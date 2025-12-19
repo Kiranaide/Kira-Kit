@@ -31,6 +31,24 @@ import { DialogPage } from "@/pages/components/dialog";
 import { DrawerPage } from "@/pages/components/drawer";
 import { EmptyPage } from "@/pages/components/empty";
 import { PopoverPage } from "@/pages/components/popover";
+import { HoverCardPage } from "@/pages/components/hover-card";
+import { KbdPage } from "@/pages/components/kbd";
+import { MenubarPage } from "@/pages/components/menubar";
+import { NavigationMenuPage } from "@/pages/components/navigation-menu";
+import { PaginationPage } from "@/pages/components/pagination";
+import { ProgressPage } from "@/pages/components/progress";
+import { RadioGroupPage } from "@/pages/components/radio-group";
+import { ResizablePage } from "@/pages/components/resizable";
+import { SkeletonPage } from "@/pages/components/skeleton";
+import { SliderPage } from "@/pages/components/slider";
+import { ContextMenuPage } from "@/pages/components/context-menu";
+import { TablePage } from "@/pages/components/table";
+import { DataTablePage } from "@/pages/components/data-table";
+import { TabsPage } from "@/pages/components/tabs";
+import { TogglePage } from "@/pages/components/toggle";
+import { TooltipPage } from "@/pages/components/tooltip";
+import { TypographyPage } from "@/pages/components/typography";
+import { CheckboxPage } from "@/pages/components/checkbox";
 
 // Root route with layout
 const rootRoute = createRootRoute({
@@ -189,6 +207,114 @@ const popoverRoute = createRoute({
   component: PopoverPage,
 });
 
+const hoverCardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/hover-card",
+  component: HoverCardPage,
+});
+
+const kbdRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/kbd",
+  component: KbdPage,
+});
+
+const menubarRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/menubar",
+  component: MenubarPage,
+});
+
+const navigationMenuRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/navigation-menu",
+  component: NavigationMenuPage,
+});
+
+const paginationRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/pagination",
+  component: PaginationPage,
+});
+
+const progressRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/progress",
+  component: ProgressPage,
+});
+
+const radioGroupRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/radio-group",
+  component: RadioGroupPage,
+});
+
+const resizableRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/resizable",
+  component: ResizablePage,
+});
+
+const skeletonRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/skeleton",
+  component: SkeletonPage,
+});
+
+const sliderRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/slider",
+  component: SliderPage,
+});
+
+const contextMenuRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/context-menu",
+  component: ContextMenuPage,
+});
+
+const tableRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/table",
+  component: TablePage,
+});
+
+const dataTableRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/data-table",
+  component: DataTablePage,
+});
+
+const tabsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/tabs",
+  component: TabsPage,
+});
+
+const toggleRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/toggle",
+  component: TogglePage,
+});
+
+const tooltipRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/tooltip",
+  component: TooltipPage,
+});
+
+const typographyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/typography",
+  component: TypographyPage,
+});
+
+const checkboxRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/checkbox",
+  component: CheckboxPage,
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -216,6 +342,24 @@ const routeTree = rootRoute.addChildren([
   drawerRoute,
   emptyRoute,
   popoverRoute,
+  hoverCardRoute,
+  kbdRoute,
+  menubarRoute,
+  navigationMenuRoute,
+  paginationRoute,
+  progressRoute,
+  radioGroupRoute,
+  resizableRoute,
+  skeletonRoute,
+  sliderRoute,
+  contextMenuRoute,
+  tableRoute,
+  dataTableRoute,
+  tabsRoute,
+  toggleRoute,
+  tooltipRoute,
+  typographyRoute,
+  checkboxRoute,
 ]);
 
 // Create router
