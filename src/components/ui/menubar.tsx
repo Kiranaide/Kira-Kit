@@ -207,12 +207,12 @@ function MenubarShortcut({
   );
 }
 
-// Submenu - using proper SubmenuTrigger.Root wrapper
-function MenubarSub({ children, ...props }: MenuPrimitive.Root.Props) {
+// Submenu - using proper SubmenuRoot wrapper
+function MenubarSub({ children, ...props }: MenuPrimitive.SubmenuRoot.Props) {
   return (
-    <MenuPrimitive.Root data-slot="menubar-sub" {...props}>
+    <MenuPrimitive.SubmenuRoot data-slot="menubar-sub" {...props}>
       {children}
-    </MenuPrimitive.Root>
+    </MenuPrimitive.SubmenuRoot>
   );
 }
 

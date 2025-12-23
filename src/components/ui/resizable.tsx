@@ -1,257 +1,88 @@
+"use client";
+
 import * as React from "react";
+import { Panel, Group, Separator } from "react-resizable-panels";
 import { IconGripVertical } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
-interface ResizablePanelGroupProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  direction?: "horizontal" | "vertical";
-  onLayout?: (sizes: number[]) => void;
-}
-
-interface ResizableContextValue {
-  direction: "horizontal" | "vertical";
-  sizes: number[];
-  setSizes: React.Dispatch<React.SetStateAction<number[]>>;
-  registerPanel: (
-    index: number,
-    defaultSize: number,
-    minSize: number,
-    maxSize: number
-  ) => void;
-  startResize: (index: number, e: React.MouseEvent | React.TouchEvent) => void;
-}
-
-const ResizableContext = React.createContext<ResizableContextValue | null>(
-  null
+// Context to pass orientation to handles
+const ResizableContext = React.createContext<"horizontal" | "vertical">(
+  "horizontal"
 );
+
+// Re-export Group as ResizablePanelGroup with styling
+interface ResizablePanelGroupProps extends React.ComponentProps<typeof Group> {
+  className?: string;
+}
 
 function ResizablePanelGroup({
   className,
-  direction = "horizontal",
+  orientation = "horizontal",
   children,
-  onLayout,
   ...props
 }: ResizablePanelGroupProps) {
-  const [sizes, setSizes] = React.useState<number[]>([]);
-  const panelsRef = React.useRef<{ minSize: number; maxSize: number }[]>([]);
-  const containerRef = React.useRef<HTMLDivElement>(null);
-
-  const registerPanel = React.useCallback(
-    (index: number, defaultSize: number, minSize: number, maxSize: number) => {
-      setSizes((prev) => {
-        const newSizes = [...prev];
-        if (newSizes[index] === undefined) {
-          newSizes[index] = defaultSize;
-        }
-        return newSizes;
-      });
-      panelsRef.current[index] = { minSize, maxSize };
-    },
-    []
-  );
-
-  const startResize = React.useCallback(
-    (handleIndex: number, e: React.MouseEvent | React.TouchEvent) => {
-      e.preventDefault();
-      const container = containerRef.current;
-      if (!container) return;
-
-      const isHorizontal = direction === "horizontal";
-      const containerRect = container.getBoundingClientRect();
-      const containerSize = isHorizontal
-        ? containerRect.width
-        : containerRect.height;
-
-      const getPosition = (event: MouseEvent | TouchEvent) => {
-        if ("touches" in event) {
-          return isHorizontal
-            ? event.touches[0].clientX
-            : event.touches[0].clientY;
-        }
-        return isHorizontal ? event.clientX : event.clientY;
-      };
-
-      const startPos = getPosition(e.nativeEvent as MouseEvent | TouchEvent);
-      const startSizes = [...sizes];
-
-      const onMove = (moveEvent: MouseEvent | TouchEvent) => {
-        const currentPos = getPosition(moveEvent);
-        const delta = ((currentPos - startPos) / containerSize) * 100;
-
-        const newSizes = [...startSizes];
-        const leftIndex = handleIndex;
-        const rightIndex = handleIndex + 1;
-
-        if (leftIndex >= 0 && rightIndex < newSizes.length) {
-          let newLeftSize = startSizes[leftIndex] + delta;
-          let newRightSize = startSizes[rightIndex] - delta;
-
-          const leftPanel = panelsRef.current[leftIndex];
-          const rightPanel = panelsRef.current[rightIndex];
-
-          // Apply constraints
-          if (leftPanel) {
-            newLeftSize = Math.max(
-              leftPanel.minSize,
-              Math.min(leftPanel.maxSize, newLeftSize)
-            );
-          }
-          if (rightPanel) {
-            newRightSize = Math.max(
-              rightPanel.minSize,
-              Math.min(rightPanel.maxSize, newRightSize)
-            );
-          }
-
-          // Recalculate to respect constraints
-          const totalOriginal = startSizes[leftIndex] + startSizes[rightIndex];
-          const total = newLeftSize + newRightSize;
-          if (Math.abs(total - totalOriginal) > 0.1) {
-            // Adjust to maintain total
-            if (delta > 0) {
-              newLeftSize = totalOriginal - newRightSize;
-            } else {
-              newRightSize = totalOriginal - newLeftSize;
-            }
-          }
-
-          newSizes[leftIndex] = newLeftSize;
-          newSizes[rightIndex] = newRightSize;
-
-          setSizes(newSizes);
-          onLayout?.(newSizes);
-        }
-      };
-
-      const onEnd = () => {
-        document.removeEventListener("mousemove", onMove);
-        document.removeEventListener("mouseup", onEnd);
-        document.removeEventListener("touchmove", onMove);
-        document.removeEventListener("touchend", onEnd);
-      };
-
-      document.addEventListener("mousemove", onMove);
-      document.addEventListener("mouseup", onEnd);
-      document.addEventListener("touchmove", onMove);
-      document.addEventListener("touchend", onEnd);
-    },
-    [direction, sizes, onLayout]
-  );
-
   return (
-    <ResizableContext.Provider
-      value={{ direction, sizes, setSizes, registerPanel, startResize }}
-    >
-      <div
-        ref={containerRef}
-        data-slot="resizable-panel-group"
-        data-direction={direction}
+    <ResizableContext.Provider value={orientation}>
+      <Group
+        orientation={orientation}
         className={cn(
           "flex h-full w-full",
-          direction === "horizontal" ? "flex-row" : "flex-col",
+          orientation === "vertical" && "flex-col",
           className
         )}
         {...props}
       >
         {children}
-      </div>
+      </Group>
     </ResizableContext.Provider>
   );
 }
 
-interface ResizablePanelProps extends React.HTMLAttributes<HTMLDivElement> {
-  defaultSize?: number;
-  minSize?: number;
-  maxSize?: number;
-}
+// Re-export Panel as ResizablePanel
+const ResizablePanel = Panel;
 
-function ResizablePanel({
-  className,
-  defaultSize = 50,
-  minSize = 10,
-  maxSize = 90,
-  children,
-  ...props
-}: ResizablePanelProps) {
-  const context = React.useContext(ResizableContext);
-  const indexRef = React.useRef<number>(-1);
-  const [index, setIndex] = React.useState(-1);
-
-  React.useEffect(() => {
-    if (context && indexRef.current === -1) {
-      const panelIndex = context.sizes.length;
-      indexRef.current = panelIndex;
-      setIndex(panelIndex);
-      context.registerPanel(panelIndex, defaultSize, minSize, maxSize);
-    }
-  }, [context, defaultSize, minSize, maxSize]);
-
-  const size = context?.sizes[index] ?? defaultSize;
-
-  return (
-    <div
-      data-slot="resizable-panel"
-      className={cn("overflow-hidden", className)}
-      style={{
-        flexBasis: `${size}%`,
-        flexGrow: 0,
-        flexShrink: 0,
-      }}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
-interface ResizableHandleProps extends React.HTMLAttributes<HTMLDivElement> {
+// Re-export Separator as ResizableHandle with styling
+interface ResizableHandleProps {
   withHandle?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 function ResizableHandle({
-  className,
   withHandle = true,
-  ...props
+  className,
+  style,
 }: ResizableHandleProps) {
-  const context = React.useContext(ResizableContext);
-  const [handleIndex, setHandleIndex] = React.useState(-1);
-
-  React.useEffect(() => {
-    if (context && handleIndex === -1) {
-      // The handle index is the number of panels registered so far minus 1
-      setHandleIndex(Math.max(0, context.sizes.length - 1));
-    }
-  }, [context, handleIndex]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    context?.startResize(handleIndex, e);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    context?.startResize(handleIndex, e);
-  };
-
-  const isHorizontal = context?.direction === "horizontal";
+  const orientation = React.useContext(ResizableContext);
+  const isVertical = orientation === "vertical";
 
   return (
-    <div
-      data-slot="resizable-handle"
+    <Separator
       className={cn(
-        "relative flex items-center justify-center bg-border",
-        isHorizontal ? "w-1.5 cursor-col-resize" : "h-1.5 cursor-row-resize",
-        "hover:bg-primary/50 active:bg-primary/70 transition-colors",
+        "relative flex items-center justify-center bg-border transition-colors hover:bg-primary/50 active:bg-primary/70",
         className
       )}
-      onMouseDown={handleMouseDown}
-      onTouchStart={handleTouchStart}
-      {...props}
+      style={{
+        width: isVertical ? "100%" : "6px",
+        height: isVertical ? "6px" : "100%",
+        cursor: isVertical ? "row-resize" : "col-resize",
+        flexShrink: 0,
+        ...style,
+      }}
     >
       {withHandle && (
-        <div className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border">
-          <IconGripVertical className="h-2.5 w-2.5" />
+        <div
+          className={cn(
+            "z-10 flex items-center justify-center rounded-sm border bg-border",
+            isVertical ? "h-3 w-4" : "h-4 w-3"
+          )}
+        >
+          <IconGripVertical
+            className={cn("h-2.5 w-2.5", isVertical && "rotate-90")}
+          />
         </div>
       )}
-    </div>
+    </Separator>
   );
 }
 

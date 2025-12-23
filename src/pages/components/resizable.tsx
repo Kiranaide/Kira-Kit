@@ -20,7 +20,7 @@ export function ResizablePage() {
           Horizontal Layout
         </h2>
         <div className="h-48 rounded-lg border border-border overflow-hidden">
-          <ResizablePanelGroup direction="horizontal">
+          <ResizablePanelGroup orientation="horizontal">
             <ResizablePanel defaultSize={50}>
               <div className="flex h-full items-center justify-center p-6 bg-muted/30">
                 <span className="font-semibold">Panel 1</span>
@@ -42,13 +42,13 @@ export function ResizablePage() {
           Vertical Layout
         </h2>
         <div className="h-64 rounded-lg border border-border overflow-hidden">
-          <ResizablePanelGroup direction="vertical">
+          <ResizablePanelGroup orientation="vertical">
             <ResizablePanel defaultSize={40}>
               <div className="flex h-full items-center justify-center p-6 bg-muted/30">
                 <span className="font-semibold">Header</span>
               </div>
             </ResizablePanel>
-            <ResizableHandle direction="vertical" />
+            <ResizableHandle />
             <ResizablePanel defaultSize={60}>
               <div className="flex h-full items-center justify-center p-6 bg-muted/50">
                 <span className="font-semibold">Content</span>
@@ -64,7 +64,7 @@ export function ResizablePage() {
           Three Panel Layout
         </h2>
         <div className="h-48 rounded-lg border border-border overflow-hidden">
-          <ResizablePanelGroup direction="horizontal">
+          <ResizablePanelGroup orientation="horizontal">
             <ResizablePanel defaultSize={25} minSize={15}>
               <div className="flex h-full items-center justify-center p-4 bg-muted/20">
                 <span className="text-sm font-medium">Sidebar</span>
@@ -92,7 +92,7 @@ export function ResizablePage() {
           Without Visible Handle
         </h2>
         <div className="h-32 rounded-lg border border-border overflow-hidden">
-          <ResizablePanelGroup direction="horizontal">
+          <ResizablePanelGroup orientation="horizontal">
             <ResizablePanel defaultSize={50}>
               <div className="flex h-full items-center justify-center p-6 bg-primary/5">
                 <span className="font-semibold">Left</span>
@@ -121,7 +121,7 @@ export function ResizablePage() {
   ResizableHandle,
 } from "@/components/ui/resizable"
 
-<ResizablePanelGroup direction="horizontal">
+<ResizablePanelGroup orientation="horizontal">
   <ResizablePanel defaultSize={50}>
     Content 1
   </ResizablePanel>

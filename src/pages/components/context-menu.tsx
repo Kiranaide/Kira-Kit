@@ -8,10 +8,8 @@ import {
   ContextMenuCheckboxItem,
   ContextMenuRadioGroup,
   ContextMenuRadioItem,
+  ContextMenuGroup,
   ContextMenuLabel,
-  ContextMenuSub,
-  ContextMenuSubTrigger,
-  ContextMenuSubContent,
 } from "@/components/ui/context-menu";
 
 export function ContextMenuPage() {
@@ -83,13 +81,15 @@ export function ContextMenuPage() {
             Right click for sorting options
           </ContextMenuTrigger>
           <ContextMenuContent>
-            <ContextMenuLabel>Sort By</ContextMenuLabel>
-            <ContextMenuSeparator />
-            <ContextMenuRadioGroup value="name">
-              <ContextMenuRadioItem value="name">Name</ContextMenuRadioItem>
-              <ContextMenuRadioItem value="date">Date</ContextMenuRadioItem>
-              <ContextMenuRadioItem value="size">Size</ContextMenuRadioItem>
-            </ContextMenuRadioGroup>
+            <ContextMenuGroup>
+              <ContextMenuLabel>Sort By</ContextMenuLabel>
+              <ContextMenuSeparator />
+              <ContextMenuRadioGroup value="name">
+                <ContextMenuRadioItem value="name">Name</ContextMenuRadioItem>
+                <ContextMenuRadioItem value="date">Date</ContextMenuRadioItem>
+                <ContextMenuRadioItem value="size">Size</ContextMenuRadioItem>
+              </ContextMenuRadioGroup>
+            </ContextMenuGroup>
           </ContextMenuContent>
         </ContextMenu>
       </section>

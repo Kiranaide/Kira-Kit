@@ -28,7 +28,7 @@ function AccordionItem({ className, ...props }: AccordionPrimitive.Item.Props) {
 
 // Accordion Trigger Variants
 const accordionTriggerVariants = cva(
-  "flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&[data-panel-open]]:rounded-b-none rounded-lg",
+  "flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [[data-panel-open]_&]:rounded-b-none rounded-lg",
   {
     variants: {
       variant: {
@@ -80,78 +80,25 @@ function AccordionTrigger({
   );
 }
 
-// Accordion Content / Panel with Web Animation API
-interface AccordionContentProps extends AccordionPrimitive.Panel.Props {}
-
+// Accordion Content / Panel with Base UI CSS variable animation
 function AccordionContent({
   className,
   children,
   ...props
-}: AccordionContentProps) {
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const innerRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    const el = contentRef.current;
-    if (!el) return;
-
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === "data-open") {
-          const isOpen = el.hasAttribute("data-open");
-          const inner = innerRef.current;
-          if (!inner) return;
-
-          if (isOpen) {
-            // Opening animation with Web Animation API
-            const height = inner.scrollHeight;
-            el.animate(
-              [
-                { height: "0px", opacity: 0 },
-                { height: `${height}px`, opacity: 1 },
-              ],
-              {
-                duration: 250,
-                easing: "ease-out",
-                fill: "forwards",
-              }
-            ).onfinish = () => {
-              el.style.height = "auto";
-            };
-          } else {
-            // Closing animation with Web Animation API
-            const height = el.scrollHeight;
-            el.animate(
-              [
-                { height: `${height}px`, opacity: 1 },
-                { height: "0px", opacity: 0 },
-              ],
-              {
-                duration: 200,
-                easing: "ease-in",
-                fill: "forwards",
-              }
-            );
-          }
-        }
-      });
-    });
-
-    observer.observe(el, { attributes: true });
-    return () => observer.disconnect();
-  }, []);
-
+}: AccordionPrimitive.Panel.Props) {
   return (
     <AccordionPrimitive.Panel
-      ref={contentRef}
       data-slot="accordion-panel"
-      className={cn("overflow-hidden", className)}
+      className={cn(
+        // Use Base UI's built-in CSS variable for height animation
+        "h-[var(--accordion-panel-height)] overflow-hidden",
+        "transition-[height] duration-300 ease-out",
+        "data-[starting-style]:h-0 data-[ending-style]:h-0",
+        className
+      )}
       {...props}
     >
-      <div
-        ref={innerRef}
-        className="px-4 py-3 text-sm text-muted-foreground border-t border-border"
-      >
+      <div className="px-4 py-3 text-sm text-muted-foreground border-t border-border">
         {children}
       </div>
     </AccordionPrimitive.Panel>

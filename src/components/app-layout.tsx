@@ -52,6 +52,8 @@ import {
   IconTooltip,
   IconTypography,
   IconSquareCheck,
+  IconBinaryTree2,
+  IconUpload,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -320,6 +322,18 @@ export function AppLayout() {
                   icon={<IconSquareCheck className="w-5 h-5" />}
                 >
                   Checkbox
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/tree-view"
+                  icon={<IconBinaryTree2 className="w-5 h-5" />}
+                >
+                  Tree View
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/file-upload"
+                  icon={<IconUpload className="w-5 h-5" />}
+                >
+                  File Upload
                 </SidebarItem>
               </SidebarGroup>
 

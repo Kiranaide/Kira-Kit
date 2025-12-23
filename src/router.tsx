@@ -49,6 +49,8 @@ import { TogglePage } from "@/pages/components/toggle";
 import { TooltipPage } from "@/pages/components/tooltip";
 import { TypographyPage } from "@/pages/components/typography";
 import { CheckboxPage } from "@/pages/components/checkbox";
+import { TreeViewPage } from "@/pages/components/tree-view";
+import { FileUploadPage } from "@/pages/components/file-upload";
 
 // Root route with layout
 const rootRoute = createRootRoute({
@@ -315,6 +317,18 @@ const checkboxRoute = createRoute({
   component: CheckboxPage,
 });
 
+const treeViewRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/tree-view",
+  component: TreeViewPage,
+});
+
+const fileUploadRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/file-upload",
+  component: FileUploadPage,
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -360,6 +374,8 @@ const routeTree = rootRoute.addChildren([
   tooltipRoute,
   typographyRoute,
   checkboxRoute,
+  treeViewRoute,
+  fileUploadRoute,
 ]);
 
 // Create router

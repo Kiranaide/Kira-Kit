@@ -21,8 +21,6 @@ import type {
   ColumnPinningState,
   Row,
   Table as TableType,
-  Header,
-  Cell,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -148,11 +146,9 @@ function DataTableRoot<TData, TValue>({
     ...(enablePagination && {
       getPaginationRowModel: getPaginationRowModel(),
     }),
-    // Row Selection
-    ...(enableRowSelection && {
-      onRowSelectionChange: setRowSelection,
-      enableRowSelection: true,
-    }),
+    // Row Selection - always set up handlers, let columns control visibility
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: enableRowSelection,
     // Column Ordering
     ...(enableColumnOrdering && {
       onColumnOrderChange: setColumnOrder,
@@ -251,11 +247,13 @@ function DataTableSearch({
 interface DataTableContentProps<TData> {
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
   stickyHeader?: boolean;
+  expandOnRowClick?: boolean;
 }
 
 function DataTableContent<TData>({
   renderSubComponent,
   stickyHeader = false,
+  expandOnRowClick = false,
 }: DataTableContentProps<TData>) {
   const { table } = useDataTable<TData>();
 
@@ -320,7 +318,19 @@ function DataTableContent<TData>({
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <React.Fragment key={row.id}>
-                <TableRow data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  data-state={row.getIsSelected() && "selected"}
+                  className={
+                    expandOnRowClick && row.getCanExpand()
+                      ? "cursor-pointer"
+                      : undefined
+                  }
+                  onClick={
+                    expandOnRowClick && row.getCanExpand()
+                      ? () => row.toggleExpanded()
+                      : undefined
+                  }
+                >
                   {row.getVisibleCells().map((cell) => {
                     const isPinned = cell.column.getIsPinned();
                     return (
