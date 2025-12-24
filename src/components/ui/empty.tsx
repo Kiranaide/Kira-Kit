@@ -50,7 +50,10 @@ function Empty({
   children,
   ...props
 }: EmptyProps) {
-  const IconComponent = typeof icon === "string" ? emptyIcons[icon] : null;
+  const IconComponent =
+    typeof icon === "string"
+      ? emptyIcons[icon as keyof typeof emptyIcons]
+      : null;
 
   return (
     <div

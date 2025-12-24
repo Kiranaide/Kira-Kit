@@ -16,7 +16,6 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 
 interface VirtualizedDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

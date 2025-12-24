@@ -14,7 +14,6 @@ import {
   isSameDay,
   isWithinInterval,
   isBefore,
-  isAfter,
   subDays,
   startOfYear,
   endOfYear,

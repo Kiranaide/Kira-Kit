@@ -3,8 +3,6 @@ import {
   format,
   addMonths,
   subMonths,
-  addYears,
-  subYears,
   startOfMonth,
   endOfMonth,
   startOfWeek,
@@ -15,11 +13,8 @@ import {
   isWithinInterval,
   isBefore,
   isAfter,
-  startOfYear,
-  endOfYear,
-  eachMonthOfInterval,
 } from "date-fns";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
@@ -160,7 +155,16 @@ function Calendar({
     }
   };
 
-  const getDayVariant = (date: Date): any => {
+  const getDayVariant = (
+    date: Date
+  ):
+    | "default"
+    | "outside"
+    | "rangeStart"
+    | "rangeEnd"
+    | "selected"
+    | "range"
+    | "today" => {
     if (!isSameMonth(date, currentMonth)) return "outside";
     if (isRangeStart(date)) return "rangeStart";
     if (isRangeEnd(date)) return "rangeEnd";

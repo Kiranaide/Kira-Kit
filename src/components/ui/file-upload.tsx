@@ -12,7 +12,7 @@ import {
 // ============================================
 // TYPES
 // ============================================
-export interface UploadedFile {
+interface UploadedFile {
   id: string;
   file: File;
   preview?: string;

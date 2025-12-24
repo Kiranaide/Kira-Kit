@@ -64,7 +64,7 @@ export function SelectPage() {
         <div className="max-w-sm">
           <Select>
             <SelectTrigger>
-              <SelectValue placeholder="Select a fruit" />
+              <SelectValue>Select a fruit</SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -132,7 +132,7 @@ export function SelectPage() {
         <div className="max-w-sm">
           <Select disabled>
             <SelectTrigger>
-              <SelectValue placeholder="Disabled" />
+              <SelectValue>Disabled</SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="option">Option</SelectItem>

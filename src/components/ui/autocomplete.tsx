@@ -1,5 +1,4 @@
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
 import { IconSearch, IconCheck, IconLoader2, IconX } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 

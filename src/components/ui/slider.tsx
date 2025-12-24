@@ -58,7 +58,7 @@ function Slider({
 }: SliderProps) {
   const [internalValue, setInternalValue] = React.useState(defaultValue);
   const currentValue = value ?? internalValue;
-  const percentage = ((currentValue - min) / (max - min)) * 100;
+  // const percentage = ((currentValue - min) / (max - min)) * 100;
 
   const handleChange = (newValue: number | readonly number[]) => {
     const val = Array.isArray(newValue) ? newValue[0] : newValue;
