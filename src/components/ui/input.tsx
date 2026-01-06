@@ -124,6 +124,268 @@ function NumericInput({
 }
 
 // ============================================
+// FORMATTED NUMERIC INPUTS
+// - CurrencyInput
+// - PercentageInput
+// - DecimalInput
+// These inputs format as you type using a fixed number of fraction digits.
+// ============================================
+
+type FormattedInputBaseProps = Omit<
+  React.ComponentProps<"input">,
+  "type" | "onChange" | "value"
+>;
+
+interface CurrencyInputProps extends FormattedInputBaseProps {
+  value?: number | null;
+  onChange?: (value: number | null) => void;
+  currency?: string;
+  locale?: string;
+  fractionDigits?: number;
+}
+
+function CurrencyInput({
+  value,
+  onChange,
+  currency = "USD",
+  locale,
+  fractionDigits = 2,
+  className,
+  ...props
+}: CurrencyInputProps) {
+  const [internalValue, setInternalValue] = React.useState<number | null>(
+    value ?? null
+  );
+  const [displayValue, setDisplayValue] = React.useState("");
+
+  const effectiveValue = value ?? internalValue;
+
+  const format = React.useCallback(
+    (num: number) => {
+      try {
+        return new Intl.NumberFormat(locale, {
+          style: "currency",
+          currency,
+          minimumFractionDigits: fractionDigits,
+          maximumFractionDigits: fractionDigits,
+        }).format(num);
+      } catch {
+        return num.toFixed(fractionDigits);
+      }
+    },
+    [currency, fractionDigits, locale]
+  );
+
+  React.useEffect(() => {
+    if (effectiveValue == null || Number.isNaN(effectiveValue)) {
+      setDisplayValue("");
+    } else {
+      setDisplayValue(format(effectiveValue));
+    }
+  }, [effectiveValue, format]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    const digits = raw.replace(/[^\d]/g, "");
+
+    if (!digits) {
+      setInternalValue(null);
+      setDisplayValue("");
+      onChange?.(null);
+      return;
+    }
+
+    const int = parseInt(digits, 10);
+    const factor = Math.pow(10, fractionDigits);
+    const num = int / factor;
+
+    setInternalValue(num);
+    setDisplayValue(format(num));
+    onChange?.(num);
+  };
+
+  const handleBlur = () => {
+    if (effectiveValue == null || Number.isNaN(effectiveValue)) {
+      setDisplayValue("");
+    } else {
+      setDisplayValue(format(effectiveValue));
+    }
+  };
+
+  return (
+    <Input
+      inputMode="decimal"
+      className={className}
+      value={displayValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      {...props}
+    />
+  );
+}
+
+interface PercentageInputProps extends FormattedInputBaseProps {
+  value?: number | null;
+  onChange?: (value: number | null) => void;
+  locale?: string;
+  fractionDigits?: number;
+}
+
+function PercentageInput({
+  value,
+  onChange,
+  locale,
+  fractionDigits = 2,
+  className,
+  ...props
+}: PercentageInputProps) {
+  const [internalValue, setInternalValue] = React.useState<number | null>(
+    value ?? null
+  );
+  const [displayValue, setDisplayValue] = React.useState("");
+
+  const effectiveValue = value ?? internalValue;
+
+  const format = React.useCallback(
+    (num: number) =>
+      `${num.toLocaleString(locale, {
+        minimumFractionDigits: fractionDigits,
+        maximumFractionDigits: fractionDigits,
+      })}%`,
+    [fractionDigits, locale]
+  );
+
+  React.useEffect(() => {
+    if (effectiveValue == null || Number.isNaN(effectiveValue)) {
+      setDisplayValue("");
+    } else {
+      setDisplayValue(format(effectiveValue));
+    }
+  }, [effectiveValue, format]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    const digits = raw.replace(/[^\d]/g, "");
+
+    if (!digits) {
+      setInternalValue(null);
+      setDisplayValue("");
+      onChange?.(null);
+      return;
+    }
+
+    const int = parseInt(digits, 10);
+    const factor = Math.pow(10, fractionDigits);
+    const num = int / factor;
+
+    setInternalValue(num);
+    setDisplayValue(format(num));
+    onChange?.(num);
+  };
+
+  const handleBlur = () => {
+    if (effectiveValue == null || Number.isNaN(effectiveValue)) {
+      setDisplayValue("");
+    } else {
+      setDisplayValue(format(effectiveValue));
+    }
+  };
+
+  return (
+    <Input
+      inputMode="decimal"
+      className={className}
+      value={displayValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      {...props}
+    />
+  );
+}
+
+interface DecimalInputProps extends FormattedInputBaseProps {
+  value?: number | null;
+  onChange?: (value: number | null) => void;
+  locale?: string;
+  fractionDigits?: number;
+  useGrouping?: boolean;
+}
+
+function DecimalInput({
+  value,
+  onChange,
+  locale,
+  fractionDigits = 2,
+  useGrouping = true,
+  className,
+  ...props
+}: DecimalInputProps) {
+  const [internalValue, setInternalValue] = React.useState<number | null>(
+    value ?? null
+  );
+  const [displayValue, setDisplayValue] = React.useState("");
+
+  const effectiveValue = value ?? internalValue;
+
+  const format = React.useCallback(
+    (num: number) =>
+      num.toLocaleString(locale, {
+        minimumFractionDigits: fractionDigits,
+        maximumFractionDigits: fractionDigits,
+        useGrouping,
+      }),
+    [fractionDigits, locale, useGrouping]
+  );
+
+  React.useEffect(() => {
+    if (effectiveValue == null || Number.isNaN(effectiveValue)) {
+      setDisplayValue("");
+    } else {
+      setDisplayValue(format(effectiveValue));
+    }
+  }, [effectiveValue, format]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    const digits = raw.replace(/[^\d]/g, "");
+
+    if (!digits) {
+      setInternalValue(null);
+      setDisplayValue("");
+      onChange?.(null);
+      return;
+    }
+
+    const int = parseInt(digits, 10);
+    const factor = Math.pow(10, fractionDigits);
+    const num = int / factor;
+
+    setInternalValue(num);
+    setDisplayValue(format(num));
+    onChange?.(num);
+  };
+
+  const handleBlur = () => {
+    if (effectiveValue == null || Number.isNaN(effectiveValue)) {
+      setDisplayValue("");
+    } else {
+      setDisplayValue(format(effectiveValue));
+    }
+  };
+
+  return (
+    <Input
+      inputMode="decimal"
+      className={className}
+      value={displayValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      {...props}
+    />
+  );
+}
+
+// ============================================
 // INPUT WITH PREFIX/SUFFIX (Symbol Input)
 // ============================================
 interface InputWithAffixProps
@@ -491,6 +753,9 @@ export {
   InputWithTooltip,
   InputWithDropdown,
   InputGroup,
+  CurrencyInput,
+  PercentageInput,
+  DecimalInput,
 };
 export type {
   NumericInputProps,
@@ -502,4 +767,7 @@ export type {
   InputWithTooltipProps,
   InputWithDropdownProps,
   InputGroupProps,
+  CurrencyInputProps,
+  PercentageInputProps,
+  DecimalInputProps,
 };

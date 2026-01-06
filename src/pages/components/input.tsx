@@ -2,18 +2,38 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { NumericInput, InputWithAffix } from "@/components/ui/input";
+import {
+  NumericInput,
+  InputWithAffix,
+  InputWithLabel,
+  InputWithButton,
+  InputWithSpinner,
+  InputWithTooltip,
+  InputWithDropdown,
+  InputGroup,
+  TextareaFixed,
+  CurrencyInput,
+  PercentageInput,
+  DecimalInput,
+} from "@/components/ui/input";
 import { ColorPicker } from "@/components/ui/color-picker";
 import {
   IconCurrencyDollar,
   IconPercentage,
   IconAt,
   IconSearch,
+  IconSend,
+  IconCheck,
 } from "@tabler/icons-react";
 
 export function InputPage() {
   const [numericValue, setNumericValue] = React.useState(5);
   const [color, setColor] = React.useState("#3b82f6");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [emailValue, setEmailValue] = React.useState("");
+  const [currencyValue, setCurrencyValue] = React.useState<number | null>(1234.56);
+  const [percentageValue, setPercentageValue] = React.useState<number | null>(12.5);
+  const [decimalValue, setDecimalValue] = React.useState<number | null>(98765.43);
 
   return (
     <div className="p-8 max-w-4xl space-y-12">
@@ -88,6 +108,41 @@ export function InputPage() {
               step={0.1}
               min={0}
               max={5}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Formatted Inputs */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Formatted Inputs
+        </h2>
+        <div className="max-w-sm space-y-4">
+          <div className="space-y-2">
+            <Label>Currency (auto decimal + locale format)</Label>
+            <CurrencyInput
+              value={currencyValue}
+              onChange={setCurrencyValue}
+              currency="USD"
+              placeholder="$1,234.56"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Percentage (auto decimal + % suffix)</Label>
+            <PercentageInput
+              value={percentageValue}
+              onChange={setPercentageValue}
+              placeholder="12.50%"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Decimal (fixed fraction digits)</Label>
+            <DecimalInput
+              value={decimalValue}
+              onChange={setDecimalValue}
+              fractionDigits={3}
+              placeholder="98,765.430"
             />
           </div>
         </div>
@@ -193,6 +248,196 @@ export function InputPage() {
         </div>
       </section>
 
+      {/* Input with Label */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Input with Label
+        </h2>
+        <div className="max-w-sm space-y-4">
+          <InputWithLabel
+            label="Email Address"
+            description="We'll never share your email with anyone else."
+            placeholder="name@example.com"
+            type="email"
+          />
+          <InputWithLabel
+            label="Password"
+            description="Must be at least 8 characters"
+            type="password"
+            placeholder="Enter password"
+          />
+          <InputWithLabel
+            label="Username"
+            error="Username is already taken"
+            placeholder="username"
+          />
+        </div>
+      </section>
+
+      {/* Input with Button */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Input with Button
+        </h2>
+        <div className="max-w-sm space-y-4">
+          <div className="space-y-2">
+            <Label>Subscribe</Label>
+            <InputWithButton
+              placeholder="Enter your email"
+              buttonText="Subscribe"
+              buttonIcon={<IconSend className="w-4 h-4" />}
+              buttonPosition="right"
+              onButtonClick={() => alert("Subscribed!")}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Search</Label>
+            <InputWithButton
+              placeholder="Search..."
+              buttonText="Search"
+              buttonIcon={<IconSearch className="w-4 h-4" />}
+              buttonPosition="left"
+              buttonVariant="outline"
+              onButtonClick={() => alert("Searching...")}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Verify</Label>
+            <InputWithButton
+              placeholder="Enter code"
+              buttonText="Verify"
+              buttonIcon={<IconCheck className="w-4 h-4" />}
+              buttonPosition="right"
+              buttonVariant="success"
+              onButtonClick={() => alert("Verified!")}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Input with Spinner */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Input with Spinner
+        </h2>
+        <div className="max-w-sm space-y-4">
+          <div className="space-y-2">
+            <Label>Loading State</Label>
+            <InputWithSpinner
+              placeholder="Searching..."
+              isLoading={isLoading}
+            />
+            <button
+              onClick={() => setIsLoading(!isLoading)}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Toggle loading
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Input with Tooltip */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Input with Tooltip
+        </h2>
+        <div className="max-w-sm space-y-4">
+          <InputWithTooltip
+            placeholder="Hover for help"
+            tooltip="This field is required and must be unique"
+          />
+          <InputWithTooltip
+            placeholder="API Key"
+            tooltip="Keep this secret! Never share your API key publicly."
+            type="password"
+          />
+        </div>
+      </section>
+
+      {/* Input with Dropdown */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Input with Dropdown
+        </h2>
+        <div className="max-w-sm space-y-4">
+          <div className="space-y-2">
+            <Label>Country Code</Label>
+            <InputWithDropdown
+              options={[
+                { value: "+1", label: "+1" },
+                { value: "+44", label: "+44" },
+                { value: "+33", label: "+33" },
+                { value: "+49", label: "+49" },
+                { value: "+81", label: "+81" },
+              ]}
+              placeholder="Phone number"
+              onOptionSelect={(value) => console.log("Selected:", value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Domain</Label>
+            <InputWithDropdown
+              options={[
+                { value: "gmail.com", label: "@gmail.com" },
+                { value: "yahoo.com", label: "@yahoo.com" },
+                { value: "outlook.com", label: "@outlook.com" },
+              ]}
+              placeholder="Username"
+              dropdownPosition="right"
+              onOptionSelect={(value) => console.log("Selected:", value)}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Input Group */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Input Group
+        </h2>
+        <div className="max-w-sm space-y-4">
+          <div className="space-y-2">
+            <Label>Date Range</Label>
+            <InputGroup>
+              <Input type="date" placeholder="Start date" />
+              <Input type="date" placeholder="End date" />
+            </InputGroup>
+          </div>
+          <div className="space-y-2">
+            <Label>Time Range</Label>
+            <InputGroup>
+              <Input type="time" placeholder="Start time" />
+              <Input type="time" placeholder="End time" />
+            </InputGroup>
+          </div>
+          <div className="space-y-2">
+            <Label>Price Range</Label>
+            <InputGroup>
+              <InputWithAffix prefix="$" type="number" placeholder="Min" />
+              <InputWithAffix prefix="$" type="number" placeholder="Max" />
+            </InputGroup>
+          </div>
+        </div>
+      </section>
+
+      {/* Textarea Fixed */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Fixed Height Textarea
+        </h2>
+        <div className="max-w-sm space-y-4">
+          <div className="space-y-2">
+            <Label>Comments (Fixed Height)</Label>
+            <TextareaFixed rows={4} placeholder="Enter comments..." />
+          </div>
+          <div className="space-y-2">
+            <Label>Notes</Label>
+            <TextareaFixed rows={3} placeholder="Add notes..." />
+          </div>
+        </div>
+      </section>
+
       {/* Disabled */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -202,6 +447,7 @@ export function InputPage() {
           <Input placeholder="Disabled input" disabled />
           <NumericInput value={5} onChange={() => {}} disabled />
           <InputWithAffix prefix="$" placeholder="Disabled" disabled />
+          <InputWithLabel label="Disabled Field" disabled placeholder="Cannot edit" />
         </div>
       </section>
 
