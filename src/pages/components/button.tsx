@@ -1,9 +1,8 @@
-import { Button } from "@/components/ui/button";
 import {
-  HoldButton,
+  Button,
   ExpandableIconButton,
-  HoldToCloseAlert,
-} from "@/components/ui/button-extended";
+} from "@/components/ui/button";
+import { HoldToCloseAlert } from "@/components/ui/alert";
 import {
   IconPlus,
   IconDownload,
@@ -13,6 +12,9 @@ import {
   IconSettings,
   IconHeart,
   IconPlayerPlay,
+  IconInfoCircle,
+  IconCircleCheck,
+  IconAlertTriangle,
 } from "@tabler/icons-react";
 
 export function ButtonPage() {
@@ -30,13 +32,69 @@ export function ButtonPage() {
         <h2 className="text-xl font-semibold border-b border-border pb-2">
           Variants
         </h2>
-        <div className="flex flex-wrap gap-3">
-          <Button variant="default">Default</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="destructive">Destructive</Button>
-          <Button variant="link">Link</Button>
+        <div className="space-y-6">
+          {/* Basic Variants */}
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">
+              Basic
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="default">Default</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="outline">Outline</Button>
+              <Button variant="ghost">Ghost</Button>
+              <Button variant="destructive">Destructive</Button>
+              <Button variant="link">Link</Button>
+            </div>
+          </div>
+
+          {/* Destructive Variants */}
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">
+              Destructive
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="destructive">Destructive</Button>
+              <Button variant="destructive-outline">Destructive Outline</Button>
+              <Button variant="destructive-ghost">Destructive Ghost</Button>
+            </div>
+          </div>
+
+          {/* Info Variants */}
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">
+              Info
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="info">Info</Button>
+              <Button variant="info-outline">Info Outline</Button>
+              <Button variant="info-ghost">Info Ghost</Button>
+            </div>
+          </div>
+
+          {/* Success Variants */}
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">
+              Success
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="success">Success</Button>
+              <Button variant="success-outline">Success Outline</Button>
+              <Button variant="success-ghost">Success Ghost</Button>
+            </div>
+          </div>
+
+          {/* Warning Variants */}
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">
+              Warning
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <Button variant="warning">Warning</Button>
+              <Button variant="warning-outline">Warning Outline</Button>
+              <Button variant="warning-ghost">Warning Ghost</Button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -45,11 +103,43 @@ export function ButtonPage() {
         <h2 className="text-xl font-semibold border-b border-border pb-2">
           Sizes
         </h2>
-        <div className="flex flex-wrap items-center gap-3">
-          <Button size="xs">Extra Small</Button>
-          <Button size="sm">Small</Button>
-          <Button size="default">Default</Button>
-          <Button size="lg">Large</Button>
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="xs" variant="default">Extra Small</Button>
+            <Button size="xs" variant="secondary">Extra Small</Button>
+            <Button size="xs" variant="outline">Extra Small</Button>
+            <Button size="xs" variant="info">Extra Small</Button>
+            <Button size="xs" variant="success">Extra Small</Button>
+            <Button size="xs" variant="warning">Extra Small</Button>
+            <Button size="xs" variant="destructive">Extra Small</Button>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="sm" variant="default">Small</Button>
+            <Button size="sm" variant="secondary">Small</Button>
+            <Button size="sm" variant="outline">Small</Button>
+            <Button size="sm" variant="info">Small</Button>
+            <Button size="sm" variant="success">Small</Button>
+            <Button size="sm" variant="warning">Small</Button>
+            <Button size="sm" variant="destructive">Small</Button>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="default" variant="default">Default</Button>
+            <Button size="default" variant="secondary">Default</Button>
+            <Button size="default" variant="outline">Default</Button>
+            <Button size="default" variant="info">Default</Button>
+            <Button size="default" variant="success">Default</Button>
+            <Button size="default" variant="warning">Default</Button>
+            <Button size="default" variant="destructive">Default</Button>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="lg" variant="default">Large</Button>
+            <Button size="lg" variant="secondary">Large</Button>
+            <Button size="lg" variant="outline">Large</Button>
+            <Button size="lg" variant="info">Large</Button>
+            <Button size="lg" variant="success">Large</Button>
+            <Button size="lg" variant="warning">Large</Button>
+            <Button size="lg" variant="destructive">Large</Button>
+          </div>
         </div>
       </section>
 
@@ -58,19 +148,99 @@ export function ButtonPage() {
         <h2 className="text-xl font-semibold border-b border-border pb-2">
           Icon Buttons
         </h2>
-        <div className="flex flex-wrap items-center gap-3">
-          <Button size="icon-xs" variant="outline">
-            <IconPlus className="w-4 h-4" />
-          </Button>
-          <Button size="icon-sm" variant="outline">
-            <IconPlus className="w-4 h-4" />
-          </Button>
-          <Button size="icon" variant="outline">
-            <IconPlus className="w-4 h-4" />
-          </Button>
-          <Button size="icon-lg" variant="outline">
-            <IconPlus className="w-4 h-4" />
-          </Button>
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="icon-xs" variant="default">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-xs" variant="secondary">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-xs" variant="outline">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-xs" variant="info">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-xs" variant="success">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-xs" variant="warning">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-xs" variant="destructive">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="icon-sm" variant="default">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-sm" variant="secondary">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-sm" variant="outline">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-sm" variant="info">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-sm" variant="success">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-sm" variant="warning">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-sm" variant="destructive">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="icon" variant="default">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="secondary">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="outline">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="info">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="success">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="warning">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon" variant="destructive">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button size="icon-lg" variant="default">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-lg" variant="secondary">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-lg" variant="outline">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-lg" variant="info">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-lg" variant="success">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-lg" variant="warning">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+            <Button size="icon-lg" variant="destructive">
+              <IconPlus className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -80,13 +250,29 @@ export function ButtonPage() {
           With Icons
         </h2>
         <div className="flex flex-wrap gap-3">
-          <Button>
+          <Button variant="default">
             <IconMail data-icon="inline-start" className="w-4 h-4" />
             Send Email
           </Button>
           <Button variant="secondary">
             <IconDownload data-icon="inline-start" className="w-4 h-4" />
             Download
+          </Button>
+          <Button variant="outline">
+            <IconSettings data-icon="inline-start" className="w-4 h-4" />
+            Settings
+          </Button>
+          <Button variant="info">
+            <IconInfoCircle data-icon="inline-start" className="w-4 h-4" />
+            Info
+          </Button>
+          <Button variant="success">
+            <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
+            Success
+          </Button>
+          <Button variant="warning">
+            <IconAlertTriangle data-icon="inline-start" className="w-4 h-4" />
+            Warning
           </Button>
           <Button variant="destructive">
             <IconTrash data-icon="inline-start" className="w-4 h-4" />
@@ -104,22 +290,54 @@ export function ButtonPage() {
           Hold the button to execute the action. Release early to cancel.
         </p>
         <div className="flex flex-wrap gap-3">
-          <HoldButton
-            variant="destructive"
-            holdDuration={1500}
-            onHoldComplete={() => alert("Deleted!")}
-          >
-            <IconTrash className="w-4 h-4 mr-2" />
-            Hold to Delete
-          </HoldButton>
-          <HoldButton
+          <Button
             variant="default"
             holdDuration={1000}
             onHoldComplete={() => alert("Sent!")}
           >
             <IconSend className="w-4 h-4 mr-2" />
             Hold to Send
-          </HoldButton>
+          </Button>
+          <Button
+            variant="secondary"
+            holdDuration={1200}
+            onHoldComplete={() => alert("Saved!")}
+          >
+            <IconDownload className="w-4 h-4 mr-2" />
+            Hold to Save
+          </Button>
+          <Button
+            variant="info"
+            holdDuration={1000}
+            onHoldComplete={() => alert("Info confirmed!")}
+          >
+            <IconInfoCircle className="w-4 h-4 mr-2" />
+            Hold to Confirm
+          </Button>
+          <Button
+            variant="success"
+            holdDuration={1000}
+            onHoldComplete={() => alert("Approved!")}
+          >
+            <IconCircleCheck className="w-4 h-4 mr-2" />
+            Hold to Approve
+          </Button>
+          <Button
+            variant="warning"
+            holdDuration={1500}
+            onHoldComplete={() => alert("Warning acknowledged!")}
+          >
+            <IconAlertTriangle className="w-4 h-4 mr-2" />
+            Hold to Acknowledge
+          </Button>
+          <Button
+            variant="destructive"
+            holdDuration={1500}
+            onHoldComplete={() => alert("Deleted!")}
+          >
+            <IconTrash className="w-4 h-4 mr-2" />
+            Hold to Delete
+          </Button>
         </div>
       </section>
 
@@ -131,28 +349,98 @@ export function ButtonPage() {
         <p className="text-sm text-muted-foreground">
           Icon-only buttons that expand to show text on hover.
         </p>
-        <div className="flex flex-wrap gap-3">
-          <ExpandableIconButton
-            icon={<IconSettings className="w-4 h-4" />}
-            label="Settings"
-            variant="outline"
-          />
-          <ExpandableIconButton
-            icon={<IconHeart className="w-4 h-4" />}
-            label="Like"
-            variant="secondary"
-          />
-          <ExpandableIconButton
-            icon={<IconPlayerPlay className="w-4 h-4" />}
-            label="Play Video"
-            variant="default"
-          />
-          <ExpandableIconButton
-            icon={<IconTrash className="w-4 h-4" />}
-            label="Delete"
-            variant="destructive"
-            expandDirection="left"
-          />
+        <div className="space-y-3">
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">
+              Regular
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <ExpandableIconButton
+                icon={<IconSettings className="w-4 h-4" />}
+                label="Settings"
+                variant="outline"
+              />
+              <ExpandableIconButton
+                icon={<IconHeart className="w-4 h-4" />}
+                label="Like"
+                variant="secondary"
+              />
+              <ExpandableIconButton
+                icon={<IconPlayerPlay className="w-4 h-4" />}
+                label="Play Video"
+                variant="default"
+              />
+              <ExpandableIconButton
+                icon={<IconInfoCircle className="w-4 h-4" />}
+                label="Info"
+                variant="info"
+              />
+              <ExpandableIconButton
+                icon={<IconCircleCheck className="w-4 h-4" />}
+                label="Success"
+                variant="success"
+              />
+              <ExpandableIconButton
+                icon={<IconAlertTriangle className="w-4 h-4" />}
+                label="Warning"
+                variant="warning"
+              />
+              <ExpandableIconButton
+                icon={<IconTrash className="w-4 h-4" />}
+                label="Delete"
+                variant="destructive"
+              />
+            </div>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">
+              With Hold to Confirm
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <ExpandableIconButton
+                icon={<IconSend className="w-4 h-4" />}
+                label="Send"
+                variant="default"
+                holdDuration={1000}
+                onHoldComplete={() => alert("Sent!")}
+              />
+              <ExpandableIconButton
+                icon={<IconDownload className="w-4 h-4" />}
+                label="Save"
+                variant="secondary"
+                holdDuration={1200}
+                onHoldComplete={() => alert("Saved!")}
+              />
+              <ExpandableIconButton
+                icon={<IconInfoCircle className="w-4 h-4" />}
+                label="Confirm"
+                variant="info"
+                holdDuration={1000}
+                onHoldComplete={() => alert("Confirmed!")}
+              />
+              <ExpandableIconButton
+                icon={<IconCircleCheck className="w-4 h-4" />}
+                label="Approve"
+                variant="success"
+                holdDuration={1000}
+                onHoldComplete={() => alert("Approved!")}
+              />
+              <ExpandableIconButton
+                icon={<IconAlertTriangle className="w-4 h-4" />}
+                label="Acknowledge"
+                variant="warning"
+                holdDuration={1500}
+                onHoldComplete={() => alert("Acknowledged!")}
+              />
+              <ExpandableIconButton
+                icon={<IconTrash className="w-4 h-4" />}
+                label="Delete"
+                variant="destructive"
+                holdDuration={1500}
+                onHoldComplete={() => alert("Deleted!")}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -166,12 +454,30 @@ export function ButtonPage() {
         </p>
         <div className="space-y-3 max-w-md">
           <HoldToCloseAlert
+            variant="default"
+            onClose={() => console.log("Default dismissed!")}
+          >
+            <span className="font-medium">Default Alert</span>
+            <p className="text-sm opacity-90">
+              This is a default alert message.
+            </p>
+          </HoldToCloseAlert>
+          <HoldToCloseAlert
             variant="info"
             onClose={() => console.log("Info dismissed!")}
           >
             <span className="font-medium">Information</span>
             <p className="text-sm opacity-90">
               This is an informational message.
+            </p>
+          </HoldToCloseAlert>
+          <HoldToCloseAlert
+            variant="success"
+            onClose={() => console.log("Success dismissed!")}
+          >
+            <span className="font-medium">Success</span>
+            <p className="text-sm opacity-90">
+              Operation completed successfully.
             </p>
           </HoldToCloseAlert>
           <HoldToCloseAlert
@@ -191,6 +497,43 @@ export function ButtonPage() {
             <span className="font-medium">Error</span>
             <p className="text-sm opacity-90">
               An error occurred. Hold to dismiss.
+            </p>
+          </HoldToCloseAlert>
+          <HoldToCloseAlert
+            variant="outline-info"
+            onClose={() => console.log("Outline info dismissed!")}
+          >
+            <span className="font-medium">Outline Info</span>
+            <p className="text-sm opacity-90">
+              This is an outline variant alert.
+            </p>
+          </HoldToCloseAlert>
+          <HoldToCloseAlert
+            variant="outline-success"
+            onClose={() => console.log("Outline success dismissed!")}
+          >
+            <span className="font-medium">Outline Success</span>
+            <p className="text-sm opacity-90">
+              Outline success variant example.
+            </p>
+          </HoldToCloseAlert>
+          <HoldToCloseAlert
+            variant="outline-warning"
+            onClose={() => console.log("Outline warning dismissed!")}
+          >
+            <span className="font-medium">Outline Warning</span>
+            <p className="text-sm opacity-90">
+              Outline warning variant example.
+            </p>
+          </HoldToCloseAlert>
+          <HoldToCloseAlert
+            variant="outline-destructive"
+            holdDuration={2000}
+            onClose={() => console.log("Outline destructive dismissed!")}
+          >
+            <span className="font-medium">Outline Error</span>
+            <p className="text-sm opacity-90">
+              Outline destructive variant example.
             </p>
           </HoldToCloseAlert>
         </div>
@@ -219,20 +562,19 @@ export function ButtonPage() {
         </h2>
         <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
           <pre className="text-sm text-foreground">
-            {`import { Button } from "@/components/ui/button"
-import { HoldButton, ExpandableIconButton } from "@/components/ui/button-extended"
+            {`import { Button, ExpandableIconButton } from "@/components/ui/button"
 
 // Basic
 <Button>Click me</Button>
 
-// Hold to confirm
-<HoldButton
+// Hold to confirm (use onHoldComplete prop)
+<Button
   holdDuration={1500}
   onHoldComplete={() => handleDelete()}
   variant="destructive"
 >
   Hold to Delete
-</HoldButton>
+</Button>
 
 // Expandable icon
 <ExpandableIconButton

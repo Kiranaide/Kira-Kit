@@ -1,4 +1,7 @@
+"use client";
+
 import * as React from "react";
+import { animate } from "animejs";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
   IconInfoCircle,
@@ -168,4 +171,138 @@ function AlertWithHeading({
   );
 }
 
-export { Alert, AlertTitle, AlertDescription, AlertWithHeading, alertVariants };
+// ============================================
+// HOLD TO CLOSE ALERT (Hold to dismiss, release to cancel)
+// ============================================
+interface HoldToCloseAlertProps {
+  holdDuration?: number;
+  onClose?: () => void;
+  children?: React.ReactNode;
+  className?: string;
+  variant?:
+    | "default"
+    | "info"
+    | "success"
+    | "warning"
+    | "destructive"
+    | "outline-default"
+    | "outline-info"
+    | "outline-success"
+    | "outline-warning"
+    | "outline-destructive";
+  progressColor?: string;
+}
+
+function HoldToCloseAlert({
+  holdDuration = 1500,
+  onClose,
+  children,
+  className,
+  variant = "default",
+  progressColor,
+}: HoldToCloseAlertProps) {
+  const progressRef = React.useRef<HTMLDivElement>(null);
+  const animationRef = React.useRef<ReturnType<typeof animate> | null>(null);
+  const [isHolding, setIsHolding] = React.useState(false);
+
+  // Use alertVariants for styling consistency
+  const variantClasses = alertVariants({ variant });
+
+  const getProgressColor = () => {
+    if (progressColor) return progressColor;
+    // Use vibrant, colorful progress bars that match the variant
+    switch (variant) {
+      case "info":
+      case "outline-info":
+        return "rgba(59, 130, 246, 0.6)"; // Bright blue
+      case "success":
+      case "outline-success":
+        return "rgba(34, 197, 94, 0.6)"; // Bright green
+      case "warning":
+      case "outline-warning":
+        return "rgba(251, 191, 36, 0.7)"; // Bright amber/yellow
+      case "destructive":
+      case "outline-destructive":
+        return "rgba(239, 68, 68, 0.6)"; // Bright red
+      case "default":
+      case "outline-default":
+      default:
+        return "rgba(148, 163, 184, 0.5)"; // Muted gray
+    }
+  };
+
+  const handlePointerDown = () => {
+    setIsHolding(true);
+    if (progressRef.current) {
+      animationRef.current = animate(progressRef.current, {
+        width: ["0%", "100%"],
+        duration: holdDuration,
+        ease: "linear",
+        onComplete: () => {
+          onClose?.();
+          resetProgress();
+        },
+      });
+    }
+  };
+
+  const resetProgress = () => {
+    setIsHolding(false);
+    if (animationRef.current) {
+      animationRef.current.pause();
+    }
+    if (progressRef.current) {
+      animate(progressRef.current, {
+        width: "0%",
+        duration: 150,
+        ease: "outQuad",
+      });
+    }
+  };
+
+  const handlePointerUp = () => {
+    resetProgress();
+  };
+
+  const handlePointerLeave = () => {
+    if (isHolding) {
+      resetProgress();
+    }
+  };
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-lg border p-4 select-none cursor-pointer",
+        variantClasses,
+        className
+      )}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
+    >
+      <div
+        ref={progressRef}
+        className="absolute left-0 top-0 h-full w-0 pointer-events-none transition-opacity duration-150"
+        style={{
+          backgroundColor: getProgressColor(),
+          opacity: isHolding ? 1 : 0,
+        }}
+      />
+      <div className="relative z-10">{children}</div>
+      <p className="relative z-10 text-xs text-muted-foreground mt-2">
+        Hold to dismiss
+      </p>
+    </div>
+  );
+}
+
+export {
+  Alert,
+  AlertTitle,
+  AlertDescription,
+  AlertWithHeading,
+  HoldToCloseAlert,
+  alertVariants,
+};
+export type { HoldToCloseAlertProps };

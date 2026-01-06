@@ -2,7 +2,7 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { NumericInput, InputWithAffix } from "@/components/ui/input-extended";
+import { NumericInput, InputWithAffix } from "@/components/ui/input";
 import { ColorPicker } from "@/components/ui/color-picker";
 import {
   IconCurrencyDollar,
@@ -212,9 +212,9 @@ export function InputPage() {
         </h2>
         <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
           <pre className="text-sm text-foreground">
-            {`import { Input } from "@/components/ui/input"
+            {`import { Input, NumericInput, InputWithAffix } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { NumericInput, InputWithAffix, ColorPicker } from "@/components/ui/input-extended"
+import { ColorPicker } from "@/components/ui/color-picker"
 
 // Basic
 <Input placeholder="Enter text..." />

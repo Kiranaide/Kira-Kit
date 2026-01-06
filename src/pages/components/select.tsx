@@ -11,7 +11,7 @@ import {
   MultiSelect,
   AsyncSelect,
   type SelectOption,
-} from "@/components/ui/select-extended";
+} from "@/components/ui/select";
 
 const fruits: SelectOption[] = [
   { value: "apple", label: "Apple" },
@@ -148,7 +148,7 @@ export function SelectPage() {
         </h2>
         <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
           <pre className="text-sm text-foreground">
-            {`import { MultiSelect, AsyncSelect } from "@/components/ui/select-extended"
+            {`import { MultiSelect, AsyncSelect } from "@/components/ui/select"
 
 // Multi Select
 <MultiSelect
