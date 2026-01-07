@@ -1,7 +1,20 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import * as React from "react";
+import {
+  RadioGroup,
+  RadioGroupItem,
+  RadioWithLabel,
+  RadioCard,
+} from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import {
+  IconCreditCard,
+  IconBuildingBank,
+  IconWallet,
+} from "@tabler/icons-react";
 
 export function RadioGroupPage() {
+  const [payment, setPayment] = React.useState("card");
+
   return (
     <div className="p-8 max-w-4xl space-y-12">
       <header>
@@ -30,6 +43,68 @@ export function RadioGroupPage() {
             <Label>Option 3</Label>
           </div>
         </RadioGroup>
+      </section>
+
+      {/* RadioWithLabel */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          RadioWithLabel
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          A convenience component with built-in label and description.
+        </p>
+        <RadioGroup defaultValue="comfortable">
+          <RadioWithLabel
+            value="default"
+            label="Default"
+            description="System default settings."
+          />
+          <RadioWithLabel
+            value="comfortable"
+            label="Comfortable"
+            description="More spacing for better readability."
+          />
+          <RadioWithLabel
+            value="compact"
+            label="Compact"
+            description="Less spacing for more content."
+          />
+        </RadioGroup>
+      </section>
+
+      {/* Radio Cards */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Radio Cards
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Card-style radio options with icon support.
+        </p>
+        <RadioGroup
+          value={payment}
+          onValueChange={setPayment}
+          className="grid gap-3 max-w-md"
+        >
+          <RadioCard
+            value="card"
+            label="Credit Card"
+            description="Pay with Visa, Mastercard, or AMEX"
+            icon={<IconCreditCard className="h-5 w-5" />}
+          />
+          <RadioCard
+            value="bank"
+            label="Bank Transfer"
+            description="Direct transfer from your bank account"
+            icon={<IconBuildingBank className="h-5 w-5" />}
+          />
+          <RadioCard
+            value="wallet"
+            label="Digital Wallet"
+            description="Pay with PayPal, Apple Pay, or Google Pay"
+            icon={<IconWallet className="h-5 w-5" />}
+          />
+        </RadioGroup>
+        <p className="text-sm text-muted-foreground">Selected: {payment}</p>
       </section>
 
       {/* Horizontal Orientation */}
@@ -87,42 +162,6 @@ export function RadioGroupPage() {
             </RadioGroup>
           </div>
         </div>
-      </section>
-
-      {/* With Descriptions */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          With Descriptions
-        </h2>
-        <RadioGroup defaultValue="comfortable">
-          <div className="flex items-start space-x-3">
-            <RadioGroupItem value="default" className="mt-1" />
-            <div>
-              <Label className="font-medium">Default</Label>
-              <p className="text-sm text-muted-foreground">
-                System default settings.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-3">
-            <RadioGroupItem value="comfortable" className="mt-1" />
-            <div>
-              <Label className="font-medium">Comfortable</Label>
-              <p className="text-sm text-muted-foreground">
-                More spacing for better readability.
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-3">
-            <RadioGroupItem value="compact" className="mt-1" />
-            <div>
-              <Label className="font-medium">Compact</Label>
-              <p className="text-sm text-muted-foreground">
-                Less spacing for more content.
-              </p>
-            </div>
-          </div>
-        </RadioGroup>
       </section>
 
       {/* Usage */}

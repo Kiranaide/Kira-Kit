@@ -25,7 +25,6 @@ import { AlertPage } from "@/pages/components/alert";
 import { AspectRatioPage } from "@/pages/components/aspect-ratio";
 import { AvatarPage } from "@/pages/components/avatar";
 import { ButtonGroupPage } from "@/pages/components/button-group";
-import { AutocompletePage } from "@/pages/components/autocomplete";
 import { CalendarPage } from "@/pages/components/calendar";
 import { DialogPage } from "@/pages/components/dialog";
 import { DrawerPage } from "@/pages/components/drawer";
@@ -45,6 +44,7 @@ import { ContextMenuPage } from "@/pages/components/context-menu";
 import { TablePage } from "@/pages/components/table";
 import { DataTablePage } from "@/pages/components/data-table";
 import { TabsPage } from "@/pages/components/tabs";
+import { ToastPage } from "@/pages/components/toast";
 import { TogglePage } from "@/pages/components/toggle";
 import { TooltipPage } from "@/pages/components/tooltip";
 import { TypographyPage } from "@/pages/components/typography";
@@ -173,12 +173,6 @@ const buttonGroupRoute = createRoute({
   component: ButtonGroupPage,
 });
 
-const autocompleteRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/components/autocomplete",
-  component: AutocompletePage,
-});
-
 const calendarRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/calendar",
@@ -293,6 +287,12 @@ const tabsRoute = createRoute({
   component: TabsPage,
 });
 
+const toastRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/toast",
+  component: ToastPage,
+});
+
 const toggleRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/toggle",
@@ -350,7 +350,6 @@ const routeTree = rootRoute.addChildren([
   aspectRatioRoute,
   avatarRoute,
   buttonGroupRoute,
-  autocompleteRoute,
   calendarRoute,
   dialogRoute,
   drawerRoute,
@@ -370,6 +369,7 @@ const routeTree = rootRoute.addChildren([
   tableRoute,
   dataTableRoute,
   tabsRoute,
+  toastRoute,
   toggleRoute,
   tooltipRoute,
   typographyRoute,

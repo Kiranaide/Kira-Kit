@@ -11,6 +11,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/ui/date-picker";
+import {
+  Combobox,
+  ComboboxTrigger,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxEmpty,
+  ComboboxItem,
+  ComboboxValue,
+} from "@/components/ui/combobox";
 
 export function DialogPage() {
   return (
@@ -48,6 +59,42 @@ export function DialogPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      </section>
+
+      {/* Size Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Size Variants
+        </h2>
+        <div className="flex flex-wrap gap-4">
+          {(["sm", "default", "lg", "xl", "full"] as const).map((size) => (
+            <Dialog key={size}>
+              <DialogTrigger
+                render={
+                  <Button variant="outline" className="capitalize">
+                    {size} ({size === "full" ? "Fullscreen" : "Pop-up"})
+                  </Button>
+                }
+              />
+              <DialogContent size={size}>
+                <DialogHeader>
+                  <DialogTitle className="capitalize">
+                    {size} Dialog
+                  </DialogTitle>
+                  <DialogDescription>
+                    This is a dialog with <code>size="{size}"</code>.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="h-32 flex items-center justify-center bg-muted/20 rounded-lg border border-dashed">
+                  Content Area
+                </div>
+                <DialogFooter>
+                  <DialogClose render={<Button>Close</Button>} />
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          ))}
+        </div>
       </section>
 
       {/* Form Dialog */}
@@ -141,6 +188,76 @@ export function DialogPage() {
 </Dialog>`}
           </pre>
         </div>
+      </section>
+
+      {/* Form with Popovers */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Form with Popovers (Accessibility Test)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Testing interaction with nested popovers (DatePicker, Combobox) inside
+          a dialog, and sticky footer behavior in full-screen mode.
+        </p>
+        <Dialog>
+          <DialogTrigger render={<Button>Open Complex Form</Button>} />
+          <DialogContent size="full">
+            <DialogHeader>
+              <DialogTitle>Schedule Meeting</DialogTitle>
+              <DialogDescription>
+                Fill out the form below to schedule a new meeting.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex-1 overflow-y-auto py-4">
+              <div className="grid gap-6 max-w-md mx-auto">
+                <div className="space-y-2">
+                  <Label>Meeting Title</Label>
+                  <Input placeholder="e.g. Q4 Planning" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Date</Label>
+                  <DatePicker placeholder="Pick a date" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Participants</Label>
+                  <Combobox>
+                    <ComboboxTrigger className="w-full">
+                      <ComboboxInput placeholder="Select team member..." />
+                    </ComboboxTrigger>
+                    <ComboboxContent>
+                      <ComboboxList>
+                        <ComboboxEmpty>No results found.</ComboboxEmpty>
+                        <ComboboxItem>
+                          <ComboboxValue>Alice Johnson</ComboboxValue>
+                        </ComboboxItem>
+                        <ComboboxItem>
+                          <ComboboxValue>Bob Smith</ComboboxValue>
+                        </ComboboxItem>
+                        <ComboboxItem>
+                          <ComboboxValue>Charlie Brown</ComboboxValue>
+                        </ComboboxItem>
+                        <ComboboxItem>
+                          <ComboboxValue>Diana Prince</ComboboxValue>
+                        </ComboboxItem>
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Input placeholder="Meeting agenda..." className="h-32" />
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+              <Button>Schedule Meeting</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </section>
     </div>
   );

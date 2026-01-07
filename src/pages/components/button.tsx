@@ -1,6 +1,7 @@
 import {
   Button,
   ExpandableIconButton,
+  LoadingButton,
 } from "@/components/ui/button";
 import { HoldToCloseAlert } from "@/components/ui/alert";
 import {
@@ -16,6 +17,65 @@ import {
   IconCircleCheck,
   IconAlertTriangle,
 } from "@tabler/icons-react";
+
+import * as React from "react";
+
+function LoadingButtonDemo() {
+  const [loadingStates, setLoadingStates] = React.useState<
+    Record<string, boolean>
+  >({});
+
+  const handleClick = (id: string) => {
+    setLoadingStates((prev) => ({ ...prev, [id]: true }));
+    setTimeout(() => {
+      setLoadingStates((prev) => ({ ...prev, [id]: false }));
+    }, 2000);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-3">
+      <LoadingButton
+        isLoading={loadingStates["default"]}
+        onClick={() => handleClick("default")}
+      >
+        <IconSend data-icon="inline-start" className="w-4 h-4" />
+        Submit
+      </LoadingButton>
+      <LoadingButton
+        variant="secondary"
+        isLoading={loadingStates["secondary"]}
+        onClick={() => handleClick("secondary")}
+      >
+        <IconDownload data-icon="inline-start" className="w-4 h-4" />
+        Save
+      </LoadingButton>
+      <LoadingButton
+        variant="outline"
+        isLoading={loadingStates["outline"]}
+        onClick={() => handleClick("outline")}
+        loadingText="Processing..."
+      >
+        Process
+      </LoadingButton>
+      <LoadingButton
+        variant="success"
+        isLoading={loadingStates["success"]}
+        onClick={() => handleClick("success")}
+      >
+        <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
+        Confirm
+      </LoadingButton>
+      <LoadingButton
+        variant="destructive"
+        isLoading={loadingStates["destructive"]}
+        onClick={() => handleClick("destructive")}
+      >
+        <IconTrash data-icon="inline-start" className="w-4 h-4" />
+        Delete
+      </LoadingButton>
+    </div>
+  );
+}
 
 export function ButtonPage() {
   return (
@@ -105,40 +165,96 @@ export function ButtonPage() {
         </h2>
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-3">
-            <Button size="xs" variant="default">Extra Small</Button>
-            <Button size="xs" variant="secondary">Extra Small</Button>
-            <Button size="xs" variant="outline">Extra Small</Button>
-            <Button size="xs" variant="info">Extra Small</Button>
-            <Button size="xs" variant="success">Extra Small</Button>
-            <Button size="xs" variant="warning">Extra Small</Button>
-            <Button size="xs" variant="destructive">Extra Small</Button>
+            <Button size="xs" variant="default">
+              Extra Small
+            </Button>
+            <Button size="xs" variant="secondary">
+              Extra Small
+            </Button>
+            <Button size="xs" variant="outline">
+              Extra Small
+            </Button>
+            <Button size="xs" variant="info">
+              Extra Small
+            </Button>
+            <Button size="xs" variant="success">
+              Extra Small
+            </Button>
+            <Button size="xs" variant="warning">
+              Extra Small
+            </Button>
+            <Button size="xs" variant="destructive">
+              Extra Small
+            </Button>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <Button size="sm" variant="default">Small</Button>
-            <Button size="sm" variant="secondary">Small</Button>
-            <Button size="sm" variant="outline">Small</Button>
-            <Button size="sm" variant="info">Small</Button>
-            <Button size="sm" variant="success">Small</Button>
-            <Button size="sm" variant="warning">Small</Button>
-            <Button size="sm" variant="destructive">Small</Button>
+            <Button size="sm" variant="default">
+              Small
+            </Button>
+            <Button size="sm" variant="secondary">
+              Small
+            </Button>
+            <Button size="sm" variant="outline">
+              Small
+            </Button>
+            <Button size="sm" variant="info">
+              Small
+            </Button>
+            <Button size="sm" variant="success">
+              Small
+            </Button>
+            <Button size="sm" variant="warning">
+              Small
+            </Button>
+            <Button size="sm" variant="destructive">
+              Small
+            </Button>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <Button size="default" variant="default">Default</Button>
-            <Button size="default" variant="secondary">Default</Button>
-            <Button size="default" variant="outline">Default</Button>
-            <Button size="default" variant="info">Default</Button>
-            <Button size="default" variant="success">Default</Button>
-            <Button size="default" variant="warning">Default</Button>
-            <Button size="default" variant="destructive">Default</Button>
+            <Button size="default" variant="default">
+              Default
+            </Button>
+            <Button size="default" variant="secondary">
+              Default
+            </Button>
+            <Button size="default" variant="outline">
+              Default
+            </Button>
+            <Button size="default" variant="info">
+              Default
+            </Button>
+            <Button size="default" variant="success">
+              Default
+            </Button>
+            <Button size="default" variant="warning">
+              Default
+            </Button>
+            <Button size="default" variant="destructive">
+              Default
+            </Button>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <Button size="lg" variant="default">Large</Button>
-            <Button size="lg" variant="secondary">Large</Button>
-            <Button size="lg" variant="outline">Large</Button>
-            <Button size="lg" variant="info">Large</Button>
-            <Button size="lg" variant="success">Large</Button>
-            <Button size="lg" variant="warning">Large</Button>
-            <Button size="lg" variant="destructive">Large</Button>
+            <Button size="lg" variant="default">
+              Large
+            </Button>
+            <Button size="lg" variant="secondary">
+              Large
+            </Button>
+            <Button size="lg" variant="outline">
+              Large
+            </Button>
+            <Button size="lg" variant="info">
+              Large
+            </Button>
+            <Button size="lg" variant="success">
+              Large
+            </Button>
+            <Button size="lg" variant="warning">
+              Large
+            </Button>
+            <Button size="lg" variant="destructive">
+              Large
+            </Button>
           </div>
         </div>
       </section>
@@ -295,7 +411,7 @@ export function ButtonPage() {
             holdDuration={1000}
             onHoldComplete={() => alert("Sent!")}
           >
-            <IconSend className="w-4 h-4 mr-2" />
+            <IconSend data-icon="inline-start" className="w-4 h-4" />
             Hold to Send
           </Button>
           <Button
@@ -303,7 +419,7 @@ export function ButtonPage() {
             holdDuration={1200}
             onHoldComplete={() => alert("Saved!")}
           >
-            <IconDownload className="w-4 h-4 mr-2" />
+            <IconDownload data-icon="inline-start" className="w-4 h-4" />
             Hold to Save
           </Button>
           <Button
@@ -311,7 +427,7 @@ export function ButtonPage() {
             holdDuration={1000}
             onHoldComplete={() => alert("Info confirmed!")}
           >
-            <IconInfoCircle className="w-4 h-4 mr-2" />
+            <IconInfoCircle data-icon="inline-start" className="w-4 h-4" />
             Hold to Confirm
           </Button>
           <Button
@@ -319,7 +435,7 @@ export function ButtonPage() {
             holdDuration={1000}
             onHoldComplete={() => alert("Approved!")}
           >
-            <IconCircleCheck className="w-4 h-4 mr-2" />
+            <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
             Hold to Approve
           </Button>
           <Button
@@ -327,7 +443,7 @@ export function ButtonPage() {
             holdDuration={1500}
             onHoldComplete={() => alert("Warning acknowledged!")}
           >
-            <IconAlertTriangle className="w-4 h-4 mr-2" />
+            <IconAlertTriangle data-icon="inline-start" className="w-4 h-4" />
             Hold to Acknowledge
           </Button>
           <Button
@@ -335,7 +451,7 @@ export function ButtonPage() {
             holdDuration={1500}
             onHoldComplete={() => alert("Deleted!")}
           >
-            <IconTrash className="w-4 h-4 mr-2" />
+            <IconTrash data-icon="inline-start" className="w-4 h-4" />
             Hold to Delete
           </Button>
         </div>
@@ -537,6 +653,18 @@ export function ButtonPage() {
             </p>
           </HoldToCloseAlert>
         </div>
+      </section>
+
+      {/* Loading Button */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Loading Button
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Buttons with loading spinners for async operations. Automatically
+          disabled while loading.
+        </p>
+        <LoadingButtonDemo />
       </section>
 
       {/* Disabled State */}

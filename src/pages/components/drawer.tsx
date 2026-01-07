@@ -124,6 +124,90 @@ export function DrawerPage() {
         </Drawer>
       </section>
 
+      {/* Size Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Size Variants
+        </h2>
+        <div className="grid gap-8">
+          {/* Width Variants (Right) */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Width Variants (Right)
+            </h3>
+            <div className="flex flex-wrap gap-4">
+              {(["sm", "default", "lg", "xl", "full"] as const).map((size) => (
+                <Drawer key={size}>
+                  <DrawerTrigger
+                    render={
+                      <Button variant="outline" size="sm">
+                        {size}
+                      </Button>
+                    }
+                  />
+                  <DrawerContent side="right" size={size}>
+                    <DrawerHeader>
+                      <DrawerTitle className="capitalize">
+                        {size} Right Drawer
+                      </DrawerTitle>
+                      <DrawerDescription>
+                        This drawer has <code>size="{size}"</code>.
+                      </DrawerDescription>
+                    </DrawerHeader>
+                    <DrawerBody>
+                      <div className="h-full flex items-center justify-center bg-muted/20 border border-dashed rounded-lg">
+                        Content
+                      </div>
+                    </DrawerBody>
+                    <DrawerFooter>
+                      <DrawerClose render={<Button>Close</Button>} />
+                    </DrawerFooter>
+                  </DrawerContent>
+                </Drawer>
+              ))}
+            </div>
+          </div>
+
+          {/* Height Variants (Bottom) */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              Height Variants (Bottom)
+            </h3>
+            <div className="flex flex-wrap gap-4">
+              {(["sm", "default", "lg", "xl", "full"] as const).map((size) => (
+                <Drawer key={size}>
+                  <DrawerTrigger
+                    render={
+                      <Button variant="outline" size="sm">
+                        {size}
+                      </Button>
+                    }
+                  />
+                  <DrawerContent side="bottom" size={size}>
+                    <DrawerHeader>
+                      <DrawerTitle className="capitalize">
+                        {size} Bottom Drawer
+                      </DrawerTitle>
+                      <DrawerDescription>
+                        This drawer has <code>size="{size}"</code>.
+                      </DrawerDescription>
+                    </DrawerHeader>
+                    <DrawerBody>
+                      <div className="h-full flex items-center justify-center bg-muted/20 border border-dashed rounded-lg min-h-[100px]">
+                        Content
+                      </div>
+                    </DrawerBody>
+                    <DrawerFooter>
+                      <DrawerClose render={<Button>Close</Button>} />
+                    </DrawerFooter>
+                  </DrawerContent>
+                </Drawer>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">

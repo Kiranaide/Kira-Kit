@@ -1,8 +1,11 @@
 import * as React from "react";
-import { Slider } from "@/components/ui/slider";
+import { Slider, RangeSlider } from "@/components/ui/slider";
 
 export function SliderPage() {
   const [value, setValue] = React.useState(50);
+  const [rangeValue, setRangeValue] = React.useState<[number, number]>([
+    20, 80,
+  ]);
 
   return (
     <div className="p-8 max-w-4xl space-y-12">
@@ -35,6 +38,57 @@ export function SliderPage() {
             max={100}
             step={1}
             showValue
+          />
+        </div>
+      </section>
+
+      {/* With Tooltip */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          With Tooltip on Drag
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Drag the slider to see the tooltip appear.
+        </p>
+        <div className="max-w-md">
+          <Slider defaultValue={50} max={100} showTooltip />
+        </div>
+      </section>
+
+      {/* Range Slider */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Range Slider
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Select a range between two values.
+        </p>
+        <div className="max-w-md">
+          <RangeSlider
+            value={rangeValue}
+            onValueChange={setRangeValue}
+            min={0}
+            max={100}
+            showValue
+          />
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Range: {rangeValue[0]} - {rangeValue[1]}
+        </p>
+      </section>
+
+      {/* Range Slider with Tooltip */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Range Slider with Tooltip
+        </h2>
+        <div className="max-w-md">
+          <RangeSlider
+            defaultValue={[30, 70]}
+            min={0}
+            max={100}
+            showTooltip
+            formatValue={(v) => `$${v}`}
           />
         </div>
       </section>

@@ -39,12 +39,14 @@ function DialogOverlay({
 
 interface DialogContentProps extends DialogPrimitive.Popup.Props {
   showCloseButton?: boolean;
+  size?: "sm" | "default" | "lg" | "xl" | "full";
 }
 
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  size = "default",
   ...props
 }: DialogContentProps) {
   return (
@@ -53,11 +55,17 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2",
+          "fixed left-1/2 top-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2",
           "bg-background border border-border rounded-xl p-6 shadow-xl",
           "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
           "data-[ending-style]:opacity-0 data-[ending-style]:scale-95",
           "transition-all duration-200",
+          "flex flex-col",
+          size === "sm" && "max-w-sm",
+          size === "default" && "max-w-lg",
+          size === "lg" && "max-w-2xl",
+          size === "xl" && "max-w-4xl",
+          size === "full" && "max-w-[calc(100vw-2rem)] h-[calc(100vh-2rem)]",
           className
         )}
         {...props}
@@ -97,7 +105,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 mt-6",
+        "flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 mt-auto pt-6",
         className
       )}
       {...props}

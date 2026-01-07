@@ -1,5 +1,4 @@
-import { Toggle } from "@/components/ui/toggle";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Toggle, ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle";
 import {
   IconBold,
   IconItalic,
@@ -8,6 +7,9 @@ import {
   IconAlignCenter,
   IconAlignRight,
   IconAlignJustified,
+  IconBookmark,
+  IconHeart,
+  IconStar,
 } from "@tabler/icons-react";
 
 export function TogglePage() {
@@ -59,6 +61,36 @@ export function TogglePage() {
         </div>
       </section>
 
+      {/* Semantic Color Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Semantic Color Variants
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Toggle buttons with semantic colors when pressed.
+        </p>
+        <div className="flex gap-4">
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Success</p>
+            <Toggle variant="success" defaultPressed>
+              ✓ Accept
+            </Toggle>
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Warning</p>
+            <Toggle variant="warning" defaultPressed>
+              ⚠ Warn
+            </Toggle>
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Destructive</p>
+            <Toggle variant="destructive" defaultPressed>
+              ✕ Delete
+            </Toggle>
+          </div>
+        </div>
+      </section>
+
       {/* Toggle Sizes */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -73,6 +105,72 @@ export function TogglePage() {
           </Toggle>
           <Toggle size="lg">
             <IconBold className="h-5 w-5" />
+          </Toggle>
+        </div>
+      </section>
+
+      {/* Ghost Variant */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Ghost Variant
+        </h2>
+        <div className="flex gap-4">
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Ghost (Hover only)</p>
+            <Toggle variant="ghost">
+              <IconBold className="h-4 w-4" />
+            </Toggle>
+          </div>
+        </div>
+      </section>
+
+      {/* Shape Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Shape Variants
+        </h2>
+        <div className="flex gap-4">
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Default</p>
+            <Toggle>
+              <IconBold className="h-4 w-4" />
+            </Toggle>
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Pill</p>
+            <Toggle shape="pill">
+              <IconBold className="h-4 w-4" />
+            </Toggle>
+          </div>
+        </div>
+      </section>
+
+      {/* With Text & Icon Animation */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Rich Examples
+        </h2>
+        <div className="flex gap-4 items-center">
+          <Toggle className="gap-2" aria-label="Toggle bookmark">
+            <IconBookmark className="h-4 w-4" />
+            Bookmark
+          </Toggle>
+
+          <Toggle
+            className="group gap-2"
+            aria-label="Toggle favorite"
+            variant="outline"
+            shape="pill"
+          >
+            <IconHeart className="h-4 w-4 group-data-[pressed]:fill-current group-data-[pressed]:text-destructive transition-colors" />
+            Like
+          </Toggle>
+
+          <Toggle
+            className="h-10 w-10 p-0 rounded-full group"
+            variant="outline"
+          >
+            <IconStar className="h-5 w-5 group-data-[pressed]:fill-warning group-data-[pressed]:text-warning transition-colors" />
           </Toggle>
         </div>
       </section>

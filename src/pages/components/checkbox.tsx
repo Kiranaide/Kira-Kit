@@ -1,7 +1,22 @@
-import { Checkbox } from "@/components/ui/checkbox";
+import * as React from "react";
+import {
+  Checkbox,
+  CheckboxWithLabel,
+  CheckboxGroup,
+} from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { IconHeart, IconStar, IconBookmark } from "@tabler/icons-react";
 
 export function CheckboxPage() {
+  const [groupValue, setGroupValue] = React.useState<string[]>(["banana"]);
+
+  const fruitOptions = [
+    { value: "apple", label: "Apple", description: "A sweet red fruit" },
+    { value: "banana", label: "Banana", description: "A yellow curved fruit" },
+    { value: "orange", label: "Orange", description: "A citrus fruit" },
+    { value: "grape", label: "Grape", disabled: true },
+  ];
+
   return (
     <div className="p-8 max-w-4xl space-y-12">
       <header>
@@ -23,23 +38,77 @@ export function CheckboxPage() {
         </div>
       </section>
 
-      {/* Default Checked */}
+      {/* Size Variants */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Default Checked
+          Size Variants
         </h2>
-        <div className="flex items-center space-x-2">
-          <Checkbox id="marketing" defaultChecked />
-          <Label htmlFor="marketing">Receive marketing emails</Label>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center space-x-2">
+            <Checkbox id="size-sm" size="sm" checked />
+            <Label htmlFor="size-sm">Small</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox id="size-default" size="default" checked />
+            <Label htmlFor="size-default">Default</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox id="size-lg" size="lg" checked />
+            <Label htmlFor="size-lg">Large</Label>
+          </div>
         </div>
       </section>
 
-      {/* Disabled */}
+      {/* Custom Icons */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Disabled
+          Custom Icons
         </h2>
-        <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Use the customIcon prop to display a different icon when checked.
+        </p>
+        <div className="flex items-center gap-6">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="heart"
+              customIcon={<IconHeart className="h-3 w-3" strokeWidth={3} />}
+            />
+            <Label htmlFor="heart">Favorite</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="star"
+              customIcon={<IconStar className="h-3 w-3" strokeWidth={3} />}
+            />
+            <Label htmlFor="star">Star</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="bookmark"
+              customIcon={<IconBookmark className="h-3 w-3" strokeWidth={3} />}
+            />
+            <Label htmlFor="bookmark">Bookmark</Label>
+          </div>
+        </div>
+      </section>
+
+      {/* Indeterminate State */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Indeterminate State
+        </h2>
+        <div className="flex items-center space-x-2">
+          <Checkbox id="indeterminate" checked="indeterminate" />
+          <Label htmlFor="indeterminate">Partially selected</Label>
+        </div>
+      </section>
+
+      {/* Disabled States */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Disabled States
+        </h2>
+        <div className="flex items-center gap-6">
           <div className="flex items-center space-x-2">
             <Checkbox id="disabled-unchecked" disabled />
             <Label
@@ -50,7 +119,7 @@ export function CheckboxPage() {
             </Label>
           </div>
           <div className="flex items-center space-x-2">
-            <Checkbox id="disabled-checked" disabled defaultChecked />
+            <Checkbox id="disabled-checked" disabled checked />
             <Label htmlFor="disabled-checked" className="text-muted-foreground">
               Disabled checked
             </Label>
@@ -58,87 +127,66 @@ export function CheckboxPage() {
         </div>
       </section>
 
-      {/* With Description */}
+      {/* CheckboxWithLabel */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          With Description
+          CheckboxWithLabel
         </h2>
-        <div className="items-top flex space-x-2">
-          <Checkbox id="terms2" />
-          <div className="grid gap-1.5 leading-none">
-            <Label htmlFor="terms2" className="font-medium">
-              Accept terms and conditions
-            </Label>
-            <p className="text-sm text-muted-foreground">
-              You agree to our Terms of Service and Privacy Policy.
-            </p>
-          </div>
+        <p className="text-sm text-muted-foreground">
+          A convenience wrapper with built-in label and description.
+        </p>
+        <div className="space-y-3 max-w-md">
+          <CheckboxWithLabel
+            label="Enable notifications"
+            description="Receive push notifications on your device"
+          />
+          <CheckboxWithLabel
+            label="Marketing emails"
+            description="Get updates about new features"
+            checked
+          />
         </div>
       </section>
 
-      {/* Form Example */}
+      {/* CheckboxGroup */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Form Example
+          CheckboxGroup
         </h2>
-        <div className="space-y-4">
-          <div className="items-top flex space-x-2">
-            <Checkbox id="sidebar" defaultChecked />
-            <div className="grid gap-1.5 leading-none">
-              <Label htmlFor="sidebar" className="font-medium">
-                Show sidebar
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Display navigation sidebar
-              </p>
-            </div>
-          </div>
-          <div className="items-top flex space-x-2">
-            <Checkbox id="notifications" defaultChecked />
-            <div className="grid gap-1.5 leading-none">
-              <Label htmlFor="notifications" className="font-medium">
-                Enable notifications
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Receive push notifications
-              </p>
-            </div>
-          </div>
-          <div className="items-top flex space-x-2">
-            <Checkbox id="cookies" />
-            <div className="grid gap-1.5 leading-none">
-              <Label htmlFor="cookies" className="font-medium">
-                Accept cookies
-              </Label>
-              <p className="text-sm text-muted-foreground">
-                Allow tracking cookies
-              </p>
-            </div>
-          </div>
+        <p className="text-sm text-muted-foreground">
+          Grouped checkboxes with optional select-all functionality.
+        </p>
+        <div className="max-w-md">
+          <CheckboxGroup
+            label="Select your favorite fruits"
+            description="Choose one or more options"
+            options={fruitOptions}
+            value={groupValue}
+            onChange={setGroupValue}
+            showSelectAll
+            selectAllLabel="Select all fruits"
+          />
         </div>
+        <p className="text-sm text-muted-foreground">
+          Selected: {groupValue.join(", ") || "None"}
+        </p>
       </section>
 
-      {/* Usage */}
+      {/* Horizontal CheckboxGroup */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Usage
+          Horizontal CheckboxGroup
         </h2>
-        <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
-          <pre className="text-sm text-foreground">
-            {`import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-
-<div className="flex items-center space-x-2">
-  <Checkbox id="terms" />
-  <Label htmlFor="terms">Accept terms</Label>
-</div>
-
-{/* Controlled */}
-<Checkbox
-  checked={isChecked}
-  onCheckedChange={setIsChecked}
-/>`}
-          </pre>
+        <div className="max-w-lg">
+          <CheckboxGroup
+            options={[
+              { value: "react", label: "React" },
+              { value: "vue", label: "Vue" },
+              { value: "angular", label: "Angular" },
+              { value: "svelte", label: "Svelte" },
+            ]}
+            orientation="horizontal"
+          />
         </div>
       </section>
     </div>

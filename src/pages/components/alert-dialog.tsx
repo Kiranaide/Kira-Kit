@@ -71,6 +71,49 @@ export function AlertDialogPage() {
         </AlertDialog>
       </section>
 
+      {/* Centered Layout */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Centered Layout
+        </h2>
+        <AlertDialog>
+          <AlertDialogTrigger
+            render={<Button variant="outline">Centered Dialog</Button>}
+          />
+          <AlertDialogContent>
+            <AlertDialogHeader centered>
+              <AlertDialogTitle>Successfully Saved</AlertDialogTitle>
+              <AlertDialogDescription>
+                Your changes have been saved successfully to the database.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="flex justify-center py-4">
+              <div className="bg-success/20 text-success-foreground p-3 rounded-full">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="size-6"
+                >
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              </div>
+            </div>
+            <AlertDialogFooter centered>
+              <AlertDialogAction className="w-full sm:w-auto">
+                Awesome
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">

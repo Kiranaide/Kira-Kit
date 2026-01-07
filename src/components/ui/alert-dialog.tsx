@@ -62,13 +62,16 @@ function AlertDialogContent({
 
 function AlertDialogHeader({
   className,
+  centered = false,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & { centered?: boolean }) {
   return (
     <div
       data-slot="alert-dialog-header"
       className={cn(
         "grid grid-rows-[auto_1fr] place-items-center gap-1.5 text-center has-data-[slot=alert-dialog-media]:grid-rows-[auto_auto_1fr] has-data-[slot=alert-dialog-media]:gap-x-4 sm:group-data-[size=default]/alert-dialog-content:place-items-start sm:group-data-[size=default]/alert-dialog-content:text-left sm:group-data-[size=default]/alert-dialog-content:has-data-[slot=alert-dialog-media]:grid-rows-[auto_1fr]",
+        centered &&
+          "place-items-center text-center sm:group-data-[size=default]/alert-dialog-content:place-items-center sm:group-data-[size=default]/alert-dialog-content:text-center",
         className
       )}
       {...props}
@@ -78,13 +81,15 @@ function AlertDialogHeader({
 
 function AlertDialogFooter({
   className,
+  centered = false,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & { centered?: boolean }) {
   return (
     <div
       data-slot="alert-dialog-footer"
       className={cn(
         "bg-muted/50 -mx-4 -mb-4 rounded-b-xl border-t p-4 flex flex-col-reverse gap-2 group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2 sm:flex-row sm:justify-end",
+        centered && "sm:justify-center",
         className
       )}
       {...props}

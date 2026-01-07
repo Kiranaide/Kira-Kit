@@ -10,7 +10,10 @@ import {
 import {
   MultiSelect,
   AsyncSelect,
+  CreatableSelect,
+  Autocomplete,
   type SelectOption,
+  type AutocompleteOption,
 } from "@/components/ui/select";
 
 const fruits: SelectOption[] = [
@@ -44,8 +47,16 @@ const searchUsers = async (query: string): Promise<SelectOption[]> => {
 };
 
 export function SelectPage() {
+  const [basicValue, setBasicValue] = React.useState<string>("");
   const [multiValue, setMultiValue] = React.useState<string[]>([]);
   const [asyncValue, setAsyncValue] = React.useState("");
+  const [autocompleteValue, setAutocompleteValue] = React.useState<string>("");
+  const [autocompleteMulti, setAutocompleteMulti] = React.useState<string[]>(
+    []
+  );
+  const [creatableOptions, setCreatableOptions] =
+    React.useState<SelectOption[]>(fruits);
+  const [creatableValue, setCreatableValue] = React.useState<string>("");
 
   return (
     <div className="p-8 max-w-4xl space-y-12">
@@ -62,9 +73,9 @@ export function SelectPage() {
           Basic Select
         </h2>
         <div className="max-w-sm">
-          <Select>
+          <Select value={basicValue} onValueChange={setBasicValue}>
             <SelectTrigger>
-              <SelectValue>Select a fruit</SelectValue>
+              <SelectValue placeholder="Select a fruit" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -76,6 +87,11 @@ export function SelectPage() {
             </SelectContent>
           </Select>
         </div>
+        {basicValue && (
+          <p className="text-sm text-muted-foreground">
+            Selected: {basicValue}
+          </p>
+        )}
       </section>
 
       {/* Multi Select */}
@@ -167,6 +183,103 @@ export function SelectPage() {
 />`}
           </pre>
         </div>
+      </section>
+
+      {/* Autocomplete */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Autocomplete
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Searchable input with fuzzy matching, keyboard navigation, and
+          auto-highlight.
+        </p>
+        <div className="max-w-sm">
+          <Autocomplete
+            options={fruits as AutocompleteOption[]}
+            placeholder="Search fruits..."
+            onChange={(v) => setAutocompleteValue(v as string)}
+          />
+        </div>
+        {autocompleteValue && (
+          <p className="text-sm text-muted-foreground">
+            Selected: {autocompleteValue}
+          </p>
+        )}
+      </section>
+
+      {/* Autocomplete Multi-select */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Autocomplete Multi-select
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Multi-select with inline tags, fuzzy matching, and backspace to
+          remove.
+        </p>
+        <div className="max-w-sm">
+          <Autocomplete
+            options={fruits as AutocompleteOption[]}
+            multiple
+            placeholder="Select multiple fruits..."
+            value={autocompleteMulti}
+            onChange={(v) => setAutocompleteMulti(v as string[])}
+          />
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Selected: {autocompleteMulti.length} items
+        </p>
+      </section>
+
+      {/* Autocomplete Async */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Autocomplete Async
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Async search with debouncing and loading indicator.
+        </p>
+        <div className="max-w-sm">
+          <Autocomplete
+            onSearch={
+              searchUsers as (query: string) => Promise<AutocompleteOption[]>
+            }
+            debounceMs={300}
+            placeholder="Type to search users..."
+          />
+        </div>
+      </section>
+
+      {/* Creatable Select */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Creatable Select
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Type to search or create new options. Press Enter to create when no
+          match is found.
+        </p>
+        <div className="max-w-sm">
+          <CreatableSelect
+            options={creatableOptions}
+            value={creatableValue}
+            onChange={(val) => setCreatableValue(val)}
+            onCreateOption={(inputValue) => {
+              const newOption = {
+                value: inputValue.toLowerCase(),
+                label: inputValue,
+              };
+              setCreatableOptions((prev) => [...prev, newOption]);
+              setCreatableValue(newOption.value);
+            }}
+            placeholder="Select or create..."
+          />
+        </div>
+        {creatableValue && (
+          <p className="text-sm text-muted-foreground">
+            Selected: {creatableValue}
+          </p>
+        )}
       </section>
     </div>
   );

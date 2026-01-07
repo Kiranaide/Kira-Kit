@@ -10,6 +10,7 @@ import {
   ThemeProvider,
   ThemeToggle,
 } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import {
   IconHome,
   IconClick,
@@ -30,7 +31,6 @@ import {
   IconRectangle,
   IconUser,
   IconLayoutColumns,
-  IconSearch,
   IconCalendar,
   IconLayoutSidebar,
   IconBox,
@@ -54,12 +54,14 @@ import {
   IconSquareCheck,
   IconBinaryTree2,
   IconUpload,
+  IconBell,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
   return (
     <ThemeProvider>
       <SidebarProvider>
+        <Toaster />
         <div className="flex h-screen overflow-hidden">
           <Sidebar>
             <SidebarHeader />
@@ -72,84 +74,6 @@ export function AppLayout() {
 
               <SidebarGroup label="Components">
                 <SidebarItem
-                  to="/components/button"
-                  icon={<IconClick className="w-5 h-5" />}
-                >
-                  Button
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/card"
-                  icon={<IconLayoutCards className="w-5 h-5" />}
-                >
-                  Card
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/input"
-                  icon={<IconForms className="w-5 h-5" />}
-                >
-                  Input
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/select"
-                  icon={<IconSelector className="w-5 h-5" />}
-                >
-                  Select
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/combobox"
-                  icon={<IconListSearch className="w-5 h-5" />}
-                >
-                  Combobox
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/textarea"
-                  icon={<IconTextCaption className="w-5 h-5" />}
-                >
-                  Textarea
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/field"
-                  icon={<IconInputCheck className="w-5 h-5" />}
-                >
-                  Field
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/input-group"
-                  icon={<IconLayoutList className="w-5 h-5" />}
-                >
-                  Input Group
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/badge"
-                  icon={<IconBadge className="w-5 h-5" />}
-                >
-                  Badge
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/alert-dialog"
-                  icon={<IconAlertCircle className="w-5 h-5" />}
-                >
-                  Alert Dialog
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/dropdown-menu"
-                  icon={<IconMenu2 className="w-5 h-5" />}
-                >
-                  Dropdown Menu
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/separator"
-                  icon={<IconSeparator className="w-5 h-5" />}
-                >
-                  Separator
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/label"
-                  icon={<IconTag className="w-5 h-5" />}
-                >
-                  Label
-                </SidebarItem>
-                <SidebarItem
                   to="/components/accordion"
                   icon={<IconList className="w-5 h-5" />}
                 >
@@ -160,6 +84,12 @@ export function AppLayout() {
                   icon={<IconAlertTriangle className="w-5 h-5" />}
                 >
                   Alert
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/alert-dialog"
+                  icon={<IconAlertCircle className="w-5 h-5" />}
+                >
+                  Alert Dialog
                 </SidebarItem>
                 <SidebarItem
                   to="/components/aspect-ratio"
@@ -174,22 +104,58 @@ export function AppLayout() {
                   Avatar
                 </SidebarItem>
                 <SidebarItem
+                  to="/components/badge"
+                  icon={<IconBadge className="w-5 h-5" />}
+                >
+                  Badge
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/button"
+                  icon={<IconClick className="w-5 h-5" />}
+                >
+                  Button
+                </SidebarItem>
+                <SidebarItem
                   to="/components/button-group"
                   icon={<IconLayoutColumns className="w-5 h-5" />}
                 >
                   Button Group
                 </SidebarItem>
                 <SidebarItem
-                  to="/components/autocomplete"
-                  icon={<IconSearch className="w-5 h-5" />}
-                >
-                  Autocomplete
-                </SidebarItem>
-                <SidebarItem
                   to="/components/calendar"
                   icon={<IconCalendar className="w-5 h-5" />}
                 >
                   Calendar
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/card"
+                  icon={<IconLayoutCards className="w-5 h-5" />}
+                >
+                  Card
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/checkbox"
+                  icon={<IconSquareCheck className="w-5 h-5" />}
+                >
+                  Checkbox
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/combobox"
+                  icon={<IconListSearch className="w-5 h-5" />}
+                >
+                  Combobox
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/context-menu"
+                  icon={<IconMenu2 className="w-5 h-5" />}
+                >
+                  Context Menu
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/data-table"
+                  icon={<IconLayoutList className="w-5 h-5" />}
+                >
+                  Data Table
                 </SidebarItem>
                 <SidebarItem
                   to="/components/dialog"
@@ -204,16 +170,28 @@ export function AppLayout() {
                   Drawer
                 </SidebarItem>
                 <SidebarItem
+                  to="/components/dropdown-menu"
+                  icon={<IconMenu2 className="w-5 h-5" />}
+                >
+                  Dropdown Menu
+                </SidebarItem>
+                <SidebarItem
                   to="/components/empty"
                   icon={<IconInbox className="w-5 h-5" />}
                 >
                   Empty
                 </SidebarItem>
                 <SidebarItem
-                  to="/components/popover"
-                  icon={<IconMessageCircle className="w-5 h-5" />}
+                  to="/components/field"
+                  icon={<IconInputCheck className="w-5 h-5" />}
                 >
-                  Popover
+                  Field
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/file-upload"
+                  icon={<IconUpload className="w-5 h-5" />}
+                >
+                  File Upload
                 </SidebarItem>
                 <SidebarItem
                   to="/components/hover-card"
@@ -222,10 +200,28 @@ export function AppLayout() {
                   Hover Card
                 </SidebarItem>
                 <SidebarItem
+                  to="/components/input"
+                  icon={<IconForms className="w-5 h-5" />}
+                >
+                  Input
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/input-group"
+                  icon={<IconLayoutList className="w-5 h-5" />}
+                >
+                  Input Group
+                </SidebarItem>
+                <SidebarItem
                   to="/components/kbd"
                   icon={<IconKeyboard className="w-5 h-5" />}
                 >
                   Kbd
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/label"
+                  icon={<IconTag className="w-5 h-5" />}
+                >
+                  Label
                 </SidebarItem>
                 <SidebarItem
                   to="/components/menubar"
@@ -246,6 +242,12 @@ export function AppLayout() {
                   Pagination
                 </SidebarItem>
                 <SidebarItem
+                  to="/components/popover"
+                  icon={<IconMessageCircle className="w-5 h-5" />}
+                >
+                  Popover
+                </SidebarItem>
+                <SidebarItem
                   to="/components/progress"
                   icon={<IconLoader className="w-5 h-5" />}
                 >
@@ -264,6 +266,18 @@ export function AppLayout() {
                   Resizable
                 </SidebarItem>
                 <SidebarItem
+                  to="/components/select"
+                  icon={<IconSelector className="w-5 h-5" />}
+                >
+                  Select
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/separator"
+                  icon={<IconSeparator className="w-5 h-5" />}
+                >
+                  Separator
+                </SidebarItem>
+                <SidebarItem
                   to="/components/skeleton"
                   icon={<IconBoxMultiple className="w-5 h-5" />}
                 >
@@ -276,28 +290,28 @@ export function AppLayout() {
                   Slider
                 </SidebarItem>
                 <SidebarItem
-                  to="/components/context-menu"
-                  icon={<IconMenu2 className="w-5 h-5" />}
-                >
-                  Context Menu
-                </SidebarItem>
-                <SidebarItem
                   to="/components/table"
                   icon={<IconTable className="w-5 h-5" />}
                 >
                   Table
                 </SidebarItem>
                 <SidebarItem
-                  to="/components/data-table"
-                  icon={<IconLayoutList className="w-5 h-5" />}
-                >
-                  Data Table
-                </SidebarItem>
-                <SidebarItem
                   to="/components/tabs"
                   icon={<IconFolder className="w-5 h-5" />}
                 >
                   Tabs
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/textarea"
+                  icon={<IconTextCaption className="w-5 h-5" />}
+                >
+                  Textarea
+                </SidebarItem>
+                <SidebarItem
+                  to="/components/toast"
+                  icon={<IconBell className="w-5 h-5" />}
+                >
+                  Toast
                 </SidebarItem>
                 <SidebarItem
                   to="/components/toggle"
@@ -312,28 +326,16 @@ export function AppLayout() {
                   Tooltip
                 </SidebarItem>
                 <SidebarItem
-                  to="/components/typography"
-                  icon={<IconTypography className="w-5 h-5" />}
-                >
-                  Typography
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/checkbox"
-                  icon={<IconSquareCheck className="w-5 h-5" />}
-                >
-                  Checkbox
-                </SidebarItem>
-                <SidebarItem
                   to="/components/tree-view"
                   icon={<IconBinaryTree2 className="w-5 h-5" />}
                 >
                   Tree View
                 </SidebarItem>
                 <SidebarItem
-                  to="/components/file-upload"
-                  icon={<IconUpload className="w-5 h-5" />}
+                  to="/components/typography"
+                  icon={<IconTypography className="w-5 h-5" />}
                 >
-                  File Upload
+                  Typography
                 </SidebarItem>
               </SidebarGroup>
 

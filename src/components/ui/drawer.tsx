@@ -9,16 +9,78 @@ const drawerVariants = cva(
   {
     variants: {
       side: {
-        left: "inset-y-0 left-0 h-full w-3/4 max-w-sm border-r data-[starting-style]:-translate-x-full data-[ending-style]:-translate-x-full",
+        left: "inset-y-0 left-0 h-full border-r data-[starting-style]:-translate-x-full data-[ending-style]:-translate-x-full",
         right:
-          "inset-y-0 right-0 h-full w-3/4 max-w-sm border-l data-[starting-style]:translate-x-full data-[ending-style]:translate-x-full",
-        top: "inset-x-0 top-0 w-full h-auto max-h-[80vh] border-b data-[starting-style]:-translate-y-full data-[ending-style]:-translate-y-full",
+          "inset-y-0 right-0 h-full border-l data-[starting-style]:translate-x-full data-[ending-style]:translate-x-full",
+        top: "inset-x-0 top-0 w-full border-b data-[starting-style]:-translate-y-full data-[ending-style]:-translate-y-full",
         bottom:
-          "inset-x-0 bottom-0 w-full h-auto max-h-[80vh] border-t data-[starting-style]:translate-y-full data-[ending-style]:translate-y-full",
+          "inset-x-0 bottom-0 w-full border-t data-[starting-style]:translate-y-full data-[ending-style]:translate-y-full",
+      },
+      size: {
+        sm: "",
+        default: "",
+        lg: "",
+        xl: "",
+        full: "",
       },
     },
+    compoundVariants: [
+      // Left/Right sizes (Width)
+      {
+        side: ["left", "right"],
+        size: "sm",
+        className: "w-3/4 max-w-xs",
+      },
+      {
+        side: ["left", "right"],
+        size: "default",
+        className: "w-3/4 max-w-sm",
+      },
+      {
+        side: ["left", "right"],
+        size: "lg",
+        className: "w-3/4 max-w-lg",
+      },
+      {
+        side: ["left", "right"],
+        size: "xl",
+        className: "w-3/4 max-w-xl",
+      },
+      {
+        side: ["left", "right"],
+        size: "full",
+        className: "w-screen max-w-none",
+      },
+      // Top/Bottom sizes (Height)
+      {
+        side: ["top", "bottom"],
+        size: "sm",
+        className: "h-auto max-h-[30vh]",
+      },
+      {
+        side: ["top", "bottom"],
+        size: "default",
+        className: "h-auto max-h-[80vh]",
+      },
+      {
+        side: ["top", "bottom"],
+        size: "lg",
+        className: "h-auto max-h-[90vh]",
+      },
+      {
+        side: ["top", "bottom"],
+        size: "xl",
+        className: "h-screen max-h-none",
+      },
+      {
+        side: ["top", "bottom"],
+        size: "full",
+        className: "h-screen max-h-none",
+      },
+    ],
     defaultVariants: {
       side: "right",
+      size: "default",
     },
   }
 );
@@ -67,6 +129,7 @@ function DrawerContent({
   className,
   children,
   side = "right",
+  size = "default",
   showCloseButton = true,
   ...props
 }: DrawerContentProps) {
@@ -75,7 +138,7 @@ function DrawerContent({
       <DrawerOverlay />
       <DialogPrimitive.Popup
         data-slot="drawer-content"
-        className={cn(drawerVariants({ side }), className)}
+        className={cn(drawerVariants({ side, size }), className)}
         {...props}
       >
         {children}
