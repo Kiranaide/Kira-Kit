@@ -76,138 +76,145 @@ interface ButtonProps
   progressColor?: string;
 }
 
-function Button({
-  className,
-  variant = "default",
-  size = "default",
-  holdDuration,
-  onHoldComplete,
-  progressColor,
-  disabled,
-  children,
-  onPointerDown,
-  onPointerUp,
-  onPointerLeave,
-  ...props
-}: ButtonProps) {
-  const progressRef = React.useRef<HTMLDivElement>(null);
-  const animationRef = React.useRef<ReturnType<typeof animate> | null>(null);
-  const [isHolding, setIsHolding] = React.useState(false);
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      className,
+      variant = "default",
+      size = "default",
+      holdDuration,
+      onHoldComplete,
+      progressColor,
+      disabled,
+      children,
+      onPointerDown,
+      onPointerUp,
+      onPointerLeave,
+      ...props
+    },
+    ref
+  ) => {
+    const progressRef = React.useRef<HTMLDivElement>(null);
+    const animationRef = React.useRef<ReturnType<typeof animate> | null>(null);
+    const [isHolding, setIsHolding] = React.useState(false);
 
-  // Determine progress color based on variant - more vibrant and colorful
-  const getProgressColor = () => {
-    if (progressColor) return progressColor;
+    // Determine progress color based on variant - more vibrant and colorful
+    const getProgressColor = () => {
+      if (progressColor) return progressColor;
 
-    // Use vibrant, semi-transparent colors that match the variant
-    switch (variant) {
-      case "destructive":
-        return "rgba(255, 255, 255, 0.5)";
-      case "default":
-        return "rgba(255, 255, 255, 0.5)";
-      case "secondary":
-        return "rgba(255, 255, 255, 0.4)";
-      case "info":
-        return "rgba(59, 130, 246, 0.6)"; // Bright blue
-      case "success":
-        return "rgba(34, 197, 94, 0.6)"; // Bright green
-      case "warning":
-        return "rgba(251, 191, 36, 0.7)"; // Bright amber/yellow
-      case "outline":
-        return "hsl(var(--primary) / 0.4)";
-      case "ghost":
-        return "hsl(var(--primary) / 0.3)";
-      default:
-        return "hsl(var(--primary) / 0.4)";
-    }
-  };
+      // Use vibrant, semi-transparent colors that match the variant
+      switch (variant) {
+        case "destructive":
+          return "rgba(255, 255, 255, 0.5)";
+        case "default":
+          return "rgba(255, 255, 255, 0.5)";
+        case "secondary":
+          return "rgba(255, 255, 255, 0.4)";
+        case "info":
+          return "rgba(59, 130, 246, 0.6)"; // Bright blue
+        case "success":
+          return "rgba(34, 197, 94, 0.6)"; // Bright green
+        case "warning":
+          return "rgba(251, 191, 36, 0.7)"; // Bright amber/yellow
+        case "outline":
+          return "hsl(var(--primary) / 0.4)";
+        case "ghost":
+          return "hsl(var(--primary) / 0.3)";
+        default:
+          return "hsl(var(--primary) / 0.4)";
+      }
+    };
 
-  const resetProgress = () => {
-    setIsHolding(false);
-    if (animationRef.current) {
-      animationRef.current.pause();
-    }
-    if (progressRef.current) {
-      animate(progressRef.current, {
-        width: "0%",
-        duration: 150,
-        ease: "outQuad",
-      });
-    }
-  };
+    const resetProgress = () => {
+      setIsHolding(false);
+      if (animationRef.current) {
+        animationRef.current.pause();
+      }
+      if (progressRef.current) {
+        animate(progressRef.current, {
+          width: "0%",
+          duration: 150,
+          ease: "outQuad",
+        });
+      }
+    };
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (disabled || !onHoldComplete) {
+    const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (disabled || !onHoldComplete) {
+        onPointerDown?.(e);
+        return;
+      }
+
+      setIsHolding(true);
+
+      if (progressRef.current) {
+        animationRef.current = animate(progressRef.current, {
+          width: ["0%", "100%"],
+          duration: holdDuration || 1000,
+          ease: "linear",
+          onComplete: () => {
+            onHoldComplete();
+            resetProgress();
+          },
+        });
+      }
+
       onPointerDown?.(e);
-      return;
-    }
+    };
 
-    setIsHolding(true);
+    const handlePointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (onHoldComplete) {
+        resetProgress();
+      }
+      onPointerUp?.(e);
+    };
 
-    if (progressRef.current) {
-      animationRef.current = animate(progressRef.current, {
-        width: ["0%", "100%"],
-        duration: holdDuration || 1000,
-        ease: "linear",
-        onComplete: () => {
-          onHoldComplete();
-          resetProgress();
-        },
-      });
-    }
+    const handlePointerLeave = (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (onHoldComplete && isHolding) {
+        resetProgress();
+      }
+      onPointerLeave?.(e);
+    };
 
-    onPointerDown?.(e);
-  };
+    const isHoldButton = !!onHoldComplete;
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (onHoldComplete) {
-      resetProgress();
-    }
-    onPointerUp?.(e);
-  };
-
-  const handlePointerLeave = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (onHoldComplete && isHolding) {
-      resetProgress();
-    }
-    onPointerLeave?.(e);
-  };
-
-  const isHoldButton = !!onHoldComplete;
-
-  return (
-    <ButtonPrimitive
-      data-slot="button"
-      className={cn(
-        buttonVariants({ variant, size, className }),
-        isHoldButton && "relative overflow-hidden select-none"
-      )}
-      disabled={disabled}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerLeave}
-      {...props}
-    >
-      {isHoldButton && (
-        <>
-          {/* Progress bar - visible left-to-right animation */}
-          <div
-            ref={progressRef}
-            className="absolute left-0 top-0 h-full pointer-events-none"
-            style={{
-              width: 0,
-              backgroundColor: getProgressColor(),
-            }}
-          />
-          {/* Content with proper flex alignment */}
-          <span className="relative z-10 flex items-center gap-2">
-            {children}
-          </span>
-        </>
-      )}
-      {!isHoldButton && children}
-    </ButtonPrimitive>
-  );
-}
+    return (
+      <ButtonPrimitive
+        ref={ref}
+        data-slot="button"
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          isHoldButton && "relative overflow-hidden select-none"
+        )}
+        disabled={disabled}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerLeave}
+        {...props}
+      >
+        {isHoldButton && (
+          <>
+            {/* Progress bar - visible left-to-right animation */}
+            <div
+              ref={progressRef}
+              className="absolute left-0 top-0 h-full pointer-events-none"
+              style={{
+                width: 0,
+                backgroundColor: getProgressColor(),
+              }}
+            />
+            {/* Content with proper flex alignment */}
+            <span className="relative z-10 flex items-center gap-2">
+              {children}
+            </span>
+          </>
+        )}
+        {!isHoldButton && children}
+      </ButtonPrimitive>
+    );
+  }
+);
+Button.displayName = "Button";
 
 // ============================================
 // HOLD BUTTON (backward compatibility wrapper)

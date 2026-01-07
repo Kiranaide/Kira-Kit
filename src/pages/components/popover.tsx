@@ -3,6 +3,8 @@ import {
   PopoverTrigger,
   PopoverContent,
   PopoverClose,
+  PopoverPortal,
+  PopoverBackdrop,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -127,6 +129,88 @@ export function PopoverPage() {
             </PopoverContent>
           </Popover>
         </div>
+      </section>
+
+      {/* Size Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Size Variants
+        </h2>
+        <div className="flex flex-wrap gap-4">
+          <Popover>
+            <PopoverTrigger
+              render={<Button variant="outline">Small Popover</Button>}
+            />
+            <PopoverContent size="sm">
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Small</h4>
+                <p className="text-sm text-muted-foreground">Compact (w-48).</p>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger
+              render={<Button variant="outline">Large Popover</Button>}
+            />
+            <PopoverContent size="lg">
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Large</h4>
+                <p className="text-sm text-muted-foreground">
+                  Wide (w-96). Great for complex content.
+                </p>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger
+              render={<Button variant="outline">Auto Width</Button>}
+            />
+            <PopoverContent size="auto">
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Auto Width</h4>
+                <p className="text-sm text-muted-foreground whitespace-nowrap">
+                  Adapts to content.
+                </p>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </section>
+
+      {/* Modal Popover */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Modal Popover
+        </h2>
+        <Popover>
+          <PopoverTrigger
+            render={<Button variant="default">Open Modal Popover</Button>}
+          />
+          <PopoverPortal>
+            <PopoverBackdrop />
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium text-lg leading-none">
+                    Modal-like Behavior
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    This popover has a backdrop (blur + dim) and behaves like a
+                    dialog.
+                  </p>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <PopoverClose
+                    render={<Button variant="outline">Cancel</Button>}
+                  />
+                  <PopoverClose render={<Button>Confirm</Button>} />
+                </div>
+              </div>
+            </PopoverContent>
+          </PopoverPortal>
+        </Popover>
       </section>
 
       {/* Usage */}

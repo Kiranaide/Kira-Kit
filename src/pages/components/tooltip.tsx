@@ -39,6 +39,104 @@ export function TooltipPage() {
           </div>
         </section>
 
+        {/* Style Variants */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold border-b border-border pb-2">
+            Style Variants
+          </h2>
+          <div className="flex gap-4">
+            <Tooltip>
+              <TooltipTrigger
+                render={<Button variant="outline">Secondary</Button>}
+              />
+              <TooltipContent variant="secondary">
+                Secondary tooltip
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger
+                render={<Button variant="outline">Outline</Button>}
+              />
+              <TooltipContent variant="outline">Outline tooltip</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger
+                render={<Button variant="destructive">Destructive</Button>}
+              />
+              <TooltipContent variant="destructive">
+                Destructive action
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </section>
+
+        {/* Size Variants */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold border-b border-border pb-2">
+            Size Variants
+          </h2>
+          <div className="flex gap-4 items-center">
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button variant="outline" size="sm">
+                    Small
+                  </Button>
+                }
+              />
+              <TooltipContent size="sm">Small tooltip</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger
+                render={<Button variant="outline">Default</Button>}
+              />
+              <TooltipContent>Default tooltip</TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button variant="outline" size="lg">
+                    Large
+                  </Button>
+                }
+              />
+              <TooltipContent size="lg">Large tooltip text</TooltipContent>
+            </Tooltip>
+          </div>
+        </section>
+
+        {/* Interactive */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold border-b border-border pb-2">
+            Interactive (Hoverable)
+          </h2>
+          <div className="flex gap-4">
+            <Tooltip hoverable>
+              <TooltipTrigger
+                render={<Button variant="outline">Hoverable Content</Button>}
+              />
+              <TooltipContent className="p-0 overflow-hidden">
+                <div className="p-3 bg-card border border-border rounded-md shadow-sm w-48">
+                  <p className="font-medium text-sm mb-2">
+                    Interactive Content
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    You can move your mouse into this tooltip to click links or
+                    buttons.
+                  </p>
+                  <Button size="sm" className="w-full">
+                    Click Me
+                  </Button>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </section>
+
         {/* With Arrow */}
         <section className="space-y-4">
           <h2 className="text-xl font-semibold border-b border-border pb-2">

@@ -1,4 +1,5 @@
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 function Popover({ ...props }: PopoverPrimitive.Root.Props) {
@@ -17,31 +18,87 @@ function PopoverClose({ ...props }: PopoverPrimitive.Close.Props) {
   return <PopoverPrimitive.Close data-slot="popover-close" {...props} />;
 }
 
-interface PopoverContentProps extends PopoverPrimitive.Popup.Props {
-  sideOffset?: number;
+const popoverContentVariants = cva(
+  "z-50 rounded-lg border border-border bg-popover p-4 shadow-lg outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+  {
+    variants: {
+      size: {
+        auto: "w-auto",
+        sm: "w-48",
+        md: "w-72",
+        lg: "w-96",
+        xl: "w-[32rem]",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  }
+);
+
+interface PopoverContentProps
+  extends PopoverPrimitive.Popup.Props,
+    VariantProps<typeof popoverContentVariants> {
+  side?: PopoverPrimitive.Positioner.Props["side"];
+  sideOffset?: PopoverPrimitive.Positioner.Props["sideOffset"];
+  align?: PopoverPrimitive.Positioner.Props["align"];
+  alignOffset?: PopoverPrimitive.Positioner.Props["alignOffset"];
+  arrowPadding?: PopoverPrimitive.Positioner.Props["arrowPadding"];
+  collisionBoundary?: PopoverPrimitive.Positioner.Props["collisionBoundary"];
+  collisionPadding?: PopoverPrimitive.Positioner.Props["collisionPadding"];
+  sticky?: PopoverPrimitive.Positioner.Props["sticky"];
 }
 
 function PopoverContent({
   className,
   sideOffset = 4,
+  side = "bottom",
+  align = "center",
+  alignOffset = 0,
+  arrowPadding,
+  collisionBoundary,
+  collisionPadding,
+  sticky,
+  size,
   ...props
 }: PopoverContentProps) {
   return (
     <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Positioner sideOffset={sideOffset}>
+      <PopoverPrimitive.Positioner
+        side={side}
+        sideOffset={sideOffset}
+        align={align}
+        alignOffset={alignOffset}
+        arrowPadding={arrowPadding}
+        collisionBoundary={collisionBoundary}
+        collisionPadding={collisionPadding}
+        sticky={sticky}
+        trackAnchor={true}
+        className="invisible data-[side]:visible"
+      >
         <PopoverPrimitive.Popup
           data-slot="popover-content"
-          className={cn(
-            "z-50 w-72 rounded-lg border border-border bg-popover p-4 shadow-lg outline-none",
-            "data-starting-style:opacity-0 data-starting-style:scale-95",
-            "data-ending-style:opacity-0 data-ending-style:scale-95",
-            "transition-all duration-150",
-            className
-          )}
+          className={cn(popoverContentVariants({ size }), className)}
           {...props}
         />
       </PopoverPrimitive.Positioner>
     </PopoverPrimitive.Portal>
+  );
+}
+
+function PopoverBackdrop({
+  className,
+  ...props
+}: PopoverPrimitive.Backdrop.Props) {
+  return (
+    <PopoverPrimitive.Backdrop
+      data-slot="popover-backdrop"
+      className={cn(
+        "fixed inset-0 z-40 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        className
+      )}
+      {...props}
+    />
   );
 }
 
@@ -62,4 +119,5 @@ export {
   PopoverClose,
   PopoverPortal,
   PopoverArrow,
+  PopoverBackdrop,
 };
