@@ -3,9 +3,9 @@ import {
   PopoverTrigger,
   PopoverContent,
   PopoverClose,
-  PopoverPortal,
   PopoverBackdrop,
 } from "@/components/ui/popover";
+import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -184,32 +184,38 @@ export function PopoverPage() {
         <h2 className="text-xl font-semibold border-b border-border pb-2">
           Modal Popover
         </h2>
-        <Popover>
+        <Popover modal>
           <PopoverTrigger
             render={<Button variant="default">Open Modal Popover</Button>}
           />
-          <PopoverPortal>
+          <PopoverPrimitive.Portal>
             <PopoverBackdrop />
-            <PopoverContent className="w-80">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <h4 className="font-medium text-lg leading-none">
-                    Modal-like Behavior
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    This popover has a backdrop (blur + dim) and behaves like a
-                    dialog.
-                  </p>
+            <PopoverPrimitive.Positioner
+              side="bottom"
+              sideOffset={4}
+              className="z-50"
+            >
+              <PopoverPrimitive.Popup className="w-80 rounded-lg border border-border bg-popover p-4 shadow-lg outline-none data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium text-lg leading-none">
+                      Modal-like Behavior
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      This popover has a backdrop (blur + dim) and behaves like
+                      a dialog.
+                    </p>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <PopoverClose
+                      render={<Button variant="outline">Cancel</Button>}
+                    />
+                    <PopoverClose render={<Button>Confirm</Button>} />
+                  </div>
                 </div>
-                <div className="flex justify-end gap-2">
-                  <PopoverClose
-                    render={<Button variant="outline">Cancel</Button>}
-                  />
-                  <PopoverClose render={<Button>Confirm</Button>} />
-                </div>
-              </div>
-            </PopoverContent>
-          </PopoverPortal>
+              </PopoverPrimitive.Popup>
+            </PopoverPrimitive.Positioner>
+          </PopoverPrimitive.Portal>
         </Popover>
       </section>
 

@@ -58,29 +58,140 @@ function PaginationItem({
   );
 }
 
+const paginationLinkVariants = cva(
+  "inline-flex items-center justify-center font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: [
+          "rounded-md hover:bg-muted",
+          "data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-sm",
+        ],
+        outline: [
+          "rounded-md border border-transparent hover:border-border hover:bg-transparent",
+          "data-[active=true]:border-primary data-[active=true]:bg-primary/10 data-[active=true]:text-primary",
+        ],
+        pills: [
+          "rounded-full hover:bg-muted",
+          "data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-sm",
+        ],
+        ghost: [
+          "rounded-md hover:bg-muted/50 hover:text-foreground",
+          "data-[active=true]:text-primary data-[active=true]:font-semibold data-[active=true]:bg-transparent",
+        ],
+        rounded: [
+          "rounded-lg hover:bg-muted",
+          "data-[active=true]:bg-primary data-[active=true]:text-primary-foreground data-[active=true]:shadow-md",
+        ],
+      },
+      color: {
+        default: "",
+        primary: "",
+        success: "",
+        warning: "",
+        destructive: "",
+      },
+    },
+    compoundVariants: [
+      // Success color
+      {
+        variant: "default",
+        color: "success",
+        className:
+          "data-[active=true]:bg-green-600 data-[active=true]:text-white",
+      },
+      {
+        variant: "pills",
+        color: "success",
+        className:
+          "data-[active=true]:bg-green-600 data-[active=true]:text-white",
+      },
+      {
+        variant: "outline",
+        color: "success",
+        className:
+          "data-[active=true]:border-green-600 data-[active=true]:bg-green-500/10 data-[active=true]:text-green-600",
+      },
+      {
+        variant: "ghost",
+        color: "success",
+        className: "data-[active=true]:text-green-600",
+      },
+      // Warning color
+      {
+        variant: "default",
+        color: "warning",
+        className:
+          "data-[active=true]:bg-amber-500 data-[active=true]:text-white",
+      },
+      {
+        variant: "pills",
+        color: "warning",
+        className:
+          "data-[active=true]:bg-amber-500 data-[active=true]:text-white",
+      },
+      {
+        variant: "outline",
+        color: "warning",
+        className:
+          "data-[active=true]:border-amber-500 data-[active=true]:bg-amber-500/10 data-[active=true]:text-amber-600",
+      },
+      {
+        variant: "ghost",
+        color: "warning",
+        className: "data-[active=true]:text-amber-600",
+      },
+      // Destructive color
+      {
+        variant: "default",
+        color: "destructive",
+        className:
+          "data-[active=true]:bg-destructive data-[active=true]:text-destructive-foreground",
+      },
+      {
+        variant: "pills",
+        color: "destructive",
+        className:
+          "data-[active=true]:bg-destructive data-[active=true]:text-destructive-foreground",
+      },
+      {
+        variant: "outline",
+        color: "destructive",
+        className:
+          "data-[active=true]:border-destructive data-[active=true]:bg-destructive/10 data-[active=true]:text-destructive",
+      },
+      {
+        variant: "ghost",
+        color: "destructive",
+        className: "data-[active=true]:text-destructive",
+      },
+    ],
+    defaultVariants: {
+      variant: "default",
+      color: "default",
+    },
+  }
+);
+
 interface PaginationLinkProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof paginationLinkVariants> {
   isActive?: boolean;
 }
 
 function PaginationLink({
   className,
   isActive,
+  variant,
+  color,
   ...props
 }: PaginationLinkProps) {
   return (
     <button
       data-slot="pagination-link"
+      data-active={isActive}
       aria-current={isActive ? "page" : undefined}
-      className={cn(
-        "inline-flex items-center justify-center rounded-md font-medium transition-colors",
-        "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        "disabled:pointer-events-none disabled:opacity-50",
-        isActive
-          ? "bg-primary text-primary-foreground hover:bg-primary/90"
-          : "bg-transparent",
-        className
-      )}
+      className={cn(paginationLinkVariants({ variant, color }), className)}
       {...props}
     />
   );
@@ -144,4 +255,5 @@ export {
   PaginationNext,
   PaginationEllipsis,
   paginationVariants,
+  paginationLinkVariants,
 };

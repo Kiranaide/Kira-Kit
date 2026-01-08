@@ -19,7 +19,7 @@ function PopoverClose({ ...props }: PopoverPrimitive.Close.Props) {
 }
 
 const popoverContentVariants = cva(
-  "z-50 rounded-lg border border-border bg-popover p-4 shadow-lg outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+  "z-50 rounded-lg border border-border bg-popover p-4 shadow-lg outline-none data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
   {
     variants: {
       size: {
@@ -74,7 +74,6 @@ function PopoverContent({
         collisionPadding={collisionPadding}
         sticky={sticky}
         trackAnchor={true}
-        className="invisible data-[side]:visible"
       >
         <PopoverPrimitive.Popup
           data-slot="popover-content"
@@ -94,7 +93,7 @@ function PopoverBackdrop({
     <PopoverPrimitive.Backdrop
       data-slot="popover-backdrop"
       className={cn(
-        "fixed inset-0 z-40 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "fixed inset-0 z-40 bg-black/40 backdrop-blur-sm data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0",
         className
       )}
       {...props}

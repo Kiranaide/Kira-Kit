@@ -135,6 +135,207 @@ export function PaginationPage() {
         </div>
       </section>
 
+      {/* Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Variants
+        </h2>
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Outline</p>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious variant="outline" />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="outline">1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="outline" isActive>
+                    2
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="outline">3</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext variant="outline" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Pills</p>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious variant="pills" />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="pills">1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="pills" isActive>
+                    2
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="pills">3</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext variant="pills" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Ghost</p>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious variant="ghost" />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="ghost">1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="ghost" isActive>
+                    2
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="ghost">3</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext variant="ghost" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Rounded</p>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious variant="rounded" />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="rounded">1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="rounded" isActive>
+                    2
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="rounded">3</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext variant="rounded" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </div>
+      </section>
+
+      {/* Color Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Color Variants
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Combine style and color variants for themed pagination.
+        </p>
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm font-medium mb-2">Success (Pills)</p>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious variant="pills" color="success" />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="pills" color="success">
+                    1
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="pills" color="success" isActive>
+                    2
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="pills" color="success">
+                    3
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext variant="pills" color="success" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-2">Warning (Outline)</p>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious variant="outline" color="warning" />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="outline" color="warning">
+                    1
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="outline" color="warning" isActive>
+                    2
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="outline" color="warning">
+                    3
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext variant="outline" color="warning" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-2">Destructive (Ghost)</p>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious variant="ghost" color="destructive" />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="ghost" color="destructive">
+                    1
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="ghost" color="destructive" isActive>
+                    2
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink variant="ghost" color="destructive">
+                    3
+                  </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext variant="ghost" color="destructive" />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </div>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">

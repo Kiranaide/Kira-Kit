@@ -20,9 +20,9 @@ export function NavigationMenuPage() {
       </header>
 
       {/* Basic Navigation */}
-      <section className="space-y-4">
+      <section className="space-y-4 min-h-[280px]">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Basic Navigation
+          Basic Navigation with Dropdowns
         </h2>
         <NavigationMenu>
           <NavigationMenuList>
@@ -84,10 +84,13 @@ export function NavigationMenuPage() {
       </section>
 
       {/* Simple Links */}
-      <section className="space-y-4">
+      <section className="space-y-4 pt-8">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Simple Links
+          Simple Links (Without Dropdowns)
         </h2>
+        <p className="text-sm text-muted-foreground">
+          Navigation menu with direct links, no dropdowns.
+        </p>
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>

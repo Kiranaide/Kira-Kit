@@ -51,6 +51,7 @@ import { TypographyPage } from "@/pages/components/typography";
 import { CheckboxPage } from "@/pages/components/checkbox";
 import { TreeViewPage } from "@/pages/components/tree-view";
 import { FileUploadPage } from "@/pages/components/file-upload";
+import { SidebarPage } from "@/pages/components/sidebar";
 
 // Root route with layout
 const rootRoute = createRootRoute({
@@ -329,6 +330,12 @@ const fileUploadRoute = createRoute({
   component: FileUploadPage,
 });
 
+const sidebarRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/sidebar",
+  component: SidebarPage,
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -376,6 +383,7 @@ const routeTree = rootRoute.addChildren([
   checkboxRoute,
   treeViewRoute,
   fileUploadRoute,
+  sidebarRoute,
 ]);
 
 // Create router

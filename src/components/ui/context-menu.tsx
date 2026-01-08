@@ -38,10 +38,8 @@ function ContextMenuContent({
         <ContextMenuPrimitive.Popup
           data-slot="context-menu-content"
           className={cn(
-            "z-[100] min-w-[8rem] overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-lg",
-            "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
-            "data-[ending-style]:opacity-0 data-[ending-style]:scale-95",
-            "transition-all duration-150",
+            "z-50 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 shadow-lg",
+            "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95",
             className
           )}
           {...props}
@@ -271,10 +269,8 @@ function ContextMenuSubContent({
         <ContextMenuPrimitive.Popup
           data-slot="context-menu-sub-content"
           className={cn(
-            "z-[100] min-w-[8rem] overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-lg",
-            "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
-            "data-[ending-style]:opacity-0 data-[ending-style]:scale-95",
-            "transition-all duration-150",
+            "z-50 min-w-[8rem] overflow-hidden rounded-md border border-border bg-popover p-1 shadow-lg",
+            "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95",
             className
           )}
           {...props}

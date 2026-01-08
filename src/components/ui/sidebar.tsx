@@ -79,16 +79,28 @@ export function useSidebar() {
 }
 
 // Sidebar Components
-export function Sidebar({ children }: { children: React.ReactNode }) {
+type SidebarVariant = "default" | "floating" | "inset";
+
+interface SidebarProps {
+  children: React.ReactNode;
+  variant?: SidebarVariant;
+}
+
+export function Sidebar({ children, variant = "default" }: SidebarProps) {
   const { collapsed } = useSidebar();
 
+  const baseClasses = "h-screen flex flex-col transition-all duration-300";
+  const widthClasses = collapsed ? "w-16" : "w-64";
+
+  const variantClasses = {
+    default: "bg-sidebar border-r border-sidebar-border",
+    floating:
+      "bg-sidebar m-2 rounded-xl border border-sidebar-border shadow-lg h-[calc(100vh-16px)]",
+    inset: "bg-muted/30",
+  };
+
   return (
-    <aside
-      className={cn(
-        "h-screen bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
-      )}
-    >
+    <aside className={cn(baseClasses, widthClasses, variantClasses[variant])}>
       {children}
     </aside>
   );
@@ -167,9 +179,15 @@ interface SidebarItemProps {
   to: string;
   icon?: React.ReactNode;
   children: React.ReactNode;
+  level?: number;
 }
 
-export function SidebarItem({ to, icon, children }: SidebarItemProps) {
+export function SidebarItem({
+  to,
+  icon,
+  children,
+  level = 0,
+}: SidebarItemProps) {
   const { collapsed } = useSidebar();
   const routerState = useRouterState();
   const isActive = routerState.location.pathname === to;
@@ -178,9 +196,13 @@ export function SidebarItem({ to, icon, children }: SidebarItemProps) {
     <Link
       to={to}
       className={cn(
-        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+        "flex items-center gap-3 py-2 rounded-lg text-sm transition-all duration-150",
+        level === 0 ? "px-3" : "",
+        level > 0 && !collapsed
+          ? "ml-4 pl-3 border-l-2 border-sidebar-border"
+          : "",
         isActive
-          ? "bg-sidebar-primary text-sidebar-primary-foreground"
+          ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium"
           : "text-sidebar-foreground hover:bg-sidebar-accent"
       )}
       title={collapsed ? String(children) : undefined}
@@ -188,6 +210,51 @@ export function SidebarItem({ to, icon, children }: SidebarItemProps) {
       {icon && <span className="flex-shrink-0">{icon}</span>}
       {!collapsed && <span>{children}</span>}
     </Link>
+  );
+}
+
+// Tree-view style sidebar item group with expand/collapse
+interface SidebarItemGroupProps {
+  label: string;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}
+
+export function SidebarItemGroup({
+  label,
+  icon,
+  children,
+  defaultOpen = false,
+}: SidebarItemGroupProps) {
+  const { collapsed } = useSidebar();
+  const [open, setOpen] = React.useState(defaultOpen);
+
+  if (collapsed) {
+    return <div className="space-y-0.5">{children}</div>;
+  }
+
+  return (
+    <div className="space-y-0.5">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-150"
+      >
+        {icon && <span className="flex-shrink-0">{icon}</span>}
+        <span className="flex-1 text-left">{label}</span>
+        <IconChevronDown
+          className={cn(
+            "w-4 h-4 transition-transform duration-200",
+            open ? "rotate-0" : "-rotate-90"
+          )}
+        />
+      </button>
+      {open && (
+        <div className="ml-2 space-y-0.5 animate-in slide-in-from-top-2 fade-in-0 duration-200">
+          {children}
+        </div>
+      )}
+    </div>
   );
 }
 

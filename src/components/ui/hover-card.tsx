@@ -1,120 +1,94 @@
-import * as React from "react";
+import { PreviewCard as PreviewCardPrimitive } from "@base-ui/react/preview-card";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-interface HoverCardProps {
-  children: React.ReactNode;
-  openDelay?: number;
-  closeDelay?: number;
+function HoverCard({ ...props }: PreviewCardPrimitive.Root.Props) {
+  return <PreviewCardPrimitive.Root data-slot="hover-card" {...props} />;
 }
 
-interface HoverCardContextValue {
-  open: boolean;
-  setOpen: (open: boolean) => void;
+function HoverCardTrigger({ ...props }: PreviewCardPrimitive.Trigger.Props) {
+  return (
+    <PreviewCardPrimitive.Trigger data-slot="hover-card-trigger" {...props} />
+  );
 }
 
-const HoverCardContext = React.createContext<HoverCardContextValue | null>(
-  null
+const hoverCardContentVariants = cva(
+  "z-[100] rounded-lg border border-border bg-popover p-4 shadow-lg outline-none data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+  {
+    variants: {
+      size: {
+        sm: "w-48",
+        md: "w-64",
+        lg: "w-80",
+        xl: "w-96",
+      },
+    },
+    defaultVariants: {
+      size: "md",
+    },
+  }
 );
 
-function HoverCard({
-  children,
-  openDelay = 200,
-  closeDelay = 300,
-}: HoverCardProps) {
-  const [open, setOpen] = React.useState(false);
-  const openTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
-  const closeTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
-
-  const handleOpen = React.useCallback(() => {
-    if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-    openTimeoutRef.current = setTimeout(() => setOpen(true), openDelay);
-  }, [openDelay]);
-
-  const handleClose = React.useCallback(() => {
-    if (openTimeoutRef.current) clearTimeout(openTimeoutRef.current);
-    closeTimeoutRef.current = setTimeout(() => setOpen(false), closeDelay);
-  }, [closeDelay]);
-
-  React.useEffect(() => {
-    return () => {
-      if (openTimeoutRef.current) clearTimeout(openTimeoutRef.current);
-      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-    };
-  }, []);
-
-  return (
-    <HoverCardContext.Provider value={{ open, setOpen }}>
-      <div
-        data-slot="hover-card"
-        className="relative inline-block"
-        onMouseEnter={handleOpen}
-        onMouseLeave={handleClose}
-      >
-        {children}
-      </div>
-    </HoverCardContext.Provider>
-  );
-}
-
-interface HoverCardTriggerProps extends React.HTMLAttributes<HTMLSpanElement> {
-  render?: React.ReactElement<{ className?: string }>;
-}
-
-function HoverCardTrigger({
-  className,
-  children,
-  render,
-  ...props
-}: HoverCardTriggerProps) {
-  if (render) {
-    return React.cloneElement(render, {
-      ...props,
-      className: cn(className, render.props.className),
-    });
-  }
-
-  return (
-    <span data-slot="hover-card-trigger" className={className} {...props}>
-      {children}
-    </span>
-  );
-}
-
-interface HoverCardContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  sideOffset?: number;
-  align?: "start" | "center" | "end";
+interface HoverCardContentProps
+  extends PreviewCardPrimitive.Popup.Props,
+    VariantProps<typeof hoverCardContentVariants> {
+  side?: PreviewCardPrimitive.Positioner.Props["side"];
+  sideOffset?: PreviewCardPrimitive.Positioner.Props["sideOffset"];
+  align?: PreviewCardPrimitive.Positioner.Props["align"];
+  alignOffset?: PreviewCardPrimitive.Positioner.Props["alignOffset"];
+  arrowPadding?: PreviewCardPrimitive.Positioner.Props["arrowPadding"];
+  collisionBoundary?: PreviewCardPrimitive.Positioner.Props["collisionBoundary"];
+  collisionPadding?: PreviewCardPrimitive.Positioner.Props["collisionPadding"];
+  sticky?: PreviewCardPrimitive.Positioner.Props["sticky"];
 }
 
 function HoverCardContent({
   className,
   sideOffset = 8,
+  side = "bottom",
   align = "center",
+  alignOffset = 0,
+  arrowPadding,
+  collisionBoundary,
+  collisionPadding,
+  sticky,
+  size,
   ...props
 }: HoverCardContentProps) {
-  const context = React.useContext(HoverCardContext);
-
-  if (!context?.open) return null;
-
   return (
-    <div
-      data-slot="hover-card-content"
-      className={cn(
-        // Higher z-index to appear above sidebar
-        "absolute z-[100] w-64 rounded-lg border border-border bg-popover p-4 shadow-lg outline-none",
-        "animate-in fade-in-0 zoom-in-95",
-        align === "start" && "left-0",
-        align === "center" && "left-1/2 -translate-x-1/2",
-        align === "end" && "right-0",
-        className
-      )}
-      style={{ top: `calc(100% + ${sideOffset}px)` }}
+    <PreviewCardPrimitive.Portal>
+      <PreviewCardPrimitive.Positioner
+        side={side}
+        sideOffset={sideOffset}
+        align={align}
+        alignOffset={alignOffset}
+        arrowPadding={arrowPadding}
+        collisionBoundary={collisionBoundary}
+        collisionPadding={collisionPadding}
+        sticky={sticky}
+        trackAnchor={true}
+      >
+        <PreviewCardPrimitive.Popup
+          data-slot="hover-card-content"
+          className={cn(hoverCardContentVariants({ size }), className)}
+          {...props}
+        />
+      </PreviewCardPrimitive.Positioner>
+    </PreviewCardPrimitive.Portal>
+  );
+}
+
+function HoverCardArrow({
+  className,
+  ...props
+}: PreviewCardPrimitive.Arrow.Props) {
+  return (
+    <PreviewCardPrimitive.Arrow
+      data-slot="hover-card-arrow"
+      className={cn("fill-popover", className)}
       {...props}
     />
   );
 }
 
-export { HoverCard, HoverCardTrigger, HoverCardContent };
+export { HoverCard, HoverCardTrigger, HoverCardContent, HoverCardArrow };

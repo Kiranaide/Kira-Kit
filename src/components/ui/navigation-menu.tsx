@@ -142,9 +142,7 @@ function NavigationMenuContent({
           data-slot="navigation-menu-content"
           className={cn(
             "z-[100] w-full rounded-lg border border-border bg-popover p-4 shadow-lg md:w-auto",
-            "data-[starting-style]:opacity-0 data-[starting-style]:translate-y-1",
-            "data-[ending-style]:opacity-0 data-[ending-style]:translate-y-1",
-            "transition-all duration-200",
+            "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2",
             className
           )}
           {...props}

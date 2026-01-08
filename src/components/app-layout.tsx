@@ -284,6 +284,12 @@ export function AppLayout() {
                   Skeleton
                 </SidebarItem>
                 <SidebarItem
+                  to="/components/sidebar"
+                  icon={<IconLayoutSidebar className="w-5 h-5" />}
+                >
+                  Sidebar
+                </SidebarItem>
+                <SidebarItem
                   to="/components/slider"
                   icon={<IconAdjustmentsHorizontal className="w-5 h-5" />}
                 >

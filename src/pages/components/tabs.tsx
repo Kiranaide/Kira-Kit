@@ -154,6 +154,284 @@ export function TabsPage() {
         </Tabs>
       </section>
 
+      {/* Underline Variant */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Underline Variant
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          A clean underline style with animated border indicator.
+        </p>
+        <Tabs defaultValue="all">
+          <TabsList variant="underline">
+            <TabsTrigger value="all" variant="underline">
+              All
+            </TabsTrigger>
+            <TabsTrigger value="active" variant="underline">
+              Active
+            </TabsTrigger>
+            <TabsTrigger value="completed" variant="underline">
+              Completed
+            </TabsTrigger>
+            <TabsTrigger value="archived" variant="underline">
+              Archived
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="all">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              All items content
+            </div>
+          </TabsContent>
+          <TabsContent value="active">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Active items content
+            </div>
+          </TabsContent>
+          <TabsContent value="completed">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Completed items content
+            </div>
+          </TabsContent>
+          <TabsContent value="archived">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Archived items content
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
+
+      {/* Soft Variant */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Soft Variant
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Subtle background highlight with primary color accent.
+        </p>
+        <Tabs defaultValue="overview">
+          <TabsList variant="soft">
+            <TabsTrigger value="overview" variant="soft">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="details" variant="soft">
+              Details
+            </TabsTrigger>
+            <TabsTrigger value="settings" variant="soft">
+              Settings
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Overview content with soft styling
+            </div>
+          </TabsContent>
+          <TabsContent value="details">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Details content with soft styling
+            </div>
+          </TabsContent>
+          <TabsContent value="settings">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Settings content with soft styling
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
+
+      {/* Card Variant */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Card Variant
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Active tab appears as a card with shadow and border.
+        </p>
+        <Tabs defaultValue="first">
+          <TabsList variant="card">
+            <TabsTrigger value="first" variant="card">
+              First
+            </TabsTrigger>
+            <TabsTrigger value="second" variant="card">
+              Second
+            </TabsTrigger>
+            <TabsTrigger value="third" variant="card">
+              Third
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="first">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              First tab content with card styling
+            </div>
+          </TabsContent>
+          <TabsContent value="second">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Second tab content with card styling
+            </div>
+          </TabsContent>
+          <TabsContent value="third">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Third tab content with card styling
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
+
+      {/* Color Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Color Variants
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Combine style variants with color variants for different themes.
+        </p>
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm font-medium mb-2">Success (Pills)</p>
+            <Tabs defaultValue="active">
+              <TabsList variant="pills">
+                <TabsTrigger value="all" variant="pills" color="success">
+                  All
+                </TabsTrigger>
+                <TabsTrigger value="active" variant="pills" color="success">
+                  Active
+                </TabsTrigger>
+                <TabsTrigger value="done" variant="pills" color="success">
+                  Done
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="all" animation="slide">
+                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
+                  All tasks content
+                </div>
+              </TabsContent>
+              <TabsContent value="active" animation="slide">
+                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
+                  Active tasks content
+                </div>
+              </TabsContent>
+              <TabsContent value="done" animation="slide">
+                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
+                  Done tasks content
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-2">Warning (Underline)</p>
+            <Tabs defaultValue="pending">
+              <TabsList variant="underline">
+                <TabsTrigger
+                  value="pending"
+                  variant="underline"
+                  color="warning"
+                >
+                  Pending
+                </TabsTrigger>
+                <TabsTrigger value="review" variant="underline" color="warning">
+                  In Review
+                </TabsTrigger>
+                <TabsTrigger
+                  value="approved"
+                  variant="underline"
+                  color="warning"
+                >
+                  Approved
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="pending" animation="slideUp">
+                <div className="p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950 mt-4">
+                  Pending items
+                </div>
+              </TabsContent>
+              <TabsContent value="review" animation="slideUp">
+                <div className="p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950 mt-4">
+                  Items in review
+                </div>
+              </TabsContent>
+              <TabsContent value="approved" animation="slideUp">
+                <div className="p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950 mt-4">
+                  Approved items
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-2">Destructive (Soft)</p>
+            <Tabs defaultValue="errors">
+              <TabsList variant="soft">
+                <TabsTrigger value="errors" variant="soft" color="destructive">
+                  Errors
+                </TabsTrigger>
+                <TabsTrigger
+                  value="warnings"
+                  variant="soft"
+                  color="destructive"
+                >
+                  Warnings
+                </TabsTrigger>
+                <TabsTrigger value="logs" variant="soft" color="destructive">
+                  Logs
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="errors" animation="zoom">
+                <div className="p-4 rounded-lg border border-destructive/20 bg-destructive/5 mt-4">
+                  Error logs
+                </div>
+              </TabsContent>
+              <TabsContent value="warnings" animation="zoom">
+                <div className="p-4 rounded-lg border border-destructive/20 bg-destructive/5 mt-4">
+                  Warning logs
+                </div>
+              </TabsContent>
+              <TabsContent value="logs" animation="zoom">
+                <div className="p-4 rounded-lg border border-destructive/20 bg-destructive/5 mt-4">
+                  All logs
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </section>
+
+      {/* Animations */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Content Animations
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          TabsContent supports different entrance animations: fade, slide,
+          slideUp, and zoom.
+        </p>
+        <Tabs defaultValue="slide">
+          <TabsList>
+            <TabsTrigger value="slide">Slide Right</TabsTrigger>
+            <TabsTrigger value="slideUp">Slide Up</TabsTrigger>
+            <TabsTrigger value="zoom">Zoom</TabsTrigger>
+            <TabsTrigger value="fade">Fade</TabsTrigger>
+          </TabsList>
+          <TabsContent value="slide" animation="slide">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              This content slides in from the right
+            </div>
+          </TabsContent>
+          <TabsContent value="slideUp" animation="slideUp">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              This content slides in from the bottom
+            </div>
+          </TabsContent>
+          <TabsContent value="zoom" animation="zoom">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              This content zooms in
+            </div>
+          </TabsContent>
+          <TabsContent value="fade" animation="fade">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              This content fades in (default)
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
