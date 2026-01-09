@@ -81,6 +81,18 @@ const tabsTriggerVariants = cva(
     compoundVariants: [
       // Primary color
       {
+        variant: "default",
+        color: "primary",
+        className:
+          "data-[active]:bg-primary data-[active]:text-primary-foreground",
+      },
+      {
+        variant: "outline",
+        color: "primary",
+        className:
+          "data-[active]:bg-primary data-[active]:text-primary-foreground",
+      },
+      {
         variant: "pills",
         color: "primary",
         className:
@@ -96,7 +108,25 @@ const tabsTriggerVariants = cva(
         color: "primary",
         className: "data-[active]:text-primary data-[active]:border-primary",
       },
+      {
+        variant: "card",
+        color: "primary",
+        className:
+          "data-[active]:bg-primary data-[active]:text-primary-foreground",
+      },
       // Success color
+      {
+        variant: "default",
+        color: "success",
+        className:
+          "data-[active]:bg-green-600 data-[active]:text-white",
+      },
+      {
+        variant: "outline",
+        color: "success",
+        className:
+          "data-[active]:bg-green-600 data-[active]:text-white",
+      },
       {
         variant: "pills",
         color: "success",
@@ -114,7 +144,25 @@ const tabsTriggerVariants = cva(
         className:
           "data-[active]:text-green-600 data-[active]:border-green-600",
       },
+      {
+        variant: "card",
+        color: "success",
+        className:
+          "data-[active]:bg-green-600 data-[active]:text-white",
+      },
       // Warning color
+      {
+        variant: "default",
+        color: "warning",
+        className:
+          "data-[active]:bg-amber-500 data-[active]:text-white",
+      },
+      {
+        variant: "outline",
+        color: "warning",
+        className:
+          "data-[active]:bg-amber-500 data-[active]:text-white",
+      },
       {
         variant: "pills",
         color: "warning",
@@ -132,7 +180,25 @@ const tabsTriggerVariants = cva(
         className:
           "data-[active]:text-amber-600 data-[active]:border-amber-500",
       },
+      {
+        variant: "card",
+        color: "warning",
+        className:
+          "data-[active]:bg-amber-500 data-[active]:text-white",
+      },
       // Destructive color
+      {
+        variant: "default",
+        color: "destructive",
+        className:
+          "data-[active]:bg-destructive data-[active]:text-destructive-foreground",
+      },
+      {
+        variant: "outline",
+        color: "destructive",
+        className:
+          "data-[active]:bg-destructive data-[active]:text-destructive-foreground",
+      },
       {
         variant: "pills",
         color: "destructive",
@@ -150,6 +216,12 @@ const tabsTriggerVariants = cva(
         color: "destructive",
         className:
           "data-[active]:text-destructive data-[active]:border-destructive",
+      },
+      {
+        variant: "card",
+        color: "destructive",
+        className:
+          "data-[active]:bg-destructive data-[active]:text-destructive-foreground",
       },
     ],
     defaultVariants: {

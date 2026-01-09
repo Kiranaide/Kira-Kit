@@ -1,4 +1,9 @@
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  AvatarGroup,
+} from "@/components/ui/avatar";
 
 export function AvatarPage() {
   return (
@@ -83,18 +88,54 @@ export function AvatarPage() {
         <h2 className="text-xl font-semibold border-b border-border pb-2">
           Avatar Group
         </h2>
-        <div className="flex -space-x-2">
-          <Avatar className="border-2 border-background">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <Avatar className="border-2 border-background">
-            <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
-            <AvatarFallback>VC</AvatarFallback>
-          </Avatar>
-          <Avatar className="border-2 border-background">
-            <AvatarFallback>+3</AvatarFallback>
-          </Avatar>
+        <p className="text-sm text-muted-foreground mb-4">
+          Stacked avatars with automatic overflow indicator.
+        </p>
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Default (max 3)</p>
+            <AvatarGroup max={3}>
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <Avatar>
+                <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
+                <AvatarFallback>VC</AvatarFallback>
+              </Avatar>
+              <Avatar>
+                <AvatarFallback>AB</AvatarFallback>
+              </Avatar>
+              <Avatar>
+                <AvatarFallback>CD</AvatarFallback>
+              </Avatar>
+              <Avatar>
+                <AvatarFallback>EF</AvatarFallback>
+              </Avatar>
+            </AvatarGroup>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Large size</p>
+            <AvatarGroup max={4} size="lg">
+              <Avatar size="lg">
+                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <Avatar size="lg">
+                <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
+                <AvatarFallback>VC</AvatarFallback>
+              </Avatar>
+              <Avatar size="lg">
+                <AvatarFallback>AB</AvatarFallback>
+              </Avatar>
+              <Avatar size="lg">
+                <AvatarFallback>CD</AvatarFallback>
+              </Avatar>
+              <Avatar size="lg">
+                <AvatarFallback>EF</AvatarFallback>
+              </Avatar>
+            </AvatarGroup>
+          </div>
         </div>
       </section>
 

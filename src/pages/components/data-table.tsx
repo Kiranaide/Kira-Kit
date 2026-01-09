@@ -8,8 +8,11 @@ import {
   DataTablePagination,
   DataTableColumnHeader,
   DataTableColumnVisibility,
+  DataTablePinningControls,
+  DataTableEditableCell,
   createSelectColumn,
   createExpandColumn,
+  createDragHandleColumn,
 } from "@/components/ui/data-table";
 import type { ColumnDef, Row } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
@@ -165,6 +168,74 @@ const expandColumns: ColumnDef<Payment>[] = [
   },
 ];
 
+// Columns with drag handle for reordering
+const reorderColumns: ColumnDef<Payment>[] = [
+  createDragHandleColumn<Payment>(),
+  ...basicColumns,
+];
+
+// Columns with editable cells
+const editableColumns: ColumnDef<Payment>[] = [
+  {
+    accessorKey: "email",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email" />
+    ),
+    cell: ({ row, table }) => (
+      <DataTableEditableCell
+        value={row.getValue("email")}
+        onSave={(value) => {
+          // In a real app, you'd update the data source
+          console.log("Saved:", value);
+        }}
+        type="text"
+      />
+    ),
+  },
+  {
+    accessorKey: "amount",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Amount" />
+    ),
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("amount"));
+      return (
+        <DataTableEditableCell
+          value={amount}
+          onSave={(value) => {
+            console.log("Saved amount:", value);
+          }}
+          type="number"
+        />
+      );
+    },
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+      return (
+        <DataTableEditableCell
+          value={status}
+          onSave={(value) => {
+            console.log("Saved status:", value);
+          }}
+          type="select"
+          options={[
+            { value: "pending", label: "Pending" },
+            { value: "processing", label: "Processing" },
+            { value: "success", label: "Success" },
+            { value: "failed", label: "Failed" },
+          ]}
+        />
+      );
+    },
+  },
+];
+
 export function DataTablePage() {
   const [showColumnVisibility, setShowColumnVisibility] = React.useState(false);
 
@@ -229,7 +300,10 @@ export function DataTablePage() {
           columns={expandColumns}
           data={data}
           enableExpanding
+          // All rows can expand (they have renderSubComponent)
+          // Provide getSubRows that returns undefined so TanStack knows to use getRowCanExpand
           getSubRows={() => undefined}
+          getRowCanExpand={() => true}
         >
           <DataTableContent<Payment>
             renderSubComponent={({ row }: { row: Row<Payment> }) => (
@@ -263,7 +337,10 @@ export function DataTablePage() {
           columns={basicColumns}
           data={data}
           enableExpanding
+          // All rows can expand (they have renderSubComponent)
+          // Provide getSubRows that returns undefined so TanStack knows to use getRowCanExpand
           getSubRows={() => undefined}
+          getRowCanExpand={() => true}
         >
           <DataTableContent<Payment>
             expandOnRowClick
@@ -347,6 +424,131 @@ const columns: ColumnDef<YourType>[] = [
         </div>
       </section>
 
+      {/* Column Pinning */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Column Pinning
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Click the three-dot menu on column headers to pin columns left or right.
+          Pinned columns stay visible while scrolling.
+        </p>
+        <DataTableRoot
+          columns={basicColumns.map((col, idx) => ({
+            ...col,
+            header: ({ column }) => (
+              <DataTableColumnHeader
+                column={column}
+                title={
+                  col.accessorKey === "email"
+                    ? "Email"
+                    : col.accessorKey === "status"
+                    ? "Status"
+                    : "Amount"
+                }
+                showPinning={true}
+              />
+            ),
+          }))}
+          data={data}
+          enableColumnPinning
+        >
+          <div className="flex items-center justify-between">
+            <DataTableSearch columnKey="email" placeholder="Filter emails..." />
+            <DataTablePinningControls />
+          </div>
+          <DataTableContent />
+          <DataTablePagination />
+        </DataTableRoot>
+      </section>
+
+      {/* Column Resizing */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Column Resizing
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Hover over column borders and drag to resize. Resize handles appear on
+          hover.
+        </p>
+        <DataTableRoot columns={basicColumns} data={data} enableColumnResizing>
+          <DataTableContent />
+          <DataTablePagination />
+        </DataTableRoot>
+      </section>
+
+      {/* Row Reordering */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Row Reordering
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Drag rows by the grip handle to reorder them.
+        </p>
+        <DataTableRoot
+          columns={reorderColumns}
+          data={data}
+          enableColumnOrdering={false}
+        >
+          <DataTableContent
+            enableReordering
+            onReorder={(newOrder) => {
+              console.log("New order:", newOrder);
+            }}
+          />
+          <DataTablePagination />
+        </DataTableRoot>
+      </section>
+
+      {/* Inline Cell Editing */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Inline Cell Editing
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Double-click any cell to edit. Press Enter to save, Escape to cancel.
+        </p>
+        <DataTableRoot columns={editableColumns} data={data}>
+          <DataTableContent />
+          <DataTablePagination />
+        </DataTableRoot>
+      </section>
+
+      {/* Virtualization */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Virtualization (10,000 rows)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Virtualization enables smooth scrolling with large datasets. Only visible rows are rendered, making it performant even with thousands of rows. Sorting and filtering work seamlessly.
+        </p>
+        <DataTableRoot
+          columns={basicColumns}
+          data={React.useMemo(() => {
+            // Generate 10,000 rows for virtualization demo
+            const largeData: Payment[] = [];
+            const statuses: Payment["status"][] = ["pending", "processing", "success", "failed"];
+            for (let i = 0; i < 10000; i++) {
+              largeData.push({
+                id: `row-${i}`,
+                amount: Math.floor(Math.random() * 10000) + 100,
+                status: statuses[Math.floor(Math.random() * statuses.length)],
+                email: `user${i}@example.com`,
+                createdAt: new Date(2024, 0, 1 + (i % 365)).toISOString().split("T")[0],
+              });
+            }
+            return largeData;
+          }, [])}
+          enableVirtualization
+          enablePagination={false}
+          containerHeight={600}
+          estimateRowHeight={48}
+        >
+          <DataTableSearch columnKey="email" placeholder="Filter emails..." />
+          <DataTableContent stickyHeader />
+        </DataTableRoot>
+      </section>
+
       {/* Available Features */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -380,6 +582,9 @@ const columns: ColumnDef<YourType>[] = [
               <li>
                 <code>enableGrouping</code> - Group by column
               </li>
+              <li>
+                <code>enableVirtualization</code> - Virtual scrolling
+              </li>
             </ul>
           </div>
           <div>
@@ -406,10 +611,174 @@ const columns: ColumnDef<YourType>[] = [
               <li>
                 <code>DataTableColumnVisibility</code> - Toggle cols
               </li>
+              <li>
+                <code>DataTablePinningControls</code> - Pin status
+              </li>
+              <li>
+                <code>DataTableEditableCell</code> - Inline editing
+              </li>
             </ul>
           </div>
         </div>
       </section>
+
+      {/* Async Data Loading */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Async Data Loading
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Example of loading data asynchronously with loading states, error handling, and retry functionality.
+        </p>
+        <AsyncDataTableExample />
+      </section>
+    </div>
+  );
+}
+
+// ============================================
+// ASYNC DATA TABLE EXAMPLE
+// ============================================
+function AsyncDataTableExample() {
+  const [data, setData] = React.useState<Payment[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [retryCount, setRetryCount] = React.useState(0);
+
+  // Simulate async data fetching
+  const fetchData = React.useCallback(async (shouldFail = false) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Simulate API call with delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      
+      if (shouldFail && retryCount < 2) {
+        throw new Error("Failed to load data. Please try again.");
+      }
+      
+      // Generate mock data
+      const mockData: Payment[] = Array.from({ length: 20 }, (_, i) => ({
+        id: `async-${Date.now()}-${i}`,
+        amount: Math.floor(Math.random() * 10000) + 100,
+        status: (["pending", "processing", "success", "failed"] as const)[
+          Math.floor(Math.random() * 4)
+        ],
+        email: `user${i + 1}@example.com`,
+        createdAt: new Date(2024, 0, 1 + (i % 365)).toISOString().split("T")[0],
+      }));
+      
+      setData(mockData);
+      setIsLoading(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      setIsLoading(false);
+    }
+  }, [retryCount]);
+
+  React.useEffect(() => {
+    fetchData(retryCount > 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [retryCount]);
+
+  const asyncColumns: ColumnDef<Payment>[] = [
+    {
+      accessorKey: "email",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Email" />
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Status" />
+      ),
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string;
+        const variant =
+          status === "success"
+            ? "default"
+            : status === "failed"
+            ? "destructive"
+            : "secondary";
+        return <Badge variant={variant}>{status}</Badge>;
+      },
+    },
+    {
+      accessorKey: "amount",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Amount" />
+      ),
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("amount"));
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(amount);
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created At",
+    },
+  ];
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6">
+        <div className="flex flex-col items-center justify-center gap-4">
+          <p className="text-sm font-medium text-destructive">{error}</p>
+          <Button
+            onClick={() => {
+              setRetryCount((prev) => prev + 1);
+            }}
+            variant="outline"
+            size="sm"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="rounded-lg border border-border p-6">
+        <div className="flex flex-col items-center justify-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground">Loading data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          Loaded {data.length} rows
+        </p>
+        <Button
+          onClick={() => {
+            setRetryCount(0);
+            fetchData(false);
+          }}
+          variant="outline"
+          size="sm"
+        >
+          Refresh Data
+        </Button>
+      </div>
+      <DataTableRoot columns={asyncColumns} data={data}>
+        <DataTableSearch columnKey="email" placeholder="Filter emails..." />
+        <DataTableContent />
+        <div className="flex items-center justify-between">
+          <DataTablePageCount />
+          <DataTablePagination />
+        </div>
+      </DataTableRoot>
     </div>
   );
 }

@@ -1,4 +1,10 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  TabsIndicator,
+} from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
@@ -286,6 +292,31 @@ export function TabsPage() {
         </p>
         <div className="space-y-6">
           <div>
+            <p className="text-sm font-medium mb-2">Success (Default)</p>
+            <Tabs defaultValue="active">
+              <TabsList>
+                <TabsTrigger value="all" color="success">All</TabsTrigger>
+                <TabsTrigger value="active" color="success">Active</TabsTrigger>
+                <TabsTrigger value="done" color="success">Done</TabsTrigger>
+              </TabsList>
+              <TabsContent value="all" animation="slide">
+                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
+                  All tasks content
+                </div>
+              </TabsContent>
+              <TabsContent value="active" animation="slide">
+                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
+                  Active tasks content
+                </div>
+              </TabsContent>
+              <TabsContent value="done" animation="slide">
+                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
+                  Done tasks content
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+          <div>
             <p className="text-sm font-medium mb-2">Success (Pills)</p>
             <Tabs defaultValue="active">
               <TabsList variant="pills">
@@ -432,6 +463,46 @@ export function TabsPage() {
         </Tabs>
       </section>
 
+      {/* With Indicator */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          With Indicator
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          TabsIndicator provides a smooth animated indicator that follows the
+          active tab. Works best with underline and default variants.
+        </p>
+        <Tabs defaultValue="tab1">
+          <TabsList variant="underline" className="relative">
+            <TabsTrigger value="tab1" variant="underline">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="tab2" variant="underline">
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="tab3" variant="underline">
+              Reports
+            </TabsTrigger>
+            <TabsIndicator />
+          </TabsList>
+          <TabsContent value="tab1">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Overview content with animated indicator
+            </div>
+          </TabsContent>
+          <TabsContent value="tab2">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Analytics content with animated indicator
+            </div>
+          </TabsContent>
+          <TabsContent value="tab3">
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Reports content with animated indicator
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -439,8 +510,15 @@ export function TabsPage() {
         </h2>
         <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
           <pre className="text-sm text-foreground">
-            {`import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+            {`import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  TabsIndicator,
+} from "@/components/ui/tabs"
 
+// Basic usage
 <Tabs defaultValue="tab1">
   <TabsList>
     <TabsTrigger value="tab1">Tab 1</TabsTrigger>
@@ -448,7 +526,28 @@ export function TabsPage() {
   </TabsList>
   <TabsContent value="tab1">Content 1</TabsContent>
   <TabsContent value="tab2">Content 2</TabsContent>
-</Tabs>`}
+</Tabs>
+
+// With indicator (for underline variant)
+<Tabs defaultValue="tab1">
+  <TabsList variant="underline" className="relative">
+    <TabsTrigger value="tab1" variant="underline">Tab 1</TabsTrigger>
+    <TabsTrigger value="tab2" variant="underline">Tab 2</TabsTrigger>
+    <TabsIndicator />
+  </TabsList>
+  <TabsContent value="tab1">Content 1</TabsContent>
+  <TabsContent value="tab2">Content 2</TabsContent>
+</Tabs>
+
+// With animations
+<TabsContent value="tab1" animation="slide">
+  Content slides in from right
+</TabsContent>
+
+// Color variants
+<TabsTrigger value="tab1" variant="pills" color="success">
+  Success Tab
+</TabsTrigger>`}
           </pre>
         </div>
       </section>

@@ -388,13 +388,15 @@ export function SidebarPage() {
   SidebarContent,
   SidebarGroup,
   SidebarItem,
+  SidebarItemGroup,
   SidebarFooter,
+  SidebarDivider,
   ThemeToggle,
 } from "@/components/ui/sidebar"
 
 <SidebarProvider>
   <div className="flex">
-    <Sidebar>
+    <Sidebar variant="default">
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup label="Main">
@@ -402,6 +404,15 @@ export function SidebarPage() {
             Home
           </SidebarItem>
         </SidebarGroup>
+        <SidebarDivider />
+        <SidebarItemGroup label="Documents" icon={<FolderIcon />}>
+          <SidebarItem to="/docs/intro" level={1}>
+            Introduction
+          </SidebarItem>
+          <SidebarItem to="/docs/api" level={1}>
+            API Reference
+          </SidebarItem>
+        </SidebarItemGroup>
       </SidebarContent>
       <SidebarFooter>
         <ThemeToggle />
@@ -409,7 +420,12 @@ export function SidebarPage() {
     </Sidebar>
     <main>{/* Your content */}</main>
   </div>
-</SidebarProvider>`}
+</SidebarProvider>
+
+// Variants
+<Sidebar variant="floating" />  // Rounded with shadow
+<Sidebar variant="inset" />      // Subtle background
+<Sidebar variant="default" />    // Standard with border`}
           </pre>
         </div>
       </section>

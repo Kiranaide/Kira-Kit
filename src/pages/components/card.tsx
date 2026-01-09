@@ -39,31 +39,131 @@ export function CardPage() {
         </Card>
       </section>
 
-      {/* Card Grid */}
+      {/* Card Variants */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Card Grid
+          Card Variants
         </h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Card variant="interactive" className="max-w-md">
             <CardHeader>
-              <CardTitle>Feature One</CardTitle>
-              <CardDescription>Description of feature one.</CardDescription>
+              <CardTitle>Interactive Card</CardTitle>
+              <CardDescription>Hover to see lift effect.</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Content explaining the feature in more detail.
+                This card has a hover effect with shadow and translation.
               </p>
             </CardContent>
           </Card>
-          <Card>
+          <Card variant="gradient" className="max-w-md">
             <CardHeader>
-              <CardTitle>Feature Two</CardTitle>
-              <CardDescription>Description of feature two.</CardDescription>
+              <CardTitle>Gradient Card</CardTitle>
+              <CardDescription>Beautiful gradient background.</CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Content explaining the feature in more detail.
+                Gradient border and background effect.
+              </p>
+            </CardContent>
+          </Card>
+          <Card variant="glass" className="max-w-md">
+            <CardHeader>
+              <CardTitle>Glass Card</CardTitle>
+              <CardDescription>Glassmorphism effect.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Backdrop blur with transparency for modern UI.
+              </p>
+            </CardContent>
+          </Card>
+          <Card variant="outline" className="max-w-md">
+            <CardHeader>
+              <CardTitle>Outline Card</CardTitle>
+              <CardDescription>Transparent with border.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Clean outline style with transparent background.
+              </p>
+            </CardContent>
+          </Card>
+          <Card variant="elevated" className="max-w-md">
+            <CardHeader>
+              <CardTitle>Elevated Card</CardTitle>
+              <CardDescription>Card with shadow elevation.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Subtle shadow for depth and hierarchy.
+              </p>
+            </CardContent>
+          </Card>
+          <Card variant="elevated2" className="max-w-md">
+            <CardHeader>
+              <CardTitle>Elevated 2 Card</CardTitle>
+              <CardDescription>Stronger shadow elevation.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                More pronounced shadow for emphasis.
+              </p>
+            </CardContent>
+          </Card>
+          <Card variant="bordered" className="max-w-md">
+            <CardHeader>
+              <CardTitle>Bordered Card</CardTitle>
+              <CardDescription>Card with prominent border.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Clear border definition for separation.
+              </p>
+            </CardContent>
+          </Card>
+          <Card variant="soft" className="max-w-md">
+            <CardHeader>
+              <CardTitle>Soft Card</CardTitle>
+              <CardDescription>Muted background style.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Subtle muted background for gentle contrast.
+              </p>
+            </CardContent>
+          </Card>
+          <Card variant="flat" className="max-w-md">
+            <CardHeader>
+              <CardTitle>Flat Card</CardTitle>
+              <CardDescription>Minimal flat design.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                No borders or shadows, pure flat design.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+      
+      {/* Glass Card Demo with Background */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Glass Card with Background
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Glassmorphism effect works best over colorful backgrounds.
+        </p>
+        <div className="relative p-8 rounded-lg bg-gradient-to-br from-primary/20 via-secondary/20 to-primary/10">
+          <Card variant="glass" className="max-w-md">
+            <CardHeader>
+              <CardTitle>Glass Card</CardTitle>
+              <CardDescription>See the blur effect behind this card.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                The backdrop blur creates a frosted glass effect that blurs the colorful background behind it.
               </p>
             </CardContent>
           </Card>

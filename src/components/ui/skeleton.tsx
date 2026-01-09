@@ -2,12 +2,13 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-const skeletonVariants = cva("animate-pulse rounded-md bg-muted", {
+const skeletonVariants = cva("rounded-md bg-muted", {
   variants: {
     variant: {
-      default: "",
-      circle: "rounded-full",
-      text: "h-4 w-full",
+      default: "animate-pulse",
+      circle: "rounded-full animate-pulse",
+      text: "h-4 w-full animate-pulse",
+      shimmer: "relative overflow-hidden",
     },
   },
   defaultVariants: {
@@ -25,7 +26,19 @@ function Skeleton({ className, variant, ...props }: SkeletonProps) {
       data-slot="skeleton"
       className={cn(skeletonVariants({ variant }), className)}
       {...props}
-    />
+    >
+      {variant === "shimmer" && (
+        <div 
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 via-white/20 via-white/10 to-transparent"
+          style={{
+            width: "100%",
+            height: "100%",
+            animation: "shimmer 2s linear infinite",
+            willChange: "transform",
+          }}
+        />
+      )}
+    </div>
   );
 }
 

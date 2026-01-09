@@ -2,15 +2,29 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 // Table Root
+interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+  striped?: boolean;
+  bordered?: boolean;
+}
+
 function Table({
   className,
+  striped = false,
+  bordered = false,
   ...props
-}: React.HTMLAttributes<HTMLTableElement>) {
+}: TableProps) {
   return (
     <div className="relative w-full overflow-auto">
       <table
         data-slot="table"
-        className={cn("w-full caption-bottom text-sm", className)}
+        data-striped={striped}
+        data-bordered={bordered}
+        className={cn(
+          "w-full caption-bottom text-sm",
+          striped && "[&_tbody_tr:nth-child(even)]:bg-muted/50",
+          bordered && "border-collapse [&_td]:border [&_th]:border [&_td]:border-border [&_th]:border-border",
+          className
+        )}
         {...props}
       />
     </div>

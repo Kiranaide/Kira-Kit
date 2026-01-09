@@ -77,7 +77,11 @@ function Badge({
         ),
         children: (
           <>
-            {icon && <span className="shrink-0">{icon}</span>}
+            {icon && (
+              <span className="shrink-0 flex items-center [&>svg]:w-[1em] [&>svg]:h-[1em]">
+                {icon}
+              </span>
+            )}
             {children}
           </>
         ),
@@ -158,6 +162,8 @@ interface CountBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   max?: number;
   size?: "xs" | "sm" | "default";
   variant?: "default" | "destructive" | "secondary";
+  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
 }
 
 function CountBadge({
@@ -165,21 +171,29 @@ function CountBadge({
   max = 99,
   size = "default",
   variant = "default",
+  icon,
+  iconPosition = "left",
   className,
   ...props
 }: CountBadgeProps) {
   const displayCount = count > max ? `${max}+` : count;
 
   const sizeClasses = {
-    xs: "min-w-4 h-4 px-1 text-[10px]",
-    sm: "min-w-5 h-5 px-1.5 text-xs",
-    default: "min-w-6 h-6 px-2 text-xs",
+    xs: "min-w-4 h-4 px-1 text-[10px] gap-0.5",
+    sm: "min-w-5 h-5 px-1.5 text-xs gap-1",
+    default: "min-w-6 h-6 px-2 text-xs gap-1",
   };
 
   const variantClasses = {
     default: "bg-primary text-primary-foreground",
     destructive: "bg-destructive text-destructive-foreground",
     secondary: "bg-secondary text-secondary-foreground",
+  };
+
+  const iconSizes = {
+    xs: "w-2.5 h-2.5",
+    sm: "w-3 h-3",
+    default: "w-3.5 h-3.5",
   };
 
   return (
@@ -189,10 +203,16 @@ function CountBadge({
         "inline-flex items-center justify-center rounded-full font-medium tabular-nums",
         sizeClasses[size],
         variantClasses[variant],
+        iconPosition === "right" && "flex-row-reverse",
         className
       )}
       {...props}
     >
+      {icon && (
+        <span className={cn("shrink-0 flex items-center", iconSizes[size])}>
+          {icon}
+        </span>
+      )}
       {displayCount}
     </span>
   );

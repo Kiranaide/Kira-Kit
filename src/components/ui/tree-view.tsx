@@ -6,6 +6,7 @@ import {
   IconFolder,
   IconFolderOpen,
 } from "@tabler/icons-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // ============================================
 // TYPES
@@ -23,6 +24,9 @@ interface TreeViewContextValue {
   toggleNode: (id: string) => void;
   selectedNode: string | null;
   setSelectedNode: (id: string | null) => void;
+  selectedNodes: Set<string>;
+  toggleSelection: (id: string) => void;
+  selectionMode: "single" | "multiple";
   showLines?: boolean;
 }
 
@@ -43,7 +47,10 @@ interface TreeViewProps {
   data: TreeNode[];
   defaultExpandedNodes?: string[];
   showLines?: boolean;
+  selectionMode?: "single" | "multiple";
+  defaultSelectedNodes?: string[];
   onSelect?: (node: TreeNode) => void;
+  onSelectionChange?: (selectedNodes: string[]) => void;
   className?: string;
 }
 
@@ -51,13 +58,23 @@ function TreeView({
   data,
   defaultExpandedNodes = [],
   showLines = true,
+  selectionMode = "single",
+  defaultSelectedNodes = [],
   onSelect,
+  onSelectionChange,
   className,
 }: TreeViewProps) {
   const [expandedNodes, setExpandedNodes] = React.useState<Set<string>>(
     new Set(defaultExpandedNodes)
   );
-  const [selectedNode, setSelectedNode] = React.useState<string | null>(null);
+  const [selectedNode, setSelectedNode] = React.useState<string | null>(
+    selectionMode === "single" && defaultSelectedNodes.length > 0
+      ? defaultSelectedNodes[0]
+      : null
+  );
+  const [selectedNodes, setSelectedNodes] = React.useState<Set<string>>(
+    new Set(selectionMode === "multiple" ? defaultSelectedNodes : [])
+  );
 
   const toggleNode = React.useCallback((id: string) => {
     setExpandedNodes((prev) => {
@@ -71,12 +88,70 @@ function TreeView({
     });
   }, []);
 
+  // Helper function to get all child node IDs recursively
+  const getAllChildIds = React.useCallback((node: TreeNode): string[] => {
+    const ids: string[] = [];
+    if (node.children) {
+      for (const child of node.children) {
+        ids.push(child.id);
+        ids.push(...getAllChildIds(child));
+      }
+    }
+    return ids;
+  }, []);
+
+  // Helper function to find a node by ID
+  const findNodeById = React.useCallback((nodes: TreeNode[], id: string): TreeNode | null => {
+    for (const node of nodes) {
+      if (node.id === id) return node;
+      if (node.children) {
+        const found = findNodeById(node.children, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  }, []);
+
+  const toggleSelection = React.useCallback((id: string) => {
+    setSelectedNodes((prev) => {
+      const next = new Set(prev);
+      const node = findNodeById(data, id);
+      
+      if (!node) return next;
+      
+      const isSelected = next.has(id);
+      const childIds = getAllChildIds(node);
+      
+      if (isSelected) {
+        // Deselect parent and all children
+        next.delete(id);
+        childIds.forEach((childId) => next.delete(childId));
+      } else {
+        // Select parent and all children
+        next.add(id);
+        childIds.forEach((childId) => next.add(childId));
+      }
+      
+      return next;
+    });
+  }, [data, getAllChildIds, findNodeById]);
+
+  React.useEffect(() => {
+    if (selectionMode === "multiple") {
+      onSelectionChange?.(Array.from(selectedNodes));
+    }
+  }, [selectedNodes, selectionMode, onSelectionChange]);
+
   const handleSelect = React.useCallback(
     (id: string, node: TreeNode) => {
-      setSelectedNode(id);
+      if (selectionMode === "multiple") {
+        toggleSelection(id);
+      } else {
+        setSelectedNode(id);
+      }
       onSelect?.(node);
     },
-    [onSelect]
+    [onSelect, selectionMode, toggleSelection]
   );
 
   return (
@@ -101,6 +176,10 @@ function TreeView({
             if (node) handleSelect(id, node);
           }
         },
+        selectedNodes,
+        toggleSelection,
+        selectionMode,
+        onSelect,
         showLines,
       }}
     >
@@ -149,11 +228,18 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
     toggleNode,
     selectedNode,
     setSelectedNode,
+    selectedNodes,
+    toggleSelection,
+    selectionMode,
+    onSelect,
     showLines,
   } = useTreeView();
   const isExpanded = expandedNodes.has(node.id);
   const hasChildren = node.children && node.children.length > 0;
-  const isSelected = selectedNode === node.id;
+  const isSelected =
+    selectionMode === "multiple"
+      ? selectedNodes.has(node.id)
+      : selectedNode === node.id;
 
   const handleClick = () => {
     if (hasChildren && !node.isFile) {
@@ -180,65 +266,88 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
         <>
           {/* Horizontal line to node */}
           <span
-            className="absolute border-t border-muted-foreground/30"
+            className="absolute border-t border-muted-foreground/30 z-0"
             style={{
               left: `${(level - 1) * 20 + 10}px`,
               top: "14px",
               width: "10px",
             }}
           />
-          {/* Vertical line connecting siblings */}
+          {/* Vertical line connecting siblings - only if not last */}
           {!isLast && (
             <span
-              className="absolute border-l border-muted-foreground/30"
+              className="absolute border-l border-muted-foreground/30 z-0"
               style={{
                 left: `${(level - 1) * 20 + 10}px`,
                 top: "14px",
-                height: "calc(100% - 14px)",
+                bottom: 0,
               }}
             />
           )}
         </>
       )}
 
-      <button
-        onClick={handleClick}
+      <div
         className={cn(
           "flex w-full items-center gap-1.5 rounded-md px-2 py-1 hover:bg-muted text-left transition-colors",
           isSelected && "bg-muted font-medium"
         )}
         style={{ paddingLeft: `${level * 20 + 8}px` }}
       >
-        {/* Expand/collapse arrow */}
-        {hasChildren ? (
-          <IconChevronRight
-            className={cn(
-              "h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform",
-              isExpanded && "rotate-90"
-            )}
+        {/* Checkbox for multi-select */}
+        {selectionMode === "multiple" && (
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => {
+              toggleSelection(node.id);
+              onSelect?.(node);
+            }}
+            onClick={(e) => e.stopPropagation()}
+            className="shrink-0"
           />
-        ) : (
-          <span className="w-3.5" />
         )}
 
-        {/* Icon */}
-        <span className="shrink-0">{getIcon()}</span>
+        <button
+          onClick={() => {
+            handleClick();
+            if (selectionMode === "single") {
+              onSelect?.(node);
+            }
+          }}
+          className="flex items-center gap-1.5 flex-1"
+        >
+          {/* Expand/collapse arrow */}
+          {hasChildren ? (
+            <IconChevronRight
+              className={cn(
+                "h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform",
+                isExpanded && "rotate-90"
+              )}
+            />
+          ) : (
+            <span className="w-3.5" />
+          )}
 
-        {/* Label */}
-        <span className="truncate">{node.name}</span>
-      </button>
+          {/* Icon */}
+          <span className="shrink-0">{getIcon()}</span>
+
+          {/* Label */}
+          <span className="truncate">{node.name}</span>
+        </button>
+      </div>
 
       {/* Children */}
       {hasChildren && isExpanded && (
         <div className="relative">
-          {/* Vertical connecting line for children */}
-          {showLines && (
+          {/* Vertical connecting line for children - only show if there are multiple children */}
+          {showLines && node.children && node.children.length > 1 && (
             <span
-              className="absolute border-l border-muted-foreground/30"
+              className="absolute border-l border-muted-foreground/30 z-0"
               style={{
                 left: `${level * 20 + 10}px`,
                 top: 0,
-                height: "100%",
+                bottom: 0,
+                width: "1px",
               }}
             />
           )}

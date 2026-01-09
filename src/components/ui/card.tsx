@@ -2,16 +2,38 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+const cardVariants = {
+  default: "ring-foreground/10 bg-card",
+  interactive: "ring-foreground/10 bg-card hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer",
+  gradient: "bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/5 ring-primary/20",
+  glass: "bg-background/60 dark:bg-background/40 backdrop-blur-xl backdrop-saturate-150 border border-border/50 shadow-lg ring-0",
+  outline: "bg-transparent border-2 border-border ring-0",
+  elevated: "ring-foreground/10 bg-card shadow-lg",
+  bordered: "bg-card border-2 border-border ring-0",
+  flat: "bg-muted/30 border-0 ring-0",
+  elevated2: "ring-foreground/10 bg-card shadow-2xl",
+  soft: "bg-muted/50 border border-border/50 ring-0",
+};
+
 function Card({
   className,
   size = "default",
+  variant = "default",
   ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
+}: React.ComponentProps<"div"> & { 
+  size?: "default" | "sm";
+  variant?: "default" | "interactive" | "gradient" | "glass" | "outline" | "elevated" | "bordered" | "flat" | "elevated2" | "soft";
+}) {
   return (
     <div
       data-slot="card"
       data-size={size}
-      className={cn("ring-foreground/10 bg-card text-card-foreground gap-4 overflow-hidden rounded-xl py-4 text-sm ring-1 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl group/card flex flex-col", className)}
+      data-variant={variant}
+      className={cn(
+        "text-card-foreground gap-4 overflow-hidden rounded-xl py-4 text-sm ring-1 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl group/card flex flex-col",
+        cardVariants[variant],
+        className
+      )}
       {...props}
     />
   )

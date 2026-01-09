@@ -197,6 +197,27 @@ export function TreeViewPage() {
         </div>
       </section>
 
+      {/* Multi-Selection */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Multi-Selection
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Select multiple nodes using checkboxes.
+        </p>
+        <div className="max-w-sm rounded-lg border p-4">
+          <TreeView
+            data={fileTreeData}
+            selectionMode="multiple"
+            defaultExpandedNodes={["src", "components"]}
+            onSelectionChange={(selected) => {
+              console.log("Selected nodes:", selected);
+            }}
+            onSelect={handleSelect}
+          />
+        </div>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">

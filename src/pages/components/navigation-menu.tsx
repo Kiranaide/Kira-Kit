@@ -111,6 +111,94 @@ export function NavigationMenuPage() {
         </NavigationMenu>
       </section>
 
+      {/* Mixed Navigation */}
+      <section className="space-y-4 pt-8">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Mixed Navigation
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Combine dropdowns and direct links in the same navigation menu.
+        </p>
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink href="#">Home</NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuDropdown menuId="products">
+                <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+                <NavigationMenuContent className="w-[300px]">
+                  <ul className="grid gap-3 p-4">
+                    <ListItem href="#" title="Web App">
+                      Build modern web applications
+                    </ListItem>
+                    <ListItem href="#" title="Mobile App">
+                      Native mobile experiences
+                    </ListItem>
+                    <ListItem href="#" title="API">
+                      Integrate with our API
+                    </ListItem>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuDropdown>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink href="#">Pricing</NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuDropdown menuId="resources">
+                <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
+                <NavigationMenuContent className="w-[400px]">
+                  <ul className="grid gap-3 p-4 md:grid-cols-2">
+                    <ListItem href="#" title="Documentation">
+                      Complete API reference
+                    </ListItem>
+                    <ListItem href="#" title="Guides">
+                      Step-by-step tutorials
+                    </ListItem>
+                    <ListItem href="#" title="Blog">
+                      Latest updates and news
+                    </ListItem>
+                    <ListItem href="#" title="Support">
+                      Get help from our team
+                    </ListItem>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuDropdown>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </section>
+
+      {/* Features */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Features
+        </h2>
+        <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+          <li>
+            <strong className="text-foreground">Auto-close:</strong> Only one
+            dropdown menu can be open at a time
+          </li>
+          <li>
+            <strong className="text-foreground">Keyboard Navigation:</strong>{" "}
+            Full keyboard support with arrow keys and Escape
+          </li>
+          <li>
+            <strong className="text-foreground">Responsive:</strong> Adapts to
+            different screen sizes
+          </li>
+          <li>
+            <strong className="text-foreground">Flexible Layout:</strong>{" "}
+            Support for grid layouts in dropdown content
+          </li>
+          <li>
+            <strong className="text-foreground">Router Integration:</strong>{" "}
+            Works with TanStack Router for client-side navigation
+          </li>
+        </ul>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -129,23 +217,36 @@ export function NavigationMenuPage() {
   ListItem,
 } from "@/components/ui/navigation-menu"
 
+// Basic dropdown
 <NavigationMenu>
   <NavigationMenuList>
     <NavigationMenuItem>
       <NavigationMenuDropdown menuId="products">
         <NavigationMenuTrigger>Products</NavigationMenuTrigger>
         <NavigationMenuContent>
-          <ListItem href="#" title="Item">
-            Description here
-          </ListItem>
+          <ul className="grid gap-3 p-4">
+            <ListItem href="#" title="Item">
+              Description here
+            </ListItem>
+          </ul>
         </NavigationMenuContent>
       </NavigationMenuDropdown>
     </NavigationMenuItem>
-    <NavigationMenuItem>
-      <NavigationMenuLink href="#">Docs</NavigationMenuLink>
-    </NavigationMenuItem>
   </NavigationMenuList>
-</NavigationMenu>`}
+</NavigationMenu>
+
+// Direct link
+<NavigationMenuItem>
+  <NavigationMenuLink href="#">Docs</NavigationMenuLink>
+</NavigationMenuItem>
+
+// Grid layout in content
+<NavigationMenuContent className="w-[400px]">
+  <ul className="grid gap-3 p-4 md:grid-cols-2">
+    <ListItem href="#" title="Item 1">Description</ListItem>
+    <ListItem href="#" title="Item 2">Description</ListItem>
+  </ul>
+</NavigationMenuContent>`}
           </pre>
         </div>
       </section>

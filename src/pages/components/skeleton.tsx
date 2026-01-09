@@ -101,6 +101,22 @@ export function SkeletonPage() {
         </div>
       </section>
 
+      {/* Shimmer Animation */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Shimmer Animation
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Smooth gradient sweep animation for loading states.
+        </p>
+        <div className="space-y-3">
+          <Skeleton variant="shimmer" className="h-4 w-full" />
+          <Skeleton variant="shimmer" className="h-4 w-3/4" />
+          <Skeleton variant="shimmer" className="h-4 w-1/2" />
+          <Skeleton variant="shimmer" className="h-32 w-full rounded-lg" />
+        </div>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">

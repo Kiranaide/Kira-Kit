@@ -71,4 +71,126 @@ function Progress({
   );
 }
 
-export { Progress, progressVariants };
+// ============================================
+// CIRCULAR PROGRESS
+// ============================================
+interface CircularProgressProps
+  extends React.SVGProps<SVGSVGElement>,
+    VariantProps<typeof progressVariants> {
+  value?: number;
+  max?: number;
+  showLabel?: boolean;
+  indeterminate?: boolean;
+}
+
+function CircularProgress({
+  value = 0,
+  max = 100,
+  size = "default",
+  variant = "default",
+  showLabel = false,
+  indeterminate = false,
+  className,
+  ...props
+}: CircularProgressProps) {
+  const percentage = Math.min(100, Math.max(0, (value / max) * 100));
+  const radius = 45;
+  const circumference = 2 * Math.PI * radius;
+  // When percentage is 100%, offset should be 0 (fully filled - complete circle)
+  // When percentage is 0%, offset should be circumference (empty - no circle drawn)
+  // strokeDashoffset: 0 = full circle drawn, circumference = empty
+  const offset = Math.max(0, circumference * (1 - percentage / 100));
+
+  const sizeClasses = {
+    sm: "h-12 w-12",
+    default: "h-16 w-16",
+    lg: "h-20 w-20",
+    xl: "h-24 w-24",
+  };
+
+  const strokeWidth = {
+    sm: 3,
+    default: 4,
+    lg: 5,
+    xl: 6,
+  };
+
+  const variantColors = {
+    default: "stroke-primary",
+    info: "stroke-info",
+    success: "stroke-success",
+    warning: "stroke-warning",
+    destructive: "stroke-destructive",
+  };
+
+  const sizeValue = sizeClasses[size || "default"];
+  
+  return (
+    <div className={cn("relative inline-flex items-center justify-center", sizeValue, className)}>
+      <svg
+        className="transform -rotate-90 w-full h-full"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="xMidYMid meet"
+        {...props}
+      >
+        {/* Background circle */}
+        <circle
+          cx="50"
+          cy="50"
+          r={radius}
+          stroke="currentColor"
+          strokeWidth={strokeWidth[size || "default"]}
+          fill="none"
+          className="text-muted opacity-20"
+        />
+        {/* Progress circle */}
+        {indeterminate ? (
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            stroke="currentColor"
+            strokeWidth={strokeWidth[size || "default"]}
+            fill="none"
+            strokeDasharray={`${circumference * 0.75} ${circumference * 0.25}`}
+            strokeLinecap="round"
+            className={cn(variantColors[variant || "default"])}
+            style={{
+              transformOrigin: "50% 50%",
+              animation: "spin 1s linear infinite",
+            }}
+          />
+        ) : (
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            stroke="currentColor"
+            strokeWidth={strokeWidth[size || "default"]}
+            fill="none"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            className={cn(
+              variantColors[variant || "default"],
+              "transition-all duration-500 ease-in-out"
+            )}
+            style={{
+              transformOrigin: "50% 50%",
+            }}
+          />
+        )}
+      </svg>
+      {showLabel && !indeterminate && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="text-xs font-medium text-foreground">
+            {Math.round(percentage)}%
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export { Progress, CircularProgress, progressVariants };
+export type { CircularProgressProps };
