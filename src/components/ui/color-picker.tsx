@@ -16,7 +16,14 @@ import {
 } from "@uiw/color-convert";
 import Hue from "@uiw/react-color-hue";
 import Saturation from "@uiw/react-color-saturation";
-import { IconCheck, IconChevronDown, IconX } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconChevronDown,
+  IconX,
+  IconColorPicker,
+  IconCopy,
+  IconCopyCheck,
+} from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -79,6 +86,14 @@ function ColorPicker({
   );
   const [isOpen, setIsOpen] = React.useState(false);
   const [showTypeMenu, setShowTypeMenu] = React.useState(false);
+  const [recentColors, setRecentColors] = React.useState<HexColor[]>([]);
+  const [copied, setCopied] = React.useState(false);
+  const [eyedropperSupported, setEyedropperSupported] = React.useState(false);
+
+  // Check for EyeDropper API support
+  React.useEffect(() => {
+    setEyedropperSupported("EyeDropper" in window);
+  }, []);
 
   React.useEffect(() => {
     if (value) {
@@ -88,11 +103,58 @@ function ColorPicker({
 
   const handleValueChange = (color: HsvaColor) => {
     setColorHsv(color);
+    const hexColor = hsvaToHex(color);
+
+    // Add to recent colors
+    setRecentColors((prev) => {
+      const filtered = prev.filter(
+        (c) => c.toLowerCase() !== hexColor.toLowerCase()
+      );
+      return [hexColor, ...filtered].slice(0, 8);
+    });
+
     onValueChange?.({
-      hex: hsvaToHex(color),
+      hex: hexColor,
       hsl: hsvaToHsla(color),
       rgb: hsvaToRgba(color),
     });
+  };
+
+  // Eyedropper handler
+  const handleEyedropper = async () => {
+    if (!eyedropperSupported) return;
+
+    try {
+      const eyeDropper = new (window as any).EyeDropper();
+      const result = await eyeDropper.open();
+      handleValueChange(hexToHsva(result.sRGBHex));
+    } catch (e) {
+      // User cancelled or error occurred
+      console.log("Eyedropper cancelled");
+    }
+  };
+
+  // Copy to clipboard handler
+  const handleCopy = async () => {
+    const rgb = hsvaToRgba(colorHsv);
+    const hsl = hsvaToHsla(colorHsv);
+
+    const colorValue =
+      colorType === "hex"
+        ? hsvaToHex(colorHsv)
+        : colorType === "rgb"
+        ? `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+        : `hsl(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(
+            hsl.l
+          )}%)`;
+
+    try {
+      await navigator.clipboard.writeText(colorValue);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      console.error("Failed to copy:", e);
+    }
   };
 
   const defaultSwatches: HexColor[] = [
@@ -167,6 +229,43 @@ function ColorPicker({
             }
           />
 
+          {/* Toolbar: Eyedropper and Copy */}
+          <div className="flex items-center gap-2">
+            {eyedropperSupported && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleEyedropper}
+                className="flex-1"
+                aria-label="Pick color from screen"
+              >
+                <IconColorPicker className="h-4 w-4 mr-2" />
+                Eyedropper
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleCopy}
+              className="flex-1"
+              aria-label={copied ? "Copied!" : "Copy color value"}
+            >
+              {copied ? (
+                <>
+                  <IconCopyCheck className="h-4 w-4 mr-2" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <IconCopy className="h-4 w-4 mr-2" />
+                  Copy
+                </>
+              )}
+            </Button>
+          </div>
+
           {/* Color type selector and input */}
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -234,13 +333,42 @@ function ColorPicker({
           {allSwatches.length > 0 && (
             <>
               <div className="h-px bg-border" />
-              <div className="flex flex-wrap gap-1.5">
-                {allSwatches
-                  .sort((a, b) => hexToHsva(a).h - hexToHsva(b).h)
-                  .map((color) => (
+              <div>
+                <p className="text-xs text-muted-foreground mb-2">Presets</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {allSwatches
+                    .sort((a, b) => hexToHsva(a).h - hexToHsva(b).h)
+                    .map((color) => (
+                      <button
+                        type="button"
+                        key={color}
+                        onClick={() => handleValueChange(hexToHsva(color))}
+                        className={cn(
+                          "h-6 w-6 rounded-md border border-input transition-transform hover:scale-110",
+                          hsvaToHex(colorHsv).toLowerCase() ===
+                            color.toLowerCase() &&
+                            "ring-2 ring-ring ring-offset-1"
+                        )}
+                        style={{ backgroundColor: color }}
+                        aria-label={`Select color ${color}`}
+                      />
+                    ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Recent Colors */}
+          {recentColors.length > 0 && (
+            <>
+              <div className="h-px bg-border" />
+              <div>
+                <p className="text-xs text-muted-foreground mb-2">Recent</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {recentColors.map((color, index) => (
                     <button
                       type="button"
-                      key={color}
+                      key={`${color}-${index}`}
                       onClick={() => handleValueChange(hexToHsva(color))}
                       className={cn(
                         "h-6 w-6 rounded-md border border-input transition-transform hover:scale-110",
@@ -249,8 +377,10 @@ function ColorPicker({
                           "ring-2 ring-ring ring-offset-1"
                       )}
                       style={{ backgroundColor: color }}
+                      aria-label={`Recent color ${color}`}
                     />
                   ))}
+                </div>
               </div>
             </>
           )}

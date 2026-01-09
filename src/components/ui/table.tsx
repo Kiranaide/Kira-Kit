@@ -22,7 +22,8 @@ function Table({
         className={cn(
           "w-full caption-bottom text-sm",
           striped && "[&_tbody_tr:nth-child(even)]:bg-muted/50",
-          bordered && "border-collapse [&_td]:border [&_th]:border [&_td]:border-border [&_th]:border-border",
+          bordered &&
+            "border-collapse [&_td]:border [&_th]:border [&_td]:border-border [&_th]:border-border",
           className
         )}
         {...props}

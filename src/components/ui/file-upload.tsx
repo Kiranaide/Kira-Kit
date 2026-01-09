@@ -7,6 +7,12 @@ import {
   IconPhoto,
   IconVideo,
   IconPlayerPlay,
+  IconZoomIn,
+  IconZoomOut,
+  IconRotateClockwise,
+  IconDownload,
+  IconChevronLeft,
+  IconChevronRight,
 } from "@tabler/icons-react";
 
 // ============================================
@@ -29,6 +35,7 @@ interface FileUploadProps {
   className?: string;
   onFilesChange?: (files: UploadedFile[]) => void;
   onUpload?: (files: File[]) => Promise<void>;
+  enablePreview?: boolean; // Enable file preview modal
 }
 
 // ============================================
@@ -43,9 +50,13 @@ function FileUpload({
   className,
   onFilesChange,
   onUpload,
+  enablePreview = true,
 }: FileUploadProps) {
   const [files, setFiles] = React.useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = React.useState(false);
+  const [previewFile, setPreviewFile] = React.useState<UploadedFile | null>(
+    null
+  );
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const processFiles = React.useCallback(
@@ -182,9 +193,33 @@ function FileUpload({
       {files.length > 0 && (
         <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
           {files.map((file) => (
-            <FilePreview key={file.id} file={file} onRemove={removeFile} />
+            <FilePreview
+              key={file.id}
+              file={file}
+              onRemove={removeFile}
+              onPreview={enablePreview ? () => setPreviewFile(file) : undefined}
+            />
           ))}
         </div>
+      )}
+
+      {/* Preview Modal */}
+      {previewFile && (
+        <FilePreviewModal
+          file={previewFile}
+          allFiles={files}
+          onClose={() => setPreviewFile(null)}
+          onNavigate={(direction) => {
+            const currentIndex = files.findIndex(
+              (f) => f.id === previewFile.id
+            );
+            const newIndex =
+              direction === "prev"
+                ? (currentIndex - 1 + files.length) % files.length
+                : (currentIndex + 1) % files.length;
+            setPreviewFile(files[newIndex]);
+          }}
+        />
       )}
 
       {/* Upload Button */}
@@ -207,9 +242,10 @@ function FileUpload({
 interface FilePreviewProps {
   file: UploadedFile;
   onRemove: (id: string) => void;
+  onPreview?: () => void;
 }
 
-function FilePreview({ file, onRemove }: FilePreviewProps) {
+function FilePreview({ file, onRemove, onPreview }: FilePreviewProps) {
   const [videoPlaying, setVideoPlaying] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
@@ -232,8 +268,10 @@ function FilePreview({ file, onRemove }: FilePreviewProps) {
     <div
       className={cn(
         "relative group rounded-lg border overflow-hidden",
-        file.error && "border-destructive"
+        file.error && "border-destructive",
+        onPreview && "cursor-pointer hover:border-primary transition-colors"
       )}
+      onClick={onPreview}
     >
       {/* Preview */}
       <div className="aspect-square bg-muted flex items-center justify-center">
@@ -298,11 +336,250 @@ function FilePreview({ file, onRemove }: FilePreviewProps) {
 
       {/* Remove Button */}
       <button
-        onClick={() => onRemove(file.id)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove(file.id);
+        }}
         className="absolute top-1 right-1 h-6 w-6 rounded-full bg-background/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
+        aria-label="Remove file"
       >
         <IconX className="h-3.5 w-3.5" />
       </button>
+    </div>
+  );
+}
+
+// ============================================
+// FILE PREVIEW MODAL COMPONENT
+// ============================================
+interface FilePreviewModalProps {
+  file: UploadedFile;
+  allFiles: UploadedFile[];
+  onClose: () => void;
+  onNavigate: (direction: "prev" | "next") => void;
+}
+
+function FilePreviewModal({
+  file,
+  allFiles,
+  onClose,
+  onNavigate,
+}: FilePreviewModalProps) {
+  const [zoom, setZoom] = React.useState(1);
+  const [rotation, setRotation] = React.useState(0);
+  const modalRef = React.useRef<HTMLDivElement>(null);
+
+  const isImage = file.file.type.startsWith("image/");
+  const isVideo = file.file.type.startsWith("video/");
+  const isAudio = file.file.type.startsWith("audio/");
+
+  const currentIndex = allFiles.findIndex((f) => f.id === file.id);
+  const canNavigate = allFiles.length > 1;
+
+  // Keyboard navigation
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      } else if (e.key === "ArrowLeft" && canNavigate) {
+        onNavigate("prev");
+      } else if (e.key === "ArrowRight" && canNavigate) {
+        onNavigate("next");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose, onNavigate, canNavigate]);
+
+  // Focus trap
+  React.useEffect(() => {
+    const modal = modalRef.current;
+    if (!modal) return;
+
+    const focusableElements = modal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0] as HTMLElement;
+    const lastElement = focusableElements[
+      focusableElements.length - 1
+    ] as HTMLElement;
+
+    firstElement?.focus();
+
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== "Tab") return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement?.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement?.focus();
+        }
+      }
+    };
+
+    modal.addEventListener("keydown", handleTabKey as EventListener);
+    return () =>
+      modal.removeEventListener("keydown", handleTabKey as EventListener);
+  }, []);
+
+  const handleDownload = () => {
+    const url = file.preview || URL.createObjectURL(file.file);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = file.file.name;
+    a.click();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-sm"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="File preview"
+    >
+      <div
+        ref={modalRef}
+        className="relative w-full h-full max-w-7xl max-h-[90vh] m-4 flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 bg-background/80 backdrop-blur rounded-t-lg border-b">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg font-semibold truncate">{file.file.name}</h2>
+            <p className="text-sm text-muted-foreground">
+              {formatFileSize(file.file.size)} •{" "}
+              {file.file.type || "Unknown type"}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 ml-4">
+            {isImage && (
+              <>
+                <button
+                  onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
+                  className="p-2 rounded-md hover:bg-muted"
+                  aria-label="Zoom out"
+                >
+                  <IconZoomOut className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => setZoom(Math.min(3, zoom + 0.25))}
+                  className="p-2 rounded-md hover:bg-muted"
+                  aria-label="Zoom in"
+                >
+                  <IconZoomIn className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => setRotation((rotation + 90) % 360)}
+                  className="p-2 rounded-md hover:bg-muted"
+                  aria-label="Rotate"
+                >
+                  <IconRotateClockwise className="h-5 w-5" />
+                </button>
+              </>
+            )}
+            <button
+              onClick={handleDownload}
+              className="p-2 rounded-md hover:bg-muted"
+              aria-label="Download file"
+            >
+              <IconDownload className="h-5 w-5" />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-md hover:bg-muted"
+              aria-label="Close preview"
+            >
+              <IconX className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 flex items-center justify-center p-4 bg-muted/30 overflow-hidden">
+          {isImage && file.preview ? (
+            <img
+              src={file.preview}
+              alt={file.file.name}
+              className="max-w-full max-h-full object-contain transition-transform"
+              style={{
+                transform: `scale(${zoom}) rotate(${rotation}deg)`,
+              }}
+            />
+          ) : isVideo && file.preview ? (
+            <video
+              src={file.preview}
+              controls
+              className="max-w-full max-h-full"
+              autoPlay
+            />
+          ) : isAudio && file.preview ? (
+            <div className="w-full max-w-2xl space-y-4">
+              <div className="flex items-center justify-center p-8 bg-background rounded-lg">
+                <IconVideo className="h-24 w-24 text-muted-foreground" />
+              </div>
+              <audio src={file.preview} controls className="w-full" autoPlay />
+              <div className="text-center space-y-2">
+                <p className="text-lg font-medium">{file.file.name}</p>
+                <p className="text-sm text-muted-foreground">
+                  {formatFileSize(file.file.size)}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center space-y-4">
+              <IconFile className="h-24 w-24 text-muted-foreground mx-auto" />
+              <div>
+                <p className="text-lg font-medium">{file.file.name}</p>
+                <p className="text-sm text-muted-foreground">
+                  {formatFileSize(file.file.size)} •{" "}
+                  {file.file.type || "Unknown type"}
+                </p>
+              </div>
+              <button
+                onClick={handleDownload}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              >
+                <IconDownload className="h-4 w-4" />
+                Download
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        {canNavigate && (
+          <>
+            <button
+              onClick={() => onNavigate("prev")}
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-background/80 backdrop-blur hover:bg-background transition-colors"
+              aria-label="Previous file"
+            >
+              <IconChevronLeft className="h-6 w-6" />
+            </button>
+            <button
+              onClick={() => onNavigate("next")}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-background/80 backdrop-blur hover:bg-background transition-colors"
+              aria-label="Next file"
+            >
+              <IconChevronRight className="h-6 w-6" />
+            </button>
+          </>
+        )}
+
+        {/* Footer */}
+        {canNavigate && (
+          <div className="p-4 bg-background/80 backdrop-blur rounded-b-lg border-t text-center text-sm text-muted-foreground">
+            {currentIndex + 1} of {allFiles.length}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

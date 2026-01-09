@@ -9,12 +9,15 @@ function LoadingExample() {
   const handleLoad = () => {
     setIsLoading(true);
     setLoadProgress(0);
-    
+
     const interval = setInterval(() => {
       setLoadProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          setIsLoading(false);
+          // Add a brief delay to show the complete circle at 100%
+          setTimeout(() => {
+            setIsLoading(false);
+          }, 500);
           return 100;
         }
         return prev + 2;
@@ -166,7 +169,9 @@ export function ProgressPage() {
             </div>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-4">Indeterminate (Loading)</p>
+            <p className="text-sm text-muted-foreground mb-4">
+              Indeterminate (Loading)
+            </p>
             <div className="flex items-center gap-6">
               <CircularProgress indeterminate />
               <CircularProgress indeterminate variant="success" />

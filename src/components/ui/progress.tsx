@@ -33,6 +33,7 @@ interface ProgressProps
   value?: number;
   max?: number;
   showLabel?: boolean;
+  "aria-label"?: string;
 }
 
 function Progress({
@@ -42,6 +43,7 @@ function Progress({
   size,
   variant,
   showLabel = false,
+  "aria-label": ariaLabel,
   ...props
 }: ProgressProps) {
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
@@ -51,6 +53,7 @@ function Progress({
       <ProgressPrimitive.Root
         data-slot="progress"
         value={value}
+        aria-label={ariaLabel}
         className={cn(progressVariants({ size, variant }), className)}
         {...props}
       >
@@ -81,6 +84,7 @@ interface CircularProgressProps
   max?: number;
   showLabel?: boolean;
   indeterminate?: boolean;
+  "aria-label"?: string;
 }
 
 function CircularProgress({
@@ -90,6 +94,7 @@ function CircularProgress({
   variant = "default",
   showLabel = false,
   indeterminate = false,
+  "aria-label": ariaLabel,
   className,
   ...props
 }: CircularProgressProps) {
@@ -124,13 +129,28 @@ function CircularProgress({
   };
 
   const sizeValue = sizeClasses[size || "default"];
-  
+
   return (
-    <div className={cn("relative inline-flex items-center justify-center", sizeValue, className)}>
+    <div
+      role="progressbar"
+      aria-valuenow={indeterminate ? undefined : value}
+      aria-valuemin={0}
+      aria-valuemax={max}
+      aria-label={
+        ariaLabel ||
+        (indeterminate ? "Loading" : `${Math.round(percentage)}% complete`)
+      }
+      className={cn(
+        "relative inline-flex items-center justify-center",
+        sizeValue,
+        className
+      )}
+    >
       <svg
         className="transform -rotate-90 w-full h-full"
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
         {...props}
       >
         {/* Background circle */}

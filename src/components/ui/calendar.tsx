@@ -3,6 +3,8 @@ import {
   format,
   addMonths,
   subMonths,
+  addDays,
+  addYears,
   startOfMonth,
   endOfMonth,
   startOfWeek,
@@ -46,6 +48,15 @@ const calendarButtonVariants = cva(
 
 // Day of week headers
 const WEEK_DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const WEEK_DAYS_FULL = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 const MONTHS = [
   "Jan",
   "Feb",
@@ -85,6 +96,8 @@ function Calendar({
   const [currentMonth, setCurrentMonth] = React.useState(
     selected instanceof Date ? selected : new Date()
   );
+  const [focusedDate, setFocusedDate] = React.useState<Date | null>(null);
+  const gridRef = React.useRef<HTMLDivElement>(null);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -174,59 +187,152 @@ function Calendar({
     return "default";
   };
 
+  // Keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent, date: Date) => {
+    let newDate: Date | null = null;
+
+    switch (e.key) {
+      case "ArrowLeft":
+        newDate = addDays(date, -1);
+        break;
+      case "ArrowRight":
+        newDate = addDays(date, 1);
+        break;
+      case "ArrowUp":
+        newDate = addDays(date, -7);
+        break;
+      case "ArrowDown":
+        newDate = addDays(date, 7);
+        break;
+      case "Home":
+        newDate = startOfWeek(date);
+        break;
+      case "End":
+        newDate = endOfWeek(date);
+        break;
+      case "PageUp":
+        newDate = e.shiftKey ? addYears(date, -1) : subMonths(date, 1);
+        break;
+      case "PageDown":
+        newDate = e.shiftKey ? addYears(date, 1) : addMonths(date, 1);
+        break;
+      case "Enter":
+      case " ":
+        e.preventDefault();
+        handleDayClick(date);
+        return;
+      default:
+        return;
+    }
+
+    if (newDate) {
+      e.preventDefault();
+      setFocusedDate(newDate);
+      // Update month if needed
+      if (!isSameMonth(newDate, currentMonth)) {
+        setCurrentMonth(newDate);
+      }
+      // Focus the new date button
+      setTimeout(() => {
+        const button = gridRef.current?.querySelector(
+          `button[data-date="${newDate.toISOString()}"]`
+        ) as HTMLButtonElement;
+        button?.focus();
+      }, 0);
+    }
+  };
+
   return (
     <div
       className={cn(
         "p-3 bg-popover border border-border rounded-lg",
         className
       )}
+      role="application"
+      aria-label="Calendar"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <button
+          type="button"
           onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="p-1 rounded-md hover:bg-muted"
+          className="p-1 rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Previous month"
         >
-          <IconChevronLeft className="h-4 w-4" />
+          <IconChevronLeft className="h-4 w-4" aria-hidden="true" />
         </button>
-        <span className="text-sm font-medium">
+        <span
+          className="text-sm font-medium"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {format(currentMonth, "MMMM yyyy")}
         </span>
         <button
+          type="button"
           onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="p-1 rounded-md hover:bg-muted"
+          className="p-1 rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Next month"
         >
-          <IconChevronRight className="h-4 w-4" />
+          <IconChevronRight className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
 
       {/* Week days */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
-        {WEEK_DAYS.map((day) => (
+      <div className="grid grid-cols-7 gap-1 mb-2" role="row">
+        {WEEK_DAYS.map((day, index) => (
           <div
             key={day}
             className="h-9 flex items-center justify-center text-xs text-muted-foreground font-medium"
+            role="columnheader"
+            aria-label={WEEK_DAYS_FULL[index]}
           >
-            {day}
+            <abbr title={WEEK_DAYS_FULL[index]} aria-hidden="true">
+              {day}
+            </abbr>
           </div>
         ))}
       </div>
 
       {/* Days */}
-      <div className="grid grid-cols-7 gap-1">
-        {days.map((day) => (
-          <button
-            key={day.toISOString()}
-            onClick={() => handleDayClick(day)}
-            disabled={isDateDisabled(day)}
-            className={cn(
-              calendarButtonVariants({ variant: getDayVariant(day) }),
-              !isSameMonth(day, currentMonth) && "opacity-30"
-            )}
-          >
-            {format(day, "d")}
-          </button>
-        ))}
+      <div
+        ref={gridRef}
+        className="grid grid-cols-7 gap-1"
+        role="grid"
+        aria-label="Calendar dates"
+      >
+        {days.map((day) => {
+          const isToday = isSameDay(day, new Date());
+          const daySelected = isSelected(day);
+          const dayDisabled = isDateDisabled(day);
+
+          return (
+            <button
+              key={day.toISOString()}
+              type="button"
+              data-date={day.toISOString()}
+              onClick={() => handleDayClick(day)}
+              onKeyDown={(e) => handleKeyDown(e, day)}
+              disabled={dayDisabled}
+              tabIndex={
+                isSameDay(day, focusedDate || (selected as Date) || new Date())
+                  ? 0
+                  : -1
+              }
+              className={cn(
+                calendarButtonVariants({ variant: getDayVariant(day) }),
+                !isSameMonth(day, currentMonth) && "opacity-30"
+              )}
+              role="gridcell"
+              aria-label={format(day, "EEEE, MMMM d, yyyy")}
+              aria-selected={daySelected}
+              aria-current={isToday ? "date" : undefined}
+              aria-disabled={dayDisabled}
+            >
+              {format(day, "d")}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

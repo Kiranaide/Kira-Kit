@@ -89,7 +89,7 @@ function TreeView({
   }, []);
 
   // Helper function to get all child node IDs recursively
-  const getAllChildIds = React.useCallback((node: TreeNode): string[] => {
+  const getAllChildIds = (node: TreeNode): string[] => {
     const ids: string[] = [];
     if (node.children) {
       for (const child of node.children) {
@@ -98,10 +98,10 @@ function TreeView({
       }
     }
     return ids;
-  }, []);
+  };
 
   // Helper function to find a node by ID
-  const findNodeById = React.useCallback((nodes: TreeNode[], id: string): TreeNode | null => {
+  const findNodeById = (nodes: TreeNode[], id: string): TreeNode | null => {
     for (const node of nodes) {
       if (node.id === id) return node;
       if (node.children) {
@@ -110,31 +110,34 @@ function TreeView({
       }
     }
     return null;
-  }, []);
+  };
 
-  const toggleSelection = React.useCallback((id: string) => {
-    setSelectedNodes((prev) => {
-      const next = new Set(prev);
-      const node = findNodeById(data, id);
-      
-      if (!node) return next;
-      
-      const isSelected = next.has(id);
-      const childIds = getAllChildIds(node);
-      
-      if (isSelected) {
-        // Deselect parent and all children
-        next.delete(id);
-        childIds.forEach((childId) => next.delete(childId));
-      } else {
-        // Select parent and all children
-        next.add(id);
-        childIds.forEach((childId) => next.add(childId));
-      }
-      
-      return next;
-    });
-  }, [data, getAllChildIds, findNodeById]);
+  const toggleSelection = React.useCallback(
+    (id: string) => {
+      setSelectedNodes((prev) => {
+        const next = new Set(prev);
+        const node = findNodeById(data, id);
+
+        if (!node) return next;
+
+        const isSelected = next.has(id);
+        const childIds = getAllChildIds(node);
+
+        if (isSelected) {
+          // Deselect parent and all children
+          next.delete(id);
+          childIds.forEach((childId) => next.delete(childId));
+        } else {
+          // Select parent and all children
+          next.add(id);
+          childIds.forEach((childId) => next.add(childId));
+        }
+
+        return next;
+      });
+    },
+    [data, getAllChildIds, findNodeById]
+  );
 
   React.useEffect(() => {
     if (selectionMode === "multiple") {
@@ -183,7 +186,7 @@ function TreeView({
         showLines,
       }}
     >
-      <div className={cn("text-sm", className)}>
+      <div role="tree" className={cn("text-sm", className)}>
         <TreeNodeList nodes={data} level={0} />
       </div>
     </TreeViewContext.Provider>
@@ -200,7 +203,7 @@ interface TreeNodeListProps {
 
 function TreeNodeList({ nodes, level }: TreeNodeListProps) {
   return (
-    <ul className="list-none">
+    <ul role="group" className="list-none">
       {nodes.map((node, index) => (
         <TreeNodeItem
           key={node.id}
@@ -251,35 +254,47 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
   const getIcon = () => {
     if (node.icon) return node.icon;
     if (node.isFile)
-      return <IconFile className="h-4 w-4 text-muted-foreground" />;
+      return (
+        <IconFile
+          className="h-4 w-4 text-muted-foreground"
+          aria-hidden="true"
+        />
+      );
     return isExpanded ? (
-      <IconFolderOpen className="h-4 w-4 text-yellow-500" />
+      <IconFolderOpen className="h-4 w-4 text-yellow-500" aria-hidden="true" />
     ) : (
-      <IconFolder className="h-4 w-4 text-yellow-500" />
+      <IconFolder className="h-4 w-4 text-yellow-500" aria-hidden="true" />
     );
   };
 
   return (
-    <li className="relative">
+    <li
+      role="treeitem"
+      aria-expanded={hasChildren ? isExpanded : undefined}
+      aria-selected={isSelected}
+      className="relative"
+    >
       {/* Tree lines */}
       {showLines && level > 0 && (
         <>
           {/* Horizontal line to node */}
           <span
-            className="absolute border-t border-muted-foreground/30 z-0"
+            aria-hidden="true"
+            className="absolute border-t border-border z-0"
             style={{
-              left: `${(level - 1) * 20 + 10}px`,
-              top: "14px",
-              width: "10px",
+              left: `${(level - 1) * 24 + 12}px`,
+              top: "16px",
+              width: "12px",
             }}
           />
           {/* Vertical line connecting siblings - only if not last */}
           {!isLast && (
             <span
-              className="absolute border-l border-muted-foreground/30 z-0"
+              aria-hidden="true"
+              className="absolute border-l border-border z-0"
               style={{
-                left: `${(level - 1) * 20 + 10}px`,
-                top: "14px",
+                left: `${(level - 1) * 24 + 12}px`,
+                top: "16px",
                 bottom: 0,
               }}
             />
@@ -289,11 +304,20 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
 
       <div
         className={cn(
-          "flex w-full items-center gap-1.5 rounded-md px-2 py-1 hover:bg-muted text-left transition-colors",
-          isSelected && "bg-muted font-medium"
+          "flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 hover:bg-muted/50 text-left transition-colors relative",
+          isSelected && selectionMode === "single" && "bg-muted/50 font-medium",
+          isSelected && selectionMode === "multiple" && "font-medium"
         )}
-        style={{ paddingLeft: `${level * 20 + 8}px` }}
+        style={{ paddingLeft: `${level * 24 + 8}px` }}
       >
+        {/* Selection indicator for multi-select - left border accent */}
+        {selectionMode === "multiple" && isSelected && (
+          <span
+            aria-hidden="true"
+            className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary rounded-r"
+          />
+        )}
+
         {/* Checkbox for multi-select */}
         {selectionMode === "multiple" && (
           <Checkbox
@@ -304,6 +328,7 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
             }}
             onClick={(e) => e.stopPropagation()}
             className="shrink-0"
+            aria-label={`Select ${node.name}`}
           />
         )}
 
@@ -314,18 +339,20 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
               onSelect?.(node);
             }
           }}
-          className="flex items-center gap-1.5 flex-1"
+          className="flex items-center gap-1.5 flex-1 min-w-0"
+          aria-label={node.name}
         >
           {/* Expand/collapse arrow */}
           {hasChildren ? (
             <IconChevronRight
+              aria-hidden="true"
               className={cn(
                 "h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform",
                 isExpanded && "rotate-90"
               )}
             />
           ) : (
-            <span className="w-3.5" />
+            <span className="w-3.5" aria-hidden="true" />
           )}
 
           {/* Icon */}
@@ -339,15 +366,15 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
       {/* Children */}
       {hasChildren && isExpanded && (
         <div className="relative">
-          {/* Vertical connecting line for children - only show if there are multiple children */}
-          {showLines && node.children && node.children.length > 1 && (
+          {/* Vertical connecting line for children */}
+          {showLines && node.children && node.children.length > 0 && (
             <span
-              className="absolute border-l border-muted-foreground/30 z-0"
+              aria-hidden="true"
+              className="absolute border-l border-border z-0"
               style={{
-                left: `${level * 20 + 10}px`,
+                left: `${level * 24 + 12}px`,
                 top: 0,
-                bottom: 0,
-                width: "1px",
+                bottom: "8px",
               }}
             />
           )}

@@ -73,6 +73,7 @@ function Empty({
                 : "h-12 w-12"
             )}
             strokeWidth={1.5}
+            aria-hidden="true"
           />
         ) : (
           icon
