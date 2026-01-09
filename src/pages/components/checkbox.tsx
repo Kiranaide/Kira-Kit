@@ -189,6 +189,39 @@ export function CheckboxPage() {
           />
         </div>
       </section>
+
+      {/* Usage */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Usage
+        </h2>
+        <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
+          <pre className="text-sm text-foreground">
+            {`import { Checkbox, CheckboxWithLabel, CheckboxGroup } from "@/components/ui/checkbox"
+
+// Basic checkbox
+<Checkbox id="terms" />
+
+// With label
+<CheckboxWithLabel
+  label="Enable notifications"
+  description="Receive push notifications"
+/>
+
+// Checkbox group
+<CheckboxGroup
+  label="Select fruits"
+  options={[
+    { value: "apple", label: "Apple" },
+    { value: "banana", label: "Banana" },
+  ]}
+  value={selectedFruits}
+  onChange={setSelectedFruits}
+  showSelectAll
+/>`}
+          </pre>
+        </div>
+      </section>
     </div>
   );
 }

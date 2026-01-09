@@ -52,6 +52,7 @@ import { CheckboxPage } from "@/pages/components/checkbox";
 import { TreeViewPage } from "@/pages/components/tree-view";
 import { FileUploadPage } from "@/pages/components/file-upload";
 import { SidebarPage } from "@/pages/components/sidebar";
+import { ColorPickerPage } from "@/pages/components/color-picker";
 
 // Root route with layout
 const rootRoute = createRootRoute({
@@ -336,6 +337,12 @@ const sidebarRoute = createRoute({
   component: SidebarPage,
 });
 
+const colorPickerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/color-picker",
+  component: ColorPickerPage,
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -384,6 +391,7 @@ const routeTree = rootRoute.addChildren([
   treeViewRoute,
   fileUploadRoute,
   sidebarRoute,
+  colorPickerRoute,
 ]);
 
 // Create router
