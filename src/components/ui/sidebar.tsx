@@ -6,12 +6,14 @@ import {
   IconChevronDown,
   IconSun,
   IconMoon,
+  IconMenu2,
 } from "@tabler/icons-react";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
 
 // Theme context
 type Theme = "light" | "dark";
@@ -58,19 +60,61 @@ export function useTheme() {
   return context;
 }
 
+// Mobile detection hook
+const MOBILE_BREAKPOINT = 768;
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
+    undefined
+  );
+
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const onChange = () => setIsMobile(mql.matches);
+    mql.addEventListener("change", onChange);
+    setIsMobile(mql.matches);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+
+  return !!isMobile;
+}
+
 // Sidebar context
 interface SidebarContextValue {
   collapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+  isMobile: boolean;
+  openMobile: boolean;
+  setOpenMobile: React.Dispatch<React.SetStateAction<boolean>>;
+  toggleSidebar: () => void;
 }
 
 const SidebarContext = React.createContext<SidebarContextValue | null>(null);
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = React.useState(false);
+  const [openMobile, setOpenMobile] = React.useState(false);
+  const isMobile = useIsMobile();
+
+  const toggleSidebar = React.useCallback(() => {
+    if (isMobile) {
+      setOpenMobile((prev) => !prev);
+    } else {
+      setCollapsed((prev) => !prev);
+    }
+  }, [isMobile]);
 
   return (
-    <SidebarContext.Provider value={{ collapsed, setCollapsed }}>
+    <SidebarContext.Provider
+      value={{
+        collapsed,
+        setCollapsed,
+        isMobile,
+        openMobile,
+        setOpenMobile,
+        toggleSidebar,
+      }}
+    >
       {children}
     </SidebarContext.Provider>
   );
@@ -92,7 +136,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ children, variant = "default" }: SidebarProps) {
-  const { collapsed } = useSidebar();
+  const { collapsed, isMobile, openMobile, setOpenMobile } = useSidebar();
 
   const baseClasses = "h-screen flex flex-col transition-all duration-300";
   const widthClasses = collapsed ? "w-16" : "w-64";
@@ -104,10 +148,55 @@ export function Sidebar({ children, variant = "default" }: SidebarProps) {
     inset: "bg-muted/30",
   };
 
+  // Mobile: Render as Drawer overlay
+  if (isMobile) {
+    return (
+      <Drawer open={openMobile} onOpenChange={setOpenMobile}>
+        <DrawerContent
+          side="left"
+          size="sm"
+          showCloseButton={false}
+          className="p-0"
+        >
+          <div className={cn("h-full flex flex-col", variantClasses[variant])}>
+            {children}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  // Desktop: Standard sidebar
   return (
     <aside className={cn(baseClasses, widthClasses, variantClasses[variant])}>
       {children}
     </aside>
+  );
+}
+
+// Mobile trigger button (hamburger menu)
+export function SidebarTrigger({
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { toggleSidebar, isMobile } = useSidebar();
+
+  // Only show on mobile
+  if (!isMobile) return null;
+
+  return (
+    <button
+      type="button"
+      onClick={toggleSidebar}
+      className={cn(
+        "p-2 rounded-md hover:bg-muted transition-colors",
+        className
+      )}
+      aria-label="Toggle navigation menu"
+      {...props}
+    >
+      <IconMenu2 className="w-5 h-5" />
+    </button>
   );
 }
 

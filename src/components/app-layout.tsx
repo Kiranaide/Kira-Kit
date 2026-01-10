@@ -9,6 +9,7 @@ import {
   SidebarProvider,
   ThemeProvider,
   ThemeToggle,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -65,300 +66,314 @@ export function AppLayout() {
         <SidebarProvider>
           <Toaster />
           <div className="flex h-screen overflow-hidden">
-          <Sidebar>
-            <SidebarHeader />
-            <SidebarContent>
-              <SidebarItem to="/" icon={<IconHome className="w-5 h-5" />}>
-                Overview
-              </SidebarItem>
+            {/* Mobile Header - only visible on small screens */}
+            <header className="fixed top-0 left-0 right-0 z-40 flex items-center h-14 px-4 border-b border-border bg-background md:hidden">
+              <SidebarTrigger />
+              <div className="flex items-center gap-2 ml-2">
+                <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                  <span className="text-primary-foreground font-bold text-xs">
+                    K
+                  </span>
+                </div>
+                <span className="font-semibold text-foreground">Kira Kit</span>
+              </div>
+            </header>
 
-              <SidebarDivider />
+            {/* Sidebar - hidden on mobile, visible on md+ */}
+            <Sidebar>
+              <SidebarHeader />
+              <SidebarContent>
+                <SidebarItem to="/" icon={<IconHome className="w-5 h-5" />}>
+                  Overview
+                </SidebarItem>
 
-              <SidebarGroup label="Components">
-                <SidebarItem
-                  to="/components/accordion"
-                  icon={<IconList className="w-5 h-5" />}
-                >
-                  Accordion
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/alert"
-                  icon={<IconAlertTriangle className="w-5 h-5" />}
-                >
-                  Alert
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/alert-dialog"
-                  icon={<IconAlertCircle className="w-5 h-5" />}
-                >
-                  Alert Dialog
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/aspect-ratio"
-                  icon={<IconRectangle className="w-5 h-5" />}
-                >
-                  Aspect Ratio
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/avatar"
-                  icon={<IconUser className="w-5 h-5" />}
-                >
-                  Avatar
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/badge"
-                  icon={<IconBadge className="w-5 h-5" />}
-                >
-                  Badge
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/button"
-                  icon={<IconClick className="w-5 h-5" />}
-                >
-                  Button
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/button-group"
-                  icon={<IconLayoutColumns className="w-5 h-5" />}
-                >
-                  Button Group
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/calendar"
-                  icon={<IconCalendar className="w-5 h-5" />}
-                >
-                  Calendar
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/card"
-                  icon={<IconLayoutCards className="w-5 h-5" />}
-                >
-                  Card
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/checkbox"
-                  icon={<IconSquareCheck className="w-5 h-5" />}
-                >
-                  Checkbox
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/combobox"
-                  icon={<IconListSearch className="w-5 h-5" />}
-                >
-                  Combobox
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/context-menu"
-                  icon={<IconMenu2 className="w-5 h-5" />}
-                >
-                  Context Menu
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/data-table"
-                  icon={<IconLayoutList className="w-5 h-5" />}
-                >
-                  Data Table
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/dialog"
-                  icon={<IconBox className="w-5 h-5" />}
-                >
-                  Dialog
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/drawer"
-                  icon={<IconLayoutSidebar className="w-5 h-5" />}
-                >
-                  Drawer
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/dropdown-menu"
-                  icon={<IconMenu2 className="w-5 h-5" />}
-                >
-                  Dropdown Menu
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/empty"
-                  icon={<IconInbox className="w-5 h-5" />}
-                >
-                  Empty
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/field"
-                  icon={<IconInputCheck className="w-5 h-5" />}
-                >
-                  Field
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/file-upload"
-                  icon={<IconUpload className="w-5 h-5" />}
-                >
-                  File Upload
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/hover-card"
-                  icon={<IconPointer className="w-5 h-5" />}
-                >
-                  Hover Card
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/input"
-                  icon={<IconForms className="w-5 h-5" />}
-                >
-                  Input
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/input-group"
-                  icon={<IconLayoutList className="w-5 h-5" />}
-                >
-                  Input Group
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/kbd"
-                  icon={<IconKeyboard className="w-5 h-5" />}
-                >
-                  Kbd
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/label"
-                  icon={<IconTag className="w-5 h-5" />}
-                >
-                  Label
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/menubar"
-                  icon={<IconMenu className="w-5 h-5" />}
-                >
-                  Menubar
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/navigation-menu"
-                  icon={<IconNavigation className="w-5 h-5" />}
-                >
-                  Navigation Menu
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/pagination"
-                  icon={<IconNumbers className="w-5 h-5" />}
-                >
-                  Pagination
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/popover"
-                  icon={<IconMessageCircle className="w-5 h-5" />}
-                >
-                  Popover
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/progress"
-                  icon={<IconLoader className="w-5 h-5" />}
-                >
-                  Progress
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/radio-group"
-                  icon={<IconCircleDot className="w-5 h-5" />}
-                >
-                  Radio Group
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/resizable"
-                  icon={<IconLayoutBoardSplit className="w-5 h-5" />}
-                >
-                  Resizable
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/select"
-                  icon={<IconSelector className="w-5 h-5" />}
-                >
-                  Select
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/separator"
-                  icon={<IconSeparator className="w-5 h-5" />}
-                >
-                  Separator
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/skeleton"
-                  icon={<IconBoxMultiple className="w-5 h-5" />}
-                >
-                  Skeleton
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/sidebar"
-                  icon={<IconLayoutSidebar className="w-5 h-5" />}
-                >
-                  Sidebar
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/slider"
-                  icon={<IconAdjustmentsHorizontal className="w-5 h-5" />}
-                >
-                  Slider
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/table"
-                  icon={<IconTable className="w-5 h-5" />}
-                >
-                  Table
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/tabs"
-                  icon={<IconFolder className="w-5 h-5" />}
-                >
-                  Tabs
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/textarea"
-                  icon={<IconTextCaption className="w-5 h-5" />}
-                >
-                  Textarea
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/toast"
-                  icon={<IconBell className="w-5 h-5" />}
-                >
-                  Toast
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/toggle"
-                  icon={<IconToggleLeft className="w-5 h-5" />}
-                >
-                  Toggle
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/tooltip"
-                  icon={<IconTooltip className="w-5 h-5" />}
-                >
-                  Tooltip
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/tree-view"
-                  icon={<IconBinaryTree2 className="w-5 h-5" />}
-                >
-                  Tree View
-                </SidebarItem>
-                <SidebarItem
-                  to="/components/typography"
-                  icon={<IconTypography className="w-5 h-5" />}
-                >
-                  Typography
-                </SidebarItem>
-              </SidebarGroup>
+                <SidebarDivider />
 
-              <SidebarDivider />
+                <SidebarGroup label="Components">
+                  <SidebarItem
+                    to="/components/accordion"
+                    icon={<IconList className="w-5 h-5" />}
+                  >
+                    Accordion
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/alert"
+                    icon={<IconAlertTriangle className="w-5 h-5" />}
+                  >
+                    Alert
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/alert-dialog"
+                    icon={<IconAlertCircle className="w-5 h-5" />}
+                  >
+                    Alert Dialog
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/aspect-ratio"
+                    icon={<IconRectangle className="w-5 h-5" />}
+                  >
+                    Aspect Ratio
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/avatar"
+                    icon={<IconUser className="w-5 h-5" />}
+                  >
+                    Avatar
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/badge"
+                    icon={<IconBadge className="w-5 h-5" />}
+                  >
+                    Badge
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/button"
+                    icon={<IconClick className="w-5 h-5" />}
+                  >
+                    Button
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/button-group"
+                    icon={<IconLayoutColumns className="w-5 h-5" />}
+                  >
+                    Button Group
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/calendar"
+                    icon={<IconCalendar className="w-5 h-5" />}
+                  >
+                    Calendar
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/card"
+                    icon={<IconLayoutCards className="w-5 h-5" />}
+                  >
+                    Card
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/checkbox"
+                    icon={<IconSquareCheck className="w-5 h-5" />}
+                  >
+                    Checkbox
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/combobox"
+                    icon={<IconListSearch className="w-5 h-5" />}
+                  >
+                    Combobox
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/context-menu"
+                    icon={<IconMenu2 className="w-5 h-5" />}
+                  >
+                    Context Menu
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/data-table"
+                    icon={<IconLayoutList className="w-5 h-5" />}
+                  >
+                    Data Table
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/dialog"
+                    icon={<IconBox className="w-5 h-5" />}
+                  >
+                    Dialog
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/drawer"
+                    icon={<IconLayoutSidebar className="w-5 h-5" />}
+                  >
+                    Drawer
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/dropdown-menu"
+                    icon={<IconMenu2 className="w-5 h-5" />}
+                  >
+                    Dropdown Menu
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/empty"
+                    icon={<IconInbox className="w-5 h-5" />}
+                  >
+                    Empty
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/field"
+                    icon={<IconInputCheck className="w-5 h-5" />}
+                  >
+                    Field
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/file-upload"
+                    icon={<IconUpload className="w-5 h-5" />}
+                  >
+                    File Upload
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/hover-card"
+                    icon={<IconPointer className="w-5 h-5" />}
+                  >
+                    Hover Card
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/input"
+                    icon={<IconForms className="w-5 h-5" />}
+                  >
+                    Input
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/input-group"
+                    icon={<IconLayoutList className="w-5 h-5" />}
+                  >
+                    Input Group
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/kbd"
+                    icon={<IconKeyboard className="w-5 h-5" />}
+                  >
+                    Kbd
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/label"
+                    icon={<IconTag className="w-5 h-5" />}
+                  >
+                    Label
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/menubar"
+                    icon={<IconMenu className="w-5 h-5" />}
+                  >
+                    Menubar
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/navigation-menu"
+                    icon={<IconNavigation className="w-5 h-5" />}
+                  >
+                    Navigation Menu
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/pagination"
+                    icon={<IconNumbers className="w-5 h-5" />}
+                  >
+                    Pagination
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/popover"
+                    icon={<IconMessageCircle className="w-5 h-5" />}
+                  >
+                    Popover
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/progress"
+                    icon={<IconLoader className="w-5 h-5" />}
+                  >
+                    Progress
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/radio-group"
+                    icon={<IconCircleDot className="w-5 h-5" />}
+                  >
+                    Radio Group
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/resizable"
+                    icon={<IconLayoutBoardSplit className="w-5 h-5" />}
+                  >
+                    Resizable
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/select"
+                    icon={<IconSelector className="w-5 h-5" />}
+                  >
+                    Select
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/separator"
+                    icon={<IconSeparator className="w-5 h-5" />}
+                  >
+                    Separator
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/skeleton"
+                    icon={<IconBoxMultiple className="w-5 h-5" />}
+                  >
+                    Skeleton
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/sidebar"
+                    icon={<IconLayoutSidebar className="w-5 h-5" />}
+                  >
+                    Sidebar
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/slider"
+                    icon={<IconAdjustmentsHorizontal className="w-5 h-5" />}
+                  >
+                    Slider
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/table"
+                    icon={<IconTable className="w-5 h-5" />}
+                  >
+                    Table
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/tabs"
+                    icon={<IconFolder className="w-5 h-5" />}
+                  >
+                    Tabs
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/textarea"
+                    icon={<IconTextCaption className="w-5 h-5" />}
+                  >
+                    Textarea
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/toast"
+                    icon={<IconBell className="w-5 h-5" />}
+                  >
+                    Toast
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/toggle"
+                    icon={<IconToggleLeft className="w-5 h-5" />}
+                  >
+                    Toggle
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/tooltip"
+                    icon={<IconTooltip className="w-5 h-5" />}
+                  >
+                    Tooltip
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/tree-view"
+                    icon={<IconBinaryTree2 className="w-5 h-5" />}
+                  >
+                    Tree View
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/typography"
+                    icon={<IconTypography className="w-5 h-5" />}
+                  >
+                    Typography
+                  </SidebarItem>
+                </SidebarGroup>
 
-              <SidebarGroup label="Settings">
-                <ThemeToggle />
-              </SidebarGroup>
-            </SidebarContent>
-          </Sidebar>
+                <SidebarDivider />
 
-          <main className="flex-1 overflow-y-auto bg-background">
-            <Outlet />
-          </main>
-        </div>
+                <SidebarGroup label="Settings">
+                  <ThemeToggle />
+                </SidebarGroup>
+              </SidebarContent>
+            </Sidebar>
+
+            <main className="flex-1 overflow-y-auto bg-background pt-14 md:pt-0">
+              <Outlet />
+            </main>
+          </div>
         </SidebarProvider>
       </TooltipProvider>
     </ThemeProvider>
