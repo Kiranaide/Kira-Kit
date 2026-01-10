@@ -1,44 +1,292 @@
 import * as React from "react";
-import {
-  DayPicker,
-  getDefaultClassNames,
-  type DateRange,
-  type Matcher,
-} from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
-import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
-import { isBefore } from "date-fns";
+import { cn } from "@/lib/utils";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronDown,
+} from "@tabler/icons-react";
+import { isBefore, setMonth, setYear, format } from "date-fns";
+
+// ============================================
+// CALENDAR SIZE VARIANTS
+// ============================================
+
+const calendarSizeConfig = {
+  sm: {
+    day: "h-7 w-7 text-xs",
+    dayButton: "h-7 w-7 text-xs",
+    weekday: "h-6 text-[10px]",
+    nav: "h-6 w-6",
+    navIcon: "h-3.5 w-3.5",
+    caption: "text-xs",
+    root: "p-2",
+    dropdown: "text-xs h-6 px-1.5",
+    dropdownIcon: "h-3 w-3 ml-0.5",
+  },
+  default: {
+    day: "h-9 w-9 text-sm",
+    dayButton: "h-9 w-9 text-sm",
+    weekday: "h-7 text-xs",
+    nav: "h-7 w-7",
+    navIcon: "h-4 w-4",
+    caption: "text-sm",
+    root: "p-3",
+    dropdown: "text-sm h-7 px-2",
+    dropdownIcon: "h-3.5 w-3.5 ml-1",
+  },
+  lg: {
+    day: "h-11 w-11 text-base",
+    dayButton: "h-11 w-11 text-base",
+    weekday: "h-8 text-sm",
+    nav: "h-8 w-8",
+    navIcon: "h-5 w-5",
+    caption: "text-base",
+    root: "p-4",
+    dropdown: "text-base h-8 px-2.5",
+    dropdownIcon: "h-4 w-4 ml-1",
+  },
+};
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+// ============================================
+// CUSTOM CHEVRON COMPONENT
+// ============================================
+
+function CustomChevron({
+  orientation,
+  size = "default",
+}: {
+  orientation: "left" | "right" | "up" | "down";
+  size?: "sm" | "default" | "lg";
+}) {
+  const sizeConfig = calendarSizeConfig[size];
+
+  switch (orientation) {
+    case "left":
+      return <IconChevronLeft className={sizeConfig.navIcon} />;
+    case "right":
+      return <IconChevronRight className={sizeConfig.navIcon} />;
+    case "down":
+      return <IconChevronDown className={sizeConfig.dropdownIcon} />;
+    default:
+      return <IconChevronDown className={sizeConfig.dropdownIcon} />;
+  }
+}
+
+// ============================================
+// CUSTOM MONTH CAPTION COMPONENT
+// ============================================
+
+interface MonthCaptionProps {
+  displayMonth: Date;
+  onMonthChange: (month: Date) => void;
+  size: "sm" | "default" | "lg";
+}
+
+function MonthCaption({
+  displayMonth,
+  onMonthChange,
+  size,
+}: MonthCaptionProps) {
+  const [showMonthPicker, setShowMonthPicker] = React.useState(false);
+  const [showYearPicker, setShowYearPicker] = React.useState(false);
+  const sizeConfig = calendarSizeConfig[size];
+
+  const currentYear = displayMonth.getFullYear();
+  const startYear = Math.floor(currentYear / 12) * 12;
+  const years = Array.from({ length: 12 }, (_, i) => startYear + i);
+
+  const handleMonthSelect = (monthIndex: number) => {
+    const newDate = setMonth(displayMonth, monthIndex);
+    onMonthChange(newDate);
+    setShowMonthPicker(false);
+  };
+
+  const handleYearSelect = (year: number) => {
+    const newDate = setYear(displayMonth, year);
+    onMonthChange(newDate);
+    setShowYearPicker(false);
+  };
+
+  return (
+    <div className="relative flex items-center gap-1">
+      {/* Month Button */}
+      <button
+        type="button"
+        onClick={() => {
+          setShowMonthPicker(!showMonthPicker);
+          setShowYearPicker(false);
+        }}
+        className={cn(
+          sizeConfig.dropdown,
+          "flex items-center gap-1 rounded-md border border-border bg-background font-medium hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+        )}
+      >
+        {format(displayMonth, "MMMM")}
+        <IconChevronDown className={sizeConfig.dropdownIcon} />
+      </button>
+
+      {/* Year Button */}
+      <button
+        type="button"
+        onClick={() => {
+          setShowYearPicker(!showYearPicker);
+          setShowMonthPicker(false);
+        }}
+        className={cn(
+          sizeConfig.dropdown,
+          "flex items-center gap-1 rounded-md border border-border bg-background font-medium hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+        )}
+      >
+        {format(displayMonth, "yyyy")}
+        <IconChevronDown className={sizeConfig.dropdownIcon} />
+      </button>
+
+      {/* Month Picker Dropdown */}
+      {showMonthPicker && (
+        <div className="absolute top-full left-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px] animate-in fade-in-0 zoom-in-95">
+          <div className="grid grid-cols-3 gap-1">
+            {MONTHS.map((month, index) => (
+              <button
+                key={month}
+                type="button"
+                onClick={() => handleMonthSelect(index)}
+                className={cn(
+                  "px-2 py-1.5 rounded-md text-xs font-medium transition-colors",
+                  displayMonth.getMonth() === index
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                )}
+              >
+                {month.slice(0, 3)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Year Picker Dropdown */}
+      {showYearPicker && (
+        <div className="absolute top-full left-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px] animate-in fade-in-0 zoom-in-95">
+          <div className="flex items-center justify-between mb-2">
+            <button
+              type="button"
+              onClick={() => {
+                const newDate = setYear(displayMonth, currentYear - 12);
+                onMonthChange(newDate);
+              }}
+              className="p-1 rounded hover:bg-muted"
+            >
+              <IconChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="text-xs font-medium">
+              {startYear} - {startYear + 11}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                const newDate = setYear(displayMonth, currentYear + 12);
+                onMonthChange(newDate);
+              }}
+              className="p-1 rounded hover:bg-muted"
+            >
+              <IconChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-3 gap-1">
+            {years.map((year) => (
+              <button
+                key={year}
+                type="button"
+                onClick={() => handleYearSelect(year)}
+                className={cn(
+                  "px-2 py-1.5 rounded-md text-xs font-medium transition-colors",
+                  currentYear === year
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                )}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ============================================
 // CALENDAR COMPONENT
 // ============================================
 
 interface CalendarProps {
+  /** Selection mode */
   mode?: "single" | "range" | "multiple";
+  /** Size variant */
+  size?: "sm" | "default" | "lg";
+  /** Selected date(s) */
   selected?: Date | Date[] | { from?: Date; to?: Date };
+  /** Selection change handler */
   onSelect?: (
     date: Date | Date[] | { from?: Date; to?: Date } | undefined
   ) => void;
+  /** Function to disable specific dates */
   disabled?: (date: Date) => boolean;
+  /** Minimum selectable date */
   minDate?: Date;
+  /** Maximum selectable date */
   maxDate?: Date;
+  /** Auto-focus calendar on render */
+  autoFocus?: boolean;
+  /** Custom ARIA label for the calendar */
+  ariaLabel?: string;
+  /** Show Today button in footer */
+  showTodayButton?: boolean;
+  /** Custom footer content */
+  footer?: React.ReactNode;
+  /** Enable animations */
+  animate?: boolean;
+  /** Additional CSS classes */
   className?: string;
 }
 
 function Calendar({
   mode = "single",
+  size = "default",
   selected,
   onSelect,
   disabled,
   minDate,
   maxDate,
+  autoFocus = false,
+  ariaLabel,
+  showTodayButton = true,
+  footer,
+  animate = true,
   className,
 }: CalendarProps) {
-  const defaultClassNames = getDefaultClassNames();
+  const sizeConfig = calendarSizeConfig[size];
+  const [month, setMonth] = React.useState<Date>(new Date());
 
-  // Convert our API to react-day-picker's API
+  // Handle selection
   const handleSelect = React.useCallback(
     (date: Date | Date[] | { from?: Date; to?: Date } | undefined) => {
       onSelect?.(date);
@@ -48,130 +296,154 @@ function Calendar({
 
   // Build disabled matcher
   const disabledMatcher = React.useMemo(() => {
-    const matchers: Matcher[] = [];
+    const matchers: Array<
+      { before: Date } | { after: Date } | ((date: Date) => boolean)
+    > = [];
     if (minDate) matchers.push({ before: minDate });
     if (maxDate) matchers.push({ after: maxDate });
     if (disabled) matchers.push(disabled);
     return matchers.length > 0 ? matchers : undefined;
   }, [minDate, maxDate, disabled]);
 
-  // Render different DayPicker instances based on mode for proper type safety
-  if (mode === "range") {
-    return (
-      <DayPicker
-        mode="range"
-        selected={selected as DateRange | undefined}
-        onSelect={handleSelect as (date: DateRange | undefined) => void}
-        disabled={disabledMatcher}
-        required={false}
-        className={cn("p-3", className)}
-        showOutsideDays
-        classNames={{
-          root: `${defaultClassNames.root}`,
-          months: `${defaultClassNames.months}`,
-          month: `${defaultClassNames.month}`,
-          month_caption: `${defaultClassNames.month_caption} flex items-center justify-center mb-4`,
-          caption_label: `${defaultClassNames.caption_label} text-sm font-medium`,
-          nav: `${defaultClassNames.nav} flex items-center gap-1`,
-          button_previous: `${defaultClassNames.button_previous} p-1 rounded-md hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`,
-          button_next: `${defaultClassNames.button_next} p-1 rounded-md hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`,
-          month_grid: `${defaultClassNames.month_grid} w-full border-collapse`,
-          weekdays: `${defaultClassNames.weekdays}`,
-          weekday: `${defaultClassNames.weekday} h-9 text-center text-xs text-muted-foreground font-medium p-0`,
-          week: `${defaultClassNames.week}`,
-          day: `${defaultClassNames.day} h-9 text-center p-0`,
-          day_button: `${defaultClassNames.day_button} w-full h-full flex flex-col items-center justify-center hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background transition-all relative rounded-md`,
-          selected: `bg-primary text-primary-foreground font-medium rounded-md hover:bg-primary/90 aria-selected:bg-primary aria-selected:text-primary-foreground`,
-          today: `${defaultClassNames.today} bg-muted/30 font-medium text-foreground`,
-          outside: `${defaultClassNames.outside} text-muted-foreground/60`,
-          disabled: `${defaultClassNames.disabled} text-muted-foreground/50 opacity-60 cursor-not-allowed aria-disabled:true`,
-          range_start: `${defaultClassNames.range_start} bg-primary text-primary-foreground font-medium rounded-r-none hover:bg-primary/90 aria-selected:bg-primary aria-selected:text-primary-foreground`,
-          range_end: `${defaultClassNames.range_end} bg-primary text-primary-foreground font-medium rounded-l-none hover:bg-primary/90 aria-selected:bg-primary aria-selected:text-primary-foreground`,
-          range_middle: `bg-primary/10 text-foreground font-medium rounded-none hover:bg-primary/15 aria-selected:bg-primary/10 [&_.rdp-day_button]:text-foreground [&_.rdp-day_button]:font-medium`,
-          hidden: `${defaultClassNames.hidden} invisible`,
-        }}
-      />
-    );
-  }
+  // Handle Today button click
+  const handleTodayClick = React.useCallback(() => {
+    const today = new Date();
+    setMonth(today);
+    if (mode === "single") {
+      onSelect?.(today);
+    } else if (mode === "range") {
+      onSelect?.({ from: today, to: today });
+    } else if (mode === "multiple") {
+      onSelect?.([today]);
+    }
+  }, [mode, onSelect]);
 
-  // Multiple mode
-  if (mode === "multiple") {
-    return (
-      <DayPicker
-        mode="multiple"
-        selected={selected as Date[] | undefined}
-        onSelect={handleSelect as (date: Date[] | undefined) => void}
-        disabled={disabledMatcher}
-        required={false}
-        className={cn("p-3", className)}
-        showOutsideDays
-        classNames={{
-          root: `${defaultClassNames.root}`,
-          months: `${defaultClassNames.months}`,
-          month: `${defaultClassNames.month}`,
-          month_caption: `${defaultClassNames.month_caption} flex items-center justify-center mb-4`,
-          caption_label: `${defaultClassNames.caption_label} text-sm font-medium`,
-          nav: `${defaultClassNames.nav} flex items-center gap-1`,
-          button_previous: `${defaultClassNames.button_previous} p-1 rounded-md hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`,
-          button_next: `${defaultClassNames.button_next} p-1 rounded-md hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`,
-          month_grid: `${defaultClassNames.month_grid} w-full border-collapse`,
-          weekdays: `${defaultClassNames.weekdays}`,
-          weekday: `${defaultClassNames.weekday} h-9 text-center text-xs text-muted-foreground font-medium p-0`,
-          week: `${defaultClassNames.week}`,
-          day: `${defaultClassNames.day} h-9 text-center p-0`,
-          day_button: `${defaultClassNames.day_button} w-full h-full flex flex-col items-center justify-center hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-ring focus-visible:ring-offset-background transition-all relative rounded-md`,
-          selected: `bg-primary text-primary-foreground font-medium rounded-md hover:bg-primary/90 aria-selected:bg-primary aria-selected:text-primary-foreground`,
-          today: `${defaultClassNames.today} bg-muted/30 font-medium text-foreground`,
-          outside: `${defaultClassNames.outside} text-muted-foreground/60`,
-          disabled: `${defaultClassNames.disabled} text-muted-foreground/50 opacity-60 cursor-not-allowed aria-disabled:true`,
-          range_start: `${defaultClassNames.range_start} bg-primary text-primary-foreground font-medium rounded-r-none hover:bg-primary/90 aria-selected:bg-primary aria-selected:text-primary-foreground`,
-          range_end: `${defaultClassNames.range_end} bg-primary text-primary-foreground font-medium rounded-l-none hover:bg-primary/90 aria-selected:bg-primary aria-selected:text-primary-foreground`,
-          range_middle: `${defaultClassNames.range_middle} bg-primary/10 text-foreground font-medium rounded-none hover:bg-primary/15 aria-selected:bg-primary/10`,
-          hidden: `${defaultClassNames.hidden} invisible`,
-        }}
-      />
-    );
-  }
+  // Custom chevron component with size awareness
+  const ChevronComponent = React.useCallback(
+    (props: { orientation: "left" | "right" | "up" | "down" }) => (
+      <CustomChevron {...props} size={size} />
+    ),
+    [size]
+  );
 
-  // Single mode
   return (
-    <DayPicker
-      mode="single"
-      selected={selected as Date | undefined}
-      onSelect={handleSelect as (date: Date | undefined) => void}
-      disabled={disabledMatcher}
-      className={cn("p-3", className)}
-      showOutsideDays
-      classNames={{
-        root: `${defaultClassNames.root}`,
-        months: `${defaultClassNames.months}`,
-        month: `${defaultClassNames.month}`,
-        month_caption: `${defaultClassNames.month_caption} flex items-center justify-center mb-4`,
-        caption_label: `${defaultClassNames.caption_label} text-sm font-medium`,
-        nav: `${defaultClassNames.nav} flex items-center gap-1`,
-        button_previous: `${defaultClassNames.button_previous} p-1 rounded-md hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`,
-        button_next: `${defaultClassNames.button_next} p-1 rounded-md hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`,
-        month_grid: `${defaultClassNames.month_grid} w-full border-collapse`,
-        weekdays: `${defaultClassNames.weekdays}`,
-        weekday: `${defaultClassNames.weekday} h-9 text-center text-xs text-muted-foreground font-medium p-0`,
-        week: `${defaultClassNames.week}`,
-        day: `${defaultClassNames.day} h-9 text-center p-0`,
-        day_button: `${defaultClassNames.day_button} w-full h-full flex flex-col items-center justify-center hover:bg-muted/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-ring focus-visible:ring-offset-background transition-all relative rounded-md`,
-        selected: `bg-primary text-primary-foreground font-medium rounded-md hover:bg-primary/90 aria-selected:bg-primary aria-selected:text-primary-foreground`,
-        today: `${defaultClassNames.today} bg-muted/30 font-medium text-foreground`,
-        outside: `${defaultClassNames.outside} text-muted-foreground/60`,
-        disabled: `${defaultClassNames.disabled} text-muted-foreground/50 opacity-60 cursor-not-allowed aria-disabled:true`,
-        range_start: `${defaultClassNames.range_start} bg-primary text-primary-foreground font-medium rounded-r-none hover:bg-primary/90 aria-selected:bg-primary aria-selected:text-primary-foreground`,
-        range_end: `${defaultClassNames.range_end} bg-primary text-primary-foreground font-medium rounded-l-none hover:bg-primary/90 aria-selected:bg-primary aria-selected:text-primary-foreground`,
-        range_middle: `${defaultClassNames.range_middle} bg-primary/10 text-foreground font-medium rounded-none hover:bg-primary/15 aria-selected:bg-primary/10`,
-        hidden: `${defaultClassNames.hidden} invisible`,
-      }}
-    />
+    <div className={cn(sizeConfig.root, className)}>
+      {/* Custom Month/Year Header */}
+      <div className="flex items-center justify-between mb-3">
+        <button
+          type="button"
+          onClick={() => {
+            const prevMonth = new Date(month);
+            prevMonth.setMonth(prevMonth.getMonth() - 1);
+            setMonth(prevMonth);
+          }}
+          className={cn(
+            sizeConfig.nav,
+            "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          )}
+          aria-label="Previous month"
+        >
+          <IconChevronLeft className={sizeConfig.navIcon} />
+        </button>
+
+        <MonthCaption
+          displayMonth={month}
+          onMonthChange={setMonth}
+          size={size}
+        />
+
+        <button
+          type="button"
+          onClick={() => {
+            const nextMonth = new Date(month);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            setMonth(nextMonth);
+          }}
+          className={cn(
+            sizeConfig.nav,
+            "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          )}
+          aria-label="Next month"
+        >
+          <IconChevronRight className={sizeConfig.navIcon} />
+        </button>
+      </div>
+
+      <DayPicker
+        mode={mode}
+        selected={
+          selected as Date | Date[] | { from?: Date; to?: Date } | undefined
+        }
+        onSelect={
+          handleSelect as (
+            date: Date | Date[] | { from?: Date; to?: Date } | undefined
+          ) => void
+        }
+        disabled={disabledMatcher}
+        autoFocus={autoFocus}
+        animate={animate}
+        aria-label={ariaLabel}
+        month={month}
+        onMonthChange={setMonth}
+        hideNavigation
+        showOutsideDays
+        components={{
+          Chevron: ChevronComponent,
+        }}
+        classNames={{
+          months: "flex flex-col",
+          month: "",
+          month_caption: "hidden",
+          month_grid: "w-full border-collapse",
+          weekdays: "grid grid-cols-7",
+          weekday: cn(
+            sizeConfig.weekday,
+            "flex items-center justify-center text-muted-foreground font-medium"
+          ),
+          week: "grid grid-cols-7",
+          day: cn(sizeConfig.day, "flex items-center justify-center p-0"),
+          day_button: cn(
+            sizeConfig.dayButton,
+            "w-full h-full flex items-center justify-center rounded-md",
+            "hover:bg-muted transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          ),
+          selected:
+            "!bg-primary !text-primary-foreground font-medium hover:!bg-primary/90",
+          today: "font-semibold text-primary",
+          outside: "text-muted-foreground/40",
+          disabled: "opacity-40 cursor-not-allowed",
+          range_start: "rounded-r-none !bg-primary !text-primary-foreground",
+          range_end: "rounded-l-none !bg-primary !text-primary-foreground",
+          range_middle: "rounded-none !bg-primary/10",
+          hidden: "invisible",
+        }}
+        footer={
+          footer !== undefined ? (
+            footer
+          ) : showTodayButton ? (
+            <div className="mt-3 pt-3 border-t border-border">
+              <button
+                type="button"
+                onClick={handleTodayClick}
+                className={cn(
+                  "w-full py-1.5 rounded-md transition-colors font-medium",
+                  "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  sizeConfig.caption
+                )}
+              >
+                Today
+              </button>
+            </div>
+          ) : null
+        }
+      />
+    </div>
   );
 }
 
 // ============================================
-// MONTH PICKER (Keep existing implementation)
+// MONTH PICKER (Standalone)
 // ============================================
 
 const calendarButtonVariants = cva(
@@ -183,8 +455,9 @@ const calendarButtonVariants = cva(
         selected: "bg-primary text-primary-foreground hover:bg-primary/90",
       },
       size: {
-        default: "h-9 w-9",
-        sm: "h-7 w-7 text-xs",
+        sm: "h-6 text-xs",
+        default: "h-8 text-sm",
+        lg: "h-10 text-base",
       },
     },
     defaultVariants: {
@@ -194,69 +467,29 @@ const calendarButtonVariants = cva(
   }
 );
 
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-
 interface MonthPickerProps {
   mode?: "single" | "range";
+  size?: "sm" | "default" | "lg";
   selected?: Date | { from?: Date; to?: Date };
   onSelect?: (date: Date | { from?: Date; to?: Date }) => void;
   className?: string;
-  size?: "sm" | "default" | "lg";
-  currentYear?: number;
 }
 
 function MonthPicker({
   mode = "single",
+  size = "default",
   selected,
   onSelect,
   className,
-  size = "default",
-  currentYear: propCurrentYear,
 }: MonthPickerProps) {
   const [currentYear, setCurrentYear] = React.useState(
-    propCurrentYear ??
-      (selected instanceof Date
-        ? selected.getFullYear()
-        : new Date().getFullYear())
+    selected instanceof Date ? selected.getFullYear() : new Date().getFullYear()
   );
 
-  // Sync with prop when it changes - always update when prop changes
-  React.useEffect(() => {
-    if (propCurrentYear !== undefined) {
-      setCurrentYear(propCurrentYear);
-    }
-  }, [propCurrentYear]);
-
-  // Use prop value directly if available, otherwise use state
-  const displayYear = propCurrentYear ?? currentYear;
-
-  // Match calendar size configuration
-  const buttonSize = React.useMemo(() => {
-    switch (size) {
-      case "sm":
-        return "h-9";
-      case "lg":
-        return "h-12";
-      default:
-        return "h-11";
-    }
-  }, [size]);
+  const sizeConfig = calendarSizeConfig[size];
 
   const handleMonthClick = (monthIndex: number) => {
-    const date = new Date(displayYear, monthIndex, 1);
+    const date = new Date(currentYear, monthIndex, 1);
     if (mode === "single") {
       onSelect?.(date);
     } else {
@@ -278,7 +511,7 @@ function MonthPicker({
     if (selected instanceof Date) {
       return (
         selected.getMonth() === monthIndex &&
-        selected.getFullYear() === displayYear
+        selected.getFullYear() === currentYear
       );
     }
     return false;
@@ -286,42 +519,39 @@ function MonthPicker({
 
   return (
     <div
-      data-picker-container
-      className={cn("w-full min-w-0", className)}
-      style={{ width: "100%" }}
+      className={cn(
+        "bg-popover border border-border rounded-lg",
+        sizeConfig.root,
+        className
+      )}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <button
-          onClick={() => setCurrentYear(displayYear - 1)}
+          onClick={() => setCurrentYear(currentYear - 1)}
           className={cn(
-            buttonSize,
-            "w-9 rounded-lg hover:bg-muted flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            sizeConfig.nav,
+            "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors"
           )}
+          aria-label="Previous year"
         >
-          <IconChevronLeft className="h-4 w-4" />
+          <IconChevronLeft className={sizeConfig.navIcon} />
         </button>
-        <span className="text-sm font-medium">{displayYear}</span>
+        <span className={cn(sizeConfig.caption, "font-medium")}>
+          {currentYear}
+        </span>
         <button
-          onClick={() => setCurrentYear(displayYear + 1)}
+          onClick={() => setCurrentYear(currentYear + 1)}
           className={cn(
-            buttonSize,
-            "w-9 rounded-lg hover:bg-muted flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            sizeConfig.nav,
+            "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors"
           )}
+          aria-label="Next year"
         >
-          <IconChevronRight className="h-4 w-4" />
+          <IconChevronRight className={sizeConfig.navIcon} />
         </button>
       </div>
 
-      <div
-        data-picker-grid
-        className="grid grid-cols-3 gap-2 w-full border-collapse"
-        style={{
-          gridTemplateRows: "repeat(4, minmax(0, 1fr))",
-          width: "100%",
-          maxWidth: "100%",
-          minWidth: 0,
-        }}
-      >
+      <div className="grid grid-cols-3 gap-1.5">
         {MONTHS.map((month, index) => (
           <button
             key={month}
@@ -329,12 +559,12 @@ function MonthPicker({
             className={cn(
               calendarButtonVariants({
                 variant: isMonthSelected(index) ? "selected" : "default",
+                size,
               }),
-              buttonSize,
               "w-full"
             )}
           >
-            {month}
+            {month.slice(0, 3)}
           </button>
         ))}
       </div>
@@ -343,22 +573,23 @@ function MonthPicker({
 }
 
 // ============================================
-// YEAR PICKER (Keep existing implementation)
+// YEAR PICKER (Standalone)
 // ============================================
 
 interface YearPickerProps {
   mode?: "single" | "range";
+  size?: "sm" | "default" | "lg";
   selected?: number | { from?: number; to?: number };
   onSelect?: (year: number | { from?: number; to?: number }) => void;
   className?: string;
-  size?: "sm" | "default" | "lg";
 }
 
 function YearPicker({
+  mode = "single",
+  size = "default",
   selected,
   onSelect,
   className,
-  size = "default",
 }: YearPickerProps) {
   const currentYear = new Date().getFullYear();
   const [startYear, setStartYear] = React.useState(
@@ -366,24 +597,24 @@ function YearPicker({
       12
   );
 
+  const sizeConfig = calendarSizeConfig[size];
   const years = Array.from({ length: 12 }, (_, i) => startYear + i);
 
-  // Match calendar size configuration
-  const buttonSize = React.useMemo(() => {
-    switch (size) {
-      case "sm":
-        return "h-9";
-      case "lg":
-        return "h-12";
-      default:
-        return "h-11";
-    }
-  }, [size]);
-
   const handleYearClick = (year: number) => {
-    // Always call onSelect with the year number for date picker integration
-    // The date picker will handle the mode logic
-    onSelect?.(year);
+    if (mode === "single") {
+      onSelect?.(year);
+    } else {
+      const range = selected as { from?: number; to?: number } | undefined;
+      if (!range?.from || (range.from && range.to)) {
+        onSelect?.({ from: year, to: undefined });
+      } else {
+        if (year < range.from) {
+          onSelect?.({ from: year, to: range.from });
+        } else {
+          onSelect?.({ from: range.from, to: year });
+        }
+      }
+    }
   };
 
   const isYearSelected = (year: number) => {
@@ -393,44 +624,39 @@ function YearPicker({
 
   return (
     <div
-      data-picker-container
-      className={cn("w-full min-w-0", className)}
-      style={{ width: "100%" }}
+      className={cn(
+        "bg-popover border border-border rounded-lg",
+        sizeConfig.root,
+        className
+      )}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
         <button
           onClick={() => setStartYear(startYear - 12)}
           className={cn(
-            buttonSize,
-            "w-9 rounded-lg hover:bg-muted flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            sizeConfig.nav,
+            "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors"
           )}
+          aria-label="Previous 12 years"
         >
-          <IconChevronLeft className="h-4 w-4" />
+          <IconChevronLeft className={sizeConfig.navIcon} />
         </button>
-        <span className="text-sm font-medium">
+        <span className={cn(sizeConfig.caption, "font-medium")}>
           {startYear} - {startYear + 11}
         </span>
         <button
           onClick={() => setStartYear(startYear + 12)}
           className={cn(
-            buttonSize,
-            "w-9 rounded-lg hover:bg-muted flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            sizeConfig.nav,
+            "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors"
           )}
+          aria-label="Next 12 years"
         >
-          <IconChevronRight className="h-4 w-4" />
+          <IconChevronRight className={sizeConfig.navIcon} />
         </button>
       </div>
 
-      <div
-        data-picker-grid
-        className="grid grid-cols-3 gap-2 w-full border-collapse"
-        style={{
-          gridTemplateRows: "repeat(4, minmax(0, 1fr))",
-          width: "100%",
-          maxWidth: "100%",
-          minWidth: 0,
-        }}
-      >
+      <div className="grid grid-cols-3 gap-1.5">
         {years.map((year) => (
           <button
             key={year}
@@ -438,8 +664,8 @@ function YearPicker({
             className={cn(
               calendarButtonVariants({
                 variant: isYearSelected(year) ? "selected" : "default",
+                size,
               }),
-              buttonSize,
               "w-full"
             )}
           >
@@ -452,3 +678,4 @@ function YearPicker({
 }
 
 export { Calendar, MonthPicker, YearPicker, calendarButtonVariants };
+export type { CalendarProps, MonthPickerProps, YearPickerProps };

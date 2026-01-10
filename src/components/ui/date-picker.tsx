@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import {
   format,
@@ -10,9 +10,19 @@ import {
   endOfMonth,
   startOfYear,
   endOfYear,
+  setMonth,
+  setYear,
 } from "date-fns";
-import { IconCalendar, IconX } from "@tabler/icons-react";
+import {
+  IconCalendar,
+  IconX,
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronDown,
+} from "@tabler/icons-react";
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 // ============================================
 // TYPES
@@ -21,6 +31,9 @@ import { cn } from "@/lib/utils";
 /** Selection mode for the date picker */
 type DatePickerMode = "single" | "range";
 
+/** Apply mode - when the selection is committed */
+type ApplyMode = "immediate" | "confirm";
+
 /** Configuration for date presets */
 interface DatePreset {
   /** Display label for the preset */
@@ -28,6 +41,92 @@ interface DatePreset {
   /** Function that returns the preset value */
   getValue: () => Date | { from: Date; to: Date };
 }
+
+// ============================================
+// CVA VARIANTS
+// ============================================
+
+const datePickerTriggerVariants = cva(
+  "flex items-center gap-2 rounded-lg border cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-input bg-background hover:bg-muted/50 aria-expanded:ring-2 aria-expanded:ring-ring",
+        outline:
+          "border-2 border-input bg-transparent hover:border-primary/50 aria-expanded:border-primary",
+        ghost:
+          "border-transparent bg-transparent hover:bg-muted/50 aria-expanded:bg-muted/50",
+      },
+      size: {
+        sm: "h-8 px-2.5 text-xs",
+        default: "h-10 px-3 text-sm",
+        lg: "h-12 px-4 text-base",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+
+const calendarSizeConfig = {
+  sm: {
+    day: "h-7 w-7 text-xs",
+    dayButton: "h-7 w-7 text-xs",
+    weekday: "h-6 text-[10px]",
+    nav: "h-6 w-6",
+    navIcon: "h-3.5 w-3.5",
+    caption: "text-xs",
+    root: "p-3",
+    icon: "h-3.5 w-3.5",
+    clearIcon: "h-3 w-3",
+    dropdown: "text-xs h-6 px-1.5",
+    dropdownIcon: "h-3 w-3 ml-0.5",
+  },
+  default: {
+    day: "h-9 w-9 text-sm",
+    dayButton: "h-9 w-9 text-sm",
+    weekday: "h-7 text-xs",
+    nav: "h-7 w-7",
+    navIcon: "h-4 w-4",
+    caption: "text-sm",
+    root: "p-4",
+    icon: "h-4 w-4",
+    clearIcon: "h-3.5 w-3.5",
+    dropdown: "text-sm h-7 px-2",
+    dropdownIcon: "h-3.5 w-3.5 ml-1",
+  },
+  lg: {
+    day: "h-11 w-11 text-base",
+    dayButton: "h-11 w-11 text-base",
+    weekday: "h-8 text-sm",
+    nav: "h-8 w-8",
+    navIcon: "h-5 w-5",
+    caption: "text-base",
+    root: "p-5",
+    icon: "h-5 w-5",
+    clearIcon: "h-4 w-4",
+    dropdown: "text-base h-8 px-2.5",
+    dropdownIcon: "h-4 w-4 ml-1",
+  },
+};
+
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 // Default presets for single date selection
 const singlePresets: DatePreset[] = [
@@ -62,8 +161,180 @@ const rangePresets: DatePreset[] = [
   },
 ];
 
-/** Props for the DatePicker component */
-interface DatePickerProps {
+// ============================================
+// CUSTOM CHEVRON COMPONENT
+// ============================================
+
+function CustomChevron({
+  orientation,
+  size = "default",
+}: {
+  orientation: "left" | "right" | "up" | "down";
+  size?: "sm" | "default" | "lg";
+}) {
+  const sizeConfig = calendarSizeConfig[size];
+
+  switch (orientation) {
+    case "left":
+      return <IconChevronLeft className={sizeConfig.navIcon} />;
+    case "right":
+      return <IconChevronRight className={sizeConfig.navIcon} />;
+    case "down":
+      return <IconChevronDown className={sizeConfig.dropdownIcon} />;
+    default:
+      return <IconChevronDown className={sizeConfig.dropdownIcon} />;
+  }
+}
+
+// ============================================
+// CUSTOM MONTH CAPTION COMPONENT
+// ============================================
+
+interface MonthCaptionProps {
+  displayMonth: Date;
+  onMonthChange: (month: Date) => void;
+  size: "sm" | "default" | "lg";
+}
+
+function MonthCaption({
+  displayMonth,
+  onMonthChange,
+  size,
+}: MonthCaptionProps) {
+  const [showMonthPicker, setShowMonthPicker] = React.useState(false);
+  const [showYearPicker, setShowYearPicker] = React.useState(false);
+  const sizeConfig = calendarSizeConfig[size];
+
+  const currentYear = displayMonth.getFullYear();
+  const startYear = Math.floor(currentYear / 12) * 12;
+  const years = Array.from({ length: 12 }, (_, i) => startYear + i);
+
+  const handleMonthSelect = (monthIndex: number) => {
+    const newDate = setMonth(displayMonth, monthIndex);
+    onMonthChange(newDate);
+    setShowMonthPicker(false);
+  };
+
+  const handleYearSelect = (year: number) => {
+    const newDate = setYear(displayMonth, year);
+    onMonthChange(newDate);
+    setShowYearPicker(false);
+  };
+
+  return (
+    <div className="relative flex items-center gap-1">
+      {/* Month Button */}
+      <button
+        type="button"
+        onClick={() => {
+          setShowMonthPicker(!showMonthPicker);
+          setShowYearPicker(false);
+        }}
+        className={cn(
+          sizeConfig.dropdown,
+          "flex items-center gap-1 rounded-md border border-border bg-background font-medium hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+        )}
+      >
+        {format(displayMonth, "MMMM")}
+        <IconChevronDown className={sizeConfig.dropdownIcon} />
+      </button>
+
+      {/* Year Button */}
+      <button
+        type="button"
+        onClick={() => {
+          setShowYearPicker(!showYearPicker);
+          setShowMonthPicker(false);
+        }}
+        className={cn(
+          sizeConfig.dropdown,
+          "flex items-center gap-1 rounded-md border border-border bg-background font-medium hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+        )}
+      >
+        {format(displayMonth, "yyyy")}
+        <IconChevronDown className={sizeConfig.dropdownIcon} />
+      </button>
+
+      {/* Month Picker Dropdown */}
+      {showMonthPicker && (
+        <div className="absolute top-full left-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px] animate-in fade-in-0 zoom-in-95">
+          <div className="grid grid-cols-3 gap-1">
+            {MONTHS.map((month, index) => (
+              <button
+                key={month}
+                type="button"
+                onClick={() => handleMonthSelect(index)}
+                className={cn(
+                  "px-2 py-1.5 rounded-md text-xs font-medium transition-colors",
+                  displayMonth.getMonth() === index
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                )}
+              >
+                {month.slice(0, 3)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Year Picker Dropdown */}
+      {showYearPicker && (
+        <div className="absolute top-full left-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px] animate-in fade-in-0 zoom-in-95">
+          <div className="flex items-center justify-between mb-2">
+            <button
+              type="button"
+              onClick={() => {
+                const newDate = setYear(displayMonth, currentYear - 12);
+                onMonthChange(newDate);
+              }}
+              className="p-1 rounded hover:bg-muted"
+            >
+              <IconChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="text-xs font-medium">
+              {startYear} - {startYear + 11}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                const newDate = setYear(displayMonth, currentYear + 12);
+                onMonthChange(newDate);
+              }}
+              className="p-1 rounded hover:bg-muted"
+            >
+              <IconChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-3 gap-1">
+            {years.map((year) => (
+              <button
+                key={year}
+                type="button"
+                onClick={() => handleYearSelect(year)}
+                className={cn(
+                  "px-2 py-1.5 rounded-md text-xs font-medium transition-colors",
+                  currentYear === year
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                )}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================
+// PROPS INTERFACE
+// ============================================
+
+interface DatePickerProps
+  extends VariantProps<typeof datePickerTriggerVariants> {
   /** Selection mode: 'single' for single date, 'range' for date range */
   mode?: DatePickerMode;
   /** Current selected value */
@@ -80,6 +351,10 @@ interface DatePickerProps {
   minDate?: Date;
   /** Maximum selectable date */
   maxDate?: Date;
+  /** Apply mode: immediate or confirm */
+  applyMode?: ApplyMode;
+  /** Custom ARIA label */
+  ariaLabel?: string;
   /** Additional CSS classes */
   className?: string;
 }
@@ -88,28 +363,10 @@ interface DatePickerProps {
 // DATE PICKER COMPONENT
 // ============================================
 
-/**
- * DatePicker component with full accessibility support.
- *
- * @example
- * ```tsx
- * // Single date selection
- * <DatePicker
- *   mode="single"
- *   value={date}
- *   onChange={setDate}
- * />
- *
- * // Date range selection
- * <DatePicker
- *   mode="range"
- *   value={{ from: startDate, to: endDate }}
- *   onChange={setDateRange}
- * />
- * ```
- */
 function DatePicker({
   mode = "single",
+  variant = "default",
+  size = "default",
   value,
   onChange,
   placeholder = "Select date",
@@ -117,14 +374,27 @@ function DatePicker({
   showPresets = true,
   minDate,
   maxDate,
+  applyMode = "immediate",
+  ariaLabel,
   className,
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [pendingValue, setPendingValue] = React.useState<
+    Date | { from?: Date; to?: Date } | undefined
+  >(undefined);
+  const [month, setMonthState] = React.useState<Date>(new Date());
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<HTMLDivElement>(null);
 
-  const defaultClassNames = getDefaultClassNames();
+  const sizeConfig = calendarSizeConfig[size || "default"];
+
+  // Initialize pending value when opening in confirm mode
+  React.useEffect(() => {
+    if (isOpen && applyMode === "confirm") {
+      setPendingValue(value);
+    }
+  }, [isOpen, applyMode, value]);
 
   // Close on outside click
   React.useEffect(() => {
@@ -133,25 +403,44 @@ function DatePicker({
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
       ) {
+        if (applyMode === "confirm") {
+          setPendingValue(undefined);
+        }
         setIsOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [applyMode]);
+
+  // Handle keyboard
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        if (applyMode === "confirm") {
+          setPendingValue(undefined);
+        }
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, applyMode]);
 
   // ============================================
   // HELPERS
   // ============================================
 
-  // Format display value
+  const currentValue = applyMode === "confirm" && isOpen ? pendingValue : value;
+
   const formatValue = () => {
-    if (!value) return placeholder;
-    if (value instanceof Date) {
-      return format(value, "MMM dd, yyyy");
+    const displayValue = value;
+    if (!displayValue) return placeholder;
+    if (displayValue instanceof Date) {
+      return format(displayValue, "MMM dd, yyyy");
     }
-    if ("from" in value) {
-      const { from, to } = value;
+    if ("from" in displayValue) {
+      const { from, to } = displayValue;
       if (!from) return placeholder;
       if (!to) return format(from, "MMM dd, yyyy") + " - ...";
       return `${format(from, "MMM dd")} - ${format(to, "MMM dd, yyyy")}`;
@@ -159,9 +448,8 @@ function DatePicker({
     return placeholder;
   };
 
-  // Build disabled matcher
   const disabledMatcher = React.useMemo(() => {
-    const matchers: any[] = [];
+    const matchers: Array<{ before: Date } | { after: Date }> = [];
     if (minDate) matchers.push({ before: minDate });
     if (maxDate) matchers.push({ after: maxDate });
     return matchers.length > 0 ? matchers : undefined;
@@ -171,18 +459,41 @@ function DatePicker({
   // HANDLERS
   // ============================================
 
-  // Handle preset click
-  const handlePresetClick = (preset: DatePreset) => {
-    onChange?.(preset.getValue() as Date | { from?: Date; to?: Date });
+  const handleCalendarSelect = (
+    date: Date | Date[] | { from?: Date; to?: Date } | undefined
+  ) => {
+    if (applyMode === "confirm") {
+      setPendingValue(date as Date | { from?: Date; to?: Date });
+    } else {
+      onChange?.(date as Date | { from?: Date; to?: Date });
+    }
   };
 
-  // Clear selection
+  const handlePresetClick = (preset: DatePreset) => {
+    const presetValue = preset.getValue() as Date | { from?: Date; to?: Date };
+    if (applyMode === "confirm") {
+      setPendingValue(presetValue);
+    } else {
+      onChange?.(presetValue);
+    }
+  };
+
+  const handleApply = () => {
+    onChange?.(pendingValue);
+    setPendingValue(undefined);
+    setIsOpen(false);
+  };
+
+  const handleCancel = () => {
+    setPendingValue(undefined);
+    setIsOpen(false);
+  };
+
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
     onChange?.(undefined);
   };
 
-  // Handle trigger keyboard events
   const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -190,7 +501,22 @@ function DatePicker({
     }
   };
 
+  const handleTodayClick = () => {
+    const today = new Date();
+    setMonthState(today);
+    handleCalendarSelect(
+      mode === "single" ? today : { from: today, to: today }
+    );
+  };
+
   const presets = mode === "single" ? singlePresets : rangePresets;
+
+  const ChevronComponent = React.useCallback(
+    (props: { orientation: "left" | "right" | "up" | "down" }) => (
+      <CustomChevron {...props} size={size || "default"} />
+    ),
+    [size]
+  );
 
   // ============================================
   // RENDER
@@ -205,24 +531,19 @@ function DatePicker({
         tabIndex={disabled ? -1 : 0}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
-        aria-label={`Date picker, ${formatValue()}`}
+        aria-label={ariaLabel || `Date picker, ${formatValue()}`}
         className={cn(
-          "flex items-center gap-2 h-10 px-3 rounded-lg border border-input bg-background cursor-pointer",
-          "hover:bg-muted/50 transition-colors",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          isOpen && "ring-2 ring-ring",
+          datePickerTriggerVariants({ variant, size }),
           disabled && "opacity-50 pointer-events-none"
         )}
         onClick={() => setIsOpen(!isOpen)}
         onKeyDown={handleTriggerKeyDown}
       >
         <IconCalendar
-          className="h-4 w-4 text-muted-foreground shrink-0"
+          className={cn(sizeConfig.icon, "text-muted-foreground shrink-0")}
           aria-hidden="true"
         />
-        <span
-          className={cn("flex-1 text-sm", !value && "text-muted-foreground")}
-        >
+        <span className={cn("flex-1", !value && "text-muted-foreground")}>
           {formatValue()}
         </span>
         {value && (
@@ -233,7 +554,7 @@ function DatePicker({
             aria-label="Clear date"
           >
             <IconX
-              className="h-3.5 w-3.5 text-muted-foreground"
+              className={cn(sizeConfig.clearIcon, "text-muted-foreground")}
               aria-hidden="true"
             />
           </button>
@@ -247,96 +568,192 @@ function DatePicker({
           aria-modal="true"
           aria-label={`Choose ${mode === "range" ? "date range" : "date"}`}
           className={cn(
-            "absolute z-50 mt-2 flex rounded-xl border border-border bg-popover shadow-xl",
+            "absolute z-50 mt-2 flex flex-col rounded-xl border border-border bg-popover shadow-xl",
             "animate-in fade-in-0 zoom-in-95 duration-200"
           )}
         >
-          {/* Presets Sidebar */}
-          {showPresets && (
-            <div className="border-r border-border p-4 min-w-[160px] flex flex-col">
-              <div className="text-xs font-semibold text-muted-foreground mb-3">
-                Quick Select
+          <div className="flex">
+            {/* Presets Sidebar */}
+            {showPresets && (
+              <div className="border-r border-border p-4 min-w-[140px] flex flex-col">
+                <div className="text-xs font-semibold text-muted-foreground mb-3">
+                  Quick Select
+                </div>
+                <div className="flex flex-col gap-1">
+                  {presets.map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => handlePresetClick(preset)}
+                      className={cn(
+                        "w-full text-left px-3 py-2 rounded-lg",
+                        "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                        "transition-colors font-medium",
+                        sizeConfig.caption
+                      )}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-col gap-1.5">
-                {presets.map((preset) => (
-                  <button
-                    key={preset.label}
-                    type="button"
-                    onClick={() => handlePresetClick(preset)}
-                    className={cn(
-                      "w-full text-left text-sm px-3 py-2.5 rounded-lg",
-                      "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      "transition-colors font-medium"
-                    )}
-                  >
-                    {preset.label}
-                  </button>
-                ))}
+            )}
+
+            {/* Calendar */}
+            <div className={sizeConfig.root}>
+              {/* Custom Header */}
+              <div className="flex items-center justify-between mb-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const prevMonth = new Date(month);
+                    prevMonth.setMonth(prevMonth.getMonth() - 1);
+                    setMonthState(prevMonth);
+                  }}
+                  className={cn(
+                    sizeConfig.nav,
+                    "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  )}
+                  aria-label="Previous month"
+                >
+                  <IconChevronLeft className={sizeConfig.navIcon} />
+                </button>
+
+                <MonthCaption
+                  displayMonth={month}
+                  onMonthChange={setMonthState}
+                  size={size || "default"}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextMonth = new Date(month);
+                    nextMonth.setMonth(nextMonth.getMonth() + 1);
+                    setMonthState(nextMonth);
+                  }}
+                  className={cn(
+                    sizeConfig.nav,
+                    "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  )}
+                  aria-label="Next month"
+                >
+                  <IconChevronRight className={sizeConfig.navIcon} />
+                </button>
+              </div>
+
+              <DayPicker
+                mode={mode}
+                selected={
+                  currentValue as Date | { from?: Date; to?: Date } | undefined
+                }
+                onSelect={
+                  handleCalendarSelect as (
+                    date: Date | { from?: Date; to?: Date } | undefined
+                  ) => void
+                }
+                disabled={disabledMatcher}
+                autoFocus
+                month={month}
+                onMonthChange={setMonthState}
+                hideNavigation
+                showOutsideDays
+                components={{
+                  Chevron: ChevronComponent,
+                }}
+                classNames={{
+                  months: "flex flex-col",
+                  month: "",
+                  month_caption: "hidden",
+                  month_grid: "w-full border-collapse",
+                  weekdays: "grid grid-cols-7",
+                  weekday: cn(
+                    sizeConfig.weekday,
+                    "flex items-center justify-center text-muted-foreground font-medium"
+                  ),
+                  week: "grid grid-cols-7",
+                  day: cn(
+                    sizeConfig.day,
+                    "flex items-center justify-center p-0"
+                  ),
+                  day_button: cn(
+                    sizeConfig.dayButton,
+                    "w-full h-full flex items-center justify-center rounded-md",
+                    "hover:bg-muted transition-colors",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  ),
+                  selected:
+                    "!bg-primary !text-primary-foreground font-medium hover:!bg-primary/90 !rounded-lg",
+                  today: "font-semibold text-primary",
+                  outside: "text-muted-foreground/40",
+                  disabled: "opacity-40 cursor-not-allowed",
+                  range_start:
+                    "rounded-r-none !bg-primary !text-primary-foreground",
+                  range_end:
+                    "rounded-l-none !bg-primary !text-primary-foreground",
+                  range_middle: "rounded-none !bg-primary/10",
+                  hidden: "invisible",
+                }}
+                footer={
+                  applyMode === "immediate" ? (
+                    <div className="mt-3 pt-3 border-t border-border">
+                      <button
+                        type="button"
+                        onClick={handleTodayClick}
+                        className={cn(
+                          "w-full py-1.5 rounded-lg transition-colors font-medium",
+                          "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          sizeConfig.caption
+                        )}
+                      >
+                        Today
+                      </button>
+                    </div>
+                  ) : null
+                }
+              />
+            </div>
+          </div>
+
+          {/* Confirm Mode Footer */}
+          {applyMode === "confirm" && (
+            <div className="flex items-center justify-between gap-2 p-3 border-t border-border">
+              <div className={cn("text-muted-foreground", sizeConfig.caption)}>
+                {pendingValue
+                  ? pendingValue instanceof Date
+                    ? format(pendingValue, "PPP")
+                    : "from" in pendingValue && pendingValue.from
+                    ? `${format(pendingValue.from, "MMM dd")}${
+                        pendingValue.to
+                          ? ` - ${format(pendingValue.to, "MMM dd, yyyy")}`
+                          : " - ..."
+                      }`
+                    : "Select a date"
+                  : "Select a date"}
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size={size === "lg" ? "default" : "sm"}
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size={size === "lg" ? "default" : "sm"}
+                  onClick={handleApply}
+                  disabled={!pendingValue}
+                >
+                  Apply
+                </Button>
               </div>
             </div>
           )}
-
-          {/* Calendar using react-day-picker */}
-          <div className="p-5">
-            <DayPicker
-              mode={mode}
-              selected={value as any}
-              onSelect={onChange as any}
-              disabled={disabledMatcher}
-              showOutsideDays
-              classNames={{
-                root: `${defaultClassNames.root}`,
-                months: `${defaultClassNames.months}`,
-                month: `${defaultClassNames.month}`,
-                month_caption: `${defaultClassNames.month_caption} flex items-center justify-between mb-4`,
-                caption_label: `${defaultClassNames.caption_label} text-sm font-medium`,
-                nav: `${defaultClassNames.nav} flex items-center gap-1`,
-                button_previous: `${defaultClassNames.button_previous} p-2 rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`,
-                button_next: `${defaultClassNames.button_next} p-2 rounded-lg hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`,
-                month_grid: `${defaultClassNames.month_grid} w-full border-collapse`,
-                weekdays: `${defaultClassNames.weekdays}`,
-                weekday: `${defaultClassNames.weekday} h-11 w-11 flex items-center justify-center text-xs text-muted-foreground font-semibold`,
-                week: `${defaultClassNames.week}`,
-                day: `${defaultClassNames.day} h-11 w-11`,
-                day_button: `${defaultClassNames.day_button} h-11 w-11 flex items-center justify-center text-sm rounded-full transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1`,
-                selected: `${defaultClassNames.selected} bg-primary text-primary-foreground font-medium hover:bg-primary/90`,
-                today: `${defaultClassNames.today} font-semibold text-primary`,
-                outside: `${defaultClassNames.outside} text-muted-foreground/40`,
-                disabled: `${defaultClassNames.disabled} opacity-40 cursor-not-allowed`,
-                range_start: `${defaultClassNames.range_start} bg-primary text-primary-foreground rounded-r-none`,
-                range_end: `${defaultClassNames.range_end} bg-primary text-primary-foreground rounded-l-none`,
-                range_middle: `${defaultClassNames.range_middle} bg-primary/10 rounded-none`,
-                hidden: `${defaultClassNames.hidden} invisible`,
-              }}
-              footer={
-                <div className="mt-3 pt-3 border-t border-border">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const today = new Date();
-                      if (mode === "single") {
-                        onChange?.(today);
-                      } else {
-                        onChange?.({ from: today, to: today });
-                      }
-                    }}
-                    className={cn(
-                      "w-full text-sm py-2 rounded-lg",
-                      "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      "transition-colors"
-                    )}
-                  >
-                    Today
-                  </button>
-                </div>
-              }
-            />
-          </div>
         </div>
       )}
     </div>
   );
 }
 
-export { DatePicker };
-export type { DatePickerProps, DatePreset };
+export { DatePicker, datePickerTriggerVariants };
+export type { DatePickerProps, DatePreset, ApplyMode };

@@ -188,51 +188,51 @@ function DataTableRoot<TData, TValue>({
     getExpandedRowModel: getExpandedRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
 
-    // Sorting
-    onSortingChange: enableSorting ? setSorting : undefined,
+    // Sorting - Always provide handler (TanStack Table requirement)
+    onSortingChange: setSorting,
     enableSortingRemoval: enableSorting,
+    enableSorting: enableSorting,
 
-    // Filtering
-    onColumnFiltersChange: enableFiltering ? setColumnFilters : undefined,
-    onGlobalFilterChange: enableFiltering ? setGlobalFilter : undefined,
+    // Filtering - Always provide handlers (TanStack Table requirement)
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    enableColumnFilters: enableFiltering,
+    enableGlobalFilter: enableFiltering,
 
     // Row Selection
     onRowSelectionChange: setRowSelection,
     enableRowSelection: enableRowSelection,
 
     // Column Ordering
-    onColumnOrderChange: enableColumnOrdering ? setColumnOrder : undefined,
+    onColumnOrderChange: setColumnOrder,
+    enableColumnOrdering: enableColumnOrdering,
 
     // Column Pinning
-    onColumnPinningChange: enableColumnPinning ? setColumnPinning : undefined,
+    onColumnPinningChange: setColumnPinning,
     enableColumnPinning: enableColumnPinning,
 
     // Column Resizing
     enableColumnResizing: enableColumnResizing,
     columnResizeMode: enableColumnResizing ? ("onChange" as const) : undefined,
 
-    // Expanding
-    onExpandedChange: enableExpanding ? setExpanded : undefined,
-    getSubRows: enableExpanding ? getSubRows : undefined,
-    getRowCanExpand:
-      enableExpanding && getRowCanExpand ? getRowCanExpand : undefined,
+    // Expanding - Always provide handler, pass getRowCanExpand if provided
+    onExpandedChange: setExpanded,
+    getSubRows: getSubRows,
+    getRowCanExpand: getRowCanExpand,
+    enableExpanding: enableExpanding,
 
     // Grouping
-    onGroupingChange: enableGrouping ? setGrouping : undefined,
+    onGroupingChange: setGrouping,
+    enableGrouping: enableGrouping,
 
-    // Column Visibility
+    // Column Visibility - Always provide handler
     onColumnVisibilityChange: setColumnVisibility,
 
     // State - Always provide all state properties
     state: {
       sorting,
       columnFilters,
-      columnVisibility: {
-        ...columnVisibility,
-        // Ensure select and expand columns are always visible
-        select: columnVisibility.select ?? true,
-        expand: columnVisibility.expand ?? true,
-      },
+      columnVisibility,
       rowSelection,
       columnOrder,
       columnPinning,
@@ -249,6 +249,7 @@ function DataTableRoot<TData, TValue>({
   });
 
   // Store virtualization props in context for child components
+  // Include state values in deps to trigger re-renders when table state changes
   const contextValue = React.useMemo(
     () => ({
       table: table as TableType<unknown>,
@@ -259,6 +260,7 @@ function DataTableRoot<TData, TValue>({
       isLoading,
       hasNextPage,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       table,
       enableVirtualization,
@@ -267,6 +269,16 @@ function DataTableRoot<TData, TValue>({
       onLoadMore,
       isLoading,
       hasNextPage,
+      // Include state values to trigger re-renders
+      columnFilters,
+      globalFilter,
+      columnVisibility,
+      sorting,
+      rowSelection,
+      expanded,
+      columnOrder,
+      columnPinning,
+      grouping,
     ]
   );
 

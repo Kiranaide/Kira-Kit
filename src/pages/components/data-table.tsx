@@ -430,8 +430,8 @@ const columns: ColumnDef<YourType>[] = [
           Column Pinning
         </h2>
         <p className="text-sm text-muted-foreground">
-          Click the three-dot menu on column headers to pin columns left or right.
-          Pinned columns stay visible while scrolling.
+          Click the three-dot menu on column headers to pin columns left or
+          right. Pinned columns stay visible while scrolling.
         </p>
         <DataTableRoot
           columns={basicColumns.map((col, idx) => ({
@@ -520,21 +520,30 @@ const columns: ColumnDef<YourType>[] = [
           Virtualization (10,000 rows)
         </h2>
         <p className="text-sm text-muted-foreground">
-          Virtualization enables smooth scrolling with large datasets. Only visible rows are rendered, making it performant even with thousands of rows. Sorting and filtering work seamlessly.
+          Virtualization enables smooth scrolling with large datasets. Only
+          visible rows are rendered, making it performant even with thousands of
+          rows. Sorting and filtering work seamlessly.
         </p>
         <DataTableRoot
           columns={basicColumns}
           data={React.useMemo(() => {
             // Generate 10,000 rows for virtualization demo
             const largeData: Payment[] = [];
-            const statuses: Payment["status"][] = ["pending", "processing", "success", "failed"];
+            const statuses: Payment["status"][] = [
+              "pending",
+              "processing",
+              "success",
+              "failed",
+            ];
             for (let i = 0; i < 10000; i++) {
               largeData.push({
                 id: `row-${i}`,
                 amount: Math.floor(Math.random() * 10000) + 100,
                 status: statuses[Math.floor(Math.random() * statuses.length)],
                 email: `user${i}@example.com`,
-                createdAt: new Date(2024, 0, 1 + (i % 365)).toISOString().split("T")[0],
+                createdAt: new Date(2024, 0, 1 + (i % 365))
+                  .toISOString()
+                  .split("T")[0],
               });
             }
             return largeData;
@@ -628,7 +637,8 @@ const columns: ColumnDef<YourType>[] = [
           Async Data Loading
         </h2>
         <p className="text-sm text-muted-foreground">
-          Example of loading data asynchronously with loading states, error handling, and retry functionality.
+          Example of loading data asynchronously with loading states, error
+          handling, and retry functionality.
         </p>
         <AsyncDataTableExample />
       </section>
@@ -646,36 +656,41 @@ function AsyncDataTableExample() {
   const [retryCount, setRetryCount] = React.useState(0);
 
   // Simulate async data fetching
-  const fetchData = React.useCallback(async (shouldFail = false) => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Simulate API call with delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      
-      if (shouldFail && retryCount < 2) {
-        throw new Error("Failed to load data. Please try again.");
+  const fetchData = React.useCallback(
+    async (shouldFail = false) => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // Simulate API call with delay
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        if (shouldFail && retryCount < 2) {
+          throw new Error("Failed to load data. Please try again.");
+        }
+
+        // Generate mock data
+        const mockData: Payment[] = Array.from({ length: 20 }, (_, i) => ({
+          id: `async-${Date.now()}-${i}`,
+          amount: Math.floor(Math.random() * 10000) + 100,
+          status: (["pending", "processing", "success", "failed"] as const)[
+            Math.floor(Math.random() * 4)
+          ],
+          email: `user${i + 1}@example.com`,
+          createdAt: new Date(2024, 0, 1 + (i % 365))
+            .toISOString()
+            .split("T")[0],
+        }));
+
+        setData(mockData);
+        setIsLoading(false);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+        setIsLoading(false);
       }
-      
-      // Generate mock data
-      const mockData: Payment[] = Array.from({ length: 20 }, (_, i) => ({
-        id: `async-${Date.now()}-${i}`,
-        amount: Math.floor(Math.random() * 10000) + 100,
-        status: (["pending", "processing", "success", "failed"] as const)[
-          Math.floor(Math.random() * 4)
-        ],
-        email: `user${i + 1}@example.com`,
-        createdAt: new Date(2024, 0, 1 + (i % 365)).toISOString().split("T")[0],
-      }));
-      
-      setData(mockData);
-      setIsLoading(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-      setIsLoading(false);
-    }
-  }, [retryCount]);
+    },
+    [retryCount]
+  );
 
   React.useEffect(() => {
     fetchData(retryCount > 0);
