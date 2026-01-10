@@ -1,76 +1,11 @@
 import * as React from "react";
-import {
-  format,
-  addMonths,
-  subMonths,
-  addDays,
-  addYears,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-  isSameMonth,
-  isSameDay,
-  isWithinInterval,
-  isBefore,
-  isAfter,
-} from "date-fns";
-import { cva } from "class-variance-authority";
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import "react-day-picker/style.css";
 import { cn } from "@/lib/utils";
 
-// Calendar button styles
-const calendarButtonVariants = cva(
-  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
-  {
-    variants: {
-      variant: {
-        default: "hover:bg-muted",
-        selected: "bg-primary text-primary-foreground hover:bg-primary/90",
-        today: "bg-muted text-foreground",
-        range: "bg-primary/10 text-primary",
-        rangeStart: "bg-primary text-primary-foreground rounded-r-none",
-        rangeEnd: "bg-primary text-primary-foreground rounded-l-none",
-        outside: "text-muted-foreground opacity-50",
-      },
-      size: {
-        default: "h-9 w-9",
-        sm: "h-7 w-7 text-xs",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-);
-
-// Day of week headers
-const WEEK_DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-const WEEK_DAYS_FULL = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+// ============================================
+// CALENDAR COMPONENT
+// ============================================
 
 interface CalendarProps {
   mode?: "single" | "range" | "multiple";
@@ -93,252 +28,104 @@ function Calendar({
   maxDate,
   className,
 }: CalendarProps) {
-  const [currentMonth, setCurrentMonth] = React.useState(
-    selected instanceof Date ? selected : new Date()
-  );
-  const [focusedDate, setFocusedDate] = React.useState<Date | null>(null);
-  const gridRef = React.useRef<HTMLDivElement>(null);
+  const defaultClassNames = getDefaultClassNames();
 
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
-  const calendarStart = startOfWeek(monthStart);
-  const calendarEnd = endOfWeek(monthEnd);
-
-  const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
-
-  const isDateDisabled = (date: Date) => {
-    if (disabled?.(date)) return true;
-    if (minDate && isBefore(date, minDate)) return true;
-    if (maxDate && isAfter(date, maxDate)) return true;
-    return false;
-  };
-
-  const isSelected = (date: Date) => {
-    if (!selected) return false;
-    if (selected instanceof Date) return isSameDay(date, selected);
-    if (Array.isArray(selected))
-      return selected.some((d) => isSameDay(date, d));
-    return false;
-  };
-
-  const isInRange = (date: Date) => {
-    if (!selected || typeof selected !== "object" || !("from" in selected))
-      return false;
-    const { from, to } = selected;
-    if (!from || !to) return false;
-    return isWithinInterval(date, { start: from, end: to });
-  };
-
-  const isRangeStart = (date: Date) => {
-    if (!selected || typeof selected !== "object" || !("from" in selected))
-      return false;
-    return selected.from ? isSameDay(date, selected.from) : false;
-  };
-
-  const isRangeEnd = (date: Date) => {
-    if (!selected || typeof selected !== "object" || !("from" in selected))
-      return false;
-    return selected.to ? isSameDay(date, selected.to) : false;
-  };
-
-  const handleDayClick = (date: Date) => {
-    if (isDateDisabled(date)) return;
-
-    if (mode === "single") {
+  // Convert our API to react-day-picker's API
+  const handleSelect = React.useCallback(
+    (date: Date | Date[] | { from?: Date; to?: Date } | undefined) => {
       onSelect?.(date);
-    } else if (mode === "multiple") {
-      const currentSelected = Array.isArray(selected) ? selected : [];
-      const exists = currentSelected.some((d) => isSameDay(date, d));
-      if (exists) {
-        onSelect?.(currentSelected.filter((d) => !isSameDay(date, d)));
-      } else {
-        onSelect?.([...currentSelected, date]);
-      }
-    } else if (mode === "range") {
-      const range = selected as { from?: Date; to?: Date } | undefined;
-      if (!range?.from || (range.from && range.to)) {
-        onSelect?.({ from: date, to: undefined });
-      } else {
-        if (isBefore(date, range.from)) {
-          onSelect?.({ from: date, to: range.from });
-        } else {
-          onSelect?.({ from: range.from, to: date });
-        }
-      }
-    }
-  };
+    },
+    [onSelect]
+  );
 
-  const getDayVariant = (
-    date: Date
-  ):
-    | "default"
-    | "outside"
-    | "rangeStart"
-    | "rangeEnd"
-    | "selected"
-    | "range"
-    | "today" => {
-    if (!isSameMonth(date, currentMonth)) return "outside";
-    if (isRangeStart(date)) return "rangeStart";
-    if (isRangeEnd(date)) return "rangeEnd";
-    if (isSelected(date)) return "selected";
-    if (isInRange(date)) return "range";
-    if (isSameDay(date, new Date())) return "today";
-    return "default";
-  };
-
-  // Keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent, date: Date) => {
-    let newDate: Date | null = null;
-
-    switch (e.key) {
-      case "ArrowLeft":
-        newDate = addDays(date, -1);
-        break;
-      case "ArrowRight":
-        newDate = addDays(date, 1);
-        break;
-      case "ArrowUp":
-        newDate = addDays(date, -7);
-        break;
-      case "ArrowDown":
-        newDate = addDays(date, 7);
-        break;
-      case "Home":
-        newDate = startOfWeek(date);
-        break;
-      case "End":
-        newDate = endOfWeek(date);
-        break;
-      case "PageUp":
-        newDate = e.shiftKey ? addYears(date, -1) : subMonths(date, 1);
-        break;
-      case "PageDown":
-        newDate = e.shiftKey ? addYears(date, 1) : addMonths(date, 1);
-        break;
-      case "Enter":
-      case " ":
-        e.preventDefault();
-        handleDayClick(date);
-        return;
-      default:
-        return;
-    }
-
-    if (newDate) {
-      e.preventDefault();
-      setFocusedDate(newDate);
-      // Update month if needed
-      if (!isSameMonth(newDate, currentMonth)) {
-        setCurrentMonth(newDate);
-      }
-      // Focus the new date button
-      setTimeout(() => {
-        const button = gridRef.current?.querySelector(
-          `button[data-date="${newDate.toISOString()}"]`
-        ) as HTMLButtonElement;
-        button?.focus();
-      }, 0);
-    }
-  };
+  // Build disabled matcher
+  const disabledMatcher = React.useMemo(() => {
+    const matchers: any[] = [];
+    if (minDate) matchers.push({ before: minDate });
+    if (maxDate) matchers.push({ after: maxDate });
+    if (disabled) matchers.push(disabled);
+    return matchers.length > 0 ? matchers : undefined;
+  }, [minDate, maxDate, disabled]);
 
   return (
-    <div
-      className={cn(
-        "p-3 bg-popover border border-border rounded-lg",
-        className
-      )}
-      role="application"
-      aria-label="Calendar"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <button
-          type="button"
-          onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="p-1 rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Previous month"
-        >
-          <IconChevronLeft className="h-4 w-4" aria-hidden="true" />
-        </button>
-        <span
-          className="text-sm font-medium"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {format(currentMonth, "MMMM yyyy")}
-        </span>
-        <button
-          type="button"
-          onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="p-1 rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Next month"
-        >
-          <IconChevronRight className="h-4 w-4" aria-hidden="true" />
-        </button>
-      </div>
-
-      {/* Week days */}
-      <div className="grid grid-cols-7 gap-1 mb-2" role="row">
-        {WEEK_DAYS.map((day, index) => (
-          <div
-            key={day}
-            className="h-9 flex items-center justify-center text-xs text-muted-foreground font-medium"
-            role="columnheader"
-            aria-label={WEEK_DAYS_FULL[index]}
-          >
-            <abbr title={WEEK_DAYS_FULL[index]} aria-hidden="true">
-              {day}
-            </abbr>
-          </div>
-        ))}
-      </div>
-
-      {/* Days */}
-      <div
-        ref={gridRef}
-        className="grid grid-cols-7 gap-1"
-        role="grid"
-        aria-label="Calendar dates"
-      >
-        {days.map((day) => {
-          const isToday = isSameDay(day, new Date());
-          const daySelected = isSelected(day);
-          const dayDisabled = isDateDisabled(day);
-
-          return (
-            <button
-              key={day.toISOString()}
-              type="button"
-              data-date={day.toISOString()}
-              onClick={() => handleDayClick(day)}
-              onKeyDown={(e) => handleKeyDown(e, day)}
-              disabled={dayDisabled}
-              tabIndex={
-                isSameDay(day, focusedDate || (selected as Date) || new Date())
-                  ? 0
-                  : -1
-              }
-              className={cn(
-                calendarButtonVariants({ variant: getDayVariant(day) }),
-                !isSameMonth(day, currentMonth) && "opacity-30"
-              )}
-              role="gridcell"
-              aria-label={format(day, "EEEE, MMMM d, yyyy")}
-              aria-selected={daySelected}
-              aria-current={isToday ? "date" : undefined}
-              aria-disabled={dayDisabled}
-            >
-              {format(day, "d")}
-            </button>
-          );
-        })}
-      </div>
-    </div>
+    <DayPicker
+      mode={mode}
+      selected={selected as any}
+      onSelect={handleSelect as any}
+      disabled={disabledMatcher}
+      className={cn("p-3", className)}
+      classNames={{
+        root: `${defaultClassNames.root}`,
+        months: `${defaultClassNames.months}`,
+        month: `${defaultClassNames.month}`,
+        month_caption: `${defaultClassNames.month_caption} flex items-center justify-center mb-4`,
+        caption_label: `${defaultClassNames.caption_label} text-sm font-medium`,
+        nav: `${defaultClassNames.nav} flex items-center gap-1`,
+        button_previous: `${defaultClassNames.button_previous} p-1 rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`,
+        button_next: `${defaultClassNames.button_next} p-1 rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`,
+        month_grid: `${defaultClassNames.month_grid} w-full border-collapse`,
+        weekdays: `${defaultClassNames.weekdays}`,
+        weekday: `${defaultClassNames.weekday} h-9 w-9 flex items-center justify-center text-xs text-muted-foreground font-medium`,
+        week: `${defaultClassNames.week}`,
+        day: `${defaultClassNames.day} h-9 w-9 flex items-center justify-center rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:pointer-events-none`,
+        day_button: `${defaultClassNames.day_button} w-full h-full flex items-center justify-center hover:bg-muted`,
+        selected: `${defaultClassNames.selected} bg-primary text-primary-foreground hover:bg-primary/90`,
+        today: `${defaultClassNames.today} font-semibold text-primary`,
+        outside: `${defaultClassNames.outside} text-muted-foreground/40`,
+        disabled: `${defaultClassNames.disabled} opacity-40 cursor-not-allowed`,
+        range_start: `${defaultClassNames.range_start} bg-primary text-primary-foreground rounded-r-none`,
+        range_end: `${defaultClassNames.range_end} bg-primary text-primary-foreground rounded-l-none`,
+        range_middle: `${defaultClassNames.range_middle} bg-primary/10 rounded-none`,
+        hidden: `${defaultClassNames.hidden} invisible`,
+      }}
+      showOutsideDays
+    />
   );
 }
 
-// Month Picker
+// ============================================
+// MONTH PICKER (Keep existing implementation)
+// ============================================
+
+import { cva } from "class-variance-authority";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { isBefore } from "date-fns";
+
+const calendarButtonVariants = cva(
+  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "hover:bg-muted",
+        selected: "bg-primary text-primary-foreground hover:bg-primary/90",
+      },
+      size: {
+        default: "h-9 w-9",
+        sm: "h-7 w-7 text-xs",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
 interface MonthPickerProps {
   mode?: "single" | "range";
   selected?: Date | { from?: Date; to?: Date };
@@ -428,7 +215,10 @@ function MonthPicker({
   );
 }
 
-// Year Picker
+// ============================================
+// YEAR PICKER (Keep existing implementation)
+// ============================================
+
 interface YearPickerProps {
   mode?: "single" | "range";
   selected?: number | { from?: number; to?: number };

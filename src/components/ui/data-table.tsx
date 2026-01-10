@@ -178,53 +178,52 @@ function DataTableRoot<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    // Core
     getCoreRowModel: getCoreRowModel(),
-    // Sorting with 3-way toggle (asc -> desc -> none)
-    ...(enableSorting && {
-      getSortedRowModel: getSortedRowModel(),
-      onSortingChange: setSorting,
-      enableSortingRemoval: true,
-    }),
+
+    // Row Models - Always provide unconditionally (TanStack Table requirement)
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
+
+    // Sorting
+    onSortingChange: enableSorting ? setSorting : undefined,
+    enableSortingRemoval: enableSorting,
+
     // Filtering
-    ...(enableFiltering && {
-      getFilteredRowModel: getFilteredRowModel(),
-      onColumnFiltersChange: setColumnFilters,
-      onGlobalFilterChange: setGlobalFilter,
-    }),
-    // Pagination
-    ...(enablePagination && {
-      getPaginationRowModel: getPaginationRowModel(),
-    }),
-    // Row Selection - always set up handlers, let columns control visibility
+    onColumnFiltersChange: enableFiltering ? setColumnFilters : undefined,
+    onGlobalFilterChange: enableFiltering ? setGlobalFilter : undefined,
+
+    // Row Selection
     onRowSelectionChange: setRowSelection,
     enableRowSelection: enableRowSelection,
+
     // Column Ordering
-    ...(enableColumnOrdering && {
-      onColumnOrderChange: setColumnOrder,
-    }),
+    onColumnOrderChange: enableColumnOrdering ? setColumnOrder : undefined,
+
     // Column Pinning
-    ...(enableColumnPinning && {
-      onColumnPinningChange: setColumnPinning,
-      enableColumnPinning: true,
-    }),
+    onColumnPinningChange: enableColumnPinning ? setColumnPinning : undefined,
+    enableColumnPinning: enableColumnPinning,
+
     // Column Resizing
-    ...(enableColumnResizing && {
-      enableColumnResizing: true,
-      columnResizeMode: "onChange" as const,
-    }),
+    enableColumnResizing: enableColumnResizing,
+    columnResizeMode: enableColumnResizing ? ("onChange" as const) : undefined,
+
     // Expanding
-    ...(enableExpanding && {
-      getExpandedRowModel: getExpandedRowModel(),
-      onExpandedChange: setExpanded,
-      getSubRows,
-      ...(getRowCanExpand && { getRowCanExpand }),
-    }),
+    onExpandedChange: enableExpanding ? setExpanded : undefined,
+    getSubRows: enableExpanding ? getSubRows : undefined,
+    getRowCanExpand:
+      enableExpanding && getRowCanExpand ? getRowCanExpand : undefined,
+
     // Grouping
-    ...(enableGrouping && {
-      getGroupedRowModel: getGroupedRowModel(),
-      onGroupingChange: setGrouping,
-    }),
+    onGroupingChange: enableGrouping ? setGrouping : undefined,
+
+    // Column Visibility
     onColumnVisibilityChange: setColumnVisibility,
+
+    // State - Always provide all state properties
     state: {
       sorting,
       columnFilters,
@@ -237,10 +236,11 @@ function DataTableRoot<TData, TValue>({
       rowSelection,
       columnOrder,
       columnPinning,
-      ...(enableExpanding && { expanded }),
+      expanded,
       grouping,
       globalFilter,
     },
+
     initialState: {
       pagination: {
         pageSize: initialPageSize,
