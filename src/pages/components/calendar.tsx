@@ -8,6 +8,11 @@ export function CalendarPage() {
     from?: Date;
     to?: Date;
   }>();
+  const [confirmDate, setConfirmDate] = React.useState<Date | undefined>();
+  const [confirmRange, setConfirmRange] = React.useState<{
+    from?: Date;
+    to?: Date;
+  }>();
 
   return (
     <div className="p-8 max-w-4xl space-y-12">
@@ -73,6 +78,171 @@ export function CalendarPage() {
         </div>
       </section>
 
+      {/* Size Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Size Variants
+        </h2>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              Small (sm)
+            </label>
+            <div className="max-w-xs">
+              <DatePicker
+                mode="single"
+                size="sm"
+                placeholder="Small date picker"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              Default
+            </label>
+            <div className="max-w-xs">
+              <DatePicker
+                mode="single"
+                size="default"
+                placeholder="Default date picker"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              Large (lg)
+            </label>
+            <div className="max-w-xs">
+              <DatePicker
+                mode="single"
+                size="lg"
+                placeholder="Large date picker"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Apply Mode Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Apply Mode Variants
+        </h2>
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              Immediate (Default) - Applies on selection
+            </label>
+            <div className="max-w-xs">
+              <DatePicker
+                mode="single"
+                value={singleDate}
+                onChange={(d) => setSingleDate(d as Date)}
+                placeholder="Pick a date (immediate)"
+                applyMode="immediate"
+              />
+            </div>
+            {singleDate && (
+              <p className="text-sm text-muted-foreground">
+                Selected: {format(singleDate, "PPP")}
+              </p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              Confirm Mode - Requires Apply button click
+            </label>
+            <div className="max-w-xs">
+              <DatePicker
+                mode="single"
+                value={confirmDate}
+                onChange={(d) => setConfirmDate(d as Date)}
+                placeholder="Pick a date (confirm mode)"
+                applyMode="confirm"
+              />
+            </div>
+            {confirmDate && (
+              <p className="text-sm text-muted-foreground">
+                Selected: {format(confirmDate, "PPP")}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Select a date and click "Apply" to confirm, or "Cancel" to reset.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              Confirm Mode with Date Range
+            </label>
+            <div className="max-w-xs">
+              <DatePicker
+                mode="range"
+                value={confirmRange}
+                onChange={(d) =>
+                  setConfirmRange(d as { from?: Date; to?: Date })
+                }
+                placeholder="Select date range (confirm mode)"
+                applyMode="confirm"
+              />
+            </div>
+            {confirmRange?.from && (
+              <p className="text-sm text-muted-foreground">
+                From: {format(confirmRange.from, "PPP")}
+                {confirmRange.to && ` — To: ${format(confirmRange.to, "PPP")}`}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Select a date range and click "Apply" to confirm.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Style Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Style Variants
+        </h2>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              Default
+            </label>
+            <div className="max-w-xs">
+              <DatePicker
+                mode="single"
+                variant="default"
+                placeholder="Default variant"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              Outline
+            </label>
+            <div className="max-w-xs">
+              <DatePicker
+                mode="single"
+                variant="outline"
+                placeholder="Outline variant"
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">
+              Ghost
+            </label>
+            <div className="max-w-xs">
+              <DatePicker
+                mode="single"
+                variant="ghost"
+                placeholder="Ghost variant"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -83,6 +253,7 @@ export function CalendarPage() {
           <li>Presets sidebar for quick date selection</li>
           <li>Clear button to reset selection</li>
           <li>Single date and date range modes</li>
+          <li>Apply mode: immediate (default) or confirm (with Apply/Cancel buttons)</li>
           <li>Click outside to close</li>
         </ul>
       </section>
@@ -115,7 +286,49 @@ export function CalendarPage() {
 />
 
 {/* Without presets */}
-<DatePicker showPresets={false} />`}
+<DatePicker showPresets={false} />
+
+{/* Size variants */}
+<DatePicker size="sm" placeholder="Small" />
+<DatePicker size="default" placeholder="Default" />
+<DatePicker size="lg" placeholder="Large" />
+
+{/* Style variants */}
+<DatePicker variant="default" placeholder="Default" />
+<DatePicker variant="outline" placeholder="Outline" />
+<DatePicker variant="ghost" placeholder="Ghost" />
+
+{/* Combined variants */}
+<DatePicker 
+  size="lg" 
+  variant="outline" 
+  placeholder="Large outline" 
+/>
+
+{/* Apply mode variants */}
+{/* Immediate (default) - applies on selection */}
+<DatePicker
+  mode="single"
+  value={date}
+  onChange={setDate}
+  applyMode="immediate"
+/>
+
+{/* Confirm mode - requires Apply button */}
+<DatePicker
+  mode="single"
+  value={date}
+  onChange={setDate}
+  applyMode="confirm"
+/>
+
+{/* Confirm mode with date range */}
+<DatePicker
+  mode="range"
+  value={{ from: startDate, to: endDate }}
+  onChange={setDateRange}
+  applyMode="confirm"
+/>`}
           </pre>
         </div>
       </section>

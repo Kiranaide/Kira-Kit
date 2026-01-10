@@ -7,6 +7,11 @@ import {
   IconSun,
   IconMoon,
 } from "@tabler/icons-react";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 // Theme context
 type Theme = "light" | "dark";
@@ -192,7 +197,7 @@ export function SidebarItem({
   const routerState = useRouterState();
   const isActive = routerState.location.pathname === to;
 
-  return (
+  const linkContent = (
     <Link
       to={to}
       className={cn(
@@ -205,12 +210,24 @@ export function SidebarItem({
           ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium"
           : "text-sidebar-foreground hover:bg-sidebar-accent"
       )}
-      title={collapsed ? String(children) : undefined}
     >
-      {icon && <span className="flex-shrink-0">{icon}</span>}
+      {icon && <span className="shrink-0">{icon}</span>}
       {!collapsed && <span>{children}</span>}
     </Link>
   );
+
+  if (collapsed) {
+    return (
+      <Tooltip>
+        <TooltipTrigger render={linkContent} />
+        <TooltipContent side="right" variant="outline">
+          {children}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return linkContent;
 }
 
 // Tree-view style sidebar item group with expand/collapse
@@ -234,21 +251,25 @@ export function SidebarItemGroup({
     return <div className="space-y-0.5">{children}</div>;
   }
 
+  const buttonContent = (
+    <button
+      onClick={() => setOpen(!open)}
+      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-150"
+    >
+      {icon && <span className="flex-shrink-0">{icon}</span>}
+      <span className="flex-1 text-left">{label}</span>
+      <IconChevronDown
+        className={cn(
+          "w-4 h-4 transition-transform duration-200",
+          open ? "rotate-0" : "-rotate-90"
+        )}
+      />
+    </button>
+  );
+
   return (
     <div className="space-y-0.5">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-150"
-      >
-        {icon && <span className="flex-shrink-0">{icon}</span>}
-        <span className="flex-1 text-left">{label}</span>
-        <IconChevronDown
-          className={cn(
-            "w-4 h-4 transition-transform duration-200",
-            open ? "rotate-0" : "-rotate-90"
-          )}
-        />
-      </button>
+      {buttonContent}
       {open && (
         <div className="ml-2 space-y-0.5 animate-in slide-in-from-top-2 fade-in-0 duration-200">
           {children}
@@ -272,7 +293,7 @@ export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
   const { collapsed } = useSidebar();
 
-  return (
+  const buttonContent = (
     <button
       onClick={toggleTheme}
       className={cn(
@@ -290,4 +311,17 @@ export function ThemeToggle() {
       )}
     </button>
   );
+
+  if (collapsed) {
+    return (
+      <Tooltip>
+        <TooltipTrigger render={buttonContent} />
+        <TooltipContent side="right" variant="outline">
+          {theme === "light" ? "Dark Mode" : "Light Mode"}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return buttonContent;
 }

@@ -11,6 +11,7 @@ import {
   ThemeToggle,
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   IconHome,
   IconClick,
@@ -60,9 +61,10 @@ import {
 export function AppLayout() {
   return (
     <ThemeProvider>
-      <SidebarProvider>
-        <Toaster />
-        <div className="flex h-screen overflow-hidden">
+      <TooltipProvider>
+        <SidebarProvider>
+          <Toaster />
+          <div className="flex h-screen overflow-hidden">
           <Sidebar>
             <SidebarHeader />
             <SidebarContent>
@@ -357,7 +359,8 @@ export function AppLayout() {
             <Outlet />
           </main>
         </div>
-      </SidebarProvider>
+        </SidebarProvider>
+      </TooltipProvider>
     </ThemeProvider>
   );
 }

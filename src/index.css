@@ -222,3 +222,162 @@
     transform: translateX(100%);
   }
 }
+
+/* Date Picker Calendar Styles - Matching Design System */
+@layer components {
+  /* Hide default navigation when using custom caption */
+  .rdp-nav,
+  .rdp-button_previous,
+  .rdp-button_next {
+    display: none !important;
+  }
+
+  /* Remove top margin/padding from month caption */
+  .rdp-month_caption {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  /* Remove top margin/padding from months container */
+  .rdp-months {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  /* Match picker grid width to calendar table width - only target pickers, not calendar */
+  [data-picker-grid] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0;
+  }
+
+  /* Ensure picker containers match calendar width */
+  [data-picker-container] {
+    width: 100%;
+    min-width: 0;
+  }
+  /* Selected dates: Solid primary color background with primary-foreground text - no rings or circles */
+  .rdp-day_selected {
+    @apply bg-primary text-primary-foreground rounded-md;
+  }
+
+  .rdp-day_selected:hover {
+    @apply bg-primary/90;
+  }
+
+  /* Remove any focus rings, outlines, or circular elements from selected dates */
+  .rdp-day_selected .rdp-day_button:focus-visible,
+  .rdp-day_selected .rdp-day_button:focus,
+  .rdp-day_selected .rdp-day_button,
+  .rdp-day_selected.rdp-day_button {
+    @apply ring-0 outline-none;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Also remove rings from range start/end */
+  .rdp-day_range_start .rdp-day_button,
+  .rdp-day_range_end .rdp-day_button,
+  .rdp-day_range_start.rdp-day_button,
+  .rdp-day_range_end.rdp-day_button {
+    @apply ring-0 outline-none;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Today indicator: Light gray background + blue dot beneath */
+  .rdp-day_today:not(.rdp-day_selected) {
+    @apply bg-muted/30;
+  }
+
+  /* Blue dot indicator for today dates - only when NOT selected */
+  .rdp-day_today:not(.rdp-day_selected) .rdp-day_button::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--primary);
+  }
+
+  /* No dot when ANY date is selected - hide it completely */
+  .rdp-day_selected .rdp-day_button::after,
+  .rdp-day_today.rdp-day_selected .rdp-day_button::after,
+  .rdp-day_range_start .rdp-day_button::after,
+  .rdp-day_range_end .rdp-day_button::after {
+    display: none !important;
+    content: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Ensure day buttons are square/rectangular, not circular */
+  .rdp-day_button {
+    @apply rounded-md;
+  }
+
+  /* Hover state: Subtle light gray background */
+  .rdp-day_button:hover:not(.rdp-day_selected):not(.rdp-day_disabled) {
+    @apply bg-muted/50;
+  }
+
+  /* Focus visibility for accessibility */
+  .rdp-day_button:focus-visible {
+    @apply ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Range selection styling */
+  .rdp-day_range_start,
+  .rdp-day_range_end {
+    @apply bg-primary text-primary-foreground rounded-md;
+  }
+
+  .rdp-day_range_middle {
+    @apply bg-primary/10 rounded-none;
+  }
+
+  .rdp-day_range_middle:hover {
+    @apply bg-primary/15;
+  }
+
+  /* Ensure range middle dates are visible with proper contrast - force text color */
+  .rdp-day_range_middle .rdp-day_button,
+  .rdp-day_range_middle.rdp-day_button {
+    @apply text-foreground font-medium;
+    color: var(--foreground) !important;
+  }
+
+  /* Force text visibility in range middle - override any default styles for all nested elements */
+  .rdp-day_range_middle .rdp-day_button *,
+  .rdp-day_range_middle.rdp-day_button *,
+  .rdp-day_range_middle .rdp-day_button > *,
+  .rdp-day_range_middle .rdp-day_button span,
+  .rdp-day_range_middle.rdp-day_button span,
+  .rdp-day_range_middle .rdp-day_button::before,
+  .rdp-day_range_middle .rdp-day_button::after {
+    color: var(--foreground) !important;
+  }
+
+  /* Remove any rings or borders that might interfere with visibility */
+  .rdp-day_range_middle .rdp-day_button:focus-visible,
+  .rdp-day_range_middle.rdp-day_button:focus-visible {
+    @apply ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Accessibility: High contrast mode support */
+  @media (forced-colors: active) {
+    .rdp-day_selected {
+      @apply bg-[Highlight] text-[HighlightText];
+    }
+
+    .rdp-day_today:not(.rdp-day_selected) {
+      @apply border-2 border-[Highlight];
+    }
+
+    .rdp-day_today .rdp-day_button::after {
+      background-color: Highlight;
+    }
+  }
+}
