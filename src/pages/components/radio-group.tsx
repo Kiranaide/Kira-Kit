@@ -82,7 +82,7 @@ export function RadioGroupPage() {
         </p>
         <RadioGroup
           value={payment}
-          onValueChange={setPayment}
+          onValueChange={(val) => setPayment(val as string)}
           className="grid gap-3 max-w-md"
         >
           <RadioCard

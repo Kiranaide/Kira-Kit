@@ -2,8 +2,8 @@ import * as React from "react";
 import { ColorPicker } from "@/components/ui/color-picker";
 
 export function ColorPickerPage() {
-  const [color1, setColor1] = React.useState("#3b82f6");
-  const [color2, setColor2] = React.useState("#22c55e");
+  const [color1, setColor1] = React.useState<`#${string}`>("#3b82f6");
+  const [color2, setColor2] = React.useState<`#${string}`>("#22c55e");
 
   return (
     <div className="p-8 max-w-4xl space-y-12">
@@ -26,7 +26,7 @@ export function ColorPickerPage() {
         <div className="flex items-center gap-4">
           <ColorPicker
             value={color1}
-            onValueChange={(value) => setColor1(value.hex)}
+            onValueChange={(value) => setColor1(value.hex as `#${string}`)}
           />
           <span className="text-sm font-mono">{color1}</span>
         </div>
@@ -66,7 +66,7 @@ export function ColorPickerPage() {
         </p>
         <ColorPicker
           value={color2}
-          onValueChange={(value) => setColor2(value.hex)}
+          onValueChange={(value) => setColor2(value.hex as `#${string}`)}
           swatches={[
             "#ef4444",
             "#f97316",

@@ -166,10 +166,10 @@ const rangePresets: DatePreset[] = [
 // ============================================
 
 function CustomChevron({
-  orientation,
+  orientation = "down",
   size = "default",
 }: {
-  orientation: "left" | "right" | "up" | "down";
+  orientation?: "left" | "right" | "up" | "down";
   size?: "sm" | "default" | "lg";
 }) {
   const sizeConfig = calendarSizeConfig[size];
@@ -512,8 +512,13 @@ function DatePicker({
   const presets = mode === "single" ? singlePresets : rangePresets;
 
   const ChevronComponent = React.useCallback(
-    (props: { orientation: "left" | "right" | "up" | "down" }) => (
-      <CustomChevron {...props} size={size || "default"} />
+    (props: {
+      orientation?: "left" | "right" | "up" | "down";
+      className?: string;
+      size?: number;
+      disabled?: boolean;
+    }) => (
+      <CustomChevron orientation={props.orientation} size={size || "default"} />
     ),
     [size]
   );
@@ -642,11 +647,10 @@ function DatePicker({
                 </button>
               </div>
 
+              {/* @ts-expect-error - DayPicker has discriminated union types based on mode that can't be satisfied with dynamic mode prop */}
               <DayPicker
                 mode={mode}
-                selected={
-                  currentValue as Date | { from?: Date; to?: Date } | undefined
-                }
+                selected={currentValue as unknown as Date | undefined}
                 onSelect={
                   handleCalendarSelect as (
                     date: Date | { from?: Date; to?: Date } | undefined

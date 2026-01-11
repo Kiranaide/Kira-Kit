@@ -136,9 +136,8 @@ function DataTableRoot<TData, TValue>({
   children,
   enableSorting = true,
   enableFiltering = true,
-  enablePagination = true,
   enableRowSelection = false,
-  enableColumnOrdering = false,
+  enableColumnOrdering: _enableColumnOrdering = false,
   enableColumnPinning = false,
   enableColumnResizing = false,
   enableExpanding = false,
@@ -205,7 +204,6 @@ function DataTableRoot<TData, TValue>({
 
     // Column Ordering
     onColumnOrderChange: setColumnOrder,
-    enableColumnOrdering: enableColumnOrdering,
 
     // Column Pinning
     onColumnPinningChange: setColumnPinning,

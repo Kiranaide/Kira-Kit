@@ -73,9 +73,12 @@ export function SelectPage() {
           Basic Select
         </h2>
         <div className="max-w-sm">
-          <Select value={basicValue} onValueChange={setBasicValue}>
+          <Select
+            value={basicValue}
+            onValueChange={(val) => setBasicValue(val ?? "")}
+          >
             <SelectTrigger>
-              <SelectValue placeholder="Select a fruit" />
+              <SelectValue>{basicValue || "Select a fruit"}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>

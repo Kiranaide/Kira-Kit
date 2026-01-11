@@ -49,8 +49,11 @@ interface ToggleProps
 function Toggle({ className, variant, size, shape, ...props }: ToggleProps) {
   const ref = React.useRef<HTMLButtonElement>(null);
 
-  const handlePressedChange = (pressed: boolean) => {
-    props.onPressedChange?.(pressed);
+  const handlePressedChange: TogglePrimitive.Props["onPressedChange"] = (
+    pressed,
+    eventDetails
+  ) => {
+    props.onPressedChange?.(pressed, eventDetails);
 
     if (ref.current) {
       animate(ref.current, {
@@ -125,7 +128,7 @@ function ToggleGroup({
   );
 }
 
-interface ToggleGroupItemProps extends ToggleGroupPrimitive.Item.Props {
+interface ToggleGroupItemProps extends TogglePrimitive.Props {
   variant?: "default" | "success" | "warning" | "destructive";
 }
 
@@ -138,8 +141,11 @@ function ToggleGroupItem({
   const context = React.useContext(ToggleGroupContext);
   const ref = React.useRef<HTMLButtonElement>(null);
 
-  const handlePressedChange = (pressed: boolean) => {
-    props.onPressedChange?.(pressed);
+  const handlePressedChange: TogglePrimitive.Props["onPressedChange"] = (
+    pressed,
+    eventDetails
+  ) => {
+    props.onPressedChange?.(pressed, eventDetails);
 
     if (ref.current) {
       animate(ref.current, {

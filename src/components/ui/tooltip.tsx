@@ -75,7 +75,6 @@ function TooltipContent({
         collisionBoundary={collisionBoundary}
         collisionPadding={collisionPadding}
         sticky={sticky}
-        trackAnchor={true}
       >
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"

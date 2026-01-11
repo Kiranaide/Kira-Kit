@@ -220,13 +220,13 @@ export function TogglePage() {
           Outline Variant Group
         </h2>
         <ToggleGroup variant="outline" defaultValue={["left"]}>
-          <ToggleGroupItem value="left" variant="outline">
+          <ToggleGroupItem value="left">
             <IconAlignLeft className="h-4 w-4" />
           </ToggleGroupItem>
-          <ToggleGroupItem value="center" variant="outline">
+          <ToggleGroupItem value="center">
             <IconAlignCenter className="h-4 w-4" />
           </ToggleGroupItem>
-          <ToggleGroupItem value="right" variant="outline">
+          <ToggleGroupItem value="right">
             <IconAlignRight className="h-4 w-4" />
           </ToggleGroupItem>
         </ToggleGroup>

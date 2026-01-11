@@ -115,7 +115,7 @@ export function TooltipPage() {
             Interactive (Hoverable)
           </h2>
           <div className="flex gap-4">
-            <Tooltip hoverable>
+            <Tooltip>
               <TooltipTrigger
                 render={<Button variant="outline">Hoverable Content</Button>}
               />

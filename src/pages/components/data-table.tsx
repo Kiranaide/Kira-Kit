@@ -181,7 +181,7 @@ const editableColumns: ColumnDef<Payment>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Email" />
     ),
-    cell: ({ row, table }) => (
+    cell: ({ row }) => (
       <DataTableEditableCell
         value={row.getValue("email")}
         onSave={(value) => {
@@ -434,22 +434,28 @@ const columns: ColumnDef<YourType>[] = [
           right. Pinned columns stay visible while scrolling.
         </p>
         <DataTableRoot
-          columns={basicColumns.map((col, idx) => ({
-            ...col,
-            header: ({ column }) => (
-              <DataTableColumnHeader
-                column={column}
-                title={
-                  col.accessorKey === "email"
-                    ? "Email"
-                    : col.accessorKey === "status"
-                    ? "Status"
-                    : "Amount"
-                }
-                showPinning={true}
-              />
-            ),
-          }))}
+          columns={
+            basicColumns.map((col) => {
+              const key =
+                "accessorKey" in col ? (col.accessorKey as string) : "";
+              return {
+                ...col,
+                header: ({ column }) => (
+                  <DataTableColumnHeader
+                    column={column}
+                    title={
+                      key === "email"
+                        ? "Email"
+                        : key === "status"
+                        ? "Status"
+                        : "Amount"
+                    }
+                    showPinning={true}
+                  />
+                ),
+              };
+            }) as ColumnDef<Payment>[]
+          }
           data={data}
           enableColumnPinning
         >

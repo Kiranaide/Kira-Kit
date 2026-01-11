@@ -28,6 +28,7 @@ interface TreeViewContextValue {
   toggleSelection: (id: string) => void;
   selectionMode: "single" | "multiple";
   showLines?: boolean;
+  onSelect?: (node: TreeNode) => void;
 }
 
 const TreeViewContext = React.createContext<TreeViewContextValue | null>(null);

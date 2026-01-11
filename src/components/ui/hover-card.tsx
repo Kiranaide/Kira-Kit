@@ -66,7 +66,6 @@ function HoverCardContent({
         collisionBoundary={collisionBoundary}
         collisionPadding={collisionPadding}
         sticky={sticky}
-        trackAnchor={true}
       >
         <PreviewCardPrimitive.Popup
           data-slot="hover-card-content"

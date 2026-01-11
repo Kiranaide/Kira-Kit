@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Calendar, MonthPicker, YearPicker } from "@/components/ui/calendar";
-import { format, addDays, subDays } from "date-fns";
+import { format, addDays } from "date-fns";
 
 export function CalendarPage() {
   const [singleDate, setSingleDate] = React.useState<Date | undefined>();

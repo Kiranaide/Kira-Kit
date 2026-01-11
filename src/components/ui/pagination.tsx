@@ -174,7 +174,7 @@ const paginationLinkVariants = cva(
 );
 
 interface PaginationLinkProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color">,
     VariantProps<typeof paginationLinkVariants> {
   isActive?: boolean;
 }

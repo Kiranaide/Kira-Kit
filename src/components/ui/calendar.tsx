@@ -70,10 +70,10 @@ const MONTHS = [
 // ============================================
 
 function CustomChevron({
-  orientation,
+  orientation = "down",
   size = "default",
 }: {
-  orientation: "left" | "right" | "up" | "down";
+  orientation?: "left" | "right" | "up" | "down";
   size?: "sm" | "default" | "lg";
 }) {
   const sizeConfig = calendarSizeConfig[size];
@@ -320,9 +320,12 @@ function Calendar({
 
   // Custom chevron component with size awareness
   const ChevronComponent = React.useCallback(
-    (props: { orientation: "left" | "right" | "up" | "down" }) => (
-      <CustomChevron {...props} size={size} />
-    ),
+    (props: {
+      orientation?: "left" | "right" | "up" | "down";
+      className?: string;
+      size?: number;
+      disabled?: boolean;
+    }) => <CustomChevron orientation={props.orientation} size={size} />,
     [size]
   );
 
@@ -369,11 +372,10 @@ function Calendar({
         </button>
       </div>
 
+      {/* @ts-expect-error - DayPicker has discriminated union types based on mode that can't be satisfied with dynamic mode prop */}
       <DayPicker
         mode={mode}
-        selected={
-          selected as Date | Date[] | { from?: Date; to?: Date } | undefined
-        }
+        selected={selected as unknown as Date | Date[] | undefined}
         onSelect={
           handleSelect as (
             date: Date | Date[] | { from?: Date; to?: Date } | undefined

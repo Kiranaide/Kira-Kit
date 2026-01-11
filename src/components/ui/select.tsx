@@ -206,7 +206,7 @@ function SelectScrollDownButton({
 // ============================================
 // TYPES
 // ============================================
-export interface SelectOption {
+interface SelectOption {
   value: string;
   label: string;
   disabled?: boolean;
@@ -880,7 +880,7 @@ function useDebounce<T>(value: T, delay: number): T {
 // ============================================
 // AUTOCOMPLETE COMPONENT
 // ============================================
-export interface AutocompleteOption {
+interface AutocompleteOption {
   value: string;
   label: string;
   disabled?: boolean;
@@ -1208,9 +1208,9 @@ export {
 };
 export type {
   SelectOption,
+  AutocompleteOption,
   MultiSelectProps,
   AsyncSelectProps,
   CreatableSelectProps,
-  AutocompleteOption,
   AutocompleteProps,
 };

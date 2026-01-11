@@ -110,7 +110,7 @@ function ColorPicker({
       const filtered = prev.filter(
         (c) => c.toLowerCase() !== hexColor.toLowerCase()
       );
-      return [hexColor, ...filtered].slice(0, 8);
+      return [hexColor as HexColor, ...filtered].slice(0, 8);
     });
 
     onValueChange?.({

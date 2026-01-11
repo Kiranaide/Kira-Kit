@@ -73,7 +73,6 @@ function PopoverContent({
         collisionBoundary={collisionBoundary}
         collisionPadding={collisionPadding}
         sticky={sticky}
-        trackAnchor={true}
       >
         <PopoverPrimitive.Popup
           data-slot="popover-content"
