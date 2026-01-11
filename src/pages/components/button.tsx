@@ -3,7 +3,6 @@ import {
   ExpandableIconButton,
   LoadingButton,
 } from "@/components/ui/button";
-import { HoldToCloseAlert } from "@/components/ui/alert";
 import {
   IconPlus,
   IconDownload,
@@ -557,101 +556,6 @@ export function ButtonPage() {
               />
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Hold to Close Alert */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Hold to Close Alert
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Hold to dismiss the alert. Progress bar animates while holding.
-        </p>
-        <div className="space-y-3 max-w-md">
-          <HoldToCloseAlert
-            variant="default"
-            onClose={() => console.log("Default dismissed!")}
-          >
-            <span className="font-medium">Default Alert</span>
-            <p className="text-sm opacity-90">
-              This is a default alert message.
-            </p>
-          </HoldToCloseAlert>
-          <HoldToCloseAlert
-            variant="info"
-            onClose={() => console.log("Info dismissed!")}
-          >
-            <span className="font-medium">Information</span>
-            <p className="text-sm opacity-90">
-              This is an informational message.
-            </p>
-          </HoldToCloseAlert>
-          <HoldToCloseAlert
-            variant="success"
-            onClose={() => console.log("Success dismissed!")}
-          >
-            <span className="font-medium">Success</span>
-            <p className="text-sm opacity-90">
-              Operation completed successfully.
-            </p>
-          </HoldToCloseAlert>
-          <HoldToCloseAlert
-            variant="warning"
-            onClose={() => console.log("Warning dismissed!")}
-          >
-            <span className="font-medium">Warning</span>
-            <p className="text-sm opacity-90">
-              Something needs your attention.
-            </p>
-          </HoldToCloseAlert>
-          <HoldToCloseAlert
-            variant="destructive"
-            holdDuration={2000}
-            onClose={() => console.log("Error dismissed!")}
-          >
-            <span className="font-medium">Error</span>
-            <p className="text-sm opacity-90">
-              An error occurred. Hold to dismiss.
-            </p>
-          </HoldToCloseAlert>
-          <HoldToCloseAlert
-            variant="outline-info"
-            onClose={() => console.log("Outline info dismissed!")}
-          >
-            <span className="font-medium">Outline Info</span>
-            <p className="text-sm opacity-90">
-              This is an outline variant alert.
-            </p>
-          </HoldToCloseAlert>
-          <HoldToCloseAlert
-            variant="outline-success"
-            onClose={() => console.log("Outline success dismissed!")}
-          >
-            <span className="font-medium">Outline Success</span>
-            <p className="text-sm opacity-90">
-              Outline success variant example.
-            </p>
-          </HoldToCloseAlert>
-          <HoldToCloseAlert
-            variant="outline-warning"
-            onClose={() => console.log("Outline warning dismissed!")}
-          >
-            <span className="font-medium">Outline Warning</span>
-            <p className="text-sm opacity-90">
-              Outline warning variant example.
-            </p>
-          </HoldToCloseAlert>
-          <HoldToCloseAlert
-            variant="outline-destructive"
-            holdDuration={2000}
-            onClose={() => console.log("Outline destructive dismissed!")}
-          >
-            <span className="font-medium">Outline Error</span>
-            <p className="text-sm opacity-90">
-              Outline destructive variant example.
-            </p>
-          </HoldToCloseAlert>
         </div>
       </section>
 
