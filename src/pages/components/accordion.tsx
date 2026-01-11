@@ -11,9 +11,19 @@ import {
   IconFolder,
   IconFile,
   IconSettings,
+  IconChevronRight,
+  IconPlus,
 } from "@tabler/icons-react";
 
 export function AccordionPage() {
+  const handleOpen = () => {
+    console.log("Accordion item opened");
+  };
+
+  const handleClose = () => {
+    console.log("Accordion item closed");
+  };
+
   return (
     <div className="p-8 max-w-4xl space-y-12">
       <header>
@@ -195,6 +205,292 @@ export function AccordionPage() {
         </Accordion>
       </section>
 
+      {/* Size Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Size Variants
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Use the <code className="bg-muted px-1 rounded">size</code> prop to
+          change trigger and content sizes.
+        </p>
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-sm font-medium mb-2">xs</h3>
+            <Accordion>
+              <AccordionItem value="item-1">
+                <AccordionTrigger size="xs">Extra Small</AccordionTrigger>
+                <AccordionContent size="xs">
+                  This is extra small content.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium mb-2">sm</h3>
+            <Accordion>
+              <AccordionItem value="item-1">
+                <AccordionTrigger size="sm">Small</AccordionTrigger>
+                <AccordionContent size="sm">
+                  This is small content.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium mb-2">default</h3>
+            <Accordion>
+              <AccordionItem value="item-1">
+                <AccordionTrigger size="default">Default</AccordionTrigger>
+                <AccordionContent size="default">
+                  This is default size content.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium mb-2">lg</h3>
+            <Accordion>
+              <AccordionItem value="item-1">
+                <AccordionTrigger size="lg">Large</AccordionTrigger>
+                <AccordionContent size="lg">
+                  This is large content with more padding.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
+      </section>
+
+      {/* Ghost and Outline Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Ghost and Outline Variants
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Use <code className="bg-muted px-1 rounded">variant="ghost"</code> or{" "}
+          <code className="bg-muted px-1 rounded">variant="outline"</code> for
+          alternative styles.
+        </p>
+        <Accordion>
+          <AccordionItem value="ghost">
+            <AccordionTrigger variant="ghost">Ghost Variant</AccordionTrigger>
+            <AccordionContent>
+              Ghost variant has no background color until hovered.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="outline">
+            <AccordionTrigger variant="outline">
+              Outline Variant
+            </AccordionTrigger>
+            <AccordionContent>
+              Outline variant has a border but no background color.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+
+      {/* Custom Chevron Icon */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Custom Chevron Icon
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Use <code className="bg-muted px-1 rounded">chevronIcon</code> to
+          replace the default chevron.
+        </p>
+        <Accordion>
+          <AccordionItem value="item-1">
+            <AccordionTrigger
+              chevronIcon={<IconChevronRight className="w-4 h-4" />}
+              chevronPosition="end"
+            >
+              Custom Chevron (Right Arrow)
+            </AccordionTrigger>
+            <AccordionContent>
+              This accordion uses a custom right arrow icon instead of the
+              default chevron.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger
+              chevronIcon={<IconPlus className="w-4 h-4" />}
+              showArrow={false}
+            >
+              Plus/Minus Toggle
+            </AccordionTrigger>
+            <AccordionContent>
+              This accordion uses a plus/minus style toggle indicator.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+
+      {/* Disabled State */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Disabled State
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Use the <code className="bg-muted px-1 rounded">disabled</code> prop
+          on AccordionItem to disable interaction.
+        </p>
+        <Accordion>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>Enabled Item</AccordionTrigger>
+            <AccordionContent>This item can be toggled.</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2" disabled>
+            <AccordionTrigger>Disabled Item</AccordionTrigger>
+            <AccordionContent>
+              This item cannot be interacted with.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-3">
+            <AccordionTrigger>Another Enabled Item</AccordionTrigger>
+            <AccordionContent>This item can also be toggled.</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+
+      {/* Callbacks */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Callbacks
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Use <code className="bg-muted px-1 rounded">onOpen</code> and{" "}
+          <code className="bg-muted px-1 rounded">onClose</code> props on
+          AccordionItem for lifecycle callbacks. Check console for logs.
+        </p>
+        <Accordion>
+          <AccordionItem
+            value="item-1"
+            onOpen={handleOpen}
+            onClose={handleClose}
+          >
+            <AccordionTrigger>With Callbacks</AccordionTrigger>
+            <AccordionContent>
+              Open and close this item to see console logs.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+
+      {/* Lazy Mount with Skeleton */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Lazy Mount with Skeleton
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Use <code className="bg-muted px-1 rounded">lazyMount</code> and{" "}
+          <code className="bg-muted px-1 rounded">showSkeleton</code> to defer
+          rendering until opened and show a loading state.
+        </p>
+        <Accordion>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>Regular Content</AccordionTrigger>
+            <AccordionContent>
+              This content renders immediately.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger>Lazy Mounted with Skeleton</AccordionTrigger>
+            <AccordionContent lazyMount showSkeleton skeletonLines={4}>
+              <p>This content is loaded only when opened.</p>
+              <p>The skeleton shown while loading.</p>
+              <p>More content loaded on demand.</p>
+              <p>Final piece of content.</p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+
+      {/* Inset Padding */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Inset Padding
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Use <code className="bg-muted px-1 rounded">inset</code> prop on
+          AccordionContent for nested accordions.
+        </p>
+        <Accordion multiple>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>Parent Item 1</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-2">This is parent content.</p>
+              <Accordion>
+                <AccordionItem value="child-1">
+                  <AccordionTrigger>Nested Child 1</AccordionTrigger>
+                  <AccordionContent inset>
+                    This nested accordion has inset padding for visual
+                    hierarchy.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="child-2">
+                  <AccordionTrigger>Nested Child 2</AccordionTrigger>
+                  <AccordionContent inset>
+                    Another nested accordion item with inset.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger>Parent Item 2</AccordionTrigger>
+            <AccordionContent>
+              Another parent item without nested content.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
+
+      {/* Scroll Into View */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Scroll Into View
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Use <code className="bg-muted px-1 rounded">scrollIntoView</code> prop
+          on Accordion to auto-scroll to opened items.
+        </p>
+        <div className="h-64 overflow-auto border rounded-lg p-4">
+          <Accordion scrollIntoView>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>Item 1 (scroll to see more)</AccordionTrigger>
+              <AccordionContent>
+                Content for item 1. Opening this should scroll it into view.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>Item 2</AccordionTrigger>
+              <AccordionContent>Content for item 2.</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>Item 3</AccordionTrigger>
+              <AccordionContent>Content for item 3.</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-4">
+              <AccordionTrigger>Item 4</AccordionTrigger>
+              <AccordionContent>Content for item 4.</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-5">
+              <AccordionTrigger>Item 5</AccordionTrigger>
+              <AccordionContent>Content for item 5.</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-6">
+              <AccordionTrigger>Item 6</AccordionTrigger>
+              <AccordionContent>Content for item 6.</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-7">
+              <AccordionTrigger>Item 7</AccordionTrigger>
+              <AccordionContent>Content for item 7.</AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -209,7 +505,7 @@ export function AccordionPage() {
   AccordionContent,
 } from "@/components/ui/accordion"
 
-{/* Basic */}
+// Basic
 <Accordion defaultValue={["item-1"]}>
   <AccordionItem value="item-1">
     <AccordionTrigger>Title</AccordionTrigger>
@@ -217,20 +513,53 @@ export function AccordionPage() {
   </AccordionItem>
 </Accordion>
 
-{/* With Icon */}
+// With Icon (backward compatible)
 <AccordionTrigger icon={<Icon />}>Title</AccordionTrigger>
 
-{/* Without Arrow */}
+// Without Arrow
 <AccordionTrigger showArrow={false}>Title</AccordionTrigger>
 
-{/* Colored Header */}
+// Colored Header
 <AccordionTrigger variant="info">Info</AccordionTrigger>
 <AccordionTrigger variant="success">Success</AccordionTrigger>
 <AccordionTrigger variant="warning">Warning</AccordionTrigger>
 <AccordionTrigger variant="destructive">Error</AccordionTrigger>
+<AccordionTrigger variant="ghost">Ghost</AccordionTrigger>
+<AccordionTrigger variant="outline">Outline</AccordionTrigger>
 
-{/* Multiple open */}
-<Accordion openMultiple>...</Accordion>`}
+// Sizes
+<AccordionTrigger size="xs">Extra Small</AccordionTrigger>
+<AccordionTrigger size="sm">Small</AccordionTrigger>
+<AccordionTrigger size="default">Default</AccordionTrigger>
+<AccordionTrigger size="lg">Large</AccordionTrigger>
+
+// Multiple open
+<Accordion multiple>...</Accordion>
+
+// Disabled Item
+<AccordionItem value="item-1" disabled>...</AccordionItem>
+
+// With Callbacks
+<AccordionItem value="item-1" onOpen={() => {}} onClose={() => {}}>
+  <AccordionTrigger>Title</AccordionTrigger>
+  <AccordionContent>Content</AccordionContent>
+</AccordionItem>
+
+// Lazy Mount with Skeleton
+<AccordionContent lazyMount showSkeleton skeletonLines={4}>
+  Content loaded on open
+</AccordionContent>
+
+// Nested Accordions with Inset
+<AccordionContent inset>...</AccordionContent>
+
+// Custom Chevron
+<AccordionTrigger chevronIcon={<CustomIcon />} chevronPosition="start">
+  Title
+</AccordionTrigger>
+
+// Scroll Into View
+<Accordion scrollIntoView>...</Accordion>`}
           </pre>
         </div>
       </section>
