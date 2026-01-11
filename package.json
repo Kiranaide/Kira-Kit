@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "bun run registry:build && tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "registry:build": "bun run scripts/build-registry.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
