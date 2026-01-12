@@ -420,7 +420,9 @@ function ButtonGroup({
   React.useEffect(() => {
     if (!animated || !containerRef.current) return;
 
-    const buttons = containerRef.current.querySelectorAll("[data-slot=button]");
+    const buttons = containerRef.current.querySelectorAll(
+      "[data-slot=button]"
+    );
 
     if (buttons.length > 0) {
       animate(buttons, {
