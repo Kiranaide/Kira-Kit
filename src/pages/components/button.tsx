@@ -2,6 +2,7 @@ import {
   Button,
   ExpandableIconButton,
   LoadingButton,
+  IconButtonWithTooltip,
 } from "@/components/ui/button";
 import {
   IconPlus,
@@ -569,6 +570,54 @@ export function ButtonPage() {
           disabled while loading.
         </p>
         <LoadingButtonDemo />
+      </section>
+
+      {/* Icon Button with Tooltip */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Icon Button with Tooltip
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Icon-only buttons with descriptive tooltips for accessibility.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <IconButtonWithTooltip
+            icon={<IconSettings className="w-4 h-4" />}
+            tooltip="Settings"
+            variant="outline"
+            size="icon"
+          />
+          <IconButtonWithTooltip
+            icon={<IconHeart className="w-4 h-4" />}
+            tooltip="Add to favorites"
+            variant="secondary"
+            size="icon"
+          />
+          <IconButtonWithTooltip
+            icon={<IconDownload className="w-4 h-4" />}
+            tooltip="Download file"
+            variant="default"
+            size="icon"
+          />
+          <IconButtonWithTooltip
+            icon={<IconTrash className="w-4 h-4" />}
+            tooltip="Delete item"
+            variant="destructive"
+            size="icon"
+          />
+          <IconButtonWithTooltip
+            icon={<IconInfoCircle className="w-4 h-4" />}
+            tooltip="More information"
+            variant="info"
+            size="icon"
+          />
+          <IconButtonWithTooltip
+            icon={<IconCircleCheck className="w-4 h-4" />}
+            tooltip="Mark as complete"
+            variant="success"
+            size="icon"
+          />
+        </div>
       </section>
 
       {/* Disabled State */}
