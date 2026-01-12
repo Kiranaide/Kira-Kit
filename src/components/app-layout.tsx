@@ -57,6 +57,7 @@ import {
   IconBinaryTree2,
   IconUpload,
   IconBell,
+  IconPalette,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -155,6 +156,12 @@ export function AppLayout() {
                     icon={<IconSquareCheck className="w-5 h-5" />}
                   >
                     Checkbox
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/color-usage"
+                    icon={<IconPalette className="w-5 h-5" />}
+                  >
+                    Color System
                   </SidebarItem>
                   <SidebarItem
                     to="/components/combobox"

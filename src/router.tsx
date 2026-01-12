@@ -53,6 +53,7 @@ import { TreeViewPage } from "@/pages/components/tree-view";
 import { FileUploadPage } from "@/pages/components/file-upload";
 import { SidebarPage } from "@/pages/components/sidebar";
 import { ColorPickerPage } from "@/pages/components/color-picker";
+import { ColorUsagePage } from "@/pages/components/color-usage";
 
 // Root route with layout
 const rootRoute = createRootRoute({
@@ -343,6 +344,12 @@ const colorPickerRoute = createRoute({
   component: ColorPickerPage,
 });
 
+const colorUsageRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/color-usage",
+  component: ColorUsagePage,
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -392,6 +399,7 @@ const routeTree = rootRoute.addChildren([
   fileUploadRoute,
   sidebarRoute,
   colorPickerRoute,
+  colorUsageRoute,
 ]);
 
 // Create router
