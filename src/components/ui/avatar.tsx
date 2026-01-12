@@ -4,10 +4,15 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
+/**
+ * Avatar size and shape variants
+ * @see {@link AvatarProps} for usage
+ */
 const avatarVariants = cva(
-  "relative flex shrink-0 overflow-hidden rounded-full",
+  "relative flex shrink-0 transition-all duration-200",
   {
     variants: {
+      /** Size of the avatar from xs (24px) to 4xl (128px) */
       size: {
         xs: "h-6 w-6 text-[10px]",
         sm: "h-8 w-8 text-xs",
@@ -18,19 +23,42 @@ const avatarVariants = cva(
         "3xl": "h-24 w-24 text-2xl",
         "4xl": "h-32 w-32 text-3xl",
       },
+      /** Shape of the avatar */
       shape: {
         circle: "rounded-full",
         square: "rounded-none",
         rounded: "rounded-lg",
       },
+      /** Enable interactive states for clickable avatars */
+      interactive: {
+        true: "cursor-pointer hover:opacity-90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        false: "",
+      },
     },
     defaultVariants: {
       size: "default",
       shape: "circle",
+      interactive: false,
     },
   }
 );
 
+const avatarContentVariants = cva("relative flex shrink-0 overflow-hidden", {
+  variants: {
+    shape: {
+      circle: "rounded-full",
+      square: "rounded-none",
+      rounded: "rounded-lg",
+    },
+  },
+  defaultVariants: {
+    shape: "circle",
+  },
+});
+
+/**
+ * Ring color variants for Avatar borders
+ */
 const avatarRingVariants = cva("", {
   variants: {
     ring: {
@@ -43,9 +71,16 @@ const avatarRingVariants = cva("", {
       warning: "ring-2 ring-warning ring-offset-2 ring-offset-background",
       info: "ring-2 ring-info ring-offset-2 ring-offset-background",
     },
+    /** Shape must match avatar shape for proper ring border-radius */
+    shape: {
+      circle: "rounded-full",
+      square: "rounded-none",
+      rounded: "rounded-lg",
+    },
   },
   defaultVariants: {
     ring: "default",
+    shape: "circle",
   },
 });
 
@@ -60,21 +95,22 @@ const statusVariants = cva(
         away: "bg-warning",
         offline_gray: "bg-muted",
       },
+      // Sizes aligned with badgeVariants for consistency
       size: {
-        xs: "h-1.5 w-1.5",
-        sm: "h-2 w-2",
-        default: "h-2.5 w-2.5",
-        lg: "h-3 w-3",
-        xl: "h-4 w-4",
-        "2xl": "h-5 w-5",
-        "3xl": "h-6 w-6",
+        xs: "h-2.5 w-2.5",
+        sm: "h-3 w-3",
+        default: "h-3.5 w-3.5",
+        lg: "h-4 w-4",
+        xl: "h-5 w-5",
+        "2xl": "h-6 w-6",
+        "3xl": "h-7 w-7",
         "4xl": "h-8 w-8",
       },
       position: {
-        "bottom-right": "-bottom-0 -right-0",
-        "bottom-left": "-bottom-0 -left-0",
-        "top-right": "-top-0 -right-0",
-        "top-left": "-top-0 -left-0",
+        "bottom-right": "-bottom-0.5 -right-0.5",
+        "bottom-left": "-bottom-0.5 -left-0.5",
+        "top-right": "-top-0.5 -right-0.5",
+        "top-left": "-top-0.5 -left-0.5",
       },
     },
     defaultVariants: {
@@ -142,9 +178,20 @@ const gradientVariants = cva(
   }
 );
 
+/**
+ * Avatar component props
+ * @example
+ * ```tsx
+ * <Avatar size="lg" ring="primary" status="online">
+ *   <AvatarImage src="/avatar.png" alt="User" />
+ *   <AvatarFallback>JD</AvatarFallback>
+ * </Avatar>
+ * ```
+ */
 interface AvatarProps
   extends React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof avatarVariants> {
+  /** Colored ring around the avatar */
   ring?:
     | "default"
     | "primary"
@@ -153,33 +200,79 @@ interface AvatarProps
     | "success"
     | "warning"
     | "info";
+  /** Online status indicator */
   status?: "online" | "offline" | "busy" | "away" | "offline_gray";
+  /** Position of status indicator */
+  statusPosition?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
+  /** Accessible label for screen readers */
+  "aria-label"?: string;
 }
 
 function Avatar({
   className,
   size,
-  shape,
+  shape = "circle",
   ring,
   status,
+  statusPosition = "top-right",
   children,
+  onClick,
+  "aria-label": ariaLabel,
   ...props
 }: AvatarProps) {
-  const statusSize = size || "default";
+  // Determine if avatar should have interactive states
+  const isInteractive = Boolean(onClick);
 
   return (
     <span
       data-slot="avatar"
+      role={ariaLabel ? "img" : undefined}
+      aria-label={ariaLabel}
+      tabIndex={isInteractive ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={
+        isInteractive
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onClick?.(e as unknown as React.MouseEvent<HTMLSpanElement>);
+              }
+            }
+          : undefined
+      }
       className={cn(
-        avatarVariants({ size, shape }),
-        ring && ring !== "default" && avatarRingVariants({ ring }),
+        "relative inline-flex",
+        avatarVariants({ size, shape, interactive: isInteractive }),
         className
       )}
       {...props}
     >
-      {children}
+      <span
+        data-slot="avatar-content"
+        className={cn(avatarContentVariants({ shape }), "h-full w-full")}
+      >
+        {children}
+      </span>
+      {ring && ring !== "default" && (
+        <span
+          aria-hidden="true"
+          className={cn(
+            "absolute inset-0 pointer-events-none",
+            avatarRingVariants({ ring, shape })
+          )}
+        />
+      )}
       {status && (
-        <span className={cn(statusVariants({ status, size: statusSize }))} />
+        <span
+          aria-hidden="true"
+          className={cn(
+            statusVariants({ status, size: size || "default" }),
+            statusPosition === "top-right" && "-top-0 -right-0",
+            statusPosition === "top-left" && "-top-0 -left-0",
+            statusPosition === "bottom-right" && "-bottom-0 -right-0",
+            statusPosition === "bottom-left" && "-bottom-0 -left-0"
+          )}
+        />
       )}
     </span>
   );
@@ -232,7 +325,7 @@ function AvatarFallback({
       <span
         data-slot="avatar-fallback"
         className={cn(
-          "flex h-full w-full items-center justify-center rounded-full font-medium",
+          "flex h-full w-full items-center justify-center font-medium",
           gradientVariants({ gradient }),
           className
         )}
@@ -247,7 +340,7 @@ function AvatarFallback({
     <span
       data-slot="avatar-fallback"
       className={cn(
-        "flex h-full w-full items-center justify-center rounded-full bg-muted font-medium text-muted-foreground",
+        "flex h-full w-full items-center justify-center bg-muted font-medium text-muted-foreground",
         className
       )}
       {...props}
@@ -465,6 +558,7 @@ export {
   AvatarStack,
   AutoAvatar,
   avatarVariants,
+  avatarContentVariants,
   avatarRingVariants,
   statusVariants,
   badgeVariants,

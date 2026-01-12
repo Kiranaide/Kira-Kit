@@ -4,13 +4,19 @@ import * as React from "react";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
+import { IconX } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Badge variant styles
+ * @see {@link BadgeProps} for usage
+ */
 const badgeVariants = cva(
   "gap-1.5 rounded-full border border-transparent font-medium transition-all inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-colors overflow-hidden group/badge",
   {
     variants: {
+      /** Visual style variant */
       variant: {
         default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         secondary:
@@ -25,7 +31,6 @@ const badgeVariants = cva(
         ghost:
           "bg-muted text-muted-foreground hover:bg-muted/80 dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",
-        // Soft variants (lighter backgrounds)
         "primary-soft": "bg-primary/10 text-primary",
         "secondary-soft": "bg-secondary/50 text-secondary-foreground",
         "destructive-soft": "bg-destructive/10 text-destructive",
@@ -35,6 +40,7 @@ const badgeVariants = cva(
           "bg-warning/10 text-warning-foreground dark:text-warning",
         "info-soft": "bg-info/10 text-info-foreground dark:text-info",
       },
+      /** Size of the badge */
       size: {
         xs: "h-4 px-1.5 text-[10px] [&>svg]:size-2.5",
         sm: "h-5 px-2 text-xs [&>svg]:size-3",
@@ -42,19 +48,114 @@ const badgeVariants = cva(
         lg: "h-7 px-3 text-sm [&>svg]:size-4",
         xl: "h-8 px-4 text-sm [&>svg]:size-4",
       },
+      /** Interactive state for clickable badges */
+      clickable: {
+        true: "cursor-pointer hover:opacity-90 active:scale-95",
+        false: "",
+      },
+      /** Disabled state */
+      disabled: {
+        true: "opacity-50 cursor-not-allowed pointer-events-none",
+        false: "",
+      },
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
+      clickable: false,
+      disabled: false,
+    },
+  }
+);
+
+const badgeDotVariants = cva("rounded-full shrink-0", {
+  variants: {
+    color: {
+      default: "bg-primary",
+      secondary: "bg-secondary",
+      destructive: "bg-destructive",
+      success: "bg-success",
+      warning: "bg-warning",
+      info: "bg-info",
+      outline: "bg-foreground",
+      muted: "bg-muted-foreground",
+    },
+    size: {
+      xs: "h-1.5 w-1.5",
+      sm: "h-2 w-2",
+      default: "h-2.5 w-2.5",
+      lg: "h-3 w-3",
+      xl: "h-3.5 w-3.5",
+    },
+    pulse: {
+      none: "",
+      continuous: "animate-ping",
+      once: "animate-ping-once",
+    },
+  },
+  defaultVariants: {
+    color: "default",
+    size: "default",
+    pulse: "none",
+  },
+});
+
+const badgeCloseVariants = cva(
+  "rounded-full p-0.5 opacity-70 hover:opacity-100 transition-opacity focus:outline-none focus-visible:ring-2",
+  {
+    variants: {
+      size: {
+        xs: "h-3 w-3 [&>svg]:size-2",
+        sm: "h-3.5 w-3.5 [&>svg]:size-2.5",
+        default: "h-4 w-4 [&>svg]:size-3",
+        lg: "h-4.5 w-4.5 [&>svg]:size-3.5",
+        xl: "h-5 w-5 [&>svg]:size-4",
+      },
+    },
+    defaultVariants: {
       size: "default",
     },
   }
 );
 
+/**
+ * Badge component props
+ * @example
+ * ```tsx
+ * <Badge variant="success" icon={<CheckIcon />}>Approved</Badge>
+ * <Badge dismissible onClose={() => {}}>Removable</Badge>
+ * ```
+ */
 interface BadgeProps
   extends useRender.ComponentProps<"span">,
     VariantProps<typeof badgeVariants> {
+  /** Icon to display in the badge */
   icon?: React.ReactNode;
+  /** Position of the icon */
   iconPosition?: "left" | "right";
+  /** Show a dot indicator, optionally with a specific color */
+  dot?:
+    | boolean
+    | "default"
+    | "secondary"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | "outline"
+    | "muted";
+  /** Pulse animation for the dot */
+  dotPulse?: "none" | "continuous" | "once";
+  /** Show a close button */
+  dismissible?: boolean;
+  /** Callback when badge is dismissed */
+  onClose?: () => void;
+  /** Show loading spinner */
+  loading?: boolean;
+  /** Disable the badge */
+  disabled?: boolean;
+  /** Accessible label for the close button */
+  closeLabel?: string;
 }
 
 function Badge({
@@ -63,28 +164,143 @@ function Badge({
   size = "default",
   icon,
   iconPosition = "left",
+  dot = false,
+  dotPulse = "none",
+  dismissible = false,
+  onClose,
+  loading = false,
+  disabled = false,
+  closeLabel = "Remove",
   render,
   children,
   ...props
 }: BadgeProps) {
+  const [isVisible, setIsVisible] = React.useState(true);
+  const [isClosing, setIsClosing] = React.useState(false);
+
+  const handleClose = React.useCallback(() => {
+    if (loading || disabled) return;
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsVisible(false);
+      onClose?.();
+    }, 150);
+  }, [loading, disabled, onClose]);
+
+  const handleKeyDown = React.useCallback(
+    (e: React.KeyboardEvent) => {
+      if ((e.key === "Enter" || e.key === " ") && dismissible) {
+        e.preventDefault();
+        handleClose();
+      }
+    },
+    [dismissible, handleClose]
+  );
+
+  // Simplified dot color logic
+  const dotColor =
+    dot === true
+      ? "default"
+      : ((dot || "default") as
+          | "default"
+          | "secondary"
+          | "destructive"
+          | "success"
+          | "warning"
+          | "info"
+          | "outline"
+          | "muted");
+  const hasDot = dot !== false;
+
+  const badgeContent = (
+    <>
+      {hasDot && (
+        <span
+          className={cn(
+            badgeDotVariants({
+              color: dotColor,
+              size,
+              pulse:
+                dotPulse === "continuous" || dotPulse === "once"
+                  ? dotPulse
+                  : "none",
+            })
+          )}
+        />
+      )}
+      {icon && (
+        <span className="shrink-0 flex items-center [&>svg]:w-[1em] [&>svg]:h-[1em]">
+          {loading ? (
+            <svg className="animate-spin h-[1em] w-[1em]" viewBox="0 0 24 24">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+              />
+            </svg>
+          ) : (
+            icon
+          )}
+        </span>
+      )}
+      <span className={cn(dismissible && !loading && "pr-1")}>{children}</span>
+      {dismissible && !loading && (
+        <button
+          type="button"
+          onClick={handleClose}
+          onKeyDown={handleKeyDown}
+          disabled={disabled}
+          className={cn(
+            badgeCloseVariants({ size }),
+            "focus-visible:ring-offset-1"
+          )}
+          aria-label={closeLabel}
+        >
+          <IconX />
+        </button>
+      )}
+    </>
+  );
+
   return useRender({
-    defaultTagName: "span",
+    defaultTagName: isVisible ? "span" : "div",
     props: mergeProps<"span">(
       {
         className: cn(
-          badgeVariants({ className, variant, size }),
-          iconPosition === "right" && "flex-row-reverse"
+          badgeVariants({
+            variant,
+            size,
+            clickable: props.onClick ? true : false,
+            disabled,
+          }),
+          iconPosition === "right" && "flex-row-reverse",
+          isClosing && "opacity-0 scale-95 transition-all duration-150",
+          !isVisible && "hidden",
+          className
         ),
-        children: (
-          <>
-            {icon && (
-              <span className="shrink-0 flex items-center [&>svg]:w-[1em] [&>svg]:h-[1em]">
-                {icon}
-              </span>
-            )}
-            {children}
-          </>
-        ),
+        "aria-disabled": disabled || undefined,
+        tabIndex: props.onClick && !disabled ? 0 : undefined,
+        onKeyDown:
+          props.onClick && !disabled
+            ? (e: React.KeyboardEvent) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  (props.onClick as (e: React.MouseEvent) => void)?.(
+                    e as unknown as React.MouseEvent
+                  );
+                }
+              }
+            : undefined,
+        children: badgeContent,
       },
       props
     ),
@@ -103,11 +319,15 @@ function Badge({
 interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   status: "success" | "warning" | "error" | "info" | "default";
   size?: "sm" | "default" | "lg";
+  pulse?: "none" | "continuous" | "once";
+  label?: string;
 }
 
 function StatusBadge({
   status,
   size = "default",
+  pulse = "none",
+  label,
   className,
   children,
   ...props
@@ -118,6 +338,14 @@ function StatusBadge({
     error: "bg-destructive",
     info: "bg-info",
     default: "bg-muted-foreground",
+  };
+
+  const statusLabels = {
+    success: "Success",
+    warning: "Warning",
+    error: "Error",
+    info: "Info",
+    default: "Unknown",
   };
 
   const sizeClasses = {
@@ -132,9 +360,12 @@ function StatusBadge({
     lg: "h-2.5 w-2.5",
   };
 
+  const displayLabel = label || statusLabels[status];
+
   return (
     <span
       data-slot="status-badge"
+      role="status"
       className={cn(
         "inline-flex items-center rounded-full bg-muted text-muted-foreground font-medium",
         sizeClasses[size],
@@ -143,12 +374,16 @@ function StatusBadge({
       {...props}
     >
       <span
+        aria-hidden="true"
         className={cn(
           "rounded-full shrink-0",
           statusColors[status],
-          dotSizes[size]
+          dotSizes[size],
+          (pulse === "continuous" || pulse === "once") &&
+            "animate-ping opacity-75"
         )}
       />
+      <span>{displayLabel}</span>
       {children}
     </span>
   );
@@ -157,26 +392,50 @@ function StatusBadge({
 // ============================================
 // COUNT BADGE (for notifications, counts etc)
 // ============================================
+type CountFormat = "default" | "short" | "commas";
+
+function formatCount(count: number, format: CountFormat, max: number): string {
+  if (format === "short") {
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1).replace(/\.0$/, "")}M+`;
+    }
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1).replace(/\.0$/, "")}k+`;
+    }
+    return count > max ? `${max}+` : count.toString();
+  }
+  if (format === "commas") {
+    const formatted = count.toLocaleString();
+    return count > max ? `${max.toLocaleString()}+` : formatted;
+  }
+  return count > max ? `${max}+` : count.toString();
+}
+
 interface CountBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   count: number;
   max?: number;
+  format?: CountFormat;
   size?: "xs" | "sm" | "default";
   variant?: "default" | "destructive" | "secondary";
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
+  pulse?: boolean;
 }
 
 function CountBadge({
   count,
   max = 99,
+  format = "default",
   size = "default",
   variant = "default",
   icon,
   iconPosition = "left",
+  pulse = false,
   className,
   ...props
 }: CountBadgeProps) {
-  const displayCount = count > max ? `${max}+` : count;
+  const displayCount = formatCount(count, format, max);
+  const showPulse = pulse && count > 0;
 
   const sizeClasses = {
     xs: "min-w-4 h-4 px-1 text-[10px] gap-0.5",
@@ -204,6 +463,7 @@ function CountBadge({
         sizeClasses[size],
         variantClasses[variant],
         iconPosition === "right" && "flex-row-reverse",
+        showPulse && "animate-badge-pulse",
         className
       )}
       {...props}
@@ -213,10 +473,124 @@ function CountBadge({
           {icon}
         </span>
       )}
-      {displayCount}
+      <span>{displayCount}</span>
     </span>
   );
 }
 
-export { Badge, badgeVariants, StatusBadge, CountBadge };
-export type { BadgeProps, StatusBadgeProps, CountBadgeProps };
+// ============================================
+// TAG BADGE (for tagging systems)
+// ============================================
+interface TagBadgeProps extends Omit<BadgeProps, "variant"> {
+  variant?:
+    | "default"
+    | "secondary"
+    | "outline"
+    | "ghost"
+    | "primary-soft"
+    | "secondary-soft"
+    | "success"
+    | "success-soft"
+    | "warning"
+    | "warning-soft"
+    | "info"
+    | "info-soft"
+    | "destructive"
+    | "destructive-soft";
+  removable?: boolean;
+  onRemove?: () => void;
+}
+
+function TagBadge({
+  variant = "default",
+  size = "sm",
+  icon,
+  iconPosition = "left",
+  removable = false,
+  onRemove,
+  children,
+  className,
+  ...props
+}: TagBadgeProps) {
+  const [isRemoved, setIsRemoved] = React.useState(false);
+
+  const handleRemove = () => {
+    setIsRemoved(true);
+    onRemove?.();
+  };
+
+  if (isRemoved) return null;
+
+  return (
+    <Badge
+      variant={variant}
+      size={size}
+      icon={icon}
+      iconPosition={iconPosition}
+      dismissible={removable}
+      onClose={handleRemove}
+      className={cn("rounded-md", className)}
+      {...props}
+    >
+      {children}
+    </Badge>
+  );
+}
+
+// ============================================
+// BADGE GROUP (for stacking)
+// ============================================
+interface BadgeGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+  gap?: "tight" | "normal" | "loose";
+  orientation?: "horizontal" | "vertical";
+}
+
+function BadgeGroup({
+  gap = "normal",
+  orientation = "horizontal",
+  className,
+  children,
+  ...props
+}: BadgeGroupProps) {
+  const gapClasses = {
+    tight: "gap-1",
+    normal: "gap-2",
+    loose: "gap-3",
+  };
+
+  const orientationClasses = {
+    horizontal: "flex flex-row flex-wrap items-center",
+    vertical: "flex flex-col",
+  };
+
+  return (
+    <div
+      data-slot="badge-group"
+      className={cn(
+        orientationClasses[orientation],
+        gapClasses[gap],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+export {
+  Badge,
+  badgeVariants,
+  StatusBadge,
+  CountBadge,
+  TagBadge,
+  BadgeGroup,
+  formatCount,
+};
+export type {
+  BadgeProps,
+  StatusBadgeProps,
+  CountBadgeProps,
+  TagBadgeProps,
+  BadgeGroupProps,
+};

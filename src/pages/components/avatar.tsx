@@ -101,7 +101,7 @@ export function AvatarPage() {
           Status Indicators
         </h2>
         <p className="text-sm text-muted-foreground mb-4">
-          Online, offline, busy, or away status dots.
+          Online, offline, busy, or away status dots (default: top-right).
         </p>
         <div className="flex items-center gap-6">
           <Avatar status="online" size="lg">
@@ -119,6 +119,50 @@ export function AvatarPage() {
           <Avatar status="offline_gray" size="lg">
             <AvatarFallback>GRAY</AvatarFallback>
           </Avatar>
+        </div>
+      </section>
+
+      {/* Status Positions */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Status Positions
+        </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          Configure where the status indicator appears.
+        </p>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-2">Top Right (default)</p>
+            <div className="inline-block">
+              <Avatar status="online" statusPosition="top-right" size="lg">
+                <AvatarFallback>TR</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-2">Top Left</p>
+            <div className="inline-block">
+              <Avatar status="online" statusPosition="top-left" size="lg">
+                <AvatarFallback>TL</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-2">Bottom Right</p>
+            <div className="inline-block">
+              <Avatar status="online" statusPosition="bottom-right" size="lg">
+                <AvatarFallback>BR</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-2">Bottom Left</p>
+            <div className="inline-block">
+              <Avatar status="online" statusPosition="bottom-left" size="lg">
+                <AvatarFallback>BL</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -414,6 +458,12 @@ export function AvatarPage() {
 // Status indicators
 <Avatar status="online">...</Avatar>
 <Avatar status="busy" size="lg">...</Avatar>
+
+// Status position (default: top-right)
+<Avatar status="online" statusPosition="top-right">...</Avatar>
+<Avatar status="online" statusPosition="top-left">...</Avatar>
+<Avatar status="online" statusPosition="bottom-right">...</Avatar>
+<Avatar status="online" statusPosition="bottom-left">...</Avatar>
 
 // Ring colors
 <Avatar ring="primary">...</Avatar>
