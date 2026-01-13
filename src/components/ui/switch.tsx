@@ -76,6 +76,12 @@ interface SwitchProps
   thumbIconChecked?: React.ReactNode;
   /** Ref to access the hidden input element. */
   inputRef?: React.Ref<HTMLInputElement>;
+  /** Name attribute for form submission. */
+  name?: string;
+  /** Value attribute for form submission. */
+  value?: string;
+  /** Required attribute for form validation. */
+  required?: boolean;
 }
 
 function Switch({
@@ -95,7 +101,6 @@ function Switch({
   readOnly,
   required,
   name,
-  value,
   id,
   inputRef,
   ...props
@@ -157,7 +162,6 @@ function Switch({
         readOnly={readOnly}
         required={required}
         name={name}
-        value={value}
         inputRef={inputRef}
         className={({ checked: isChecked }) =>
           cn(switchTrackVariants({ size }), getColorClass(isChecked))

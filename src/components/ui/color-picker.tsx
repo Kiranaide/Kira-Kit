@@ -307,7 +307,9 @@ function ColorPicker({
 
   const saturationRef = React.useRef<HTMLDivElement>(null);
   const hueRef = React.useRef<HTMLDivElement>(null);
-  const announcementTimeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
+  const announcementTimeoutRef = React.useRef<
+    ReturnType<typeof setTimeout> | undefined
+  >(undefined);
   const [announcement, setAnnouncement] = React.useState("");
 
   // Size variants for trigger button
