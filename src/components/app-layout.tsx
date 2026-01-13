@@ -58,6 +58,7 @@ import {
   IconUpload,
   IconBell,
   IconPalette,
+  IconColorPicker,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -162,6 +163,12 @@ export function AppLayout() {
                     icon={<IconPalette className="w-5 h-5" />}
                   >
                     Color System
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/color-picker"
+                    icon={<IconColorPicker className="w-5 h-5" />}
+                  >
+                    Color Picker
                   </SidebarItem>
                   <SidebarItem
                     to="/components/combobox"
