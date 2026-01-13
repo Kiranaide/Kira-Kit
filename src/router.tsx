@@ -40,6 +40,7 @@ import { RadioGroupPage } from "@/pages/components/radio-group";
 import { ResizablePage } from "@/pages/components/resizable";
 import { SkeletonPage } from "@/pages/components/skeleton";
 import { SliderPage } from "@/pages/components/slider";
+import { SwitchPage } from "@/pages/components/switch";
 import { ContextMenuPage } from "@/pages/components/context-menu";
 import { TablePage } from "@/pages/components/table";
 import { DataTablePage } from "@/pages/components/data-table";
@@ -266,6 +267,12 @@ const sliderRoute = createRoute({
   component: SliderPage,
 });
 
+const switchRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/switch",
+  component: SwitchPage,
+});
+
 const contextMenuRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/context-menu",
@@ -386,6 +393,7 @@ const routeTree = rootRoute.addChildren([
   resizableRoute,
   skeletonRoute,
   sliderRoute,
+  switchRoute,
   contextMenuRoute,
   tableRoute,
   dataTableRoute,

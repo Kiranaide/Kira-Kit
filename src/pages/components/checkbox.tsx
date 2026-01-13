@@ -3,9 +3,18 @@ import {
   Checkbox,
   CheckboxWithLabel,
   CheckboxGroup,
+  CheckboxCard,
 } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { IconHeart, IconStar, IconBookmark } from "@tabler/icons-react";
+import {
+  IconHeart,
+  IconStar,
+  IconBookmark,
+  IconDeviceMobile,
+  IconSettings,
+  IconUser,
+  IconShield,
+} from "@tabler/icons-react";
 
 export function CheckboxPage() {
   const [groupValue, setGroupValue] = React.useState<string[]>(["banana"]);
@@ -18,12 +27,12 @@ export function CheckboxPage() {
   ];
 
   return (
-    <div className="p-8 max-w-4xl space-y-12">
+    <div className="p-8 max-w-5xl space-y-12">
       <header>
         <h1 className="text-3xl font-bold mb-2">Checkbox</h1>
         <p className="text-muted-foreground">
           A control that allows the user to toggle between checked and
-          unchecked.
+          unchecked states with support for variants, colors, and more.
         </p>
       </header>
 
@@ -59,6 +68,112 @@ export function CheckboxPage() {
         </div>
       </section>
 
+      {/* Style Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Style Variants
+        </h2>
+        <div className="grid grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Default</p>
+            <div className="flex items-center gap-4">
+              <Checkbox variant="default" id="var-default-unchecked" />
+              <Checkbox variant="default" id="var-default-checked" checked />
+              <Checkbox
+                variant="default"
+                id="var-default-indeterminate"
+                checked="indeterminate"
+              />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Outline</p>
+            <div className="flex items-center gap-4">
+              <Checkbox variant="outline" id="var-outline-unchecked" />
+              <Checkbox variant="outline" id="var-outline-checked" checked />
+              <Checkbox
+                variant="outline"
+                id="var-outline-indeterminate"
+                checked="indeterminate"
+              />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Filled</p>
+            <div className="flex items-center gap-4">
+              <Checkbox variant="filled" id="var-filled-unchecked" />
+              <Checkbox variant="filled" id="var-filled-checked" checked />
+              <Checkbox
+                variant="filled"
+                id="var-filled-indeterminate"
+                checked="indeterminate"
+              />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Soft</p>
+            <div className="flex items-center gap-4">
+              <Checkbox variant="soft" id="var-soft-unchecked" />
+              <Checkbox variant="soft" id="var-soft-checked" checked />
+              <Checkbox
+                variant="soft"
+                id="var-soft-indeterminate"
+                checked="indeterminate"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Color Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Color Variants
+        </h2>
+        <div className="grid grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Success</p>
+            <div className="flex items-center gap-4">
+              <Checkbox color="success" id="col-success-unchecked" />
+              <Checkbox color="success" id="col-success-checked" checked />
+              <Checkbox
+                color="success"
+                id="col-success-indeterminate"
+                checked="indeterminate"
+              />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Destructive</p>
+            <div className="flex items-center gap-4">
+              <Checkbox color="destructive" id="col-destructive-unchecked" />
+              <Checkbox
+                color="destructive"
+                id="col-destructive-checked"
+                checked
+              />
+              <Checkbox
+                color="destructive"
+                id="col-destructive-indeterminate"
+                checked="indeterminate"
+              />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Warning</p>
+            <div className="flex items-center gap-4">
+              <Checkbox color="warning" id="col-warning-unchecked" />
+              <Checkbox color="warning" id="col-warning-checked" checked />
+              <Checkbox
+                color="warning"
+                id="col-warning-indeterminate"
+                checked="indeterminate"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Custom Icons */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -71,35 +186,57 @@ export function CheckboxPage() {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="heart"
-              customIcon={<IconHeart className="h-3 w-3" strokeWidth={3} />}
+              variant="filled"
+              customIcon={<IconHeart className="h-3.5 w-3.5" strokeWidth={3} />}
             />
             <Label htmlFor="heart">Favorite</Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
               id="star"
-              customIcon={<IconStar className="h-3 w-3" strokeWidth={3} />}
+              variant="filled"
+              customIcon={<IconStar className="h-3.5 w-3.5" strokeWidth={3} />}
             />
             <Label htmlFor="star">Star</Label>
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox
               id="bookmark"
-              customIcon={<IconBookmark className="h-3 w-3" strokeWidth={3} />}
+              variant="filled"
+              customIcon={
+                <IconBookmark className="h-3.5 w-3.5" strokeWidth={3} />
+              }
             />
             <Label htmlFor="bookmark">Bookmark</Label>
           </div>
         </div>
       </section>
 
-      {/* Indeterminate State */}
+      {/* Loading State */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Indeterminate State
+          Loading State
         </h2>
-        <div className="flex items-center space-x-2">
-          <Checkbox id="indeterminate" checked="indeterminate" />
-          <Label htmlFor="indeterminate">Partially selected</Label>
+        <div className="flex items-center gap-6">
+          <Checkbox id="loading-unchecked" loading />
+          <Checkbox id="loading-checked" checked loading />
+          <Checkbox
+            id="loading-indeterminate"
+            checked="indeterminate"
+            loading
+          />
+        </div>
+      </section>
+
+      {/* Error State */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Error State
+        </h2>
+        <div className="flex items-center gap-6">
+          <Checkbox id="error-unchecked" error />
+          <Checkbox id="error-checked" checked error />
+          <Checkbox id="error-indeterminate" checked="indeterminate" error />
         </div>
       </section>
 
@@ -120,8 +257,20 @@ export function CheckboxPage() {
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox id="disabled-checked" disabled checked />
-            <Label htmlFor="disabled-checked" className="text-muted-foreground">
+            <Label
+              htmlFor="disabled-checked"
+              className="text-muted-foreground"
+            >
               Disabled checked
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox id="disabled-readonly" readOnly checked />
+            <Label
+              htmlFor="disabled-readonly"
+              className="text-muted-foreground"
+            >
+              Readonly checked
             </Label>
           </div>
         </div>
@@ -144,6 +293,16 @@ export function CheckboxPage() {
             label="Marketing emails"
             description="Get updates about new features"
             checked
+          />
+          <CheckboxWithLabel
+            label="With error"
+            description="This checkbox has an error state"
+            error
+          />
+          <CheckboxWithLabel
+            label="Loading state"
+            description="When processing a request"
+            loading
           />
         </div>
       </section>
@@ -190,6 +349,84 @@ export function CheckboxPage() {
         </div>
       </section>
 
+      {/* CheckboxCard */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          CheckboxCard
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Card-style selectable checkbox with icon and description support.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+          <CheckboxCard
+            label="Mobile App"
+            description="iOS and Android applications"
+            icon={<IconDeviceMobile className="h-5 w-5" />}
+            variant="outline"
+          />
+          <CheckboxCard
+            label="Settings"
+            description="Configure application preferences"
+            icon={<IconSettings className="h-5 w-5" />}
+            variant="outline"
+            checked
+          />
+          <CheckboxCard
+            label="User Profile"
+            description="Manage account settings"
+            icon={<IconUser className="h-5 w-5" />}
+            variant="outline"
+            disabled
+          />
+          <CheckboxCard
+            label="Security"
+            description="Two-factor authentication"
+            icon={<IconShield className="h-5 w-5" />}
+            variant="outline"
+            error
+          />
+        </div>
+      </section>
+
+      {/* Switch Reference */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Switch Component
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          For toggle switch functionality with icon support, use the dedicated{" "}
+          <a href="/components/switch" className="text-primary hover:underline">
+            Switch component
+          </a>
+          .
+        </p>
+      </section>
+
+      {/* Combined Example */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Settings Panel Example
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          A realistic settings panel combining checkbox variants.
+        </p>
+        <div className="border rounded-lg p-6 max-w-2xl space-y-6">
+          <div>
+            <h3 className="text-lg font-medium mb-3">Notification Channels</h3>
+            <CheckboxGroup
+              options={[
+                { value: "email", label: "Email", description: "Get notified via email" },
+                { value: "push", label: "Push", description: "Browser push notifications" },
+                { value: "sms", label: "SMS", description: "Text message notifications" },
+                { value: "slack", label: "Slack", description: "Slack channel updates" },
+              ]}
+              showSelectAll
+              orientation="horizontal"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -197,15 +434,20 @@ export function CheckboxPage() {
         </h2>
         <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
           <pre className="text-sm text-foreground">
-            {`import { Checkbox, CheckboxWithLabel, CheckboxGroup } from "@/components/ui/checkbox"
+            {`import { Checkbox, CheckboxWithLabel, CheckboxGroup, CheckboxCard } from "@/components/ui/checkbox"
 
 // Basic checkbox
 <Checkbox id="terms" />
 
-// With label
+// With variants
+<Checkbox variant="outline" color="success" size="lg" checked />
+
+// Checkbox with label
 <CheckboxWithLabel
   label="Enable notifications"
   description="Receive push notifications"
+  error
+  loading
 />
 
 // Checkbox group
@@ -218,6 +460,13 @@ export function CheckboxPage() {
   value={selectedFruits}
   onChange={setSelectedFruits}
   showSelectAll
+/>
+
+// Card style checkbox
+<CheckboxCard
+  label="Mobile App"
+  description="iOS and Android"
+  icon={<IconDeviceMobile />}
 />`}
           </pre>
         </div>
