@@ -19,7 +19,6 @@ import {
   IconLayoutCards,
   IconForms,
   IconSelector,
-  IconListSearch,
   IconTextCaption,
   IconInputCheck,
   IconLayoutList,
@@ -169,12 +168,6 @@ export function AppLayout() {
                     icon={<IconColorPicker className="w-5 h-5" />}
                   >
                     Color Picker
-                  </SidebarItem>
-                  <SidebarItem
-                    to="/components/combobox"
-                    icon={<IconListSearch className="w-5 h-5" />}
-                  >
-                    Combobox
                   </SidebarItem>
                   <SidebarItem
                     to="/components/context-menu"

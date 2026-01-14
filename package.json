@@ -21,7 +21,7 @@
     "@tailwindcss/vite": "^4.1.17",
     "@tanstack/react-router": "^1.141.2",
     "@tanstack/react-table": "^8.21.3",
-    "@tanstack/react-virtual": "^3.13.13",
+    "@tanstack/react-virtual": "^3.13.18",
     "@uiw/color-convert": "^2.9.2",
     "@uiw/react-color-hue": "^2.9.2",
     "@uiw/react-color-saturation": "^2.9.2",

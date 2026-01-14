@@ -13,15 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
-  Combobox,
-  ComboboxTrigger,
-  ComboboxInput,
-  ComboboxContent,
-  ComboboxList,
-  ComboboxEmpty,
-  ComboboxItem,
-  ComboboxValue,
-} from "@/components/ui/combobox";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function DialogPage() {
   return (
@@ -196,8 +193,8 @@ export function DialogPage() {
           Form with Popovers (Accessibility Test)
         </h2>
         <p className="text-sm text-muted-foreground">
-          Testing interaction with nested popovers (DatePicker, Combobox) inside
-          a dialog, and sticky footer behavior in full-screen mode.
+          Testing interaction with nested popovers (DatePicker, Select) inside a
+          dialog, and sticky footer behavior in full-screen mode.
         </p>
         <Dialog>
           <DialogTrigger render={<Button>Open Complex Form</Button>} />
@@ -222,28 +219,17 @@ export function DialogPage() {
 
                 <div className="space-y-2">
                   <Label>Participants</Label>
-                  <Combobox>
-                    <ComboboxTrigger className="w-full">
-                      <ComboboxInput placeholder="Select team member..." />
-                    </ComboboxTrigger>
-                    <ComboboxContent>
-                      <ComboboxList>
-                        <ComboboxEmpty>No results found.</ComboboxEmpty>
-                        <ComboboxItem>
-                          <ComboboxValue>Alice Johnson</ComboboxValue>
-                        </ComboboxItem>
-                        <ComboboxItem>
-                          <ComboboxValue>Bob Smith</ComboboxValue>
-                        </ComboboxItem>
-                        <ComboboxItem>
-                          <ComboboxValue>Charlie Brown</ComboboxValue>
-                        </ComboboxItem>
-                        <ComboboxItem>
-                          <ComboboxValue>Diana Prince</ComboboxValue>
-                        </ComboboxItem>
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
+                  <Select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="alice">Alice Johnson</SelectItem>
+                      <SelectItem value="bob">Bob Smith</SelectItem>
+                      <SelectItem value="charlie">Charlie Brown</SelectItem>
+                      <SelectItem value="diana">Diana Prince</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">

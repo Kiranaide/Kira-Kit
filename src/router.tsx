@@ -11,7 +11,6 @@ import { ButtonPage } from "@/pages/components/button";
 import { CardPage } from "@/pages/components/card";
 import { InputPage } from "@/pages/components/input";
 import { SelectPage } from "@/pages/components/select";
-import { ComboboxPage } from "@/pages/components/combobox";
 import { TextareaPage } from "@/pages/components/textarea";
 import { FieldPage } from "@/pages/components/field";
 import { InputGroupPage } from "@/pages/components/input-group";
@@ -91,12 +90,6 @@ const selectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/select",
   component: SelectPage,
-});
-
-const comboboxRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/components/combobox",
-  component: ComboboxPage,
 });
 
 const textareaRoute = createRoute({
@@ -364,7 +357,6 @@ const routeTree = rootRoute.addChildren([
   cardRoute,
   inputRoute,
   selectRoute,
-  comboboxRoute,
   textareaRoute,
   fieldRoute,
   inputGroupRoute,
