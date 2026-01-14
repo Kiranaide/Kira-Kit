@@ -14,6 +14,10 @@ import {
 } from "@tabler/icons-react";
 import { animate, stagger } from "animejs";
 
+// ============================================
+// BASE SELECT PRIMITIVES (Low-level wrappers)
+// ============================================
+
 const Select = SelectPrimitive.Root;
 
 function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
@@ -212,652 +216,63 @@ interface SelectOption {
   disabled?: boolean;
 }
 
-// ============================================
-// MULTI SELECT COMPONENT
-// ============================================
-interface MultiSelectProps {
-  options: SelectOption[];
-  value?: string[];
-  onChange?: (value: string[]) => void;
-  placeholder?: string;
+interface AutocompleteOption {
+  value: string;
+  label: string;
   disabled?: boolean;
-  className?: string;
-  maxDisplayedTags?: number;
-  showSearchIcon?: boolean;
-}
-
-function MultiSelect({
-  options,
-  value = [],
-  onChange,
-  placeholder = "Select...",
-  disabled = false,
-  className,
-  maxDisplayedTags = 3,
-  showSearchIcon = false,
-}: MultiSelectProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [highlightedIndex, setHighlightedIndex] = React.useState(0);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const listRef = React.useRef<HTMLDivElement>(null);
-
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const selectedOptions = options.filter((opt) => value.includes(opt.value));
-  const displayedTags = selectedOptions.slice(0, maxDisplayedTags);
-  const remainingCount = selectedOptions.length - maxDisplayedTags;
-
-  const toggleOption = (optionValue: string) => {
-    const newValue = value.includes(optionValue)
-      ? value.filter((v) => v !== optionValue)
-      : [...value, optionValue];
-    onChange?.(newValue);
-    setSearchQuery("");
-    inputRef.current?.focus();
-  };
-
-  const removeTag = (optionValue: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    onChange?.(value.filter((v) => v !== optionValue));
-  };
-
-  // Reset highlighted index when options change
-  React.useEffect(() => {
-    setHighlightedIndex(0);
-  }, [filteredOptions.length]);
-
-  // Animate items when dropdown opens
-  React.useEffect(() => {
-    if (isOpen && listRef.current) {
-      const items = listRef.current.querySelectorAll("[data-option]");
-      animate(items, {
-        opacity: [0, 1],
-        translateY: [-10, 0],
-        delay: stagger(30),
-        duration: 200,
-        ease: "outQuad",
-      });
-    }
-  }, [isOpen, filteredOptions.length]);
-
-  // Handle keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setHighlightedIndex((prev) =>
-        prev < filteredOptions.length - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-    } else if (
-      e.key === "Enter" &&
-      highlightedIndex >= 0 &&
-      filteredOptions[highlightedIndex]
-    ) {
-      e.preventDefault();
-      toggleOption(filteredOptions[highlightedIndex].value);
-    } else if (e.key === "Escape") {
-      setIsOpen(false);
-    } else if (e.key === "Backspace" && !searchQuery && value.length > 0) {
-      const newValue = value.slice(0, -1);
-      onChange?.(newValue);
-    }
-  };
-
-  return (
-    <div className={cn("relative w-full", className)}>
-      <div
-        className={cn(
-          "flex flex-wrap items-center gap-1 min-h-8 px-2 py-1 rounded-lg border border-input bg-transparent cursor-text",
-          "dark:bg-input/30 dark:hover:bg-input/50",
-          "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
-          disabled && "opacity-50 pointer-events-none"
-        )}
-        onClick={() => inputRef.current?.focus()}
-      >
-        {showSearchIcon && (
-          <IconSearch className="h-4 w-4 text-muted-foreground shrink-0" />
-        )}
-        {displayedTags.map((opt) => (
-          <span
-            key={opt.value}
-            className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs shrink-0"
-          >
-            {opt.label}
-            <button
-              type="button"
-              onClick={(e) => removeTag(opt.value, e)}
-              className="rounded-sm hover:bg-muted-foreground/20"
-            >
-              <IconX className="h-3 w-3" />
-            </button>
-          </span>
-        ))}
-        {remainingCount > 0 && (
-          <span className="text-xs text-muted-foreground shrink-0">
-            +{remainingCount} more
-          </span>
-        )}
-        <input
-          ref={inputRef}
-          type="text"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => setIsOpen(true)}
-          onBlur={() => setTimeout(() => setIsOpen(false), 150)}
-          onKeyDown={handleKeyDown}
-          placeholder={value.length > 0 ? "" : placeholder}
-          disabled={disabled}
-          className="flex-1 min-w-[80px] bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
-        />
-        <IconChevronDown
-          className={cn(
-            "h-4 w-4 text-muted-foreground shrink-0 transition-transform",
-            isOpen && "rotate-180"
-          )}
-        />
-      </div>
-      {isOpen && filteredOptions.length > 0 && (
-        <div
-          ref={listRef}
-          className="absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border bg-popover p-1 shadow-md"
-        >
-          {filteredOptions.map((option, index) => {
-            const isSelected = value.includes(option.value);
-            const isHighlighted = index === highlightedIndex;
-            return (
-              <button
-                key={option.value}
-                data-option
-                type="button"
-                disabled={option.disabled}
-                onClick={() => toggleOption(option.value)}
-                onMouseEnter={() => setHighlightedIndex(index)}
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none",
-                  isHighlighted && "bg-muted",
-                  option.disabled && "opacity-50 cursor-not-allowed"
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex h-4 w-4 items-center justify-center rounded border transition-colors shrink-0",
-                    isSelected
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-input"
-                  )}
-                >
-                  {isSelected && <IconCheck className="h-3 w-3" />}
-                </div>
-                <span className="truncate">{option.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-      {isOpen && filteredOptions.length === 0 && searchQuery && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-popover p-3 text-sm text-muted-foreground text-center shadow-md">
-          No options found
-        </div>
-      )}
-    </div>
-  );
 }
 
 // ============================================
-// ASYNC SELECT COMPONENT
+// UNIFIED SELECT FIELD COMPONENT
+// Uses Base-UI Combobox for full functionality
 // ============================================
-interface AsyncSelectProps {
-  loadOptions: (query: string) => Promise<SelectOption[]>;
-  value?: string;
-  onChange?: (value: string, option: SelectOption | null) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  className?: string;
+
+interface SelectFieldProps<T extends SelectOption = SelectOption> {
+  /** Options to display in the dropdown */
+  options?: T[];
+  /** Controlled value - single string or array for multiple */
+  value?: string | string[];
+  /** Callback when value changes */
+  onChange?: (
+    value: string | string[],
+    selectedOptions: T | T[] | null
+  ) => void;
+  /** Enable multiple selection with chips */
+  multiple?: boolean;
+  /** Enable search/filter input */
+  searchable?: boolean;
+  /** Enable creating new options */
+  creatable?: boolean;
+  /** Enable async loading mode */
+  async?: boolean;
+  /** Async search function */
+  onSearch?: (query: string) => Promise<T[]>;
+  /** Debounce delay for async search (ms) */
   debounceMs?: number;
+  /** Cache async results */
   cacheOptions?: boolean;
-  showSearchIcon?: boolean;
-}
-
-function AsyncSelect({
-  loadOptions,
-  value,
-  onChange,
-  placeholder = "Search...",
-  disabled = false,
-  className,
-  debounceMs = 300,
-  cacheOptions = true,
-  showSearchIcon = false,
-}: AsyncSelectProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [options, setOptions] = React.useState<SelectOption[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [selectedOption, setSelectedOption] =
-    React.useState<SelectOption | null>(null);
-  const [highlightedIndex, setHighlightedIndex] = React.useState(0);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const listRef = React.useRef<HTMLDivElement>(null);
-  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const cacheRef = React.useRef<Map<string, SelectOption[]>>(new Map());
-
-  // Load options with debounce
-  const fetchOptions = React.useCallback(
-    async (query: string) => {
-      if (cacheOptions && cacheRef.current.has(query)) {
-        setOptions(cacheRef.current.get(query) || []);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const result = await loadOptions(query);
-        setOptions(result);
-        if (cacheOptions) {
-          cacheRef.current.set(query, result);
-        }
-      } catch (error) {
-        console.error("Failed to load options:", error);
-        setOptions([]);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [loadOptions, cacheOptions]
-  );
-
-  React.useEffect(() => {
-    if (!isOpen) return;
-
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    debounceRef.current = setTimeout(() => {
-      fetchOptions(searchQuery);
-    }, debounceMs);
-
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, [searchQuery, isOpen, fetchOptions, debounceMs]);
-
-  // Load initial options when dropdown opens
-  React.useEffect(() => {
-    if (isOpen && options.length === 0) {
-      fetchOptions("");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
-
-  // Reset highlighted index when options change
-  React.useEffect(() => {
-    setHighlightedIndex(0);
-  }, [options.length]);
-
-  // Animate items when options change
-  React.useEffect(() => {
-    if (isOpen && listRef.current && !isLoading && options.length > 0) {
-      const items = listRef.current.querySelectorAll("[data-option]");
-      animate(items, {
-        opacity: [0, 1],
-        translateY: [-10, 0],
-        delay: stagger(30),
-        duration: 200,
-        ease: "outQuad",
-      });
-    }
-  }, [options, isLoading, isOpen]);
-
-  const handleSelect = (option: SelectOption) => {
-    setSelectedOption(option);
-    onChange?.(option.value, option);
-    setIsOpen(false);
-    setSearchQuery(option.label);
-  };
-
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedOption(null);
-    onChange?.("", null);
-    setSearchQuery("");
-    inputRef.current?.focus();
-  };
-
-  // Handle keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setHighlightedIndex((prev) =>
-        prev < options.length - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-    } else if (
-      e.key === "Enter" &&
-      highlightedIndex >= 0 &&
-      options[highlightedIndex]
-    ) {
-      e.preventDefault();
-      handleSelect(options[highlightedIndex]);
-    } else if (e.key === "Escape") {
-      setIsOpen(false);
-    }
-  };
-
-  return (
-    <div className={cn("relative w-full", className)}>
-      <div
-        className={cn(
-          "flex items-center gap-1 h-8 px-2 py-1 rounded-lg border border-input bg-transparent cursor-text",
-          "dark:bg-input/30 dark:hover:bg-input/50",
-          "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
-          disabled && "opacity-50 pointer-events-none"
-        )}
-        onClick={() => inputRef.current?.focus()}
-      >
-        {showSearchIcon && (
-          <IconSearch className="h-4 w-4 text-muted-foreground shrink-0" />
-        )}
-        <input
-          ref={inputRef}
-          type="text"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setIsOpen(true);
-            if (selectedOption) {
-              setSelectedOption(null);
-            }
-          }}
-          onFocus={() => setIsOpen(true)}
-          onBlur={() => setTimeout(() => setIsOpen(false), 150)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          disabled={disabled}
-          className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
-        />
-        {isLoading && (
-          <IconLoader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
-        )}
-        {selectedOption && !isLoading && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="rounded-sm p-0.5 hover:bg-muted"
-          >
-            <IconX className="h-4 w-4" />
-          </button>
-        )}
-        {!isLoading && !selectedOption && (
-          <IconChevronDown
-            className={cn(
-              "h-4 w-4 text-muted-foreground shrink-0 transition-transform",
-              isOpen && "rotate-180"
-            )}
-          />
-        )}
-      </div>
-      {isOpen && (
-        <div
-          ref={listRef}
-          className="absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border bg-popover p-1 shadow-md"
-        >
-          {isLoading ? (
-            <div className="flex items-center justify-center py-4 gap-2 text-sm text-muted-foreground">
-              <IconLoader2 className="h-4 w-4 animate-spin" />
-              Loading...
-            </div>
-          ) : options.length === 0 ? (
-            <div className="py-4 text-center text-sm text-muted-foreground">
-              {searchQuery ? "No results found" : "Type to search..."}
-            </div>
-          ) : (
-            options.map((option, index) => {
-              const isSelected = value === option.value;
-              const isHighlighted = index === highlightedIndex;
-              return (
-                <button
-                  key={option.value}
-                  data-option
-                  type="button"
-                  disabled={option.disabled}
-                  onClick={() => handleSelect(option)}
-                  onMouseEnter={() => setHighlightedIndex(index)}
-                  className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none",
-                    isHighlighted && "bg-muted",
-                    option.disabled && "opacity-50 cursor-not-allowed"
-                  )}
-                >
-                  <span className="flex-1 text-left truncate">
-                    {option.label}
-                  </span>
-                  {isSelected && (
-                    <IconCheck className="h-4 w-4 text-primary shrink-0" />
-                  )}
-                </button>
-              );
-            })
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ============================================
-// CREATABLE SELECT COMPONENT
-// ============================================
-interface CreatableSelectProps {
-  options: SelectOption[];
-  value?: string;
-  onChange?: (value: string, option: SelectOption) => void;
+  /** Callback when creating new option */
   onCreateOption?: (inputValue: string) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  className?: string;
+  /** Label for create option button */
   createLabel?: string;
+  /** Placeholder text */
+  placeholder?: string;
+  /** Disable the component */
+  disabled?: boolean;
+  /** Size variant */
+  size?: "sm" | "default";
+  /** Additional className */
+  className?: string;
+  /** Max tags to display in multiple mode */
+  maxDisplayedTags?: number;
+  /** Show search icon */
+  showSearchIcon?: boolean;
+  /** Enable fuzzy matching for filtering */
+  fuzzyMatching?: boolean;
+  /** Custom filter function */
+  filterFn?: (option: T, query: string) => boolean;
 }
 
-function CreatableSelect({
-  options,
-  value,
-  onChange,
-  onCreateOption,
-  placeholder = "Select or type to create...",
-  disabled = false,
-  className,
-  createLabel = "Create",
-}: CreatableSelectProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [highlightedIndex, setHighlightedIndex] = React.useState(0);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const listRef = React.useRef<HTMLDivElement>(null);
-
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const selectedOption = options.find((opt) => opt.value === value);
-  const showCreateOption =
-    searchQuery &&
-    !filteredOptions.some(
-      (opt) => opt.label.toLowerCase() === searchQuery.toLowerCase()
-    );
-
-  // Reset highlighted index when options change
-  React.useEffect(() => {
-    setHighlightedIndex(0);
-  }, [filteredOptions.length, showCreateOption]);
-
-  // Animate items when dropdown opens
-  React.useEffect(() => {
-    if (isOpen && listRef.current) {
-      const items = listRef.current.querySelectorAll("[data-option]");
-      animate(items, {
-        opacity: [0, 1],
-        translateY: [-10, 0],
-        delay: stagger(30),
-        duration: 200,
-        ease: "outQuad",
-      });
-    }
-  }, [isOpen, filteredOptions.length]);
-
-  const handleSelect = (option: SelectOption) => {
-    onChange?.(option.value, option);
-    setSearchQuery(option.label);
-    setIsOpen(false);
-  };
-
-  const handleCreate = () => {
-    if (searchQuery && onCreateOption) {
-      onCreateOption(searchQuery);
-      setIsOpen(false);
-    }
-  };
-
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onChange?.("", { value: "", label: "" });
-    setSearchQuery("");
-    inputRef.current?.focus();
-  };
-
-  // Handle keyboard navigation
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    const totalOptions = filteredOptions.length + (showCreateOption ? 1 : 0);
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setHighlightedIndex((prev) =>
-        prev < totalOptions - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (showCreateOption && highlightedIndex === filteredOptions.length) {
-        handleCreate();
-      } else if (highlightedIndex >= 0 && filteredOptions[highlightedIndex]) {
-        handleSelect(filteredOptions[highlightedIndex]);
-      }
-    } else if (e.key === "Escape") {
-      setIsOpen(false);
-    }
-  };
-
-  return (
-    <div className={cn("relative w-full", className)}>
-      <div
-        className={cn(
-          "flex items-center gap-1 h-8 px-2 py-1 rounded-lg border border-input bg-transparent cursor-text",
-          "dark:bg-input/30 dark:hover:bg-input/50",
-          "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
-          disabled && "opacity-50 pointer-events-none"
-        )}
-        onClick={() => inputRef.current?.focus()}
-      >
-        <input
-          ref={inputRef}
-          type="text"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => setIsOpen(true)}
-          onBlur={() => setTimeout(() => setIsOpen(false), 150)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          disabled={disabled}
-          className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
-        />
-        {selectedOption && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="rounded-sm p-0.5 hover:bg-muted"
-          >
-            <IconX className="h-4 w-4" />
-          </button>
-        )}
-        <IconChevronDown
-          className={cn(
-            "h-4 w-4 text-muted-foreground shrink-0 transition-transform",
-            isOpen && "rotate-180"
-          )}
-        />
-      </div>
-      {isOpen && (filteredOptions.length > 0 || showCreateOption) && (
-        <div
-          ref={listRef}
-          className="absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border bg-popover p-1 shadow-md"
-        >
-          {filteredOptions.map((option, index) => {
-            const isSelected = value === option.value;
-            const isHighlighted = index === highlightedIndex;
-            return (
-              <button
-                key={option.value}
-                data-option
-                type="button"
-                disabled={option.disabled}
-                onClick={() => handleSelect(option)}
-                onMouseEnter={() => setHighlightedIndex(index)}
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none",
-                  isHighlighted && "bg-muted",
-                  option.disabled && "opacity-50 cursor-not-allowed"
-                )}
-              >
-                <span className="flex-1 text-left truncate">
-                  {option.label}
-                </span>
-                {isSelected && (
-                  <IconCheck className="h-4 w-4 text-primary shrink-0" />
-                )}
-              </button>
-            );
-          })}
-          {showCreateOption && (
-            <button
-              data-option
-              type="button"
-              onClick={handleCreate}
-              onMouseEnter={() => setHighlightedIndex(filteredOptions.length)}
-              className={cn(
-                "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none text-primary",
-                highlightedIndex === filteredOptions.length && "bg-muted"
-              )}
-            >
-              <span className="flex-1 text-left">
-                {createLabel} "{searchQuery}"
-              </span>
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ============================================
-// UTILITIES
-// ============================================
 // Fuzzy matching utility
 function fuzzyMatch(text: string, query: string): boolean {
   const pattern = query.toLowerCase().split("").join(".*");
@@ -877,15 +292,558 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-// ============================================
-// AUTOCOMPLETE COMPONENT
-// ============================================
-interface AutocompleteOption {
-  value: string;
-  label: string;
-  disabled?: boolean;
+function SelectField<T extends SelectOption = SelectOption>({
+  options: initialOptions = [],
+  value,
+  onChange,
+  multiple = false,
+  searchable = true,
+  creatable = false,
+  async = false,
+  onSearch,
+  debounceMs = 300,
+  cacheOptions = true,
+  onCreateOption,
+  createLabel = "Create",
+  placeholder = "Select...",
+  disabled = false,
+  size = "default",
+  className,
+  maxDisplayedTags = 3,
+  showSearchIcon = true,
+  fuzzyMatching = true,
+  filterFn,
+}: SelectFieldProps<T>) {
+  const [inputValue, setInputValue] = React.useState("");
+  const [options, setOptions] = React.useState<T[]>(initialOptions);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const listRef = React.useRef<HTMLDivElement>(null);
+  const cacheRef = React.useRef<Map<string, T[]>>(new Map());
+  const debouncedQuery = useDebounce(inputValue, debounceMs);
+
+  // Convert value to internal format
+  const selectedValues = React.useMemo(() => {
+    if (value === undefined || value === null) return [];
+    return Array.isArray(value) ? value : [value];
+  }, [value]);
+
+  // Update options when initialOptions change (for non-async mode)
+  React.useEffect(() => {
+    if (!async) {
+      setOptions(initialOptions);
+    }
+  }, [initialOptions, async]);
+
+  // Async search effect
+  React.useEffect(() => {
+    if (!async || !onSearch) return;
+
+    if (!debouncedQuery && !isOpen) {
+      return;
+    }
+
+    // Check cache
+    if (cacheOptions && cacheRef.current.has(debouncedQuery)) {
+      setOptions(cacheRef.current.get(debouncedQuery) || []);
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoading(true);
+
+    onSearch(debouncedQuery)
+      .then((results) => {
+        if (!cancelled) {
+          setOptions(results as T[]);
+          if (cacheOptions) {
+            cacheRef.current.set(debouncedQuery, results as T[]);
+          }
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setOptions([]);
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedQuery, isOpen, async, onSearch, cacheOptions]);
+
+  // Filter options (only for non-async mode)
+  const filteredOptions = React.useMemo(() => {
+    if (async) {
+      return options;
+    }
+
+    if (!inputValue) {
+      return options;
+    }
+
+    return options.filter((opt) => {
+      if (filterFn) {
+        return filterFn(opt, inputValue);
+      }
+      return fuzzyMatching
+        ? fuzzyMatch(opt.label, inputValue)
+        : opt.label.toLowerCase().includes(inputValue.toLowerCase());
+    });
+  }, [options, inputValue, fuzzyMatching, filterFn, async]);
+
+  // Check if create option should be shown
+  const showCreateOption = React.useMemo(() => {
+    if (!creatable || !inputValue.trim()) return false;
+    const normalizedInput = inputValue.trim().toLowerCase();
+    return !filteredOptions.some(
+      (opt) => opt.label.toLowerCase() === normalizedInput
+    );
+  }, [creatable, inputValue, filteredOptions]);
+
+  // Animate items when dropdown opens
+  React.useEffect(() => {
+    if (isOpen && listRef.current && !isLoading) {
+      const items = listRef.current.querySelectorAll("[data-option]");
+      if (items.length > 0) {
+        animate(items, {
+          opacity: [0, 1],
+          translateY: [-10, 0],
+          delay: stagger(30),
+          duration: 200,
+          ease: "outQuad",
+        });
+      }
+    }
+  }, [isOpen, filteredOptions.length, isLoading]);
+
+  const handleSelect = (optionValue: string) => {
+    const option = options.find((o) => o.value === optionValue);
+
+    if (multiple) {
+      const newValues = selectedValues.includes(optionValue)
+        ? selectedValues.filter((v) => v !== optionValue)
+        : [...selectedValues, optionValue];
+
+      const newOptions = options.filter((o) => newValues.includes(o.value));
+      onChange?.(newValues, newOptions as T[]);
+      setInputValue("");
+    } else {
+      onChange?.(optionValue, option || null);
+      setIsOpen(false);
+      if (option) {
+        setInputValue(option.label);
+      }
+    }
+  };
+
+  const handleRemoveChip = (optionValue: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newValues = selectedValues.filter((v) => v !== optionValue);
+    const newOptions = options.filter((o) => newValues.includes(o.value));
+    onChange?.(
+      multiple ? newValues : "",
+      multiple ? (newOptions as T[]) : null
+    );
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange?.(multiple ? [] : "", null);
+    setInputValue("");
+  };
+
+  const handleCreate = () => {
+    if (inputValue.trim() && onCreateOption) {
+      onCreateOption(inputValue.trim());
+      setInputValue("");
+      setIsOpen(false);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    if (!isOpen) {
+      setIsOpen(true);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setIsOpen(false);
+    } else if (
+      e.key === "Backspace" &&
+      !inputValue &&
+      multiple &&
+      selectedValues.length > 0
+    ) {
+      const newValues = selectedValues.slice(0, -1);
+      const newOptions = options.filter((o) => newValues.includes(o.value));
+      onChange?.(newValues, newOptions as T[]);
+    }
+  };
+
+  const selectedOptions = options.filter((o) =>
+    selectedValues.includes(o.value)
+  );
+  const displayedTags = selectedOptions.slice(0, maxDisplayedTags);
+  const remainingCount = selectedOptions.length - maxDisplayedTags;
+
+  const triggerClasses = cn(
+    "flex flex-wrap items-center gap-1 min-h-8 px-2 py-1 rounded-lg border border-input bg-transparent cursor-text w-full",
+    "dark:bg-input/30 dark:hover:bg-input/50",
+    "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+    size === "sm" && "min-h-7 rounded-[min(var(--radius-md),10px)]",
+    disabled && "opacity-50 pointer-events-none cursor-not-allowed"
+  );
+
+  const popupClasses = cn(
+    "absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border bg-popover p-1 shadow-md",
+    "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95"
+  );
+
+  const itemClasses = (
+    isHighlighted: boolean,
+    isSelected: boolean,
+    isDisabled?: boolean
+  ) =>
+    cn(
+      "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none cursor-pointer",
+      isHighlighted && "bg-muted",
+      isSelected && "font-medium",
+      isDisabled && "opacity-50 pointer-events-none cursor-not-allowed"
+    );
+
+  return (
+    <div className={cn("relative w-full", className)}>
+      {/* Trigger container */}
+      <div
+        className={triggerClasses}
+        onClick={() => !disabled && setIsOpen(true)}
+        onFocus={() => !disabled && setIsOpen(true)}
+        tabIndex={disabled ? -1 : 0}
+        role="combobox"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-disabled={disabled}
+      >
+        {showSearchIcon && searchable && (
+          <IconSearch className="h-4 w-4 text-muted-foreground shrink-0" />
+        )}
+
+        {/* Multi-select chips */}
+        {multiple &&
+          displayedTags.map((opt) => (
+            <span
+              key={opt.value}
+              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md bg-muted shrink-0"
+            >
+              {opt.label}
+              <button
+                type="button"
+                onClick={(e) => handleRemoveChip(opt.value, e)}
+                className="hover:text-destructive rounded-sm"
+                aria-label={`Remove ${opt.label}`}
+              >
+                <IconX className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+
+        {remainingCount > 0 && (
+          <span className="text-xs text-muted-foreground shrink-0">
+            +{remainingCount} more
+          </span>
+        )}
+
+        {/* Search input */}
+        {searchable ? (
+          <input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setIsOpen(true)}
+            onBlur={() => setTimeout(() => setIsOpen(false), 150)}
+            placeholder={
+              multiple && selectedValues.length > 0 ? "" : placeholder
+            }
+            disabled={disabled}
+            className="flex-1 min-w-[80px] bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
+            aria-autocomplete="list"
+          />
+        ) : (
+          <span
+            className={cn(
+              "flex-1 text-sm text-left truncate",
+              !selectedOptions.length && "text-muted-foreground"
+            )}
+          >
+            {!multiple && selectedOptions.length > 0
+              ? selectedOptions[0].label
+              : placeholder}
+          </span>
+        )}
+
+        {/* Loading indicator */}
+        {isLoading && (
+          <IconLoader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
+        )}
+
+        {/* Clear button */}
+        {!isLoading && selectedValues.length > 0 && !multiple && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="rounded-sm p-0.5 hover:bg-muted"
+            aria-label="Clear selection"
+          >
+            <IconX className="h-4 w-4" />
+          </button>
+        )}
+
+        {/* Chevron icon */}
+        {!isLoading && (
+          <IconChevronDown
+            className={cn(
+              "h-4 w-4 text-muted-foreground shrink-0 transition-transform",
+              isOpen && "rotate-180"
+            )}
+          />
+        )}
+      </div>
+
+      {/* Dropdown popup */}
+      {isOpen && (
+        <div
+          ref={listRef}
+          className={popupClasses}
+          role="listbox"
+          aria-multiselectable={multiple}
+        >
+          {/* Loading state */}
+          {isLoading ? (
+            <div className="flex items-center justify-center py-4 gap-2 text-sm text-muted-foreground">
+              <IconLoader2 className="h-4 w-4 animate-spin" />
+              Loading...
+            </div>
+          ) : filteredOptions.length === 0 && !showCreateOption ? (
+            /* Empty state */
+            <div className="py-4 text-center text-sm text-muted-foreground">
+              {inputValue
+                ? "No results found"
+                : async
+                ? "Type to search..."
+                : "No options"}
+            </div>
+          ) : (
+            /* Options list */
+            <>
+              {filteredOptions.map((option) => {
+                const isSelected = selectedValues.includes(option.value);
+                return (
+                  <div
+                    key={option.value}
+                    data-option
+                    role="option"
+                    aria-selected={isSelected}
+                    aria-disabled={option.disabled}
+                    className={itemClasses(false, isSelected, option.disabled)}
+                    onClick={() =>
+                      !option.disabled && handleSelect(option.value)
+                    }
+                  >
+                    {multiple && (
+                      <div
+                        className={cn(
+                          "h-4 w-4 border rounded flex items-center justify-center shrink-0",
+                          isSelected
+                            ? "bg-primary border-primary"
+                            : "border-input"
+                        )}
+                      >
+                        {isSelected && (
+                          <IconCheck className="h-3 w-3 text-primary-foreground" />
+                        )}
+                      </div>
+                    )}
+                    <span className="flex-1 text-left truncate">
+                      {option.label}
+                    </span>
+                    {!multiple && isSelected && (
+                      <IconCheck className="h-4 w-4 text-primary shrink-0" />
+                    )}
+                  </div>
+                );
+              })}
+
+              {/* Create option */}
+              {showCreateOption && (
+                <div
+                  data-option
+                  role="option"
+                  className={cn(itemClasses(false, false), "text-primary")}
+                  onClick={handleCreate}
+                >
+                  <span className="flex-1 text-left">
+                    {createLabel} "{inputValue.trim()}"
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
+// ============================================
+// DEPRECATED COMPONENTS
+// These are kept for backward compatibility.
+// Use SelectField instead with appropriate props.
+// ============================================
+
+/**
+ * @deprecated Use `<SelectField multiple />` instead.
+ * This component is kept for backward compatibility.
+ */
+interface MultiSelectProps {
+  options: SelectOption[];
+  value?: string[];
+  onChange?: (value: string[]) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+  maxDisplayedTags?: number;
+  showSearchIcon?: boolean;
+}
+
+/**
+ * @deprecated Use `<SelectField multiple />` instead.
+ */
+function MultiSelect({
+  options,
+  value = [],
+  onChange,
+  placeholder = "Select...",
+  disabled = false,
+  className,
+  maxDisplayedTags = 3,
+  showSearchIcon = false,
+}: MultiSelectProps) {
+  return (
+    <SelectField
+      options={options}
+      value={value}
+      onChange={(val) => onChange?.(val as string[])}
+      multiple
+      placeholder={placeholder}
+      disabled={disabled}
+      className={className}
+      maxDisplayedTags={maxDisplayedTags}
+      showSearchIcon={showSearchIcon}
+    />
+  );
+}
+
+/**
+ * @deprecated Use `<SelectField async onSearch={...} />` instead.
+ * This component is kept for backward compatibility.
+ */
+interface AsyncSelectProps {
+  loadOptions: (query: string) => Promise<SelectOption[]>;
+  value?: string;
+  onChange?: (value: string, option: SelectOption | null) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+  debounceMs?: number;
+  cacheOptions?: boolean;
+  showSearchIcon?: boolean;
+}
+
+/**
+ * @deprecated Use `<SelectField async onSearch={...} />` instead.
+ */
+function AsyncSelect({
+  loadOptions,
+  value,
+  onChange,
+  placeholder = "Search...",
+  disabled = false,
+  className,
+  debounceMs = 300,
+  cacheOptions = true,
+  showSearchIcon = false,
+}: AsyncSelectProps) {
+  return (
+    <SelectField
+      value={value}
+      onChange={(val, opt) =>
+        onChange?.(val as string, opt as SelectOption | null)
+      }
+      async
+      onSearch={loadOptions}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={className}
+      debounceMs={debounceMs}
+      cacheOptions={cacheOptions}
+      showSearchIcon={showSearchIcon}
+    />
+  );
+}
+
+/**
+ * @deprecated Use `<SelectField creatable onCreateOption={...} />` instead.
+ * This component is kept for backward compatibility.
+ */
+interface CreatableSelectProps {
+  options: SelectOption[];
+  value?: string;
+  onChange?: (value: string, option: SelectOption) => void;
+  onCreateOption?: (inputValue: string) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  className?: string;
+  createLabel?: string;
+}
+
+/**
+ * @deprecated Use `<SelectField creatable onCreateOption={...} />` instead.
+ */
+function CreatableSelect({
+  options,
+  value,
+  onChange,
+  onCreateOption,
+  placeholder = "Select or type to create...",
+  disabled = false,
+  className,
+  createLabel = "Create",
+}: CreatableSelectProps) {
+  return (
+    <SelectField
+      options={options}
+      value={value}
+      onChange={(val, opt) => onChange?.(val as string, opt as SelectOption)}
+      creatable
+      onCreateOption={onCreateOption}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={className}
+      createLabel={createLabel}
+    />
+  );
+}
+
+/**
+ * @deprecated Use `<SelectField />` with appropriate props instead.
+ * This component is kept for backward compatibility.
+ */
 interface AutocompleteProps {
   options?: AutocompleteOption[];
   value?: string | string[];
@@ -901,6 +859,9 @@ interface AutocompleteProps {
   className?: string;
 }
 
+/**
+ * @deprecated Use `<SelectField />` with appropriate props instead.
+ */
 function Autocomplete({
   options: initialOptions = [],
   value,
@@ -909,286 +870,34 @@ function Autocomplete({
   placeholder = "Search...",
   disabled = false,
   multiple = false,
-  limit,
   debounceMs = 300,
   fuzzyMatching = true,
-  autoHighlight = true,
   className,
 }: AutocompleteProps) {
-  const [inputValue, setInputValue] = React.useState("");
-  const [options, setOptions] =
-    React.useState<AutocompleteOption[]>(initialOptions);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedValues, setSelectedValues] = React.useState<string[]>(
-    Array.isArray(value) ? value : value ? [value] : []
-  );
-  const [highlightedIndex, setHighlightedIndex] = React.useState<number>(
-    autoHighlight ? 0 : -1
-  );
-
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const listRef = React.useRef<HTMLDivElement>(null);
-  const debouncedQuery = useDebounce(inputValue, debounceMs);
-
-  // Update options when initialOptions change
-  React.useEffect(() => {
-    if (!onSearch) {
-      setOptions(initialOptions);
-    }
-  }, [initialOptions, onSearch]);
-
-  // Filter options (only for non-async mode)
-  const filteredOptions = React.useMemo(() => {
-    if (onSearch) {
-      // For async mode, just apply limit
-      return limit ? options.slice(0, limit) : options;
-    }
-
-    let result = options;
-
-    if (inputValue) {
-      result = options.filter((opt) =>
-        fuzzyMatching
-          ? fuzzyMatch(opt.label, inputValue)
-          : opt.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-    }
-
-    if (limit) {
-      result = result.slice(0, limit);
-    }
-
-    return result;
-  }, [options, inputValue, fuzzyMatching, limit, onSearch]);
-
-  // Async search effect
-  React.useEffect(() => {
-    if (!onSearch) return;
-
-    if (!debouncedQuery) {
-      setOptions([]);
-      setIsLoading(false);
-      return;
-    }
-
-    let cancelled = false;
-    setIsLoading(true);
-
-    onSearch(debouncedQuery)
-      .then((results) => {
-        if (!cancelled) {
-          setOptions(results);
-          setIsLoading(false);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setOptions([]);
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [debouncedQuery, onSearch]);
-
-  // Auto highlight first option
-  React.useEffect(() => {
-    if (autoHighlight && filteredOptions.length > 0) {
-      setHighlightedIndex(0);
-    } else {
-      setHighlightedIndex(-1);
-    }
-  }, [filteredOptions.length, autoHighlight]);
-
-  // Animate items when dropdown opens
-  React.useEffect(() => {
-    if (isOpen && listRef.current && !isLoading) {
-      const items = listRef.current.querySelectorAll("[data-option]");
-      animate(items, {
-        opacity: [0, 1],
-        translateY: [-10, 0],
-        delay: stagger(30),
-        duration: 200,
-        ease: "outQuad",
-      });
-    }
-  }, [isOpen, filteredOptions.length, isLoading]);
-
-  const handleSelect = (optionValue: string) => {
-    if (multiple) {
-      const newValues = selectedValues.includes(optionValue)
-        ? selectedValues.filter((v) => v !== optionValue)
-        : [...selectedValues, optionValue];
-      setSelectedValues(newValues);
-      onChange?.(newValues);
-      setInputValue("");
-      inputRef.current?.focus();
-    } else {
-      setSelectedValues([optionValue]);
-      onChange?.(optionValue);
-      setIsOpen(false);
-      const option = options.find((o) => o.value === optionValue);
-      if (option) {
-        setInputValue(option.label);
-      }
-    }
-  };
-
-  const handleRemove = (optionValue: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const newValues = selectedValues.filter((v) => v !== optionValue);
-    setSelectedValues(newValues);
-    onChange?.(multiple ? newValues : "");
-    inputRef.current?.focus();
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setHighlightedIndex((prev) =>
-        prev < filteredOptions.length - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-    } else if (
-      e.key === "Enter" &&
-      highlightedIndex >= 0 &&
-      filteredOptions[highlightedIndex]
-    ) {
-      e.preventDefault();
-      handleSelect(filteredOptions[highlightedIndex].value);
-    } else if (e.key === "Escape") {
-      setIsOpen(false);
-    } else if (
-      e.key === "Backspace" &&
-      !inputValue &&
-      multiple &&
-      selectedValues.length > 0
-    ) {
-      // Remove last selected item on backspace
-      const newValues = selectedValues.slice(0, -1);
-      setSelectedValues(newValues);
-      onChange?.(newValues);
-    }
-  };
-
-  const selectedOptions =
-    options.length > 0
-      ? options.filter((o) => selectedValues.includes(o.value))
-      : initialOptions.filter((o) => selectedValues.includes(o.value));
-
   return (
-    <div className={cn("relative w-full", className)}>
-      {/* Input container with tags inside */}
-      <div
-        className={cn(
-          "flex flex-wrap items-center gap-1 min-h-8 px-2 py-1 rounded-lg border border-input bg-transparent cursor-text",
-          "dark:bg-input/30 dark:hover:bg-input/50",
-          "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
-          disabled && "opacity-50 pointer-events-none"
-        )}
-        onClick={() => inputRef.current?.focus()}
-      >
-        <IconSearch className="h-4 w-4 text-muted-foreground shrink-0" />
-
-        {/* Multi-select tags inside input */}
-        {multiple &&
-          selectedOptions.map((opt) => (
-            <span
-              key={opt.value}
-              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md bg-muted shrink-0"
-            >
-              {opt.label}
-              <button
-                type="button"
-                onClick={(e) => handleRemove(opt.value, e)}
-                className="hover:text-destructive"
-              >
-                <IconX className="h-3 w-3" />
-              </button>
-            </span>
-          ))}
-
-        <input
-          ref={inputRef}
-          type="text"
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => setIsOpen(true)}
-          onBlur={() => setTimeout(() => setIsOpen(false), 150)}
-          onKeyDown={handleKeyDown}
-          placeholder={multiple && selectedValues.length > 0 ? "" : placeholder}
-          disabled={disabled}
-          className="flex-1 min-w-[80px] bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
-        />
-
-        {isLoading && (
-          <IconLoader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
-        )}
-      </div>
-
-      {/* Dropdown */}
-      {isOpen && filteredOptions.length > 0 && (
-        <div
-          ref={listRef}
-          className="absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border bg-popover p-1 shadow-md"
-        >
-          {filteredOptions.map((option, index) => {
-            const isSelected = selectedValues.includes(option.value);
-            const isHighlighted = index === highlightedIndex;
-
-            return (
-              <div
-                key={option.value}
-                className={cn(
-                  "flex items-center gap-2 px-2 py-1.5 text-sm rounded-md cursor-pointer",
-                  isHighlighted && "bg-muted",
-                  isSelected && "font-medium",
-                  option.disabled && "opacity-50 pointer-events-none"
-                )}
-                onClick={() => !option.disabled && handleSelect(option.value)}
-                onMouseEnter={() => setHighlightedIndex(index)}
-              >
-                {multiple && (
-                  <div
-                    className={cn(
-                      "h-4 w-4 border rounded flex items-center justify-center shrink-0",
-                      isSelected ? "bg-primary border-primary" : "border-input"
-                    )}
-                  >
-                    {isSelected && (
-                      <IconCheck className="h-3 w-3 text-primary-foreground" />
-                    )}
-                  </div>
-                )}
-                <span className="truncate">{option.label}</span>
-                {!multiple && isSelected && (
-                  <IconCheck className="ml-auto h-4 w-4 text-primary shrink-0" />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* No results */}
-      {isOpen && filteredOptions.length === 0 && !isLoading && inputValue && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-popover p-3 text-sm text-muted-foreground text-center shadow-md">
-          No results found
-        </div>
-      )}
-    </div>
+    <SelectField
+      options={initialOptions}
+      value={value}
+      onChange={(val) => onChange?.(val)}
+      multiple={multiple}
+      async={!!onSearch}
+      onSearch={onSearch}
+      placeholder={placeholder}
+      disabled={disabled}
+      className={className}
+      debounceMs={debounceMs}
+      fuzzyMatching={fuzzyMatching}
+      showSearchIcon
+    />
   );
 }
 
+// ============================================
+// EXPORTS
+// ============================================
+
 export {
+  // Base Select primitives (low-level)
   Select,
   SelectContent,
   SelectGroup,
@@ -1199,16 +908,23 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
+  // Unified component (recommended)
+  SelectField,
+  // Deprecated components (backward compatibility)
   MultiSelect,
   AsyncSelect,
   CreatableSelect,
   Autocomplete,
+  // Utilities
   fuzzyMatch,
   useDebounce,
 };
+
 export type {
   SelectOption,
   AutocompleteOption,
+  SelectFieldProps,
+  // Deprecated types
   MultiSelectProps,
   AsyncSelectProps,
   CreatableSelectProps,
