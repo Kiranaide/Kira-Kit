@@ -1,3 +1,6 @@
+"use client";
+
+import * as React from "react";
 import {
   Menubar,
   MenubarMenu,
@@ -9,20 +12,46 @@ import {
   MenubarCheckboxItem,
   MenubarRadioGroup,
   MenubarRadioItem,
+  MenubarLabel,
   MenubarSub,
   MenubarSubTrigger,
   MenubarSubContent,
-  MenubarLabel,
 } from "@/components/ui/menubar";
+import {
+  IconFile,
+  IconEdit,
+  IconEye,
+  IconUser,
+  IconSettings,
+  IconTrash,
+  IconCopy,
+  IconDownload,
+  IconBold,
+  IconItalic,
+  IconUnderline,
+  IconPalette,
+} from "@tabler/icons-react";
 
 export function MenubarPage() {
+  const [radioValue, setRadioValue] = React.useState("andy");
+  const [showToolbar, setShowToolbar] = React.useState(true);
+  const [showSidebar, setShowSidebar] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const handleAsyncAction = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+  };
+
   return (
     <div className="p-8 max-w-4xl space-y-12">
       <header>
         <h1 className="text-3xl font-bold mb-2">Menubar</h1>
         <p className="text-muted-foreground">
-          A horizontal menu bar with dropdown menus, like in desktop
-          applications.
+          A horizontal menu bar with dropdown menus, like in desktop applications.
+          Now with enhanced features like icons, loading states, and focus styles.
         </p>
       </header>
 
@@ -35,16 +64,18 @@ export function MenubarPage() {
           <MenubarMenu>
             <MenubarTrigger>File</MenubarTrigger>
             <MenubarContent>
-              <MenubarItem>
+              <MenubarItem icon={<IconFile className="h-4 w-4" />}>
                 New Tab <MenubarShortcut>⌘T</MenubarShortcut>
               </MenubarItem>
-              <MenubarItem>
+              <MenubarItem icon={<IconFile className="h-4 w-4" />}>
                 New Window <MenubarShortcut>⌘N</MenubarShortcut>
               </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem>Share</MenubarItem>
+              <MenubarItem icon={<IconCopy className="h-4 w-4" />}>
+                Share
+              </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem>
+              <MenubarItem icon={<IconDownload className="h-4 w-4" />}>
                 Print <MenubarShortcut>⌘P</MenubarShortcut>
               </MenubarItem>
             </MenubarContent>
@@ -53,10 +84,10 @@ export function MenubarPage() {
           <MenubarMenu>
             <MenubarTrigger>Edit</MenubarTrigger>
             <MenubarContent>
-              <MenubarItem>
+              <MenubarItem icon={<IconEdit className="h-4 w-4" />}>
                 Undo <MenubarShortcut>⌘Z</MenubarShortcut>
               </MenubarItem>
-              <MenubarItem>
+              <MenubarItem icon={<IconEdit className="h-4 w-4" />}>
                 Redo <MenubarShortcut>⇧⌘Z</MenubarShortcut>
               </MenubarItem>
               <MenubarSeparator />
@@ -75,10 +106,14 @@ export function MenubarPage() {
           <MenubarMenu>
             <MenubarTrigger>View</MenubarTrigger>
             <MenubarContent>
-              <MenubarCheckboxItem checked>Show Toolbar</MenubarCheckboxItem>
-              <MenubarCheckboxItem>Show Sidebar</MenubarCheckboxItem>
+              <MenubarCheckboxItem checked={showToolbar} onCheckedChange={setShowToolbar}>
+                Show Toolbar
+              </MenubarCheckboxItem>
+              <MenubarCheckboxItem checked={showSidebar} onCheckedChange={setShowSidebar}>
+                Show Sidebar
+              </MenubarCheckboxItem>
               <MenubarSeparator />
-              <MenubarItem>
+              <MenubarItem icon={<IconEye className="h-4 w-4" />}>
                 Enter Full Screen <MenubarShortcut>F11</MenubarShortcut>
               </MenubarItem>
             </MenubarContent>
@@ -87,14 +122,92 @@ export function MenubarPage() {
           <MenubarMenu>
             <MenubarTrigger>Profiles</MenubarTrigger>
             <MenubarContent>
-              <MenubarRadioGroup value="andy">
+              <MenubarRadioGroup value={radioValue} onValueChange={setRadioValue}>
                 <MenubarLabel>Switch Profile</MenubarLabel>
                 <MenubarRadioItem value="andy">Andy</MenubarRadioItem>
                 <MenubarRadioItem value="benoit">Benoit</MenubarRadioItem>
                 <MenubarRadioItem value="luis">Luis</MenubarRadioItem>
               </MenubarRadioGroup>
               <MenubarSeparator />
-              <MenubarItem>Edit Profiles...</MenubarItem>
+              <MenubarItem icon={<IconUser className="h-4 w-4" />}>
+                Edit Profiles...
+              </MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
+      </section>
+
+      {/* With Icons */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          With Icons
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Menu items now support <code>icon</code> prop for visual indicators.
+        </p>
+        <Menubar>
+          <MenubarMenu>
+            <MenubarTrigger>Actions</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem icon={<IconFile className="h-4 w-4" />}>
+                New File
+              </MenubarItem>
+              <MenubarItem icon={<IconSettings className="h-4 w-4" />}>
+                Settings
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem icon={<IconUser className="h-4 w-4" />}>
+                Profile
+              </MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
+      </section>
+
+      {/* With Loading State */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          With Loading State
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Async actions can display a loading spinner with <code>loading</code> prop.
+        </p>
+        <Menubar>
+          <MenubarMenu>
+            <MenubarTrigger>Async</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem>Normal Action</MenubarItem>
+              <MenubarItem
+                icon={<IconDownload className="h-4 w-4" />}
+                loading={isLoading}
+                onClick={handleAsyncAction}
+              >
+                {isLoading ? "Downloading..." : "Download"}
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem>Another Action</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
+      </section>
+
+      {/* With Destructive Items */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Destructive Items
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Use <code>variant="destructive"</code> for dangerous actions like delete.
+        </p>
+        <Menubar>
+          <MenubarMenu>
+            <MenubarTrigger>Danger Zone</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem icon={<IconTrash className="h-4 w-4" />} variant="destructive">
+                Delete Project
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem>Cancel</MenubarItem>
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
@@ -109,12 +222,16 @@ export function MenubarPage() {
           <MenubarMenu>
             <MenubarTrigger>Format</MenubarTrigger>
             <MenubarContent>
-              <MenubarItem>Bold</MenubarItem>
-              <MenubarItem>Italic</MenubarItem>
-              <MenubarItem>Underline</MenubarItem>
+              <MenubarItem icon={<IconBold className="h-4 w-4" />}>Bold</MenubarItem>
+              <MenubarItem icon={<IconItalic className="h-4 w-4" />}>Italic</MenubarItem>
+              <MenubarItem icon={<IconUnderline className="h-4 w-4" />}>
+                Underline
+              </MenubarItem>
               <MenubarSeparator />
               <MenubarSub>
-                <MenubarSubTrigger>Text Color</MenubarSubTrigger>
+                <MenubarSubTrigger icon={<IconPalette className="h-4 w-4" />}>
+                  Text Color
+                </MenubarSubTrigger>
                 <MenubarSubContent>
                   <MenubarItem>Red</MenubarItem>
                   <MenubarItem>Green</MenubarItem>
@@ -142,32 +259,28 @@ export function MenubarPage() {
         </h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
           <li>
-            <strong className="text-foreground">Checkbox Items:</strong> Toggle
-            states with checkboxes
+            <strong className="text-foreground">Icons:</strong> Add visual context with{" "}
+            <code>icon</code> prop
           </li>
           <li>
-            <strong className="text-foreground">Radio Groups:</strong> Single
-            selection from a group
+            <strong className="text-foreground">Loading States:</strong>{" "}
+            <code>loading</code> prop for async actions
           </li>
           <li>
-            <strong className="text-foreground">Submenus:</strong> Nested menus
-            for hierarchical actions
+            <strong className="text-foreground">Destructive Variant:</strong>{" "}
+            <code>variant="destructive"</code> for dangerous actions
           </li>
           <li>
-            <strong className="text-foreground">Keyboard Shortcuts:</strong>{" "}
-            Display keyboard shortcuts with MenubarShortcut
+            <strong className="text-foreground">Focus Ring Styles:</strong> Visible
+            focus indicators for accessibility
           </li>
           <li>
-            <strong className="text-foreground">Separators:</strong> Visual
-            grouping with MenubarSeparator
+            <strong className="text-foreground">TypeScript Types:</strong> Fully typed
+            props exported
           </li>
           <li>
-            <strong className="text-foreground">Labels:</strong> Section headers
-            with MenubarLabel
-          </li>
-          <li>
-            <strong className="text-foreground">Keyboard Navigation:</strong>{" "}
-            Full keyboard support with arrow keys and shortcuts
+            <strong className="text-foreground">forwardRef:</strong> Ref support on
+            most components
           </li>
         </ul>
       </section>
@@ -179,7 +292,7 @@ export function MenubarPage() {
         </h2>
         <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
           <pre className="text-sm text-foreground">
-            {`import {
+{`import {
   Menubar,
   MenubarMenu,
   MenubarTrigger,
@@ -196,40 +309,22 @@ export function MenubarPage() {
   MenubarSubContent,
 } from "@/components/ui/menubar"
 
-// Basic menubar
 <Menubar>
   <MenubarMenu>
     <MenubarTrigger>File</MenubarTrigger>
     <MenubarContent>
-      <MenubarItem>
+      <MenubarItem icon={<IconFile className="h-4 w-4" />}>
         New <MenubarShortcut>⌘N</MenubarShortcut>
       </MenubarItem>
-      <MenubarSeparator />
-      <MenubarItem>Quit</MenubarItem>
+      <MenubarItem variant="destructive" icon={<IconTrash className="h-4 w-4" />}>
+        Delete
+      </MenubarItem>
+      <MenubarItem loading={isLoading} onClick={handleAction}>
+        Async Action
+      </MenubarItem>
     </MenubarContent>
   </MenubarMenu>
-</Menubar>
-
-// With checkboxes
-<MenubarCheckboxItem checked>
-  Show Toolbar
-</MenubarCheckboxItem>
-
-// With radio group
-<MenubarRadioGroup value="option1">
-  <MenubarLabel>Options</MenubarLabel>
-  <MenubarRadioItem value="option1">Option 1</MenubarRadioItem>
-  <MenubarRadioItem value="option2">Option 2</MenubarRadioItem>
-</MenubarRadioGroup>
-
-// With submenu
-<MenubarSub>
-  <MenubarSubTrigger>More Options</MenubarSubTrigger>
-  <MenubarSubContent>
-    <MenubarItem>Sub Item 1</MenubarItem>
-    <MenubarItem>Sub Item 2</MenubarItem>
-  </MenubarSubContent>
-</MenubarSub>`}
+</Menubar>`}
           </pre>
         </div>
       </section>
