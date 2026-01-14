@@ -1104,14 +1104,14 @@ function InputWithDropdown({
 }
 
 // ============================================
-// INPUT GROUP (multiple inputs in a row)
+// INPUT CLUSTER (multiple inputs in a row - simpler pattern)
 // ============================================
-interface InputGroupProps {
+interface InputClusterProps {
   children: React.ReactNode;
   className?: string;
 }
 
-function InputGroup({ children, className }: InputGroupProps) {
+function InputCluster({ children, className }: InputClusterProps) {
   const childArray = React.Children.toArray(children);
 
   return (
@@ -1277,8 +1277,9 @@ function SearchInput({
   );
 }
 
-export { Input, inputVariants };
 export {
+  Input,
+  inputVariants,
   NumericInput,
   TextareaFixed,
   InputWithLabel,
@@ -1286,7 +1287,7 @@ export {
   InputWithSpinner,
   InputWithTooltip,
   InputWithDropdown,
-  InputGroup,
+  InputCluster,
   CurrencyInput,
   PercentageInput,
   DecimalInput,
@@ -1300,7 +1301,7 @@ export type {
   InputWithSpinnerProps,
   InputWithTooltipProps,
   InputWithDropdownProps,
-  InputGroupProps,
+  InputClusterProps,
   CurrencyInputProps,
   PercentageInputProps,
   DecimalInputProps,

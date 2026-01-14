@@ -7,7 +7,7 @@ import {
   InputWithSpinner,
   InputWithTooltip,
   InputWithDropdown,
-  InputGroup,
+  InputCluster,
   TextareaFixed,
   CurrencyInput,
   PercentageInput,
@@ -506,37 +506,46 @@ export function InputPage() {
         </div>
       </section>
 
-      {/* Input Group */}
+      {/* Input Cluster */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Input Group
+          Input Cluster
         </h2>
         <p className="text-sm text-muted-foreground">
           Container for combining multiple inputs into a cohesive visual unit.
-          Automatically handles border radius adjustments for seamless
-          connection. Ideal for date ranges, time ranges, and multi-part inputs.
+          Automatically handles border radius adjustments for seamless connection.
+          Ideal for date ranges, time ranges, phone numbers, and multi-part inputs.
+          <br />
+          <span className="font-medium text-foreground">
+            Note: For inputs with addons (prefix text, buttons, etc.), see the
+            <a href="/components/input-group" className="underline">
+              {" "}
+              Input Group
+            </a>{" "}
+            component.
+          </span>
         </p>
         <div className="max-w-sm space-y-4">
           <div className="space-y-2">
             <Label>Date Range</Label>
-            <InputGroup>
+            <InputCluster>
               <Input type="date" placeholder="Start date" />
               <Input type="date" placeholder="End date" />
-            </InputGroup>
+            </InputCluster>
           </div>
           <div className="space-y-2">
             <Label>Time Range</Label>
-            <InputGroup>
+            <InputCluster>
               <Input type="time" placeholder="Start time" />
               <Input type="time" placeholder="End time" />
-            </InputGroup>
+            </InputCluster>
           </div>
           <div className="space-y-2">
             <Label>Price Range</Label>
-            <InputGroup>
+            <InputCluster>
               <Input prefix="$" type="number" placeholder="Min" />
               <Input prefix="$" type="number" placeholder="Max" />
-            </InputGroup>
+            </InputCluster>
           </div>
         </div>
       </section>
