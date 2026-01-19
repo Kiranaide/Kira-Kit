@@ -188,7 +188,7 @@ export function SeparatorPage() {
             <p className="text-sm text-muted-foreground mb-2">Pulse</p>
             <Separator animated="pulse" color="primary" />
           </div>
-          <div>
+          {/* <div>
             <p className="text-sm text-muted-foreground mb-2">
               Shimmer (Gradient)
             </p>
@@ -197,7 +197,7 @@ export function SeparatorPage() {
               gradient="primary"
               animated="shimmer"
             />
-          </div>
+          </div> */}
         </div>
       </section>
 
