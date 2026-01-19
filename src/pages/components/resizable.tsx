@@ -1,10 +1,20 @@
+import * as React from "react";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
+  CollapsiblePanel,
+  usePanelRef,
+  type Layout,
 } from "@/components/ui/resizable";
+import { Button } from "@/components/ui/button";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 
 export function ResizablePage() {
+  const [layout, setLayout] = React.useState<Layout>({});
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const sidebarPanelRef = usePanelRef();
+
   return (
     <div className="p-8 max-w-4xl space-y-12">
       <header>
@@ -55,6 +65,147 @@ export function ResizablePage() {
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
+        </div>
+      </section>
+
+      {/* Collapsible Panel */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Collapsible Panel
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Panels can be collapsed and expanded programmatically.
+        </p>
+        <div className="flex gap-2 mb-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => sidebarPanelRef.current?.collapse()}
+          >
+            <IconChevronLeft className="h-4 w-4 mr-1" />
+            Collapse
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => sidebarPanelRef.current?.expand()}
+          >
+            <IconChevronRight className="h-4 w-4 mr-1" />
+            Expand
+          </Button>
+          <span className="text-sm text-muted-foreground flex items-center">
+            Status: {isCollapsed ? "Collapsed" : "Expanded"}
+          </span>
+        </div>
+        <div className="h-48 rounded-lg border border-border overflow-hidden">
+          <ResizablePanelGroup orientation="horizontal">
+            <CollapsiblePanel
+              id="sidebar"
+              panelRef={sidebarPanelRef}
+              collapsible
+              collapsedSize={0}
+              defaultSize={25}
+              minSize={15}
+              maxSize={40}
+              onResize={(size) => {
+                // Update collapsed state based on size
+                setIsCollapsed(size.asPercentage <= 1);
+              }}
+            >
+              <div className="flex h-full items-center justify-center p-4 bg-muted/30">
+                <span className="text-sm font-medium">Sidebar</span>
+              </div>
+            </CollapsiblePanel>
+            <ResizableHandle />
+            <ResizablePanel defaultSize={75}>
+              <div className="flex h-full items-center justify-center p-4 bg-muted/50">
+                <span className="text-sm font-medium">Main Content</span>
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
+      </section>
+
+      {/* Layout Callbacks */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Layout Callbacks
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Track layout changes in real-time with onLayoutChange callback.
+        </p>
+        <div className="h-48 rounded-lg border border-border overflow-hidden">
+          <ResizablePanelGroup
+            orientation="horizontal"
+            onLayoutChange={(newLayout) => setLayout(newLayout)}
+          >
+            <ResizablePanel defaultSize={30} id="left">
+              <div className="flex h-full items-center justify-center p-4 bg-muted/30">
+                <span className="text-sm font-medium">
+                  {layout.left?.toFixed(1) ?? 30}%
+                </span>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel defaultSize={70} id="right">
+              <div className="flex h-full items-center justify-center p-4 bg-muted/50">
+                <span className="text-sm font-medium">
+                  {layout.right?.toFixed(1) ?? 70}%
+                </span>
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
+      </section>
+
+      {/* Handle Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Handle Variants
+        </h2>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Default</p>
+            <div className="h-24 rounded-lg border border-border overflow-hidden">
+              <ResizablePanelGroup orientation="horizontal">
+                <ResizablePanel defaultSize={50}>
+                  <div className="flex h-full items-center justify-center bg-muted/30" />
+                </ResizablePanel>
+                <ResizableHandle variant="default" />
+                <ResizablePanel defaultSize={50}>
+                  <div className="flex h-full items-center justify-center bg-muted/50" />
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </div>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Subtle</p>
+            <div className="h-24 rounded-lg border border-border overflow-hidden">
+              <ResizablePanelGroup orientation="horizontal">
+                <ResizablePanel defaultSize={50}>
+                  <div className="flex h-full items-center justify-center bg-muted/30" />
+                </ResizablePanel>
+                <ResizableHandle variant="subtle" />
+                <ResizablePanel defaultSize={50}>
+                  <div className="flex h-full items-center justify-center bg-muted/50" />
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </div>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Prominent</p>
+            <div className="h-24 rounded-lg border border-border overflow-hidden">
+              <ResizablePanelGroup orientation="horizontal">
+                <ResizablePanel defaultSize={50}>
+                  <div className="flex h-full items-center justify-center bg-muted/30" />
+                </ResizablePanel>
+                <ResizableHandle variant="prominent" />
+                <ResizablePanel defaultSize={50}>
+                  <div className="flex h-full items-center justify-center bg-muted/50" />
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -119,8 +270,11 @@ export function ResizablePage() {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
+  CollapsiblePanel,
+  usePanelRef,
 } from "@/components/ui/resizable"
 
+// Basic usage
 <ResizablePanelGroup orientation="horizontal">
   <ResizablePanel defaultSize={50}>
     Content 1
@@ -129,7 +283,35 @@ export function ResizablePage() {
   <ResizablePanel defaultSize={50}>
     Content 2
   </ResizablePanel>
-</ResizablePanelGroup>`}
+</ResizablePanelGroup>
+
+// With layout callback
+<ResizablePanelGroup 
+  onLayoutChange={(layout) => {
+    console.log(layout); // { left: 30, right: 70 }
+  }}
+>
+  <ResizablePanel id="left" defaultSize={30}>...</ResizablePanel>
+  <ResizableHandle />
+  <ResizablePanel id="right" defaultSize={70}>...</ResizablePanel>
+</ResizablePanelGroup>
+
+// Collapsible panel with imperative API
+const panelRef = usePanelRef();
+
+<CollapsiblePanel
+  panelRef={panelRef}
+  collapsible
+  collapsedSize={0}
+  onResize={(size) => console.log(size.asPercentage)}
+>
+  Sidebar content
+</CollapsiblePanel>
+
+// Programmatic control
+panelRef.current?.collapse();
+panelRef.current?.expand();
+panelRef.current?.resize(30);`}
           </pre>
         </div>
       </section>
