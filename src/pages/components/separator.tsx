@@ -1,4 +1,5 @@
 import { Separator } from "@/components/ui/separator";
+import { IconStar, IconBolt } from "@tabler/icons-react";
 
 export function SeparatorPage() {
   return (
@@ -100,14 +101,16 @@ export function SeparatorPage() {
         </div>
       </section>
 
-      {/* With Label */}
+      {/* With Label and Icon */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          With Label
+          With Label & Icon
         </h2>
         <div className="space-y-6">
           <div>
-            <p className="text-sm text-muted-foreground mb-2">Center label (default)</p>
+            <p className="text-sm text-muted-foreground mb-2">
+              Center label (default)
+            </p>
             <Separator label="Or continue with" />
           </div>
           <div>
@@ -119,12 +122,81 @@ export function SeparatorPage() {
             <Separator label="The End" labelAlign="end" />
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-2">Vertical with label</p>
+            <p className="text-sm text-muted-foreground mb-2">
+              With Icon (Left)
+            </p>
+            <Separator
+              label="Favorites"
+              labelIcon={<IconStar className="w-3 h-3" />}
+            />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">
+              With Icon (Right)
+            </p>
+            <Separator
+              label="Power"
+              labelIcon={<IconBolt className="w-3 h-3" />}
+              labelIconPosition="right"
+            />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">
+              Vertical with label
+            </p>
             <div className="flex h-24">
               <span className="p-2">Left</span>
               <Separator orientation="vertical" label="VS" />
               <span className="p-2">Right</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gradients */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Gradients
+        </h2>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">
+              Fade (Transparent edges)
+            </p>
+            <Separator lineStyle="gradient" gradient="fade" />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">
+              Primary Color Gradient
+            </p>
+            <Separator lineStyle="gradient" gradient="primary" />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Rainbow</p>
+            <Separator lineStyle="gradient" gradient="rainbow" />
+          </div>
+        </div>
+      </section>
+
+      {/* Animated */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Animated
+        </h2>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">Pulse</p>
+            <Separator animated="pulse" color="primary" />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">
+              Shimmer (Gradient)
+            </p>
+            <Separator
+              lineStyle="gradient"
+              gradient="primary"
+              animated="shimmer"
+            />
           </div>
         </div>
       </section>

@@ -12,9 +12,11 @@ import {
   AsyncSelect,
   CreatableSelect,
   Autocomplete,
+  SelectField,
   type SelectOption,
   type AutocompleteOption,
 } from "@/components/ui/select";
+import { IconUser } from "@tabler/icons-react";
 
 const fruits: SelectOption[] = [
   { value: "apple", label: "Apple" },
@@ -42,7 +44,7 @@ const searchUsers = async (query: string): Promise<SelectOption[]> => {
   ];
   if (!query) return allUsers;
   return allUsers.filter((u) =>
-    u.label.toLowerCase().includes(query.toLowerCase())
+    u.label.toLowerCase().includes(query.toLowerCase()),
   );
 };
 
@@ -52,7 +54,7 @@ export function SelectPage() {
   const [asyncValue, setAsyncValue] = React.useState("");
   const [autocompleteValue, setAutocompleteValue] = React.useState<string>("");
   const [autocompleteMulti, setAutocompleteMulti] = React.useState<string[]>(
-    []
+    [],
   );
   const [creatableOptions, setCreatableOptions] =
     React.useState<SelectOption[]>(fruits);
@@ -250,6 +252,63 @@ export function SelectPage() {
             debounceMs={300}
             placeholder="Type to search users..."
           />
+        </div>
+      </section>
+
+      {/* Trigger Variants */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Trigger Variants
+        </h2>
+        <div className="flex flex-col gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Default</p>
+              <SelectField options={fruits} placeholder="Default trigger" />
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Ghost</p>
+              <SelectField
+                options={fruits}
+                variant="ghost"
+                placeholder="Ghost trigger"
+              />
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Outline</p>
+              <SelectField
+                options={fruits}
+                variant="outline"
+                placeholder="Outline trigger"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">With Left Icon</p>
+              <SelectField
+                options={fruits}
+                leftIcon={<IconUser className="w-4 h-4" />}
+                placeholder="Select user..."
+              />
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Invalid State</p>
+              <SelectField
+                options={fruits}
+                aria-invalid={true}
+                placeholder="Error state"
+              />
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">No Chevron</p>
+              <SelectField
+                options={fruits}
+                hideChevron
+                placeholder="No chevron"
+              />
+            </div>
+          </div>
         </div>
       </section>
 

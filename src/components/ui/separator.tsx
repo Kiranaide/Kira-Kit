@@ -28,6 +28,21 @@ const separatorVariants = cva(
           "bg-transparent border-0 border-t border-dashed border-border data-[orientation=vertical]:border-t-0 data-[orientation=vertical]:border-l",
         dotted:
           "bg-transparent border-0 border-t border-dotted border-border data-[orientation=vertical]:border-t-0 data-[orientation=vertical]:border-l",
+        gradient: "bg-gradient-to-r from-border/0 via-border to-border/0",
+      },
+      /** Custom gradient type */
+      gradient: {
+        none: "",
+        fade: "from-border/0 via-border to-border/0",
+        primary: "from-primary/0 via-primary to-primary/0",
+        rainbow:
+          "bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500",
+      },
+      /** Animation type */
+      animated: {
+        none: "",
+        pulse: "animate-pulse",
+        shimmer: "animate-[shimmer_2s_infinite]",
       },
       /** Color of the separator */
       color: {
@@ -51,6 +66,25 @@ const separatorVariants = cva(
       { lineStyle: "solid", color: "success", className: "bg-success" },
       { lineStyle: "solid", color: "warning", className: "bg-warning" },
       { lineStyle: "solid", color: "info", className: "bg-info" },
+      // Gradient variants (ensure bg-gradient is applied)
+      {
+        lineStyle: "gradient",
+        gradient: "fade",
+        className:
+          "bg-gradient-to-r data-[orientation=vertical]:bg-gradient-to-b",
+      },
+      {
+        lineStyle: "gradient",
+        gradient: "primary",
+        className:
+          "bg-gradient-to-r data-[orientation=vertical]:bg-gradient-to-b",
+      },
+      {
+        lineStyle: "gradient",
+        gradient: "rainbow",
+        className:
+          "bg-gradient-to-r data-[orientation=vertical]:bg-gradient-to-b",
+      },
       // Dashed/dotted color variants (use border-color)
       { lineStyle: "dashed", color: "default", className: "border-border" },
       { lineStyle: "dashed", color: "primary", className: "border-primary" },
@@ -89,8 +123,10 @@ const separatorVariants = cva(
       size: "default",
       lineStyle: "solid",
       color: "default",
+      gradient: "none",
+      animated: "none",
     },
-  }
+  },
 );
 
 /**
@@ -101,17 +137,23 @@ const separatorVariants = cva(
  * <Separator orientation="vertical" />
  * <Separator lineStyle="dashed" color="primary" />
  * <Separator label="Or continue with" />
+ * <Separator lineStyle="gradient" gradient="primary" />
  * ```
  */
 export interface SeparatorProps
-  extends SeparatorPrimitive.Props,
-    VariantProps<typeof separatorVariants> {
-  /** Text label to display in the separator */
-  label?: string;
+  extends SeparatorPrimitive.Props, VariantProps<typeof separatorVariants> {
+  /** Label content to display in the separator */
+  label?: React.ReactNode;
   /** Alignment of the label */
   labelAlign?: "start" | "center" | "end";
+  /** Icon to display alongside the label */
+  labelIcon?: React.ReactNode;
+  /** Position of the label icon */
+  labelIconPosition?: "left" | "right";
   /** Spacing around the separator */
   spacing?: "none" | "sm" | "default" | "lg";
+  /** Whether the separator is purely decorative (aria-hidden) */
+  decorative?: boolean;
 }
 
 /**
@@ -123,9 +165,14 @@ export function Separator({
   size,
   lineStyle = "solid",
   color = "default",
+  gradient,
+  animated,
   label,
   labelAlign = "center",
+  labelIcon,
+  labelIconPosition = "left",
   spacing,
+  decorative,
   ...props
 }: SeparatorProps) {
   // Spacing classes for margin
@@ -136,51 +183,77 @@ export function Separator({
     lg: orientation === "horizontal" ? "my-6" : "mx-6",
   };
 
+  const semanticProps = decorative
+    ? { role: "none", "aria-hidden": true }
+    : { role: "separator", "aria-orientation": orientation };
+
   if (label) {
+    const showLeftLine = labelAlign === "end" || labelAlign === "center";
+    const showRightLine = labelAlign === "start" || labelAlign === "center";
+
     return (
       <div
         data-slot="separator"
-        role="separator"
-        aria-orientation={orientation}
+        {...semanticProps}
         className={cn(
           "flex items-center gap-3 w-full",
           orientation === "vertical" && "flex-col h-full w-auto",
           spacing && spacingClasses[spacing],
-          className
+          className,
         )}
       >
-        <SeparatorPrimitive
-          aria-hidden="true"
-          orientation={orientation}
-          className={cn(
-            separatorVariants({ size, lineStyle, color }),
-            orientation === "horizontal" && "flex-1",
-            orientation === "vertical" && "flex-1 min-h-4 w-px"
-          )}
-          {...props}
-        />
+        {showLeftLine && (
+          <SeparatorPrimitive
+            aria-hidden="true"
+            orientation={orientation}
+            className={cn(
+              separatorVariants({
+                size,
+                lineStyle,
+                color,
+                gradient,
+                animated,
+              }),
+              "overflow-hidden",
+              orientation === "horizontal" && "flex-1",
+              orientation === "vertical" && "flex-1 min-h-4 w-px",
+            )}
+            data-orientation={orientation}
+          />
+        )}
         <span
           className={cn(
-            "text-xs text-muted-foreground uppercase tracking-wider font-medium whitespace-nowrap px-2 select-none",
+            "flex items-center text-xs text-muted-foreground uppercase tracking-wider font-medium whitespace-nowrap px-2 select-none",
             orientation === "vertical" && "py-1",
-            labelAlign === "start" &&
-              (orientation === "horizontal" ? "-order-1" : "order-2"),
-            labelAlign === "end" &&
-              (orientation === "horizontal" ? "order-last" : "order-first")
           )}
         >
-          {label}
-        </span>
-        <SeparatorPrimitive
-          aria-hidden="true"
-          orientation={orientation}
-          className={cn(
-            separatorVariants({ size, lineStyle, color }),
-            orientation === "horizontal" && "flex-1",
-            orientation === "vertical" && "flex-1 min-h-4 w-px"
+          {labelIcon && labelIconPosition === "left" && (
+            <span className="mr-2">{labelIcon}</span>
           )}
-          {...props}
-        />
+          {label}
+          {labelIcon && labelIconPosition === "right" && (
+            <span className="ml-2">{labelIcon}</span>
+          )}
+        </span>
+        {showRightLine && (
+          <SeparatorPrimitive
+            aria-hidden="true"
+            orientation={orientation}
+            className={cn(
+              separatorVariants({
+                size,
+                lineStyle,
+                color,
+                gradient,
+                animated,
+              }),
+              "overflow-hidden",
+              orientation === "horizontal" && "flex-1",
+              orientation === "vertical" && "flex-1 min-h-4 w-px",
+            )}
+            data-orientation={orientation}
+          />
+        )}
       </div>
     );
   }
@@ -190,11 +263,14 @@ export function Separator({
       data-slot="separator"
       orientation={orientation}
       className={cn(
-        separatorVariants({ size, lineStyle, color }),
+        separatorVariants({ size, lineStyle, color, gradient, animated }),
         spacing && spacingClasses[spacing],
-        className
+        "overflow-hidden",
+        className,
       )}
+      data-orientation={orientation}
       {...props}
+      {...(decorative ? { decorative: true } : {})}
     />
   );
 }

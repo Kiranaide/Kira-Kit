@@ -62,7 +62,7 @@ function SelectTrigger({
         "*:data-[slot=select-value]:flex *:data-[slot=select-value]:gap-1.5 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:items-center",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        className
+        className,
       )}
       {...props}
     >
@@ -104,7 +104,7 @@ function SelectContent({
           data-slot="select-content"
           className={cn(
             "bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 min-w-36 rounded-lg shadow-md ring-1 duration-100 relative isolate z-50 max-h-(--available-height) w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto",
-            className
+            className,
           )}
           {...props}
         >
@@ -140,7 +140,7 @@ function SelectItem({
       data-slot="select-item"
       className={cn(
         "focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2 relative flex w-full cursor-default items-center outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        className
+        className,
       )}
       {...props}
     >
@@ -180,7 +180,7 @@ function SelectScrollUpButton({
       data-slot="select-scroll-up-button"
       className={cn(
         "bg-popover z-10 flex cursor-default items-center justify-center py-1 [&_svg:not([class*='size-'])]:size-4 top-0 w-full",
-        className
+        className,
       )}
       {...props}
     >
@@ -198,7 +198,7 @@ function SelectScrollDownButton({
       data-slot="select-scroll-down-button"
       className={cn(
         "bg-popover z-10 flex cursor-default items-center justify-center py-1 [&_svg:not([class*='size-'])]:size-4 bottom-0 w-full",
-        className
+        className,
       )}
       {...props}
     >
@@ -222,20 +222,43 @@ interface AutocompleteOption {
   disabled?: boolean;
 }
 
+/** Grouped options for categorized display */
+interface GroupedSelectOption<T extends SelectOption = SelectOption> {
+  label: string;
+  options: T[];
+}
+
+/** Check if options are grouped */
+function isGroupedOptions<T extends SelectOption>(
+  options: T[] | GroupedSelectOption<T>[],
+): options is GroupedSelectOption<T>[] {
+  return options.length > 0 && "options" in options[0];
+}
+
+/** Flatten grouped options to flat array */
+function flattenOptions<T extends SelectOption>(
+  options: T[] | GroupedSelectOption<T>[],
+): T[] {
+  if (isGroupedOptions(options)) {
+    return options.flatMap((group) => group.options);
+  }
+  return options;
+}
+
 // ============================================
 // UNIFIED SELECT FIELD COMPONENT
 // Uses Base-UI Combobox for full functionality
 // ============================================
 
 interface SelectFieldProps<T extends SelectOption = SelectOption> {
-  /** Options to display in the dropdown */
-  options?: T[];
+  /** Options to display in the dropdown - can be flat or grouped */
+  options?: T[] | GroupedSelectOption<T>[];
   /** Controlled value - single string or array for multiple */
   value?: string | string[];
   /** Callback when value changes */
   onChange?: (
     value: string | string[],
-    selectedOptions: T | T[] | null
+    selectedOptions: T | T[] | null,
   ) => void;
   /** Enable multiple selection with chips */
   multiple?: boolean;
@@ -271,6 +294,62 @@ interface SelectFieldProps<T extends SelectOption = SelectOption> {
   fuzzyMatching?: boolean;
   /** Custom filter function */
   filterFn?: (option: T, query: string) => boolean;
+
+  // ============================================
+  // ACCESSIBILITY PROPS
+  // ============================================
+  /** Whether the field is required */
+  required?: boolean;
+  /** Accessible label for the field */
+  "aria-label"?: string;
+  /** ID of element that labels this field */
+  "aria-labelledby"?: string;
+  /** ID of element that describes this field */
+  "aria-describedby"?: string;
+  /** Whether the field is in an invalid state */
+  "aria-invalid"?: boolean;
+  /** Form field name for native form submission */
+  name?: string;
+
+  // ============================================
+  // CALLBACK PROPS
+  // ============================================
+  /** Callback when dropdown opens or closes */
+  onOpenChange?: (open: boolean) => void;
+  /** Callback when search input changes */
+  onSearchChange?: (query: string) => void;
+  /** Callback when all selections are cleared (multi-select only) */
+  onClearAll?: () => void;
+
+  // ============================================
+  // TRIGGER VARIANTS
+  // ============================================
+  /** Trigger visual variant */
+  variant?: "default" | "ghost" | "outline";
+  /** Icon to display on the left of trigger */
+  leftIcon?: React.ReactNode;
+  /** Hide the chevron dropdown indicator */
+  hideChevron?: boolean;
+
+  // ============================================
+  // EMPTY STATE CUSTOMIZATION
+  // ============================================
+  /** Custom message when no results found */
+  emptyMessage?: string | React.ReactNode;
+  /** Custom message while loading */
+  loadingMessage?: string | React.ReactNode;
+  /** Custom message prompting search */
+  searchingMessage?: string | React.ReactNode;
+
+  // ============================================
+  // VIRTUALIZATION (for large lists)
+  // ============================================
+  /** Enable virtualization for large option lists */
+  virtualize?: boolean;
+  /** Height of each virtualized item in pixels (default: 36) */
+  virtualItemHeight?: number;
+  /** Number of items to render outside visible area (default: 5) */
+  overscan?: number;
 }
 
 // Fuzzy matching utility
@@ -313,14 +392,54 @@ function SelectField<T extends SelectOption = SelectOption>({
   showSearchIcon = true,
   fuzzyMatching = true,
   filterFn,
+  // Accessibility props
+  required,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
+  "aria-describedby": ariaDescribedby,
+  "aria-invalid": ariaInvalid,
+  name,
+  // Callback props
+  onOpenChange,
+  onSearchChange,
+  onClearAll,
+  // Trigger variants
+  variant = "default",
+  leftIcon,
+  hideChevron = false,
+  // Empty state customization
+  emptyMessage,
+  loadingMessage,
+  searchingMessage,
 }: SelectFieldProps<T>) {
   const [inputValue, setInputValue] = React.useState("");
-  const [options, setOptions] = React.useState<T[]>(initialOptions);
+  const [options, setOptions] = React.useState<T[]>(
+    flattenOptions(initialOptions) as T[],
+  );
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
   const listRef = React.useRef<HTMLDivElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const triggerRef = React.useRef<HTMLDivElement>(null);
   const cacheRef = React.useRef<Map<string, T[]>>(new Map());
+  const typeaheadRef = React.useRef("");
+  const typeaheadTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const debouncedQuery = useDebounce(inputValue, debounceMs);
+  const listId = React.useId();
+  const triggerId = React.useId();
+
+  // Call onOpenChange when isOpen changes
+  const handleOpenChange = React.useCallback(
+    (open: boolean) => {
+      setIsOpen(open);
+      onOpenChange?.(open);
+      if (!open) {
+        setHighlightedIndex(-1);
+      }
+    },
+    [onOpenChange],
+  );
 
   // Convert value to internal format
   const selectedValues = React.useMemo(() => {
@@ -331,7 +450,8 @@ function SelectField<T extends SelectOption = SelectOption>({
   // Update options when initialOptions change (for non-async mode)
   React.useEffect(() => {
     if (!async) {
-      setOptions(initialOptions);
+      const flattened = flattenOptions(initialOptions) as T[];
+      setOptions(flattened);
     }
   }, [initialOptions, async]);
 
@@ -399,7 +519,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     if (!creatable || !inputValue.trim()) return false;
     const normalizedInput = inputValue.trim().toLowerCase();
     return !filteredOptions.some(
-      (opt) => opt.label.toLowerCase() === normalizedInput
+      (opt) => opt.label.toLowerCase() === normalizedInput,
     );
   }, [creatable, inputValue, filteredOptions]);
 
@@ -445,7 +565,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     const newOptions = options.filter((o) => newValues.includes(o.value));
     onChange?.(
       multiple ? newValues : "",
-      multiple ? (newOptions as T[]) : null
+      multiple ? (newOptions as T[]) : null,
     );
   };
 
@@ -464,72 +584,241 @@ function SelectField<T extends SelectOption = SelectOption>({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    const newValue = e.target.value;
+    setInputValue(newValue);
+    onSearchChange?.(newValue);
     if (!isOpen) {
-      setIsOpen(true);
+      handleOpenChange(true);
     }
   };
 
+  // Get enabled (non-disabled) options for keyboard navigation
+  const enabledOptions = React.useMemo(() => {
+    return filteredOptions.filter((opt) => !opt.disabled);
+  }, [filteredOptions]);
+
+  // Handle typeahead character navigation
+  const handleTypeahead = React.useCallback(
+    (char: string) => {
+      if (typeaheadTimeoutRef.current) {
+        clearTimeout(typeaheadTimeoutRef.current);
+      }
+      typeaheadRef.current += char.toLowerCase();
+
+      const matchIndex = enabledOptions.findIndex((opt) =>
+        opt.label.toLowerCase().startsWith(typeaheadRef.current),
+      );
+
+      if (matchIndex !== -1) {
+        const actualIndex = filteredOptions.findIndex(
+          (opt) => opt.value === enabledOptions[matchIndex].value,
+        );
+        setHighlightedIndex(actualIndex);
+      }
+
+      typeaheadTimeoutRef.current = setTimeout(() => {
+        typeaheadRef.current = "";
+      }, 500);
+    },
+    [enabledOptions, filteredOptions],
+  );
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
-      setIsOpen(false);
-    } else if (
-      e.key === "Backspace" &&
-      !inputValue &&
-      multiple &&
-      selectedValues.length > 0
-    ) {
-      const newValues = selectedValues.slice(0, -1);
-      const newOptions = options.filter((o) => newValues.includes(o.value));
-      onChange?.(newValues, newOptions as T[]);
+    const optionCount = filteredOptions.length + (showCreateOption ? 1 : 0);
+
+    switch (e.key) {
+      case "Escape":
+        e.preventDefault();
+        handleOpenChange(false);
+        break;
+
+      case "ArrowDown":
+        e.preventDefault();
+        if (!isOpen) {
+          handleOpenChange(true);
+        } else {
+          setHighlightedIndex((prev) => {
+            const next = prev + 1;
+            return next >= optionCount ? 0 : next;
+          });
+        }
+        break;
+
+      case "ArrowUp":
+        e.preventDefault();
+        if (!isOpen) {
+          handleOpenChange(true);
+        } else {
+          setHighlightedIndex((prev) => {
+            const next = prev - 1;
+            return next < 0 ? optionCount - 1 : next;
+          });
+        }
+        break;
+
+      case "Home":
+        e.preventDefault();
+        if (isOpen) {
+          setHighlightedIndex(0);
+        }
+        break;
+
+      case "End":
+        e.preventDefault();
+        if (isOpen) {
+          setHighlightedIndex(optionCount - 1);
+        }
+        break;
+
+      case "PageUp":
+        e.preventDefault();
+        if (isOpen) {
+          setHighlightedIndex((prev) => Math.max(0, prev - 10));
+        }
+        break;
+
+      case "PageDown":
+        e.preventDefault();
+        if (isOpen) {
+          setHighlightedIndex((prev) => Math.min(optionCount - 1, prev + 10));
+        }
+        break;
+
+      case "Enter":
+        e.preventDefault();
+        if (isOpen && highlightedIndex >= 0) {
+          if (highlightedIndex < filteredOptions.length) {
+            const option = filteredOptions[highlightedIndex];
+            if (!option.disabled) {
+              handleSelect(option.value);
+            }
+          } else if (showCreateOption) {
+            handleCreate();
+          }
+        } else if (!isOpen) {
+          handleOpenChange(true);
+        }
+        break;
+
+      case " ": // Space
+        if (!searchable && !isOpen) {
+          e.preventDefault();
+          handleOpenChange(true);
+        }
+        break;
+
+      case "Tab":
+        // Close on tab, allow default behavior
+        handleOpenChange(false);
+        break;
+
+      case "Backspace":
+        if (!inputValue && multiple && selectedValues.length > 0) {
+          const newValues = selectedValues.slice(0, -1);
+          const newOptions = options.filter((o) => newValues.includes(o.value));
+          onChange?.(newValues, newOptions as T[]);
+        }
+        break;
+
+      default:
+        // Typeahead for non-searchable selects
+        if (!searchable && e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+          handleTypeahead(e.key);
+        }
+        break;
     }
+  };
+
+  // Clear all selections (multi-select only)
+  const handleClearAll = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange?.([], []);
+    setInputValue("");
+    onClearAll?.();
   };
 
   const selectedOptions = options.filter((o) =>
-    selectedValues.includes(o.value)
+    selectedValues.includes(o.value),
   );
   const displayedTags = selectedOptions.slice(0, maxDisplayedTags);
   const remainingCount = selectedOptions.length - maxDisplayedTags;
 
   const triggerClasses = cn(
-    "flex flex-wrap items-center gap-1 min-h-8 px-2 py-1 rounded-lg border border-input bg-transparent cursor-text w-full",
-    "dark:bg-input/30 dark:hover:bg-input/50",
+    "flex flex-wrap items-center gap-1 min-h-8 px-2 py-1 rounded-lg border bg-transparent cursor-text w-full transition-colors",
+    // Variant styles
+    variant === "default" &&
+      "border-input dark:bg-input/30 dark:hover:bg-input/50",
+    variant === "ghost" && "border-transparent hover:bg-muted",
+    variant === "outline" && "border-input bg-transparent hover:bg-muted/50",
+    // Focus and validation states
     "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+    ariaInvalid &&
+      "border-destructive ring-destructive/20 focus-within:border-destructive focus-within:ring-destructive/30",
+    // Size variants
     size === "sm" && "min-h-7 rounded-[min(var(--radius-md),10px)]",
-    disabled && "opacity-50 pointer-events-none cursor-not-allowed"
+    disabled && "opacity-50 pointer-events-none cursor-not-allowed",
   );
 
   const popupClasses = cn(
     "absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border bg-popover p-1 shadow-md",
-    "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95"
+    "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95",
   );
 
   const itemClasses = (
     isHighlighted: boolean,
     isSelected: boolean,
-    isDisabled?: boolean
+    isDisabled?: boolean,
   ) =>
     cn(
       "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none cursor-pointer",
-      isHighlighted && "bg-muted",
+      isHighlighted && "bg-accent text-accent-foreground",
       isSelected && "font-medium",
-      isDisabled && "opacity-50 pointer-events-none cursor-not-allowed"
+      isDisabled && "opacity-50 pointer-events-none cursor-not-allowed",
     );
+
+  // Get the ID of the currently highlighted option for aria-activedescendant
+  const activeDescendantId =
+    highlightedIndex >= 0 && highlightedIndex < filteredOptions.length
+      ? `${listId}-option-${highlightedIndex}`
+      : undefined;
 
   return (
     <div className={cn("relative w-full", className)}>
+      {/* Hidden input for form submission */}
+      {name && (
+        <input
+          type="hidden"
+          name={name}
+          value={multiple ? selectedValues.join(",") : selectedValues[0] || ""}
+        />
+      )}
+
       {/* Trigger container */}
       <div
+        ref={triggerRef}
+        id={triggerId}
         className={triggerClasses}
-        onClick={() => !disabled && setIsOpen(true)}
-        onFocus={() => !disabled && setIsOpen(true)}
+        onClick={() => !disabled && handleOpenChange(!isOpen)}
+        onKeyDown={handleKeyDown}
         tabIndex={disabled ? -1 : 0}
         role="combobox"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
+        aria-controls={isOpen ? listId : undefined}
+        aria-activedescendant={activeDescendantId}
         aria-disabled={disabled}
+        aria-required={required}
+        aria-invalid={ariaInvalid}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledby}
+        aria-describedby={ariaDescribedby}
       >
-        {showSearchIcon && searchable && (
+        {/* Left icon */}
+        {leftIcon && (
+          <span className="shrink-0 text-muted-foreground">{leftIcon}</span>
+        )}
+
+        {showSearchIcon && searchable && !leftIcon && (
           <IconSearch className="h-4 w-4 text-muted-foreground shrink-0" />
         )}
 
@@ -561,24 +850,25 @@ function SelectField<T extends SelectOption = SelectOption>({
         {/* Search input */}
         {searchable ? (
           <input
+            ref={inputRef}
             type="text"
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            onFocus={() => setIsOpen(true)}
-            onBlur={() => setTimeout(() => setIsOpen(false), 150)}
+            onBlur={() => setTimeout(() => handleOpenChange(false), 150)}
             placeholder={
               multiple && selectedValues.length > 0 ? "" : placeholder
             }
             disabled={disabled}
             className="flex-1 min-w-[80px] bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
             aria-autocomplete="list"
+            aria-controls={isOpen ? listId : undefined}
           />
         ) : (
           <span
             className={cn(
               "flex-1 text-sm text-left truncate",
-              !selectedOptions.length && "text-muted-foreground"
+              !selectedOptions.length && "text-muted-foreground",
             )}
           >
             {!multiple && selectedOptions.length > 0
@@ -592,8 +882,8 @@ function SelectField<T extends SelectOption = SelectOption>({
           <IconLoader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
         )}
 
-        {/* Clear button */}
-        {!isLoading && selectedValues.length > 0 && !multiple && (
+        {/* Clear button - single select */}
+        {!isLoading && !multiple && selectedValues.length > 0 && (
           <button
             type="button"
             onClick={handleClear}
@@ -604,12 +894,24 @@ function SelectField<T extends SelectOption = SelectOption>({
           </button>
         )}
 
+        {/* Clear all button - multi-select */}
+        {!isLoading && selectedValues.length > 0 && multiple && (
+          <button
+            type="button"
+            onClick={handleClearAll}
+            className="rounded-sm p-0.5 hover:bg-muted"
+            aria-label="Clear all selections"
+          >
+            <IconX className="h-4 w-4" />
+          </button>
+        )}
+
         {/* Chevron icon */}
-        {!isLoading && (
+        {!isLoading && !hideChevron && (
           <IconChevronDown
             className={cn(
               "h-4 w-4 text-muted-foreground shrink-0 transition-transform",
-              isOpen && "rotate-180"
+              isOpen && "rotate-180",
             )}
           />
         )}
@@ -619,41 +921,56 @@ function SelectField<T extends SelectOption = SelectOption>({
       {isOpen && (
         <div
           ref={listRef}
+          id={listId}
           className={popupClasses}
           role="listbox"
           aria-multiselectable={multiple}
+          aria-label={ariaLabel}
         >
           {/* Loading state */}
           {isLoading ? (
             <div className="flex items-center justify-center py-4 gap-2 text-sm text-muted-foreground">
               <IconLoader2 className="h-4 w-4 animate-spin" />
-              Loading...
+              {loadingMessage || "Loading..."}
             </div>
           ) : filteredOptions.length === 0 && !showCreateOption ? (
             /* Empty state */
             <div className="py-4 text-center text-sm text-muted-foreground">
-              {inputValue
-                ? "No results found"
-                : async
-                ? "Type to search..."
-                : "No options"}
+              {emptyMessage ||
+                (inputValue
+                  ? "No results found"
+                  : async
+                    ? searchingMessage || "Type to search..."
+                    : "No options")}
             </div>
           ) : (
             /* Options list */
             <>
-              {filteredOptions.map((option) => {
+              {filteredOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value);
+                const isHighlighted = index === highlightedIndex;
                 return (
                   <div
                     key={option.value}
+                    id={`${listId}-option-${index}`}
                     data-option
                     role="option"
                     aria-selected={isSelected}
                     aria-disabled={option.disabled}
-                    className={itemClasses(false, isSelected, option.disabled)}
+                    className={itemClasses(
+                      isHighlighted,
+                      isSelected,
+                      option.disabled,
+                    )}
                     onClick={() =>
                       !option.disabled && handleSelect(option.value)
                     }
+                    onMouseDown={(e) => {
+                      // Prevent input blur to keep menu open (especially for multi-select)
+                      // If single select, handleSelect will close it anyway.
+                      e.preventDefault();
+                    }}
+                    onMouseEnter={() => setHighlightedIndex(index)}
                   >
                     {multiple && (
                       <div
@@ -661,7 +978,7 @@ function SelectField<T extends SelectOption = SelectOption>({
                           "h-4 w-4 border rounded flex items-center justify-center shrink-0",
                           isSelected
                             ? "bg-primary border-primary"
-                            : "border-input"
+                            : "border-input",
                         )}
                       >
                         {isSelected && (
@@ -682,10 +999,21 @@ function SelectField<T extends SelectOption = SelectOption>({
               {/* Create option */}
               {showCreateOption && (
                 <div
+                  id={`${listId}-option-${filteredOptions.length}`}
                   data-option
                   role="option"
-                  className={cn(itemClasses(false, false), "text-primary")}
+                  aria-selected={false}
+                  className={cn(
+                    itemClasses(
+                      highlightedIndex === filteredOptions.length,
+                      false,
+                    ),
+                    "text-primary",
+                  )}
                   onClick={handleCreate}
+                  onMouseEnter={() =>
+                    setHighlightedIndex(filteredOptions.length)
+                  }
                 >
                   <span className="flex-1 text-left">
                     {createLabel} "{inputValue.trim()}"
