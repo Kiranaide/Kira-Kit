@@ -1211,65 +1211,106 @@ function DataTableRowCount() {
 interface DataTablePaginationProps {
   showPageSize?: boolean;
   pageSizeOptions?: number[];
+  showPageInfo?: boolean;
+  showFirstLast?: boolean;
+  variant?: "default" | "outline" | "ghost";
+  size?: "sm" | "default" | "lg";
 }
 
 function DataTablePagination({
   showPageSize = false,
   pageSizeOptions = [10, 20, 30, 40, 50],
+  showPageInfo = false,
+  showFirstLast = true,
+  variant = "outline",
+  size = "sm",
 }: DataTablePaginationProps) {
   const { table } = useDataTable();
 
+  const pageCount = table.getPageCount();
+  const currentPage = table.getState().pagination.pageIndex + 1;
+  const pageSize = table.getState().pagination.pageSize;
+  const totalRows = table.getFilteredRowModel().rows.length;
+
   return (
-    <div className="flex items-center justify-between gap-4">
-      {showPageSize && (
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Rows per page</span>
-          <select
-            value={table.getState().pagination.pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
-            className="h-8 rounded-md border border-input bg-background px-2 text-sm"
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex items-center gap-4">
+        {showPageSize && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground whitespace-nowrap hidden sm:inline">Rows per page</span>
+            <select
+              value={pageSize}
+              onChange={(e) => table.setPageSize(Number(e.target.value))}
+              className={cn(
+                "rounded-md border border-input bg-background px-2 focus:outline-none focus:ring-2 focus:ring-ring",
+                size === "sm" && "h-7 text-xs",
+                size === "default" && "h-8 text-sm",
+                size === "lg" && "h-9 text-base"
+              )}
+            >
+              {pageSizeOptions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        {showPageInfo && totalRows > 0 && (
+          <div className="text-sm text-muted-foreground">
+            <span className="hidden sm:inline">
+              Showing {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, totalRows)} of {totalRows}
+            </span>
+            <span className="sm:hidden">{currentPage}/{pageCount}</span>
+          </div>
+        )}
+      </div>
+      <div className="flex items-center gap-1">
+        {showFirstLast && (
+          <Button
+            variant={variant}
+            size={size}
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+            aria-label="Go to first page"
           >
-            {pageSizeOptions.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-      <div className="flex items-center gap-2">
+            {"<<"}
+          </Button>
+        )}
         <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<<"}
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
+          variant={variant}
+          size={size}
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
+          aria-label="Go to previous page"
         >
           Previous
         </Button>
+        <div className="flex items-center gap-1 mx-1">
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {pageCount}
+          </span>
+        </div>
         <Button
-          variant="outline"
-          size="sm"
+          variant={variant}
+          size={size}
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
+          aria-label="Go to next page"
         >
           Next
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          disabled={!table.getCanNextPage()}
-        >
-          {">>"}
-        </Button>
+        {showFirstLast && (
+          <Button
+            variant={variant}
+            size={size}
+            onClick={() => table.setPageIndex(pageCount - 1)}
+            disabled={!table.getCanNextPage()}
+            aria-label="Go to last page"
+          >
+            {">>"}
+          </Button>
+        )}
       </div>
     </div>
   );

@@ -32,7 +32,7 @@ import { PopoverPage } from "@/pages/components/popover";
 import { HoverCardPage } from "@/pages/components/hover-card";
 import { KbdPage } from "@/pages/components/kbd";
 import { MenubarPage } from "@/pages/components/menubar";
-// import { NavigationMenuPage } from "@/pages/components/navigation-menu";
+import { NavigationMenuPage } from "@/pages/components/navigation-menu";
 import { PaginationPage } from "@/pages/components/pagination";
 import { ProgressPage } from "@/pages/components/progress";
 import { RadioGroupPage } from "@/pages/components/radio-group";
@@ -218,11 +218,11 @@ const menubarRoute = createRoute({
   component: MenubarPage,
 });
 
-// const navigationMenuRoute = createRoute({
-//   getParentRoute: () => rootRoute,
-//   path: "/components/navigation-menu",
-//   component: NavigationMenuPage,
-// });
+const navigationMenuRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/navigation-menu",
+  component: NavigationMenuPage,
+});
 
 const paginationRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -378,7 +378,7 @@ const routeTree = rootRoute.addChildren([
   hoverCardRoute,
   kbdRoute,
   menubarRoute,
-  // navigationMenuRoute,
+  navigationMenuRoute,
   paginationRoute,
   progressRoute,
   radioGroupRoute,

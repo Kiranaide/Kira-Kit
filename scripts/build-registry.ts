@@ -4,11 +4,12 @@
  * Outputs to public/r/ for Vercel deployment.
  */
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync } from "fs";
 import { join, basename } from "path";
 
 // Configuration
 const COMPONENTS_DIR = "./src/components/ui";
+const HOOKS_DIR = "./src/hooks";
 const OUTPUT_DIR = "./public/r";
 const REGISTRY_NAME = "kira-kit";
 const HOMEPAGE = "https://kira-kit.vercel.app";
@@ -87,14 +88,14 @@ const REGISTRY_DEPENDENCY_MAP: Record<string, string[]> = {
 
 interface RegistryItem {
   name: string;
-  type: "registry:ui";
+  type: "registry:ui" | "registry:hook";
   title: string;
   description: string;
   dependencies: string[];
   registryDependencies: string[];
   files: Array<{
     path: string;
-    type: "registry:component";
+    type: "registry:component" | "registry:hook";
     content: string;
   }>;
 }
@@ -137,6 +138,23 @@ function extractDependencies(content: string): string[] {
   }
 
   return Array.from(deps).sort();
+}
+
+/**
+ * Get hook dependencies from component content
+ */
+function getHookDependencies(content: string): string[] {
+  const hooks: Set<string> = new Set();
+  
+  // Scan for @/hooks/* imports
+  const hookImportRegex = /from\s+["']@\/hooks\/([^"']+)["']/g;
+  let match;
+  while ((match = hookImportRegex.exec(content)) !== null) {
+    const hookName = match[1].replace(".tsx", "").replace(".ts", "");
+    hooks.add(hookName);
+  }
+  
+  return Array.from(hooks).sort();
 }
 
 /**
@@ -185,6 +203,29 @@ function generateRegistryItem(filePath: string): RegistryItem {
 
   const dependencies = extractDependencies(content);
   const registryDependencies = getRegistryDependencies(fileName, content);
+  const hookDeps = getHookDependencies(content);
+
+  // Build files array with component file
+  const files: RegistryItem["files"] = [
+    {
+      path: `ui/${fileName}.tsx`,
+      type: "registry:component",
+      content,
+    },
+  ];
+
+  // Include hook files if component imports them
+  for (const hookName of hookDeps) {
+    const hookPath = join(HOOKS_DIR, `${hookName}.ts`);
+    if (existsSync(hookPath)) {
+      const hookContent = readFileSync(hookPath, "utf-8");
+      files.push({
+        path: `hooks/${hookName}.ts`,
+        type: "registry:hook",
+        content: hookContent,
+      });
+    }
+  }
 
   return {
     name: fileName,
@@ -193,13 +234,7 @@ function generateRegistryItem(filePath: string): RegistryItem {
     description: `${toTitleCase(fileName)} component from Kira Kit.`,
     dependencies,
     registryDependencies,
-    files: [
-      {
-        path: `ui/${fileName}.tsx`,
-        type: "registry:component",
-        content,
-      },
-    ],
+    files,
   };
 }
 
