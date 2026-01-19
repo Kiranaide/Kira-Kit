@@ -308,9 +308,11 @@ function Slider({
               className="relative w-full rounded-full bg-muted select-none"
             >
               {/* Tick marks INSIDE the track */}
-              {markersToRender.map((marker) => {
+              {markersToRender.map((marker, index) => {
                 const percent = ((marker.value - min) / (max - min)) * 100;
                 const isActive = marker.value <= currentValue;
+                const isFirst = index === 0;
+                const isLast = index === markersToRender.length - 1;
                 return (
                   <button
                     key={marker.value}
@@ -325,8 +327,12 @@ function Slider({
                         !readOnly &&
                         "cursor-pointer hover:scale-150",
                       disabled && "cursor-not-allowed",
+                      isFirst && "ml-1",
+                      isLast && "mr-1",
                     )}
-                    style={{ left: `${percent}%` }}
+                    style={{
+                      left: `${isLast ? 99 : percent}%`,
+                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       animateToMarker(marker.value);
@@ -346,9 +352,9 @@ function Slider({
               <SliderPrimitive.Thumb
                 ref={thumbRef}
                 data-slot="slider-thumb"
+                index={0}
                 className={cn(
                   "z-10 block rounded-full border-2 border-primary bg-white dark:bg-zinc-900 shadow-md select-none",
-                  "transition-all duration-150 ease-out",
                   "hover:scale-110 hover:shadow-lg",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   "disabled:pointer-events-none disabled:opacity-50",
@@ -396,10 +402,12 @@ function Slider({
         {/* Marker labels BELOW the slider track */}
         {hasMarkerLabels && (
           <div className="relative mt-1 w-full">
-            {markersToRender.map((marker) => {
+            {markersToRender.map((marker, index) => {
               if (!marker.label) return null;
               const percent = ((marker.value - min) / (max - min)) * 100;
               const isActive = currentValue === marker.value;
+              const isFirst = index === 0;
+              const isLast = index === markersToRender.length - 1;
               return (
                 <button
                   key={marker.value}
@@ -413,6 +421,8 @@ function Slider({
                       !readOnly &&
                       "cursor-pointer hover:text-primary",
                     disabled && "cursor-not-allowed opacity-50",
+                    isFirst && "ml-0.5",
+                    isLast && "mr-0.5",
                   )}
                   style={{ left: `${percent}%` }}
                   onClick={() => animateToMarker(marker.value)}
@@ -665,8 +675,10 @@ function RangeSlider({
               className="relative w-full rounded-full bg-muted select-none"
             >
               {/* Tick marks INSIDE the track */}
-              {markersToRender.map((marker) => {
+              {markersToRender.map((marker, index) => {
                 const percent = ((marker.value - min) / (max - min)) * 100;
+                const isFirst = index === 0;
+                const isLast = index === markersToRender.length - 1;
                 const isInRange =
                   marker.value >= currentValue[0] &&
                   marker.value <= currentValue[1];
@@ -679,8 +691,10 @@ function RangeSlider({
                       isInRange
                         ? "bg-primary-foreground/80"
                         : "bg-muted-foreground/40",
+                      isFirst && "ml-1",
+                      isLast && "mr-1",
                     )}
-                    style={{ left: `${percent}%` }}
+                    style={{ left: `${isLast ? 99 : percent}%` }}
                     aria-hidden="true"
                   />
                 );
