@@ -204,7 +204,7 @@ function ProgressLabel({ className, ...props }: ProgressLabelProps) {
 // PROGRESS VALUE SUB-COMPONENT
 // ============================================
 
-interface ProgressValueProps extends React.HTMLAttributes<HTMLSpanElement> {
+interface ProgressValueProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children"> {
   /** Format function for the value display. */
   children?:
     | ((formattedValue: string | null, value: number | null) => React.ReactNode)

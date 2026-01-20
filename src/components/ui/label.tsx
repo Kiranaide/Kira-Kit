@@ -213,7 +213,7 @@ function Label({
         disabled && "opacity-50 cursor-not-allowed",
         className
       )}
-      {...(props as React.ComponentProps<typeof Component>)}
+      {...(props as object)}
     >
       {content}
     </Component>

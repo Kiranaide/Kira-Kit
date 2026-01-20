@@ -115,7 +115,7 @@ function Slider({
   const [isDragging, setIsDragging] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
   const sliderRef = React.useRef<HTMLDivElement>(null);
-  const thumbRef = React.useRef<HTMLSpanElement>(null);
+  const thumbRef = React.useRef<HTMLDivElement>(null);
 
   const currentValue = value ?? internalValue;
 
@@ -553,8 +553,8 @@ function RangeSlider({
   const [isHovering, setIsHovering] = React.useState(false);
   const [activeThumb, setActiveThumb] = React.useState<0 | 1 | null>(null);
   const sliderRef = React.useRef<HTMLDivElement>(null);
-  const thumb0Ref = React.useRef<HTMLSpanElement>(null);
-  const thumb1Ref = React.useRef<HTMLSpanElement>(null);
+  const thumb0Ref = React.useRef<HTMLDivElement>(null);
+  const thumb1Ref = React.useRef<HTMLDivElement>(null);
 
   const currentValue = value ?? internalValue;
 

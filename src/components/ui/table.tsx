@@ -1,16 +1,32 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// Table Root
+// ============================================
+// ARIA SORT TYPE
+// ============================================
+type AriaSort = "ascending" | "descending" | "none" | "other";
+
+// ============================================
+// TABLE ROOT
+// ============================================
 interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
   striped?: boolean;
   bordered?: boolean;
+  /** Use role="grid" for interactive data tables with keyboard navigation */
+  isGrid?: boolean;
+  /** For virtualized tables, indicate total column count */
+  ariaColCount?: number;
+  /** For virtualized tables, indicate total row count */
+  ariaRowCount?: number;
 }
 
 function Table({
   className,
   striped = false,
   bordered = false,
+  isGrid = false,
+  ariaColCount,
+  ariaRowCount,
   ...props
 }: TableProps) {
   return (
@@ -19,6 +35,9 @@ function Table({
         data-slot="table"
         data-striped={striped}
         data-bordered={bordered}
+        role={isGrid ? "grid" : undefined}
+        aria-colcount={ariaColCount}
+        aria-rowcount={ariaRowCount}
         className={cn(
           "w-full caption-bottom text-sm",
           striped && "[&_tbody_tr:nth-child(even)]:bg-muted/50",
@@ -74,13 +93,28 @@ function TableFooter({
   );
 }
 
+// ============================================
+// TABLE ROW
+// ============================================
+interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+  /** For selectable rows, indicate selection state */
+  isSelected?: boolean;
+  /** For grid role tables */
+  isGridRow?: boolean;
+}
+
 function TableRow({
   className,
+  isSelected,
+  isGridRow = false,
   ...props
-}: React.HTMLAttributes<HTMLTableRowElement>) {
+}: TableRowProps) {
   return (
     <tr
       data-slot="table-row"
+      data-state={isSelected ? "selected" : undefined}
+      role={isGridRow ? "row" : undefined}
+      aria-selected={isSelected}
       className={cn(
         "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
         className
@@ -90,13 +124,31 @@ function TableRow({
   );
 }
 
+// ============================================
+// TABLE HEAD (Column Header)
+// ============================================
+interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  /** Scope for accessibility - defaults to "col" for column headers */
+  scope?: "col" | "row" | "colgroup" | "rowgroup";
+  /** For sortable columns, indicate current sort direction */
+  ariaSort?: AriaSort;
+  /** For grid role tables */
+  isGridCell?: boolean;
+}
+
 function TableHead({
   className,
+  scope = "col",
+  ariaSort,
+  isGridCell = false,
   ...props
-}: React.ThHTMLAttributes<HTMLTableCellElement>) {
+}: TableHeadProps) {
   return (
     <th
       data-slot="table-head"
+      scope={scope}
+      role={isGridCell ? "columnheader" : undefined}
+      aria-sort={ariaSort}
       className={cn(
         "h-10 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
         className
@@ -106,13 +158,23 @@ function TableHead({
   );
 }
 
+// ============================================
+// TABLE CELL
+// ============================================
+interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  /** For grid role tables */
+  isGridCell?: boolean;
+}
+
 function TableCell({
   className,
+  isGridCell = false,
   ...props
-}: React.TdHTMLAttributes<HTMLTableCellElement>) {
+}: TableCellProps) {
   return (
     <td
       data-slot="table-cell"
+      role={isGridCell ? "gridcell" : undefined}
       className={cn(
         "p-4 align-middle [&:has([role=checkbox])]:pr-0",
         className
@@ -145,3 +207,5 @@ export {
   TableCell,
   TableCaption,
 };
+
+export type { TableProps, TableRowProps, TableHeadProps, TableCellProps, AriaSort };

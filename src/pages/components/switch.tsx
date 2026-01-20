@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Switch, SwitchWithLabel } from "@/components/ui/switch";
+import { Switch, SwitchWithLabel, SwitchGroup } from "@/components/ui/switch";
 import {
   IconMoon,
   IconSun,
@@ -21,13 +21,14 @@ export function SwitchPage() {
   const [wifi, setWifi] = React.useState(true);
   const [volume, setVolume] = React.useState(false);
   const [bluetooth, setBluetooth] = React.useState(true);
+  const [hasError, setHasError] = React.useState(true);
 
   return (
     <div className="p-8 max-w-5xl space-y-12">
       <header>
         <h1 className="text-3xl font-bold mb-2">Switch</h1>
         <p className="text-muted-foreground">
-          A two-state toggle switch component for binary on/off settings.
+          A two-state toggle switch component with full accessibility support.
         </p>
       </header>
 
@@ -100,6 +101,115 @@ export function SwitchPage() {
               Warning
             </label>
           </div>
+        </div>
+      </section>
+
+      {/* Label Position (New) */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Label Position (New)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Use <code className="bg-muted px-1 rounded">labelPosition</code> to place the label before or after the switch.
+        </p>
+        <div className="space-y-4 max-w-md">
+          <Switch
+            label="Label at end (default)"
+            description="The label appears after the switch"
+            labelPosition="end"
+          />
+          <Switch
+            label="Label at start"
+            description="The label appears before the switch"
+            labelPosition="start"
+          />
+        </div>
+      </section>
+
+      {/* Error Message (New) */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Error Message (New)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Display validation errors with proper ARIA attributes for accessibility.
+        </p>
+        <div className="space-y-4 max-w-md">
+          <Switch
+            label="Accept terms and conditions"
+            description="You must accept to continue"
+            errorMessage={hasError ? "You must accept the terms to proceed" : undefined}
+            checked={!hasError}
+            onCheckedChange={(checked) => setHasError(!checked)}
+            required
+          />
+          <p className="text-xs text-muted-foreground">
+            ✓ aria-invalid • aria-errormessage • aria-describedby
+          </p>
+        </div>
+      </section>
+
+      {/* Screen Reader Announcements (New) */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Screen Reader Announcements (New)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Custom labels for checked/unchecked states announced to screen readers.
+        </p>
+        <div className="space-y-4 max-w-md">
+          <Switch
+            label="Airplane Mode"
+            description="Toggle airplane mode on your device"
+            checkedLabel="Airplane mode enabled"
+            uncheckedLabel="Airplane mode disabled"
+          />
+        </div>
+      </section>
+
+      {/* Touch Target (New) */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Touch Target (New)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Use <code className="bg-muted px-1 rounded">touchTarget</code> to ensure WCAG 2.2 AA compliant 44×44px minimum touch area.
+        </p>
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3">
+            <Switch id="touch-normal" />
+            <label htmlFor="touch-normal" className="text-sm">
+              Normal
+            </label>
+          </div>
+          <div className="flex items-center gap-3">
+            <Switch id="touch-target" touchTarget />
+            <label htmlFor="touch-target" className="text-sm">
+              With Touch Target (44px min)
+            </label>
+          </div>
+        </div>
+      </section>
+
+      {/* Switch Group (New) */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Switch Group (New)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Group related switches with proper accessibility attributes.
+        </p>
+        <div className="grid gap-6 md:grid-cols-2">
+          <SwitchGroup label="Notification Settings" orientation="vertical">
+            <Switch label="Email notifications" />
+            <Switch label="Push notifications" defaultChecked />
+            <Switch label="SMS notifications" />
+          </SwitchGroup>
+          <SwitchGroup label="Privacy Settings" orientation="vertical">
+            <Switch label="Public profile" defaultChecked />
+            <Switch label="Show online status" defaultChecked />
+            <Switch label="Allow messages from anyone" />
+          </SwitchGroup>
         </div>
       </section>
 
@@ -371,24 +481,46 @@ export function SwitchPage() {
         </h2>
         <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
           <pre className="text-sm text-foreground">
-            {`import { Switch, SwitchWithLabel } from "@/components/ui/switch"
+            {`import { Switch, SwitchWithLabel, SwitchGroup } from "@/components/ui/switch"
 
 // Basic switch
 <Switch id="notifications" />
 
-// Controlled switch
+// With label and description
 <Switch
-  checked={isEnabled}
-  onCheckedChange={setIsEnabled}
-/>
-
-// With label
-<SwitchWithLabel
   label="Enable notifications"
   description="Receive push notifications"
-  checked={notifications}
-  onCheckedChange={setNotifications}
+  checked={enabled}
+  onCheckedChange={setEnabled}
 />
+
+// Label position
+<Switch label="Label first" labelPosition="start" />
+<Switch label="Label last" labelPosition="end" />
+
+// With error message (New)
+<Switch
+  label="Accept terms"
+  errorMessage="You must accept the terms"
+  required
+/>
+
+// Screen reader announcements (New)
+<Switch
+  label="Airplane Mode"
+  checkedLabel="Airplane mode enabled"
+  uncheckedLabel="Airplane mode disabled"
+/>
+
+// Touch target for mobile (New)
+<Switch touchTarget />
+
+// Switch group (New)
+<SwitchGroup label="Notification Settings">
+  <Switch label="Email" />
+  <Switch label="Push" />
+  <Switch label="SMS" />
+</SwitchGroup>
 
 // With custom icons
 <Switch
@@ -406,11 +538,9 @@ export function SwitchPage() {
 
 // With loading state
 <Switch loading />
-<Switch loading checked />
 
 // With error state
-<Switch error />
-<Switch error checked />`}
+<Switch error />`}
           </pre>
         </div>
       </section>

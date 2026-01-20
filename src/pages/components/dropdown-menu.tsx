@@ -207,14 +207,26 @@ export function DropdownMenuPage() {
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>Appearance</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup value={radioValue} onValueChange={setRadioValue}>
-              <DropdownMenuRadioItem value="light" icon={<IconSun className="w-4 h-4" />}>
+            <DropdownMenuRadioGroup
+              value={radioValue}
+              onValueChange={setRadioValue}
+            >
+              <DropdownMenuRadioItem
+                value="light"
+                icon={<IconSun className="w-4 h-4" />}
+              >
                 Light
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="dark" icon={<IconMoon className="w-4 h-4" />}>
+              <DropdownMenuRadioItem
+                value="dark"
+                icon={<IconMoon className="w-4 h-4" />}
+              >
                 Dark
               </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="system" icon={<IconDeviceDesktop className="w-4 h-4" />}>
+              <DropdownMenuRadioItem
+                value="system"
+                icon={<IconDeviceDesktop className="w-4 h-4" />}
+              >
                 System
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
@@ -242,9 +254,7 @@ export function DropdownMenuPage() {
               <Button variant="ghost" size="sm">
                 Cancel
               </Button>
-              <Button size="sm">
-                Confirm
-              </Button>
+              <Button size="sm">Confirm</Button>
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -264,7 +274,9 @@ export function DropdownMenuPage() {
             <DropdownMenuItem>Analytics</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger icon={<IconSettings className="w-4 h-4" />}>
+              <DropdownMenuSubTrigger
+                icon={<IconSettings className="w-4 h-4" />}
+              >
                 Settings
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
@@ -281,7 +293,7 @@ export function DropdownMenuPage() {
             </DropdownMenuSub>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive">
-              <IconLogout className="w-4 h-4 mr-2" />
+              <IconLogout className="w-4 h-4" />
               Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -324,7 +336,10 @@ export function DropdownMenuPage() {
             Settings
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive" icon={<IconLogout className="w-4 h-4" />}>
+          <DropdownMenuItem
+            variant="destructive"
+            icon={<IconLogout className="w-4 h-4" />}
+          >
             Logout
           </DropdownMenuItem>
         </DropdownMenuWithContent>
@@ -337,7 +352,7 @@ export function DropdownMenuPage() {
         </h2>
         <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
           <pre className="text-sm text-foreground">
-{`import {
+            {`import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,

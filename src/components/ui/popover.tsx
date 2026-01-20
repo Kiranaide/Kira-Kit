@@ -77,11 +77,9 @@ const popoverContentVariants = cva(
 // POPOVER CONTENT
 // ============================================
 
-type InteractionType = "mouse" | "touch" | "pen" | "keyboard";
-
 interface PopoverContentProps
   extends
-    PopoverPrimitive.Popup.Props,
+    Omit<PopoverPrimitive.Popup.Props, "initialFocus" | "finalFocus">,
     VariantProps<typeof popoverContentVariants> {
   /** Side to position the popover relative to trigger. */
   side?: PopoverPrimitive.Positioner.Props["side"];
@@ -104,23 +102,15 @@ interface PopoverContentProps
    * - `false`: Do not move focus.
    * - `true`: Focus first tabbable element or popup.
    * - `RefObject`: Focus the ref element.
-   * - `function`: Called with interaction type, return element to focus.
    */
-  initialFocus?:
-    | boolean
-    | React.RefObject<HTMLElement | null>
-    | ((openType: InteractionType) => boolean | void | HTMLElement | null);
+  initialFocus?: PopoverPrimitive.Popup.Props["initialFocus"];
   /**
    * Element to focus when the popover closes.
    * - `false`: Do not move focus.
    * - `true`: Focus trigger or previously focused element.
    * - `RefObject`: Focus the ref element.
-   * - `function`: Called with interaction type, return element to focus.
    */
-  finalFocus?:
-    | boolean
-    | React.RefObject<HTMLElement | null>
-    | ((closeType: InteractionType) => boolean | void | HTMLElement | null);
+  finalFocus?: PopoverPrimitive.Popup.Props["finalFocus"];
   /** ARIA role for the popover content. */
   role?: "dialog" | "tooltip" | "listbox" | "menu";
 }
@@ -246,6 +236,7 @@ function PopoverTitle({
 // POPOVER DESCRIPTION
 // ============================================
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface PopoverDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
 
 function PopoverDescription({ className, ...props }: PopoverDescriptionProps) {

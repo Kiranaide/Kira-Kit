@@ -763,8 +763,15 @@ export function SidebarGroup({
 }: SidebarGroupProps) {
   const { collapsed, isHoverExpanded, reducedMotion } = useSidebar();
   const [open, setOpen] = React.useState(defaultOpen);
+  const [contentHeight, setContentHeight] = React.useState<number | null>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const isExpanded = !collapsed || isHoverExpanded;
+
+  React.useEffect(() => {
+    if (contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight);
+    }
+  }, [children, open]);
 
   if (!isExpanded) {
     return (
@@ -806,7 +813,7 @@ export function SidebarGroup({
           open ? "opacity-100" : "opacity-0 h-0",
         )}
         style={{
-          maxHeight: open ? contentRef.current?.scrollHeight ?? "1000px" : "0px",
+          maxHeight: open ? (contentHeight ?? 1000) : 0,
         }}
       >
         {children}

@@ -31,6 +31,13 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -43,6 +50,12 @@ import {
   IconPin,
   IconPinFilled,
   IconDotsVertical,
+  IconInbox,
+  IconX,
+  IconTrash,
+  IconEdit,
+  IconEye,
+  IconCopy,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import {
@@ -70,6 +83,17 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 // ============================================
+// DENSITY TYPE
+// ============================================
+type DataTableDensity = "compact" | "default" | "comfortable";
+
+const densityStyles: Record<DataTableDensity, { row: string; cell: string }> = {
+  compact: { row: "h-8", cell: "py-1 px-2 text-xs" },
+  default: { row: "h-12", cell: "py-2 px-4 text-sm" },
+  comfortable: { row: "h-16", cell: "py-4 px-4 text-sm" },
+};
+
+// ============================================
 // CONTEXT
 // ============================================
 interface DataTableContextValue<TData> {
@@ -80,6 +104,12 @@ interface DataTableContextValue<TData> {
   onLoadMore?: () => void;
   isLoading?: boolean;
   hasNextPage?: boolean;
+  /** Row density setting */
+  density: DataTableDensity;
+  /** Enable keyboard navigation */
+  enableKeyboardNavigation?: boolean;
+  /** Announce changes to screen readers */
+  announceChanges?: boolean;
 }
 
 const DataTableContext =
@@ -111,6 +141,11 @@ interface DataTableProps<TData, TValue> {
   enableExpanding?: boolean;
   enableGrouping?: boolean;
   enableVirtualization?: boolean;
+  // Keyboard & Accessibility
+  enableKeyboardNavigation?: boolean;
+  announceChanges?: boolean;
+  // Density
+  density?: DataTableDensity;
   // Initial states
   initialPageSize?: number;
   initialSorting?: SortingState;
@@ -137,12 +172,15 @@ function DataTableRoot<TData, TValue>({
   enableSorting = true,
   enableFiltering = true,
   enableRowSelection = false,
-  enableColumnOrdering: _enableColumnOrdering = false,
+  enableColumnOrdering: _enableColumnOrdering = false, // eslint-disable-line @typescript-eslint/no-unused-vars
   enableColumnPinning = false,
   enableColumnResizing = false,
   enableExpanding = false,
   enableGrouping = false,
   enableVirtualization = false,
+  enableKeyboardNavigation = false,
+  announceChanges = false,
+  density = "default",
   initialPageSize = 10,
   initialSorting = [],
   onRowSelectionChange,
@@ -156,14 +194,14 @@ function DataTableRoot<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>(initialSorting);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([]);
   const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>(
-    {}
+    {},
   );
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
   const [grouping, setGrouping] = React.useState<GroupingState>([]);
@@ -257,6 +295,9 @@ function DataTableRoot<TData, TValue>({
       onLoadMore,
       isLoading,
       hasNextPage,
+      density,
+      enableKeyboardNavigation,
+      announceChanges,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -267,6 +308,9 @@ function DataTableRoot<TData, TValue>({
       onLoadMore,
       isLoading,
       hasNextPage,
+      density,
+      enableKeyboardNavigation,
+      announceChanges,
       // Include state values to trigger re-renders
       columnFilters,
       globalFilter,
@@ -277,7 +321,7 @@ function DataTableRoot<TData, TValue>({
       columnOrder,
       columnPinning,
       grouping,
-    ]
+    ],
   );
 
   return (
@@ -337,6 +381,8 @@ interface DataTableContentProps<TData> {
   expandOnRowClick?: boolean;
   enableReordering?: boolean;
   onReorder?: (newOrder: string[]) => void;
+  density?: DataTableDensity;
+  emptyState?: React.ReactNode;
 }
 
 function DataTableContent<TData>({
@@ -345,6 +391,8 @@ function DataTableContent<TData>({
   expandOnRowClick = false,
   enableReordering = false,
   onReorder,
+  density: densityProp,
+  emptyState,
 }: DataTableContentProps<TData>) {
   const {
     table,
@@ -354,7 +402,10 @@ function DataTableContent<TData>({
     onLoadMore,
     isLoading = false,
     hasNextPage = false,
+    density: contextDensity = "default",
   } = useDataTable<TData>();
+
+  const density = densityProp ?? contextDensity;
 
   if (enableVirtualization) {
     return (
@@ -386,7 +437,7 @@ function DataTableContent<TData>({
     <div
       className={cn(
         "rounded-lg border border-border",
-        stickyHeader && "max-h-[600px] overflow-auto"
+        stickyHeader && "max-h-[600px] overflow-auto",
       )}
     >
       <Table>
@@ -406,10 +457,10 @@ function DataTableContent<TData>({
                 let leftOffset = 0;
                 if (pinnedLeft) {
                   const leftPinnedColumns = headerGroup.headers.filter(
-                    (h) => h.column.getIsPinned() === "left"
+                    (h) => h.column.getIsPinned() === "left",
                   );
                   const currentIndex = leftPinnedColumns.findIndex(
-                    (h) => h.id === header.id
+                    (h) => h.id === header.id,
                   );
                   for (let i = 0; i < currentIndex; i++) {
                     leftOffset += leftPinnedColumns[i].getSize();
@@ -420,10 +471,10 @@ function DataTableContent<TData>({
                 let rightOffset = 0;
                 if (pinnedRight) {
                   const rightPinnedColumns = headerGroup.headers.filter(
-                    (h) => h.column.getIsPinned() === "right"
+                    (h) => h.column.getIsPinned() === "right",
                   );
                   const currentIndex = rightPinnedColumns.findIndex(
-                    (h) => h.id === header.id
+                    (h) => h.id === header.id,
                   );
                   for (
                     let i = currentIndex + 1;
@@ -454,7 +505,7 @@ function DataTableContent<TData>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                     {/* Column resizer handle */}
                     {header.column.getCanResize() && (
@@ -465,7 +516,7 @@ function DataTableContent<TData>({
                           "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none transition-colors",
                           header.column.getIsResizing()
                             ? "bg-primary"
-                            : "bg-transparent group-hover:bg-primary/50"
+                            : "bg-transparent group-hover:bg-primary/50",
                         )}
                       />
                     )}
@@ -481,11 +532,10 @@ function DataTableContent<TData>({
               <React.Fragment key={row.id}>
                 <TableRow
                   data-state={row.getIsSelected() && "selected"}
-                  className={
-                    expandOnRowClick && row.getCanExpand()
-                      ? "cursor-pointer"
-                      : undefined
-                  }
+                  className={cn(
+                    densityStyles[density]?.row,
+                    expandOnRowClick && row.getCanExpand() && "cursor-pointer",
+                  )}
                   onClick={
                     expandOnRowClick && row.getCanExpand()
                       ? () => row.toggleExpanded()
@@ -504,7 +554,7 @@ function DataTableContent<TData>({
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "left");
                       const currentIndex = leftPinnedColumns.findIndex(
-                        (c) => c.id === cell.id
+                        (c) => c.id === cell.id,
                       );
                       for (let i = 0; i < currentIndex; i++) {
                         leftOffset += leftPinnedColumns[i].column.getSize();
@@ -518,7 +568,7 @@ function DataTableContent<TData>({
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "right");
                       const currentIndex = rightPinnedColumns.findIndex(
-                        (c) => c.id === cell.id
+                        (c) => c.id === cell.id,
                       );
                       for (
                         let i = currentIndex + 1;
@@ -532,7 +582,10 @@ function DataTableContent<TData>({
                     return (
                       <TableCell
                         key={cell.id}
-                        className={cn(isPinned && "shadow-sm")}
+                        className={cn(
+                          densityStyles[density]?.cell,
+                          isPinned && "shadow-sm",
+                        )}
                         style={{
                           width: cell.column.getSize(),
                           ...(isPinned && {
@@ -546,7 +599,7 @@ function DataTableContent<TData>({
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     );
@@ -565,13 +618,25 @@ function DataTableContent<TData>({
                 )}
               </React.Fragment>
             ))
+          ) : emptyState ? (
+            <TableRow>
+              <TableCell
+                colSpan={table.getAllColumns().length}
+                className="h-24 text-center"
+              >
+                {emptyState}
+              </TableCell>
+            </TableRow>
           ) : (
             <TableRow>
               <TableCell
                 colSpan={table.getAllColumns().length}
-                className="h-24 text-center text-muted-foreground"
+                className="h-24 text-center"
               >
-                No results.
+                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                  <IconInbox className="h-8 w-8 mb-2" />
+                  <span>No results found</span>
+                </div>
               </TableCell>
             </TableRow>
           )}
@@ -605,7 +670,7 @@ function DataTableVirtualizedContent<TData>({
   isLoading = false,
   hasNextPage = false,
 }: DataTableVirtualizedContentProps<TData>) {
-  const { table } = useDataTable<TData>();
+  const { table, density } = useDataTable<TData>();
   const parentRef = React.useRef<HTMLDivElement>(null);
   const { rows } = table.getRowModel();
 
@@ -651,7 +716,7 @@ function DataTableVirtualizedContent<TData>({
           className={cn(stickyHeader && "sticky top-0 bg-background z-10")}
         >
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className={densityStyles[density]?.row}>
               {headerGroup.headers.map((header) => {
                 const isPinned = header.column.getIsPinned();
                 const pinnedLeft = isPinned === "left";
@@ -661,10 +726,10 @@ function DataTableVirtualizedContent<TData>({
                 let leftOffset = 0;
                 if (pinnedLeft) {
                   const leftPinnedColumns = headerGroup.headers.filter(
-                    (h) => h.column.getIsPinned() === "left"
+                    (h) => h.column.getIsPinned() === "left",
                   );
                   const currentIndex = leftPinnedColumns.findIndex(
-                    (h) => h.id === header.id
+                    (h) => h.id === header.id,
                   );
                   for (let i = 0; i < currentIndex; i++) {
                     leftOffset += leftPinnedColumns[i].getSize();
@@ -675,10 +740,10 @@ function DataTableVirtualizedContent<TData>({
                 let rightOffset = 0;
                 if (pinnedRight) {
                   const rightPinnedColumns = headerGroup.headers.filter(
-                    (h) => h.column.getIsPinned() === "right"
+                    (h) => h.column.getIsPinned() === "right",
                   );
                   const currentIndex = rightPinnedColumns.findIndex(
-                    (h) => h.id === header.id
+                    (h) => h.id === header.id,
                   );
                   for (
                     let i = currentIndex + 1;
@@ -709,7 +774,7 @@ function DataTableVirtualizedContent<TData>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                     {/* Column resizer handle */}
                     {header.column.getCanResize() && (
@@ -720,7 +785,7 @@ function DataTableVirtualizedContent<TData>({
                           "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none transition-colors",
                           header.column.getIsResizing()
                             ? "bg-primary"
-                            : "bg-transparent group-hover:bg-primary/50"
+                            : "bg-transparent group-hover:bg-primary/50",
                         )}
                       />
                     )}
@@ -746,11 +811,10 @@ function DataTableVirtualizedContent<TData>({
                 <TableRow
                   data-index={virtualRow.index}
                   data-state={row.getIsSelected() && "selected"}
-                  className={
-                    expandOnRowClick && row.getCanExpand()
-                      ? "cursor-pointer"
-                      : undefined
-                  }
+                  className={cn(
+                    densityStyles[density]?.row,
+                    expandOnRowClick && row.getCanExpand() && "cursor-pointer",
+                  )}
                   onClick={
                     expandOnRowClick && row.getCanExpand()
                       ? () => row.toggleExpanded()
@@ -769,7 +833,7 @@ function DataTableVirtualizedContent<TData>({
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "left");
                       const currentIndex = leftPinnedCells.findIndex(
-                        (c) => c.id === cell.id
+                        (c) => c.id === cell.id,
                       );
                       for (let i = 0; i < currentIndex; i++) {
                         leftOffset += leftPinnedCells[i].column.getSize();
@@ -783,7 +847,7 @@ function DataTableVirtualizedContent<TData>({
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "right");
                       const currentIndex = rightPinnedCells.findIndex(
-                        (c) => c.id === cell.id
+                        (c) => c.id === cell.id,
                       );
                       for (
                         let i = currentIndex + 1;
@@ -797,7 +861,10 @@ function DataTableVirtualizedContent<TData>({
                     return (
                       <TableCell
                         key={cell.id}
-                        className={cn(isPinned && "shadow-sm")}
+                        className={cn(
+                          densityStyles[density]?.cell,
+                          isPinned && "shadow-sm",
+                        )}
                         style={{
                           width: cell.column.getSize(),
                           ...(isPinned && {
@@ -811,7 +878,7 @@ function DataTableVirtualizedContent<TData>({
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     );
@@ -881,7 +948,7 @@ function DataTableReorderableContent<TData>({
   expandOnRowClick = false,
   onReorder,
 }: DataTableReorderableContentProps<TData>) {
-  const { table } = useDataTable<TData>();
+  const { table, density } = useDataTable<TData>();
   const rows = table.getRowModel().rows;
   const [items, setItems] = React.useState(() => rows.map((row) => row.id));
 
@@ -895,7 +962,7 @@ function DataTableReorderableContent<TData>({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -930,7 +997,7 @@ function DataTableReorderableContent<TData>({
     <div
       className={cn(
         "rounded-lg border border-border",
-        stickyHeader && "max-h-[600px] overflow-auto"
+        stickyHeader && "max-h-[600px] overflow-auto",
       )}
     >
       <DndContext
@@ -944,8 +1011,8 @@ function DataTableReorderableContent<TData>({
               stickyHeader ? "sticky top-0 bg-background z-10" : undefined
             }
           >
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id} className={densityStyles[density]?.row}>
                 {headerGroup.headers.map((header) => {
                   const isPinned = header.column.getIsPinned();
                   const pinnedLeft = isPinned === "left";
@@ -954,10 +1021,10 @@ function DataTableReorderableContent<TData>({
                   let leftOffset = 0;
                   if (pinnedLeft) {
                     const leftPinnedColumns = headerGroup.headers.filter(
-                      (h) => h.column.getIsPinned() === "left"
+                      (h) => h.column.getIsPinned() === "left",
                     );
                     const currentIndex = leftPinnedColumns.findIndex(
-                      (h) => h.id === header.id
+                      (h) => h.id === header.id,
                     );
                     for (let i = 0; i < currentIndex; i++) {
                       leftOffset += leftPinnedColumns[i].getSize();
@@ -967,10 +1034,10 @@ function DataTableReorderableContent<TData>({
                   let rightOffset = 0;
                   if (pinnedRight) {
                     const rightPinnedColumns = headerGroup.headers.filter(
-                      (h) => h.column.getIsPinned() === "right"
+                      (h) => h.column.getIsPinned() === "right",
                     );
                     const currentIndex = rightPinnedColumns.findIndex(
-                      (h) => h.id === header.id
+                      (h) => h.id === header.id,
                     );
                     for (
                       let i = currentIndex + 1;
@@ -1001,7 +1068,7 @@ function DataTableReorderableContent<TData>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                       {header.column.getCanResize() && (
                         <div
@@ -1011,7 +1078,7 @@ function DataTableReorderableContent<TData>({
                             "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none transition-colors",
                             header.column.getIsResizing()
                               ? "bg-primary"
-                              : "bg-transparent group-hover:bg-primary/50"
+                              : "bg-transparent group-hover:bg-primary/50",
                           )}
                         />
                       )}
@@ -1067,6 +1134,7 @@ function DataTableSortableRow<TData>({
   renderSubComponent,
   expandOnRowClick = false,
 }: DataTableSortableRowProps<TData>) {
+  const { density } = useDataTable<TData>();
   const {
     attributes,
     listeners,
@@ -1090,8 +1158,9 @@ function DataTableSortableRow<TData>({
         data-state={row.getIsSelected() && "selected"}
         className={cn(
           "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+          densityStyles[density]?.row,
           expandOnRowClick && row.getCanExpand() && "cursor-pointer",
-          isDragging && "ring-2 ring-primary"
+          isDragging && "ring-2 ring-primary",
         )}
         onClick={
           expandOnRowClick && row.getCanExpand()
@@ -1110,7 +1179,7 @@ function DataTableSortableRow<TData>({
               .getVisibleCells()
               .filter((c) => c.column.getIsPinned() === "left");
             const currentIndex = leftPinnedColumns.findIndex(
-              (c) => c.id === cell.id
+              (c) => c.id === cell.id,
             );
             for (let i = 0; i < currentIndex; i++) {
               leftOffset += leftPinnedColumns[i].column.getSize();
@@ -1123,7 +1192,7 @@ function DataTableSortableRow<TData>({
               .getVisibleCells()
               .filter((c) => c.column.getIsPinned() === "right");
             const currentIndex = rightPinnedColumns.findIndex(
-              (c) => c.id === cell.id
+              (c) => c.id === cell.id,
             );
             for (let i = currentIndex + 1; i < rightPinnedColumns.length; i++) {
               rightOffset += rightPinnedColumns[i].column.getSize();
@@ -1137,8 +1206,9 @@ function DataTableSortableRow<TData>({
             <TableCell
               key={cell.id}
               className={cn(
+                densityStyles[density]?.cell,
                 isPinned && "shadow-sm",
-                isDragHandle && "cursor-grab active:cursor-grabbing"
+                isDragHandle && "cursor-grab active:cursor-grabbing",
               )}
               style={{
                 width: cell.column.getSize(),
@@ -1237,7 +1307,9 @@ function DataTablePagination({
       <div className="flex items-center gap-4">
         {showPageSize && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground whitespace-nowrap hidden sm:inline">Rows per page</span>
+            <span className="text-sm text-muted-foreground whitespace-nowrap hidden sm:inline">
+              Rows per page
+            </span>
             <select
               value={pageSize}
               onChange={(e) => table.setPageSize(Number(e.target.value))}
@@ -1245,7 +1317,7 @@ function DataTablePagination({
                 "rounded-md border border-input bg-background px-2 focus:outline-none focus:ring-2 focus:ring-ring",
                 size === "sm" && "h-7 text-xs",
                 size === "default" && "h-8 text-sm",
-                size === "lg" && "h-9 text-base"
+                size === "lg" && "h-9 text-base",
               )}
             >
               {pageSizeOptions.map((s) => (
@@ -1259,9 +1331,12 @@ function DataTablePagination({
         {showPageInfo && totalRows > 0 && (
           <div className="text-sm text-muted-foreground">
             <span className="hidden sm:inline">
-              Showing {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, totalRows)} of {totalRows}
+              Showing {(currentPage - 1) * pageSize + 1}-
+              {Math.min(currentPage * pageSize, totalRows)} of {totalRows}
             </span>
-            <span className="sm:hidden">{currentPage}/{pageCount}</span>
+            <span className="sm:hidden">
+              {currentPage}/{pageCount}
+            </span>
           </div>
         )}
       </div>
@@ -1319,8 +1394,10 @@ function DataTablePagination({
 // ============================================
 // COLUMN HEADER HELPER (with 3-way sorting)
 // ============================================
-interface DataTableColumnHeaderProps<TData, TValue>
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface DataTableColumnHeaderProps<
+  TData,
+  TValue,
+> extends React.HTMLAttributes<HTMLDivElement> {
   column: import("@tanstack/react-table").Column<TData, TValue>;
   title: string;
   showPinning?: boolean;
@@ -1362,7 +1439,7 @@ function DataTableColumnHeader<TData, TValue>({
       <button
         className={cn(
           "flex items-center gap-1 -ml-3 px-3 py-1.5 rounded-md hover:bg-muted",
-          isPinned && "bg-muted/50"
+          isPinned && "bg-muted/50",
         )}
         onClick={handleSort}
       >
@@ -1531,7 +1608,7 @@ function createExpandColumn<TData>(): ColumnDef<TData> {
               <IconChevronRight
                 className={cn(
                   "h-4 w-4 text-muted-foreground transition-transform",
-                  isExpanded && "rotate-90"
+                  isExpanded && "rotate-90",
                 )}
               />
             </button>
@@ -1668,7 +1745,7 @@ function DataTableEditableCell({
         onKeyDown={handleKeyDown}
         className={cn(
           "w-full border border-primary rounded px-2 py-1 bg-background",
-          className
+          className,
         )}
       >
         {options.map((option) => (
@@ -1687,7 +1764,7 @@ function DataTableEditableCell({
       value={editValue}
       onChange={(e) =>
         setEditValue(
-          type === "number" ? Number(e.target.value) : e.target.value
+          type === "number" ? Number(e.target.value) : e.target.value,
         )
       }
       onBlur={handleSave}
@@ -1701,6 +1778,537 @@ function DataTableEditableCell({
 // ============================================
 // EXPORTS
 // ============================================
+// ============================================
+// SKELETON COMPONENT
+// ============================================
+interface DataTableSkeletonProps {
+  /** Number of skeleton rows to display */
+  rows?: number;
+  /** Number of columns (defaults to 5) */
+  columns?: number;
+  /** Show header skeleton */
+  showHeader?: boolean;
+  /** Additional CSS class */
+  className?: string;
+}
+
+function DataTableSkeleton({
+  rows = 5,
+  columns = 5,
+  showHeader = true,
+  className,
+}: DataTableSkeletonProps) {
+  return (
+    <div className={cn("rounded-lg border border-border", className)}>
+      <Table>
+        {showHeader && (
+          <TableHeader>
+            <TableRow>
+              {Array.from({ length: columns }).map((_, i) => (
+                <TableHead key={i}>
+                  <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+        )}
+        <TableBody>
+          {Array.from({ length: rows }).map((_, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {Array.from({ length: columns }).map((_, colIndex) => (
+                <TableCell key={colIndex}>
+                  <div
+                    className="h-4 animate-pulse rounded bg-muted"
+                    style={{ width: `${60 + Math.random() * 40}%` }}
+                  />
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+// ============================================
+// EMPTY STATE COMPONENT
+// ============================================
+interface DataTableEmptyStateProps {
+  /** Icon to display */
+  icon?: React.ReactNode;
+  /** Title text */
+  title?: string;
+  /** Description text */
+  description?: string;
+  /** Action button/element */
+  action?: React.ReactNode;
+  /** Additional CSS class */
+  className?: string;
+}
+
+function DataTableEmptyState({
+  icon,
+  title = "No results found",
+  description = "Try adjusting your search or filters",
+  action,
+  className,
+}: DataTableEmptyStateProps) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center py-12 text-center",
+        className,
+      )}
+    >
+      <div className="mb-4 text-muted-foreground">
+        {icon ?? <IconInbox className="h-12 w-12" />}
+      </div>
+      <h3 className="mb-1 text-lg font-medium">{title}</h3>
+      <p className="mb-4 text-sm text-muted-foreground">{description}</p>
+      {action}
+    </div>
+  );
+}
+
+// ============================================
+// BULK ACTIONS BAR
+// ============================================
+interface DataTableBulkActionsProps {
+  /** Children containing action buttons */
+  children: React.ReactNode;
+  /** Additional CSS class */
+  className?: string;
+  /** Custom clear selection handler */
+  onClearSelection?: () => void;
+}
+
+function DataTableBulkActions({
+  children,
+  className,
+  onClearSelection,
+}: DataTableBulkActionsProps) {
+  const { table } = useDataTable();
+  const selectedCount = Object.keys(table.getState().rowSelection).length;
+
+  if (selectedCount === 0) {
+    return null;
+  }
+
+  const handleClear = () => {
+    if (onClearSelection) {
+      onClearSelection();
+    } else {
+      table.resetRowSelection();
+    }
+  };
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-3 rounded-lg border border-border bg-muted/50 px-4 py-2",
+        className,
+      )}
+      role="toolbar"
+      aria-label="Bulk actions"
+    >
+      <div className="flex items-center gap-2 text-sm font-medium">
+        <span>{selectedCount} selected</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleClear}
+          className="h-6 px-2"
+          aria-label="Clear selection"
+        >
+          <IconX className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+      <div className="h-4 w-px bg-border" />
+      <div className="flex items-center gap-2">{children}</div>
+    </div>
+  );
+}
+
+// ============================================
+// ROW ACTIONS MENU
+// ============================================
+interface RowAction<TData> {
+  /** Action label */
+  label: string;
+  /** Icon component */
+  icon?: React.ReactNode;
+  /** Click handler */
+  onClick: (row: TData) => void;
+  /** Whether the action is destructive (shows in red) */
+  destructive?: boolean;
+  /** Whether the action is disabled */
+  disabled?: boolean;
+  /** Whether to show a separator before this action */
+  separator?: boolean;
+}
+
+interface DataTableRowActionsProps<TData> {
+  /** The row data */
+  row: TData;
+  /** Array of actions */
+  actions: RowAction<TData>[];
+  /** Additional CSS class */
+  className?: string;
+}
+
+function DataTableRowActions<TData>({
+  row,
+  actions,
+  className,
+}: DataTableRowActionsProps<TData>) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn("h-8 w-8 p-0", className)}
+            aria-label="Row actions"
+          >
+            <IconDotsVertical className="h-4 w-4" />
+          </Button>
+        }
+      />
+      <DropdownMenuContent align="end">
+        {actions.map((action, index) => (
+          <React.Fragment key={index}>
+            {action.separator && index > 0 && (
+              <div className="my-1 h-px bg-border" />
+            )}
+            <DropdownMenuItem
+              onClick={() => action.onClick(row)}
+              disabled={action.disabled}
+              className={cn(action.destructive && "text-destructive")}
+            >
+              {action.icon && <span className="mr-2">{action.icon}</span>}
+              {action.label}
+            </DropdownMenuItem>
+          </React.Fragment>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+// ============================================
+// CELL RENDERERS
+// ============================================
+
+// Status Cell
+type StatusVariant = "default" | "success" | "warning" | "error" | "info";
+
+interface StatusCellProps {
+  /** The status value */
+  value: string;
+  /** Map of value to variant */
+  statusMap?: Record<string, StatusVariant>;
+  /** Show as dot instead of badge */
+  dot?: boolean;
+  /** Additional CSS class */
+  className?: string;
+}
+
+const statusVariantStyles: Record<StatusVariant, string> = {
+  default: "bg-secondary text-secondary-foreground",
+  success: "bg-success/20 text-success border-success/30",
+  warning: "bg-warning/20 text-warning border-warning/30",
+  error: "bg-destructive/20 text-destructive border-destructive/30",
+  info: "bg-info/20 text-info border-info/30",
+};
+
+const statusDotStyles: Record<StatusVariant, string> = {
+  default: "bg-muted-foreground",
+  success: "bg-success",
+  warning: "bg-warning",
+  error: "bg-destructive",
+  info: "bg-info",
+};
+
+function StatusCell({
+  value,
+  statusMap = {},
+  dot = false,
+  className,
+}: StatusCellProps) {
+  const variant = statusMap[value] ?? "default";
+
+  if (dot) {
+    return (
+      <div className={cn("flex items-center gap-2", className)}>
+        <div
+          className={cn("h-2 w-2 rounded-full", statusDotStyles[variant])}
+          aria-hidden="true"
+        />
+        <span className="capitalize">{value}</span>
+      </div>
+    );
+  }
+
+  return (
+    <Badge
+      variant="outline"
+      className={cn("capitalize", statusVariantStyles[variant], className)}
+    >
+      {value}
+    </Badge>
+  );
+}
+
+// Date Cell
+interface DateCellProps {
+  /** The date value (Date object, string, or number) */
+  value: Date | string | number | null | undefined;
+  /** Date format using Intl.DateTimeFormat options */
+  format?: Intl.DateTimeFormatOptions;
+  /** Show relative time in tooltip */
+  showRelative?: boolean;
+  /** Locale for formatting */
+  locale?: string;
+  /** Fallback text for null/undefined values */
+  fallback?: string;
+  /** Additional CSS class */
+  className?: string;
+}
+
+function getRelativeTime(date: Date, locale: string = "en"): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSecs / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+
+  if (diffDays > 30) {
+    return rtf.format(-Math.floor(diffDays / 30), "month");
+  } else if (diffDays > 0) {
+    return rtf.format(-diffDays, "day");
+  } else if (diffHours > 0) {
+    return rtf.format(-diffHours, "hour");
+  } else if (diffMins > 0) {
+    return rtf.format(-diffMins, "minute");
+  } else {
+    return rtf.format(-diffSecs, "second");
+  }
+}
+
+function DateCell({
+  value,
+  format = { dateStyle: "medium" },
+  showRelative = false,
+  locale = "en",
+  fallback = "—",
+  className,
+}: DateCellProps) {
+  if (value === null || value === undefined) {
+    return (
+      <span className={cn("text-muted-foreground", className)}>{fallback}</span>
+    );
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (isNaN(date.getTime())) {
+    return (
+      <span className={cn("text-muted-foreground", className)}>{fallback}</span>
+    );
+  }
+
+  const formatted = new Intl.DateTimeFormat(locale, format).format(date);
+  const relative = getRelativeTime(date, locale);
+
+  if (showRelative) {
+    return (
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <span className={cn("cursor-help", className)}>{formatted}</span>
+          }
+        />
+        <TooltipContent>{relative}</TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return <span className={className}>{formatted}</span>;
+}
+
+// Currency Cell
+interface CurrencyCellProps {
+  /** The numeric value */
+  value: number | null | undefined;
+  /** Currency code (e.g., "USD", "EUR") */
+  currency?: string;
+  /** Locale for formatting */
+  locale?: string;
+  /** Show positive values in green, negative in red */
+  colorCode?: boolean;
+  /** Fallback text for null/undefined values */
+  fallback?: string;
+  /** Additional CSS class */
+  className?: string;
+}
+
+function CurrencyCell({
+  value,
+  currency = "USD",
+  locale = "en-US",
+  colorCode = false,
+  fallback = "—",
+  className,
+}: CurrencyCellProps) {
+  if (value === null || value === undefined) {
+    return (
+      <span className={cn("text-muted-foreground", className)}>{fallback}</span>
+    );
+  }
+
+  const formatted = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+  }).format(value);
+
+  const colorClass = colorCode
+    ? value > 0
+      ? "text-success"
+      : value < 0
+        ? "text-destructive"
+        : ""
+    : "";
+
+  return <span className={cn(colorClass, className)}>{formatted}</span>;
+}
+
+// Avatar Cell
+interface AvatarCellProps {
+  /** Image source URL */
+  src?: string | null;
+  /** Alt text / Name for fallback initials */
+  name: string;
+  /** Show name alongside avatar */
+  showName?: boolean;
+  /** Avatar size */
+  size?: "sm" | "default" | "lg";
+  /** Additional CSS class */
+  className?: string;
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+const avatarSizeStyles = {
+  sm: "h-6 w-6 text-xs",
+  default: "h-8 w-8 text-sm",
+  lg: "h-10 w-10 text-base",
+};
+
+function AvatarCell({
+  src,
+  name,
+  showName = true,
+  size = "default",
+  className,
+}: AvatarCellProps) {
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <Avatar className={avatarSizeStyles[size]}>
+        {src && <AvatarImage src={src} alt={name} />}
+        <AvatarFallback className="text-xs">{getInitials(name)}</AvatarFallback>
+      </Avatar>
+      {showName && <span>{name}</span>}
+    </div>
+  );
+}
+
+// Actions Cell (Preset row actions)
+interface ActionsCellProps<TData> {
+  /** The row data */
+  row: TData;
+  /** Edit handler */
+  onEdit?: (row: TData) => void;
+  /** View handler */
+  onView?: (row: TData) => void;
+  /** Delete handler */
+  onDelete?: (row: TData) => void;
+  /** Duplicate handler */
+  onDuplicate?: (row: TData) => void;
+  /** Additional custom actions */
+  customActions?: RowAction<TData>[];
+  /** Additional CSS class */
+  className?: string;
+}
+
+function ActionsCell<TData>({
+  row,
+  onEdit,
+  onView,
+  onDelete,
+  onDuplicate,
+  customActions = [],
+  className,
+}: ActionsCellProps<TData>) {
+  const actions: RowAction<TData>[] = [];
+
+  if (onView) {
+    actions.push({
+      label: "View",
+      icon: <IconEye className="h-4 w-4" />,
+      onClick: onView,
+    });
+  }
+
+  if (onEdit) {
+    actions.push({
+      label: "Edit",
+      icon: <IconEdit className="h-4 w-4" />,
+      onClick: onEdit,
+    });
+  }
+
+  if (onDuplicate) {
+    actions.push({
+      label: "Duplicate",
+      icon: <IconCopy className="h-4 w-4" />,
+      onClick: onDuplicate,
+    });
+  }
+
+  // Add custom actions
+  actions.push(...customActions);
+
+  if (onDelete) {
+    actions.push({
+      label: "Delete",
+      icon: <IconTrash className="h-4 w-4" />,
+      onClick: onDelete,
+      destructive: true,
+      separator: actions.length > 0,
+    });
+  }
+
+  if (actions.length === 0) {
+    return null;
+  }
+
+  return (
+    <DataTableRowActions row={row} actions={actions} className={className} />
+  );
+}
+
 // ============================================
 // COLUMN PINNING CONTROLS (Standalone component)
 // ============================================
@@ -1740,6 +2348,309 @@ function DataTablePinningControls() {
   );
 }
 
+// ============================================
+// DENSITY TOGGLE
+// ============================================
+interface DataTableDensityToggleProps {
+  /** Current density value (controlled) */
+  value?: DataTableDensity;
+  /** Default density (uncontrolled) */
+  defaultValue?: DataTableDensity;
+  /** Callback when density changes */
+  onValueChange?: (density: DataTableDensity) => void;
+  /** Additional CSS class */
+  className?: string;
+}
+
+function DataTableDensityToggle({
+  value,
+  defaultValue = "default",
+  onValueChange,
+  className,
+}: DataTableDensityToggleProps) {
+  const [internalValue, setInternalValue] =
+    React.useState<DataTableDensity>(defaultValue);
+  const currentValue = value ?? internalValue;
+
+  const handleChange = (newValue: DataTableDensity) => {
+    if (!value) {
+      setInternalValue(newValue);
+    }
+    onValueChange?.(newValue);
+  };
+
+  const densityOptions: { value: DataTableDensity; label: string }[] = [
+    { value: "compact", label: "Compact" },
+    { value: "default", label: "Default" },
+    { value: "comfortable", label: "Comfortable" },
+  ];
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-1 rounded-lg border border-border p-1",
+        className,
+      )}
+    >
+      {densityOptions.map((option) => (
+        <Button
+          key={option.value}
+          variant={currentValue === option.value ? "secondary" : "ghost"}
+          size="sm"
+          onClick={() => handleChange(option.value)}
+          className="h-7 px-2 text-xs"
+        >
+          {option.label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
+// ============================================
+// FILTER COMPONENTS
+// ============================================
+
+// Number Range Filter
+interface NumberRangeFilterProps {
+  /** Column ID to filter */
+  columnId: string;
+  /** Minimum value placeholder */
+  minPlaceholder?: string;
+  /** Maximum value placeholder */
+  maxPlaceholder?: string;
+  /** Step value for inputs */
+  step?: number;
+  /** Additional CSS class */
+  className?: string;
+}
+
+function NumberRangeFilter({
+  columnId,
+  minPlaceholder = "Min",
+  maxPlaceholder = "Max",
+  step = 1,
+  className,
+}: NumberRangeFilterProps) {
+  const { table } = useDataTable();
+  const column = table.getColumn(columnId);
+
+  const filterValue = (column?.getFilterValue() as [number?, number?]) ?? [
+    undefined,
+    undefined,
+  ];
+  const [min, max] = filterValue;
+
+  const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value ? Number(e.target.value) : undefined;
+    column?.setFilterValue([value, max]);
+  };
+
+  const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value ? Number(e.target.value) : undefined;
+    column?.setFilterValue([min, value]);
+  };
+
+  if (!column) return null;
+
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <Input
+        type="number"
+        placeholder={minPlaceholder}
+        value={min ?? ""}
+        onChange={handleMinChange}
+        step={step}
+        className="h-8 w-20"
+      />
+      <span className="text-muted-foreground">to</span>
+      <Input
+        type="number"
+        placeholder={maxPlaceholder}
+        value={max ?? ""}
+        onChange={handleMaxChange}
+        step={step}
+        className="h-8 w-20"
+      />
+    </div>
+  );
+}
+
+// Multi-Select Filter
+interface MultiSelectFilterOption {
+  value: string;
+  label: string;
+}
+
+interface MultiSelectFilterProps {
+  /** Column ID to filter */
+  columnId: string;
+  /** Available options */
+  options: MultiSelectFilterOption[];
+  /** Placeholder text */
+  placeholder?: string;
+  /** Enable search within options */
+  searchable?: boolean;
+  /** Additional CSS class */
+  className?: string;
+}
+
+function MultiSelectFilter({
+  columnId,
+  options,
+  placeholder = "Select...",
+  searchable = true,
+  className,
+}: MultiSelectFilterProps) {
+  const { table } = useDataTable();
+  const column = table.getColumn(columnId);
+  const [search, setSearch] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+
+  const filterValue = (column?.getFilterValue() as string[]) ?? [];
+
+  const filteredOptions = searchable
+    ? options.filter((opt) =>
+        opt.label.toLowerCase().includes(search.toLowerCase()),
+      )
+    : options;
+
+  const handleToggle = (value: string) => {
+    const newValue = filterValue.includes(value)
+      ? filterValue.filter((v) => v !== value)
+      : [...filterValue, value];
+    column?.setFilterValue(newValue.length > 0 ? newValue : undefined);
+  };
+
+  const handleSelectAll = () => {
+    column?.setFilterValue(options.map((o) => o.value));
+  };
+
+  const handleClear = () => {
+    column?.setFilterValue(undefined);
+  };
+
+  if (!column) return null;
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn("h-8 justify-between", className)}
+          >
+            {filterValue.length > 0
+              ? `${filterValue.length} selected`
+              : placeholder}
+            <IconChevronDown className="ml-2 h-4 w-4" />
+          </Button>
+        }
+      />
+      <DropdownMenuContent className="w-56 p-2">
+        {searchable && (
+          <Input
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="mb-2 h-8"
+          />
+        )}
+        <div className="flex items-center gap-2 mb-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSelectAll}
+            className="h-6 text-xs"
+          >
+            Select All
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClear}
+            className="h-6 text-xs"
+          >
+            Clear
+          </Button>
+        </div>
+        <div className="max-h-48 overflow-auto">
+          {filteredOptions.map((option) => (
+            <div
+              key={option.value}
+              className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted rounded cursor-pointer"
+              onClick={() => handleToggle(option.value)}
+            >
+              <Checkbox
+                checked={filterValue.includes(option.value)}
+                className="pointer-events-none"
+              />
+              <span className="text-sm">{option.label}</span>
+            </div>
+          ))}
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+// Date Range Filter
+interface DateRangeFilterProps {
+  /** Column ID to filter */
+  columnId: string;
+  /** Additional CSS class */
+  className?: string;
+}
+
+function DateRangeFilter({ columnId, className }: DateRangeFilterProps) {
+  const { table } = useDataTable();
+  const column = table.getColumn(columnId);
+
+  const filterValue = (column?.getFilterValue() as [string?, string?]) ?? [
+    undefined,
+    undefined,
+  ];
+  const [fromDate, toDate] = filterValue;
+
+  const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value || undefined;
+    column?.setFilterValue([value, toDate]);
+  };
+
+  const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value || undefined;
+    column?.setFilterValue([fromDate, value]);
+  };
+
+  if (!column) return null;
+
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <Input
+        type="date"
+        value={fromDate ?? ""}
+        onChange={handleFromChange}
+        className="h-8"
+      />
+      <span className="text-muted-foreground">to</span>
+      <Input
+        type="date"
+        value={toDate ?? ""}
+        onChange={handleToChange}
+        className="h-8"
+      />
+    </div>
+  );
+}
+
+// ============================================
+// DENSITY STYLES HELPER (for use in custom implementations)
+// ============================================
+function getDensityStyles(density: DataTableDensity) {
+  return densityStyles[density];
+}
+
 export {
   // Main components
   DataTableRoot,
@@ -1750,6 +2661,7 @@ export {
   DataTablePagination,
   DataTableColumnVisibility,
   DataTablePinningControls,
+  DataTableDensityToggle,
   // Column header
   DataTableColumnHeader,
   // Column helpers
@@ -1758,9 +2670,46 @@ export {
   createDragHandleColumn,
   // Editable cell
   DataTableEditableCell,
+  // UI Components
+  DataTableSkeleton,
+  DataTableEmptyState,
+  DataTableBulkActions,
+  DataTableRowActions,
+  // Cell renderers
+  StatusCell,
+  DateCell,
+  CurrencyCell,
+  AvatarCell,
+  ActionsCell,
+  // Filter components
+  NumberRangeFilter,
+  MultiSelectFilter,
+  DateRangeFilter,
+  // Utilities
+  getDensityStyles,
   // Context hook
   useDataTable,
 };
 
 // Type exports
-export type { DataTableProps, DataTableSearchProps, DataTablePaginationProps };
+export type {
+  DataTableProps,
+  DataTableSearchProps,
+  DataTablePaginationProps,
+  DataTableSkeletonProps,
+  DataTableEmptyStateProps,
+  DataTableBulkActionsProps,
+  DataTableRowActionsProps,
+  DataTableDensityToggleProps,
+  DataTableDensity,
+  RowAction,
+  StatusCellProps,
+  DateCellProps,
+  CurrencyCellProps,
+  AvatarCellProps,
+  ActionsCellProps,
+  NumberRangeFilterProps,
+  MultiSelectFilterProps,
+  MultiSelectFilterOption,
+  DateRangeFilterProps,
+};

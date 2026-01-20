@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   Tabs,
   TabsList,
@@ -14,14 +15,33 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  IconHome,
+  IconSettings,
+  IconUser,
+  IconBell,
+  IconChartBar,
+  IconFileText,
+} from "@tabler/icons-react";
 
 export function TabsPage() {
+  const [closableTabs, setClosableTabs] = React.useState([
+    { value: "tab1", label: "Dashboard" },
+    { value: "tab2", label: "Analytics" },
+    { value: "tab3", label: "Reports" },
+    { value: "tab4", label: "Settings" },
+  ]);
+
+  const handleCloseTab = (value: string) => {
+    setClosableTabs((prev) => prev.filter((tab) => tab.value !== value));
+  };
+
   return (
     <div className="p-8 max-w-4xl space-y-12">
       <header>
         <h1 className="text-3xl font-bold mb-2">Tabs</h1>
         <p className="text-muted-foreground">
-          Switch between different views of content.
+          Switch between different views with full accessibility and RTL support.
         </p>
       </header>
 
@@ -90,98 +110,262 @@ export function TabsPage() {
         </Tabs>
       </section>
 
-      {/* Outline Variant */}
+      {/* With Icons (New) */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Outline Variant
+          With Icons (New)
         </h2>
-        <Tabs defaultValue="tab1">
-          <TabsList variant="outline">
-            <TabsTrigger value="tab1" variant="outline">
-              Tab 1
+        <p className="text-sm text-muted-foreground">
+          Add icons to tabs using the <code className="bg-muted px-1 rounded">icon</code> prop.
+        </p>
+        <Tabs defaultValue="home">
+          <TabsList>
+            <TabsTrigger value="home" icon={<IconHome />}>
+              Home
             </TabsTrigger>
-            <TabsTrigger value="tab2" variant="outline">
-              Tab 2
+            <TabsTrigger value="profile" icon={<IconUser />}>
+              Profile
             </TabsTrigger>
-            <TabsTrigger value="tab3" variant="outline">
-              Tab 3
+            <TabsTrigger value="settings" icon={<IconSettings />}>
+              Settings
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">
-            <div className="p-4 rounded-lg border border-border mt-2">
-              Content for Tab 1
+          <TabsContent value="home">
+            <div className="p-4 rounded-lg border border-border">
+              Home content with icon
             </div>
           </TabsContent>
-          <TabsContent value="tab2">
-            <div className="p-4 rounded-lg border border-border mt-2">
-              Content for Tab 2
+          <TabsContent value="profile">
+            <div className="p-4 rounded-lg border border-border">
+              Profile content with icon
             </div>
           </TabsContent>
-          <TabsContent value="tab3">
-            <div className="p-4 rounded-lg border border-border mt-2">
-              Content for Tab 3
+          <TabsContent value="settings">
+            <div className="p-4 rounded-lg border border-border">
+              Settings content with icon
             </div>
           </TabsContent>
         </Tabs>
       </section>
 
-      {/* Pills Variant */}
+      {/* With Badges (New) */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Pills Variant
+          With Badges (New)
         </h2>
-        <Tabs defaultValue="overview">
-          <TabsList variant="pills">
-            <TabsTrigger value="overview" variant="pills">
-              Overview
+        <p className="text-sm text-muted-foreground">
+          Add notification badges using <code className="bg-muted px-1 rounded">badge</code> and <code className="bg-muted px-1 rounded">badgeColor</code> props.
+        </p>
+        <Tabs defaultValue="inbox">
+          <TabsList>
+            <TabsTrigger value="inbox" icon={<IconBell />} badge={5} badgeColor="destructive">
+              Inbox
             </TabsTrigger>
-            <TabsTrigger value="analytics" variant="pills">
+            <TabsTrigger value="analytics" icon={<IconChartBar />} badge="New" badgeColor="primary">
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="reports" variant="pills">
+            <TabsTrigger value="reports" icon={<IconFileText />}>
               Reports
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="overview">
-            <div className="p-4 rounded-lg bg-muted/50 mt-2">
-              Overview content
+          <TabsContent value="inbox">
+            <div className="p-4 rounded-lg border border-border">
+              You have 5 unread notifications
             </div>
           </TabsContent>
           <TabsContent value="analytics">
-            <div className="p-4 rounded-lg bg-muted/50 mt-2">
-              Analytics content
+            <div className="p-4 rounded-lg border border-border">
+              New analytics features available
             </div>
           </TabsContent>
           <TabsContent value="reports">
-            <div className="p-4 rounded-lg bg-muted/50 mt-2">
+            <div className="p-4 rounded-lg border border-border">
               Reports content
             </div>
           </TabsContent>
         </Tabs>
       </section>
 
-      {/* Underline Variant */}
+      {/* Closable Tabs (New) */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Underline Variant
+          Closable Tabs (New)
         </h2>
         <p className="text-sm text-muted-foreground">
-          A clean underline style with animated border indicator.
+          Use <code className="bg-muted px-1 rounded">closable</code> and <code className="bg-muted px-1 rounded">onClose</code> props. 
+          Supports Delete/Backspace keyboard shortcuts.
         </p>
-        <Tabs defaultValue="all">
-          <TabsList variant="underline">
-            <TabsTrigger value="all" variant="underline">
-              All
-            </TabsTrigger>
-            <TabsTrigger value="active" variant="underline">
-              Active
-            </TabsTrigger>
-            <TabsTrigger value="completed" variant="underline">
-              Completed
-            </TabsTrigger>
-            <TabsTrigger value="archived" variant="underline">
-              Archived
-            </TabsTrigger>
+        <Tabs defaultValue={closableTabs[0]?.value}>
+          <TabsList>
+            {closableTabs.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                closable
+                onClose={handleCloseTab}
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {closableTabs.map((tab) => (
+            <TabsContent key={tab.value} value={tab.value}>
+              <div className="p-4 rounded-lg border border-border">
+                Content for {tab.label}
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
+        {closableTabs.length === 0 && (
+          <p className="text-sm text-muted-foreground italic">
+            All tabs closed. Refresh to reset.
+          </p>
+        )}
+      </section>
+
+      {/* Vertical Orientation (New) */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Vertical Orientation (New)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Use <code className="bg-muted px-1 rounded">orientation="vertical"</code> for vertical tab layouts.
+        </p>
+        <Tabs defaultValue="general" orientation="vertical">
+          <div className="flex gap-4">
+            <TabsList className="w-48">
+              <TabsTrigger value="general" icon={<IconSettings />}>
+                General
+              </TabsTrigger>
+              <TabsTrigger value="profile" icon={<IconUser />}>
+                Profile
+              </TabsTrigger>
+              <TabsTrigger value="notifications" icon={<IconBell />}>
+                Notifications
+              </TabsTrigger>
+            </TabsList>
+            <div className="flex-1">
+              <TabsContent value="general" className="mt-0">
+                <div className="p-4 rounded-lg border border-border">
+                  General settings content
+                </div>
+              </TabsContent>
+              <TabsContent value="profile" className="mt-0">
+                <div className="p-4 rounded-lg border border-border">
+                  Profile settings content
+                </div>
+              </TabsContent>
+              <TabsContent value="notifications" className="mt-0">
+                <div className="p-4 rounded-lg border border-border">
+                  Notification settings content
+                </div>
+              </TabsContent>
+            </div>
+          </div>
+        </Tabs>
+      </section>
+
+      {/* Color-Matched Backgrounds (New) */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Color-Matched Backgrounds (New)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          TabsList background automatically matches the color variant.
+        </p>
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm font-medium mb-2">Primary</p>
+            <Tabs defaultValue="tab1" color="primary">
+              <TabsList>
+                <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+                <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+                <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+              </TabsList>
+              <TabsContent value="tab1">
+                <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
+                  Primary themed content
+                </div>
+              </TabsContent>
+              <TabsContent value="tab2">
+                <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
+                  Tab 2 content
+                </div>
+              </TabsContent>
+              <TabsContent value="tab3">
+                <div className="p-4 rounded-lg border border-primary/20 bg-primary/5">
+                  Tab 3 content
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-2">Success</p>
+            <Tabs defaultValue="tab1" color="success">
+              <TabsList>
+                <TabsTrigger value="tab1">Active</TabsTrigger>
+                <TabsTrigger value="tab2">Completed</TabsTrigger>
+                <TabsTrigger value="tab3">Archived</TabsTrigger>
+              </TabsList>
+              <TabsContent value="tab1">
+                <div className="p-4 rounded-lg border border-green-500/20 bg-green-500/5">
+                  Success themed content
+                </div>
+              </TabsContent>
+              <TabsContent value="tab2">
+                <div className="p-4 rounded-lg border border-green-500/20 bg-green-500/5">
+                  Completed content
+                </div>
+              </TabsContent>
+              <TabsContent value="tab3">
+                <div className="p-4 rounded-lg border border-green-500/20 bg-green-500/5">
+                  Archived content
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-2">Destructive</p>
+            <Tabs defaultValue="tab1" color="destructive">
+              <TabsList>
+                <TabsTrigger value="tab1">Errors</TabsTrigger>
+                <TabsTrigger value="tab2">Warnings</TabsTrigger>
+                <TabsTrigger value="tab3">Logs</TabsTrigger>
+              </TabsList>
+              <TabsContent value="tab1">
+                <div className="p-4 rounded-lg border border-destructive/20 bg-destructive/5">
+                  Error logs content
+                </div>
+              </TabsContent>
+              <TabsContent value="tab2">
+                <div className="p-4 rounded-lg border border-destructive/20 bg-destructive/5">
+                  Warning logs content
+                </div>
+              </TabsContent>
+              <TabsContent value="tab3">
+                <div className="p-4 rounded-lg border border-destructive/20 bg-destructive/5">
+                  All logs content
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </section>
+
+      {/* Underline Variant with Indicator */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Underline Variant (Auto Indicator)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          The indicator is automatically included for underline variant.
+        </p>
+        <Tabs defaultValue="all" variant="underline">
+          <TabsList>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="active">Active</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
+            <TabsTrigger value="archived">Archived</TabsTrigger>
           </TabsList>
           <TabsContent value="all">
             <div className="p-4 rounded-lg border border-border mt-4">
@@ -206,6 +390,94 @@ export function TabsPage() {
         </Tabs>
       </section>
 
+      {/* Underline with Colors */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Underline with Color Indicator
+        </h2>
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm font-medium mb-2">Primary</p>
+            <Tabs defaultValue="tab1" variant="underline" color="primary">
+              <TabsList>
+                <TabsTrigger value="tab1">Overview</TabsTrigger>
+                <TabsTrigger value="tab2">Analytics</TabsTrigger>
+                <TabsTrigger value="tab3">Reports</TabsTrigger>
+              </TabsList>
+              <TabsContent value="tab1">
+                <div className="p-4 rounded-lg border border-border mt-4">
+                  Overview with primary indicator
+                </div>
+              </TabsContent>
+              <TabsContent value="tab2">
+                <div className="p-4 rounded-lg border border-border mt-4">
+                  Analytics content
+                </div>
+              </TabsContent>
+              <TabsContent value="tab3">
+                <div className="p-4 rounded-lg border border-border mt-4">
+                  Reports content
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+          <div>
+            <p className="text-sm font-medium mb-2">Warning</p>
+            <Tabs defaultValue="pending" variant="underline" color="warning">
+              <TabsList>
+                <TabsTrigger value="pending">Pending</TabsTrigger>
+                <TabsTrigger value="review">In Review</TabsTrigger>
+                <TabsTrigger value="approved">Approved</TabsTrigger>
+              </TabsList>
+              <TabsContent value="pending">
+                <div className="p-4 rounded-lg border border-amber-500/20 bg-amber-500/5 mt-4">
+                  Pending items
+                </div>
+              </TabsContent>
+              <TabsContent value="review">
+                <div className="p-4 rounded-lg border border-amber-500/20 bg-amber-500/5 mt-4">
+                  Items in review
+                </div>
+              </TabsContent>
+              <TabsContent value="approved">
+                <div className="p-4 rounded-lg border border-amber-500/20 bg-amber-500/5 mt-4">
+                  Approved items
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </div>
+      </section>
+
+      {/* Pills Variant */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Pills Variant
+        </h2>
+        <Tabs defaultValue="overview" variant="pills">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview">
+            <div className="p-4 rounded-lg bg-muted/50 mt-2">
+              Overview content
+            </div>
+          </TabsContent>
+          <TabsContent value="analytics">
+            <div className="p-4 rounded-lg bg-muted/50 mt-2">
+              Analytics content
+            </div>
+          </TabsContent>
+          <TabsContent value="reports">
+            <div className="p-4 rounded-lg bg-muted/50 mt-2">
+              Reports content
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
+
       {/* Soft Variant */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -214,17 +486,11 @@ export function TabsPage() {
         <p className="text-sm text-muted-foreground">
           Subtle background highlight with primary color accent.
         </p>
-        <Tabs defaultValue="overview">
-          <TabsList variant="soft">
-            <TabsTrigger value="overview" variant="soft">
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="details" variant="soft">
-              Details
-            </TabsTrigger>
-            <TabsTrigger value="settings" variant="soft">
-              Settings
-            </TabsTrigger>
+        <Tabs defaultValue="overview" variant="soft">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
           <TabsContent value="overview">
             <div className="p-4 rounded-lg border border-border mt-4">
@@ -252,17 +518,11 @@ export function TabsPage() {
         <p className="text-sm text-muted-foreground">
           Active tab appears as a card with shadow and border.
         </p>
-        <Tabs defaultValue="first">
-          <TabsList variant="card">
-            <TabsTrigger value="first" variant="card">
-              First
-            </TabsTrigger>
-            <TabsTrigger value="second" variant="card">
-              Second
-            </TabsTrigger>
-            <TabsTrigger value="third" variant="card">
-              Third
-            </TabsTrigger>
+        <Tabs defaultValue="first" variant="card">
+          <TabsList>
+            <TabsTrigger value="first">First</TabsTrigger>
+            <TabsTrigger value="second">Second</TabsTrigger>
+            <TabsTrigger value="third">Third</TabsTrigger>
           </TabsList>
           <TabsContent value="first">
             <div className="p-4 rounded-lg border border-border mt-4">
@@ -282,146 +542,36 @@ export function TabsPage() {
         </Tabs>
       </section>
 
-      {/* Color Variants */}
+      {/* Lazy Loading (New) */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Color Variants
+          Lazy Loading (New)
         </h2>
         <p className="text-sm text-muted-foreground">
-          Combine style variants with color variants for different themes.
+          Use <code className="bg-muted px-1 rounded">lazy</code> prop to only render panel content when first activated.
         </p>
-        <div className="space-y-6">
-          <div>
-            <p className="text-sm font-medium mb-2">Success (Default)</p>
-            <Tabs defaultValue="active">
-              <TabsList>
-                <TabsTrigger value="all" color="success">All</TabsTrigger>
-                <TabsTrigger value="active" color="success">Active</TabsTrigger>
-                <TabsTrigger value="done" color="success">Done</TabsTrigger>
-              </TabsList>
-              <TabsContent value="all" animation="slide">
-                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
-                  All tasks content
-                </div>
-              </TabsContent>
-              <TabsContent value="active" animation="slide">
-                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
-                  Active tasks content
-                </div>
-              </TabsContent>
-              <TabsContent value="done" animation="slide">
-                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
-                  Done tasks content
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-          <div>
-            <p className="text-sm font-medium mb-2">Success (Pills)</p>
-            <Tabs defaultValue="active">
-              <TabsList variant="pills">
-                <TabsTrigger value="all" variant="pills" color="success">
-                  All
-                </TabsTrigger>
-                <TabsTrigger value="active" variant="pills" color="success">
-                  Active
-                </TabsTrigger>
-                <TabsTrigger value="done" variant="pills" color="success">
-                  Done
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="all" animation="slide">
-                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
-                  All tasks content
-                </div>
-              </TabsContent>
-              <TabsContent value="active" animation="slide">
-                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
-                  Active tasks content
-                </div>
-              </TabsContent>
-              <TabsContent value="done" animation="slide">
-                <div className="p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 mt-4">
-                  Done tasks content
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-          <div>
-            <p className="text-sm font-medium mb-2">Warning (Underline)</p>
-            <Tabs defaultValue="pending">
-              <TabsList variant="underline">
-                <TabsTrigger
-                  value="pending"
-                  variant="underline"
-                  color="warning"
-                >
-                  Pending
-                </TabsTrigger>
-                <TabsTrigger value="review" variant="underline" color="warning">
-                  In Review
-                </TabsTrigger>
-                <TabsTrigger
-                  value="approved"
-                  variant="underline"
-                  color="warning"
-                >
-                  Approved
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="pending" animation="slideUp">
-                <div className="p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950 mt-4">
-                  Pending items
-                </div>
-              </TabsContent>
-              <TabsContent value="review" animation="slideUp">
-                <div className="p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950 mt-4">
-                  Items in review
-                </div>
-              </TabsContent>
-              <TabsContent value="approved" animation="slideUp">
-                <div className="p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950 mt-4">
-                  Approved items
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-          <div>
-            <p className="text-sm font-medium mb-2">Destructive (Soft)</p>
-            <Tabs defaultValue="errors">
-              <TabsList variant="soft">
-                <TabsTrigger value="errors" variant="soft" color="destructive">
-                  Errors
-                </TabsTrigger>
-                <TabsTrigger
-                  value="warnings"
-                  variant="soft"
-                  color="destructive"
-                >
-                  Warnings
-                </TabsTrigger>
-                <TabsTrigger value="logs" variant="soft" color="destructive">
-                  Logs
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="errors" animation="zoom">
-                <div className="p-4 rounded-lg border border-destructive/20 bg-destructive/5 mt-4">
-                  Error logs
-                </div>
-              </TabsContent>
-              <TabsContent value="warnings" animation="zoom">
-                <div className="p-4 rounded-lg border border-destructive/20 bg-destructive/5 mt-4">
-                  Warning logs
-                </div>
-              </TabsContent>
-              <TabsContent value="logs" animation="zoom">
-                <div className="p-4 rounded-lg border border-destructive/20 bg-destructive/5 mt-4">
-                  All logs
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </div>
+        <Tabs defaultValue="tab1">
+          <TabsList>
+            <TabsTrigger value="tab1">Eager (Default)</TabsTrigger>
+            <TabsTrigger value="tab2">Lazy Loaded</TabsTrigger>
+            <TabsTrigger value="tab3">Lazy Loaded</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tab1">
+            <div className="p-4 rounded-lg border border-border">
+              This content is rendered immediately
+            </div>
+          </TabsContent>
+          <TabsContent value="tab2" lazy>
+            <div className="p-4 rounded-lg border border-border">
+              This content was lazy loaded (only rendered when tab activated)
+            </div>
+          </TabsContent>
+          <TabsContent value="tab3" lazy>
+            <div className="p-4 rounded-lg border border-border">
+              This content was also lazy loaded
+            </div>
+          </TabsContent>
+        </Tabs>
       </section>
 
       {/* Animations */}
@@ -463,41 +613,34 @@ export function TabsPage() {
         </Tabs>
       </section>
 
-      {/* With Indicator */}
+      {/* Manual Indicator */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
-          With Indicator
+          Manual Indicator
         </h2>
         <p className="text-sm text-muted-foreground">
-          TabsIndicator provides a smooth animated indicator that follows the
-          active tab. Works best with underline and default variants.
+          You can also add TabsIndicator manually for more control.
         </p>
-        <Tabs defaultValue="tab1">
-          <TabsList variant="underline" className="relative">
-            <TabsTrigger value="tab1" variant="underline">
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="tab2" variant="underline">
-              Analytics
-            </TabsTrigger>
-            <TabsTrigger value="tab3" variant="underline">
-              Reports
-            </TabsTrigger>
+        <Tabs defaultValue="tab1" variant="underline" showIndicator={false}>
+          <TabsList className="relative">
+            <TabsTrigger value="tab1">Overview</TabsTrigger>
+            <TabsTrigger value="tab2">Analytics</TabsTrigger>
+            <TabsTrigger value="tab3">Reports</TabsTrigger>
             <TabsIndicator />
           </TabsList>
           <TabsContent value="tab1">
             <div className="p-4 rounded-lg border border-border mt-4">
-              Overview content with animated indicator
+              Overview with manual indicator
             </div>
           </TabsContent>
           <TabsContent value="tab2">
             <div className="p-4 rounded-lg border border-border mt-4">
-              Analytics content with animated indicator
+              Analytics with manual indicator
             </div>
           </TabsContent>
           <TabsContent value="tab3">
             <div className="p-4 rounded-lg border border-border mt-4">
-              Reports content with animated indicator
+              Reports with manual indicator
             </div>
           </TabsContent>
         </Tabs>
@@ -528,26 +671,44 @@ export function TabsPage() {
   <TabsContent value="tab2">Content 2</TabsContent>
 </Tabs>
 
-// With indicator (for underline variant)
-<Tabs defaultValue="tab1">
-  <TabsList variant="underline" className="relative">
-    <TabsTrigger value="tab1" variant="underline">Tab 1</TabsTrigger>
-    <TabsTrigger value="tab2" variant="underline">Tab 2</TabsTrigger>
-    <TabsIndicator />
-  </TabsList>
-  <TabsContent value="tab1">Content 1</TabsContent>
-  <TabsContent value="tab2">Content 2</TabsContent>
+// With icons and badges (New)
+<TabsTrigger value="inbox" icon={<IconBell />} badge={5} badgeColor="destructive">
+  Inbox
+</TabsTrigger>
+
+// Closable tabs (New)
+<TabsTrigger value="tab1" closable onClose={(value) => removeTab(value)}>
+  Closable Tab
+</TabsTrigger>
+
+// Vertical orientation (New)
+<Tabs orientation="vertical">
+  ...
 </Tabs>
+
+// Color-matched backgrounds (New)
+<Tabs color="primary">
+  <TabsList> {/* Gets bg-primary/10 */}
+    ...
+  </TabsList>
+</Tabs>
+
+// Underline with auto indicator
+<Tabs variant="underline">
+  <TabsList> {/* Indicator included automatically */}
+    ...
+  </TabsList>
+</Tabs>
+
+// Lazy loading (New)
+<TabsContent value="tab1" lazy>
+  Heavy content loaded on demand
+</TabsContent>
 
 // With animations
 <TabsContent value="tab1" animation="slide">
   Content slides in from right
-</TabsContent>
-
-// Color variants
-<TabsTrigger value="tab1" variant="pills" color="success">
-  Success Tab
-</TabsTrigger>`}
+</TabsContent>`}
           </pre>
         </div>
       </section>

@@ -160,7 +160,6 @@ function NavigationMenuDropdown({
         data-slot="navigation-menu-dropdown"
         open={isOpen}
         onOpenChange={handleOpenChange}
-        openOnHover={openOnHover}
         {...props}
       >
         {children}

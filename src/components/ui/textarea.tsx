@@ -1,18 +1,208 @@
 import * as React from "react";
-
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+// ============================================
+// TEXTAREA VARIANTS
+// ============================================
+const textareaVariants = cva(
+  [
+    // Base styles
+    "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50",
+    "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
+    "aria-invalid:border-destructive dark:aria-invalid:border-destructive/50",
+    "disabled:bg-input/50 dark:disabled:bg-input/80",
+    "rounded-lg border bg-transparent transition-colors",
+    "focus-visible:ring-[3px] aria-invalid:ring-[3px]",
+    "placeholder:text-muted-foreground",
+    "flex w-full outline-none",
+    "disabled:cursor-not-allowed disabled:opacity-50",
+  ],
+  {
+    variants: {
+      size: {
+        sm: "px-2 py-1.5 text-xs min-h-12",
+        default: "px-2.5 py-2 text-base md:text-sm min-h-16",
+        lg: "px-3 py-2.5 text-base min-h-20",
+      },
+      resize: {
+        none: "resize-none",
+        vertical: "resize-y",
+        horizontal: "resize-x",
+        both: "resize",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+      resize: "none",
+    },
+  }
+);
+
+// ============================================
+// TEXTAREA COMPONENT
+// ============================================
+interface TextareaProps
+  extends Omit<React.ComponentProps<"textarea">, "size">,
+    VariantProps<typeof textareaVariants> {
+  /** Minimum number of rows (affects min-height) */
+  minRows?: number;
+  /** Maximum number of rows (affects max-height, enables scroll) */
+  maxRows?: number;
+  /** Enable auto-sizing based on content (default: true) */
+  autoSize?: boolean;
+}
+
+function Textarea({
+  className,
+  size,
+  resize,
+  minRows,
+  maxRows,
+  autoSize = true,
+  style,
+  ...props
+}: TextareaProps) {
+  // Calculate height constraints based on rows
+  // Approximate line height: 1.5rem (24px) + padding
+  const lineHeight = size === "sm" ? 20 : size === "lg" ? 28 : 24;
+  const paddingY = size === "sm" ? 12 : size === "lg" ? 20 : 16;
+
+  const minHeight = minRows ? minRows * lineHeight + paddingY : undefined;
+  const maxHeight = maxRows ? maxRows * lineHeight + paddingY : undefined;
+
   return (
     <textarea
       data-slot="textarea"
       className={cn(
-        "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 rounded-lg border bg-transparent px-2.5 py-2 text-base transition-colors focus-visible:ring-[3px] aria-invalid:ring-[3px] md:text-sm placeholder:text-muted-foreground flex field-sizing-content min-h-16 w-full outline-none disabled:cursor-not-allowed disabled:opacity-50",
+        textareaVariants({ size, resize }),
+        autoSize && "field-sizing-content",
+        maxRows && "overflow-auto",
         className
       )}
+      style={{
+        ...style,
+        minHeight: minHeight ? `${minHeight}px` : undefined,
+        maxHeight: maxHeight ? `${maxHeight}px` : undefined,
+      }}
       {...props}
     />
   );
 }
 
-export { Textarea };
+// ============================================
+// TEXTAREA WITH CHARACTER COUNTER
+// ============================================
+interface TextareaWithCounterProps extends TextareaProps {
+  /** Maximum character count */
+  maxLength: number;
+  /** Threshold (0-1) at which to show warning color (default: 0.8 = 80%) */
+  warningThreshold?: number;
+  /** Show remaining characters instead of current/max */
+  showRemaining?: boolean;
+  /** Custom counter render function */
+  renderCounter?: (props: {
+    current: number;
+    max: number;
+    remaining: number;
+    isWarning: boolean;
+    isError: boolean;
+  }) => React.ReactNode;
+  /** Additional class for the wrapper */
+  wrapperClassName?: string;
+}
+
+function TextareaWithCounter({
+  maxLength,
+  warningThreshold = 0.8,
+  showRemaining = false,
+  renderCounter,
+  wrapperClassName,
+  value,
+  defaultValue,
+  onChange,
+  id,
+  "aria-describedby": ariaDescribedBy,
+  ...props
+}: TextareaWithCounterProps) {
+  const [internalValue, setInternalValue] = React.useState(
+    (defaultValue as string) ?? ""
+  );
+  const isControlled = value !== undefined;
+  const currentValue = isControlled ? String(value) : internalValue;
+  const currentLength = currentValue.length;
+  const remaining = maxLength - currentLength;
+
+  const isWarning = currentLength >= maxLength * warningThreshold;
+  const isError = currentLength >= maxLength;
+
+  // Generate unique ID for counter and textarea
+  const generatedCounterId = React.useId();
+  const generatedTextareaId = React.useId();
+  const counterId = generatedCounterId;
+  const textareaId = id ?? generatedTextareaId;
+  const counterElementId = `${counterId}-counter`;
+
+  // Combine aria-describedby with counter ID
+  const combinedAriaDescribedBy = ariaDescribedBy
+    ? `${ariaDescribedBy} ${counterElementId}`
+    : counterElementId;
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (!isControlled) {
+      setInternalValue(e.target.value);
+    }
+    onChange?.(e);
+  };
+
+  const counterContent = renderCounter ? (
+    renderCounter({
+      current: currentLength,
+      max: maxLength,
+      remaining,
+      isWarning,
+      isError,
+    })
+  ) : (
+    <span>
+      {showRemaining
+        ? `${remaining} characters remaining`
+        : `${currentLength}/${maxLength}`}
+    </span>
+  );
+
+  return (
+    <div className={cn("relative", wrapperClassName)}>
+      <Textarea
+        id={textareaId}
+        value={isControlled ? value : internalValue}
+        onChange={handleChange}
+        maxLength={maxLength}
+        aria-describedby={combinedAriaDescribedBy}
+        {...props}
+      />
+      <div
+        id={counterElementId}
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className={cn(
+          "mt-1.5 text-xs text-right transition-colors",
+          isError
+            ? "text-destructive"
+            : isWarning
+              ? "text-warning dark:text-warning"
+              : "text-muted-foreground"
+        )}
+      >
+        {counterContent}
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// EXPORTS
+// ============================================
+export { Textarea, TextareaWithCounter, textareaVariants };
+export type { TextareaProps, TextareaWithCounterProps };
