@@ -49,6 +49,7 @@ import {
   IconHeart,
   IconBookmark,
   IconTag,
+  IconClock,
 } from "@tabler/icons-react";
 
 // Simple sidebar toggle button for demos
@@ -288,6 +289,36 @@ export function SidebarPage() {
                     Billing
                   </SidebarItem>
                 </SidebarItemGroup>
+                <SidebarDivider />
+                <SidebarGroup label="New Components 2025-2026" defaultOpen>
+                  <SidebarItem to="/components/new-components-showcase" icon={<IconCode className="w-5 h-5" />}>
+                    Breadcrumb
+                  </SidebarItem>
+                  <SidebarItem to="/components/new-components-showcase" icon={<IconLayoutSidebar className="w-5 h-5" />}>
+                    Command Palette
+                  </SidebarItem>
+                  <SidebarItem to="/components/new-components-showcase" icon={<IconBell className="w-5 h-5" />}>
+                    Announcement Bar
+                  </SidebarItem>
+                  <SidebarItem to="/components/new-components-showcase" icon={<IconUsers className="w-5 h-5" />}>
+                    Stepper
+                  </SidebarItem>
+                  <SidebarItem to="/components/new-components-showcase" icon={<IconClock className="w-5 h-5" />}>
+                    Timeline
+                  </SidebarItem>
+                  <SidebarItem to="/components/new-components-showcase" icon={<IconChartBar className="w-5 h-5" />}>
+                    Stats Card
+                  </SidebarItem>
+                  <SidebarItem to="/components/new-components-showcase" icon={<IconPhoto className="w-5 h-5" />}>
+                    Carousel
+                  </SidebarItem>
+                  <SidebarItem to="/components/new-components-showcase" icon={<IconSearch className="w-5 h-5" />}>
+                    Spotlight Search
+                  </SidebarItem>
+                  <SidebarItem to="/components/new-components-showcase" icon={<IconFolder className="w-5 h-5" />}>
+                    Kanban Board
+                  </SidebarItem>
+                </SidebarGroup>
               </SidebarContent>
               <SidebarFooter sticky>
                 <ThemeToggle />

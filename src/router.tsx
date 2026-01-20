@@ -60,6 +60,15 @@ import { GridPage } from "@/pages/components/grid";
 import { ContainerPage } from "@/pages/components/container";
 import { ScrollAreaPage } from "@/pages/components/scroll-area";
 import { LayoutUtilitiesPage } from "@/pages/components/layout-utilities";
+import KanbanPage from "@/pages/components/kanban";
+import CarouselPage from "@/pages/components/carousel";
+import SpotlightPage from "@/pages/components/spotlight";
+import StatsCardPage from "@/pages/components/stats-card";
+import TimelinePage from "@/pages/components/timeline";
+import StepperPage from "@/pages/components/stepper";
+import CommandPage from "@/pages/components/command";
+import AnnouncementBarPage from "@/pages/components/announcement-bar";
+import BreadcrumbPages from "@/pages/components/breadcrumb";
 
 // Root route with layout
 const rootRoute = createRootRoute({
@@ -392,6 +401,60 @@ const layoutUtilitiesRoute = createRoute({
   component: LayoutUtilitiesPage,
 });
 
+const kanbanRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/kanban",
+  component: KanbanPage,
+});
+
+const carouselRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/carousel",
+  component: CarouselPage,
+});
+
+const spotlightRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/spotlight",
+  component: SpotlightPage,
+});
+
+const statsCardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/stats-card",
+  component: StatsCardPage,
+});
+
+const timelineRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/timeline",
+  component: TimelinePage,
+});
+
+const stepperRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/stepper",
+  component: StepperPage,
+});
+
+const commandRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/command",
+  component: CommandPage,
+});
+
+const announcementBarRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/announcement-bar",
+  component: AnnouncementBarPage,
+});
+
+const breadcrumbRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/breadcrumb",
+  component: BreadcrumbPages,
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -448,6 +511,15 @@ const routeTree = rootRoute.addChildren([
   containerRoute,
   scrollAreaRoute,
   layoutUtilitiesRoute,
+  kanbanRoute,
+  carouselRoute,
+  spotlightRoute,
+  statsCardRoute,
+  timelineRoute,
+  stepperRoute,
+  commandRoute,
+  announcementBarRoute,
+  breadcrumbRoute,
 ]);
 
 // Create router
