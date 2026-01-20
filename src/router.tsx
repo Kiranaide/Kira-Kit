@@ -54,6 +54,12 @@ import { FileUploadPage } from "@/pages/components/file-upload";
 import { SidebarPage } from "@/pages/components/sidebar";
 import { ColorPickerPage } from "@/pages/components/color-picker";
 import { ColorUsagePage } from "@/pages/components/color-usage";
+import { FlexPage } from "@/pages/components/flex";
+import { StackPage } from "@/pages/components/stack";
+import { GridPage } from "@/pages/components/grid";
+import { ContainerPage } from "@/pages/components/container";
+import { ScrollAreaPage } from "@/pages/components/scroll-area";
+import { LayoutUtilitiesPage } from "@/pages/components/layout-utilities";
 
 // Root route with layout
 const rootRoute = createRootRoute({
@@ -350,6 +356,42 @@ const colorUsageRoute = createRoute({
   component: ColorUsagePage,
 });
 
+const flexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/flex",
+  component: FlexPage,
+});
+
+const stackRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/stack",
+  component: StackPage,
+});
+
+const gridRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/grid",
+  component: GridPage,
+});
+
+const containerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/container",
+  component: ContainerPage,
+});
+
+const scrollAreaRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/scroll-area",
+  component: ScrollAreaPage,
+});
+
+const layoutUtilitiesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/layout-utilities",
+  component: LayoutUtilitiesPage,
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -400,6 +442,12 @@ const routeTree = rootRoute.addChildren([
   sidebarRoute,
   colorPickerRoute,
   colorUsageRoute,
+  flexRoute,
+  stackRoute,
+  gridRoute,
+  containerRoute,
+  scrollAreaRoute,
+  layoutUtilitiesRoute,
 ]);
 
 // Create router

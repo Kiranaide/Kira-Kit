@@ -58,6 +58,7 @@ import {
   IconBell,
   IconPalette,
   IconColorPicker,
+  IconChevronDown,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -87,6 +88,47 @@ export function AppLayout() {
                 <SidebarItem to="/" icon={<IconHome className="w-5 h-5" />}>
                   Overview
                 </SidebarItem>
+
+                <SidebarDivider />
+
+                <SidebarGroup label="Layout">
+                  <SidebarItem
+                    to="/components/flex"
+                    icon={<IconLayoutColumns className="w-5 h-5" />}
+                  >
+                    Flex
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/stack"
+                    icon={<IconLayoutList className="w-5 h-5" />}
+                  >
+                    Stack
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/grid"
+                    icon={<IconTable className="w-5 h-5" />}
+                  >
+                    Grid
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/container"
+                    icon={<IconBox className="w-5 h-5" />}
+                  >
+                    Container
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/scroll-area"
+                    icon={<IconChevronDown className="w-5 h-5" />}
+                  >
+                    Scroll Area
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/layout-utilities"
+                    icon={<IconBoxMultiple className="w-5 h-5" />}
+                  >
+                    Utilities
+                  </SidebarItem>
+                </SidebarGroup>
 
                 <SidebarDivider />
 
