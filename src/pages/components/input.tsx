@@ -13,9 +13,14 @@ import {
   PercentageInput,
   DecimalInput,
   SearchInput,
+  OTPInput,
+  Rating,
+  RatingDisplay,
 } from "@/components/ui/input";
+import type { OTPInputRef } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { ColorPicker } from "@/components/ui/color-picker";
 import {
   IconCurrencyDollar,
@@ -24,6 +29,10 @@ import {
   IconSearch,
   IconSend,
   IconCheck,
+  IconHeart,
+  IconHeartFilled,
+  IconFlame,
+  IconMoodSmile,
 } from "@tabler/icons-react";
 
 export function InputPage() {
@@ -44,6 +53,15 @@ export function InputPage() {
   const [isSearching, setIsSearching] = React.useState(false);
   const [clearableValue, setClearableValue] =
     React.useState("Type to clear me");
+
+  // OTP Input state
+  const [otpValue, setOtpValue] = React.useState("");
+  const [otpComplete, setOtpComplete] = React.useState(false);
+  const otpRef = React.useRef<OTPInputRef>(null);
+
+  // Rating state
+  const [ratingValue, setRatingValue] = React.useState(3.5);
+  const [feedbackRating, setFeedbackRating] = React.useState(0);
 
   return (
     <div className="p-8 max-w-4xl space-y-12">
@@ -690,6 +708,324 @@ export function InputPage() {
         </div>
       </section>
 
+      {/* OTP Input */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          OTP Input
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          One-time password input with separated digit boxes. Supports
+          auto-focus advancement, paste handling, keyboard navigation
+          (Arrow keys, Backspace), configurable length (4-8 digits), and
+          numeric/alphanumeric modes.
+        </p>
+
+        <div className="space-y-6">
+          {/* Basic OTP */}
+          <div className="space-y-2">
+            <Label>6-Digit Verification Code</Label>
+            <OTPInput
+              ref={otpRef}
+              value={otpValue}
+              onChange={setOtpValue}
+              onComplete={(code) => {
+                setOtpComplete(true);
+                console.log("OTP Complete:", code);
+              }}
+              autoFocus
+            />
+            <div className="flex items-center gap-4">
+              <p className="text-xs text-muted-foreground">
+                Value: "{otpValue}" {otpComplete && <span className="text-success">✓ Complete</span>}
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  otpRef.current?.clear();
+                  setOtpComplete(false);
+                }}
+              >
+                Clear
+              </Button>
+            </div>
+          </div>
+
+          {/* Size Variants */}
+          <div className="space-y-3">
+            <Label>Size Variants</Label>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground">Small</span>
+                <OTPInput length={4} size="sm" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground">Default</span>
+                <OTPInput length={4} />
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground">Large</span>
+                <OTPInput length={4} size="lg" />
+              </div>
+            </div>
+          </div>
+
+          {/* Variants */}
+          <div className="space-y-3">
+            <Label>Style Variants</Label>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground">Default</span>
+                <OTPInput length={4} variant="default" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground">Outline</span>
+                <OTPInput length={4} variant="outline" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground">Filled</span>
+                <OTPInput length={4} variant="filled" />
+              </div>
+            </div>
+          </div>
+
+          {/* With Separator */}
+          <div className="space-y-2">
+            <Label>With Separator (Phone Format)</Label>
+            <OTPInput length={6} separatorAfter={2} gap="lg" />
+            <p className="text-xs text-muted-foreground">
+              Separator appears after the 3rd digit
+            </p>
+          </div>
+
+          {/* Alphanumeric */}
+          <div className="space-y-2">
+            <Label>Alphanumeric Code</Label>
+            <OTPInput length={6} type="alphanumeric" placeholder="—" />
+            <p className="text-xs text-muted-foreground">
+              Accepts both letters and numbers (auto-uppercased)
+            </p>
+          </div>
+
+          {/* Masked (PIN) */}
+          <div className="space-y-2">
+            <Label>PIN Input (Masked)</Label>
+            <OTPInput length={4} mask type="numeric" />
+            <p className="text-xs text-muted-foreground">
+              Values are hidden like a password
+            </p>
+          </div>
+
+          {/* Invalid State */}
+          <div className="space-y-2">
+            <Label>Invalid State</Label>
+            <OTPInput length={6} invalid />
+            <p className="text-xs text-destructive">
+              Invalid verification code
+            </p>
+          </div>
+
+          {/* Disabled */}
+          <div className="space-y-2">
+            <Label>Disabled</Label>
+            <OTPInput length={6} disabled />
+          </div>
+        </div>
+      </section>
+
+      {/* Rating */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold border-b border-border pb-2">
+          Rating
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Star rating component with hover preview, half-star support,
+          keyboard navigation, and customizable icons/colors. Includes
+          a display-only variant for showing ratings.
+        </p>
+
+        <div className="space-y-6">
+          {/* Interactive Rating */}
+          <div className="space-y-2">
+            <Label>Interactive Rating</Label>
+            <Rating
+              value={ratingValue}
+              onChange={setRatingValue}
+              allowHalf
+              showValue
+            />
+            <p className="text-xs text-muted-foreground">
+              Click or use arrow keys to rate. Supports half-stars.
+            </p>
+          </div>
+
+          {/* Size Variants */}
+          <div className="space-y-3">
+            <Label>Size Variants</Label>
+            <div className="space-y-2">
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-16">Small</span>
+                <Rating defaultValue={4} size="sm" />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-16">Default</span>
+                <Rating defaultValue={4} />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-16">Large</span>
+                <Rating defaultValue={4} size="lg" />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-16">XL</span>
+                <Rating defaultValue={4} size="xl" />
+              </div>
+            </div>
+          </div>
+
+          {/* Color Variants */}
+          <div className="space-y-3">
+            <Label>Color Variants</Label>
+            <div className="space-y-2">
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-16">Yellow</span>
+                <Rating defaultValue={4} color="yellow" />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-16">Orange</span>
+                <Rating defaultValue={4} color="orange" />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-16">Red</span>
+                <Rating defaultValue={4} color="red" />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-16">Pink</span>
+                <Rating defaultValue={4} color="pink" />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-16">Primary</span>
+                <Rating defaultValue={4} color="default" />
+              </div>
+            </div>
+          </div>
+
+          {/* Custom Icons */}
+          <div className="space-y-3">
+            <Label>Custom Icons</Label>
+            <div className="space-y-2">
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-20">Hearts</span>
+                <Rating
+                  defaultValue={3}
+                  color="pink"
+                  filledIcon={<IconHeartFilled />}
+                  emptyIcon={<IconHeart />}
+                />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-20">Fire</span>
+                <Rating
+                  defaultValue={4}
+                  color="orange"
+                  max={3}
+                  filledIcon={<IconFlame />}
+                  emptyIcon={<IconFlame className="opacity-30" />}
+                />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-20">Mood</span>
+                <Rating
+                  defaultValue={4}
+                  color="yellow"
+                  filledIcon={<IconMoodSmile />}
+                  emptyIcon={<IconMoodSmile className="opacity-30" />}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Half Stars */}
+          <div className="space-y-2">
+            <Label>Half Star Support</Label>
+            <div className="flex flex-wrap gap-4">
+              <Rating value={2.5} allowHalf readOnly showValue />
+              <Rating value={3.5} allowHalf readOnly showValue />
+              <Rating value={4.5} allowHalf readOnly showValue />
+            </div>
+          </div>
+
+          {/* Different Max Values */}
+          <div className="space-y-3">
+            <Label>Custom Max Values</Label>
+            <div className="space-y-2">
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-20">3 stars</span>
+                <Rating defaultValue={2} max={3} />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-20">5 stars</span>
+                <Rating defaultValue={3} max={5} />
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-xs text-muted-foreground w-20">10 stars</span>
+                <Rating defaultValue={7} max={10} size="sm" />
+              </div>
+            </div>
+          </div>
+
+          {/* Rating Display (Read-only) */}
+          <div className="space-y-3">
+            <Label>Rating Display (Read-only)</Label>
+            <div className="space-y-2">
+              <RatingDisplay value={4.7} reviewCount={1234} />
+              <RatingDisplay value={3.2} reviewCount={89} color="orange" />
+              <RatingDisplay value={5.0} reviewCount={42} color="pink" />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Use RatingDisplay for showing ratings with review counts
+            </p>
+          </div>
+
+          {/* Feedback Form Example */}
+          <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
+            <Label>How was your experience?</Label>
+            <Rating
+              value={feedbackRating}
+              onChange={setFeedbackRating}
+              size="lg"
+            />
+            <div className="flex items-center gap-2 mt-2">
+              {feedbackRating > 0 && (
+                <>
+                  <span className="text-sm">
+                    {feedbackRating === 1 && "😞 Poor"}
+                    {feedbackRating === 2 && "😕 Fair"}
+                    {feedbackRating === 3 && "😐 Good"}
+                    {feedbackRating === 4 && "😊 Great"}
+                    {feedbackRating === 5 && "🤩 Excellent!"}
+                  </span>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      alert(`Thank you for your ${feedbackRating}-star rating!`);
+                      setFeedbackRating(0);
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Disabled */}
+          <div className="space-y-2">
+            <Label>Disabled</Label>
+            <Rating defaultValue={3} disabled />
+          </div>
+        </div>
+      </section>
+
       {/* Usage */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold border-b border-border pb-2">
@@ -697,7 +1033,13 @@ export function InputPage() {
         </h2>
         <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
           <pre className="text-sm text-foreground">
-            {`import { Input, NumericInput } from "@/components/ui/input"
+            {`import { 
+  Input, 
+  NumericInput,
+  OTPInput,
+  Rating,
+  RatingDisplay,
+} from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ColorPicker } from "@/components/ui/color-picker"
 
@@ -711,6 +1053,38 @@ import { ColorPicker } from "@/components/ui/color-picker"
 // With prefix/suffix (native support)
 <Input prefix="$" placeholder="0.00" />
 <Input suffix="%" placeholder="0" />
+
+// OTP Input
+<OTPInput
+  length={6}
+  type="numeric"
+  onComplete={(code) => console.log("OTP:", code)}
+/>
+
+// OTP with separator (phone format)
+<OTPInput length={6} separatorAfter={2} />
+
+// PIN Input (masked)
+<OTPInput length={4} mask />
+
+// Rating
+<Rating 
+  value={rating} 
+  onChange={setRating} 
+  allowHalf 
+  showValue 
+/>
+
+// Rating Display (read-only with review count)
+<RatingDisplay value={4.7} reviewCount={1234} />
+
+// Custom Rating icons
+<Rating
+  defaultValue={3}
+  color="pink"
+  filledIcon={<IconHeartFilled />}
+  emptyIcon={<IconHeart />}
+/>
 
 // Color picker
 <ColorPicker value="#3b82f6" onChange={setColor} />`}

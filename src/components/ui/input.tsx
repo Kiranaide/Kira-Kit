@@ -1277,6 +1277,761 @@ function SearchInput({
   );
 }
 
+// ============================================
+// OTP INPUT
+// ============================================
+
+type OTPInputType = "numeric" | "alphanumeric" | "alphabetic";
+
+interface OTPInputRef {
+  focus: () => void;
+  clear: () => void;
+  getValue: () => string;
+  setValue: (value: string) => void;
+}
+
+const otpInputVariants = cva(
+  "flex items-center justify-center border bg-background text-center font-mono font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
+  {
+    variants: {
+      size: {
+        sm: "h-9 w-9 text-sm rounded-md",
+        default: "h-11 w-11 text-lg rounded-lg",
+        lg: "h-14 w-14 text-xl rounded-xl",
+      },
+      variant: {
+        default: "border-input",
+        outline: "border-2 border-input",
+        filled: "border-transparent bg-muted",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+      variant: "default",
+    },
+  }
+);
+
+const otpContainerVariants = cva("flex items-center", {
+  variants: {
+    gap: {
+      sm: "gap-1.5",
+      default: "gap-2",
+      lg: "gap-3",
+    },
+  },
+  defaultVariants: {
+    gap: "default",
+  },
+});
+
+interface OTPInputProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
+    VariantProps<typeof otpInputVariants> {
+  /** Number of OTP digits (4-8) */
+  length?: 4 | 5 | 6 | 7 | 8;
+  /** Type of allowed characters */
+  type?: OTPInputType;
+  /** Mask input values (show dots) */
+  mask?: boolean;
+  /** Auto-submit when complete */
+  autoSubmit?: boolean;
+  /** Current value */
+  value?: string;
+  /** Value change handler */
+  onChange?: (value: string) => void;
+  /** Called when all digits are entered */
+  onComplete?: (value: string) => void;
+  /** Disabled state */
+  disabled?: boolean;
+  /** Invalid state for styling */
+  invalid?: boolean;
+  /** Gap between inputs */
+  gap?: "sm" | "default" | "lg";
+  /** Show separator after this index (e.g., 3 for "XXX-XXX") */
+  separatorAfter?: number;
+  /** Auto-focus first input on mount */
+  autoFocus?: boolean;
+  /** Placeholder character */
+  placeholder?: string;
+  /** Aria label for accessibility */
+  "aria-label"?: string;
+  /** Aria describedby for accessibility */
+  "aria-describedby"?: string;
+}
+
+const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
+  (
+    {
+      length = 6,
+      type = "numeric",
+      mask = false,
+      autoSubmit = false,
+      value = "",
+      onChange,
+      onComplete,
+      disabled = false,
+      invalid = false,
+      size = "default",
+      variant = "default",
+      gap = "default",
+      separatorAfter,
+      autoFocus = false,
+      placeholder = "○",
+      className,
+      "aria-label": ariaLabel = "One-time password",
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref
+  ) => {
+    const baseId = React.useId();
+    const [values, setValues] = React.useState<string[]>(() =>
+      value.split("").slice(0, length).concat(Array(length).fill("")).slice(0, length)
+    );
+    const [focusedIndex, setFocusedIndex] = React.useState<number | null>(null);
+    const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
+
+    // Sync external value
+    React.useEffect(() => {
+      const newValues = value
+        .split("")
+        .slice(0, length)
+        .concat(Array(length).fill(""))
+        .slice(0, length);
+      setValues(newValues);
+    }, [value, length]);
+
+    // Auto-focus first input
+    React.useEffect(() => {
+      if (autoFocus && inputRefs.current[0]) {
+        inputRefs.current[0].focus();
+      }
+    }, [autoFocus]);
+
+    // Expose imperative methods
+    React.useImperativeHandle(ref, () => ({
+      focus: () => inputRefs.current[0]?.focus(),
+      clear: () => {
+        const emptyValues = Array(length).fill("");
+        setValues(emptyValues);
+        onChange?.("");
+        inputRefs.current[0]?.focus();
+      },
+      getValue: () => values.join(""),
+      setValue: (newValue: string) => {
+        const newValues = newValue
+          .split("")
+          .slice(0, length)
+          .concat(Array(length).fill(""))
+          .slice(0, length);
+        setValues(newValues);
+        onChange?.(newValue.slice(0, length));
+      },
+    }));
+
+    // Validate input based on type
+    const isValidChar = React.useCallback(
+      (char: string): boolean => {
+        switch (type) {
+          case "numeric":
+            return /^\d$/.test(char);
+          case "alphabetic":
+            return /^[a-zA-Z]$/.test(char);
+          case "alphanumeric":
+            return /^[a-zA-Z0-9]$/.test(char);
+          default:
+            return false;
+        }
+      },
+      [type]
+    );
+
+    // Handle input change
+    const handleOTPChange = React.useCallback(
+      (index: number, inputValue: string) => {
+        const char = inputValue.slice(-1).toUpperCase();
+
+        if (!char) {
+          // Clear current input
+          const newValues = [...values];
+          newValues[index] = "";
+          setValues(newValues);
+          onChange?.(newValues.join(""));
+          return;
+        }
+
+        if (!isValidChar(char)) {
+          // Shake animation for invalid input
+          const input = inputRefs.current[index];
+          if (input) {
+            input.style.transform = "translateX(-4px)";
+            setTimeout(() => {
+              input.style.transform = "translateX(4px)";
+              setTimeout(() => {
+                input.style.transform = "translateX(-4px)";
+                setTimeout(() => {
+                  input.style.transform = "translateX(4px)";
+                  setTimeout(() => {
+                    input.style.transform = "";
+                  }, 50);
+                }, 50);
+              }, 50);
+            }, 50);
+          }
+          return;
+        }
+
+        const newValues = [...values];
+        newValues[index] = char;
+        setValues(newValues);
+
+        const newValue = newValues.join("");
+        onChange?.(newValue);
+
+        // Move to next input
+        if (index < length - 1) {
+          inputRefs.current[index + 1]?.focus();
+        }
+
+        // Check if complete
+        if (newValues.every((v) => v !== "")) {
+          onComplete?.(newValue);
+        }
+      },
+      [values, length, isValidChar, onChange, onComplete]
+    );
+
+    // Handle paste
+    const handlePaste = React.useCallback(
+      (e: React.ClipboardEvent) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData("text").toUpperCase();
+        const chars = pastedData.split("").filter(isValidChar).slice(0, length);
+
+        if (chars.length === 0) return;
+
+        const newValues = [...Array(length).fill("")];
+        chars.forEach((char, i) => {
+          newValues[i] = char;
+        });
+
+        setValues(newValues);
+        onChange?.(chars.join(""));
+
+        // Focus appropriate input
+        const nextEmptyIndex = newValues.findIndex((v) => v === "");
+        const focusIndex = nextEmptyIndex === -1 ? length - 1 : nextEmptyIndex;
+        inputRefs.current[focusIndex]?.focus();
+
+        // Check if complete
+        if (chars.length === length) {
+          onComplete?.(chars.join(""));
+        }
+      },
+      [length, isValidChar, onChange, onComplete]
+    );
+
+    // Handle keydown
+    const handleKeyDown = React.useCallback(
+      (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+        switch (e.key) {
+          case "Backspace":
+            e.preventDefault();
+            if (values[index]) {
+              // Clear current
+              const newValues = [...values];
+              newValues[index] = "";
+              setValues(newValues);
+              onChange?.(newValues.join(""));
+            } else if (index > 0) {
+              // Move to previous and clear
+              const newValues = [...values];
+              newValues[index - 1] = "";
+              setValues(newValues);
+              onChange?.(newValues.join(""));
+              inputRefs.current[index - 1]?.focus();
+            }
+            break;
+
+          case "Delete":
+            e.preventDefault();
+            if (values[index]) {
+              const newValues = [...values];
+              newValues[index] = "";
+              setValues(newValues);
+              onChange?.(newValues.join(""));
+            }
+            break;
+
+          case "ArrowLeft":
+            e.preventDefault();
+            if (index > 0) {
+              inputRefs.current[index - 1]?.focus();
+            }
+            break;
+
+          case "ArrowRight":
+            e.preventDefault();
+            if (index < length - 1) {
+              inputRefs.current[index + 1]?.focus();
+            }
+            break;
+
+          case "Home":
+            e.preventDefault();
+            inputRefs.current[0]?.focus();
+            break;
+
+          case "End":
+            e.preventDefault();
+            inputRefs.current[length - 1]?.focus();
+            break;
+        }
+      },
+      [values, length, onChange]
+    );
+
+    // Handle focus
+    const handleFocus = React.useCallback(
+      (index: number) => {
+        setFocusedIndex(index);
+        // Select input content
+        inputRefs.current[index]?.select();
+      },
+      []
+    );
+
+    // Handle blur
+    const handleBlur = React.useCallback(() => {
+      setFocusedIndex(null);
+    }, []);
+
+    // Render separator
+    const renderSeparator = (index: number) => {
+      if (separatorAfter !== undefined && index === separatorAfter) {
+        return (
+          <span
+            className="text-muted-foreground font-medium text-lg select-none"
+            aria-hidden="true"
+          >
+            -
+          </span>
+        );
+      }
+      return null;
+    };
+
+    return (
+      <div
+        role="group"
+        aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
+        data-slot="otp-input"
+        data-invalid={invalid || undefined}
+        className={cn(otpContainerVariants({ gap }), className)}
+        {...props}
+      >
+        {Array.from({ length }).map((_, index) => (
+          <React.Fragment key={index}>
+            <input
+              ref={(el) => {
+                inputRefs.current[index] = el;
+              }}
+              id={`${baseId}-${index}`}
+              type={mask ? "password" : "text"}
+              inputMode={type === "numeric" ? "numeric" : "text"}
+              autoComplete="one-time-code"
+              maxLength={1}
+              value={values[index]}
+              placeholder={focusedIndex === index ? "" : placeholder}
+              disabled={disabled}
+              aria-label={`Digit ${index + 1} of ${length}`}
+              aria-invalid={invalid || undefined}
+              className={cn(
+                otpInputVariants({ size, variant }),
+                invalid && "border-destructive focus:ring-destructive",
+                focusedIndex === index && "ring-2 ring-ring ring-offset-2",
+                values[index] && "border-primary/50"
+              )}
+              onChange={(e) => handleOTPChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              onFocus={() => handleFocus(index)}
+              onBlur={handleBlur}
+              onPaste={handlePaste}
+            />
+            {renderSeparator(index)}
+          </React.Fragment>
+        ))}
+      </div>
+    );
+  }
+);
+
+OTPInput.displayName = "OTPInput";
+
+// ============================================
+// RATING
+// ============================================
+
+import {
+  IconStar,
+  IconStarFilled,
+  IconStarHalfFilled,
+} from "@tabler/icons-react";
+
+const ratingVariants = cva("inline-flex items-center gap-0.5", {
+  variants: {
+    size: {
+      sm: "[&_svg]:h-4 [&_svg]:w-4",
+      default: "[&_svg]:h-5 [&_svg]:w-5",
+      lg: "[&_svg]:h-6 [&_svg]:w-6",
+      xl: "[&_svg]:h-8 [&_svg]:w-8",
+    },
+  },
+  defaultVariants: {
+    size: "default",
+  },
+});
+
+const ratingItemVariants = cva(
+  "transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm",
+  {
+    variants: {
+      color: {
+        default: "text-primary",
+        yellow: "text-yellow-500",
+        orange: "text-orange-500",
+        red: "text-red-500",
+        pink: "text-pink-500",
+      },
+      disabled: {
+        true: "cursor-default opacity-60",
+        false: "",
+      },
+      readOnly: {
+        true: "cursor-default",
+        false: "",
+      },
+    },
+    defaultVariants: {
+      color: "yellow",
+      disabled: false,
+      readOnly: false,
+    },
+  }
+);
+
+interface RatingProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
+    VariantProps<typeof ratingVariants> {
+  /** Current rating value */
+  value?: number;
+  /** Default value (uncontrolled) */
+  defaultValue?: number;
+  /** Value change handler */
+  onChange?: (value: number) => void;
+  /** Maximum rating value */
+  max?: number;
+  /** Allow half-star ratings */
+  allowHalf?: boolean;
+  /** Allow clearing (clicking same value) */
+  allowClear?: boolean;
+  /** Disabled state */
+  disabled?: boolean;
+  /** Read-only display mode */
+  readOnly?: boolean;
+  /** Color scheme */
+  color?: "default" | "yellow" | "orange" | "red" | "pink";
+  /** Show numeric value */
+  showValue?: boolean;
+  /** Custom filled icon */
+  filledIcon?: React.ReactNode;
+  /** Custom empty icon */
+  emptyIcon?: React.ReactNode;
+  /** Custom half icon */
+  halfIcon?: React.ReactNode;
+  /** Custom tooltip formatter */
+  tooltipFormatter?: (value: number) => string;
+  /** Aria label */
+  "aria-label"?: string;
+  /** Aria describedby */
+  "aria-describedby"?: string;
+}
+
+const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
+  (
+    {
+      value: controlledValue,
+      defaultValue = 0,
+      onChange,
+      max = 5,
+      allowHalf = false,
+      allowClear = true,
+      disabled = false,
+      readOnly = false,
+      size = "default",
+      color = "yellow",
+      showValue = false,
+      filledIcon,
+      emptyIcon,
+      halfIcon,
+      tooltipFormatter,
+      className,
+      "aria-label": ariaLabel = "Rating",
+      "aria-describedby": ariaDescribedBy,
+      ...props
+    },
+    ref
+  ) => {
+    const [internalValue, setInternalValue] = React.useState(defaultValue);
+    const [hoverValue, setHoverValue] = React.useState<number | null>(null);
+
+    // Use controlled or internal value
+    const currentValue = controlledValue ?? internalValue;
+
+    // Display value (hover takes precedence)
+    const displayValue = hoverValue ?? currentValue;
+
+    // Handle value change
+    const handleRatingChange = React.useCallback(
+      (newValue: number) => {
+        if (disabled || readOnly) return;
+
+        // Allow clearing by clicking same value
+        const finalValue = allowClear && newValue === currentValue ? 0 : newValue;
+
+        if (controlledValue === undefined) {
+          setInternalValue(finalValue);
+        }
+        onChange?.(finalValue);
+      },
+      [disabled, readOnly, allowClear, currentValue, controlledValue, onChange]
+    );
+
+    // Handle mouse move for half-star detection
+    const handleMouseMove = React.useCallback(
+      (index: number, e: React.MouseEvent<HTMLButtonElement>) => {
+        if (disabled || readOnly) return;
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const isLeftHalf = x < rect.width / 2;
+
+        if (allowHalf && isLeftHalf) {
+          setHoverValue(index + 0.5);
+        } else {
+          setHoverValue(index + 1);
+        }
+      },
+      [disabled, readOnly, allowHalf]
+    );
+
+    // Handle click for half-star detection
+    const handleClick = React.useCallback(
+      (index: number, e: React.MouseEvent<HTMLButtonElement>) => {
+        if (disabled || readOnly) return;
+
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const isLeftHalf = x < rect.width / 2;
+
+        if (allowHalf && isLeftHalf) {
+          handleRatingChange(index + 0.5);
+        } else {
+          handleRatingChange(index + 1);
+        }
+      },
+      [disabled, readOnly, allowHalf, handleRatingChange]
+    );
+
+    // Handle keyboard navigation
+    const handleKeyDown = React.useCallback(
+      (e: React.KeyboardEvent) => {
+        if (disabled || readOnly) return;
+
+        const step = allowHalf ? 0.5 : 1;
+        let newValue = currentValue;
+
+        switch (e.key) {
+          case "ArrowRight":
+          case "ArrowUp":
+            e.preventDefault();
+            newValue = Math.min(max, currentValue + step);
+            break;
+          case "ArrowLeft":
+          case "ArrowDown":
+            e.preventDefault();
+            newValue = Math.max(0, currentValue - step);
+            break;
+          case "Home":
+            e.preventDefault();
+            newValue = 0;
+            break;
+          case "End":
+            e.preventDefault();
+            newValue = max;
+            break;
+          default:
+            return;
+        }
+
+        if (controlledValue === undefined) {
+          setInternalValue(newValue);
+        }
+        onChange?.(newValue);
+      },
+      [disabled, readOnly, allowHalf, max, currentValue, controlledValue, onChange]
+    );
+
+    // Render star icon based on fill state
+    const renderStar = React.useCallback(
+      (index: number) => {
+        const fillAmount = displayValue - index;
+
+        if (fillAmount >= 1) {
+          // Fully filled
+          return filledIcon || <IconStarFilled />;
+        } else if (fillAmount >= 0.5 && allowHalf) {
+          // Half filled
+          return halfIcon || <IconStarHalfFilled />;
+        } else {
+          // Empty
+          return emptyIcon || <IconStar />;
+        }
+      },
+      [displayValue, allowHalf, filledIcon, halfIcon, emptyIcon]
+    );
+
+    // Get tooltip text
+    const getTooltip = React.useCallback(
+      (value: number) => {
+        if (tooltipFormatter) return tooltipFormatter(value);
+        return `${value} of ${max}`;
+      },
+      [tooltipFormatter, max]
+    );
+
+    // Generate stars
+    const stars = React.useMemo(() => {
+      return Array.from({ length: max }, (_, index) => {
+        const starValue = index + 1;
+        const isFilled = displayValue >= starValue;
+        const isHalfFilled = allowHalf && displayValue >= index + 0.5 && displayValue < starValue;
+
+        return (
+          <button
+            key={index}
+            type="button"
+            role="radio"
+            aria-checked={currentValue >= starValue}
+            aria-label={`Rate ${starValue} out of ${max}`}
+            tabIndex={disabled || readOnly ? -1 : index === 0 ? 0 : -1}
+            disabled={disabled}
+            title={getTooltip(starValue)}
+            className={cn(
+              ratingItemVariants({
+                color: isFilled || isHalfFilled ? color : undefined,
+                disabled,
+                readOnly,
+              }),
+              !isFilled && !isHalfFilled && "text-muted-foreground/40",
+              !disabled && !readOnly && "hover:scale-110"
+            )}
+            onClick={(e) => handleClick(index, e)}
+            onMouseMove={(e) => handleMouseMove(index, e)}
+            onMouseLeave={() => setHoverValue(null)}
+            onFocus={() => !readOnly && setHoverValue(index + 1)}
+            onBlur={() => setHoverValue(null)}
+          >
+            {renderStar(index)}
+          </button>
+        );
+      });
+    }, [
+      max,
+      displayValue,
+      currentValue,
+      allowHalf,
+      disabled,
+      readOnly,
+      color,
+      handleClick,
+      handleMouseMove,
+      getTooltip,
+      renderStar,
+    ]);
+
+    return (
+      <div
+        ref={ref}
+        role="radiogroup"
+        aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
+        aria-disabled={disabled || undefined}
+        aria-readonly={readOnly || undefined}
+        data-slot="rating"
+        data-value={currentValue}
+        tabIndex={-1}
+        onKeyDown={handleKeyDown}
+        className={cn(ratingVariants({ size }), className)}
+        {...props}
+      >
+        {stars}
+        {showValue && (
+          <span
+            className="ml-2 text-sm font-medium tabular-nums text-muted-foreground"
+            aria-hidden="true"
+          >
+            {displayValue.toFixed(allowHalf ? 1 : 0)}
+          </span>
+        )}
+      </div>
+    );
+  }
+);
+
+Rating.displayName = "Rating";
+
+interface RatingDisplayProps
+  extends Omit<RatingProps, "onChange" | "allowClear" | "allowHalf"> {
+  /** Show fraction (e.g., 4.5) */
+  showFraction?: boolean;
+  /** Number of reviews */
+  reviewCount?: number;
+}
+
+const RatingDisplay = React.forwardRef<HTMLDivElement, RatingDisplayProps>(
+  ({ value = 0, showFraction = true, reviewCount, className, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn("inline-flex items-center gap-2", className)}
+        {...props}
+      >
+        <Rating
+          value={value}
+          readOnly
+          allowHalf={showFraction}
+          {...props}
+        />
+        {showFraction && (
+          <span className="text-sm font-medium tabular-nums">
+            {value.toFixed(1)}
+          </span>
+        )}
+        {reviewCount !== undefined && (
+          <span className="text-sm text-muted-foreground">
+            ({reviewCount.toLocaleString()})
+          </span>
+        )}
+      </div>
+    );
+  }
+);
+
+RatingDisplay.displayName = "RatingDisplay";
+
 export {
   Input,
   inputVariants,
@@ -1292,6 +2047,15 @@ export {
   PercentageInput,
   DecimalInput,
   SearchInput,
+  // OTP Input
+  OTPInput,
+  otpInputVariants,
+  otpContainerVariants,
+  // Rating
+  Rating,
+  RatingDisplay,
+  ratingVariants,
+  ratingItemVariants,
 };
 export type {
   NumericInputProps,
@@ -1306,4 +2070,11 @@ export type {
   PercentageInputProps,
   DecimalInputProps,
   SearchInputProps,
+  // OTP Input
+  OTPInputProps,
+  OTPInputRef,
+  OTPInputType,
+  // Rating
+  RatingProps,
+  RatingDisplayProps,
 };
