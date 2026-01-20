@@ -59,6 +59,9 @@ import {
   IconPalette,
   IconColorPicker,
   IconChevronDown,
+  IconSearch,
+  IconListNumbers,
+  IconTimeline,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -175,11 +178,17 @@ export function AppLayout() {
                   >
                     Button
                   </SidebarItem>
-                  <SidebarItem
+<SidebarItem
                     to="/components/button-group"
                     icon={<IconLayoutColumns className="w-5 h-5" />}
                   >
                     Button Group
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/breadcrumb"
+                    icon={<IconNavigation className="w-5 h-5" />}
+                  >
+                    Breadcrumb
                   </SidebarItem>
                   <SidebarItem
                     to="/components/calendar"
@@ -187,11 +196,17 @@ export function AppLayout() {
                   >
                     Calendar
                   </SidebarItem>
-                  <SidebarItem
+<SidebarItem
                     to="/components/card"
                     icon={<IconLayoutCards className="w-5 h-5" />}
                   >
                     Card
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/carousel"
+                    icon={<IconLayoutBoardSplit className="w-5 h-5" />}
+                  >
+                    Carousel
                   </SidebarItem>
                   <SidebarItem
                     to="/components/checkbox"
@@ -362,6 +377,18 @@ export function AppLayout() {
                     Slider
                   </SidebarItem>
                   <SidebarItem
+                    to="/components/spotlight"
+                    icon={<IconSearch className="w-5 h-5" />}
+                  >
+                    Spotlight
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/stepper"
+                    icon={<IconListNumbers className="w-5 h-5" />}
+                  >
+                    Stepper
+                  </SidebarItem>
+                  <SidebarItem
                     to="/components/table"
                     icon={<IconTable className="w-5 h-5" />}
                   >
@@ -396,6 +423,12 @@ export function AppLayout() {
                     icon={<IconTooltip className="w-5 h-5" />}
                   >
                     Tooltip
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/timeline"
+                    icon={<IconTimeline className="w-5 h-5" />}
+                  >
+                    Timeline
                   </SidebarItem>
                   <SidebarItem
                     to="/components/tree-view"

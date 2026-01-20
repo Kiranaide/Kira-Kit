@@ -62,6 +62,7 @@ import { ScrollAreaPage } from "@/pages/components/scroll-area";
 import { LayoutUtilitiesPage } from "@/pages/components/layout-utilities";
 import KanbanPage from "@/pages/components/kanban";
 import CarouselPage from "@/pages/components/carousel";
+import BreadcrumbPage from "@/pages/components/breadcrumb";
 import SpotlightPage from "@/pages/components/spotlight";
 import StatsCardPage from "@/pages/components/stats-card";
 import TimelinePage from "@/pages/components/timeline";
@@ -183,6 +184,12 @@ const buttonGroupRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/button-group",
   component: ButtonGroupPage,
+});
+
+const breadcrumbRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/breadcrumb",
+  component: BreadcrumbPage,
 });
 
 const calendarRoute = createRoute({
@@ -447,12 +454,6 @@ const announcementBarRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/announcement-bar",
   component: AnnouncementBarPage,
-});
-
-const breadcrumbRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/components/breadcrumb",
-  component: BreadcrumbPages,
 });
 
 // Build route tree
