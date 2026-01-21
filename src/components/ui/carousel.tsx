@@ -34,6 +34,8 @@ const carouselVariants = cva("relative group", {
       cards: "",
       fade: "",
       peek: "",
+      zoom: "",
+      flip: "",
     },
     orientation: {
       horizontal: "",
@@ -57,6 +59,8 @@ const carouselContentVariants = cva("flex", {
       cards: "",
       fade: "relative",
       peek: "",
+      zoom: "items-center justify-center",
+      flip: "perspective-1000",
     },
   },
   defaultVariants: {
@@ -72,6 +76,8 @@ const carouselItemVariants = cva("min-w-0 shrink-0 grow-0", {
       cards: "pl-4 md:basis-1/2 lg:basis-1/3",
       fade: "basis-full absolute inset-0 transition-opacity duration-500",
       peek: "basis-[85%] pl-4",
+      zoom: "basis-full pl-4 transition-transform duration-300",
+      flip: "basis-full pl-4",
     },
     size: {
       sm: "",
@@ -148,6 +154,7 @@ interface CarouselProps
   onSettle?: () => void
   onCarouselScroll?: (progress: number) => void
   setApi?: (api: ReturnType<typeof useEmblaCarousel>[1]) => void
+  autoHeight?: boolean
 }
 
 type CarouselContentProps = React.ComponentPropsWithoutRef<"div">
@@ -222,9 +229,10 @@ type CarouselContextValue = {
   selectedIndex: number
   slideCount: number
   orientation: "horizontal" | "vertical"
-  variant: "default" | "cards" | "fade" | "peek" | null | undefined
+  variant: "default" | "cards" | "fade" | "peek" | "zoom" | "flip" | null | undefined
   prefersReducedMotion: boolean
   isAutoPlaying: boolean
+  isDragging: boolean
   toggleAutoplay: () => void
   setApi?: (api: ReturnType<typeof useEmblaCarousel>[1]) => void
 }
@@ -360,9 +368,11 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
     const [slideCount, setSlideCount] = React.useState(0)
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
+    const [isDragging, setIsDragging] = React.useState(false)
     const autoplayTimerRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
     const containerRef = React.useRef<HTMLDivElement>(null)
     const liveRegionRef = React.useRef<HTMLDivElement>(null)
+    const dragAnimationRef = React.useRef<gsap.core.Tween | null>(null)
 
     // Detect reduced motion preference
     React.useEffect(() => {
@@ -542,6 +552,42 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       [emblaApi]
     )
 
+    useGSAP(() => {
+      if (!emblaApi || prefersReducedMotion) return
+
+      const handlePointerDown = () => {
+        setIsDragging(true)
+        if (dragAnimationRef.current) dragAnimationRef.current.kill()
+        dragAnimationRef.current = gsap.to(".embla__container", {
+          scale: 0.98,
+          opacity: 0.9,
+          duration: 0.2,
+          ease: "power2.out",
+        })
+      }
+
+      const handlePointerUp = () => {
+        setIsDragging(false)
+        if (dragAnimationRef.current) {
+          dragAnimationRef.current.kill()
+          dragAnimationRef.current = gsap.to(".embla__container", {
+            scale: 1,
+            opacity: 1,
+            duration: 0.3,
+            ease: "back.out(1.7)",
+          })
+        }
+      }
+
+      emblaApi.containerNode().addEventListener("pointerdown", handlePointerDown)
+      emblaApi.containerNode().addEventListener("pointerup", handlePointerUp)
+
+      return () => {
+        emblaApi.containerNode().removeEventListener("pointerdown", handlePointerDown)
+        emblaApi.containerNode().removeEventListener("pointerup", handlePointerUp)
+      }
+    }, [emblaApi, prefersReducedMotion])
+
     return (
       <CarouselContext.Provider
         value={{
@@ -559,6 +605,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
           variant,
           prefersReducedMotion,
           isAutoPlaying,
+          isDragging,
           toggleAutoplay,
           setApi,
         }}
@@ -622,10 +669,13 @@ CarouselContent.displayName = "CarouselContent"
 const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
   ({ className, variant, size, index = 0, children, ...props }, ref) => {
     const carouselContext = useCarousel()
-    const { emblaApi, carouselId, selectedIndex, slideCount, variant: contextVariant } = carouselContext
+    const { emblaApi, carouselId, selectedIndex, slideCount, variant: contextVariant, prefersReducedMotion } = carouselContext
+    const itemRef = React.useRef<HTMLDivElement>(null)
     const itemVariant = variant ?? contextVariant ?? "default"
     const isActive = index === selectedIndex
     const isFade = itemVariant === "fade"
+    const isZoom = itemVariant === "zoom"
+    const isFlip = itemVariant === "flip"
 
     const isVisible = React.useMemo(() => {
       if (!emblaApi || isFade) return isActive
@@ -633,9 +683,36 @@ const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
       return inView.includes(index)
     }, [emblaApi, isFade, isActive, index])
 
+    useGSAP(() => {
+      if (!itemRef.current) return
+      if (prefersReducedMotion) return
+
+      if (isZoom) {
+        gsap.to(itemRef.current, {
+          scale: isActive ? 1 : 0.8,
+          opacity: isActive ? 1 : 0.3,
+          duration: 0.5,
+          ease: "power2.out",
+        })
+      }
+
+      if (isFlip) {
+        const rotationY = isActive ? 0 : 180
+        gsap.to(itemRef.current, {
+          rotationY,
+          duration: 0.6,
+          ease: "back.out(1.7)",
+        })
+      }
+    }, [isActive, isZoom, isFlip, prefersReducedMotion])
+
     return (
       <div
-        ref={ref}
+        ref={(node) => {
+          itemRef.current = node
+          if (typeof ref === "function") ref(node)
+          else if (ref) ref.current = node
+        }}
         data-slot="carousel-item"
         id={`carousel-slide-${carouselId}-${index}`}
         role="tabpanel"
@@ -646,7 +723,8 @@ const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
         className={cn(
           carouselItemVariants({ variant: itemVariant, size, className }),
           isFade && (isActive ? "opacity-100 z-10" : "opacity-0 z-0"),
-          !isFade && !isVisible && "opacity-50"
+          !isFade && !isVisible && "opacity-50",
+          isFlip && "transform-style-3d backface-hidden"
         )}
         {...props}
       >
@@ -968,9 +1046,13 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
     const [position, setPosition] = React.useState({ x: 0, y: 0 })
     const [isDragging, setIsDragging] = React.useState(false)
     const [showKeyboardHelp, setShowKeyboardHelp] = React.useState(false)
+    const [swipeOffset, setSwipeOffset] = React.useState({ x: 0, y: 0 })
     const imageRef = React.useRef<HTMLImageElement>(null)
     const containerRef = React.useRef<HTMLDivElement>(null)
     const dragStart = React.useRef({ x: 0, y: 0 })
+    const touchStartRef = React.useRef<{ x: number; y: number; time: number } | null>(null)
+    const initialPinchDistanceRef = React.useRef<number | null>(null)
+    const initialZoomRef = React.useRef<number>(1)
 
     // Reset state when opening
     React.useEffect(() => {
@@ -978,8 +1060,122 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
         setCurrentIndex(initialIndex)
         setZoom(1)
         setPosition({ x: 0, y: 0 })
+        setSwipeOffset({ x: 0, y: 0 })
       }
     }, [open, initialIndex])
+
+    // Touch event handlers for mobile gestures
+    const handleTouchStart = React.useCallback((e: React.TouchEvent) => {
+      if (e.touches.length === 1) {
+        // Single touch - track for swipe
+        touchStartRef.current = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+          time: Date.now(),
+        }
+      } else if (e.touches.length === 2) {
+        // Two finger touch - pinch to zoom
+        const distance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        )
+        initialPinchDistanceRef.current = distance
+        initialZoomRef.current = zoom
+      }
+    }, [zoom])
+
+    const handleTouchMove = React.useCallback((e: React.TouchEvent) => {
+      if (e.touches.length === 1 && touchStartRef.current && zoom === 1) {
+        // Single touch swipe (only when not zoomed)
+        const deltaX = e.touches[0].clientX - touchStartRef.current.x
+        const deltaY = e.touches[0].clientY - touchStartRef.current.y
+        setSwipeOffset({ x: deltaX, y: deltaY })
+      } else if (e.touches.length === 2 && initialPinchDistanceRef.current !== null) {
+        // Pinch to zoom
+        const distance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        )
+        const scale = distance / initialPinchDistanceRef.current
+        const newZoom = Math.min(Math.max(initialZoomRef.current * scale, 1), 4)
+        setZoom(newZoom)
+        if (newZoom === 1) setPosition({ x: 0, y: 0 })
+      } else if (e.touches.length === 1 && zoom > 1) {
+        // Pan when zoomed
+        if (touchStartRef.current) {
+          setPosition({
+            x: e.touches[0].clientX - touchStartRef.current.x + position.x,
+            y: e.touches[0].clientY - touchStartRef.current.y + position.y,
+          })
+          touchStartRef.current = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+            time: Date.now(),
+          }
+        }
+      }
+    }, [zoom, position])
+
+    const handleTouchEnd = React.useCallback(() => {
+      if (touchStartRef.current && zoom === 1) {
+        const deltaX = swipeOffset.x
+        const deltaY = swipeOffset.y
+        const deltaTime = Date.now() - touchStartRef.current.time
+        const velocityX = Math.abs(deltaX) / deltaTime
+        const velocityY = Math.abs(deltaY) / deltaTime
+
+        // Swipe threshold: 100px or velocity > 0.5
+        const SWIPE_THRESHOLD = 100
+        const VELOCITY_THRESHOLD = 0.5
+
+        // Vertical swipe to dismiss
+        if (Math.abs(deltaY) > SWIPE_THRESHOLD || velocityY > VELOCITY_THRESHOLD) {
+          if (Math.abs(deltaY) > Math.abs(deltaX)) {
+            onOpenChange(false)
+            setSwipeOffset({ x: 0, y: 0 })
+            touchStartRef.current = null
+            initialPinchDistanceRef.current = null
+            return
+          }
+        }
+
+        // Horizontal swipe to navigate
+        if (Math.abs(deltaX) > SWIPE_THRESHOLD || velocityX > VELOCITY_THRESHOLD) {
+          if (deltaX > 0) {
+            // Swipe right - previous
+            setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))
+          } else {
+            // Swipe left - next
+            setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))
+          }
+          setZoom(1)
+          setPosition({ x: 0, y: 0 })
+        }
+      }
+
+      // Reset swipe offset with animation
+      setSwipeOffset({ x: 0, y: 0 })
+      touchStartRef.current = null
+      initialPinchDistanceRef.current = null
+    }, [zoom, swipeOffset, images.length, onOpenChange])
+
+    // Double tap to zoom
+    const lastTapRef = React.useRef<number>(0)
+    const handleDoubleTap = React.useCallback(() => {
+      const now = Date.now()
+      const DOUBLE_TAP_DELAY = 300
+
+      if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
+        // Double tap detected
+        if (zoom === 1) {
+          setZoom(2)
+        } else {
+          setZoom(1)
+          setPosition({ x: 0, y: 0 })
+        }
+      }
+      lastTapRef.current = now
+    }, [zoom])
 
     // Keyboard navigation
     React.useEffect(() => {
@@ -1243,14 +1439,25 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
         <div
           ref={containerRef}
           className={cn(
-            "relative flex h-full w-full items-center justify-center overflow-hidden",
+            "relative flex h-full w-full items-center justify-center overflow-hidden touch-none",
             zoom > 1 ? "cursor-grab" : "cursor-default",
             isDragging && "cursor-grabbing"
           )}
+          style={{
+            transform: `translate(${swipeOffset.x}px, ${swipeOffset.y}px)`,
+            opacity: 1 - Math.abs(swipeOffset.y) / 500,
+            transition: swipeOffset.x === 0 && swipeOffset.y === 0 ? "transform 0.3s ease, opacity 0.3s ease" : "none",
+          }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={() => {
+            handleTouchEnd()
+            handleDoubleTap()
+          }}
         >
           <img
             ref={imageRef}

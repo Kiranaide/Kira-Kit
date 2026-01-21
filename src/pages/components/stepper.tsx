@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { IconCheck, IconUser, IconMail, IconLock } from "@tabler/icons-react"
+import { IconCheck, IconUser, IconMail, IconLock, IconBuilding } from "@tabler/icons-react"
 
 import {
   Stepper,
@@ -12,6 +12,7 @@ import {
   StepperPanel,
   StepperActions,
   StepperProgress,
+  StepperNavigation,
 } from "@/components/ui/stepper"
 import { useStepper } from "@/hooks/use-stepper"
 import { Button } from "@/components/ui/button"
@@ -20,6 +21,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 
 // ============================================================================
 // DEMO DATA
@@ -354,6 +356,232 @@ function SizesDemo() {
   )
 }
 
+function SkippableStepsDemo() {
+  const stepper = useStepper({
+    totalSteps: 5,
+    initialStep: 0,
+    skippableSteps: [1, 3], // Profile and Business steps are optional
+    onSkip: (step) => console.log(`Skipped step ${step}`),
+  })
+
+  const skippableSteps = [
+    { title: "Account", description: "Create your account", icon: <IconUser className="h-4 w-4" />, optional: false },
+    { title: "Profile", description: "Optional profile setup", icon: <IconMail className="h-4 w-4" />, optional: true },
+    { title: "Security", description: "Configure security", icon: <IconLock className="h-4 w-4" />, optional: false },
+    { title: "Business", description: "Optional business info", icon: <IconBuilding className="h-4 w-4" />, optional: true },
+    { title: "Complete", description: "You're all set!", icon: <IconCheck className="h-4 w-4" />, optional: false },
+  ]
+
+  return (
+    <div className="space-y-8">
+      <Stepper
+        value={stepper.currentStep}
+        onValueChange={(v) => stepper.goTo(v)}
+        skippableSteps={[1, 3]}
+        skippedSteps={Array.from(stepper.skippedSteps)}
+      >
+        {skippableSteps.map((s, index) => (
+          <StepperItem key={index} value={index} optional={s.optional}>
+            <StepperIndicator>{s.icon}</StepperIndicator>
+            <StepperContent>
+              <StepperTitle>
+                {s.title}
+                {s.optional && <Badge variant="outline" className="ml-2 text-xs">Optional</Badge>}
+              </StepperTitle>
+              <StepperDescription>{s.description}</StepperDescription>
+            </StepperContent>
+            <StepperSeparator />
+          </StepperItem>
+        ))}
+      </Stepper>
+
+      <div className="flex items-center justify-between rounded-lg bg-muted p-4 text-sm">
+        <div className="flex gap-4">
+          <span>Skipped: <Badge variant="secondary">{stepper.skippedSteps.size}</Badge></span>
+          <span>Progress: <Badge variant="secondary">{Math.round(stepper.progress)}%</Badge></span>
+        </div>
+      </div>
+
+      <StepperActions>
+        <Button variant="outline" onClick={stepper.prev} disabled={!stepper.canGoPrev}>
+          Previous
+        </Button>
+        <div className="flex gap-2">
+          {stepper.isSkippable(stepper.currentStep) && !stepper.isLastStep && (
+            <Button variant="ghost" onClick={stepper.skip}>
+              Skip this step
+            </Button>
+          )}
+          <Button onClick={() => stepper.next()} disabled={!stepper.canGoNext && !stepper.isLastStep}>
+            {stepper.isLastStep ? "Complete" : "Next"}
+          </Button>
+        </div>
+      </StepperActions>
+    </div>
+  )
+}
+
+function ConditionalStepsDemo() {
+  const [isBusiness, setIsBusiness] = useState(false)
+  
+  const stepper = useStepper({
+    totalSteps: 5,
+    initialStep: 0,
+    stepConditions: {
+      2: isBusiness, // Business Details only shows if isBusiness is true
+      3: isBusiness, // Payment only shows if isBusiness is true
+    },
+  })
+
+  const conditionalSteps = [
+    { title: "Account Type", description: "Choose account type", show: true },
+    { title: "Personal Info", description: "Your details", show: true },
+    { title: "Business Details", description: "Company information", show: isBusiness },
+    { title: "Payment", description: "Billing setup", show: isBusiness },
+    { title: "Complete", description: "All done!", show: true },
+  ]
+
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center gap-4 rounded-lg border p-4">
+        <Switch
+          id="business-mode"
+          checked={isBusiness}
+          onCheckedChange={setIsBusiness}
+        />
+        <Label htmlFor="business-mode" className="cursor-pointer">
+          I'm signing up as a business
+          <span className="block text-sm text-muted-foreground">
+            {isBusiness ? "Business steps are visible" : "Toggle to show business steps"}
+          </span>
+        </Label>
+      </div>
+
+      <Stepper value={stepper.currentStep} onValueChange={(v) => stepper.goTo(v)}>
+        {conditionalSteps.map((s, index) => (
+          <StepperItem key={index} value={index} condition={s.show}>
+            <StepperIndicator />
+            <StepperContent>
+              <StepperTitle>{s.title}</StepperTitle>
+              <StepperDescription>{s.description}</StepperDescription>
+            </StepperContent>
+            <StepperSeparator />
+          </StepperItem>
+        ))}
+      </Stepper>
+
+      <div className="text-sm text-muted-foreground">
+        Visible steps: {stepper.visibleSteps.length} of 5 total
+      </div>
+
+      <StepperActions>
+        <Button variant="outline" onClick={stepper.prev} disabled={!stepper.canGoPrev}>
+          Previous
+        </Button>
+        <Button onClick={() => stepper.next()} disabled={!stepper.canGoNext && !stepper.isLastStep}>
+          {stepper.isLastStep ? "Complete" : "Next"}
+        </Button>
+      </StepperActions>
+    </div>
+  )
+}
+
+function PersistenceDemo() {
+  const stepper = useStepper({
+    totalSteps: 4,
+    initialStep: 0,
+    persistKey: "demo-wizard",
+    onComplete: () => alert("Wizard completed!"),
+  })
+
+  return (
+    <div className="space-y-8">
+      <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
+        <p>This wizard saves progress to localStorage. Refresh the page to see it persist!</p>
+        <p className="mt-2">Key: <code className="rounded bg-muted px-1">stepper-demo-wizard</code></p>
+      </div>
+
+      <Stepper
+        value={stepper.currentStep}
+        onValueChange={(v) => stepper.goTo(v)}
+        completedSteps={Array.from(stepper.completedSteps)}
+        persistKey="demo-wizard"
+      >
+        {steps.map((s, index) => (
+          <StepperItem key={index} value={index}>
+            <StepperIndicator>{s.icon}</StepperIndicator>
+            <StepperContent>
+              <StepperTitle>{s.title}</StepperTitle>
+              <StepperDescription>{s.description}</StepperDescription>
+            </StepperContent>
+            <StepperSeparator />
+          </StepperItem>
+        ))}
+      </Stepper>
+
+      <div className="flex items-center justify-between rounded-lg bg-muted p-4 text-sm">
+        <span>Completed: {stepper.completedSteps.size} / {stepper.totalSteps}</span>
+        <Button variant="outline" size="sm" onClick={() => { stepper.reset(); stepper.clearProgress() }}>
+          Clear Progress
+        </Button>
+      </div>
+
+      <StepperActions>
+        <Button variant="outline" onClick={stepper.prev} disabled={!stepper.canGoPrev}>
+          Previous
+        </Button>
+        <Button onClick={() => stepper.next()}>
+          {stepper.isLastStep ? "Complete" : "Next"}
+        </Button>
+      </StepperActions>
+    </div>
+  )
+}
+
+function NavigationComponentDemo() {
+  const [step, setStep] = useState(0)
+  const [loading, setLoading] = useState(false)
+
+  const handleNext = async () => {
+    setLoading(true)
+    // Simulate async validation
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    setLoading(false)
+    return true
+  }
+
+  return (
+    <div className="space-y-8">
+      <Stepper
+        value={step}
+        onValueChange={setStep}
+        skippableSteps={[1, 2]}
+      >
+        {steps.map((s, index) => (
+          <StepperItem key={index} value={index} optional={index === 1 || index === 2}>
+            <StepperIndicator>{s.icon}</StepperIndicator>
+            <StepperContent>
+              <StepperTitle>{s.title}</StepperTitle>
+              <StepperDescription>{s.description}</StepperDescription>
+            </StepperContent>
+            <StepperSeparator />
+          </StepperItem>
+        ))}
+
+        <StepperNavigation
+          onNext={handleNext}
+          onFinish={() => alert("Done!")}
+          loading={loading}
+          backLabel="Go Back"
+          nextLabel="Continue"
+          skipLabel="Skip Step"
+          finishLabel="Finish Setup"
+        />
+      </Stepper>
+    </div>
+  )
+}
+
 // ============================================================================
 // MAIN PAGE
 // ============================================================================
@@ -365,11 +593,13 @@ export default function StepperPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <h1 className="text-3xl font-bold">Stepper</h1>
-          <Badge>Enhanced</Badge>
+          <Badge>v2.0</Badge>
+          <Badge variant="outline">Breaking Changes</Badge>
         </div>
         <p className="text-lg text-muted-foreground">
           A multi-step wizard component with full keyboard navigation,
-          ARIA tablist pattern, GSAP animations, and validation support.
+          proper ARIA navigation pattern, hybrid GSAP + CSS animations,
+          skip steps, conditional branching, and persistence support.
         </p>
       </div>
 
@@ -380,7 +610,8 @@ export default function StepperPage() {
             <CardTitle className="text-base">Accessible</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            WAI-ARIA tablist pattern with arrow key navigation and screen reader announcements.
+            WAI-ARIA navigation pattern with <code>aria-current="step"</code>,
+            arrow key navigation, Enter/Space activation, and screen reader announcements.
           </CardContent>
         </Card>
         <Card>
@@ -388,7 +619,7 @@ export default function StepperPage() {
             <CardTitle className="text-base">Animated</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Smooth GSAP transitions with prefers-reduced-motion support.
+            Hybrid GSAP + tailwind-animate transitions with prefers-reduced-motion support.
           </CardContent>
         </Card>
         <Card>
@@ -396,7 +627,8 @@ export default function StepperPage() {
             <CardTitle className="text-base">Flexible</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Horizontal/vertical layouts, progress bar variant, validation API, and useStepper hook.
+            Skip steps, conditional branching, localStorage persistence, editable mode,
+            and StepperNavigation utility.
           </CardContent>
         </Card>
       </div>
@@ -406,10 +638,14 @@ export default function StepperPage() {
         <TabsList className="flex-wrap">
           <TabsTrigger value="basic">Basic</TabsTrigger>
           <TabsTrigger value="vertical">Vertical</TabsTrigger>
-          <TabsTrigger value="progress">Progress Bar</TabsTrigger>
+          <TabsTrigger value="progress">Progress</TabsTrigger>
           <TabsTrigger value="hook">With Hook</TabsTrigger>
           <TabsTrigger value="states">States</TabsTrigger>
           <TabsTrigger value="sizes">Sizes</TabsTrigger>
+          <TabsTrigger value="skippable">Skippable</TabsTrigger>
+          <TabsTrigger value="conditional">Conditional</TabsTrigger>
+          <TabsTrigger value="persistence">Persistence</TabsTrigger>
+          <TabsTrigger value="navigation">Navigation</TabsTrigger>
         </TabsList>
 
         <TabsContent value="basic">
@@ -473,7 +709,7 @@ export default function StepperPage() {
             <CardHeader>
               <CardTitle>Step States</CardTitle>
               <CardDescription>
-                Completed, active, error, and pending states.
+                Completed, active, error, skipped, and pending states.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -495,6 +731,62 @@ export default function StepperPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="skippable">
+          <Card>
+            <CardHeader>
+              <CardTitle>Skippable Steps</CardTitle>
+              <CardDescription>
+                Optional steps that users can skip. Steps marked with "Optional" badge can be skipped.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SkippableStepsDemo />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="conditional">
+          <Card>
+            <CardHeader>
+              <CardTitle>Conditional / Branching Steps</CardTitle>
+              <CardDescription>
+                Steps that show/hide based on conditions. Toggle the switch to see business-specific steps.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ConditionalStepsDemo />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="persistence">
+          <Card>
+            <CardHeader>
+              <CardTitle>Save & Resume Progress</CardTitle>
+              <CardDescription>
+                Progress is automatically saved to localStorage. Refresh the page to see it persist.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PersistenceDemo />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="navigation">
+          <Card>
+            <CardHeader>
+              <CardTitle>StepperNavigation Component</CardTitle>
+              <CardDescription>
+                Pre-built navigation with Back, Next, Skip buttons and async validation support.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <NavigationComponentDemo />
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
 
       {/* Keyboard Navigation */}
@@ -511,6 +803,7 @@ export default function StepperPage() {
               { key: "Home", description: "Go to first step" },
               { key: "End", description: "Go to last step" },
               { key: "Enter / Space", description: "Activate focused step" },
+              { key: "Escape", description: "Cancel / blur focus" },
             ].map(({ key, description }) => (
               <div key={key} className="flex items-center gap-2">
                 <kbd className="rounded border bg-muted px-2 py-1 text-xs font-mono">
@@ -561,17 +854,58 @@ export default function StepperPage() {
                   <td className="py-2">Force sequential completion</td>
                 </tr>
                 <tr>
-                  <td className="py-2 font-mono text-xs">completedSteps</td>
-                  <td className="py-2 text-muted-foreground">number[]</td>
-                  <td className="py-2">Array of completed step indices</td>
+                  <td className="py-2 font-mono text-xs">editable</td>
+                  <td className="py-2 text-muted-foreground">boolean</td>
+                  <td className="py-2">Allow clicking completed steps to edit</td>
                 </tr>
                 <tr>
-                  <td className="py-2 font-mono text-xs">errorSteps</td>
+                  <td className="py-2 font-mono text-xs">skippableSteps</td>
                   <td className="py-2 text-muted-foreground">number[]</td>
-                  <td className="py-2">Array of error step indices</td>
+                  <td className="py-2">Steps that can be skipped</td>
+                </tr>
+                <tr>
+                  <td className="py-2 font-mono text-xs">persistKey</td>
+                  <td className="py-2 text-muted-foreground">string</td>
+                  <td className="py-2">localStorage key for persistence</td>
+                </tr>
+                <tr>
+                  <td className="py-2 font-mono text-xs">onComplete</td>
+                  <td className="py-2 text-muted-foreground">() =&gt; void</td>
+                  <td className="py-2">Callback when wizard completes</td>
                 </tr>
               </tbody>
             </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Breaking Changes */}
+      <Card className="border-destructive/50">
+        <CardHeader>
+          <CardTitle className="text-destructive">Breaking Changes (v2.0)</CardTitle>
+          <CardDescription>Migration notes from v1.x</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-medium">ARIA Roles Changed</h4>
+            <p className="text-muted-foreground">
+              Changed from <code>role="tablist"</code> to <code>role="navigation"</code> with
+              <code>role="list"</code> + <code>role="listitem"</code> pattern for proper stepper semantics.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-medium">StepperItem now uses &lt;li&gt;</h4>
+            <p className="text-muted-foreground">
+              <code>StepperItem</code> changed from <code>&lt;div&gt;</code> to <code>&lt;li&gt;</code>.
+              Update any custom styling that targets the element type.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-medium">New Props</h4>
+            <p className="text-muted-foreground">
+              Added: <code>editable</code>, <code>skippableSteps</code>, <code>skippedSteps</code>,
+              <code>persistKey</code>, <code>onSkip</code>, <code>onComplete</code>, <code>condition</code> (on StepperItem).
+            </p>
           </div>
         </CardContent>
       </Card>

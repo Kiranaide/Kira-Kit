@@ -478,6 +478,58 @@ export default function CarouselPage() {
         </Carousel>
       </section>
 
+      {/* Zoom Variant */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">Zoom Variant</h2>
+        <p className="text-muted-foreground">
+          Active slide scales up while inactive slides scale down.
+        </p>
+
+        <Carousel variant={"zoom" as any} className="w-full max-w-xl mx-auto">
+          <CarouselContent>
+            {images.slice(0, 4).map((img) => (
+              <CarouselItem key={img.src}>
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  className="w-full h-[300px] object-cover rounded-lg"
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+          <CarouselDots className="mt-4" />
+        </Carousel>
+      </section>
+
+      {/* Flip Variant */}
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold">Flip Variant</h2>
+        <p className="text-muted-foreground">
+          3D flip animation between slides.
+        </p>
+
+        <Carousel variant={"flip" as any} className="w-full max-w-xl mx-auto">
+          <CarouselContent>
+            {images.slice(0, 4).map((img) => (
+              <CarouselItem key={img.src}>
+                <div className="w-full h-[300px] rounded-lg overflow-hidden bg-card flex items-center justify-center">
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+          <CarouselDots className="mt-4" />
+        </Carousel>
+      </section>
+
       {/* CarouselImage with Loading States */}
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">CarouselImage Component</h2>

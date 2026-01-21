@@ -62,6 +62,9 @@ import {
   IconSearch,
   IconListNumbers,
   IconTimeline,
+  IconSpeakerphone,
+  IconLayoutKanban,
+  IconChartBar,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -135,7 +138,7 @@ export function AppLayout() {
 
                 <SidebarDivider />
 
-                <SidebarGroup label="Components">
+<SidebarGroup label="Components">
                   <SidebarItem
                     to="/components/accordion"
                     icon={<IconList className="w-5 h-5" />}
@@ -153,6 +156,12 @@ export function AppLayout() {
                     icon={<IconAlertCircle className="w-5 h-5" />}
                   >
                     Alert Dialog
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/announcement-bar"
+                    icon={<IconSpeakerphone className="w-5 h-5" />}
+                  >
+                    Announcement Bar
                   </SidebarItem>
                   <SidebarItem
                     to="/components/aspect-ratio"
@@ -292,6 +301,12 @@ export function AppLayout() {
                   >
                     Input Group
                   </SidebarItem>
+<SidebarItem
+                    to="/components/kanban"
+                    icon={<IconLayoutKanban className="w-5 h-5" />}
+                  >
+                    Kanban
+                  </SidebarItem>
                   <SidebarItem
                     to="/components/kbd"
                     icon={<IconKeyboard className="w-5 h-5" />}
@@ -387,6 +402,12 @@ export function AppLayout() {
                     icon={<IconListNumbers className="w-5 h-5" />}
                   >
                     Stepper
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/stats-card"
+                    icon={<IconChartBar className="w-5 h-5" />}
+                  >
+                    Stats Card
                   </SidebarItem>
                   <SidebarItem
                     to="/components/table"

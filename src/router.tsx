@@ -69,7 +69,6 @@ import TimelinePage from "@/pages/components/timeline";
 import StepperPage from "@/pages/components/stepper";
 import CommandPage from "@/pages/components/command";
 import AnnouncementBarPage from "@/pages/components/announcement-bar";
-import BreadcrumbPages from "@/pages/components/breadcrumb";
 
 // Root route with layout
 const rootRoute = createRootRoute({
