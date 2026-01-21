@@ -34,7 +34,7 @@ const stepperItemVariants = cva("group flex", {
   variants: {
     orientation: {
       horizontal: "flex-row items-center",
-      vertical: "flex-col",
+      vertical: "flex-row items-start gap-3 w-full",
     },
     clickable: {
       true: "cursor-pointer",
@@ -72,16 +72,16 @@ const stepperIndicatorVariants = cva(
   }
 )
 
-const stepperSeparatorVariants = cva("transition-all duration-300", {
+const stepperSeparatorVariants = cva("transition-all duration-300 rounded-full", {
   variants: {
     orientation: {
-      horizontal: "h-0.5 flex-1 min-w-8",
-      vertical: "ml-4 mt-2 w-0.5 min-h-8",
+      horizontal: "h-0.5 flex-1 min-w-12",
+      vertical: "ml-4 mt-2 w-0.5 min-h-10",
     },
     state: {
-      pending: "bg-muted-foreground/20",
-      active: "bg-primary/50",
-      completed: "bg-primary",
+      pending: "bg-transparent",
+      active: "bg-transparent",
+      completed: "bg-transparent",
     },
   },
   defaultVariants: {
@@ -94,7 +94,7 @@ const stepperContentVariants = cva("", {
   variants: {
     orientation: {
       horizontal: "mt-2 text-center",
-      vertical: "ml-4 mt-0 pb-8 pt-1",
+      vertical: "mt-0 pt-0 pb-6 flex-1 min-w-0",
     },
   },
   defaultVariants: {
@@ -121,6 +121,8 @@ interface StepperContextValue {
   skippedSteps: Set<number>
   skippableSteps: Set<number>
   totalSteps: number
+  visibleStepsCount: number
+  currentVisibleIndex: number
   registerStep: (index: number, condition?: boolean) => void
   unregisterStep: (index: number) => void
   getStepState: (index: number) => StepState
@@ -273,6 +275,16 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
     }, [registeredSteps, stepConditions])
 
     const totalSteps = visibleSteps.size
+    
+    const visibleStepsArray = React.useMemo(
+      () => Array.from(visibleSteps).sort((a, b) => a - b),
+      [visibleSteps]
+    )
+    
+    const currentVisibleIndex = React.useMemo(
+      () => Math.max(visibleStepsArray.indexOf(value), 0),
+      [visibleStepsArray, value]
+    )
 
     // Load persisted progress
     React.useEffect(() => {
@@ -457,9 +469,9 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
             break
           case "Enter":
           case " ":
-            e.preventDefault()
+            { e.preventDefault()
             // Activate the currently focused step
-            const focusedElement = document.activeElement
+            const focusedElement: HTMLElement | null = document.activeElement instanceof HTMLElement ? document.activeElement : null
             if (focusedElement?.hasAttribute("data-value")) {
               const stepValue = parseInt(focusedElement.getAttribute("data-value") || "0", 10)
               if (canNavigateTo(stepValue)) {
@@ -467,7 +479,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
                 announceStep(stepValue)
               }
             }
-            return
+            return }
           case "Escape":
             // Cancel editing / blur focus
             e.preventDefault()
@@ -499,6 +511,8 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
         skippedSteps,
         skippableSteps,
         totalSteps,
+        visibleStepsCount: totalSteps,
+        currentVisibleIndex,
         registerStep,
         unregisterStep,
         getStepState,
@@ -523,6 +537,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
         skippedSteps,
         skippableSteps,
         totalSteps,
+        currentVisibleIndex,
         registerStep,
         unregisterStep,
         getStepState,
@@ -842,8 +857,7 @@ StepperDescription.displayName = "StepperDescription"
 // ============================================================================
 // STEPPER SEPARATOR
 // ============================================================================
-
-interface StepperSeparatorProps extends React.HTMLAttributes<HTMLDivElement> {}
+type StepperSeparatorProps = React.HTMLAttributes<HTMLDivElement>
 
 const StepperSeparator = React.forwardRef<HTMLDivElement, StepperSeparatorProps>(
   ({ className, ...props }, ref) => {
@@ -993,48 +1007,85 @@ interface StepperProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   showLabels?: boolean
   /** Custom labels for each step */
   labels?: string[]
+  /** Total number of steps (overrides context when StepperProgress is used standalone) */
+  steps?: number
 }
 
 const StepperProgress = React.forwardRef<HTMLDivElement, StepperProgressProps>(
-  ({ showLabels = false, labels = [], className, ...props }, ref) => {
-    const { value, totalSteps } = useStepperContext()
-    const progress = totalSteps > 1 ? (value / (totalSteps - 1)) * 100 : 100
+  ({ showLabels = false, labels = [], steps, className, ...props }, ref) => {
+    const { value, totalSteps: contextTotalSteps, visibleStepsCount, currentVisibleIndex } = useStepperContext()
     const reducedMotion = useReducedMotion()
     const progressRef = React.useRef<HTMLDivElement>(null)
+    const previousProgress = React.useRef<number>(0)
 
-    // GSAP animation for progress bar
+    // Determine total steps: explicit prop > labels length > context registered steps
+    const effectiveTotalSteps = steps ?? (labels.length > 0 ? labels.length : null) ?? visibleStepsCount ?? contextTotalSteps ?? 0
+    
+    // Determine current step index: use context's currentVisibleIndex if steps are registered,
+    // otherwise use value directly (for standalone progress bar usage)
+    const hasRegisteredSteps = contextTotalSteps > 0
+    const effectiveCurrentIndex = hasRegisteredSteps ? currentVisibleIndex : value
+
+    // Calculate progress percentage
+    const progress = effectiveTotalSteps > 1 
+      ? (effectiveCurrentIndex / (effectiveTotalSteps - 1)) * 100 
+      : effectiveCurrentIndex > 0 ? 100 : 0
+
+    // Clamp progress between 0 and 100
+    const clampedProgress = Math.max(0, Math.min(100, progress))
+
+    // Initialize previous progress on mount
     React.useEffect(() => {
-      if (!progressRef.current || reducedMotion) return
+      previousProgress.current = clampedProgress
+    }, [])
 
+    // GSAP animation for progress bar - optimized for performance
+    React.useEffect(() => {
+      if (!progressRef.current) return
+
+      // Only animate if progress actually changed
+      if (previousProgress.current === clampedProgress) return
+
+      if (reducedMotion) {
+        gsap.set(progressRef.current, { width: `${clampedProgress}%` })
+        previousProgress.current = clampedProgress
+        return
+      }
+
+      // Fast, snappy animation with overwrite to prevent stacking
       gsap.to(progressRef.current, {
-        width: `${progress}%`,
-        duration: 0.4,
+        width: `${clampedProgress}%`,
+        duration: 0.35,
         ease: "power2.out",
+        overwrite: "auto",
+        onComplete: () => {
+          previousProgress.current = clampedProgress
+        }
       })
-    }, [progress, reducedMotion])
+    }, [clampedProgress, reducedMotion])
 
     return (
       <div ref={ref} data-slot="stepper-progress" className={cn("w-full", className)} {...props}>
         <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
           <div
             ref={progressRef}
-            className="absolute left-0 top-0 h-full bg-primary transition-all"
-            style={{ width: reducedMotion ? `${progress}%` : 0 }}
+            className="absolute left-0 top-0 h-full bg-primary"
+            style={{ width: `${clampedProgress}%` }}
             role="progressbar"
-            aria-valuenow={value + 1}
+            aria-valuenow={effectiveCurrentIndex + 1}
             aria-valuemin={1}
-            aria-valuemax={totalSteps}
-            aria-label={`Step ${value + 1} of ${totalSteps}`}
+            aria-valuemax={effectiveTotalSteps}
+            aria-label={`Step ${effectiveCurrentIndex + 1} of ${effectiveTotalSteps}`}
           />
         </div>
         {showLabels && labels.length > 0 && (
           <div className="mt-2 flex justify-between">
-            {labels.map((label, index) => (
+            {labels.map((label: string, index: number) => (
               <span
                 key={index}
                 className={cn(
-                  "text-xs transition-colors",
-                  index <= value ? "text-primary font-medium" : "text-muted-foreground"
+                  "text-xs transition-colors duration-200",
+                  index <= effectiveCurrentIndex ? "text-primary font-medium" : "text-muted-foreground"
                 )}
               >
                 {label}

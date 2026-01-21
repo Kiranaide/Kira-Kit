@@ -188,36 +188,46 @@ const tabsListVariants = cva(
 function TabsIndicatorInternal() {
   const { orientation, variant, color } = useTabsContext();
 
+  const isUnderline = variant === "underline";
+  const isFill = !isUnderline;
+
   // Determine position based on orientation and variant
   const effectivePosition =
     orientation === "vertical"
-      ? variant === "underline"
+      ? isUnderline
         ? "right"
-        : "left"
-      : variant === "underline"
+        : "fill"
+      : isUnderline
       ? "bottom"
-      : "bottom";
+      : "fill";
 
   const positionClasses = {
     bottom: "bottom-0 left-[var(--active-tab-left)] w-[var(--active-tab-width)] h-0.5",
     top: "top-0 left-[var(--active-tab-left)] w-[var(--active-tab-width)] h-0.5",
     left: "left-0 top-[var(--active-tab-top)] h-[var(--active-tab-height)] w-0.5",
     right: "right-0 top-[var(--active-tab-top)] h-[var(--active-tab-height)] w-0.5",
+    fill: [
+      "left-[var(--active-tab-left)]",
+      "top-[var(--active-tab-top)]",
+      "w-[var(--active-tab-width)]",
+      "h-[var(--active-tab-height)]",
+      "rounded-md",
+      "opacity-80",
+    ].join(" "),
   };
 
   // Color classes for the indicator
   const colorClasses = {
-    default: "bg-primary",
-    primary: "bg-primary",
-    success: "bg-green-600",
-    warning: "bg-amber-500",
-    destructive: "bg-destructive",
+    default: isFill ? "bg-primary/10" : "bg-primary",
+    primary: isFill ? "bg-primary/10" : "bg-primary",
+    success: isFill ? "bg-green-600/10" : "bg-green-600",
+    warning: isFill ? "bg-amber-500/10" : "bg-amber-500",
+    destructive: isFill ? "bg-destructive/10" : "bg-destructive",
   };
 
-  // Only show indicator for underline variant by default
-  if (variant !== "underline") {
-    return null;
-  }
+  const shapeClasses = isUnderline
+    ? ""
+    : "border border-border/50 shadow-sm backdrop-blur-sm pointer-events-none z-0";
 
   return (
     <TabsPrimitive.Indicator
@@ -229,7 +239,8 @@ function TabsIndicatorInternal() {
         "animate-in fade-in-0 duration-200",
         "transition-all duration-200 ease-out",
         "motion-reduce:transition-none motion-reduce:animate-none",
-        positionClasses[effectivePosition]
+        positionClasses[effectivePosition],
+        shapeClasses
       )}
     />
   );
@@ -285,6 +296,7 @@ const tabsTriggerVariants = cva(
   [
     "inline-flex items-center justify-center whitespace-nowrap gap-2",
     "rounded-md px-3 py-1.5 text-sm font-medium",
+    "relative z-10", // keep content above indicator
     // Transitions
     "transition-all duration-200",
     "motion-reduce:transition-none",
@@ -300,27 +312,34 @@ const tabsTriggerVariants = cva(
       variant: {
         default: [
           "text-muted-foreground hover:text-foreground",
+          // Support both data-selected (Base UI) and data-state=selected (safety)
           "data-[selected]:bg-background data-[selected]:text-foreground data-[selected]:shadow-md data-[selected]:font-semibold",
+          "data-[state=selected]:bg-background data-[state=selected]:text-foreground data-[state=selected]:shadow-md data-[state=selected]:font-semibold",
         ],
         outline: [
           "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-          "data-[selected]:bg-primary data-[selected]:text-primary-foreground data-[selected]:font-semibold data-[selected]:shadow-md",
+          "data-[selected]:bg-primary data-[selected]:text-foreground data-[selected]:font-semibold data-[selected]:shadow-md",
+          "data-[state=selected]:bg-primary data-[state=selected]:text-foreground data-[state=selected]:font-semibold data-[state=selected]:shadow-md",
         ],
         pills: [
           "text-muted-foreground border border-transparent hover:text-foreground hover:bg-muted/50",
-          "data-[selected]:bg-primary data-[selected]:text-primary-foreground data-[selected]:border-primary data-[selected]:font-semibold data-[selected]:shadow-md",
+          "data-[selected]:bg-primary data-[selected]:text-foreground data-[selected]:border-primary data-[selected]:font-semibold data-[selected]:shadow-md",
+          "data-[state=selected]:bg-primary data-[state=selected]:text-foreground data-[state=selected]:border-primary data-[state=selected]:font-semibold data-[state=selected]:shadow-md",
         ],
         underline: [
           "text-muted-foreground rounded-none border-b-2 border-transparent -mb-px hover:text-foreground hover:border-muted-foreground/30",
           "data-[selected]:text-primary data-[selected]:border-primary data-[selected]:font-semibold",
+          "data-[state=selected]:text-primary data-[state=selected]:border-primary data-[state=selected]:font-semibold",
         ],
         soft: [
           "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-          "data-[selected]:bg-primary/10 data-[selected]:text-primary data-[selected]:font-semibold",
+          "data-[selected]:bg-primary/10 data-[selected]:text-foreground data-[selected]:font-semibold",
+          "data-[state=selected]:bg-primary/10 data-[state=selected]:text-foreground data-[state=selected]:font-semibold",
         ],
         card: [
           "text-muted-foreground hover:text-foreground",
           "data-[selected]:bg-card data-[selected]:text-foreground data-[selected]:shadow-lg data-[selected]:font-semibold data-[selected]:border data-[selected]:border-border",
+          "data-[state=selected]:bg-card data-[state=selected]:text-foreground data-[state=selected]:shadow-lg data-[state=selected]:font-semibold data-[state=selected]:border data-[state=selected]:border-border",
         ],
       },
       color: {
@@ -346,17 +365,20 @@ const tabsTriggerVariants = cva(
       {
         variant: "default",
         color: "primary",
-        className: "data-[selected]:bg-primary data-[selected]:text-primary-foreground",
+        className:
+          "data-[selected]:bg-primary data-[selected]:text-foreground data-[state=selected]:bg-primary data-[state=selected]:text-foreground",
       },
       {
         variant: "outline",
         color: "primary",
-        className: "data-[selected]:bg-primary data-[selected]:text-primary-foreground",
+        className:
+          "data-[selected]:bg-primary data-[selected]:text-foreground data-[state=selected]:bg-primary data-[state=selected]:text-foreground",
       },
       {
         variant: "pills",
         color: "primary",
-        className: "data-[selected]:bg-primary data-[selected]:text-primary-foreground",
+        className:
+          "data-[selected]:bg-primary data-[selected]:text-foreground data-[state=selected]:bg-primary data-[state=selected]:text-foreground",
       },
       {
         variant: "soft",
@@ -556,7 +578,7 @@ function TabsTrigger({
       {badge !== undefined && (
         <span
           className={cn(
-            "inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-medium min-w-[1.25rem]",
+            "inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-medium min-w-5",
             badgeColorClasses[badgeColor]
           )}
         >
@@ -754,7 +776,7 @@ function TabsScrollButton({
       aria-label={`Scroll ${direction}`}
       className={cn(
         "absolute z-10 flex items-center justify-center",
-        "w-8 h-full bg-gradient-to-r from-background to-transparent",
+        "w-8 h-full bg-linear-to-r from-background to-transparent",
         isHorizontal ? "top-0" : "left-0",
         isStart ? (isHorizontal ? "left-0" : "top-0") : (isHorizontal ? "right-0 rotate-180" : "bottom-0 rotate-180"),
         "opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity",

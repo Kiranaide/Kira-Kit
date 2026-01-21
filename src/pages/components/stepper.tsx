@@ -84,11 +84,11 @@ function DemoWrapper({
           </div>
           <Tabs value={view} onValueChange={(v) => setView(v as "preview" | "code")}>
             <TabsList>
-              <TabsTrigger value="preview" className="gap-1">
-                <IconEye className="w-3.5 h-3.5" /> Preview
+              <TabsTrigger value="preview" icon={<IconEye className="w-3.5 h-3.5" />} className="gap-1">
+                 Preview
               </TabsTrigger>
-              <TabsTrigger value="code" className="gap-1">
-                <IconFileCode className="w-3.5 h-3.5" /> Code
+              <TabsTrigger value="code" icon={<IconFileCode className="w-3.5 h-3.5" />} className="gap-1">
+                 Code
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -98,7 +98,16 @@ function DemoWrapper({
         {view === "preview" ? (
           <div className="min-h-[200px]">{children}</div>
         ) : (
-          <CodeBlock code={code} />
+          <CodeBlock
+            code={code}
+            language="tsx"
+            wordWrap="bounded"
+            minimap={false}
+            fontSize={13}
+            themeMode="system"
+            darkTheme="vitesse-dark"
+            lightTheme="github-light"
+          />
         )}
       </CardContent>
     </Card>
@@ -1485,7 +1494,7 @@ function ChangelogSection() {
           <div key={release.version} className="relative pl-6 border-l-2 border-border">
             <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-background border-2 border-border" />
             <div className="flex items-center gap-2 mb-3">
-              <Badge variant={release.badge as any}>{release.version}</Badge>
+              <Badge>{release.version}</Badge>
               <span className="text-sm text-muted-foreground">{release.date}</span>
             </div>
             <div className="space-y-4">
