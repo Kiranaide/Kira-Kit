@@ -138,7 +138,7 @@ export function AppLayout() {
 
                 <SidebarDivider />
 
-<SidebarGroup label="Components">
+                <SidebarGroup label="Components">
                   <SidebarItem
                     to="/components/accordion"
                     icon={<IconList className="w-5 h-5" />}
@@ -187,7 +187,7 @@ export function AppLayout() {
                   >
                     Button
                   </SidebarItem>
-<SidebarItem
+                  <SidebarItem
                     to="/components/button-group"
                     icon={<IconLayoutColumns className="w-5 h-5" />}
                   >
@@ -205,7 +205,7 @@ export function AppLayout() {
                   >
                     Calendar
                   </SidebarItem>
-<SidebarItem
+                  <SidebarItem
                     to="/components/card"
                     icon={<IconLayoutCards className="w-5 h-5" />}
                   >
@@ -234,6 +234,12 @@ export function AppLayout() {
                     icon={<IconColorPicker className="w-5 h-5" />}
                   >
                     Color Picker
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/command"
+                    icon={<IconMenu className="w-5 h-5" />}
+                  >
+                    Command
                   </SidebarItem>
                   <SidebarItem
                     to="/components/context-menu"
@@ -301,7 +307,7 @@ export function AppLayout() {
                   >
                     Input Group
                   </SidebarItem>
-<SidebarItem
+                  <SidebarItem
                     to="/components/kanban"
                     icon={<IconLayoutKanban className="w-5 h-5" />}
                   >

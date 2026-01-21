@@ -1,5 +1,11 @@
-import { useState } from "react"
-import { IconCheck, IconUser, IconMail, IconLock, IconBuilding } from "@tabler/icons-react"
+import { useState } from "react";
+import {
+  IconCheck,
+  IconUser,
+  IconMail,
+  IconLock,
+  IconBuilding,
+} from "@tabler/icons-react";
 
 import {
   Stepper,
@@ -13,33 +19,55 @@ import {
   StepperActions,
   StepperProgress,
   StepperNavigation,
-} from "@/components/ui/stepper"
-import { useStepper } from "@/hooks/use-stepper"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+} from "@/components/ui/stepper";
+import { useStepper } from "@/hooks/use-stepper";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 // ============================================================================
 // DEMO DATA
 // ============================================================================
 
 const steps = [
-  { title: "Account", description: "Create your account", icon: <IconUser className="h-4 w-4" /> },
-  { title: "Profile", description: "Set up your profile", icon: <IconMail className="h-4 w-4" /> },
-  { title: "Security", description: "Configure security", icon: <IconLock className="h-4 w-4" /> },
-  { title: "Complete", description: "You're all set!", icon: <IconCheck className="h-4 w-4" /> },
-]
+  {
+    title: "Account",
+    description: "Create your account",
+    icon: <IconUser className="h-4 w-4" />,
+  },
+  {
+    title: "Profile",
+    description: "Set up your profile",
+    icon: <IconMail className="h-4 w-4" />,
+  },
+  {
+    title: "Security",
+    description: "Configure security",
+    icon: <IconLock className="h-4 w-4" />,
+  },
+  {
+    title: "Complete",
+    description: "You're all set!",
+    icon: <IconCheck className="h-4 w-4" />,
+  },
+];
 
 // ============================================================================
 // DEMO COMPONENTS
 // ============================================================================
 
 function BasicDemo() {
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(0);
 
   return (
     <div className="space-y-8">
@@ -72,14 +100,19 @@ function BasicDemo() {
         </Button>
       </StepperActions>
     </div>
-  )
+  );
 }
 
 function VerticalDemo() {
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(0);
 
   return (
-    <Stepper value={step} onValueChange={setStep} orientation="vertical" className="w-full">
+    <Stepper
+      value={step}
+      onValueChange={setStep}
+      orientation="vertical"
+      className="w-full"
+    >
       <div className="flex gap-8">
         <div className="w-64 shrink-0">
           {steps.map((s, index) => (
@@ -160,12 +193,12 @@ function VerticalDemo() {
         </div>
       </div>
     </Stepper>
-  )
+  );
 }
 
 function ProgressDemo() {
-  const [step, setStep] = useState(1)
-  const totalSteps = 4
+  const [step, setStep] = useState(1);
+  const totalSteps = 4;
 
   return (
     <div className="space-y-8">
@@ -198,7 +231,7 @@ function ProgressDemo() {
         </Button>
       </StepperActions>
     </div>
-  )
+  );
 }
 
 function WithHookDemo() {
@@ -211,11 +244,14 @@ function WithHookDemo() {
       1: () => true,
       2: () => true,
     },
-  })
+  });
 
   return (
     <div className="space-y-8">
-      <Stepper value={stepper.currentStep} onValueChange={(v) => stepper.goTo(v)}>
+      <Stepper
+        value={stepper.currentStep}
+        onValueChange={(v) => stepper.goTo(v)}
+      >
         {steps.map((s, index) => (
           <StepperItem key={index} value={index}>
             <StepperIndicator />
@@ -229,8 +265,13 @@ function WithHookDemo() {
 
       <div className="flex items-center justify-between rounded-lg bg-muted p-4 text-sm">
         <div className="flex gap-4">
-          <span>Current: <Badge variant="outline">{stepper.currentStep + 1}</Badge></span>
-          <span>Progress: <Badge variant="secondary">{Math.round(stepper.progress)}%</Badge></span>
+          <span>
+            Current: <Badge variant="outline">{stepper.currentStep + 1}</Badge>
+          </span>
+          <span>
+            Progress:{" "}
+            <Badge variant="secondary">{Math.round(stepper.progress)}%</Badge>
+          </span>
         </div>
         <div className="flex gap-2">
           <span className={stepper.isFirstStep ? "text-muted-foreground" : ""}>
@@ -253,19 +294,16 @@ function WithHookDemo() {
         >
           Previous
         </Button>
-        <Button
-          onClick={() => stepper.next()}
-          disabled={!stepper.canGoNext}
-        >
+        <Button onClick={() => stepper.next()} disabled={!stepper.canGoNext}>
           {stepper.isLastStep ? "Complete" : "Next"}
         </Button>
       </StepperActions>
     </div>
-  )
+  );
 }
 
 function StatesDemo() {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(1);
 
   return (
     <div className="space-y-8">
@@ -328,17 +366,19 @@ function StatesDemo() {
         </Button>
       </StepperActions>
     </div>
-  )
+  );
 }
 
 function SizesDemo() {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(1);
 
   return (
     <div className="space-y-12">
       {(["sm", "default", "lg"] as const).map((size) => (
         <div key={size} className="space-y-2">
-          <Badge variant="outline" className="mb-4">{size.toUpperCase()}</Badge>
+          <Badge variant="outline" className="mb-4">
+            {size.toUpperCase()}
+          </Badge>
           <Stepper value={step} onValueChange={setStep} size={size}>
             {steps.slice(0, 3).map((s, index) => (
               <StepperItem key={index} value={index}>
@@ -353,7 +393,7 @@ function SizesDemo() {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 function SkippableStepsDemo() {
@@ -362,15 +402,40 @@ function SkippableStepsDemo() {
     initialStep: 0,
     skippableSteps: [1, 3], // Profile and Business steps are optional
     onSkip: (step) => console.log(`Skipped step ${step}`),
-  })
+  });
 
   const skippableSteps = [
-    { title: "Account", description: "Create your account", icon: <IconUser className="h-4 w-4" />, optional: false },
-    { title: "Profile", description: "Optional profile setup", icon: <IconMail className="h-4 w-4" />, optional: true },
-    { title: "Security", description: "Configure security", icon: <IconLock className="h-4 w-4" />, optional: false },
-    { title: "Business", description: "Optional business info", icon: <IconBuilding className="h-4 w-4" />, optional: true },
-    { title: "Complete", description: "You're all set!", icon: <IconCheck className="h-4 w-4" />, optional: false },
-  ]
+    {
+      title: "Account",
+      description: "Create your account",
+      icon: <IconUser className="h-4 w-4" />,
+      optional: false,
+    },
+    {
+      title: "Profile",
+      description: "Optional profile setup",
+      icon: <IconMail className="h-4 w-4" />,
+      optional: true,
+    },
+    {
+      title: "Security",
+      description: "Configure security",
+      icon: <IconLock className="h-4 w-4" />,
+      optional: false,
+    },
+    {
+      title: "Business",
+      description: "Optional business info",
+      icon: <IconBuilding className="h-4 w-4" />,
+      optional: true,
+    },
+    {
+      title: "Complete",
+      description: "You're all set!",
+      icon: <IconCheck className="h-4 w-4" />,
+      optional: false,
+    },
+  ];
 
   return (
     <div className="space-y-8">
@@ -386,7 +451,11 @@ function SkippableStepsDemo() {
             <StepperContent>
               <StepperTitle>
                 {s.title}
-                {s.optional && <Badge variant="outline" className="ml-2 text-xs">Optional</Badge>}
+                {s.optional && (
+                  <Badge variant="outline" className="ml-2 text-xs">
+                    Optional
+                  </Badge>
+                )}
               </StepperTitle>
               <StepperDescription>{s.description}</StepperDescription>
             </StepperContent>
@@ -397,13 +466,23 @@ function SkippableStepsDemo() {
 
       <div className="flex items-center justify-between rounded-lg bg-muted p-4 text-sm">
         <div className="flex gap-4">
-          <span>Skipped: <Badge variant="secondary">{stepper.skippedSteps.size}</Badge></span>
-          <span>Progress: <Badge variant="secondary">{Math.round(stepper.progress)}%</Badge></span>
+          <span>
+            Skipped:{" "}
+            <Badge variant="secondary">{stepper.skippedSteps.size}</Badge>
+          </span>
+          <span>
+            Progress:{" "}
+            <Badge variant="secondary">{Math.round(stepper.progress)}%</Badge>
+          </span>
         </div>
       </div>
 
       <StepperActions>
-        <Button variant="outline" onClick={stepper.prev} disabled={!stepper.canGoPrev}>
+        <Button
+          variant="outline"
+          onClick={stepper.prev}
+          disabled={!stepper.canGoPrev}
+        >
           Previous
         </Button>
         <div className="flex gap-2">
@@ -412,18 +491,21 @@ function SkippableStepsDemo() {
               Skip this step
             </Button>
           )}
-          <Button onClick={() => stepper.next()} disabled={!stepper.canGoNext && !stepper.isLastStep}>
+          <Button
+            onClick={() => stepper.next()}
+            disabled={!stepper.canGoNext && !stepper.isLastStep}
+          >
             {stepper.isLastStep ? "Complete" : "Next"}
           </Button>
         </div>
       </StepperActions>
     </div>
-  )
+  );
 }
 
 function ConditionalStepsDemo() {
-  const [isBusiness, setIsBusiness] = useState(false)
-  
+  const [isBusiness, setIsBusiness] = useState(false);
+
   const stepper = useStepper({
     totalSteps: 5,
     initialStep: 0,
@@ -431,15 +513,19 @@ function ConditionalStepsDemo() {
       2: isBusiness, // Business Details only shows if isBusiness is true
       3: isBusiness, // Payment only shows if isBusiness is true
     },
-  })
+  });
 
   const conditionalSteps = [
     { title: "Account Type", description: "Choose account type", show: true },
     { title: "Personal Info", description: "Your details", show: true },
-    { title: "Business Details", description: "Company information", show: isBusiness },
+    {
+      title: "Business Details",
+      description: "Company information",
+      show: isBusiness,
+    },
     { title: "Payment", description: "Billing setup", show: isBusiness },
     { title: "Complete", description: "All done!", show: true },
-  ]
+  ];
 
   return (
     <div className="space-y-8">
@@ -452,12 +538,17 @@ function ConditionalStepsDemo() {
         <Label htmlFor="business-mode" className="cursor-pointer">
           I'm signing up as a business
           <span className="block text-sm text-muted-foreground">
-            {isBusiness ? "Business steps are visible" : "Toggle to show business steps"}
+            {isBusiness
+              ? "Business steps are visible"
+              : "Toggle to show business steps"}
           </span>
         </Label>
       </div>
 
-      <Stepper value={stepper.currentStep} onValueChange={(v) => stepper.goTo(v)}>
+      <Stepper
+        value={stepper.currentStep}
+        onValueChange={(v) => stepper.goTo(v)}
+      >
         {conditionalSteps.map((s, index) => (
           <StepperItem key={index} value={index} condition={s.show}>
             <StepperIndicator />
@@ -475,15 +566,22 @@ function ConditionalStepsDemo() {
       </div>
 
       <StepperActions>
-        <Button variant="outline" onClick={stepper.prev} disabled={!stepper.canGoPrev}>
+        <Button
+          variant="outline"
+          onClick={stepper.prev}
+          disabled={!stepper.canGoPrev}
+        >
           Previous
         </Button>
-        <Button onClick={() => stepper.next()} disabled={!stepper.canGoNext && !stepper.isLastStep}>
+        <Button
+          onClick={() => stepper.next()}
+          disabled={!stepper.canGoNext && !stepper.isLastStep}
+        >
           {stepper.isLastStep ? "Complete" : "Next"}
         </Button>
       </StepperActions>
     </div>
-  )
+  );
 }
 
 function PersistenceDemo() {
@@ -492,13 +590,19 @@ function PersistenceDemo() {
     initialStep: 0,
     persistKey: "demo-wizard",
     onComplete: () => alert("Wizard completed!"),
-  })
+  });
 
   return (
     <div className="space-y-8">
       <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
-        <p>This wizard saves progress to localStorage. Refresh the page to see it persist!</p>
-        <p className="mt-2">Key: <code className="rounded bg-muted px-1">stepper-demo-wizard</code></p>
+        <p>
+          This wizard saves progress to localStorage. Refresh the page to see it
+          persist!
+        </p>
+        <p className="mt-2">
+          Key:{" "}
+          <code className="rounded bg-muted px-1">stepper-demo-wizard</code>
+        </p>
       </div>
 
       <Stepper
@@ -520,14 +624,27 @@ function PersistenceDemo() {
       </Stepper>
 
       <div className="flex items-center justify-between rounded-lg bg-muted p-4 text-sm">
-        <span>Completed: {stepper.completedSteps.size} / {stepper.totalSteps}</span>
-        <Button variant="outline" size="sm" onClick={() => { stepper.reset(); stepper.clearProgress() }}>
+        <span>
+          Completed: {stepper.completedSteps.size} / {stepper.totalSteps}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            stepper.reset();
+            stepper.clearProgress();
+          }}
+        >
           Clear Progress
         </Button>
       </div>
 
       <StepperActions>
-        <Button variant="outline" onClick={stepper.prev} disabled={!stepper.canGoPrev}>
+        <Button
+          variant="outline"
+          onClick={stepper.prev}
+          disabled={!stepper.canGoPrev}
+        >
           Previous
         </Button>
         <Button onClick={() => stepper.next()}>
@@ -535,30 +652,30 @@ function PersistenceDemo() {
         </Button>
       </StepperActions>
     </div>
-  )
+  );
 }
 
 function NavigationComponentDemo() {
-  const [step, setStep] = useState(0)
-  const [loading, setLoading] = useState(false)
+  const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const handleNext = async () => {
-    setLoading(true)
+    setLoading(true);
     // Simulate async validation
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setLoading(false)
-    return true
-  }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setLoading(false);
+    return true;
+  };
 
   return (
     <div className="space-y-8">
-      <Stepper
-        value={step}
-        onValueChange={setStep}
-        skippableSteps={[1, 2]}
-      >
+      <Stepper value={step} onValueChange={setStep} skippableSteps={[1, 2]}>
         {steps.map((s, index) => (
-          <StepperItem key={index} value={index} optional={index === 1 || index === 2}>
+          <StepperItem
+            key={index}
+            value={index}
+            optional={index === 1 || index === 2}
+          >
             <StepperIndicator>{s.icon}</StepperIndicator>
             <StepperContent>
               <StepperTitle>{s.title}</StepperTitle>
@@ -579,7 +696,7 @@ function NavigationComponentDemo() {
         />
       </Stepper>
     </div>
-  )
+  );
 }
 
 // ============================================================================
@@ -597,9 +714,9 @@ export default function StepperPage() {
           <Badge variant="outline">Breaking Changes</Badge>
         </div>
         <p className="text-lg text-muted-foreground">
-          A multi-step wizard component with full keyboard navigation,
-          proper ARIA navigation pattern, hybrid GSAP + CSS animations,
-          skip steps, conditional branching, and persistence support.
+          A multi-step wizard component with full keyboard navigation, proper
+          ARIA navigation pattern, hybrid GSAP + CSS animations, skip steps,
+          conditional branching, and persistence support.
         </p>
       </div>
 
@@ -611,7 +728,8 @@ export default function StepperPage() {
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
             WAI-ARIA navigation pattern with <code>aria-current="step"</code>,
-            arrow key navigation, Enter/Space activation, and screen reader announcements.
+            arrow key navigation, Enter/Space activation, and screen reader
+            announcements.
           </CardContent>
         </Card>
         <Card>
@@ -619,7 +737,8 @@ export default function StepperPage() {
             <CardTitle className="text-base">Animated</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Hybrid GSAP + tailwind-animate transitions with prefers-reduced-motion support.
+            Hybrid GSAP + tailwind-animate transitions with
+            prefers-reduced-motion support.
           </CardContent>
         </Card>
         <Card>
@@ -627,8 +746,8 @@ export default function StepperPage() {
             <CardTitle className="text-base">Flexible</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Skip steps, conditional branching, localStorage persistence, editable mode,
-            and StepperNavigation utility.
+            Skip steps, conditional branching, localStorage persistence,
+            editable mode, and StepperNavigation utility.
           </CardContent>
         </Card>
       </div>
@@ -695,7 +814,8 @@ export default function StepperPage() {
             <CardHeader>
               <CardTitle>Using useStepper Hook</CardTitle>
               <CardDescription>
-                Programmatic control with the useStepper hook for validation and navigation.
+                Programmatic control with the useStepper hook for validation and
+                navigation.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -737,7 +857,8 @@ export default function StepperPage() {
             <CardHeader>
               <CardTitle>Skippable Steps</CardTitle>
               <CardDescription>
-                Optional steps that users can skip. Steps marked with "Optional" badge can be skipped.
+                Optional steps that users can skip. Steps marked with "Optional"
+                badge can be skipped.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -751,7 +872,8 @@ export default function StepperPage() {
             <CardHeader>
               <CardTitle>Conditional / Branching Steps</CardTitle>
               <CardDescription>
-                Steps that show/hide based on conditions. Toggle the switch to see business-specific steps.
+                Steps that show/hide based on conditions. Toggle the switch to
+                see business-specific steps.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -765,7 +887,8 @@ export default function StepperPage() {
             <CardHeader>
               <CardTitle>Save & Resume Progress</CardTitle>
               <CardDescription>
-                Progress is automatically saved to localStorage. Refresh the page to see it persist.
+                Progress is automatically saved to localStorage. Refresh the
+                page to see it persist.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -779,7 +902,8 @@ export default function StepperPage() {
             <CardHeader>
               <CardTitle>StepperNavigation Component</CardTitle>
               <CardDescription>
-                Pre-built navigation with Back, Next, Skip buttons and async validation support.
+                Pre-built navigation with Back, Next, Skip buttons and async
+                validation support.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -793,7 +917,9 @@ export default function StepperPage() {
       <Card>
         <CardHeader>
           <CardTitle>Keyboard Navigation</CardTitle>
-          <CardDescription>Full keyboard support for accessibility</CardDescription>
+          <CardDescription>
+            Full keyboard support for accessibility
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -809,9 +935,52 @@ export default function StepperPage() {
                 <kbd className="rounded border bg-muted px-2 py-1 text-xs font-mono">
                   {key}
                 </kbd>
-                <span className="text-sm text-muted-foreground">{description}</span>
+                <span className="text-sm text-muted-foreground">
+                  {description}
+                </span>
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Usage */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Usage</CardTitle>
+          <CardDescription>Basic implementation example</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md bg-muted p-4">
+            <pre className="text-sm overflow-x-auto">
+              <code className="language-tsx">{`import {
+  Stepper,
+  StepperItem,
+  StepperIndicator,
+  StepperTitle,
+  StepperDescription,
+  StepperContent,
+  StepperSeparator
+} from "@/components/ui/stepper"
+
+export function StepperDemo() {
+  const [step, setStep] = useState(0)
+
+  return (
+    <Stepper value={step} onValueChange={setStep}>
+      <StepperItem value={0}>
+        <StepperIndicator />
+        <StepperContent>
+          <StepperTitle>Step 1</StepperTitle>
+          <StepperDescription>Enter details</StepperDescription>
+        </StepperContent>
+        <StepperSeparator />
+      </StepperItem>
+      {/* Add more steps... */}
+    </Stepper>
+  )
+}`}</code>
+            </pre>
           </div>
         </CardContent>
       </Card>
@@ -822,59 +991,438 @@ export default function StepperPage() {
           <CardTitle>API Reference</CardTitle>
           <CardDescription>Key props and configuration options</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2 text-left font-medium">Prop</th>
-                  <th className="py-2 text-left font-medium">Type</th>
-                  <th className="py-2 text-left font-medium">Description</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                <tr>
-                  <td className="py-2 font-mono text-xs">value</td>
-                  <td className="py-2 text-muted-foreground">number</td>
-                  <td className="py-2">Current step (0-indexed)</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">orientation</td>
-                  <td className="py-2 text-muted-foreground">horizontal | vertical</td>
-                  <td className="py-2">Layout direction</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">size</td>
-                  <td className="py-2 text-muted-foreground">sm | default | lg</td>
-                  <td className="py-2">Indicator size</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">linear</td>
-                  <td className="py-2 text-muted-foreground">boolean</td>
-                  <td className="py-2">Force sequential completion</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">editable</td>
-                  <td className="py-2 text-muted-foreground">boolean</td>
-                  <td className="py-2">Allow clicking completed steps to edit</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">skippableSteps</td>
-                  <td className="py-2 text-muted-foreground">number[]</td>
-                  <td className="py-2">Steps that can be skipped</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">persistKey</td>
-                  <td className="py-2 text-muted-foreground">string</td>
-                  <td className="py-2">localStorage key for persistence</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">onComplete</td>
-                  <td className="py-2 text-muted-foreground">() =&gt; void</td>
-                  <td className="py-2">Callback when wizard completes</td>
-                </tr>
-              </tbody>
-            </table>
+        <CardContent className="space-y-8">
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Stepper</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 text-left font-medium w-[120px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="py-2 font-mono text-xs">value</td>
+                    <td className="py-2 text-muted-foreground">number</td>
+                    <td className="py-2">
+                      Current active step index (0-indexed). Required for
+                      controlled mode.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">defaultValue</td>
+                    <td className="py-2 text-muted-foreground">number</td>
+                    <td className="py-2">
+                      Initial step index for uncontrolled mode. Default: 0
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">onValueChange</td>
+                    <td className="py-2 text-muted-foreground">
+                      (value: number) =&gt; void
+                    </td>
+                    <td className="py-2">
+                      Callback fired when the active step changes.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">orientation</td>
+                    <td className="py-2 text-muted-foreground">
+                      "horizontal" | "vertical"
+                    </td>
+                    <td className="py-2">
+                      Layout orientation of the stepper. Default: "horizontal"
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">size</td>
+                    <td className="py-2 text-muted-foreground">
+                      "sm" | "default" | "lg"
+                    </td>
+                    <td className="py-2">
+                      Size of the stepper indicators. Default: "default"
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">linear</td>
+                    <td className="py-2 text-muted-foreground">boolean</td>
+                    <td className="py-2">
+                      If true, requires steps to be completed sequentially.
+                      Default: false
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">editable</td>
+                    <td className="py-2 text-muted-foreground">boolean</td>
+                    <td className="py-2">
+                      If true, users can click to navigate back to completed
+                      steps. Default: true
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">skippableSteps</td>
+                    <td className="py-2 text-muted-foreground">number[]</td>
+                    <td className="py-2">
+                      Array of step indices that can be skipped.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">persistKey</td>
+                    <td className="py-2 text-muted-foreground">string</td>
+                    <td className="py-2">
+                      Unique key to persist state to localStorage.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">onComplete</td>
+                    <td className="py-2 text-muted-foreground">
+                      () =&gt; void
+                    </td>
+                    <td className="py-2">
+                      Callback fired when the last step is completed.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">StepperItem</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 text-left font-medium w-[120px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="py-2 font-mono text-xs">value</td>
+                    <td className="py-2 text-muted-foreground">number</td>
+                    <td className="py-2">
+                      The index of this step. Must match the index in the steps
+                      array.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">optional</td>
+                    <td className="py-2 text-muted-foreground">boolean</td>
+                    <td className="py-2">Marks the step as optional.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">disabled</td>
+                    <td className="py-2 text-muted-foreground">boolean</td>
+                    <td className="py-2">
+                      Disables interaction with the step.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">condition</td>
+                    <td className="py-2 text-muted-foreground">boolean</td>
+                    <td className="py-2">
+                      If false, the step is hidden and removed from the flow.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">StepperIndicator</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 text-left font-medium w-[120px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="py-2 font-mono text-xs">completedIcon</td>
+                    <td className="py-2 text-muted-foreground">ReactNode</td>
+                    <td className="py-2">
+                      Icon to show when step is completed. Default: Check icon
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">errorIcon</td>
+                    <td className="py-2 text-muted-foreground">ReactNode</td>
+                    <td className="py-2">
+                      Icon to show when step has an error. Default: X icon
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">loadingIcon</td>
+                    <td className="py-2 text-muted-foreground">ReactNode</td>
+                    <td className="py-2">
+                      Icon to show when step is loading. Default: Loader icon
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">StepperTitle</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 text-left font-medium w-[120px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="py-2 font-mono text-xs">children</td>
+                    <td className="py-2 text-muted-foreground">ReactNode</td>
+                    <td className="py-2">Title content.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">StepperDescription</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 text-left font-medium w-[120px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="py-2 font-mono text-xs">children</td>
+                    <td className="py-2 text-muted-foreground">ReactNode</td>
+                    <td className="py-2">Description content.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">StepperSeparator</h3>
+            <div className="overflow-x-auto">
+              <div className="text-sm text-muted-foreground">
+                Renders a separator line between steps. Automatically handles
+                positioning and styling based on step state. No specific props.
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">StepperContent</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 text-left font-medium w-[120px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="py-2 font-mono text-xs">children</td>
+                    <td className="py-2 text-muted-foreground">ReactNode</td>
+                    <td className="py-2">
+                      Content wrapper for title and description.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">StepperPanel</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 text-left font-medium w-[120px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="py-2 font-mono text-xs">value</td>
+                    <td className="py-2 text-muted-foreground">number</td>
+                    <td className="py-2">Step index this panel belongs to.</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">forceMount</td>
+                    <td className="py-2 text-muted-foreground">boolean</td>
+                    <td className="py-2">
+                      Force mount the panel content even when not active (useful
+                      for animations).
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">StepperActions</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 text-left font-medium w-[120px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="py-2 font-mono text-xs">children</td>
+                    <td className="py-2 text-muted-foreground">ReactNode</td>
+                    <td className="py-2">
+                      Container for action buttons (Next, Prev, etc).
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">StepperProgress</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 text-left font-medium w-[120px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="py-2 font-mono text-xs">showLabels</td>
+                    <td className="py-2 text-muted-foreground">boolean</td>
+                    <td className="py-2">
+                      Whether to show labels below the progress bar.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">labels</td>
+                    <td className="py-2 text-muted-foreground">string[]</td>
+                    <td className="py-2">Array of label strings to display.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">StepperNavigation</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="py-2 text-left font-medium w-[120px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr>
+                    <td className="py-2 font-mono text-xs">onNext</td>
+                    <td className="py-2 text-muted-foreground">
+                      () =&gt; void | Promise
+                    </td>
+                    <td className="py-2">
+                      Function called when "Next" is clicked. Can return a
+                      Promise to show loading.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">onPrev</td>
+                    <td className="py-2 text-muted-foreground">
+                      () =&gt; void
+                    </td>
+                    <td className="py-2">
+                      Function called when "Previous" is clicked.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">onFinish</td>
+                    <td className="py-2 text-muted-foreground">
+                      () =&gt; void
+                    </td>
+                    <td className="py-2">
+                      Function called when "Finish" is clicked on the last step.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 font-mono text-xs">loading</td>
+                    <td className="py-2 text-muted-foreground">boolean</td>
+                    <td className="py-2">
+                      Forces data-loading state on the Next/Finish button.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -882,33 +1430,40 @@ export default function StepperPage() {
       {/* Breaking Changes */}
       <Card className="border-destructive/50">
         <CardHeader>
-          <CardTitle className="text-destructive">Breaking Changes (v2.0)</CardTitle>
+          <CardTitle className="text-destructive">
+            Breaking Changes (v2.0)
+          </CardTitle>
           <CardDescription>Migration notes from v1.x</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 text-sm">
           <div>
             <h4 className="font-medium">ARIA Roles Changed</h4>
             <p className="text-muted-foreground">
-              Changed from <code>role="tablist"</code> to <code>role="navigation"</code> with
-              <code>role="list"</code> + <code>role="listitem"</code> pattern for proper stepper semantics.
+              Changed from <code>role="tablist"</code> to{" "}
+              <code>role="navigation"</code> with
+              <code>role="list"</code> + <code>role="listitem"</code> pattern
+              for proper stepper semantics.
             </p>
           </div>
           <div>
             <h4 className="font-medium">StepperItem now uses &lt;li&gt;</h4>
             <p className="text-muted-foreground">
-              <code>StepperItem</code> changed from <code>&lt;div&gt;</code> to <code>&lt;li&gt;</code>.
-              Update any custom styling that targets the element type.
+              <code>StepperItem</code> changed from <code>&lt;div&gt;</code> to{" "}
+              <code>&lt;li&gt;</code>. Update any custom styling that targets
+              the element type.
             </p>
           </div>
           <div>
             <h4 className="font-medium">New Props</h4>
             <p className="text-muted-foreground">
-              Added: <code>editable</code>, <code>skippableSteps</code>, <code>skippedSteps</code>,
-              <code>persistKey</code>, <code>onSkip</code>, <code>onComplete</code>, <code>condition</code> (on StepperItem).
+              Added: <code>editable</code>, <code>skippableSteps</code>,{" "}
+              <code>skippedSteps</code>,<code>persistKey</code>,{" "}
+              <code>onSkip</code>, <code>onComplete</code>,{" "}
+              <code>condition</code> (on StepperItem).
             </p>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

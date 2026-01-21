@@ -1,16 +1,37 @@
-import * as React from "react"
-import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandShortcut, CommandSeparator } from "@/components/ui/command"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { IconSearch, IconFileText, IconSettings, IconUser, IconLayoutDashboard, IconCommand, IconLetterK, IconUsers, IconDatabase } from "@tabler/icons-react"
-import { Badge } from "@/components/ui/badge"
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandShortcut,
+  CommandSeparator,
+} from "@/components/ui/command";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  IconSearch,
+  IconFileText,
+  IconSettings,
+  IconUser,
+  IconLayoutDashboard,
+  IconCommand,
+  IconLetterK,
+  IconUsers,
+  IconDatabase,
+} from "@tabler/icons-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function CommandPage() {
   return (
     <div className="container mx-auto py-8 space-y-12">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">Command</h1>
-        <p className="text-muted-foreground">Command palette with search, groups, and shortcuts</p>
+        <p className="text-muted-foreground">
+          Command palette with search, groups, and shortcuts
+        </p>
       </div>
 
       <section className="space-y-4">
@@ -95,8 +116,12 @@ export default function CommandPage() {
                 <span>Dashboard</span>
                 <CommandShortcut>
                   <div className="flex gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">⌘</kbd>
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">D</kbd>
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                      ⌘
+                    </kbd>
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                      D
+                    </kbd>
                   </div>
                 </CommandShortcut>
               </CommandItem>
@@ -104,8 +129,12 @@ export default function CommandPage() {
                 <span>Search</span>
                 <CommandShortcut>
                   <div className="flex gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">⌘</kbd>
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">K</kbd>
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                      ⌘
+                    </kbd>
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                      K
+                    </kbd>
                   </div>
                 </CommandShortcut>
               </CommandItem>
@@ -113,8 +142,12 @@ export default function CommandPage() {
                 <span>Settings</span>
                 <CommandShortcut>
                   <div className="flex gap-1">
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">⌘</kbd>
-                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">,</kbd>
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                      ⌘
+                    </kbd>
+                    <kbd className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                      ,
+                    </kbd>
                   </div>
                 </CommandShortcut>
               </CommandItem>
@@ -135,7 +168,9 @@ export default function CommandPage() {
                 <div className="flex flex-col items-center py-4 text-center">
                   <IconSearch className="h-8 w-8 text-muted-foreground mb-2" />
                   <p className="text-sm">No results found</p>
-                  <p className="text-xs text-muted-foreground">Try a different search term</p>
+                  <p className="text-xs text-muted-foreground">
+                    Try a different search term
+                  </p>
                 </div>
               </CommandEmpty>
             </CommandList>
@@ -145,7 +180,9 @@ export default function CommandPage() {
 
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">Variants</h2>
-        <p className="text-muted-foreground">Default, minimal, and bordered styles</p>
+        <p className="text-muted-foreground">
+          Default, minimal, and bordered styles
+        </p>
 
         <div className="space-y-8">
           <div className="space-y-2">
@@ -198,12 +235,12 @@ export default function CommandPage() {
 
         <div className="flex justify-center">
           <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <IconCommand className="h-4 w-4" />
-                <IconLetterK className="h-4 w-4" />
-                Open Command
-              </Button>
+            <DialogTrigger
+              className={cn(buttonVariants({ variant: "outline" }), "gap-2")}
+            >
+              <IconCommand className="h-4 w-4" />
+              <IconLetterK className="h-4 w-4" />
+              Open Command
             </DialogTrigger>
             <DialogContent className="p-0">
               <Command>
@@ -244,7 +281,9 @@ export default function CommandPage() {
 
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold">With Badges</h2>
-        <p className="text-muted-foreground">Command items with status badges</p>
+        <p className="text-muted-foreground">
+          Command items with status badges
+        </p>
 
         <div className="max-w-xl mx-auto">
           <Command>
@@ -253,17 +292,23 @@ export default function CommandPage() {
               <CommandItem>
                 <IconUser className="h-4 w-4 mr-2" />
                 <span className="flex-1">Profile</span>
-                <Badge variant="secondary" className="text-xs">Pro</Badge>
+                <Badge variant="secondary" className="text-xs">
+                  Pro
+                </Badge>
               </CommandItem>
               <CommandItem>
                 <IconUsers className="h-4 w-4 mr-2" />
                 <span className="flex-1">Team</span>
-                <Badge variant="outline" className="text-xs">New</Badge>
+                <Badge variant="outline" className="text-xs">
+                  New
+                </Badge>
               </CommandItem>
               <CommandItem>
                 <IconDatabase className="h-4 w-4 mr-2" />
                 <span className="flex-1">Database</span>
-                <Badge variant="destructive" className="text-xs">3 alerts</Badge>
+                <Badge variant="destructive" className="text-xs">
+                  3 alerts
+                </Badge>
               </CommandItem>
             </CommandList>
           </Command>
@@ -281,19 +326,25 @@ export default function CommandPage() {
               <CommandItem>
                 <div className="flex flex-col">
                   <span className="font-medium">Dashboard</span>
-                  <span className="text-xs text-muted-foreground">View your analytics and metrics</span>
+                  <span className="text-xs text-muted-foreground">
+                    View your analytics and metrics
+                  </span>
                 </div>
               </CommandItem>
               <CommandItem>
                 <div className="flex flex-col">
                   <span className="font-medium">Profile</span>
-                  <span className="text-xs text-muted-foreground">Manage your account settings</span>
+                  <span className="text-xs text-muted-foreground">
+                    Manage your account settings
+                  </span>
                 </div>
               </CommandItem>
               <CommandItem>
                 <div className="flex flex-col">
                   <span className="font-medium">Settings</span>
-                  <span className="text-xs text-muted-foreground">Configure your preferences</span>
+                  <span className="text-xs text-muted-foreground">
+                    Configure your preferences
+                  </span>
                 </div>
               </CommandItem>
             </CommandList>
@@ -301,5 +352,5 @@ export default function CommandPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }
