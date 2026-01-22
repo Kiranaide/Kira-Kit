@@ -1,0 +1,42 @@
+{
+  "name": "@kira-kit/cli",
+  "version": "0.1.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "CLI tool for adding Kira Kit components to your project",
+  "type": "module",
+  "bin": {
+    "kira-kit": "bin/kira-kit.js"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --outfile=bin/kira-kit.js --platform=node --format=esm --target=node22 --external:node:*",
+    "dev": "bun run build --watch",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
+  },
+  "keywords": [
+    "kira-kit",
+    "ui-components",
+    "cli",
+    "react",
+    "tailwind"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.0.0",
+    "inquirer": "^10.0.0",
+    "picocolors": "^1.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.0",
+    "@types/inquirer": "^9.0.0",
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.0"
+  }
+}
