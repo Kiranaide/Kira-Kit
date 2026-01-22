@@ -4,7 +4,6 @@ import * as React from "react";
 import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IconChevronDown } from "@tabler/icons-react";
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 import { cn } from "@/lib/utils";
@@ -161,23 +160,27 @@ function CollapsibleContent({
 
       if (isOpen) {
         setHasBeenOpened(true);
-        animationRef.current = animate(panel, {
-          height: [0, contentHeight],
-          opacity: [0, 1],
-          duration: 300,
-          ease: "outCubic",
-          onComplete: () => {
-            panel.style.height = "auto";
-          },
-        });
+        animationRef.current = gsap.fromTo(
+          panel,
+          { height: 0, opacity: 0 },
+          {
+            height: contentHeight,
+            opacity: 1,
+            duration: 0.3,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.set(panel, { height: "auto" });
+            },
+          }
+        );
       } else {
-        panel.style.height = `${contentHeight}px`;
+        gsap.set(panel, { height: contentHeight });
         void panel.offsetHeight;
-        animationRef.current = animate(panel, {
-          height: [contentHeight, 0],
-          opacity: [1, 0],
-          duration: 300,
-          ease: "outCubic",
+        animationRef.current = gsap.to(panel, {
+          height: 0,
+          opacity: 0,
+          duration: 0.3,
+          ease: "power2.in",
         });
       }
 
