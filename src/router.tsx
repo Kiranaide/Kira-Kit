@@ -24,7 +24,7 @@ import { AlertPage } from "@/pages/components/alert";
 import { AspectRatioPage } from "@/pages/components/aspect-ratio";
 import { AvatarPage } from "@/pages/components/avatar";
 import { ButtonGroupPage } from "@/pages/components/button-group";
-import { CalendarPage } from "@/pages/components/calendar";
+import CalendarPage from "@/pages/components/calendar";
 import { DialogPage } from "@/pages/components/dialog";
 import { DrawerPage } from "@/pages/components/drawer";
 import { EmptyPage } from "@/pages/components/empty";
@@ -38,7 +38,7 @@ import { ProgressPage } from "@/pages/components/progress";
 import { RadioGroupPage } from "@/pages/components/radio-group";
 import { ResizablePage } from "@/pages/components/resizable";
 import { SkeletonPage } from "@/pages/components/skeleton";
-import { SliderPage } from "@/pages/components/slider";
+import SliderPage from "@/pages/components/slider";
 import { SwitchPage } from "@/pages/components/switch";
 import { ContextMenuPage } from "@/pages/components/context-menu";
 import { TablePage } from "@/pages/components/table";
@@ -46,18 +46,18 @@ import { DataTablePage } from "@/pages/components/data-table";
 import { TabsPage } from "@/pages/components/tabs";
 import { ToastPage } from "@/pages/components/toast";
 import { TogglePage } from "@/pages/components/toggle";
-import { TooltipPage } from "@/pages/components/tooltip";
-import { TypographyPage } from "@/pages/components/typography";
+import TooltipPage from "@/pages/components/tooltip";
+import TypographyPage from "@/pages/components/typography";
 import { CheckboxPage } from "@/pages/components/checkbox";
-import { TreeViewPage } from "@/pages/components/tree-view";
+import TreeViewPage from "@/pages/components/tree-view";
 import { FileUploadPage } from "@/pages/components/file-upload";
-import { SidebarPage } from "@/pages/components/sidebar";
+import SidebarPage from "@/pages/components/sidebar";
 import { ColorPickerPage } from "@/pages/components/color-picker";
 import { ColorUsagePage } from "@/pages/components/color-usage";
 import { FlexPage } from "@/pages/components/flex";
 import { StackPage } from "@/pages/components/stack";
-import { GridPage } from "@/pages/components/grid";
-import { ContainerPage } from "@/pages/components/container";
+import GridPage from "@/pages/components/grid";
+import ContainerPage from "@/pages/components/container";
 import { ScrollAreaPage } from "@/pages/components/scroll-area";
 import { LayoutUtilitiesPage } from "@/pages/components/layout-utilities";
 import KanbanPage from "@/pages/components/kanban";
@@ -66,9 +66,25 @@ import BreadcrumbPage from "@/pages/components/breadcrumb";
 import SpotlightPage from "@/pages/components/spotlight";
 import StatsCardPage from "@/pages/components/stats-card";
 import TimelinePage from "@/pages/components/timeline";
-import StepperPage from "@/pages/components/stepper";
+import { StepperPage } from "@/pages/components/stepper";
 import CommandPage from "@/pages/components/command";
 import AnnouncementBarPage from "@/pages/components/announcement-bar";
+import { CollapsiblePage } from "@/pages/components/collapsible";
+import DatePickerPage from "@/pages/components/date-picker";
+import { LinkPage } from "@/pages/components/link";
+import ModalPage from "@/pages/components/modal";
+import { ProgressIndicatorPage } from "@/pages/components/progress-indicator";
+import { SheetPage } from "@/pages/components/sheet";
+import { SpinnerPage } from "@/pages/components/spinner";
+import { BoxPage } from "@/pages/components/box";
+import { CenterPage } from "@/pages/components/center";
+import { CodeBlockPage } from "@/pages/components/code-block";
+import IconButtonPage from "@/pages/components/icon-button";
+import ImagePage from "@/pages/components/image";
+import { SpacerPage } from "@/pages/components/spacer";
+import SplitViewPage from "@/pages/components/split-view";
+import ToggleGroupPage from "@/pages/components/toggle-group";
+import VideoPlayerPage from "@/pages/components/video-player";
 
 // Root route with layout
 const rootRoute = createRootRoute({
@@ -455,6 +471,102 @@ const announcementBarRoute = createRoute({
   component: AnnouncementBarPage,
 });
 
+const collapsibleRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/collapsible",
+  component: CollapsiblePage,
+});
+
+const datePickerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/date-picker",
+  component: DatePickerPage,
+});
+
+const linkRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/link",
+  component: LinkPage,
+});
+
+const modalRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/modal",
+  component: ModalPage,
+});
+
+const progressIndicatorRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/progress-indicator",
+  component: ProgressIndicatorPage,
+});
+
+const sheetRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/sheet",
+  component: SheetPage,
+});
+
+const spinnerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/spinner",
+  component: SpinnerPage,
+});
+
+const boxRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/box",
+  component: BoxPage,
+});
+
+const centerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/center",
+  component: CenterPage,
+});
+
+const codeBlockRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/code-block",
+  component: CodeBlockPage,
+});
+
+const iconButtonRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/icon-button",
+  component: IconButtonPage,
+});
+
+const imageRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/image",
+  component: ImagePage,
+});
+
+const spacerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/spacer",
+  component: SpacerPage,
+});
+
+const splitViewRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/split-view",
+  component: SplitViewPage,
+});
+
+const toggleGroupRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/toggle-group",
+  component: ToggleGroupPage,
+});
+
+const videoPlayerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/video-player",
+  component: VideoPlayerPage,
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -475,6 +587,7 @@ const routeTree = rootRoute.addChildren([
   aspectRatioRoute,
   avatarRoute,
   buttonGroupRoute,
+  breadcrumbRoute,
   calendarRoute,
   dialogRoute,
   drawerRoute,
@@ -519,7 +632,22 @@ const routeTree = rootRoute.addChildren([
   stepperRoute,
   commandRoute,
   announcementBarRoute,
-  breadcrumbRoute,
+  collapsibleRoute,
+  datePickerRoute,
+  linkRoute,
+  modalRoute,
+  progressIndicatorRoute,
+  sheetRoute,
+  spinnerRoute,
+  boxRoute,
+  centerRoute,
+  codeBlockRoute,
+  iconButtonRoute,
+  imageRoute,
+  spacerRoute,
+  splitViewRoute,
+  toggleGroupRoute,
+  videoPlayerRoute,
 ]);
 
 // Create router

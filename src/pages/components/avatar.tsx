@@ -6,24 +6,267 @@ import {
   AvatarGroup,
   AvatarStack,
   AutoAvatar,
-} from "@/components/ui/avatar";
+} from "@/components/ui/avatar"
+import {
+  IconAccessible,
+  IconPalette,
+  IconStack2,
+} from "@tabler/icons-react"
+import {
+  ComponentPage,
+  PageHeader,
+  FeatureGrid,
+  DemoTabs,
+  DemoWrapper,
+  UsageBlock,
+  APIReference,
+} from "@/components/docs"
 
-export function AvatarPage() {
+// =============================================================================
+// Demo Components
+// =============================================================================
+
+function BasicDemo() {
   return (
-    <div className="p-8 max-w-4xl space-y-12">
-      <header>
-        <h1 className="text-3xl font-bold mb-2">Avatar</h1>
-        <p className="text-muted-foreground">
-          An image element with fallback for representing users.
-        </p>
-      </header>
+    <div className="flex items-center gap-4">
+      <Avatar>
+        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+      <Avatar>
+        <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
+        <AvatarFallback>VC</AvatarFallback>
+      </Avatar>
+      <Avatar>
+        <AvatarFallback>JD</AvatarFallback>
+      </Avatar>
+    </div>
+  )
+}
 
-      {/* Basic */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Basic Avatar
-        </h2>
-        <div className="flex items-center gap-4">
+const basicCode = `import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+
+<Avatar>
+  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+  <AvatarFallback>CN</AvatarFallback>
+</Avatar>`
+
+function SizesDemo() {
+  return (
+    <div className="flex items-end gap-6">
+      <Avatar size="xs"><AvatarFallback>XS</AvatarFallback></Avatar>
+      <Avatar size="sm"><AvatarFallback>SM</AvatarFallback></Avatar>
+      <Avatar size="default"><AvatarFallback>DF</AvatarFallback></Avatar>
+      <Avatar size="lg"><AvatarFallback>LG</AvatarFallback></Avatar>
+      <Avatar size="xl"><AvatarFallback>XL</AvatarFallback></Avatar>
+      <Avatar size="2xl"><AvatarFallback>2XL</AvatarFallback></Avatar>
+      <Avatar size="3xl"><AvatarFallback>3XL</AvatarFallback></Avatar>
+      <Avatar size="4xl"><AvatarFallback>4XL</AvatarFallback></Avatar>
+    </div>
+  )
+}
+
+const sizesCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+
+// Sizes: xs (24px), sm (32px), default (40px), lg (48px), 
+//        xl (56px), 2xl (64px), 3xl (80px), 4xl (128px)
+<Avatar size="xs"><AvatarFallback>XS</AvatarFallback></Avatar>
+<Avatar size="lg"><AvatarFallback>LG</AvatarFallback></Avatar>
+<Avatar size="4xl"><AvatarFallback>4XL</AvatarFallback></Avatar>`
+
+function ShapesDemo() {
+  return (
+    <div className="flex items-center gap-6">
+      <Avatar shape="circle" size="lg">
+        <AvatarFallback>Circle</AvatarFallback>
+      </Avatar>
+      <Avatar shape="rounded" size="lg">
+        <AvatarFallback>Rounded</AvatarFallback>
+      </Avatar>
+      <Avatar shape="square" size="lg">
+        <AvatarFallback>Square</AvatarFallback>
+      </Avatar>
+    </div>
+  )
+}
+
+const shapesCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+
+// Shapes: circle (default), rounded, square
+<Avatar shape="circle"><AvatarFallback>C</AvatarFallback></Avatar>
+<Avatar shape="rounded"><AvatarFallback>R</AvatarFallback></Avatar>
+<Avatar shape="square"><AvatarFallback>S</AvatarFallback></Avatar>`
+
+function StatusDemo() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-6">
+        <Avatar status="online" size="lg"><AvatarFallback>ON</AvatarFallback></Avatar>
+        <Avatar status="offline" size="lg"><AvatarFallback>OFF</AvatarFallback></Avatar>
+        <Avatar status="busy" size="lg"><AvatarFallback>BUSY</AvatarFallback></Avatar>
+        <Avatar status="away" size="lg"><AvatarFallback>AWAY</AvatarFallback></Avatar>
+        <Avatar status="offline_gray" size="lg"><AvatarFallback>GRAY</AvatarFallback></Avatar>
+      </div>
+      <div>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">Status Positions</h4>
+        <div className="grid gap-6 md:grid-cols-4">
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-2">Top Right</p>
+            <Avatar status="online" statusPosition="top-right" size="lg">
+              <AvatarFallback>TR</AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-2">Top Left</p>
+            <Avatar status="online" statusPosition="top-left" size="lg">
+              <AvatarFallback>TL</AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-2">Bottom Right</p>
+            <Avatar status="online" statusPosition="bottom-right" size="lg">
+              <AvatarFallback>BR</AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground mb-2">Bottom Left</p>
+            <Avatar status="online" statusPosition="bottom-left" size="lg">
+              <AvatarFallback>BL</AvatarFallback>
+            </Avatar>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const statusCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+
+// Status indicators
+<Avatar status="online"><AvatarFallback>ON</AvatarFallback></Avatar>
+<Avatar status="offline"><AvatarFallback>OFF</AvatarFallback></Avatar>
+<Avatar status="busy"><AvatarFallback>BUSY</AvatarFallback></Avatar>
+<Avatar status="away"><AvatarFallback>AWAY</AvatarFallback></Avatar>
+
+// Status position (default: top-right)
+<Avatar status="online" statusPosition="top-right">...</Avatar>
+<Avatar status="online" statusPosition="top-left">...</Avatar>
+<Avatar status="online" statusPosition="bottom-right">...</Avatar>
+<Avatar status="online" statusPosition="bottom-left">...</Avatar>`
+
+function RingsDemo() {
+  return (
+    <div className="flex items-center gap-6">
+      <Avatar ring="primary" size="lg"><AvatarFallback>PR</AvatarFallback></Avatar>
+      <Avatar ring="success" size="lg"><AvatarFallback>SU</AvatarFallback></Avatar>
+      <Avatar ring="warning" size="lg"><AvatarFallback>WA</AvatarFallback></Avatar>
+      <Avatar ring="destructive" size="lg"><AvatarFallback>DE</AvatarFallback></Avatar>
+    </div>
+  )
+}
+
+const ringsCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+
+// Ring colors
+<Avatar ring="primary"><AvatarFallback>P</AvatarFallback></Avatar>
+<Avatar ring="success"><AvatarFallback>S</AvatarFallback></Avatar>
+<Avatar ring="warning"><AvatarFallback>W</AvatarFallback></Avatar>
+<Avatar ring="destructive"><AvatarFallback>D</AvatarFallback></Avatar>`
+
+function BadgeDemo() {
+  return (
+    <div className="flex items-center gap-8">
+      <div className="relative">
+        <Avatar size="lg">
+          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+        <AvatarBadge content="5" size="sm" />
+      </div>
+      <div className="relative">
+        <Avatar size="lg">
+          <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
+          <AvatarFallback>VC</AvatarFallback>
+        </Avatar>
+        <AvatarBadge variant="success" content="✓" size="default" />
+      </div>
+      <div className="relative">
+        <Avatar size="lg">
+          <AvatarFallback>AB</AvatarFallback>
+        </Avatar>
+        <AvatarBadge variant="destructive" content="!" />
+      </div>
+      <div className="relative">
+        <Avatar size="lg">
+          <AvatarFallback>GM</AvatarFallback>
+        </Avatar>
+        <AvatarBadge variant="info" content="12" />
+      </div>
+    </div>
+  )
+}
+
+const badgeCode = `import { Avatar, AvatarImage, AvatarFallback, AvatarBadge } from "@/components/ui/avatar"
+
+<div className="relative">
+  <Avatar size="lg">
+    <AvatarImage src="..." alt="..." />
+    <AvatarFallback>CN</AvatarFallback>
+  </Avatar>
+  <AvatarBadge content="5" size="sm" />
+</div>
+
+// Variants
+<AvatarBadge variant="success" content="✓" />
+<AvatarBadge variant="destructive" content="!" />
+<AvatarBadge variant="info" content="12" />`
+
+function AutoAvatarDemo() {
+  return (
+    <div className="flex items-center gap-4">
+      <AutoAvatar name="John Doe" size="lg" />
+      <AutoAvatar name="Jane Smith" size="lg" />
+      <AutoAvatar name="Bob Johnson" size="lg" />
+      <AutoAvatar name="Alice" size="lg" />
+      <AutoAvatar name="Charlie Brown" size="lg" />
+    </div>
+  )
+}
+
+const autoAvatarCode = `import { AutoAvatar } from "@/components/ui/avatar"
+
+// Automatically generates initials from name
+<AutoAvatar name="John Doe" size="lg" />
+<AutoAvatar name="Jane Smith" size="lg" />
+<AutoAvatar name="Alice" size="lg" />`
+
+function GradientDemo() {
+  return (
+    <div className="flex items-center gap-4">
+      <Avatar size="lg"><AvatarFallback variant="gradient">CN</AvatarFallback></Avatar>
+      <Avatar size="lg"><AvatarFallback variant="gradient" gradient="blue">BL</AvatarFallback></Avatar>
+      <Avatar size="lg"><AvatarFallback variant="gradient" gradient="purple">PU</AvatarFallback></Avatar>
+      <Avatar size="lg"><AvatarFallback variant="gradient" gradient="green">GR</AvatarFallback></Avatar>
+      <Avatar size="lg"><AvatarFallback variant="gradient" gradient="orange">OR</AvatarFallback></Avatar>
+      <Avatar size="lg"><AvatarFallback variant="gradient" gradient="pink">PK</AvatarFallback></Avatar>
+    </div>
+  )
+}
+
+const gradientCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+
+// Gradient fallback backgrounds
+<AvatarFallback variant="gradient">CN</AvatarFallback>
+<AvatarFallback variant="gradient" gradient="blue">BL</AvatarFallback>
+<AvatarFallback variant="gradient" gradient="purple">PU</AvatarFallback>
+<AvatarFallback variant="gradient" gradient="green">GR</AvatarFallback>`
+
+function GroupDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground mb-2">Default (max 3)</p>
+        <AvatarGroup max={3}>
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
@@ -32,416 +275,239 @@ export function AvatarPage() {
             <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
             <AvatarFallback>VC</AvatarFallback>
           </Avatar>
-          <Avatar>
-            <AvatarFallback>JD</AvatarFallback>
+          <Avatar><AvatarFallback>AB</AvatarFallback></Avatar>
+          <Avatar><AvatarFallback>CD</AvatarFallback></Avatar>
+          <Avatar><AvatarFallback>EF</AvatarFallback></Avatar>
+        </AvatarGroup>
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground mb-2">Large size with status</p>
+        <AvatarGroup max={4} size="lg">
+          <Avatar size="lg" status="online">
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-        </div>
-      </section>
+          <Avatar size="lg" status="online">
+            <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
+            <AvatarFallback>VC</AvatarFallback>
+          </Avatar>
+          <Avatar size="lg" status="busy"><AvatarFallback>AB</AvatarFallback></Avatar>
+          <Avatar size="lg" status="away"><AvatarFallback>CD</AvatarFallback></Avatar>
+          <Avatar size="lg" status="offline"><AvatarFallback>EF</AvatarFallback></Avatar>
+        </AvatarGroup>
+      </div>
+    </div>
+  )
+}
 
-      {/* Sizes */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Sizes
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          From xs (24px) to 4xl (128px) for different contexts.
-        </p>
-        <div className="flex items-end gap-6">
-          <Avatar size="xs">
-            <AvatarFallback>XS</AvatarFallback>
-          </Avatar>
-          <Avatar size="sm">
-            <AvatarFallback>SM</AvatarFallback>
-          </Avatar>
-          <Avatar size="default">
-            <AvatarFallback>DF</AvatarFallback>
-          </Avatar>
-          <Avatar size="lg">
-            <AvatarFallback>LG</AvatarFallback>
-          </Avatar>
-          <Avatar size="xl">
-            <AvatarFallback>XL</AvatarFallback>
-          </Avatar>
-          <Avatar size="2xl">
-            <AvatarFallback>2XL</AvatarFallback>
-          </Avatar>
-          <Avatar size="3xl">
-            <AvatarFallback>3XL</AvatarFallback>
-          </Avatar>
-          <Avatar size="4xl">
-            <AvatarFallback>4XL</AvatarFallback>
-          </Avatar>
-        </div>
-      </section>
+const groupCode = `import { Avatar, AvatarImage, AvatarFallback, AvatarGroup } from "@/components/ui/avatar"
 
-      {/* Shapes */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Shapes
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Circle (default), rounded, or square avatars.
-        </p>
-        <div className="flex items-center gap-6">
-          <Avatar shape="circle" size="lg">
-            <AvatarFallback>Circle</AvatarFallback>
-          </Avatar>
-          <Avatar shape="rounded" size="lg">
-            <AvatarFallback>Rounded</AvatarFallback>
-          </Avatar>
-          <Avatar shape="square" size="lg">
-            <AvatarFallback>Square</AvatarFallback>
-          </Avatar>
-        </div>
-      </section>
+// Avatar group with overflow
+<AvatarGroup max={3}>
+  <Avatar><AvatarFallback>A</AvatarFallback></Avatar>
+  <Avatar><AvatarFallback>B</AvatarFallback></Avatar>
+  <Avatar><AvatarFallback>C</AvatarFallback></Avatar>
+  <Avatar><AvatarFallback>D</AvatarFallback></Avatar>
+  <Avatar><AvatarFallback>E</AvatarFallback></Avatar>
+</AvatarGroup>
 
-      {/* Status Indicators */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Status Indicators
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Online, offline, busy, or away status dots (default: top-right).
-        </p>
-        <div className="flex items-center gap-6">
-          <Avatar status="online" size="lg">
-            <AvatarFallback>ON</AvatarFallback>
-          </Avatar>
-          <Avatar status="offline" size="lg">
-            <AvatarFallback>OFF</AvatarFallback>
-          </Avatar>
-          <Avatar status="busy" size="lg">
-            <AvatarFallback>BUSY</AvatarFallback>
-          </Avatar>
-          <Avatar status="away" size="lg">
-            <AvatarFallback>AWAY</AvatarFallback>
-          </Avatar>
-          <Avatar status="offline_gray" size="lg">
-            <AvatarFallback>GRAY</AvatarFallback>
-          </Avatar>
-        </div>
-      </section>
+// With size and status
+<AvatarGroup max={4} size="lg">
+  <Avatar size="lg" status="online">...</Avatar>
+  <Avatar size="lg" status="busy">...</Avatar>
+</AvatarGroup>`
 
-      {/* Status Positions */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Status Positions
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Configure where the status indicator appears.
-        </p>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">Top Right (default)</p>
-            <div className="inline-block">
-              <Avatar status="online" statusPosition="top-right" size="lg">
-                <AvatarFallback>TR</AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">Top Left</p>
-            <div className="inline-block">
-              <Avatar status="online" statusPosition="top-left" size="lg">
-                <AvatarFallback>TL</AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">Bottom Right</p>
-            <div className="inline-block">
-              <Avatar status="online" statusPosition="bottom-right" size="lg">
-                <AvatarFallback>BR</AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">Bottom Left</p>
-            <div className="inline-block">
-              <Avatar status="online" statusPosition="bottom-left" size="lg">
-                <AvatarFallback>BL</AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-        </div>
-      </section>
+function StackDemo() {
+  return (
+    <div className="max-w-xl">
+      <AvatarStack>
+        <Avatar><AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" /><AvatarFallback>CN</AvatarFallback></Avatar>
+        <Avatar><AvatarImage src="https://github.com/vercel.png" alt="@vercel" /><AvatarFallback>VC</AvatarFallback></Avatar>
+        <Avatar><AvatarFallback>AB</AvatarFallback></Avatar>
+        <Avatar><AvatarFallback>CD</AvatarFallback></Avatar>
+        <Avatar><AvatarFallback>EF</AvatarFallback></Avatar>
+        <Avatar><AvatarFallback>GH</AvatarFallback></Avatar>
+        <Avatar><AvatarFallback>IJ</AvatarFallback></Avatar>
+        <Avatar><AvatarFallback>KL</AvatarFallback></Avatar>
+      </AvatarStack>
+    </div>
+  )
+}
 
-      {/* Ring Colors */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Ring Colors
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Colored border rings around avatars.
-        </p>
-        <div className="flex items-center gap-6">
-          <Avatar ring="primary" size="lg">
-            <AvatarFallback>PR</AvatarFallback>
-          </Avatar>
-          <Avatar ring="success" size="lg">
-            <AvatarFallback>SU</AvatarFallback>
-          </Avatar>
-          <Avatar ring="warning" size="lg">
-            <AvatarFallback>WA</AvatarFallback>
-          </Avatar>
-          <Avatar ring="destructive" size="lg">
-            <AvatarFallback>DE</AvatarFallback>
-          </Avatar>
-        </div>
-      </section>
+const stackCode = `import { Avatar, AvatarFallback, AvatarStack } from "@/components/ui/avatar"
 
-      {/* Avatar Badge */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Avatar Badge
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Notification counts or status indicators.
-        </p>
-        <div className="flex items-center gap-8">
-          <div className="relative">
-            <Avatar size="lg">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            <AvatarBadge content="5" size="sm" />
-          </div>
-          <div className="relative">
-            <Avatar size="lg">
-              <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
-              <AvatarFallback>VC</AvatarFallback>
-            </Avatar>
-            <AvatarBadge variant="success" content="✓" size="default" />
-          </div>
-          <div className="relative">
-            <Avatar size="lg">
-              <AvatarFallback>AB</AvatarFallback>
-            </Avatar>
-            <AvatarBadge variant="destructive" content="!" />
-          </div>
-          <div className="relative">
-            <Avatar size="lg">
-              <AvatarFallback>GM</AvatarFallback>
-            </Avatar>
-            <AvatarBadge variant="info" content="12" />
-          </div>
-        </div>
-      </section>
+// Horizontally scrolling stack
+<AvatarStack>
+  <Avatar><AvatarFallback>A</AvatarFallback></Avatar>
+  <Avatar><AvatarFallback>B</AvatarFallback></Avatar>
+  <Avatar><AvatarFallback>C</AvatarFallback></Avatar>
+</AvatarStack>`
 
-      {/* Auto-Avatar with Initials */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Auto Avatar (Initials)
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Automatically generates initials from name.
-        </p>
-        <div className="flex items-center gap-4">
-          <AutoAvatar name="John Doe" size="lg" />
-          <AutoAvatar name="Jane Smith" size="lg" />
-          <AutoAvatar name="Bob Johnson" size="lg" />
-          <AutoAvatar name="Alice" size="lg" />
-          <AutoAvatar name="Charlie Brown" size="lg" />
-        </div>
-      </section>
+// =============================================================================
+// Main Page Component
+// =============================================================================
 
-      {/* Gradient Fallback */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Gradient Fallback
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Predefined gradient backgrounds for fallback state.
-        </p>
-        <div className="flex items-center gap-4">
-          <Avatar size="lg">
-            <AvatarFallback variant="gradient">CN</AvatarFallback>
-          </Avatar>
-          <Avatar size="lg">
-            <AvatarFallback variant="gradient" gradient="blue">
-              BL
-            </AvatarFallback>
-          </Avatar>
-          <Avatar size="lg">
-            <AvatarFallback variant="gradient" gradient="purple">
-              PU
-            </AvatarFallback>
-          </Avatar>
-          <Avatar size="lg">
-            <AvatarFallback variant="gradient" gradient="green">
-              GR
-            </AvatarFallback>
-          </Avatar>
-          <Avatar size="lg">
-            <AvatarFallback variant="gradient" gradient="orange">
-              OR
-            </AvatarFallback>
-          </Avatar>
-          <Avatar size="lg">
-            <AvatarFallback variant="gradient" gradient="pink">
-              PK
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      </section>
+export function AvatarPage() {
+  const features = [
+    {
+      title: "Accessible",
+      description: "Proper alt text support and fallback handling.",
+      icon: <IconAccessible className="w-4 h-4 text-primary" />,
+    },
+    {
+      title: "Customizable",
+      description: "8 sizes, 3 shapes, status indicators, and ring colors.",
+      icon: <IconPalette className="w-4 h-4 text-primary" />,
+    },
+    {
+      title: "Composable",
+      description: "AvatarGroup, AvatarStack, AutoAvatar, and gradient fallbacks.",
+      icon: <IconStack2 className="w-4 h-4 text-primary" />,
+    },
+  ]
 
-      {/* Avatar Group */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Avatar Group
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Stacked avatars with automatic overflow indicator.
-        </p>
-        <div className="space-y-6">
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">Default (max 3)</p>
-            <AvatarGroup max={3}>
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <Avatar>
-                <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
-                <AvatarFallback>VC</AvatarFallback>
-              </Avatar>
-              <Avatar>
-                <AvatarFallback>AB</AvatarFallback>
-              </Avatar>
-              <Avatar>
-                <AvatarFallback>CD</AvatarFallback>
-              </Avatar>
-              <Avatar>
-                <AvatarFallback>EF</AvatarFallback>
-              </Avatar>
-            </AvatarGroup>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">Large size</p>
-            <AvatarGroup max={4} size="lg">
-              <Avatar size="lg">
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <Avatar size="lg">
-                <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
-                <AvatarFallback>VC</AvatarFallback>
-              </Avatar>
-              <Avatar size="lg">
-                <AvatarFallback>AB</AvatarFallback>
-              </Avatar>
-              <Avatar size="lg">
-                <AvatarFallback>CD</AvatarFallback>
-              </Avatar>
-              <Avatar size="lg">
-                <AvatarFallback>EF</AvatarFallback>
-              </Avatar>
-            </AvatarGroup>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">With status indicators</p>
-            <AvatarGroup max={4}>
-              <Avatar status="online">
-                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <Avatar status="online">
-                <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
-                <AvatarFallback>VC</AvatarFallback>
-              </Avatar>
-              <Avatar status="busy">
-                <AvatarFallback>AB</AvatarFallback>
-              </Avatar>
-              <Avatar status="away">
-                <AvatarFallback>CD</AvatarFallback>
-              </Avatar>
-              <Avatar status="offline">
-                <AvatarFallback>EF</AvatarFallback>
-              </Avatar>
-            </AvatarGroup>
-          </div>
-        </div>
-      </section>
+  const demoTabs = [
+    {
+      value: "basic",
+      label: "Basic",
+      demo: (
+        <DemoWrapper
+          title="Basic Avatar"
+          description="Image with fallback for when image fails to load"
+          code={basicCode}
+        >
+          <BasicDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "sizes",
+      label: "Sizes",
+      demo: (
+        <DemoWrapper
+          title="Size Variants"
+          description="From 24px (xs) to 128px (4xl)"
+          code={sizesCode}
+        >
+          <SizesDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "shapes",
+      label: "Shapes",
+      demo: (
+        <DemoWrapper
+          title="Shape Variants"
+          description="Circle, rounded, or square avatars"
+          code={shapesCode}
+        >
+          <ShapesDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "status",
+      label: "Status",
+      demo: (
+        <DemoWrapper
+          title="Status Indicators"
+          description="Online, offline, busy, away status with configurable positions"
+          code={statusCode}
+        >
+          <StatusDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "rings",
+      label: "Rings",
+      demo: (
+        <DemoWrapper
+          title="Ring Colors"
+          description="Colored border rings around avatars"
+          code={ringsCode}
+        >
+          <RingsDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "badge",
+      label: "Badge",
+      demo: (
+        <DemoWrapper
+          title="Avatar Badge"
+          description="Notification counts or status indicators"
+          code={badgeCode}
+        >
+          <BadgeDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "auto",
+      label: "AutoAvatar",
+      demo: (
+        <DemoWrapper
+          title="Auto Avatar"
+          description="Automatically generates initials from name"
+          code={autoAvatarCode}
+        >
+          <AutoAvatarDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "gradient",
+      label: "Gradient",
+      demo: (
+        <DemoWrapper
+          title="Gradient Fallback"
+          description="Predefined gradient backgrounds for fallback state"
+          code={gradientCode}
+        >
+          <GradientDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "group",
+      label: "Group",
+      demo: (
+        <DemoWrapper
+          title="Avatar Group"
+          description="Stacked avatars with automatic overflow indicator"
+          code={groupCode}
+        >
+          <GroupDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "stack",
+      label: "Stack",
+      demo: (
+        <DemoWrapper
+          title="Avatar Stack"
+          description="Horizontally scrolling stack of avatars"
+          code={stackCode}
+        >
+          <StackDemo />
+        </DemoWrapper>
+      ),
+    },
+  ]
 
-      {/* Avatar Stack */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Avatar Stack
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Horizontally scrolling stack of avatars.
-        </p>
-        <div className="max-w-xl">
-          <AvatarStack>
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-            <Avatar>
-              <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
-              <AvatarFallback>VC</AvatarFallback>
-            </Avatar>
-            <Avatar>
-              <AvatarFallback>AB</AvatarFallback>
-            </Avatar>
-            <Avatar>
-              <AvatarFallback>CD</AvatarFallback>
-            </Avatar>
-            <Avatar>
-              <AvatarFallback>EF</AvatarFallback>
-            </Avatar>
-            <Avatar>
-              <AvatarFallback>GH</AvatarFallback>
-            </Avatar>
-            <Avatar>
-              <AvatarFallback>IJ</AvatarFallback>
-            </Avatar>
-            <Avatar>
-              <AvatarFallback>KL</AvatarFallback>
-            </Avatar>
-          </AvatarStack>
-        </div>
-      </section>
-
-      {/* Complete Example */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Complete Example
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Combining all features in a user profile card.
-        </p>
-        <div className="flex items-center gap-4 p-4 border rounded-lg max-w-md">
-          <div className="relative">
-            <Avatar size="xl" ring="primary">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback variant="gradient">CN</AvatarFallback>
-            </Avatar>
-            <AvatarBadge
-              content="5"
-              variant="destructive"
-              className="absolute -bottom-1 -right-1"
-            />
-          </div>
-          <div>
-            <h3 className="font-semibold">John Doe</h3>
-            <p className="text-sm text-muted-foreground">Product Designer</p>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="h-2 w-2 rounded-full bg-success" />
-              <span className="text-xs text-muted-foreground">Online</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Usage */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Usage
-        </h2>
-        <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
-          <pre className="text-sm text-foreground">
-            {`import { Avatar, AvatarImage, AvatarFallback, AvatarBadge, AvatarGroup, AvatarStack, AutoAvatar } from "@/components/ui/avatar"
+  const usageCode = `import { 
+  Avatar, 
+  AvatarImage, 
+  AvatarFallback, 
+  AvatarBadge, 
+  AvatarGroup, 
+  AvatarStack, 
+  AutoAvatar 
+} from "@/components/ui/avatar"
 
 // Basic
 <Avatar>
@@ -457,30 +523,19 @@ export function AvatarPage() {
 
 // Status indicators
 <Avatar status="online">...</Avatar>
-<Avatar status="busy" size="lg">...</Avatar>
-
-// Status position (default: top-right)
-<Avatar status="online" statusPosition="top-right">...</Avatar>
-<Avatar status="online" statusPosition="top-left">...</Avatar>
-<Avatar status="online" statusPosition="bottom-right">...</Avatar>
-<Avatar status="online" statusPosition="bottom-left">...</Avatar>
+<Avatar status="busy" statusPosition="bottom-right">...</Avatar>
 
 // Ring colors
 <Avatar ring="primary">...</Avatar>
-<Avatar ring="success">...</Avatar>
 
 // Badge with notification count
-<Avatar>
-  <AvatarImage src="..." />
-  <AvatarFallback>CN</AvatarFallback>
+<div className="relative">
+  <Avatar><AvatarFallback>CN</AvatarFallback></Avatar>
   <AvatarBadge content="5" />
-</Avatar>
+</div>
 
 // Auto avatar with initials
 <AutoAvatar name="John Doe" size="lg" />
-
-// Gradient fallback
-<AvatarFallback variant="gradient">CN</AvatarFallback>
 
 // Avatar group
 <AvatarGroup max={3}>
@@ -492,10 +547,72 @@ export function AvatarPage() {
 <AvatarStack>
   <Avatar>...</Avatar>
   <Avatar>...</Avatar>
-</AvatarStack>`}
-          </pre>
-        </div>
-      </section>
-    </div>
-  );
+</AvatarStack>`
+
+  const apiReference = [
+    {
+      title: "Avatar",
+      props: [
+        { prop: "size", type: '"xs" | "sm" | "default" | "lg" | "xl" | "2xl" | "3xl" | "4xl"', default: '"default"', description: "Avatar size" },
+        { prop: "shape", type: '"circle" | "rounded" | "square"', default: '"circle"', description: "Avatar shape" },
+        { prop: "status", type: '"online" | "offline" | "busy" | "away" | "offline_gray"', default: "-", description: "Status indicator" },
+        { prop: "statusPosition", type: '"top-right" | "top-left" | "bottom-right" | "bottom-left"', default: '"top-right"', description: "Status position" },
+        { prop: "ring", type: '"primary" | "success" | "warning" | "destructive"', default: "-", description: "Ring color" },
+      ],
+    },
+    {
+      title: "AvatarImage",
+      props: [
+        { prop: "src", type: "string", default: "-", description: "Image URL" },
+        { prop: "alt", type: "string", default: "-", description: "Alt text for accessibility" },
+      ],
+    },
+    {
+      title: "AvatarFallback",
+      props: [
+        { prop: "variant", type: '"default" | "gradient"', default: '"default"', description: "Fallback style" },
+        { prop: "gradient", type: '"default" | "blue" | "purple" | "green" | "orange" | "pink"', default: '"default"', description: "Gradient color" },
+      ],
+    },
+    {
+      title: "AvatarBadge",
+      props: [
+        { prop: "content", type: "string", default: "-", description: "Badge content" },
+        { prop: "variant", type: '"default" | "success" | "destructive" | "info"', default: '"default"', description: "Badge variant" },
+        { prop: "size", type: '"sm" | "default"', default: '"default"', description: "Badge size" },
+      ],
+    },
+    {
+      title: "AvatarGroup",
+      props: [
+        { prop: "max", type: "number", default: "3", description: "Maximum visible avatars" },
+        { prop: "size", type: "AvatarSize", default: '"default"', description: "Size of all avatars" },
+      ],
+    },
+    {
+      title: "AutoAvatar",
+      props: [
+        { prop: "name", type: "string", default: "-", description: "Name to generate initials from" },
+        { prop: "...props", type: "AvatarProps", default: "-", description: "All Avatar props" },
+      ],
+    },
+  ]
+
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Avatar"
+        description="Image element with fallback for representing users, with status indicators, badges, and group layouts."
+        version="v2.0"
+      />
+
+      <FeatureGrid features={features} />
+
+      <DemoTabs tabs={demoTabs} />
+
+      <UsageBlock code={usageCode} />
+
+      <APIReference sections={apiReference} />
+    </ComponentPage>
+  )
 }

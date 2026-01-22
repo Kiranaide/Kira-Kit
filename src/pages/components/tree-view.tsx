@@ -4,7 +4,20 @@ import {
   IconFileCode,
   IconFileText,
   IconSettings,
+  IconHierarchy,
+  IconCheckbox,
+  IconList,
 } from "@tabler/icons-react";
+import {
+  ComponentPage,
+  PageHeader,
+  FeatureGrid,
+  DemoTabs,
+  DemoWrapper,
+  KeyboardShortcuts,
+  UsageBlock,
+  APIReference,
+} from "@/components/docs";
 
 const fileTreeData: TreeNode[] = [
   {
@@ -144,88 +157,168 @@ const simpleTreeData: TreeNode[] = [
   },
 ];
 
-export function TreeViewPage() {
+const features = [
+  {
+    title: "Hierarchical Display",
+    description: "Organize nested data with expand/collapse functionality and connecting lines for visual hierarchy.",
+    icon: <IconHierarchy className="h-5 w-5 text-muted-foreground" />,
+  },
+  {
+    title: "Multi-Selection",
+    description: "Support for single or multiple selection modes with checkbox controls and parent-child selection cascading.",
+    icon: <IconCheckbox className="h-5 w-5 text-muted-foreground" />,
+  },
+  {
+    title: "Customizable",
+    description: "Custom icons per node, optional connecting lines, and built-in folder/file icons with full styling control.",
+    icon: <IconList className="h-5 w-5 text-muted-foreground" />,
+  },
+];
+
+function BasicDemo() {
+  const handleSelect = (node: TreeNode) => {
+    console.log("Selected:", node);
+  };
+
+  return <TreeView data={simpleTreeData} onSelect={handleSelect} />;
+}
+
+const basicCode = `import { TreeView, type TreeNode } from "@/components/ui/tree-view"
+
+const data: TreeNode[] = [
+  {
+    id: "documents",
+    name: "Documents",
+    children: [
+      { id: "resume.pdf", name: "resume.pdf", isFile: true },
+      { id: "cover-letter.docx", name: "cover-letter.docx", isFile: true },
+      {
+        id: "projects",
+        name: "Projects",
+        children: [
+          { id: "project1.md", name: "project1.md", isFile: true },
+          { id: "project2.md", name: "project2.md", isFile: true },
+        ],
+      },
+    ],
+  },
+]
+
+export function BasicTreeViewDemo() {
+  return (
+    <TreeView data={data} onSelect={(node) => console.log(node)} />
+  )
+}`;
+
+function FileExplorerDemo() {
   const handleSelect = (node: TreeNode) => {
     console.log("Selected:", node);
   };
 
   return (
-    <div className="p-8 max-w-4xl space-y-12">
-      <header>
-        <h1 className="text-3xl font-bold mb-2">Tree View</h1>
-        <p className="text-muted-foreground">
-          A hierarchical tree structure with connecting lines and
-          expand/collapse arrows.
-        </p>
-      </header>
+    <TreeView
+      data={fileTreeData}
+      defaultExpandedNodes={["src", "components", "ui"]}
+      onSelect={handleSelect}
+    />
+  );
+}
 
-      {/* Basic Tree */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Basic Tree
-        </h2>
-        <div className="max-w-sm rounded-lg border p-4">
-          <TreeView data={simpleTreeData} onSelect={handleSelect} />
-        </div>
-      </section>
+const fileExplorerCode = `import { TreeView, type TreeNode } from "@/components/ui/tree-view"
+import { IconFileCode, IconPhoto, IconSettings, IconFileText } from "@tabler/icons-react"
 
-      {/* File Explorer */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          File Explorer
-        </h2>
-        <div className="max-w-md rounded-lg border p-4">
-          <TreeView
-            data={fileTreeData}
-            defaultExpandedNodes={["src", "components", "ui"]}
-            onSelect={handleSelect}
-          />
-        </div>
-      </section>
+const data: TreeNode[] = [
+  {
+    id: "src",
+    name: "src",
+    children: [
+      {
+        id: "components",
+        name: "components",
+        children: [
+          {
+            id: "button.tsx",
+            name: "button.tsx",
+            isFile: true,
+            icon: <IconFileCode className="h-4 w-4 text-blue-500" />,
+          },
+        ],
+      },
+    ],
+  },
+]
 
-      {/* Without Lines */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Without Lines
-        </h2>
-        <div className="max-w-sm rounded-lg border p-4">
-          <TreeView
-            data={simpleTreeData}
-            showLines={false}
-            onSelect={handleSelect}
-          />
-        </div>
-      </section>
+export function FileExplorerDemo() {
+  return (
+    <TreeView
+      data={data}
+      defaultExpandedNodes={["src", "components"]}
+      onSelect={(node) => console.log(node)}
+    />
+  )
+}`;
 
-      {/* Multi-Selection */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Multi-Selection
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Select multiple nodes using checkboxes.
-        </p>
-        <div className="max-w-sm rounded-lg border p-4">
-          <TreeView
-            data={fileTreeData}
-            selectionMode="multiple"
-            defaultExpandedNodes={["src", "components"]}
-            onSelectionChange={(selected) => {
-              console.log("Selected nodes:", selected);
-            }}
-            onSelect={handleSelect}
-          />
-        </div>
-      </section>
+function WithoutLinesDemo() {
+  const handleSelect = (node: TreeNode) => {
+    console.log("Selected:", node);
+  };
 
-      {/* Usage */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Usage
-        </h2>
-        <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
-          <pre className="text-sm text-foreground">
-            {`import { TreeView, type TreeNode } from "@/components/ui/tree-view"
+  return (
+    <TreeView
+      data={simpleTreeData}
+      showLines={false}
+      onSelect={handleSelect}
+    />
+  );
+}
+
+const withoutLinesCode = `import { TreeView, type TreeNode } from "@/components/ui/tree-view"
+
+export function WithoutLinesDemo() {
+  return (
+    <TreeView
+      data={data}
+      showLines={false}
+      onSelect={(node) => console.log(node)}
+    />
+  )
+}`;
+
+function MultiSelectionDemo() {
+  const handleSelect = (node: TreeNode) => {
+    console.log("Selected:", node);
+  };
+
+  return (
+    <TreeView
+      data={fileTreeData}
+      selectionMode="multiple"
+      defaultExpandedNodes={["src", "components"]}
+      onSelectionChange={(selected) => {
+        console.log("Selected nodes:", selected);
+      }}
+      onSelect={handleSelect}
+    />
+  );
+}
+
+const multiSelectionCode = `import { TreeView, type TreeNode } from "@/components/ui/tree-view"
+
+export function MultiSelectionDemo() {
+  return (
+    <TreeView
+      data={data}
+      selectionMode="multiple"
+      defaultExpandedNodes={["src"]}
+      onSelectionChange={(selectedNodes) => {
+        console.log("Selected:", selectedNodes)
+      }}
+      onSelect={(node) => console.log("Clicked:", node)}
+    />
+  )
+}`;
+
+const usageCode = `import { TreeView, type TreeNode } from "@/components/ui/tree-view"
 
 const data: TreeNode[] = [
   {
@@ -239,15 +332,196 @@ const data: TreeNode[] = [
   { id: "file3", name: "file3.txt", isFile: true },
 ]
 
-<TreeView
-  data={data}
-  defaultExpandedNodes={["folder1"]}
-  showLines={true}
-  onSelect={(node) => console.log(node)}
-/>`}
-          </pre>
-        </div>
-      </section>
-    </div>
+export function MyTree() {
+  return (
+    <TreeView
+      data={data}
+      defaultExpandedNodes={["folder1"]}
+      showLines={true}
+      selectionMode="single"
+      onSelect={(node) => console.log(node)}
+    />
+  )
+}`;
+
+export default function TreeViewPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Tree View"
+        description="A hierarchical tree structure with connecting lines, expand/collapse arrows, and multi-selection support for organizing nested data."
+        version="v1.0"
+      />
+
+      <FeatureGrid features={features} />
+
+      <DemoTabs
+        defaultValue="basic"
+        tabs={[
+          {
+            value: "basic",
+            label: "Basic",
+            demo: (
+              <DemoWrapper
+                title="Basic Tree"
+                description="Simple hierarchical tree with expand/collapse functionality."
+                code={basicCode}
+              >
+                <BasicDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "file-explorer",
+            label: "File Explorer",
+            demo: (
+              <DemoWrapper
+                title="File Explorer"
+                description="Rich file tree with custom icons and pre-expanded folders."
+                code={fileExplorerCode}
+              >
+                <FileExplorerDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "without-lines",
+            label: "Without Lines",
+            demo: (
+              <DemoWrapper
+                title="Without Connecting Lines"
+                description="Clean tree view without visual connecting lines."
+                code={withoutLinesCode}
+              >
+                <WithoutLinesDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "multi-selection",
+            label: "Multi-Selection",
+            demo: (
+              <DemoWrapper
+                title="Multi-Selection"
+                description="Select multiple nodes using checkboxes with parent-child selection cascading."
+                code={multiSelectionCode}
+              >
+                <MultiSelectionDemo />
+              </DemoWrapper>
+            ),
+          },
+        ]}
+      />
+
+      <KeyboardShortcuts
+        shortcuts={[
+          { keys: "Enter / Space", description: "Toggle expand/collapse for folders" },
+          { keys: "↑ / ↓", description: "Navigate between tree nodes" },
+          { keys: "←", description: "Collapse current folder" },
+          { keys: "→", description: "Expand current folder" },
+          { keys: "Home", description: "Navigate to first node" },
+          { keys: "End", description: "Navigate to last node" },
+        ]}
+      />
+
+      <UsageBlock
+        title="Usage"
+        description="Basic implementation example with default configuration."
+        code={usageCode}
+      />
+
+      <APIReference
+        sections={[
+          {
+            title: "TreeView",
+            props: [
+              {
+                prop: "data",
+                type: "TreeNode[]",
+                default: "-",
+                description: "Array of tree nodes to display.",
+              },
+              {
+                prop: "defaultExpandedNodes",
+                type: "string[]",
+                default: "[]",
+                description: "Array of node IDs that should be expanded by default.",
+              },
+              {
+                prop: "showLines",
+                type: "boolean",
+                default: "true",
+                description: "Whether to show connecting lines between nodes.",
+              },
+              {
+                prop: "selectionMode",
+                type: '"single" | "multiple"',
+                default: '"single"',
+                description: "Selection mode for tree nodes.",
+              },
+              {
+                prop: "defaultSelectedNodes",
+                type: "string[]",
+                default: "[]",
+                description: "Array of node IDs that should be selected by default.",
+              },
+              {
+                prop: "onSelect",
+                type: "(node: TreeNode) => void",
+                default: "-",
+                description: "Callback when a node is clicked.",
+              },
+              {
+                prop: "onSelectionChange",
+                type: "(selectedNodes: string[]) => void",
+                default: "-",
+                description: "Callback when selection changes (multiple mode only).",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the tree container.",
+              },
+            ],
+          },
+          {
+            title: "TreeNode",
+            props: [
+              {
+                prop: "id",
+                type: "string",
+                default: "-",
+                description: "Unique identifier for the node.",
+              },
+              {
+                prop: "name",
+                type: "string",
+                default: "-",
+                description: "Display name for the node.",
+              },
+              {
+                prop: "icon",
+                type: "ReactNode",
+                default: "-",
+                description: "Custom icon to display next to the node name.",
+              },
+              {
+                prop: "children",
+                type: "TreeNode[]",
+                default: "-",
+                description: "Array of child nodes (for folders/parents).",
+              },
+              {
+                prop: "isFile",
+                type: "boolean",
+                default: "false",
+                description: "Whether the node represents a file (leaf node).",
+              },
+            ],
+          },
+        ]}
+      />
+    </ComponentPage>
   );
 }

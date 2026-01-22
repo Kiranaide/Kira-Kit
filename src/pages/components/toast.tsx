@@ -1,11 +1,278 @@
+import { useState } from "react";
+import {
+  IconAccessible,
+  IconLayoutGrid,
+  IconClick,
+} from "@tabler/icons-react";
+
 import { toast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import {
+  ComponentPage,
+  PageHeader,
+  FeatureGrid,
+  DemoTabs,
+  DemoWrapper,
+  UsageBlock,
+  APIReference,
+} from "@/components/docs";
 
-export function ToastPage() {
+// =============================================================================
+// Demo: Basic Toast
+// =============================================================================
+function BasicDemo() {
+  return (
+    <div className="flex flex-wrap gap-4">
+      <Button variant="outline" onClick={() => toast("Event has been created")}>
+        Show Toast
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.message("Event has been created", {
+            description: "Sunday, December 03, 2023 at 9:00 AM",
+          })
+        }
+      >
+        With Description
+      </Button>
+    </div>
+  );
+}
+
+const basicCode = `import { toast } from "@/components/ui/toast"
+import { Button } from "@/components/ui/button"
+
+export function BasicToastDemo() {
+  return (
+    <div className="flex flex-wrap gap-4">
+      <Button 
+        variant="outline" 
+        onClick={() => toast("Event has been created")}
+      >
+        Show Toast
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.message("Event has been created", {
+            description: "Sunday, December 03, 2023 at 9:00 AM",
+          })
+        }
+      >
+        With Description
+      </Button>
+    </div>
+  )
+}`;
+
+// =============================================================================
+// Demo: Variants
+// =============================================================================
+function VariantsDemo() {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-4">
+        <Button
+          variant="outline"
+          onClick={() => toast("Event has been created")}
+        >
+          Default
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast.success("Event has been created")}
+        >
+          Success
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast.error("Event has not been created")}
+        >
+          Error
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast.warning("Event start time cannot be in the past")
+          }
+        >
+          Warning
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast.info("New message received")}
+        >
+          Info
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast.loading("Processing your request...")}
+        >
+          Loading
+        </Button>
+      </div>
+      <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-md">
+        <strong>Accessibility:</strong> Success/Info use{" "}
+        <code>aria-live="polite"</code>, Error/Warning use{" "}
+        <code>aria-live="assertive"</code> for screen reader announcements.
+      </div>
+    </div>
+  );
+}
+
+const variantsCode = `import { toast } from "@/components/ui/toast"
+import { Button } from "@/components/ui/button"
+
+export function ToastVariantsDemo() {
+  return (
+    <div className="flex flex-wrap gap-4">
+      <Button
+        variant="outline"
+        onClick={() => toast("Event has been created")}
+      >
+        Default
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => toast.success("Event has been created")}
+      >
+        Success
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => toast.error("Event has not been created")}
+      >
+        Error
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => toast.warning("Event start time cannot be in the past")}
+      >
+        Warning
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => toast.info("New message received")}
+      >
+        Info
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => toast.loading("Processing your request...")}
+      >
+        Loading
+      </Button>
+    </div>
+  )
+}`;
+
+// =============================================================================
+// Demo: Actions
+// =============================================================================
+function ActionsDemo() {
+  return (
+    <div className="flex flex-wrap gap-4">
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast("Event has been deleted", {
+            action: {
+              label: "Undo",
+              onClick: () => toast.success("Event restored"),
+            },
+          })
+        }
+      >
+        With Undo Action
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.error("Failed to save changes", {
+            action: {
+              label: "Retry",
+              onClick: () => toast.loading("Retrying..."),
+            },
+          })
+        }
+      >
+        Error with Retry
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.success("Payment successful", {
+            description: "Your order #12345 has been confirmed.",
+            action: {
+              label: "View Order",
+              onClick: () => toast.info("Navigating to order..."),
+            },
+          })
+        }
+      >
+        Success with Action
+      </Button>
+    </div>
+  );
+}
+
+const actionsCode = `import { toast } from "@/components/ui/toast"
+import { Button } from "@/components/ui/button"
+
+export function ToastActionsDemo() {
+  return (
+    <div className="flex flex-wrap gap-4">
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast("Event has been deleted", {
+            action: {
+              label: "Undo",
+              onClick: () => toast.success("Event restored"),
+            },
+          })
+        }
+      >
+        With Undo Action
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.error("Failed to save changes", {
+            action: {
+              label: "Retry",
+              onClick: () => toast.loading("Retrying..."),
+            },
+          })
+        }
+      >
+        Error with Retry
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.success("Payment successful", {
+            description: "Your order #12345 has been confirmed.",
+            action: {
+              label: "View Order",
+              onClick: () => toast.info("Navigating to order..."),
+            },
+          })
+        }
+      >
+        Success with Action
+      </Button>
+    </div>
+  )
+}`;
+
+// =============================================================================
+// Demo: Promise
+// =============================================================================
+function PromiseDemo() {
   const [loadingId, setLoadingId] = useState<string | number | null>(null);
 
-  // Simulate async operation for promise demo
   const simulateAsync = () =>
     new Promise<{ name: string }>((resolve, reject) => {
       setTimeout(() => {
@@ -16,162 +283,25 @@ export function ToastPage() {
     });
 
   return (
-    <div className="container mx-auto py-10 space-y-10">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold tracking-tight">Toast</h1>
-        <p className="text-lg text-muted-foreground">
-          A succinct message that is displayed temporarily. Built using Sonner
-          with enhanced accessibility (WCAG 2.2 AA compliant).
-        </p>
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-4">
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast.promise(simulateAsync(), {
+              loading: "Creating event...",
+              success: (data) => `${data.name} has been created`,
+              error: (err) => `Failed: ${(err as Error).message}`,
+            })
+          }
+        >
+          Promise Toast (70% success rate)
+        </Button>
       </div>
 
-      {/* Basic Usage */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Basic Usage
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Call the <code className="bg-muted px-1 rounded">toast</code> function
-          to display a notification. Each type uses appropriate ARIA live
-          regions.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <Button
-            variant="outline"
-            onClick={() => toast("Event has been created")}
-          >
-            Default
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => toast.success("Event has been created")}
-          >
-            Success
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => toast.info("New message received")}
-          >
-            Info
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast.warning("Event start time cannot be in the past")
-            }
-          >
-            Warning
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => toast.error("Event has not been created")}
-          >
-            Error
-          </Button>
-        </div>
-        <div className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-md">
-          <strong>Accessibility:</strong> Success/Info use{" "}
-          <code>aria-live="polite"</code>, Error/Warning use{" "}
-          <code>aria-live="assertive"</code> for screen reader announcements.
-        </div>
-      </section>
-
-      {/* With Description */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          With Description
-        </h2>
-        <div className="flex flex-wrap gap-4">
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast.message("Event has been created", {
-                description: "Sunday, December 03, 2023 at 9:00 AM",
-              })
-            }
-          >
-            With Description
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast.success("Payment successful", {
-                description: "Your order #12345 has been confirmed.",
-              })
-            }
-          >
-            Success with Description
-          </Button>
-        </div>
-      </section>
-
-      {/* With Action */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          With Action
-        </h2>
-        <div className="flex flex-wrap gap-4">
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast("Event has been deleted", {
-                action: {
-                  label: "Undo",
-                  onClick: () => toast.success("Event restored"),
-                },
-              })
-            }
-          >
-            With Undo Action
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast.error("Failed to save changes", {
-                action: {
-                  label: "Retry",
-                  onClick: () => toast.loading("Retrying..."),
-                },
-              })
-            }
-          >
-            Error with Retry
-          </Button>
-        </div>
-      </section>
-
-      {/* Promise-based Toast */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Promise-based Toast
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Automatically shows loading, success, or error states based on promise
-          resolution.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast.promise(simulateAsync(), {
-                loading: "Creating event...",
-                success: (data) => `${data.name} has been created`,
-                error: (err) => `Failed: ${(err as Error).message}`,
-              })
-            }
-          >
-            Promise Toast (70% success rate)
-          </Button>
-        </div>
-      </section>
-
-      {/* Loading Toast with Manual Control */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Loading Toast (Manual Control)
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Control toast lifecycle programmatically using IDs.
+      <div className="border-t pt-6">
+        <p className="text-sm text-muted-foreground mb-4">
+          Control toast lifecycle programmatically using IDs:
         </p>
         <div className="flex flex-wrap gap-4">
           <Button
@@ -203,139 +333,105 @@ export function ToastPage() {
             </Button>
           )}
         </div>
-      </section>
+      </div>
+    </div>
+  );
+}
 
-      {/* Duration Control */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Duration Control
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Default durations: Info 5s, Success 4s, Warning 6s, Error 8s. Override
-          with <code>duration</code> prop.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast("Quick notification", {
-                duration: 2000,
-              })
-            }
-          >
-            2 second toast
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast.info("This will stay longer", {
-                duration: 10000,
-              })
-            }
-          >
-            10 second toast
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast.warning("This won't auto-dismiss", {
-                duration: Infinity,
-              })
-            }
-          >
-            Persistent toast
-          </Button>
-        </div>
-      </section>
+const promiseCode = `import { useState } from "react"
+import { toast } from "@/components/ui/toast"
+import { Button } from "@/components/ui/button"
 
-      {/* Positions */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Positions
-        </h2>
-        <div className="flex flex-wrap gap-4">
-          <Button
-            variant="outline"
-            onClick={() => toast("Top Right", { position: "top-right" })}
-          >
-            Top Right
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => toast("Top Center", { position: "top-center" })}
-          >
-            Top Center
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => toast("Top Left", { position: "top-left" })}
-          >
-            Top Left
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => toast("Bottom Right", { position: "bottom-right" })}
-          >
-            Bottom Right
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast("Bottom Center", { position: "bottom-center" })
-            }
-          >
-            Bottom Center
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => toast("Bottom Left", { position: "bottom-left" })}
-          >
-            Bottom Left
-          </Button>
-        </div>
-      </section>
+export function ToastPromiseDemo() {
+  const [loadingId, setLoadingId] = useState<string | number | null>(null)
 
-      {/* Custom Toast */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Custom Toast
-        </h2>
-        <div className="flex flex-wrap gap-4">
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast.custom((id) => (
-                <div className="flex items-center gap-3 bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/30 rounded-lg p-4 shadow-lg">
-                  <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                    <span className="text-xl">🎉</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold">Congratulations!</p>
-                    <p className="text-sm text-muted-foreground">
-                      You've unlocked a new achievement.
-                    </p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => toast.dismiss(id)}
-                  >
-                    Dismiss
-                  </Button>
-                </div>
-              ))
-            }
-          >
-            Custom Toast
-          </Button>
-        </div>
-      </section>
+  const simulateAsync = () =>
+    new Promise<{ name: string }>((resolve, reject) => {
+      setTimeout(() => {
+        Math.random() > 0.3
+          ? resolve({ name: "Event" })
+          : reject(new Error("Network error"))
+      }, 2000)
+    })
 
-      {/* Dismiss All */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Dismiss All
-        </h2>
+  return (
+    <div className="space-y-6">
+      {/* Promise-based toast */}
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.promise(simulateAsync(), {
+            loading: "Creating event...",
+            success: (data) => \`\${data.name} has been created\`,
+            error: (err) => \`Failed: \${(err as Error).message}\`,
+          })
+        }
+      >
+        Promise Toast
+      </Button>
+
+      {/* Manual control with ID */}
+      <Button
+        variant="outline"
+        onClick={() => {
+          const id = toast.loading("Processing your request...")
+          setLoadingId(id)
+
+          setTimeout(() => {
+            toast.dismiss(id)
+            toast.success("Processing complete!")
+            setLoadingId(null)
+          }, 3000)
+        }}
+        disabled={loadingId !== null}
+      >
+        {loadingId ? "Processing..." : "Start Loading Toast"}
+      </Button>
+    </div>
+  )
+}`;
+
+// =============================================================================
+// Demo: Dismiss
+// =============================================================================
+function DismissDemo() {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-4">
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast("Quick notification", {
+              duration: 2000,
+            })
+          }
+        >
+          2 second toast
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast.info("This will stay longer", {
+              duration: 10000,
+            })
+          }
+        >
+          10 second toast
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast.warning("This won't auto-dismiss", {
+              duration: Infinity,
+            })
+          }
+        >
+          Persistent toast
+        </Button>
+      </div>
+
+      <div className="border-t pt-6">
+        <p className="text-sm text-muted-foreground mb-4">Dismiss control:</p>
         <div className="flex flex-wrap gap-4">
           <Button
             variant="outline"
@@ -351,16 +447,292 @@ export function ToastPage() {
             Dismiss All
           </Button>
         </div>
-      </section>
+      </div>
 
-      {/* Usage */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Usage
-        </h2>
-        <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
-          <pre className="text-sm text-foreground">
-            {`import { toast } from "@/components/ui/toast"
+      <div className="border-t pt-6">
+        <p className="text-sm text-muted-foreground mb-4">Programmatic dismiss:</p>
+        <div className="flex flex-wrap gap-4">
+          <Button
+            variant="outline"
+            onClick={() => {
+              const id = toast("This toast will be dismissed in 2 seconds");
+              setTimeout(() => toast.dismiss(id), 2000);
+            }}
+          >
+            Dismiss by ID
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const dismissCode = `import { toast } from "@/components/ui/toast"
+import { Button } from "@/components/ui/button"
+
+export function ToastDismissDemo() {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-4">
+        {/* Duration control */}
+        <Button
+          variant="outline"
+          onClick={() => toast("Quick notification", { duration: 2000 })}
+        >
+          2 second toast
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast.info("This will stay longer", { duration: 10000 })}
+        >
+          10 second toast
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast.warning("Persistent", { duration: Infinity })}
+        >
+          Persistent toast
+        </Button>
+      </div>
+
+      {/* Dismiss all */}
+      <div className="flex flex-wrap gap-4">
+        <Button
+          variant="outline"
+          onClick={() => {
+            toast("Toast 1")
+            toast("Toast 2")
+            toast("Toast 3")
+          }}
+        >
+          Show Multiple Toasts
+        </Button>
+        <Button variant="destructive" onClick={() => toast.dismiss()}>
+          Dismiss All
+        </Button>
+      </div>
+
+      {/* Dismiss by ID */}
+      <Button
+        variant="outline"
+        onClick={() => {
+          const id = toast("This toast will be dismissed in 2 seconds")
+          setTimeout(() => toast.dismiss(id), 2000)
+        }}
+      >
+        Dismiss by ID
+      </Button>
+    </div>
+  )
+}`;
+
+// =============================================================================
+// Demo: Custom
+// =============================================================================
+function CustomDemo() {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap gap-4">
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast.custom((id) => (
+              <div className="flex items-center gap-3 bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/30 rounded-lg p-4 shadow-lg">
+                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-xl">🎉</span>
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold">Congratulations!</p>
+                  <p className="text-sm text-muted-foreground">
+                    You've unlocked a new achievement.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => toast.dismiss(id)}
+                >
+                  Dismiss
+                </Button>
+              </div>
+            ))
+          }
+        >
+          Custom Toast
+        </Button>
+
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast.custom(() => (
+              <div className="flex items-center gap-2 bg-background border rounded-lg p-4 shadow-lg">
+                <span className="text-lg">📦</span>
+                <span>Your package is on its way!</span>
+              </div>
+            ))
+          }
+        >
+          JSX Content
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+const customCode = `import { toast } from "@/components/ui/toast"
+import { Button } from "@/components/ui/button"
+
+export function ToastCustomDemo() {
+  return (
+    <div className="flex flex-wrap gap-4">
+      {/* Fully custom toast */}
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.custom((id) => (
+            <div className="flex items-center gap-3 bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/30 rounded-lg p-4 shadow-lg">
+              <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                <span className="text-xl">🎉</span>
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold">Congratulations!</p>
+                <p className="text-sm text-muted-foreground">
+                  You've unlocked a new achievement.
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => toast.dismiss(id)}
+              >
+                Dismiss
+              </Button>
+            </div>
+          ))
+        }
+      >
+        Custom Toast
+      </Button>
+
+      {/* Simple JSX content */}
+      <Button
+        variant="outline"
+        onClick={() =>
+          toast.custom(() => (
+            <div className="flex items-center gap-2 bg-background border rounded-lg p-4 shadow-lg">
+              <span className="text-lg">📦</span>
+              <span>Your package is on its way!</span>
+            </div>
+          ))
+        }
+      >
+        JSX Content
+      </Button>
+    </div>
+  )
+}`;
+
+// =============================================================================
+// Demo: Positions
+// =============================================================================
+function PositionsDemo() {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-4">
+        <Button
+          variant="outline"
+          onClick={() => toast("Top Left", { position: "top-left" })}
+        >
+          Top Left
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast("Top Center", { position: "top-center" })}
+        >
+          Top Center
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast("Top Right", { position: "top-right" })}
+        >
+          Top Right
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast("Bottom Left", { position: "bottom-left" })}
+        >
+          Bottom Left
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast("Bottom Center", { position: "bottom-center" })}
+        >
+          Bottom Center
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => toast("Bottom Right", { position: "bottom-right" })}
+        >
+          Bottom Right
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Click each button to see the toast appear in different positions.
+      </p>
+    </div>
+  );
+}
+
+const positionsCode = `import { toast } from "@/components/ui/toast"
+import { Button } from "@/components/ui/button"
+
+export function ToastPositionsDemo() {
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      <Button
+        variant="outline"
+        onClick={() => toast("Top Left", { position: "top-left" })}
+      >
+        Top Left
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => toast("Top Center", { position: "top-center" })}
+      >
+        Top Center
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => toast("Top Right", { position: "top-right" })}
+      >
+        Top Right
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => toast("Bottom Left", { position: "bottom-left" })}
+      >
+        Bottom Left
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => toast("Bottom Center", { position: "bottom-center" })}
+      >
+        Bottom Center
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => toast("Bottom Right", { position: "bottom-right" })}
+      >
+        Bottom Right
+      </Button>
+    </div>
+  )
+}`;
+
+// =============================================================================
+// Usage Code
+// =============================================================================
+const usageCode = `import { toast } from "@/components/ui/toast"
 
 // Basic usage
 toast("Hello world")
@@ -382,6 +754,16 @@ toast("File deleted", {
   }
 })
 
+// Duration control
+toast("Quick notification", { duration: 2000 })
+toast.info("Long notification", { duration: 10000 })
+toast.warning("Persistent toast", { duration: Infinity })
+
+// Dismiss control
+toast.dismiss() // Dismiss all toasts
+const id = toast.loading("Processing...")
+toast.dismiss(id) // Dismiss specific toast
+
 // Promise-based
 toast.promise(saveData(), {
   loading: "Saving...",
@@ -389,14 +771,316 @@ toast.promise(saveData(), {
   error: (err) => \`Error: \${err.message}\`
 })
 
-// Programmatic control
-const id = toast.loading("Processing...")
-// Later...
-toast.dismiss(id)
-toast.success("Done!")`}
-          </pre>
-        </div>
-      </section>
-    </div>
+// Custom JSX
+toast.custom((id) => (
+  <div className="p-4 bg-primary text-primary-foreground rounded-lg">
+    Custom toast content
+    <button onClick={() => toast.dismiss(id)}>Close</button>
+  </div>
+))`;
+
+// =============================================================================
+// API Reference Data
+// =============================================================================
+const apiSections = [
+  {
+    title: "toast()",
+    props: [
+      {
+        prop: "message",
+        type: "string | ReactNode",
+        description: "The message content to display in the toast",
+      },
+      {
+        prop: "options",
+        type: "ToastOptions",
+        description: "Optional configuration object",
+      },
+    ],
+  },
+  {
+    title: "ToastOptions",
+    props: [
+      {
+        prop: "description",
+        type: "string | ReactNode",
+        description: "Additional descriptive text below the main message",
+      },
+      {
+        prop: "duration",
+        type: "number",
+        default: "4000",
+        description: "Duration in ms before auto-dismiss. Use Infinity for persistent",
+      },
+      {
+        prop: "position",
+        type: "Position",
+        default: '"bottom-right"',
+        description: "Screen position for the toast",
+      },
+      {
+        prop: "action",
+        type: "{ label: string; onClick: () => void }",
+        description: "Action button configuration",
+      },
+      {
+        prop: "id",
+        type: "string | number",
+        description: "Custom ID for programmatic control",
+      },
+      {
+        prop: "dismissible",
+        type: "boolean",
+        default: "true",
+        description: "Whether the toast can be dismissed by the user",
+      },
+      {
+        prop: "onDismiss",
+        type: "(toast: Toast) => void",
+        description: "Callback when toast is dismissed",
+      },
+      {
+        prop: "onAutoClose",
+        type: "(toast: Toast) => void",
+        description: "Callback when toast auto-closes",
+      },
+    ],
+  },
+  {
+    title: "Toast Methods",
+    props: [
+      {
+        prop: "toast()",
+        type: "(message, options?) => id",
+        description: "Show a default toast",
+      },
+      {
+        prop: "toast.success()",
+        type: "(message, options?) => id",
+        description: "Show a success toast with checkmark icon",
+      },
+      {
+        prop: "toast.error()",
+        type: "(message, options?) => id",
+        description: "Show an error toast with X icon",
+      },
+      {
+        prop: "toast.warning()",
+        type: "(message, options?) => id",
+        description: "Show a warning toast with alert icon",
+      },
+      {
+        prop: "toast.info()",
+        type: "(message, options?) => id",
+        description: "Show an info toast with info icon",
+      },
+      {
+        prop: "toast.loading()",
+        type: "(message, options?) => id",
+        description: "Show a loading toast with spinner",
+      },
+      {
+        prop: "toast.promise()",
+        type: "(promise, { loading, success, error }) => id",
+        description: "Show toast states based on promise resolution",
+      },
+      {
+        prop: "toast.custom()",
+        type: "(jsx | (id) => jsx) => id",
+        description: "Show a fully custom toast component",
+      },
+      {
+        prop: "toast.dismiss()",
+        type: "(id?) => void",
+        description: "Dismiss a specific toast or all toasts if no ID",
+      },
+    ],
+  },
+  {
+    title: "Position",
+    props: [
+      {
+        prop: '"top-left"',
+        type: "string",
+        description: "Top left corner of the screen",
+      },
+      {
+        prop: '"top-center"',
+        type: "string",
+        description: "Top center of the screen",
+      },
+      {
+        prop: '"top-right"',
+        type: "string",
+        description: "Top right corner of the screen",
+      },
+      {
+        prop: '"bottom-left"',
+        type: "string",
+        description: "Bottom left corner of the screen",
+      },
+      {
+        prop: '"bottom-center"',
+        type: "string",
+        description: "Bottom center of the screen",
+      },
+      {
+        prop: '"bottom-right"',
+        type: "string",
+        description: "Bottom right corner of the screen (default)",
+      },
+    ],
+  },
+];
+
+// =============================================================================
+// Features Data
+// =============================================================================
+const features = [
+  {
+    title: "Accessible",
+    description:
+      "WCAG 2.2 AA compliant with proper ARIA live regions. Success/Info use polite, Error/Warning use assertive announcements.",
+    icon: <IconAccessible className="h-4 w-4" />,
+  },
+  {
+    title: "6 Positions",
+    description:
+      "Display toasts in any corner or center position. Configurable per-toast or globally via Toaster component.",
+    icon: <IconLayoutGrid className="h-4 w-4" />,
+  },
+  {
+    title: "Rich Actions",
+    description:
+      "Support for action buttons, promise-based toasts, custom JSX content, and programmatic control via IDs.",
+    icon: <IconClick className="h-4 w-4" />,
+  },
+];
+
+// =============================================================================
+// Demo Tabs Configuration
+// =============================================================================
+const demoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    demo: (
+      <DemoWrapper
+        title="Basic Toast"
+        description="Simple toast notifications with optional descriptions."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "variants",
+    label: "Variants",
+    demo: (
+      <DemoWrapper
+        title="Toast Variants"
+        description="All available toast types with appropriate icons and ARIA semantics."
+        code={variantsCode}
+      >
+        <VariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "actions",
+    label: "Actions",
+    demo: (
+      <DemoWrapper
+        title="Toast with Actions"
+        description="Add action buttons for undo, retry, or custom interactions."
+        code={actionsCode}
+      >
+        <ActionsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "dismiss",
+    label: "Dismiss",
+    demo: (
+      <DemoWrapper
+        title="Dismiss Control"
+        description="Auto-dismiss duration, persistent toasts, and programmatic dismiss."
+        code={dismissCode}
+      >
+        <DismissDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "promise",
+    label: "Promise",
+    demo: (
+      <DemoWrapper
+        title="Promise-based Toasts"
+        description="Automatically show loading, success, or error states based on promise resolution."
+        code={promiseCode}
+      >
+        <PromiseDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "custom",
+    label: "Custom",
+    demo: (
+      <DemoWrapper
+        title="Custom JSX Toasts"
+        description="Create fully custom toast components with JSX content."
+        code={customCode}
+      >
+        <CustomDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "positions",
+    label: "Positions",
+    demo: (
+      <DemoWrapper
+        title="Toast Positions"
+        description="Display toasts in any of the 6 available screen positions."
+        code={positionsCode}
+      >
+        <PositionsDemo />
+      </DemoWrapper>
+    ),
+  },
+];
+
+// =============================================================================
+// Main Page Component
+// =============================================================================
+export function ToastPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Toast"
+        version="v1.0"
+        description="A succinct message that is displayed temporarily. Built using Sonner with enhanced accessibility (WCAG 2.2 AA compliant)."
+      />
+
+      <FeatureGrid features={features} />
+
+      <DemoTabs tabs={demoTabs} defaultValue="basic" />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Import the toast function and call it to display notifications."
+      />
+
+      <APIReference
+        sections={apiSections}
+        title="API Reference"
+        description="Complete API for the toast notification system."
+      />
+    </ComponentPage>
   );
 }

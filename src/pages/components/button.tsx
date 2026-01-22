@@ -1,9 +1,10 @@
+import * as React from "react"
 import {
   Button,
   ExpandableIconButton,
   LoadingButton,
   IconButtonWithTooltip,
-} from "@/components/ui/button";
+} from "@/components/ui/button"
 import {
   IconPlus,
   IconDownload,
@@ -15,640 +16,590 @@ import {
   IconPlayerPlay,
   IconInfoCircle,
   IconCircleCheck,
-  IconAlertTriangle,
-} from "@tabler/icons-react";
+  IconAccessible,
+  IconPalette,
+  IconStack2,
+} from "@tabler/icons-react"
+import {
+  ComponentPage,
+  PageHeader,
+  FeatureGrid,
+  DemoTabs,
+  DemoWrapper,
+  KeyboardShortcuts,
+  UsageBlock,
+  APIReference,
+} from "@/components/docs"
 
-import * as React from "react";
+// =============================================================================
+// Demo Components
+// =============================================================================
 
-function LoadingButtonDemo() {
-  const [loadingStates, setLoadingStates] = React.useState<
-    Record<string, boolean>
-  >({});
-
-  const handleClick = (id: string) => {
-    setLoadingStates((prev) => ({ ...prev, [id]: true }));
-    setTimeout(() => {
-      setLoadingStates((prev) => ({ ...prev, [id]: false }));
-    }, 2000);
-  };
-
+function VariantsDemo() {
   return (
-    <div className="flex flex-wrap gap-3">
-      <LoadingButton
-        isLoading={loadingStates["default"]}
-        onClick={() => handleClick("default")}
-      >
-        <IconSend data-icon="inline-start" className="w-4 h-4" />
-        Submit
-      </LoadingButton>
-      <LoadingButton
-        variant="secondary"
-        isLoading={loadingStates["secondary"]}
-        onClick={() => handleClick("secondary")}
-      >
-        <IconDownload data-icon="inline-start" className="w-4 h-4" />
-        Save
-      </LoadingButton>
-      <LoadingButton
-        variant="outline"
-        isLoading={loadingStates["outline"]}
-        onClick={() => handleClick("outline")}
-        loadingText="Processing..."
-      >
-        Process
-      </LoadingButton>
-      <LoadingButton
-        variant="success"
-        isLoading={loadingStates["success"]}
-        onClick={() => handleClick("success")}
-      >
-        <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
-        Confirm
-      </LoadingButton>
-      <LoadingButton
-        variant="destructive"
-        isLoading={loadingStates["destructive"]}
-        onClick={() => handleClick("destructive")}
-      >
-        <IconTrash data-icon="inline-start" className="w-4 h-4" />
-        Delete
-      </LoadingButton>
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">Basic</h3>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="default">Default</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="outline">Outline</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button variant="link">Link</Button>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">Semantic</h3>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="destructive">Destructive</Button>
+          <Button variant="info">Info</Button>
+          <Button variant="success">Success</Button>
+          <Button variant="warning">Warning</Button>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">Outline Variants</h3>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="destructive-outline">Destructive</Button>
+          <Button variant="info-outline">Info</Button>
+          <Button variant="success-outline">Success</Button>
+          <Button variant="warning-outline">Warning</Button>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">Ghost Variants</h3>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="destructive-ghost">Destructive</Button>
+          <Button variant="info-ghost">Info</Button>
+          <Button variant="success-ghost">Success</Button>
+          <Button variant="warning-ghost">Warning</Button>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
 
-export function ButtonPage() {
+const variantsCode = `import { Button } from "@/components/ui/button"
+
+// Basic variants
+<Button variant="default">Default</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>
+
+// Semantic variants
+<Button variant="destructive">Destructive</Button>
+<Button variant="info">Info</Button>
+<Button variant="success">Success</Button>
+<Button variant="warning">Warning</Button>
+
+// Outline and ghost variants
+<Button variant="destructive-outline">Destructive</Button>
+<Button variant="info-ghost">Info</Button>`
+
+function SizesDemo() {
   return (
-    <div className="p-8 max-w-4xl space-y-12">
-      <header>
-        <h1 className="text-3xl font-bold mb-2">Button</h1>
-        <p className="text-muted-foreground">
-          A versatile button component with multiple variants and sizes.
-        </p>
-      </header>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <Button size="xs">Extra Small</Button>
+        <Button size="sm">Small</Button>
+        <Button size="default">Default</Button>
+        <Button size="lg">Large</Button>
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <Button size="icon-xs" variant="outline"><IconPlus className="w-3 h-3" /></Button>
+        <Button size="icon-sm" variant="outline"><IconPlus className="w-4 h-4" /></Button>
+        <Button size="icon" variant="outline"><IconPlus className="w-4 h-4" /></Button>
+        <Button size="icon-lg" variant="outline"><IconPlus className="w-5 h-5" /></Button>
+      </div>
+    </div>
+  )
+}
 
-      {/* Variants Section */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Variants
-        </h2>
-        <div className="space-y-6">
-          {/* Basic Variants */}
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">
-              Basic
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="default">Default</Button>
-              <Button variant="secondary">Secondary</Button>
-              <Button variant="outline">Outline</Button>
-              <Button variant="ghost">Ghost</Button>
-              <Button variant="destructive">Destructive</Button>
-              <Button variant="link">Link</Button>
-            </div>
-          </div>
+const sizesCode = `import { Button } from "@/components/ui/button"
 
-          {/* Destructive Variants */}
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">
-              Destructive
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="destructive">Destructive</Button>
-              <Button variant="destructive-outline">Destructive Outline</Button>
-              <Button variant="destructive-ghost">Destructive Ghost</Button>
-            </div>
-          </div>
+// Text button sizes
+<Button size="xs">Extra Small</Button>
+<Button size="sm">Small</Button>
+<Button size="default">Default</Button>
+<Button size="lg">Large</Button>
 
-          {/* Info Variants */}
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">
-              Info
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="info">Info</Button>
-              <Button variant="info-outline">Info Outline</Button>
-              <Button variant="info-ghost">Info Ghost</Button>
-            </div>
-          </div>
+// Icon button sizes
+<Button size="icon-xs"><IconPlus /></Button>
+<Button size="icon-sm"><IconPlus /></Button>
+<Button size="icon"><IconPlus /></Button>
+<Button size="icon-lg"><IconPlus /></Button>`
 
-          {/* Success Variants */}
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">
-              Success
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="success">Success</Button>
-              <Button variant="success-outline">Success Outline</Button>
-              <Button variant="success-ghost">Success Ghost</Button>
-            </div>
-          </div>
+function WithIconsDemo() {
+  return (
+    <div className="flex flex-wrap gap-3">
+      <Button variant="default">
+        <IconMail data-icon="inline-start" className="w-4 h-4" />
+        Send Email
+      </Button>
+      <Button variant="secondary">
+        <IconDownload data-icon="inline-start" className="w-4 h-4" />
+        Download
+      </Button>
+      <Button variant="outline">
+        <IconSettings data-icon="inline-start" className="w-4 h-4" />
+        Settings
+      </Button>
+      <Button variant="success">
+        <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
+        Confirm
+      </Button>
+      <Button variant="destructive">
+        <IconTrash data-icon="inline-start" className="w-4 h-4" />
+        Delete
+      </Button>
+    </div>
+  )
+}
 
-          {/* Warning Variants */}
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">
-              Warning
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              <Button variant="warning">Warning</Button>
-              <Button variant="warning-outline">Warning Outline</Button>
-              <Button variant="warning-ghost">Warning Ghost</Button>
-            </div>
-          </div>
-        </div>
-      </section>
+const withIconsCode = `import { Button } from "@/components/ui/button"
+import { IconMail, IconDownload, IconSettings } from "@tabler/icons-react"
 
-      {/* Sizes Section */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Sizes
-        </h2>
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <Button size="xs" variant="default">
-              Extra Small
-            </Button>
-            <Button size="xs" variant="secondary">
-              Extra Small
-            </Button>
-            <Button size="xs" variant="outline">
-              Extra Small
-            </Button>
-            <Button size="xs" variant="info">
-              Extra Small
-            </Button>
-            <Button size="xs" variant="success">
-              Extra Small
-            </Button>
-            <Button size="xs" variant="warning">
-              Extra Small
-            </Button>
-            <Button size="xs" variant="destructive">
-              Extra Small
-            </Button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button size="sm" variant="default">
-              Small
-            </Button>
-            <Button size="sm" variant="secondary">
-              Small
-            </Button>
-            <Button size="sm" variant="outline">
-              Small
-            </Button>
-            <Button size="sm" variant="info">
-              Small
-            </Button>
-            <Button size="sm" variant="success">
-              Small
-            </Button>
-            <Button size="sm" variant="warning">
-              Small
-            </Button>
-            <Button size="sm" variant="destructive">
-              Small
-            </Button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button size="default" variant="default">
-              Default
-            </Button>
-            <Button size="default" variant="secondary">
-              Default
-            </Button>
-            <Button size="default" variant="outline">
-              Default
-            </Button>
-            <Button size="default" variant="info">
-              Default
-            </Button>
-            <Button size="default" variant="success">
-              Default
-            </Button>
-            <Button size="default" variant="warning">
-              Default
-            </Button>
-            <Button size="default" variant="destructive">
-              Default
-            </Button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button size="lg" variant="default">
-              Large
-            </Button>
-            <Button size="lg" variant="secondary">
-              Large
-            </Button>
-            <Button size="lg" variant="outline">
-              Large
-            </Button>
-            <Button size="lg" variant="info">
-              Large
-            </Button>
-            <Button size="lg" variant="success">
-              Large
-            </Button>
-            <Button size="lg" variant="warning">
-              Large
-            </Button>
-            <Button size="lg" variant="destructive">
-              Large
-            </Button>
-          </div>
-        </div>
-      </section>
+// Use data-icon="inline-start" for proper icon spacing
+<Button variant="default">
+  <IconMail data-icon="inline-start" className="w-4 h-4" />
+  Send Email
+</Button>
 
-      {/* Icon Buttons */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Icon Buttons
-        </h2>
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <Button size="icon-xs" variant="default">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-xs" variant="secondary">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-xs" variant="outline">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-xs" variant="info">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-xs" variant="success">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-xs" variant="warning">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-xs" variant="destructive">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button size="icon-sm" variant="default">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-sm" variant="secondary">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-sm" variant="outline">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-sm" variant="info">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-sm" variant="success">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-sm" variant="warning">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-sm" variant="destructive">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button size="icon" variant="default">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="secondary">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="outline">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="info">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="success">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="warning">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="destructive">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button size="icon-lg" variant="default">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-lg" variant="secondary">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-lg" variant="outline">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-lg" variant="info">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-lg" variant="success">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-lg" variant="warning">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-            <Button size="icon-lg" variant="destructive">
-              <IconPlus className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </section>
+<Button variant="secondary">
+  <IconDownload data-icon="inline-start" className="w-4 h-4" />
+  Download
+</Button>`
 
-      {/* With Icons */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          With Icons
-        </h2>
+function HoldToConfirmDemo() {
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Hold the button to execute the action. Release early to cancel.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <Button
+          variant="default"
+          holdDuration={1000}
+          onHoldComplete={() => alert("Sent!")}
+        >
+          <IconSend data-icon="inline-start" className="w-4 h-4" />
+          Hold to Send
+        </Button>
+        <Button
+          variant="success"
+          holdDuration={1000}
+          onHoldComplete={() => alert("Approved!")}
+        >
+          <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
+          Hold to Approve
+        </Button>
+        <Button
+          variant="destructive"
+          holdDuration={1500}
+          onHoldComplete={() => alert("Deleted!")}
+        >
+          <IconTrash data-icon="inline-start" className="w-4 h-4" />
+          Hold to Delete
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+const holdToConfirmCode = `import { Button } from "@/components/ui/button"
+
+// Hold duration in milliseconds
+<Button
+  variant="destructive"
+  holdDuration={1500}
+  onHoldComplete={() => handleDelete()}
+>
+  Hold to Delete
+</Button>
+
+// With icon
+<Button
+  variant="success"
+  holdDuration={1000}
+  onHoldComplete={() => handleApprove()}
+>
+  <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
+  Hold to Approve
+</Button>`
+
+function ExpandableDemo() {
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Icon-only buttons that expand to show text on hover.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <ExpandableIconButton
+          icon={<IconSettings className="w-4 h-4" />}
+          label="Settings"
+          variant="outline"
+        />
+        <ExpandableIconButton
+          icon={<IconHeart className="w-4 h-4" />}
+          label="Like"
+          variant="secondary"
+        />
+        <ExpandableIconButton
+          icon={<IconPlayerPlay className="w-4 h-4" />}
+          label="Play Video"
+          variant="default"
+        />
+        <ExpandableIconButton
+          icon={<IconTrash className="w-4 h-4" />}
+          label="Delete"
+          variant="destructive"
+        />
+      </div>
+      <div>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">With Hold to Confirm</h4>
         <div className="flex flex-wrap gap-3">
-          <Button variant="default">
-            <IconMail data-icon="inline-start" className="w-4 h-4" />
-            Send Email
-          </Button>
-          <Button variant="secondary">
-            <IconDownload data-icon="inline-start" className="w-4 h-4" />
-            Download
-          </Button>
-          <Button variant="outline">
-            <IconSettings data-icon="inline-start" className="w-4 h-4" />
-            Settings
-          </Button>
-          <Button variant="info">
-            <IconInfoCircle data-icon="inline-start" className="w-4 h-4" />
-            Info
-          </Button>
-          <Button variant="success">
-            <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
-            Success
-          </Button>
-          <Button variant="warning">
-            <IconAlertTriangle data-icon="inline-start" className="w-4 h-4" />
-            Warning
-          </Button>
-          <Button variant="destructive">
-            <IconTrash data-icon="inline-start" className="w-4 h-4" />
-            Delete
-          </Button>
-        </div>
-      </section>
-
-      {/* Hold Button */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Hold to Confirm
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Hold the button to execute the action. Release early to cancel.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Button
+          <ExpandableIconButton
+            icon={<IconSend className="w-4 h-4" />}
+            label="Send"
             variant="default"
             holdDuration={1000}
             onHoldComplete={() => alert("Sent!")}
-          >
-            <IconSend data-icon="inline-start" className="w-4 h-4" />
-            Hold to Send
-          </Button>
-          <Button
-            variant="secondary"
-            holdDuration={1200}
-            onHoldComplete={() => alert("Saved!")}
-          >
-            <IconDownload data-icon="inline-start" className="w-4 h-4" />
-            Hold to Save
-          </Button>
-          <Button
-            variant="info"
-            holdDuration={1000}
-            onHoldComplete={() => alert("Info confirmed!")}
-          >
-            <IconInfoCircle data-icon="inline-start" className="w-4 h-4" />
-            Hold to Confirm
-          </Button>
-          <Button
-            variant="success"
-            holdDuration={1000}
-            onHoldComplete={() => alert("Approved!")}
-          >
-            <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
-            Hold to Approve
-          </Button>
-          <Button
-            variant="warning"
-            holdDuration={1500}
-            onHoldComplete={() => alert("Warning acknowledged!")}
-          >
-            <IconAlertTriangle data-icon="inline-start" className="w-4 h-4" />
-            Hold to Acknowledge
-          </Button>
-          <Button
+          />
+          <ExpandableIconButton
+            icon={<IconTrash className="w-4 h-4" />}
+            label="Delete"
             variant="destructive"
             holdDuration={1500}
             onHoldComplete={() => alert("Deleted!")}
-          >
-            <IconTrash data-icon="inline-start" className="w-4 h-4" />
-            Hold to Delete
-          </Button>
-        </div>
-      </section>
-
-      {/* Expandable Icon Button */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Expandable Icon Button
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Icon-only buttons that expand to show text on hover.
-        </p>
-        <div className="space-y-3">
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">
-              Regular
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              <ExpandableIconButton
-                icon={<IconSettings className="w-4 h-4" />}
-                label="Settings"
-                variant="outline"
-              />
-              <ExpandableIconButton
-                icon={<IconHeart className="w-4 h-4" />}
-                label="Like"
-                variant="secondary"
-              />
-              <ExpandableIconButton
-                icon={<IconPlayerPlay className="w-4 h-4" />}
-                label="Play Video"
-                variant="default"
-              />
-              <ExpandableIconButton
-                icon={<IconInfoCircle className="w-4 h-4" />}
-                label="Info"
-                variant="info"
-              />
-              <ExpandableIconButton
-                icon={<IconCircleCheck className="w-4 h-4" />}
-                label="Success"
-                variant="success"
-              />
-              <ExpandableIconButton
-                icon={<IconAlertTriangle className="w-4 h-4" />}
-                label="Warning"
-                variant="warning"
-              />
-              <ExpandableIconButton
-                icon={<IconTrash className="w-4 h-4" />}
-                label="Delete"
-                variant="destructive"
-              />
-            </div>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-2">
-              With Hold to Confirm
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              <ExpandableIconButton
-                icon={<IconSend className="w-4 h-4" />}
-                label="Send"
-                variant="default"
-                holdDuration={1000}
-                onHoldComplete={() => alert("Sent!")}
-              />
-              <ExpandableIconButton
-                icon={<IconDownload className="w-4 h-4" />}
-                label="Save"
-                variant="secondary"
-                holdDuration={1200}
-                onHoldComplete={() => alert("Saved!")}
-              />
-              <ExpandableIconButton
-                icon={<IconInfoCircle className="w-4 h-4" />}
-                label="Confirm"
-                variant="info"
-                holdDuration={1000}
-                onHoldComplete={() => alert("Confirmed!")}
-              />
-              <ExpandableIconButton
-                icon={<IconCircleCheck className="w-4 h-4" />}
-                label="Approve"
-                variant="success"
-                holdDuration={1000}
-                onHoldComplete={() => alert("Approved!")}
-              />
-              <ExpandableIconButton
-                icon={<IconAlertTriangle className="w-4 h-4" />}
-                label="Acknowledge"
-                variant="warning"
-                holdDuration={1500}
-                onHoldComplete={() => alert("Acknowledged!")}
-              />
-              <ExpandableIconButton
-                icon={<IconTrash className="w-4 h-4" />}
-                label="Delete"
-                variant="destructive"
-                holdDuration={1500}
-                onHoldComplete={() => alert("Deleted!")}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Loading Button */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Loading Button
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Buttons with loading spinners for async operations. Automatically
-          disabled while loading.
-        </p>
-        <LoadingButtonDemo />
-      </section>
-
-      {/* Icon Button with Tooltip */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Icon Button with Tooltip
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Icon-only buttons with descriptive tooltips for accessibility.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <IconButtonWithTooltip
-            icon={<IconSettings className="w-4 h-4" />}
-            tooltip="Settings"
-            variant="outline"
-            size="icon"
-          />
-          <IconButtonWithTooltip
-            icon={<IconHeart className="w-4 h-4" />}
-            tooltip="Add to favorites"
-            variant="secondary"
-            size="icon"
-          />
-          <IconButtonWithTooltip
-            icon={<IconDownload className="w-4 h-4" />}
-            tooltip="Download file"
-            variant="default"
-            size="icon"
-          />
-          <IconButtonWithTooltip
-            icon={<IconTrash className="w-4 h-4" />}
-            tooltip="Delete item"
-            variant="destructive"
-            size="icon"
-          />
-          <IconButtonWithTooltip
-            icon={<IconInfoCircle className="w-4 h-4" />}
-            tooltip="More information"
-            variant="info"
-            size="icon"
-          />
-          <IconButtonWithTooltip
-            icon={<IconCircleCheck className="w-4 h-4" />}
-            tooltip="Mark as complete"
-            variant="success"
-            size="icon"
           />
         </div>
-      </section>
+      </div>
+    </div>
+  )
+}
 
-      {/* Disabled State */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Disabled
-        </h2>
-        <div className="flex flex-wrap gap-3">
-          <Button disabled>Disabled Default</Button>
-          <Button variant="secondary" disabled>
-            Disabled Secondary
-          </Button>
-          <Button variant="outline" disabled>
-            Disabled Outline
-          </Button>
-        </div>
-      </section>
+const expandableCode = `import { ExpandableIconButton } from "@/components/ui/button"
 
-      {/* Usage */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Usage
-        </h2>
-        <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
-          <pre className="text-sm text-foreground">
-            {`import { Button, ExpandableIconButton } from "@/components/ui/button"
+// Basic expandable
+<ExpandableIconButton
+  icon={<IconSettings className="w-4 h-4" />}
+  label="Settings"
+  variant="outline"
+/>
 
-// Basic
+// With hold to confirm
+<ExpandableIconButton
+  icon={<IconTrash className="w-4 h-4" />}
+  label="Delete"
+  variant="destructive"
+  holdDuration={1500}
+  onHoldComplete={() => handleDelete()}
+/>`
+
+function LoadingButtonDemo() {
+  const [loadingStates, setLoadingStates] = React.useState<Record<string, boolean>>({})
+
+  const handleClick = (id: string) => {
+    setLoadingStates((prev) => ({ ...prev, [id]: true }))
+    setTimeout(() => {
+      setLoadingStates((prev) => ({ ...prev, [id]: false }))
+    }, 2000)
+  }
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Buttons with loading spinners for async operations. Automatically disabled while loading.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <LoadingButton
+          isLoading={loadingStates["default"]}
+          onClick={() => handleClick("default")}
+        >
+          <IconSend data-icon="inline-start" className="w-4 h-4" />
+          Submit
+        </LoadingButton>
+        <LoadingButton
+          variant="secondary"
+          isLoading={loadingStates["secondary"]}
+          onClick={() => handleClick("secondary")}
+        >
+          <IconDownload data-icon="inline-start" className="w-4 h-4" />
+          Save
+        </LoadingButton>
+        <LoadingButton
+          variant="outline"
+          isLoading={loadingStates["outline"]}
+          onClick={() => handleClick("outline")}
+          loadingText="Processing..."
+        >
+          Process
+        </LoadingButton>
+        <LoadingButton
+          variant="destructive"
+          isLoading={loadingStates["destructive"]}
+          onClick={() => handleClick("destructive")}
+        >
+          <IconTrash data-icon="inline-start" className="w-4 h-4" />
+          Delete
+        </LoadingButton>
+      </div>
+    </div>
+  )
+}
+
+const loadingButtonCode = `import { LoadingButton } from "@/components/ui/button"
+
+const [isLoading, setIsLoading] = useState(false)
+
+<LoadingButton
+  isLoading={isLoading}
+  onClick={() => handleSubmit()}
+>
+  Submit
+</LoadingButton>
+
+// With custom loading text
+<LoadingButton
+  isLoading={isLoading}
+  loadingText="Processing..."
+>
+  Process
+</LoadingButton>`
+
+function IconButtonWithTooltipDemo() {
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Icon-only buttons with descriptive tooltips for accessibility.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <IconButtonWithTooltip
+          icon={<IconSettings className="w-4 h-4" />}
+          tooltip="Settings"
+          variant="outline"
+          size="icon"
+        />
+        <IconButtonWithTooltip
+          icon={<IconHeart className="w-4 h-4" />}
+          tooltip="Add to favorites"
+          variant="secondary"
+          size="icon"
+        />
+        <IconButtonWithTooltip
+          icon={<IconDownload className="w-4 h-4" />}
+          tooltip="Download file"
+          variant="default"
+          size="icon"
+        />
+        <IconButtonWithTooltip
+          icon={<IconTrash className="w-4 h-4" />}
+          tooltip="Delete item"
+          variant="destructive"
+          size="icon"
+        />
+        <IconButtonWithTooltip
+          icon={<IconInfoCircle className="w-4 h-4" />}
+          tooltip="More information"
+          variant="info"
+          size="icon"
+        />
+      </div>
+    </div>
+  )
+}
+
+const iconButtonWithTooltipCode = `import { IconButtonWithTooltip } from "@/components/ui/button"
+
+<IconButtonWithTooltip
+  icon={<IconSettings className="w-4 h-4" />}
+  tooltip="Settings"
+  variant="outline"
+  size="icon"
+/>
+
+<IconButtonWithTooltip
+  icon={<IconTrash className="w-4 h-4" />}
+  tooltip="Delete item"
+  variant="destructive"
+  size="icon"
+/>`
+
+function DisabledDemo() {
+  return (
+    <div className="flex flex-wrap gap-3">
+      <Button disabled>Disabled Default</Button>
+      <Button variant="secondary" disabled>Disabled Secondary</Button>
+      <Button variant="outline" disabled>Disabled Outline</Button>
+      <Button variant="destructive" disabled>Disabled Destructive</Button>
+    </div>
+  )
+}
+
+const disabledCode = `import { Button } from "@/components/ui/button"
+
+<Button disabled>Disabled Default</Button>
+<Button variant="secondary" disabled>Disabled Secondary</Button>
+<Button variant="outline" disabled>Disabled Outline</Button>`
+
+// =============================================================================
+// Main Page Component
+// =============================================================================
+
+export function ButtonPage() {
+  const features = [
+    {
+      title: "Accessible",
+      description: "Full keyboard navigation and ARIA support for screen readers.",
+      icon: <IconAccessible className="w-4 h-4 text-primary" />,
+    },
+    {
+      title: "Multiple Variants",
+      description: "20+ variants including semantic colors and outline/ghost styles.",
+      icon: <IconPalette className="w-4 h-4 text-primary" />,
+    },
+    {
+      title: "Composable",
+      description: "LoadingButton, ExpandableIconButton, and IconButtonWithTooltip components.",
+      icon: <IconStack2 className="w-4 h-4 text-primary" />,
+    },
+  ]
+
+  const demoTabs = [
+    {
+      value: "variants",
+      label: "Variants",
+      demo: (
+        <DemoWrapper
+          title="Button Variants"
+          description="All available button variants including semantic colors"
+          code={variantsCode}
+        >
+          <VariantsDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "sizes",
+      label: "Sizes",
+      demo: (
+        <DemoWrapper
+          title="Size Variants"
+          description="Text and icon button sizes from extra small to large"
+          code={sizesCode}
+        >
+          <SizesDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "icons",
+      label: "With Icons",
+      demo: (
+        <DemoWrapper
+          title="Buttons with Icons"
+          description="Combine icons with text using data-icon attribute"
+          code={withIconsCode}
+        >
+          <WithIconsDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "hold",
+      label: "Hold to Confirm",
+      demo: (
+        <DemoWrapper
+          title="Hold to Confirm"
+          description="Prevent accidental clicks with hold-to-confirm pattern"
+          code={holdToConfirmCode}
+        >
+          <HoldToConfirmDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "expandable",
+      label: "Expandable",
+      demo: (
+        <DemoWrapper
+          title="Expandable Icon Button"
+          description="Icon buttons that expand to show labels on hover"
+          code={expandableCode}
+        >
+          <ExpandableDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "loading",
+      label: "Loading",
+      demo: (
+        <DemoWrapper
+          title="Loading Button"
+          description="Buttons with loading state for async operations"
+          code={loadingButtonCode}
+        >
+          <LoadingButtonDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "tooltip",
+      label: "With Tooltip",
+      demo: (
+        <DemoWrapper
+          title="Icon Button with Tooltip"
+          description="Icon buttons with descriptive tooltips"
+          code={iconButtonWithTooltipCode}
+        >
+          <IconButtonWithTooltipDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "disabled",
+      label: "Disabled",
+      demo: (
+        <DemoWrapper
+          title="Disabled State"
+          description="Buttons in disabled state"
+          code={disabledCode}
+        >
+          <DisabledDemo />
+        </DemoWrapper>
+      ),
+    },
+  ]
+
+  const keyboardShortcuts = [
+    { keys: "Enter", description: "Activate button" },
+    { keys: "Space", description: "Activate button" },
+    { keys: "Tab", description: "Move focus to next element" },
+    { keys: "Shift + Tab", description: "Move focus to previous element" },
+  ]
+
+  const usageCode = `import { 
+  Button, 
+  LoadingButton,
+  ExpandableIconButton,
+  IconButtonWithTooltip 
+} from "@/components/ui/button"
+
+// Basic button
 <Button>Click me</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="destructive">Delete</Button>
 
-// Hold to confirm (use onHoldComplete prop)
+// With icon
+<Button>
+  <IconMail data-icon="inline-start" className="w-4 h-4" />
+  Send Email
+</Button>
+
+// Hold to confirm
 <Button
   holdDuration={1500}
   onHoldComplete={() => handleDelete()}
@@ -657,14 +608,79 @@ export function ButtonPage() {
   Hold to Delete
 </Button>
 
-// Expandable icon
+// Loading state
+<LoadingButton isLoading={isLoading}>
+  Submit
+</LoadingButton>
+
+// Expandable icon button
 <ExpandableIconButton
   icon={<IconSettings />}
   label="Settings"
-/>`}
-          </pre>
-        </div>
-      </section>
-    </div>
-  );
+/>
+
+// Icon with tooltip
+<IconButtonWithTooltip
+  icon={<IconTrash />}
+  tooltip="Delete item"
+  variant="destructive"
+/>`
+
+  const apiReference = [
+    {
+      title: "Button",
+      props: [
+        { prop: "variant", type: '"default" | "secondary" | "outline" | "ghost" | "link" | "destructive" | "info" | "success" | "warning" | ...', default: '"default"', description: "Visual style of the button" },
+        { prop: "size", type: '"default" | "xs" | "sm" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg"', default: '"default"', description: "Size of the button" },
+        { prop: "holdDuration", type: "number", default: "-", description: "Duration in ms to hold before triggering onHoldComplete" },
+        { prop: "onHoldComplete", type: "() => void", default: "-", description: "Callback when hold duration is completed" },
+        { prop: "disabled", type: "boolean", default: "false", description: "Disable the button" },
+        { prop: "asChild", type: "boolean", default: "false", description: "Render as child element (for custom components)" },
+      ],
+    },
+    {
+      title: "LoadingButton",
+      props: [
+        { prop: "isLoading", type: "boolean", default: "false", description: "Show loading spinner and disable button" },
+        { prop: "loadingText", type: "string", default: "-", description: "Text to show while loading" },
+        { prop: "...props", type: "ButtonProps", default: "-", description: "All Button props are supported" },
+      ],
+    },
+    {
+      title: "ExpandableIconButton",
+      props: [
+        { prop: "icon", type: "ReactNode", default: "-", description: "Icon element to display" },
+        { prop: "label", type: "string", default: "-", description: "Text label shown on hover" },
+        { prop: "...props", type: "ButtonProps", default: "-", description: "All Button props are supported" },
+      ],
+    },
+    {
+      title: "IconButtonWithTooltip",
+      props: [
+        { prop: "icon", type: "ReactNode", default: "-", description: "Icon element to display" },
+        { prop: "tooltip", type: "string", default: "-", description: "Tooltip text on hover" },
+        { prop: "...props", type: "ButtonProps", default: "-", description: "All Button props are supported" },
+      ],
+    },
+  ]
+
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Button"
+        description="A versatile button component with multiple variants, sizes, and interactive features like hold-to-confirm and loading states."
+        version="v2.0"
+      />
+
+      <FeatureGrid features={features} />
+
+      <DemoTabs tabs={demoTabs} />
+
+      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
+
+      <UsageBlock code={usageCode} />
+
+      <APIReference sections={apiReference} />
+    </ComponentPage>
+  )
 }

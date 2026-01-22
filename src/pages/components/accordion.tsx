@@ -1,75 +1,116 @@
 import {
+  IconFolder,
+  IconFile,
+  IconSettings,
+  IconInfoCircle,
+  IconCheck,
+  IconAlertTriangle,
+  IconChevronRight,
+  IconPlus,
+} from "@tabler/icons-react";
+
+import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
 import {
-  IconInfoCircle,
-  IconCheck,
-  IconAlertTriangle,
-  IconFolder,
-  IconFile,
-  IconSettings,
-  IconChevronRight,
-  IconPlus,
-} from "@tabler/icons-react";
+  ComponentPage,
+  PageHeader,
+  FeatureGrid,
+  DemoWrapper,
+  DemoTabs,
+  KeyboardShortcuts,
+  UsageBlock,
+  APIReference,
+} from "@/components/docs";
 
-export function AccordionPage() {
-  const handleOpen = () => {
-    console.log("Accordion item opened");
-  };
-
-  const handleClose = () => {
-    console.log("Accordion item closed");
-  };
-
+function BasicDemo() {
   return (
-    <div className="p-8 max-w-4xl space-y-12">
-      <header>
-        <h1 className="text-3xl font-bold mb-2">Accordion</h1>
-        <p className="text-muted-foreground">
-          Collapsible content panels for organizing information.
-        </p>
-      </header>
+    <Accordion defaultValue={["item-1"]}>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>What is Kira Kit?</AccordionTrigger>
+        <AccordionContent>
+          Kira Kit is a modern React component library built with Base UI,
+          Tailwind CSS, and TypeScript. It provides a set of accessible and
+          customizable UI components.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-2">
+        <AccordionTrigger>How do I install it?</AccordionTrigger>
+        <AccordionContent>
+          Simply copy the components you need into your project. Each
+          component is self-contained and can be customized to fit your
+          design system.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-3">
+        <AccordionTrigger>Is it accessible?</AccordionTrigger>
+        <AccordionContent>
+          Yes! All components are built with accessibility in mind, using
+          Base UI primitives that follow WAI-ARIA guidelines.
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}
 
-      {/* Basic Accordion */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Basic Accordion
-        </h2>
-        <Accordion defaultValue={["item-1"]}>
+const basicCode = `import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion"
+
+export function BasicAccordionDemo() {
+  return (
+    <Accordion defaultValue={["item-1"]}>
+      <AccordionItem value="item-1">
+        <AccordionTrigger>What is Kira Kit?</AccordionTrigger>
+        <AccordionContent>
+          Kira Kit is a modern React component library built with Base UI,
+          Tailwind CSS, and TypeScript.
+        </AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="item-2">
+        <AccordionTrigger>How do I install it?</AccordionTrigger>
+        <AccordionContent>
+          Simply copy the components you need into your project.
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  )
+}`;
+
+function CollapsibleDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Multiple Selection</p>
+        <Accordion multiple defaultValue={["item-1", "item-2"]}>
           <AccordionItem value="item-1">
-            <AccordionTrigger>What is Kira Kit?</AccordionTrigger>
+            <AccordionTrigger>First Item (open by default)</AccordionTrigger>
             <AccordionContent>
-              Kira Kit is a modern React component library built with Base UI,
-              Tailwind CSS, and TypeScript. It provides a set of accessible and
-              customizable UI components.
+              Multiple items can be open simultaneously.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-2">
-            <AccordionTrigger>How do I install it?</AccordionTrigger>
+            <AccordionTrigger>Second Item (open by default)</AccordionTrigger>
             <AccordionContent>
-              Simply copy the components you need into your project. Each
-              component is self-contained and can be customized to fit your
-              design system.
+              Click any header to toggle without closing others.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-3">
-            <AccordionTrigger>Is it accessible?</AccordionTrigger>
+            <AccordionTrigger>Third Item</AccordionTrigger>
             <AccordionContent>
-              Yes! All components are built with accessibility in mind, using
-              Base UI primitives that follow WAI-ARIA guidelines.
+              This one starts closed but can be opened.
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </section>
-
-      {/* Without Arrow */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Without Arrow
-        </h2>
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Without Arrow</p>
         <Accordion>
           <AccordionItem value="item-1">
             <AccordionTrigger showArrow={false}>
@@ -88,13 +129,47 @@ export function AccordionPage() {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </section>
+      </div>
+    </div>
+  );
+}
 
-      {/* With Icon */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          With Icon
-        </h2>
+const collapsibleCode = `import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+
+export function CollapsibleAccordionDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Multiple Selection</p>
+        <Accordion multiple defaultValue={["item-1", "item-2"]}>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>First Item</AccordionTrigger>
+            <AccordionContent>Multiple items can be open.</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger>Second Item</AccordionTrigger>
+            <AccordionContent>Click to toggle without closing others.</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Without Arrow</p>
+        <Accordion>
+          <AccordionItem value="item-1">
+            <AccordionTrigger showArrow={false}>No Arrow</AccordionTrigger>
+            <AccordionContent>Clean look without the arrow indicator.</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    </div>
+  )
+}`;
+
+function IconsDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">With Icon</p>
         <Accordion>
           <AccordionItem value="item-1">
             <AccordionTrigger icon={<IconFolder className="w-4 h-4" />}>
@@ -121,13 +196,9 @@ export function AccordionPage() {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </section>
-
-      {/* Header Background Colors */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Header Background Colors
-        </h2>
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Header Background Colors</p>
         <Accordion multiple>
           <AccordionItem value="info">
             <AccordionTrigger
@@ -162,143 +233,10 @@ export function AccordionPage() {
               This warns about potential issues with a yellow pastel background.
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="destructive">
-            <AccordionTrigger variant="destructive">
-              Destructive / Error
-            </AccordionTrigger>
-            <AccordionContent>
-              This indicates an error or destructive action with a red pastel
-              background.
-            </AccordionContent>
-          </AccordionItem>
         </Accordion>
-      </section>
-
-      {/* Multiple Selection */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Multiple Selection
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Set <code className="bg-muted px-1 rounded">multiple</code> to allow
-          opening multiple items at once.
-        </p>
-        <Accordion multiple defaultValue={["item-1", "item-2"]}>
-          <AccordionItem value="item-1">
-            <AccordionTrigger>First Item (open by default)</AccordionTrigger>
-            <AccordionContent>
-              Multiple items can be open simultaneously.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger>Second Item (open by default)</AccordionTrigger>
-            <AccordionContent>
-              Click any header to toggle without closing others.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3">
-            <AccordionTrigger>Third Item</AccordionTrigger>
-            <AccordionContent>
-              This one starts closed but can be opened.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </section>
-
-      {/* Size Variants */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Size Variants
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Use the <code className="bg-muted px-1 rounded">size</code> prop to
-          change trigger and content sizes.
-        </p>
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-sm font-medium mb-2">xs</h3>
-            <Accordion>
-              <AccordionItem value="item-1">
-                <AccordionTrigger size="xs">Extra Small</AccordionTrigger>
-                <AccordionContent size="xs">
-                  This is extra small content.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium mb-2">sm</h3>
-            <Accordion>
-              <AccordionItem value="item-1">
-                <AccordionTrigger size="sm">Small</AccordionTrigger>
-                <AccordionContent size="sm">
-                  This is small content.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium mb-2">default</h3>
-            <Accordion>
-              <AccordionItem value="item-1">
-                <AccordionTrigger size="default">Default</AccordionTrigger>
-                <AccordionContent size="default">
-                  This is default size content.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium mb-2">lg</h3>
-            <Accordion>
-              <AccordionItem value="item-1">
-                <AccordionTrigger size="lg">Large</AccordionTrigger>
-                <AccordionContent size="lg">
-                  This is large content with more padding.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        </div>
-      </section>
-
-      {/* Ghost and Outline Variants */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Ghost and Outline Variants
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Use <code className="bg-muted px-1 rounded">variant="ghost"</code> or{" "}
-          <code className="bg-muted px-1 rounded">variant="outline"</code> for
-          alternative styles.
-        </p>
-        <Accordion>
-          <AccordionItem value="ghost">
-            <AccordionTrigger variant="ghost">Ghost Variant</AccordionTrigger>
-            <AccordionContent>
-              Ghost variant has no background color until hovered.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="outline">
-            <AccordionTrigger variant="outline">
-              Outline Variant
-            </AccordionTrigger>
-            <AccordionContent>
-              Outline variant has a border but no background color.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </section>
-
-      {/* Custom Chevron Icon */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Custom Chevron Icon
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Use <code className="bg-muted px-1 rounded">chevronIcon</code> to
-          replace the default chevron.
-        </p>
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Custom Chevron</p>
         <Accordion>
           <AccordionItem value="item-1">
             <AccordionTrigger
@@ -308,8 +246,7 @@ export function AccordionPage() {
               Custom Chevron (Right Arrow)
             </AccordionTrigger>
             <AccordionContent>
-              This accordion uses a custom right arrow icon instead of the
-              default chevron.
+              This accordion uses a custom right arrow icon.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-2">
@@ -324,97 +261,50 @@ export function AccordionPage() {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </section>
+      </div>
+    </div>
+  );
+}
 
-      {/* Disabled State */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Disabled State
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Use the <code className="bg-muted px-1 rounded">disabled</code> prop
-          on AccordionItem to disable interaction.
-        </p>
+const iconsCode = `import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+import { IconFolder, IconFile, IconSettings, IconChevronRight } from "@tabler/icons-react"
+
+export function IconsAccordionDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">With Icon</p>
         <Accordion>
           <AccordionItem value="item-1">
-            <AccordionTrigger>Enabled Item</AccordionTrigger>
-            <AccordionContent>This item can be toggled.</AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2" disabled>
-            <AccordionTrigger>Disabled Item</AccordionTrigger>
-            <AccordionContent>
-              This item cannot be interacted with.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3">
-            <AccordionTrigger>Another Enabled Item</AccordionTrigger>
-            <AccordionContent>This item can also be toggled.</AccordionContent>
+            <AccordionTrigger icon={<IconFolder className="w-4 h-4" />}>
+              Project Files
+            </AccordionTrigger>
+            <AccordionContent>Contains all your project source files.</AccordionContent>
           </AccordionItem>
         </Accordion>
-      </section>
-
-      {/* Callbacks */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Callbacks
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Use <code className="bg-muted px-1 rounded">onOpen</code> and{" "}
-          <code className="bg-muted px-1 rounded">onClose</code> props on
-          AccordionItem for lifecycle callbacks. Check console for logs.
-        </p>
-        <Accordion>
-          <AccordionItem
-            value="item-1"
-            onOpen={handleOpen}
-            onClose={handleClose}
-          >
-            <AccordionTrigger>With Callbacks</AccordionTrigger>
-            <AccordionContent>
-              Open and close this item to see console logs.
-            </AccordionContent>
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Header Colors</p>
+        <Accordion multiple>
+          <AccordionItem value="info">
+            <AccordionTrigger variant="info">Info</AccordionTrigger>
+            <AccordionContent>Informational content.</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="success">
+            <AccordionTrigger variant="success">Success</AccordionTrigger>
+            <AccordionContent>Successful action.</AccordionContent>
           </AccordionItem>
         </Accordion>
-      </section>
+      </div>
+    </div>
+  )
+}`;
 
-      {/* Lazy Mount with Skeleton */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Lazy Mount with Skeleton
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Use <code className="bg-muted px-1 rounded">lazyMount</code> and{" "}
-          <code className="bg-muted px-1 rounded">showSkeleton</code> to defer
-          rendering until opened and show a loading state.
-        </p>
-        <Accordion>
-          <AccordionItem value="item-1">
-            <AccordionTrigger>Regular Content</AccordionTrigger>
-            <AccordionContent>
-              This content renders immediately.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger>Lazy Mounted with Skeleton</AccordionTrigger>
-            <AccordionContent lazyMount showSkeleton skeletonLines={4}>
-              <p>This content is loaded only when opened.</p>
-              <p>The skeleton shown while loading.</p>
-              <p>More content loaded on demand.</p>
-              <p>Final piece of content.</p>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </section>
-
-      {/* Inset Padding */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Inset Padding
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Use <code className="bg-muted px-1 rounded">inset</code> prop on
-          AccordionContent for nested accordions.
-        </p>
+function VerticalDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Nested Accordions</p>
         <Accordion multiple>
           <AccordionItem value="item-1">
             <AccordionTrigger>Parent Item 1</AccordionTrigger>
@@ -444,61 +334,78 @@ export function AccordionPage() {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-      </section>
-
-      {/* Scroll Into View */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Scroll Into View
-        </h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Use <code className="bg-muted px-1 rounded">scrollIntoView</code> prop
-          on Accordion to auto-scroll to opened items.
-        </p>
-        <div className="h-64 overflow-auto border rounded-lg p-4">
-          <Accordion scrollIntoView>
-            <AccordionItem value="item-1">
-              <AccordionTrigger>Item 1 (scroll to see more)</AccordionTrigger>
-              <AccordionContent>
-                Content for item 1. Opening this should scroll it into view.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-2">
-              <AccordionTrigger>Item 2</AccordionTrigger>
-              <AccordionContent>Content for item 2.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-3">
-              <AccordionTrigger>Item 3</AccordionTrigger>
-              <AccordionContent>Content for item 3.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-4">
-              <AccordionTrigger>Item 4</AccordionTrigger>
-              <AccordionContent>Content for item 4.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-5">
-              <AccordionTrigger>Item 5</AccordionTrigger>
-              <AccordionContent>Content for item 5.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-6">
-              <AccordionTrigger>Item 6</AccordionTrigger>
-              <AccordionContent>Content for item 6.</AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-7">
-              <AccordionTrigger>Item 7</AccordionTrigger>
-              <AccordionContent>Content for item 7.</AccordionContent>
-            </AccordionItem>
-          </Accordion>
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Size Variants</p>
+        <div className="space-y-4">
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">xs</p>
+            <Accordion>
+              <AccordionItem value="item-1">
+                <AccordionTrigger size="xs">Extra Small</AccordionTrigger>
+                <AccordionContent size="xs">
+                  This is extra small content.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">sm</p>
+            <Accordion>
+              <AccordionItem value="item-1">
+                <AccordionTrigger size="sm">Small</AccordionTrigger>
+                <AccordionContent size="sm">
+                  This is small content.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">lg</p>
+            <Accordion>
+              <AccordionItem value="item-1">
+                <AccordionTrigger size="lg">Large</AccordionTrigger>
+                <AccordionContent size="lg">
+                  This is large content with more padding.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </div>
-      </section>
+      </div>
+    </div>
+  );
+}
 
-      {/* Usage */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold border-b border-border pb-2">
-          Usage
-        </h2>
-        <div className="bg-muted/50 rounded-lg p-4 overflow-x-auto">
-          <pre className="text-sm text-foreground">
-            {`import {
+const verticalCode = `import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
+
+export function VerticalAccordionDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Nested Accordions</p>
+        <Accordion multiple>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>Parent Item 1</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-2">This is parent content.</p>
+              <Accordion>
+                <AccordionItem value="child-1">
+                  <AccordionTrigger>Nested Child 1</AccordionTrigger>
+                  <AccordionContent inset>
+                    Nested content with inset padding.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    </div>
+  )
+}`;
+
+const usageCode = `import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
@@ -513,7 +420,7 @@ export function AccordionPage() {
   </AccordionItem>
 </Accordion>
 
-// With Icon (backward compatible)
+// With Icon
 <AccordionTrigger icon={<Icon />}>Title</AccordionTrigger>
 
 // Without Arrow
@@ -559,10 +466,281 @@ export function AccordionPage() {
 </AccordionTrigger>
 
 // Scroll Into View
-<Accordion scrollIntoView>...</Accordion>`}
-          </pre>
-        </div>
-      </section>
-    </div>
+<Accordion scrollIntoView>...</Accordion>`;
+
+export function AccordionPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Accordion"
+        description="Collapsible content panels for organizing information. Supports icons, colors, sizes, nested accordions, and lazy loading."
+        version="v2.0"
+      />
+
+      <FeatureGrid
+        features={[
+          {
+            title: "Accessible",
+            description:
+              "WAI-ARIA compliant with proper roles, keyboard navigation (Tab, Enter, Space, Arrow keys), and screen reader announcements.",
+          },
+          {
+            title: "Customizable",
+            description:
+              "Supports icons, colors, sizes, custom chevrons, ghost/outline variants, and disabled states.",
+          },
+          {
+            title: "Performant",
+            description:
+              "Lazy mount with skeleton loading, GSAP animations with prefers-reduced-motion support, and scroll-into-view.",
+          },
+        ]}
+      />
+
+      <DemoTabs
+        defaultValue="basic"
+        tabs={[
+          {
+            value: "basic",
+            label: "Basic",
+            demo: (
+              <DemoWrapper
+                title="Basic Accordion"
+                description="Simple accordion with default open item and smooth animations."
+                code={basicCode}
+              >
+                <BasicDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "collapsible",
+            label: "Collapsible",
+            demo: (
+              <DemoWrapper
+                title="Collapsible Behavior"
+                description="Multiple selection mode and custom arrow options for flexible collapsible patterns."
+                code={collapsibleCode}
+              >
+                <CollapsibleDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "icons",
+            label: "Icons",
+            demo: (
+              <DemoWrapper
+                title="With Icons"
+                description="Icon support, colored headers, and custom chevron configurations."
+                code={iconsCode}
+              >
+                <IconsDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "vertical",
+            label: "Vertical",
+            demo: (
+              <DemoWrapper
+                title="Vertical / Nested"
+                description="Nested accordions with inset padding and size variants."
+                code={verticalCode}
+              >
+                <VerticalDemo />
+              </DemoWrapper>
+            ),
+          },
+        ]}
+      />
+
+      <KeyboardShortcuts
+        shortcuts={[
+          { keys: "Tab", description: "Move focus to next accordion" },
+          { keys: "Shift + Tab", description: "Move focus to previous accordion" },
+          { keys: "Enter / Space", description: "Toggle current item" },
+          { keys: "Home", description: "Move to first item" },
+          { keys: "End", description: "Move to last item" },
+          { keys: "Arrow Down / Arrow Right", description: "Move to next item" },
+          { keys: "Arrow Up / Arrow Left", description: "Move to previous item" },
+        ]}
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Import and use the Accordion components with various configuration options."
+      />
+
+      <APIReference
+        sections={[
+          {
+            title: "Accordion",
+            props: [
+              {
+                prop: "defaultValue",
+                type: "string[]",
+                default: "-",
+                description: "Array of item values to be open by default.",
+              },
+              {
+                prop: "value",
+                type: "string[]",
+                default: "-",
+                description: "Array of currently open item values (controlled).",
+              },
+              {
+                prop: "onValueChange",
+                type: "(value: string[]) => void",
+                default: "-",
+                description: "Callback when open items change.",
+              },
+              {
+                prop: "multiple",
+                type: "boolean",
+                default: "false",
+                description: "Allow multiple items to be open at once.",
+              },
+              {
+                prop: "scrollIntoView",
+                type: "boolean",
+                default: "false",
+                description: "Auto-scroll opened items into view.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes.",
+              },
+            ],
+          },
+          {
+            title: "AccordionItem",
+            props: [
+              {
+                prop: "value",
+                type: "string",
+                default: "-",
+                description: "Unique identifier for the accordion item.",
+              },
+              {
+                prop: "disabled",
+                type: "boolean",
+                default: "false",
+                description: "Disable interaction with this item.",
+              },
+              {
+                prop: "onOpen",
+                type: "() => void",
+                default: "-",
+                description: "Callback when item opens.",
+              },
+              {
+                prop: "onClose",
+                type: "() => void",
+                default: "-",
+                description: "Callback when item closes.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes.",
+              },
+            ],
+          },
+          {
+            title: "AccordionTrigger",
+            props: [
+              {
+                prop: "variant",
+                type: "'default' | 'info' | 'success' | 'warning' | 'destructive' | 'ghost' | 'outline'",
+                default: "'default'",
+                description: "Visual style variant of the trigger.",
+              },
+              {
+                prop: "size",
+                type: "'xs' | 'sm' | 'default' | 'lg'",
+                default: "'default'",
+                description: "Size of the trigger.",
+              },
+              {
+                prop: "showArrow",
+                type: "boolean",
+                default: "true",
+                description: "Show or hide the default chevron arrow.",
+              },
+              {
+                prop: "chevronIcon",
+                type: "ReactNode",
+                default: "-",
+                description: "Custom icon to replace the default chevron.",
+              },
+              {
+                prop: "chevronPosition",
+                type: "'start' | 'end'",
+                default: "'end'",
+                description: "Position of the chevron icon.",
+              },
+              {
+                prop: "icon",
+                type: "ReactNode",
+                default: "-",
+                description: "Icon displayed before the trigger text.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes.",
+              },
+            ],
+          },
+          {
+            title: "AccordionContent",
+            props: [
+              {
+                prop: "size",
+                type: "'xs' | 'sm' | 'default' | 'lg'",
+                default: "'default'",
+                description: "Size of the content padding.",
+              },
+              {
+                prop: "inset",
+                type: "boolean",
+                default: "false",
+                description: "Add left padding for nested accordions.",
+              },
+              {
+                prop: "lazyMount",
+                type: "boolean",
+                default: "false",
+                description: "Defer rendering until first open.",
+              },
+              {
+                prop: "showSkeleton",
+                type: "boolean",
+                default: "false",
+                description: "Show skeleton loading state before mount.",
+              },
+              {
+                prop: "skeletonLines",
+                type: "number",
+                default: "3",
+                description: "Number of skeleton lines to show.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes.",
+              },
+            ],
+          },
+        ]}
+      />
+    </ComponentPage>
   );
 }

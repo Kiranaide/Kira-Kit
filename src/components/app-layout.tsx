@@ -59,12 +59,23 @@ import {
   IconPalette,
   IconColorPicker,
   IconChevronDown,
-  IconSearch,
-  IconListNumbers,
-  IconTimeline,
+  IconChevronLeft,
+  IconMagnet,
+  IconLink,
+  IconLoader2,
+  IconClipboardList,
   IconSpeakerphone,
   IconLayoutKanban,
   IconChartBar,
+  IconTimeline,
+  IconSquare,
+  IconFocus2,
+  IconCode,
+  IconPointerFilled,
+  IconPhoto,
+  IconSpace,
+  IconToggleRight,
+  IconPlayerPlay,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -99,16 +110,28 @@ export function AppLayout() {
 
                 <SidebarGroup label="Layout">
                   <SidebarItem
+                    to="/components/box"
+                    icon={<IconSquare className="w-5 h-5" />}
+                  >
+                    Box
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/center"
+                    icon={<IconFocus2 className="w-5 h-5" />}
+                  >
+                    Center
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/container"
+                    icon={<IconBox className="w-5 h-5" />}
+                  >
+                    Container
+                  </SidebarItem>
+                  <SidebarItem
                     to="/components/flex"
                     icon={<IconLayoutColumns className="w-5 h-5" />}
                   >
                     Flex
-                  </SidebarItem>
-                  <SidebarItem
-                    to="/components/stack"
-                    icon={<IconLayoutList className="w-5 h-5" />}
-                  >
-                    Stack
                   </SidebarItem>
                   <SidebarItem
                     to="/components/grid"
@@ -117,11 +140,12 @@ export function AppLayout() {
                     Grid
                   </SidebarItem>
                   <SidebarItem
-                    to="/components/container"
-                    icon={<IconBox className="w-5 h-5" />}
+                    to="/components/stack"
+                    icon={<IconLayoutList className="w-5 h-5" />}
                   >
-                    Container
+                    Stack
                   </SidebarItem>
+
                   <SidebarItem
                     to="/components/scroll-area"
                     icon={<IconChevronDown className="w-5 h-5" />}
@@ -199,6 +223,7 @@ export function AppLayout() {
                   >
                     Breadcrumb
                   </SidebarItem>
+
                   <SidebarItem
                     to="/components/calendar"
                     icon={<IconCalendar className="w-5 h-5" />}
@@ -217,11 +242,24 @@ export function AppLayout() {
                   >
                     Carousel
                   </SidebarItem>
+
                   <SidebarItem
                     to="/components/checkbox"
                     icon={<IconSquareCheck className="w-5 h-5" />}
                   >
                     Checkbox
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/collapsible"
+                    icon={<IconChevronLeft className="w-5 h-5" />}
+                  >
+                    Collapsible
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/code-block"
+                    icon={<IconCode className="w-5 h-5" />}
+                  >
+                    Code Block
                   </SidebarItem>
                   <SidebarItem
                     to="/components/color-usage"
@@ -252,6 +290,12 @@ export function AppLayout() {
                     icon={<IconLayoutList className="w-5 h-5" />}
                   >
                     Data Table
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/date-picker"
+                    icon={<IconCalendar className="w-5 h-5" />}
+                  >
+                    Date Picker
                   </SidebarItem>
                   <SidebarItem
                     to="/components/dialog"
@@ -296,6 +340,18 @@ export function AppLayout() {
                     Hover Card
                   </SidebarItem>
                   <SidebarItem
+                    to="/components/icon-button"
+                    icon={<IconPointerFilled className="w-5 h-5" />}
+                  >
+                    Icon Button
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/image"
+                    icon={<IconPhoto className="w-5 h-5" />}
+                  >
+                    Image
+                  </SidebarItem>
+                  <SidebarItem
                     to="/components/input"
                     icon={<IconForms className="w-5 h-5" />}
                   >
@@ -326,10 +382,22 @@ export function AppLayout() {
                     Label
                   </SidebarItem>
                   <SidebarItem
+                    to="/components/link"
+                    icon={<IconLink className="w-5 h-5" />}
+                  >
+                    Link
+                  </SidebarItem>
+                  <SidebarItem
                     to="/components/menubar"
                     icon={<IconMenu className="w-5 h-5" />}
                   >
                     Menubar
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/modal"
+                    icon={<IconBox className="w-5 h-5" />}
+                  >
+                    Modal
                   </SidebarItem>
                   <SidebarItem
                     to="/components/navigation-menu"
@@ -356,6 +424,12 @@ export function AppLayout() {
                     Progress
                   </SidebarItem>
                   <SidebarItem
+                    to="/components/progress-indicator"
+                    icon={<IconNumbers className="w-5 h-5" />}
+                  >
+                    Progress Indicator
+                  </SidebarItem>
+                  <SidebarItem
                     to="/components/radio-group"
                     icon={<IconCircleDot className="w-5 h-5" />}
                   >
@@ -380,16 +454,16 @@ export function AppLayout() {
                     Separator
                   </SidebarItem>
                   <SidebarItem
+                    to="/components/sheet"
+                    icon={<IconLayoutSidebar className="w-5 h-5" />}
+                  >
+                    Sheet
+                  </SidebarItem>
+                  <SidebarItem
                     to="/components/skeleton"
                     icon={<IconBoxMultiple className="w-5 h-5" />}
                   >
                     Skeleton
-                  </SidebarItem>
-                  <SidebarItem
-                    to="/components/sidebar"
-                    icon={<IconLayoutSidebar className="w-5 h-5" />}
-                  >
-                    Sidebar
                   </SidebarItem>
                   <SidebarItem
                     to="/components/slider"
@@ -398,14 +472,38 @@ export function AppLayout() {
                     Slider
                   </SidebarItem>
                   <SidebarItem
+                    to="/components/sidebar"
+                    icon={<IconLayoutSidebar className="w-5 h-5" />}
+                  >
+                    Sidebar
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/spinner"
+                    icon={<IconLoader2 className="w-5 h-5" />}
+                  >
+                    Spinner
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/split-view"
+                    icon={<IconLayoutColumns className="w-5 h-5" />}
+                  >
+                    Split View
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/spacer"
+                    icon={<IconSpace className="w-5 h-5" />}
+                  >
+                    Spacer
+                  </SidebarItem>
+                  <SidebarItem
                     to="/components/spotlight"
-                    icon={<IconSearch className="w-5 h-5" />}
+                    icon={<IconMagnet className="w-5 h-5" />}
                   >
                     Spotlight
                   </SidebarItem>
                   <SidebarItem
                     to="/components/stepper"
-                    icon={<IconListNumbers className="w-5 h-5" />}
+                    icon={<IconClipboardList className="w-5 h-5" />}
                   >
                     Stepper
                   </SidebarItem>
@@ -434,6 +532,12 @@ export function AppLayout() {
                     Textarea
                   </SidebarItem>
                   <SidebarItem
+                    to="/components/timeline"
+                    icon={<IconTimeline className="w-5 h-5" />}
+                  >
+                    Timeline
+                  </SidebarItem>
+                  <SidebarItem
                     to="/components/toast"
                     icon={<IconBell className="w-5 h-5" />}
                   >
@@ -446,16 +550,16 @@ export function AppLayout() {
                     Toggle
                   </SidebarItem>
                   <SidebarItem
+                    to="/components/toggle-group"
+                    icon={<IconToggleRight className="w-5 h-5" />}
+                  >
+                    Toggle Group
+                  </SidebarItem>
+                  <SidebarItem
                     to="/components/tooltip"
                     icon={<IconTooltip className="w-5 h-5" />}
                   >
                     Tooltip
-                  </SidebarItem>
-                  <SidebarItem
-                    to="/components/timeline"
-                    icon={<IconTimeline className="w-5 h-5" />}
-                  >
-                    Timeline
                   </SidebarItem>
                   <SidebarItem
                     to="/components/tree-view"
@@ -468,6 +572,12 @@ export function AppLayout() {
                     icon={<IconTypography className="w-5 h-5" />}
                   >
                     Typography
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/video-player"
+                    icon={<IconPlayerPlay className="w-5 h-5" />}
+                  >
+                    Video Player
                   </SidebarItem>
                 </SidebarGroup>
 

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 import {
   IconFile,
   IconFolder,
@@ -12,14 +12,26 @@ import {
   IconCode,
   IconTerminal,
   IconBrandGithub,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
-import { Spotlight, type SpotlightItemType, type SpotlightGroupType } from "@/components/ui/spotlight"
-import { SpotlightProvider, useSpotlight } from "@/hooks/use-spotlight"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Spotlight,
+  type SpotlightItemType,
+  type SpotlightGroupType,
+} from "@/components/ui/spotlight";
+import { SpotlightProvider } from "@/hooks/use-spotlight";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  ComponentPage,
+  PageHeader,
+  FeatureGrid,
+  DemoTabs,
+  DemoWrapper,
+  KeyboardShortcuts,
+  UsageBlock,
+  APIReference,
+} from "@/components/docs";
 
 // ============================================================================
 // DEMO DATA
@@ -113,7 +125,7 @@ const commandGroups: SpotlightGroupType[] = [
       },
     ],
   },
-]
+];
 
 const recentItems: SpotlightItemType[] = [
   {
@@ -134,22 +146,25 @@ const recentItems: SpotlightItemType[] = [
     description: "3 new messages",
     icon: <IconMail className="h-4 w-4" />,
   },
-]
+];
 
 // ============================================================================
 // DEMO COMPONENTS
 // ============================================================================
 
 function BasicDemo() {
-  const [open, setOpen] = useState(false)
-  const [selectedItem, setSelectedItem] = useState<string | null>(null)
+  const [open, setOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
         <Button onClick={() => setOpen(true)}>Open Spotlight</Button>
         <span className="text-sm text-muted-foreground">
-          or press <kbd className="rounded border bg-muted px-1.5 py-0.5 text-xs">⌘K</kbd>
+          or press{" "}
+          <kbd className="rounded border bg-muted px-1.5 py-0.5 text-xs">
+            ⌘K
+          </kbd>
         </span>
       </div>
 
@@ -168,23 +183,41 @@ function BasicDemo() {
         onSelect={(item) => setSelectedItem(item.label)}
       />
     </div>
-  )
+  );
 }
 
-function AsyncSearchDemo() {
+const basicCode = `import { useState } from "react"
+import { Spotlight } from "@/components/ui/spotlight"
+
+export function BasicSpotlightDemo() {
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [items, setItems] = useState<SpotlightItemType[]>([])
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open Spotlight</Button>
+
+      <Spotlight
+        open={open}
+        onOpenChange={setOpen}
+        placeholder="Type a command or search..."
+      />
+    </>
+  )
+}`;
+
+function AsyncSearchDemo() {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [items, setItems] = useState<SpotlightItemType[]>([]);
 
   const handleSearch = async (query: string) => {
     if (!query) {
-      setItems([])
-      return
+      setItems([]);
+      return;
     }
 
-    setLoading(true)
-    // Simulate async search
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const results: SpotlightItemType[] = [
       {
@@ -199,11 +232,11 @@ function AsyncSearchDemo() {
         description: "Found in calendar",
         icon: <IconCalendar className="h-4 w-4" />,
       },
-    ]
+    ];
 
-    setItems(results)
-    setLoading(false)
-  }
+    setItems(results);
+    setLoading(false);
+  };
 
   return (
     <div className="space-y-4">
@@ -225,53 +258,81 @@ function AsyncSearchDemo() {
         }
       />
     </div>
-  )
+  );
 }
+
+const asyncSearchCode = `import { useState } from "react"
+import { Spotlight } from "@/components/ui/spotlight"
+import { IconFile } from "@tabler/icons-react"
+
+export function AsyncSearchDemo() {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [items, setItems] = useState([])
+
+  const handleSearch = async (query: string) => {
+    setLoading(true)
+    const results = await searchAPI(query)
+    setLoading(false)
+    setItems(results)
+  }
+
+  return (
+    <Spotlight
+      open={open}
+      onOpenChange={setOpen}
+      items={items}
+      loading={loading}
+      onSearch={handleSearch}
+      placeholder="Search..."
+      disableFilter
+    />
+  )
+}`;
 
 function GlobalShortcutDemo() {
   return (
     <SpotlightProvider>
-      <GlobalShortcutContent />
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Press{" "}
+          <kbd className="rounded border bg-muted px-1.5 py-0.5 text-xs">
+            ⌘K
+          </kbd>{" "}
+          anywhere to open the spotlight. The shortcut is handled globally by
+          SpotlightProvider.
+        </p>
+
+        <div className="flex gap-2">
+          <Button onClick={() => {}}>Open Programmatically</Button>
+          <Button variant="outline">Close Programmatically</Button>
+        </div>
+      </div>
     </SpotlightProvider>
-  )
+  );
 }
 
-function GlobalShortcutContent() {
+const globalShortcutCode = `import { SpotlightProvider, useSpotlight } from "@/hooks/use-spotlight"
+
+export function GlobalShortcutDemo() {
   const { open, openSpotlight, closeSpotlight, query } = useSpotlight()
 
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Press <kbd className="rounded border bg-muted px-1.5 py-0.5 text-xs">⌘K</kbd> anywhere to open the spotlight.
-        The shortcut is handled globally by the SpotlightProvider.
-      </p>
-
-      <div className="flex gap-2">
-        <Button onClick={openSpotlight}>Open Programmatically</Button>
-        <Button variant="outline" onClick={closeSpotlight}>
-          Close Programmatically
-        </Button>
-      </div>
-
-      {query && (
-        <p className="text-sm">
-          Current query: <Badge variant="secondary">{query}</Badge>
-        </p>
-      )}
-
+    <SpotlightProvider>
+      <Button onClick={openSpotlight}>Open Spotlight</Button>
       <Spotlight
         open={open}
         onOpenChange={closeSpotlight}
         groups={commandGroups}
         placeholder="Global spotlight with keyboard shortcut..."
       />
-    </div>
+    </SpotlightProvider>
   )
-}
+}`;
 
 function SizesDemo() {
-  const [size, setSize] = useState<"sm" | "default" | "lg" | "full">("default")
-  const [open, setOpen] = useState(false)
+  const [size, setSize] = useState<"sm" | "default" | "lg" | "full">("default");
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="space-y-4">
@@ -281,8 +342,8 @@ function SizesDemo() {
             key={s}
             variant={size === s ? "default" : "outline"}
             onClick={() => {
-              setSize(s)
-              setOpen(true)
+              setSize(s);
+              setOpen(true);
             }}
           >
             {s.toUpperCase()}
@@ -298,206 +359,297 @@ function SizesDemo() {
         placeholder={`Size: ${size}`}
       />
     </div>
-  )
+  );
 }
+
+const sizesCode = `import { useState } from "react"
+import { Spotlight } from "@/components/ui/spotlight"
+
+export function SizesDemo() {
+  const [size, setSize] = useState("default")
+
+  return (
+    <Spotlight
+      size={size}
+      open={open}
+      onOpenChange={setOpen}
+      groups={commandGroups}
+      placeholder="Select size..."
+    />
+  )
+}`;
 
 // ============================================================================
 // MAIN PAGE
 // ============================================================================
 
 export default function SpotlightPage() {
+  const features = [
+    {
+      title: "Accessible",
+      description:
+        "Full ARIA combobox pattern with keyboard navigation, focus management, and screen reader support.",
+      icon: <IconSearch className="w-4 h-4 text-primary" />,
+    },
+    {
+      title: "Animated",
+      description:
+        "Smooth GSAP animations with prefers-reduced-motion support for accessibility.",
+      icon: <IconBell className="w-4 h-4 text-primary" />,
+    },
+    {
+      title: "Flexible",
+      description:
+        "Supports grouped commands, async search, custom rendering, and global shortcuts.",
+      icon: <IconCode className="w-4 h-4 text-primary" />,
+    },
+  ];
+
+  const demoTabs = [
+    {
+      value: "basic",
+      label: "Basic",
+      demo: (
+        <DemoWrapper
+          title="Basic Usage"
+          description="Command palette with grouped items, recent searches, and keyboard navigation."
+          code={basicCode}
+        >
+          <BasicDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "async",
+      label: "Async Search",
+      demo: (
+        <DemoWrapper
+          title="Async Search"
+          description="Spotlight with async search, loading state, and custom empty state."
+          code={asyncSearchCode}
+        >
+          <AsyncSearchDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "global",
+      label: "Global Shortcut",
+      demo: (
+        <DemoWrapper
+          title="Global Keyboard Shortcut"
+          description="Use SpotlightProvider for global ⌘K shortcut handling."
+          code={globalShortcutCode}
+        >
+          <GlobalShortcutDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "sizes",
+      label: "Sizes",
+      demo: (
+        <DemoWrapper
+          title="Size Variants"
+          description="Different size options: sm, default, lg, and full."
+          code={sizesCode}
+        >
+          <SizesDemo />
+        </DemoWrapper>
+      ),
+    },
+  ];
+
+  const keyboardShortcuts = [
+    { keys: "↑ / ↓", description: "Navigate through items" },
+    { keys: "Enter", description: "Select focused item" },
+    { keys: "Escape", description: "Close spotlight" },
+    { keys: "Home", description: "Jump to first item" },
+    { keys: "End", description: "Jump to last item" },
+    { keys: "⌘K / Ctrl+K", description: "Open spotlight (global)" },
+  ];
+
+  const usageCode = `import { Spotlight } from "@/components/ui/spotlight"
+import { SpotlightProvider, useSpotlight } from "@/hooks/use-spotlight"
+
+// Basic usage
+<Spotlight
+  open={open}
+  onOpenChange={setOpen}
+  groups={commandGroups}
+  recentItems={recentItems}
+  placeholder="Type a command or search..."
+/>
+
+// With async search
+<Spotlight
+  items={items}
+  loading={loading}
+  onSearch={handleSearch}
+  placeholder="Search..."
+  disableFilter
+/>
+
+// Global shortcut provider
+<SpotlightProvider>
+  <Spotlight open={open} onOpenChange={setOpen} groups={commandGroups} />
+</SpotlightProvider>`;
+
+  const apiReference = [
+    {
+      title: "Spotlight",
+      props: [
+        {
+          prop: "open",
+          type: "boolean",
+          default: "-",
+          description: "Controlled open state",
+        },
+        {
+          prop: "groups",
+          type: "SpotlightGroup[]",
+          default: "-",
+          description: "Grouped command items",
+        },
+        {
+          prop: "items",
+          type: "SpotlightItem[]",
+          default: "-",
+          description: "Flat list of items",
+        },
+        {
+          prop: "recentItems",
+          type: "SpotlightItem[]",
+          default: "-",
+          description: "Recent items shown when query is empty",
+        },
+        {
+          prop: "onSearch",
+          type: "(query: string) => void",
+          default: "-",
+          description: "Async search callback",
+        },
+        {
+          prop: "size",
+          type: '"sm" | "default" | "lg" | "full"',
+          default: '"default"',
+          description: "Spotlight size variant",
+        },
+        {
+          prop: "loading",
+          type: "boolean",
+          default: "false",
+          description: "Show loading spinner",
+        },
+        {
+          prop: "disableFilter",
+          type: "boolean",
+          default: "false",
+          description: "Disable client-side filtering",
+        },
+        {
+          prop: "placeholder",
+          type: "string",
+          default: '"Search..."',
+          description: "Search placeholder text",
+        },
+        {
+          prop: "emptyContent",
+          type: "ReactNode",
+          default: "-",
+          description: "Custom empty state content",
+        },
+        {
+          prop: "onSelect",
+          type: "(item: SpotlightItem) => void",
+          default: "-",
+          description: "Item selection callback",
+        },
+        {
+          prop: "onSearch",
+          type: "(query: string, results: SpotlightItem[]) => void",
+          default: "-",
+          description: "Search results callback",
+        },
+      ],
+    },
+    {
+      title: "SpotlightProvider",
+      props: [
+        {
+          prop: "shortcut",
+          type: "string[]",
+          default: '["Meta", "K"]',
+          description: "Keyboard shortcut to open spotlight",
+        },
+        {
+          prop: "defaultOpen",
+          type: "boolean",
+          default: "false",
+          description: "Default open state",
+        },
+        {
+          prop: "children",
+          type: "ReactNode",
+          default: "-",
+          description: "Provider children",
+        },
+      ],
+    },
+    {
+      title: "useSpotlight Hook Returns",
+      props: [
+        {
+          prop: "open",
+          type: "boolean",
+          default: "-",
+          description: "Current open state",
+        },
+        {
+          prop: "openSpotlight",
+          type: "() => void",
+          default: "-",
+          description: "Function to open spotlight",
+        },
+        {
+          prop: "closeSpotlight",
+          type: "() => void",
+          default: "-",
+          description: "Function to close spotlight",
+        },
+        {
+          prop: "query",
+          type: "string",
+          default: "-",
+          description: "Current search query",
+        },
+        {
+          prop: "focusedIndex",
+          type: "number",
+          default: "-",
+          description: "Index of focused item",
+        },
+      ],
+    },
+  ];
+
   return (
-    <div className="container mx-auto max-w-4xl space-y-12 py-10">
-      {/* Header */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <h1 className="text-3xl font-bold">Spotlight</h1>
-          <Badge>Enhanced</Badge>
-        </div>
-        <p className="text-lg text-muted-foreground">
-          A command palette / spotlight search component with full keyboard navigation,
-          ARIA accessibility, GSAP animations, and flexible configuration.
-        </p>
-      </div>
+    <ComponentPage>
+      <PageHeader
+        title="Spotlight"
+        description="A command palette / spotlight search component with full keyboard navigation, ARIA accessibility, GSAP animations, and flexible configuration."
+        version="v1.0"
+      />
 
-      {/* Features */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Accessible</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Full ARIA combobox pattern with keyboard navigation, focus management, and screen reader support.
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Animated</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Smooth GSAP animations with prefers-reduced-motion support for accessibility.
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Flexible</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Supports grouped commands, async search, custom rendering, and global keyboard shortcuts.
-          </CardContent>
-        </Card>
-      </div>
+      <FeatureGrid features={features} />
 
-      {/* Demos */}
-      <Tabs defaultValue="basic" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="basic">Basic</TabsTrigger>
-          <TabsTrigger value="async">Async Search</TabsTrigger>
-          <TabsTrigger value="global">Global Shortcut</TabsTrigger>
-          <TabsTrigger value="sizes">Sizes</TabsTrigger>
-        </TabsList>
+      <DemoTabs tabs={demoTabs} />
 
-        <TabsContent value="basic">
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic Usage</CardTitle>
-              <CardDescription>
-                Command palette with grouped items, recent searches, and keyboard navigation.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BasicDemo />
-            </CardContent>
-          </Card>
-        </TabsContent>
+      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
 
-        <TabsContent value="async">
-          <Card>
-            <CardHeader>
-              <CardTitle>Async Search</CardTitle>
-              <CardDescription>
-                Spotlight with async search, loading state, and custom empty state.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <AsyncSearchDemo />
-            </CardContent>
-          </Card>
-        </TabsContent>
+      <UsageBlock code={usageCode} />
 
-        <TabsContent value="global">
-          <Card>
-            <CardHeader>
-              <CardTitle>Global Keyboard Shortcut</CardTitle>
-              <CardDescription>
-                Use SpotlightProvider for global ⌘K shortcut handling.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <GlobalShortcutDemo />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="sizes">
-          <Card>
-            <CardHeader>
-              <CardTitle>Size Variants</CardTitle>
-              <CardDescription>
-                Different size options: sm, default, lg, and full.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SizesDemo />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      {/* Keyboard Shortcuts */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Keyboard Navigation</CardTitle>
-          <CardDescription>Full keyboard support for accessibility</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {[
-              { key: "↑ / ↓", description: "Navigate through items" },
-              { key: "Enter", description: "Select focused item" },
-              { key: "Escape", description: "Close spotlight" },
-              { key: "Home", description: "Jump to first item" },
-              { key: "End", description: "Jump to last item" },
-              { key: "⌘K / Ctrl+K", description: "Open spotlight (global)" },
-            ].map(({ key, description }) => (
-              <div key={key} className="flex items-center gap-2">
-                <kbd className="rounded border bg-muted px-2 py-1 text-xs font-mono">
-                  {key}
-                </kbd>
-                <span className="text-sm text-muted-foreground">{description}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* API Reference */}
-      <Card>
-        <CardHeader>
-          <CardTitle>API Reference</CardTitle>
-          <CardDescription>Key props and configuration options</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2 text-left font-medium">Prop</th>
-                  <th className="py-2 text-left font-medium">Type</th>
-                  <th className="py-2 text-left font-medium">Description</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                <tr>
-                  <td className="py-2 font-mono text-xs">open</td>
-                  <td className="py-2 text-muted-foreground">boolean</td>
-                  <td className="py-2">Controlled open state</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">groups</td>
-                  <td className="py-2 text-muted-foreground">SpotlightGroup[]</td>
-                  <td className="py-2">Grouped command items</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">items</td>
-                  <td className="py-2 text-muted-foreground">SpotlightItem[]</td>
-                  <td className="py-2">Flat list of items</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">recentItems</td>
-                  <td className="py-2 text-muted-foreground">SpotlightItem[]</td>
-                  <td className="py-2">Recent items shown when query is empty</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">onSearch</td>
-                  <td className="py-2 text-muted-foreground">(query: string) =&gt; void</td>
-                  <td className="py-2">Async search callback</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">size</td>
-                  <td className="py-2 text-muted-foreground">sm | default | lg | full</td>
-                  <td className="py-2">Spotlight size variant</td>
-                </tr>
-                <tr>
-                  <td className="py-2 font-mono text-xs">loading</td>
-                  <td className="py-2 text-muted-foreground">boolean</td>
-                  <td className="py-2">Show loading spinner</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
+      <APIReference sections={apiReference} />
+    </ComponentPage>
+  );
 }
