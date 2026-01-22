@@ -10,7 +10,7 @@
     "kira-kit": "bin/kira-kit.js"
   },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --outfile=bin/kira-kit.js --platform=node --format=esm --target=node22 --external:node:*",
+    "build": "esbuild src/index.ts --bundle --outfile=bin/kira-kit.js",
     "dev": "bun run build --watch",
     "start": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",

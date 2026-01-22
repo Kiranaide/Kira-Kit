@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
-import { join } from "path";
+import inquirer from "inquirer";
+import { join, dirname } from "path";
 import { welcome, info, success, warning, dim } from "../lib/logger";
 import { selectBaseColor } from "../prompts/base-color";
 import { selectPrimaryColor } from "../prompts/primary-color";
@@ -36,7 +37,6 @@ export async function init(options: InitOptions): Promise<void> {
   const existingConfig = readConfig(cwd);
   if (existingConfig) {
     warning("Kira Kit is already initialized in this project.");
-    const inquirer = await import("inquirer");
     const { confirm } = await inquirer.prompt([
       {
         type: "confirm",
@@ -101,6 +101,10 @@ export async function init(options: InitOptions): Promise<void> {
   } else {
     // Create it if it doesn't exist
     const cssContent = generateCss(colorToUse);
+    const cssDir = dirname(cssFilePath);
+    if (!existsSync(cssDir)) {
+      mkdirSync(cssDir, { recursive: true });
+    }
     writeFileSync(cssFilePath, cssContent, "utf-8");
     success("Created src/index.css with dynamic palette");
   }
