@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { animate, stagger } from "animejs";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Button, type ButtonProps } from "@/components/ui/button";
@@ -151,22 +152,22 @@ function ButtonGroup({
     [selectionMode, value, onChange, orientation, variant, disabled, loop]
   );
 
-  React.useEffect(() => {
+  useGSAP(() => {
     if (!animated || !containerRef.current) return;
 
     const buttons = containerRef.current.querySelectorAll("[data-slot=button]");
 
     if (buttons.length > 0) {
-      animate(buttons, {
-        opacity: [0, 1],
-        translateY: orientation === "vertical" ? [-10, 0] : [0, 0],
-        translateX: orientation === "horizontal" ? [-10, 0] : [0, 0],
-        delay: stagger(animationStagger),
-        duration: 300,
-        easing: "easeOutQuad",
+      gsap.from(buttons, {
+        opacity: 0,
+        y: orientation === "vertical" ? -10 : 0,
+        x: orientation === "horizontal" ? -10 : 0,
+        stagger: animationStagger / 1000,
+        duration: 0.3,
+        ease: "power2.out",
       });
     }
-  }, [animated, orientation, animationStagger]);
+  }, { scope: containerRef, dependencies: [animated, orientation, animationStagger] });
 
   const processChildren = () => {
     const childArray = React.Children.toArray(children).filter(
@@ -367,15 +368,17 @@ function ToggleGroupItem({
 
   const itemRef = React.useRef<HTMLButtonElement>(null);
 
-  React.useEffect(() => {
+  useGSAP(() => {
     if (isSelected && itemRef.current) {
-      animate(itemRef.current, {
-        scale: [1, 0.98, 1],
-        duration: 200,
-        easing: "easeOutQuad",
+      gsap.to(itemRef.current, {
+        scale: 0.95,
+        duration: 0.1,
+        yoyo: true,
+        repeat: 1,
+        ease: "power1.inOut",
       });
     }
-  }, [isSelected]);
+  }, { scope: itemRef, dependencies: [isSelected] });
 
   const getSelectedClassName = (): string => {
     if (!isSelected) return "";

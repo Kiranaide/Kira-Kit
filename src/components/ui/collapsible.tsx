@@ -4,7 +4,8 @@ import * as React from "react";
 import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IconChevronDown } from "@tabler/icons-react";
-import { animate } from "animejs";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
 import { cn } from "@/lib/utils";
 
@@ -128,7 +129,7 @@ function CollapsibleContent({
   const panelRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const [hasBeenOpened, setHasBeenOpened] = React.useState(false);
-  const animationRef = React.useRef<ReturnType<typeof animate> | null>(null);
+  const animationRef = React.useRef<gsap.core.Tween | null>(null);
 
   React.useEffect(() => {
     const panel = panelRef.current;

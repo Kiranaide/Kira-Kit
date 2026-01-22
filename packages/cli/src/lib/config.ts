@@ -2,11 +2,14 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import type { ComponentsConfig } from "../types";
 
+export const DEFAULT_REGISTRY_URL = "https://kira-kit.vercel.app/r";
+
 const DEFAULT_CONFIG = {
   $schema: "https://ui.shadcn.com/schema.json",
   style: "base-nova",
   rsc: false,
   tsx: true,
+  registryUrl: DEFAULT_REGISTRY_URL,
   tailwind: {
     config: "",
     css: "src/index.css",
@@ -28,10 +31,7 @@ const DEFAULT_CONFIG = {
 } as const;
 
 export function findConfigFile(cwd: string): string | null {
-  const paths = [
-    join(cwd, "components.json"),
-    join(cwd, "kira-kit.json"),
-  ];
+  const paths = [join(cwd, "components.json"), join(cwd, "kira-kit.json")];
 
   for (const path of paths) {
     if (existsSync(path)) {
@@ -59,7 +59,7 @@ export function readConfig(cwd: string): ComponentsConfig | null {
 
 export function writeConfig(
   cwd: string,
-  config: Partial<ComponentsConfig>
+  config: Partial<ComponentsConfig>,
 ): void {
   const existingConfig = readConfig(cwd);
   const newConfig = { ...DEFAULT_CONFIG, ...existingConfig, ...config };
@@ -70,7 +70,7 @@ export function writeConfig(
 
 export function updateAliases(
   cwd: string,
-  aliases: Partial<ComponentsConfig["aliases"]>
+  aliases: Partial<ComponentsConfig["aliases"]>,
 ): void {
   const config = readConfig(cwd);
 

@@ -1,4 +1,4 @@
-import { join, dirname } from "path";
+import { join } from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 
 const COMPONENTS_DIR = "./src/components/ui";
@@ -7,87 +7,10 @@ const OUTPUT_DIR = "./public/r";
 const REGISTRY_NAME = "kira-kit";
 const HOMEPAGE = "https://kira-kit.vercel.app";
 
-const NPM_DEPENDENCY_MAP: Record<string, string[]> = {
-  "@base-ui/react": ["@base-ui/react"],
-  animejs: ["animejs"],
-  "class-variance-authority": ["class-variance-authority"],
-  "@tabler/icons-react": ["@tabler/icons-react"],
-  datefns: ["date-fns"],
-  "react-day-picker": ["react-day-picker"],
-  "react-resizable-panels": ["react-resizable-panels"],
-  "@tanstack/react-table": ["@tanstack/react-table"],
-  "@tanstack/react-virtual": ["@tanstack/react-virtual"],
-  "@uiw/color-convert": ["@uiw/color-convert"],
-  "@uiw/react-color-hue": ["@uiw/react-color-hue"],
-  "@uiw/react-color-saturation": ["@uiw/react-color-saturation"],
-  "@dnd-kit/core": ["@dnd-kit/core"],
-  "@dnd-kit/sortable": ["@dnd-kit/sortable"],
-  "@dnd-kit/utilities": ["@dnd-kit/utilities"],
-  cmdk: ["cmdk"],
-  "embla-carousel-react": ["embla-carousel-react"],
-  sonner: ["sonner"],
-};
-
-const REGISTRY_DEPENDENCY_MAP: Record<string, string[]> = {
-  accordion: [],
-  alert: [],
-  "alert-dialog": ["button"],
-  "announcement-bar": [],
-  "aspect-ratio": [],
-  avatar: [],
-  badge: [],
-  breadcrumb: [],
-  button: [],
-  "button-group": ["button"],
-  calendar: [],
-  card: [],
-  carousel: [],
-  checkbox: ["label"],
-  "color-picker": ["button", "popover", "input", "slider", "tabs"],
-  combobox: ["button"],
-  command: ["dialog"],
-  "context-menu": [],
-  "data-table": ["button", "checkbox", "input", "dropdown-menu", "table"],
-  "date-picker": ["button", "popover", "calendar"],
-  dialog: [],
-  drawer: [],
-  "dropdown-menu": [],
-  empty: [],
-  field: ["label"],
-  "file-upload": ["button", "dialog"],
-  "hover-card": [],
-  input: [],
-  "input-group": ["input"],
-  kbd: [],
-  kanban: [],
-  label: [],
-  menubar: [],
-  "navigation-menu": [],
-  pagination: ["button"],
-  popover: [],
-  progress: [],
-  "radio-group": ["label"],
-  resizable: [],
-  select: ["button", "popover"],
-  separator: [],
-  sidebar: ["button", "separator"],
-  skeleton: [],
-  slider: [],
-  sonner: [],
-  spotlight: ["command"],
-  stepper: [],
-  stats: [],
-  "stats-card": [],
-  switch: [],
-  table: [],
-  tabs: [],
-  textarea: [],
-  timeline: [],
-  toggle: [],
-  "toggle-group": ["toggle"],
-  tooltip: [],
-  "tree-view": ["checkbox"],
-};
+import {
+  NPM_DEPENDENCY_MAP,
+  REGISTRY_DEPENDENCY_MAP,
+} from "../lib/build-config";
 
 interface RegistryItem {
   name: string;
@@ -119,7 +42,7 @@ function extractDependencies(content: string): string[] {
   for (const [importKey, npmDeps] of Object.entries(NPM_DEPENDENCY_MAP)) {
     const regex = new RegExp(
       `from\\s+["']${importKey.replace("/", "\\/")}`,
-      "g"
+      "g",
     );
     if (regex.test(content)) {
       npmDeps.forEach((dep) => deps.add(dep));
@@ -151,7 +74,7 @@ function getHookDependencies(content: string): string[] {
 
 function getRegistryDependencies(
   componentName: string,
-  content: string
+  content: string,
 ): string[] {
   const deps: Set<string> = new Set();
 
@@ -230,6 +153,7 @@ export function buildRegistry(): void {
     return;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { readdirSync } = require("fs");
   const files = readdirSync(COMPONENTS_DIR)
     .filter((f: string) => f.endsWith(".tsx"))
@@ -247,7 +171,7 @@ export function buildRegistry(): void {
     const componentJsonPath = join(OUTPUT_DIR, `${item.name}.json`);
     writeFileSync(componentJsonPath, JSON.stringify(item, null, 2));
     console.log(
-      `  ✅ ${item.name} (${item.dependencies.length} deps, ${item.registryDependencies.length} registry deps)`
+      `  ✅ ${item.name} (${item.dependencies.length} deps, ${item.registryDependencies.length} registry deps)`,
     );
   }
 
@@ -274,15 +198,15 @@ export function buildRegistry(): void {
 
   writeFileSync(
     join(OUTPUT_DIR, "index.json"),
-    JSON.stringify(indexData, null, 2)
+    JSON.stringify(indexData, null, 2),
   );
 
   console.log(`\n✨ Registry built successfully!`);
   console.log(`   📁 Output: ${OUTPUT_DIR}/`);
   console.log(
-    `   📄 ${files.length} component JSONs + registry.json + index.json`
+    `   📄 ${files.length} component JSONs + registry.json + index.json`,
   );
   console.log(
-    `\n🚀 Deploy to Vercel and access at: https://your-domain.vercel.app/r/{name}.json`
+    `\n🚀 Deploy to Vercel and access at: https://your-domain.vercel.app/r/{name}.json`,
   );
 }

@@ -51,7 +51,7 @@ export function welcome(name: string): void {
     ██║  ██╗██║██║  ██║██║  ██║      ██║  ██╗██║   ██║   
     ╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚═╝  ╚═╝      ╚═╝  ╚═╝╚═╝   ╚═╝   
 
-    CLI v0.1.0. Welcome
+    CLI v0.2.0. Welcome!
     `),
   );
 }

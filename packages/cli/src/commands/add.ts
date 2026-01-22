@@ -1,7 +1,7 @@
-import { fetchRegistryItem } from "../lib/registry";
-import { fileExists, readFile, writeFile, ensureDir } from "../lib/file";
+import { fetchRegistryItem, fetchRegistryIndex } from "../lib/registry";
+import { fileExists, writeFile, ensureDir } from "../lib/file";
 import { installDependencies, parseDependencies } from "../lib/deps";
-import { getAliases, getRegistryUrl, readConfig } from "../lib/config";
+import { getAliases, readConfig } from "../lib/config";
 import { info, success, error, warning, spinner } from "../lib/logger";
 import { existsSync } from "fs";
 import { join, dirname } from "path";
@@ -17,17 +17,23 @@ export async function addComponents(options: AddOptions): Promise<void> {
   }
 
   const aliases = getAliases(cwd);
-  const componentsDir = join(cwd, aliases.components.replace("@/", "src/"), "ui");
+  const componentsDir = join(
+    cwd,
+    aliases.components.replace("@/", "src/"),
+    "ui",
+  );
   const hooksDir = join(cwd, aliases.hooks.replace("@/", "src/"));
 
   if (options.all) {
-    await addAllComponents(componentsDir, hooksDir);
+    await addAllComponents(componentsDir, hooksDir, cwd, options);
     return;
   }
 
   const components = options.components;
   if (components.length === 0) {
-    error("No components specified. Use 'kira-kit add button' or 'kira-kit add --all'");
+    error(
+      "No components specified. Use 'kira-kit add button' or 'kira-kit add --all'",
+    );
     return;
   }
 
@@ -52,7 +58,10 @@ export async function addComponents(options: AddOptions): Promise<void> {
     for (const file of registryItem.files) {
       const filePath = join(
         file.path.startsWith("ui/") ? componentsDir : hooksDir,
-        file.path.replace("ui/", "").replace("hooks/", "").replace("hooks/", "")
+        file.path
+          .replace("ui/", "")
+          .replace("hooks/", "")
+          .replace("hooks/", ""),
       );
 
       if (fileExists(filePath) && !options.overwrite) {
@@ -65,7 +74,7 @@ export async function addComponents(options: AddOptions): Promise<void> {
     }
 
     const deps = await parseDependencies(
-      registryItem.files.map((f) => f.content).join("\n")
+      registryItem.files.map((f) => f.content).join("\n"),
     );
     allDependencies.push(...deps);
 
@@ -80,8 +89,10 @@ export async function addComponents(options: AddOptions): Promise<void> {
   if (allDependencies.length > 0) {
     const uniqueDeps = [...new Set(allDependencies)].sort();
     const missingDeps = uniqueDeps.filter((dep) => {
-      return !existsSync(join(cwd, "node_modules", dep)) &&
-        !existsSync(join(cwd, "bun.lockb"));
+      return (
+        !existsSync(join(cwd, "node_modules", dep)) &&
+        !existsSync(join(cwd, "bun.lockb"))
+      );
     });
 
     if (missingDeps.length > 0) {
@@ -98,7 +109,7 @@ export async function addComponents(options: AddOptions): Promise<void> {
 
   if (options.components.length > installedComponents.length) {
     const failed = options.components.filter(
-      (c) => !installedComponents.includes(c)
+      (c) => !installedComponents.includes(c),
     );
     warning(`Failed to add: ${failed.join(", ")}`);
   }
@@ -108,8 +119,28 @@ export async function addComponents(options: AddOptions): Promise<void> {
 
 async function addAllComponents(
   componentsDir: string,
-  hooksDir: string
+  hooksDir: string,
+  cwd: string = process.cwd(),
+  options: AddOptions,
 ): Promise<void> {
-  info("Adding all components is not yet implemented.");
-  info("Please add components individually: 'kira-kit add button card dialog'");
+  info("Fetching registry index...");
+  try {
+    const index = await fetchRegistryIndex(cwd);
+    const allComponents = index.components.map((c) => c.name);
+
+    info(`Found ${allComponents.length} components. Installing all...`);
+
+    // We can reuse the main logic by recursively calling addComponents
+    // but with a flag to avoid infinite recursion if we were calling the command action.
+    // Since we are inside the module, we can just call addComponents directly.
+    // However, we need to pass the list of components to it.
+
+    await addComponents({
+      ...options,
+      all: false, // Prevent infinite loop
+      components: allComponents,
+    });
+  } catch (error) {
+    console.error("Failed to fetch registry index:", error);
+  }
 }

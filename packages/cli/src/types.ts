@@ -24,6 +24,7 @@ export interface ComponentsConfig {
   style: string;
   rsc: boolean;
   tsx: boolean;
+  registryUrl: string;
   tailwind: {
     config: string;
     css: string;

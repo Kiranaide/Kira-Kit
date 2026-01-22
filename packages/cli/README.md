@@ -6,10 +6,10 @@ CLI tool for adding Kira Kit components to your React project.
 
 ```bash
 # Global install
-npm install -g @kira-kit/cli
+npm install -g kira-kit
 
 # Or use with npx
-npx @kira-kit/cli add button
+npx kira-kit add button
 ```
 
 ## Usage
