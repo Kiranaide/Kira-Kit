@@ -65,11 +65,7 @@ function BasicDemo() {
         >
           Back
         </ContextMenuItem>
-        <ContextMenuItem
-          icon={<IconArrowForward />}
-          shortcut="⌘]"
-          disabled
-        >
+        <ContextMenuItem icon={<IconArrowForward />} shortcut="⌘]" disabled>
           Forward
         </ContextMenuItem>
         <ContextMenuItem
@@ -357,8 +353,7 @@ function CheckboxesDemo() {
       </ContextMenu>
       <p className="text-sm text-muted-foreground">
         Status: Toolbar: {showSidebar ? "On" : "Off"}, Sidebar:{" "}
-        {showSidebar ? "On" : "Off"}, Status Bar:{" "}
-        {showStatusBar ? "On" : "Off"}
+        {showSidebar ? "On" : "Off"}, Status Bar: {showStatusBar ? "On" : "Off"}
       </p>
     </div>
   );
@@ -954,7 +949,7 @@ const demoTabs = [
   },
 ];
 
-export function ContextMenuPage() {
+export default function ContextMenuPage() {
   return (
     <ComponentPage>
       <PageHeader

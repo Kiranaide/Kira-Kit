@@ -366,11 +366,7 @@ function TriggerVariantsDemo() {
         </div>
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">No Chevron</p>
-          <SelectField
-            options={fruits}
-            hideChevron
-            placeholder="No chevron"
-          />
+          <SelectField options={fruits} hideChevron placeholder="No chevron" />
         </div>
       </div>
     </div>
@@ -580,69 +576,190 @@ const apiSections = [
     title: "Select",
     props: [
       { prop: "value", type: "string", description: "Controlled value" },
-      { prop: "defaultValue", type: "string", description: "Initial value for uncontrolled mode" },
-      { prop: "onValueChange", type: "(value: string) => void", description: "Called when value changes" },
-      { prop: "disabled", type: "boolean", default: "false", description: "Disable the select" },
+      {
+        prop: "defaultValue",
+        type: "string",
+        description: "Initial value for uncontrolled mode",
+      },
+      {
+        prop: "onValueChange",
+        type: "(value: string) => void",
+        description: "Called when value changes",
+      },
+      {
+        prop: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disable the select",
+      },
       { prop: "open", type: "boolean", description: "Controlled open state" },
-      { prop: "onOpenChange", type: "(open: boolean) => void", description: "Called when open state changes" },
+      {
+        prop: "onOpenChange",
+        type: "(open: boolean) => void",
+        description: "Called when open state changes",
+      },
     ],
   },
   {
     title: "MultiSelect",
     props: [
-      { prop: "options", type: "SelectOption[]", description: "Array of options to display" },
+      {
+        prop: "options",
+        type: "SelectOption[]",
+        description: "Array of options to display",
+      },
       { prop: "value", type: "string[]", description: "Selected values" },
-      { prop: "onChange", type: "(value: string[]) => void", description: "Called when selection changes" },
+      {
+        prop: "onChange",
+        type: "(value: string[]) => void",
+        description: "Called when selection changes",
+      },
       { prop: "placeholder", type: "string", description: "Placeholder text" },
-      { prop: "disabled", type: "boolean", default: "false", description: "Disable the select" },
-      { prop: "maxItems", type: "number", description: "Maximum number of selectable items" },
-      { prop: "searchable", type: "boolean", default: "true", description: "Enable search filtering" },
+      {
+        prop: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disable the select",
+      },
+      {
+        prop: "maxItems",
+        type: "number",
+        description: "Maximum number of selectable items",
+      },
+      {
+        prop: "searchable",
+        type: "boolean",
+        default: "true",
+        description: "Enable search filtering",
+      },
     ],
   },
   {
     title: "AsyncSelect",
     props: [
-      { prop: "loadOptions", type: "(query: string) => Promise<SelectOption[]>", description: "Async function to load options" },
+      {
+        prop: "loadOptions",
+        type: "(query: string) => Promise<SelectOption[]>",
+        description: "Async function to load options",
+      },
       { prop: "value", type: "string", description: "Selected value" },
-      { prop: "onChange", type: "(value: string, option?: SelectOption) => void", description: "Called when value changes" },
+      {
+        prop: "onChange",
+        type: "(value: string, option?: SelectOption) => void",
+        description: "Called when value changes",
+      },
       { prop: "placeholder", type: "string", description: "Placeholder text" },
-      { prop: "debounceMs", type: "number", default: "300", description: "Debounce delay for search" },
-      { prop: "minChars", type: "number", default: "0", description: "Minimum characters before search" },
+      {
+        prop: "debounceMs",
+        type: "number",
+        default: "300",
+        description: "Debounce delay for search",
+      },
+      {
+        prop: "minChars",
+        type: "number",
+        default: "0",
+        description: "Minimum characters before search",
+      },
     ],
   },
   {
     title: "Autocomplete",
     props: [
-      { prop: "options", type: "AutocompleteOption[]", description: "Static options array" },
-      { prop: "onSearch", type: "(query: string) => Promise<AutocompleteOption[]>", description: "Async search function" },
-      { prop: "value", type: "string | string[]", description: "Selected value(s)" },
-      { prop: "onChange", type: "(value: string | string[]) => void", description: "Called when value changes" },
-      { prop: "multiple", type: "boolean", default: "false", description: "Enable multi-select mode" },
+      {
+        prop: "options",
+        type: "AutocompleteOption[]",
+        description: "Static options array",
+      },
+      {
+        prop: "onSearch",
+        type: "(query: string) => Promise<AutocompleteOption[]>",
+        description: "Async search function",
+      },
+      {
+        prop: "value",
+        type: "string | string[]",
+        description: "Selected value(s)",
+      },
+      {
+        prop: "onChange",
+        type: "(value: string | string[]) => void",
+        description: "Called when value changes",
+      },
+      {
+        prop: "multiple",
+        type: "boolean",
+        default: "false",
+        description: "Enable multi-select mode",
+      },
       { prop: "placeholder", type: "string", description: "Placeholder text" },
-      { prop: "debounceMs", type: "number", default: "300", description: "Debounce delay for async search" },
+      {
+        prop: "debounceMs",
+        type: "number",
+        default: "300",
+        description: "Debounce delay for async search",
+      },
     ],
   },
   {
     title: "CreatableSelect",
     props: [
-      { prop: "options", type: "SelectOption[]", description: "Array of options" },
+      {
+        prop: "options",
+        type: "SelectOption[]",
+        description: "Array of options",
+      },
       { prop: "value", type: "string", description: "Selected value" },
-      { prop: "onChange", type: "(value: string) => void", description: "Called when value changes" },
-      { prop: "onCreateOption", type: "(inputValue: string) => void", description: "Called when creating new option" },
+      {
+        prop: "onChange",
+        type: "(value: string) => void",
+        description: "Called when value changes",
+      },
+      {
+        prop: "onCreateOption",
+        type: "(inputValue: string) => void",
+        description: "Called when creating new option",
+      },
       { prop: "placeholder", type: "string", description: "Placeholder text" },
-      { prop: "createLabel", type: "(input: string) => string", description: "Custom create option label" },
+      {
+        prop: "createLabel",
+        type: "(input: string) => string",
+        description: "Custom create option label",
+      },
     ],
   },
   {
     title: "SelectField",
     props: [
-      { prop: "options", type: "SelectOption[]", description: "Array of options" },
+      {
+        prop: "options",
+        type: "SelectOption[]",
+        description: "Array of options",
+      },
       { prop: "value", type: "string", description: "Selected value" },
-      { prop: "onValueChange", type: "(value: string) => void", description: "Called when value changes" },
+      {
+        prop: "onValueChange",
+        type: "(value: string) => void",
+        description: "Called when value changes",
+      },
       { prop: "placeholder", type: "string", description: "Placeholder text" },
-      { prop: "variant", type: "'default' | 'ghost' | 'outline'", default: "'default'", description: "Trigger style variant" },
-      { prop: "leftIcon", type: "ReactNode", description: "Icon to show on the left" },
-      { prop: "hideChevron", type: "boolean", default: "false", description: "Hide the dropdown chevron" },
+      {
+        prop: "variant",
+        type: "'default' | 'ghost' | 'outline'",
+        default: "'default'",
+        description: "Trigger style variant",
+      },
+      {
+        prop: "leftIcon",
+        type: "ReactNode",
+        description: "Icon to show on the left",
+      },
+      {
+        prop: "hideChevron",
+        type: "boolean",
+        default: "false",
+        description: "Hide the dropdown chevron",
+      },
     ],
   },
 ];
@@ -765,7 +882,7 @@ const demoTabs = [
 // Page Component
 // =============================================================================
 
-export function SelectPage() {
+export default function SelectPage() {
   return (
     <ComponentPage>
       <PageHeader

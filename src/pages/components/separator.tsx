@@ -1,5 +1,11 @@
-import { Separator } from "@/components/ui/separator"
-import { IconStar, IconBolt, IconLine, IconPalette, IconSparkles } from "@tabler/icons-react"
+import { Separator } from "@/components/ui/separator";
+import {
+  IconStar,
+  IconBolt,
+  IconLine,
+  IconPalette,
+  IconSparkles,
+} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -8,7 +14,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 // =============================================================================
 // Demo Components
@@ -21,7 +27,7 @@ function HorizontalDemo() {
       <Separator />
       <p>Content below the separator</p>
     </div>
-  )
+  );
 }
 
 const horizontalCode = `import { Separator } from "@/components/ui/separator"
@@ -34,7 +40,7 @@ export function HorizontalSeparator() {
       <p>Content below the separator</p>
     </div>
   )
-}`
+}`;
 
 function VerticalDemo() {
   return (
@@ -45,7 +51,7 @@ function VerticalDemo() {
       <Separator orientation="vertical" />
       <span>Right</span>
     </div>
-  )
+  );
 }
 
 const verticalCode = `import { Separator } from "@/components/ui/separator"
@@ -60,7 +66,7 @@ export function VerticalSeparator() {
       <span>Right</span>
     </div>
   )
-}`
+}`;
 
 function SizesDemo() {
   return (
@@ -86,7 +92,7 @@ function SizesDemo() {
         <Separator size="xl" className="max-w-48" />
       </div>
     </div>
-  )
+  );
 }
 
 const sizesCode = `import { Separator } from "@/components/ui/separator"
@@ -101,7 +107,7 @@ export function SeparatorSizes() {
       <Separator size="xl" />
     </div>
   )
-}`
+}`;
 
 function LineStylesDemo() {
   return (
@@ -119,7 +125,7 @@ function LineStylesDemo() {
         <Separator lineStyle="dotted" className="max-w-64" />
       </div>
     </div>
-  )
+  );
 }
 
 const lineStylesCode = `import { Separator } from "@/components/ui/separator"
@@ -132,7 +138,7 @@ export function SeparatorLineStyles() {
       <Separator lineStyle="dotted" />
     </div>
   )
-}`
+}`;
 
 function ColorsDemo() {
   return (
@@ -158,7 +164,7 @@ function ColorsDemo() {
         <Separator color="destructive" className="max-w-48" />
       </div>
     </div>
-  )
+  );
 }
 
 const colorsCode = `import { Separator } from "@/components/ui/separator"
@@ -173,7 +179,7 @@ export function SeparatorColors() {
       <Separator color="destructive" />
     </div>
   )
-}`
+}`;
 
 function LabelsDemo() {
   return (
@@ -193,18 +199,14 @@ function LabelsDemo() {
         <Separator label="The End" labelAlign="end" />
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">
-          With Icon (Left)
-        </p>
+        <p className="text-sm text-muted-foreground mb-2">With Icon (Left)</p>
         <Separator
           label="Favorites"
           labelIcon={<IconStar className="w-3 h-3" />}
         />
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">
-          With Icon (Right)
-        </p>
+        <p className="text-sm text-muted-foreground mb-2">With Icon (Right)</p>
         <Separator
           label="Power"
           labelIcon={<IconBolt className="w-3 h-3" />}
@@ -222,7 +224,7 @@ function LabelsDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const labelsCode = `import { Separator } from "@/components/ui/separator"
@@ -261,7 +263,7 @@ export function SeparatorWithLabels() {
       </div>
     </div>
   )
-}`
+}`;
 
 function GradientsDemo() {
   return (
@@ -283,7 +285,7 @@ function GradientsDemo() {
         <Separator lineStyle="gradient" gradient="rainbow" />
       </div>
     </div>
-  )
+  );
 }
 
 const gradientsCode = `import { Separator } from "@/components/ui/separator"
@@ -301,7 +303,7 @@ export function SeparatorGradients() {
       <Separator lineStyle="gradient" gradient="rainbow" />
     </div>
   )
-}`
+}`;
 
 function AnimatedDemo() {
   return (
@@ -311,7 +313,7 @@ function AnimatedDemo() {
         <Separator animated="pulse" color="primary" />
       </div>
     </div>
-  )
+  );
 }
 
 const animatedCode = `import { Separator } from "@/components/ui/separator"
@@ -323,13 +325,13 @@ export function AnimatedSeparator() {
       <Separator animated="pulse" color="primary" />
     </div>
   )
-}`
+}`;
 
 // =============================================================================
 // Page Component
 // =============================================================================
 
-export function SeparatorPage() {
+export default function SeparatorPage() {
   const features = [
     {
       title: "Multiple Orientations",
@@ -349,7 +351,7 @@ export function SeparatorPage() {
         "Add descriptive labels with optional icons, positioned at start, center, or end of the separator.",
       icon: <IconSparkles className="h-4 w-4" />,
     },
-  ]
+  ];
 
   const demoTabs = [
     {
@@ -456,7 +458,7 @@ export function SeparatorPage() {
         </DemoWrapper>
       ),
     },
-  ]
+  ];
 
   const usageCode = `import { Separator } from "@/components/ui/separator"
 
@@ -483,7 +485,7 @@ export function SeparatorPage() {
 <Separator lineStyle="gradient" gradient="primary" />
 
 // Animated
-<Separator animated="pulse" color="primary" />`
+<Separator animated="pulse" color="primary" />`;
 
   const apiSections = [
     {
@@ -559,11 +561,12 @@ export function SeparatorPage() {
           prop: "decorative",
           type: "boolean",
           default: "false",
-          description: "If true, the separator is purely decorative (aria-hidden).",
+          description:
+            "If true, the separator is purely decorative (aria-hidden).",
         },
       ],
     },
-  ]
+  ];
 
   return (
     <ComponentPage>
@@ -587,5 +590,5 @@ export function SeparatorPage() {
         description="Props and configuration options for the Separator component."
       />
     </ComponentPage>
-  )
+  );
 }

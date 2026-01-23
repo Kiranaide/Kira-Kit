@@ -1,5 +1,9 @@
-import * as React from "react"
-import { IconLoader, IconAccessible, IconComponents } from "@tabler/icons-react"
+import * as React from "react";
+import {
+  IconLoader,
+  IconAccessible,
+  IconComponents,
+} from "@tabler/icons-react";
 
 import {
   Skeleton,
@@ -14,8 +18,8 @@ import {
   SkeletonTableRow,
   SkeletonListItem,
   SkeletonBone,
-} from "@/components/ui/skeleton"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
   PageHeader,
@@ -24,7 +28,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 // =============================================================================
 // Demo Code Snippets
@@ -39,7 +43,7 @@ export function BasicSkeletonDemo() {
       <Skeleton className="h-4 w-1/2" />
     </div>
   )
-}`
+}`;
 
 const shapesCode = `import {
   SkeletonText,
@@ -75,7 +79,7 @@ export function ShapesDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 const compoundCode = `import { useState } from "react"
 import { SkeletonGroup } from "@/components/ui/skeleton"
@@ -121,7 +125,7 @@ export function CompoundDemo() {
       </p>
     </>
   )
-}`
+}`;
 
 const linesCode = `import { SkeletonLines } from "@/components/ui/skeleton"
 
@@ -138,7 +142,7 @@ export function LinesDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 const imageCode = `import { SkeletonImage } from "@/components/ui/skeleton"
 
@@ -159,7 +163,7 @@ export function ImageDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 const tableCode = `import { SkeletonTableRow } from "@/components/ui/skeleton"
 
@@ -172,7 +176,7 @@ export function TableDemo() {
       <SkeletonTableRow columns={4} delay={150} />
     </div>
   )
-}`
+}`;
 
 const listCode = `import { SkeletonListItem } from "@/components/ui/skeleton"
 
@@ -184,7 +188,7 @@ export function ListDemo() {
       <SkeletonListItem delay={100} />
     </div>
   )
-}`
+}`;
 
 const cardCode = `import { SkeletonCard } from "@/components/ui/skeleton"
 
@@ -195,7 +199,7 @@ export function CardDemo() {
       <SkeletonCard />
     </div>
   )
-}`
+}`;
 
 const animationsCode = `import { Skeleton } from "@/components/ui/skeleton"
 
@@ -225,7 +229,7 @@ export function AnimationsDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 const staggeredCode = `import { SkeletonBone } from "@/components/ui/skeleton"
 
@@ -238,7 +242,7 @@ export function StaggeredDemo() {
       <SkeletonBone className="h-4 w-full" delay={300} />
     </div>
   )
-}`
+}`;
 
 const compositionCode = `import {
   SkeletonAvatar,
@@ -275,7 +279,7 @@ function ArticleSkeleton() {
       <SkeletonLines count={3} lastLineWidth="3/4" />
     </div>
   )
-}`
+}`;
 
 const usageCode = `import {
   Skeleton,
@@ -317,7 +321,7 @@ const usageCode = `import {
 <SkeletonTableRow columns={4} delay={50} />
 
 // List items
-<SkeletonListItem />`
+<SkeletonListItem />`;
 
 // =============================================================================
 // Demo Components
@@ -329,7 +333,7 @@ function BasicDemo() {
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-4 w-1/2" />
     </div>
-  )
+  );
 }
 
 function ShapesDemo() {
@@ -358,11 +362,11 @@ function ShapesDemo() {
         <SkeletonButton />
       </div>
     </div>
-  )
+  );
 }
 
 function CompoundDemo() {
-  const [isLoading, setIsLoading] = React.useState(true)
+  const [isLoading, setIsLoading] = React.useState(true);
 
   return (
     <div className="space-y-4">
@@ -397,10 +401,11 @@ function CompoundDemo() {
       </SkeletonGroup>
 
       <p className="text-xs text-muted-foreground">
-        aria-busy={isLoading ? "true" : "false"} | aria-live="polite" | role="status"
+        aria-busy={isLoading ? "true" : "false"} | aria-live="polite" |
+        role="status"
       </p>
     </div>
-  )
+  );
 }
 
 function LinesDemo() {
@@ -415,7 +420,7 @@ function LinesDemo() {
         <SkeletonLines count={5} gap="lg" lastLineWidth="1/2" />
       </div>
     </div>
-  )
+  );
 }
 
 function ImageDemo() {
@@ -434,7 +439,7 @@ function ImageDemo() {
         <SkeletonImage aspectRatio="1/1" />
       </div>
     </div>
-  )
+  );
 }
 
 function TableDemo() {
@@ -445,7 +450,7 @@ function TableDemo() {
       <SkeletonTableRow columns={4} delay={100} />
       <SkeletonTableRow columns={4} delay={150} />
     </div>
-  )
+  );
 }
 
 function ListDemo() {
@@ -455,7 +460,7 @@ function ListDemo() {
       <SkeletonListItem delay={50} />
       <SkeletonListItem delay={100} />
     </div>
-  )
+  );
 }
 
 function CardDemo() {
@@ -464,7 +469,7 @@ function CardDemo() {
       <SkeletonCard />
       <SkeletonCard />
     </div>
-  )
+  );
 }
 
 function AnimationsDemo() {
@@ -489,7 +494,7 @@ function AnimationsDemo() {
         <Skeleton variant="wave" className="h-4 w-3/4" />
       </div>
     </div>
-  )
+  );
 }
 
 function StaggeredDemo() {
@@ -500,7 +505,7 @@ function StaggeredDemo() {
       <SkeletonBone className="h-4 w-full" delay={200} />
       <SkeletonBone className="h-4 w-full" delay={300} />
     </div>
-  )
+  );
 }
 
 function CompositionDemo() {
@@ -531,7 +536,7 @@ function CompositionDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // =============================================================================
@@ -541,7 +546,7 @@ const features = [
   {
     title: "Accessible",
     description:
-      "Full ARIA support with aria-busy, aria-live, and role=\"status\" for screen reader announcements.",
+      'Full ARIA support with aria-busy, aria-live, and role="status" for screen reader announcements.',
     icon: <IconAccessible className="h-4 w-4" />,
   },
   {
@@ -556,7 +561,7 @@ const features = [
       "Preset components (Avatar, Text, Card) plus compound patterns for complex loading states.",
     icon: <IconComponents className="h-4 w-4" />,
   },
-]
+];
 
 // =============================================================================
 // Demo Tabs Configuration
@@ -705,7 +710,7 @@ const demoTabs = [
       </DemoWrapper>
     ),
   },
-]
+];
 
 // =============================================================================
 // API Reference Data
@@ -837,12 +842,12 @@ const apiSections = [
       },
     ],
   },
-]
+];
 
 // =============================================================================
 // Main Page Component
 // =============================================================================
-export function SkeletonPage() {
+export default function SkeletonPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -867,5 +872,5 @@ export function SkeletonPage() {
         description="Props and configuration options for skeleton components."
       />
     </ComponentPage>
-  )
+  );
 }

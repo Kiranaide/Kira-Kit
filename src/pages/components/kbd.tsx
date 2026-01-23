@@ -172,7 +172,7 @@ const usageCode = `import { Kbd, KbdShortcut } from "@/components/ui/kbd"
 // Keyboard shortcut
 <KbdShortcut keys={["Ctrl", "Shift", "P"]} />`;
 
-export function KbdPage() {
+export default function KbdPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -185,15 +185,18 @@ export function KbdPage() {
         features={[
           {
             title: "Inline Display",
-            description: "Elegant inline keyboard key display with proper spacing and typography.",
+            description:
+              "Elegant inline keyboard key display with proper spacing and typography.",
           },
           {
             title: "Variant Support",
-            description: "Multiple visual styles: default, outline, and ghost variants.",
+            description:
+              "Multiple visual styles: default, outline, and ghost variants.",
           },
           {
             title: "Compound Shortcuts",
-            description: "KbdShortcut component for displaying multi-key keyboard combinations.",
+            description:
+              "KbdShortcut component for displaying multi-key keyboard combinations.",
           },
         ]}
       />
@@ -307,7 +310,8 @@ export function KbdPage() {
                 prop: "keys",
                 type: "string[]",
                 default: "-",
-                description: "Array of key strings to display as a compound shortcut.",
+                description:
+                  "Array of key strings to display as a compound shortcut.",
               },
               {
                 prop: "separator",

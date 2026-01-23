@@ -1,9 +1,5 @@
 import * as React from "react";
-import {
-  IconChartBar,
-  IconLoader,
-  IconPalette,
-} from "@tabler/icons-react";
+import { IconChartBar, IconLoader, IconPalette } from "@tabler/icons-react";
 
 import {
   Progress,
@@ -168,7 +164,11 @@ function IndeterminateDemo() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Use <code className="text-xs bg-muted px-1 py-0.5 rounded">value=&#123;null&#125;</code> for indeterminate state.
+        Use{" "}
+        <code className="text-xs bg-muted px-1 py-0.5 rounded">
+          value=&#123;null&#125;
+        </code>{" "}
+        for indeterminate state.
       </p>
       <div className="space-y-3">
         <Progress value={null} variant="default" />
@@ -204,7 +204,9 @@ function StripedDemo() {
         <Progress value={70} striped animated size="lg" />
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Striped + Animated (Success)</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          Striped + Animated (Success)
+        </p>
         <Progress value={70} striped animated size="lg" variant="success" />
       </div>
     </div>
@@ -236,7 +238,9 @@ function WithLabelDemo() {
         <Progress value={75} showLabel />
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">With sub-components</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          With sub-components
+        </p>
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <ProgressLabel>Upload Progress</ProgressLabel>
@@ -311,21 +315,11 @@ function AccessibilityDemo() {
         <p className="text-sm text-muted-foreground mb-2">
           Custom aria-valuetext (Screen readers announce "Step 3 of 5")
         </p>
-        <Progress 
-          value={60} 
-          showLabel 
-          getAriaValueText={() => "Step 3 of 5"} 
-        />
+        <Progress value={60} showLabel getAriaValueText={() => "Step 3 of 5"} />
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">
-          Custom aria-label
-        </p>
-        <Progress 
-          value={45} 
-          showLabel 
-          aria-label="File upload progress" 
-        />
+        <p className="text-sm text-muted-foreground mb-2">Custom aria-label</p>
+        <Progress value={45} showLabel aria-label="File upload progress" />
       </div>
     </div>
   );
@@ -527,7 +521,9 @@ function CircularDemo() {
         </div>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-4">Indeterminate (value=null)</p>
+        <p className="text-sm text-muted-foreground mb-4">
+          Indeterminate (value=null)
+        </p>
         <div className="flex items-center gap-6">
           <CircularProgress value={null} />
           <CircularProgress value={null} variant="success" />
@@ -713,52 +709,188 @@ const apiSections = [
   {
     title: "Progress",
     props: [
-      { prop: "value", type: "number | null", default: "-", description: "Current progress value. Use null for indeterminate state." },
-      { prop: "max", type: "number", default: "100", description: "Maximum value for the progress." },
-      { prop: "size", type: '"sm" | "default" | "lg" | "xl"', default: '"default"', description: "Size of the progress bar." },
-      { prop: "variant", type: '"default" | "info" | "success" | "warning" | "destructive"', default: '"default"', description: "Color variant." },
-      { prop: "showLabel", type: "boolean", default: "false", description: "Show percentage label below the progress bar." },
-      { prop: "striped", type: "boolean", default: "false", description: "Display striped pattern on the indicator." },
-      { prop: "animated", type: "boolean", default: "false", description: "Animate the striped pattern. Only works when striped is true." },
-      { prop: "locale", type: "Intl.LocalesArgument", default: "-", description: "Locale for number formatting." },
-      { prop: "getAriaValueText", type: "(formatted, value) => string", default: "-", description: "Function to generate human-readable text for screen readers." },
-      { prop: "onComplete", type: "() => void", default: "-", description: "Callback when progress reaches max value." },
+      {
+        prop: "value",
+        type: "number | null",
+        default: "-",
+        description:
+          "Current progress value. Use null for indeterminate state.",
+      },
+      {
+        prop: "max",
+        type: "number",
+        default: "100",
+        description: "Maximum value for the progress.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Size of the progress bar.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "info" | "success" | "warning" | "destructive"',
+        default: '"default"',
+        description: "Color variant.",
+      },
+      {
+        prop: "showLabel",
+        type: "boolean",
+        default: "false",
+        description: "Show percentage label below the progress bar.",
+      },
+      {
+        prop: "striped",
+        type: "boolean",
+        default: "false",
+        description: "Display striped pattern on the indicator.",
+      },
+      {
+        prop: "animated",
+        type: "boolean",
+        default: "false",
+        description:
+          "Animate the striped pattern. Only works when striped is true.",
+      },
+      {
+        prop: "locale",
+        type: "Intl.LocalesArgument",
+        default: "-",
+        description: "Locale for number formatting.",
+      },
+      {
+        prop: "getAriaValueText",
+        type: "(formatted, value) => string",
+        default: "-",
+        description:
+          "Function to generate human-readable text for screen readers.",
+      },
+      {
+        prop: "onComplete",
+        type: "() => void",
+        default: "-",
+        description: "Callback when progress reaches max value.",
+      },
     ],
   },
   {
     title: "CircularProgress",
     props: [
-      { prop: "value", type: "number | null", default: "-", description: "Current progress value. Use null for indeterminate state." },
-      { prop: "max", type: "number", default: "100", description: "Maximum value for the progress." },
-      { prop: "size", type: '"sm" | "default" | "lg" | "xl"', default: '"default"', description: "Size of the circular progress." },
-      { prop: "variant", type: '"default" | "info" | "success" | "warning" | "destructive"', default: '"default"', description: "Color variant." },
-      { prop: "showLabel", type: "boolean", default: "false", description: "Show percentage label in the center." },
-      { prop: "getAriaValueText", type: "(formatted, value) => string", default: "-", description: "Function to generate human-readable text for screen readers." },
+      {
+        prop: "value",
+        type: "number | null",
+        default: "-",
+        description:
+          "Current progress value. Use null for indeterminate state.",
+      },
+      {
+        prop: "max",
+        type: "number",
+        default: "100",
+        description: "Maximum value for the progress.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Size of the circular progress.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "info" | "success" | "warning" | "destructive"',
+        default: '"default"',
+        description: "Color variant.",
+      },
+      {
+        prop: "showLabel",
+        type: "boolean",
+        default: "false",
+        description: "Show percentage label in the center.",
+      },
+      {
+        prop: "getAriaValueText",
+        type: "(formatted, value) => string",
+        default: "-",
+        description:
+          "Function to generate human-readable text for screen readers.",
+      },
     ],
   },
   {
     title: "SegmentedProgress",
     props: [
-      { prop: "segments", type: "Segment[]", default: "-", description: "Array of segments with value, variant, and optional label." },
-      { prop: "total", type: "number", default: "-", description: "Total value for calculating segment widths." },
-      { prop: "size", type: '"sm" | "default" | "lg" | "xl"', default: '"default"', description: "Size of the progress bar." },
-      { prop: "showLabels", type: "boolean", default: "false", description: "Show legend labels below the progress bar." },
+      {
+        prop: "segments",
+        type: "Segment[]",
+        default: "-",
+        description:
+          "Array of segments with value, variant, and optional label.",
+      },
+      {
+        prop: "total",
+        type: "number",
+        default: "-",
+        description: "Total value for calculating segment widths.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Size of the progress bar.",
+      },
+      {
+        prop: "showLabels",
+        type: "boolean",
+        default: "false",
+        description: "Show legend labels below the progress bar.",
+      },
     ],
   },
   {
     title: "ProgressLabel",
     props: [
-      { prop: "htmlFor", type: "string", default: "-", description: "ID of the associated progress element." },
-      { prop: "children", type: "ReactNode", default: "-", description: "Label text content." },
+      {
+        prop: "htmlFor",
+        type: "string",
+        default: "-",
+        description: "ID of the associated progress element.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Label text content.",
+      },
     ],
   },
   {
     title: "ProgressValue",
     props: [
-      { prop: "value", type: "number | null", default: "-", description: "Current progress value." },
-      { prop: "max", type: "number", default: "100", description: "Maximum value." },
-      { prop: "locale", type: "Intl.LocalesArgument", default: "-", description: "Locale for number formatting." },
-      { prop: "children", type: "(formatted, value) => ReactNode", default: "-", description: "Optional render function for custom display." },
+      {
+        prop: "value",
+        type: "number | null",
+        default: "-",
+        description: "Current progress value.",
+      },
+      {
+        prop: "max",
+        type: "number",
+        default: "100",
+        description: "Maximum value.",
+      },
+      {
+        prop: "locale",
+        type: "Intl.LocalesArgument",
+        default: "-",
+        description: "Locale for number formatting.",
+      },
+      {
+        prop: "children",
+        type: "(formatted, value) => ReactNode",
+        default: "-",
+        description: "Optional render function for custom display.",
+      },
     ],
   },
 ];
@@ -767,21 +899,24 @@ const apiSections = [
 // MAIN PAGE COMPONENT
 // =============================================================================
 
-export function ProgressPage() {
+export default function ProgressPage() {
   const features = [
     {
       title: "Multiple Variants",
-      description: "Linear, circular, and segmented progress indicators with size and color variants.",
+      description:
+        "Linear, circular, and segmented progress indicators with size and color variants.",
       icon: <IconChartBar className="h-4 w-4" />,
     },
     {
       title: "Indeterminate State",
-      description: "Support for indeterminate loading states with animated indicators.",
+      description:
+        "Support for indeterminate loading states with animated indicators.",
       icon: <IconLoader className="h-4 w-4" />,
     },
     {
       title: "Customizable",
-      description: "Striped patterns, animated effects, locale formatting, and accessible labels.",
+      description:
+        "Striped patterns, animated effects, locale formatting, and accessible labels.",
       icon: <IconPalette className="h-4 w-4" />,
     },
   ];

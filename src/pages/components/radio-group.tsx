@@ -726,7 +726,7 @@ import { Label } from "@/components/ui/label"
 // Main Page Component
 // =============================================================================
 
-export function RadioGroupPage() {
+export default function RadioGroupPage() {
   const features = [
     {
       icon: <IconCircleCheck className="h-4 w-4" />,

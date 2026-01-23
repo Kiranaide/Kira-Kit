@@ -11,12 +11,7 @@ import {
   IconAccessible,
 } from "@tabler/icons-react";
 
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
@@ -153,7 +148,9 @@ function VariantsDemo() {
       </div>
 
       <div className="space-y-4">
-        <p className="text-sm font-medium">Underline (with animated indicator)</p>
+        <p className="text-sm font-medium">
+          Underline (with animated indicator)
+        </p>
         <Tabs defaultValue="tab1" variant="underline">
           <TabsList>
             <TabsTrigger value="tab1">Overview</TabsTrigger>
@@ -166,10 +163,14 @@ function VariantsDemo() {
             </div>
           </TabsContent>
           <TabsContent value="tab2">
-            <div className="p-4 rounded-lg border border-border mt-4">Analytics</div>
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Analytics
+            </div>
           </TabsContent>
           <TabsContent value="tab3">
-            <div className="p-4 rounded-lg border border-border mt-4">Reports</div>
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Reports
+            </div>
           </TabsContent>
         </Tabs>
       </div>
@@ -208,10 +209,14 @@ function VariantsDemo() {
             </div>
           </TabsContent>
           <TabsContent value="tab2">
-            <div className="p-4 rounded-lg border border-border mt-4">Details</div>
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Details
+            </div>
           </TabsContent>
           <TabsContent value="tab3">
-            <div className="p-4 rounded-lg border border-border mt-4">Settings</div>
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Settings
+            </div>
           </TabsContent>
         </Tabs>
       </div>
@@ -230,10 +235,14 @@ function VariantsDemo() {
             </div>
           </TabsContent>
           <TabsContent value="tab2">
-            <div className="p-4 rounded-lg border border-border mt-4">Second</div>
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Second
+            </div>
           </TabsContent>
           <TabsContent value="tab3">
-            <div className="p-4 rounded-lg border border-border mt-4">Third</div>
+            <div className="p-4 rounded-lg border border-border mt-4">
+              Third
+            </div>
           </TabsContent>
         </Tabs>
       </div>
@@ -419,10 +428,20 @@ function IconsDemo() {
         <p className="text-sm font-medium">With Badges</p>
         <Tabs defaultValue="inbox">
           <TabsList>
-            <TabsTrigger value="inbox" icon={<IconBell />} badge={5} badgeColor="destructive">
+            <TabsTrigger
+              value="inbox"
+              icon={<IconBell />}
+              badge={5}
+              badgeColor="destructive"
+            >
               Inbox
             </TabsTrigger>
-            <TabsTrigger value="analytics" icon={<IconChartBar />} badge="New" badgeColor="primary">
+            <TabsTrigger
+              value="analytics"
+              icon={<IconChartBar />}
+              badge="New"
+              badgeColor="primary"
+            >
               Analytics
             </TabsTrigger>
             <TabsTrigger value="reports" icon={<IconFileText />}>
@@ -493,7 +512,8 @@ function DisabledDemo() {
         </TabsList>
         <TabsContent value="active">
           <div className="p-4 rounded-lg border border-border">
-            This is the active tab content. The disabled tabs cannot be selected.
+            This is the active tab content. The disabled tabs cannot be
+            selected.
           </div>
         </TabsContent>
         <TabsContent value="another">
@@ -579,7 +599,8 @@ function ControlledDemo() {
           <div className="p-4 rounded-lg border border-border">
             <p className="font-medium">First Tab Content</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Current active tab: <code className="bg-muted px-1 rounded">{activeTab}</code>
+              Current active tab:{" "}
+              <code className="bg-muted px-1 rounded">{activeTab}</code>
             </p>
           </div>
         </TabsContent>
@@ -587,7 +608,8 @@ function ControlledDemo() {
           <div className="p-4 rounded-lg border border-border">
             <p className="font-medium">Second Tab Content</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Current active tab: <code className="bg-muted px-1 rounded">{activeTab}</code>
+              Current active tab:{" "}
+              <code className="bg-muted px-1 rounded">{activeTab}</code>
             </p>
           </div>
         </TabsContent>
@@ -595,7 +617,8 @@ function ControlledDemo() {
           <div className="p-4 rounded-lg border border-border">
             <p className="font-medium">Third Tab Content</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Current active tab: <code className="bg-muted px-1 rounded">{activeTab}</code>
+              Current active tab:{" "}
+              <code className="bg-muted px-1 rounded">{activeTab}</code>
             </p>
           </div>
         </TabsContent>
@@ -926,7 +949,7 @@ const demoTabs = [
   },
 ];
 
-export function TabsPage() {
+export default function TabsPage() {
   return (
     <ComponentPage>
       <PageHeader

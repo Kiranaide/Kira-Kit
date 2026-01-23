@@ -1,4 +1,4 @@
-import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import {
   ComponentPage,
   PageHeader,
@@ -7,7 +7,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 const presetRatiosCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
 
@@ -76,14 +76,17 @@ const presetRatiosCode = `import { AspectRatio } from "@/components/ui/aspect-ra
       </div>
     </AspectRatio>
   </div>
-</div>`
+</div>`;
 
 function PresetRatiosDemo() {
   return (
     <div className="grid gap-6 md:grid-cols-4">
       <div>
         <p className="text-sm text-muted-foreground mb-2">16:9 (Video)</p>
-        <AspectRatio ratio="16:9" className="bg-muted rounded-lg overflow-hidden">
+        <AspectRatio
+          ratio="16:9"
+          className="bg-muted rounded-lg overflow-hidden"
+        >
           <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
             16:9
           </div>
@@ -91,7 +94,10 @@ function PresetRatiosDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">4:3 (Photo)</p>
-        <AspectRatio ratio="4:3" className="bg-muted rounded-lg overflow-hidden">
+        <AspectRatio
+          ratio="4:3"
+          className="bg-muted rounded-lg overflow-hidden"
+        >
           <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
             4:3
           </div>
@@ -99,7 +105,10 @@ function PresetRatiosDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">1:1 (Square)</p>
-        <AspectRatio ratio="1:1" className="bg-muted rounded-lg overflow-hidden">
+        <AspectRatio
+          ratio="1:1"
+          className="bg-muted rounded-lg overflow-hidden"
+        >
           <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
             1:1
           </div>
@@ -107,7 +116,10 @@ function PresetRatiosDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">9:16 (Story)</p>
-        <AspectRatio ratio="9:16" className="bg-muted rounded-lg overflow-hidden">
+        <AspectRatio
+          ratio="9:16"
+          className="bg-muted rounded-lg overflow-hidden"
+        >
           <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
             9:16
           </div>
@@ -115,7 +127,10 @@ function PresetRatiosDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">21:9 (Ultrawide)</p>
-        <AspectRatio ratio="21:9" className="bg-muted rounded-lg overflow-hidden">
+        <AspectRatio
+          ratio="21:9"
+          className="bg-muted rounded-lg overflow-hidden"
+        >
           <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
             21:9
           </div>
@@ -123,7 +138,10 @@ function PresetRatiosDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">3:2 (Classic)</p>
-        <AspectRatio ratio="3:2" className="bg-muted rounded-lg overflow-hidden">
+        <AspectRatio
+          ratio="3:2"
+          className="bg-muted rounded-lg overflow-hidden"
+        >
           <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
             3:2
           </div>
@@ -131,7 +149,10 @@ function PresetRatiosDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">3:4 (Portrait)</p>
-        <AspectRatio ratio="3:4" className="bg-muted rounded-lg overflow-hidden">
+        <AspectRatio
+          ratio="3:4"
+          className="bg-muted rounded-lg overflow-hidden"
+        >
           <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
             3:4
           </div>
@@ -139,14 +160,17 @@ function PresetRatiosDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">2:3 (Portrait)</p>
-        <AspectRatio ratio="2:3" className="bg-muted rounded-lg overflow-hidden">
+        <AspectRatio
+          ratio="2:3"
+          className="bg-muted rounded-lg overflow-hidden"
+        >
           <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
             2:3
           </div>
         </AspectRatio>
       </div>
     </div>
-  )
+  );
 }
 
 const withImageCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
@@ -172,7 +196,7 @@ const withImageCode = `import { AspectRatio } from "@/components/ui/aspect-ratio
       />
     </AspectRatio>
   </div>
-</div>`
+</div>`;
 
 function WithImageDemo() {
   return (
@@ -198,7 +222,7 @@ function WithImageDemo() {
         </AspectRatio>
       </div>
     </div>
-  )
+  );
 }
 
 const loadingStateCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
@@ -225,7 +249,7 @@ const loadingStateCode = `import { AspectRatio } from "@/components/ui/aspect-ra
       className="w-full h-full object-cover rounded-lg"
     />
   </AspectRatio>
-</div>`
+</div>`;
 
 function LoadingStateDemo() {
   return (
@@ -252,7 +276,7 @@ function LoadingStateDemo() {
         />
       </AspectRatio>
     </div>
-  )
+  );
 }
 
 const contentPositionCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
@@ -278,33 +302,49 @@ const contentPositionCode = `import { AspectRatio } from "@/components/ui/aspect
       Bottom Right
     </div>
   </AspectRatio>
-</div>`
+</div>`;
 
 function ContentPositionDemo() {
   return (
     <div className="grid gap-4 md:grid-cols-4">
-      <AspectRatio ratio="4:3" position="center" className="bg-muted rounded-lg overflow-hidden">
+      <AspectRatio
+        ratio="4:3"
+        position="center"
+        className="bg-muted rounded-lg overflow-hidden"
+      >
         <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
           Center
         </div>
       </AspectRatio>
-      <AspectRatio ratio="4:3" position="top" className="bg-muted rounded-lg overflow-hidden">
+      <AspectRatio
+        ratio="4:3"
+        position="top"
+        className="bg-muted rounded-lg overflow-hidden"
+      >
         <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
           Top
         </div>
       </AspectRatio>
-      <AspectRatio ratio="4:3" position="bottom-left" className="bg-muted rounded-lg overflow-hidden">
+      <AspectRatio
+        ratio="4:3"
+        position="bottom-left"
+        className="bg-muted rounded-lg overflow-hidden"
+      >
         <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
           Bottom Left
         </div>
       </AspectRatio>
-      <AspectRatio ratio="4:3" position="bottom-right" className="bg-muted rounded-lg overflow-hidden">
+      <AspectRatio
+        ratio="4:3"
+        position="bottom-right"
+        className="bg-muted rounded-lg overflow-hidden"
+      >
         <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
           Bottom Right
         </div>
       </AspectRatio>
     </div>
-  )
+  );
 }
 
 const withVideoCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
@@ -319,7 +359,7 @@ const withVideoCode = `import { AspectRatio } from "@/components/ui/aspect-ratio
       className="w-full h-full rounded-lg"
     />
   </AspectRatio>
-</div>`
+</div>`;
 
 function WithVideoDemo() {
   return (
@@ -334,10 +374,10 @@ function WithVideoDemo() {
         />
       </AspectRatio>
     </div>
-  )
+  );
 }
 
-export function AspectRatioPage() {
+export default function AspectRatioPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -350,15 +390,18 @@ export function AspectRatioPage() {
         features={[
           {
             title: "Preset Ratios",
-            description: "Built-in support for common aspect ratios like 16:9, 4:3, 1:1, 9:16, and more using string values.",
+            description:
+              "Built-in support for common aspect ratios like 16:9, 4:3, 1:1, 9:16, and more using string values.",
           },
           {
             title: "Loading State",
-            description: "Built-in skeleton loading support with animated pulse effect while content loads.",
+            description:
+              "Built-in skeleton loading support with animated pulse effect while content loads.",
           },
           {
             title: "Content Positioning",
-            description: "Control how content is positioned within the container with center, top, bottom, left, right options.",
+            description:
+              "Control how content is positioned within the container with center, top, bottom, left, right options.",
           },
         ]}
       />
@@ -468,26 +511,30 @@ export function AspectRatioPage() {
               {
                 prop: "ratio",
                 type: "number | AspectRatioPreset",
-                default: "\"1:1\"",
-                description: "The aspect ratio to maintain. Can be a number or a preset string like '16:9', '4:3', '1:1', '9:16', '21:9', '3:4', '2:3', '3:2'.",
+                default: '"1:1"',
+                description:
+                  "The aspect ratio to maintain. Can be a number or a preset string like '16:9', '4:3', '1:1', '9:16', '21:9', '3:4', '2:3', '3:2'.",
               },
               {
                 prop: "fit",
                 type: "'cover' | 'contain' | 'fill' | 'none' | 'scaleDown'",
-                default: "\"cover\"",
-                description: "Controls how content fits within the container. Uses CSS object-fit.",
+                default: '"cover"',
+                description:
+                  "Controls how content fits within the container. Uses CSS object-fit.",
               },
               {
                 prop: "position",
                 type: "'center' | 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'",
-                default: "\"center\"",
-                description: "Controls the alignment of content within the container.",
+                default: '"center"',
+                description:
+                  "Controls the alignment of content within the container.",
               },
               {
                 prop: "loading",
                 type: "boolean",
                 default: "false",
-                description: "Shows a skeleton loading state while content loads.",
+                description:
+                  "Shows a skeleton loading state while content loads.",
               },
               {
                 prop: "skeleton",
@@ -522,7 +569,8 @@ export function AspectRatioPage() {
                 prop: "xl",
                 type: "number | AspectRatioPreset",
                 default: "lg",
-                description: "Aspect ratio for extra large screens (1280px and up).",
+                description:
+                  "Aspect ratio for extra large screens (1280px and up).",
               },
               {
                 prop: "fit",
@@ -534,12 +582,13 @@ export function AspectRatioPage() {
                 prop: "loading",
                 type: "boolean",
                 default: "false",
-                description: "Shows a skeleton loading state while content loads.",
+                description:
+                  "Shows a skeleton loading state while content loads.",
               },
             ],
           },
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

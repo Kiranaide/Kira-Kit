@@ -1,11 +1,11 @@
-import { IconCloudUpload } from "@tabler/icons-react"
+import { IconCloudUpload } from "@tabler/icons-react";
 import {
   Empty,
   EmptyInbox,
   EmptySearch,
   EmptyFile,
-} from "@/components/ui/empty"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
   PageHeader,
@@ -14,7 +14,7 @@ import {
   DemoTabs,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 const basicCode = `import { Empty } from "@/components/ui/empty"
 
@@ -25,7 +25,7 @@ export function BasicEmptyDemo() {
       description="There's nothing here yet. Try adding some content."
     />
   )
-}`
+}`;
 
 function BasicDemo() {
   return (
@@ -33,7 +33,7 @@ function BasicDemo() {
       title="No data available"
       description="There's nothing here yet. Try adding some content."
     />
-  )
+  );
 }
 
 const iconsCode = `import { EmptyInbox, EmptySearch, EmptyFile } from "@/components/ui/empty"
@@ -51,7 +51,7 @@ export function IconPresetsDemo() {
       />
     </div>
   )
-}`
+}`;
 
 function IconsDemo() {
   return (
@@ -65,7 +65,7 @@ function IconsDemo() {
         description="Something went wrong"
       />
     </div>
-  )
+  );
 }
 
 const customCode = `import { Empty } from "@/components/ui/empty"
@@ -79,7 +79,7 @@ export function CustomIconDemo() {
       description="Drag and drop files here or click to browse"
     />
   )
-}`
+}`;
 
 function CustomDemo() {
   return (
@@ -88,7 +88,7 @@ function CustomDemo() {
       title="Upload files"
       description="Drag and drop files here or click to browse"
     />
-  )
+  );
 }
 
 const actionCode = `import { Empty } from "@/components/ui/empty"
@@ -103,7 +103,7 @@ export function ActionDemo() {
       action={<Button>Create Project</Button>}
     />
   )
-}`
+}`;
 
 function ActionDemo() {
   return (
@@ -113,7 +113,7 @@ function ActionDemo() {
       description="Get started by creating your first project"
       action={<Button>Create Project</Button>}
     />
-  )
+  );
 }
 
 const sizesCode = `import { Empty } from "@/components/ui/empty"
@@ -126,7 +126,7 @@ export function SizesDemo() {
       <Empty size="lg" title="Large" description="For prominent display" />
     </div>
   )
-}`
+}`;
 
 function SizesDemo() {
   return (
@@ -135,7 +135,7 @@ function SizesDemo() {
       <Empty size="default" title="Default" description="Standard size" />
       <Empty size="lg" title="Large" description="For prominent display" />
     </div>
-  )
+  );
 }
 
 const usageCode = `import { Empty, EmptyInbox, EmptySearch } from "@/components/ui/empty"
@@ -154,9 +154,9 @@ import { Button } from "@/components/ui/button"
 <EmptySearch description="No results found" />
 
 // Custom icon
-<Empty icon={<CustomIcon />} title="Title" />`
+<Empty icon={<CustomIcon />} title="Title" />`;
 
-export function EmptyPage() {
+export default function EmptyPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -169,15 +169,18 @@ export function EmptyPage() {
         features={[
           {
             title: "Icon Presets",
-            description: "Built-in icons for common empty states: inbox, search, file, and alert.",
+            description:
+              "Built-in icons for common empty states: inbox, search, file, and alert.",
           },
           {
             title: "Customizable",
-            description: "Use custom icons, sizes, and action buttons to match your design.",
+            description:
+              "Use custom icons, sizes, and action buttons to match your design.",
           },
           {
             title: "Accessible",
-            description: "Proper ARIA attributes and semantic HTML for screen readers.",
+            description:
+              "Proper ARIA attributes and semantic HTML for screen readers.",
           },
         ]}
       />
@@ -266,7 +269,8 @@ export function EmptyPage() {
                 prop: "icon",
                 type: "string | ReactNode",
                 default: "-",
-                description: 'Icon name ("inbox" | "search" | "file" | "alert") or custom icon element.',
+                description:
+                  'Icon name ("inbox" | "search" | "file" | "alert") or custom icon element.',
               },
               {
                 prop: "title",
@@ -408,5 +412,5 @@ export function EmptyPage() {
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

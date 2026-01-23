@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   IconFile,
   IconEdit,
@@ -16,7 +16,7 @@ import {
   IconChevronRight,
   IconKeyboard,
   IconCheck,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 
 import {
   Menubar,
@@ -33,7 +33,7 @@ import {
   MenubarSub,
   MenubarSubTrigger,
   MenubarSubContent,
-} from "@/components/ui/menubar"
+} from "@/components/ui/menubar";
 import {
   ComponentPage,
   PageHeader,
@@ -43,7 +43,7 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 function BasicDemo() {
   return (
@@ -51,38 +51,60 @@ function BasicDemo() {
       <MenubarMenu>
         <MenubarTrigger>File</MenubarTrigger>
         <MenubarContent>
-          <MenubarItem>New Tab <MenubarShortcut>⌘T</MenubarShortcut></MenubarItem>
-          <MenubarItem>New Window <MenubarShortcut>⌘N</MenubarShortcut></MenubarItem>
+          <MenubarItem>
+            New Tab <MenubarShortcut>⌘T</MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem>
+            New Window <MenubarShortcut>⌘N</MenubarShortcut>
+          </MenubarItem>
           <MenubarSeparator />
           <MenubarItem>Share</MenubarItem>
           <MenubarSeparator />
-          <MenubarItem>Print <MenubarShortcut>⌘P</MenubarShortcut></MenubarItem>
+          <MenubarItem>
+            Print <MenubarShortcut>⌘P</MenubarShortcut>
+          </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
 
       <MenubarMenu>
         <MenubarTrigger>Edit</MenubarTrigger>
         <MenubarContent>
-          <MenubarItem>Undo <MenubarShortcut>⌘Z</MenubarShortcut></MenubarItem>
-          <MenubarItem>Redo <MenubarShortcut>⇧⌘Z</MenubarShortcut></MenubarItem>
+          <MenubarItem>
+            Undo <MenubarShortcut>⌘Z</MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem>
+            Redo <MenubarShortcut>⇧⌘Z</MenubarShortcut>
+          </MenubarItem>
           <MenubarSeparator />
-          <MenubarItem>Cut <MenubarShortcut>⌘X</MenubarShortcut></MenubarItem>
-          <MenubarItem>Copy <MenubarShortcut>⌘C</MenubarShortcut></MenubarItem>
-          <MenubarItem>Paste <MenubarShortcut>⌘V</MenubarShortcut></MenubarItem>
+          <MenubarItem>
+            Cut <MenubarShortcut>⌘X</MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem>
+            Copy <MenubarShortcut>⌘C</MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem>
+            Paste <MenubarShortcut>⌘V</MenubarShortcut>
+          </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
 
       <MenubarMenu>
         <MenubarTrigger>View</MenubarTrigger>
         <MenubarContent>
-          <MenubarItem>Enter Full Screen <MenubarShortcut>F11</MenubarShortcut></MenubarItem>
+          <MenubarItem>
+            Enter Full Screen <MenubarShortcut>F11</MenubarShortcut>
+          </MenubarItem>
           <MenubarSeparator />
-          <MenubarItem>Zoom In <MenubarShortcut>⌘+</MenubarShortcut></MenubarItem>
-          <MenubarItem>Zoom Out <MenubarShortcut>⌘-</MenubarShortcut></MenubarItem>
+          <MenubarItem>
+            Zoom In <MenubarShortcut>⌘+</MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem>
+            Zoom Out <MenubarShortcut>⌘-</MenubarShortcut>
+          </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
     </Menubar>
-  )
+  );
 }
 
 const basicCode = `import {
@@ -109,7 +131,7 @@ export function BasicMenubar() {
       </MenubarMenu>
     </Menubar>
   )
-}`
+}`;
 
 function IconButtonsDemo() {
   return (
@@ -145,13 +167,16 @@ function IconButtonsDemo() {
           <MenubarItem icon={<IconCopy className="h-4 w-4" />}>
             Copy
           </MenubarItem>
-          <MenubarItem icon={<IconTrash className="h-4 w-4" />} variant="destructive">
+          <MenubarItem
+            icon={<IconTrash className="h-4 w-4" />}
+            variant="destructive"
+          >
             Delete
           </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
     </Menubar>
-  )
+  );
 }
 
 const iconButtonsCode = `import {
@@ -183,25 +208,34 @@ export function MenubarWithIcons() {
       </MenubarMenu>
     </Menubar>
   )
-}`
+}`;
 
 function CheckboxDemo() {
-  const [showToolbar, setShowToolbar] = React.useState(true)
-  const [showSidebar, setShowSidebar] = React.useState(false)
-  const [showStatusBar, setShowStatusBar] = React.useState(true)
+  const [showToolbar, setShowToolbar] = React.useState(true);
+  const [showSidebar, setShowSidebar] = React.useState(false);
+  const [showStatusBar, setShowStatusBar] = React.useState(true);
 
   return (
     <Menubar>
       <MenubarMenu>
         <MenubarTrigger>View</MenubarTrigger>
         <MenubarContent>
-          <MenubarCheckboxItem checked={showToolbar} onCheckedChange={setShowToolbar}>
+          <MenubarCheckboxItem
+            checked={showToolbar}
+            onCheckedChange={setShowToolbar}
+          >
             Show Toolbar
           </MenubarCheckboxItem>
-          <MenubarCheckboxItem checked={showSidebar} onCheckedChange={setShowSidebar}>
+          <MenubarCheckboxItem
+            checked={showSidebar}
+            onCheckedChange={setShowSidebar}
+          >
             Show Sidebar
           </MenubarCheckboxItem>
-          <MenubarCheckboxItem checked={showStatusBar} onCheckedChange={setShowStatusBar}>
+          <MenubarCheckboxItem
+            checked={showStatusBar}
+            onCheckedChange={setShowStatusBar}
+          >
             Show Status Bar
           </MenubarCheckboxItem>
         </MenubarContent>
@@ -222,7 +256,7 @@ function CheckboxDemo() {
         </MenubarContent>
       </MenubarMenu>
     </Menubar>
-  )
+  );
 }
 
 const checkboxCode = `import * as React from "react"
@@ -253,10 +287,10 @@ export function MenubarWithCheckbox() {
       </MenubarMenu>
     </Menubar>
   )
-}`
+}`;
 
 function RadioDemo() {
-  const [radioValue, setRadioValue] = React.useState("andy")
+  const [radioValue, setRadioValue] = React.useState("andy");
 
   return (
     <Menubar>
@@ -288,7 +322,7 @@ function RadioDemo() {
         </MenubarContent>
       </MenubarMenu>
     </Menubar>
-  )
+  );
 }
 
 const radioCode = `import * as React from "react"
@@ -323,7 +357,7 @@ export function MenubarWithRadio() {
       </MenubarMenu>
     </Menubar>
   )
-}`
+}`;
 
 function DropdownDemo() {
   return (
@@ -331,8 +365,12 @@ function DropdownDemo() {
       <MenubarMenu>
         <MenubarTrigger>Format</MenubarTrigger>
         <MenubarContent>
-          <MenubarItem icon={<IconBold className="h-4 w-4" />}>Bold</MenubarItem>
-          <MenubarItem icon={<IconItalic className="h-4 w-4" />}>Italic</MenubarItem>
+          <MenubarItem icon={<IconBold className="h-4 w-4" />}>
+            Bold
+          </MenubarItem>
+          <MenubarItem icon={<IconItalic className="h-4 w-4" />}>
+            Italic
+          </MenubarItem>
           <MenubarItem icon={<IconUnderline className="h-4 w-4" />}>
             Underline
           </MenubarItem>
@@ -380,7 +418,7 @@ function DropdownDemo() {
         </MenubarContent>
       </MenubarMenu>
     </Menubar>
-  )
+  );
 }
 
 const dropdownCode = `import {
@@ -419,9 +457,9 @@ export function MenubarWithDropdown() {
       </MenubarMenu>
     </Menubar>
   )
-}`
+}`;
 
-export function MenubarPage() {
+export default function MenubarPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -434,17 +472,20 @@ export function MenubarPage() {
         features={[
           {
             title: "Icon Support",
-            description: "Add visual context with icon prop on menu items for better UX.",
+            description:
+              "Add visual context with icon prop on menu items for better UX.",
             icon: <IconKeyboard className="h-4 w-4" />,
           },
           {
             title: "Interactive Items",
-            description: "Checkbox items and radio groups for toggleable options and selections.",
+            description:
+              "Checkbox items and radio groups for toggleable options and selections.",
             icon: <IconCheck className="h-4 w-4" />,
           },
           {
             title: "Submenus",
-            description: "Nested menu support with MenubarSub, MenubarSubTrigger, and MenubarSubContent.",
+            description:
+              "Nested menu support with MenubarSub, MenubarSubTrigger, and MenubarSubContent.",
             icon: <IconChevronRight className="h-4 w-4" />,
           },
         ]}
@@ -453,11 +494,71 @@ export function MenubarPage() {
       <DemoTabs
         defaultValue="basic"
         tabs={[
-          { value: "basic", label: "Basic", demo: <DemoWrapper title="Basic Menubar" description="A simple menubar with menus, items, separators, and keyboard shortcuts." code={basicCode}><BasicDemo /></DemoWrapper> },
-          { value: "icons", label: "Icon Buttons", demo: <DemoWrapper title="With Icons" description="Menu items with icon prop for visual indicators and destructive variants." code={iconButtonsCode}><IconButtonsDemo /></DemoWrapper> },
-          { value: "checkbox", label: "Checkbox", demo: <DemoWrapper title="Checkbox Items" description="Toggleable checkbox items for settings and preferences." code={checkboxCode}><CheckboxDemo /></DemoWrapper> },
-          { value: "radio", label: "Radio", demo: <DemoWrapper title="Radio Groups" description="Radio group for selecting one option from multiple choices." code={radioCode}><RadioDemo /></DemoWrapper> },
-          { value: "dropdown", label: "Dropdown", demo: <DemoWrapper title="Submenus" description="Create nested dropdown menus for hierarchical organization." code={dropdownCode}><DropdownDemo /></DemoWrapper> },
+          {
+            value: "basic",
+            label: "Basic",
+            demo: (
+              <DemoWrapper
+                title="Basic Menubar"
+                description="A simple menubar with menus, items, separators, and keyboard shortcuts."
+                code={basicCode}
+              >
+                <BasicDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "icons",
+            label: "Icon Buttons",
+            demo: (
+              <DemoWrapper
+                title="With Icons"
+                description="Menu items with icon prop for visual indicators and destructive variants."
+                code={iconButtonsCode}
+              >
+                <IconButtonsDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "checkbox",
+            label: "Checkbox",
+            demo: (
+              <DemoWrapper
+                title="Checkbox Items"
+                description="Toggleable checkbox items for settings and preferences."
+                code={checkboxCode}
+              >
+                <CheckboxDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "radio",
+            label: "Radio",
+            demo: (
+              <DemoWrapper
+                title="Radio Groups"
+                description="Radio group for selecting one option from multiple choices."
+                code={radioCode}
+              >
+                <RadioDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "dropdown",
+            label: "Dropdown",
+            demo: (
+              <DemoWrapper
+                title="Submenus"
+                description="Create nested dropdown menus for hierarchical organization."
+                code={dropdownCode}
+              >
+                <DropdownDemo />
+              </DemoWrapper>
+            ),
+          },
         ]}
       />
 
@@ -512,94 +613,195 @@ export function MenubarPage() {
           {
             title: "Menubar",
             props: [
-              { prop: "className", type: "string", description: "Additional CSS classes for the menubar container." },
+              {
+                prop: "className",
+                type: "string",
+                description:
+                  "Additional CSS classes for the menubar container.",
+              },
             ],
           },
           {
             title: "MenubarMenu",
             props: [
-              { prop: "open", type: "boolean", description: "Whether the menu is currently open (controlled)." },
-              { prop: "defaultOpen", type: "boolean", description: "Whether the menu is open by default." },
-              { prop: "onOpenChange", type: "(open: boolean) => void", description: "Callback when menu open state changes." },
+              {
+                prop: "open",
+                type: "boolean",
+                description: "Whether the menu is currently open (controlled).",
+              },
+              {
+                prop: "defaultOpen",
+                type: "boolean",
+                description: "Whether the menu is open by default.",
+              },
+              {
+                prop: "onOpenChange",
+                type: "(open: boolean) => void",
+                description: "Callback when menu open state changes.",
+              },
             ],
           },
           {
             title: "MenubarTrigger",
             props: [
-              { prop: "className", type: "string", description: "Additional CSS classes for the trigger button." },
+              {
+                prop: "className",
+                type: "string",
+                description: "Additional CSS classes for the trigger button.",
+              },
             ],
           },
           {
             title: "MenubarContent",
             props: [
-              { prop: "align", type: '"start" | "center" | "end"', default: '"start"', description: "Alignment of the menu relative to the trigger." },
-              { prop: "alignOffset", type: "number", description: "Offset in pixels from the alignment edge." },
-              { prop: "className", type: "string", description: "Additional CSS classes for the content container." },
+              {
+                prop: "align",
+                type: '"start" | "center" | "end"',
+                default: '"start"',
+                description: "Alignment of the menu relative to the trigger.",
+              },
+              {
+                prop: "alignOffset",
+                type: "number",
+                description: "Offset in pixels from the alignment edge.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                description:
+                  "Additional CSS classes for the content container.",
+              },
             ],
           },
           {
             title: "MenubarItem",
             props: [
-              { prop: "icon", type: "ReactNode", description: "Icon to display before the item text." },
-              { prop: "variant", type: '"default" | "destructive"', default: '"default"', description: "Visual style variant for the item." },
-              { prop: "disabled", type: "boolean", default: "false", description: "Disable interaction with this item." },
-              { prop: "className", type: "string", description: "Additional CSS classes for the item." },
+              {
+                prop: "icon",
+                type: "ReactNode",
+                description: "Icon to display before the item text.",
+              },
+              {
+                prop: "variant",
+                type: '"default" | "destructive"',
+                default: '"default"',
+                description: "Visual style variant for the item.",
+              },
+              {
+                prop: "disabled",
+                type: "boolean",
+                default: "false",
+                description: "Disable interaction with this item.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                description: "Additional CSS classes for the item.",
+              },
             ],
           },
           {
             title: "MenubarCheckboxItem",
             props: [
-              { prop: "checked", type: "boolean", description: "Whether the checkbox is checked." },
-              { prop: "onCheckedChange", type: "(checked: boolean) => void", description: "Callback when checked state changes." },
+              {
+                prop: "checked",
+                type: "boolean",
+                description: "Whether the checkbox is checked.",
+              },
+              {
+                prop: "onCheckedChange",
+                type: "(checked: boolean) => void",
+                description: "Callback when checked state changes.",
+              },
             ],
           },
           {
             title: "MenubarRadioGroup",
             props: [
-              { prop: "value", type: "string", description: "The selected radio value." },
-              { prop: "onValueChange", type: "(value: string) => void", description: "Callback when radio value changes." },
+              {
+                prop: "value",
+                type: "string",
+                description: "The selected radio value.",
+              },
+              {
+                prop: "onValueChange",
+                type: "(value: string) => void",
+                description: "Callback when radio value changes.",
+              },
             ],
           },
           {
             title: "MenubarRadioItem",
             props: [
-              { prop: "value", type: "string", description: "Unique value for this radio item." },
+              {
+                prop: "value",
+                type: "string",
+                description: "Unique value for this radio item.",
+              },
             ],
           },
           {
             title: "MenubarLabel",
             props: [
-              { prop: "className", type: "string", description: "Additional CSS classes for the label." },
+              {
+                prop: "className",
+                type: "string",
+                description: "Additional CSS classes for the label.",
+              },
             ],
           },
           {
             title: "MenubarSub",
             props: [
-              { prop: "open", type: "boolean", description: "Whether the submenu is open (controlled)." },
-              { prop: "defaultOpen", type: "boolean", description: "Whether the submenu is open by default." },
-              { prop: "onOpenChange", type: "(open: boolean) => void", description: "Callback when submenu open state changes." },
+              {
+                prop: "open",
+                type: "boolean",
+                description: "Whether the submenu is open (controlled).",
+              },
+              {
+                prop: "defaultOpen",
+                type: "boolean",
+                description: "Whether the submenu is open by default.",
+              },
+              {
+                prop: "onOpenChange",
+                type: "(open: boolean) => void",
+                description: "Callback when submenu open state changes.",
+              },
             ],
           },
           {
             title: "MenubarSubTrigger",
             props: [
-              { prop: "icon", type: "ReactNode", description: "Icon to display before the trigger text." },
+              {
+                prop: "icon",
+                type: "ReactNode",
+                description: "Icon to display before the trigger text.",
+              },
             ],
           },
           {
             title: "MenubarSubContent",
             props: [
-              { prop: "alignOffset", type: "number", description: "Offset in pixels from the alignment edge." },
+              {
+                prop: "alignOffset",
+                type: "number",
+                description: "Offset in pixels from the alignment edge.",
+              },
             ],
           },
           {
             title: "MenubarShortcut",
             props: [
-              { prop: "className", type: "string", description: "Additional CSS classes for the shortcut text." },
+              {
+                prop: "className",
+                type: "string",
+                description: "Additional CSS classes for the shortcut text.",
+              },
             ],
           },
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

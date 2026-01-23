@@ -965,7 +965,7 @@ const demoTabs = [
   },
 ];
 
-export function HoverCardPage() {
+export default function HoverCardPage() {
   return (
     <ComponentPage>
       <PageHeader

@@ -12,7 +12,7 @@ import {
 } from "@/components/docs";
 import { FileUpload } from "@/components/ui/file-upload";
 
-export function FileUploadPage() {
+export default function FileUploadPage() {
   const handleUpload = React.useCallback(async (uploadedFiles: File[]) => {
     console.log("Uploading files:", uploadedFiles);
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -59,17 +59,20 @@ export function FileUploadPage() {
         features={[
           {
             title: "Drag & Drop",
-            description: "Intuitive drag and drop interface with visual feedback and file validation.",
+            description:
+              "Intuitive drag and drop interface with visual feedback and file validation.",
             icon: <IconUpload className="h-5 w-5" />,
           },
           {
             title: "Media Preview",
-            description: "Built-in image and video preview with zoom, rotate, and playback controls.",
+            description:
+              "Built-in image and video preview with zoom, rotate, and playback controls.",
             icon: <IconPhoto className="h-5 w-5" />,
           },
           {
             title: "File Validation",
-            description: "Accept types, size limits, and max file count with error handling.",
+            description:
+              "Accept types, size limits, and max file count with error handling.",
             icon: <IconVideo className="h-5 w-5" />,
           },
         ]}
@@ -139,7 +142,9 @@ export function FileUploadPage() {
                 description="Single file upload without multiple selection."
                 code={singleCode}
               >
-                <FileUpload onFilesChange={(f) => console.log("Single file:", f)} />
+                <FileUpload
+                  onFilesChange={(f) => console.log("Single file:", f)}
+                />
               </DemoWrapper>
             ),
           },
@@ -193,7 +198,8 @@ const handleUpload = async (files: File[]) => {
                 prop: "accept",
                 type: "string",
                 default: "undefined",
-                description: "Accepted file types (e.g., 'image/*', 'video/*', '.pdf')",
+                description:
+                  "Accepted file types (e.g., 'image/*', 'video/*', '.pdf')",
               },
               {
                 prop: "multiple",
@@ -235,7 +241,8 @@ const handleUpload = async (files: File[]) => {
                 prop: "onUpload",
                 type: "(files: File[]) => Promise<void>",
                 default: "undefined",
-                description: "Upload handler called when upload button is clicked",
+                description:
+                  "Upload handler called when upload button is clicked",
               },
             ],
           },

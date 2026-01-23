@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 import {
   Drawer,
   DrawerTrigger,
@@ -9,8 +9,8 @@ import {
   DrawerDescription,
   DrawerBody,
   DrawerClose,
-} from "@/components/ui/drawer"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
   PageHeader,
@@ -20,8 +20,12 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
-import { IconLayoutSidebar, IconSettings, IconArrowsRight } from "@tabler/icons-react"
+} from "@/components/docs";
+import {
+  IconLayoutSidebar,
+  IconSettings,
+  IconArrowsRight,
+} from "@tabler/icons-react";
 
 function BasicDemo() {
   return (
@@ -34,7 +38,8 @@ function BasicDemo() {
         </DrawerHeader>
         <DrawerBody>
           <p className="text-sm text-muted-foreground">
-            You can put any content here. The drawer is scrollable if content overflows.
+            You can put any content here. The drawer is scrollable if content
+            overflows.
           </p>
         </DrawerBody>
         <DrawerFooter>
@@ -43,7 +48,7 @@ function BasicDemo() {
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }
 
 const basicCode = `<Drawer>
@@ -58,14 +63,18 @@ const basicCode = `<Drawer>
       <DrawerClose render={<Button>Close</Button>} />
     </DrawerFooter>
   </DrawerContent>
-</Drawer>`
+</Drawer>`;
 
 function PositionsDemo() {
   return (
     <div className="grid grid-cols-2 gap-4">
       <Drawer>
         <DrawerTrigger
-          render={<Button variant="outline" className="w-full">Left</Button>}
+          render={
+            <Button variant="outline" className="w-full">
+              Left
+            </Button>
+          }
         />
         <DrawerContent side="left">
           <DrawerHeader>
@@ -73,14 +82,20 @@ function PositionsDemo() {
             <DrawerDescription>Slides from left</DrawerDescription>
           </DrawerHeader>
           <DrawerBody>
-            <p className="text-sm text-muted-foreground">Often used for navigation menus.</p>
+            <p className="text-sm text-muted-foreground">
+              Often used for navigation menus.
+            </p>
           </DrawerBody>
         </DrawerContent>
       </Drawer>
 
       <Drawer>
         <DrawerTrigger
-          render={<Button variant="outline" className="w-full">Right</Button>}
+          render={
+            <Button variant="outline" className="w-full">
+              Right
+            </Button>
+          }
         />
         <DrawerContent side="right">
           <DrawerHeader>
@@ -88,14 +103,20 @@ function PositionsDemo() {
             <DrawerDescription>Slides from right (default)</DrawerDescription>
           </DrawerHeader>
           <DrawerBody>
-            <p className="text-sm text-muted-foreground">Common for settings panels.</p>
+            <p className="text-sm text-muted-foreground">
+              Common for settings panels.
+            </p>
           </DrawerBody>
         </DrawerContent>
       </Drawer>
 
       <Drawer>
         <DrawerTrigger
-          render={<Button variant="outline" className="w-full">Top</Button>}
+          render={
+            <Button variant="outline" className="w-full">
+              Top
+            </Button>
+          }
         />
         <DrawerContent side="top">
           <DrawerHeader>
@@ -103,14 +124,20 @@ function PositionsDemo() {
             <DrawerDescription>Slides from top</DrawerDescription>
           </DrawerHeader>
           <DrawerBody>
-            <p className="text-sm text-muted-foreground">Useful for notifications.</p>
+            <p className="text-sm text-muted-foreground">
+              Useful for notifications.
+            </p>
           </DrawerBody>
         </DrawerContent>
       </Drawer>
 
       <Drawer>
         <DrawerTrigger
-          render={<Button variant="outline" className="w-full">Bottom</Button>}
+          render={
+            <Button variant="outline" className="w-full">
+              Bottom
+            </Button>
+          }
         />
         <DrawerContent side="bottom">
           <DrawerHeader>
@@ -118,12 +145,14 @@ function PositionsDemo() {
             <DrawerDescription>Slides from bottom</DrawerDescription>
           </DrawerHeader>
           <DrawerBody>
-            <p className="text-sm text-muted-foreground">Common on mobile for action sheets.</p>
+            <p className="text-sm text-muted-foreground">
+              Common on mobile for action sheets.
+            </p>
           </DrawerBody>
         </DrawerContent>
       </Drawer>
     </div>
-  )
+  );
 }
 
 const positionsCode = `<Drawer>
@@ -144,13 +173,15 @@ const positionsCode = `<Drawer>
 <Drawer>
   <DrawerTrigger render={<Button>Bottom</Button>} />
   <DrawerContent side="bottom" />
-</Drawer>`
+</Drawer>`;
 
 function SizesDemo() {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
-        <h3 className="text-sm font-medium text-muted-foreground">Width Variants (Right)</h3>
+        <h3 className="text-sm font-medium text-muted-foreground">
+          Width Variants (Right)
+        </h3>
         <div className="flex flex-wrap gap-4">
           {(["sm", "default", "lg", "xl", "full"] as const).map((size) => (
             <Drawer key={size}>
@@ -185,7 +216,9 @@ function SizesDemo() {
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-sm font-medium text-muted-foreground">Height Variants (Bottom)</h3>
+        <h3 className="text-sm font-medium text-muted-foreground">
+          Height Variants (Bottom)
+        </h3>
         <div className="flex flex-wrap gap-4">
           {(["sm", "default", "lg", "xl", "full"] as const).map((size) => (
             <Drawer key={size}>
@@ -219,7 +252,7 @@ function SizesDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const sizesCode = `// Width variants for side drawers
@@ -234,11 +267,11 @@ const sizesCode = `// Width variants for side drawers
 <DrawerContent side="bottom" size="default" />
 <DrawerContent side="bottom" size="lg" />
 <DrawerContent side="bottom" size="xl" />
-<DrawerContent side="bottom" size="full" />`
+<DrawerContent side="bottom" size="full" />`;
 
 function NestedDemo() {
-  const [parentOpen, setParentOpen] = useState(false)
-  const [childOpen, setChildOpen] = useState(false)
+  const [parentOpen, setParentOpen] = useState(false);
+  const [childOpen, setChildOpen] = useState(false);
 
   return (
     <div className="space-y-4">
@@ -251,7 +284,8 @@ function NestedDemo() {
           </DrawerHeader>
           <DrawerBody className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              This is the parent drawer. You can open another drawer from within it.
+              This is the parent drawer. You can open another drawer from within
+              it.
             </p>
             <Button onClick={() => setChildOpen(true)}>
               Open Child Drawer
@@ -271,7 +305,8 @@ function NestedDemo() {
           </DrawerHeader>
           <DrawerBody>
             <p className="text-sm text-muted-foreground">
-              This drawer is nested inside the parent drawer. Multiple drawers can be open simultaneously.
+              This drawer is nested inside the parent drawer. Multiple drawers
+              can be open simultaneously.
             </p>
           </DrawerBody>
           <DrawerFooter>
@@ -289,7 +324,7 @@ function NestedDemo() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
 
 const nestedCode = `function NestedDemo() {
@@ -324,10 +359,10 @@ const nestedCode = `function NestedDemo() {
       </Drawer>
     </>
   )
-}`
+}`;
 
 function ControlledDemo() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="space-y-4">
@@ -340,7 +375,8 @@ function ControlledDemo() {
           </DrawerHeader>
           <DrawerBody>
             <p className="text-sm text-muted-foreground">
-              This drawer's open state is controlled by the parent component's state.
+              This drawer's open state is controlled by the parent component's
+              state.
             </p>
             <div className="mt-4 p-3 rounded bg-muted/50 border text-sm">
               <div className="font-mono">isOpen: {String(isOpen)}</div>
@@ -366,7 +402,7 @@ function ControlledDemo() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
 
 const controlledCode = `function ControlledDemo() {
@@ -394,9 +430,9 @@ const controlledCode = `function ControlledDemo() {
       </Button>
     </>
   )
-}`
+}`;
 
-export function DrawerPage() {
+export default function DrawerPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -409,17 +445,20 @@ export function DrawerPage() {
         features={[
           {
             title: "Multiple Positions",
-            description: "Slide from left, right, top, or bottom with smooth animations.",
+            description:
+              "Slide from left, right, top, or bottom with smooth animations.",
             icon: <IconLayoutSidebar className="h-5 w-5" />,
           },
           {
             title: "Configurable Sizes",
-            description: "Choose from sm, default, lg, xl, or full for perfect sizing.",
+            description:
+              "Choose from sm, default, lg, xl, or full for perfect sizing.",
             icon: <IconSettings className="h-5 w-5" />,
           },
           {
             title: "Accessibility First",
-            description: "Full keyboard navigation, focus management, and ARIA support.",
+            description:
+              "Full keyboard navigation, focus management, and ARIA support.",
             icon: <IconArrowsRight className="h-5 w-5" />,
           },
         ]}
@@ -713,5 +752,5 @@ export function DrawerPage() {
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

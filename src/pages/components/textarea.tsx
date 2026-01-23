@@ -5,10 +5,7 @@ import {
   IconAccessible,
 } from "@tabler/icons-react";
 
-import {
-  Textarea,
-  TextareaWithCounter,
-} from "@/components/ui/textarea";
+import { Textarea, TextareaWithCounter } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
@@ -286,7 +283,9 @@ function SizesDemo() {
 }
 
 function ResizeDemo() {
-  const [resize, setResize] = React.useState<"none" | "vertical" | "horizontal" | "both">("none");
+  const [resize, setResize] = React.useState<
+    "none" | "vertical" | "horizontal" | "both"
+  >("none");
   const [useMinRows, setUseMinRows] = React.useState(false);
   const [useMaxRows, setUseMaxRows] = React.useState(false);
 
@@ -391,7 +390,9 @@ function AutoSizeDemo() {
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium">Fixed height (no auto-size)</label>
+        <label className="text-sm font-medium">
+          Fixed height (no auto-size)
+        </label>
         <Textarea
           placeholder="This textarea has a fixed height..."
           autoSize={false}
@@ -524,13 +525,15 @@ const apiSections = [
       {
         prop: "maxRows",
         type: "number",
-        description: "Maximum number of visible rows (affects max-height, enables scroll)",
+        description:
+          "Maximum number of visible rows (affects max-height, enables scroll)",
       },
       {
         prop: "autoSize",
         type: "boolean",
         default: "true",
-        description: "Enable auto-sizing based on content using CSS field-sizing",
+        description:
+          "Enable auto-sizing based on content using CSS field-sizing",
       },
     ],
   },
@@ -670,7 +673,7 @@ const demoTabs = [
 // MAIN PAGE COMPONENT
 // =============================================================================
 
-export function TextareaPage() {
+export default function TextareaPage() {
   return (
     <ComponentPage>
       <PageHeader

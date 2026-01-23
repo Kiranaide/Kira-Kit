@@ -1,9 +1,28 @@
-import { IconBrandGithub, IconBell, IconSettings, IconArrowsLeftRight, IconLayoutGrid, IconDeviceLaptop, IconUser, IconMail, IconPhone, IconHome } from "@tabler/icons-react"
-import { Flex } from "@/components/ui/flex"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ComponentPage, PageHeader, FeatureGrid, DemoTabs, DemoWrapper, UsageBlock, APIReference } from "@/components/docs"
+import {
+  IconBrandGithub,
+  IconBell,
+  IconSettings,
+  IconArrowsLeftRight,
+  IconLayoutGrid,
+  IconDeviceLaptop,
+  IconUser,
+  IconMail,
+  IconPhone,
+  IconHome,
+} from "@tabler/icons-react";
+import { Flex } from "@/components/ui/flex";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  ComponentPage,
+  PageHeader,
+  FeatureGrid,
+  DemoTabs,
+  DemoWrapper,
+  UsageBlock,
+  APIReference,
+} from "@/components/docs";
 
 const directionCode = `import { Flex } from "@/components/ui/flex"
 
@@ -36,7 +55,7 @@ export function DirectionDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function DirectionDemo() {
   return (
@@ -51,7 +70,11 @@ function DirectionDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">Column</p>
-        <Flex direction="column" gap={4} className="p-4 border rounded-lg bg-muted/30">
+        <Flex
+          direction="column"
+          gap={4}
+          className="p-4 border rounded-lg bg-muted/30"
+        >
           <div className="p-4 bg-primary/20 rounded">1</div>
           <div className="p-4 bg-primary/20 rounded">2</div>
           <div className="p-4 bg-primary/20 rounded">3</div>
@@ -59,14 +82,18 @@ function DirectionDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">Row Reverse</p>
-        <Flex direction="row-reverse" gap={4} className="p-4 border rounded-lg bg-muted/30">
+        <Flex
+          direction="row-reverse"
+          gap={4}
+          className="p-4 border rounded-lg bg-muted/30"
+        >
           <div className="p-4 bg-primary/20 rounded">1</div>
           <div className="p-4 bg-primary/20 rounded">2</div>
           <div className="p-4 bg-primary/20 rounded">3</div>
         </Flex>
       </div>
     </div>
-  )
+  );
 }
 
 const justifyCode = `import { Flex } from "@/components/ui/flex"
@@ -86,23 +113,29 @@ export function JustifyDemo() {
       ))}
     </div>
   )
-}`
+}`;
 
 function JustifyDemo() {
   return (
     <div className="space-y-4">
-      {(["start", "center", "end", "between", "around", "evenly"] as const).map((justify) => (
-        <div key={justify}>
-          <p className="text-sm text-muted-foreground mb-2">{justify}</p>
-          <Flex justify={justify} gap={4} className="p-4 border rounded-lg bg-muted/30">
-            <div className="p-3 bg-primary/20 rounded">A</div>
-            <div className="p-3 bg-primary/20 rounded">B</div>
-            <div className="p-3 bg-primary/20 rounded">C</div>
-          </Flex>
-        </div>
-      ))}
+      {(["start", "center", "end", "between", "around", "evenly"] as const).map(
+        (justify) => (
+          <div key={justify}>
+            <p className="text-sm text-muted-foreground mb-2">{justify}</p>
+            <Flex
+              justify={justify}
+              gap={4}
+              className="p-4 border rounded-lg bg-muted/30"
+            >
+              <div className="p-3 bg-primary/20 rounded">A</div>
+              <div className="p-3 bg-primary/20 rounded">B</div>
+              <div className="p-3 bg-primary/20 rounded">C</div>
+            </Flex>
+          </div>
+        ),
+      )}
     </div>
-  )
+  );
 }
 
 const alignCode = `import { Flex } from "@/components/ui/flex"
@@ -122,23 +155,29 @@ export function AlignDemo() {
       ))}
     </div>
   )
-}`
+}`;
 
 function AlignDemo() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {(["start", "center", "end", "stretch", "baseline"] as const).map((align) => (
-        <div key={align}>
-          <p className="text-sm text-muted-foreground mb-2">{align}</p>
-          <Flex align={align} gap={4} className="p-4 border rounded-lg bg-muted/30 h-32">
-            <div className="p-2 bg-primary/20 rounded text-sm">Short</div>
-            <div className="p-4 bg-primary/20 rounded">Medium</div>
-            <div className="p-6 bg-primary/20 rounded text-lg">Tall</div>
-          </Flex>
-        </div>
-      ))}
+      {(["start", "center", "end", "stretch", "baseline"] as const).map(
+        (align) => (
+          <div key={align}>
+            <p className="text-sm text-muted-foreground mb-2">{align}</p>
+            <Flex
+              align={align}
+              gap={4}
+              className="p-4 border rounded-lg bg-muted/30 h-32"
+            >
+              <div className="p-2 bg-primary/20 rounded text-sm">Short</div>
+              <div className="p-4 bg-primary/20 rounded">Medium</div>
+              <div className="p-6 bg-primary/20 rounded text-lg">Tall</div>
+            </Flex>
+          </div>
+        ),
+      )}
     </div>
-  )
+  );
 }
 
 const gapCode = `import { Flex } from "@/components/ui/flex"
@@ -159,7 +198,7 @@ export function GapDemo() {
       ))}
     </div>
   )
-}`
+}`;
 
 function GapDemo() {
   return (
@@ -176,7 +215,7 @@ function GapDemo() {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 const wrapCode = `import { Flex } from "@/components/ui/flex"
@@ -202,29 +241,44 @@ export function WrapDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function WrapDemo() {
   return (
     <div className="space-y-4">
       <div>
         <p className="text-sm text-muted-foreground mb-2">wrap</p>
-        <Flex wrap="wrap" gap={4} className="p-4 border rounded-lg bg-muted/30 max-w-md">
+        <Flex
+          wrap="wrap"
+          gap={4}
+          className="p-4 border rounded-lg bg-muted/30 max-w-md"
+        >
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="p-4 bg-primary/20 rounded w-24 text-center">{i + 1}</div>
+            <div key={i} className="p-4 bg-primary/20 rounded w-24 text-center">
+              {i + 1}
+            </div>
           ))}
         </Flex>
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">nowrap (default)</p>
-        <Flex wrap="nowrap" gap={4} className="p-4 border rounded-lg bg-muted/30 max-w-md overflow-x-auto">
+        <Flex
+          wrap="nowrap"
+          gap={4}
+          className="p-4 border rounded-lg bg-muted/30 max-w-md overflow-x-auto"
+        >
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="p-4 bg-primary/20 rounded w-24 text-center shrink-0">{i + 1}</div>
+            <div
+              key={i}
+              className="p-4 bg-primary/20 rounded w-24 text-center shrink-0"
+            >
+              {i + 1}
+            </div>
           ))}
         </Flex>
       </div>
     </div>
-  )
+  );
 }
 
 const responsiveCode = `import { Flex } from "@/components/ui/flex"
@@ -247,13 +301,14 @@ export function ResponsiveDemo() {
       </Flex>
     </div>
   )
-}`
+}`;
 
 function ResponsiveDemo() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Resize the window to see the layout change from column on mobile to row on desktop.
+        Resize the window to see the layout change from column on mobile to row
+        on desktop.
       </p>
       <Flex
         direction={{ base: "column", md: "row" }}
@@ -261,12 +316,18 @@ function ResponsiveDemo() {
         align={{ base: "stretch", md: "center" }}
         className="p-4 border rounded-lg bg-muted/30"
       >
-        <div className="p-4 bg-primary/20 rounded flex-1">Responsive Item 1</div>
-        <div className="p-4 bg-primary/20 rounded flex-1">Responsive Item 2</div>
-        <div className="p-4 bg-primary/20 rounded flex-1">Responsive Item 3</div>
+        <div className="p-4 bg-primary/20 rounded flex-1">
+          Responsive Item 1
+        </div>
+        <div className="p-4 bg-primary/20 rounded flex-1">
+          Responsive Item 2
+        </div>
+        <div className="p-4 bg-primary/20 rounded flex-1">
+          Responsive Item 3
+        </div>
       </Flex>
     </div>
-  )
+  );
 }
 
 const semanticCode = `import { Flex } from "@/components/ui/flex"
@@ -283,19 +344,36 @@ export function SemanticDemo() {
       <Button size="sm">Sign In</Button>
     </Flex>
   )
-}`
+}`;
 
 function SemanticDemo() {
   return (
-    <Flex as="nav" justify="between" align="center" className="p-4 border rounded-lg bg-muted/30">
+    <Flex
+      as="nav"
+      justify="between"
+      align="center"
+      className="p-4 border rounded-lg bg-muted/30"
+    >
       <Flex as="ul" gap={4} className="list-none">
-        <li><a href="#" className="hover:text-primary">Home</a></li>
-        <li><a href="#" className="hover:text-primary">About</a></li>
-        <li><a href="#" className="hover:text-primary">Contact</a></li>
+        <li>
+          <a href="#" className="hover:text-primary">
+            Home
+          </a>
+        </li>
+        <li>
+          <a href="#" className="hover:text-primary">
+            About
+          </a>
+        </li>
+        <li>
+          <a href="#" className="hover:text-primary">
+            Contact
+          </a>
+        </li>
       </Flex>
       <Button size="sm">Sign In</Button>
     </Flex>
-  )
+  );
 }
 
 const realWorldCode = `import { Flex } from "@/components/ui/flex"
@@ -369,21 +447,30 @@ export function RealWorldDemos() {
       </div>
     </div>
   )
-}`
+}`;
 
 function RealWorldDemos() {
   return (
     <div className="space-y-6">
       <div>
         <p className="text-sm text-muted-foreground mb-2">Navigation Header</p>
-        <Flex as="header" justify="between" align="center" className="p-4 border rounded-lg bg-background">
+        <Flex
+          as="header"
+          justify="between"
+          align="center"
+          className="p-4 border rounded-lg bg-background"
+        >
           <Flex align="center" gap={2}>
             <div className="size-8 bg-primary rounded-md" />
             <span className="font-semibold">Brand</span>
           </Flex>
           <Flex gap={2}>
-            <Button variant="ghost" size="icon-sm"><IconBell className="size-4" /></Button>
-            <Button variant="ghost" size="icon-sm"><IconSettings className="size-4" /></Button>
+            <Button variant="ghost" size="icon-sm">
+              <IconBell className="size-4" />
+            </Button>
+            <Button variant="ghost" size="icon-sm">
+              <IconSettings className="size-4" />
+            </Button>
             <Avatar size="sm">
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
@@ -393,14 +480,20 @@ function RealWorldDemos() {
 
       <div>
         <p className="text-sm text-muted-foreground mb-2">User Profile Card</p>
-        <Flex gap={4} align="center" className="p-4 border rounded-lg bg-background">
+        <Flex
+          gap={4}
+          align="center"
+          className="p-4 border rounded-lg bg-background"
+        >
           <Avatar size="lg">
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Flex direction="column" gap={1} className="flex-1">
             <span className="font-semibold">John Doe</span>
-            <span className="text-sm text-muted-foreground">Software Engineer</span>
+            <span className="text-sm text-muted-foreground">
+              Software Engineer
+            </span>
             <Flex gap={2} className="mt-1">
               <Badge variant="secondary">React</Badge>
               <Badge variant="secondary">TypeScript</Badge>
@@ -414,8 +507,14 @@ function RealWorldDemos() {
       </div>
 
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Contact Information</p>
-        <Flex direction="column" gap={3} className="p-4 border rounded-lg bg-background">
+        <p className="text-sm text-muted-foreground mb-2">
+          Contact Information
+        </p>
+        <Flex
+          direction="column"
+          gap={3}
+          className="p-4 border rounded-lg bg-background"
+        >
           <Flex align="center" gap={3}>
             <IconUser className="size-4 text-muted-foreground" />
             <span>John Doe</span>
@@ -435,10 +534,10 @@ function RealWorldDemos() {
         </Flex>
       </div>
     </div>
-  )
+  );
 }
 
-export function FlexPage() {
+export default function FlexPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -451,17 +550,20 @@ export function FlexPage() {
         features={[
           {
             title: "Responsive Values",
-            description: "All layout props support breakpoint-aware responsive values using Tailwind conventions.",
+            description:
+              "All layout props support breakpoint-aware responsive values using Tailwind conventions.",
             icon: <IconDeviceLaptop className="h-5 w-5 text-primary" />,
           },
           {
             title: "Semantic HTML",
-            description: "Render as any semantic element like nav, header, main, or form using the as prop.",
+            description:
+              "Render as any semantic element like nav, header, main, or form using the as prop.",
             icon: <IconLayoutGrid className="h-5 w-5 text-primary" />,
           },
           {
             title: "Type Safe",
-            description: "Full TypeScript support with strict type inference for direction, justify, align, and more.",
+            description:
+              "Full TypeScript support with strict type inference for direction, justify, align, and more.",
             icon: <IconArrowsLeftRight className="h-5 w-5 text-primary" />,
           },
         ]}
@@ -619,37 +721,42 @@ export function FlexPage() {
                 prop: "as",
                 type: "FlexElement",
                 default: '"div"',
-                description: 'Semantic HTML element to render (div, nav, header, main, article, aside, footer, ul, ol, form, fieldset, span)',
+                description:
+                  "Semantic HTML element to render (div, nav, header, main, article, aside, footer, ul, ol, form, fieldset, span)",
               },
               {
                 prop: "direction",
                 type: "ResponsiveValue<FlexDirection>",
                 default: '"row"',
-                description: "Flex direction - row, row-reverse, column, column-reverse",
+                description:
+                  "Flex direction - row, row-reverse, column, column-reverse",
               },
               {
                 prop: "wrap",
                 type: "ResponsiveValue<FlexWrap>",
-                default: '-',
+                default: "-",
                 description: "Flex wrap behavior - nowrap, wrap, wrap-reverse",
               },
               {
                 prop: "justify",
                 type: "ResponsiveValue<FlexJustify>",
-                default: '-',
-                description: "Justify content alignment - start, end, center, between, around, evenly",
+                default: "-",
+                description:
+                  "Justify content alignment - start, end, center, between, around, evenly",
               },
               {
                 prop: "align",
                 type: "ResponsiveValue<FlexAlign>",
-                default: '-',
-                description: "Align items alignment - start, end, center, baseline, stretch",
+                default: "-",
+                description:
+                  "Align items alignment - start, end, center, baseline, stretch",
               },
               {
                 prop: "gap",
                 type: "ResponsiveValue<FlexGap>",
-                default: '-',
-                description: "Gap between items - 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24",
+                default: "-",
+                description:
+                  "Gap between items - 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24",
               },
               {
                 prop: "inline",
@@ -664,5 +771,5 @@ export function FlexPage() {
         description="Key props and configuration options"
       />
     </ComponentPage>
-  )
+  );
 }

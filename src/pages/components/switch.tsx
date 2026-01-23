@@ -51,7 +51,7 @@ function DemoWrapperInner({
               "px-3 py-1 text-sm rounded-md transition-colors",
               view === "preview"
                 ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted"
+                : "hover:bg-muted",
             )}
           >
             Preview
@@ -62,7 +62,7 @@ function DemoWrapperInner({
               "px-3 py-1 text-sm rounded-md transition-colors",
               view === "code"
                 ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted"
+                : "hover:bg-muted",
             )}
           >
             Code
@@ -435,8 +435,10 @@ function UncontrolledDemo() {
           Uncontrolled (with defaultChecked)
         </p>
         <p className="text-sm text-muted-foreground">
-          The switch manages its own state. Use <code className="bg-muted px-1 rounded">name</code> and
-          <code className="bg-muted px-1 rounded">form</code> props to access the value.
+          The switch manages its own state. Use{" "}
+          <code className="bg-muted px-1 rounded">name</code> and
+          <code className="bg-muted px-1 rounded">form</code> props to access
+          the value.
         </p>
         <form
           onSubmit={(e) => {
@@ -473,7 +475,8 @@ function UncontrolledDemo() {
       <div className="border-t pt-6 space-y-4 max-w-md">
         <p className="text-sm font-medium">Controlled (with checked)</p>
         <p className="text-sm text-muted-foreground">
-          You control the state with <code className="bg-muted px-1 rounded">checked</code> and{" "}
+          You control the state with{" "}
+          <code className="bg-muted px-1 rounded">checked</code> and{" "}
           <code className="bg-muted px-1 rounded">onCheckedChange</code> props.
         </p>
         <div className="flex flex-col gap-4">
@@ -700,7 +703,7 @@ export function SettingsPanelDemo() {
   )
 }`;
 
-export function SwitchPage() {
+export default function SwitchPage() {
   const features = [
     {
       title: "Accessible",
@@ -965,7 +968,8 @@ export function SwitchPage() {
           prop: "touchTarget",
           type: "boolean",
           default: "false",
-          description: "Ensures WCAG 2.2 AA compliant 44x44px minimum touch area.",
+          description:
+            "Ensures WCAG 2.2 AA compliant 44x44px minimum touch area.",
         },
         {
           prop: "checkedLabel",

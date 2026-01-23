@@ -105,6 +105,20 @@ function CollapsibleTrigger({
   );
 }
 
+const collapsibleContentVariants = cva("", {
+  variants: {
+    size: {
+      xs: "px-3 py-1.5 text-xs",
+      sm: "px-3.5 py-2 text-xs",
+      default: "px-4 py-3 text-sm",
+      lg: "px-5 py-4 text-base",
+    },
+  },
+  defaultVariants: {
+    size: "default",
+  },
+});
+
 type CollapsibleContentProps = Omit<
   CollapsiblePrimitive.Panel.Props,
   "children"
@@ -114,6 +128,7 @@ type CollapsibleContentProps = Omit<
   lazyMount?: boolean;
   showSkeleton?: boolean;
   skeletonLines?: number;
+  size?: "xs" | "sm" | "default" | "lg";
 };
 
 function CollapsibleContent({
@@ -123,6 +138,7 @@ function CollapsibleContent({
   lazyMount = false,
   showSkeleton = false,
   skeletonLines = 3,
+  size = "default",
   ...props
 }: CollapsibleContentProps) {
   const panelRef = React.useRef<HTMLDivElement>(null);
@@ -196,7 +212,7 @@ function CollapsibleContent({
     return () => {
       observer.disconnect();
       if (animationRef.current) {
-        animationRef.current.pause();
+        animationRef.current.kill();
       }
     };
   }, []);
@@ -239,7 +255,7 @@ function CollapsibleContent({
       }}
       {...props}
     >
-      <div ref={contentRef} className="px-4 py-3">
+      <div ref={contentRef} className={cn(collapsibleContentVariants({ size }))}>
         {renderContent}
       </div>
     </CollapsiblePrimitive.Panel>

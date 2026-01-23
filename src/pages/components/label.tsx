@@ -74,7 +74,11 @@ function WithIconsDemo() {
         <Label icon={<IconLock />} htmlFor="icon-password">
           Password
         </Label>
-        <Input id="icon-password" type="password" placeholder="Enter password" />
+        <Input
+          id="icon-password"
+          type="password"
+          placeholder="Enter password"
+        />
       </div>
 
       <div className="space-y-2">
@@ -307,15 +311,26 @@ function RequiredOptionalDemo() {
   return (
     <div className="space-y-6 max-w-md">
       <div className="space-y-4">
-        <h4 className="text-sm font-medium text-muted-foreground">Required Fields</h4>
+        <h4 className="text-sm font-medium text-muted-foreground">
+          Required Fields
+        </h4>
         <div className="space-y-2">
           <Label required htmlFor="required">
             Required Field
           </Label>
-          <Input id="required" type="email" placeholder="Enter your email" required />
+          <Input
+            id="required"
+            type="email"
+            placeholder="Enter your email"
+            required
+          />
         </div>
         <div className="space-y-2">
-          <Label required requiredIndicator="(required)" htmlFor="required-custom">
+          <Label
+            required
+            requiredIndicator="(required)"
+            htmlFor="required-custom"
+          >
             Custom Required Indicator
           </Label>
           <Input id="required-custom" placeholder="..." />
@@ -323,7 +338,9 @@ function RequiredOptionalDemo() {
       </div>
 
       <div className="space-y-4">
-        <h4 className="text-sm font-medium text-muted-foreground">Optional Fields</h4>
+        <h4 className="text-sm font-medium text-muted-foreground">
+          Optional Fields
+        </h4>
         <div className="space-y-2">
           <Label optional htmlFor="optional">
             Optional Field
@@ -461,7 +478,8 @@ function StatesDemo() {
 
       <div className="space-y-2">
         <Label truncate htmlFor="truncate">
-          This is a very long label that will be truncated with an ellipsis when it exceeds the maximum width
+          This is a very long label that will be truncated with an ellipsis when
+          it exceeds the maximum width
         </Label>
         <Input id="truncate" placeholder="..." />
       </div>
@@ -842,7 +860,8 @@ const apiSections = [
       {
         prop: "counter",
         type: "number | string",
-        description: "Counter badge displayed after the label. Shows 99+ when over 99.",
+        description:
+          "Counter badge displayed after the label. Shows 99+ when over 99.",
       },
       {
         prop: "required",
@@ -1127,7 +1146,7 @@ const demoTabs = [
 // =============================================================================
 // Main Page Component
 // =============================================================================
-export function LabelPage() {
+export default function LabelPage() {
   return (
     <ComponentPage>
       <PageHeader

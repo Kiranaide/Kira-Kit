@@ -1,4 +1,10 @@
-import { Badge, StatusBadge, CountBadge, TagBadge, BadgeGroup } from "@/components/ui/badge"
+import {
+  Badge,
+  StatusBadge,
+  CountBadge,
+  TagBadge,
+  BadgeGroup,
+} from "@/components/ui/badge";
 import {
   IconCheck,
   IconX,
@@ -9,7 +15,7 @@ import {
   IconAccessible,
   IconPalette,
   IconStack2,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -18,7 +24,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 // =============================================================================
 // Demo Components
@@ -28,7 +34,9 @@ function VariantsDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Basic</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Basic
+        </h3>
         <div className="flex flex-wrap gap-3">
           <Badge variant="default">Default</Badge>
           <Badge variant="secondary">Secondary</Badge>
@@ -39,7 +47,9 @@ function VariantsDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Semantic</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Semantic
+        </h3>
         <div className="flex flex-wrap gap-3">
           <Badge variant="success">Success</Badge>
           <Badge variant="warning">Warning</Badge>
@@ -58,7 +68,7 @@ function VariantsDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const variantsCode = `import { Badge } from "@/components/ui/badge"
@@ -76,7 +86,7 @@ const variantsCode = `import { Badge } from "@/components/ui/badge"
 
 // Soft variants (muted backgrounds)
 <Badge variant="primary-soft">Primary Soft</Badge>
-<Badge variant="success-soft">Success Soft</Badge>`
+<Badge variant="success-soft">Success Soft</Badge>`;
 
 function SizesDemo() {
   return (
@@ -87,7 +97,7 @@ function SizesDemo() {
       <Badge size="lg">Large</Badge>
       <Badge size="xl">Extra Large</Badge>
     </div>
-  )
+  );
 }
 
 const sizesCode = `import { Badge } from "@/components/ui/badge"
@@ -96,19 +106,31 @@ const sizesCode = `import { Badge } from "@/components/ui/badge"
 <Badge size="sm">Small</Badge>
 <Badge size="default">Default</Badge>
 <Badge size="lg">Large</Badge>
-<Badge size="xl">Extra Large</Badge>`
+<Badge size="xl">Extra Large</Badge>`;
 
 function WithIconsDemo() {
   return (
     <div className="flex flex-wrap gap-3">
-      <Badge variant="default" icon={<IconCheck />}>Approved</Badge>
-      <Badge variant="destructive" icon={<IconX />}>Rejected</Badge>
-      <Badge variant="success" icon={<IconCheck />}>Completed</Badge>
-      <Badge variant="warning" icon={<IconAlertCircle />}>Warning</Badge>
-      <Badge variant="info" icon={<IconInfoCircle />}>Information</Badge>
-      <Badge variant="secondary" icon={<IconStar />} iconPosition="right">Featured</Badge>
+      <Badge variant="default" icon={<IconCheck />}>
+        Approved
+      </Badge>
+      <Badge variant="destructive" icon={<IconX />}>
+        Rejected
+      </Badge>
+      <Badge variant="success" icon={<IconCheck />}>
+        Completed
+      </Badge>
+      <Badge variant="warning" icon={<IconAlertCircle />}>
+        Warning
+      </Badge>
+      <Badge variant="info" icon={<IconInfoCircle />}>
+        Information
+      </Badge>
+      <Badge variant="secondary" icon={<IconStar />} iconPosition="right">
+        Featured
+      </Badge>
     </div>
-  )
+  );
 }
 
 const withIconsCode = `import { Badge } from "@/components/ui/badge"
@@ -122,7 +144,7 @@ import { IconCheck, IconX, IconAlertCircle } from "@tabler/icons-react"
 // Icon on right
 <Badge variant="secondary" icon={<IconStar />} iconPosition="right">
   Featured
-</Badge>`
+</Badge>`;
 
 function DotIndicatorDemo() {
   return (
@@ -135,15 +157,23 @@ function DotIndicatorDemo() {
         <Badge dot="info">Info Dot</Badge>
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">With Pulse Animation</h4>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+          With Pulse Animation
+        </h4>
         <div className="flex flex-wrap gap-3">
-          <Badge dot dotPulse="continuous">Live</Badge>
-          <Badge dot="success" dotPulse="once">New</Badge>
-          <Badge dot="warning" dotPulse="continuous">Processing</Badge>
+          <Badge dot dotPulse="continuous">
+            Live
+          </Badge>
+          <Badge dot="success" dotPulse="once">
+            New
+          </Badge>
+          <Badge dot="warning" dotPulse="continuous">
+            Processing
+          </Badge>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const dotIndicatorCode = `import { Badge } from "@/components/ui/badge"
@@ -158,43 +188,70 @@ const dotIndicatorCode = `import { Badge } from "@/components/ui/badge"
 
 // With pulse animation
 <Badge dot dotPulse="continuous">Live</Badge>
-<Badge dot="success" dotPulse="once">New</Badge>`
+<Badge dot="success" dotPulse="once">New</Badge>`;
 
 function InteractiveDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">Clickable</h4>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+          Clickable
+        </h4>
         <div className="flex flex-wrap gap-3">
-          <Badge variant="primary-soft" icon={<IconStar />} onClick={() => alert("Premium clicked!")}>
+          <Badge
+            variant="primary-soft"
+            icon={<IconStar />}
+            onClick={() => alert("Premium clicked!")}
+          >
             Premium
           </Badge>
-          <Badge variant="success-soft" icon={<IconCheck />} onClick={() => alert("Verified clicked!")}>
+          <Badge
+            variant="success-soft"
+            icon={<IconCheck />}
+            onClick={() => alert("Verified clicked!")}
+          >
             Verified
           </Badge>
         </div>
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">Dismissible</h4>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+          Dismissible
+        </h4>
         <div className="flex flex-wrap gap-3">
-          <Badge variant="secondary-soft" dismissible onClose={() => alert("Dismissed!")}>
+          <Badge
+            variant="secondary-soft"
+            dismissible
+            onClose={() => alert("Dismissed!")}
+          >
             Removable
           </Badge>
-          <Badge variant="warning-soft" icon={<IconAlertCircle />} dismissible onClose={() => alert("Dismissed!")}>
+          <Badge
+            variant="warning-soft"
+            icon={<IconAlertCircle />}
+            dismissible
+            onClose={() => alert("Dismissed!")}
+          >
             Can be closed
           </Badge>
         </div>
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">Loading</h4>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+          Loading
+        </h4>
         <div className="flex flex-wrap gap-3">
           <Badge loading>Loading...</Badge>
-          <Badge variant="success" loading>Saving...</Badge>
-          <Badge variant="destructive" loading>Deleting...</Badge>
+          <Badge variant="success" loading>
+            Saving...
+          </Badge>
+          <Badge variant="destructive" loading>
+            Deleting...
+          </Badge>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const interactiveCode = `import { Badge } from "@/components/ui/badge"
@@ -208,7 +265,7 @@ const interactiveCode = `import { Badge } from "@/components/ui/badge"
 </Badge>
 
 // Loading state
-<Badge loading>Loading...</Badge>`
+<Badge loading>Loading...</Badge>`;
 
 function StatusBadgeDemo() {
   return (
@@ -221,17 +278,29 @@ function StatusBadgeDemo() {
         <StatusBadge status="default">Unknown</StatusBadge>
       </div>
       <div className="flex flex-wrap gap-3">
-        <StatusBadge status="success" size="sm">Small</StatusBadge>
-        <StatusBadge status="success" size="default">Default</StatusBadge>
-        <StatusBadge status="success" size="lg">Large</StatusBadge>
+        <StatusBadge status="success" size="sm">
+          Small
+        </StatusBadge>
+        <StatusBadge status="success" size="default">
+          Default
+        </StatusBadge>
+        <StatusBadge status="success" size="lg">
+          Large
+        </StatusBadge>
       </div>
       <div className="flex flex-wrap gap-3">
-        <StatusBadge status="success" pulse="continuous">Live</StatusBadge>
-        <StatusBadge status="warning" pulse="once">New</StatusBadge>
-        <StatusBadge status="error" pulse="continuous">Error</StatusBadge>
+        <StatusBadge status="success" pulse="continuous">
+          Live
+        </StatusBadge>
+        <StatusBadge status="warning" pulse="once">
+          New
+        </StatusBadge>
+        <StatusBadge status="error" pulse="continuous">
+          Error
+        </StatusBadge>
       </div>
     </div>
-  )
+  );
 }
 
 const statusBadgeCode = `import { StatusBadge } from "@/components/ui/badge"
@@ -242,7 +311,7 @@ const statusBadgeCode = `import { StatusBadge } from "@/components/ui/badge"
 <StatusBadge status="error">Offline</StatusBadge>
 
 // With pulse animation
-<StatusBadge status="success" pulse="continuous">Live</StatusBadge>`
+<StatusBadge status="success" pulse="continuous">Live</StatusBadge>`;
 
 function CountBadgeDemo() {
   return (
@@ -255,7 +324,9 @@ function CountBadgeDemo() {
         <CountBadge count={12} variant="secondary" />
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">Short Format</h4>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+          Short Format
+        </h4>
         <div className="flex flex-wrap items-center gap-3">
           <CountBadge count={1500} format="short" />
           <CountBadge count={25000} format="short" />
@@ -263,18 +334,24 @@ function CountBadgeDemo() {
         </div>
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">With Icons</h4>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+          With Icons
+        </h4>
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
             <IconBell className="w-6 h-6" />
-            <CountBadge count={3} size="xs" className="absolute -top-1 -right-1" />
+            <CountBadge
+              count={3}
+              size="xs"
+              className="absolute -top-1 -right-1"
+            />
           </div>
           <CountBadge count={5} icon={<IconBell />} />
           <CountBadge count={42} icon={<IconBell />} pulse />
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const countBadgeCode = `import { CountBadge } from "@/components/ui/badge"
@@ -290,24 +367,43 @@ const countBadgeCode = `import { CountBadge } from "@/components/ui/badge"
 <CountBadge count={5} icon={<IconBell />} />
 
 // With pulse
-<CountBadge count={42} pulse />`
+<CountBadge count={42} pulse />`;
 
 function TagBadgeDemo() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2">
-        <TagBadge variant="outline" removable onRemove={() => {}}>React</TagBadge>
-        <TagBadge variant="outline" removable onRemove={() => {}}>TypeScript</TagBadge>
-        <TagBadge variant="outline" removable onRemove={() => {}}>Next.js</TagBadge>
-        <TagBadge variant="outline" removable onRemove={() => {}}>Tailwind</TagBadge>
+        <TagBadge variant="outline" removable onRemove={() => {}}>
+          React
+        </TagBadge>
+        <TagBadge variant="outline" removable onRemove={() => {}}>
+          TypeScript
+        </TagBadge>
+        <TagBadge variant="outline" removable onRemove={() => {}}>
+          Next.js
+        </TagBadge>
+        <TagBadge variant="outline" removable onRemove={() => {}}>
+          Tailwind
+        </TagBadge>
       </div>
       <div className="flex flex-wrap gap-2">
-        <TagBadge variant="primary-soft" removable onRemove={() => {}}>JavaScript</TagBadge>
-        <TagBadge variant="success-soft" icon={<IconCheck />} removable onRemove={() => {}}>Active</TagBadge>
-        <TagBadge variant="destructive-soft" removable onRemove={() => {}}>Bug</TagBadge>
+        <TagBadge variant="primary-soft" removable onRemove={() => {}}>
+          JavaScript
+        </TagBadge>
+        <TagBadge
+          variant="success-soft"
+          icon={<IconCheck />}
+          removable
+          onRemove={() => {}}
+        >
+          Active
+        </TagBadge>
+        <TagBadge variant="destructive-soft" removable onRemove={() => {}}>
+          Bug
+        </TagBadge>
       </div>
     </div>
-  )
+  );
 }
 
 const tagBadgeCode = `import { TagBadge } from "@/components/ui/badge"
@@ -318,7 +414,7 @@ const tagBadgeCode = `import { TagBadge } from "@/components/ui/badge"
 
 <TagBadge variant="success-soft" icon={<IconCheck />} removable>
   Active
-</TagBadge>`
+</TagBadge>`;
 
 function BadgeGroupDemo() {
   return (
@@ -340,7 +436,9 @@ function BadgeGroupDemo() {
         </BadgeGroup>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Vertical orientation</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          Vertical orientation
+        </p>
         <BadgeGroup orientation="vertical" gap="normal">
           <Badge variant="success-soft">Step 1</Badge>
           <Badge variant="warning-soft">Step 2</Badge>
@@ -348,7 +446,7 @@ function BadgeGroupDemo() {
         </BadgeGroup>
       </div>
     </div>
-  )
+  );
 }
 
 const badgeGroupCode = `import { Badge, BadgeGroup } from "@/components/ui/badge"
@@ -363,13 +461,13 @@ const badgeGroupCode = `import { Badge, BadgeGroup } from "@/components/ui/badge
 <BadgeGroup orientation="vertical" gap="normal">
   <Badge>Step 1</Badge>
   <Badge>Step 2</Badge>
-</BadgeGroup>`
+</BadgeGroup>`;
 
 // =============================================================================
 // Main Page Component
 // =============================================================================
 
-export function BadgePage() {
+export default function BadgePage() {
   const features = [
     {
       title: "Accessible",
@@ -383,10 +481,11 @@ export function BadgePage() {
     },
     {
       title: "Composable",
-      description: "StatusBadge, CountBadge, TagBadge, and BadgeGroup components.",
+      description:
+        "StatusBadge, CountBadge, TagBadge, and BadgeGroup components.",
       icon: <IconStack2 className="w-4 h-4 text-primary" />,
     },
-  ]
+  ];
 
   const demoTabs = [
     {
@@ -506,7 +605,7 @@ export function BadgePage() {
         </DemoWrapper>
       ),
     },
-  ]
+  ];
 
   const usageCode = `import { 
   Badge, 
@@ -550,58 +649,173 @@ export function BadgePage() {
 <BadgeGroup gap="normal">
   <Badge>Item 1</Badge>
   <Badge>Item 2</Badge>
-</BadgeGroup>`
+</BadgeGroup>`;
 
   const apiReference = [
     {
       title: "Badge",
       props: [
-        { prop: "variant", type: '"default" | "secondary" | "outline" | "destructive" | "success" | "warning" | "info" | "primary-soft" | ...', default: '"default"', description: "Visual style" },
-        { prop: "size", type: '"xs" | "sm" | "default" | "lg" | "xl"', default: '"default"', description: "Badge size" },
-        { prop: "icon", type: "ReactNode", default: "-", description: "Icon element" },
-        { prop: "iconPosition", type: '"left" | "right"', default: '"left"', description: "Icon position" },
-        { prop: "dot", type: 'boolean | "success" | "warning" | "destructive" | "info"', default: "-", description: "Show dot indicator" },
-        { prop: "dotPulse", type: '"once" | "continuous"', default: "-", description: "Dot pulse animation" },
-        { prop: "dismissible", type: "boolean", default: "false", description: "Show close button" },
-        { prop: "onClose", type: "() => void", default: "-", description: "Close callback" },
-        { prop: "loading", type: "boolean", default: "false", description: "Show loading spinner" },
-        { prop: "onClick", type: "() => void", default: "-", description: "Click handler" },
+        {
+          prop: "variant",
+          type: '"default" | "secondary" | "outline" | "destructive" | "success" | "warning" | "info" | "primary-soft" | ...',
+          default: '"default"',
+          description: "Visual style",
+        },
+        {
+          prop: "size",
+          type: '"xs" | "sm" | "default" | "lg" | "xl"',
+          default: '"default"',
+          description: "Badge size",
+        },
+        {
+          prop: "icon",
+          type: "ReactNode",
+          default: "-",
+          description: "Icon element",
+        },
+        {
+          prop: "iconPosition",
+          type: '"left" | "right"',
+          default: '"left"',
+          description: "Icon position",
+        },
+        {
+          prop: "dot",
+          type: 'boolean | "success" | "warning" | "destructive" | "info"',
+          default: "-",
+          description: "Show dot indicator",
+        },
+        {
+          prop: "dotPulse",
+          type: '"once" | "continuous"',
+          default: "-",
+          description: "Dot pulse animation",
+        },
+        {
+          prop: "dismissible",
+          type: "boolean",
+          default: "false",
+          description: "Show close button",
+        },
+        {
+          prop: "onClose",
+          type: "() => void",
+          default: "-",
+          description: "Close callback",
+        },
+        {
+          prop: "loading",
+          type: "boolean",
+          default: "false",
+          description: "Show loading spinner",
+        },
+        {
+          prop: "onClick",
+          type: "() => void",
+          default: "-",
+          description: "Click handler",
+        },
       ],
     },
     {
       title: "StatusBadge",
       props: [
-        { prop: "status", type: '"success" | "warning" | "error" | "info" | "default"', default: '"default"', description: "Status type" },
-        { prop: "pulse", type: '"once" | "continuous"', default: "-", description: "Pulse animation" },
-        { prop: "size", type: '"sm" | "default" | "lg"', default: '"default"', description: "Badge size" },
+        {
+          prop: "status",
+          type: '"success" | "warning" | "error" | "info" | "default"',
+          default: '"default"',
+          description: "Status type",
+        },
+        {
+          prop: "pulse",
+          type: '"once" | "continuous"',
+          default: "-",
+          description: "Pulse animation",
+        },
+        {
+          prop: "size",
+          type: '"sm" | "default" | "lg"',
+          default: '"default"',
+          description: "Badge size",
+        },
       ],
     },
     {
       title: "CountBadge",
       props: [
-        { prop: "count", type: "number", default: "-", description: "Count to display" },
-        { prop: "max", type: "number", default: "99", description: "Maximum before showing +" },
-        { prop: "format", type: '"default" | "short" | "commas"', default: '"default"', description: "Number format" },
-        { prop: "icon", type: "ReactNode", default: "-", description: "Optional icon" },
-        { prop: "pulse", type: "boolean", default: "false", description: "Pulse animation" },
+        {
+          prop: "count",
+          type: "number",
+          default: "-",
+          description: "Count to display",
+        },
+        {
+          prop: "max",
+          type: "number",
+          default: "99",
+          description: "Maximum before showing +",
+        },
+        {
+          prop: "format",
+          type: '"default" | "short" | "commas"',
+          default: '"default"',
+          description: "Number format",
+        },
+        {
+          prop: "icon",
+          type: "ReactNode",
+          default: "-",
+          description: "Optional icon",
+        },
+        {
+          prop: "pulse",
+          type: "boolean",
+          default: "false",
+          description: "Pulse animation",
+        },
       ],
     },
     {
       title: "TagBadge",
       props: [
-        { prop: "removable", type: "boolean", default: "false", description: "Show remove button" },
-        { prop: "onRemove", type: "() => void", default: "-", description: "Remove callback" },
-        { prop: "...props", type: "BadgeProps", default: "-", description: "All Badge props" },
+        {
+          prop: "removable",
+          type: "boolean",
+          default: "false",
+          description: "Show remove button",
+        },
+        {
+          prop: "onRemove",
+          type: "() => void",
+          default: "-",
+          description: "Remove callback",
+        },
+        {
+          prop: "...props",
+          type: "BadgeProps",
+          default: "-",
+          description: "All Badge props",
+        },
       ],
     },
     {
       title: "BadgeGroup",
       props: [
-        { prop: "gap", type: '"tight" | "normal" | "loose"', default: '"normal"', description: "Spacing between badges" },
-        { prop: "orientation", type: '"horizontal" | "vertical"', default: '"horizontal"', description: "Layout direction" },
+        {
+          prop: "gap",
+          type: '"tight" | "normal" | "loose"',
+          default: '"normal"',
+          description: "Spacing between badges",
+        },
+        {
+          prop: "orientation",
+          type: '"horizontal" | "vertical"',
+          default: '"horizontal"',
+          description: "Layout direction",
+        },
       ],
     },
-  ]
+  ];
 
   return (
     <ComponentPage>
@@ -619,5 +833,5 @@ export function BadgePage() {
 
       <APIReference sections={apiReference} />
     </ComponentPage>
-  )
+  );
 }

@@ -6,12 +6,8 @@ import {
   AvatarGroup,
   AvatarStack,
   AutoAvatar,
-} from "@/components/ui/avatar"
-import {
-  IconAccessible,
-  IconPalette,
-  IconStack2,
-} from "@tabler/icons-react"
+} from "@/components/ui/avatar";
+import { IconAccessible, IconPalette, IconStack2 } from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -20,7 +16,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 // =============================================================================
 // Demo Components
@@ -41,7 +37,7 @@ function BasicDemo() {
         <AvatarFallback>JD</AvatarFallback>
       </Avatar>
     </div>
-  )
+  );
 }
 
 const basicCode = `import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -49,21 +45,37 @@ const basicCode = `import { Avatar, AvatarImage, AvatarFallback } from "@/compon
 <Avatar>
   <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
   <AvatarFallback>CN</AvatarFallback>
-</Avatar>`
+</Avatar>`;
 
 function SizesDemo() {
   return (
     <div className="flex items-end gap-6">
-      <Avatar size="xs"><AvatarFallback>XS</AvatarFallback></Avatar>
-      <Avatar size="sm"><AvatarFallback>SM</AvatarFallback></Avatar>
-      <Avatar size="default"><AvatarFallback>DF</AvatarFallback></Avatar>
-      <Avatar size="lg"><AvatarFallback>LG</AvatarFallback></Avatar>
-      <Avatar size="xl"><AvatarFallback>XL</AvatarFallback></Avatar>
-      <Avatar size="2xl"><AvatarFallback>2XL</AvatarFallback></Avatar>
-      <Avatar size="3xl"><AvatarFallback>3XL</AvatarFallback></Avatar>
-      <Avatar size="4xl"><AvatarFallback>4XL</AvatarFallback></Avatar>
+      <Avatar size="xs">
+        <AvatarFallback>XS</AvatarFallback>
+      </Avatar>
+      <Avatar size="sm">
+        <AvatarFallback>SM</AvatarFallback>
+      </Avatar>
+      <Avatar size="default">
+        <AvatarFallback>DF</AvatarFallback>
+      </Avatar>
+      <Avatar size="lg">
+        <AvatarFallback>LG</AvatarFallback>
+      </Avatar>
+      <Avatar size="xl">
+        <AvatarFallback>XL</AvatarFallback>
+      </Avatar>
+      <Avatar size="2xl">
+        <AvatarFallback>2XL</AvatarFallback>
+      </Avatar>
+      <Avatar size="3xl">
+        <AvatarFallback>3XL</AvatarFallback>
+      </Avatar>
+      <Avatar size="4xl">
+        <AvatarFallback>4XL</AvatarFallback>
+      </Avatar>
     </div>
-  )
+  );
 }
 
 const sizesCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -72,7 +84,7 @@ const sizesCode = `import { Avatar, AvatarFallback } from "@/components/ui/avata
 //        xl (56px), 2xl (64px), 3xl (80px), 4xl (128px)
 <Avatar size="xs"><AvatarFallback>XS</AvatarFallback></Avatar>
 <Avatar size="lg"><AvatarFallback>LG</AvatarFallback></Avatar>
-<Avatar size="4xl"><AvatarFallback>4XL</AvatarFallback></Avatar>`
+<Avatar size="4xl"><AvatarFallback>4XL</AvatarFallback></Avatar>`;
 
 function ShapesDemo() {
   return (
@@ -87,7 +99,7 @@ function ShapesDemo() {
         <AvatarFallback>Square</AvatarFallback>
       </Avatar>
     </div>
-  )
+  );
 }
 
 const shapesCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -95,20 +107,32 @@ const shapesCode = `import { Avatar, AvatarFallback } from "@/components/ui/avat
 // Shapes: circle (default), rounded, square
 <Avatar shape="circle"><AvatarFallback>C</AvatarFallback></Avatar>
 <Avatar shape="rounded"><AvatarFallback>R</AvatarFallback></Avatar>
-<Avatar shape="square"><AvatarFallback>S</AvatarFallback></Avatar>`
+<Avatar shape="square"><AvatarFallback>S</AvatarFallback></Avatar>`;
 
 function StatusDemo() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-6">
-        <Avatar status="online" size="lg"><AvatarFallback>ON</AvatarFallback></Avatar>
-        <Avatar status="offline" size="lg"><AvatarFallback>OFF</AvatarFallback></Avatar>
-        <Avatar status="busy" size="lg"><AvatarFallback>BUSY</AvatarFallback></Avatar>
-        <Avatar status="away" size="lg"><AvatarFallback>AWAY</AvatarFallback></Avatar>
-        <Avatar status="offline_gray" size="lg"><AvatarFallback>GRAY</AvatarFallback></Avatar>
+        <Avatar status="online" size="lg">
+          <AvatarFallback>ON</AvatarFallback>
+        </Avatar>
+        <Avatar status="offline" size="lg">
+          <AvatarFallback>OFF</AvatarFallback>
+        </Avatar>
+        <Avatar status="busy" size="lg">
+          <AvatarFallback>BUSY</AvatarFallback>
+        </Avatar>
+        <Avatar status="away" size="lg">
+          <AvatarFallback>AWAY</AvatarFallback>
+        </Avatar>
+        <Avatar status="offline_gray" size="lg">
+          <AvatarFallback>GRAY</AvatarFallback>
+        </Avatar>
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">Status Positions</h4>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+          Status Positions
+        </h4>
         <div className="grid gap-6 md:grid-cols-4">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-2">Top Right</p>
@@ -137,7 +161,7 @@ function StatusDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const statusCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -152,17 +176,25 @@ const statusCode = `import { Avatar, AvatarFallback } from "@/components/ui/avat
 <Avatar status="online" statusPosition="top-right">...</Avatar>
 <Avatar status="online" statusPosition="top-left">...</Avatar>
 <Avatar status="online" statusPosition="bottom-right">...</Avatar>
-<Avatar status="online" statusPosition="bottom-left">...</Avatar>`
+<Avatar status="online" statusPosition="bottom-left">...</Avatar>`;
 
 function RingsDemo() {
   return (
     <div className="flex items-center gap-6">
-      <Avatar ring="primary" size="lg"><AvatarFallback>PR</AvatarFallback></Avatar>
-      <Avatar ring="success" size="lg"><AvatarFallback>SU</AvatarFallback></Avatar>
-      <Avatar ring="warning" size="lg"><AvatarFallback>WA</AvatarFallback></Avatar>
-      <Avatar ring="destructive" size="lg"><AvatarFallback>DE</AvatarFallback></Avatar>
+      <Avatar ring="primary" size="lg">
+        <AvatarFallback>PR</AvatarFallback>
+      </Avatar>
+      <Avatar ring="success" size="lg">
+        <AvatarFallback>SU</AvatarFallback>
+      </Avatar>
+      <Avatar ring="warning" size="lg">
+        <AvatarFallback>WA</AvatarFallback>
+      </Avatar>
+      <Avatar ring="destructive" size="lg">
+        <AvatarFallback>DE</AvatarFallback>
+      </Avatar>
     </div>
-  )
+  );
 }
 
 const ringsCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -171,7 +203,7 @@ const ringsCode = `import { Avatar, AvatarFallback } from "@/components/ui/avata
 <Avatar ring="primary"><AvatarFallback>P</AvatarFallback></Avatar>
 <Avatar ring="success"><AvatarFallback>S</AvatarFallback></Avatar>
 <Avatar ring="warning"><AvatarFallback>W</AvatarFallback></Avatar>
-<Avatar ring="destructive"><AvatarFallback>D</AvatarFallback></Avatar>`
+<Avatar ring="destructive"><AvatarFallback>D</AvatarFallback></Avatar>`;
 
 function BadgeDemo() {
   return (
@@ -203,7 +235,7 @@ function BadgeDemo() {
         <AvatarBadge variant="info" content="12" />
       </div>
     </div>
-  )
+  );
 }
 
 const badgeCode = `import { Avatar, AvatarImage, AvatarFallback, AvatarBadge } from "@/components/ui/avatar"
@@ -219,7 +251,7 @@ const badgeCode = `import { Avatar, AvatarImage, AvatarFallback, AvatarBadge } f
 // Variants
 <AvatarBadge variant="success" content="✓" />
 <AvatarBadge variant="destructive" content="!" />
-<AvatarBadge variant="info" content="12" />`
+<AvatarBadge variant="info" content="12" />`;
 
 function AutoAvatarDemo() {
   return (
@@ -230,7 +262,7 @@ function AutoAvatarDemo() {
       <AutoAvatar name="Alice" size="lg" />
       <AutoAvatar name="Charlie Brown" size="lg" />
     </div>
-  )
+  );
 }
 
 const autoAvatarCode = `import { AutoAvatar } from "@/components/ui/avatar"
@@ -238,19 +270,41 @@ const autoAvatarCode = `import { AutoAvatar } from "@/components/ui/avatar"
 // Automatically generates initials from name
 <AutoAvatar name="John Doe" size="lg" />
 <AutoAvatar name="Jane Smith" size="lg" />
-<AutoAvatar name="Alice" size="lg" />`
+<AutoAvatar name="Alice" size="lg" />`;
 
 function GradientDemo() {
   return (
     <div className="flex items-center gap-4">
-      <Avatar size="lg"><AvatarFallback variant="gradient">CN</AvatarFallback></Avatar>
-      <Avatar size="lg"><AvatarFallback variant="gradient" gradient="blue">BL</AvatarFallback></Avatar>
-      <Avatar size="lg"><AvatarFallback variant="gradient" gradient="purple">PU</AvatarFallback></Avatar>
-      <Avatar size="lg"><AvatarFallback variant="gradient" gradient="green">GR</AvatarFallback></Avatar>
-      <Avatar size="lg"><AvatarFallback variant="gradient" gradient="orange">OR</AvatarFallback></Avatar>
-      <Avatar size="lg"><AvatarFallback variant="gradient" gradient="pink">PK</AvatarFallback></Avatar>
+      <Avatar size="lg">
+        <AvatarFallback variant="gradient">CN</AvatarFallback>
+      </Avatar>
+      <Avatar size="lg">
+        <AvatarFallback variant="gradient" gradient="blue">
+          BL
+        </AvatarFallback>
+      </Avatar>
+      <Avatar size="lg">
+        <AvatarFallback variant="gradient" gradient="purple">
+          PU
+        </AvatarFallback>
+      </Avatar>
+      <Avatar size="lg">
+        <AvatarFallback variant="gradient" gradient="green">
+          GR
+        </AvatarFallback>
+      </Avatar>
+      <Avatar size="lg">
+        <AvatarFallback variant="gradient" gradient="orange">
+          OR
+        </AvatarFallback>
+      </Avatar>
+      <Avatar size="lg">
+        <AvatarFallback variant="gradient" gradient="pink">
+          PK
+        </AvatarFallback>
+      </Avatar>
     </div>
-  )
+  );
 }
 
 const gradientCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -259,7 +313,7 @@ const gradientCode = `import { Avatar, AvatarFallback } from "@/components/ui/av
 <AvatarFallback variant="gradient">CN</AvatarFallback>
 <AvatarFallback variant="gradient" gradient="blue">BL</AvatarFallback>
 <AvatarFallback variant="gradient" gradient="purple">PU</AvatarFallback>
-<AvatarFallback variant="gradient" gradient="green">GR</AvatarFallback>`
+<AvatarFallback variant="gradient" gradient="green">GR</AvatarFallback>`;
 
 function GroupDemo() {
   return (
@@ -275,13 +329,21 @@ function GroupDemo() {
             <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
             <AvatarFallback>VC</AvatarFallback>
           </Avatar>
-          <Avatar><AvatarFallback>AB</AvatarFallback></Avatar>
-          <Avatar><AvatarFallback>CD</AvatarFallback></Avatar>
-          <Avatar><AvatarFallback>EF</AvatarFallback></Avatar>
+          <Avatar>
+            <AvatarFallback>AB</AvatarFallback>
+          </Avatar>
+          <Avatar>
+            <AvatarFallback>CD</AvatarFallback>
+          </Avatar>
+          <Avatar>
+            <AvatarFallback>EF</AvatarFallback>
+          </Avatar>
         </AvatarGroup>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Large size with status</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          Large size with status
+        </p>
         <AvatarGroup max={4} size="lg">
           <Avatar size="lg" status="online">
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
@@ -291,13 +353,19 @@ function GroupDemo() {
             <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
             <AvatarFallback>VC</AvatarFallback>
           </Avatar>
-          <Avatar size="lg" status="busy"><AvatarFallback>AB</AvatarFallback></Avatar>
-          <Avatar size="lg" status="away"><AvatarFallback>CD</AvatarFallback></Avatar>
-          <Avatar size="lg" status="offline"><AvatarFallback>EF</AvatarFallback></Avatar>
+          <Avatar size="lg" status="busy">
+            <AvatarFallback>AB</AvatarFallback>
+          </Avatar>
+          <Avatar size="lg" status="away">
+            <AvatarFallback>CD</AvatarFallback>
+          </Avatar>
+          <Avatar size="lg" status="offline">
+            <AvatarFallback>EF</AvatarFallback>
+          </Avatar>
         </AvatarGroup>
       </div>
     </div>
-  )
+  );
 }
 
 const groupCode = `import { Avatar, AvatarImage, AvatarFallback, AvatarGroup } from "@/components/ui/avatar"
@@ -315,23 +383,41 @@ const groupCode = `import { Avatar, AvatarImage, AvatarFallback, AvatarGroup } f
 <AvatarGroup max={4} size="lg">
   <Avatar size="lg" status="online">...</Avatar>
   <Avatar size="lg" status="busy">...</Avatar>
-</AvatarGroup>`
+</AvatarGroup>`;
 
 function StackDemo() {
   return (
     <div className="max-w-xl">
       <AvatarStack>
-        <Avatar><AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" /><AvatarFallback>CN</AvatarFallback></Avatar>
-        <Avatar><AvatarImage src="https://github.com/vercel.png" alt="@vercel" /><AvatarFallback>VC</AvatarFallback></Avatar>
-        <Avatar><AvatarFallback>AB</AvatarFallback></Avatar>
-        <Avatar><AvatarFallback>CD</AvatarFallback></Avatar>
-        <Avatar><AvatarFallback>EF</AvatarFallback></Avatar>
-        <Avatar><AvatarFallback>GH</AvatarFallback></Avatar>
-        <Avatar><AvatarFallback>IJ</AvatarFallback></Avatar>
-        <Avatar><AvatarFallback>KL</AvatarFallback></Avatar>
+        <Avatar>
+          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+        <Avatar>
+          <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
+          <AvatarFallback>VC</AvatarFallback>
+        </Avatar>
+        <Avatar>
+          <AvatarFallback>AB</AvatarFallback>
+        </Avatar>
+        <Avatar>
+          <AvatarFallback>CD</AvatarFallback>
+        </Avatar>
+        <Avatar>
+          <AvatarFallback>EF</AvatarFallback>
+        </Avatar>
+        <Avatar>
+          <AvatarFallback>GH</AvatarFallback>
+        </Avatar>
+        <Avatar>
+          <AvatarFallback>IJ</AvatarFallback>
+        </Avatar>
+        <Avatar>
+          <AvatarFallback>KL</AvatarFallback>
+        </Avatar>
       </AvatarStack>
     </div>
-  )
+  );
 }
 
 const stackCode = `import { Avatar, AvatarFallback, AvatarStack } from "@/components/ui/avatar"
@@ -341,13 +427,13 @@ const stackCode = `import { Avatar, AvatarFallback, AvatarStack } from "@/compon
   <Avatar><AvatarFallback>A</AvatarFallback></Avatar>
   <Avatar><AvatarFallback>B</AvatarFallback></Avatar>
   <Avatar><AvatarFallback>C</AvatarFallback></Avatar>
-</AvatarStack>`
+</AvatarStack>`;
 
 // =============================================================================
 // Main Page Component
 // =============================================================================
 
-export function AvatarPage() {
+export default function AvatarPage() {
   const features = [
     {
       title: "Accessible",
@@ -361,10 +447,11 @@ export function AvatarPage() {
     },
     {
       title: "Composable",
-      description: "AvatarGroup, AvatarStack, AutoAvatar, and gradient fallbacks.",
+      description:
+        "AvatarGroup, AvatarStack, AutoAvatar, and gradient fallbacks.",
       icon: <IconStack2 className="w-4 h-4 text-primary" />,
     },
-  ]
+  ];
 
   const demoTabs = [
     {
@@ -497,7 +584,7 @@ export function AvatarPage() {
         </DemoWrapper>
       ),
     },
-  ]
+  ];
 
   const usageCode = `import { 
   Avatar, 
@@ -547,56 +634,131 @@ export function AvatarPage() {
 <AvatarStack>
   <Avatar>...</Avatar>
   <Avatar>...</Avatar>
-</AvatarStack>`
+</AvatarStack>`;
 
   const apiReference = [
     {
       title: "Avatar",
       props: [
-        { prop: "size", type: '"xs" | "sm" | "default" | "lg" | "xl" | "2xl" | "3xl" | "4xl"', default: '"default"', description: "Avatar size" },
-        { prop: "shape", type: '"circle" | "rounded" | "square"', default: '"circle"', description: "Avatar shape" },
-        { prop: "status", type: '"online" | "offline" | "busy" | "away" | "offline_gray"', default: "-", description: "Status indicator" },
-        { prop: "statusPosition", type: '"top-right" | "top-left" | "bottom-right" | "bottom-left"', default: '"top-right"', description: "Status position" },
-        { prop: "ring", type: '"primary" | "success" | "warning" | "destructive"', default: "-", description: "Ring color" },
+        {
+          prop: "size",
+          type: '"xs" | "sm" | "default" | "lg" | "xl" | "2xl" | "3xl" | "4xl"',
+          default: '"default"',
+          description: "Avatar size",
+        },
+        {
+          prop: "shape",
+          type: '"circle" | "rounded" | "square"',
+          default: '"circle"',
+          description: "Avatar shape",
+        },
+        {
+          prop: "status",
+          type: '"online" | "offline" | "busy" | "away" | "offline_gray"',
+          default: "-",
+          description: "Status indicator",
+        },
+        {
+          prop: "statusPosition",
+          type: '"top-right" | "top-left" | "bottom-right" | "bottom-left"',
+          default: '"top-right"',
+          description: "Status position",
+        },
+        {
+          prop: "ring",
+          type: '"primary" | "success" | "warning" | "destructive"',
+          default: "-",
+          description: "Ring color",
+        },
       ],
     },
     {
       title: "AvatarImage",
       props: [
         { prop: "src", type: "string", default: "-", description: "Image URL" },
-        { prop: "alt", type: "string", default: "-", description: "Alt text for accessibility" },
+        {
+          prop: "alt",
+          type: "string",
+          default: "-",
+          description: "Alt text for accessibility",
+        },
       ],
     },
     {
       title: "AvatarFallback",
       props: [
-        { prop: "variant", type: '"default" | "gradient"', default: '"default"', description: "Fallback style" },
-        { prop: "gradient", type: '"default" | "blue" | "purple" | "green" | "orange" | "pink"', default: '"default"', description: "Gradient color" },
+        {
+          prop: "variant",
+          type: '"default" | "gradient"',
+          default: '"default"',
+          description: "Fallback style",
+        },
+        {
+          prop: "gradient",
+          type: '"default" | "blue" | "purple" | "green" | "orange" | "pink"',
+          default: '"default"',
+          description: "Gradient color",
+        },
       ],
     },
     {
       title: "AvatarBadge",
       props: [
-        { prop: "content", type: "string", default: "-", description: "Badge content" },
-        { prop: "variant", type: '"default" | "success" | "destructive" | "info"', default: '"default"', description: "Badge variant" },
-        { prop: "size", type: '"sm" | "default"', default: '"default"', description: "Badge size" },
+        {
+          prop: "content",
+          type: "string",
+          default: "-",
+          description: "Badge content",
+        },
+        {
+          prop: "variant",
+          type: '"default" | "success" | "destructive" | "info"',
+          default: '"default"',
+          description: "Badge variant",
+        },
+        {
+          prop: "size",
+          type: '"sm" | "default"',
+          default: '"default"',
+          description: "Badge size",
+        },
       ],
     },
     {
       title: "AvatarGroup",
       props: [
-        { prop: "max", type: "number", default: "3", description: "Maximum visible avatars" },
-        { prop: "size", type: "AvatarSize", default: '"default"', description: "Size of all avatars" },
+        {
+          prop: "max",
+          type: "number",
+          default: "3",
+          description: "Maximum visible avatars",
+        },
+        {
+          prop: "size",
+          type: "AvatarSize",
+          default: '"default"',
+          description: "Size of all avatars",
+        },
       ],
     },
     {
       title: "AutoAvatar",
       props: [
-        { prop: "name", type: "string", default: "-", description: "Name to generate initials from" },
-        { prop: "...props", type: "AvatarProps", default: "-", description: "All Avatar props" },
+        {
+          prop: "name",
+          type: "string",
+          default: "-",
+          description: "Name to generate initials from",
+        },
+        {
+          prop: "...props",
+          type: "AvatarProps",
+          default: "-",
+          description: "All Avatar props",
+        },
       ],
     },
-  ]
+  ];
 
   return (
     <ComponentPage>
@@ -614,5 +776,5 @@ export function AvatarPage() {
 
       <APIReference sections={apiReference} />
     </ComponentPage>
-  )
+  );
 }

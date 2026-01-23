@@ -1,7 +1,7 @@
-import { useState } from "react"
-import { CodeBlock, type CodeBlockProps } from "@/components/ui/code-block"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import { CodeBlock, type CodeBlockProps } from "@/components/ui/code-block";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   ComponentPage,
   PageHeader,
@@ -9,7 +9,7 @@ import {
   DemoTabs,
   DemoWrapper,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 const sampleCode = `import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -31,7 +31,7 @@ export function Counter() {
 }
 
 // This component demonstrates React hooks and state management
-// Click the button to increment the counter`
+// Click the button to increment the counter`;
 
 const sampleReactCode = `import { useState, useEffect } from "react"
 
@@ -53,7 +53,7 @@ function Component() {
       </button>
     </div>
   )
-}`
+}`;
 
 const sampleTypeScriptCode = `interface User {
   id: number
@@ -72,7 +72,7 @@ async function fetchUser(id: number): Promise<User> {
 
 // Usage
 const user = await fetchUser(1)
-console.log(user.name)`
+console.log(user.name)`;
 
 function BasicDemo() {
   return (
@@ -83,7 +83,7 @@ function BasicDemo() {
       minimap={false}
       wordWrap="on"
     />
-  )
+  );
 }
 
 const basicCode = `import { CodeBlock } from "@/components/ui/code-block"
@@ -94,10 +94,12 @@ const basicCode = `import { CodeBlock } from "@/components/ui/code-block"
   showLineNumbers={true}
   minimap={false}
   wordWrap="on"
-/>`
+/>`;
 
 function ThemeDemo() {
-  const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">("system")
+  const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">(
+    "system",
+  );
 
   return (
     <div className="space-y-6">
@@ -159,7 +161,7 @@ function ThemeDemo() {
         />
       </div>
     </div>
-  )
+  );
 }
 
 const themeCode = `import { CodeBlock } from "@/components/ui/code-block"
@@ -185,10 +187,12 @@ const themeCode = `import { CodeBlock } from "@/components/ui/code-block"
   themeMode="system"
   lightTheme="github-light"
   darkTheme="vitesse-dark"
-/>`
+/>`;
 
 function LanguagesDemo() {
-  const [language, setLanguage] = useState<"tsx" | "typescript" | "javascript" | "python" | "rust">("tsx")
+  const [language, setLanguage] = useState<
+    "tsx" | "typescript" | "javascript" | "python" | "rust"
+  >("tsx");
 
   const codeSamples = {
     tsx: sampleCode,
@@ -209,7 +213,7 @@ print(greet("World"))`,
 fn main() {
     println!("{}", greet("World"));
 }`,
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -218,16 +222,18 @@ fn main() {
         <Badge>{language}</Badge>
       </div>
       <div className="flex flex-wrap gap-2">
-        {(["tsx", "typescript", "javascript", "python", "rust"] as const).map((lang) => (
-          <Button
-            key={lang}
-            variant={language === lang ? "default" : "outline"}
-            size="sm"
-            onClick={() => setLanguage(lang)}
-          >
-            {lang}
-          </Button>
-        ))}
+        {(["tsx", "typescript", "javascript", "python", "rust"] as const).map(
+          (lang) => (
+            <Button
+              key={lang}
+              variant={language === lang ? "default" : "outline"}
+              size="sm"
+              onClick={() => setLanguage(lang)}
+            >
+              {lang}
+            </Button>
+          ),
+        )}
       </div>
       <CodeBlock
         code={codeSamples[language]}
@@ -235,7 +241,7 @@ fn main() {
         minimap={false}
       />
     </div>
-  )
+  );
 }
 
 const languagesCode = `import { CodeBlock } from "@/components/ui/code-block"
@@ -256,13 +262,13 @@ const languagesCode = `import { CodeBlock } from "@/components/ui/code-block"
 // typescript, javascript, jsx, tsx, python, rust, go, java, c, cpp, csharp,
 // php, ruby, swift, kotlin, scala, groovy, clojure, elixir, erlang,
 // haskell, lua, perl, sql, shell, powershell, docker, yaml, toml, json,
-// xml, html, css, scss, less, markdown, r, julia, matlab`
+// xml, html, css, scss, less, markdown, r, julia, matlab`;
 
 function OptionsDemo() {
-  const [showLineNumbers, setShowLineNumbers] = useState(true)
-  const [fontSize, setFontSize] = useState(14)
-  const [wordWrap, setWordWrap] = useState<CodeBlockProps["wordWrap"]>("on")
-  const [minimap, setMinimap] = useState(false)
+  const [showLineNumbers, setShowLineNumbers] = useState(true);
+  const [fontSize, setFontSize] = useState(14);
+  const [wordWrap, setWordWrap] = useState<CodeBlockProps["wordWrap"]>("on");
+  const [minimap, setMinimap] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -331,7 +337,7 @@ function OptionsDemo() {
         minimap={minimap}
       />
     </div>
-  )
+  );
 }
 
 const optionsCode = `import { CodeBlock } from "@/components/ui/code-block"
@@ -365,15 +371,17 @@ const optionsCode = `import { CodeBlock } from "@/components/ui/code-block"
   language="tsx"
   minimap={true}
   minimap={false}
-/>`
+/>`;
 
 function HeightDemo() {
-  const [height, setHeight] = useState<"auto" | number>("auto")
+  const [height, setHeight] = useState<"auto" | number>("auto");
 
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <p className="text-sm font-medium">Height: {typeof height === "number" ? `${height}px` : "auto"}</p>
+        <p className="text-sm font-medium">
+          Height: {typeof height === "number" ? `${height}px` : "auto"}
+        </p>
         <div className="flex gap-2">
           <Button
             variant={height === "auto" ? "default" : "outline"}
@@ -405,7 +413,7 @@ function HeightDemo() {
         minimap={false}
       />
     </div>
-  )
+  );
 }
 
 const heightCode = `import { CodeBlock } from "@/components/ui/code-block"
@@ -426,10 +434,10 @@ const heightCode = `import { CodeBlock } from "@/components/ui/code-block"
 <CodeBlock
   code={code}
   height={500}
-/>`
+/>`;
 
 function VariantDemo() {
-  const [variant, setVariant] = useState<"default" | "light">("default")
+  const [variant, setVariant] = useState<"default" | "light">("default");
 
   return (
     <div className="space-y-6">
@@ -468,7 +476,7 @@ function VariantDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const variantCode = `import { CodeBlock } from "@/components/ui/code-block"
@@ -485,9 +493,9 @@ const variantCode = `import { CodeBlock } from "@/components/ui/code-block"
   code={code}
   language="tsx"
   variant="light"
-/>`
+/>`;
 
-export function CodeBlockPage() {
+export default function CodeBlockPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -500,15 +508,18 @@ export function CodeBlockPage() {
         features={[
           {
             title: "Syntax Highlighting",
-            description: "Support for 100+ programming languages with Monaco's powerful tokenizer.",
+            description:
+              "Support for 100+ programming languages with Monaco's powerful tokenizer.",
           },
           {
             title: "Multiple Themes",
-            description: "Beautiful light and dark themes including Vitesse, GitHub, Nord, Dracula, and more.",
+            description:
+              "Beautiful light and dark themes including Vitesse, GitHub, Nord, Dracula, and more.",
           },
           {
             title: "Customizable",
-            description: "Control font size, line numbers, word wrap, minimap, and height.",
+            description:
+              "Control font size, line numbers, word wrap, minimap, and height.",
           },
         ]}
       />
@@ -602,59 +613,239 @@ export function CodeBlockPage() {
           {
             title: "CodeBlock Props",
             props: [
-              { prop: "code", type: "string", default: "-", description: "The code content to display" },
-              { prop: "language", type: "string", default: "tsx", description: "Programming language for syntax highlighting" },
-              { prop: "variant", type: '"default" | "light"', default: "default", description: "Color variant" },
-              { prop: "theme", type: "MonacoTheme", default: "vitesse-dark", description: "Fixed theme (ignores themeMode)" },
-              { prop: "themeMode", type: '"light" | "dark" | "system"', default: "dark", description: "Theme mode preference" },
-              { prop: "lightTheme", type: "MonacoTheme", default: "github-light", description: "Theme for light mode" },
-              { prop: "darkTheme", type: "MonacoTheme", default: "vitesse-dark", description: "Theme for dark mode" },
-              { prop: "showLineNumbers", type: "boolean", default: "true", description: "Show line numbers" },
-              { prop: "fontSize", type: "number", default: "14", description: "Font size in pixels" },
-              { prop: "fontFamily", type: "string", default: "Geist Mono, monospace", description: "Font family" },
-              { prop: "wordWrap", type: '"on" | "off" | "bounded"', default: "on", description: "Word wrap behavior" },
-              { prop: "minimap", type: "boolean", default: "false", description: "Show minimap" },
-              { prop: "readOnly", type: "boolean", default: "true", description: "Read-only mode" },
-              { prop: "editable", type: "boolean", default: "false", description: "Enable editing" },
-              { prop: "height", type: "string | number", default: "auto", description: "Container height" },
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes" },
+              {
+                prop: "code",
+                type: "string",
+                default: "-",
+                description: "The code content to display",
+              },
+              {
+                prop: "language",
+                type: "string",
+                default: "tsx",
+                description: "Programming language for syntax highlighting",
+              },
+              {
+                prop: "variant",
+                type: '"default" | "light"',
+                default: "default",
+                description: "Color variant",
+              },
+              {
+                prop: "theme",
+                type: "MonacoTheme",
+                default: "vitesse-dark",
+                description: "Fixed theme (ignores themeMode)",
+              },
+              {
+                prop: "themeMode",
+                type: '"light" | "dark" | "system"',
+                default: "dark",
+                description: "Theme mode preference",
+              },
+              {
+                prop: "lightTheme",
+                type: "MonacoTheme",
+                default: "github-light",
+                description: "Theme for light mode",
+              },
+              {
+                prop: "darkTheme",
+                type: "MonacoTheme",
+                default: "vitesse-dark",
+                description: "Theme for dark mode",
+              },
+              {
+                prop: "showLineNumbers",
+                type: "boolean",
+                default: "true",
+                description: "Show line numbers",
+              },
+              {
+                prop: "fontSize",
+                type: "number",
+                default: "14",
+                description: "Font size in pixels",
+              },
+              {
+                prop: "fontFamily",
+                type: "string",
+                default: "Geist Mono, monospace",
+                description: "Font family",
+              },
+              {
+                prop: "wordWrap",
+                type: '"on" | "off" | "bounded"',
+                default: "on",
+                description: "Word wrap behavior",
+              },
+              {
+                prop: "minimap",
+                type: "boolean",
+                default: "false",
+                description: "Show minimap",
+              },
+              {
+                prop: "readOnly",
+                type: "boolean",
+                default: "true",
+                description: "Read-only mode",
+              },
+              {
+                prop: "editable",
+                type: "boolean",
+                default: "false",
+                description: "Enable editing",
+              },
+              {
+                prop: "height",
+                type: "string | number",
+                default: "auto",
+                description: "Container height",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes",
+              },
             ],
           },
           {
             title: "Available Themes",
             props: [
-              { prop: "vitesse-dark", type: "string", default: "-", description: "Dark theme with neon accents" },
-              { prop: "vitesse-light", type: "string", default: "-", description: "Light theme with clean look" },
-              { prop: "github-dark", type: "string", default: "-", description: "GitHub's dark theme" },
-              { prop: "github-dark-default", type: "string", default: "-", description: "GitHub dark default" },
-              { prop: "github-light", type: "string", default: "-", description: "GitHub's light theme" },
-              { prop: "nord", type: "string", default: "-", description: "Arctic, north-bluish color palette" },
-              { prop: "one-dark-pro", type: "string", default: "-", description: "Atom's iconic dark theme" },
-              { prop: "dracula", type: "string", default: "-", description: "Dracula official theme" },
-              { prop: "tokyo-night", type: "string", default: "-", description: "A clean, dark Tokyo Night theme" },
+              {
+                prop: "vitesse-dark",
+                type: "string",
+                default: "-",
+                description: "Dark theme with neon accents",
+              },
+              {
+                prop: "vitesse-light",
+                type: "string",
+                default: "-",
+                description: "Light theme with clean look",
+              },
+              {
+                prop: "github-dark",
+                type: "string",
+                default: "-",
+                description: "GitHub's dark theme",
+              },
+              {
+                prop: "github-dark-default",
+                type: "string",
+                default: "-",
+                description: "GitHub dark default",
+              },
+              {
+                prop: "github-light",
+                type: "string",
+                default: "-",
+                description: "GitHub's light theme",
+              },
+              {
+                prop: "nord",
+                type: "string",
+                default: "-",
+                description: "Arctic, north-bluish color palette",
+              },
+              {
+                prop: "one-dark-pro",
+                type: "string",
+                default: "-",
+                description: "Atom's iconic dark theme",
+              },
+              {
+                prop: "dracula",
+                type: "string",
+                default: "-",
+                description: "Dracula official theme",
+              },
+              {
+                prop: "tokyo-night",
+                type: "string",
+                default: "-",
+                description: "A clean, dark Tokyo Night theme",
+              },
             ],
           },
           {
             title: "Supported Languages",
             props: [
-              { prop: "JavaScript/TypeScript", type: "string", default: "-", description: "javascript, typescript, tsx, jsx" },
-              { prop: "Python", type: "string", default: "-", description: "python" },
-              { prop: "Rust", type: "string", default: "-", description: "rust" },
+              {
+                prop: "JavaScript/TypeScript",
+                type: "string",
+                default: "-",
+                description: "javascript, typescript, tsx, jsx",
+              },
+              {
+                prop: "Python",
+                type: "string",
+                default: "-",
+                description: "python",
+              },
+              {
+                prop: "Rust",
+                type: "string",
+                default: "-",
+                description: "rust",
+              },
               { prop: "Go", type: "string", default: "-", description: "go" },
-              { prop: "Java", type: "string", default: "-", description: "java" },
-              { prop: "C/C++/C#", type: "string", default: "-", description: "c, cpp, csharp" },
+              {
+                prop: "Java",
+                type: "string",
+                default: "-",
+                description: "java",
+              },
+              {
+                prop: "C/C++/C#",
+                type: "string",
+                default: "-",
+                description: "c, cpp, csharp",
+              },
               { prop: "PHP", type: "string", default: "-", description: "php" },
-              { prop: "Ruby", type: "string", default: "-", description: "ruby" },
-              { prop: "Swift/Kotlin", type: "string", default: "-", description: "swift, kotlin" },
+              {
+                prop: "Ruby",
+                type: "string",
+                default: "-",
+                description: "ruby",
+              },
+              {
+                prop: "Swift/Kotlin",
+                type: "string",
+                default: "-",
+                description: "swift, kotlin",
+              },
               { prop: "SQL", type: "string", default: "-", description: "sql" },
-              { prop: "Shell", type: "string", default: "-", description: "shell, powershell, bash" },
-              { prop: "Config", type: "string", default: "-", description: "json, yaml, toml, xml, ini" },
-              { prop: "Web", type: "string", default: "-", description: "html, css, scss, less, markdown" },
-              { prop: "Data Science", type: "string", default: "-", description: "r, julia, matlab" },
+              {
+                prop: "Shell",
+                type: "string",
+                default: "-",
+                description: "shell, powershell, bash",
+              },
+              {
+                prop: "Config",
+                type: "string",
+                default: "-",
+                description: "json, yaml, toml, xml, ini",
+              },
+              {
+                prop: "Web",
+                type: "string",
+                default: "-",
+                description: "html, css, scss, less, markdown",
+              },
+              {
+                prop: "Data Science",
+                type: "string",
+                default: "-",
+                description: "r, julia, matlab",
+              },
             ],
           },
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

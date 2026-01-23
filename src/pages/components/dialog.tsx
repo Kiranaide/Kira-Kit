@@ -38,7 +38,9 @@ function BasicDemo() {
   return (
     <div className="flex items-center justify-center min-h-[200px]">
       <Dialog>
-        <DialogTrigger render={<Button variant="outline">Open Dialog</Button>} />
+        <DialogTrigger
+          render={<Button variant="outline">Open Dialog</Button>}
+        />
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Welcome to Kira Kit</DialogTitle>
@@ -252,7 +254,9 @@ function ScrollableDemo() {
   return (
     <div className="flex items-center justify-center min-h-[200px]">
       <Dialog>
-        <DialogTrigger render={<Button variant="outline">Open Scrollable Dialog</Button>} />
+        <DialogTrigger
+          render={<Button variant="outline">Open Scrollable Dialog</Button>}
+        />
         <DialogContent size="lg">
           <DialogHeader>
             <DialogTitle>Terms of Service</DialogTitle>
@@ -325,7 +329,9 @@ function AlertDemo() {
   return (
     <div className="flex items-center justify-center min-h-[200px]">
       <Dialog>
-        <DialogTrigger render={<Button variant="destructive">Delete Account</Button>} />
+        <DialogTrigger
+          render={<Button variant="destructive">Delete Account</Button>}
+        />
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Are you absolutely sure?</DialogTitle>
@@ -430,7 +436,9 @@ function CustomDemo() {
       </Dialog>
 
       <Dialog>
-        <DialogTrigger render={<Button variant="outline">No Close Button</Button>} />
+        <DialogTrigger
+          render={<Button variant="outline">No Close Button</Button>}
+        />
         <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Important Notice</DialogTitle>
@@ -591,7 +599,8 @@ const apiSections = [
         prop: "modal",
         type: "boolean",
         default: "true",
-        description: "Whether the dialog is modal (blocks interaction with rest of page).",
+        description:
+          "Whether the dialog is modal (blocks interaction with rest of page).",
       },
     ],
   },
@@ -644,7 +653,8 @@ const apiSections = [
       {
         prop: "children",
         type: "ReactNode",
-        description: "Header content, typically DialogTitle and DialogDescription.",
+        description:
+          "Header content, typically DialogTitle and DialogDescription.",
       },
     ],
   },
@@ -715,7 +725,7 @@ const apiSections = [
 // Main Page Component
 // =============================================================================
 
-export function DialogPage() {
+export default function DialogPage() {
   const features = [
     {
       title: "Accessible",

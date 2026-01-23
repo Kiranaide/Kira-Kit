@@ -1,13 +1,21 @@
-import { IconCheck, IconX, IconAlertCircle, IconStar, IconLayout, IconColumns, IconSpacingVertical } from "@tabler/icons-react"
-import { HStack, VStack } from "@/components/ui/stack"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import {
+  IconCheck,
+  IconX,
+  IconAlertCircle,
+  IconStar,
+  IconLayout,
+  IconColumns,
+  IconSpacingVertical,
+} from "@tabler/icons-react";
+import { HStack, VStack } from "@/components/ui/stack";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   PageHeader,
   FeatureGrid,
@@ -15,7 +23,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 function VStackDemo() {
   return (
@@ -23,21 +31,33 @@ function VStackDemo() {
       <div>
         <p className="text-sm text-muted-foreground mb-2">Default gap</p>
         <VStack className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-3 bg-primary/20 rounded w-full text-center">Item 1</div>
-          <div className="p-3 bg-primary/20 rounded w-full text-center">Item 2</div>
-          <div className="p-3 bg-primary/20 rounded w-full text-center">Item 3</div>
+          <div className="p-3 bg-primary/20 rounded w-full text-center">
+            Item 1
+          </div>
+          <div className="p-3 bg-primary/20 rounded w-full text-center">
+            Item 2
+          </div>
+          <div className="p-3 bg-primary/20 rounded w-full text-center">
+            Item 3
+          </div>
         </VStack>
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">gap={8}</p>
         <VStack gap={8} className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-3 bg-primary/20 rounded w-full text-center">Item 1</div>
-          <div className="p-3 bg-primary/20 rounded w-full text-center">Item 2</div>
-          <div className="p-3 bg-primary/20 rounded w-full text-center">Item 3</div>
+          <div className="p-3 bg-primary/20 rounded w-full text-center">
+            Item 1
+          </div>
+          <div className="p-3 bg-primary/20 rounded w-full text-center">
+            Item 2
+          </div>
+          <div className="p-3 bg-primary/20 rounded w-full text-center">
+            Item 3
+          </div>
         </VStack>
       </div>
     </div>
-  )
+  );
 }
 
 const vstackCode = `import { VStack } from "@/components/ui/stack"
@@ -61,7 +81,7 @@ export function VStackDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function HStackDemo() {
   return (
@@ -75,7 +95,9 @@ function HStackDemo() {
         </HStack>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">With justify="between"</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          With justify="between"
+        </p>
         <HStack justify="between" className="p-4 border rounded-lg bg-muted/30">
           <div className="p-3 bg-primary/20 rounded">Left</div>
           <div className="p-3 bg-primary/20 rounded">Center</div>
@@ -83,7 +105,7 @@ function HStackDemo() {
         </HStack>
       </div>
     </div>
-  )
+  );
 }
 
 const hstackCode = `import { HStack } from "@/components/ui/stack"
@@ -107,7 +129,7 @@ export function HStackDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function AlignmentDemo() {
   return (
@@ -115,7 +137,11 @@ function AlignmentDemo() {
       {(["start", "center", "end"] as const).map((align) => (
         <div key={align}>
           <p className="text-sm text-muted-foreground mb-2">align="{align}"</p>
-          <HStack align={align} gap={4} className="p-4 border rounded-lg bg-muted/30 h-24">
+          <HStack
+            align={align}
+            gap={4}
+            className="p-4 border rounded-lg bg-muted/30 h-24"
+          >
             <div className="p-2 bg-primary/20 rounded">A</div>
             <div className="p-4 bg-primary/20 rounded">B</div>
             <div className="p-6 bg-primary/20 rounded">C</div>
@@ -123,7 +149,7 @@ function AlignmentDemo() {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 const alignmentCode = `import { HStack } from "@/components/ui/stack"
@@ -142,13 +168,15 @@ export function AlignmentDemo() {
       ))}
     </div>
   )
-}`
+}`;
 
 function DividersDemo() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
-        <p className="text-sm text-muted-foreground mb-2">VStack with dividers</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          VStack with dividers
+        </p>
         <VStack dividers className="p-4 border rounded-lg bg-background">
           <div className="py-2">Section 1</div>
           <div className="py-2">Section 2</div>
@@ -156,8 +184,14 @@ function DividersDemo() {
         </VStack>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">HStack with dividers</p>
-        <HStack dividers align="center" className="p-4 border rounded-lg bg-background h-16">
+        <p className="text-sm text-muted-foreground mb-2">
+          HStack with dividers
+        </p>
+        <HStack
+          dividers
+          align="center"
+          className="p-4 border rounded-lg bg-background h-16"
+        >
           <span className="px-2">Home</span>
           <span className="px-2">Products</span>
           <span className="px-2">About</span>
@@ -165,7 +199,7 @@ function DividersDemo() {
         </HStack>
       </div>
     </div>
-  )
+  );
 }
 
 const dividersCode = `import { HStack, VStack } from "@/components/ui/stack"
@@ -190,7 +224,7 @@ export function DividersDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function ResponsiveGapDemo() {
   return (
@@ -198,14 +232,17 @@ function ResponsiveGapDemo() {
       <p className="text-sm text-muted-foreground">
         Resize the window to see gap change: base=2, md=4, lg=8
       </p>
-      <HStack gap={{ base: 2, md: 4, lg: 8 }} className="p-4 border rounded-lg bg-muted/30">
+      <HStack
+        gap={{ base: 2, md: 4, lg: 8 }}
+        className="p-4 border rounded-lg bg-muted/30"
+      >
         <div className="p-4 bg-primary/20 rounded">1</div>
         <div className="p-4 bg-primary/20 rounded">2</div>
         <div className="p-4 bg-primary/20 rounded">3</div>
         <div className="p-4 bg-primary/20 rounded">4</div>
       </HStack>
     </div>
-  )
+  );
 }
 
 const responsiveGapCode = `import { HStack } from "@/components/ui/stack"
@@ -224,7 +261,7 @@ export function ResponsiveGapDemo() {
       </HStack>
     </div>
   )
-}`
+}`;
 
 function ActionButtonsDemo() {
   return (
@@ -233,12 +270,16 @@ function ActionButtonsDemo() {
       <Button variant="outline">Cancel</Button>
       <Button variant="destructive">Delete</Button>
     </HStack>
-  )
+  );
 }
 
 function StatusListDemo() {
   return (
-    <VStack gap={2} align="start" className="p-4 border rounded-lg bg-background">
+    <VStack
+      gap={2}
+      align="start"
+      className="p-4 border rounded-lg bg-background"
+    >
       <HStack gap={2} align="center">
         <IconCheck className="size-4 text-green-500" />
         <span>Build completed successfully</span>
@@ -256,7 +297,7 @@ function StatusListDemo() {
         <span>Deployment failed</span>
       </HStack>
     </VStack>
-  )
+  );
 }
 
 function TeamMembersDemo() {
@@ -264,11 +305,16 @@ function TeamMembersDemo() {
     { name: "Alice Johnson", role: "Lead Developer", avatar: "AJ" },
     { name: "Bob Smith", role: "Designer", avatar: "BS" },
     { name: "Carol White", role: "Product Manager", avatar: "CW" },
-  ]
+  ];
   return (
     <VStack dividers className="border rounded-lg bg-background">
       {users.map((user) => (
-        <HStack key={user.name} justify="between" align="center" className="p-4">
+        <HStack
+          key={user.name}
+          justify="between"
+          align="center"
+          className="p-4"
+        >
           <HStack gap={3} align="center">
             <Avatar size="sm">
               <AvatarFallback>{user.avatar}</AvatarFallback>
@@ -284,7 +330,7 @@ function TeamMembersDemo() {
         </HStack>
       ))}
     </VStack>
-  )
+  );
 }
 
 function FeatureCardsDemo() {
@@ -292,7 +338,7 @@ function FeatureCardsDemo() {
     { icon: IconStar, title: "Premium", desc: "Access all features" },
     { icon: IconCheck, title: "Verified", desc: "Trusted by millions" },
     { icon: IconAlertCircle, title: "Support", desc: "24/7 assistance" },
-  ]
+  ];
   return (
     <HStack gap={4} className="overflow-x-auto pb-2">
       {features.map((feature) => (
@@ -305,7 +351,7 @@ function FeatureCardsDemo() {
         </Card>
       ))}
     </HStack>
-  )
+  );
 }
 
 const realWorldCode = `import { HStack, VStack } from "@/components/ui/stack"
@@ -390,7 +436,7 @@ export function FeatureCardsDemo() {
       ))}
     </HStack>
   )
-}`
+}`;
 
 const usageCode = `import { Stack, HStack, VStack } from "@/components/ui/stack"
 
@@ -418,9 +464,9 @@ const usageCode = `import { Stack, HStack, VStack } from "@/components/ui/stack"
 <HStack gap={{ base: 2, md: 4, lg: 8 }}>
   <Card />
   <Card />
-</HStack>`
+</HStack>`;
 
-export function StackPage() {
+export default function StackPage() {
   return (
     <div className="p-8 max-w-6xl space-y-10">
       <PageHeader
@@ -433,17 +479,20 @@ export function StackPage() {
         features={[
           {
             title: "Simple API",
-            description: "Streamlined flex layout with gap, align, and justify props. No complex flex configuration needed.",
+            description:
+              "Streamlined flex layout with gap, align, and justify props. No complex flex configuration needed.",
             icon: <IconLayout className="size-5" />,
           },
           {
             title: "Responsive",
-            description: "Built-in responsive values for gap, align, and justify. Change layout across breakpoints with ease.",
+            description:
+              "Built-in responsive values for gap, align, and justify. Change layout across breakpoints with ease.",
             icon: <IconColumns className="size-5" />,
           },
           {
             title: "Dividers",
-            description: "Optional automatic dividers between items. Perfect for menus, lists, and navigation patterns.",
+            description:
+              "Optional automatic dividers between items. Perfect for menus, lists, and navigation patterns.",
             icon: <IconSpacingVertical className="size-5" />,
           },
         ]}
@@ -456,7 +505,11 @@ export function StackPage() {
             value: "vstack",
             label: "VStack",
             demo: (
-              <DemoWrapper title="Vertical Stack" description="Items stacked vertically with configurable gap." code={vstackCode}>
+              <DemoWrapper
+                title="Vertical Stack"
+                description="Items stacked vertically with configurable gap."
+                code={vstackCode}
+              >
                 <VStackDemo />
               </DemoWrapper>
             ),
@@ -465,7 +518,11 @@ export function StackPage() {
             value: "hstack",
             label: "HStack",
             demo: (
-              <DemoWrapper title="Horizontal Stack" description="Items stacked horizontally with alignment options." code={hstackCode}>
+              <DemoWrapper
+                title="Horizontal Stack"
+                description="Items stacked horizontally with alignment options."
+                code={hstackCode}
+              >
                 <HStackDemo />
               </DemoWrapper>
             ),
@@ -474,7 +531,11 @@ export function StackPage() {
             value: "alignment",
             label: "Alignment",
             demo: (
-              <DemoWrapper title="Cross-Axis Alignment" description="Control how items align along the cross-axis." code={alignmentCode}>
+              <DemoWrapper
+                title="Cross-Axis Alignment"
+                description="Control how items align along the cross-axis."
+                code={alignmentCode}
+              >
                 <AlignmentDemo />
               </DemoWrapper>
             ),
@@ -483,7 +544,11 @@ export function StackPage() {
             value: "dividers",
             label: "Dividers",
             demo: (
-              <DemoWrapper title="Stack with Dividers" description="Automatic dividers between items using the Separator component." code={dividersCode}>
+              <DemoWrapper
+                title="Stack with Dividers"
+                description="Automatic dividers between items using the Separator component."
+                code={dividersCode}
+              >
                 <DividersDemo />
               </DemoWrapper>
             ),
@@ -492,7 +557,11 @@ export function StackPage() {
             value: "responsive",
             label: "Responsive",
             demo: (
-              <DemoWrapper title="Responsive Gap" description="Gap changes based on viewport size." code={responsiveGapCode}>
+              <DemoWrapper
+                title="Responsive Gap"
+                description="Gap changes based on viewport size."
+                code={responsiveGapCode}
+              >
                 <ResponsiveGapDemo />
               </DemoWrapper>
             ),
@@ -502,16 +571,32 @@ export function StackPage() {
             label: "Real-World",
             demo: (
               <div className="space-y-6">
-                <DemoWrapper title="Action Buttons" description="Button group with primary and secondary actions." code={realWorldCode}>
+                <DemoWrapper
+                  title="Action Buttons"
+                  description="Button group with primary and secondary actions."
+                  code={realWorldCode}
+                >
                   <ActionButtonsDemo />
                 </DemoWrapper>
-                <DemoWrapper title="Status List" description="Status indicators with icons and text." code={realWorldCode}>
+                <DemoWrapper
+                  title="Status List"
+                  description="Status indicators with icons and text."
+                  code={realWorldCode}
+                >
                   <StatusListDemo />
                 </DemoWrapper>
-                <DemoWrapper title="Team Members" description="User list with avatars and action buttons." code={realWorldCode}>
+                <DemoWrapper
+                  title="Team Members"
+                  description="User list with avatars and action buttons."
+                  code={realWorldCode}
+                >
                   <TeamMembersDemo />
                 </DemoWrapper>
-                <DemoWrapper title="Feature Cards" description="Horizontal scrollable feature cards." code={realWorldCode}>
+                <DemoWrapper
+                  title="Feature Cards"
+                  description="Horizontal scrollable feature cards."
+                  code={realWorldCode}
+                >
                   <FeatureCardsDemo />
                 </DemoWrapper>
               </div>
@@ -535,7 +620,8 @@ export function StackPage() {
                 prop: "as",
                 type: "StackElement",
                 default: '"div"',
-                description: "Semantic HTML element to render (div, section, nav, etc.)",
+                description:
+                  "Semantic HTML element to render (div, section, nav, etc.)",
               },
               {
                 prop: "direction",
@@ -553,13 +639,15 @@ export function StackPage() {
                 prop: "align",
                 type: "ResponsiveValue<StackAlign>",
                 default: "-",
-                description: "Cross-axis alignment (start, center, end, baseline, stretch)",
+                description:
+                  "Cross-axis alignment (start, center, end, baseline, stretch)",
               },
               {
                 prop: "justify",
                 type: "ResponsiveValue<StackJustify>",
                 default: "-",
-                description: "Main-axis justification (start, center, end, between, around, evenly)",
+                description:
+                  "Main-axis justification (start, center, end, between, around, evenly)",
               },
               {
                 prop: "dividers",
@@ -642,5 +730,5 @@ export function StackPage() {
         ]}
       />
     </div>
-  )
+  );
 }

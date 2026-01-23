@@ -1,9 +1,5 @@
 import * as React from "react";
-import {
-  IconLoader,
-  IconCircleCheck,
-  IconSettings,
-} from "@tabler/icons-react";
+import { IconLoader, IconCircleCheck, IconSettings } from "@tabler/icons-react";
 
 import { ProgressIndicator } from "@/components/ui/progress-indicator";
 import { Button } from "@/components/ui/button";
@@ -188,7 +184,11 @@ function SizesDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">Default</p>
-        <ProgressIndicator steps={steps} currentStep={currentStep} size="default" />
+        <ProgressIndicator
+          steps={steps}
+          currentStep={currentStep}
+          size="default"
+        />
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">Large</p>
@@ -249,7 +249,8 @@ function WithoutLabelDemo() {
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Progress indicator without labels. Provide empty strings for step labels to hide them.
+        Progress indicator without labels. Provide empty strings for step labels
+        to hide them.
       </p>
     </div>
   );
@@ -302,9 +303,21 @@ function CustomDemo() {
         <p className="text-sm text-muted-foreground mb-2">With Custom Icons</p>
         <ProgressIndicator
           steps={[
-            { label: "Upload", value: 0, icon: <IconLoader className="h-4 w-4" /> },
-            { label: "Process", value: 1, icon: <IconSettings className="h-4 w-4" /> },
-            { label: "Complete", value: 2, icon: <IconCircleCheck className="h-4 w-4" /> },
+            {
+              label: "Upload",
+              value: 0,
+              icon: <IconLoader className="h-4 w-4" />,
+            },
+            {
+              label: "Process",
+              value: 1,
+              icon: <IconSettings className="h-4 w-4" />,
+            },
+            {
+              label: "Complete",
+              value: 2,
+              icon: <IconCircleCheck className="h-4 w-4" />,
+            },
           ]}
           currentStep={currentStep}
         />
@@ -317,17 +330,17 @@ function CustomDemo() {
             {
               label: "Account Setup",
               value: 0,
-              description: "Create your account"
+              description: "Create your account",
             },
             {
               label: "Profile",
               value: 1,
-              description: "Add your information"
+              description: "Add your information",
             },
             {
               label: "Preferences",
               value: 2,
-              description: "Configure settings"
+              description: "Configure settings",
             },
           ]}
           currentStep={currentStep}
@@ -336,7 +349,9 @@ function CustomDemo() {
       </div>
 
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Animated with Custom Width</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          Animated with Custom Width
+        </p>
         <div className="max-w-md">
           <ProgressIndicator
             steps={[
@@ -472,43 +487,112 @@ const apiSections = [
   {
     title: "ProgressIndicator",
     props: [
-      { prop: "steps", type: "ProgressStep[]", default: "-", description: "Array of step objects with label, value, icon, and optional description." },
-      { prop: "currentStep", type: "number", default: "-", description: "The currently active step index." },
-      { prop: "size", type: '"sm" | "default" | "lg"', default: '"default"', description: "Size of the progress indicator." },
-      { prop: "variant", type: '"default" | "success" | "warning" | "destructive"', default: '"default"', description: "Color variant of the indicator." },
-      { prop: "orientation", type: '"horizontal" | "vertical"', default: '"horizontal"', description: "Layout orientation of the steps." },
-      { prop: "clickable", type: "boolean", default: "false", description: "Whether steps can be clicked to navigate." },
-      { prop: "animated", type: "boolean", default: "false", description: "Enable animations for step transitions." },
-      { prop: "showDescription", type: "boolean", default: "false", description: "Show step descriptions below labels." },
-      { prop: "onStepClick", type: "(value: number) => void", default: "-", description: "Callback when a step is clicked." },
+      {
+        prop: "steps",
+        type: "ProgressStep[]",
+        default: "-",
+        description:
+          "Array of step objects with label, value, icon, and optional description.",
+      },
+      {
+        prop: "currentStep",
+        type: "number",
+        default: "-",
+        description: "The currently active step index.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Size of the progress indicator.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "success" | "warning" | "destructive"',
+        default: '"default"',
+        description: "Color variant of the indicator.",
+      },
+      {
+        prop: "orientation",
+        type: '"horizontal" | "vertical"',
+        default: '"horizontal"',
+        description: "Layout orientation of the steps.",
+      },
+      {
+        prop: "clickable",
+        type: "boolean",
+        default: "false",
+        description: "Whether steps can be clicked to navigate.",
+      },
+      {
+        prop: "animated",
+        type: "boolean",
+        default: "false",
+        description: "Enable animations for step transitions.",
+      },
+      {
+        prop: "showDescription",
+        type: "boolean",
+        default: "false",
+        description: "Show step descriptions below labels.",
+      },
+      {
+        prop: "onStepClick",
+        type: "(value: number) => void",
+        default: "-",
+        description: "Callback when a step is clicked.",
+      },
     ],
   },
   {
     title: "ProgressIndicatorStep",
     props: [
-      { prop: "label", type: "string", default: "-", description: "Display label for the step. Use empty string to hide." },
-      { prop: "value", type: "number", default: "-", description: "Unique value/identifier for the step." },
-      { prop: "icon", type: "ReactNode", default: "-", description: "Optional icon to display in the step indicator." },
-      { prop: "description", type: "string", default: "-", description: "Optional description text for the step." },
+      {
+        prop: "label",
+        type: "string",
+        default: "-",
+        description: "Display label for the step. Use empty string to hide.",
+      },
+      {
+        prop: "value",
+        type: "number",
+        default: "-",
+        description: "Unique value/identifier for the step.",
+      },
+      {
+        prop: "icon",
+        type: "ReactNode",
+        default: "-",
+        description: "Optional icon to display in the step indicator.",
+      },
+      {
+        prop: "description",
+        type: "string",
+        default: "-",
+        description: "Optional description text for the step.",
+      },
     ],
   },
 ];
 
-export function ProgressIndicatorPage() {
+export default function ProgressIndicatorPage() {
   const features = [
     {
       title: "Flexible Layout",
-      description: "Horizontal and vertical orientations with size and color variants.",
+      description:
+        "Horizontal and vertical orientations with size and color variants.",
       icon: <IconSettings className="h-4 w-4" />,
     },
     {
       title: "Interactive",
-      description: "Clickable steps for direct navigation with callback support.",
+      description:
+        "Clickable steps for direct navigation with callback support.",
       icon: <IconLoader className="h-4 w-4" />,
     },
     {
       title: "Customizable",
-      description: "Optional icons, descriptions, animations, and responsive design.",
+      description:
+        "Optional icons, descriptions, animations, and responsive design.",
       icon: <IconCircleCheck className="h-4 w-4" />,
     },
   ];

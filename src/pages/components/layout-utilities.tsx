@@ -1,12 +1,18 @@
-import { Center } from "@/components/ui/center"
-import { Spacer } from "@/components/ui/spacer"
-import { Box } from "@/components/ui/box"
-import { Flex } from "@/components/ui/flex"
-import { HStack, VStack } from "@/components/ui/stack"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { IconLoader2, IconCheck, IconSettings, IconBell, IconUser } from "@tabler/icons-react"
+import { Center } from "@/components/ui/center";
+import { Spacer } from "@/components/ui/spacer";
+import { Box } from "@/components/ui/box";
+import { Flex } from "@/components/ui/flex";
+import { HStack, VStack } from "@/components/ui/stack";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  IconLoader2,
+  IconCheck,
+  IconSettings,
+  IconBell,
+  IconUser,
+} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -14,7 +20,7 @@ import {
   DemoWrapper,
   DemoTabs,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 function CenterTypesDemo() {
   return (
@@ -42,7 +48,7 @@ function CenterTypesDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const centerTypesCode = `import { Center } from "@/components/ui/center"
@@ -62,7 +68,7 @@ const centerTypesCode = `import { Center } from "@/components/ui/center"
   <Center type="absolute">
     <Spinner />
   </Center>
-</div>`
+</div>`;
 
 function InlineCenterDemo() {
   return (
@@ -73,7 +79,7 @@ function InlineCenterDemo() {
       </Center>
       with text around it.
     </div>
-  )
+  );
 }
 
 const inlineCenterCode = `import { Center } from "@/components/ui/center"
@@ -81,7 +87,7 @@ const inlineCenterCode = `import { Center } from "@/components/ui/center"
 // Inline centering
 <Center inline className="size-8">
   <Icon />
-</Center>`
+</Center>`;
 
 function LoadingOverlayDemo() {
   return (
@@ -95,7 +101,7 @@ function LoadingOverlayDemo() {
         </Center>
       </div>
     </div>
-  )
+  );
 }
 
 const loadingOverlayCode = `import { Center } from "@/components/ui/center"
@@ -111,7 +117,7 @@ import { VStack } from "@/components/ui/stack"
       </VStack>
     </Center>
   </div>
-</div>`
+</div>`;
 
 function EmptyStateDemo() {
   return (
@@ -122,12 +128,14 @@ function EmptyStateDemo() {
         </div>
         <div className="text-center">
           <h4 className="font-semibold">No items yet</h4>
-          <p className="text-sm text-muted-foreground">Add your first item to get started</p>
+          <p className="text-sm text-muted-foreground">
+            Add your first item to get started
+          </p>
         </div>
         <Button>Add Item</Button>
       </VStack>
     </Center>
-  )
+  );
 }
 
 const emptyStateCode = `import { Center } from "@/components/ui/center"
@@ -145,17 +153,21 @@ import { VStack } from "@/components/ui/stack"
     </div>
     <Button>Add Item</Button>
   </VStack>
-</Center>`
+</Center>`;
 
 function AutoSpacerDemo() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Push elements apart</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          Push elements apart
+        </p>
         <Flex align="center" className="p-4 border rounded-lg bg-muted/30">
           <span className="font-semibold">Brand</span>
           <Spacer />
-          <Button variant="ghost" size="sm">Sign In</Button>
+          <Button variant="ghost" size="sm">
+            Sign In
+          </Button>
         </Flex>
       </div>
       <div>
@@ -169,7 +181,7 @@ function AutoSpacerDemo() {
         </Flex>
       </div>
     </div>
-  )
+  );
 }
 
 const autoSpacerCode = `import { Flex } from "@/components/ui/flex"
@@ -189,7 +201,7 @@ import { Spacer } from "@/components/ui/spacer"
   <span>Center Content</span>
   <Spacer />
   <IconSettings className="size-5" />
-</Flex>`
+</Flex>`;
 
 function FixedSpacerDemo() {
   return (
@@ -211,7 +223,7 @@ function FixedSpacerDemo() {
         </VStack>
       </div>
     </div>
-  )
+  );
 }
 
 const fixedSpacerCode = `import { HStack, VStack } from "@/components/ui/stack"
@@ -229,11 +241,15 @@ import { Spacer } from "@/components/ui/spacer"
   <div>A</div>
   <Spacer size={8} axis="vertical" />
   <div>B</div>
-</VStack>`
+</VStack>`;
 
 function NavigationHeaderDemo() {
   return (
-    <Flex as="nav" align="center" className="p-4 border rounded-lg bg-background">
+    <Flex
+      as="nav"
+      align="center"
+      className="p-4 border rounded-lg bg-background"
+    >
       <HStack gap={2} align="center">
         <div className="size-8 bg-primary rounded" />
         <span className="font-semibold">App Name</span>
@@ -252,7 +268,7 @@ function NavigationHeaderDemo() {
         <AvatarFallback>JD</AvatarFallback>
       </Avatar>
     </Flex>
-  )
+  );
 }
 
 const navigationHeaderCode = `import { Flex } from "@/components/ui/flex"
@@ -279,7 +295,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
   <Avatar size="sm">
     <AvatarFallback>JD</AvatarFallback>
   </Avatar>
-</Flex>`
+</Flex>`;
 
 function BoxBasicDemo() {
   return (
@@ -294,7 +310,7 @@ function BoxBasicDemo() {
         Custom colors
       </Box>
     </div>
-  )
+  );
 }
 
 const boxBasicCode = `import { Box } from "@/components/ui/box"
@@ -312,18 +328,26 @@ const boxBasicCode = `import { Box } from "@/components/ui/box"
 // Custom Colors
 <Box p={4} bg="primary" color="primary-foreground" rounded="lg">
   Custom colors
-</Box>`
+</Box>`;
 
 function BoxRoundedDemo() {
   return (
     <div className="flex flex-wrap gap-4">
-      {(["none", "sm", "default", "md", "lg", "xl", "2xl", "full"] as const).map((rounded) => (
-        <Box key={rounded} p={4} bg="primary/20" rounded={rounded} className="min-w-20 text-center">
+      {(
+        ["none", "sm", "default", "md", "lg", "xl", "2xl", "full"] as const
+      ).map((rounded) => (
+        <Box
+          key={rounded}
+          p={4}
+          bg="primary/20"
+          rounded={rounded}
+          className="min-w-20 text-center"
+        >
           <span className="text-xs">{rounded}</span>
         </Box>
       ))}
     </div>
-  )
+  );
 }
 
 const boxRoundedCode = `import { Box } from "@/components/ui/box"
@@ -331,18 +355,27 @@ const boxRoundedCode = `import { Box } from "@/components/ui/box"
 // Border radius variants
 <Box p={4} rounded="lg">Large radius</Box>
 <Box p={4} rounded="full">Pill</Box>
-<Box p={4} rounded="none">No radius</Box>`
+<Box p={4} rounded="none">No radius</Box>`;
 
 function BoxShadowDemo() {
   return (
     <div className="flex flex-wrap gap-4">
-      {(["none", "sm", "default", "md", "lg", "xl", "2xl"] as const).map((shadow) => (
-        <Box key={shadow} p={4} shadow={shadow} rounded="lg" bg="background" className="min-w-20 text-center">
-          <span className="text-xs">{shadow}</span>
-        </Box>
-      ))}
+      {(["none", "sm", "default", "md", "lg", "xl", "2xl"] as const).map(
+        (shadow) => (
+          <Box
+            key={shadow}
+            p={4}
+            shadow={shadow}
+            rounded="lg"
+            bg="background"
+            className="min-w-20 text-center"
+          >
+            <span className="text-xs">{shadow}</span>
+          </Box>
+        ),
+      )}
     </div>
-  )
+  );
 }
 
 const boxShadowCode = `import { Box } from "@/components/ui/box"
@@ -351,7 +384,7 @@ const boxShadowCode = `import { Box } from "@/components/ui/box"
 <Box p={4} shadow="sm">Small shadow</Box>
 <Box p={4} shadow="md">Medium shadow</Box>
 <Box p={4} shadow="lg">Large shadow</Box>
-<Box p={4} shadow="xl">Extra large</Box>`
+<Box p={4} shadow="xl">Extra large</Box>`;
 
 function SemanticBoxDemo() {
   return (
@@ -361,7 +394,7 @@ function SemanticBoxDemo() {
         This Box renders as an &lt;article&gt; element for semantic HTML.
       </p>
     </Box>
-  )
+  );
 }
 
 const semanticBoxCode = `import { Box } from "@/components/ui/box"
@@ -370,18 +403,27 @@ const semanticBoxCode = `import { Box } from "@/components/ui/box"
 <Box as="article" p={6} rounded="lg" border shadow="sm">
   <h2>Article Title</h2>
   <p>Content</p>
-</Box>`
+</Box>`;
 
 function QuickCardDemo() {
   return (
-    <Box p={6} rounded="xl" shadow="lg" bg="background" border className="max-w-sm">
+    <Box
+      p={6}
+      rounded="xl"
+      shadow="lg"
+      bg="background"
+      border
+      className="max-w-sm"
+    >
       <HStack gap={4} align="start">
         <Avatar>
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
         <VStack gap={1} className="flex-1">
           <span className="font-semibold">John Doe</span>
-          <span className="text-sm text-muted-foreground">Software Engineer</span>
+          <span className="text-sm text-muted-foreground">
+            Software Engineer
+          </span>
           <HStack gap={2} className="mt-2">
             <Badge variant="secondary">React</Badge>
             <Badge variant="secondary">TypeScript</Badge>
@@ -389,7 +431,7 @@ function QuickCardDemo() {
         </VStack>
       </HStack>
     </Box>
-  )
+  );
 }
 
 const quickCardCode = `import { Box } from "@/components/ui/box"
@@ -412,22 +454,30 @@ import { HStack, VStack } from "@/components/ui/stack"
       </HStack>
     </VStack>
   </HStack>
-</Box>`
+</Box>`;
 
 function NotificationBoxDemo() {
   return (
-    <Box p={4} rounded="lg" bg="primary/10" border className="border-primary/20 max-w-md">
+    <Box
+      p={4}
+      rounded="lg"
+      bg="primary/10"
+      border
+      className="border-primary/20 max-w-md"
+    >
       <HStack gap={3}>
         <Center className="size-10 rounded-full bg-primary/20">
           <IconCheck className="size-5 text-primary" />
         </Center>
         <VStack gap={0} className="flex-1">
           <span className="font-medium">Success!</span>
-          <span className="text-sm text-muted-foreground">Your changes have been saved.</span>
+          <span className="text-sm text-muted-foreground">
+            Your changes have been saved.
+          </span>
         </VStack>
       </HStack>
     </Box>
-  )
+  );
 }
 
 const notificationBoxCode = `import { Box } from "@/components/ui/box"
@@ -446,9 +496,9 @@ import { IconCheck } from "@tabler/icons-react"
       <span className="text-sm text-muted-foreground">Your changes have been saved.</span>
     </VStack>
   </HStack>
-</Box>`
+</Box>`;
 
-export function LayoutUtilitiesPage() {
+export default function LayoutUtilitiesPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -461,15 +511,18 @@ export function LayoutUtilitiesPage() {
         features={[
           {
             title: "Flexible Centering",
-            description: "Three centering strategies: flex, grid, and absolute positioning for any layout scenario.",
+            description:
+              "Three centering strategies: flex, grid, and absolute positioning for any layout scenario.",
           },
           {
             title: "Smart Spacing",
-            description: "Auto spacer pushes elements apart, fixed spacer adds consistent gaps.",
+            description:
+              "Auto spacer pushes elements apart, fixed spacer adds consistent gaps.",
           },
           {
             title: "Polymorphic Box",
-            description: "Semantic HTML with utility props for quick styling without className bloat.",
+            description:
+              "Semantic HTML with utility props for quick styling without className bloat.",
           },
         ]}
       />
@@ -654,38 +707,128 @@ export function LayoutUtilitiesPage() {
           {
             title: "Center Props",
             props: [
-              { prop: "type", type: '"flex" | "grid" | "absolute"', default: "flex", description: "Centering method strategy" },
-              { prop: "inline", type: "boolean", default: "false", description: "Use inline-flex or inline-grid" },
-              { prop: "as", type: "CenterElement", default: "div", description: "Semantic HTML element to render" },
+              {
+                prop: "type",
+                type: '"flex" | "grid" | "absolute"',
+                default: "flex",
+                description: "Centering method strategy",
+              },
+              {
+                prop: "inline",
+                type: "boolean",
+                default: "false",
+                description: "Use inline-flex or inline-grid",
+              },
+              {
+                prop: "as",
+                type: "CenterElement",
+                default: "div",
+                description: "Semantic HTML element to render",
+              },
             ],
           },
           {
             title: "Spacer Props",
             props: [
-              { prop: "size", type: "number | \"auto\"", default: "auto", description: "Fixed size or auto (flex: 1)" },
-              { prop: "axis", type: '"horizontal" | "vertical"', default: "horizontal", description: "Direction of spacing" },
+              {
+                prop: "size",
+                type: 'number | "auto"',
+                default: "auto",
+                description: "Fixed size or auto (flex: 1)",
+              },
+              {
+                prop: "axis",
+                type: '"horizontal" | "vertical"',
+                default: "horizontal",
+                description: "Direction of spacing",
+              },
             ],
           },
           {
             title: "Box Props",
             props: [
-              { prop: "as", type: "BoxElement", default: "div", description: "Semantic HTML element to render" },
-              { prop: "p", type: "0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12", default: "-", description: "Padding on all sides" },
-              { prop: "px", type: "0-8", default: "-", description: "Horizontal padding" },
-              { prop: "py", type: "0-8", default: "-", description: "Vertical padding" },
-              { prop: "rounded", type: "RoundedVariant", default: "-", description: "Border radius value" },
-              { prop: "shadow", type: "ShadowVariant", default: "-", description: "Box shadow value" },
-              { prop: "bg", type: "string", default: "-", description: "Background color (Tailwind without bg-)" },
-              { prop: "color", type: "string", default: "-", description: "Text color (Tailwind without text-)" },
-              { prop: "border", type: "boolean | string", default: "-", description: "Border (true or custom)" },
-              { prop: "w", type: "string", default: "-", description: "Width (Tailwind without w-)" },
-              { prop: "h", type: "string", default: "-", description: "Height (Tailwind without h-)" },
-              { prop: "display", type: "DisplayVariant", default: "-", description: "CSS display property" },
-              { prop: "position", type: "PositionVariant", default: "-", description: "CSS position property" },
+              {
+                prop: "as",
+                type: "BoxElement",
+                default: "div",
+                description: "Semantic HTML element to render",
+              },
+              {
+                prop: "p",
+                type: "0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12",
+                default: "-",
+                description: "Padding on all sides",
+              },
+              {
+                prop: "px",
+                type: "0-8",
+                default: "-",
+                description: "Horizontal padding",
+              },
+              {
+                prop: "py",
+                type: "0-8",
+                default: "-",
+                description: "Vertical padding",
+              },
+              {
+                prop: "rounded",
+                type: "RoundedVariant",
+                default: "-",
+                description: "Border radius value",
+              },
+              {
+                prop: "shadow",
+                type: "ShadowVariant",
+                default: "-",
+                description: "Box shadow value",
+              },
+              {
+                prop: "bg",
+                type: "string",
+                default: "-",
+                description: "Background color (Tailwind without bg-)",
+              },
+              {
+                prop: "color",
+                type: "string",
+                default: "-",
+                description: "Text color (Tailwind without text-)",
+              },
+              {
+                prop: "border",
+                type: "boolean | string",
+                default: "-",
+                description: "Border (true or custom)",
+              },
+              {
+                prop: "w",
+                type: "string",
+                default: "-",
+                description: "Width (Tailwind without w-)",
+              },
+              {
+                prop: "h",
+                type: "string",
+                default: "-",
+                description: "Height (Tailwind without h-)",
+              },
+              {
+                prop: "display",
+                type: "DisplayVariant",
+                default: "-",
+                description: "CSS display property",
+              },
+              {
+                prop: "position",
+                type: "PositionVariant",
+                default: "-",
+                description: "CSS position property",
+              },
             ],
           },
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -6,9 +6,9 @@ import {
   CollapsiblePanel,
   usePanelRef,
   type Layout,
-} from "@/components/ui/resizable"
-import { Button } from "@/components/ui/button"
-import { IconArrowsMove, IconColumns, IconRefresh } from "@tabler/icons-react"
+} from "@/components/ui/resizable";
+import { Button } from "@/components/ui/button";
+import { IconArrowsMove, IconColumns, IconRefresh } from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -18,10 +18,10 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 function BasicDemo() {
-  const [layout, setLayout] = React.useState<Layout>({})
+  const [layout, setLayout] = React.useState<Layout>({});
 
   return (
     <div className="h-48 rounded-lg border border-border overflow-hidden">
@@ -46,7 +46,7 @@ function BasicDemo() {
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
-  )
+  );
 }
 
 const basicCode = `import * as React from "react"
@@ -84,7 +84,7 @@ function BasicDemo() {
       </ResizablePanelGroup>
     </div>
   )
-}`
+}`;
 
 function HandleVariantsDemo() {
   return (
@@ -146,7 +146,7 @@ function HandleVariantsDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const handleVariantsCode = `import {
@@ -219,11 +219,11 @@ function HandleVariantsDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function MinMaxDemo() {
-  const [isCollapsed, setIsCollapsed] = React.useState(false)
-  const sidebarPanelRef = usePanelRef()
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const sidebarPanelRef = usePanelRef();
 
   return (
     <div className="space-y-2">
@@ -257,7 +257,7 @@ function MinMaxDemo() {
             minSize={15}
             maxSize={40}
             onResize={(size) => {
-              setIsCollapsed(size.asPercentage <= 1)
+              setIsCollapsed(size.asPercentage <= 1);
             }}
           >
             <div className="flex h-full items-center justify-center p-4 bg-muted/30">
@@ -273,7 +273,7 @@ function MinMaxDemo() {
         </ResizablePanelGroup>
       </div>
     </div>
-  )
+  );
 }
 
 const minMaxCode = `import * as React from "react"
@@ -336,7 +336,7 @@ function MinMaxDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function MultipleDemo() {
   return (
@@ -361,7 +361,7 @@ function MultipleDemo() {
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
-  )
+  );
 }
 
 const multipleCode = `import {
@@ -394,7 +394,7 @@ function MultipleDemo() {
       </ResizablePanelGroup>
     </div>
   )
-}`
+}`;
 
 function OrientationDemo() {
   return (
@@ -436,7 +436,7 @@ function OrientationDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const orientationCode = `import {
@@ -487,7 +487,7 @@ function OrientationDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 const usageCode = `import {
   ResizablePanelGroup,
@@ -536,9 +536,9 @@ const panelRef = usePanelRef();
 // Programmatic control
 panelRef.current?.collapse();
 panelRef.current?.expand();
-panelRef.current?.resize(30);`
+panelRef.current?.resize(30);`;
 
-export function ResizablePage() {
+export default function ResizablePage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -551,17 +551,20 @@ export function ResizablePage() {
         features={[
           {
             title: "Flexible Layouts",
-            description: "Support for horizontal and vertical panel arrangements with any number of panels.",
+            description:
+              "Support for horizontal and vertical panel arrangements with any number of panels.",
             icon: <IconArrowsMove className="h-4 w-4" />,
           },
           {
             title: "Collapsible Panels",
-            description: "Imperative API for collapsing and expanding panels with smooth transitions.",
+            description:
+              "Imperative API for collapsing and expanding panels with smooth transitions.",
             icon: <IconColumns className="h-4 w-4" />,
           },
           {
             title: "Real-time Updates",
-            description: "Track layout changes with onLayoutChange callbacks and get precise size values.",
+            description:
+              "Track layout changes with onLayoutChange callbacks and get precise size values.",
             icon: <IconRefresh className="h-4 w-4" />,
           },
         ]}
@@ -796,5 +799,5 @@ export function ResizablePage() {
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

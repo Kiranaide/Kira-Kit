@@ -11,7 +11,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { IconInfoCircle, IconSettings, IconAlertCircle } from "@tabler/icons-react";
+import {
+  IconInfoCircle,
+  IconSettings,
+  IconAlertCircle,
+} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -104,9 +108,7 @@ function PositionsDemo() {
     <div className="flex flex-wrap items-center justify-center gap-4">
       {positions.map(({ side, label }) => (
         <Popover key={side}>
-          <PopoverTrigger
-            render={<Button variant="outline">{label}</Button>}
-          />
+          <PopoverTrigger render={<Button variant="outline">{label}</Button>} />
           <PopoverContent side={side}>
             <PopoverArrow />
             <PopoverTitle>Position: {label}</PopoverTitle>
@@ -162,9 +164,7 @@ function AlignmentsDemo() {
     <div className="flex flex-wrap items-center justify-center gap-4">
       {alignments.map(({ align, label }) => (
         <Popover key={align}>
-          <PopoverTrigger
-            render={<Button variant="outline">{label}</Button>}
-          />
+          <PopoverTrigger render={<Button variant="outline">{label}</Button>} />
           <PopoverContent side="top" align={align}>
             <PopoverArrow />
             <PopoverTitle>Align: {label}</PopoverTitle>
@@ -221,14 +221,14 @@ function SideOffsetDemo() {
     <div className="flex flex-wrap items-center justify-center gap-4">
       {offsets.map(({ offset, label }) => (
         <Popover key={offset}>
-          <PopoverTrigger
-            render={<Button variant="outline">{label}</Button>}
-          />
+          <PopoverTrigger render={<Button variant="outline">{label}</Button>} />
           <PopoverContent side="bottom" sideOffset={offset}>
             <PopoverArrow />
             <PopoverTitle>Offset: {label}</PopoverTitle>
             <PopoverDescription>
-              This popover is {offset === 0 ? "directly adjacent" : `${offset}px away`} from the trigger.
+              This popover is{" "}
+              {offset === 0 ? "directly adjacent" : `${offset}px away`} from the
+              trigger.
             </PopoverDescription>
           </PopoverContent>
         </Popover>
@@ -308,7 +308,11 @@ function FormDemo() {
           <div className="mt-4 space-y-3">
             <div className="grid gap-2">
               <Label htmlFor="focusInput">Name</Label>
-              <Input ref={inputRef} id="focusInput" placeholder="Enter name..." />
+              <Input
+                ref={inputRef}
+                id="focusInput"
+                placeholder="Enter name..."
+              />
             </div>
             <PopoverClose render={<Button size="sm">Done</Button>} />
           </div>
@@ -486,7 +490,7 @@ import { Button } from "@/components/ui/button"
   ...
 </PopoverContent>`;
 
-export function PopoverPage() {
+export default function PopoverPage() {
   const features = [
     {
       title: "Accessible",

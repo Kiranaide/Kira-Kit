@@ -1,7 +1,11 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { IconBrandTabler, IconKeyboard, IconSettings } from "@tabler/icons-react";
+import {
+  IconBrandTabler,
+  IconKeyboard,
+  IconSettings,
+} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -20,19 +24,70 @@ const items = Array.from({ length: 50 }, (_, i) => ({
 }));
 
 const tags = [
-  "React", "TypeScript", "JavaScript", "CSS", "HTML", "Node.js",
-  "Python", "Go", "Rust", "Vue", "Angular", "Svelte", "Next.js",
-  "Tailwind", "GraphQL", "REST", "Docker", "Kubernetes", "AWS",
+  "React",
+  "TypeScript",
+  "JavaScript",
+  "CSS",
+  "HTML",
+  "Node.js",
+  "Python",
+  "Go",
+  "Rust",
+  "Vue",
+  "Angular",
+  "Svelte",
+  "Next.js",
+  "Tailwind",
+  "GraphQL",
+  "REST",
+  "Docker",
+  "Kubernetes",
+  "AWS",
 ];
 
 const chatMessages = [
-  { sender: "Alice", message: "Hey, how's project going?", time: "10:30 AM", self: false },
-  { sender: "You", message: "Going well! Just finished layout components.", time: "10:32 AM", self: true },
-  { sender: "Alice", message: "That's great! Can you show me a demo?", time: "10:33 AM", self: false },
-  { sender: "You", message: "Sure, I'll share my screen in a bit.", time: "10:35 AM", self: true },
-  { sender: "Alice", message: "Perfect, thanks!", time: "10:36 AM", self: false },
-  { sender: "You", message: "No problem. The ScrollArea component is particularly nice.", time: "10:38 AM", self: true },
-  { sender: "Alice", message: "Looking forward to seeing it!", time: "10:40 AM", self: false },
+  {
+    sender: "Alice",
+    message: "Hey, how's project going?",
+    time: "10:30 AM",
+    self: false,
+  },
+  {
+    sender: "You",
+    message: "Going well! Just finished layout components.",
+    time: "10:32 AM",
+    self: true,
+  },
+  {
+    sender: "Alice",
+    message: "That's great! Can you show me a demo?",
+    time: "10:33 AM",
+    self: false,
+  },
+  {
+    sender: "You",
+    message: "Sure, I'll share my screen in a bit.",
+    time: "10:35 AM",
+    self: true,
+  },
+  {
+    sender: "Alice",
+    message: "Perfect, thanks!",
+    time: "10:36 AM",
+    self: false,
+  },
+  {
+    sender: "You",
+    message: "No problem. The ScrollArea component is particularly nice.",
+    time: "10:38 AM",
+    self: true,
+  },
+  {
+    sender: "Alice",
+    message: "Looking forward to seeing it!",
+    time: "10:40 AM",
+    self: false,
+  },
 ];
 
 function VerticalScrollDemo() {
@@ -40,7 +95,10 @@ function VerticalScrollDemo() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <p className="text-sm text-muted-foreground mb-2">Default</p>
-        <ScrollArea className="h-72 border rounded-lg" aria-label="Scrollable list">
+        <ScrollArea
+          className="h-72 border rounded-lg"
+          aria-label="Scrollable list"
+        >
           <div className="p-4 space-y-2">
             {items.slice(0, 20).map((item) => (
               <div
@@ -48,7 +106,9 @@ function VerticalScrollDemo() {
                 className="p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
               >
                 <div className="font-medium">{item.name}</div>
-                <div className="text-sm text-muted-foreground">{item.description}</div>
+                <div className="text-sm text-muted-foreground">
+                  {item.description}
+                </div>
               </div>
             ))}
           </div>
@@ -68,7 +128,9 @@ function VerticalScrollDemo() {
                 </Avatar>
                 <div>
                   <div className="font-medium text-sm">User {item.id}</div>
-                  <div className="text-xs text-muted-foreground">user{item.id}@example.com</div>
+                  <div className="text-xs text-muted-foreground">
+                    user{item.id}@example.com
+                  </div>
                 </div>
               </div>
             ))}
@@ -121,7 +183,11 @@ function VerticalScrollDemo() {
 
 function HorizontalScrollDemo() {
   return (
-    <ScrollArea orientation="horizontal" className="w-full border rounded-lg" aria-label="Tags">
+    <ScrollArea
+      orientation="horizontal"
+      className="w-full border rounded-lg"
+      aria-label="Tags"
+    >
       <div className="flex gap-2 p-4">
         {tags.map((tag) => (
           <Badge key={tag} variant="secondary" className="shrink-0">
@@ -154,13 +220,29 @@ function HorizontalScrollDemo() {
 
 function BothDirectionsDemo() {
   return (
-    <ScrollArea orientation="both" className="h-72 border rounded-lg" aria-label="Large content">
+    <ScrollArea
+      orientation="both"
+      className="h-72 border rounded-lg"
+      aria-label="Large content"
+    >
       <div className="p-4" style={{ width: "150%", minWidth: "800px" }}>
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              {["ID", "Name", "Email", "Role", "Status", "Department", "Location", "Joined"].map((header) => (
-                <th key={header} className="text-left p-3 bg-muted font-medium border-b whitespace-nowrap">
+              {[
+                "ID",
+                "Name",
+                "Email",
+                "Role",
+                "Status",
+                "Department",
+                "Location",
+                "Joined",
+              ].map((header) => (
+                <th
+                  key={header}
+                  className="text-left p-3 bg-muted font-medium border-b whitespace-nowrap"
+                >
                   {header}
                 </th>
               ))}
@@ -170,8 +252,12 @@ function BothDirectionsDemo() {
             {items.slice(0, 15).map((item) => (
               <tr key={item.id} className="hover:bg-muted/50">
                 <td className="p-3 border-b">{item.id}</td>
-                <td className="p-3 border-b whitespace-nowrap">User {item.id}</td>
-                <td className="p-3 border-b whitespace-nowrap">user{item.id}@example.com</td>
+                <td className="p-3 border-b whitespace-nowrap">
+                  User {item.id}
+                </td>
+                <td className="p-3 border-b whitespace-nowrap">
+                  user{item.id}@example.com
+                </td>
                 <td className="p-3 border-b">Developer</td>
                 <td className="p-3 border-b">
                   <Badge variant={item.id % 2 === 0 ? "default" : "secondary"}>
@@ -179,8 +265,12 @@ function BothDirectionsDemo() {
                   </Badge>
                 </td>
                 <td className="p-3 border-b whitespace-nowrap">Engineering</td>
-                <td className="p-3 border-b whitespace-nowrap">San Francisco</td>
-                <td className="p-3 border-b whitespace-nowrap">2024-01-{String(item.id).padStart(2, "0")}</td>
+                <td className="p-3 border-b whitespace-nowrap">
+                  San Francisco
+                </td>
+                <td className="p-3 border-b whitespace-nowrap">
+                  2024-01-{String(item.id).padStart(2, "0")}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -289,7 +379,10 @@ function AccessibilityDemo() {
       <p className="text-sm text-muted-foreground">
         Focus the scroll area below and use keyboard navigation:
       </p>
-      <ScrollArea className="h-48 border rounded-lg" aria-label="Keyboard navigation demo">
+      <ScrollArea
+        className="h-48 border rounded-lg"
+        aria-label="Keyboard navigation demo"
+      >
         <div className="p-4 space-y-2">
           {items.slice(0, 15).map((item) => (
             <div key={item.id} className="p-3 bg-muted/50 rounded">
@@ -325,13 +418,23 @@ function AccessibilityDemo() {
 
 function ChatMessagesDemo() {
   return (
-    <ScrollArea className="h-64 border rounded-lg bg-muted/20" aria-label="Chat messages">
+    <ScrollArea
+      className="h-64 border rounded-lg bg-muted/20"
+      aria-label="Chat messages"
+    >
       <div className="p-4 space-y-4">
         {chatMessages.map((msg, i) => (
-          <div key={i} className={`flex ${msg.self ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[70%] p-3 rounded-lg ${msg.self ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+          <div
+            key={i}
+            className={`flex ${msg.self ? "justify-end" : "justify-start"}`}
+          >
+            <div
+              className={`max-w-[70%] p-3 rounded-lg ${msg.self ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+            >
               <div className="text-sm">{msg.message}</div>
-              <div className={`text-xs mt-1 ${msg.self ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+              <div
+                className={`text-xs mt-1 ${msg.self ? "text-primary-foreground/70" : "text-muted-foreground"}`}
+              >
                 {msg.time}
               </div>
             </div>
@@ -370,9 +473,13 @@ function ChatMessagesDemo() {
 
 function CodeBlockDemo() {
   return (
-    <ScrollArea orientation="horizontal" className="border rounded-lg bg-zinc-950" aria-label="Code example">
+    <ScrollArea
+      orientation="horizontal"
+      className="border rounded-lg bg-zinc-950"
+      aria-label="Code example"
+    >
       <pre className="p-4 text-sm text-zinc-100 font-mono">
-{`import { ScrollArea } from "@/components/ui/scroll-area"
+        {`import { ScrollArea } from "@/components/ui/scroll-area"
 
 function MyComponent() {
   return (
@@ -410,7 +517,7 @@ function MyComponent() {
   )
 }`;
 
-export function ScrollAreaPage() {
+export default function ScrollAreaPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -423,17 +530,20 @@ export function ScrollAreaPage() {
         features={[
           {
             title: "Accessible",
-            description: "Full keyboard navigation with arrow keys, Page Up/Down, and Home/End support. ARIA compliant with proper labeling.",
+            description:
+              "Full keyboard navigation with arrow keys, Page Up/Down, and Home/End support. ARIA compliant with proper labeling.",
             icon: <IconKeyboard className="h-4 w-4" />,
           },
           {
             title: "Customizable",
-            description: "Support for vertical, horizontal, and bidirectional scrolling with configurable scrollbar sizes.",
+            description:
+              "Support for vertical, horizontal, and bidirectional scrolling with configurable scrollbar sizes.",
             icon: <IconSettings className="h-4 w-4" />,
           },
           {
             title: "Native Feel",
-            description: "Styled native scrollbars that respect browser settings and user preferences while maintaining visual consistency.",
+            description:
+              "Styled native scrollbars that respect browser settings and user preferences while maintaining visual consistency.",
             icon: <IconBrandTabler className="h-4 w-4" />,
           },
         ]}
@@ -581,50 +691,146 @@ export function ScrollAreaPage() {
           {
             title: "ScrollArea",
             props: [
-              { prop: "orientation", type: `'vertical' | 'horizontal' | 'both'`, default: `'vertical'`, description: "Scroll direction for the scrollable area." },
-              { prop: "scrollbarSize", type: `'thin' | 'default' | 'thick'`, default: `'default'`, description: "Size of the scrollbars." },
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the scroll area container." },
-              { prop: "aria-label", type: "string", default: "-", description: "Accessibility label for the scrollable region." },
-              { prop: "asChild", type: "boolean", default: "false", description: "Merge props with child element." },
-              { prop: "children", type: "ReactNode", default: "-", description: "Content to be scrolled." },
+              {
+                prop: "orientation",
+                type: `'vertical' | 'horizontal' | 'both'`,
+                default: `'vertical'`,
+                description: "Scroll direction for the scrollable area.",
+              },
+              {
+                prop: "scrollbarSize",
+                type: `'thin' | 'default' | 'thick'`,
+                default: `'default'`,
+                description: "Size of the scrollbars.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description:
+                  "Additional CSS classes for the scroll area container.",
+              },
+              {
+                prop: "aria-label",
+                type: "string",
+                default: "-",
+                description: "Accessibility label for the scrollable region.",
+              },
+              {
+                prop: "asChild",
+                type: "boolean",
+                default: "false",
+                description: "Merge props with child element.",
+              },
+              {
+                prop: "children",
+                type: "ReactNode",
+                default: "-",
+                description: "Content to be scrolled.",
+              },
             ],
           },
           {
             title: "ScrollAreaRoot",
             props: [
-              { prop: "orientation", type: `'vertical' | 'horizontal' | 'both'`, default: `'vertical'`, description: "Scroll direction for the scrollable area." },
-              { prop: "scrollbarSize", type: `'thin' | 'default' | 'thick'`, default: `'default'`, description: "Size of the scrollbars." },
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the root element." },
-              { prop: "asChild", type: "boolean", default: "false", description: "Merge props with child element." },
+              {
+                prop: "orientation",
+                type: `'vertical' | 'horizontal' | 'both'`,
+                default: `'vertical'`,
+                description: "Scroll direction for the scrollable area.",
+              },
+              {
+                prop: "scrollbarSize",
+                type: `'thin' | 'default' | 'thick'`,
+                default: `'default'`,
+                description: "Size of the scrollbars.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the root element.",
+              },
+              {
+                prop: "asChild",
+                type: "boolean",
+                default: "false",
+                description: "Merge props with child element.",
+              },
             ],
           },
           {
             title: "ScrollAreaViewport",
             props: [
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the viewport element." },
-              { prop: "asChild", type: "boolean", default: "false", description: "Merge props with child element." },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the viewport element.",
+              },
+              {
+                prop: "asChild",
+                type: "boolean",
+                default: "false",
+                description: "Merge props with child element.",
+              },
             ],
           },
           {
             title: "ScrollAreaScrollbar",
             props: [
-              { prop: "orientation", type: `'vertical' | 'horizontal'`, default: "-", description: "Orientation of the scrollbar." },
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the scrollbar." },
-              { prop: "asChild", type: "boolean", default: "false", description: "Merge props with child element." },
+              {
+                prop: "orientation",
+                type: `'vertical' | 'horizontal'`,
+                default: "-",
+                description: "Orientation of the scrollbar.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the scrollbar.",
+              },
+              {
+                prop: "asChild",
+                type: "boolean",
+                default: "false",
+                description: "Merge props with child element.",
+              },
             ],
           },
           {
             title: "ScrollAreaThumb",
             props: [
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the scrollbar thumb." },
-              { prop: "asChild", type: "boolean", default: "false", description: "Merge props with child element." },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the scrollbar thumb.",
+              },
+              {
+                prop: "asChild",
+                type: "boolean",
+                default: "false",
+                description: "Merge props with child element.",
+              },
             ],
           },
           {
             title: "ScrollAreaCorner",
             props: [
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the corner element." },
-              { prop: "asChild", type: "boolean", default: "false", description: "Merge props with child element." },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the corner element.",
+              },
+              {
+                prop: "asChild",
+                type: "boolean",
+                default: "false",
+                description: "Merge props with child element.",
+              },
             ],
           },
         ]}

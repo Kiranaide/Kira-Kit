@@ -437,9 +437,7 @@ function SubmenuDemo() {
           <DropdownMenuItem>Analytics</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger
-              icon={<IconSettings className="w-4 h-4" />}
-            >
+            <DropdownMenuSubTrigger icon={<IconSettings className="w-4 h-4" />}>
               Settings
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
@@ -1131,7 +1129,7 @@ const demoTabs = [
 // Page Component
 // =============================================================================
 
-export function DropdownMenuPage() {
+export default function DropdownMenuPage() {
   return (
     <ComponentPage>
       <PageHeader

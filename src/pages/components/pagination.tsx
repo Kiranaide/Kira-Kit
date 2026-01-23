@@ -1,9 +1,9 @@
-import * as React from "react"
+import * as React from "react";
 import {
   IconNumbers,
   IconArrowsLeftRight,
   IconAdjustments,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 import {
   Pagination,
   PaginationContent,
@@ -18,17 +18,17 @@ import {
   PaginationSizeSelector,
   PaginationJump,
   PaginationStatus,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-  import { CodeBlock } from "@/components/ui/code-block"
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CodeBlock } from "@/components/ui/code-block";
 
 function DemoWrapper({
   title,
@@ -36,12 +36,12 @@ function DemoWrapper({
   children,
   code,
 }: {
-  title: string
-  description?: string
-  children: React.ReactNode
-  code: string
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+  code: string;
 }) {
-  const [view, setView] = React.useState<"preview" | "code">("preview")
+  const [view, setView] = React.useState<"preview" | "code">("preview");
 
   return (
     <Card>
@@ -51,10 +51,17 @@ function DemoWrapper({
             <CardTitle>{title}</CardTitle>
             {description && <CardDescription>{description}</CardDescription>}
           </div>
-          <Tabs value={view} onValueChange={(v) => setView(v as "preview" | "code")}>
+          <Tabs
+            value={view}
+            onValueChange={(v) => setView(v as "preview" | "code")}
+          >
             <TabsList>
-              <TabsTrigger value="preview" className="gap-1.5">Preview</TabsTrigger>
-              <TabsTrigger value="code" className="gap-1.5">Code</TabsTrigger>
+              <TabsTrigger value="preview" className="gap-1.5">
+                Preview
+              </TabsTrigger>
+              <TabsTrigger value="code" className="gap-1.5">
+                Code
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -67,7 +74,7 @@ function DemoWrapper({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function BasicDemo() {
@@ -91,7 +98,7 @@ function BasicDemo() {
         </PaginationItem>
       </PaginationContent>
     </Pagination>
-  )
+  );
 }
 
 const basicCode = `import {
@@ -125,7 +132,7 @@ export function BasicPagination() {
       </PaginationContent>
     </Pagination>
   )
-}`
+}`;
 
 function VariantsDemo() {
   return (
@@ -173,7 +180,7 @@ function VariantsDemo() {
         </Pagination>
       </div>
     </div>
-  )
+  );
 }
 
 const variantsCode = `import {
@@ -201,7 +208,7 @@ export function PaginationVariants() {
       ))}
     </div>
   )
-}`
+}`;
 
 function SizesDemo() {
   return (
@@ -267,7 +274,7 @@ function SizesDemo() {
         </Pagination>
       </div>
     </div>
-  )
+  );
 }
 
 const sizesCode = `import {
@@ -297,10 +304,10 @@ export function PaginationSizes() {
       ))}
     </div>
   )
-}`
+}`;
 
 function ControlledDemo() {
-  const [controlledPage, setControlledPage] = React.useState(1)
+  const [controlledPage, setControlledPage] = React.useState(1);
 
   return (
     <div className="space-y-4">
@@ -344,7 +351,7 @@ function ControlledDemo() {
         </button>
       </div>
     </div>
-  )
+  );
 }
 
 const controlledCode = `import { useState } from "react"
@@ -388,7 +395,7 @@ export function ControlledPagination() {
       </div>
     </div>
   )
-}`
+}`;
 
 function WithSelectDemo() {
   return (
@@ -417,7 +424,7 @@ function WithSelectDemo() {
       </div>
       <PaginationStatus />
     </Pagination>
-  )
+  );
 }
 
 const withSelectCode = `import {
@@ -455,9 +462,9 @@ export function PaginationWithSelect() {
       <PaginationStatus />
     </Pagination>
   )
-}`
+}`;
 
-export function PaginationPage() {
+export default function PaginationPage() {
   return (
     <div className="container mx-auto max-w-4xl space-y-12 py-10">
       <div className="space-y-4">
@@ -466,7 +473,8 @@ export function PaginationPage() {
           <Badge>v1.0</Badge>
         </div>
         <p className="text-lg text-muted-foreground">
-          Navigation for paginated content with smart page range calculation, accessibility features, and mobile-responsive layout.
+          Navigation for paginated content with smart page range calculation,
+          accessibility features, and mobile-responsive layout.
         </p>
       </div>
 
@@ -479,7 +487,8 @@ export function PaginationPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Automatic page range calculation with intelligent ellipsis placement that adapts as you navigate.
+            Automatic page range calculation with intelligent ellipsis placement
+            that adapts as you navigate.
           </CardContent>
         </Card>
         <Card>
@@ -490,7 +499,8 @@ export function PaginationPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Mobile-friendly layout with touch targets and flexible composition for any screen size.
+            Mobile-friendly layout with touch targets and flexible composition
+            for any screen size.
           </CardContent>
         </Card>
         <Card>
@@ -501,7 +511,8 @@ export function PaginationPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Multiple variants, sizes, colors, and composable sub-components for complete control.
+            Multiple variants, sizes, colors, and composable sub-components for
+            complete control.
           </CardContent>
         </Card>
       </div>
@@ -569,13 +580,21 @@ export function PaginationPage() {
       <Card>
         <CardHeader>
           <CardTitle>Keyboard Navigation</CardTitle>
-          <CardDescription>Full keyboard support for accessibility</CardDescription>
+          <CardDescription>
+            Full keyboard support for accessibility
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-2 sm:grid-cols-2">
             {[
-              { keys: "Tab", description: "Navigate between pagination controls" },
-              { keys: "Enter / Space", description: "Activate focused page or button" },
+              {
+                keys: "Tab",
+                description: "Navigate between pagination controls",
+              },
+              {
+                keys: "Enter / Space",
+                description: "Activate focused page or button",
+              },
               { keys: "Home", description: "Go to first page (when focused)" },
               { keys: "End", description: "Go to last page (when focused)" },
             ].map((shortcut, index) => (
@@ -583,7 +602,9 @@ export function PaginationPage() {
                 <kbd className="rounded border bg-muted px-2 py-1 text-xs font-mono">
                   {shortcut.keys}
                 </kbd>
-                <span className="text-sm text-muted-foreground">{shortcut.description}</span>
+                <span className="text-sm text-muted-foreground">
+                  {shortcut.description}
+                </span>
               </div>
             ))}
           </div>
@@ -593,7 +614,9 @@ export function PaginationPage() {
       <Card>
         <CardHeader>
           <CardTitle>Usage</CardTitle>
-          <CardDescription>Import and use the pagination components with your data.</CardDescription>
+          <CardDescription>
+            Import and use the pagination components with your data.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <CodeBlock
@@ -665,31 +688,94 @@ const currentPageData = pagination.getPageData(allData)`}
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">Prop</th>
-                    <th className="py-2 text-left font-medium w-[200px]">Type</th>
-                    <th className="py-2 text-left font-medium w-[100px]">Default</th>
+                    <th className="py-2 text-left font-medium w-[140px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium w-[100px]">
+                      Default
+                    </th>
                     <th className="py-2 text-left font-medium">Description</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {[
-                    { prop: "total", type: "number", description: "Total number of items" },
-                    { prop: "pageSize", type: "number", default: "10", description: "Items per page" },
-                    { prop: "page", type: "number", description: "Controlled page value (1-indexed)" },
-                    { prop: "defaultPage", type: "number", default: "1", description: "Initial page for uncontrolled mode" },
-                    { prop: "onPageChange", type: "(page: number) => void", description: "Called when page changes" },
-                    { prop: "onPageSizeChange", type: "(size: number) => void", description: "Called when page size changes" },
-                    { prop: "variant", type: '"default" | "outline" | "pills" | "ghost" | "rounded"', default: '"default"', description: "Visual style variant" },
-                    { prop: "color", type: '"default" | "success" | "warning" | "destructive"', default: '"default"', description: "Color variant for active state" },
-                    { prop: "size", type: '"sm" | "default" | "lg"', default: '"default"', description: "Size variant" },
-                    { prop: "disabled", type: "boolean", default: "false", description: "Disable all controls" },
-                    { prop: "maxPages", type: "number", default: "5", description: "Max visible page numbers" },
+                    {
+                      prop: "total",
+                      type: "number",
+                      description: "Total number of items",
+                    },
+                    {
+                      prop: "pageSize",
+                      type: "number",
+                      default: "10",
+                      description: "Items per page",
+                    },
+                    {
+                      prop: "page",
+                      type: "number",
+                      description: "Controlled page value (1-indexed)",
+                    },
+                    {
+                      prop: "defaultPage",
+                      type: "number",
+                      default: "1",
+                      description: "Initial page for uncontrolled mode",
+                    },
+                    {
+                      prop: "onPageChange",
+                      type: "(page: number) => void",
+                      description: "Called when page changes",
+                    },
+                    {
+                      prop: "onPageSizeChange",
+                      type: "(size: number) => void",
+                      description: "Called when page size changes",
+                    },
+                    {
+                      prop: "variant",
+                      type: '"default" | "outline" | "pills" | "ghost" | "rounded"',
+                      default: '"default"',
+                      description: "Visual style variant",
+                    },
+                    {
+                      prop: "color",
+                      type: '"default" | "success" | "warning" | "destructive"',
+                      default: '"default"',
+                      description: "Color variant for active state",
+                    },
+                    {
+                      prop: "size",
+                      type: '"sm" | "default" | "lg"',
+                      default: '"default"',
+                      description: "Size variant",
+                    },
+                    {
+                      prop: "disabled",
+                      type: "boolean",
+                      default: "false",
+                      description: "Disable all controls",
+                    },
+                    {
+                      prop: "maxPages",
+                      type: "number",
+                      default: "5",
+                      description: "Max visible page numbers",
+                    },
                   ].map((item, index) => (
                     <tr key={index}>
                       <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{item.type}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{item.default || "-"}</td>
-                      <td className="py-2 text-muted-foreground">{item.description}</td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {item.type}
+                      </td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {item.default || "-"}
+                      </td>
+                      <td className="py-2 text-muted-foreground">
+                        {item.description}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -703,22 +789,42 @@ const currentPageData = pagination.getPageData(allData)`}
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">Prop</th>
-                    <th className="py-2 text-left font-medium w-[200px]">Type</th>
-                    <th className="py-2 text-left font-medium w-[100px]">Default</th>
+                    <th className="py-2 text-left font-medium w-[140px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium w-[100px]">
+                      Default
+                    </th>
                     <th className="py-2 text-left font-medium">Description</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {[
-                    { prop: "className", type: "string", description: "Additional CSS classes" },
-                    { prop: "children", type: "ReactNode", description: "Pagination items" },
+                    {
+                      prop: "className",
+                      type: "string",
+                      description: "Additional CSS classes",
+                    },
+                    {
+                      prop: "children",
+                      type: "ReactNode",
+                      description: "Pagination items",
+                    },
                   ].map((item, index) => (
                     <tr key={index}>
                       <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{item.type}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">-</td>
-                      <td className="py-2 text-muted-foreground">{item.description}</td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {item.type}
+                      </td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        -
+                      </td>
+                      <td className="py-2 text-muted-foreground">
+                        {item.description}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -732,22 +838,42 @@ const currentPageData = pagination.getPageData(allData)`}
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">Prop</th>
-                    <th className="py-2 text-left font-medium w-[200px]">Type</th>
-                    <th className="py-2 text-left font-medium w-[100px]">Default</th>
+                    <th className="py-2 text-left font-medium w-[140px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium w-[100px]">
+                      Default
+                    </th>
                     <th className="py-2 text-left font-medium">Description</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {[
-                    { prop: "className", type: "string", description: "Additional CSS classes" },
-                    { prop: "children", type: "ReactNode", description: "Item content (buttons, links)" },
+                    {
+                      prop: "className",
+                      type: "string",
+                      description: "Additional CSS classes",
+                    },
+                    {
+                      prop: "children",
+                      type: "ReactNode",
+                      description: "Item content (buttons, links)",
+                    },
                   ].map((item, index) => (
                     <tr key={index}>
                       <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{item.type}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">-</td>
-                      <td className="py-2 text-muted-foreground">{item.description}</td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {item.type}
+                      </td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        -
+                      </td>
+                      <td className="py-2 text-muted-foreground">
+                        {item.description}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -756,27 +882,50 @@ const currentPageData = pagination.getPageData(allData)`}
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">PaginationNext / PaginationPrevious</h3>
+            <h3 className="text-lg font-semibold">
+              PaginationNext / PaginationPrevious
+            </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">Prop</th>
-                    <th className="py-2 text-left font-medium w-[200px]">Type</th>
-                    <th className="py-2 text-left font-medium w-[100px]">Default</th>
+                    <th className="py-2 text-left font-medium w-[140px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium w-[100px]">
+                      Default
+                    </th>
                     <th className="py-2 text-left font-medium">Description</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {[
-                    { prop: "className", type: "string", description: "Additional CSS classes" },
-                    { prop: "showLabel", type: "boolean", default: "false", description: "Show text label instead of icon" },
+                    {
+                      prop: "className",
+                      type: "string",
+                      description: "Additional CSS classes",
+                    },
+                    {
+                      prop: "showLabel",
+                      type: "boolean",
+                      default: "false",
+                      description: "Show text label instead of icon",
+                    },
                   ].map((item, index) => (
                     <tr key={index}>
                       <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{item.type}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{item.default || "-"}</td>
-                      <td className="py-2 text-muted-foreground">{item.description}</td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {item.type}
+                      </td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {item.default || "-"}
+                      </td>
+                      <td className="py-2 text-muted-foreground">
+                        {item.description}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -790,23 +939,48 @@ const currentPageData = pagination.getPageData(allData)`}
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">Prop</th>
-                    <th className="py-2 text-left font-medium w-[200px]">Type</th>
-                    <th className="py-2 text-left font-medium w-[100px]">Default</th>
+                    <th className="py-2 text-left font-medium w-[140px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium w-[100px]">
+                      Default
+                    </th>
                     <th className="py-2 text-left font-medium">Description</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {[
-                    { prop: "isActive", type: "boolean", default: "false", description: "Whether this is the active page" },
-                    { prop: "page", type: "number", description: "Page number (for manual links)" },
-                    { prop: "onClick", type: "() => void", description: "Click handler" },
+                    {
+                      prop: "isActive",
+                      type: "boolean",
+                      default: "false",
+                      description: "Whether this is the active page",
+                    },
+                    {
+                      prop: "page",
+                      type: "number",
+                      description: "Page number (for manual links)",
+                    },
+                    {
+                      prop: "onClick",
+                      type: "() => void",
+                      description: "Click handler",
+                    },
                   ].map((item, index) => (
                     <tr key={index}>
                       <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{item.type}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{item.default || "-"}</td>
-                      <td className="py-2 text-muted-foreground">{item.description}</td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {item.type}
+                      </td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {item.default || "-"}
+                      </td>
+                      <td className="py-2 text-muted-foreground">
+                        {item.description}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -815,35 +989,89 @@ const currentPageData = pagination.getPageData(allData)`}
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">usePagination Hook Returns</h3>
+            <h3 className="text-lg font-semibold">
+              usePagination Hook Returns
+            </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">Prop</th>
-                    <th className="py-2 text-left font-medium w-[200px]">Type</th>
-                    <th className="py-2 text-left font-medium w-[100px]">Default</th>
+                    <th className="py-2 text-left font-medium w-[140px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium w-[100px]">
+                      Default
+                    </th>
                     <th className="py-2 text-left font-medium">Description</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {[
-                    { prop: "page", type: "number", description: "Current page (1-indexed)" },
-                    { prop: "pageCount", type: "number", description: "Total number of pages" },
-                    { prop: "startItem / endItem", type: "number", description: "Item range for current page (1-indexed)" },
-                    { prop: "hasPrev / hasNext", type: "boolean", description: "Navigation availability" },
-                    { prop: "isFirst / isLast", type: "boolean", description: "Whether on first or last page" },
-                    { prop: "setPage(n)", type: "function", description: "Go to specific page" },
-                    { prop: "nextPage() / prevPage()", type: "function", description: "Navigate forward/backward" },
-                    { prop: "firstPage() / lastPage()", type: "function", description: "Navigate to first/last page" },
-                    { prop: "getPageRange()", type: "PageRangeItem[]", description: "Get page numbers with ellipsis" },
-                    { prop: "getPageData(data)", type: "function", description: "Slice array for current page" },
+                    {
+                      prop: "page",
+                      type: "number",
+                      description: "Current page (1-indexed)",
+                    },
+                    {
+                      prop: "pageCount",
+                      type: "number",
+                      description: "Total number of pages",
+                    },
+                    {
+                      prop: "startItem / endItem",
+                      type: "number",
+                      description: "Item range for current page (1-indexed)",
+                    },
+                    {
+                      prop: "hasPrev / hasNext",
+                      type: "boolean",
+                      description: "Navigation availability",
+                    },
+                    {
+                      prop: "isFirst / isLast",
+                      type: "boolean",
+                      description: "Whether on first or last page",
+                    },
+                    {
+                      prop: "setPage(n)",
+                      type: "function",
+                      description: "Go to specific page",
+                    },
+                    {
+                      prop: "nextPage() / prevPage()",
+                      type: "function",
+                      description: "Navigate forward/backward",
+                    },
+                    {
+                      prop: "firstPage() / lastPage()",
+                      type: "function",
+                      description: "Navigate to first/last page",
+                    },
+                    {
+                      prop: "getPageRange()",
+                      type: "PageRangeItem[]",
+                      description: "Get page numbers with ellipsis",
+                    },
+                    {
+                      prop: "getPageData(data)",
+                      type: "function",
+                      description: "Slice array for current page",
+                    },
                   ].map((item, index) => (
                     <tr key={index}>
                       <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{item.type}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">-</td>
-                      <td className="py-2 text-muted-foreground">{item.description}</td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {item.type}
+                      </td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        -
+                      </td>
+                      <td className="py-2 text-muted-foreground">
+                        {item.description}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -853,5 +1081,5 @@ const currentPageData = pagination.getPageData(allData)`}
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

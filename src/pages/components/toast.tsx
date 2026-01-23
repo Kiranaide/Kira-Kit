@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  IconAccessible,
-  IconLayoutGrid,
-  IconClick,
-} from "@tabler/icons-react";
+import { IconAccessible, IconLayoutGrid, IconClick } from "@tabler/icons-react";
 
 import { toast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
@@ -450,7 +446,9 @@ function DismissDemo() {
       </div>
 
       <div className="border-t pt-6">
-        <p className="text-sm text-muted-foreground mb-4">Programmatic dismiss:</p>
+        <p className="text-sm text-muted-foreground mb-4">
+          Programmatic dismiss:
+        </p>
         <div className="flex flex-wrap gap-4">
           <Button
             variant="outline"
@@ -810,7 +808,8 @@ const apiSections = [
         prop: "duration",
         type: "number",
         default: "4000",
-        description: "Duration in ms before auto-dismiss. Use Infinity for persistent",
+        description:
+          "Duration in ms before auto-dismiss. Use Infinity for persistent",
       },
       {
         prop: "position",
@@ -1057,7 +1056,7 @@ const demoTabs = [
 // =============================================================================
 // Main Page Component
 // =============================================================================
-export function ToastPage() {
+export default function ToastPage() {
   return (
     <ComponentPage>
       <PageHeader

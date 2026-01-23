@@ -1,7 +1,13 @@
-import { IconLoader2, IconSettings, IconCheck, IconBell, IconUser } from "@tabler/icons-react"
-import { Center } from "@/components/ui/center"
-import { VStack } from "@/components/ui/stack"
-import { Button } from "@/components/ui/button"
+import {
+  IconLoader2,
+  IconSettings,
+  IconCheck,
+  IconBell,
+  IconUser,
+} from "@tabler/icons-react";
+import { Center } from "@/components/ui/center";
+import { VStack } from "@/components/ui/stack";
+import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
   PageHeader,
@@ -9,7 +15,7 @@ import {
   DemoTabs,
   DemoWrapper,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 function CenterTypesDemo() {
   return (
@@ -35,7 +41,7 @@ function CenterTypesDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const centerTypesCode = `import { Center } from "@/components/ui/center"
@@ -55,7 +61,7 @@ const centerTypesCode = `import { Center } from "@/components/ui/center"
   <Center type="absolute">
     <Spinner />
   </Center>
-</div>`
+</div>`;
 
 function InlineCenterDemo() {
   return (
@@ -66,7 +72,7 @@ function InlineCenterDemo() {
       </Center>
       <span>with text around it.</span>
     </div>
-  )
+  );
 }
 
 const inlineCenterCode = `import { Center } from "@/components/ui/center"
@@ -84,7 +90,7 @@ import { Icon } from "@tabler/icons-react"
   <Center inline><IconA /></Center>
   <Center inline><IconB /></Center>
   <Center inline><IconC /></Center>
-</Flex>`
+</Flex>`;
 
 function LoadingOverlayDemo() {
   return (
@@ -98,7 +104,7 @@ function LoadingOverlayDemo() {
         </Center>
       </div>
     </div>
-  )
+  );
 }
 
 const loadingOverlayCode = `import { Center } from "@/components/ui/center"
@@ -115,7 +121,7 @@ import { IconLoader2 } from "@tabler/icons-react"
       </VStack>
     </Center>
   </div>
-</div>`
+</div>`;
 
 function EmptyStateDemo() {
   return (
@@ -126,12 +132,14 @@ function EmptyStateDemo() {
         </div>
         <div className="text-center space-y-2">
           <h4 className="font-semibold">No items yet</h4>
-          <p className="text-sm text-muted-foreground">Add your first item to get started</p>
+          <p className="text-sm text-muted-foreground">
+            Add your first item to get started
+          </p>
           <Button>Add Item</Button>
         </div>
       </VStack>
     </Center>
-  )
+  );
 }
 
 const emptyStateCode = `import { Center } from "@/components/ui/center"
@@ -151,7 +159,7 @@ import { Button } from "@/components/ui/button"
       <Button>Add Item</Button>
     </div>
   </VStack>
-</Center>`
+</Center>`;
 
 function ModalOverlayDemo() {
   return (
@@ -172,7 +180,7 @@ function ModalOverlayDemo() {
         </Center>
       </div>
     </div>
-  )
+  );
 }
 
 const modalOverlayCode = `import { Center } from "@/components/ui/center"
@@ -196,7 +204,7 @@ import { Button } from "@/components/ui/button"
       </div>
     </Center>
   </div>
-</div>`
+</div>`;
 
 function UserProfileDemo() {
   return (
@@ -210,7 +218,7 @@ function UserProfileDemo() {
         <p className="text-xs text-muted-foreground">New York, NY</p>
       </div>
     </div>
-  )
+  );
 }
 
 const userProfileCode = `import { Center } from "@/components/ui/center"
@@ -230,7 +238,7 @@ import { IconUser } from "@tabler/icons-react"
     <h4>John Doe</h4>
     <p className="text-sm text-muted-foreground">Software Engineer</p>
   </div>
-</div>`
+</div>`;
 
 function SizeVariantsDemo() {
   return (
@@ -248,7 +256,7 @@ function SizeVariantsDemo() {
         <span className="text-xs">w-48 h-24</span>
       </Center>
     </div>
-  )
+  );
 }
 
 const sizeVariantsCode = `import { Center } from "@/components/ui/center"
@@ -269,9 +277,9 @@ const sizeVariantsCode = `import { Center } from "@/components/ui/center"
 // Custom width and height
 <Center className="w-48 h-24 bg-primary/20 rounded">
   Content
-</Center>`
+</Center>`;
 
-export function CenterPage() {
+export default function CenterPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -284,15 +292,18 @@ export function CenterPage() {
         features={[
           {
             title: "Multiple Strategies",
-            description: "Choose between flex, grid, or absolute positioning based on your needs.",
+            description:
+              "Choose between flex, grid, or absolute positioning based on your needs.",
           },
           {
             title: "Inline Support",
-            description: "Center icons and small elements inline with text for badges and labels.",
+            description:
+              "Center icons and small elements inline with text for badges and labels.",
           },
           {
             title: "Semantic HTML",
-            description: "Render as semantic elements with the 'as' prop for better accessibility.",
+            description:
+              "Render as semantic elements with the 'as' prop for better accessibility.",
           },
         ]}
       />
@@ -399,31 +410,93 @@ export function CenterPage() {
           {
             title: "Center Props",
             props: [
-              { prop: "type", type: '"flex" | "grid" | "absolute"', default: "flex", description: "Centering method strategy" },
-              { prop: "inline", type: "boolean", default: "false", description: "Use inline-flex or inline-grid" },
-              { prop: "as", type: "CenterElement", default: "div", description: "Semantic HTML element to render" },
-              { prop: "className", type: "string", default: "-", description: "Additional Tailwind classes" },
+              {
+                prop: "type",
+                type: '"flex" | "grid" | "absolute"',
+                default: "flex",
+                description: "Centering method strategy",
+              },
+              {
+                prop: "inline",
+                type: "boolean",
+                default: "false",
+                description: "Use inline-flex or inline-grid",
+              },
+              {
+                prop: "as",
+                type: "CenterElement",
+                default: "div",
+                description: "Semantic HTML element to render",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional Tailwind classes",
+              },
             ],
           },
           {
             title: "Center Types",
             props: [
-              { prop: "flex", type: "string", default: "-", description: "Uses CSS flexbox. Best for most cases. Adds items-center justify-center." },
-              { prop: "grid", type: "string", default: "-", description: "Uses CSS Grid. Adds place-items-center. Good for simple containers." },
-              { prop: "absolute", type: "string", default: "-", description: "Uses absolute positioning. Requires relative parent. Adds top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2." },
+              {
+                prop: "flex",
+                type: "string",
+                default: "-",
+                description:
+                  "Uses CSS flexbox. Best for most cases. Adds items-center justify-center.",
+              },
+              {
+                prop: "grid",
+                type: "string",
+                default: "-",
+                description:
+                  "Uses CSS Grid. Adds place-items-center. Good for simple containers.",
+              },
+              {
+                prop: "absolute",
+                type: "string",
+                default: "-",
+                description:
+                  "Uses absolute positioning. Requires relative parent. Adds top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2.",
+              },
             ],
           },
           {
             title: "Usage Tips",
             props: [
-              { prop: "flex centering", type: "string", default: "-", description: "Default. Works for any content size. Use for general purpose centering." },
-              { prop: "grid centering", type: "string", default: "-", description: "Use when centering single element. Slightly more performant than flex." },
-              { prop: "absolute centering", type: "string", default: "-", description: "Use for overlays, modals, tooltips. Parent must have relative, fixed, or absolute positioning." },
-              { prop: "inline centering", type: "string", default: "-", description: "Set inline=true to use inline-flex or inline-grid. Useful for centering icons within badges." },
+              {
+                prop: "flex centering",
+                type: "string",
+                default: "-",
+                description:
+                  "Default. Works for any content size. Use for general purpose centering.",
+              },
+              {
+                prop: "grid centering",
+                type: "string",
+                default: "-",
+                description:
+                  "Use when centering single element. Slightly more performant than flex.",
+              },
+              {
+                prop: "absolute centering",
+                type: "string",
+                default: "-",
+                description:
+                  "Use for overlays, modals, tooltips. Parent must have relative, fixed, or absolute positioning.",
+              },
+              {
+                prop: "inline centering",
+                type: "string",
+                default: "-",
+                description:
+                  "Set inline=true to use inline-flex or inline-grid. Useful for centering icons within badges.",
+              },
             ],
           },
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

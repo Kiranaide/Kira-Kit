@@ -5,13 +5,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import {
-  IconAccessible,
-  IconPalette,
-  IconStack2,
-} from "@tabler/icons-react"
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { IconAccessible, IconPalette, IconStack2 } from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -20,7 +16,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 // =============================================================================
 // Demo Components
@@ -42,7 +38,7 @@ function BasicDemo() {
         <Button size="sm">Action</Button>
       </CardFooter>
     </Card>
-  )
+  );
 }
 
 const basicCode = `import {
@@ -65,7 +61,7 @@ const basicCode = `import {
   <CardFooter>
     <Button>Action</Button>
   </CardFooter>
-</Card>`
+</Card>`;
 
 function VariantsDemo() {
   return (
@@ -137,7 +133,7 @@ function VariantsDemo() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 const variantsCode = `import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -164,7 +160,7 @@ const variantsCode = `import { Card, CardHeader, CardTitle, CardContent } from "
 <Card variant="soft">...</Card>
 
 // Flat - no borders or shadows
-<Card variant="flat">...</Card>`
+<Card variant="flat">...</Card>`;
 
 function GlassDemo() {
   return (
@@ -172,16 +168,19 @@ function GlassDemo() {
       <Card variant="glass" className="max-w-md">
         <CardHeader>
           <CardTitle>Glass Card</CardTitle>
-          <CardDescription>See the blur effect behind this card.</CardDescription>
+          <CardDescription>
+            See the blur effect behind this card.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            The backdrop blur creates a frosted glass effect that blurs the colorful background behind it.
+            The backdrop blur creates a frosted glass effect that blurs the
+            colorful background behind it.
           </p>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 const glassCode = `// Glass card works best over colorful backgrounds
@@ -195,7 +194,7 @@ const glassCode = `// Glass card works best over colorful backgrounds
       Content with backdrop blur
     </CardContent>
   </Card>
-</div>`
+</div>`;
 
 function MoreVariantsDemo() {
   return (
@@ -223,20 +222,20 @@ function MoreVariantsDemo() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 const moreVariantsCode = `// Elevated 2 - stronger shadow
 <Card variant="elevated2">...</Card>
 
 // Flat - no borders or shadows
-<Card variant="flat">...</Card>`
+<Card variant="flat">...</Card>`;
 
 // =============================================================================
 // Main Page Component
 // =============================================================================
 
-export function CardPage() {
+export default function CardPage() {
   const features = [
     {
       title: "Accessible",
@@ -250,10 +249,11 @@ export function CardPage() {
     },
     {
       title: "Composable",
-      description: "Header, Content, Footer, Title, and Description sub-components.",
+      description:
+        "Header, Content, Footer, Title, and Description sub-components.",
       icon: <IconStack2 className="w-4 h-4 text-primary" />,
     },
-  ]
+  ];
 
   const demoTabs = [
     {
@@ -308,7 +308,7 @@ export function CardPage() {
         </DemoWrapper>
       ),
     },
-  ]
+  ];
 
   const usageCode = `import {
   Card,
@@ -333,53 +333,118 @@ export function CardPage() {
 <Card variant="interactive">...</Card>
 <Card variant="gradient">...</Card>
 <Card variant="glass">...</Card>
-<Card variant="elevated">...</Card>`
+<Card variant="elevated">...</Card>`;
 
   const apiReference = [
     {
       title: "Card",
       props: [
-        { prop: "variant", type: '"default" | "interactive" | "gradient" | "glass" | "outline" | "elevated" | "elevated2" | "bordered" | "soft" | "flat"', default: '"default"', description: "Visual style of the card" },
-        { prop: "className", type: "string", default: "-", description: "Additional CSS classes" },
-        { prop: "children", type: "ReactNode", default: "-", description: "Card content (Header, Content, Footer)" },
+        {
+          prop: "variant",
+          type: '"default" | "interactive" | "gradient" | "glass" | "outline" | "elevated" | "elevated2" | "bordered" | "soft" | "flat"',
+          default: '"default"',
+          description: "Visual style of the card",
+        },
+        {
+          prop: "className",
+          type: "string",
+          default: "-",
+          description: "Additional CSS classes",
+        },
+        {
+          prop: "children",
+          type: "ReactNode",
+          default: "-",
+          description: "Card content (Header, Content, Footer)",
+        },
       ],
     },
     {
       title: "CardHeader",
       props: [
-        { prop: "className", type: "string", default: "-", description: "Additional CSS classes" },
-        { prop: "children", type: "ReactNode", default: "-", description: "Header content (Title, Description)" },
+        {
+          prop: "className",
+          type: "string",
+          default: "-",
+          description: "Additional CSS classes",
+        },
+        {
+          prop: "children",
+          type: "ReactNode",
+          default: "-",
+          description: "Header content (Title, Description)",
+        },
       ],
     },
     {
       title: "CardTitle",
       props: [
-        { prop: "className", type: "string", default: "-", description: "Additional CSS classes" },
-        { prop: "children", type: "ReactNode", default: "-", description: "Title text" },
+        {
+          prop: "className",
+          type: "string",
+          default: "-",
+          description: "Additional CSS classes",
+        },
+        {
+          prop: "children",
+          type: "ReactNode",
+          default: "-",
+          description: "Title text",
+        },
       ],
     },
     {
       title: "CardDescription",
       props: [
-        { prop: "className", type: "string", default: "-", description: "Additional CSS classes" },
-        { prop: "children", type: "ReactNode", default: "-", description: "Description text" },
+        {
+          prop: "className",
+          type: "string",
+          default: "-",
+          description: "Additional CSS classes",
+        },
+        {
+          prop: "children",
+          type: "ReactNode",
+          default: "-",
+          description: "Description text",
+        },
       ],
     },
     {
       title: "CardContent",
       props: [
-        { prop: "className", type: "string", default: "-", description: "Additional CSS classes" },
-        { prop: "children", type: "ReactNode", default: "-", description: "Main content" },
+        {
+          prop: "className",
+          type: "string",
+          default: "-",
+          description: "Additional CSS classes",
+        },
+        {
+          prop: "children",
+          type: "ReactNode",
+          default: "-",
+          description: "Main content",
+        },
       ],
     },
     {
       title: "CardFooter",
       props: [
-        { prop: "className", type: "string", default: "-", description: "Additional CSS classes" },
-        { prop: "children", type: "ReactNode", default: "-", description: "Footer content (actions, buttons)" },
+        {
+          prop: "className",
+          type: "string",
+          default: "-",
+          description: "Additional CSS classes",
+        },
+        {
+          prop: "children",
+          type: "ReactNode",
+          default: "-",
+          description: "Footer content (actions, buttons)",
+        },
       ],
     },
-  ]
+  ];
 
   return (
     <ComponentPage>
@@ -397,5 +462,5 @@ export function CardPage() {
 
       <APIReference sections={apiReference} />
     </ComponentPage>
-  )
+  );
 }

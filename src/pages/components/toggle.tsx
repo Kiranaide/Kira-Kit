@@ -653,7 +653,7 @@ export function ToggleGroupVerticalDemo() {
 // Page Component
 // =============================================================================
 
-export function TogglePage() {
+export default function TogglePage() {
   const features = [
     {
       title: "Accessible",
@@ -799,8 +799,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
           prop: "multiple",
           type: "boolean",
           default: "false",
-          description:
-            "Allow multiple items to be selected simultaneously.",
+          description: "Allow multiple items to be selected simultaneously.",
         },
         {
           prop: "variant",

@@ -1,6 +1,10 @@
-import * as React from "react"
-import { ColorPicker } from "@/components/ui/color-picker"
-import { IconPalette, IconClipboard, IconAccessible } from "@tabler/icons-react"
+import * as React from "react";
+import { ColorPicker } from "@/components/ui/color-picker";
+import {
+  IconPalette,
+  IconClipboard,
+  IconAccessible,
+} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -9,14 +13,14 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 // =============================================================================
 // Demo Components
 // =============================================================================
 
 function BasicDemo() {
-  const [color, setColor] = React.useState<`#${string}`>("#3b82f6")
+  const [color, setColor] = React.useState<`#${string}`>("#3b82f6");
 
   return (
     <div className="flex items-center gap-4">
@@ -26,7 +30,7 @@ function BasicDemo() {
       />
       <span className="text-sm font-mono">{color}</span>
     </div>
-  )
+  );
 }
 
 const basicCode = `import { useState } from "react"
@@ -44,7 +48,7 @@ export function BasicColorPickerDemo() {
       <span className="text-sm font-mono">{color}</span>
     </div>
   )
-}`
+}`;
 
 function FormatsDemo() {
   return (
@@ -62,7 +66,7 @@ function FormatsDemo() {
         <ColorPicker value="#f59e0b" type="hsl" />
       </div>
     </div>
-  )
+  );
 }
 
 const formatsCode = `import { ColorPicker } from "@/components/ui/color-picker"
@@ -74,10 +78,10 @@ const formatsCode = `import { ColorPicker } from "@/components/ui/color-picker"
 <ColorPicker value="#8b5cf6" type="rgb" />
 
 // HSL format
-<ColorPicker value="#f59e0b" type="hsl" />`
+<ColorPicker value="#f59e0b" type="hsl" />`;
 
 function CustomSwatchesDemo() {
-  const [color, setColor] = React.useState<`#${string}`>("#22c55e")
+  const [color, setColor] = React.useState<`#${string}`>("#22c55e");
 
   return (
     <ColorPicker
@@ -94,7 +98,7 @@ function CustomSwatchesDemo() {
         "#ec4899",
       ]}
     />
-  )
+  );
 }
 
 const customSwatchesCode = `import { useState } from "react"
@@ -119,7 +123,7 @@ export function CustomSwatchesDemo() {
       ]}
     />
   )
-}`
+}`;
 
 function HideSwatchesDemo() {
   return (
@@ -128,7 +132,7 @@ function HideSwatchesDemo() {
       hideDefaultSwatches
       swatches={["#000000", "#ffffff", "#6366f1", "#ec4899"]}
     />
-  )
+  );
 }
 
 const hideSwatchesCode = `import { ColorPicker } from "@/components/ui/color-picker"
@@ -138,21 +142,25 @@ const hideSwatchesCode = `import { ColorPicker } from "@/components/ui/color-pic
   value="#6366f1"
   hideDefaultSwatches
   swatches={["#000000", "#ffffff", "#6366f1", "#ec4899"]}
-/>`
+/>`;
 
 function ContrastDemo() {
   return (
     <div className="flex flex-wrap gap-8">
       <div className="space-y-2">
-        <p className="text-xs font-medium text-muted-foreground">With Contrast</p>
+        <p className="text-xs font-medium text-muted-foreground">
+          With Contrast
+        </p>
         <ColorPicker value="#3b82f6" />
       </div>
       <div className="space-y-2">
-        <p className="text-xs font-medium text-muted-foreground">Hidden Contrast</p>
+        <p className="text-xs font-medium text-muted-foreground">
+          Hidden Contrast
+        </p>
         <ColorPicker value="#3b82f6" hideContrastRatio />
       </div>
     </div>
-  )
+  );
 }
 
 const contrastCode = `import { ColorPicker } from "@/components/ui/color-picker"
@@ -161,25 +169,25 @@ const contrastCode = `import { ColorPicker } from "@/components/ui/color-picker"
 <ColorPicker value="#3b82f6" />
 
 // Hide contrast ratio display
-<ColorPicker value="#3b82f6" hideContrastRatio />`
+<ColorPicker value="#3b82f6" hideContrastRatio />`;
 
 function DisabledDemo() {
   return (
     <div className="flex flex-wrap gap-4">
       <ColorPicker value="#94a3b8" disabled />
     </div>
-  )
+  );
 }
 
 const disabledCode = `import { ColorPicker } from "@/components/ui/color-picker"
 
-<ColorPicker value="#94a3b8" disabled />`
+<ColorPicker value="#94a3b8" disabled />`;
 
 // =============================================================================
 // Main Page Component
 // =============================================================================
 
-export function ColorPickerPage() {
+export default function ColorPickerPage() {
   const features = [
     {
       title: "Multiple Formats",
@@ -188,7 +196,8 @@ export function ColorPickerPage() {
     },
     {
       title: "Copy to Clipboard",
-      description: "Click the copy button to quickly copy the current color value.",
+      description:
+        "Click the copy button to quickly copy the current color value.",
       icon: <IconClipboard className="w-4 h-4 text-primary" />,
     },
     {
@@ -196,7 +205,7 @@ export function ColorPickerPage() {
       description: "Full keyboard navigation and WCAG contrast ratio display.",
       icon: <IconAccessible className="w-4 h-4 text-primary" />,
     },
-  ]
+  ];
 
   const demoTabs = [
     {
@@ -277,7 +286,7 @@ export function ColorPickerPage() {
         </DemoWrapper>
       ),
     },
-  ]
+  ];
 
   const usageCode = `import { useState } from "react"
 import { ColorPicker } from "@/components/ui/color-picker"
@@ -309,23 +318,64 @@ export function ColorPickerExample() {
 <ColorPicker value={color} hideContrastRatio />
 
 // Disabled state
-<ColorPicker value={color} disabled />`
+<ColorPicker value={color} disabled />`;
 
   const apiReference = [
     {
       title: "ColorPicker",
       props: [
-        { prop: "value", type: "`#${string}`", default: '"#000000"', description: "Current color value as HEX string" },
-        { prop: "onValueChange", type: "(value: ColorValue) => void", default: "-", description: "Callback when color changes. Returns ColorValue with hex, rgb, hsl properties" },
-        { prop: "type", type: '"hex" | "rgb" | "hsl"', default: '"hex"', description: "Color format to display" },
-        { prop: "swatches", type: "`#${string}`[]", default: "-", description: "Custom preset colors to display" },
-        { prop: "hideDefaultSwatches", type: "boolean", default: "false", description: "Hide the default color swatches" },
-        { prop: "hideContrastRatio", type: "boolean", default: "false", description: "Hide WCAG contrast ratio display" },
-        { prop: "disabled", type: "boolean", default: "false", description: "Disable the color picker" },
-        { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the root element" },
+        {
+          prop: "value",
+          type: "`#${string}`",
+          default: '"#000000"',
+          description: "Current color value as HEX string",
+        },
+        {
+          prop: "onValueChange",
+          type: "(value: ColorValue) => void",
+          default: "-",
+          description:
+            "Callback when color changes. Returns ColorValue with hex, rgb, hsl properties",
+        },
+        {
+          prop: "type",
+          type: '"hex" | "rgb" | "hsl"',
+          default: '"hex"',
+          description: "Color format to display",
+        },
+        {
+          prop: "swatches",
+          type: "`#${string}`[]",
+          default: "-",
+          description: "Custom preset colors to display",
+        },
+        {
+          prop: "hideDefaultSwatches",
+          type: "boolean",
+          default: "false",
+          description: "Hide the default color swatches",
+        },
+        {
+          prop: "hideContrastRatio",
+          type: "boolean",
+          default: "false",
+          description: "Hide WCAG contrast ratio display",
+        },
+        {
+          prop: "disabled",
+          type: "boolean",
+          default: "false",
+          description: "Disable the color picker",
+        },
+        {
+          prop: "className",
+          type: "string",
+          default: "-",
+          description: "Additional CSS classes for the root element",
+        },
       ],
     },
-  ]
+  ];
 
   return (
     <ComponentPage>
@@ -343,5 +393,5 @@ export function ColorPickerExample() {
 
       <APIReference sections={apiReference} />
     </ComponentPage>
-  )
+  );
 }

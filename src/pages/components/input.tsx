@@ -1171,7 +1171,7 @@ function RatingDemo() {
 // Main Page Component
 // =============================================================================
 
-export function InputPage() {
+export default function InputPage() {
   const features = [
     {
       title: "Accessible",

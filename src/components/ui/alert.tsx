@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { animate } from "animejs";
+import gsap from "gsap";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
   IconInfoCircle,
@@ -120,9 +120,7 @@ function Alert({
   const [isVisible, setIsVisible] = React.useState(true);
   const alertRef = React.useRef<HTMLDivElement>(null);
   const progressRef = React.useRef<HTMLDivElement>(null);
-  const holdAnimationRef = React.useRef<ReturnType<typeof animate> | null>(
-    null
-  );
+  const holdAnimationRef = React.useRef<gsap.core.Tween | null>(null);
   const [isHolding, setIsHolding] = React.useState(false);
   const IconComponent = alertIcons[variant || "default"];
   const [toastState, setToastState] = React.useState<
@@ -153,11 +151,11 @@ function Alert({
 
   const handleClose = React.useCallback(() => {
     if (alertRef.current) {
-      animate(alertRef.current, {
-        opacity: [1, 0],
-        translateY: [0, -10],
-        duration: 200,
-        ease: "inQuad",
+      gsap.to(alertRef.current, {
+        opacity: 0,
+        y: -10,
+        duration: 0.2,
+        ease: "power1.in",
         onComplete: () => {
           setIsVisible(false);
           onClose?.();
@@ -169,13 +167,13 @@ function Alert({
   const resetProgress = React.useCallback(() => {
     setIsHolding(false);
     if (holdAnimationRef.current) {
-      holdAnimationRef.current.pause();
+      holdAnimationRef.current.kill();
     }
     if (progressRef.current) {
-      animate(progressRef.current, {
+      gsap.to(progressRef.current, {
         width: "0%",
-        duration: 150,
-        ease: "outQuad",
+        duration: 0.15,
+        ease: "power2.out",
       });
     }
   }, []);
@@ -184,15 +182,19 @@ function Alert({
     if (!holdToClose) return;
     setIsHolding(true);
     if (progressRef.current) {
-      holdAnimationRef.current = animate(progressRef.current, {
-        width: ["0%", "100%"],
-        duration: holdDuration,
-        ease: "linear",
-        onComplete: () => {
-          handleClose();
-          resetProgress();
-        },
-      });
+      holdAnimationRef.current = gsap.fromTo(
+        progressRef.current,
+        { width: "0%" },
+        {
+          width: "100%",
+          duration: holdDuration / 1000,
+          ease: "none",
+          onComplete: () => {
+            handleClose();
+            resetProgress();
+          },
+        }
+      );
     }
   }, [holdToClose, holdDuration, handleClose, resetProgress]);
 
@@ -401,7 +403,7 @@ function HoldToCloseAlert({
   size = "default",
 }: HoldToCloseAlertProps) {
   const progressRef = React.useRef<HTMLDivElement>(null);
-  const animationRef = React.useRef<ReturnType<typeof animate> | null>(null);
+  const animationRef = React.useRef<gsap.core.Tween | null>(null);
   const [isHolding, setIsHolding] = React.useState(false);
 
   const variantClasses = alertVariants({ variant, size });
@@ -444,28 +446,32 @@ function HoldToCloseAlert({
   const handlePointerDown = () => {
     setIsHolding(true);
     if (progressRef.current) {
-      animationRef.current = animate(progressRef.current, {
-        width: ["0%", "100%"],
-        duration: holdDuration,
-        ease: "linear",
-        onComplete: () => {
-          onClose?.();
-          resetProgress();
-        },
-      });
+      animationRef.current = gsap.fromTo(
+        progressRef.current,
+        { width: "0%" },
+        {
+          width: "100%",
+          duration: holdDuration / 1000,
+          ease: "none",
+          onComplete: () => {
+            onClose?.();
+            resetProgress();
+          },
+        }
+      );
     }
   };
 
   const resetProgress = () => {
     setIsHolding(false);
     if (animationRef.current) {
-      animationRef.current.pause();
+      animationRef.current.kill();
     }
     if (progressRef.current) {
-      animate(progressRef.current, {
+      gsap.to(progressRef.current, {
         width: "0%",
-        duration: 150,
-        ease: "outQuad",
+        duration: 0.15,
+        ease: "power2.out",
       });
     }
   };

@@ -40,16 +40,15 @@ function BasicDemo() {
       <AccordionItem value="item-2">
         <AccordionTrigger>How do I install it?</AccordionTrigger>
         <AccordionContent>
-          Simply copy the components you need into your project. Each
-          component is self-contained and can be customized to fit your
-          design system.
+          Simply copy the components you need into your project. Each component
+          is self-contained and can be customized to fit your design system.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">
         <AccordionTrigger>Is it accessible?</AccordionTrigger>
         <AccordionContent>
-          Yes! All components are built with accessibility in mind, using
-          Base UI primitives that follow WAI-ARIA guidelines.
+          Yes! All components are built with accessibility in mind, using Base
+          UI primitives that follow WAI-ARIA guidelines.
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -198,7 +197,9 @@ function IconsDemo() {
         </Accordion>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-3">Header Background Colors</p>
+        <p className="text-sm text-muted-foreground mb-3">
+          Header Background Colors
+        </p>
         <Accordion multiple>
           <AccordionItem value="info">
             <AccordionTrigger
@@ -468,7 +469,7 @@ const usageCode = `import {
 // Scroll Into View
 <Accordion scrollIntoView>...</Accordion>`;
 
-export function AccordionPage() {
+export default function AccordionPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -558,12 +559,21 @@ export function AccordionPage() {
       <KeyboardShortcuts
         shortcuts={[
           { keys: "Tab", description: "Move focus to next accordion" },
-          { keys: "Shift + Tab", description: "Move focus to previous accordion" },
+          {
+            keys: "Shift + Tab",
+            description: "Move focus to previous accordion",
+          },
           { keys: "Enter / Space", description: "Toggle current item" },
           { keys: "Home", description: "Move to first item" },
           { keys: "End", description: "Move to last item" },
-          { keys: "Arrow Down / Arrow Right", description: "Move to next item" },
-          { keys: "Arrow Up / Arrow Left", description: "Move to previous item" },
+          {
+            keys: "Arrow Down / Arrow Right",
+            description: "Move to next item",
+          },
+          {
+            keys: "Arrow Up / Arrow Left",
+            description: "Move to previous item",
+          },
         ]}
       />
 
@@ -588,7 +598,8 @@ export function AccordionPage() {
                 prop: "value",
                 type: "string[]",
                 default: "-",
-                description: "Array of currently open item values (controlled).",
+                description:
+                  "Array of currently open item values (controlled).",
               },
               {
                 prop: "onValueChange",

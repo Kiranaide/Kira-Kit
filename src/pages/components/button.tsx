@@ -1,10 +1,10 @@
-import * as React from "react"
+import * as React from "react";
 import {
   Button,
   ExpandableIconButton,
   LoadingButton,
   IconButtonWithTooltip,
-} from "@/components/ui/button"
+} from "@/components/ui/button";
 import {
   IconPlus,
   IconDownload,
@@ -19,7 +19,7 @@ import {
   IconAccessible,
   IconPalette,
   IconStack2,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -29,7 +29,7 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 // =============================================================================
 // Demo Components
@@ -39,7 +39,9 @@ function VariantsDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Basic</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Basic
+        </h3>
         <div className="flex flex-wrap gap-3">
           <Button variant="default">Default</Button>
           <Button variant="secondary">Secondary</Button>
@@ -49,7 +51,9 @@ function VariantsDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Semantic</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Semantic
+        </h3>
         <div className="flex flex-wrap gap-3">
           <Button variant="destructive">Destructive</Button>
           <Button variant="info">Info</Button>
@@ -58,7 +62,9 @@ function VariantsDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Outline Variants</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Outline Variants
+        </h3>
         <div className="flex flex-wrap gap-3">
           <Button variant="destructive-outline">Destructive</Button>
           <Button variant="info-outline">Info</Button>
@@ -67,7 +73,9 @@ function VariantsDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Ghost Variants</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Ghost Variants
+        </h3>
         <div className="flex flex-wrap gap-3">
           <Button variant="destructive-ghost">Destructive</Button>
           <Button variant="info-ghost">Info</Button>
@@ -76,7 +84,7 @@ function VariantsDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const variantsCode = `import { Button } from "@/components/ui/button"
@@ -96,7 +104,7 @@ const variantsCode = `import { Button } from "@/components/ui/button"
 
 // Outline and ghost variants
 <Button variant="destructive-outline">Destructive</Button>
-<Button variant="info-ghost">Info</Button>`
+<Button variant="info-ghost">Info</Button>`;
 
 function SizesDemo() {
   return (
@@ -108,13 +116,21 @@ function SizesDemo() {
         <Button size="lg">Large</Button>
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <Button size="icon-xs" variant="outline"><IconPlus className="w-3 h-3" /></Button>
-        <Button size="icon-sm" variant="outline"><IconPlus className="w-4 h-4" /></Button>
-        <Button size="icon" variant="outline"><IconPlus className="w-4 h-4" /></Button>
-        <Button size="icon-lg" variant="outline"><IconPlus className="w-5 h-5" /></Button>
+        <Button size="icon-xs" variant="outline">
+          <IconPlus className="w-3 h-3" />
+        </Button>
+        <Button size="icon-sm" variant="outline">
+          <IconPlus className="w-4 h-4" />
+        </Button>
+        <Button size="icon" variant="outline">
+          <IconPlus className="w-4 h-4" />
+        </Button>
+        <Button size="icon-lg" variant="outline">
+          <IconPlus className="w-5 h-5" />
+        </Button>
       </div>
     </div>
-  )
+  );
 }
 
 const sizesCode = `import { Button } from "@/components/ui/button"
@@ -129,7 +145,7 @@ const sizesCode = `import { Button } from "@/components/ui/button"
 <Button size="icon-xs"><IconPlus /></Button>
 <Button size="icon-sm"><IconPlus /></Button>
 <Button size="icon"><IconPlus /></Button>
-<Button size="icon-lg"><IconPlus /></Button>`
+<Button size="icon-lg"><IconPlus /></Button>`;
 
 function WithIconsDemo() {
   return (
@@ -155,7 +171,7 @@ function WithIconsDemo() {
         Delete
       </Button>
     </div>
-  )
+  );
 }
 
 const withIconsCode = `import { Button } from "@/components/ui/button"
@@ -170,7 +186,7 @@ import { IconMail, IconDownload, IconSettings } from "@tabler/icons-react"
 <Button variant="secondary">
   <IconDownload data-icon="inline-start" className="w-4 h-4" />
   Download
-</Button>`
+</Button>`;
 
 function HoldToConfirmDemo() {
   return (
@@ -205,7 +221,7 @@ function HoldToConfirmDemo() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
 
 const holdToConfirmCode = `import { Button } from "@/components/ui/button"
@@ -227,7 +243,7 @@ const holdToConfirmCode = `import { Button } from "@/components/ui/button"
 >
   <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
   Hold to Approve
-</Button>`
+</Button>`;
 
 function ExpandableDemo() {
   return (
@@ -258,7 +274,9 @@ function ExpandableDemo() {
         />
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">With Hold to Confirm</h4>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+          With Hold to Confirm
+        </h4>
         <div className="flex flex-wrap gap-3">
           <ExpandableIconButton
             icon={<IconSend className="w-4 h-4" />}
@@ -277,7 +295,7 @@ function ExpandableDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const expandableCode = `import { ExpandableIconButton } from "@/components/ui/button"
@@ -296,22 +314,25 @@ const expandableCode = `import { ExpandableIconButton } from "@/components/ui/bu
   variant="destructive"
   holdDuration={1500}
   onHoldComplete={() => handleDelete()}
-/>`
+/>`;
 
 function LoadingButtonDemo() {
-  const [loadingStates, setLoadingStates] = React.useState<Record<string, boolean>>({})
+  const [loadingStates, setLoadingStates] = React.useState<
+    Record<string, boolean>
+  >({});
 
   const handleClick = (id: string) => {
-    setLoadingStates((prev) => ({ ...prev, [id]: true }))
+    setLoadingStates((prev) => ({ ...prev, [id]: true }));
     setTimeout(() => {
-      setLoadingStates((prev) => ({ ...prev, [id]: false }))
-    }, 2000)
-  }
+      setLoadingStates((prev) => ({ ...prev, [id]: false }));
+    }, 2000);
+  };
 
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Buttons with loading spinners for async operations. Automatically disabled while loading.
+        Buttons with loading spinners for async operations. Automatically
+        disabled while loading.
       </p>
       <div className="flex flex-wrap gap-3">
         <LoadingButton
@@ -347,7 +368,7 @@ function LoadingButtonDemo() {
         </LoadingButton>
       </div>
     </div>
-  )
+  );
 }
 
 const loadingButtonCode = `import { LoadingButton } from "@/components/ui/button"
@@ -367,7 +388,7 @@ const [isLoading, setIsLoading] = useState(false)
   loadingText="Processing..."
 >
   Process
-</LoadingButton>`
+</LoadingButton>`;
 
 function IconButtonWithTooltipDemo() {
   return (
@@ -408,7 +429,7 @@ function IconButtonWithTooltipDemo() {
         />
       </div>
     </div>
-  )
+  );
 }
 
 const iconButtonWithTooltipCode = `import { IconButtonWithTooltip } from "@/components/ui/button"
@@ -425,47 +446,56 @@ const iconButtonWithTooltipCode = `import { IconButtonWithTooltip } from "@/comp
   tooltip="Delete item"
   variant="destructive"
   size="icon"
-/>`
+/>`;
 
 function DisabledDemo() {
   return (
     <div className="flex flex-wrap gap-3">
       <Button disabled>Disabled Default</Button>
-      <Button variant="secondary" disabled>Disabled Secondary</Button>
-      <Button variant="outline" disabled>Disabled Outline</Button>
-      <Button variant="destructive" disabled>Disabled Destructive</Button>
+      <Button variant="secondary" disabled>
+        Disabled Secondary
+      </Button>
+      <Button variant="outline" disabled>
+        Disabled Outline
+      </Button>
+      <Button variant="destructive" disabled>
+        Disabled Destructive
+      </Button>
     </div>
-  )
+  );
 }
 
 const disabledCode = `import { Button } from "@/components/ui/button"
 
 <Button disabled>Disabled Default</Button>
 <Button variant="secondary" disabled>Disabled Secondary</Button>
-<Button variant="outline" disabled>Disabled Outline</Button>`
+<Button variant="outline" disabled>Disabled Outline</Button>`;
 
 // =============================================================================
 // Main Page Component
 // =============================================================================
 
-export function ButtonPage() {
+export default function ButtonPage() {
   const features = [
     {
       title: "Accessible",
-      description: "Full keyboard navigation and ARIA support for screen readers.",
+      description:
+        "Full keyboard navigation and ARIA support for screen readers.",
       icon: <IconAccessible className="w-4 h-4 text-primary" />,
     },
     {
       title: "Multiple Variants",
-      description: "20+ variants including semantic colors and outline/ghost styles.",
+      description:
+        "20+ variants including semantic colors and outline/ghost styles.",
       icon: <IconPalette className="w-4 h-4 text-primary" />,
     },
     {
       title: "Composable",
-      description: "LoadingButton, ExpandableIconButton, and IconButtonWithTooltip components.",
+      description:
+        "LoadingButton, ExpandableIconButton, and IconButtonWithTooltip components.",
       icon: <IconStack2 className="w-4 h-4 text-primary" />,
     },
-  ]
+  ];
 
   const demoTabs = [
     {
@@ -572,14 +602,14 @@ export function ButtonPage() {
         </DemoWrapper>
       ),
     },
-  ]
+  ];
 
   const keyboardShortcuts = [
     { keys: "Enter", description: "Activate button" },
     { keys: "Space", description: "Activate button" },
     { keys: "Tab", description: "Move focus to next element" },
     { keys: "Shift + Tab", description: "Move focus to previous element" },
-  ]
+  ];
 
   const usageCode = `import { 
   Button, 
@@ -624,45 +654,121 @@ export function ButtonPage() {
   icon={<IconTrash />}
   tooltip="Delete item"
   variant="destructive"
-/>`
+/>`;
 
   const apiReference = [
     {
       title: "Button",
       props: [
-        { prop: "variant", type: '"default" | "secondary" | "outline" | "ghost" | "link" | "destructive" | "info" | "success" | "warning" | ...', default: '"default"', description: "Visual style of the button" },
-        { prop: "size", type: '"default" | "xs" | "sm" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg"', default: '"default"', description: "Size of the button" },
-        { prop: "holdDuration", type: "number", default: "-", description: "Duration in ms to hold before triggering onHoldComplete" },
-        { prop: "onHoldComplete", type: "() => void", default: "-", description: "Callback when hold duration is completed" },
-        { prop: "disabled", type: "boolean", default: "false", description: "Disable the button" },
-        { prop: "asChild", type: "boolean", default: "false", description: "Render as child element (for custom components)" },
+        {
+          prop: "variant",
+          type: '"default" | "secondary" | "outline" | "ghost" | "link" | "destructive" | "info" | "success" | "warning" | ...',
+          default: '"default"',
+          description: "Visual style of the button",
+        },
+        {
+          prop: "size",
+          type: '"default" | "xs" | "sm" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg"',
+          default: '"default"',
+          description: "Size of the button",
+        },
+        {
+          prop: "holdDuration",
+          type: "number",
+          default: "-",
+          description:
+            "Duration in ms to hold before triggering onHoldComplete",
+        },
+        {
+          prop: "onHoldComplete",
+          type: "() => void",
+          default: "-",
+          description: "Callback when hold duration is completed",
+        },
+        {
+          prop: "disabled",
+          type: "boolean",
+          default: "false",
+          description: "Disable the button",
+        },
+        {
+          prop: "asChild",
+          type: "boolean",
+          default: "false",
+          description: "Render as child element (for custom components)",
+        },
       ],
     },
     {
       title: "LoadingButton",
       props: [
-        { prop: "isLoading", type: "boolean", default: "false", description: "Show loading spinner and disable button" },
-        { prop: "loadingText", type: "string", default: "-", description: "Text to show while loading" },
-        { prop: "...props", type: "ButtonProps", default: "-", description: "All Button props are supported" },
+        {
+          prop: "isLoading",
+          type: "boolean",
+          default: "false",
+          description: "Show loading spinner and disable button",
+        },
+        {
+          prop: "loadingText",
+          type: "string",
+          default: "-",
+          description: "Text to show while loading",
+        },
+        {
+          prop: "...props",
+          type: "ButtonProps",
+          default: "-",
+          description: "All Button props are supported",
+        },
       ],
     },
     {
       title: "ExpandableIconButton",
       props: [
-        { prop: "icon", type: "ReactNode", default: "-", description: "Icon element to display" },
-        { prop: "label", type: "string", default: "-", description: "Text label shown on hover" },
-        { prop: "...props", type: "ButtonProps", default: "-", description: "All Button props are supported" },
+        {
+          prop: "icon",
+          type: "ReactNode",
+          default: "-",
+          description: "Icon element to display",
+        },
+        {
+          prop: "label",
+          type: "string",
+          default: "-",
+          description: "Text label shown on hover",
+        },
+        {
+          prop: "...props",
+          type: "ButtonProps",
+          default: "-",
+          description: "All Button props are supported",
+        },
       ],
     },
     {
       title: "IconButtonWithTooltip",
       props: [
-        { prop: "icon", type: "ReactNode", default: "-", description: "Icon element to display" },
-        { prop: "tooltip", type: "string", default: "-", description: "Tooltip text on hover" },
-        { prop: "...props", type: "ButtonProps", default: "-", description: "All Button props are supported" },
+        {
+          prop: "icon",
+          type: "ReactNode",
+          default: "-",
+          description: "Icon element to display",
+        },
+        {
+          prop: "tooltip",
+          type: "string",
+          default: "-",
+          description: "Tooltip text on hover",
+        },
+        {
+          prop: "...props",
+          type: "ButtonProps",
+          default: "-",
+          description: "All Button props are supported",
+        },
       ],
     },
-  ]
+  ];
 
   return (
     <ComponentPage>
@@ -682,5 +788,5 @@ export function ButtonPage() {
 
       <APIReference sections={apiReference} />
     </ComponentPage>
-  )
+  );
 }

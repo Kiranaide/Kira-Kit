@@ -1,10 +1,10 @@
-import { Flex } from "@/components/ui/flex"
-import { HStack, VStack } from "@/components/ui/stack"
-import { Spacer } from "@/components/ui/spacer"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { IconSettings, IconBell, IconUser } from "@tabler/icons-react"
+import { Flex } from "@/components/ui/flex";
+import { HStack, VStack } from "@/components/ui/stack";
+import { Spacer } from "@/components/ui/spacer";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { IconSettings, IconBell, IconUser } from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -12,17 +12,21 @@ import {
   DemoTabs,
   DemoWrapper,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 function AutoSpacerDemo() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Push elements apart</p>
+        <p className="text-sm text-muted-foreground mb-2">
+          Push elements apart
+        </p>
         <Flex align="center" className="p-4 border rounded-lg bg-muted/30">
           <span className="font-semibold">Brand</span>
           <Spacer />
-          <Button variant="ghost" size="sm">Sign In</Button>
+          <Button variant="ghost" size="sm">
+            Sign In
+          </Button>
         </Flex>
       </div>
       <div>
@@ -36,7 +40,7 @@ function AutoSpacerDemo() {
         </Flex>
       </div>
     </div>
-  )
+  );
 }
 
 const autoSpacerCode = `import { Flex } from "@/components/ui/flex"
@@ -56,7 +60,7 @@ import { Spacer } from "@/components/ui/spacer"
   <span>Center Content</span>
   <Spacer />
   <IconSettings className="size-5" />
-</Flex>`
+</Flex>`;
 
 function FixedSpacerDemo() {
   return (
@@ -78,7 +82,7 @@ function FixedSpacerDemo() {
         </VStack>
       </div>
     </div>
-  )
+  );
 }
 
 const fixedSpacerCode = `import { HStack, VStack } from "@/components/ui/stack"
@@ -96,7 +100,7 @@ import { Spacer } from "@/components/ui/spacer"
   <div>A</div>
   <Spacer size={8} axis="vertical" />
   <div>B</div>
-</VStack>`
+</VStack>`;
 
 function SizeVariantsDemo() {
   return (
@@ -118,7 +122,10 @@ function SizeVariantsDemo() {
         <p className="text-sm font-medium mb-2">Vertical sizes</p>
         <div className="flex gap-4 items-start">
           {[2, 4, 6, 8, 12, 16].map((size) => (
-            <VStack key={size} className="border border-dashed rounded p-2 w-20">
+            <VStack
+              key={size}
+              className="border border-dashed rounded p-2 w-20"
+            >
               <span className="text-sm">Top</span>
               <Spacer size={size} axis="vertical" />
               <Badge>{size}</Badge>
@@ -128,7 +135,7 @@ function SizeVariantsDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const sizeVariantsCode = `import { HStack, VStack } from "@/components/ui/stack"
@@ -171,11 +178,15 @@ import { Badge } from "@/components/ui/badge"
   <span>Top</span>
   <Spacer size={16} axis="vertical" />
   <span>Bottom</span>
-</VStack>`
+</VStack>`;
 
 function NavigationHeaderDemo() {
   return (
-    <Flex as="nav" align="center" className="p-4 border rounded-lg bg-background">
+    <Flex
+      as="nav"
+      align="center"
+      className="p-4 border rounded-lg bg-background"
+    >
       <HStack gap={2} align="center">
         <div className="size-8 bg-primary rounded" />
         <span className="font-semibold">App Name</span>
@@ -194,7 +205,7 @@ function NavigationHeaderDemo() {
         <AvatarFallback>JD</AvatarFallback>
       </Avatar>
     </Flex>
-  )
+  );
 }
 
 const navigationHeaderCode = `import { Flex } from "@/components/ui/flex"
@@ -223,7 +234,7 @@ import { Button } from "@/components/ui/button"
   <Avatar size="sm">
     <AvatarFallback>JD</AvatarFallback>
   </Avatar>
-</Flex>`
+</Flex>`;
 
 function CardActionDemo() {
   return (
@@ -244,14 +255,16 @@ function CardActionDemo() {
             <Badge>Active</Badge>
           </div>
           <Flex align="center" className="gap-2">
-            <Button variant="outline" size="sm">View Profile</Button>
+            <Button variant="outline" size="sm">
+              View Profile
+            </Button>
             <Spacer />
             <Button size="sm">Message</Button>
           </Flex>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const cardActionCode = `import { Flex } from "@/components/ui/flex"
@@ -281,7 +294,7 @@ import { Badge } from "@/components/ui/badge"
       <Button size="sm">Message</Button>
     </Flex>
   </div>
-</div>`
+</div>`;
 
 function FormDemo() {
   return (
@@ -296,7 +309,9 @@ function FormDemo() {
               className="w-full px-3 py-2 border rounded-md pr-24"
             />
             <Spacer size={4} axis="horizontal" />
-            <Button type="submit" size="sm">Send</Button>
+            <Button type="submit" size="sm">
+              Send
+            </Button>
           </div>
         </div>
       </div>
@@ -309,11 +324,13 @@ function FormDemo() {
             className="flex-1 px-3 py-2 border rounded-md"
           />
           <Spacer size={4} axis="horizontal" />
-          <Button variant="outline" size="sm">Forgot?</Button>
+          <Button variant="outline" size="sm">
+            Forgot?
+          </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const formCode = `import { Flex } from "@/components/ui/flex"
@@ -346,7 +363,7 @@ import { Button } from "@/components/ui/button"
     <Spacer />
     <Button variant="outline" size="sm">Forgot?</Button>
   </div>
-</div>`
+</div>`;
 
 function BreadcrumbDemo() {
   return (
@@ -359,7 +376,7 @@ function BreadcrumbDemo() {
       <Spacer size={2} axis="horizontal" />
       <span className="font-semibold">Details</span>
     </Flex>
-  )
+  );
 }
 
 const breadcrumbCode = `import { Flex } from "@/components/ui/flex"
@@ -374,19 +391,23 @@ import { Spacer } from "@/components/ui/spacer"
   <span className="text-muted-foreground">/</span>
   <Spacer size={2} axis="horizontal" />
   <span className="font-semibold">Details</span>
-</Flex>`
+</Flex>`;
 
 function ListDemo() {
   const items = [
     { title: "First item", time: "2 min ago" },
     { title: "Second item", time: "5 min ago" },
     { title: "Third item", time: "10 min ago" },
-  ]
+  ];
 
   return (
     <div className="max-w-sm border rounded-lg bg-background">
       {items.map((item, index) => (
-        <Flex key={index} align="center" className="p-3 border-b last:border-b-0">
+        <Flex
+          key={index}
+          align="center"
+          className="p-3 border-b last:border-b-0"
+        >
           <div className="flex-1">
             <span className="font-medium">{item.title}</span>
           </div>
@@ -395,7 +416,7 @@ function ListDemo() {
         </Flex>
       ))}
     </div>
-  )
+  );
 }
 
 const listCode = `import { Flex } from "@/components/ui/flex"
@@ -414,9 +435,9 @@ const items = [
   </div>
   <Spacer size={4} axis="horizontal" />
   <span className="text-xs text-muted-foreground">{item.time}</span>
-</Flex>`
+</Flex>`;
 
-export function SpacerPage() {
+export default function SpacerPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -429,15 +450,18 @@ export function SpacerPage() {
         features={[
           {
             title: "Auto Spacer",
-            description: "Push siblings apart using flex: 1 behavior. Perfect for navigation headers and lists.",
+            description:
+              "Push siblings apart using flex: 1 behavior. Perfect for navigation headers and lists.",
           },
           {
             title: "Fixed Spacing",
-            description: "Add consistent horizontal or vertical gaps with Tailwind spacing units (0-24).",
+            description:
+              "Add consistent horizontal or vertical gaps with Tailwind spacing units (0-24).",
           },
           {
             title: "Two Axes",
-            description: "Control spacing direction with axis prop: horizontal or vertical.",
+            description:
+              "Control spacing direction with axis prop: horizontal or vertical.",
           },
         ]}
       />
@@ -557,41 +581,151 @@ export function SpacerPage() {
           {
             title: "Spacer Props",
             props: [
-              { prop: "size", type: "number | \"auto\"", default: "auto", description: "Fixed size (0-24) or 'auto' for flex: 1" },
-              { prop: "axis", type: '"horizontal" | "vertical"', default: "horizontal", description: "Direction of spacing" },
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes" },
+              {
+                prop: "size",
+                type: 'number | "auto"',
+                default: "auto",
+                description: "Fixed size (0-24) or 'auto' for flex: 1",
+              },
+              {
+                prop: "axis",
+                type: '"horizontal" | "vertical"',
+                default: "horizontal",
+                description: "Direction of spacing",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes",
+              },
             ],
           },
           {
             title: "Size Values",
             props: [
-              { prop: "0", type: "number", default: "-", description: "No space (0px)" },
-              { prop: "1", type: "number", default: "-", description: "0.25rem (4px)" },
-              { prop: "2", type: "number", default: "-", description: "0.5rem (8px)" },
-              { prop: "3", type: "number", default: "-", description: "0.75rem (12px)" },
-              { prop: "4", type: "number", default: "-", description: "1rem (16px)" },
-              { prop: "5", type: "number", default: "-", description: "1.25rem (20px)" },
-              { prop: "6", type: "number", default: "-", description: "1.5rem (24px)" },
-              { prop: "8", type: "number", default: "-", description: "2rem (32px)" },
-              { prop: "10", type: "number", default: "-", description: "2.5rem (40px)" },
-              { prop: "12", type: "number", default: "-", description: "3rem (48px)" },
-              { prop: "16", type: "number", default: "-", description: "4rem (64px)" },
-              { prop: "20", type: "number", default: "-", description: "5rem (80px)" },
-              { prop: "24", type: "number", default: "-", description: "6rem (96px)" },
+              {
+                prop: "0",
+                type: "number",
+                default: "-",
+                description: "No space (0px)",
+              },
+              {
+                prop: "1",
+                type: "number",
+                default: "-",
+                description: "0.25rem (4px)",
+              },
+              {
+                prop: "2",
+                type: "number",
+                default: "-",
+                description: "0.5rem (8px)",
+              },
+              {
+                prop: "3",
+                type: "number",
+                default: "-",
+                description: "0.75rem (12px)",
+              },
+              {
+                prop: "4",
+                type: "number",
+                default: "-",
+                description: "1rem (16px)",
+              },
+              {
+                prop: "5",
+                type: "number",
+                default: "-",
+                description: "1.25rem (20px)",
+              },
+              {
+                prop: "6",
+                type: "number",
+                default: "-",
+                description: "1.5rem (24px)",
+              },
+              {
+                prop: "8",
+                type: "number",
+                default: "-",
+                description: "2rem (32px)",
+              },
+              {
+                prop: "10",
+                type: "number",
+                default: "-",
+                description: "2.5rem (40px)",
+              },
+              {
+                prop: "12",
+                type: "number",
+                default: "-",
+                description: "3rem (48px)",
+              },
+              {
+                prop: "16",
+                type: "number",
+                default: "-",
+                description: "4rem (64px)",
+              },
+              {
+                prop: "20",
+                type: "number",
+                default: "-",
+                description: "5rem (80px)",
+              },
+              {
+                prop: "24",
+                type: "number",
+                default: "-",
+                description: "6rem (96px)",
+              },
             ],
           },
           {
             title: "Usage Patterns",
             props: [
-              { prop: "Auto spacer", type: "Flex container", default: "-", description: "Use in flex containers. Spacer gets flex: 1, pushing siblings apart." },
-              { prop: "Fixed horizontal", type: "HStack", default: "-", description: "Use with HStack for consistent horizontal gaps between items." },
-              { prop: "Fixed vertical", type: "VStack", default: "-", description: "Use with VStack for consistent vertical gaps between items." },
-              { prop: "Multiple spacers", type: "Flex container", default: "-", description: "Multiple spacers share remaining space equally in auto mode." },
-              { prop: "Mixed mode", type: "Flex container", default: "-", description: "Combine auto and fixed spacers in same container for complex layouts." },
+              {
+                prop: "Auto spacer",
+                type: "Flex container",
+                default: "-",
+                description:
+                  "Use in flex containers. Spacer gets flex: 1, pushing siblings apart.",
+              },
+              {
+                prop: "Fixed horizontal",
+                type: "HStack",
+                default: "-",
+                description:
+                  "Use with HStack for consistent horizontal gaps between items.",
+              },
+              {
+                prop: "Fixed vertical",
+                type: "VStack",
+                default: "-",
+                description:
+                  "Use with VStack for consistent vertical gaps between items.",
+              },
+              {
+                prop: "Multiple spacers",
+                type: "Flex container",
+                default: "-",
+                description:
+                  "Multiple spacers share remaining space equally in auto mode.",
+              },
+              {
+                prop: "Mixed mode",
+                type: "Flex container",
+                default: "-",
+                description:
+                  "Combine auto and fixed spacers in same container for complex layouts.",
+              },
             ],
           },
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

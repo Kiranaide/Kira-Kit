@@ -8,8 +8,8 @@ import {
   SheetDescription,
   SheetBody,
   SheetClose,
-} from "@/components/ui/sheet"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
   PageHeader,
@@ -19,10 +19,14 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
-import { IconLayoutSidebar, IconSettings, IconArrowsRight } from "@tabler/icons-react"
+} from "@/components/docs";
+import {
+  IconLayoutSidebar,
+  IconSettings,
+  IconArrowsRight,
+} from "@tabler/icons-react";
 
-export function SheetPage() {
+export default function SheetPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -35,17 +39,20 @@ export function SheetPage() {
         features={[
           {
             title: "Multiple Positions",
-            description: "Slide from left, right, top, or bottom with smooth animations.",
+            description:
+              "Slide from left, right, top, or bottom with smooth animations.",
             icon: <IconLayoutSidebar className="h-5 w-5" />,
           },
           {
             title: "Configurable Sizes",
-            description: "Choose from sm, default, lg, xl, or full for perfect sizing.",
+            description:
+              "Choose from sm, default, lg, xl, or full for perfect sizing.",
             icon: <IconSettings className="h-5 w-5" />,
           },
           {
             title: "Accessibility First",
-            description: "Full keyboard navigation, focus management, and ARIA support.",
+            description:
+              "Full keyboard navigation, focus management, and ARIA support.",
             icon: <IconArrowsRight className="h-5 w-5" />,
           },
         ]}
@@ -90,7 +97,9 @@ export function SheetPage() {
                       </p>
                     </SheetBody>
                     <SheetFooter>
-                      <SheetClose render={<Button variant="outline">Cancel</Button>} />
+                      <SheetClose
+                        render={<Button variant="outline">Cancel</Button>}
+                      />
                       <Button>Save</Button>
                     </SheetFooter>
                   </SheetContent>
@@ -121,72 +130,80 @@ export function SheetPage() {
               >
                 <div className="space-y-8">
                   <div className="space-y-4">
-                    <h3 className="text-sm font-medium text-muted-foreground">Width Variants (Right)</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground">
+                      Width Variants (Right)
+                    </h3>
                     <div className="flex flex-wrap gap-4">
-                      {(["sm", "default", "lg", "xl", "full"] as const).map((size) => (
-                        <Sheet key={size}>
-                          <SheetTrigger
-                            render={
-                              <Button variant="outline" size="sm">
-                                {size}
-                              </Button>
-                            }
-                          />
-                          <SheetContent side="right" size={size}>
-                            <SheetHeader>
-                              <SheetTitle className="capitalize">
-                                {size} Right Sheet
-                              </SheetTitle>
-                              <SheetDescription>
-                                This sheet has <code>size="{size}"</code>.
-                              </SheetDescription>
-                            </SheetHeader>
-                            <SheetBody>
-                              <div className="h-full flex items-center justify-center bg-muted/20 border border-dashed rounded-lg">
-                                Content
-                              </div>
-                            </SheetBody>
-                            <SheetFooter>
-                              <SheetClose render={<Button>Close</Button>} />
-                            </SheetFooter>
-                          </SheetContent>
-                        </Sheet>
-                      ))}
+                      {(["sm", "default", "lg", "xl", "full"] as const).map(
+                        (size) => (
+                          <Sheet key={size}>
+                            <SheetTrigger
+                              render={
+                                <Button variant="outline" size="sm">
+                                  {size}
+                                </Button>
+                              }
+                            />
+                            <SheetContent side="right" size={size}>
+                              <SheetHeader>
+                                <SheetTitle className="capitalize">
+                                  {size} Right Sheet
+                                </SheetTitle>
+                                <SheetDescription>
+                                  This sheet has <code>size="{size}"</code>.
+                                </SheetDescription>
+                              </SheetHeader>
+                              <SheetBody>
+                                <div className="h-full flex items-center justify-center bg-muted/20 border border-dashed rounded-lg">
+                                  Content
+                                </div>
+                              </SheetBody>
+                              <SheetFooter>
+                                <SheetClose render={<Button>Close</Button>} />
+                              </SheetFooter>
+                            </SheetContent>
+                          </Sheet>
+                        ),
+                      )}
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-sm font-medium text-muted-foreground">Height Variants (Bottom)</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground">
+                      Height Variants (Bottom)
+                    </h3>
                     <div className="flex flex-wrap gap-4">
-                      {(["sm", "default", "lg", "xl", "full"] as const).map((size) => (
-                        <Sheet key={size}>
-                          <SheetTrigger
-                            render={
-                              <Button variant="outline" size="sm">
-                                {size}
-                              </Button>
-                            }
-                          />
-                          <SheetContent side="bottom" size={size}>
-                            <SheetHeader>
-                              <SheetTitle className="capitalize">
-                                {size} Bottom Sheet
-                              </SheetTitle>
-                              <SheetDescription>
-                                This sheet has <code>size="{size}"</code>.
-                              </SheetDescription>
-                            </SheetHeader>
-                            <SheetBody>
-                              <div className="h-full flex items-center justify-center bg-muted/20 border border-dashed rounded-lg min-h-[100px]">
-                                Content
-                              </div>
-                            </SheetBody>
-                            <SheetFooter>
-                              <SheetClose render={<Button>Close</Button>} />
-                            </SheetFooter>
-                          </SheetContent>
-                        </Sheet>
-                      ))}
+                      {(["sm", "default", "lg", "xl", "full"] as const).map(
+                        (size) => (
+                          <Sheet key={size}>
+                            <SheetTrigger
+                              render={
+                                <Button variant="outline" size="sm">
+                                  {size}
+                                </Button>
+                              }
+                            />
+                            <SheetContent side="bottom" size={size}>
+                              <SheetHeader>
+                                <SheetTitle className="capitalize">
+                                  {size} Bottom Sheet
+                                </SheetTitle>
+                                <SheetDescription>
+                                  This sheet has <code>size="{size}"</code>.
+                                </SheetDescription>
+                              </SheetHeader>
+                              <SheetBody>
+                                <div className="h-full flex items-center justify-center bg-muted/20 border border-dashed rounded-lg min-h-[100px]">
+                                  Content
+                                </div>
+                              </SheetBody>
+                              <SheetFooter>
+                                <SheetClose render={<Button>Close</Button>} />
+                              </SheetFooter>
+                            </SheetContent>
+                          </Sheet>
+                        ),
+                      )}
                     </div>
                   </div>
                 </div>
@@ -223,7 +240,11 @@ export function SheetPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <Sheet>
                     <SheetTrigger
-                      render={<Button variant="outline" className="w-full">Left</Button>}
+                      render={
+                        <Button variant="outline" className="w-full">
+                          Left
+                        </Button>
+                      }
                     />
                     <SheetContent side="left">
                       <SheetHeader>
@@ -231,29 +252,43 @@ export function SheetPage() {
                         <SheetDescription>Slides from left</SheetDescription>
                       </SheetHeader>
                       <SheetBody>
-                        <p className="text-sm text-muted-foreground">Often used for navigation menus.</p>
+                        <p className="text-sm text-muted-foreground">
+                          Often used for navigation menus.
+                        </p>
                       </SheetBody>
                     </SheetContent>
                   </Sheet>
 
                   <Sheet>
                     <SheetTrigger
-                      render={<Button variant="outline" className="w-full">Right</Button>}
+                      render={
+                        <Button variant="outline" className="w-full">
+                          Right
+                        </Button>
+                      }
                     />
                     <SheetContent side="right">
                       <SheetHeader>
                         <SheetTitle>Right Sheet</SheetTitle>
-                        <SheetDescription>Slides from right (default)</SheetDescription>
+                        <SheetDescription>
+                          Slides from right (default)
+                        </SheetDescription>
                       </SheetHeader>
                       <SheetBody>
-                        <p className="text-sm text-muted-foreground">Common for settings panels.</p>
+                        <p className="text-sm text-muted-foreground">
+                          Common for settings panels.
+                        </p>
                       </SheetBody>
                     </SheetContent>
                   </Sheet>
 
                   <Sheet>
                     <SheetTrigger
-                      render={<Button variant="outline" className="w-full">Top</Button>}
+                      render={
+                        <Button variant="outline" className="w-full">
+                          Top
+                        </Button>
+                      }
                     />
                     <SheetContent side="top">
                       <SheetHeader>
@@ -261,14 +296,20 @@ export function SheetPage() {
                         <SheetDescription>Slides from top</SheetDescription>
                       </SheetHeader>
                       <SheetBody>
-                        <p className="text-sm text-muted-foreground">Useful for notifications.</p>
+                        <p className="text-sm text-muted-foreground">
+                          Useful for notifications.
+                        </p>
                       </SheetBody>
                     </SheetContent>
                   </Sheet>
 
                   <Sheet>
                     <SheetTrigger
-                      render={<Button variant="outline" className="w-full">Bottom</Button>}
+                      render={
+                        <Button variant="outline" className="w-full">
+                          Bottom
+                        </Button>
+                      }
                     />
                     <SheetContent side="bottom">
                       <SheetHeader>
@@ -276,7 +317,9 @@ export function SheetPage() {
                         <SheetDescription>Slides from bottom</SheetDescription>
                       </SheetHeader>
                       <SheetBody>
-                        <p className="text-sm text-muted-foreground">Common on mobile for action sheets.</p>
+                        <p className="text-sm text-muted-foreground">
+                          Common on mobile for action sheets.
+                        </p>
                       </SheetBody>
                     </SheetContent>
                   </Sheet>
@@ -317,7 +360,9 @@ export function SheetPage() {
                   <SheetContent side="right" size="lg">
                     <SheetHeader>
                       <SheetTitle>Edit Profile</SheetTitle>
-                      <SheetDescription>Update your information below</SheetDescription>
+                      <SheetDescription>
+                        Update your information below
+                      </SheetDescription>
                     </SheetHeader>
                     <SheetBody>
                       <form className="space-y-4">
@@ -348,7 +393,9 @@ export function SheetPage() {
                       </form>
                     </SheetBody>
                     <SheetFooter>
-                      <SheetClose render={<Button variant="outline">Cancel</Button>} />
+                      <SheetClose
+                        render={<Button variant="outline">Cancel</Button>}
+                      />
                       <Button>Save Changes</Button>
                     </SheetFooter>
                   </SheetContent>
@@ -394,7 +441,8 @@ export function SheetPage() {
                     <SheetBody className="p-6 space-y-4">
                       <div className="p-4 rounded-lg bg-gradient-to-br from-purple-500/5 to-pink-500/5 border border-purple-200 dark:border-purple-800">
                         <p className="text-sm text-muted-foreground">
-                          This is custom content with gradient backgrounds and styled borders.
+                          This is custom content with gradient backgrounds and
+                          styled borders.
                         </p>
                       </div>
                       <div className="flex gap-2">
@@ -404,7 +452,9 @@ export function SheetPage() {
                       </div>
                     </SheetBody>
                     <SheetFooter className="bg-gradient-to-r from-purple-500/5 to-pink-500/5 border-t">
-                      <SheetClose render={<Button variant="ghost">Cancel</Button>} />
+                      <SheetClose
+                        render={<Button variant="ghost">Cancel</Button>}
+                      />
                       <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                         Confirm
                       </Button>
@@ -457,8 +507,13 @@ export function SheetPage() {
                         Click the button below to open a nested child sheet.
                       </p>
                       <Sheet>
-                        <SheetTrigger render={<Button>Open Child Sheet</Button>} />
-                        <SheetContent side="right" className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10">
+                        <SheetTrigger
+                          render={<Button>Open Child Sheet</Button>}
+                        />
+                        <SheetContent
+                          side="right"
+                          className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10"
+                        >
                           <SheetHeader>
                             <SheetTitle>Child Sheet</SheetTitle>
                             <SheetDescription>
@@ -501,7 +556,9 @@ export function SheetPage() {
 </Sheet>`}
               >
                 <Sheet>
-                  <SheetTrigger render={<Button>Open Scrollable Sheet</Button>} />
+                  <SheetTrigger
+                    render={<Button>Open Scrollable Sheet</Button>}
+                  />
                   <SheetContent side="right">
                     <SheetHeader>
                       <SheetTitle>Scrollable Content</SheetTitle>
@@ -739,5 +796,5 @@ export function SheetPage() {
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-import * as React from "react"
-import { Link } from "@tanstack/react-router"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import {
   IconArrowRight,
   IconExternalLink,
@@ -12,7 +12,7 @@ import {
   IconEye,
   IconEdit,
   IconTrash,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -22,30 +22,46 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 function BasicLinksDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Text Links</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Text Links
+        </h3>
         <div className="flex flex-wrap gap-4 items-center">
-          <Link to="/" className="text-primary hover:underline underline-offset-4">
+          <Link
+            to="/"
+            className="text-primary hover:underline underline-offset-4"
+          >
             Default Link
           </Link>
-          <Link to="/" className="text-muted-foreground hover:text-foreground hover:underline underline-offset-4">
+          <Link
+            to="/"
+            className="text-muted-foreground hover:text-foreground hover:underline underline-offset-4"
+          >
             Muted Link
           </Link>
-          <Link to="/" className="font-medium hover:text-primary transition-colors">
+          <Link
+            to="/"
+            className="font-medium hover:text-primary transition-colors"
+          >
             Medium Weight
           </Link>
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Inline Links</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Inline Links
+        </h3>
         <p className="text-sm text-muted-foreground max-w-md">
           This is an example of{" "}
-          <Link to="/" className="text-primary hover:underline underline-offset-4 font-medium">
+          <Link
+            to="/"
+            className="text-primary hover:underline underline-offset-4 font-medium"
+          >
             inline links
           </Link>{" "}
           within paragraph text. They maintain readability while providing clear
@@ -53,7 +69,7 @@ function BasicLinksDemo() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 const basicLinksCode = `import { Link } from "@tanstack/react-router"
@@ -73,13 +89,15 @@ const basicLinksCode = `import { Link } from "@tanstack/react-router"
     inline link
   </Link>{" "}
   within paragraph.
-</p>`
+</p>`;
 
 function ButtonLinksDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Link Variant</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Link Variant
+        </h3>
         <div className="flex flex-wrap gap-3">
           <Button variant="link">Link Button</Button>
           <Button variant="link" className="text-destructive">
@@ -88,7 +106,9 @@ function ButtonLinksDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Semantic Colors</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Semantic Colors
+        </h3>
         <div className="flex flex-wrap gap-3">
           <Button variant="link" className="text-primary hover:text-primary/80">
             Primary Link
@@ -105,7 +125,7 @@ function ButtonLinksDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const buttonLinksCode = `import { Link } from "@tanstack/react-router"
@@ -121,19 +141,27 @@ import { Button } from "@/components/ui/button"
 
 <Button variant="link" className="text-success">
   Success Link
-</Button>`
+</Button>`;
 
 function LinksWithIconsDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Icon Links</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Icon Links
+        </h3>
         <div className="flex flex-wrap gap-4 items-center">
-          <Link to="/" className="text-primary hover:underline underline-offset-4 inline-flex items-center gap-1">
+          <Link
+            to="/"
+            className="text-primary hover:underline underline-offset-4 inline-flex items-center gap-1"
+          >
             Read More
             <IconArrowRight className="w-4 h-4" />
           </Link>
-          <Link to="/" className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
+          <Link
+            to="/"
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+          >
             View Docs
             <IconExternalLink className="w-4 h-4" />
           </Link>
@@ -144,24 +172,35 @@ function LinksWithIconsDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Action Links</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Action Links
+        </h3>
         <div className="flex flex-wrap gap-3">
-          <Link to="/" className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-muted hover:bg-muted/80 text-sm font-medium transition-colors">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-muted hover:bg-muted/80 text-sm font-medium transition-colors"
+          >
             <IconDownload className="w-4 h-4" />
             Download
           </Link>
-          <Link to="/" className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-muted hover:bg-muted/80 text-sm font-medium transition-colors">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-muted hover:bg-muted/80 text-sm font-medium transition-colors"
+          >
             <IconShare className="w-4 h-4" />
             Share
           </Link>
-          <Link to="/" className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border hover:bg-muted text-sm font-medium transition-colors">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border hover:bg-muted text-sm font-medium transition-colors"
+          >
             <IconCopy className="w-4 h-4" />
             Copy Link
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const linksWithIconsCode = `import { Link } from "@tanstack/react-router"
@@ -189,13 +228,15 @@ import { IconArrowRight, IconDownload } from "@tabler/icons-react"
 <Link to="/" className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-muted hover:bg-muted/80">
   <IconDownload className="w-4 h-4" />
   Download
-</Link>`
+</Link>`;
 
 function ExternalLinksDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">External Links</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          External Links
+        </h3>
         <div className="space-y-2">
           <a
             href="https://example.com"
@@ -207,12 +248,15 @@ function ExternalLinksDemo() {
             <IconExternalLink className="w-3.5 h-3.5" />
           </a>
           <p className="text-xs text-muted-foreground">
-            External links should have target="_blank" and rel="noopener noreferrer"
+            External links should have target="_blank" and rel="noopener
+            noreferrer"
           </p>
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Download Links</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Download Links
+        </h3>
         <div className="flex flex-wrap gap-3">
           <a
             href="#"
@@ -233,7 +277,7 @@ function ExternalLinksDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const externalLinksCode = `// External link (opens in new tab)
@@ -264,31 +308,45 @@ const externalLinksCode = `// External link (opens in new tab)
   className="text-primary hover:underline"
 >
   External Link
-</Link>`
+</Link>`;
 
 function ActiveStatesDemo() {
-  const [activeLink, setActiveLink] = React.useState("home")
+  const [activeLink, setActiveLink] = React.useState("home");
 
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Active State</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Active State
+        </h3>
         <div className="flex flex-wrap gap-3">
           <button
             onClick={() => setActiveLink("home")}
-            className={activeLink === "home" ? "text-primary font-medium underline underline-offset-4" : "text-muted-foreground hover:text-foreground"}
+            className={
+              activeLink === "home"
+                ? "text-primary font-medium underline underline-offset-4"
+                : "text-muted-foreground hover:text-foreground"
+            }
           >
             Home
           </button>
           <button
             onClick={() => setActiveLink("about")}
-            className={activeLink === "about" ? "text-primary font-medium underline underline-offset-4" : "text-muted-foreground hover:text-foreground"}
+            className={
+              activeLink === "about"
+                ? "text-primary font-medium underline underline-offset-4"
+                : "text-muted-foreground hover:text-foreground"
+            }
           >
             About
           </button>
           <button
             onClick={() => setActiveLink("contact")}
-            className={activeLink === "contact" ? "text-primary font-medium underline underline-offset-4" : "text-muted-foreground hover:text-foreground"}
+            className={
+              activeLink === "contact"
+                ? "text-primary font-medium underline underline-offset-4"
+                : "text-muted-foreground hover:text-foreground"
+            }
           >
             Contact
           </button>
@@ -298,9 +356,14 @@ function ActiveStatesDemo() {
         </p>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Visited State</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Visited State
+        </h3>
         <div className="flex flex-wrap gap-3">
-          <Link to="/" className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300">
+          <Link
+            to="/"
+            className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+          >
             Visited Link Style
           </Link>
         </div>
@@ -309,7 +372,7 @@ function ActiveStatesDemo() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 const activeStatesCode = `import { useState } from "react"
@@ -339,41 +402,60 @@ const isHomeActive = useMatch({ to: "/" })
 // Visited state via CSS
 a:visited {
   color: hsl(var(--primary) / 0.7);
-}`
+}`;
 
 function HoverEffectsDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Hover Effects</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Hover Effects
+        </h3>
         <div className="space-y-3">
-          <Link to="/" className="text-primary hover:text-primary/70 hover:underline underline-offset-4 transition-colors">
+          <Link
+            to="/"
+            className="text-primary hover:text-primary/70 hover:underline underline-offset-4 transition-colors"
+          >
             Fade & Underline
           </Link>
           <br />
-          <Link to="/" className="text-muted-foreground hover:text-foreground hover:bg-muted px-2 py-1 rounded transition-colors">
+          <Link
+            to="/"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted px-2 py-1 rounded transition-colors"
+          >
             Background Highlight
           </Link>
           <br />
-          <Link to="/" className="inline-flex items-center gap-2 hover:translate-x-1 transition-transform">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 hover:translate-x-1 transition-transform"
+          >
             Slide Right
             <IconArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Focus States</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Focus States
+        </h3>
         <div className="flex flex-wrap gap-3">
-          <Link to="/" className="text-primary focus:outline-none focus:ring-2 focus:ring-primary/50 rounded">
+          <Link
+            to="/"
+            className="text-primary focus:outline-none focus:ring-2 focus:ring-primary/50 rounded"
+          >
             Ring Focus
           </Link>
-          <Link to="/" className="text-primary focus:outline-none focus:underline focus:underline-offset-4 focus:decoration-2">
+          <Link
+            to="/"
+            className="text-primary focus:outline-none focus:underline focus:underline-offset-4 focus:decoration-2"
+          >
             Underline Focus
           </Link>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const hoverEffectsCode = `// Hover effects
@@ -398,13 +480,15 @@ const hoverEffectsCode = `// Hover effects
 
 <Link to="/" className="text-primary focus:outline-none focus:underline focus:underline-offset-4">
   Underline Focus
-</Link>`
+</Link>`;
 
 function DisabledLinksDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Disabled Links</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Disabled Links
+        </h3>
         <div className="flex flex-wrap gap-3">
           <span className="text-muted-foreground cursor-not-allowed opacity-50">
             Disabled Link
@@ -414,11 +498,14 @@ function DisabledLinksDemo() {
           </span>
         </div>
         <p className="text-xs text-muted-foreground mt-2">
-          Use span for disabled links since true anchor elements cannot be disabled
+          Use span for disabled links since true anchor elements cannot be
+          disabled
         </p>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Action Links (Disabled)</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Action Links (Disabled)
+        </h3>
         <div className="flex flex-wrap gap-3">
           <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border text-muted-foreground/50 cursor-not-allowed">
             <IconEye className="w-4 h-4" />
@@ -435,7 +522,7 @@ function DisabledLinksDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const disabledLinksCode = `// Disabled link (use span, not a tag)
@@ -452,19 +539,24 @@ const disabledLinksCode = `// Disabled link (use span, not a tag)
 // Unavailable action
 <span className="text-muted-foreground/60 cursor-not-allowed decoration-muted-foreground/30 line-through">
   Unavailable Action
-</span>`
+</span>`;
 
 function BreadcrumbStyleDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Breadcrumb Navigation</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Breadcrumb Navigation
+        </h3>
         <nav className="flex items-center gap-2 text-sm">
           <Link to="/" className="text-muted-foreground hover:text-foreground">
             Home
           </Link>
           <span className="text-muted-foreground/50">/</span>
-          <Link to="/components/button" className="text-muted-foreground hover:text-foreground">
+          <Link
+            to="/components/button"
+            className="text-muted-foreground hover:text-foreground"
+          >
             Components
           </Link>
           <span className="text-muted-foreground/50">/</span>
@@ -472,14 +564,22 @@ function BreadcrumbStyleDemo() {
         </nav>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">With Icons</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          With Icons
+        </h3>
         <nav className="flex items-center gap-2 text-sm">
-          <Link to="/" className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
+          <Link
+            to="/"
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+          >
             <IconArrowUp className="w-3.5 h-3.5" />
             Up
           </Link>
           <span className="text-muted-foreground/50">/</span>
-          <Link to="/components/button" className="text-muted-foreground hover:text-foreground">
+          <Link
+            to="/components/button"
+            className="text-muted-foreground hover:text-foreground"
+          >
             Components
           </Link>
           <span className="text-muted-foreground/50">/</span>
@@ -487,7 +587,7 @@ function BreadcrumbStyleDemo() {
         </nav>
       </div>
     </div>
-  )
+  );
 }
 
 const breadcrumbStyleCode = `// Breadcrumb navigation
@@ -515,26 +615,29 @@ const breadcrumbStyleCode = `// Breadcrumb navigation
   </Link>
   <span className="text-muted-foreground/50">/</span>
   <span className="text-foreground">Links</span>
-</nav>`
+</nav>`;
 
-export function LinkPage() {
+export default function LinkPage() {
   const features = [
     {
       title: "Navigation",
-      description: "TanStack Router Link component for client-side navigation with prefetching.",
+      description:
+        "TanStack Router Link component for client-side navigation with prefetching.",
       icon: <IconArrowRight className="w-4 h-4 text-primary" />,
     },
     {
       title: "Flexible Styles",
-      description: "Link variant buttons, styled anchors, and inline text links for any use case.",
+      description:
+        "Link variant buttons, styled anchors, and inline text links for any use case.",
       icon: <IconExternalLink className="w-4 h-4 text-primary" />,
     },
     {
       title: "Accessible",
-      description: "Proper focus states, keyboard navigation, and ARIA attributes for screen readers.",
+      description:
+        "Proper focus states, keyboard navigation, and ARIA attributes for screen readers.",
       icon: <IconEye className="w-4 h-4 text-primary" />,
     },
-  ]
+  ];
 
   const demoTabs = [
     {
@@ -641,14 +744,14 @@ export function LinkPage() {
         </DemoWrapper>
       ),
     },
-  ]
+  ];
 
   const keyboardShortcuts = [
     { keys: "Tab", description: "Move focus to next link" },
     { keys: "Shift + Tab", description: "Move focus to previous link" },
     { keys: "Enter", description: "Activate focused link" },
     { keys: "Space", description: "Activate focused link" },
-  ]
+  ];
 
   const usageCode = `import { Link } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
@@ -677,31 +780,86 @@ import { Button } from "@/components/ui/button"
 <Link to="/" className="inline-flex items-center gap-2">
   <IconArrowRight className="w-4 h-4" />
   Continue
-</Link>`
+</Link>`;
 
   const apiReference = [
     {
       title: "Link (TanStack Router)",
       props: [
-        { prop: "to", type: "string | ToPathOption", default: "-", description: "Target route path or path object" },
-        { prop: "target", type: '"_blank" | "_self" | "_parent" | "_top"', default: '"_self"', description: "Where to open the link" },
-        { prop: "reloadDocument", type: "boolean", default: "false", description: "Force a full document reload" },
-        { prop: "preload", type: '"intent" | "render" | "false"', default: '"intent"', description: "When to preload the route" },
-        { prop: "activeProps", type: "object", default: "-", description: "Props to apply when link is active" },
-        { prop: "inactiveProps", type: "object", default: "-", description: "Props to apply when link is inactive" },
-        { prop: "...props", type: "AnchorHTMLAttributes", default: "-", description: "All anchor element props" },
+        {
+          prop: "to",
+          type: "string | ToPathOption",
+          default: "-",
+          description: "Target route path or path object",
+        },
+        {
+          prop: "target",
+          type: '"_blank" | "_self" | "_parent" | "_top"',
+          default: '"_self"',
+          description: "Where to open the link",
+        },
+        {
+          prop: "reloadDocument",
+          type: "boolean",
+          default: "false",
+          description: "Force a full document reload",
+        },
+        {
+          prop: "preload",
+          type: '"intent" | "render" | "false"',
+          default: '"intent"',
+          description: "When to preload the route",
+        },
+        {
+          prop: "activeProps",
+          type: "object",
+          default: "-",
+          description: "Props to apply when link is active",
+        },
+        {
+          prop: "inactiveProps",
+          type: "object",
+          default: "-",
+          description: "Props to apply when link is inactive",
+        },
+        {
+          prop: "...props",
+          type: "AnchorHTMLAttributes",
+          default: "-",
+          description: "All anchor element props",
+        },
       ],
     },
     {
       title: "Button (link variant)",
       props: [
-        { prop: "variant", type: '"link"', default: "-", description: "Set to 'link' for link styling" },
-        { prop: "asChild", type: "boolean", default: "false", description: "Render as child element (e.g., Link)" },
-        { prop: "className", type: "string", default: "-", description: "Additional CSS classes" },
-        { prop: "...props", type: "ButtonProps", default: "-", description: "All Button props supported" },
+        {
+          prop: "variant",
+          type: '"link"',
+          default: "-",
+          description: "Set to 'link' for link styling",
+        },
+        {
+          prop: "asChild",
+          type: "boolean",
+          default: "false",
+          description: "Render as child element (e.g., Link)",
+        },
+        {
+          prop: "className",
+          type: "string",
+          default: "-",
+          description: "Additional CSS classes",
+        },
+        {
+          prop: "...props",
+          type: "ButtonProps",
+          default: "-",
+          description: "All Button props supported",
+        },
       ],
     },
-  ]
+  ];
 
   return (
     <ComponentPage>
@@ -721,5 +879,5 @@ import { Button } from "@/components/ui/button"
 
       <APIReference sections={apiReference} />
     </ComponentPage>
-  )
+  );
 }

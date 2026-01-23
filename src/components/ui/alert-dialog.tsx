@@ -3,6 +3,8 @@
 import * as React from "react";
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import {
   IconX,
   IconAlertTriangle,
@@ -46,6 +48,25 @@ function AlertDialogOverlay({
   blurless = false,
   ...props
 }: AlertDialogOverlayProps) {
+  const overlayRef = React.useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (!overlayRef.current) return;
+
+      gsap.fromTo(
+        overlayRef.current,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: 0.2,
+          ease: "power2.out",
+        }
+      );
+    },
+    { scope: overlayRef }
+  );
+
   const blurClass = blurless
     ? ""
     : `supports-backdrop-filter:backdrop-blur-${blur}`;
@@ -57,9 +78,10 @@ function AlertDialogOverlay({
 
   return (
     <AlertDialogPrimitive.Backdrop
+      ref={overlayRef}
       data-slot="alert-dialog-overlay"
       className={cn(
-        "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 fixed inset-0 isolate z-50",
+        "fixed inset-0 isolate z-50",
         colorClass,
         blurClass,
         className
@@ -83,6 +105,7 @@ function AlertDialogContent({
   children,
   ...props
 }: AlertDialogContentProps) {
+  const contentRef = React.useRef<HTMLDivElement>(null);
   const sizeClasses = {
     sm: "max-w-xs",
     default: "max-w-xs sm:max-w-sm",
@@ -91,23 +114,45 @@ function AlertDialogContent({
     full: "max-w-[calc(100vw-2rem)] h-[calc(100vh-2rem)]",
   };
 
+  const durationMap = {
+    sm: 0.075,
+    default: 0.1,
+    lg: 0.15,
+    xl: 0.2,
+    full: 0.2,
+  };
+
+  useGSAP(
+    () => {
+      if (!contentRef.current) return;
+
+      gsap.fromTo(
+        contentRef.current,
+        { opacity: 0, scale: 0.95 },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: durationMap[size],
+          ease: "power2.out",
+        }
+      );
+    },
+    { scope: contentRef }
+  );
+
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Popup
+        ref={contentRef}
         data-slot="alert-dialog-content"
         data-size={size}
         className={cn(
-          "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 bg-background ring-foreground/10 gap-4 rounded-xl p-4 ring-1",
-          size === "sm" && "duration-75",
-          size === "default" && "duration-100",
-          size === "lg" && "duration-150",
-          size === "xl" && "duration-200",
-          size === "full" && "duration-200",
-          sizeClasses[size],
+          "bg-background ring-foreground/10 gap-4 rounded-xl p-4 ring-1",
           size === "full"
             ? "group/alert-dialog-content fixed top-1/2 left-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2 outline-none flex flex-col"
             : "group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 outline-none",
+          sizeClasses[size],
           className
         )}
         style={

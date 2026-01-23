@@ -414,7 +414,7 @@ export function WithNavigationDemo() {
 // Main Page Component
 // =============================================================================
 
-export function StepperPage() {
+export default function StepperPage() {
   const features = [
     {
       title: "Accessible",

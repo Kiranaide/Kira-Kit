@@ -2,570 +2,495 @@ import {
   createRouter,
   createRoute,
   createRootRoute,
+  lazyRouteComponent,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { AppLayout } from "@/components/app-layout";
-
-// Pages
-import { OverviewPage } from "@/pages/overview";
-import { ButtonPage } from "@/pages/components/button";
-import { CardPage } from "@/pages/components/card";
-import { InputPage } from "@/pages/components/input";
-import { SelectPage } from "@/pages/components/select";
-import { TextareaPage } from "@/pages/components/textarea";
-import { FieldPage } from "@/pages/components/field";
-import { InputGroupPage } from "@/pages/components/input-group";
-import { BadgePage } from "@/pages/components/badge";
-import { AlertDialogPage } from "@/pages/components/alert-dialog";
-import { DropdownMenuPage } from "@/pages/components/dropdown-menu";
-import { SeparatorPage } from "@/pages/components/separator";
-import { LabelPage } from "@/pages/components/label";
-import { AccordionPage } from "@/pages/components/accordion";
-import { AlertPage } from "@/pages/components/alert";
-import { AspectRatioPage } from "@/pages/components/aspect-ratio";
-import { AvatarPage } from "@/pages/components/avatar";
-import { ButtonGroupPage } from "@/pages/components/button-group";
-import CalendarPage from "@/pages/components/calendar";
-import { DialogPage } from "@/pages/components/dialog";
-import { DrawerPage } from "@/pages/components/drawer";
-import { EmptyPage } from "@/pages/components/empty";
-import { PopoverPage } from "@/pages/components/popover";
-import { HoverCardPage } from "@/pages/components/hover-card";
-import { KbdPage } from "@/pages/components/kbd";
-import { MenubarPage } from "@/pages/components/menubar";
-import { NavigationMenuPage } from "@/pages/components/navigation-menu";
-import { PaginationPage } from "@/pages/components/pagination";
-import { ProgressPage } from "@/pages/components/progress";
-import { RadioGroupPage } from "@/pages/components/radio-group";
-import { ResizablePage } from "@/pages/components/resizable";
-import { SkeletonPage } from "@/pages/components/skeleton";
-import SliderPage from "@/pages/components/slider";
-import { SwitchPage } from "@/pages/components/switch";
-import { ContextMenuPage } from "@/pages/components/context-menu";
-import { TablePage } from "@/pages/components/table";
-import { DataTablePage } from "@/pages/components/data-table";
-import { TabsPage } from "@/pages/components/tabs";
-import { ToastPage } from "@/pages/components/toast";
-import { TogglePage } from "@/pages/components/toggle";
-import TooltipPage from "@/pages/components/tooltip";
-import TypographyPage from "@/pages/components/typography";
-import { CheckboxPage } from "@/pages/components/checkbox";
-import TreeViewPage from "@/pages/components/tree-view";
-import { FileUploadPage } from "@/pages/components/file-upload";
-import SidebarPage from "@/pages/components/sidebar";
-import { ColorPickerPage } from "@/pages/components/color-picker";
-import { ColorUsagePage } from "@/pages/components/color-usage";
-import { FlexPage } from "@/pages/components/flex";
-import { StackPage } from "@/pages/components/stack";
-import GridPage from "@/pages/components/grid";
-import ContainerPage from "@/pages/components/container";
-import { ScrollAreaPage } from "@/pages/components/scroll-area";
-import { LayoutUtilitiesPage } from "@/pages/components/layout-utilities";
-import KanbanPage from "@/pages/components/kanban";
-import CarouselPage from "@/pages/components/carousel";
-import BreadcrumbPage from "@/pages/components/breadcrumb";
-import SpotlightPage from "@/pages/components/spotlight";
-import StatsCardPage from "@/pages/components/stats-card";
-import TimelinePage from "@/pages/components/timeline";
-import { StepperPage } from "@/pages/components/stepper";
-import CommandPage from "@/pages/components/command";
-import AnnouncementBarPage from "@/pages/components/announcement-bar";
-import { CollapsiblePage } from "@/pages/components/collapsible";
-import DatePickerPage from "@/pages/components/date-picker";
-import { LinkPage } from "@/pages/components/link";
-import ModalPage from "@/pages/components/modal";
-import { ProgressIndicatorPage } from "@/pages/components/progress-indicator";
-import { SheetPage } from "@/pages/components/sheet";
-import { SpinnerPage } from "@/pages/components/spinner";
-import { BoxPage } from "@/pages/components/box";
-import { CenterPage } from "@/pages/components/center";
-import { CodeBlockPage } from "@/pages/components/code-block";
-import IconButtonPage from "@/pages/components/icon-button";
-import ImagePage from "@/pages/components/image";
-import { SpacerPage } from "@/pages/components/spacer";
-import SplitViewPage from "@/pages/components/split-view";
-import ToggleGroupPage from "@/pages/components/toggle-group";
-import VideoPlayerPage from "@/pages/components/video-player";
+import { RoutePending } from "@/components/route/route-pending";
+import { RouteError } from "@/components/route/route-error";
 
 // Root route with layout
 const rootRoute = createRootRoute({
   component: AppLayout,
+  pendingComponent: RoutePending,
+  errorComponent: (props: ErrorComponentProps) => <RouteError {...props} />,
 });
 
-// Index route
+// Index route (lazy loaded)
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
-  component: OverviewPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/overview')),
+})
 
-// Component routes
+// Component routes (lazy loaded)
 const buttonRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/button",
-  component: ButtonPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/button')),
+})
 
 const cardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/card",
-  component: CardPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/card')),
+})
 
 const inputRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/input",
-  component: InputPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/input')),
+})
 
 const selectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/select",
-  component: SelectPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/select')),
+})
 
 const textareaRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/textarea",
-  component: TextareaPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/textarea')),
+})
 
 const fieldRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/field",
-  component: FieldPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/field')),
+})
 
 const inputGroupRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/input-group",
-  component: InputGroupPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/input-group')),
+})
 
 const badgeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/badge",
-  component: BadgePage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/badge')),
+})
 
 const alertDialogRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/alert-dialog",
-  component: AlertDialogPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/alert-dialog')),
+})
 
 const dropdownMenuRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/dropdown-menu",
-  component: DropdownMenuPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/dropdown-menu')),
+})
 
 const separatorRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/separator",
-  component: SeparatorPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/separator')),
+})
 
 const labelRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/label",
-  component: LabelPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/label')),
+})
 
 const accordionRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/accordion",
-  component: AccordionPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/accordion')),
+})
 
 const alertRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/alert",
-  component: AlertPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/alert')),
+})
 
 const aspectRatioRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/aspect-ratio",
-  component: AspectRatioPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/aspect-ratio')),
+})
 
 const avatarRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/avatar",
-  component: AvatarPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/avatar')),
+})
 
 const buttonGroupRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/button-group",
-  component: ButtonGroupPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/button-group')),
+})
 
 const breadcrumbRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/breadcrumb",
-  component: BreadcrumbPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/breadcrumb')),
+})
 
 const calendarRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/calendar",
-  component: CalendarPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/calendar')),
+})
 
 const dialogRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/dialog",
-  component: DialogPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/dialog')),
+})
 
 const drawerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/drawer",
-  component: DrawerPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/drawer')),
+})
 
 const emptyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/empty",
-  component: EmptyPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/empty')),
+})
 
 const popoverRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/popover",
-  component: PopoverPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/popover')),
+})
 
 const hoverCardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/hover-card",
-  component: HoverCardPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/hover-card')),
+})
 
 const kbdRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/kbd",
-  component: KbdPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/kbd')),
+})
 
 const menubarRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/menubar",
-  component: MenubarPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/menubar')),
+})
 
 const navigationMenuRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/navigation-menu",
-  component: NavigationMenuPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/navigation-menu')),
+})
 
 const paginationRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/pagination",
-  component: PaginationPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/pagination')),
+})
 
 const progressRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/progress",
-  component: ProgressPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/progress')),
+})
 
 const radioGroupRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/radio-group",
-  component: RadioGroupPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/radio-group')),
+})
 
 const resizableRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/resizable",
-  component: ResizablePage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/resizable')),
+})
 
 const skeletonRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/skeleton",
-  component: SkeletonPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/skeleton')),
+})
 
 const sliderRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/slider",
-  component: SliderPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/slider')),
+})
 
 const switchRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/switch",
-  component: SwitchPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/switch')),
+})
 
 const contextMenuRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/context-menu",
-  component: ContextMenuPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/context-menu')),
+})
 
 const tableRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/table",
-  component: TablePage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/table')),
+})
 
 const dataTableRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/data-table",
-  component: DataTablePage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/data-table')),
+})
 
 const tabsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/tabs",
-  component: TabsPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/tabs')),
+})
 
 const toastRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/toast",
-  component: ToastPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/toast')),
+})
 
 const toggleRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/toggle",
-  component: TogglePage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/toggle')),
+})
 
 const tooltipRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/tooltip",
-  component: TooltipPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/tooltip')),
+})
 
 const typographyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/typography",
-  component: TypographyPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/typography')),
+})
 
 const checkboxRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/checkbox",
-  component: CheckboxPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/checkbox')),
+})
 
 const treeViewRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/tree-view",
-  component: TreeViewPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/tree-view')),
+})
 
 const fileUploadRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/file-upload",
-  component: FileUploadPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/file-upload')),
+})
 
 const sidebarRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/sidebar",
-  component: SidebarPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/sidebar')),
+})
 
 const colorPickerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/color-picker",
-  component: ColorPickerPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/color-picker')),
+})
 
 const colorUsageRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/color-usage",
-  component: ColorUsagePage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/color-usage')),
+})
 
 const flexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/flex",
-  component: FlexPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/flex')),
+})
 
 const stackRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/stack",
-  component: StackPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/stack')),
+})
 
 const gridRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/grid",
-  component: GridPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/grid')),
+})
 
 const containerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/container",
-  component: ContainerPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/container')),
+})
 
 const scrollAreaRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/scroll-area",
-  component: ScrollAreaPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/scroll-area')),
+})
 
 const layoutUtilitiesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/layout-utilities",
-  component: LayoutUtilitiesPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/layout-utilities')),
+})
 
 const kanbanRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/kanban",
-  component: KanbanPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/kanban')),
+})
 
 const carouselRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/carousel",
-  component: CarouselPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/carousel')),
+})
 
 const spotlightRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/spotlight",
-  component: SpotlightPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/spotlight')),
+})
 
 const statsCardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/stats-card",
-  component: StatsCardPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/stats-card')),
+})
 
 const timelineRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/timeline",
-  component: TimelinePage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/timeline')),
+})
 
 const stepperRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/stepper",
-  component: StepperPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/stepper')),
+})
 
 const commandRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/command",
-  component: CommandPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/command')),
+})
 
 const announcementBarRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/announcement-bar",
-  component: AnnouncementBarPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/announcement-bar')),
+})
 
 const collapsibleRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/collapsible",
-  component: CollapsiblePage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/collapsible')),
+})
 
 const datePickerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/date-picker",
-  component: DatePickerPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/date-picker')),
+})
 
 const linkRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/link",
-  component: LinkPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/link')),
+})
 
 const modalRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/modal",
-  component: ModalPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/modal')),
+})
 
 const progressIndicatorRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/progress-indicator",
-  component: ProgressIndicatorPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/progress-indicator')),
+})
 
 const sheetRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/sheet",
-  component: SheetPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/sheet')),
+})
 
 const spinnerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/spinner",
-  component: SpinnerPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/spinner')),
+})
 
 const boxRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/box",
-  component: BoxPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/box')),
+})
 
 const centerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/center",
-  component: CenterPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/center')),
+})
 
 const codeBlockRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/code-block",
-  component: CodeBlockPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/code-block')),
+})
 
 const iconButtonRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/icon-button",
-  component: IconButtonPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/icon-button')),
+})
 
 const imageRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/image",
-  component: ImagePage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/image')),
+})
 
 const spacerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/spacer",
-  component: SpacerPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/spacer')),
+})
 
 const splitViewRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/split-view",
-  component: SplitViewPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/split-view')),
+})
 
 const toggleGroupRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/toggle-group",
-  component: ToggleGroupPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/toggle-group')),
+})
 
 const videoPlayerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/components/video-player",
-  component: VideoPlayerPage,
-});
+  component: lazyRouteComponent(() => import('@/pages/components/video-player')),
+})
 
 // Build route tree
 const routeTree = rootRoute.addChildren([

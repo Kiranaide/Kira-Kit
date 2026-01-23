@@ -179,7 +179,7 @@ export function MyInputGroup() {
   )
 }`;
 
-export function InputGroupPage() {
+export default function InputGroupPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -192,15 +192,18 @@ export function InputGroupPage() {
         features={[
           {
             title: "Flexible Alignment",
-            description: "Support for inline and block positioning with inline-start, inline-end, block-start, and block-end options.",
+            description:
+              "Support for inline and block positioning with inline-start, inline-end, block-start, and block-end options.",
           },
           {
             title: "Rich Content",
-            description: "Add icons, text labels, or action buttons to create enhanced input experiences.",
+            description:
+              "Add icons, text labels, or action buttons to create enhanced input experiences.",
           },
           {
             title: "Accessible",
-            description: "Proper ARIA roles and keyboard navigation for screen reader compatibility.",
+            description:
+              "Proper ARIA roles and keyboard navigation for screen reader compatibility.",
           },
         ]}
       />

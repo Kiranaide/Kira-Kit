@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useMatchRoute } from "@tanstack/react-router";
 import {
   IconLayoutSidebar,
   IconChevronDown,
@@ -910,8 +910,8 @@ export function SidebarItem({
   closeMobileOnClick = true,
 }: SidebarItemProps) {
   const { collapsed, side, isMobile, setOpenMobile, isHoverExpanded, reducedMotion } = useSidebar();
-  const routerState = useRouterState();
-  const isActive = routerState.location.pathname === to;
+  const matchRoute = useMatchRoute();
+  const isActive = matchRoute({ to, fuzzy: false });
   const itemRef = React.useRef<HTMLAnchorElement>(null);
   const isExpanded = !collapsed || isHoverExpanded;
 

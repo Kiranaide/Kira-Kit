@@ -1,6 +1,4 @@
-import {
-  IconAlertTriangle,
-} from "@tabler/icons-react";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 import {
   AlertDialog,
@@ -28,8 +26,7 @@ import {
   APIReference,
 } from "@/components/docs";
 
-export function AlertDialogPage() {
-
+export default function AlertDialogPage() {
   const basicCode = `import {
   AlertDialog,
   AlertDialogTrigger,
@@ -163,15 +160,18 @@ export function CustomAlertDialog() {
         features={[
           {
             title: "Accessible",
-            description: "Full keyboard navigation with Escape to close, Enter to confirm, and proper ARIA roles for screen readers.",
+            description:
+              "Full keyboard navigation with Escape to close, Enter to confirm, and proper ARIA roles for screen readers.",
           },
           {
             title: "Flexible Sizes",
-            description: "Support for sm, default, lg, xl, and full viewport sizes with responsive breakpoints.",
+            description:
+              "Support for sm, default, lg, xl, and full viewport sizes with responsive breakpoints.",
           },
           {
             title: "Rich Components",
-            description: "Built-in media icons, warning alerts, lists, shortcuts, and loading states for comprehensive dialogs.",
+            description:
+              "Built-in media icons, warning alerts, lists, shortcuts, and loading states for comprehensive dialogs.",
           },
         ]}
       />
@@ -224,7 +224,9 @@ export function CustomAlertDialog() {
                 <div className="flex justify-center py-8">
                   <AlertDialog>
                     <AlertDialogTrigger
-                      render={<Button variant="destructive">Delete Account</Button>}
+                      render={
+                        <Button variant="destructive">Delete Account</Button>
+                      }
                     />
                     <AlertDialogContent>
                       <AlertDialogHeader>
@@ -268,8 +270,7 @@ export function CustomAlertDialog() {
                         </AlertDialogMedia>
                         <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Before you proceed, please note the following
-                          warning.
+                          Before you proceed, please note the following warning.
                         </AlertDialogDescription>
                         <AlertDialogWarning variant="warning">
                           This action will permanently delete all associated
@@ -490,7 +491,8 @@ export function CustomAlertDialog() {
                 prop: "shortcut",
                 type: "string",
                 default: "undefined",
-                description: "Keyboard shortcut to display next to the button text.",
+                description:
+                  "Keyboard shortcut to display next to the button text.",
               },
             ],
           },
@@ -507,7 +509,8 @@ export function CustomAlertDialog() {
                 prop: "shortcut",
                 type: "string",
                 default: "undefined",
-                description: "Keyboard shortcut to display next to the button text.",
+                description:
+                  "Keyboard shortcut to display next to the button text.",
               },
             ],
           },

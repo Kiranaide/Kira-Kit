@@ -3,6 +3,8 @@
 import * as React from "react"
 import { IconX, IconInfoCircle, IconCheck, IconAlertTriangle, IconAlertCircle } from "@tabler/icons-react"
 import { cva, type VariantProps } from "class-variance-authority"
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
 import { cn } from "@/lib/utils"
 
 // ============================================================================
@@ -110,7 +112,7 @@ interface AnnouncementBarContentProps extends React.ComponentPropsWithoutRef<"di
   marquee?: boolean
 }
 
-interface AnnouncementBarActionProps extends React.ComponentPropsWithoutRef<"a"> {}
+type AnnouncementBarActionProps = React.ComponentPropsWithoutRef<"a">
 
 interface AnnouncementBarDismissProps extends React.ComponentPropsWithoutRef<"button"> {
   /** Accessible label for dismiss button */
@@ -189,9 +191,6 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
       urgency = "polite",
       autoDismiss,
       showProgress = false,
-      marquee = false,
-      icon,
-      dismissible = true,
       onDismiss,
       animation = "slide",
       children,
@@ -206,6 +205,67 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
     const timerRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
     const startTimeRef = React.useRef<number>(0)
     const remainingTimeRef = React.useRef<number>(autoDismiss || 0)
+    const barRef = React.useRef<HTMLDivElement>(null)
+
+    React.useImperativeHandle(ref, () => barRef.current!)
+
+    // Handle dismiss with animation
+    const handleDismiss = React.useCallback(() => {
+      if (!barRef.current || reducedMotion || animation === "none") {
+        setIsVisible(false)
+        onDismiss?.()
+        return
+      }
+
+      const exitProps: { opacity: number; y?: number; scale?: number } = { opacity: 0 }
+
+      switch (animation) {
+        case "slide":
+          exitProps.y = position === "bottom" ? 16 : -16
+          break
+        case "scale":
+          exitProps.scale = 0.95
+          break
+      }
+
+      gsap.to(barRef.current, {
+        ...exitProps,
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: () => {
+          setIsVisible(false)
+          onDismiss?.()
+        },
+      })
+    }, [reducedMotion, animation, position, onDismiss])
+
+    // Mount animation
+    useGSAP(() => {
+      if (reducedMotion || animation === "none" || !barRef.current) return
+
+      const initialProps: { opacity: number; y?: number; scale?: number } = { opacity: 0 }
+
+      switch (animation) {
+        case "slide":
+          initialProps.y = position === "bottom" ? 16 : -16
+          break
+        case "scale":
+          initialProps.scale = 0.95
+          break
+      }
+
+      gsap.fromTo(
+        barRef.current,
+        initialProps,
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.3,
+          ease: "power2.out",
+        }
+      )
+    }, { scope: barRef, dependencies: [reducedMotion, animation, position] })
 
     // Auto-dismiss timer
     React.useEffect(() => {
@@ -218,9 +278,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
           const remaining = remainingTimeRef.current - elapsed
 
           if (remaining <= 0) {
-            setIsVisible(false)
-            onDismiss?.()
-            if (timerRef.current) clearInterval(timerRef.current)
+            handleDismiss()
           } else {
             setProgress((remaining / autoDismiss) * 100)
           }
@@ -237,7 +295,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
           remainingTimeRef.current = remainingTimeRef.current - (Date.now() - startTimeRef.current)
         }
       }
-    }, [autoDismiss, isVisible, isPaused, onDismiss])
+    }, [autoDismiss, isVisible, isPaused, handleDismiss])
 
     // Handle pause/resume
     const handleMouseEnter = () => {
@@ -256,32 +314,13 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
       }
     }
 
-    if (!isVisible) return null
-
-    // Animation classes
-    const getAnimationClasses = () => {
-      if (reducedMotion || animation === "none") return ""
-
-      const baseAnimation = "animate-in duration-300"
-      switch (animation) {
-        case "slide":
-          return position === "bottom"
-            ? `${baseAnimation} slide-in-from-bottom-4`
-            : `${baseAnimation} slide-in-from-top-4`
-        case "fade":
-          return `${baseAnimation} fade-in-0`
-        case "scale":
-          return `${baseAnimation} zoom-in-95 fade-in-0`
-        default:
-          return ""
-      }
-    }
-
     // Determine aria-live based on urgency and priority
     const getAriaLive = () => {
       if (priority === "critical") return "assertive"
       return urgency
     }
+
+    if (!isVisible) return null
 
     return (
       <AnnouncementBarContext.Provider
@@ -294,7 +333,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
         }}
       >
         <div
-          ref={ref}
+          ref={barRef}
           data-slot="announcement-bar"
           data-variant={variant}
           data-priority={priority}
@@ -304,8 +343,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           className={cn(
-            announcementBarVariants({ variant, position, priority, className }),
-            getAnimationClasses()
+            announcementBarVariants({ variant, position, priority, className })
           )}
           {...props}
         >
@@ -413,28 +451,45 @@ AnnouncementBarAction.displayName = "AnnouncementBarAction"
 // ============================================================================
 
 const AnnouncementBarDismiss = React.forwardRef<HTMLButtonElement, AnnouncementBarDismissProps>(
-  ({ className, label = "Dismiss announcement", onClick, ...props }, ref) => (
-    <button
-      ref={ref}
-      type="button"
-      data-slot="announcement-bar-dismiss"
-      className={cn(
-        // 44x44 touch target for WCAG 2.5.8
-        "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md",
-        "opacity-70 transition-opacity hover:opacity-100",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        "disabled:pointer-events-none",
-        // Visual size can be smaller, but touch area is 44x44
-        "-m-2", // Negative margin to maintain visual spacing while expanding touch target
-        className
-      )}
-      aria-label={label}
-      onClick={onClick}
-      {...props}
-    >
-      <IconX className="h-4 w-4" aria-hidden="true" />
-    </button>
-  )
+  ({ className, label = "Dismiss announcement", onClick, ...props }, ref) => {
+    const buttonRef = React.useRef<HTMLButtonElement>(null)
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (buttonRef.current) {
+        gsap.to(buttonRef.current, {
+          scale: 0.9,
+          duration: 0.1,
+          yoyo: true,
+          repeat: 1,
+          ease: "power1.inOut",
+        })
+      }
+      onClick?.(e)
+    }
+
+    return (
+      <button
+        ref={ref}
+        type="button"
+        data-slot="announcement-bar-dismiss"
+        className={cn(
+          // 44x44 touch target for WCAG 2.5.8
+          "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md",
+          "opacity-70 transition-opacity hover:opacity-100",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "disabled:pointer-events-none",
+          // Visual size can be smaller, but touch area is 44x44
+          "-m-2", // Negative margin to maintain visual spacing while expanding touch target
+          className
+        )}
+        aria-label={label}
+        onClick={handleClick}
+        {...props}
+      >
+        <IconX className="h-4 w-4" aria-hidden="true" />
+      </button>
+    )
+  }
 )
 AnnouncementBarDismiss.displayName = "AnnouncementBarDismiss"
 

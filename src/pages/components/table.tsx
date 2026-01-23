@@ -69,7 +69,9 @@ function BasicDemo() {
               <TableCell className="font-medium">{invoice.invoice}</TableCell>
               <TableCell>{invoice.paymentStatus}</TableCell>
               <TableCell>{invoice.paymentMethod}</TableCell>
-              <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+              <TableCell className="text-right">
+                {invoice.totalAmount}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -123,9 +125,13 @@ function VariantsDemo() {
             <TableBody>
               {invoices.slice(0, 2).map((invoice) => (
                 <TableRow key={invoice.invoice}>
-                  <TableCell className="font-medium">{invoice.invoice}</TableCell>
+                  <TableCell className="font-medium">
+                    {invoice.invoice}
+                  </TableCell>
                   <TableCell>{invoice.paymentStatus}</TableCell>
-                  <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+                  <TableCell className="text-right">
+                    {invoice.totalAmount}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -148,9 +154,13 @@ function VariantsDemo() {
             <TableBody>
               {invoices.slice(0, 2).map((invoice) => (
                 <TableRow key={invoice.invoice}>
-                  <TableCell className="font-medium">{invoice.invoice}</TableCell>
+                  <TableCell className="font-medium">
+                    {invoice.invoice}
+                  </TableCell>
                   <TableCell>{invoice.paymentStatus}</TableCell>
-                  <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+                  <TableCell className="text-right">
+                    {invoice.totalAmount}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -172,9 +182,13 @@ function VariantsDemo() {
             <TableBody>
               {invoices.slice(0, 2).map((invoice) => (
                 <TableRow key={invoice.invoice}>
-                  <TableCell className="font-medium">{invoice.invoice}</TableCell>
+                  <TableCell className="font-medium">
+                    {invoice.invoice}
+                  </TableCell>
                   <TableCell>{invoice.paymentStatus}</TableCell>
-                  <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+                  <TableCell className="text-right">
+                    {invoice.totalAmount}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -242,7 +256,9 @@ function StripedDemo() {
               <TableCell className="font-medium">{invoice.invoice}</TableCell>
               <TableCell>{invoice.paymentStatus}</TableCell>
               <TableCell>{invoice.paymentMethod}</TableCell>
-              <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+              <TableCell className="text-right">
+                {invoice.totalAmount}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -293,7 +309,9 @@ function HoverDemo() {
               <TableCell className="font-medium">{invoice.invoice}</TableCell>
               <TableCell>{invoice.paymentStatus}</TableCell>
               <TableCell>{invoice.paymentMethod}</TableCell>
-              <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+              <TableCell className="text-right">
+                {invoice.totalAmount}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -340,12 +358,19 @@ function BorderlessDemo() {
         </TableHeader>
         <TableBody>
           {invoices.map((invoice) => (
-            <TableRow key={invoice.invoice} className="border-b-0 last:border-0">
+            <TableRow
+              key={invoice.invoice}
+              className="border-b-0 last:border-0"
+            >
               <TableCell className="border-b-0 font-medium">
                 {invoice.invoice}
               </TableCell>
-              <TableCell className="border-b-0">{invoice.paymentStatus}</TableCell>
-              <TableCell className="border-b-0">{invoice.paymentMethod}</TableCell>
+              <TableCell className="border-b-0">
+                {invoice.paymentStatus}
+              </TableCell>
+              <TableCell className="border-b-0">
+                {invoice.paymentMethod}
+              </TableCell>
               <TableCell className="border-b-0 text-right">
                 {invoice.totalAmount}
               </TableCell>
@@ -381,7 +406,7 @@ const borderlessCode = `import {
   </TableBody>
 </Table>`;
 
-export function TablePage() {
+export default function TablePage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -517,7 +542,8 @@ export function TablePage() {
                 prop: "striped",
                 type: "boolean",
                 default: "false",
-                description: "Apply alternating row colors for better readability.",
+                description:
+                  "Apply alternating row colors for better readability.",
               },
               {
                 prop: "bordered",
@@ -529,19 +555,22 @@ export function TablePage() {
                 prop: "isGrid",
                 type: "boolean",
                 default: "false",
-                description: "Use role='grid' for interactive data tables with keyboard navigation.",
+                description:
+                  "Use role='grid' for interactive data tables with keyboard navigation.",
               },
               {
                 prop: "ariaColCount",
                 type: "number",
                 default: "-",
-                description: "For virtualized tables, indicate total column count.",
+                description:
+                  "For virtualized tables, indicate total column count.",
               },
               {
                 prop: "ariaRowCount",
                 type: "number",
                 default: "-",
-                description: "For virtualized tables, indicate total row count.",
+                description:
+                  "For virtualized tables, indicate total row count.",
               },
               {
                 prop: "className",
@@ -583,13 +612,15 @@ export function TablePage() {
                 prop: "scope",
                 type: "'col' | 'row' | 'colgroup' | 'rowgroup'",
                 default: "col",
-                description: "Scope for accessibility - defaults to 'col' for column headers.",
+                description:
+                  "Scope for accessibility - defaults to 'col' for column headers.",
               },
               {
                 prop: "ariaSort",
                 type: "'ascending' | 'descending' | 'none' | 'other'",
                 default: "-",
-                description: "For sortable columns, indicate current sort direction.",
+                description:
+                  "For sortable columns, indicate current sort direction.",
               },
               {
                 prop: "isGridCell",

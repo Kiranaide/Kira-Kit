@@ -503,7 +503,9 @@ function CustomDemo() {
       </Alert>
       <Alert size="sm" variant="info">
         <AlertTitle>Small</AlertTitle>
-        <AlertDescription>Size sm alert with moderate padding.</AlertDescription>
+        <AlertDescription>
+          Size sm alert with moderate padding.
+        </AlertDescription>
       </Alert>
       <Alert size="default" variant="info">
         <AlertTitle>Default</AlertTitle>
@@ -511,10 +513,14 @@ function CustomDemo() {
       </Alert>
       <Alert size="lg" variant="info">
         <AlertTitle>Large</AlertTitle>
-        <AlertDescription>Size lg alert with generous padding.</AlertDescription>
+        <AlertDescription>
+          Size lg alert with generous padding.
+        </AlertDescription>
       </Alert>
 
-      <h4 className="text-sm font-medium pt-4">AlertWithHeading (Convenience API)</h4>
+      <h4 className="text-sm font-medium pt-4">
+        AlertWithHeading (Convenience API)
+      </h4>
       <AlertWithHeading
         variant="info"
         title="Quick Info"
@@ -588,8 +594,8 @@ function ToastDemo() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Click buttons to show toast notifications. They auto-dismiss after a
-        few seconds.
+        Click buttons to show toast notifications. They auto-dismiss after a few
+        seconds.
       </p>
       <div className="flex flex-wrap gap-2">
         <Button
@@ -754,7 +760,8 @@ const apiSections = [
         prop: "toastProps",
         type: "ToastProps",
         default: "-",
-        description: "Configuration for toast behavior (position, duration, etc.)",
+        description:
+          "Configuration for toast behavior (position, duration, etc.)",
       },
     ],
   },
@@ -989,7 +996,7 @@ export function ToastDemo() {
 // Main Page Component
 // =============================================================================
 
-export function AlertPage() {
+export default function AlertPage() {
   return (
     <ComponentPage>
       <PageHeader

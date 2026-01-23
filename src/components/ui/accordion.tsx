@@ -4,7 +4,7 @@ import * as React from "react";
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IconChevronDown } from "@tabler/icons-react";
-import { animate } from "animejs";
+import gsap from "gsap";
 
 import { cn } from "@/lib/utils";
 
@@ -205,7 +205,7 @@ function AccordionContent({
   const panelRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const [hasBeenOpened, setHasBeenOpened] = React.useState(false);
-  const animationRef = React.useRef<ReturnType<typeof animate> | null>(null);
+  const animationRef = React.useRef<gsap.core.Tween | null>(null);
 
   React.useEffect(() => {
     const panel = panelRef.current;
@@ -229,7 +229,7 @@ function AccordionContent({
       if (isOpen === prevOpen) return;
 
       if (animationRef.current) {
-        animationRef.current.pause();
+        animationRef.current.kill();
         animationRef.current = null;
       }
 
@@ -237,23 +237,27 @@ function AccordionContent({
 
       if (isOpen) {
         setHasBeenOpened(true);
-        animationRef.current = animate(panel, {
-          height: [0, contentHeight],
-          opacity: [0, 1],
-          duration: 300,
-          ease: "outCubic",
-          onComplete: () => {
-            panel.style.height = "auto";
-          },
-        });
+        animationRef.current = gsap.fromTo(
+          panel,
+          { height: 0, opacity: 0 },
+          {
+            height: contentHeight,
+            opacity: 1,
+            duration: 0.3,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.set(panel, { height: "auto" });
+            },
+          }
+        );
       } else {
-        panel.style.height = `${contentHeight}px`;
+        gsap.set(panel, { height: contentHeight });
         void panel.offsetHeight;
-        animationRef.current = animate(panel, {
-          height: [contentHeight, 0],
-          opacity: [1, 0],
-          duration: 300,
-          ease: "outCubic",
+        animationRef.current = gsap.to(panel, {
+          height: 0,
+          opacity: 0,
+          duration: 0.3,
+          ease: "power2.in",
         });
       }
 
@@ -269,7 +273,7 @@ function AccordionContent({
     return () => {
       observer.disconnect();
       if (animationRef.current) {
-        animationRef.current.pause();
+        animationRef.current.kill();
       }
     };
   }, []);

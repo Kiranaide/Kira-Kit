@@ -66,7 +66,14 @@ export function SizesDemo() {
 }`;
 
 function ColorsDemo() {
-  const variants = ["default", "muted", "destructive", "warning", "success", "info"] as const;
+  const variants = [
+    "default",
+    "muted",
+    "destructive",
+    "warning",
+    "success",
+    "info",
+  ] as const;
 
   return (
     <div className="flex items-center gap-6">
@@ -107,11 +114,7 @@ function ButtonLoadingDemo() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Button
-        onClick={handleClick}
-        disabled={loading}
-        className="gap-2"
-      >
+      <Button onClick={handleClick} disabled={loading} className="gap-2">
         {loading && <Spinner size="sm" />}
         {loading ? "Loading..." : "Submit"}
       </Button>
@@ -264,7 +267,8 @@ function InlineTextDemo() {
         Uploading file <Spinner size="xs" className="ml-1 inline" /> 75%
       </p>
       <p className="text-sm">
-        Connecting to server <Spinner size="xs" className="ml-1 inline" /> please wait
+        Connecting to server <Spinner size="xs" className="ml-1 inline" />{" "}
+        please wait
       </p>
       <p className="text-sm">
         Saving changes <Spinner size="xs" className="ml-1 inline" /> almost done
@@ -312,19 +316,40 @@ const apiSections = [
   {
     title: "Spinner",
     props: [
-      { prop: "size", type: '"xs" | "sm" | "default" | "md" | "lg" | "xl"', default: '"default"', description: "Size of the spinner." },
-      { prop: "variant", type: '"default" | "muted" | "destructive" | "warning" | "success" | "info"', default: '"default"', description: "Color variant of the spinner." },
-      { prop: "label", type: "string", default: '"Loading"', description: "Accessible label for screen readers." },
-      { prop: "className", type: "string", default: "-", description: "Additional CSS classes to apply." },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "md" | "lg" | "xl"',
+        default: '"default"',
+        description: "Size of the spinner.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "muted" | "destructive" | "warning" | "success" | "info"',
+        default: '"default"',
+        description: "Color variant of the spinner.",
+      },
+      {
+        prop: "label",
+        type: "string",
+        default: '"Loading"',
+        description: "Accessible label for screen readers.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes to apply.",
+      },
     ],
   },
 ];
 
-export function SpinnerPage() {
+export default function SpinnerPage() {
   const features = [
     {
       title: "Responsive",
-      description: "Six size variants from extra-small to extra-large for any use case.",
+      description:
+        "Six size variants from extra-small to extra-large for any use case.",
       icon: <IconLoader className="h-4 w-4" />,
     },
     {

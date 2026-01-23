@@ -380,6 +380,36 @@ function ToggleGroupItem({
     }
   }, { scope: itemRef, dependencies: [isSelected] });
 
+  const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!itemRef.current) return;
+
+    const rect = itemRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const ripple = document.createElement("span");
+    ripple.className = "absolute rounded-full bg-current opacity-20 pointer-events-none";
+    ripple.style.left = `${x}px`;
+    ripple.style.top = `${y}px`;
+    ripple.style.width = "0";
+    ripple.style.height = "0";
+
+    itemRef.current.appendChild(ripple);
+
+    gsap.to(ripple, {
+      width: Math.max(rect.width, rect.height) * 2,
+      height: Math.max(rect.width, rect.height) * 2,
+      x: -Math.max(rect.width, rect.height),
+      y: -Math.max(rect.width, rect.height),
+      opacity: 0,
+      duration: 0.6,
+      ease: "power2.out",
+      onComplete: () => {
+        ripple.remove();
+      },
+    });
+  };
+
   const getSelectedClassName = (): string => {
     if (!isSelected) return "";
     switch (effectiveVariant) {
@@ -408,8 +438,9 @@ function ToggleGroupItem({
       data-slot="toggle-group-item"
       data-selected={isSelected}
       variant={effectiveVariant}
-      className={cn(getSelectedClassName(), className)}
+      className={cn("relative overflow-hidden", getSelectedClassName(), className)}
       onClick={handleClick}
+      onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}
       disabled={isDisabled}
       aria-pressed={isSelected}

@@ -70,7 +70,7 @@ function validateSchema<T>(schema: z.ZodSchema<T>) {
   };
 }
 
-export function FieldPage() {
+export default function FieldPage() {
   const [bio, setBio] = useState("");
   const [username, setUsername] = useState("");
   const maxBioLength = 160;
@@ -294,7 +294,10 @@ const maxBioLength = 160
                       <FieldDescription>
                         A short description about yourself.
                       </FieldDescription>
-                      <FieldCharacterCount current={bio.length} max={maxBioLength} />
+                      <FieldCharacterCount
+                        current={bio.length}
+                        max={maxBioLength}
+                      />
                     </div>
                   </Field>
                 </DemoWrapper>
@@ -517,7 +520,8 @@ const maxBioLength = 160
                           Subscribe to newsletter
                         </FieldLabel>
                         <FieldDescription>
-                          Receive weekly updates about new features and promotions.
+                          Receive weekly updates about new features and
+                          promotions.
                         </FieldDescription>
                       </FieldContent>
                     </Field>
@@ -598,7 +602,9 @@ const form = useForm({
                             <Input
                               type="email"
                               value={field.state.value}
-                              onChange={(e) => field.handleChange(e.target.value)}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
                               onBlur={field.handleBlur}
                               placeholder="you@example.com"
                             />
@@ -614,7 +620,9 @@ const form = useForm({
                             <Input
                               type="password"
                               value={field.state.value}
-                              onChange={(e) => field.handleChange(e.target.value)}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
                               onBlur={field.handleBlur}
                               placeholder="Enter password"
                             />
@@ -623,14 +631,20 @@ const form = useForm({
                         )}
                       </FormField>
 
-                      <FormField name="confirmPassword" form={loginForm} required>
+                      <FormField
+                        name="confirmPassword"
+                        form={loginForm}
+                        required
+                      >
                         {(field) => (
                           <>
                             <FieldLabel>Confirm Password</FieldLabel>
                             <Input
                               type="password"
                               value={field.state.value}
-                              onChange={(e) => field.handleChange(e.target.value)}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
                               onBlur={field.handleBlur}
                               placeholder="Confirm password"
                             />
@@ -641,7 +655,10 @@ const form = useForm({
 
                       <div className="pt-2">
                         <loginForm.Subscribe
-                          selector={(state) => [state.canSubmit, state.isSubmitting]}
+                          selector={(state) => [
+                            state.canSubmit,
+                            state.isSubmitting,
+                          ]}
                           children={([canSubmit, isSubmitting]) => (
                             <Button type="submit" disabled={!canSubmit}>
                               {isSubmitting ? "Signing in..." : "Sign In"}
@@ -706,11 +723,15 @@ const form = useForm({
                         >
                           {(field) => (
                             <>
-                              <FieldLabel className="w-32">First Name</FieldLabel>
+                              <FieldLabel className="w-32">
+                                First Name
+                              </FieldLabel>
                               <div className="flex-1 space-y-1">
                                 <Input
                                   value={field.state.value}
-                                  onChange={(e) => field.handleChange(e.target.value)}
+                                  onChange={(e) =>
+                                    field.handleChange(e.target.value)
+                                  }
                                   onBlur={field.handleBlur}
                                   placeholder="John"
                                 />
@@ -728,11 +749,15 @@ const form = useForm({
                         >
                           {(field) => (
                             <>
-                              <FieldLabel className="w-32">Last Name</FieldLabel>
+                              <FieldLabel className="w-32">
+                                Last Name
+                              </FieldLabel>
                               <div className="flex-1 space-y-1">
                                 <Input
                                   value={field.state.value}
-                                  onChange={(e) => field.handleChange(e.target.value)}
+                                  onChange={(e) =>
+                                    field.handleChange(e.target.value)
+                                  }
                                   onBlur={field.handleBlur}
                                   placeholder="Doe"
                                 />
@@ -750,7 +775,9 @@ const form = useForm({
                             <Input
                               type="email"
                               value={field.state.value}
-                              onChange={(e) => field.handleChange(e.target.value)}
+                              onChange={(e) =>
+                                field.handleChange(e.target.value)
+                              }
                               onBlur={field.handleBlur}
                               placeholder="john@example.com"
                             />
@@ -767,7 +794,9 @@ const form = useForm({
                               type="number"
                               value={field.state.value || ""}
                               onChange={(e) =>
-                                field.handleChange(parseInt(e.target.value) || 0)
+                                field.handleChange(
+                                  parseInt(e.target.value) || 0,
+                                )
                               }
                               onBlur={field.handleBlur}
                               placeholder="18"
@@ -779,7 +808,10 @@ const form = useForm({
 
                       <div className="pt-2">
                         <userForm.Subscribe
-                          selector={(state) => [state.canSubmit, state.isSubmitting]}
+                          selector={(state) => [
+                            state.canSubmit,
+                            state.isSubmitting,
+                          ]}
                           children={([canSubmit, isSubmitting]) => (
                             <Button type="submit" disabled={!canSubmit}>
                               {isSubmitting ? "Creating..." : "Create Account"}
@@ -800,31 +832,35 @@ const form = useForm({
               <Card>
                 <CardContent className="pt-6">
                   <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-                    <h3 className="font-medium">Built-in Accessibility Features:</h3>
+                    <h3 className="font-medium">
+                      Built-in Accessibility Features:
+                    </h3>
                     <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                       <li>
-                        <strong>Auto ID generation:</strong> Labels are automatically
-                        linked to inputs via generated IDs
+                        <strong>Auto ID generation:</strong> Labels are
+                        automatically linked to inputs via generated IDs
                       </li>
                       <li>
-                        <strong>ARIA attributes:</strong> <code>aria-describedby</code>{" "}
-                        links descriptions and errors to inputs
+                        <strong>ARIA attributes:</strong>{" "}
+                        <code>aria-describedby</code> links descriptions and
+                        errors to inputs
                       </li>
                       <li>
-                        <strong>Required indicator:</strong> Asterisk is marked with{" "}
-                        <code>aria-hidden="true"</code>
+                        <strong>Required indicator:</strong> Asterisk is marked
+                        with <code>aria-hidden="true"</code>
                       </li>
                       <li>
                         <strong>Error announcements:</strong> Errors use{" "}
-                        <code>role="alert"</code> and <code>aria-live="polite"</code>
+                        <code>role="alert"</code> and{" "}
+                        <code>aria-live="polite"</code>
                       </li>
                       <li>
-                        <strong>Disabled state:</strong> Cascades through context to all
-                        child elements
+                        <strong>Disabled state:</strong> Cascades through
+                        context to all child elements
                       </li>
                       <li>
-                        <strong>Character count:</strong> Uses <code>aria-live</code> for
-                        screen reader updates
+                        <strong>Character count:</strong> Uses{" "}
+                        <code>aria-live</code> for screen reader updates
                       </li>
                     </ul>
                   </div>
@@ -895,13 +931,15 @@ import {
                 prop: "disabled",
                 type: "boolean",
                 default: "false",
-                description: "Disable the entire field and its children via context",
+                description:
+                  "Disable the entire field and its children via context",
               },
               {
                 prop: "required",
                 type: "boolean",
                 default: "false",
-                description: "Mark field as required (shows indicator on label)",
+                description:
+                  "Mark field as required (shows indicator on label)",
               },
               {
                 prop: "readOnly",
@@ -936,7 +974,8 @@ import {
                 prop: "showRequired",
                 type: "boolean",
                 default: "inherits",
-                description: "Show required indicator (inherits from Field context)",
+                description:
+                  "Show required indicator (inherits from Field context)",
               },
               {
                 prop: "requiredIndicator",
@@ -959,7 +998,8 @@ import {
                 prop: "id",
                 type: "string",
                 default: "auto-generated",
-                description: "ID override (uses context descriptionId if not provided)",
+                description:
+                  "ID override (uses context descriptionId if not provided)",
               },
             ],
           },
@@ -976,7 +1016,8 @@ import {
                 prop: "errors",
                 type: "string[] | Error[]",
                 default: "-",
-                description: "Array of error messages (alternative to field prop)",
+                description:
+                  "Array of error messages (alternative to field prop)",
               },
               {
                 prop: "showIcon",

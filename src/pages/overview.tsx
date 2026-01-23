@@ -1,4 +1,4 @@
-export function OverviewPage() {
+export default function OverviewPage() {
   return (
     <div className="p-8 max-w-4xl">
       <div className="mb-8">

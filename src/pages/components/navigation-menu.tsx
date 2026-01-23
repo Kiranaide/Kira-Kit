@@ -207,10 +207,7 @@ function MegaMenuDemo() {
         <NavigationMenuItem>
           <NavigationMenuDropdown menuId="products">
             <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-            <NavigationMenuContent
-              megaMenu
-              className="w-[800px] max-w-full"
-            >
+            <NavigationMenuContent megaMenu className="w-[800px] max-w-full">
               <div className="grid grid-cols-4 gap-4 p-4">
                 <NavigationMenuSection title="Web Apps">
                   <ListItem
@@ -676,14 +673,10 @@ function SubmenusDemo() {
           <NavigationMenuDropdown menuId="submenu-files">
             <NavigationMenuTrigger>Files</NavigationMenuTrigger>
             <NavigationMenuContent className="w-[250px] p-1">
-              <NavigationMenuSubItem
-                icon={<IconFile className="h-4 w-4" />}
-              >
+              <NavigationMenuSubItem icon={<IconFile className="h-4 w-4" />}>
                 New File
               </NavigationMenuSubItem>
-              <NavigationMenuSubItem
-                icon={<IconFolder className="h-4 w-4" />}
-              >
+              <NavigationMenuSubItem icon={<IconFolder className="h-4 w-4" />}>
                 New Folder
               </NavigationMenuSubItem>
               <div className="mx-2 my-1 h-px bg-border" />
@@ -788,7 +781,7 @@ export function SubmenusDemo() {
   )
 }`;
 
-export function NavigationMenuPage() {
+export default function NavigationMenuPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -801,17 +794,20 @@ export function NavigationMenuPage() {
         features={[
           {
             title: "Mega Menu",
-            description: "Use megaMenu prop for larger dropdowns with organized sections and footers.",
+            description:
+              "Use megaMenu prop for larger dropdowns with organized sections and footers.",
             icon: <IconRocket className="h-5 w-5" />,
           },
           {
             title: "Nested Submenus",
-            description: "Full support for nested submenus with keyboard navigation for complex hierarchies.",
+            description:
+              "Full support for nested submenus with keyboard navigation for complex hierarchies.",
             icon: <IconFolder className="h-5 w-5" />,
           },
           {
             title: "Accessible",
-            description: "Full keyboard support with arrow keys, Escape, and proper ARIA navigation patterns.",
+            description:
+              "Full keyboard support with arrow keys, Escape, and proper ARIA navigation patterns.",
             icon: <IconShield className="h-5 w-5" />,
           },
         ]}
@@ -906,7 +902,10 @@ export function NavigationMenuPage() {
           { keys: "↑ / ↓", description: "Navigate within dropdowns" },
           { keys: "Home", description: "Go to first menu item" },
           { keys: "End", description: "Go to last menu item" },
-          { keys: "Enter / Space", description: "Open dropdown or activate link" },
+          {
+            keys: "Enter / Space",
+            description: "Open dropdown or activate link",
+          },
           { keys: "Escape", description: "Close dropdown" },
         ]}
         title="Keyboard Navigation"
@@ -963,111 +962,262 @@ export function NavigationMenuPage() {
           {
             title: "NavigationMenu",
             props: [
-              { prop: "openOnHover", type: "boolean", default: "false", description: "Opens dropdowns on mouse hover instead of click." },
-              { prop: "hoverDelay", type: "number", default: "200", description: "Delay in milliseconds before opening on hover." },
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the root element." },
+              {
+                prop: "openOnHover",
+                type: "boolean",
+                default: "false",
+                description: "Opens dropdowns on mouse hover instead of click.",
+              },
+              {
+                prop: "hoverDelay",
+                type: "number",
+                default: "200",
+                description: "Delay in milliseconds before opening on hover.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the root element.",
+              },
             ],
           },
           {
             title: "NavigationMenuList",
             props: [
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the list container." },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the list container.",
+              },
             ],
           },
           {
             title: "NavigationMenuItem",
             props: [
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the menu item." },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the menu item.",
+              },
             ],
           },
           {
             title: "NavigationMenuDropdown",
             props: [
-              { prop: "menuId", type: "string", default: "-", description: "Unique identifier for the dropdown menu." },
-              { prop: "children", type: "ReactNode", default: "-", description: "NavigationMenuTrigger and NavigationMenuContent." },
+              {
+                prop: "menuId",
+                type: "string",
+                default: "-",
+                description: "Unique identifier for the dropdown menu.",
+              },
+              {
+                prop: "children",
+                type: "ReactNode",
+                default: "-",
+                description: "NavigationMenuTrigger and NavigationMenuContent.",
+              },
             ],
           },
           {
             title: "NavigationMenuTrigger",
             props: [
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the trigger button." },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the trigger button.",
+              },
             ],
           },
           {
             title: "NavigationMenuContent",
             props: [
-              { prop: "megaMenu", type: "boolean", default: "false", description: "Enables mega menu mode for larger dropdowns." },
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the content." },
+              {
+                prop: "megaMenu",
+                type: "boolean",
+                default: "false",
+                description: "Enables mega menu mode for larger dropdowns.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the content.",
+              },
             ],
           },
           {
             title: "NavigationMenuLink",
             props: [
-              { prop: "active", type: "boolean", default: "false", description: "Marks the link as currently active." },
-              { prop: "href", type: "string", default: "-", description: "URL for the link." },
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes." },
+              {
+                prop: "active",
+                type: "boolean",
+                default: "false",
+                description: "Marks the link as currently active.",
+              },
+              {
+                prop: "href",
+                type: "string",
+                default: "-",
+                description: "URL for the link.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes.",
+              },
             ],
           },
           {
             title: "ListItem",
             props: [
-              { prop: "href", type: "string", default: "-", description: "URL for the list item link." },
-              { prop: "title", type: "ReactNode", default: "-", description: "Title text for the item." },
-              { prop: "description", type: "ReactNode", default: "-", description: "Optional description text." },
-              { prop: "icon", type: "ReactNode", default: "-", description: "Optional icon element." },
+              {
+                prop: "href",
+                type: "string",
+                default: "-",
+                description: "URL for the list item link.",
+              },
+              {
+                prop: "title",
+                type: "ReactNode",
+                default: "-",
+                description: "Title text for the item.",
+              },
+              {
+                prop: "description",
+                type: "ReactNode",
+                default: "-",
+                description: "Optional description text.",
+              },
+              {
+                prop: "icon",
+                type: "ReactNode",
+                default: "-",
+                description: "Optional icon element.",
+              },
             ],
           },
           {
             title: "NavigationMenuHeader",
             props: [
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the header." },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the header.",
+              },
             ],
           },
           {
             title: "NavigationMenuFooter",
             props: [
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes for the footer." },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes for the footer.",
+              },
             ],
           },
           {
             title: "NavigationMenuSection",
             props: [
-              { prop: "title", type: "string", default: "-", description: "Section title for grouping items." },
-              { prop: "children", type: "ReactNode", default: "-", description: "List items within the section." },
+              {
+                prop: "title",
+                type: "string",
+                default: "-",
+                description: "Section title for grouping items.",
+              },
+              {
+                prop: "children",
+                type: "ReactNode",
+                default: "-",
+                description: "List items within the section.",
+              },
             ],
           },
           {
             title: "NavigationMenuViewAll",
             props: [
-              { prop: "href", type: "string", default: "-", description: "URL for the view all link." },
-              { prop: "title", type: "string", default: "-", description: "Title for the view all link." },
-              { prop: "description", type: "string", default: "-", description: "Optional description." },
+              {
+                prop: "href",
+                type: "string",
+                default: "-",
+                description: "URL for the view all link.",
+              },
+              {
+                prop: "title",
+                type: "string",
+                default: "-",
+                description: "Title for the view all link.",
+              },
+              {
+                prop: "description",
+                type: "string",
+                default: "-",
+                description: "Optional description.",
+              },
             ],
           },
           {
             title: "NavigationMenuSub",
             props: [
-              { prop: "children", type: "ReactNode", default: "-", description: "NavigationMenuSubTrigger and NavigationMenuSubContent." },
+              {
+                prop: "children",
+                type: "ReactNode",
+                default: "-",
+                description:
+                  "NavigationMenuSubTrigger and NavigationMenuSubContent.",
+              },
             ],
           },
           {
             title: "NavigationMenuSubTrigger",
             props: [
-              { prop: "icon", type: "ReactNode", default: "-", description: "Optional icon for the sub trigger." },
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes." },
+              {
+                prop: "icon",
+                type: "ReactNode",
+                default: "-",
+                description: "Optional icon for the sub trigger.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes.",
+              },
             ],
           },
           {
             title: "NavigationMenuSubContent",
             props: [
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes." },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes.",
+              },
             ],
           },
           {
             title: "NavigationMenuSubItem",
             props: [
-              { prop: "icon", type: "ReactNode", default: "-", description: "Optional icon for the sub item." },
-              { prop: "className", type: "string", default: "-", description: "Additional CSS classes." },
+              {
+                prop: "icon",
+                type: "ReactNode",
+                default: "-",
+                description: "Optional icon for the sub item.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Additional CSS classes.",
+              },
             ],
           },
         ]}

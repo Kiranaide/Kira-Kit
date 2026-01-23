@@ -31,15 +31,18 @@ import { Tabs } from "@/components/ui/tabs";
 const features = [
   {
     title: "Flexible",
-    description: "Support for connected/disconnected modes, horizontal/vertical orientation, and custom sizes.",
+    description:
+      "Support for connected/disconnected modes, horizontal/vertical orientation, and custom sizes.",
   },
   {
     title: "Interactive",
-    description: "Built-in radio and checkbox selection modes with keyboard navigation and aria attributes.",
+    description:
+      "Built-in radio and checkbox selection modes with keyboard navigation and aria attributes.",
   },
   {
     title: "Animated",
-    description: "Smooth entrance animations with staggered delays using animejs and prefers-reduced-motion support.",
+    description:
+      "Smooth entrance animations with staggered delays using animejs and prefers-reduced-motion support.",
   },
 ];
 
@@ -186,7 +189,9 @@ function ModesDemo() {
   return (
     <div className="flex flex-col gap-6">
       <div className="space-y-3">
-        <p className="text-sm text-muted-foreground">Connected vs Disconnected</p>
+        <p className="text-sm text-muted-foreground">
+          Connected vs Disconnected
+        </p>
         <div className="flex flex-col gap-3">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">Connected (default)</p>
@@ -197,7 +202,9 @@ function ModesDemo() {
             </ButtonGroup>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Disconnected (with gap)</p>
+            <p className="text-xs text-muted-foreground">
+              Disconnected (with gap)
+            </p>
             <ButtonGroup connected={false} gap="default">
               <Button variant="outline">One</Button>
               <Button variant="outline">Two</Button>
@@ -208,7 +215,9 @@ function ModesDemo() {
       </div>
 
       <div className="space-y-3">
-        <p className="text-sm text-muted-foreground">Radio Selection (Single)</p>
+        <p className="text-sm text-muted-foreground">
+          Radio Selection (Single)
+        </p>
         <div className="space-y-2">
           <ButtonGroupToolbar
             label="Text Formatting"
@@ -243,7 +252,9 @@ function ModesDemo() {
       </div>
 
       <div className="space-y-3">
-        <p className="text-sm text-muted-foreground">Checkbox Selection (Multiple)</p>
+        <p className="text-sm text-muted-foreground">
+          Checkbox Selection (Multiple)
+        </p>
         <div className="space-y-2">
           <ButtonGroupToolbar
             label="Tags"
@@ -602,7 +613,7 @@ function MultiSelectDemo() {
   <Button variant="outline">Third</Button>
 </ButtonGroup>`;
 
-export function ButtonGroupPage() {
+export default function ButtonGroupPage() {
   return (
     <ComponentPage>
       <PageHeader
@@ -617,60 +628,84 @@ export function ButtonGroupPage() {
         <DemoTabs
           defaultValue="basic"
           tabs={[
-            { value: "basic", label: "Basic", demo: (
-              <DemoWrapper
-                title="Basic Button Group"
-                description="Basic horizontal group, icon buttons, and vertical orientation."
-                code={basicCode}
-              >
-                <BasicDemo />
-              </DemoWrapper>
-            )},
-            { value: "styles", label: "Styles", demo: (
-              <DemoWrapper
-                title="Styles & Sizes"
-                description="Mixed button styles and size variants (sm, default, lg)."
-                code={stylesCode}
-              >
-                <StylesDemo />
-              </DemoWrapper>
-            )},
-            { value: "modes", label: "Modes", demo: (
-              <DemoWrapper
-                title="Selection Modes"
-                description="Connected/disconnected modes, radio selection (single), and checkbox selection (multiple)."
-                code={modesCode}
-              >
-                <ModesDemo />
-              </DemoWrapper>
-            )},
-            { value: "layout", label: "Layout", demo: (
-              <DemoWrapper
-                title="Justify Content"
-                description="Different justification options: start, center, between, and end."
-                code={layoutCode}
-              >
-                <LayoutDemo />
-              </DemoWrapper>
-            )},
-            { value: "animation", label: "Animation", demo: (
-              <DemoWrapper
-                title="Animated Entrance"
-                description="Buttons animate on mount with staggered delay using animejs."
-                code={animationCode}
-              >
-                <AnimationDemo />
-              </DemoWrapper>
-            )},
-            { value: "toolbar", label: "Toolbar", demo: (
-              <DemoWrapper
-                title="Real-World Toolbar"
-                description="Rich editor toolbar combining single and multiple selection modes."
-                code={toolbarCode}
-              >
-                <ToolbarDemo />
-              </DemoWrapper>
-            )},
+            {
+              value: "basic",
+              label: "Basic",
+              demo: (
+                <DemoWrapper
+                  title="Basic Button Group"
+                  description="Basic horizontal group, icon buttons, and vertical orientation."
+                  code={basicCode}
+                >
+                  <BasicDemo />
+                </DemoWrapper>
+              ),
+            },
+            {
+              value: "styles",
+              label: "Styles",
+              demo: (
+                <DemoWrapper
+                  title="Styles & Sizes"
+                  description="Mixed button styles and size variants (sm, default, lg)."
+                  code={stylesCode}
+                >
+                  <StylesDemo />
+                </DemoWrapper>
+              ),
+            },
+            {
+              value: "modes",
+              label: "Modes",
+              demo: (
+                <DemoWrapper
+                  title="Selection Modes"
+                  description="Connected/disconnected modes, radio selection (single), and checkbox selection (multiple)."
+                  code={modesCode}
+                >
+                  <ModesDemo />
+                </DemoWrapper>
+              ),
+            },
+            {
+              value: "layout",
+              label: "Layout",
+              demo: (
+                <DemoWrapper
+                  title="Justify Content"
+                  description="Different justification options: start, center, between, and end."
+                  code={layoutCode}
+                >
+                  <LayoutDemo />
+                </DemoWrapper>
+              ),
+            },
+            {
+              value: "animation",
+              label: "Animation",
+              demo: (
+                <DemoWrapper
+                  title="Animated Entrance"
+                  description="Buttons animate on mount with staggered delay using animejs."
+                  code={animationCode}
+                >
+                  <AnimationDemo />
+                </DemoWrapper>
+              ),
+            },
+            {
+              value: "toolbar",
+              label: "Toolbar",
+              demo: (
+                <DemoWrapper
+                  title="Real-World Toolbar"
+                  description="Rich editor toolbar combining single and multiple selection modes."
+                  code={toolbarCode}
+                >
+                  <ToolbarDemo />
+                </DemoWrapper>
+              ),
+            },
           ]}
         />
       </Tabs>
@@ -685,35 +720,131 @@ export function ButtonGroupPage() {
           {
             title: "ButtonGroup",
             props: [
-              { prop: "orientation", type: "horizontal | vertical", default: "horizontal", description: "Layout direction of the button group." },
-              { prop: "size", type: "xs | sm | default | lg", default: "default", description: "Size variant applied to all buttons." },
-              { prop: "gap", type: "none | sm | default | lg", default: "-", description: "Gap between buttons (only when not connected)." },
-              { prop: "justify", type: "start | center | end | between | around", default: "start", description: "Flexbox justify content alignment." },
-              { prop: "value", type: "string | string[] | null", default: "null", description: "Controlled value for selection mode." },
-              { prop: "onChange", type: "(value: string | string[]) => void", default: "-", description: "Callback when selection changes." },
-              { prop: "selectionMode", type: "none | single | multiple", default: "none", description: "Selection mode for toggle items." },
-              { prop: "connected", type: "boolean", default: "true", description: "Whether buttons are visually connected (shared borders)." },
-              { prop: "animated", type: "boolean", default: "false", description: "Enable entrance animation." },
-              { prop: "animationStagger", type: "number", default: "50", description: "Stagger delay for animation in milliseconds." },
-              { prop: "variant", type: "Button variant", default: "-", description: "Default variant for all buttons." },
-              { prop: "disabled", type: "boolean", default: "false", description: "Disable all buttons in the group." },
-              { prop: "loop", type: "boolean", default: "true", description: "Loop keyboard navigation." },
+              {
+                prop: "orientation",
+                type: "horizontal | vertical",
+                default: "horizontal",
+                description: "Layout direction of the button group.",
+              },
+              {
+                prop: "size",
+                type: "xs | sm | default | lg",
+                default: "default",
+                description: "Size variant applied to all buttons.",
+              },
+              {
+                prop: "gap",
+                type: "none | sm | default | lg",
+                default: "-",
+                description: "Gap between buttons (only when not connected).",
+              },
+              {
+                prop: "justify",
+                type: "start | center | end | between | around",
+                default: "start",
+                description: "Flexbox justify content alignment.",
+              },
+              {
+                prop: "value",
+                type: "string | string[] | null",
+                default: "null",
+                description: "Controlled value for selection mode.",
+              },
+              {
+                prop: "onChange",
+                type: "(value: string | string[]) => void",
+                default: "-",
+                description: "Callback when selection changes.",
+              },
+              {
+                prop: "selectionMode",
+                type: "none | single | multiple",
+                default: "none",
+                description: "Selection mode for toggle items.",
+              },
+              {
+                prop: "connected",
+                type: "boolean",
+                default: "true",
+                description:
+                  "Whether buttons are visually connected (shared borders).",
+              },
+              {
+                prop: "animated",
+                type: "boolean",
+                default: "false",
+                description: "Enable entrance animation.",
+              },
+              {
+                prop: "animationStagger",
+                type: "number",
+                default: "50",
+                description: "Stagger delay for animation in milliseconds.",
+              },
+              {
+                prop: "variant",
+                type: "Button variant",
+                default: "-",
+                description: "Default variant for all buttons.",
+              },
+              {
+                prop: "disabled",
+                type: "boolean",
+                default: "false",
+                description: "Disable all buttons in the group.",
+              },
+              {
+                prop: "loop",
+                type: "boolean",
+                default: "true",
+                description: "Loop keyboard navigation.",
+              },
             ],
           },
           {
             title: "ButtonGroupToolbar",
             props: [
-              { prop: "label", type: "string", default: "-", description: "Accessible label for the toolbar." },
-              { prop: "...ButtonGroup", type: "ButtonGroupProps", default: "-", description: "All props from ButtonGroup component." },
+              {
+                prop: "label",
+                type: "string",
+                default: "-",
+                description: "Accessible label for the toolbar.",
+              },
+              {
+                prop: "...ButtonGroup",
+                type: "ButtonGroupProps",
+                default: "-",
+                description: "All props from ButtonGroup component.",
+              },
             ],
           },
           {
             title: "ToggleGroupItem",
             props: [
-              { prop: "value", type: "string", default: "-", description: "Unique value for selection tracking." },
-              { prop: "variant", type: "Button variant", default: "outline", description: "Button variant, overrides group default." },
-              { prop: "disabled", type: "boolean", default: "-", description: "Disable this specific item." },
-              { prop: "...Button", type: "ButtonProps", default: "-", description: "All props from Button component." },
+              {
+                prop: "value",
+                type: "string",
+                default: "-",
+                description: "Unique value for selection tracking.",
+              },
+              {
+                prop: "variant",
+                type: "Button variant",
+                default: "outline",
+                description: "Button variant, overrides group default.",
+              },
+              {
+                prop: "disabled",
+                type: "boolean",
+                default: "-",
+                description: "Disable this specific item.",
+              },
+              {
+                prop: "...Button",
+                type: "ButtonProps",
+                default: "-",
+                description: "All props from Button component.",
+              },
             ],
           },
         ]}
