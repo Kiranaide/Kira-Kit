@@ -3,13 +3,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-/**
- * Separator variant styles
- * @see {@link SeparatorProps} for usage
- */
+
+
+
+
 const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
   variants: {
-    /** Thickness of the separator */
+
     size: {
       xs: "data-[orientation=horizontal]:h-px data-[orientation=vertical]:w-px",
       sm: "data-[orientation=horizontal]:h-px data-[orientation=vertical]:w-px",
@@ -19,7 +19,7 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
       lg: "data-[orientation=horizontal]:h-1 data-[orientation=vertical]:w-1",
       xl: "data-[orientation=horizontal]:h-1.5 data-[orientation=vertical]:w-1.5",
     },
-    /** Line style - solid uses background, dashed/dotted use borders */
+
     lineStyle: {
       solid: "bg-border",
       dashed:
@@ -28,7 +28,7 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
         "bg-transparent border-0 border-t border-dotted border-border data-[orientation=vertical]:border-t-0 data-[orientation=vertical]:border-l",
       gradient: "bg-gradient-to-r from-border/0 via-border to-border/0",
     },
-    /** Custom gradient type */
+
     gradient: {
       none: "",
       fade: "from-border/0 via-border to-border/0",
@@ -36,13 +36,13 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
       rainbow:
         "bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500",
     },
-    /** Animation type */
+
     animated: {
       none: "",
       pulse: "animate-pulse",
       shimmer: "animate-[shimmer_2s_infinite]",
     },
-    /** Color of the separator */
+
     color: {
       default: "",
       primary: "",
@@ -55,7 +55,7 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
     },
   },
   compoundVariants: [
-    // Solid color variants
+
     { lineStyle: "solid", color: "default", className: "bg-border" },
     { lineStyle: "solid", color: "primary", className: "bg-primary" },
     { lineStyle: "solid", color: "secondary", className: "bg-secondary" },
@@ -64,7 +64,7 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
     { lineStyle: "solid", color: "success", className: "bg-success" },
     { lineStyle: "solid", color: "warning", className: "bg-warning" },
     { lineStyle: "solid", color: "info", className: "bg-info" },
-    // Gradient variants (ensure bg-gradient is applied)
+
     {
       lineStyle: "gradient",
       gradient: "fade",
@@ -83,7 +83,7 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
       className:
         "bg-gradient-to-r data-[orientation=vertical]:bg-gradient-to-b",
     },
-    // Dashed/dotted color variants (use border-color)
+
     { lineStyle: "dashed", color: "default", className: "border-border" },
     { lineStyle: "dashed", color: "primary", className: "border-primary" },
     {
@@ -126,36 +126,36 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
   },
 });
 
-/**
- * Separator component props
- * @example
- * ```tsx
- * <Separator />
- * <Separator orientation="vertical" />
- * <Separator lineStyle="dashed" color="primary" />
- * <Separator label="Or continue with" />
- * <Separator lineStyle="gradient" gradient="primary" />
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
 export interface SeparatorProps
   extends SeparatorPrimitive.Props, VariantProps<typeof separatorVariants> {
-  /** Label content to display in the separator */
+
   label?: React.ReactNode;
-  /** Alignment of the label */
+
   labelAlign?: "start" | "center" | "end";
-  /** Icon to display alongside the label */
+
   labelIcon?: React.ReactNode;
-  /** Position of the label icon */
+
   labelIconPosition?: "left" | "right";
-  /** Spacing around the separator */
+
   spacing?: "none" | "sm" | "default" | "lg";
-  /** Whether the separator is purely decorative (aria-hidden) */
+
   decorative?: boolean;
 }
 
-/**
- * Visual separator for dividing content sections
- */
+
+
+
 export function Separator({
   className,
   orientation = "horizontal",
@@ -172,7 +172,7 @@ export function Separator({
   decorative,
   ...props
 }: SeparatorProps) {
-  // Spacing classes for margin
+
   const spacingClasses = {
     none: "",
     sm: orientation === "horizontal" ? "my-2" : "mx-2",

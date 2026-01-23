@@ -136,7 +136,7 @@ function Slider({
       onValueCommitted?.(val);
       setIsDragging(false);
 
-      // GSAP animation on value committed
+
       if (thumbRef.current) {
         gsap.fromTo(
           thumbRef.current,
@@ -152,12 +152,12 @@ function Slider({
     [onValueChange, onValueCommitted],
   );
 
-  // GSAP animation for marker click
+
   const animateToMarker = React.useCallback(
     (markerValue: number) => {
       if (readOnly || disabled) return;
 
-      // Animate the thumb with a pop effect
+
       if (thumbRef.current) {
         gsap.fromTo(
           thumbRef.current,
@@ -223,7 +223,7 @@ function Slider({
     return [];
   }, [markers, showStepMarkers, step, min, max]);
 
-  // Check if any marker has a label
+
   const hasMarkerLabels = markersToRender.some((m) => m.label);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -307,7 +307,7 @@ function Slider({
               data-slot="slider-track"
               className="relative w-full rounded-full bg-muted select-none"
             >
-              {/* Tick marks INSIDE the track */}
+              {}
               {markersToRender.map((marker, index) => {
                 const percent = ((marker.value - min) / (max - min)) * 100;
                 const isActive = marker.value <= currentValue;
@@ -399,7 +399,7 @@ function Slider({
           </SliderPrimitive.Control>
         </SliderPrimitive.Root>
 
-        {/* Marker labels BELOW the slider track */}
+        {}
         {hasMarkerLabels && (
           <div className="relative mt-1 w-full">
             {markersToRender.map((marker, index) => {
@@ -578,7 +578,7 @@ function RangeSlider({
         onValueCommitted?.(val);
         setIsDragging(false);
 
-        // GSAP animation on value committed
+
         const activeRef = activeThumb === 0 ? thumb0Ref : thumb1Ref;
         if (activeRef.current) {
           gsap.fromTo(
@@ -617,7 +617,7 @@ function RangeSlider({
     return [];
   }, [markers, showStepMarkers, step, min, max]);
 
-  // Check if any marker has a label
+
   const hasMarkerLabels = markersToRender.some((m) => m.label);
 
   const rangeSliderContent = (
@@ -674,7 +674,7 @@ function RangeSlider({
               data-slot="slider-track"
               className="relative w-full rounded-full bg-muted select-none"
             >
-              {/* Tick marks INSIDE the track */}
+              {}
               {markersToRender.map((marker, index) => {
                 const percent = ((marker.value - min) / (max - min)) * 100;
                 const isFirst = index === 0;
@@ -816,7 +816,7 @@ function RangeSlider({
           </SliderPrimitive.Control>
         </SliderPrimitive.Root>
 
-        {/* Marker labels BELOW the slider track */}
+        {}
         {hasMarkerLabels && (
           <div className="relative mt-1 w-full">
             {markersToRender.map((marker) => {

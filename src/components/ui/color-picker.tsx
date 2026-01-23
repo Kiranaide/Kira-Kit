@@ -98,42 +98,42 @@ function hslaToHsva(color: HslaColor): HsvaColor {
 }
 
 type OklchColor = {
-  l: number; // Lightness 0-1
-  c: number; // Chroma 0-0.4+
-  h: number; // Hue 0-360
+  l: number;
+  c: number;
+  h: number;
 };
 
-// RGB to OKLCH conversion
+
 function rgbaToOklch(rgb: RgbaColor): OklchColor {
-  // Normalize RGB to 0-1
+
   const r = rgb.r / 255;
   const g = rgb.g / 255;
   const b = rgb.b / 255;
 
-  // Convert to linear RGB
+
   const toLinear = (c: number) =>
     c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
   const lr = toLinear(r);
   const lg = toLinear(g);
   const lb = toLinear(b);
 
-  // Convert linear RGB to LMS
+
   const lLms = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
   const mLms = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
   const sLms = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
 
-  // Apply cube root
+
   const lCbrt = Math.cbrt(lLms);
   const mCbrt = Math.cbrt(mLms);
   const sCbrt = Math.cbrt(sLms);
 
-  // Convert to OKLAB
+
   const L = 0.2104542553 * lCbrt + 0.793617785 * mCbrt - 0.0040720468 * sCbrt;
   const a = 1.9779984951 * lCbrt - 2.428592205 * mCbrt + 0.4505937099 * sCbrt;
   const bVal =
     0.0259040371 * lCbrt + 0.7827717662 * mCbrt - 0.808675766 * sCbrt;
 
-  // Convert OKLAB to OKLCH
+
   const c = Math.sqrt(a * a + bVal * bVal);
   let h = Math.atan2(bVal, a) * (180 / Math.PI);
   if (h < 0) h += 360;
@@ -145,16 +145,16 @@ function rgbaToOklch(rgb: RgbaColor): OklchColor {
   };
 }
 
-// OKLCH to RGB conversion
+
 function oklchToRgba(oklch: OklchColor): RgbaColor {
   const { l: L, c, h } = oklch;
 
-  // Convert OKLCH to OKLAB
+
   const hRad = (h * Math.PI) / 180;
   const a = c * Math.cos(hRad);
   const b = c * Math.sin(hRad);
 
-  // Convert OKLAB to LMS (cubed)
+
   const lCbrt = L + 0.3963377774 * a + 0.2158037573 * b;
   const mCbrt = L - 0.1055613458 * a - 0.0638541728 * b;
   const sCbrt = L - 0.0894841775 * a - 1.291485548 * b;
@@ -163,12 +163,12 @@ function oklchToRgba(oklch: OklchColor): RgbaColor {
   const mLms = mCbrt * mCbrt * mCbrt;
   const sLms = sCbrt * sCbrt * sCbrt;
 
-  // Convert LMS to linear RGB
+
   const lr = 4.0767416621 * lLms - 3.3077115913 * mLms + 0.2309699292 * sLms;
   const lg = -1.2684380046 * lLms + 2.6097574011 * mLms - 0.3413193965 * sLms;
   const lb = -0.0041960863 * lLms - 0.7034186147 * mLms + 1.707614701 * sLms;
 
-  // Convert to sRGB
+
   const toSrgb = (c: number) =>
     c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
 
@@ -239,11 +239,11 @@ function generateHarmonies(hsva: HsvaColor): ColorHarmony[] {
 type ColorPickerProps = {
   value?: `#${string}` | HsvaColor | HslaColor | RgbaColor;
   defaultValue?: `#${string}` | HsvaColor | HslaColor | RgbaColor;
-  /** @deprecated Use `format` instead */
+
   type?: "hex" | "hsl" | "rgb" | "hexa" | "oklch";
-  /** Color format for display and input. Alias for `type` prop */
+
   format?: "hex" | "hsl" | "rgb" | "hexa" | "oklch";
-  /** Size variant for the trigger button */
+
   size?: "sm" | "default" | "lg";
   swatches?: HexColor[];
   hideContrastRatio?: boolean;
@@ -254,7 +254,7 @@ type ColorPickerProps = {
   showBackgroundPreview?: boolean;
   className?: string;
   onValueChange?: (value: ColorPickerValue) => void;
-  /** Callback when popover open state changes */
+
   onOpenChange?: (open: boolean) => void;
   children?: React.ReactNode;
   disabled?: boolean;
@@ -289,7 +289,7 @@ function ColorPicker({
   onFocus,
   onError,
 }: ColorPickerProps) {
-  // format takes precedence over type (type is deprecated)
+
   const initialFormat = format ?? type ?? "hex";
   const [colorType, setColorType] = React.useState<
     "hex" | "hsl" | "rgb" | "hexa" | "oklch"
@@ -312,7 +312,7 @@ function ColorPicker({
   >(undefined);
   const [announcement, setAnnouncement] = React.useState("");
 
-  // Size variants for trigger button
+
   const sizeClasses = {
     sm: { swatch: "h-6 w-6", input: "w-20 text-xs" },
     default: { swatch: "h-8 w-8", input: "w-24" },
@@ -321,7 +321,11 @@ function ColorPicker({
   const currentSize = sizeClasses[size];
 
   React.useEffect(() => {
-    setEyedropperSupported("EyeDropper" in window);
+    if (typeof window === "undefined") return;
+    const win = window as Window & {
+      EyeDropper?: new () => { open: () => Promise<{ sRGBHex: string }> };
+    };
+    setEyedropperSupported(typeof win.EyeDropper !== "undefined");
   }, []);
 
   React.useEffect(() => {
@@ -353,7 +357,7 @@ function ColorPicker({
       oklch: rgbaToOklch(rgb),
     });
 
-    // Debounced screen reader announcement
+
     if (announcementTimeoutRef.current) {
       clearTimeout(announcementTimeoutRef.current);
     }
@@ -368,11 +372,14 @@ function ColorPicker({
   };
 
   const handleEyedropper = async () => {
-    if (!eyedropperSupported) return;
+    if (!eyedropperSupported || typeof window === "undefined") return;
 
     try {
-      // @ts-expect-error EyeDropper API is not yet widely typed
-      const eyeDropper = new window.EyeDropper();
+      const win = window as Window & {
+        EyeDropper?: new () => { open: () => Promise<{ sRGBHex: string }> };
+      };
+      if (!win.EyeDropper) return;
+      const eyeDropper = new win.EyeDropper();
       const result = await eyeDropper.open();
       const newColor = hexToHsva(result.sRGBHex);
       handleValueChange(newColor);
@@ -540,11 +547,11 @@ function ColorPicker({
     }
   };
 
-  // Handle popover open change and notify parent
+
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     onOpenChange?.(open);
-    // Focus saturation area when opening
+
     if (open) {
       setTimeout(() => saturationRef.current?.focus(), 0);
     }
@@ -578,7 +585,7 @@ function ColorPicker({
       </PopoverTrigger>
       <PopoverContent className={cn("w-[340px] p-0", className)}>
         <div className="space-y-3 p-4">
-          {/* Screen reader announcements */}
+          {}
           <div aria-live="polite" aria-atomic="true" className="sr-only">
             {announcement}
           </div>
@@ -623,7 +630,7 @@ function ColorPicker({
                 onChange={(newHue) =>
                   handleValueChange({ ...colorHsv, ...newHue })
                 }
-                className="[&>div:first-child]:overflow-hidden [&>div:first-child]:!rounded"
+                className="[&>div:first-child]:overflow-hidden [&>div:first-child]:rounded!"
                 style={
                   {
                     width: "100%",
@@ -648,14 +655,14 @@ function ColorPicker({
                 aria-valuetext={`${Math.round(alpha * 100)}%`}
                 onKeyDown={handleAlphaKeyDown}
               >
-                {/* Checkerboard background for transparency */}
+                {}
                 <div
                   className="absolute inset-0 w-full h-4 rounded-md overflow-hidden"
                   style={{
                     background: `repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 50% / 8px 8px`,
                   }}
                 />
-                {/* Color gradient overlay */}
+                {}
                 <div
                   className="absolute inset-0 w-full h-4 rounded-md border"
                   style={{
@@ -664,7 +671,7 @@ function ColorPicker({
                     )})`,
                   }}
                 />
-                {/* Visible thumb */}
+                {}
                 <div
                   className="absolute top-0 h-4 w-4 rounded-full border-2 border-white shadow-md pointer-events-none transition-transform"
                   style={{
@@ -674,7 +681,7 @@ function ColorPicker({
                       "0 0 0 1px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.2)",
                   }}
                 />
-                {/* Invisible input for interaction */}
+                {}
                 <input
                   type="range"
                   min={0}
@@ -877,7 +884,7 @@ function ColorPicker({
                   id="color-input-error"
                   className="flex items-center gap-1.5 mt-1.5"
                 >
-                  <IconX className="h-3 w-3 text-destructive flex-shrink-0" />
+                  <IconX className="h-3 w-3 text-destructive shrink-0" />
                   <span className="text-xs text-destructive">{inputError}</span>
                 </div>
               )}
@@ -1089,11 +1096,11 @@ function ValidationBadge({
       )}
       icon={isValid ? <IconCheck /> : <IconX />}
     >
-      {/* {isValid ? (
-        <IconCheck className="h-3 w-3 flex-shrink-0" />
-      ) : (
-        <IconX className="h-3 w-3 flex-shrink-0" />
-      )} */}
+      {
+
+
+
+}
       <span className="leading-none">{children}</span>
     </Badge>
   );
@@ -1390,5 +1397,5 @@ function OklchColorInput({
 export { ColorPicker };
 export type { ColorPickerProps, ColorPickerValue, ColorHarmony, OklchColor };
 
-// Export utilities for external use
+
 export { getColorAsHsva, rgbaToOklch, oklchToRgba, hslaToHsva };

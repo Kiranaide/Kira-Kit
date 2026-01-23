@@ -8,9 +8,9 @@ import gsap from "gsap"
 import { cn } from "@/lib/utils"
 import { useAnnounce } from "@/hooks/use-announce"
 
-// ============================================================================
-// SPOTLIGHT VARIANTS (CVA)
-// ============================================================================
+
+
+
 
 const spotlightOverlayVariants = cva(
   "fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
@@ -74,9 +74,9 @@ const spotlightItemVariants = cva(
   }
 )
 
-// ============================================================================
-// TYPES
-// ============================================================================
+
+
+
 
 interface SpotlightItem<T = unknown> {
   id: string
@@ -97,43 +97,43 @@ interface SpotlightGroup<T = unknown> {
 }
 
 interface SpotlightProps<T = unknown> extends VariantProps<typeof spotlightContentVariants> {
-  /** Controlled open state */
+
   open?: boolean
-  /** Callback when open state changes */
+
   onOpenChange?: (open: boolean) => void
-  /** Groups of items to display */
+
   groups?: SpotlightGroup<T>[]
-  /** Flat list of items (alternative to groups) */
+
   items?: SpotlightItem<T>[]
-  /** Recent items to show when query is empty */
+
   recentItems?: SpotlightItem<T>[]
-  /** Callback when search query changes */
+
   onSearch?: (query: string) => void | Promise<void>
-  /** Callback when an item is selected */
+
   onSelect?: (item: SpotlightItem<T>) => void
-  /** Loading state */
+
   loading?: boolean
-  /** Placeholder text */
+
   placeholder?: string
-  /** Empty state content */
+
   emptyContent?: React.ReactNode
-  /** Custom filter function */
+
   filter?: (item: SpotlightItem<T>, query: string) => boolean
-  /** Disable built-in filtering */
+
   disableFilter?: boolean
-  /** Custom trigger element */
+
   trigger?: React.ReactNode
-  /** Show keyboard shortcut hint in trigger */
+
   showShortcutHint?: boolean
-  /** Additional class name */
+
   className?: string
-  /** Children for custom content */
+
   children?: React.ReactNode
 }
 
-// ============================================================================
-// REDUCED MOTION HOOK
-// ============================================================================
+
+
+
 
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
@@ -153,9 +153,9 @@ function useReducedMotion() {
   return prefersReducedMotion
 }
 
-// ============================================================================
-// SPOTLIGHT CONTEXT
-// ============================================================================
+
+
+
 
 interface SpotlightContextValue {
   query: string
@@ -178,9 +178,9 @@ function useSpotlightContext() {
   return context
 }
 
-// ============================================================================
-// SPOTLIGHT ROOT
-// ============================================================================
+
+
+
 
 function SpotlightRoot<T>({
   open,
@@ -208,7 +208,7 @@ function SpotlightRoot<T>({
   const reducedMotion = useReducedMotion()
   const { announce } = useAnnounce()
 
-  // Default filter function
+
   const defaultFilter = React.useCallback(
     (item: SpotlightItem<T>, searchQuery: string): boolean => {
       const q = searchQuery.toLowerCase()
@@ -221,13 +221,13 @@ function SpotlightRoot<T>({
     []
   )
 
-  // Build flat items list from groups and items
+
   const allItems = React.useMemo((): SpotlightItem<T>[] => {
     const fromGroups = groups.flatMap((g) => g.items)
     return [...fromGroups, ...items]
   }, [groups, items])
 
-  // Filter items based on query
+
   const filteredItems = React.useMemo((): SpotlightItem<T>[] => {
     if (!query) {
       return recentItems.length > 0 ? recentItems : allItems
@@ -237,7 +237,7 @@ function SpotlightRoot<T>({
     return allItems.filter((item) => filterFn(item, query))
   }, [query, allItems, recentItems, disableFilter, filter, defaultFilter])
 
-  // Build filtered groups
+
   const filteredGroups = React.useMemo((): SpotlightGroup<T>[] => {
     if (!query) {
       if (recentItems.length > 0) {
@@ -255,12 +255,12 @@ function SpotlightRoot<T>({
       .filter((g) => g.items.length > 0)
   }, [query, groups, recentItems, disableFilter, filter, defaultFilter])
 
-  // Reset selection when items change
+
   React.useEffect(() => {
     setSelectedIndex(0)
   }, [query, filteredItems.length])
 
-  // Announce results count for screen readers
+
   React.useEffect(() => {
     if (query && open) {
       const count = filteredItems.length
@@ -272,12 +272,12 @@ function SpotlightRoot<T>({
     }
   }, [filteredItems.length, query, open, announce])
 
-  // Handle search callback
+
   React.useEffect(() => {
     onSearch?.(query)
   }, [query, onSearch])
 
-  // Handle item selection
+
   const handleItemSelect = React.useCallback(
     (item: SpotlightItem<T>) => {
       if (item.disabled) return
@@ -289,7 +289,7 @@ function SpotlightRoot<T>({
     [onSelect, onOpenChange]
   )
 
-  // Keyboard navigation
+
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent) => {
       const itemCount = filteredItems.length
@@ -326,7 +326,7 @@ function SpotlightRoot<T>({
     [filteredItems, selectedIndex, handleItemSelect, onOpenChange]
   )
 
-  // Scroll selected item into view
+
   React.useEffect(() => {
     if (!listRef.current) return
     const selectedElement = listRef.current.querySelector(
@@ -335,7 +335,7 @@ function SpotlightRoot<T>({
     selectedElement?.scrollIntoView({ block: "nearest" })
   }, [selectedIndex])
 
-  // GSAP animations
+
   React.useEffect(() => {
     if (!contentRef.current || reducedMotion) return
 
@@ -348,7 +348,7 @@ function SpotlightRoot<T>({
     }
   }, [open, reducedMotion])
 
-  // Animate items on mount
+
   React.useEffect(() => {
     if (!listRef.current || reducedMotion || !open) return
 
@@ -390,7 +390,7 @@ function SpotlightRoot<T>({
             className={cn(spotlightContentVariants({ size }), className)}
             aria-label="Command palette"
           >
-            {/* Search Input */}
+            {}
             <div className="flex items-center border-b px-3" role="search">
               {loading ? (
                 <IconLoader2
@@ -437,7 +437,7 @@ function SpotlightRoot<T>({
               )}
             </div>
 
-            {/* Results */}
+            {}
             <div
               ref={listRef}
               id="spotlight-listbox"
@@ -479,7 +479,7 @@ function SpotlightRoot<T>({
               )}
             </div>
 
-            {/* Footer */}
+            {}
             <div className="flex items-center justify-between border-t px-3 py-2 text-xs text-muted-foreground">
               <div className="flex items-center gap-4">
                 <span className="flex items-center gap-1">
@@ -509,9 +509,9 @@ function SpotlightRoot<T>({
   )
 }
 
-// ============================================================================
-// SPOTLIGHT GROUP
-// ============================================================================
+
+
+
 
 interface SpotlightGroupProps {
   label: string
@@ -530,9 +530,9 @@ function SpotlightGroup({ label, children, className }: SpotlightGroupProps) {
   )
 }
 
-// ============================================================================
-// SPOTLIGHT ITEM
-// ============================================================================
+
+
+
 
 interface SpotlightItemComponentProps {
   item: SpotlightItem
@@ -589,9 +589,9 @@ function SpotlightItem({ item, index, className }: SpotlightItemComponentProps) 
   )
 }
 
-// ============================================================================
-// SPOTLIGHT TRIGGER
-// ============================================================================
+
+
+
 
 interface SpotlightTriggerProps {
   children?: React.ReactNode
@@ -623,9 +623,9 @@ function SpotlightTrigger({
   )
 }
 
-// ============================================================================
-// LEGACY COMPONENTS (Backward Compatibility)
-// ============================================================================
+
+
+
 
 interface LegacySpotlightSearchProps extends React.ComponentPropsWithoutRef<"div"> {
   onSearch?: (value: string) => void
@@ -734,11 +734,11 @@ const SpotlightResults = React.forwardRef<HTMLDivElement, LegacySpotlightResults
 )
 SpotlightResults.displayName = "SpotlightResults"
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
 
-// New API
+
+
+
+
 const Spotlight = Object.assign(SpotlightRoot, {
   Trigger: SpotlightTrigger,
   Group: SpotlightGroup,
@@ -751,12 +751,12 @@ export {
   SpotlightTrigger,
   SpotlightGroup,
   SpotlightItem,
-  // Legacy exports for backward compatibility
+
   SpotlightSearch,
   SpotlightRecent,
   SpotlightSuggestions,
   SpotlightResults,
-  // Variants
+
   spotlightOverlayVariants,
   spotlightContentVariants,
   spotlightInputVariants,
@@ -770,7 +770,7 @@ export type {
   SpotlightGroup as SpotlightGroupType,
   SpotlightGroupProps,
   SpotlightTriggerProps,
-  // Legacy types
+
   LegacySpotlightSearchProps as SpotlightSearchProps,
   LegacySpotlightRecentProps as SpotlightRecentProps,
   LegacySpotlightSuggestionsProps as SpotlightSuggestionsProps,

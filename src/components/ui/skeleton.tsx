@@ -2,9 +2,9 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// ============================================================================
-// Skeleton Variants
-// ============================================================================
+
+
+
 
 const skeletonVariants = cva("rounded-md bg-muted", {
   variants: {
@@ -26,52 +26,52 @@ const skeletonVariants = cva("rounded-md bg-muted", {
   },
 });
 
-// ============================================================================
-// Types
-// ============================================================================
+
+
+
 
 interface SkeletonRootProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Indicates loading state for assistive technology */
+
   loading?: boolean;
-  /** Accessible label describing what is loading */
+
   "aria-label"?: string;
-  /** Live region politeness for announcements */
+
   "aria-live"?: "polite" | "assertive" | "off";
-  /** Children skeleton elements */
+
   children: React.ReactNode;
 }
 
 interface SkeletonBoneProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof skeletonVariants> {
-  /** Animation delay in milliseconds for staggering */
+
   delay?: number;
-  /** Animation duration in milliseconds */
+
   duration?: number;
 }
 
 interface SkeletonLinesProps extends Omit<SkeletonBoneProps, "children"> {
-  /** Number of lines to render */
+
   count?: number;
-  /** Gap between lines */
+
   gap?: "sm" | "md" | "lg";
-  /** Make last line shorter for natural text appearance */
+
   lastLineWidth?: "full" | "3/4" | "1/2" | "2/3";
 }
 
 interface SkeletonImageProps extends SkeletonBoneProps {
-  /** Aspect ratio (e.g., "16/9", "4/3", "1/1") */
+
   aspectRatio?: string;
 }
 
 interface SkeletonAvatarProps extends Omit<SkeletonBoneProps, "variant"> {
-  /** Avatar size */
+
   size?: "sm" | "md" | "lg" | "xl";
 }
 
-// ============================================================================
-// Skeleton Root (Container with accessibility)
-// ============================================================================
+
+
+
 
 function SkeletonRoot({
   loading = true,
@@ -92,15 +92,15 @@ function SkeletonRoot({
       {...props}
     >
       {children}
-      {/* Screen reader announcement */}
+      {}
       {ariaLabel && <span className="sr-only">{ariaLabel}</span>}
     </div>
   );
 }
 
-// ============================================================================
-// Skeleton Bone (Base skeleton element)
-// ============================================================================
+
+
+
 
 function SkeletonBone({
   className,
@@ -140,9 +140,9 @@ function SkeletonBone({
   );
 }
 
-// ============================================================================
-// Skeleton Text (Single text line)
-// ============================================================================
+
+
+
 
 function SkeletonText({ className, ...props }: SkeletonBoneProps) {
   return (
@@ -154,9 +154,9 @@ function SkeletonText({ className, ...props }: SkeletonBoneProps) {
   );
 }
 
-// ============================================================================
-// Skeleton Lines (Multiple text lines)
-// ============================================================================
+
+
+
 
 function SkeletonLines({
   count = 3,
@@ -199,9 +199,9 @@ function SkeletonLines({
   );
 }
 
-// ============================================================================
-// Skeleton Heading
-// ============================================================================
+
+
+
 
 function SkeletonHeading({ className, ...props }: SkeletonBoneProps) {
   return (
@@ -213,9 +213,9 @@ function SkeletonHeading({ className, ...props }: SkeletonBoneProps) {
   );
 }
 
-// ============================================================================
-// Skeleton Avatar
-// ============================================================================
+
+
+
 
 function SkeletonAvatar({
   size = "md",
@@ -238,9 +238,9 @@ function SkeletonAvatar({
   );
 }
 
-// ============================================================================
-// Skeleton Button
-// ============================================================================
+
+
+
 
 function SkeletonButton({ className, ...props }: SkeletonBoneProps) {
   return (
@@ -248,9 +248,9 @@ function SkeletonButton({ className, ...props }: SkeletonBoneProps) {
   );
 }
 
-// ============================================================================
-// Skeleton Image
-// ============================================================================
+
+
+
 
 function SkeletonImage({
   aspectRatio = "16/9",
@@ -270,9 +270,9 @@ function SkeletonImage({
   );
 }
 
-// ============================================================================
-// Skeleton Card (Composition)
-// ============================================================================
+
+
+
 
 function SkeletonCard({ className, ...props }: SkeletonBoneProps) {
   return (
@@ -289,12 +289,12 @@ function SkeletonCard({ className, ...props }: SkeletonBoneProps) {
   );
 }
 
-// ============================================================================
-// Skeleton Table Row
-// ============================================================================
+
+
+
 
 interface SkeletonTableRowProps extends SkeletonBoneProps {
-  /** Number of columns */
+
   columns?: number;
 }
 
@@ -322,9 +322,9 @@ function SkeletonTableRow({
   );
 }
 
-// ============================================================================
-// Skeleton List Item
-// ============================================================================
+
+
+
 
 function SkeletonListItem({ className, delay, ...props }: SkeletonBoneProps) {
   return (
@@ -350,9 +350,9 @@ function SkeletonListItem({ className, delay, ...props }: SkeletonBoneProps) {
   );
 }
 
-// ============================================================================
-// Legacy Skeleton (Backward compatible)
-// ============================================================================
+
+
+
 
 interface LegacySkeletonProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -381,9 +381,9 @@ function SkeletonLegacy({ className, variant, ...props }: LegacySkeletonProps) {
   );
 }
 
-// ============================================================================
-// Compound Component Export (New API)
-// ============================================================================
+
+
+
 
 const SkeletonCompound = Object.assign(SkeletonRoot, {
   Root: SkeletonRoot,
@@ -399,16 +399,16 @@ const SkeletonCompound = Object.assign(SkeletonRoot, {
   ListItem: SkeletonListItem,
 });
 
-// ============================================================================
-// Exports
-// ============================================================================
+
+
+
 
 export {
-  // Legacy simple skeleton (backward compatible) - default export name
+
   SkeletonLegacy as Skeleton,
-  // Compound component (new API) for advanced usage
+
   SkeletonCompound as SkeletonGroup,
-  // Individual components for tree-shaking
+
   SkeletonRoot,
   SkeletonBone,
   SkeletonText,
@@ -420,7 +420,7 @@ export {
   SkeletonCard,
   SkeletonTableRow,
   SkeletonListItem,
-  // Variants
+
   skeletonVariants,
 };
 

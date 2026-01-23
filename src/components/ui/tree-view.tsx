@@ -8,9 +8,9 @@ import {
 } from "@tabler/icons-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
-// ============================================
-// TYPES
-// ============================================
+
+
+
 export interface TreeNode {
   id: string;
   name: string;
@@ -41,9 +41,9 @@ function useTreeView() {
   return context;
 }
 
-// ============================================
-// TREE VIEW ROOT
-// ============================================
+
+
+
 interface TreeViewProps {
   data: TreeNode[];
   defaultExpandedNodes?: string[];
@@ -89,7 +89,7 @@ function TreeView({
     });
   }, []);
 
-  // Helper function to get all child node IDs recursively
+
   const getAllChildIds = (node: TreeNode): string[] => {
     const ids: string[] = [];
     if (node.children) {
@@ -101,7 +101,7 @@ function TreeView({
     return ids;
   };
 
-  // Helper function to find a node by ID
+
   const findNodeById = (nodes: TreeNode[], id: string): TreeNode | null => {
     for (const node of nodes) {
       if (node.id === id) return node;
@@ -125,11 +125,11 @@ function TreeView({
         const childIds = getAllChildIds(node);
 
         if (isSelected) {
-          // Deselect parent and all children
+
           next.delete(id);
           childIds.forEach((childId) => next.delete(childId));
         } else {
-          // Select parent and all children
+
           next.add(id);
           childIds.forEach((childId) => next.add(childId));
         }
@@ -194,9 +194,9 @@ function TreeView({
   );
 }
 
-// ============================================
-// TREE NODE LIST
-// ============================================
+
+
+
 interface TreeNodeListProps {
   nodes: TreeNode[];
   level: number;
@@ -217,9 +217,9 @@ function TreeNodeList({ nodes, level }: TreeNodeListProps) {
   );
 }
 
-// ============================================
-// TREE NODE ITEM
-// ============================================
+
+
+
 interface TreeNodeItemProps {
   node: TreeNode;
   level: number;
@@ -275,10 +275,10 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
       aria-selected={isSelected}
       className="relative"
     >
-      {/* Tree lines */}
+      {}
       {showLines && level > 0 && (
         <>
-          {/* Horizontal line to node */}
+          {}
           <span
             aria-hidden="true"
             className="absolute border-t border-border z-0"
@@ -288,7 +288,7 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
               width: "12px",
             }}
           />
-          {/* Vertical line connecting siblings - only if not last */}
+          {}
           {!isLast && (
             <span
               aria-hidden="true"
@@ -311,7 +311,7 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
         )}
         style={{ paddingLeft: `${level * 24 + 8}px` }}
       >
-        {/* Selection indicator for multi-select - left border accent */}
+        {}
         {selectionMode === "multiple" && isSelected && (
           <span
             aria-hidden="true"
@@ -319,7 +319,7 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
           />
         )}
 
-        {/* Checkbox for multi-select */}
+        {}
         {selectionMode === "multiple" && (
           <Checkbox
             checked={isSelected}
@@ -343,7 +343,7 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
           className="flex items-center gap-1.5 flex-1 min-w-0"
           aria-label={node.name}
         >
-          {/* Expand/collapse arrow */}
+          {}
           {hasChildren ? (
             <IconChevronRight
               aria-hidden="true"
@@ -356,18 +356,18 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
             <span className="w-3.5" aria-hidden="true" />
           )}
 
-          {/* Icon */}
+          {}
           <span className="shrink-0">{getIcon()}</span>
 
-          {/* Label */}
+          {}
           <span className="truncate">{node.name}</span>
         </button>
       </div>
 
-      {/* Children */}
+      {}
       {hasChildren && isExpanded && (
         <div className="relative">
-          {/* Vertical connecting line for children */}
+          {}
           {showLines && node.children && node.children.length > 0 && (
             <span
               aria-hidden="true"

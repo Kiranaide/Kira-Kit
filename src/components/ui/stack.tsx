@@ -38,10 +38,10 @@ const justifyMap: Record<string, string> = {
   evenly: "justify-evenly",
 }
 
-/**
- * Stack layout variants for vertical/horizontal stacking
- * @see {@link StackProps} for usage
- */
+
+
+
+
 const stackVariants = cva("flex", {
   variants: {
     direction: {
@@ -68,46 +68,46 @@ type StackElement = "div" | "section" | "nav" | "main" | "article" | "aside" | "
 interface StackProps
   extends React.HTMLAttributes<HTMLElement>,
     Omit<VariantProps<typeof stackVariants>, "direction"> {
-  /** Semantic HTML element to render */
+
   as?: StackElement
-  /** Stack direction */
+
   direction?: StackDirection
-  /** Gap between items - supports responsive values */
+
   gap?: ResponsiveValue<StackGap>
-  /** Align items (cross-axis) - supports responsive values */
+
   align?: ResponsiveValue<StackAlign>
-  /** Justify content (main-axis) - supports responsive values */
+
   justify?: ResponsiveValue<StackJustify>
-  /** Insert dividers between children */
+
   dividers?: boolean
-  /** Custom divider element */
+
   dividerElement?: React.ReactNode
 }
 
-/**
- * Stack layout component for vertical or horizontal stacking.
- * Simplified alternative to Flex for common stacking patterns.
- * 
- * @example
- * ```tsx
- * // Vertical stack (default)
- * <Stack gap={4}>
- *   <Card>Item 1</Card>
- *   <Card>Item 2</Card>
- * </Stack>
- * 
- * // Horizontal stack with dividers
- * <Stack direction="horizontal" gap={4} dividers>
- *   <Button>Action 1</Button>
- *   <Button>Action 2</Button>
- * </Stack>
- * 
- * // Responsive gap
- * <Stack gap={{ base: 2, md: 4, lg: 6 }}>
- *   <Item />
- * </Stack>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Stack({
   as: Component = "div",
   className,
@@ -157,30 +157,30 @@ function Stack({
   )
 }
 
-/**
- * Horizontal stack - convenience wrapper for Stack with direction="horizontal"
- * @example
- * ```tsx
- * <HStack gap={4} align="center">
- *   <Avatar />
- *   <Text>Username</Text>
- * </HStack>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
 function HStack(props: Omit<StackProps, "direction">) {
   return <Stack direction="horizontal" {...props} />
 }
 
-/**
- * Vertical stack - convenience wrapper for Stack with direction="vertical"
- * @example
- * ```tsx
- * <VStack gap={2}>
- *   <Heading>Title</Heading>
- *   <Text>Description</Text>
- * </VStack>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
 function VStack(props: Omit<StackProps, "direction">) {
   return <Stack direction="vertical" {...props} />
 }

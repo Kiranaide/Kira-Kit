@@ -3,26 +3,26 @@ import { Toaster as Sonner } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
-/**
- * Enhanced Toaster component with accessibility and styling improvements.
- *
- * Features:
- * - WCAG 2.2 AA compliant with proper ARIA live regions
- * - Respects `prefers-reduced-motion`
- * - Semantic color variants with icons
- * - Configurable position and duration
- *
- * @example
- * ```tsx
- * // In your app layout
- * <Toaster position="top-right" richColors />
- *
- * // Usage
- * import { toast } from "@/components/ui/toast";
- * toast.success("Saved successfully");
- * toast.error("Something went wrong");
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const Toaster = ({
   position = "top-right",
   expand = false,
@@ -48,15 +48,15 @@ const Toaster = ({
         classNames: {
           toast: [
             "group toast",
-            // Base styles
+
             "group-[.toaster]:bg-background",
             "group-[.toaster]:text-foreground",
             "group-[.toaster]:border-border",
             "group-[.toaster]:shadow-lg",
             "group-[.toaster]:rounded-lg",
-            // Allow close button to be visible (not clipped)
+
             "group-[.toaster]:overflow-visible",
-            // Animation - respect reduced motion
+
             "motion-reduce:transition-none",
           ].join(" "),
           title: "group-[.toast]:font-semibold",
@@ -82,12 +82,12 @@ const Toaster = ({
             "group-[.toast]:text-sm",
           ].join(" "),
           closeButton: [
-            // Positioning - ensure button is not clipped
+
             "group-[.toast]:!left-auto",
             "group-[.toast]:!right-2",
             "group-[.toast]:!top-2",
             "group-[.toast]:!transform-none",
-            // Styling
+
             "group-[.toast]:bg-background",
             "group-[.toast]:text-muted-foreground",
             "group-[.toast]:border",
@@ -101,11 +101,11 @@ const Toaster = ({
             "group-[.toast]:hover:bg-muted",
             "group-[.toast]:hover:text-foreground",
             "group-[.toast]:transition-colors",
-            // Ensure icon is visible
+
             "group-[.toast]:[&_svg]:h-3",
             "group-[.toast]:[&_svg]:w-3",
           ].join(" "),
-          // Semantic color variants with enhanced visibility
+
           error: [
             "group-[.toaster]:!bg-destructive/10",
             "group-[.toaster]:!border-destructive",

@@ -6,9 +6,9 @@ import { Menu } from "@base-ui/react/menu";
 import { cn } from "@/lib/utils";
 import { IconChevronRight, IconCheck, IconLoader } from "@tabler/icons-react";
 
-// =============================================================================
-// Types
-// =============================================================================
+
+
+
 
 type DropdownMenuProps = Menu.Root.Props;
 
@@ -84,9 +84,9 @@ interface DropdownMenuWithContentProps {
   contentProps?: Omit<DropdownMenuContentProps, "children">;
 }
 
-// =============================================================================
-// DropdownMenu Root
-// =============================================================================
+
+
+
 
 function DropdownMenu({ children, ...props }: DropdownMenuProps) {
   return (
@@ -96,17 +96,17 @@ function DropdownMenu({ children, ...props }: DropdownMenuProps) {
   );
 }
 
-// =============================================================================
-// DropdownMenuPortal
-// =============================================================================
+
+
+
 
 function DropdownMenuPortal(props: DropdownMenuPortalProps) {
   return <Menu.Portal data-slot="dropdown-menu-portal" {...props} />;
 }
 
-// =============================================================================
-// DropdownMenuTrigger
-// =============================================================================
+
+
+
 
 const DropdownMenuTrigger = React.forwardRef<
   HTMLDivElement,
@@ -124,9 +124,9 @@ const DropdownMenuTrigger = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuBackdrop
-// =============================================================================
+
+
+
 
 const DropdownMenuBackdrop = React.forwardRef<
   HTMLDivElement,
@@ -142,9 +142,9 @@ const DropdownMenuBackdrop = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuContent
-// =============================================================================
+
+
+
 
 const DropdownMenuContent = React.forwardRef<
   HTMLDivElement,
@@ -188,9 +188,9 @@ const DropdownMenuContent = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuArrow
-// =============================================================================
+
+
+
 
 const DropdownMenuArrow = React.forwardRef<
   HTMLDivElement,
@@ -210,9 +210,9 @@ const DropdownMenuArrow = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuGroup
-// =============================================================================
+
+
+
 
 const DropdownMenuGroup = React.forwardRef<
   HTMLDivElement,
@@ -221,9 +221,9 @@ const DropdownMenuGroup = React.forwardRef<
   return <Menu.Group ref={ref} data-slot="dropdown-menu-group" {...props} />;
 });
 
-// =============================================================================
-// DropdownMenuLabel
-// =============================================================================
+
+
+
 
 const DropdownMenuLabel = React.forwardRef<
   HTMLDivElement,
@@ -244,9 +244,9 @@ const DropdownMenuLabel = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuItem
-// =============================================================================
+
+
+
 
 const DropdownMenuItem = React.forwardRef<
   HTMLDivElement,
@@ -308,17 +308,17 @@ const DropdownMenuItem = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuSub
-// =============================================================================
+
+
+
 
 function DropdownMenuSub({ ...props }: DropdownMenuSubProps) {
   return <Menu.SubmenuRoot data-slot="dropdown-menu-sub" {...props} />;
 }
 
-// =============================================================================
-// DropdownMenuSubTrigger
-// =============================================================================
+
+
+
 
 const DropdownMenuSubTrigger = React.forwardRef<
   HTMLDivElement,
@@ -356,9 +356,9 @@ const DropdownMenuSubTrigger = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuSubContent
-// =============================================================================
+
+
+
 
 const DropdownMenuSubContent = React.forwardRef<
   HTMLDivElement,
@@ -399,9 +399,9 @@ const DropdownMenuSubContent = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuCheckboxItem
-// =============================================================================
+
+
+
 
 const DropdownMenuCheckboxItem = React.forwardRef<
   HTMLDivElement,
@@ -443,9 +443,9 @@ const DropdownMenuCheckboxItem = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuRadioGroup
-// =============================================================================
+
+
+
 
 const DropdownMenuRadioGroup = React.forwardRef<
   HTMLDivElement,
@@ -460,9 +460,9 @@ const DropdownMenuRadioGroup = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuRadioItem
-// =============================================================================
+
+
+
 
 const DropdownMenuRadioItem = React.forwardRef<
   HTMLDivElement,
@@ -504,9 +504,9 @@ const DropdownMenuRadioItem = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuSeparator
-// =============================================================================
+
+
+
 
 const DropdownMenuSeparator = React.forwardRef<
   HTMLDivElement,
@@ -522,9 +522,9 @@ const DropdownMenuSeparator = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuShortcut
-// =============================================================================
+
+
+
 
 const DropdownMenuShortcut = React.forwardRef<
   HTMLSpanElement,
@@ -544,9 +544,9 @@ const DropdownMenuShortcut = React.forwardRef<
   );
 });
 
-// =============================================================================
-// DropdownMenuWithContent (Convenience Wrapper)
-// =============================================================================
+
+
+
 
 function DropdownMenuWithContent({
   trigger,
@@ -562,9 +562,9 @@ function DropdownMenuWithContent({
   );
 }
 
-// =============================================================================
-// Exports
-// =============================================================================
+
+
+
 
 export {
   DropdownMenu,
@@ -587,9 +587,9 @@ export {
   DropdownMenuWithContent,
 };
 
-// =============================================================================
-// Type Exports
-// =============================================================================
+
+
+
 
 export type {
   DropdownMenuProps,

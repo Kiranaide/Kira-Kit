@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, type DayPickerProps } from "react-day-picker";
 import "react-day-picker/style.css";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
@@ -10,9 +10,9 @@ import {
 } from "@tabler/icons-react";
 import { isBefore, setMonth, setYear, format } from "date-fns";
 
-// ============================================
-// CALENDAR SIZE VARIANTS
-// ============================================
+
+
+
 
 const calendarSizeConfig = {
   sm: {
@@ -65,9 +65,9 @@ const MONTHS = [
   "December",
 ];
 
-// ============================================
-// CUSTOM CHEVRON COMPONENT
-// ============================================
+
+
+
 
 function CustomChevron({
   orientation = "down",
@@ -90,9 +90,9 @@ function CustomChevron({
   }
 }
 
-// ============================================
-// CUSTOM MONTH CAPTION COMPONENT
-// ============================================
+
+
+
 
 interface MonthCaptionProps {
   displayMonth: Date;
@@ -127,7 +127,7 @@ function MonthCaption({
 
   return (
     <div className="relative flex items-center gap-1">
-      {/* Month Button */}
+      {}
       <button
         type="button"
         onClick={() => {
@@ -143,7 +143,7 @@ function MonthCaption({
         <IconChevronDown className={sizeConfig.dropdownIcon} />
       </button>
 
-      {/* Year Button */}
+      {}
       <button
         type="button"
         onClick={() => {
@@ -159,7 +159,7 @@ function MonthCaption({
         <IconChevronDown className={sizeConfig.dropdownIcon} />
       </button>
 
-      {/* Month Picker Dropdown */}
+      {}
       {showMonthPicker && (
         <div className="absolute top-full left-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px] animate-in fade-in-0 zoom-in-95">
           <div className="grid grid-cols-3 gap-1">
@@ -182,7 +182,7 @@ function MonthCaption({
         </div>
       )}
 
-      {/* Year Picker Dropdown */}
+      {}
       {showYearPicker && (
         <div className="absolute top-full left-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px] animate-in fade-in-0 zoom-in-95">
           <div className="flex items-center justify-between mb-2">
@@ -233,38 +233,38 @@ function MonthCaption({
   );
 }
 
-// ============================================
-// CALENDAR COMPONENT
-// ============================================
+
+
+
 
 interface CalendarProps {
-  /** Selection mode */
+
   mode?: "single" | "range" | "multiple";
-  /** Size variant */
+
   size?: "sm" | "default" | "lg";
-  /** Selected date(s) */
+
   selected?: Date | Date[] | { from?: Date; to?: Date };
-  /** Selection change handler */
+
   onSelect?: (
     date: Date | Date[] | { from?: Date; to?: Date } | undefined
   ) => void;
-  /** Function to disable specific dates */
+
   disabled?: (date: Date) => boolean;
-  /** Minimum selectable date */
+
   minDate?: Date;
-  /** Maximum selectable date */
+
   maxDate?: Date;
-  /** Auto-focus calendar on render */
+
   autoFocus?: boolean;
-  /** Custom ARIA label for the calendar */
+
   ariaLabel?: string;
-  /** Show Today button in footer */
+
   showTodayButton?: boolean;
-  /** Custom footer content */
+
   footer?: React.ReactNode;
-  /** Enable animations */
+
   animate?: boolean;
-  /** Additional CSS classes */
+
   className?: string;
 }
 
@@ -286,7 +286,7 @@ function Calendar({
   const sizeConfig = calendarSizeConfig[size];
   const [month, setMonth] = React.useState<Date>(new Date());
 
-  // Handle selection
+
   const handleSelect = React.useCallback(
     (date: Date | Date[] | { from?: Date; to?: Date } | undefined) => {
       onSelect?.(date);
@@ -294,7 +294,7 @@ function Calendar({
     [onSelect]
   );
 
-  // Build disabled matcher
+
   const disabledMatcher = React.useMemo(() => {
     const matchers: Array<
       { before: Date } | { after: Date } | ((date: Date) => boolean)
@@ -305,7 +305,7 @@ function Calendar({
     return matchers.length > 0 ? matchers : undefined;
   }, [minDate, maxDate, disabled]);
 
-  // Handle Today button click
+
   const handleTodayClick = React.useCallback(() => {
     const today = new Date();
     setMonth(today);
@@ -318,7 +318,7 @@ function Calendar({
     }
   }, [mode, onSelect]);
 
-  // Custom chevron component with size awareness
+
   const ChevronComponent = React.useCallback(
     (props: {
       orientation?: "left" | "right" | "up" | "down";
@@ -331,7 +331,7 @@ function Calendar({
 
   return (
     <div className={cn(sizeConfig.root, className)}>
-      {/* Custom Month/Year Header */}
+      {}
       <div className="flex items-center justify-between mb-3">
         <button
           type="button"
@@ -372,81 +372,82 @@ function Calendar({
         </button>
       </div>
 
-      {/* @ts-expect-error - DayPicker has discriminated union types based on mode that can't be satisfied with dynamic mode prop */}
-      <DayPicker
-        mode={mode}
-        selected={selected as unknown as Date | Date[] | undefined}
-        onSelect={
-          handleSelect as (
+      {}
+      {(() => {
+        const dayPickerProps = {
+          mode,
+          selected: selected as unknown as Date | Date[] | undefined,
+          onSelect: handleSelect as (
             date: Date | Date[] | { from?: Date; to?: Date } | undefined
-          ) => void
-        }
-        disabled={disabledMatcher}
-        autoFocus={autoFocus}
-        animate={animate}
-        aria-label={ariaLabel}
-        month={month}
-        onMonthChange={setMonth}
-        hideNavigation
-        showOutsideDays
-        components={{
-          Chevron: ChevronComponent,
-        }}
-        classNames={{
-          months: "flex flex-col",
-          month: "",
-          month_caption: "hidden",
-          month_grid: "w-full border-collapse",
-          weekdays: "grid grid-cols-7",
-          weekday: cn(
-            sizeConfig.weekday,
-            "flex items-center justify-center text-muted-foreground font-medium"
-          ),
-          week: "grid grid-cols-7",
-          day: cn(sizeConfig.day, "flex items-center justify-center p-0"),
-          day_button: cn(
-            sizeConfig.dayButton,
-            "w-full h-full flex items-center justify-center rounded-md",
-            "hover:bg-muted transition-colors",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          ),
-          selected:
-            "!bg-primary !text-primary-foreground font-medium hover:!bg-primary/90",
-          today: "font-semibold text-primary",
-          outside: "text-muted-foreground/40",
-          disabled: "opacity-40 cursor-not-allowed",
-          range_start: "rounded-r-none !bg-primary !text-primary-foreground",
-          range_end: "rounded-l-none !bg-primary !text-primary-foreground",
-          range_middle: "rounded-none !bg-primary/10",
-          hidden: "invisible",
-        }}
-        footer={
-          footer !== undefined ? (
-            footer
-          ) : showTodayButton ? (
-            <div className="mt-3 pt-3 border-t border-border">
-              <button
-                type="button"
-                onClick={handleTodayClick}
-                className={cn(
-                  "w-full py-1.5 rounded-md transition-colors font-medium",
-                  "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  sizeConfig.caption
-                )}
-              >
-                Today
-              </button>
-            </div>
-          ) : null
-        }
-      />
+          ) => void,
+          disabled: disabledMatcher,
+          autoFocus,
+          animate,
+          "aria-label": ariaLabel,
+          month,
+          onMonthChange: setMonth,
+          hideNavigation: true,
+          showOutsideDays: true,
+          components: {
+            Chevron: ChevronComponent,
+          },
+          classNames: {
+            months: "flex flex-col",
+            month: "",
+            month_caption: "hidden",
+            month_grid: "w-full border-collapse",
+            weekdays: "grid grid-cols-7",
+            weekday: cn(
+              sizeConfig.weekday,
+              "flex items-center justify-center text-muted-foreground font-medium"
+            ),
+            week: "grid grid-cols-7",
+            day: cn(sizeConfig.day, "flex items-center justify-center p-0"),
+            day_button: cn(
+              sizeConfig.dayButton,
+              "w-full h-full flex items-center justify-center rounded-md",
+              "hover:bg-muted transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            ),
+            selected:
+              "!bg-primary !text-primary-foreground font-medium hover:!bg-primary/90",
+            today: "font-semibold text-primary",
+            outside: "text-muted-foreground/40",
+            disabled: "opacity-40 cursor-not-allowed",
+            range_start: "rounded-r-none !bg-primary !text-primary-foreground",
+            range_end: "rounded-l-none !bg-primary !text-primary-foreground",
+            range_middle: "rounded-none !bg-primary/10",
+            hidden: "invisible",
+          },
+          footer:
+            footer !== undefined ? (
+              footer
+            ) : showTodayButton ? (
+              <div className="mt-3 pt-3 border-t border-border">
+                <button
+                  type="button"
+                  onClick={handleTodayClick}
+                  className={cn(
+                    "w-full py-1.5 rounded-md transition-colors font-medium",
+                    "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    sizeConfig.caption
+                  )}
+                >
+                  Today
+                </button>
+              </div>
+            ) : null,
+        } as unknown as DayPickerProps;
+
+        return <DayPicker {...dayPickerProps} />;
+      })()}
     </div>
   );
 }
 
-// ============================================
-// MONTH PICKER (Standalone)
-// ============================================
+
+
+
 
 const calendarButtonVariants = cva(
   "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
@@ -574,9 +575,9 @@ function MonthPicker({
   );
 }
 
-// ============================================
-// YEAR PICKER (Standalone)
-// ============================================
+
+
+
 
 interface YearPickerProps {
   mode?: "single" | "range";

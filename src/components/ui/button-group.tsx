@@ -90,31 +90,31 @@ const useButtonGroupContext = () => {
 
 interface ButtonGroupProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
-  /** Orientation of the button group */
+
   orientation?: ButtonGroupOrientation;
-  /** Size variant for all buttons */
+
   size?: ButtonGroupSize;
-  /** Gap between buttons (only when not connected) */
+
   gap?: ButtonGroupGap;
-  /** Justify content alignment */
+
   justify?: ButtonGroupJustify;
-  /** Controlled value for selection */
+
   value?: string | string[] | null;
-  /** Callback when selection changes */
+
   onChange?: (value: string | string[]) => void;
-  /** Selection mode: none, single, or multiple */
+
   selectionMode?: SelectionMode;
-  /** Whether buttons are visually connected */
+
   connected?: boolean;
-  /** Enable entrance animation */
+
   animated?: boolean;
-  /** Stagger delay for animation (ms) */
+
   animationStagger?: number;
-  /** Variant for all buttons */
+
   variant?: ButtonProps["variant"];
-  /** Disable all buttons in the group */
+
   disabled?: boolean;
-  /** Loop keyboard navigation (default: true) */
+
   loop?: boolean;
 }
 
@@ -194,7 +194,7 @@ function ButtonGroup({
             positionClasses = "rounded-none border-r-0";
           }
         } else {
-          // vertical
+
           if (isFirst && count > 1) {
             positionClasses = "rounded-b-none border-b-0";
           } else if (isLast && count > 1) {
@@ -332,7 +332,7 @@ function ToggleGroupItem({
     const isVertical = orientation === "vertical";
     const lastIndex = buttons.length - 1;
 
-    // Handle Home/End keys
+
     if (key === "Home") {
       nextIndex = 0;
       buttons[nextIndex]?.focus();
@@ -344,7 +344,7 @@ function ToggleGroupItem({
       return;
     }
 
-    // Handle Arrow keys
+
     if (
       (isVertical && (key === "ArrowDown" || key === "ArrowUp")) ||
       (!isVertical && (key === "ArrowRight" || key === "ArrowLeft"))

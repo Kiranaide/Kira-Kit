@@ -6,9 +6,9 @@ import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// ============================================
-// RADIO GROUP
-// ============================================
+
+
+
 const radioGroupVariants = cva("grid gap-2", {
   variants: {
     orientation: {
@@ -23,9 +23,9 @@ const radioGroupVariants = cva("grid gap-2", {
 
 interface RadioGroupProps
   extends RadioGroupPrimitive.Props, VariantProps<typeof radioGroupVariants> {
-  /** Whether the group has an error */
+
   error?: boolean;
-  /** Error message to display */
+
   errorMessage?: string;
 }
 
@@ -77,9 +77,9 @@ function RadioGroup({
   );
 }
 
-// ============================================
-// RADIO GROUP ITEM
-// ============================================
+
+
+
 const radioItemVariants = cva(
   "relative aspect-square rounded-full border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center transition-all",
   {
@@ -172,9 +172,9 @@ function RadioGroupItem({
   );
 }
 
-// ============================================
-// RADIO WITH LABEL
-// ============================================
+
+
+
 interface RadioWithLabelProps extends RadioGroupItemProps {
   label: string;
   description?: string;
@@ -206,9 +206,9 @@ function RadioWithLabel({
   );
 }
 
-// ============================================
-// RADIO CARD
-// ============================================
+
+
+
 interface RadioCardProps extends RadioPrimitive.Root.Props {
   label: string;
   description?: string;
@@ -259,9 +259,9 @@ function RadioCard({
   );
 }
 
-// ============================================
-// RADIO BUTTON GROUP (Segmented Control)
-// ============================================
+
+
+
 const radioButtonGroupVariants = cva(
   "inline-flex rounded-lg bg-muted p-1 gap-1",
   {

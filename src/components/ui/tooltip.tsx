@@ -3,22 +3,22 @@ import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// ============================================
-// TOOLTIP CONTENT VARIANTS
-// ============================================
+
+
+
 const tooltipContentVariants = cva(
   [
-    // Base styles
+
     "z-50 overflow-hidden rounded-md px-3 py-1.5 text-sm shadow-md",
-    // Animation - WCAG: respect prefers-reduced-motion
+
     "animate-in fade-in-0 zoom-in-95",
     "data-[ending-style]:animate-out data-[ending-style]:fade-out-0 data-[ending-style]:zoom-out-95",
-    // Positioning animations
+
     "data-[side=bottom]:slide-in-from-top-2",
     "data-[side=left]:slide-in-from-right-2",
     "data-[side=right]:slide-in-from-left-2",
     "data-[side=top]:slide-in-from-bottom-2",
-    // Reduced motion support
+
     "motion-reduce:animate-none",
   ],
   {
@@ -43,9 +43,9 @@ const tooltipContentVariants = cva(
   }
 );
 
-// ============================================
-// TOOLTIP ARROW VARIANTS
-// ============================================
+
+
+
 const tooltipArrowVariants = cva(
   [
     "data-[side=bottom]:top-[-6px]",
@@ -69,9 +69,9 @@ const tooltipArrowVariants = cva(
   }
 );
 
-// ============================================
-// TYPES
-// ============================================
+
+
+
 type TooltipContextValue = {
   variant: VariantProps<typeof tooltipContentVariants>["variant"];
   id: string;
@@ -87,181 +87,181 @@ const TooltipContext = React.createContext<TooltipContextValue>({
 });
 
 interface TooltipProviderProps {
-  /**
-   * Default hover delay for all tooltips in milliseconds
-   * @default 500
-   */
+
+
+
+
   delayDuration?: number;
-  /**
-   * Default close delay for all tooltips in milliseconds
-   * @default 200
-   */
+
+
+
+
   closeDelayDuration?: number;
-  /**
-   * Children
-   */
+
+
+
   children: React.ReactNode;
 }
 
 interface TooltipProps
   extends Omit<TooltipPrimitive.Root.Props, "children">,
     VariantProps<typeof tooltipContentVariants> {
-  /**
-   * Hover delay in milliseconds before showing tooltip
-   * @default 500
-   */
+
+
+
+
   delayDuration?: number;
-  /**
-   * Delay in milliseconds before hiding tooltip after mouse leaves
-   * @default 200
-   */
+
+
+
+
   closeDelayDuration?: number;
-  /**
-   * Children
-   */
+
+
+
   children: React.ReactNode;
 }
 
 interface TooltipTriggerProps extends TooltipPrimitive.Trigger.Props {
-  /**
-   * Custom class name
-   */
+
+
+
   className?: string;
 }
 
 interface TooltipContentProps
   extends Omit<TooltipPrimitive.Popup.Props, "children">,
     VariantProps<typeof tooltipContentVariants> {
-  /**
-   * Side of the trigger to position the tooltip
-   * @default "top"
-   */
+
+
+
+
   side?: "top" | "right" | "bottom" | "left";
-  /**
-   * Alignment of the tooltip relative to the trigger
-   * @default "center"
-   */
+
+
+
+
   align?: "start" | "center" | "end";
-  /**
-   * Offset from the trigger in pixels
-   * @default 8
-   */
+
+
+
+
   sideOffset?: number;
-  /**
-   * Maximum width of the tooltip
-   * @default 250
-   */
+
+
+
+
   maxWidth?: number | string;
-  /**
-   * Whether to show the arrow
-   * @default true
-   */
+
+
+
+
   showArrow?: boolean;
-  /**
-   * Content to display
-   */
+
+
+
   children: React.ReactNode;
 }
 
 interface TooltipArrowProps extends Omit<TooltipPrimitive.Arrow.Props, "render"> {
-  /**
-   * Custom class name
-   */
+
+
+
   className?: string;
 }
 
-// ============================================
-// SIMPLE TOOLTIP PROPS (Shorthand API)
-// ============================================
+
+
+
 interface SimpleTooltipProps extends VariantProps<typeof tooltipContentVariants> {
-  /**
-   * Tooltip content text or node
-   */
+
+
+
   content: React.ReactNode;
-  /**
-   * The element that triggers the tooltip
-   */
+
+
+
   children: React.ReactElement;
-  /**
-   * Side of the trigger to position the tooltip
-   * @default "top"
-   */
+
+
+
+
   side?: "top" | "right" | "bottom" | "left";
-  /**
-   * Alignment of the tooltip
-   * @default "center"
-   */
+
+
+
+
   align?: "start" | "center" | "end";
-  /**
-   * Whether to show the arrow
-   * @default true
-   */
+
+
+
+
   showArrow?: boolean;
-  /**
-   * Offset from the trigger
-   * @default 8
-   */
+
+
+
+
   sideOffset?: number;
-  /**
-   * Hover delay in milliseconds
-   * @default 500
-   */
+
+
+
+
   delayDuration?: number;
-  /**
-   * Close delay in milliseconds
-   * @default 200
-   */
+
+
+
+
   closeDelayDuration?: number;
-  /**
-   * Controlled open state
-   */
+
+
+
   open?: boolean;
-  /**
-   * Callback when open state changes
-   */
+
+
+
   onOpenChange?: (
     open: boolean,
     eventDetails: TooltipPrimitive.Root.ChangeEventDetails
   ) => void;
 }
 
-// ============================================
-// TOOLTIP PROVIDER
-// ============================================
-/**
- * Provider for tooltip configuration.
- * Wrap your app to set default delays.
- *
- * @example
- * ```tsx
- * <TooltipProvider delayDuration={300}>
- *   <App />
- * </TooltipProvider>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function TooltipProvider({
-  delayDuration: _delayDuration = 500, // eslint-disable-line @typescript-eslint/no-unused-vars
-  closeDelayDuration: _closeDelayDuration = 200, // eslint-disable-line @typescript-eslint/no-unused-vars
+  delayDuration: _delayDuration = 500,
+  closeDelayDuration: _closeDelayDuration = 200,
   children,
 }: TooltipProviderProps) {
-  // Base UI handles provider internally, this is for API consistency
+
   return <>{children}</>;
 }
 
-// ============================================
-// TOOLTIP ROOT
-// ============================================
-/**
- * Root component for tooltip. Controls open state and timing.
- *
- * @example
- * ```tsx
- * <Tooltip delayDuration={300}>
- *   <TooltipTrigger>Hover me</TooltipTrigger>
- *   <TooltipContent>Tooltip content</TooltipContent>
- * </Tooltip>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Tooltip({
   delayDuration = 500,
   closeDelayDuration = 200,
@@ -274,7 +274,7 @@ function Tooltip({
   const [internalOpen, setInternalOpen] = React.useState(false);
   const id = React.useId();
 
-  // Controlled vs uncontrolled
+
   const isOpen = controlledOpen ?? internalOpen;
 
   const handleOpenChange = React.useCallback(
@@ -290,8 +290,8 @@ function Tooltip({
     [controlledOpen, onOpenChange]
   );
 
-  // WCAG 1.4.13: Dismissible - Escape key to close
-  // Note: Base UI handles this internally, but we add it for extra safety
+
+
   React.useEffect(() => {
     if (!isOpen) return;
 
@@ -325,19 +325,19 @@ function Tooltip({
   );
 }
 
-// ============================================
-// TOOLTIP TRIGGER
-// ============================================
-/**
- * The element that triggers the tooltip on hover/focus.
- *
- * @example
- * ```tsx
- * <TooltipTrigger>
- *   <Button>Hover me</Button>
- * </TooltipTrigger>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
 function TooltipTrigger({ className, children, ...props }: TooltipTriggerProps) {
   const { id, delayDuration, closeDelayDuration } =
     React.useContext(TooltipContext);
@@ -345,7 +345,7 @@ function TooltipTrigger({ className, children, ...props }: TooltipTriggerProps) 
   return (
     <TooltipPrimitive.Trigger
       data-slot="tooltip-trigger"
-      // WCAG: Link trigger to tooltip content for screen readers
+
       aria-describedby={id}
       delay={delayDuration}
       closeDelay={closeDelayDuration}
@@ -357,19 +357,19 @@ function TooltipTrigger({ className, children, ...props }: TooltipTriggerProps) 
   );
 }
 
-// ============================================
-// TOOLTIP CONTENT
-// ============================================
-/**
- * The content displayed in the tooltip popup.
- *
- * @example
- * ```tsx
- * <TooltipContent side="top" align="center">
- *   This is a tooltip
- * </TooltipContent>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
 function TooltipContent({
   className,
   side = "top",
@@ -411,12 +411,12 @@ function TooltipContent({
   );
 }
 
-// ============================================
-// TOOLTIP ARROW
-// ============================================
-/**
- * Arrow pointing to the trigger element.
- */
+
+
+
+
+
+
 function TooltipArrow({
   className,
   variant,
@@ -438,29 +438,29 @@ function TooltipArrow({
   );
 }
 
-// ============================================
-// SIMPLE TOOLTIP (Shorthand API)
-// ============================================
-/**
- * Simplified tooltip component for common use cases.
- *
- * @example
- * ```tsx
- * // Simple usage
- * <SimpleTooltip content="Save your changes">
- *   <Button>Save</Button>
- * </SimpleTooltip>
- *
- * // With options
- * <SimpleTooltip
- *   content="Delete this item permanently"
- *   variant="destructive"
- *   side="right"
- * >
- *   <Button variant="destructive">Delete</Button>
- * </SimpleTooltip>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function SimpleTooltip({
   content,
   children,
@@ -498,9 +498,9 @@ function SimpleTooltip({
   );
 }
 
-// ============================================
-// EXPORTS
-// ============================================
+
+
+
 export {
   Tooltip,
   TooltipTrigger,

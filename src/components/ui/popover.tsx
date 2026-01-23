@@ -3,12 +3,12 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// ============================================
-// POPOVER ROOT
-// ============================================
+
+
+
 
 interface PopoverProps extends PopoverPrimitive.Root.Props {
-  /** Callback when open state changes. */
+
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -22,33 +22,33 @@ function Popover({ onOpenChange, ...props }: PopoverProps) {
   );
 }
 
-// ============================================
-// POPOVER TRIGGER
-// ============================================
+
+
+
 
 function PopoverTrigger({ ...props }: PopoverPrimitive.Trigger.Props) {
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
 }
 
-// ============================================
-// POPOVER PORTAL
-// ============================================
+
+
+
 
 function PopoverPortal({ ...props }: PopoverPrimitive.Portal.Props) {
   return <PopoverPrimitive.Portal data-slot="popover-portal" {...props} />;
 }
 
-// ============================================
-// POPOVER CLOSE
-// ============================================
+
+
+
 
 function PopoverClose({ ...props }: PopoverPrimitive.Close.Props) {
   return <PopoverPrimitive.Close data-slot="popover-close" {...props} />;
 }
 
-// ============================================
-// POPOVER CONTENT VARIANTS
-// ============================================
+
+
+
 
 const popoverContentVariants = cva(
   "z-50 rounded-lg border p-4 shadow-lg outline-none data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
@@ -73,45 +73,45 @@ const popoverContentVariants = cva(
   },
 );
 
-// ============================================
-// POPOVER CONTENT
-// ============================================
+
+
+
 
 interface PopoverContentProps
   extends
     Omit<PopoverPrimitive.Popup.Props, "initialFocus" | "finalFocus">,
     VariantProps<typeof popoverContentVariants> {
-  /** Side to position the popover relative to trigger. */
+
   side?: PopoverPrimitive.Positioner.Props["side"];
-  /** Offset from the trigger element. */
+
   sideOffset?: PopoverPrimitive.Positioner.Props["sideOffset"];
-  /** Alignment relative to the trigger. */
+
   align?: PopoverPrimitive.Positioner.Props["align"];
-  /** Offset for alignment. */
+
   alignOffset?: PopoverPrimitive.Positioner.Props["alignOffset"];
-  /** Padding for the arrow. */
+
   arrowPadding?: PopoverPrimitive.Positioner.Props["arrowPadding"];
-  /** Element to use as collision boundary. */
+
   collisionBoundary?: PopoverPrimitive.Positioner.Props["collisionBoundary"];
-  /** Padding from collision boundary. */
+
   collisionPadding?: PopoverPrimitive.Positioner.Props["collisionPadding"];
-  /** How to handle positioning when overflowing. */
+
   sticky?: PopoverPrimitive.Positioner.Props["sticky"];
-  /**
-   * Element to focus when the popover opens.
-   * - `false`: Do not move focus.
-   * - `true`: Focus first tabbable element or popup.
-   * - `RefObject`: Focus the ref element.
-   */
+
+
+
+
+
+
   initialFocus?: PopoverPrimitive.Popup.Props["initialFocus"];
-  /**
-   * Element to focus when the popover closes.
-   * - `false`: Do not move focus.
-   * - `true`: Focus trigger or previously focused element.
-   * - `RefObject`: Focus the ref element.
-   */
+
+
+
+
+
+
   finalFocus?: PopoverPrimitive.Popup.Props["finalFocus"];
-  /** ARIA role for the popover content. */
+
   role?: "dialog" | "tooltip" | "listbox" | "menu";
 }
 
@@ -157,9 +157,9 @@ function PopoverContent({
   );
 }
 
-// ============================================
-// POPOVER BACKDROP
-// ============================================
+
+
+
 
 function PopoverBackdrop({
   className,
@@ -177,9 +177,9 @@ function PopoverBackdrop({
   );
 }
 
-// ============================================
-// POPOVER ARROW
-// ============================================
+
+
+
 
 const popoverArrowVariants = cva("", {
   variants: {
@@ -208,12 +208,12 @@ function PopoverArrow({ className, variant, ...props }: PopoverArrowProps) {
   );
 }
 
-// ============================================
-// POPOVER TITLE
-// ============================================
+
+
+
 
 interface PopoverTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
-  /** Heading level to use. */
+
   as?: "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
@@ -232,11 +232,11 @@ function PopoverTitle({
   );
 }
 
-// ============================================
-// POPOVER DESCRIPTION
-// ============================================
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+
+
+
+
 interface PopoverDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
 
 function PopoverDescription({ className, ...props }: PopoverDescriptionProps) {
@@ -249,9 +249,9 @@ function PopoverDescription({ className, ...props }: PopoverDescriptionProps) {
   );
 }
 
-// ============================================
-// EXPORTS
-// ============================================
+
+
+
 
 export {
   Popover,

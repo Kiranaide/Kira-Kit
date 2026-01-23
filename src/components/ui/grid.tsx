@@ -104,10 +104,10 @@ const placeMap: Record<string, string> = {
   stretch: "place-items-stretch",
 }
 
-/**
- * Grid layout variants
- * @see {@link GridProps} for usage
- */
+
+
+
+
 const gridVariants = cva("grid", {
   variants: {
     inline: {
@@ -132,53 +132,53 @@ type GridElement = "div" | "section" | "main" | "article" | "aside" | "ul" | "ol
 interface GridProps
   extends React.HTMLAttributes<HTMLElement>,
     VariantProps<typeof gridVariants> {
-  /** Semantic HTML element to render */
+
   as?: GridElement
-  /** Number of columns - supports responsive values */
+
   cols?: ResponsiveValue<GridCols>
-  /** Number of rows - supports responsive values */
+
   rows?: ResponsiveValue<GridRows>
-  /** Gap between items - supports responsive values */
+
   gap?: ResponsiveValue<GridGap>
-  /** Horizontal gap - supports responsive values */
+
   gapX?: ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12>
-  /** Vertical gap - supports responsive values */
+
   gapY?: ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12>
-  /** Grid flow direction */
+
   flow?: GridFlow
-  /** Align items (block axis) - supports responsive values */
+
   align?: ResponsiveValue<GridAlign>
-  /** Justify items (inline axis) - supports responsive values */
+
   justify?: ResponsiveValue<GridJustify>
-  /** Place items shorthand - supports responsive values */
+
   place?: ResponsiveValue<GridPlace>
 }
 
-/**
- * Grid layout primitive for CSS Grid layouts.
- * Supports responsive values for columns, rows, and spacing.
- * 
- * @see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout
- * @example
- * ```tsx
- * // Basic grid
- * <Grid cols={3} gap={4}>
- *   <Card>1</Card>
- *   <Card>2</Card>
- *   <Card>3</Card>
- * </Grid>
- * 
- * // Responsive grid
- * <Grid cols={{ base: 1, md: 2, lg: 3 }} gap={{ base: 4, lg: 6 }}>
- *   <Card>Responsive</Card>
- * </Grid>
- * 
- * // Auto-fit pattern (use className)
- * <Grid className="grid-cols-[repeat(auto-fit,minmax(300px,1fr))]" gap={4}>
- *   <Card>Auto-fit</Card>
- * </Grid>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Grid({
   as: Component = "div",
   className,
@@ -215,7 +215,7 @@ function Grid({
   )
 }
 
-// GridItem maps
+
 const colSpanMap: Record<string, string> = {
   "1": "col-span-1",
   "2": "col-span-2",
@@ -321,36 +321,36 @@ type RowPosition = 1 | 2 | 3 | 4 | 5 | 6 | 7 | "auto"
 type SelfAlign = "start" | "end" | "center" | "stretch" | "auto"
 
 interface GridItemProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Column span - supports responsive values */
+
   colSpan?: ResponsiveValue<ColSpan>
-  /** Row span - supports responsive values */
+
   rowSpan?: ResponsiveValue<RowSpan>
-  /** Column start position */
+
   colStart?: ColPosition
-  /** Column end position */
+
   colEnd?: ColPosition
-  /** Row start position */
+
   rowStart?: RowPosition
-  /** Row end position */
+
   rowEnd?: RowPosition
-  /** Align self (block axis) */
+
   alignSelf?: SelfAlign
-  /** Justify self (inline axis) */
+
   justifySelf?: SelfAlign
 }
 
-/**
- * Grid item component for controlling placement within a Grid.
- * 
- * @example
- * ```tsx
- * <Grid cols={3}>
- *   <GridItem colSpan={2}>Wide item</GridItem>
- *   <GridItem>Normal item</GridItem>
- *   <GridItem colSpan={{ base: 3, md: 1 }}>Responsive span</GridItem>
- * </Grid>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
 function GridItem({
   className,
   colSpan,

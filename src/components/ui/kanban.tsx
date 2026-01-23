@@ -36,9 +36,9 @@ import { CSS } from "@dnd-kit/utilities"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
-// ============================================================================
-// TYPES
-// ============================================================================
+
+
+
 
 interface KanbanCardData {
   id: string
@@ -64,33 +64,33 @@ interface KanbanColumnData {
 }
 
 interface KanbanContextValue {
-  // State
+
   columns: KanbanColumnData[]
   setColumns: React.Dispatch<React.SetStateAction<KanbanColumnData[]>>
   activeId: UniqueIdentifier | null
   activeCard: KanbanCardData | null
   variant: "default" | "compact" | "minimal"
   columnSize: "sm" | "default" | "lg" | "auto"
-  // Keyboard navigation
+
   focusedCardId: string | null
   setFocusedCardId: (id: string | null) => void
   isGrabbed: boolean
   setIsGrabbed: (grabbed: boolean) => void
-  // Move dialog
+
   showMoveDialog: boolean
   setShowMoveDialog: (show: boolean) => void
   moveDialogCard: KanbanCardData | null
   setMoveDialogCard: (card: KanbanCardData | null) => void
   moveDialogSourceColumn: string | null
   setMoveDialogSourceColumn: (columnId: string | null) => void
-  // Functions
+
   announce: (message: string) => void
   addCard: (columnId: string, card: KanbanCardData) => void
   removeCard: (columnId: string, cardId: string) => void
   moveCard: (cardId: string, sourceColumnId: string, targetColumnId: string, targetIndex?: number) => void
   addColumn: (column: KanbanColumnData) => void
   removeColumn: (columnId: string) => void
-  // Callbacks
+
   onColumnsChange?: (columns: KanbanColumnData[]) => void
   onCardClick?: (card: KanbanCardData, columnId: string) => void
   onCardAdd?: (columnId: string) => void
@@ -106,9 +106,9 @@ function useKanban() {
   return context
 }
 
-// ============================================================================
-// VARIANTS
-// ============================================================================
+
+
+
 
 const kanbanVariants = cva("flex gap-4 overflow-x-auto pb-4", {
   variants: {
@@ -154,9 +154,9 @@ const kanbanCardVariants = cva(
   }
 )
 
-// ============================================================================
-// REDUCED MOTION HOOK
-// ============================================================================
+
+
+
 
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
@@ -176,9 +176,9 @@ function useReducedMotion() {
   return prefersReducedMotion
 }
 
-// ============================================================================
-// SCREEN READER ANNOUNCER
-// ============================================================================
+
+
+
 
 interface AnnouncerProps {
   message: string
@@ -197,9 +197,9 @@ function Announcer({ message }: AnnouncerProps) {
   )
 }
 
-// ============================================================================
-// MOVE DIALOG
-// ============================================================================
+
+
+
 
 interface MoveDialogProps {
   card: KanbanCardData
@@ -214,7 +214,7 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
   const [selectedPosition, setSelectedPosition] = React.useState<number>(0)
   const dialogRef = React.useRef<HTMLDivElement>(null)
 
-  // Focus trap
+
   React.useEffect(() => {
     const dialog = dialogRef.current
     if (!dialog) return
@@ -252,14 +252,14 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
 
   return (
     <>
-      {/* Backdrop */}
+      {}
       <div
         className="fixed inset-0 z-50 bg-black/50"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Dialog */}
+      {}
       <div
         ref={dialogRef}
         role="dialog"
@@ -291,7 +291,7 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
           </p>
         </div>
 
-        {/* Column Selection */}
+        {}
         <div className="space-y-3 mb-4">
           <label className="text-sm font-medium">Select destination column:</label>
           <div className="grid gap-2">
@@ -323,7 +323,7 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
           </div>
         </div>
 
-        {/* Position Selection */}
+        {}
         {selectedColumn && targetColumn && (
           <div className="space-y-3 mb-6">
             <label className="text-sm font-medium">Select position:</label>
@@ -346,7 +346,7 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
           </div>
         )}
 
-        {/* Actions */}
+        {}
         <div className="flex justify-end gap-3">
           <button
             type="button"
@@ -381,24 +381,24 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
   )
 }
 
-// ============================================================================
-// KANBAN ROOT COMPONENT
-// ============================================================================
+
+
+
 
 interface KanbanProps extends React.ComponentPropsWithoutRef<"div">, VariantProps<typeof kanbanVariants> {
-  /** Initial columns data (for controlled usage) */
+
   columns?: KanbanColumnData[]
-  /** Callback when columns change */
+
   onColumnsChange?: (columns: KanbanColumnData[]) => void
-  /** Column width */
+
   columnSize?: "sm" | "default" | "lg" | "auto"
-  /** Enable keyboard navigation (default: true) */
+
   enableKeyboard?: boolean
-  /** Callback when a card is clicked */
+
   onCardClick?: (card: KanbanCardData, columnId: string) => void
-  /** Callback when add card is clicked */
+
   onCardAdd?: (columnId: string) => void
-  /** Custom announcements for screen readers */
+
   announcements?: {
     onDragStart?: (card: KanbanCardData) => string
     onDragOver?: (card: KanbanCardData, column: KanbanColumnData) => string
@@ -429,18 +429,18 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
     const [activeCard, setActiveCard] = React.useState<KanbanCardData | null>(null)
     const [announcement, setAnnouncement] = React.useState("")
 
-    // Keyboard navigation state
+
     const [focusedCardId, setFocusedCardId] = React.useState<string | null>(null)
     const [isGrabbed, setIsGrabbed] = React.useState(false)
 
-    // Move dialog state
+
     const [showMoveDialog, setShowMoveDialog] = React.useState(false)
     const [moveDialogCard, setMoveDialogCard] = React.useState<KanbanCardData | null>(null)
     const [moveDialogSourceColumn, setMoveDialogSourceColumn] = React.useState<string | null>(null)
 
     const reducedMotion = useReducedMotion()
 
-    // Sync with prop changes
+
     React.useEffect(() => {
       if (initialColumns.length > 0) {
         setColumns(initialColumns)
@@ -476,7 +476,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
       return null
     }
 
-    // CRUD operations
+
     const addCard = React.useCallback((columnId: string, card: KanbanCardData) => {
       setColumns((prev) => {
         const newColumns = prev.map((col) => {
@@ -571,7 +571,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
       const activeResult = findCardAndColumn(active.id)
       if (!activeResult) return
 
-      // Check if over a column
+
       const overColumn = columns.find((c) => c.id === over.id)
       if (overColumn) {
         const message = announcements?.onDragOver?.(activeResult.card, overColumn) ||
@@ -594,12 +594,12 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
       const activeResult = findCardAndColumn(active.id)
       if (!activeResult) return
 
-      // Find target column - could be dropping on a column or a card
+
       let targetColumn = columns.find((c) => c.id === over.id)
       let targetIndex: number | undefined
 
       if (!targetColumn) {
-        // Dropped on a card - find its column
+
         const overResult = findCardAndColumn(over.id)
         if (overResult) {
           targetColumn = overResult.column
@@ -612,7 +612,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
         return
       }
 
-      // Move the card
+
       moveCardFn(String(active.id), activeResult.column.id, targetColumn.id, targetIndex)
 
       const message = announcements?.onDrop?.(activeResult.card, targetColumn) ||
@@ -626,7 +626,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
       announce(announcements?.onCancel?.() || "Drag cancelled")
     }
 
-    // Handle move from dialog
+
     const handleMoveFromDialog = (targetColumnId: string, targetIndex?: number) => {
       if (!moveDialogCard || !moveDialogSourceColumn) return
 
@@ -640,13 +640,13 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
       setMoveDialogSourceColumn(null)
     }
 
-    // Get all card IDs for sortable context
+
     const allCardIds = React.useMemo(
       () => columns.flatMap((col) => col.cards.map((c) => c.id)),
       [columns]
     )
 
-    // Determine if we're using composition or data-driven pattern
+
     const hasChildren = React.Children.count(children) > 0
 
     return (
@@ -679,10 +679,10 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
           onCardAdd,
         }}
       >
-        {/* Screen reader announcements */}
+        {}
         <Announcer message={announcement} />
 
-        {/* Keyboard instructions for screen readers */}
+        {}
         <div className="sr-only">
           Kanban board. Use Tab to navigate between cards.
           Press Space or Enter to grab a card, arrow keys to move, Space to drop, Escape to cancel.
@@ -706,12 +706,12 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
             {...props}
           >
             {hasChildren ? (
-              // Composition pattern: render children directly
+
               <SortableContext items={allCardIds} strategy={verticalListSortingStrategy}>
                 {children}
               </SortableContext>
             ) : (
-              // Data-driven pattern: render from columns prop
+
               <SortableContext items={allCardIds} strategy={verticalListSortingStrategy}>
                 {columns.map((column) => (
                   <KanbanColumn key={column.id} id={column.id} title={column.title} data={column}>
@@ -743,7 +743,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
           </DragOverlay>
         </DndContext>
 
-        {/* Move Dialog */}
+        {}
         {showMoveDialog && moveDialogCard && moveDialogSourceColumn && (
           <MoveDialog
             card={moveDialogCard}
@@ -763,22 +763,22 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
 )
 Kanban.displayName = "Kanban"
 
-// ============================================================================
-// KANBAN COLUMN
-// ============================================================================
+
+
+
 
 interface KanbanColumnProps extends React.ComponentPropsWithoutRef<"div"> {
-  /** Column ID */
+
   id: string
-  /** Column title */
+
   title: string
-  /** Column data (optional - for internal use) */
+
   data?: KanbanColumnData
-  /** Column color */
+
   color?: string
-  /** WIP limit */
+
   limit?: number
-  /** Start collapsed */
+
   collapsed?: boolean
 }
 
@@ -812,7 +812,7 @@ const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
         )}
         {...props}
       >
-        {/* Column Header */}
+        {}
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
@@ -859,7 +859,7 @@ const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
           </div>
         </div>
 
-        {/* Cards */}
+        {}
         {!isCollapsed && (
           <div className="flex-1 min-h-[100px] space-y-2 overflow-y-auto">
             <SortableContext
@@ -869,7 +869,7 @@ const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
               {children}
             </SortableContext>
 
-            {/* Drop zone indicator when empty */}
+            {}
             {cardCount === 0 && (
               <div
                 className="h-20 border-2 border-dashed border-muted-foreground/20 rounded-md flex items-center justify-center"
@@ -881,7 +881,7 @@ const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
           </div>
         )}
 
-        {/* Add Card Button */}
+        {}
         {!isCollapsed && (
           <button
             type="button"
@@ -904,18 +904,18 @@ const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
 )
 KanbanColumn.displayName = "KanbanColumn"
 
-// ============================================================================
-// KANBAN CARD
-// ============================================================================
+
+
+
 
 interface KanbanCardProps extends React.ComponentPropsWithoutRef<"div"> {
-  /** Card ID */
+
   id: string
-  /** Column ID (required for move operations) */
+
   columnId: string
-  /** Card data (optional - for internal use) */
+
   data?: KanbanCardData
-  /** Priority level */
+
   priority?: "low" | "medium" | "high" | "critical"
 }
 
@@ -950,7 +950,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
     const cardData = data ?? { id, title: "" }
     const cardPriority = data?.priority ?? priority
 
-    // Focus management
+
     React.useEffect(() => {
       if (isFocused && cardRef.current) {
         cardRef.current.focus()
@@ -973,7 +973,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
       onCardClick?.(cardData, columnId)
     }
 
-    // Keyboard navigation
+
     const handleKeyDown = (e: React.KeyboardEvent) => {
       const column = columns.find((c) => c.id === columnId)
       if (!column) return
@@ -1004,7 +1004,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
         case "ArrowUp":
           e.preventDefault()
           if (isGrabbed && cardIndex > 0) {
-            // Swap with previous card
+
             const newCards = [...column.cards]
             ;[newCards[cardIndex - 1], newCards[cardIndex]] = [newCards[cardIndex], newCards[cardIndex - 1]]
             const newColumns = columns.map((col) =>
@@ -1020,7 +1020,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
         case "ArrowDown":
           e.preventDefault()
           if (isGrabbed && cardIndex < column.cards.length - 1) {
-            // Swap with next card
+
             const newCards = [...column.cards]
             ;[newCards[cardIndex], newCards[cardIndex + 1]] = [newCards[cardIndex + 1], newCards[cardIndex]]
             const newColumns = columns.map((col) =>
@@ -1063,7 +1063,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
       }
     }
 
-    // Extract role and tabIndex from attributes to avoid conflicts
+
     const { role: _role, tabIndex: _tabIndex, ...restAttributes } = attributes
 
     return (
@@ -1113,7 +1113,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
               </div>
             </div>
 
-            {/* Card footer with meta info */}
+            {}
             {(cardData.tags || cardData.assignee || cardData.dueDate) && (
               <div className="mt-3 flex items-center gap-2 flex-wrap">
                 {cardData.tags?.slice(0, 2).map((tag) => (
@@ -1155,9 +1155,9 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
 )
 KanbanCard.displayName = "KanbanCard"
 
-// ============================================================================
-// KANBAN HEADER (for custom toolbar)
-// ============================================================================
+
+
+
 
 interface KanbanHeaderProps extends React.ComponentPropsWithoutRef<"div"> {}
 
@@ -1175,9 +1175,9 @@ const KanbanHeader = React.forwardRef<HTMLDivElement, KanbanHeaderProps>(
 )
 KanbanHeader.displayName = "KanbanHeader"
 
-// ============================================================================
-// KANBAN ADD COLUMN
-// ============================================================================
+
+
+
 
 interface KanbanAddColumnProps extends React.ComponentPropsWithoutRef<"button"> {}
 
@@ -1212,9 +1212,9 @@ const KanbanAddColumn = React.forwardRef<HTMLButtonElement, KanbanAddColumnProps
 )
 KanbanAddColumn.displayName = "KanbanAddColumn"
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
+
+
+
 
 export {
   Kanban,

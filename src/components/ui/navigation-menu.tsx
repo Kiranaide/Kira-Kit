@@ -3,7 +3,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 
-// Context to close other menus when one opens
+
 interface NavigationMenuContextValue {
   openMenu: string | null;
   setOpenMenu: (id: string | null) => void;
@@ -14,11 +14,11 @@ interface NavigationMenuContextValue {
 const NavigationMenuContext =
   React.createContext<NavigationMenuContextValue | null>(null);
 
-// Navigation Menu Root with context for closing other menus
+
 interface NavigationMenuProps extends React.HTMLAttributes<HTMLElement> {
-  /** Open dropdowns on hover instead of click */
+
   openOnHover?: boolean;
-  /** Delay in ms before opening on hover (default: 100) */
+
   hoverDelay?: number;
 }
 
@@ -46,7 +46,7 @@ function NavigationMenu({
   );
 }
 
-// Navigation Menu List
+
 function NavigationMenuList({
   className,
   ...props
@@ -60,7 +60,7 @@ function NavigationMenuList({
   );
 }
 
-// Navigation Menu Item
+
 function NavigationMenuItem({
   className,
   ...props
@@ -74,11 +74,11 @@ function NavigationMenuItem({
   );
 }
 
-// Navigation Menu Trigger Style
+
 const navigationMenuTriggerStyle =
   "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[popup-open]:bg-muted";
 
-// Navigation Menu using Base UI Menu for dropdown
+
 interface NavigationMenuDropdownProps extends Omit<
   MenuPrimitive.Root.Props,
   "open" | "onOpenChange"
@@ -115,13 +115,13 @@ function NavigationMenuDropdown({
   const handleMouseEnter = React.useCallback(() => {
     if (!openOnHover) return;
 
-    // Clear any pending close timeout
+
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = null;
     }
 
-    // Set a timeout to open the menu
+
     hoverTimeoutRef.current = setTimeout(() => {
       handleOpenChange(true);
     }, hoverDelay);
@@ -130,19 +130,19 @@ function NavigationMenuDropdown({
   const handleMouseLeave = React.useCallback(() => {
     if (!openOnHover) return;
 
-    // Clear any pending open timeout
+
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
       hoverTimeoutRef.current = null;
     }
 
-    // Set a timeout to close the menu
+
     closeTimeoutRef.current = setTimeout(() => {
       handleOpenChange(false);
     }, hoverDelay);
   }, [openOnHover, hoverDelay, handleOpenChange]);
 
-  // Cleanup on unmount
+
   React.useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
@@ -197,7 +197,7 @@ function NavigationMenuTrigger({
   );
 }
 
-// Navigation Menu Content (dropdown)
+
 interface NavigationMenuContentProps extends MenuPrimitive.Popup.Props {
   megaMenu?: boolean;
 }
@@ -226,7 +226,7 @@ function NavigationMenuContent({
   );
 }
 
-// Navigation Menu Link (for direct links without dropdown)
+
 interface NavigationMenuLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   to?: string;
   active?: boolean;
@@ -260,7 +260,7 @@ function NavigationMenuLink({
   );
 }
 
-// Navigation Menu Header (for mega menu sections)
+
 function NavigationMenuHeader({
   className,
   children,
@@ -277,7 +277,7 @@ function NavigationMenuHeader({
   );
 }
 
-// Navigation Menu Footer (for mega menu footer)
+
 function NavigationMenuFooter({
   className,
   children,
@@ -297,7 +297,7 @@ function NavigationMenuFooter({
   );
 }
 
-// Navigation Menu Section (grouped items with title)
+
 interface NavigationMenuSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
 }
@@ -320,7 +320,7 @@ function NavigationMenuSection({
   );
 }
 
-// Navigation Menu View All link
+
 interface NavigationMenuViewAllProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   title: string;
   description?: string;
@@ -366,7 +366,7 @@ function NavigationMenuViewAll({
   );
 }
 
-// List Item component for grid layouts in content
+
 interface ListItemProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   to?: string;
   title: string;
@@ -421,11 +421,11 @@ function ListItem({
   );
 }
 
-// =============================================================================
-// Submenu Components
-// =============================================================================
 
-// Submenu Root
+
+
+
+
 function NavigationMenuSub({
   children,
   ...props
@@ -437,7 +437,7 @@ function NavigationMenuSub({
   );
 }
 
-// Submenu Trigger
+
 interface NavigationMenuSubTriggerProps
   extends MenuPrimitive.SubmenuTrigger.Props {
   inset?: boolean;
@@ -486,7 +486,7 @@ function NavigationMenuSubTrigger({
   );
 }
 
-// Submenu Content
+
 interface NavigationMenuSubContentProps extends MenuPrimitive.Popup.Props {
   sideOffset?: number;
   alignOffset?: number;
@@ -519,7 +519,7 @@ function NavigationMenuSubContent({
   );
 }
 
-// Submenu Item (styled menu item for use inside submenus)
+
 interface NavigationMenuSubItemProps extends MenuPrimitive.Item.Props {
   inset?: boolean;
   icon?: React.ReactNode;

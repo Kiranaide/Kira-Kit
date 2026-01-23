@@ -3,7 +3,7 @@ import { IconCopy, IconCheck } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// Monaco editor theme options (Shiki themes supported by modern-monaco)
+
 type MonacoTheme =
   | "vitesse-dark"
   | "vitesse-light"
@@ -46,7 +46,7 @@ interface CodeBlockProps extends VariantProps<typeof codeBlockVariants> {
   onChange?: (value: string) => void;
 }
 
-// Monaco types (narrow to what we use)
+
 interface MonacoEditor {
   getValue: () => string;
   setModel: (model: MonacoModel | null) => void;
@@ -113,7 +113,7 @@ function CodeBlock({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Track system color scheme when themeMode is system
+
   React.useEffect(() => {
     if (themeMode !== "system") {
       setResolvedTheme(themeMode === "light" ? lightTheme : darkTheme);
@@ -130,18 +130,18 @@ function CodeBlock({
     return () => media.removeEventListener("change", listener);
   }, [themeMode, lightTheme, darkTheme]);
 
-  // Calculate height based on content if auto
+
   const calculatedHeight = React.useMemo(() => {
     if (height !== "auto") {
       return typeof height === "number" ? `${height}px` : height;
     }
     const lineCount = code.split("\n").length;
     const lineHeight = Math.round(fontSize * 1.5);
-    const padding = 32; // top + bottom padding
+    const padding = 32;
     return `${Math.max(lineCount * lineHeight + padding, 100)}px`;
   }, [height, code, fontSize]);
 
-  // Initialize modern-monaco using init() for direct control
+
   React.useEffect(() => {
     let isMounted = true;
     let changeListener: { dispose: () => void } | null = null;
@@ -154,19 +154,19 @@ function CodeBlock({
 
         if (!isMounted || !editorContainerRef.current) return;
 
-        // Initialize monaco with theme
+
         const monaco = (await init({ theme: resolvedTheme })) as MonacoInstance;
 
         if (!isMounted || !editorContainerRef.current) return;
 
-        // Create a dedicated model with a stable URI to avoid missing source errors
+
         const uri =
           monaco.Uri?.parse?.(
             `inmemory://code-block/${componentId}.${language}`
           ) ?? undefined;
         const model = monaco.editor.createModel(code, language, uri);
 
-        // Create the editor instance bound to the model
+
         const editor = monaco.editor.create(editorContainerRef.current, {
           model,
           theme: resolvedTheme,
@@ -196,7 +196,7 @@ function CodeBlock({
         modelRef.current = model;
         setIsMonacoReady(true);
 
-        // Setup change listener if editable
+
         if (editable && onChange) {
           changeListener = model.onDidChangeContent(() => {
             const currentCode = model.getValue();
@@ -216,9 +216,9 @@ function CodeBlock({
       editorInstanceRef.current?.dispose();
       modelRef.current?.dispose();
     };
-    // Intentionally omit `code` to avoid recreating the editor on every external
-    // code change; a separate effect syncs the model value.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+
+
   }, [
     language,
     resolvedTheme,
@@ -233,7 +233,7 @@ function CodeBlock({
     componentId,
   ]);
 
-  // Sync external code changes into the model without recreating the editor
+
   React.useEffect(() => {
     const model = modelRef.current;
     if (model && model.getValue() !== code) {
@@ -246,7 +246,7 @@ function CodeBlock({
       data-slot="code-block"
       className={cn(codeBlockVariants({ variant, className }))}
     >
-      {/* Header */}
+      {}
       <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-zinc-800">
         <div className="flex items-center gap-2">
           <div className="flex gap-1.5">
@@ -274,12 +274,12 @@ function CodeBlock({
         </div>
       </div>
 
-      {/* Monaco Editor Container */}
+      {}
       <div
         className="overflow-hidden relative"
         style={{ height: calculatedHeight, minHeight: "100px" }}
       >
-        {/* Monaco mount point */}
+        {}
         <div
           ref={editorContainerRef}
           className="w-full h-full"
@@ -289,7 +289,7 @@ function CodeBlock({
           }}
         />
 
-        {/* Fallback for when Monaco isn't ready */}
+        {}
         {!isMonacoReady && (
           <div
             className="absolute inset-0 overflow-auto bg-zinc-950"

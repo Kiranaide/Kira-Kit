@@ -1,22 +1,22 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// ============================================
-// ARIA SORT TYPE
-// ============================================
+
+
+
 type AriaSort = "ascending" | "descending" | "none" | "other";
 
-// ============================================
-// TABLE ROOT
-// ============================================
+
+
+
 interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
   striped?: boolean;
   bordered?: boolean;
-  /** Use role="grid" for interactive data tables with keyboard navigation */
+
   isGrid?: boolean;
-  /** For virtualized tables, indicate total column count */
+
   ariaColCount?: number;
-  /** For virtualized tables, indicate total row count */
+
   ariaRowCount?: number;
 }
 
@@ -93,13 +93,13 @@ function TableFooter({
   );
 }
 
-// ============================================
-// TABLE ROW
-// ============================================
+
+
+
 interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
-  /** For selectable rows, indicate selection state */
+
   isSelected?: boolean;
-  /** For grid role tables */
+
   isGridRow?: boolean;
 }
 
@@ -124,15 +124,15 @@ function TableRow({
   );
 }
 
-// ============================================
-// TABLE HEAD (Column Header)
-// ============================================
+
+
+
 interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
-  /** Scope for accessibility - defaults to "col" for column headers */
+
   scope?: "col" | "row" | "colgroup" | "rowgroup";
-  /** For sortable columns, indicate current sort direction */
+
   ariaSort?: AriaSort;
-  /** For grid role tables */
+
   isGridCell?: boolean;
 }
 
@@ -158,11 +158,11 @@ function TableHead({
   );
 }
 
-// ============================================
-// TABLE CELL
-// ============================================
+
+
+
 interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
-  /** For grid role tables */
+
   isGridCell?: boolean;
 }
 

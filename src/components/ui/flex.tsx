@@ -3,11 +3,11 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
-/**
- * Responsive value type for breakpoint-aware props
- * @example
- * { base: "row", md: "column", lg: "row" }
- */
+
+
+
+
+
 type ResponsiveValue<T> = T | {
   base?: T
   sm?: T
@@ -17,19 +17,19 @@ type ResponsiveValue<T> = T | {
   "2xl"?: T
 }
 
-/**
- * Resolves a responsive value to Tailwind classes
- */
+
+
+
 function resolveResponsive<T extends string | number>(
   value: ResponsiveValue<T> | undefined,
   classMap: Record<string, string>
 ): string {
   if (value === undefined) return ""
-  
+
   if (typeof value !== "object") {
     return classMap[String(value)] ?? ""
   }
-  
+
   return Object.entries(value)
     .filter(([, val]) => val !== undefined)
     .map(([breakpoint, val]) => {
@@ -87,17 +87,17 @@ const gapMap: Record<string, string> = {
   "24": "gap-24",
 }
 
-/**
- * Flex layout variants using CVA for static variant support
- * @see {@link FlexProps} for usage
- * @example
- * ```tsx
- * <Flex direction="column" gap={4} align="center">
- *   <div>Item 1</div>
- *   <div>Item 2</div>
- * </Flex>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
 const flexVariants = cva("", {
   variants: {
     inline: {
@@ -121,48 +121,48 @@ type FlexElement = "div" | "section" | "nav" | "main" | "article" | "aside" | "h
 interface FlexProps
   extends Omit<React.HTMLAttributes<HTMLElement>, "wrap">,
     VariantProps<typeof flexVariants> {
-  /** Semantic HTML element to render */
+
   as?: FlexElement
-  /** Flex direction - supports responsive values */
+
   direction?: ResponsiveValue<FlexDirection>
-  /** Flex wrap behavior - supports responsive values */
+
   wrap?: ResponsiveValue<FlexWrap>
-  /** Justify content alignment - supports responsive values */
+
   justify?: ResponsiveValue<FlexJustify>
-  /** Align items alignment - supports responsive values */
+
   align?: ResponsiveValue<FlexAlign>
-  /** Gap between items - supports responsive values */
+
   gap?: ResponsiveValue<FlexGap>
 }
 
-/**
- * Flex layout primitive for flexible box layouts.
- * Supports responsive values for all layout props.
- * 
- * @see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout
- * @example
- * ```tsx
- * // Basic usage
- * <Flex direction="row" gap={4} align="center">
- *   <div>Item 1</div>
- *   <div>Item 2</div>
- * </Flex>
- * 
- * // Responsive layout
- * <Flex 
- *   direction={{ base: "column", md: "row" }} 
- *   gap={{ base: 2, lg: 6 }}
- * >
- *   <div>Responsive Item</div>
- * </Flex>
- * 
- * // Semantic HTML
- * <Flex as="nav" justify="between" align="center">
- *   <Logo />
- *   <NavLinks />
- * </Flex>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Flex({
   as: Component = "div",
   className,

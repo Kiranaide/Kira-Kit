@@ -7,9 +7,9 @@ import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import { cn } from "@/lib/utils"
 
-// ============================================================================
-// ANNOUNCEMENT BAR VARIANTS
-// ============================================================================
+
+
+
 
 const announcementBarVariants = cva(
   "relative flex w-full items-center justify-between gap-4 px-4 py-3 text-sm transition-all",
@@ -69,9 +69,9 @@ const announcementBarVariants = cva(
   }
 )
 
-// ============================================================================
-// TYPES
-// ============================================================================
+
+
+
 
 type AnnouncementVariant = "default" | "info" | "success" | "warning" | "destructive"
 type AnnouncementPosition = "top" | "bottom" | "floating"
@@ -81,61 +81,61 @@ type AnimationType = "slide" | "fade" | "scale" | "none"
 type PersistMode = "session" | "persistent"
 
 interface AnnouncementBarProps extends React.ComponentPropsWithoutRef<"div">, VariantProps<typeof announcementBarVariants> {
-  /** Priority level affecting visual weight */
+
   priority?: AnnouncementPriority
-  /** Screen reader urgency - polite waits, assertive interrupts */
+
   urgency?: AnnouncementUrgency
-  /** Auto-dismiss after specified milliseconds */
+
   autoDismiss?: number
-  /** Show countdown progress bar */
+
   showProgress?: boolean
-  /** Enable marquee scrolling for long content */
+
   marquee?: boolean
-  /** Custom icon override */
+
   icon?: React.ReactNode
-  /** Whether the bar can be dismissed */
+
   dismissible?: boolean
-  /** Storage mode for dismiss state */
+
   persistMode?: PersistMode
-  /** Auto-expire after this date */
+
   expiresAt?: Date
-  /** Callback when dismissed */
+
   onDismiss?: () => void
-  /** Animation type */
+
   animation?: AnimationType
-  /** Unique ID for stacking system */
+
   announcementId?: string
 }
 
 interface AnnouncementBarContentProps extends React.ComponentPropsWithoutRef<"div"> {
-  /** Enable marquee scrolling */
+
   marquee?: boolean
 }
 
 type AnnouncementBarActionProps = React.ComponentPropsWithoutRef<"a">
 
 interface AnnouncementBarDismissProps extends React.ComponentPropsWithoutRef<"button"> {
-  /** Accessible label for dismiss button */
+
   label?: string
 }
 
 interface AnnouncementBarIconProps extends React.ComponentPropsWithoutRef<"span"> {
-  /** Icon element to render */
+
   icon?: React.ReactNode
-  /** Auto-select icon based on variant */
+
   variant?: AnnouncementVariant
 }
 
 interface AnnouncementBarProgressProps extends React.ComponentPropsWithoutRef<"div"> {
-  /** Progress value 0-100 */
+
   value: number
-  /** Variant for color */
+
   variant?: AnnouncementVariant
 }
 
-// ============================================================================
-// CONTEXT
-// ============================================================================
+
+
+
 
 interface AnnouncementBarContextValue {
   variant: AnnouncementVariant
@@ -155,9 +155,9 @@ function useAnnouncementBar() {
   return context
 }
 
-// ============================================================================
-// REDUCED MOTION HOOK
-// ============================================================================
+
+
+
 
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
@@ -177,9 +177,9 @@ function useReducedMotion() {
   return prefersReducedMotion
 }
 
-// ============================================================================
-// ANNOUNCEMENT BAR
-// ============================================================================
+
+
+
 
 const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
   (
@@ -209,7 +209,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
 
     React.useImperativeHandle(ref, () => barRef.current!)
 
-    // Handle dismiss with animation
+
     const handleDismiss = React.useCallback(() => {
       if (!barRef.current || reducedMotion || animation === "none") {
         setIsVisible(false)
@@ -239,7 +239,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
       })
     }, [reducedMotion, animation, position, onDismiss])
 
-    // Mount animation
+
     useGSAP(() => {
       if (reducedMotion || animation === "none" || !barRef.current) return
 
@@ -267,7 +267,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
       )
     }, { scope: barRef, dependencies: [reducedMotion, animation, position] })
 
-    // Auto-dismiss timer
+
     React.useEffect(() => {
       if (!autoDismiss || !isVisible) return
 
@@ -297,7 +297,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
       }
     }, [autoDismiss, isVisible, isPaused, handleDismiss])
 
-    // Handle pause/resume
+
     const handleMouseEnter = () => {
       if (autoDismiss) {
         setIsPaused(true)
@@ -314,7 +314,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
       }
     }
 
-    // Determine aria-live based on urgency and priority
+
     const getAriaLive = () => {
       if (priority === "critical") return "assertive"
       return urgency
@@ -349,7 +349,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
         >
           {children}
 
-          {/* Progress bar for auto-dismiss */}
+          {}
           {showProgress && autoDismiss && (
             <AnnouncementBarProgress value={progress} variant={variant || "default"} />
           )}
@@ -360,9 +360,9 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
 )
 AnnouncementBar.displayName = "AnnouncementBar"
 
-// ============================================================================
-// ANNOUNCEMENT BAR ICON
-// ============================================================================
+
+
+
 
 const variantIcons: Record<AnnouncementVariant, React.ReactNode> = {
   default: <IconInfoCircle className="h-5 w-5" aria-hidden="true" />,
@@ -392,9 +392,9 @@ const AnnouncementBarIcon = React.forwardRef<HTMLSpanElement, AnnouncementBarIco
 )
 AnnouncementBarIcon.displayName = "AnnouncementBarIcon"
 
-// ============================================================================
-// ANNOUNCEMENT BAR CONTENT
-// ============================================================================
+
+
+
 
 const AnnouncementBarContent = React.forwardRef<HTMLDivElement, AnnouncementBarContentProps>(
   ({ className, marquee = false, children, ...props }, ref) => {
@@ -425,9 +425,9 @@ const AnnouncementBarContent = React.forwardRef<HTMLDivElement, AnnouncementBarC
 )
 AnnouncementBarContent.displayName = "AnnouncementBarContent"
 
-// ============================================================================
-// ANNOUNCEMENT BAR ACTION
-// ============================================================================
+
+
+
 
 const AnnouncementBarAction = React.forwardRef<HTMLAnchorElement, AnnouncementBarActionProps>(
   ({ className, ...props }, ref) => (
@@ -446,9 +446,9 @@ const AnnouncementBarAction = React.forwardRef<HTMLAnchorElement, AnnouncementBa
 )
 AnnouncementBarAction.displayName = "AnnouncementBarAction"
 
-// ============================================================================
-// ANNOUNCEMENT BAR DISMISS - Enhanced with 44x44 touch target
-// ============================================================================
+
+
+
 
 const AnnouncementBarDismiss = React.forwardRef<HTMLButtonElement, AnnouncementBarDismissProps>(
   ({ className, label = "Dismiss announcement", onClick, ...props }, ref) => {
@@ -473,13 +473,13 @@ const AnnouncementBarDismiss = React.forwardRef<HTMLButtonElement, AnnouncementB
         type="button"
         data-slot="announcement-bar-dismiss"
         className={cn(
-          // 44x44 touch target for WCAG 2.5.8
+
           "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md",
           "opacity-70 transition-opacity hover:opacity-100",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           "disabled:pointer-events-none",
-          // Visual size can be smaller, but touch area is 44x44
-          "-m-2", // Negative margin to maintain visual spacing while expanding touch target
+
+          "-m-2",
           className
         )}
         aria-label={label}
@@ -493,9 +493,9 @@ const AnnouncementBarDismiss = React.forwardRef<HTMLButtonElement, AnnouncementB
 )
 AnnouncementBarDismiss.displayName = "AnnouncementBarDismiss"
 
-// ============================================================================
-// ANNOUNCEMENT BAR PROGRESS
-// ============================================================================
+
+
+
 
 const AnnouncementBarProgress = React.forwardRef<HTMLDivElement, AnnouncementBarProgressProps>(
   ({ className, value, variant = "default", ...props }, ref) => {
@@ -541,16 +541,16 @@ const AnnouncementBarProgress = React.forwardRef<HTMLDivElement, AnnouncementBar
 )
 AnnouncementBarProgress.displayName = "AnnouncementBarProgress"
 
-// ============================================================================
-// ANNOUNCEMENT STACK - For managing multiple announcements
-// ============================================================================
+
+
+
 
 interface AnnouncementStackProps {
   children: React.ReactNode
   className?: string
-  /** Position of the stack */
+
   position?: "top" | "bottom"
-  /** Maximum visible announcements before collapsing */
+
   maxVisible?: number
 }
 
@@ -612,7 +612,7 @@ function AnnouncementStack({
           </div>
         ))}
 
-        {/* Collapsed indicator */}
+        {}
         {hasHidden && !isExpanded && isHovered && (
           <button
             type="button"
@@ -631,13 +631,13 @@ function AnnouncementStack({
   )
 }
 
-// ============================================================================
-// HOOKS
-// ============================================================================
 
-/**
- * Hook to manage announcement dismissal with persistence
- */
+
+
+
+
+
+
 function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
   const [isDismissed, setIsDismissed] = React.useState(() => {
     if (typeof window === "undefined") return false
@@ -656,7 +656,7 @@ function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
         const storage = mode === "persistent" ? localStorage : sessionStorage
         storage.setItem(`announcement-${key}`, "dismissed")
       } catch {
-        // Storage unavailable
+
       }
     }
   }, [key, mode])
@@ -668,7 +668,7 @@ function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
         const storage = mode === "persistent" ? localStorage : sessionStorage
         storage.removeItem(`announcement-${key}`)
       } catch {
-        // Storage unavailable
+
       }
     }
   }, [key, mode])
@@ -676,9 +676,9 @@ function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
   return [isDismissed, dismiss, reset] as const
 }
 
-/**
- * Hook to check if announcement has expired
- */
+
+
+
 function useAnnouncementExpiry(expiresAt?: Date) {
   const [isExpired, setIsExpired] = React.useState(() => {
     if (!expiresAt) return false
@@ -700,11 +700,11 @@ function useAnnouncementExpiry(expiresAt?: Date) {
   return isExpired
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
 
-// Backward compatibility alias
+
+
+
+
 const AnnouncementDismiss = AnnouncementBarDismiss
 
 export {
@@ -719,7 +719,7 @@ export {
   useAnnouncementExpiry,
   useAnnouncementBar,
   announcementBarVariants,
-  // Backward compatibility
+
   AnnouncementDismiss,
 }
 

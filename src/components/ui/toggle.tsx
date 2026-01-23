@@ -4,20 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconCheck, IconLoader2 } from "@tabler/icons-react";
 
-// ============================================
-// TOGGLE VARIANTS
-// ============================================
+
+
+
 const toggleVariants = cva(
   [
-    // Base styles
+
     "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all",
-    // Focus styles - WCAG 2.4.7: 3:1 contrast ratio for focus indicators
+
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-    // Disabled styles
+
     "disabled:pointer-events-none disabled:opacity-50",
-    // Hover styles
+
     "hover:bg-muted hover:text-muted-foreground",
-    // Icon sizing
+
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
   ],
   {
@@ -60,48 +60,48 @@ const toggleVariants = cva(
   }
 );
 
-// ============================================
-// TYPES
-// ============================================
+
+
+
 interface ToggleProps
   extends Omit<TogglePrimitive.Props, "children">,
     VariantProps<typeof toggleVariants> {
-  /**
-   * Required for icon-only toggles for accessibility.
-   * Screen readers will announce this label.
-   * @example aria-label="Toggle bold"
-   */
+
+
+
+
+
   "aria-label"?: string;
-  /**
-   * Additional context for screen readers
-   */
+
+
+
   "aria-describedby"?: string;
-  /**
-   * Show loading spinner and disable interaction
-   */
+
+
+
   loading?: boolean;
-  /**
-   * Show checkmark indicator when pressed
-   */
+
+
+
   showIndicator?: boolean;
-  /**
-   * Position of the indicator
-   * @default "left"
-   */
+
+
+
+
   indicatorPosition?: "left" | "right";
-  /**
-   * Content to display in the toggle
-   */
+
+
+
   children?: React.ReactNode;
-  /**
-   * Icon to display (for icon-only toggles)
-   */
+
+
+
   icon?: React.ReactNode;
 }
 
-// ============================================
-// DEVELOPMENT WARNINGS
-// ============================================
+
+
+
 const warnIfMissingAriaLabel = (props: ToggleProps) => {
   if (typeof window !== "undefined" && import.meta.env?.DEV) {
     const hasTextContent =
@@ -125,35 +125,35 @@ const warnIfMissingAriaLabel = (props: ToggleProps) => {
   }
 };
 
-// ============================================
-// TOGGLE COMPONENT
-// ============================================
-/**
- * A two-state button that can be either on or off.
- *
- * @example
- * ```tsx
- * // Basic toggle
- * <Toggle>Bold</Toggle>
- *
- * // Icon-only toggle (requires aria-label)
- * <Toggle icon={<IconBold />} aria-label="Toggle bold" size="icon" />
- *
- * // With indicator
- * <Toggle showIndicator>Enable notifications</Toggle>
- *
- * // Controlled
- * const [pressed, setPressed] = useState(false);
- * <Toggle pressed={pressed} onPressedChange={setPressed}>
- *   Toggle me
- * </Toggle>
- *
- * // Loading state
- * <Toggle loading>Processing...</Toggle>
- * ```
- *
- * @see https://www.w3.org/WAI/ARIA/apg/patterns/button/
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Toggle({
   className,
   variant,
@@ -175,10 +175,10 @@ function Toggle({
     defaultPressed ?? false
   );
 
-  // Controlled vs uncontrolled
+
   const isPressed = pressed ?? internalPressed;
 
-  // Development accessibility warnings
+
   warnIfMissingAriaLabel({ icon, size, children, ...props });
 
   const handlePressedChange: TogglePrimitive.Props["onPressedChange"] =
@@ -189,15 +189,15 @@ function Toggle({
           NonNullable<TogglePrimitive.Props["onPressedChange"]>
         >[1]
       ) => {
-        // Update internal state for uncontrolled usage
+
         if (pressed === undefined) {
           setInternalPressed(newPressed);
         }
 
-        // Call user callback
+
         onPressedChange?.(newPressed, eventDetails);
 
-        // Micro-interaction animation
+
         if (ref.current && !loading) {
           ref.current.animate(
             [
@@ -215,7 +215,7 @@ function Toggle({
       [pressed, onPressedChange, loading]
     );
 
-  // Render indicator
+
   const renderIndicator = () => {
     if (loading) {
       return <IconLoader2 className="animate-spin" aria-hidden="true" />;
@@ -226,7 +226,7 @@ function Toggle({
     return null;
   };
 
-  // Build content
+
   const content = (
     <>
       {indicatorPosition === "left" && renderIndicator()}
@@ -253,8 +253,8 @@ function Toggle({
   );
 }
 
-// ============================================
-// EXPORTS
-// ============================================
+
+
+
 export { Toggle, toggleVariants };
 export type { ToggleProps };

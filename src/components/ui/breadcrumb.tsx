@@ -11,9 +11,9 @@ import {
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
-// ============================================================================
-// VARIANTS
-// ============================================================================
+
+
+
 
 const breadcrumbListVariants = cva(
   "flex flex-wrap items-center gap-1.5 break-words text-sm",
@@ -68,9 +68,9 @@ const breadcrumbSeparatorVariants = cva("flex items-center text-muted-foreground
   },
 })
 
-// ============================================================================
-// TYPES
-// ============================================================================
+
+
+
 
 interface BreadcrumbProps extends React.ComponentPropsWithoutRef<"nav"> {
   separator?: React.ReactNode
@@ -124,13 +124,13 @@ interface BreadcrumbCollapsibleProps {
 }
 
 interface UseBreadcrumbsOptions {
-  /** Custom label mapping for path segments */
+
   labels?: Record<string, string>
-  /** Whether to include home */
+
   includeHome?: boolean
-  /** Home label */
+
   homeLabel?: string
-  /** Base path to strip from the beginning */
+
   basePath?: string
 }
 
@@ -140,9 +140,9 @@ interface BreadcrumbItem {
   current: boolean
 }
 
-// ============================================================================
-// CONTEXT
-// ============================================================================
+
+
+
 
 interface BreadcrumbContextValue {
   separator?: React.ReactNode
@@ -153,31 +153,31 @@ const BreadcrumbContext = React.createContext<BreadcrumbContextValue>({})
 
 const useBreadcrumbContext = () => React.useContext(BreadcrumbContext)
 
-// ============================================================================
-// HOOKS
-// ============================================================================
 
-/**
- * Generate breadcrumb items from a pathname
- *
- * @example
- * ```tsx
- * const breadcrumbs = useBreadcrumbs("/products/electronics/phones", {
- *   labels: {
- *     products: "All Products",
- *     electronics: "Electronics",
- *     phones: "Phones",
- *   },
- * })
- * // Returns:
- * // [
- * //   { href: "/", label: "Home", current: false },
- * //   { href: "/products", label: "All Products", current: false },
- * //   { href: "/products/electronics", label: "Electronics", current: false },
- * //   { href: "/products/electronics/phones", label: "Phones", current: true },
- * // ]
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function useBreadcrumbs(
   pathname: string,
   options: UseBreadcrumbsOptions = {}
@@ -190,18 +190,18 @@ function useBreadcrumbs(
   } = options
 
   return React.useMemo(() => {
-    // Remove base path if provided
+
     let path = pathname
     if (basePath && path.startsWith(basePath)) {
       path = path.slice(basePath.length)
     }
 
-    // Split path into segments
+
     const segments = path.split("/").filter(Boolean)
 
     const items: BreadcrumbItem[] = []
 
-    // Add home if requested
+
     if (includeHome) {
       items.push({
         href: basePath || "/",
@@ -210,12 +210,12 @@ function useBreadcrumbs(
       })
     }
 
-    // Build breadcrumb items from segments
+
     let currentPath = basePath || ""
     segments.forEach((segment, index) => {
       currentPath += `/${segment}`
 
-      // Get label from mapping or capitalize segment
+
       const label =
         labels[segment] ||
         segment
@@ -233,9 +233,9 @@ function useBreadcrumbs(
   }, [pathname, labels, includeHome, homeLabel, basePath])
 }
 
-/**
- * Generate breadcrumbs from route matches (for TanStack Router)
- */
+
+
+
 function useBreadcrumbsFromMatches(
   matches: { pathname: string; meta?: { title?: string; breadcrumb?: string } }[]
 ): BreadcrumbItem[] {
@@ -248,9 +248,9 @@ function useBreadcrumbsFromMatches(
   }, [matches])
 }
 
-// ============================================================================
-// COMPONENTS
-// ============================================================================
+
+
+
 
 const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
   (
@@ -353,7 +353,7 @@ const BreadcrumbEllipsis = React.forwardRef<HTMLSpanElement, BreadcrumbEllipsisP
     const [isOpen, setIsOpen] = React.useState(false)
     const dropdownRef = React.useRef<HTMLDivElement>(null)
 
-    // Close dropdown when clicking outside
+
     React.useEffect(() => {
       if (!isOpen) return
 
@@ -367,7 +367,7 @@ const BreadcrumbEllipsis = React.forwardRef<HTMLSpanElement, BreadcrumbEllipsisP
       return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [isOpen])
 
-    // If items provided, render as dropdown
+
     if (items && items.length > 0) {
       return (
         <span
@@ -415,7 +415,7 @@ const BreadcrumbEllipsis = React.forwardRef<HTMLSpanElement, BreadcrumbEllipsisP
       )
     }
 
-    // Default: just show ellipsis icon
+
     return (
       <span
         ref={ref}
@@ -436,13 +436,13 @@ const BreadcrumbSeparator = React.forwardRef<HTMLLIElement, BreadcrumbSeparatorP
     const context = useBreadcrumbContext()
 
     const renderSeparator = () => {
-      // Use children if provided
+
       if (children) return children
 
-      // Use context separator if provided
+
       if (context.separator) return context.separator
 
-      // Render based on variant
+
       switch (variant) {
         case "dot":
           return (
@@ -501,24 +501,24 @@ const BreadcrumbHome = React.forwardRef<HTMLAnchorElement, BreadcrumbHomeProps>(
 )
 BreadcrumbHome.displayName = "BreadcrumbHome"
 
-// ============================================================================
-// JSON-LD STRUCTURED DATA
-// ============================================================================
 
-/**
- * Generates Schema.org BreadcrumbList JSON-LD for SEO
- *
- * @example
- * ```tsx
- * <BreadcrumbJsonLd
- *   items={[
- *     { name: "Home", href: "/" },
- *     { name: "Products", href: "/products" },
- *     { name: "Electronics", href: "/products/electronics" },
- *   ]}
- * />
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
   const jsonLd = React.useMemo(
     () => ({
@@ -546,28 +546,28 @@ function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
   )
 }
 
-// ============================================================================
-// COLLAPSIBLE BREADCRUMB (Compound Component)
-// ============================================================================
 
-/**
- * Auto-collapsing breadcrumb that shows ellipsis for long paths
- *
- * @example
- * ```tsx
- * <BreadcrumbCollapsible
- *   items={[
- *     { href: "/", label: "Home" },
- *     { href: "/products", label: "Products" },
- *     { href: "/products/electronics", label: "Electronics" },
- *     { href: "/products/electronics/phones", label: "Phones" },
- *     { href: "/products/electronics/phones/iphone", label: "iPhone 15", current: true },
- *   ]}
- *   maxItems={4}
- *   homeIcon
- * />
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function BreadcrumbCollapsible({
   items,
   maxItems = 4,
@@ -633,13 +633,13 @@ function BreadcrumbCollapsible({
     <Breadcrumb separator={separator}>
       <BreadcrumbJsonLd items={items.map((i) => ({ name: i.label, href: i.href }))} />
       <BreadcrumbList size={size}>
-        {/* Before items */}
+        {}
         {beforeItems.map((item, index) => {
           position++
           return renderItem(item, index, position)
         })}
 
-        {/* Ellipsis with dropdown */}
+        {}
         <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
         <BreadcrumbItem>
           <BreadcrumbEllipsis
@@ -648,7 +648,7 @@ function BreadcrumbCollapsible({
           />
         </BreadcrumbItem>
 
-        {/* After items */}
+        {}
         {afterItems.map((item, index) => {
           position = items.length - itemsAfterCollapse + index + 1
           return (
@@ -672,13 +672,13 @@ function BreadcrumbCollapsible({
   )
 }
 
-// ============================================================================
-// RESPONSIVE BREADCRUMB
-// ============================================================================
+
+
+
 
 interface BreadcrumbResponsiveProps {
   items: { href: string; label: string; current?: boolean }[]
-  /** Number of items to show on mobile (default: 2 - parent + current) */
+
   mobileItems?: number
   separator?: React.ReactNode
   size?: "sm" | "default" | "lg"
@@ -686,9 +686,9 @@ interface BreadcrumbResponsiveProps {
   homeIcon?: boolean
 }
 
-/**
- * Responsive breadcrumb that collapses on mobile
- */
+
+
+
 function BreadcrumbResponsive({
   items,
   mobileItems = 2,
@@ -697,14 +697,14 @@ function BreadcrumbResponsive({
   linkVariant,
   homeIcon = false,
 }: BreadcrumbResponsiveProps) {
-  // On mobile, show only last N items
+
   const mobileHiddenItems = items.slice(0, -mobileItems)
 
   return (
     <Breadcrumb separator={separator}>
       <BreadcrumbJsonLd items={items.map((i) => ({ name: i.label, href: i.href }))} />
       <BreadcrumbList size={size}>
-        {/* Mobile: Show ellipsis if items are hidden */}
+        {}
         {mobileHiddenItems.length > 0 && (
           <>
             <BreadcrumbItem className="md:hidden">
@@ -716,7 +716,7 @@ function BreadcrumbResponsive({
           </>
         )}
 
-        {/* Desktop: All items */}
+        {}
         {items.map((item, index) => (
           <React.Fragment key={index}>
             {index > 0 && (
@@ -752,12 +752,12 @@ function BreadcrumbResponsive({
   )
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
+
+
+
 
 export {
-  // Core components
+
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
@@ -766,15 +766,15 @@ export {
   BreadcrumbEllipsis,
   BreadcrumbSeparator,
   BreadcrumbHome,
-  // Compound components
+
   BreadcrumbJsonLd,
   BreadcrumbCollapsible,
   BreadcrumbResponsive,
-  // Hooks
+
   useBreadcrumbs,
   useBreadcrumbsFromMatches,
   useBreadcrumbContext,
-  // Variants
+
   breadcrumbListVariants,
   breadcrumbLinkVariants,
   breadcrumbSeparatorVariants,

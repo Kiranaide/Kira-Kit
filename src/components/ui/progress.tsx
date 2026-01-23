@@ -3,9 +3,9 @@ import { Progress as ProgressPrimitive } from "@base-ui/react/progress";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// ============================================
-// LINEAR PROGRESS VARIANTS
-// ============================================
+
+
+
 
 const progressVariants = cva(
   "relative w-full overflow-hidden rounded-full bg-muted",
@@ -57,36 +57,36 @@ const indicatorVariants = cva(
   },
 );
 
-// ============================================
-// PROGRESS COMPONENT
-// ============================================
+
+
+
 
 interface ProgressProps
   extends
     Omit<ProgressPrimitive.Root.Props, "value">,
     VariantProps<typeof progressVariants> {
-  /** Current progress value. Use `null` for indeterminate state. */
+
   value?: number | null;
-  /** Maximum value. Defaults to 100. */
+
   max?: number;
-  /** Show percentage label below the progress bar. */
+
   showLabel?: boolean;
-  /** Display striped pattern on the indicator. */
+
   striped?: boolean;
-  /** Animate the striped pattern. Only works when `striped` is true. */
+
   animated?: boolean;
-  /** Accessible label for screen readers. */
+
   "aria-label"?: string;
-  /** Function to generate human-readable text for screen readers. */
+
   getAriaValueText?: (
     formattedValue: string | null,
     value: number | null,
   ) => string;
-  /** Locale for number formatting. */
+
   locale?: Intl.LocalesArgument;
-  /** Number format options. */
+
   format?: Intl.NumberFormatOptions;
-  /** Callback when progress reaches max value. */
+
   onComplete?: () => void;
 }
 
@@ -112,7 +112,7 @@ function Progress({
   const isComplete = percentage >= 100;
   const previousCompleteRef = React.useRef(false);
 
-  // Format value for display
+
   const formattedValue = React.useMemo(() => {
     if (isIndeterminate) return null;
     const formatter = new Intl.NumberFormat(locale, {
@@ -123,7 +123,7 @@ function Progress({
     return formatter.format(safeValue / max);
   }, [safeValue, max, locale, format, isIndeterminate]);
 
-  // Generate aria-valuetext
+
   const ariaValueText = React.useMemo(() => {
     if (getAriaValueText) {
       return getAriaValueText(
@@ -134,7 +134,7 @@ function Progress({
     return undefined;
   }, [getAriaValueText, formattedValue, safeValue, isIndeterminate]);
 
-  // Handle onComplete callback
+
   React.useEffect(() => {
     if (isComplete && !previousCompleteRef.current && onComplete) {
       onComplete();
@@ -142,7 +142,7 @@ function Progress({
     previousCompleteRef.current = isComplete;
   }, [isComplete, onComplete]);
 
-  // Data attributes for state
+
   const dataAttributes = {
     "data-complete": isComplete ? "" : undefined,
     "data-indeterminate": isIndeterminate ? "" : undefined,
@@ -182,9 +182,9 @@ function Progress({
   );
 }
 
-// ============================================
-// PROGRESS LABEL SUB-COMPONENT
-// ============================================
+
+
+
 
 interface ProgressLabelProps extends React.HTMLAttributes<HTMLLabelElement> {
   htmlFor?: string;
@@ -200,12 +200,12 @@ function ProgressLabel({ className, ...props }: ProgressLabelProps) {
   );
 }
 
-// ============================================
-// PROGRESS VALUE SUB-COMPONENT
-// ============================================
+
+
+
 
 interface ProgressValueProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children"> {
-  /** Format function for the value display. */
+
   children?:
     | ((formattedValue: string | null, value: number | null) => React.ReactNode)
     | null;
@@ -253,9 +253,9 @@ function ProgressValue({
   );
 }
 
-// ============================================
-// SEGMENTED PROGRESS
-// ============================================
+
+
+
 
 interface Segment {
   value: number;
@@ -348,23 +348,23 @@ function SegmentedProgress({
   );
 }
 
-// ============================================
-// CIRCULAR PROGRESS
-// ============================================
+
+
+
 
 interface CircularProgressProps
   extends React.SVGProps<SVGSVGElement>, VariantProps<typeof progressVariants> {
-  /** Current progress value. Use `null` for indeterminate state. */
+
   value?: number | null;
-  /** Maximum value. Defaults to 100. */
+
   max?: number;
-  /** Show percentage label in the center. */
+
   showLabel?: boolean;
-  /** @deprecated Use `value={null}` instead. Kept for backwards compatibility. */
+
   indeterminate?: boolean;
-  /** Accessible label for screen readers. */
+
   "aria-label"?: string;
-  /** Function to generate human-readable text for screen readers. */
+
   getAriaValueText?: (
     formattedValue: string | null,
     value: number | null,
@@ -383,7 +383,7 @@ function CircularProgress({
   className,
   ...props
 }: CircularProgressProps) {
-  // Support both value={null} and indeterminate prop
+
   const isIndeterminate = value === null || indeterminateProp;
   const safeValue = isIndeterminate ? 0 : (value ?? 0);
   const percentage = Math.min(100, Math.max(0, (safeValue / max) * 100));
@@ -415,7 +415,7 @@ function CircularProgress({
 
   const sizeValue = sizeClasses[size || "default"];
 
-  // Generate aria-valuetext
+
   const formattedValue = isIndeterminate ? null : `${Math.round(percentage)}%`;
   const ariaValueText = React.useMemo(() => {
     if (getAriaValueText) {
@@ -427,7 +427,7 @@ function CircularProgress({
     return undefined;
   }, [getAriaValueText, formattedValue, safeValue, isIndeterminate]);
 
-  // Data attributes for state
+
   const dataAttributes = {
     "data-complete": percentage >= 100 ? "" : undefined,
     "data-indeterminate": isIndeterminate ? "" : undefined,
@@ -459,7 +459,7 @@ function CircularProgress({
         aria-hidden="true"
         {...props}
       >
-        {/* Background circle */}
+        {}
         <circle
           cx="50"
           cy="50"
@@ -469,7 +469,7 @@ function CircularProgress({
           fill="none"
           className="text-muted opacity-20"
         />
-        {/* Progress circle */}
+        {}
         {isIndeterminate ? (
           <circle
             cx="50"

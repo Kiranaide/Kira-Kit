@@ -4,15 +4,15 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-/**
- * Avatar size and shape variants
- * @see {@link AvatarProps} for usage
- */
+
+
+
+
 const avatarVariants = cva(
   "relative flex shrink-0 transition-all duration-200",
   {
     variants: {
-      /** Size of the avatar from xs (24px) to 4xl (128px) */
+
       size: {
         xs: "h-6 w-6 text-[10px]",
         sm: "h-8 w-8 text-xs",
@@ -23,13 +23,13 @@ const avatarVariants = cva(
         "3xl": "h-24 w-24 text-2xl",
         "4xl": "h-32 w-32 text-3xl",
       },
-      /** Shape of the avatar */
+
       shape: {
         circle: "rounded-full",
         square: "rounded-none",
         rounded: "rounded-lg",
       },
-      /** Enable interactive states for clickable avatars */
+
       interactive: {
         true: "cursor-pointer hover:opacity-90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         false: "",
@@ -56,9 +56,9 @@ const avatarContentVariants = cva("relative flex shrink-0 overflow-hidden", {
   },
 });
 
-/**
- * Ring color variants for Avatar borders
- */
+
+
+
 const avatarRingVariants = cva("", {
   variants: {
     ring: {
@@ -71,7 +71,7 @@ const avatarRingVariants = cva("", {
       warning: "ring-2 ring-warning ring-offset-2 ring-offset-background",
       info: "ring-2 ring-info ring-offset-2 ring-offset-background",
     },
-    /** Shape must match avatar shape for proper ring border-radius */
+
     shape: {
       circle: "rounded-full",
       square: "rounded-none",
@@ -95,7 +95,7 @@ const statusVariants = cva(
         away: "bg-warning",
         offline_gray: "bg-muted",
       },
-      // Sizes aligned with badgeVariants for consistency
+
       size: {
         xs: "h-2.5 w-2.5",
         sm: "h-3 w-3",
@@ -178,20 +178,20 @@ const gradientVariants = cva(
   }
 );
 
-/**
- * Avatar component props
- * @example
- * ```tsx
- * <Avatar size="lg" ring="primary" status="online">
- *   <AvatarImage src="/avatar.png" alt="User" />
- *   <AvatarFallback>JD</AvatarFallback>
- * </Avatar>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
 interface AvatarProps
   extends React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof avatarVariants> {
-  /** Colored ring around the avatar */
+
   ring?:
     | "default"
     | "primary"
@@ -200,11 +200,11 @@ interface AvatarProps
     | "success"
     | "warning"
     | "info";
-  /** Online status indicator */
+
   status?: "online" | "offline" | "busy" | "away" | "offline_gray";
-  /** Position of status indicator */
+
   statusPosition?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
-  /** Accessible label for screen readers */
+
   "aria-label"?: string;
 }
 
@@ -220,7 +220,7 @@ function Avatar({
   "aria-label": ariaLabel,
   ...props
 }: AvatarProps) {
-  // Determine if avatar should have interactive states
+
   const isInteractive = Boolean(onClick);
 
   return (
@@ -413,9 +413,9 @@ function AutoAvatar({ name, src, ...props }: AutoAvatarProps) {
   );
 }
 
-// ============================================
-// AVATAR GROUP
-// ============================================
+
+
+
 interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   max?: number;
   overlap?: number;
@@ -482,9 +482,9 @@ function AvatarGroup({
   );
 }
 
-// ============================================
-// AVATAR STACK (Horizontal Scroll)
-// ============================================
+
+
+
 interface AvatarStackProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "xs" | "sm" | "default" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
   showCount?: boolean;

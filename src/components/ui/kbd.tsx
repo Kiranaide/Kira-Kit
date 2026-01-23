@@ -41,7 +41,7 @@ function Kbd({ className, variant, size, children, ...props }: KbdProps) {
   );
 }
 
-// Shorthand for common keyboard keys
+
 function KbdShortcut({
   keys,
   separator = "+",

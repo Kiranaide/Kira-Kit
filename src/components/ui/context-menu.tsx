@@ -10,9 +10,9 @@ import {
   IconPointFilled,
 } from "@tabler/icons-react";
 
-// =============================================================================
-// ContextMenu Root
-// =============================================================================
+
+
+
 
 export type ContextMenuProps = ContextMenuPrimitive.Root.Props;
 
@@ -24,9 +24,9 @@ function ContextMenu({ children, ...props }: ContextMenuProps) {
   );
 }
 
-// =============================================================================
-// ContextMenuTrigger
-// =============================================================================
+
+
+
 
 export type ContextMenuTriggerProps = ContextMenuPrimitive.Trigger.Props;
 
@@ -46,9 +46,9 @@ const ContextMenuTrigger = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuBackdrop
-// =============================================================================
+
+
+
 
 export type ContextMenuBackdropProps = ContextMenuPrimitive.Backdrop.Props;
 
@@ -66,9 +66,9 @@ const ContextMenuBackdrop = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuContent
-// =============================================================================
+
+
+
 
 export interface ContextMenuContentProps
   extends ContextMenuPrimitive.Popup.Props {
@@ -120,9 +120,9 @@ const ContextMenuContent = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuArrow
-// =============================================================================
+
+
+
 
 export type ContextMenuArrowProps = ContextMenuPrimitive.Arrow.Props;
 
@@ -144,9 +144,9 @@ const ContextMenuArrow = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuItem
-// =============================================================================
+
+
+
 
 export interface ContextMenuItemProps extends ContextMenuPrimitive.Item.Props {
   inset?: boolean;
@@ -220,9 +220,9 @@ const ContextMenuItem = React.forwardRef<HTMLDivElement, ContextMenuItemProps>(
   }
 );
 
-// =============================================================================
-// ContextMenuCheckboxItem
-// =============================================================================
+
+
+
 
 export interface ContextMenuCheckboxItemProps
   extends ContextMenuPrimitive.CheckboxItem.Props {
@@ -272,9 +272,9 @@ const ContextMenuCheckboxItem = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuRadioGroup
-// =============================================================================
+
+
+
 
 export type ContextMenuRadioGroupProps = ContextMenuPrimitive.RadioGroup.Props;
 
@@ -291,9 +291,9 @@ const ContextMenuRadioGroup = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuRadioItem
-// =============================================================================
+
+
+
 
 export interface ContextMenuRadioItemProps
   extends ContextMenuPrimitive.RadioItem.Props {
@@ -342,9 +342,9 @@ const ContextMenuRadioItem = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuSeparator
-// =============================================================================
+
+
+
 
 export type ContextMenuSeparatorProps = ContextMenuPrimitive.Separator.Props;
 
@@ -362,9 +362,9 @@ const ContextMenuSeparator = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuGroup
-// =============================================================================
+
+
+
 
 export type ContextMenuGroupProps = ContextMenuPrimitive.Group.Props;
 
@@ -381,9 +381,9 @@ const ContextMenuGroup = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuLabel
-// =============================================================================
+
+
+
 
 export interface ContextMenuLabelProps
   extends ContextMenuPrimitive.GroupLabel.Props {
@@ -409,9 +409,9 @@ const ContextMenuLabel = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuShortcut
-// =============================================================================
+
+
+
 
 export type ContextMenuShortcutProps = React.HTMLAttributes<HTMLSpanElement>;
 
@@ -433,9 +433,9 @@ const ContextMenuShortcut = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuSub
-// =============================================================================
+
+
+
 
 export type ContextMenuSubProps = ContextMenuPrimitive.SubmenuRoot.Props;
 
@@ -445,9 +445,9 @@ function ContextMenuSub({ ...props }: ContextMenuSubProps) {
   );
 }
 
-// =============================================================================
-// ContextMenuSubTrigger
-// =============================================================================
+
+
+
 
 export interface ContextMenuSubTriggerProps
   extends ContextMenuPrimitive.SubmenuTrigger.Props {
@@ -491,9 +491,9 @@ const ContextMenuSubTrigger = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuSubContent
-// =============================================================================
+
+
+
 
 export interface ContextMenuSubContentProps
   extends ContextMenuPrimitive.Popup.Props {
@@ -540,9 +540,9 @@ const ContextMenuSubContent = React.forwardRef<
   );
 });
 
-// =============================================================================
-// ContextMenuWithContent (Convenience Wrapper)
-// =============================================================================
+
+
+
 
 export interface ContextMenuWithContentProps {
   trigger: React.ReactNode;
@@ -565,9 +565,9 @@ function ContextMenuWithContent({
   );
 }
 
-// =============================================================================
-// Exports
-// =============================================================================
+
+
+
 
 export {
   ContextMenu,

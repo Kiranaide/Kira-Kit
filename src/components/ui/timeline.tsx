@@ -14,9 +14,9 @@ import {
 import gsap from "gsap"
 import { cn } from "@/lib/utils"
 
-// ============================================================================
-// TIMELINE VARIANTS (CVA)
-// ============================================================================
+
+
+
 
 const timelineVariants = cva("relative", {
   variants: {
@@ -139,9 +139,9 @@ const timelineContentVariants = cva("flex-1 pb-8", {
   },
 })
 
-// ============================================================================
-// TYPES
-// ============================================================================
+
+
+
 
 type TimelineStatus = "default" | "success" | "warning" | "error" | "info"
 
@@ -183,9 +183,9 @@ function useTimelineContext() {
   return React.useContext(TimelineContext)
 }
 
-// ============================================================================
-// REDUCED MOTION HOOK
-// ============================================================================
+
+
+
 
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
@@ -205,32 +205,32 @@ function useReducedMotion() {
   return prefersReducedMotion
 }
 
-// ============================================================================
-// TIMELINE ROOT
-// ============================================================================
+
+
+
 
 interface TimelineProps<T = unknown>
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "children">,
     VariantProps<typeof timelineVariants> {
-  /** Data-driven items */
+
   items?: TimelineItemData<T>[]
-  /** Connector line style */
+
   connectorVariant?: "solid" | "dashed" | "gradient"
-  /** Dot size */
+
   size?: "sm" | "default" | "lg" | "xl"
-  /** Enable collapsible items */
+
   collapsible?: boolean
-  /** Enable virtualization for large lists */
+
   virtualized?: boolean
-  /** Estimated item height for virtualization */
+
   estimateSize?: number
-  /** Enable GSAP animations */
+
   animate?: boolean
-  /** Group items by date */
+
   groupBy?: "day" | "week" | "month" | "year" | ((item: TimelineItemData<T>) => string)
-  /** Render function for custom item rendering */
+
   renderItem?: (item: TimelineItemData<T>, index: number) => React.ReactNode
-  /** Children for composition pattern */
+
   children?: React.ReactNode
 }
 
@@ -255,7 +255,7 @@ function TimelineRoot<T>({
   const reducedMotion = useReducedMotion()
   const shouldAnimate = animate && !reducedMotion
 
-  // Group items if groupBy is provided
+
   const groupedItems = React.useMemo(() => {
     if (!items || !groupBy) return null
 
@@ -299,7 +299,7 @@ function TimelineRoot<T>({
     return groups
   }, [items, groupBy])
 
-  // Virtualizer for large lists
+
   const virtualizer = useVirtualizer({
     count: items?.length ?? 0,
     getScrollElement: () => parentRef.current,
@@ -307,7 +307,7 @@ function TimelineRoot<T>({
     enabled: virtualized && !!items,
   })
 
-  // GSAP stagger animation on mount
+
   React.useEffect(() => {
     if (!parentRef.current || !shouldAnimate || !items) return
 
@@ -340,7 +340,7 @@ function TimelineRoot<T>({
     [orientation, layout, variant, connectorVariant, size, collapsible, shouldAnimate]
   )
 
-  // Render virtualized list
+
   if (virtualized && items) {
     return (
       <TimelineContext.Provider value={contextValue}>
@@ -411,7 +411,7 @@ function TimelineRoot<T>({
     )
   }
 
-  // Render grouped items
+
   if (groupedItems) {
     return (
       <TimelineContext.Provider value={contextValue}>
@@ -458,7 +458,7 @@ function TimelineRoot<T>({
     )
   }
 
-  // Render data-driven items
+
   if (items) {
     return (
       <TimelineContext.Provider value={contextValue}>
@@ -498,7 +498,7 @@ function TimelineRoot<T>({
     )
   }
 
-  // Render children (composition pattern)
+
   return (
     <TimelineContext.Provider value={contextValue}>
       <div
@@ -515,16 +515,16 @@ function TimelineRoot<T>({
   )
 }
 
-// ============================================================================
-// TIMELINE ITEM
-// ============================================================================
+
+
+
 
 interface TimelineItemProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Item status */
+
   status?: TimelineStatus
-  /** Enable collapse */
+
   collapsible?: boolean
-  /** Default collapsed state */
+
   defaultCollapsed?: boolean
   children: React.ReactNode
 }
@@ -553,7 +553,7 @@ const TimelineItem = React.forwardRef<HTMLDivElement, TimelineItemProps>(
     const [collapsed, setCollapsed] = React.useState(defaultCollapsed)
     const isCollapsible = itemCollapsible ?? globalCollapsible
 
-    // Determine layout for alternating
+
     const itemLayout = layout === "alternating" ? "left" : layout
 
     const itemContextValue = React.useMemo(
@@ -589,12 +589,12 @@ const TimelineItem = React.forwardRef<HTMLDivElement, TimelineItemProps>(
 )
 TimelineItem.displayName = "TimelineItem"
 
-// ============================================================================
-// TIMELINE DOT
-// ============================================================================
+
+
+
 
 interface TimelineDotProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Override status from parent */
+
   status?: TimelineStatus | "active"
   children?: React.ReactNode
 }
@@ -608,7 +608,7 @@ const TimelineDot = React.forwardRef<HTMLDivElement, TimelineDotProps>(
     const renderIcon = () => {
       if (children) return children
 
-      // Only show icons for larger sizes
+
       if (size === "sm" || size === "default") return null
 
       switch (status) {
@@ -640,12 +640,12 @@ const TimelineDot = React.forwardRef<HTMLDivElement, TimelineDotProps>(
 )
 TimelineDot.displayName = "TimelineDot"
 
-// ============================================================================
-// TIMELINE CONNECTOR
-// ============================================================================
+
+
+
 
 interface TimelineConnectorProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Override connector variant */
+
   variant?: "solid" | "dashed" | "gradient"
 }
 
@@ -672,9 +672,9 @@ const TimelineConnector = React.forwardRef<HTMLDivElement, TimelineConnectorProp
 )
 TimelineConnector.displayName = "TimelineConnector"
 
-// ============================================================================
-// TIMELINE CONTENT
-// ============================================================================
+
+
+
 
 interface TimelineContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
@@ -687,7 +687,7 @@ const TimelineContent = React.forwardRef<HTMLDivElement, TimelineContentProps>(
     const contentRef = React.useRef<HTMLDivElement>(null)
     const reducedMotion = useReducedMotion()
 
-    // GSAP collapse animation
+
     React.useEffect(() => {
       if (!contentRef.current || !collapsible || reducedMotion) return
 
@@ -741,16 +741,16 @@ const TimelineContent = React.forwardRef<HTMLDivElement, TimelineContentProps>(
 )
 TimelineContent.displayName = "TimelineContent"
 
-// ============================================================================
-// TIMELINE TIME
-// ============================================================================
+
+
+
 
 interface TimelineTimeProps extends React.HTMLAttributes<HTMLTimeElement> {
-  /** Date/time value */
+
   datetime: Date | string
-  /** Format options */
+
   format?: Intl.DateTimeFormatOptions
-  /** Show relative time (e.g., "2 hours ago") */
+
   relative?: boolean
 }
 
@@ -801,9 +801,9 @@ const TimelineTime = React.forwardRef<HTMLTimeElement, TimelineTimeProps>(
 )
 TimelineTime.displayName = "TimelineTime"
 
-// ============================================================================
-// TIMELINE TITLE
-// ============================================================================
+
+
+
 
 interface TimelineTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
   children: React.ReactNode
@@ -831,9 +831,9 @@ const TimelineTitle = React.forwardRef<HTMLHeadingElement, TimelineTitleProps>(
 )
 TimelineTitle.displayName = "TimelineTitle"
 
-// ============================================================================
-// TIMELINE DESCRIPTION
-// ============================================================================
+
+
+
 
 interface TimelineDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
   children: React.ReactNode
@@ -855,9 +855,9 @@ const TimelineDescription = React.forwardRef<HTMLParagraphElement, TimelineDescr
 )
 TimelineDescription.displayName = "TimelineDescription"
 
-// ============================================================================
-// TIMELINE ACTIONS
-// ============================================================================
+
+
+
 
 interface TimelineActionsProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
@@ -879,9 +879,9 @@ const TimelineActions = React.forwardRef<HTMLDivElement, TimelineActionsProps>(
 )
 TimelineActions.displayName = "TimelineActions"
 
-// ============================================================================
-// TIMELINE AVATAR
-// ============================================================================
+
+
+
 
 interface TimelineAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   src?: string
@@ -921,11 +921,11 @@ const TimelineAvatar = React.forwardRef<HTMLDivElement, TimelineAvatarProps>(
 )
 TimelineAvatar.displayName = "TimelineAvatar"
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
 
-// Compound component
+
+
+
+
 const Timeline = Object.assign(TimelineRoot, {
   Item: TimelineItem,
   Dot: TimelineDot,
@@ -950,13 +950,13 @@ export {
   TimelineDescription,
   TimelineActions,
   TimelineAvatar,
-  // Variants
+
   timelineVariants,
   timelineItemVariants,
   timelineDotVariants,
   timelineConnectorVariants,
   timelineContentVariants,
-  // Context hooks
+
   useTimelineContext,
   useTimelineItemContext,
 }

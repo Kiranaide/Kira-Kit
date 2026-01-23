@@ -1,6 +1,6 @@
 "use client";
 
-/* eslint-disable react-refresh/only-export-components */
+
 
 import * as React from "react";
 import {
@@ -20,53 +20,53 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
-// =============================================================================
-// Types
-// =============================================================================
+
+
+
 
 type FieldApiLike = Pick<
   AnyFieldApi,
   "name" | "state" | "handleChange" | "handleBlur" | "setValue" | "getValue"
 >;
 
-// =============================================================================
-// Field Context - Enables state propagation to child components
-// =============================================================================
+
+
+
 
 interface FieldContextValue {
-  /** Unique identifier for the field */
+
   id: string;
-  /** Whether the field is disabled */
+
   disabled?: boolean;
-  /** Whether the field is required */
+
   required?: boolean;
-  /** Whether the field is read-only */
+
   readOnly?: boolean;
-  /** Whether the field is in an invalid state */
+
   invalid?: boolean;
-  /** ID for the description element (for aria-describedby) */
+
   descriptionId: string;
-  /** ID for the error element (for aria-describedby) */
+
   errorId: string;
-  /** Whether the field has been touched */
+
   touched?: boolean;
-  /** Whether the field is currently validating */
+
   validating?: boolean;
 }
 
 const FieldContext = createContext<FieldContextValue | null>(null);
 
-/**
- * Hook to access field context from child components.
- * Returns null if used outside a Field component.
- */
+
+
+
+
 function useFieldContext() {
   return useContext(FieldContext);
 }
 
-// =============================================================================
-// FieldSet - Semantic fieldset wrapper
-// =============================================================================
+
+
+
 
 function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
@@ -81,15 +81,15 @@ function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   );
 }
 
-// =============================================================================
-// FieldLegend - Semantic legend element
-// =============================================================================
+
+
+
 
 interface FieldLegendProps extends React.ComponentProps<"legend"> {
   variant?: "legend" | "label";
-  /** Show required indicator */
+
   showRequired?: boolean;
-  /** Custom required indicator (default: "*") */
+
   requiredIndicator?: React.ReactNode;
 }
 
@@ -128,12 +128,12 @@ function FieldLegend({
   );
 }
 
-// =============================================================================
-// FieldGroup - Groups multiple fields together
-// =============================================================================
+
+
+
 
 interface FieldGroupProps extends React.ComponentProps<"div"> {
-  /** Visual variant for the group */
+
   variant?: "default" | "outline";
 }
 
@@ -156,9 +156,9 @@ function FieldGroup({
   );
 }
 
-// =============================================================================
-// Field - Main field wrapper with context provider
-// =============================================================================
+
+
+
 
 const fieldVariants = cva(
   "data-[invalid=true]:text-destructive gap-2 group/field flex w-full",
@@ -181,15 +181,15 @@ const fieldVariants = cva(
 interface FieldProps
   extends React.ComponentProps<"div">,
     VariantProps<typeof fieldVariants> {
-  /** Disable the entire field and its children */
+
   disabled?: boolean;
-  /** Mark the field as required (shows indicator on label) */
+
   required?: boolean;
-  /** Mark the field as read-only */
+
   readOnly?: boolean;
-  /** Mark the field as invalid (triggers error styling) */
+
   invalid?: boolean;
-  /** Custom ID for the field (auto-generated if not provided) */
+
   id?: string;
 }
 
@@ -238,9 +238,9 @@ function Field({
   );
 }
 
-// =============================================================================
-// FieldContent - Content container within field
-// =============================================================================
+
+
+
 
 function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   const context = useFieldContext();
@@ -258,14 +258,14 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-// =============================================================================
-// FieldLabel - Label component with required indicator support
-// =============================================================================
+
+
+
 
 interface FieldLabelProps extends React.ComponentProps<typeof Label> {
-  /** Show required indicator (inherits from Field context if not specified) */
+
   showRequired?: boolean;
-  /** Custom required indicator (default: "*") */
+
   requiredIndicator?: React.ReactNode;
 }
 
@@ -303,14 +303,14 @@ function FieldLabel({
   );
 }
 
-// =============================================================================
-// FieldTitle - Alternative label-like title
-// =============================================================================
+
+
+
 
 interface FieldTitleProps extends React.ComponentProps<"div"> {
-  /** Show required indicator */
+
   showRequired?: boolean;
-  /** Custom required indicator (default: "*") */
+
   requiredIndicator?: React.ReactNode;
 }
 
@@ -344,12 +344,12 @@ function FieldTitle({
   );
 }
 
-// =============================================================================
-// FieldDescription - Helper/description text
-// =============================================================================
+
+
+
 
 interface FieldDescriptionProps extends React.ComponentProps<"p"> {
-  /** ID override (uses context descriptionId if not provided) */
+
   id?: string;
 }
 
@@ -373,21 +373,21 @@ function FieldDescription({ className, id, ...props }: FieldDescriptionProps) {
   );
 }
 
-/** @alias FieldDescription - For API compatibility with other UI libraries */
+
 const FieldHelperText = FieldDescription;
 
-// =============================================================================
-// FieldCharacterCount - Character count display for inputs
-// =============================================================================
+
+
+
 
 interface FieldCharacterCountProps extends React.ComponentProps<"span"> {
-  /** Current character count */
+
   current: number;
-  /** Maximum allowed characters */
+
   max: number;
-  /** Percentage threshold to show warning (default: 80) */
+
   warningThreshold?: number;
-  /** Hide when below threshold */
+
   showOnlyNearLimit?: boolean;
 }
 
@@ -403,7 +403,7 @@ function FieldCharacterCount({
   const isWarning = percentage >= warningThreshold && current <= max;
   const isError = current > max;
 
-  // Hide if below threshold and showOnlyNearLimit is enabled
+
   if (showOnlyNearLimit && percentage < warningThreshold) {
     return null;
   }
@@ -428,9 +428,9 @@ function FieldCharacterCount({
   );
 }
 
-// =============================================================================
-// FieldSeparator - Visual separator with optional content
-// =============================================================================
+
+
+
 
 function FieldSeparator({
   children,
@@ -462,14 +462,14 @@ function FieldSeparator({
   );
 }
 
-// =============================================================================
-// FieldValidationIcon - Status icon for validation state
-// =============================================================================
+
+
+
 
 interface FieldValidationIconProps extends React.ComponentProps<"span"> {
-  /** Validation state */
+
   state: "valid" | "invalid" | "validating";
-  /** Size of the icon */
+
   size?: "sm" | "default" | "lg";
 }
 
@@ -579,9 +579,9 @@ function FieldValidationIcon({
   );
 }
 
-// =============================================================================
-// Zod Validation Helper
-// =============================================================================
+
+
+
 
 type ZodValidatorOptions = {
   onChange?: boolean | number;
@@ -612,7 +612,7 @@ type ZodValidatorReturn<T> = {
 };
 
 function createZodValidator<T>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   schema: ZodType<T, any, any>,
   options: ZodValidatorOptions = { onChange: true, onSubmit: true }
 ): ZodValidatorReturn<T> {
@@ -679,15 +679,15 @@ function createZodValidator<T>(
   return result;
 }
 
-// =============================================================================
-// Enhanced FieldError with TanStack Form Support and Animation
-// =============================================================================
+
+
+
 
 interface FieldErrorProps extends React.ComponentProps<"div"> {
   errors?: Array<{ message?: string } | undefined> | string[] | null;
   field?: FieldApiLike | AnyFieldApi;
   showErrors?: boolean;
-  /** Show validation icon */
+
   showIcon?: boolean;
 }
 
@@ -744,7 +744,7 @@ function FieldError({
     );
   }, [children, metaErrors, showErrors]);
 
-  // Animate error appearance
+
   useEffect(() => {
     if (errorRef.current && content) {
       animate(errorRef.current, {
@@ -791,25 +791,25 @@ function FieldError({
   );
 }
 
-/** @alias FieldError - For API compatibility with other UI libraries */
+
 const FieldErrorText = FieldError;
 
-// =============================================================================
-// FormField - Enhanced Field for TanStack Form
-// =============================================================================
+
+
+
 
 interface FormFieldProps {
   name: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   form: any;
   children: (field: FieldApiLike) => React.ReactNode;
   className?: string;
   orientation?: "vertical" | "horizontal" | "responsive";
-  /** Disable the field */
+
   disabled?: boolean;
-  /** Mark the field as required */
+
   required?: boolean;
-  /** Mark the field as read-only */
+
   readOnly?: boolean;
 }
 
@@ -849,16 +849,16 @@ function FormField({
   );
 }
 
-// =============================================================================
-// FieldInput - Helper for common input patterns
-// =============================================================================
+
+
+
 
 interface FieldInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   field?: FieldApiLike;
   label?: React.ReactNode;
   description?: React.ReactNode;
   error?: React.ReactNode;
-  /** Show character count (requires maxLength) */
+
   showCharacterCount?: boolean;
 }
 
@@ -916,12 +916,12 @@ function FieldInput({
   );
 }
 
-// =============================================================================
-// FieldRow - Horizontal layout helper for multiple fields
-// =============================================================================
+
+
+
 
 interface FieldRowProps extends React.ComponentProps<"div"> {
-  /** Gap between fields */
+
   gap?: "sm" | "default" | "lg";
 }
 
@@ -956,9 +956,9 @@ function FieldRow({
 
 
 
-// =============================================================================
-// Exports
-// =============================================================================
+
+
+
 
 export {
   Field,
@@ -982,9 +982,9 @@ export {
   useFieldContext,
 };
 
-// =============================================================================
-// Type Exports
-// =============================================================================
+
+
+
 
 export type {
   FieldProps,

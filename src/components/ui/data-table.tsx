@@ -82,9 +82,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-// ============================================
-// DENSITY TYPE
-// ============================================
+
+
+
 type DataTableDensity = "compact" | "default" | "comfortable";
 
 const densityStyles: Record<DataTableDensity, { row: string; cell: string }> = {
@@ -93,9 +93,9 @@ const densityStyles: Record<DataTableDensity, { row: string; cell: string }> = {
   comfortable: { row: "h-16", cell: "py-4 px-4 text-sm" },
 };
 
-// ============================================
-// CONTEXT
-// ============================================
+
+
+
 interface DataTableContextValue<TData> {
   table: TableType<TData>;
   enableVirtualization?: boolean;
@@ -104,11 +104,11 @@ interface DataTableContextValue<TData> {
   onLoadMore?: () => void;
   isLoading?: boolean;
   hasNextPage?: boolean;
-  /** Row density setting */
+
   density: DataTableDensity;
-  /** Enable keyboard navigation */
+
   enableKeyboardNavigation?: boolean;
-  /** Announce changes to screen readers */
+
   announceChanges?: boolean;
 }
 
@@ -123,14 +123,14 @@ function useDataTable<TData>() {
   return context as DataTableContextValue<TData>;
 }
 
-// ============================================
-// MAIN DATATABLE ROOT
-// ============================================
+
+
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   children: React.ReactNode;
-  // Features
+
   enableSorting?: boolean;
   enableFiltering?: boolean;
   enablePagination?: boolean;
@@ -141,23 +141,23 @@ interface DataTableProps<TData, TValue> {
   enableExpanding?: boolean;
   enableGrouping?: boolean;
   enableVirtualization?: boolean;
-  // Keyboard & Accessibility
+
   enableKeyboardNavigation?: boolean;
   announceChanges?: boolean;
-  // Density
+
   density?: DataTableDensity;
-  // Initial states
+
   initialPageSize?: number;
   initialSorting?: SortingState;
-  // Callbacks
+
   onRowSelectionChange?: (selection: RowSelectionState) => void;
-  // Sub-row accessor
+
   getSubRows?: (originalRow: TData) => TData[] | undefined;
-  // Sub-component renderer
+
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
-  // Row can expand checker (for renderSubComponent without sub-rows)
+
   getRowCanExpand?: (row: Row<TData>) => boolean;
-  // Virtualization options
+
   estimateRowHeight?: number;
   containerHeight?: number;
   onLoadMore?: () => void;
@@ -172,7 +172,7 @@ function DataTableRoot<TData, TValue>({
   enableSorting = true,
   enableFiltering = true,
   enableRowSelection = false,
-  enableColumnOrdering: _enableColumnOrdering = false, // eslint-disable-line @typescript-eslint/no-unused-vars
+  enableColumnOrdering: _enableColumnOrdering = false,
   enableColumnPinning = false,
   enableColumnResizing = false,
   enableExpanding = false,
@@ -207,7 +207,7 @@ function DataTableRoot<TData, TValue>({
   const [grouping, setGrouping] = React.useState<GroupingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
 
-  // Notify parent of selection changes
+
   React.useEffect(() => {
     onRowSelectionChange?.(rowSelection);
   }, [rowSelection, onRowSelectionChange]);
@@ -215,56 +215,56 @@ function DataTableRoot<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    // Core
+
     getCoreRowModel: getCoreRowModel(),
 
-    // Row Models - Always provide unconditionally (TanStack Table requirement)
+
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
 
-    // Sorting - Always provide handler (TanStack Table requirement)
+
     onSortingChange: setSorting,
     enableSortingRemoval: enableSorting,
     enableSorting: enableSorting,
 
-    // Filtering - Always provide handlers (TanStack Table requirement)
+
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     enableColumnFilters: enableFiltering,
     enableGlobalFilter: enableFiltering,
 
-    // Row Selection
+
     onRowSelectionChange: setRowSelection,
     enableRowSelection: enableRowSelection,
 
-    // Column Ordering
+
     onColumnOrderChange: setColumnOrder,
 
-    // Column Pinning
+
     onColumnPinningChange: setColumnPinning,
     enableColumnPinning: enableColumnPinning,
 
-    // Column Resizing
+
     enableColumnResizing: enableColumnResizing,
     columnResizeMode: enableColumnResizing ? ("onChange" as const) : undefined,
 
-    // Expanding - Always provide handler, pass getRowCanExpand if provided
+
     onExpandedChange: setExpanded,
     getSubRows: getSubRows,
     getRowCanExpand: getRowCanExpand,
     enableExpanding: enableExpanding,
 
-    // Grouping
+
     onGroupingChange: setGrouping,
     enableGrouping: enableGrouping,
 
-    // Column Visibility - Always provide handler
+
     onColumnVisibilityChange: setColumnVisibility,
 
-    // State - Always provide all state properties
+
     state: {
       sorting,
       columnFilters,
@@ -284,8 +284,8 @@ function DataTableRoot<TData, TValue>({
     },
   });
 
-  // Store virtualization props in context for child components
-  // Include state values in deps to trigger re-renders when table state changes
+
+
   const contextValue = React.useMemo(
     () => ({
       table: table as TableType<unknown>,
@@ -299,7 +299,7 @@ function DataTableRoot<TData, TValue>({
       enableKeyboardNavigation,
       announceChanges,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [
       table,
       enableVirtualization,
@@ -311,7 +311,7 @@ function DataTableRoot<TData, TValue>({
       density,
       enableKeyboardNavigation,
       announceChanges,
-      // Include state values to trigger re-renders
+
       columnFilters,
       globalFilter,
       columnVisibility,
@@ -331,9 +331,9 @@ function DataTableRoot<TData, TValue>({
   );
 }
 
-// ============================================
-// SEARCH / FILTER COMPONENT
-// ============================================
+
+
+
 interface DataTableSearchProps {
   columnKey?: string;
   placeholder?: string;
@@ -372,9 +372,9 @@ function DataTableSearch({
   );
 }
 
-// ============================================
-// TABLE CONTENT COMPONENT
-// ============================================
+
+
+
 interface DataTableContentProps<TData> {
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
   stickyHeader?: boolean;
@@ -453,7 +453,7 @@ function DataTableContent<TData>({
                 const pinnedLeft = isPinned === "left";
                 const pinnedRight = isPinned === "right";
 
-                // Calculate left offset for pinned columns
+
                 let leftOffset = 0;
                 if (pinnedLeft) {
                   const leftPinnedColumns = headerGroup.headers.filter(
@@ -467,7 +467,7 @@ function DataTableContent<TData>({
                   }
                 }
 
-                // Calculate right offset for pinned columns
+
                 let rightOffset = 0;
                 if (pinnedRight) {
                   const rightPinnedColumns = headerGroup.headers.filter(
@@ -507,7 +507,7 @@ function DataTableContent<TData>({
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
-                    {/* Column resizer handle */}
+                    {}
                     {header.column.getCanResize() && (
                       <div
                         onMouseDown={header.getResizeHandler()}
@@ -547,7 +547,7 @@ function DataTableContent<TData>({
                     const pinnedLeft = isPinned === "left";
                     const pinnedRight = isPinned === "right";
 
-                    // Calculate left offset for pinned columns
+
                     let leftOffset = 0;
                     if (pinnedLeft) {
                       const leftPinnedColumns = row
@@ -561,7 +561,7 @@ function DataTableContent<TData>({
                       }
                     }
 
-                    // Calculate right offset for pinned columns
+
                     let rightOffset = 0;
                     if (pinnedRight) {
                       const rightPinnedColumns = row
@@ -605,7 +605,7 @@ function DataTableContent<TData>({
                     );
                   })}
                 </TableRow>
-                {/* Expandable sub-component */}
+                {}
                 {row.getIsExpanded() && renderSubComponent && (
                   <TableRow>
                     <TableCell
@@ -646,9 +646,9 @@ function DataTableContent<TData>({
   );
 }
 
-// ============================================
-// VIRTUALIZED TABLE CONTENT COMPONENT
-// ============================================
+
+
+
 interface DataTableVirtualizedContentProps<TData> {
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
   stickyHeader?: boolean;
@@ -689,7 +689,7 @@ function DataTableVirtualizedContent<TData>({
       ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0)
       : 0;
 
-  // Infinite scroll detection
+
   React.useEffect(() => {
     const parent = parentRef.current;
     if (!parent || !onLoadMore || !hasNextPage || isLoading) return;
@@ -722,7 +722,7 @@ function DataTableVirtualizedContent<TData>({
                 const pinnedLeft = isPinned === "left";
                 const pinnedRight = isPinned === "right";
 
-                // Calculate left offset for pinned columns
+
                 let leftOffset = 0;
                 if (pinnedLeft) {
                   const leftPinnedColumns = headerGroup.headers.filter(
@@ -736,7 +736,7 @@ function DataTableVirtualizedContent<TData>({
                   }
                 }
 
-                // Calculate right offset for pinned columns
+
                 let rightOffset = 0;
                 if (pinnedRight) {
                   const rightPinnedColumns = headerGroup.headers.filter(
@@ -776,7 +776,7 @@ function DataTableVirtualizedContent<TData>({
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
-                    {/* Column resizer handle */}
+                    {}
                     {header.column.getCanResize() && (
                       <div
                         onMouseDown={header.getResizeHandler()}
@@ -826,7 +826,7 @@ function DataTableVirtualizedContent<TData>({
                     const pinnedLeft = isPinned === "left";
                     const pinnedRight = isPinned === "right";
 
-                    // Calculate left offset for pinned columns
+
                     let leftOffset = 0;
                     if (pinnedLeft) {
                       const leftPinnedCells = row
@@ -840,7 +840,7 @@ function DataTableVirtualizedContent<TData>({
                       }
                     }
 
-                    // Calculate right offset for pinned columns
+
                     let rightOffset = 0;
                     if (pinnedRight) {
                       const rightPinnedCells = row
@@ -884,7 +884,7 @@ function DataTableVirtualizedContent<TData>({
                     );
                   })}
                 </TableRow>
-                {/* Expandable sub-component */}
+                {}
                 {row.getIsExpanded() && renderSubComponent && (
                   <TableRow>
                     <TableCell
@@ -932,9 +932,9 @@ function DataTableVirtualizedContent<TData>({
   );
 }
 
-// ============================================
-// REORDERABLE TABLE CONTENT COMPONENT
-// ============================================
+
+
+
 interface DataTableReorderableContentProps<TData> {
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
   stickyHeader?: boolean;
@@ -952,7 +952,7 @@ function DataTableReorderableContent<TData>({
   const rows = table.getRowModel().rows;
   const [items, setItems] = React.useState(() => rows.map((row) => row.id));
 
-  // Update items when rows change (e.g., filtering)
+
   React.useEffect(() => {
     const newItems = rows.map((row) => row.id);
     setItems(newItems);
@@ -979,7 +979,7 @@ function DataTableReorderableContent<TData>({
     }
   };
 
-  // Create a map of row id to row for efficient lookup
+
   const rowMap = React.useMemo(() => {
     const map = new Map<string, Row<TData>>();
     rows.forEach((row) => {
@@ -988,7 +988,7 @@ function DataTableReorderableContent<TData>({
     return map;
   }, [rows]);
 
-  // Get rows in the new order
+
   const orderedRows = items
     .map((id) => rowMap.get(id))
     .filter((row): row is Row<TData> => row !== undefined);
@@ -1120,9 +1120,9 @@ function DataTableReorderableContent<TData>({
   );
 }
 
-// ============================================
-// SORTABLE ROW COMPONENT
-// ============================================
+
+
+
 interface DataTableSortableRowProps<TData> {
   row: Row<TData>;
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
@@ -1199,7 +1199,7 @@ function DataTableSortableRow<TData>({
             }
           }
 
-          // Check if this is the drag handle column
+
           const isDragHandle = cell.column.id === "drag";
 
           return (
@@ -1241,9 +1241,9 @@ function DataTableSortableRow<TData>({
   );
 }
 
-// ============================================
-// PAGE COUNT COMPONENT
-// ============================================
+
+
+
 function DataTablePageCount() {
   const { table } = useDataTable();
 
@@ -1254,9 +1254,9 @@ function DataTablePageCount() {
   );
 }
 
-// ============================================
-// ROW COUNT COMPONENT
-// ============================================
+
+
+
 function DataTableRowCount() {
   const { table } = useDataTable();
   const selectedCount = table.getFilteredSelectedRowModel().rows.length;
@@ -1275,9 +1275,9 @@ function DataTableRowCount() {
   );
 }
 
-// ============================================
-// PAGINATION COMPONENT
-// ============================================
+
+
+
 interface DataTablePaginationProps {
   showPageSize?: boolean;
   pageSizeOptions?: number[];
@@ -1391,9 +1391,9 @@ function DataTablePagination({
   );
 }
 
-// ============================================
-// COLUMN HEADER HELPER (with 3-way sorting)
-// ============================================
+
+
+
 interface DataTableColumnHeaderProps<
   TData,
   TValue,
@@ -1422,15 +1422,15 @@ function DataTableColumnHeader<TData, TValue>({
     );
   }
 
-  // 3-way sort: asc -> desc -> none
+
   const handleSort = () => {
     const currentSort = column.getIsSorted();
     if (currentSort === false) {
-      column.toggleSorting(false); // asc
+      column.toggleSorting(false);
     } else if (currentSort === "asc") {
-      column.toggleSorting(true); // desc
+      column.toggleSorting(true);
     } else {
-      column.clearSorting(); // none
+      column.clearSorting();
     }
   };
 
@@ -1459,9 +1459,9 @@ function DataTableColumnHeader<TData, TValue>({
   );
 }
 
-// ============================================
-// COLUMN PINNING MENU
-// ============================================
+
+
+
 interface DataTableColumnPinningMenuProps<TData, TValue> {
   column: import("@tanstack/react-table").Column<TData, TValue>;
 }
@@ -1536,9 +1536,9 @@ function DataTableColumnPinningMenu<TData, TValue>({
   );
 }
 
-// ============================================
-// SELECTION CHECKBOX COLUMN HELPER
-// ============================================
+
+
+
 function createSelectColumn<TData>(): ColumnDef<TData> {
   return {
     id: "select",
@@ -1552,7 +1552,7 @@ function createSelectColumn<TData>(): ColumnDef<TData> {
               isAllSelected ? true : isSomeSelected ? "indeterminate" : false
             }
             onCheckedChange={(value) => {
-              // Toggle all page rows based on checkbox value
+
               const shouldSelect = value === true || value === "indeterminate";
               table.toggleAllPageRowsSelected(shouldSelect);
             }}
@@ -1568,7 +1568,7 @@ function createSelectColumn<TData>(): ColumnDef<TData> {
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onCheckedChange={(value) => {
-              // Toggle row selection based on checkbox value
+
               row.toggleSelected(value === true);
             }}
             aria-label="Select row"
@@ -1584,16 +1584,16 @@ function createSelectColumn<TData>(): ColumnDef<TData> {
   };
 }
 
-// ============================================
-// EXPAND COLUMN HELPER
-// ============================================
+
+
+
 function createExpandColumn<TData>(): ColumnDef<TData> {
   return {
     id: "expand",
     header: () => <div className="w-10" />,
     cell: ({ row }) => {
-      // Always show the expand button if the row can expand
-      // If it can't expand, show a placeholder to maintain column width
+
+
       const canExpand = row.getCanExpand();
       const isExpanded = row.getIsExpanded();
 
@@ -1613,7 +1613,7 @@ function createExpandColumn<TData>(): ColumnDef<TData> {
               />
             </button>
           ) : (
-            <div className="w-6" /> // Placeholder to maintain spacing
+            <div className="w-6" />
           )}
         </div>
       );
@@ -1626,9 +1626,9 @@ function createExpandColumn<TData>(): ColumnDef<TData> {
   };
 }
 
-// ============================================
-// DRAG HANDLE COLUMN HELPER
-// ============================================
+
+
+
 function createDragHandleColumn<TData>(): ColumnDef<TData> {
   return {
     id: "drag",
@@ -1644,9 +1644,9 @@ function createDragHandleColumn<TData>(): ColumnDef<TData> {
   };
 }
 
-// ============================================
-// COLUMN VISIBILITY TOGGLE
-// ============================================
+
+
+
 function DataTableColumnVisibility() {
   const { table } = useDataTable();
 
@@ -1668,9 +1668,9 @@ function DataTableColumnVisibility() {
   );
 }
 
-// ============================================
-// EDITABLE CELL COMPONENT
-// ============================================
+
+
+
 interface DataTableEditableCellProps {
   value: string | number;
   onSave: (value: string | number) => void;
@@ -1775,20 +1775,20 @@ function DataTableEditableCell({
   );
 }
 
-// ============================================
-// EXPORTS
-// ============================================
-// ============================================
-// SKELETON COMPONENT
-// ============================================
+
+
+
+
+
+
 interface DataTableSkeletonProps {
-  /** Number of skeleton rows to display */
+
   rows?: number;
-  /** Number of columns (defaults to 5) */
+
   columns?: number;
-  /** Show header skeleton */
+
   showHeader?: boolean;
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -1831,19 +1831,19 @@ function DataTableSkeleton({
   );
 }
 
-// ============================================
-// EMPTY STATE COMPONENT
-// ============================================
+
+
+
 interface DataTableEmptyStateProps {
-  /** Icon to display */
+
   icon?: React.ReactNode;
-  /** Title text */
+
   title?: string;
-  /** Description text */
+
   description?: string;
-  /** Action button/element */
+
   action?: React.ReactNode;
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -1871,15 +1871,15 @@ function DataTableEmptyState({
   );
 }
 
-// ============================================
-// BULK ACTIONS BAR
-// ============================================
+
+
+
 interface DataTableBulkActionsProps {
-  /** Children containing action buttons */
+
   children: React.ReactNode;
-  /** Additional CSS class */
+
   className?: string;
-  /** Custom clear selection handler */
+
   onClearSelection?: () => void;
 }
 
@@ -1930,30 +1930,30 @@ function DataTableBulkActions({
   );
 }
 
-// ============================================
-// ROW ACTIONS MENU
-// ============================================
+
+
+
 interface RowAction<TData> {
-  /** Action label */
+
   label: string;
-  /** Icon component */
+
   icon?: React.ReactNode;
-  /** Click handler */
+
   onClick: (row: TData) => void;
-  /** Whether the action is destructive (shows in red) */
+
   destructive?: boolean;
-  /** Whether the action is disabled */
+
   disabled?: boolean;
-  /** Whether to show a separator before this action */
+
   separator?: boolean;
 }
 
 interface DataTableRowActionsProps<TData> {
-  /** The row data */
+
   row: TData;
-  /** Array of actions */
+
   actions: RowAction<TData>[];
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -1997,21 +1997,21 @@ function DataTableRowActions<TData>({
   );
 }
 
-// ============================================
-// CELL RENDERERS
-// ============================================
 
-// Status Cell
+
+
+
+
 type StatusVariant = "default" | "success" | "warning" | "error" | "info";
 
 interface StatusCellProps {
-  /** The status value */
+
   value: string;
-  /** Map of value to variant */
+
   statusMap?: Record<string, StatusVariant>;
-  /** Show as dot instead of badge */
+
   dot?: boolean;
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -2061,19 +2061,19 @@ function StatusCell({
   );
 }
 
-// Date Cell
+
 interface DateCellProps {
-  /** The date value (Date object, string, or number) */
+
   value: Date | string | number | null | undefined;
-  /** Date format using Intl.DateTimeFormat options */
+
   format?: Intl.DateTimeFormatOptions;
-  /** Show relative time in tooltip */
+
   showRelative?: boolean;
-  /** Locale for formatting */
+
   locale?: string;
-  /** Fallback text for null/undefined values */
+
   fallback?: string;
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -2141,19 +2141,19 @@ function DateCell({
   return <span className={className}>{formatted}</span>;
 }
 
-// Currency Cell
+
 interface CurrencyCellProps {
-  /** The numeric value */
+
   value: number | null | undefined;
-  /** Currency code (e.g., "USD", "EUR") */
+
   currency?: string;
-  /** Locale for formatting */
+
   locale?: string;
-  /** Show positive values in green, negative in red */
+
   colorCode?: boolean;
-  /** Fallback text for null/undefined values */
+
   fallback?: string;
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -2187,17 +2187,17 @@ function CurrencyCell({
   return <span className={cn(colorClass, className)}>{formatted}</span>;
 }
 
-// Avatar Cell
+
 interface AvatarCellProps {
-  /** Image source URL */
+
   src?: string | null;
-  /** Alt text / Name for fallback initials */
+
   name: string;
-  /** Show name alongside avatar */
+
   showName?: boolean;
-  /** Avatar size */
+
   size?: "sm" | "default" | "lg";
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -2234,21 +2234,21 @@ function AvatarCell({
   );
 }
 
-// Actions Cell (Preset row actions)
+
 interface ActionsCellProps<TData> {
-  /** The row data */
+
   row: TData;
-  /** Edit handler */
+
   onEdit?: (row: TData) => void;
-  /** View handler */
+
   onView?: (row: TData) => void;
-  /** Delete handler */
+
   onDelete?: (row: TData) => void;
-  /** Duplicate handler */
+
   onDuplicate?: (row: TData) => void;
-  /** Additional custom actions */
+
   customActions?: RowAction<TData>[];
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -2287,7 +2287,7 @@ function ActionsCell<TData>({
     });
   }
 
-  // Add custom actions
+
   actions.push(...customActions);
 
   if (onDelete) {
@@ -2309,9 +2309,9 @@ function ActionsCell<TData>({
   );
 }
 
-// ============================================
-// COLUMN PINNING CONTROLS (Standalone component)
-// ============================================
+
+
+
 function DataTablePinningControls() {
   const { table } = useDataTable();
 
@@ -2348,17 +2348,17 @@ function DataTablePinningControls() {
   );
 }
 
-// ============================================
-// DENSITY TOGGLE
-// ============================================
+
+
+
 interface DataTableDensityToggleProps {
-  /** Current density value (controlled) */
+
   value?: DataTableDensity;
-  /** Default density (uncontrolled) */
+
   defaultValue?: DataTableDensity;
-  /** Callback when density changes */
+
   onValueChange?: (density: DataTableDensity) => void;
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -2407,21 +2407,21 @@ function DataTableDensityToggle({
   );
 }
 
-// ============================================
-// FILTER COMPONENTS
-// ============================================
 
-// Number Range Filter
+
+
+
+
 interface NumberRangeFilterProps {
-  /** Column ID to filter */
+
   columnId: string;
-  /** Minimum value placeholder */
+
   minPlaceholder?: string;
-  /** Maximum value placeholder */
+
   maxPlaceholder?: string;
-  /** Step value for inputs */
+
   step?: number;
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -2476,22 +2476,22 @@ function NumberRangeFilter({
   );
 }
 
-// Multi-Select Filter
+
 interface MultiSelectFilterOption {
   value: string;
   label: string;
 }
 
 interface MultiSelectFilterProps {
-  /** Column ID to filter */
+
   columnId: string;
-  /** Available options */
+
   options: MultiSelectFilterOption[];
-  /** Placeholder text */
+
   placeholder?: string;
-  /** Enable search within options */
+
   searchable?: boolean;
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -2595,11 +2595,11 @@ function MultiSelectFilter({
   );
 }
 
-// Date Range Filter
+
 interface DateRangeFilterProps {
-  /** Column ID to filter */
+
   columnId: string;
-  /** Additional CSS class */
+
   className?: string;
 }
 
@@ -2644,15 +2644,15 @@ function DateRangeFilter({ columnId, className }: DateRangeFilterProps) {
   );
 }
 
-// ============================================
-// DENSITY STYLES HELPER (for use in custom implementations)
-// ============================================
+
+
+
 function getDensityStyles(density: DataTableDensity) {
   return densityStyles[density];
 }
 
 export {
-  // Main components
+
   DataTableRoot,
   DataTableSearch,
   DataTableContent,
@@ -2662,36 +2662,36 @@ export {
   DataTableColumnVisibility,
   DataTablePinningControls,
   DataTableDensityToggle,
-  // Column header
+
   DataTableColumnHeader,
-  // Column helpers
+
   createSelectColumn,
   createExpandColumn,
   createDragHandleColumn,
-  // Editable cell
+
   DataTableEditableCell,
-  // UI Components
+
   DataTableSkeleton,
   DataTableEmptyState,
   DataTableBulkActions,
   DataTableRowActions,
-  // Cell renderers
+
   StatusCell,
   DateCell,
   CurrencyCell,
   AvatarCell,
   ActionsCell,
-  // Filter components
+
   NumberRangeFilter,
   MultiSelectFilter,
   DateRangeFilter,
-  // Utilities
+
   getDensityStyles,
-  // Context hook
+
   useDataTable,
 };
 
-// Type exports
+
 export type {
   DataTableProps,
   DataTableSearchProps,

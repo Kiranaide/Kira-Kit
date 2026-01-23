@@ -5,40 +5,40 @@ import { cn } from "@/lib/utils"
 type SpacerAxis = "horizontal" | "vertical"
 
 interface SpacerProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Size of the spacer in Tailwind spacing units, or "auto" for flex: 1 */
+
   size?: number | "auto"
-  /** Axis of the spacer */
+
   axis?: SpacerAxis
 }
 
-/**
- * Spacer component for adding flexible space between elements.
- * Use "auto" size to push siblings apart (flex: 1).
- * 
- * @example
- * ```tsx
- * // Flexible spacer (pushes siblings apart)
- * <Flex align="center">
- *   <Logo />
- *   <Spacer />
- *   <Button>Sign In</Button>
- * </Flex>
- * 
- * // Fixed horizontal space
- * <HStack>
- *   <Avatar />
- *   <Spacer size={4} axis="horizontal" />
- *   <Text>Username</Text>
- * </HStack>
- * 
- * // Fixed vertical space
- * <VStack>
- *   <Heading>Title</Heading>
- *   <Spacer size={8} axis="vertical" />
- *   <Content />
- * </VStack>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Spacer({
   size = "auto",
   axis = "horizontal",

@@ -10,42 +10,42 @@ import {
 } from "@/components/ui/tooltip";
 import { IconInfoCircle } from "@tabler/icons-react";
 
-// =============================================================================
-// Types
-// =============================================================================
+
+
+
 
 interface LabelProps
   extends Omit<React.ComponentProps<"label">, "prefix">,
     VariantProps<typeof labelVariants> {
-  /** Size variant */
+
   size?: "sm" | "md" | "lg";
-  /** Show required indicator */
+
   required?: boolean;
-  /** Show optional indicator */
+
   optional?: boolean;
-  /** Hint text displayed inline */
+
   hint?: React.ReactNode;
-  /** Show error styling */
+
   error?: boolean;
-  /** Show disabled styling */
+
   disabled?: boolean;
-  /** Icon to display before the label text */
+
   icon?: React.ReactNode;
-  /** Icon to display after the label text */
+
   iconAfter?: React.ReactNode;
-  /** Tooltip content for info icon */
+
   tooltip?: React.ReactNode;
-  /** Counter/badge to display (e.g., "3" for "Files (3)") */
+
   counter?: number | string;
-  /** Render as a different element (default: label) */
+
   as?: "label" | "span" | "div";
-  /** Truncate long text with ellipsis */
+
   truncate?: boolean;
-  /** Screen reader only text (visually hidden) */
+
   srOnly?: React.ReactNode;
-  /** Custom required indicator (default: "*") */
+
   requiredIndicator?: React.ReactNode;
-  /** Custom optional text (default: "optional") */
+
   optionalText?: string;
 }
 
@@ -54,30 +54,30 @@ interface LabelHintProps
     VariantProps<typeof labelHintVariants> {}
 
 interface LabelRequiredProps extends React.ComponentProps<"span"> {
-  /** Custom indicator content */
+
   indicator?: React.ReactNode;
 }
 
 interface LabelOptionalProps extends React.ComponentProps<"span"> {
-  /** Custom text (default: "optional") */
+
   text?: string;
 }
 
 interface LabelCounterProps extends React.ComponentProps<"span"> {
-  /** Counter value */
+
   count: number | string;
-  /** Maximum value before showing "99+" style */
+
   max?: number;
 }
 
 interface LabelIconProps extends React.ComponentProps<"span"> {
-  /** Position of the icon */
+
   position?: "before" | "after";
 }
 
-// =============================================================================
-// Variants
-// =============================================================================
+
+
+
 
 const labelVariants = cva(
   "text-sm leading-none font-medium group-data-[disabled=true]:opacity-50 peer-disabled:opacity-50 flex items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed",
@@ -113,9 +113,9 @@ const labelHintVariants = cva("text-muted-foreground text-xs font-normal", {
   },
 });
 
-// =============================================================================
-// Label
-// =============================================================================
+
+
+
 
 function Label({
   className,
@@ -141,13 +141,13 @@ function Label({
 
   const content = (
     <>
-      {/* Screen reader only text */}
+      {}
       {srOnly && <span className="sr-only">{srOnly}</span>}
 
-      {/* Icon before */}
+      {}
       {icon && <LabelIcon position="before">{icon}</LabelIcon>}
 
-      {/* Main text content */}
+      {}
       <span
         className={cn(
           truncate && "truncate max-w-[200px]",
@@ -157,23 +157,23 @@ function Label({
         {children}
       </span>
 
-      {/* Required indicator */}
+      {}
       {required && (
         <LabelRequired indicator={requiredIndicator} aria-hidden="true" />
       )}
 
-      {/* Optional indicator */}
+      {}
       {optional && !required && (
         <LabelOptional text={optionalText} aria-hidden="true" />
       )}
 
-      {/* Counter badge */}
+      {}
       {counter !== undefined && <LabelCounter count={counter} />}
 
-      {/* Icon after */}
+      {}
       {iconAfter && <LabelIcon position="after">{iconAfter}</LabelIcon>}
 
-      {/* Tooltip info icon */}
+      {}
       {tooltip && (
         <Tooltip>
           <TooltipTrigger
@@ -191,7 +191,7 @@ function Label({
         </Tooltip>
       )}
 
-      {/* Inline hint */}
+      {}
       {hint && (
         <LabelHint size={size} className="ml-1">
           {hint}
@@ -220,9 +220,9 @@ function Label({
   );
 }
 
-// =============================================================================
-// LabelHint
-// =============================================================================
+
+
+
 
 function LabelHint({ className, size = "md", ...props }: LabelHintProps) {
   return (
@@ -234,9 +234,9 @@ function LabelHint({ className, size = "md", ...props }: LabelHintProps) {
   );
 }
 
-// =============================================================================
-// LabelRequired
-// =============================================================================
+
+
+
 
 function LabelRequired({
   className,
@@ -254,9 +254,9 @@ function LabelRequired({
   );
 }
 
-// =============================================================================
-// LabelOptional
-// =============================================================================
+
+
+
 
 function LabelOptional({
   className,
@@ -274,9 +274,9 @@ function LabelOptional({
   );
 }
 
-// =============================================================================
-// LabelCounter - Badge style counter
-// =============================================================================
+
+
+
 
 function LabelCounter({
   className,
@@ -301,9 +301,9 @@ function LabelCounter({
   );
 }
 
-// =============================================================================
-// LabelIcon - Icon wrapper with consistent sizing
-// =============================================================================
+
+
+
 
 function LabelIcon({
   className,
@@ -326,9 +326,9 @@ function LabelIcon({
   );
 }
 
-// =============================================================================
-// LabelDescription (for field context compatibility)
-// =============================================================================
+
+
+
 
 type LabelDescriptionProps = React.ComponentProps<"p">;
 
@@ -345,16 +345,16 @@ function LabelDescription({ className, ...props }: LabelDescriptionProps) {
   );
 }
 
-// =============================================================================
-// LabelGroup - Group label with description
-// =============================================================================
+
+
+
 
 interface LabelGroupProps extends React.ComponentProps<"div"> {
-  /** The main label text */
+
   label: React.ReactNode;
-  /** Description text below the label */
+
   description?: React.ReactNode;
-  /** Label props to pass through */
+
   labelProps?: Omit<LabelProps, "children">;
 }
 
@@ -379,9 +379,9 @@ function LabelGroup({
   );
 }
 
-// =============================================================================
-// Exports
-// =============================================================================
+
+
+
 
 export {
   Label,
@@ -394,9 +394,9 @@ export {
   LabelGroup,
 };
 
-// =============================================================================
-// Type Exports
-// =============================================================================
+
+
+
 
 export type {
   LabelProps,

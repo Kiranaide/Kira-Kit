@@ -2,12 +2,12 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// ============================================
-// TEXTAREA VARIANTS
-// ============================================
+
+
+
 const textareaVariants = cva(
   [
-    // Base styles
+
     "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50",
     "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
     "aria-invalid:border-destructive dark:aria-invalid:border-destructive/50",
@@ -39,17 +39,17 @@ const textareaVariants = cva(
   }
 );
 
-// ============================================
-// TEXTAREA COMPONENT
-// ============================================
+
+
+
 interface TextareaProps
   extends Omit<React.ComponentProps<"textarea">, "size">,
     VariantProps<typeof textareaVariants> {
-  /** Minimum number of rows (affects min-height) */
+
   minRows?: number;
-  /** Maximum number of rows (affects max-height, enables scroll) */
+
   maxRows?: number;
-  /** Enable auto-sizing based on content (default: true) */
+
   autoSize?: boolean;
 }
 
@@ -63,8 +63,8 @@ function Textarea({
   style,
   ...props
 }: TextareaProps) {
-  // Calculate height constraints based on rows
-  // Approximate line height: 1.5rem (24px) + padding
+
+
   const lineHeight = size === "sm" ? 20 : size === "lg" ? 28 : 24;
   const paddingY = size === "sm" ? 12 : size === "lg" ? 20 : 16;
 
@@ -90,17 +90,17 @@ function Textarea({
   );
 }
 
-// ============================================
-// TEXTAREA WITH CHARACTER COUNTER
-// ============================================
+
+
+
 interface TextareaWithCounterProps extends TextareaProps {
-  /** Maximum character count */
+
   maxLength: number;
-  /** Threshold (0-1) at which to show warning color (default: 0.8 = 80%) */
+
   warningThreshold?: number;
-  /** Show remaining characters instead of current/max */
+
   showRemaining?: boolean;
-  /** Custom counter render function */
+
   renderCounter?: (props: {
     current: number;
     max: number;
@@ -108,7 +108,7 @@ interface TextareaWithCounterProps extends TextareaProps {
     isWarning: boolean;
     isError: boolean;
   }) => React.ReactNode;
-  /** Additional class for the wrapper */
+
   wrapperClassName?: string;
 }
 
@@ -136,14 +136,14 @@ function TextareaWithCounter({
   const isWarning = currentLength >= maxLength * warningThreshold;
   const isError = currentLength >= maxLength;
 
-  // Generate unique ID for counter and textarea
+
   const generatedCounterId = React.useId();
   const generatedTextareaId = React.useId();
   const counterId = generatedCounterId;
   const textareaId = id ?? generatedTextareaId;
   const counterElementId = `${counterId}-counter`;
 
-  // Combine aria-describedby with counter ID
+
   const combinedAriaDescribedBy = ariaDescribedBy
     ? `${ariaDescribedBy} ${counterElementId}`
     : counterElementId;
@@ -201,8 +201,8 @@ function TextareaWithCounter({
   );
 }
 
-// ============================================
-// EXPORTS
-// ============================================
+
+
+
 export { Textarea, TextareaWithCounter, textareaVariants };
 export type { TextareaProps, TextareaWithCounterProps };

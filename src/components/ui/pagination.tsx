@@ -17,16 +17,16 @@ import {
   type PageRangeItem,
 } from "@/hooks/use-pagination";
 
-// ============================================
-// CONTEXT
-// ============================================
+
+
+
 
 interface PaginationContextValue extends UsePaginationReturn {
   size: "sm" | "default" | "lg";
   variant: "default" | "outline" | "pills" | "ghost" | "rounded";
   color: "default" | "primary" | "success" | "warning" | "destructive";
   disabled: boolean;
-  /** ID for accessibility linking */
+
   paginationId: string;
 }
 
@@ -37,9 +37,9 @@ function usePaginationContext() {
   return context;
 }
 
-// ============================================
-// VARIANTS
-// ============================================
+
+
+
 
 const paginationVariants = cva("flex items-center gap-1", {
   variants: {
@@ -89,7 +89,7 @@ const paginationLinkVariants = cva(
       },
     },
     compoundVariants: [
-      // Success color
+
       {
         variant: "default",
         color: "success",
@@ -113,7 +113,7 @@ const paginationLinkVariants = cva(
         color: "success",
         className: "data-[active=true]:text-green-600",
       },
-      // Warning color
+
       {
         variant: "default",
         color: "warning",
@@ -137,7 +137,7 @@ const paginationLinkVariants = cva(
         color: "warning",
         className: "data-[active=true]:text-amber-600",
       },
-      // Destructive color
+
       {
         variant: "default",
         color: "destructive",
@@ -169,25 +169,25 @@ const paginationLinkVariants = cva(
   }
 );
 
-// ============================================
-// ROOT COMPONENT
-// ============================================
+
+
+
 
 interface PaginationProps
   extends Omit<React.HTMLAttributes<HTMLElement>, "color">,
     VariantProps<typeof paginationVariants>,
     Omit<UsePaginationOptions, "onPageChange" | "onPageSizeChange"> {
-  /** Visual style variant */
+
   variant?: "default" | "outline" | "pills" | "ghost" | "rounded";
-  /** Color variant */
+
   color?: "default" | "primary" | "success" | "warning" | "destructive";
-  /** Callback when page changes */
+
   onPageChange?: (page: number) => void;
-  /** Callback when page size changes */
+
   onPageSizeChange?: (pageSize: number) => void;
-  /** Disable all pagination controls */
+
   disabled?: boolean;
-  /** Accessible label for the navigation */
+
   "aria-label"?: string;
 }
 
@@ -210,7 +210,7 @@ function Pagination({
   ...props
 }: PaginationProps) {
   const paginationId = React.useId();
-  
+
   const pagination = usePagination({
     total,
     pageSize: pageSizeProp,
@@ -246,9 +246,9 @@ function Pagination({
   );
 }
 
-// ============================================
-// PAGINATION CONTENT
-// ============================================
+
+
+
 
 function PaginationContent({
   className,
@@ -261,7 +261,7 @@ function PaginationContent({
       data-slot="pagination-content"
       className={cn(
         "flex items-center gap-1",
-        // Mobile responsive: hide some items on small screens
+
         "[&>[data-mobile-hide]]:hidden [&>[data-mobile-hide]]:sm:flex",
         className
       )}
@@ -272,12 +272,12 @@ function PaginationContent({
   );
 }
 
-// ============================================
-// PAGINATION ITEM
-// ============================================
+
+
+
 
 interface PaginationItemProps extends React.HTMLAttributes<HTMLLIElement> {
-  /** Hide this item on mobile screens */
+
   mobileHide?: boolean;
 }
 
@@ -296,15 +296,15 @@ function PaginationItem({
   );
 }
 
-// ============================================
-// PAGINATION LINK (Page Button)
-// ============================================
+
+
+
 
 interface PaginationLinkProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "color">,
     VariantProps<typeof paginationLinkVariants> {
   isActive?: boolean;
-  /** Page number for this link (enables auto-click handling when context available) */
+
   page?: number;
 }
 
@@ -319,13 +319,13 @@ function PaginationLink({
   ...props
 }: PaginationLinkProps) {
   const context = usePaginationContext();
-  
-  // Use context values if available, otherwise use props
+
+
   const variant = variantProp ?? context?.variant ?? "default";
   const color = colorProp ?? context?.color ?? "default";
   const disabled = props.disabled ?? context?.disabled ?? false;
 
-  // Auto-determine active state from page number
+
   const active = isActive ?? (page !== undefined && context?.isCurrentPage(page));
 
   const handleClick = React.useCallback(
@@ -355,9 +355,9 @@ function PaginationLink({
   );
 }
 
-// ============================================
-// NAVIGATION BUTTONS
-// ============================================
+
+
+
 
 function PaginationFirst({
   className,
@@ -495,9 +495,9 @@ function PaginationLast({
   );
 }
 
-// ============================================
-// ELLIPSIS
-// ============================================
+
+
+
 
 function PaginationEllipsis({
   className,
@@ -527,16 +527,16 @@ function PaginationEllipsis({
   );
 }
 
-// ============================================
-// PAGINATION PAGES (Auto-render pages)
-// ============================================
+
+
+
 
 interface PaginationPagesProps {
-  /** Custom render function for page items */
+
   renderPage?: (item: PageRangeItem, index: number) => React.ReactNode;
-  /** Custom render function for ellipsis */
+
   renderEllipsis?: (key: string) => React.ReactNode;
-  /** Maximum pages to show on mobile (default: 3) */
+
   mobileMaxPages?: number;
 }
 
@@ -547,39 +547,39 @@ function PaginationPages({
 }: PaginationPagesProps) {
   const context = usePaginationContext();
 
-  // Mobile optimization: show fewer pages on small screens
+
   const mobilePages = React.useMemo(() => {
     if (!context) return [];
     const pages = context.getPageRange();
     if (pages.length <= mobileMaxPages + 2) return pages;
-    
+
     const { page, pageCount } = context;
     const result: PageRangeItem[] = [];
-    
-    // Always show first
+
+
     result.push({ type: "page", page: 1, isActive: page === 1 });
-    
+
     if (page > 2) {
       result.push({ type: "ellipsis", key: "mobile-ellipsis-start" });
     }
-    
-    // Show current page
+
+
     if (page !== 1 && page !== pageCount) {
       result.push({ type: "page", page, isActive: true });
     }
-    
+
     if (page < pageCount - 1) {
       result.push({ type: "ellipsis", key: "mobile-ellipsis-end" });
     }
-    
-    // Always show last
+
+
     if (pageCount > 1) {
       result.push({ type: "page", page: pageCount, isActive: page === pageCount });
     }
-    
+
     return result;
   }, [context, mobileMaxPages]);
-  
+
   if (!context) {
     console.warn("PaginationPages must be used within a Pagination component with total prop");
     return null;
@@ -596,13 +596,13 @@ function PaginationPages({
 
   return (
     <>
-      {/* Desktop view */}
+      {}
       {pages.map((item, index) => (
         <PaginationItem key={item.type === "page" ? item.page : item.key} mobileHide>
           {renderPage?.(item, index) ?? defaultRenderPage(item)}
         </PaginationItem>
       ))}
-      {/* Mobile view */}
+      {}
       {mobilePages.map((item, index) => (
         <PaginationItem
           key={`mobile-${item.type === "page" ? item.page : item.key}`}
@@ -615,14 +615,14 @@ function PaginationPages({
   );
 }
 
-// ============================================
-// PAGINATION INFO
-// ============================================
+
+
+
 
 interface PaginationInfoProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Format template: {start}, {end}, {total}, {page}, {pageCount} */
+
   format?: string;
-  /** Show total items only on desktop */
+
   mobileCompact?: boolean;
 }
 
@@ -640,7 +640,7 @@ function PaginationInfo({
 
   const { startItem, endItem, total, page, pageCount } = context;
 
-  // Don't render if no items
+
   if (total === 0) {
     return (
       <div
@@ -683,19 +683,19 @@ function PaginationInfo({
   );
 }
 
-// ============================================
-// PAGINATION SIZE SELECTOR
-// ============================================
+
+
+
 
 interface PaginationSizeSelectorProps
   extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "onChange"> {
-  /** Available page size options */
+
   options?: number[];
-  /** Label text */
+
   label?: string;
-  /** Show label */
+
   showLabel?: boolean;
-  /** Callback when size changes */
+
   onSizeChange?: (size: number) => void;
 }
 
@@ -760,17 +760,17 @@ function PaginationSizeSelector({
   );
 }
 
-// ============================================
-// PAGINATION JUMP (Direct Page Input)
-// ============================================
+
+
+
 
 interface PaginationJumpProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "type"> {
-  /** Label text */
+
   label?: string;
-  /** Show label */
+
   showLabel?: boolean;
-  /** Callback when page is submitted */
+
   onJump?: (page: number) => void;
 }
 
@@ -854,9 +854,9 @@ function PaginationJump({
   );
 }
 
-// ============================================
-// PAGINATION STATUS (Screen Reader Announcements)
-// ============================================
+
+
+
 
 function PaginationStatus({ className }: { className?: string }) {
   const context = usePaginationContext();
@@ -877,12 +877,12 @@ function PaginationStatus({ className }: { className?: string }) {
   );
 }
 
-// ============================================
-// EXPORTS
-// ============================================
+
+
+
 
 export {
-  // Components
+
   Pagination,
   PaginationContent,
   PaginationItem,
@@ -897,14 +897,14 @@ export {
   PaginationSizeSelector,
   PaginationJump,
   PaginationStatus,
-  // Variants
+
   paginationVariants,
   paginationLinkVariants,
-  // Hook for custom implementations
+
   usePaginationContext,
 };
 
-// Re-export hook and types from use-pagination
+
 export {
   usePagination,
   useUrlPagination,

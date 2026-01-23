@@ -20,9 +20,9 @@ import {
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { cva, type VariantProps } from "class-variance-authority";
 
-// ============================================================================
-// REDUCED MOTION HOOK (2025 Best Practice - WCAG 2.2)
-// ============================================================================
+
+
+
 
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
@@ -42,9 +42,9 @@ function useReducedMotion() {
   return prefersReducedMotion;
 }
 
-// ============================================================================
-// THEME CONTEXT
-// ============================================================================
+
+
+
 
 type Theme = "light" | "dark";
 
@@ -91,9 +91,9 @@ export function useTheme() {
   return context;
 }
 
-// ============================================================================
-// MOBILE DETECTION HOOK
-// ============================================================================
+
+
+
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -113,9 +113,9 @@ function useIsMobile() {
   return !!isMobile;
 }
 
-// ============================================================================
-// SIDEBAR CONTEXT - ENHANCED
-// ============================================================================
+
+
+
 
 type CollapsibleMode = "offcanvas" | "icon" | "none";
 type SidebarSide = "left" | "right";
@@ -143,19 +143,19 @@ const STORAGE_KEY = "kira-sidebar-collapsed";
 
 interface SidebarProviderProps {
   children: React.ReactNode;
-  /** Collapsible mode: "offcanvas" hides completely, "icon" shows icons only, "none" disables collapse */
+
   collapsible?: CollapsibleMode;
-  /** Side of the screen: "left" or "right" */
+
   side?: SidebarSide;
-  /** Default collapsed state */
+
   defaultCollapsed?: boolean;
-  /** Persist collapsed state to localStorage */
+
   persistState?: boolean;
-  /** Custom expanded width (e.g., "16rem", "256px") */
+
   width?: string;
-  /** Custom collapsed width for icon mode (e.g., "4rem", "64px") */
+
   collapsedWidth?: string;
-  /** Enable hover-to-expand when collapsed (2025 UX pattern) */
+
   hoverExpand?: boolean;
 }
 
@@ -182,14 +182,14 @@ export function SidebarProvider({
   const isMobile = useIsMobile();
   const reducedMotion = useReducedMotion();
 
-  // Persist collapsed state
+
   React.useEffect(() => {
     if (persistState && collapsible !== "none") {
       localStorage.setItem(STORAGE_KEY, String(collapsed));
     }
   }, [collapsed, persistState, collapsible]);
 
-  // Keyboard shortcut: Ctrl/Cmd + B to toggle sidebar
+
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "b") {
@@ -252,9 +252,9 @@ export function useSidebar() {
   return context;
 }
 
-// ============================================================================
-// SIDEBAR COMPONENT VARIANTS
-// ============================================================================
+
+
+
 
 const sidebarVariants = cva(
   "h-screen flex flex-col",
@@ -317,17 +317,17 @@ export function Sidebar({
     reducedMotion,
   } = useSidebar();
 
-  // Timer ref for delayed hover collapse
+
   const hoverTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Calculate width based on collapsible mode and hover state
+
   const sidebarWidth = React.useMemo(() => {
     if (collapsible === "offcanvas" && collapsed && !isHoverExpanded) return "0px";
     if (collapsible === "icon" && collapsed && !isHoverExpanded) return collapsedWidth;
     return width;
   }, [collapsed, collapsible, width, collapsedWidth, isHoverExpanded]);
 
-  // Hover expand handlers
+
   const handleMouseEnter = React.useCallback(() => {
     if (hoverExpand && collapsed && collapsible === "icon") {
       if (hoverTimeoutRef.current) {
@@ -339,14 +339,14 @@ export function Sidebar({
 
   const handleMouseLeave = React.useCallback(() => {
     if (hoverExpand && isHoverExpanded) {
-      // Delay collapse to prevent flickering
+
       hoverTimeoutRef.current = setTimeout(() => {
         setIsHoverExpanded(false);
       }, 300);
     }
   }, [hoverExpand, isHoverExpanded, setIsHoverExpanded]);
 
-  // Cleanup timeout on unmount
+
   React.useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) {
@@ -355,7 +355,7 @@ export function Sidebar({
     };
   }, []);
 
-  // Mobile: Render as Drawer overlay
+
   if (isMobile) {
     return (
       <Drawer open={openMobile} onOpenChange={setOpenMobile}>
@@ -385,8 +385,8 @@ export function Sidebar({
     );
   }
 
-  // Desktop: Standard sidebar with ARIA landmark
-  // When hover-expanded, we need a wrapper to maintain the collapsed width space
+
+
   const sidebarElement = (
     <aside
       data-slot="sidebar"
@@ -401,11 +401,11 @@ export function Sidebar({
       onMouseLeave={handleMouseLeave}
       className={cn(
         sidebarVariants({ variant, side }),
-        // Transition classes - respect reduced motion
+
         !reducedMotion && "transition-all duration-300 ease-in-out",
         reducedMotion && "transition-none",
         collapsible === "offcanvas" && collapsed && !isHoverExpanded && "overflow-hidden opacity-0",
-        // Hover expand: show as floating panel over content
+
         isHoverExpanded && "absolute z-50 shadow-xl top-0 bottom-0",
         isHoverExpanded && side === "left" && "left-0",
         isHoverExpanded && side === "right" && "right-0",
@@ -416,8 +416,8 @@ export function Sidebar({
     </aside>
   );
 
-  // When hover expand is enabled and sidebar is collapsed, wrap in a container
-  // that maintains the collapsed width space while allowing the sidebar to float
+
+
   if (hoverExpand && collapsed && collapsible === "icon") {
     return (
       <div
@@ -434,12 +434,12 @@ export function Sidebar({
   return sidebarElement;
 }
 
-// ============================================================================
-// SIDEBAR TRIGGER (Mobile Hamburger Menu)
-// ============================================================================
+
+
+
 
 interface SidebarTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Show on desktop as well */
+
   showOnDesktop?: boolean;
 }
 
@@ -450,7 +450,7 @@ export function SidebarTrigger({
 }: SidebarTriggerProps) {
   const { toggleSidebar, isMobile, openMobile } = useSidebar();
 
-  // Only show on mobile by default
+
   if (!isMobile && !showOnDesktop) return null;
 
   return (
@@ -476,20 +476,20 @@ export function SidebarTrigger({
   );
 }
 
-// ============================================================================
-// SIDEBAR HEADER
-// ============================================================================
+
+
+
 
 interface SidebarHeaderProps {
   children?: React.ReactNode;
   className?: string;
-  /** Show collapse toggle button */
+
   showToggle?: boolean;
-  /** Logo/brand component */
+
   logo?: React.ReactNode;
-  /** Title text */
+
   title?: string;
-  /** Make header sticky */
+
   sticky?: boolean;
 }
 
@@ -504,7 +504,7 @@ export function SidebarHeader({
   const { collapsed, setCollapsed, collapsible, side, isHoverExpanded } = useSidebar();
   const isExpanded = !collapsed || isHoverExpanded;
 
-  // Don't show toggle if collapsible is none
+
   const canToggle = collapsible !== "none" && showToggle;
 
   return (
@@ -570,14 +570,14 @@ export function SidebarHeader({
   );
 }
 
-// ============================================================================
-// SIDEBAR CONTENT - FIXED SCROLL ISSUE
-// ============================================================================
+
+
+
 
 interface SidebarContentProps {
   children: React.ReactNode;
   className?: string;
-  /** Show scroll-to-top button when scrolled */
+
   showScrollTop?: boolean;
 }
 
@@ -590,7 +590,7 @@ export function SidebarContent({
   const [showScrollButton, setShowScrollButton] = React.useState(false);
   const { reducedMotion } = useSidebar();
 
-  // Track scroll position to show/hide scroll-to-top button
+
   const handleScroll = React.useCallback(() => {
     if (contentRef.current) {
       setShowScrollButton(contentRef.current.scrollTop > 100);
@@ -615,7 +615,7 @@ export function SidebarContent({
       className={cn(
         "flex-1 overflow-y-auto overflow-x-hidden py-2 px-2 space-y-1",
         "scrollbar-thin scrollbar-thumb-sidebar-accent scrollbar-track-transparent",
-        // Custom scrollbar styling for webkit browsers
+
         "[&::-webkit-scrollbar]:w-1.5",
         "[&::-webkit-scrollbar-track]:bg-transparent",
         "[&::-webkit-scrollbar-thumb]:bg-sidebar-accent",
@@ -626,7 +626,7 @@ export function SidebarContent({
     >
       {children}
 
-      {/* Scroll to Top Button */}
+      {}
       {showScrollTop && showScrollButton && (
         <div className="sticky bottom-2 flex justify-center pt-2">
           <button
@@ -647,9 +647,9 @@ export function SidebarContent({
   );
 }
 
-// ============================================================================
-// SIDEBAR SEARCH
-// ============================================================================
+
+
+
 
 interface SidebarSearchProps {
   placeholder?: string;
@@ -672,7 +672,7 @@ export function SidebarSearch({
   const searchValue = value ?? internalValue;
   const setSearchValue = onChange ?? setInternalValue;
 
-  // Keyboard shortcut: Ctrl/Cmd + K to focus search
+
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -741,16 +741,16 @@ export function SidebarSearch({
   );
 }
 
-// ============================================================================
-// SIDEBAR GROUP
-// ============================================================================
+
+
+
 
 interface SidebarGroupProps {
   label: string;
   children: React.ReactNode;
   defaultOpen?: boolean;
   className?: string;
-  /** Action button/icon for the group header */
+
   action?: React.ReactNode;
 }
 
@@ -822,9 +822,9 @@ export function SidebarGroup({
   );
 }
 
-// ============================================================================
-// SIDEBAR ITEM BADGE
-// ============================================================================
+
+
+
 
 const badgeVariants = cva(
   "inline-flex items-center justify-center rounded-full text-xs font-medium",
@@ -841,7 +841,7 @@ const badgeVariants = cva(
       size: {
         default: "px-1.5 min-w-[1.25rem] h-5",
         sm: "px-1 min-w-[1rem] h-4 text-[10px]",
-        dot: "w-2.5 h-2.5 p-0", // Dot indicator for collapsed state
+        dot: "w-2.5 h-2.5 p-0",
       },
     },
     defaultVariants: {
@@ -869,18 +869,18 @@ export function SidebarBadge({
   );
 }
 
-// ============================================================================
-// SIDEBAR ITEM - ENHANCED WITH COLLAPSED BADGES
-// ============================================================================
+
+
+
 
 interface SidebarItemProps {
   to: string;
   icon?: React.ReactNode;
   children: React.ReactNode;
   level?: number;
-  /** Badge content (number, text, or custom element) */
+
   badge?: React.ReactNode;
-  /** Badge variant */
+
   badgeVariant?:
     | "default"
     | "secondary"
@@ -888,12 +888,12 @@ interface SidebarItemProps {
     | "outline"
     | "success"
     | "warning";
-  /** Keyboard shortcut display */
+
   shortcut?: string;
-  /** Disabled state */
+
   disabled?: boolean;
   className?: string;
-  /** Close mobile sidebar on click */
+
   closeMobileOnClick?: boolean;
 }
 
@@ -915,10 +915,10 @@ export function SidebarItem({
   const itemRef = React.useRef<HTMLAnchorElement>(null);
   const isExpanded = !collapsed || isHoverExpanded;
 
-  // Auto-scroll active item into view (only on initial mount or route change)
+
   React.useEffect(() => {
     if (isActive && itemRef.current) {
-      // Use requestAnimationFrame to ensure DOM is ready
+
       requestAnimationFrame(() => {
         itemRef.current?.scrollIntoView({
           behavior: reducedMotion ? "auto" : "smooth",
@@ -958,7 +958,7 @@ export function SidebarItem({
       {icon && (
         <span className={cn("shrink-0 relative", !isExpanded && "mx-auto")}>
           {icon}
-          {/* Badge dot indicator when collapsed */}
+          {}
           {!isExpanded && badge && (
             <SidebarBadge
               variant={badgeVariant}
@@ -1011,9 +1011,9 @@ export function SidebarItem({
   return linkContent;
 }
 
-// ============================================================================
-// SIDEBAR MENU (New - shadcn-style)
-// ============================================================================
+
+
+
 
 interface SidebarMenuProps {
   children: React.ReactNode;
@@ -1032,9 +1032,9 @@ export function SidebarMenu({ children, className }: SidebarMenuProps) {
   );
 }
 
-// ============================================================================
-// SIDEBAR MENU ITEM
-// ============================================================================
+
+
+
 
 interface SidebarMenuItemProps {
   children: React.ReactNode;
@@ -1053,9 +1053,9 @@ export function SidebarMenuItem({ children, className }: SidebarMenuItemProps) {
   );
 }
 
-// ============================================================================
-// SIDEBAR MENU BUTTON (for non-link items) - ENHANCED WITH COLLAPSED BADGES
-// ============================================================================
+
+
+
 
 interface SidebarMenuButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
@@ -1101,7 +1101,7 @@ export function SidebarMenuButton({
       {icon && (
         <span className={cn("shrink-0 relative", !isExpanded && "mx-auto")}>
           {icon}
-          {/* Badge dot indicator when collapsed */}
+          {}
           {!isExpanded && badge && (
             <SidebarBadge
               variant={badgeVariant}
@@ -1144,9 +1144,9 @@ export function SidebarMenuButton({
   return buttonContent;
 }
 
-// ============================================================================
-// SIDEBAR MENU SUB (Multi-level nesting)
-// ============================================================================
+
+
+
 
 interface SidebarMenuSubProps {
   children: React.ReactNode;
@@ -1174,9 +1174,9 @@ export function SidebarMenuSub({ children, className }: SidebarMenuSubProps) {
   );
 }
 
-// ============================================================================
-// SIDEBAR ITEM GROUP (Tree-view style) - ENHANCED WITH COLLAPSED BADGES
-// ============================================================================
+
+
+
 
 interface SidebarItemGroupProps {
   label: string;
@@ -1222,7 +1222,7 @@ export function SidebarItemGroup({
                 aria-label={label}
               >
                 {icon}
-                {/* Badge dot indicator when collapsed */}
+                {}
                 {badge && (
                   <SidebarBadge
                     variant={badgeVariant}
@@ -1293,9 +1293,9 @@ export function SidebarItemGroup({
   );
 }
 
-// ============================================================================
-// SIDEBAR DIVIDER
-// ============================================================================
+
+
+
 
 interface SidebarDividerProps {
   className?: string;
@@ -1311,14 +1311,14 @@ export function SidebarDivider({ className }: SidebarDividerProps) {
   );
 }
 
-// ============================================================================
-// SIDEBAR FOOTER
-// ============================================================================
+
+
+
 
 interface SidebarFooterProps {
   children: React.ReactNode;
   className?: string;
-  /** Make footer sticky */
+
   sticky?: boolean;
 }
 
@@ -1341,18 +1341,18 @@ export function SidebarFooter({
   );
 }
 
-// ============================================================================
-// SIDEBAR USER (New - User profile section)
-// ============================================================================
+
+
+
 
 interface SidebarUserProps {
-  /** User's display name */
+
   name: string;
-  /** User's email or subtitle */
+
   email?: string;
-  /** Avatar URL or element */
+
   avatar?: string | React.ReactNode;
-  /** Dropdown menu items */
+
   menuItems?: Array<{
     label: string;
     icon?: React.ReactNode;
@@ -1450,7 +1450,7 @@ export function SidebarUser({
         )}
       </button>
 
-      {/* Dropdown Menu */}
+      {}
       {menuOpen && menuItems && (
         <>
           <div
@@ -1496,9 +1496,9 @@ export function SidebarUser({
   );
 }
 
-// ============================================================================
-// THEME TOGGLE
-// ============================================================================
+
+
+
 
 interface ThemeToggleProps {
   className?: string;
@@ -1549,12 +1549,12 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
   return buttonContent;
 }
 
-// ============================================================================
-// SIDEBAR SKELETON (Loading state)
-// ============================================================================
+
+
+
 
 interface SidebarSkeletonProps {
-  /** Number of skeleton items to show */
+
   items?: number;
   className?: string;
 }
@@ -1566,7 +1566,7 @@ export function SidebarSkeleton({
   const { collapsed, isHoverExpanded } = useSidebar();
   const isExpanded = !collapsed || isHoverExpanded;
 
-  // Pre-calculated widths to avoid Math.random() during render
+
   const widths = [75, 85, 65, 90, 70, 80, 60, 95, 72, 88];
 
   return (
@@ -1597,9 +1597,9 @@ export function SidebarSkeleton({
   );
 }
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
+
+
+
 
 export {
   sidebarVariants,

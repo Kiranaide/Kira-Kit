@@ -42,10 +42,10 @@ interface InputProps
   onIncrement?: () => void;
   onDecrement?: () => void;
   size?: VariantProps<typeof inputVariants>["size"];
-  // Clear functionality
+
   showClear?: boolean;
   onClear?: () => void;
-  // Copy functionality
+
   showCopy?: boolean;
   onCopySuccess?: () => void;
   onCopyError?: (error: Error) => void;
@@ -68,7 +68,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       step = 1,
       value,
       onChange,
-      // Clear/Copy functionality
+
       showClear = false,
       onClear,
       showCopy = false,
@@ -81,7 +81,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [copied, setCopied] = React.useState(false);
 
-    // Merge refs
+
     React.useImperativeHandle(ref, () => inputRef.current!);
 
     const isNumeric = type === "number";
@@ -89,11 +89,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const effectiveSize = size || "default";
 
-    // Determine if clear button should be visible
+
     const hasValue = String(value || "").length > 0;
     const showClearButton = showClear && hasValue && !disabled;
 
-    // Handle clear
+
     const handleClear = () => {
       onClear?.();
       if (onChange && inputRef.current) {
@@ -107,7 +107,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       inputRef.current?.focus();
     };
 
-    // Handle copy
+
     const handleCopy = async () => {
       const textToCopy = inputRef.current?.value || String(value || "");
       try {
@@ -122,7 +122,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       }
     };
 
-    // Size-aware padding for prefix/suffix
+
     const prefixPadding = {
       xs: "pl-7",
       sm: "pl-7",
@@ -151,7 +151,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       lg: "pr-3",
     }[effectiveSize];
 
-    // Button dimensions for increment/decrement buttons
+
     const buttonHeight = {
       xs: "h-6",
       sm: "h-7",
@@ -173,7 +173,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       lg: "h-3.5 w-3.5",
     }[effectiveSize];
 
-    // Handle increment/decrement for numeric inputs
+
     const handleIncrement = () => {
       if (disabled) return;
 
@@ -186,13 +186,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       if (max !== undefined && typeof max === "number" && newValue > max)
         return;
 
-      // If custom handlers provided, use them
+
       if (onIncrement) {
         onIncrement();
         return;
       }
 
-      // Otherwise, update value through onChange
+
       if (onChange) {
         const syntheticEvent = {
           target: { value: String(newValue) },
@@ -213,13 +213,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       if (min !== undefined && typeof min === "number" && newValue < min)
         return;
 
-      // If custom handlers provided, use them
+
       if (onDecrement) {
         onDecrement();
         return;
       }
 
-      // Otherwise, update value through onChange
+
       if (onChange) {
         const syntheticEvent = {
           target: { value: String(newValue) },
@@ -254,7 +254,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       />
     );
 
-    // If increment buttons are shown, wrap with buttons
+
     if (showButtons) {
       const numericValue =
         typeof value === "number" ? value : parseFloat(String(value || 0)) || 0;
@@ -330,7 +330,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       );
     }
 
-    // Size-aware icon sizes for clear/copy buttons
+
     const actionIconSize = {
       xs: "h-3 w-3",
       sm: "h-3.5 w-3.5",
@@ -338,7 +338,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       lg: "h-4 w-4",
     }[effectiveSize];
 
-    // Build action buttons for clear/copy
+
     const actionButtons = (showClearButton || showCopy) && (
       <div className="flex items-center gap-0.5">
         {showClearButton && (
@@ -404,7 +404,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       </div>
     );
 
-    // Combined suffix: user suffix + action buttons
+
     const combinedSuffix = (suffix || actionButtons) && (
       <div className="flex items-center gap-1">
         {suffix}
@@ -412,16 +412,16 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       </div>
     );
 
-    // Determine extra right padding for action buttons
+
     const actionButtonsPadding =
       showClear || showCopy ? (showClear && showCopy ? "pr-14" : "pr-9") : "";
 
-    // If no prefix/suffix/actions, return simple input
+
     if (!prefix && !combinedSuffix) {
       return inputElement;
     }
 
-    // With prefix/suffix/actions, wrap in container
+
     return (
       <div className="relative flex items-center">
         {prefix && (
@@ -453,9 +453,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = "Input";
 
-// ============================================
-// NUMERIC INPUT (backward compatibility wrapper)
-// ============================================
+
+
+
 interface NumericInputProps
   extends Omit<
       React.ComponentProps<"input">,
@@ -470,10 +470,10 @@ interface NumericInputProps
   showButtons?: boolean;
 }
 
-/**
- * @deprecated Use Input with type="number" and showIncrementButtons prop instead.
- * This component is kept for backward compatibility.
- */
+
+
+
+
 function NumericInput({
   value = 0,
   onChange,
@@ -524,13 +524,13 @@ function NumericInput({
   );
 }
 
-// ============================================
-// FORMATTED NUMERIC INPUTS
-// - CurrencyInput
-// - PercentageInput
-// - DecimalInput
-// These inputs format as you type using a fixed number of fraction digits.
-// ============================================
+
+
+
+
+
+
+
 
 type FormattedInputBaseProps = Omit<
   React.ComponentProps<"input">,
@@ -795,9 +795,9 @@ function DecimalInput({
   );
 }
 
-// ============================================
-// TEXTAREA FIXED (no auto-height expansion)
-// ============================================
+
+
+
 interface TextareaFixedProps extends React.ComponentProps<"textarea"> {
   rows?: number;
 }
@@ -816,9 +816,9 @@ function TextareaFixed({ className, rows = 3, ...props }: TextareaFixedProps) {
   );
 }
 
-// ============================================
-// INPUT WITH LABEL
-// ============================================
+
+
+
 interface InputWithLabelProps
   extends Omit<React.ComponentProps<"input">, "size"> {
   label: string;
@@ -862,9 +862,9 @@ function InputWithLabel({
   );
 }
 
-// ============================================
-// INPUT WITH BUTTON
-// ============================================
+
+
+
 interface InputWithButtonProps
   extends Omit<React.ComponentProps<"input">, "size"> {
   buttonText?: string;
@@ -923,9 +923,9 @@ function InputWithButton({
   );
 }
 
-// ============================================
-// INPUT WITH SPINNER
-// ============================================
+
+
+
 interface InputWithSpinnerProps
   extends Omit<React.ComponentProps<"input">, "size"> {
   isLoading?: boolean;
@@ -954,9 +954,9 @@ function InputWithSpinner({
   );
 }
 
-// ============================================
-// INPUT WITH TOOLTIP
-// ============================================
+
+
+
 interface InputWithTooltipProps
   extends Omit<React.ComponentProps<"input">, "size"> {
   tooltip: string;
@@ -979,9 +979,9 @@ function InputWithTooltip({
   );
 }
 
-// ============================================
-// INPUT WITH DROPDOWN
-// ============================================
+
+
+
 interface InputWithDropdownProps
   extends Omit<React.ComponentProps<"input">, "onSelect" | "size"> {
   options: { value: string; label: string }[];
@@ -1006,7 +1006,7 @@ function InputWithDropdown({
   );
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  // Click outside to close
+
   React.useEffect(() => {
     if (!isOpen) return;
 
@@ -1103,9 +1103,9 @@ function InputWithDropdown({
   );
 }
 
-// ============================================
-// INPUT CLUSTER (multiple inputs in a row - simpler pattern)
-// ============================================
+
+
+
 interface InputClusterProps {
   children: React.ReactNode;
   className?: string;
@@ -1139,9 +1139,9 @@ function InputCluster({ children, className }: InputClusterProps) {
   );
 }
 
-// ============================================
-// SEARCH INPUT (debounced search with loading)
-// ============================================
+
+
+
 interface SearchInputProps
   extends Omit<React.ComponentProps<"input">, "size" | "onChange"> {
   value?: string;
@@ -1187,7 +1187,7 @@ function SearchInput({
     }
     onChange?.(newValue);
 
-    // Debounced search
+
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
@@ -1217,7 +1217,7 @@ function SearchInput({
     }
   };
 
-  // Cleanup debounce on unmount
+
   React.useEffect(() => {
     return () => {
       if (debounceRef.current) {
@@ -1228,7 +1228,7 @@ function SearchInput({
 
   return (
     <div className="relative flex items-center">
-      {/* Search icon */}
+      {}
       <div className="absolute left-2.5 flex items-center pointer-events-none text-muted-foreground z-10">
         <svg
           className={iconSize}
@@ -1249,7 +1249,7 @@ function SearchInput({
         type="search"
         className={cn(
           "pl-8",
-          // Hide native search X button since we might use our own or none
+
           "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
           className
         )}
@@ -1258,12 +1258,12 @@ function SearchInput({
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        // Use the new showClear prop from Base Input
+
         showClear={showClear}
         onClear={handleClear}
-        // If loading, show spinner in suffix (overriding clear button visibility if needed, or alongside)
-        // But Input doesn't support custom suffix alongside clear button easily without layout conflict if we aren't careful.
-        // Let's use suffix for the loading spinner.
+
+
+
         suffix={
           isLoading ? (
             <IconLoader2
@@ -1277,9 +1277,9 @@ function SearchInput({
   );
 }
 
-// ============================================
-// OTP INPUT
-// ============================================
+
+
+
 
 type OTPInputType = "numeric" | "alphanumeric" | "alphabetic";
 
@@ -1328,35 +1328,35 @@ const otpContainerVariants = cva("flex items-center", {
 interface OTPInputProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
     VariantProps<typeof otpInputVariants> {
-  /** Number of OTP digits (4-8) */
+
   length?: 4 | 5 | 6 | 7 | 8;
-  /** Type of allowed characters */
+
   type?: OTPInputType;
-  /** Mask input values (show dots) */
+
   mask?: boolean;
-  /** Auto-submit when complete */
+
   autoSubmit?: boolean;
-  /** Current value */
+
   value?: string;
-  /** Value change handler */
+
   onChange?: (value: string) => void;
-  /** Called when all digits are entered */
+
   onComplete?: (value: string) => void;
-  /** Disabled state */
+
   disabled?: boolean;
-  /** Invalid state for styling */
+
   invalid?: boolean;
-  /** Gap between inputs */
+
   gap?: "sm" | "default" | "lg";
-  /** Show separator after this index (e.g., 3 for "XXX-XXX") */
+
   separatorAfter?: number;
-  /** Auto-focus first input on mount */
+
   autoFocus?: boolean;
-  /** Placeholder character */
+
   placeholder?: string;
-  /** Aria label for accessibility */
+
   "aria-label"?: string;
-  /** Aria describedby for accessibility */
+
   "aria-describedby"?: string;
 }
 
@@ -1392,7 +1392,7 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
     const [focusedIndex, setFocusedIndex] = React.useState<number | null>(null);
     const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
-    // Sync external value
+
     React.useEffect(() => {
       const newValues = value
         .split("")
@@ -1402,14 +1402,14 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       setValues(newValues);
     }, [value, length]);
 
-    // Auto-focus first input
+
     React.useEffect(() => {
       if (autoFocus && inputRefs.current[0]) {
         inputRefs.current[0].focus();
       }
     }, [autoFocus]);
 
-    // Expose imperative methods
+
     React.useImperativeHandle(ref, () => ({
       focus: () => inputRefs.current[0]?.focus(),
       clear: () => {
@@ -1430,7 +1430,7 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       },
     }));
 
-    // Validate input based on type
+
     const isValidChar = React.useCallback(
       (char: string): boolean => {
         switch (type) {
@@ -1447,13 +1447,13 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       [type]
     );
 
-    // Handle input change
+
     const handleOTPChange = React.useCallback(
       (index: number, inputValue: string) => {
         const char = inputValue.slice(-1).toUpperCase();
 
         if (!char) {
-          // Clear current input
+
           const newValues = [...values];
           newValues[index] = "";
           setValues(newValues);
@@ -1462,7 +1462,7 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
         }
 
         if (!isValidChar(char)) {
-          // Shake animation for invalid input
+
           const input = inputRefs.current[index];
           if (input) {
             input.style.transform = "translateX(-4px)";
@@ -1489,12 +1489,12 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
         const newValue = newValues.join("");
         onChange?.(newValue);
 
-        // Move to next input
+
         if (index < length - 1) {
           inputRefs.current[index + 1]?.focus();
         }
 
-        // Check if complete
+
         if (newValues.every((v) => v !== "")) {
           onComplete?.(newValue);
         }
@@ -1502,7 +1502,7 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       [values, length, isValidChar, onChange, onComplete]
     );
 
-    // Handle paste
+
     const handlePaste = React.useCallback(
       (e: React.ClipboardEvent) => {
         e.preventDefault();
@@ -1519,12 +1519,12 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
         setValues(newValues);
         onChange?.(chars.join(""));
 
-        // Focus appropriate input
+
         const nextEmptyIndex = newValues.findIndex((v) => v === "");
         const focusIndex = nextEmptyIndex === -1 ? length - 1 : nextEmptyIndex;
         inputRefs.current[focusIndex]?.focus();
 
-        // Check if complete
+
         if (chars.length === length) {
           onComplete?.(chars.join(""));
         }
@@ -1532,20 +1532,20 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       [length, isValidChar, onChange, onComplete]
     );
 
-    // Handle keydown
+
     const handleKeyDown = React.useCallback(
       (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
         switch (e.key) {
           case "Backspace":
             e.preventDefault();
             if (values[index]) {
-              // Clear current
+
               const newValues = [...values];
               newValues[index] = "";
               setValues(newValues);
               onChange?.(newValues.join(""));
             } else if (index > 0) {
-              // Move to previous and clear
+
               const newValues = [...values];
               newValues[index - 1] = "";
               setValues(newValues);
@@ -1592,22 +1592,22 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       [values, length, onChange]
     );
 
-    // Handle focus
+
     const handleFocus = React.useCallback(
       (index: number) => {
         setFocusedIndex(index);
-        // Select input content
+
         inputRefs.current[index]?.select();
       },
       []
     );
 
-    // Handle blur
+
     const handleBlur = React.useCallback(() => {
       setFocusedIndex(null);
     }, []);
 
-    // Render separator
+
     const renderSeparator = (index: number) => {
       if (separatorAfter !== undefined && index === separatorAfter) {
         return (
@@ -1670,9 +1670,9 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
 
 OTPInput.displayName = "OTPInput";
 
-// ============================================
-// RATING
-// ============================================
+
+
+
 
 import {
   IconStar,
@@ -1725,37 +1725,37 @@ const ratingItemVariants = cva(
 interface RatingProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
     VariantProps<typeof ratingVariants> {
-  /** Current rating value */
+
   value?: number;
-  /** Default value (uncontrolled) */
+
   defaultValue?: number;
-  /** Value change handler */
+
   onChange?: (value: number) => void;
-  /** Maximum rating value */
+
   max?: number;
-  /** Allow half-star ratings */
+
   allowHalf?: boolean;
-  /** Allow clearing (clicking same value) */
+
   allowClear?: boolean;
-  /** Disabled state */
+
   disabled?: boolean;
-  /** Read-only display mode */
+
   readOnly?: boolean;
-  /** Color scheme */
+
   color?: "default" | "yellow" | "orange" | "red" | "pink";
-  /** Show numeric value */
+
   showValue?: boolean;
-  /** Custom filled icon */
+
   filledIcon?: React.ReactNode;
-  /** Custom empty icon */
+
   emptyIcon?: React.ReactNode;
-  /** Custom half icon */
+
   halfIcon?: React.ReactNode;
-  /** Custom tooltip formatter */
+
   tooltipFormatter?: (value: number) => string;
-  /** Aria label */
+
   "aria-label"?: string;
-  /** Aria describedby */
+
   "aria-describedby"?: string;
 }
 
@@ -1787,18 +1787,18 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
     const [internalValue, setInternalValue] = React.useState(defaultValue);
     const [hoverValue, setHoverValue] = React.useState<number | null>(null);
 
-    // Use controlled or internal value
+
     const currentValue = controlledValue ?? internalValue;
 
-    // Display value (hover takes precedence)
+
     const displayValue = hoverValue ?? currentValue;
 
-    // Handle value change
+
     const handleRatingChange = React.useCallback(
       (newValue: number) => {
         if (disabled || readOnly) return;
 
-        // Allow clearing by clicking same value
+
         const finalValue = allowClear && newValue === currentValue ? 0 : newValue;
 
         if (controlledValue === undefined) {
@@ -1809,7 +1809,7 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       [disabled, readOnly, allowClear, currentValue, controlledValue, onChange]
     );
 
-    // Handle mouse move for half-star detection
+
     const handleMouseMove = React.useCallback(
       (index: number, e: React.MouseEvent<HTMLButtonElement>) => {
         if (disabled || readOnly) return;
@@ -1827,7 +1827,7 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       [disabled, readOnly, allowHalf]
     );
 
-    // Handle click for half-star detection
+
     const handleClick = React.useCallback(
       (index: number, e: React.MouseEvent<HTMLButtonElement>) => {
         if (disabled || readOnly) return;
@@ -1845,7 +1845,7 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       [disabled, readOnly, allowHalf, handleRatingChange]
     );
 
-    // Handle keyboard navigation
+
     const handleKeyDown = React.useCallback(
       (e: React.KeyboardEvent) => {
         if (disabled || readOnly) return;
@@ -1884,26 +1884,26 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       [disabled, readOnly, allowHalf, max, currentValue, controlledValue, onChange]
     );
 
-    // Render star icon based on fill state
+
     const renderStar = React.useCallback(
       (index: number) => {
         const fillAmount = displayValue - index;
 
         if (fillAmount >= 1) {
-          // Fully filled
+
           return filledIcon || <IconStarFilled />;
         } else if (fillAmount >= 0.5 && allowHalf) {
-          // Half filled
+
           return halfIcon || <IconStarHalfFilled />;
         } else {
-          // Empty
+
           return emptyIcon || <IconStar />;
         }
       },
       [displayValue, allowHalf, filledIcon, halfIcon, emptyIcon]
     );
 
-    // Get tooltip text
+
     const getTooltip = React.useCallback(
       (value: number) => {
         if (tooltipFormatter) return tooltipFormatter(value);
@@ -1912,7 +1912,7 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       [tooltipFormatter, max]
     );
 
-    // Generate stars
+
     const stars = React.useMemo(() => {
       return Array.from({ length: max }, (_, index) => {
         const starValue = index + 1;
@@ -1995,9 +1995,9 @@ Rating.displayName = "Rating";
 
 interface RatingDisplayProps
   extends Omit<RatingProps, "onChange" | "allowClear" | "allowHalf"> {
-  /** Show fraction (e.g., 4.5) */
+
   showFraction?: boolean;
-  /** Number of reviews */
+
   reviewCount?: number;
 }
 
@@ -2047,11 +2047,11 @@ export {
   PercentageInput,
   DecimalInput,
   SearchInput,
-  // OTP Input
+
   OTPInput,
   otpInputVariants,
   otpContainerVariants,
-  // Rating
+
   Rating,
   RatingDisplay,
   ratingVariants,
@@ -2070,11 +2070,11 @@ export type {
   PercentageInputProps,
   DecimalInputProps,
   SearchInputProps,
-  // OTP Input
+
   OTPInputProps,
   OTPInputRef,
   OTPInputType,
-  // Rating
+
   RatingProps,
   RatingDisplayProps,
 };

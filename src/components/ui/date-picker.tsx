@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, type DayPickerProps } from "react-day-picker";
 import "react-day-picker/style.css";
 import {
   format,
@@ -24,27 +24,27 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-// ============================================
-// TYPES
-// ============================================
 
-/** Selection mode for the date picker */
+
+
+
+
 type DatePickerMode = "single" | "range";
 
-/** Apply mode - when the selection is committed */
+
 type ApplyMode = "immediate" | "confirm";
 
-/** Configuration for date presets */
+
 interface DatePreset {
-  /** Display label for the preset */
+
   label: string;
-  /** Function that returns the preset value */
+
   getValue: () => Date | { from: Date; to: Date };
 }
 
-// ============================================
-// CVA VARIANTS
-// ============================================
+
+
+
 
 const datePickerTriggerVariants = cva(
   "flex items-center gap-2 rounded-lg border cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -128,14 +128,14 @@ const MONTHS = [
   "December",
 ];
 
-// Default presets for single date selection
+
 const singlePresets: DatePreset[] = [
   { label: "Today", getValue: () => new Date() },
   { label: "Yesterday", getValue: () => subDays(new Date(), 1) },
   { label: "A week ago", getValue: () => subDays(new Date(), 7) },
 ];
 
-// Default presets for range selection
+
 const rangePresets: DatePreset[] = [
   {
     label: "Last 7 days",
@@ -161,9 +161,9 @@ const rangePresets: DatePreset[] = [
   },
 ];
 
-// ============================================
-// CUSTOM CHEVRON COMPONENT
-// ============================================
+
+
+
 
 function CustomChevron({
   orientation = "down",
@@ -186,9 +186,9 @@ function CustomChevron({
   }
 }
 
-// ============================================
-// CUSTOM MONTH CAPTION COMPONENT
-// ============================================
+
+
+
 
 interface MonthCaptionProps {
   displayMonth: Date;
@@ -223,7 +223,7 @@ function MonthCaption({
 
   return (
     <div className="relative flex items-center gap-1">
-      {/* Month Button */}
+      {}
       <button
         type="button"
         onClick={() => {
@@ -239,7 +239,7 @@ function MonthCaption({
         <IconChevronDown className={sizeConfig.dropdownIcon} />
       </button>
 
-      {/* Year Button */}
+      {}
       <button
         type="button"
         onClick={() => {
@@ -255,7 +255,7 @@ function MonthCaption({
         <IconChevronDown className={sizeConfig.dropdownIcon} />
       </button>
 
-      {/* Month Picker Dropdown */}
+      {}
       {showMonthPicker && (
         <div className="absolute top-full left-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px] animate-in fade-in-0 zoom-in-95">
           <div className="grid grid-cols-3 gap-1">
@@ -278,7 +278,7 @@ function MonthCaption({
         </div>
       )}
 
-      {/* Year Picker Dropdown */}
+      {}
       {showYearPicker && (
         <div className="absolute top-full left-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px] animate-in fade-in-0 zoom-in-95">
           <div className="flex items-center justify-between mb-2">
@@ -329,39 +329,39 @@ function MonthCaption({
   );
 }
 
-// ============================================
-// PROPS INTERFACE
-// ============================================
+
+
+
 
 interface DatePickerProps
   extends VariantProps<typeof datePickerTriggerVariants> {
-  /** Selection mode: 'single' for single date, 'range' for date range */
+
   mode?: DatePickerMode;
-  /** Current selected value */
+
   value?: Date | { from?: Date; to?: Date };
-  /** Callback when value changes */
+
   onChange?: (value: Date | { from?: Date; to?: Date } | undefined) => void;
-  /** Placeholder text when no date is selected */
+
   placeholder?: string;
-  /** Whether the picker is disabled */
+
   disabled?: boolean;
-  /** Whether to show preset options */
+
   showPresets?: boolean;
-  /** Minimum selectable date */
+
   minDate?: Date;
-  /** Maximum selectable date */
+
   maxDate?: Date;
-  /** Apply mode: immediate or confirm */
+
   applyMode?: ApplyMode;
-  /** Custom ARIA label */
+
   ariaLabel?: string;
-  /** Additional CSS classes */
+
   className?: string;
 }
 
-// ============================================
-// DATE PICKER COMPONENT
-// ============================================
+
+
+
 
 function DatePicker({
   mode = "single",
@@ -389,14 +389,14 @@ function DatePicker({
 
   const sizeConfig = calendarSizeConfig[size || "default"];
 
-  // Initialize pending value when opening in confirm mode
+
   React.useEffect(() => {
     if (isOpen && applyMode === "confirm") {
       setPendingValue(value);
     }
   }, [isOpen, applyMode, value]);
 
-  // Close on outside click
+
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -413,7 +413,7 @@ function DatePicker({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [applyMode]);
 
-  // Handle keyboard
+
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
@@ -427,9 +427,9 @@ function DatePicker({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, applyMode]);
 
-  // ============================================
-  // HELPERS
-  // ============================================
+
+
+
 
   const currentValue = applyMode === "confirm" && isOpen ? pendingValue : value;
 
@@ -455,9 +455,9 @@ function DatePicker({
     return matchers.length > 0 ? matchers : undefined;
   }, [minDate, maxDate]);
 
-  // ============================================
-  // HANDLERS
-  // ============================================
+
+
+
 
   const handleCalendarSelect = (
     date: Date | Date[] | { from?: Date; to?: Date } | undefined
@@ -523,13 +523,13 @@ function DatePicker({
     [size]
   );
 
-  // ============================================
-  // RENDER
-  // ============================================
+
+
+
 
   return (
     <div ref={containerRef} className={cn("relative w-full", className)}>
-      {/* Trigger Button */}
+      {}
       <div
         ref={triggerRef}
         role="button"
@@ -566,7 +566,7 @@ function DatePicker({
         )}
       </div>
 
-      {/* Dropdown Popup */}
+      {}
       {isOpen && (
         <div
           role="dialog"
@@ -578,7 +578,7 @@ function DatePicker({
           )}
         >
           <div className="flex">
-            {/* Presets Sidebar */}
+            {}
             {showPresets && (
               <div className="border-r border-border p-4 min-w-[140px] flex flex-col">
                 <div className="text-xs font-semibold text-muted-foreground mb-3">
@@ -604,9 +604,9 @@ function DatePicker({
               </div>
             )}
 
-            {/* Calendar */}
+            {}
             <div className={sizeConfig.root}>
-              {/* Custom Header */}
+              {}
               <div className="flex items-center justify-between mb-3">
                 <button
                   type="button"
@@ -647,79 +647,82 @@ function DatePicker({
                 </button>
               </div>
 
-              {/* @ts-expect-error - DayPicker has discriminated union types based on mode that can't be satisfied with dynamic mode prop */}
-              <DayPicker
-                mode={mode}
-                selected={currentValue as unknown as Date | undefined}
-                onSelect={
-                  handleCalendarSelect as (
+              {}
+              {(() => {
+                const dayPickerProps = {
+                  mode,
+                  selected: currentValue as unknown as Date | undefined,
+                  onSelect: handleCalendarSelect as (
                     date: Date | { from?: Date; to?: Date } | undefined
-                  ) => void
-                }
-                disabled={disabledMatcher}
-                autoFocus
-                month={month}
-                onMonthChange={setMonthState}
-                hideNavigation
-                showOutsideDays
-                components={{
-                  Chevron: ChevronComponent,
-                }}
-                classNames={{
-                  months: "flex flex-col",
-                  month: "",
-                  month_caption: "hidden",
-                  month_grid: "w-full border-collapse",
-                  weekdays: "grid grid-cols-7",
-                  weekday: cn(
-                    sizeConfig.weekday,
-                    "flex items-center justify-center text-muted-foreground font-medium"
-                  ),
-                  week: "grid grid-cols-7",
-                  day: cn(
-                    sizeConfig.day,
-                    "flex items-center justify-center p-0"
-                  ),
-                  day_button: cn(
-                    sizeConfig.dayButton,
-                    "w-full h-full flex items-center justify-center rounded-md",
-                    "hover:bg-muted transition-colors",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  ),
-                  selected:
-                    "!bg-primary !text-primary-foreground font-medium hover:!bg-primary/90 !rounded-lg",
-                  today: "font-semibold text-primary",
-                  outside: "text-muted-foreground/40",
-                  disabled: "opacity-40 cursor-not-allowed",
-                  range_start:
-                    "rounded-r-none !bg-primary !text-primary-foreground",
-                  range_end:
-                    "rounded-l-none !bg-primary !text-primary-foreground",
-                  range_middle: "rounded-none !bg-primary/10",
-                  hidden: "invisible",
-                }}
-                footer={
-                  applyMode === "immediate" ? (
-                    <div className="mt-3 pt-3 border-t border-border">
-                      <button
-                        type="button"
-                        onClick={handleTodayClick}
-                        className={cn(
-                          "w-full py-1.5 rounded-lg transition-colors font-medium",
-                          "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                          sizeConfig.caption
-                        )}
-                      >
-                        Today
-                      </button>
-                    </div>
-                  ) : null
-                }
-              />
+                  ) => void,
+                  disabled: disabledMatcher,
+                  autoFocus: true,
+                  month,
+                  onMonthChange: setMonthState,
+                  hideNavigation: true,
+                  showOutsideDays: true,
+                  components: {
+                    Chevron: ChevronComponent,
+                  },
+                  classNames: {
+                    months: "flex flex-col",
+                    month: "",
+                    month_caption: "hidden",
+                    month_grid: "w-full border-collapse",
+                    weekdays: "grid grid-cols-7",
+                    weekday: cn(
+                      sizeConfig.weekday,
+                      "flex items-center justify-center text-muted-foreground font-medium"
+                    ),
+                    week: "grid grid-cols-7",
+                    day: cn(
+                      sizeConfig.day,
+                      "flex items-center justify-center p-0"
+                    ),
+                    day_button: cn(
+                      sizeConfig.dayButton,
+                      "w-full h-full flex items-center justify-center rounded-md",
+                      "hover:bg-muted transition-colors",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    ),
+                    selected:
+                      "!bg-primary !text-primary-foreground font-medium hover:!bg-primary/90 !rounded-lg",
+                    today: "font-semibold text-primary",
+                    outside: "text-muted-foreground/40",
+                    disabled: "opacity-40 cursor-not-allowed",
+                    range_start:
+                      "rounded-r-none !bg-primary !text-primary-foreground",
+                    range_end:
+                      "rounded-l-none !bg-primary !text-primary-foreground",
+                    range_middle: "rounded-none !bg-primary/10",
+                    hidden: "invisible",
+                  },
+                  footer:
+                    applyMode === "immediate"
+                      ? (
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <button
+                            type="button"
+                            onClick={handleTodayClick}
+                            className={cn(
+                              "w-full py-1.5 rounded-lg transition-colors font-medium",
+                              "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                              sizeConfig.caption
+                            )}
+                          >
+                            Today
+                          </button>
+                        </div>
+                      )
+                      : null,
+                } as unknown as DayPickerProps;
+
+                return <DayPicker {...dayPickerProps} />;
+              })()}
             </div>
           </div>
 
-          {/* Confirm Mode Footer */}
+          {}
           {applyMode === "confirm" && (
             <div className="flex items-center justify-between gap-2 p-3 border-t border-border">
               <div className={cn("text-muted-foreground", sizeConfig.caption)}>

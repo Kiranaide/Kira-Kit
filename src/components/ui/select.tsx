@@ -14,9 +14,9 @@ import {
 } from "@tabler/icons-react";
 import { animate, stagger } from "animejs";
 
-// ============================================
-// BASE SELECT PRIMITIVES (Low-level wrappers)
-// ============================================
+
+
+
 
 const Select = SelectPrimitive.Root;
 
@@ -207,9 +207,9 @@ function SelectScrollDownButton({
   );
 }
 
-// ============================================
-// TYPES
-// ============================================
+
+
+
 interface SelectOption {
   value: string;
   label: string;
@@ -222,20 +222,20 @@ interface AutocompleteOption {
   disabled?: boolean;
 }
 
-/** Grouped options for categorized display */
+
 interface GroupedSelectOption<T extends SelectOption = SelectOption> {
   label: string;
   options: T[];
 }
 
-/** Check if options are grouped */
+
 function isGroupedOptions<T extends SelectOption>(
   options: T[] | GroupedSelectOption<T>[],
 ): options is GroupedSelectOption<T>[] {
   return options.length > 0 && "options" in options[0];
 }
 
-/** Flatten grouped options to flat array */
+
 function flattenOptions<T extends SelectOption>(
   options: T[] | GroupedSelectOption<T>[],
 ): T[] {
@@ -245,121 +245,121 @@ function flattenOptions<T extends SelectOption>(
   return options;
 }
 
-// ============================================
-// UNIFIED SELECT FIELD COMPONENT
-// Uses Base-UI Combobox for full functionality
-// ============================================
+
+
+
+
 
 interface SelectFieldProps<T extends SelectOption = SelectOption> {
-  /** Options to display in the dropdown - can be flat or grouped */
+
   options?: T[] | GroupedSelectOption<T>[];
-  /** Controlled value - single string or array for multiple */
+
   value?: string | string[];
-  /** Callback when value changes */
+
   onChange?: (
     value: string | string[],
     selectedOptions: T | T[] | null,
   ) => void;
-  /** Enable multiple selection with chips */
+
   multiple?: boolean;
-  /** Enable search/filter input */
+
   searchable?: boolean;
-  /** Enable creating new options */
+
   creatable?: boolean;
-  /** Enable async loading mode */
+
   async?: boolean;
-  /** Async search function */
+
   onSearch?: (query: string) => Promise<T[]>;
-  /** Debounce delay for async search (ms) */
+
   debounceMs?: number;
-  /** Cache async results */
+
   cacheOptions?: boolean;
-  /** Callback when creating new option */
+
   onCreateOption?: (inputValue: string) => void;
-  /** Label for create option button */
+
   createLabel?: string;
-  /** Placeholder text */
+
   placeholder?: string;
-  /** Disable the component */
+
   disabled?: boolean;
-  /** Size variant */
+
   size?: "sm" | "default";
-  /** Additional className */
+
   className?: string;
-  /** Max tags to display in multiple mode */
+
   maxDisplayedTags?: number;
-  /** Show search icon */
+
   showSearchIcon?: boolean;
-  /** Enable fuzzy matching for filtering */
+
   fuzzyMatching?: boolean;
-  /** Custom filter function */
+
   filterFn?: (option: T, query: string) => boolean;
 
-  // ============================================
-  // ACCESSIBILITY PROPS
-  // ============================================
-  /** Whether the field is required */
+
+
+
+
   required?: boolean;
-  /** Accessible label for the field */
+
   "aria-label"?: string;
-  /** ID of element that labels this field */
+
   "aria-labelledby"?: string;
-  /** ID of element that describes this field */
+
   "aria-describedby"?: string;
-  /** Whether the field is in an invalid state */
+
   "aria-invalid"?: boolean;
-  /** Form field name for native form submission */
+
   name?: string;
 
-  // ============================================
-  // CALLBACK PROPS
-  // ============================================
-  /** Callback when dropdown opens or closes */
+
+
+
+
   onOpenChange?: (open: boolean) => void;
-  /** Callback when search input changes */
+
   onSearchChange?: (query: string) => void;
-  /** Callback when all selections are cleared (multi-select only) */
+
   onClearAll?: () => void;
 
-  // ============================================
-  // TRIGGER VARIANTS
-  // ============================================
-  /** Trigger visual variant */
+
+
+
+
   variant?: "default" | "ghost" | "outline";
-  /** Icon to display on the left of trigger */
+
   leftIcon?: React.ReactNode;
-  /** Hide the chevron dropdown indicator */
+
   hideChevron?: boolean;
 
-  // ============================================
-  // EMPTY STATE CUSTOMIZATION
-  // ============================================
-  /** Custom message when no results found */
+
+
+
+
   emptyMessage?: string | React.ReactNode;
-  /** Custom message while loading */
+
   loadingMessage?: string | React.ReactNode;
-  /** Custom message prompting search */
+
   searchingMessage?: string | React.ReactNode;
 
-  // ============================================
-  // VIRTUALIZATION (for large lists)
-  // ============================================
-  /** Enable virtualization for large option lists */
+
+
+
+
   virtualize?: boolean;
-  /** Height of each virtualized item in pixels (default: 36) */
+
   virtualItemHeight?: number;
-  /** Number of items to render outside visible area (default: 5) */
+
   overscan?: number;
 }
 
-// Fuzzy matching utility
+
 function fuzzyMatch(text: string, query: string): boolean {
   const pattern = query.toLowerCase().split("").join(".*");
   const regex = new RegExp(pattern);
   return regex.test(text.toLowerCase());
 }
 
-// Debounce hook
+
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = React.useState<T>(value);
 
@@ -392,22 +392,22 @@ function SelectField<T extends SelectOption = SelectOption>({
   showSearchIcon = true,
   fuzzyMatching = true,
   filterFn,
-  // Accessibility props
+
   required,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledby,
   "aria-describedby": ariaDescribedby,
   "aria-invalid": ariaInvalid,
   name,
-  // Callback props
+
   onOpenChange,
   onSearchChange,
   onClearAll,
-  // Trigger variants
+
   variant = "default",
   leftIcon,
   hideChevron = false,
-  // Empty state customization
+
   emptyMessage,
   loadingMessage,
   searchingMessage,
@@ -429,7 +429,7 @@ function SelectField<T extends SelectOption = SelectOption>({
   const listId = React.useId();
   const triggerId = React.useId();
 
-  // Call onOpenChange when isOpen changes
+
   const handleOpenChange = React.useCallback(
     (open: boolean) => {
       setIsOpen(open);
@@ -441,13 +441,13 @@ function SelectField<T extends SelectOption = SelectOption>({
     [onOpenChange],
   );
 
-  // Convert value to internal format
+
   const selectedValues = React.useMemo(() => {
     if (value === undefined || value === null) return [];
     return Array.isArray(value) ? value : [value];
   }, [value]);
 
-  // Update options when initialOptions change (for non-async mode)
+
   React.useEffect(() => {
     if (!async) {
       const flattened = flattenOptions(initialOptions) as T[];
@@ -455,7 +455,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     }
   }, [initialOptions, async]);
 
-  // Async search effect
+
   React.useEffect(() => {
     if (!async || !onSearch) return;
 
@@ -463,7 +463,7 @@ function SelectField<T extends SelectOption = SelectOption>({
       return;
     }
 
-    // Check cache
+
     if (cacheOptions && cacheRef.current.has(debouncedQuery)) {
       setOptions(cacheRef.current.get(debouncedQuery) || []);
       return;
@@ -494,7 +494,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     };
   }, [debouncedQuery, isOpen, async, onSearch, cacheOptions]);
 
-  // Filter options (only for non-async mode)
+
   const filteredOptions = React.useMemo(() => {
     if (async) {
       return options;
@@ -514,7 +514,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     });
   }, [options, inputValue, fuzzyMatching, filterFn, async]);
 
-  // Check if create option should be shown
+
   const showCreateOption = React.useMemo(() => {
     if (!creatable || !inputValue.trim()) return false;
     const normalizedInput = inputValue.trim().toLowerCase();
@@ -523,7 +523,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     );
   }, [creatable, inputValue, filteredOptions]);
 
-  // Animate items when dropdown opens
+
   React.useEffect(() => {
     if (isOpen && listRef.current && !isLoading) {
       const items = listRef.current.querySelectorAll("[data-option]");
@@ -592,12 +592,12 @@ function SelectField<T extends SelectOption = SelectOption>({
     }
   };
 
-  // Get enabled (non-disabled) options for keyboard navigation
+
   const enabledOptions = React.useMemo(() => {
     return filteredOptions.filter((opt) => !opt.disabled);
   }, [filteredOptions]);
 
-  // Handle typeahead character navigation
+
   const handleTypeahead = React.useCallback(
     (char: string) => {
       if (typeaheadTimeoutRef.current) {
@@ -708,7 +708,7 @@ function SelectField<T extends SelectOption = SelectOption>({
         break;
 
       case "Tab":
-        // Close on tab, allow default behavior
+
         handleOpenChange(false);
         break;
 
@@ -721,7 +721,7 @@ function SelectField<T extends SelectOption = SelectOption>({
         break;
 
       default:
-        // Typeahead for non-searchable selects
+
         if (!searchable && e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
           handleTypeahead(e.key);
         }
@@ -729,7 +729,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     }
   };
 
-  // Clear all selections (multi-select only)
+
   const handleClearAll = (e: React.MouseEvent) => {
     e.stopPropagation();
     onChange?.([], []);
@@ -745,16 +745,16 @@ function SelectField<T extends SelectOption = SelectOption>({
 
   const triggerClasses = cn(
     "flex flex-wrap items-center gap-1 min-h-8 px-2 py-1 rounded-lg border bg-transparent cursor-text w-full transition-colors",
-    // Variant styles
+
     variant === "default" &&
       "border-input dark:bg-input/30 dark:hover:bg-input/50",
     variant === "ghost" && "border-transparent hover:bg-muted",
     variant === "outline" && "border-input bg-transparent hover:bg-muted/50",
-    // Focus and validation states
+
     "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
     ariaInvalid &&
       "border-destructive ring-destructive/20 focus-within:border-destructive focus-within:ring-destructive/30",
-    // Size variants
+
     size === "sm" && "min-h-7 rounded-[min(var(--radius-md),10px)]",
     disabled && "opacity-50 pointer-events-none cursor-not-allowed",
   );
@@ -776,7 +776,7 @@ function SelectField<T extends SelectOption = SelectOption>({
       isDisabled && "opacity-50 pointer-events-none cursor-not-allowed",
     );
 
-  // Get the ID of the currently highlighted option for aria-activedescendant
+
   const activeDescendantId =
     highlightedIndex >= 0 && highlightedIndex < filteredOptions.length
       ? `${listId}-option-${highlightedIndex}`
@@ -784,7 +784,7 @@ function SelectField<T extends SelectOption = SelectOption>({
 
   return (
     <div className={cn("relative w-full", className)}>
-      {/* Hidden input for form submission */}
+      {}
       {name && (
         <input
           type="hidden"
@@ -793,7 +793,7 @@ function SelectField<T extends SelectOption = SelectOption>({
         />
       )}
 
-      {/* Trigger container */}
+      {}
       <div
         ref={triggerRef}
         id={triggerId}
@@ -813,7 +813,7 @@ function SelectField<T extends SelectOption = SelectOption>({
         aria-labelledby={ariaLabelledby}
         aria-describedby={ariaDescribedby}
       >
-        {/* Left icon */}
+        {}
         {leftIcon && (
           <span className="shrink-0 text-muted-foreground">{leftIcon}</span>
         )}
@@ -822,7 +822,7 @@ function SelectField<T extends SelectOption = SelectOption>({
           <IconSearch className="h-4 w-4 text-muted-foreground shrink-0" />
         )}
 
-        {/* Multi-select chips */}
+        {}
         {multiple &&
           displayedTags.map((opt) => (
             <span
@@ -847,7 +847,7 @@ function SelectField<T extends SelectOption = SelectOption>({
           </span>
         )}
 
-        {/* Search input */}
+        {}
         {searchable ? (
           <input
             ref={inputRef}
@@ -877,12 +877,12 @@ function SelectField<T extends SelectOption = SelectOption>({
           </span>
         )}
 
-        {/* Loading indicator */}
+        {}
         {isLoading && (
           <IconLoader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
         )}
 
-        {/* Clear button - single select */}
+        {}
         {!isLoading && !multiple && selectedValues.length > 0 && (
           <button
             type="button"
@@ -894,7 +894,7 @@ function SelectField<T extends SelectOption = SelectOption>({
           </button>
         )}
 
-        {/* Clear all button - multi-select */}
+        {}
         {!isLoading && selectedValues.length > 0 && multiple && (
           <button
             type="button"
@@ -906,7 +906,7 @@ function SelectField<T extends SelectOption = SelectOption>({
           </button>
         )}
 
-        {/* Chevron icon */}
+        {}
         {!isLoading && !hideChevron && (
           <IconChevronDown
             className={cn(
@@ -917,7 +917,7 @@ function SelectField<T extends SelectOption = SelectOption>({
         )}
       </div>
 
-      {/* Dropdown popup */}
+      {}
       {isOpen && (
         <div
           ref={listRef}
@@ -927,14 +927,14 @@ function SelectField<T extends SelectOption = SelectOption>({
           aria-multiselectable={multiple}
           aria-label={ariaLabel}
         >
-          {/* Loading state */}
+          {}
           {isLoading ? (
             <div className="flex items-center justify-center py-4 gap-2 text-sm text-muted-foreground">
               <IconLoader2 className="h-4 w-4 animate-spin" />
               {loadingMessage || "Loading..."}
             </div>
           ) : filteredOptions.length === 0 && !showCreateOption ? (
-            /* Empty state */
+
             <div className="py-4 text-center text-sm text-muted-foreground">
               {emptyMessage ||
                 (inputValue
@@ -944,7 +944,7 @@ function SelectField<T extends SelectOption = SelectOption>({
                     : "No options")}
             </div>
           ) : (
-            /* Options list */
+
             <>
               {filteredOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value);
@@ -966,8 +966,8 @@ function SelectField<T extends SelectOption = SelectOption>({
                       !option.disabled && handleSelect(option.value)
                     }
                     onMouseDown={(e) => {
-                      // Prevent input blur to keep menu open (especially for multi-select)
-                      // If single select, handleSelect will close it anyway.
+
+
                       e.preventDefault();
                     }}
                     onMouseEnter={() => setHighlightedIndex(index)}
@@ -996,7 +996,7 @@ function SelectField<T extends SelectOption = SelectOption>({
                 );
               })}
 
-              {/* Create option */}
+              {}
               {showCreateOption && (
                 <div
                   id={`${listId}-option-${filteredOptions.length}`}
@@ -1028,16 +1028,16 @@ function SelectField<T extends SelectOption = SelectOption>({
   );
 }
 
-// ============================================
-// DEPRECATED COMPONENTS
-// These are kept for backward compatibility.
-// Use SelectField instead with appropriate props.
-// ============================================
 
-/**
- * @deprecated Use `<SelectField multiple />` instead.
- * This component is kept for backward compatibility.
- */
+
+
+
+
+
+
+
+
+
 interface MultiSelectProps {
   options: SelectOption[];
   value?: string[];
@@ -1049,9 +1049,9 @@ interface MultiSelectProps {
   showSearchIcon?: boolean;
 }
 
-/**
- * @deprecated Use `<SelectField multiple />` instead.
- */
+
+
+
 function MultiSelect({
   options,
   value = [],
@@ -1077,10 +1077,10 @@ function MultiSelect({
   );
 }
 
-/**
- * @deprecated Use `<SelectField async onSearch={...} />` instead.
- * This component is kept for backward compatibility.
- */
+
+
+
+
 interface AsyncSelectProps {
   loadOptions: (query: string) => Promise<SelectOption[]>;
   value?: string;
@@ -1093,9 +1093,9 @@ interface AsyncSelectProps {
   showSearchIcon?: boolean;
 }
 
-/**
- * @deprecated Use `<SelectField async onSearch={...} />` instead.
- */
+
+
+
 function AsyncSelect({
   loadOptions,
   value,
@@ -1125,10 +1125,10 @@ function AsyncSelect({
   );
 }
 
-/**
- * @deprecated Use `<SelectField creatable onCreateOption={...} />` instead.
- * This component is kept for backward compatibility.
- */
+
+
+
+
 interface CreatableSelectProps {
   options: SelectOption[];
   value?: string;
@@ -1140,9 +1140,9 @@ interface CreatableSelectProps {
   createLabel?: string;
 }
 
-/**
- * @deprecated Use `<SelectField creatable onCreateOption={...} />` instead.
- */
+
+
+
 function CreatableSelect({
   options,
   value,
@@ -1168,10 +1168,10 @@ function CreatableSelect({
   );
 }
 
-/**
- * @deprecated Use `<SelectField />` with appropriate props instead.
- * This component is kept for backward compatibility.
- */
+
+
+
+
 interface AutocompleteProps {
   options?: AutocompleteOption[];
   value?: string | string[];
@@ -1187,9 +1187,9 @@ interface AutocompleteProps {
   className?: string;
 }
 
-/**
- * @deprecated Use `<SelectField />` with appropriate props instead.
- */
+
+
+
 function Autocomplete({
   options: initialOptions = [],
   value,
@@ -1220,12 +1220,12 @@ function Autocomplete({
   );
 }
 
-// ============================================
-// EXPORTS
-// ============================================
+
+
+
 
 export {
-  // Base Select primitives (low-level)
+
   Select,
   SelectContent,
   SelectGroup,
@@ -1236,14 +1236,14 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-  // Unified component (recommended)
+
   SelectField,
-  // Deprecated components (backward compatibility)
+
   MultiSelect,
   AsyncSelect,
   CreatableSelect,
   Autocomplete,
-  // Utilities
+
   fuzzyMatch,
   useDebounce,
 };
@@ -1252,7 +1252,7 @@ export type {
   SelectOption,
   AutocompleteOption,
   SelectFieldProps,
-  // Deprecated types
+
   MultiSelectProps,
   AsyncSelectProps,
   CreatableSelectProps,

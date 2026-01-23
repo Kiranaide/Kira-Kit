@@ -13,9 +13,9 @@ import {
   DrawerBody,
 } from "@/components/ui/drawer"
 
-// ============================================
-// HOOKS
-// ============================================
+
+
+
 
 function useReducedMotion(): boolean {
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
@@ -73,9 +73,9 @@ function useCountUp(
   return decimals > 0 ? Number(displayValue.toFixed(decimals)) : Math.round(displayValue)
 }
 
-// ============================================
-// FORMATTERS
-// ============================================
+
+
+
 
 type FormatType = "currency" | "percentage" | "compact" | "number" | "custom"
 
@@ -137,9 +137,9 @@ function formatValue(value: number, options: FormatOptions = {}): string {
   return `${prefix}${formatted}${suffix}`
 }
 
-// ============================================
-// VARIANTS
-// ============================================
+
+
+
 
 const statsCardVariants = cva(
   "relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-200",
@@ -265,9 +265,9 @@ const statsCardProgressVariants = cva(
   }
 )
 
-// ============================================
-// INTERFACES
-// ============================================
+
+
+
 
 interface StatsCardContextValue {
   id: string
@@ -355,9 +355,9 @@ interface StatsCardSkeletonProps extends React.ComponentPropsWithoutRef<"div"> {
   showProgress?: boolean
 }
 
-// ============================================
-// COMPONENTS
-// ============================================
+
+
+
 
 const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
   (
@@ -805,9 +805,9 @@ const StatsCardSkeleton = React.forwardRef<HTMLDivElement, StatsCardSkeletonProp
 )
 StatsCardSkeleton.displayName = "StatsCardSkeleton"
 
-// ============================================
-// EXPORTS
-// ============================================
+
+
+
 
 export {
   StatsCard,

@@ -279,7 +279,7 @@ function Alert({
       onPointerLeave={handlePointerLeave}
       {...props}
     >
-      {/* Hold-to-close progress bar */}
+      {}
       {holdToClose && (
         <div
           ref={progressRef}

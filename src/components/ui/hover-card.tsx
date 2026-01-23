@@ -6,9 +6,9 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconLoader2 } from "@tabler/icons-react";
 
-// =============================================================================
-// Types
-// =============================================================================
+
+
+
 
 type HoverCardProps = PreviewCardPrimitive.Root.Props;
 
@@ -26,11 +26,11 @@ interface HoverCardContentProps
   collisionPadding?: PreviewCardPrimitive.Positioner.Props["collisionPadding"];
   sticky?: PreviewCardPrimitive.Positioner.Props["sticky"];
   portalled?: boolean;
-  /** Visual variant for the content */
+
   variant?: "default" | "blur";
-  /** How long to wait before the hover card opens. Specified in milliseconds. */
+
   delay?: number;
-  /** How long to wait before closing the hover card. Specified in milliseconds. */
+
   closeDelay?: number;
 }
 
@@ -38,11 +38,11 @@ type HoverCardArrowProps = PreviewCardPrimitive.Arrow.Props;
 
 interface HoverCardAnchorProps
   extends React.ComponentProps<typeof PreviewCardPrimitive.Trigger> {
-  /** The URL for the anchor link */
+
   href?: string;
-  /** Target for the link */
+
   target?: string;
-  /** Rel attribute for the link */
+
   rel?: string;
 }
 
@@ -55,13 +55,13 @@ type HoverCardTitleProps = React.ComponentProps<"h4">;
 type HoverCardDescriptionProps = React.ComponentProps<"p">;
 
 interface HoverCardLoadingProps extends React.ComponentProps<"div"> {
-  /** Loading message */
+
   message?: string;
 }
 
-// =============================================================================
-// Variants
-// =============================================================================
+
+
+
 
 const hoverCardContentVariants = cva(
   "z-[100] rounded-lg border border-border bg-popover p-4 shadow-lg outline-none data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[var(--transform-origin)]",
@@ -86,9 +86,9 @@ const hoverCardContentVariants = cva(
   }
 );
 
-// =============================================================================
-// HoverCard Root
-// =============================================================================
+
+
+
 
 function HoverCard({ children, ...props }: HoverCardProps) {
   return (
@@ -98,9 +98,9 @@ function HoverCard({ children, ...props }: HoverCardProps) {
   );
 }
 
-// =============================================================================
-// HoverCardTrigger
-// =============================================================================
+
+
+
 
 function HoverCardTrigger({
   className,
@@ -118,10 +118,10 @@ function HoverCardTrigger({
   );
 }
 
-// =============================================================================
-// HoverCardAnchor - Convenience for link-based hover cards
-// Fixed: Now properly wraps with PreviewCardPrimitive.Trigger
-// =============================================================================
+
+
+
+
 
 function HoverCardAnchor({
   className,
@@ -152,9 +152,9 @@ function HoverCardAnchor({
   );
 }
 
-// =============================================================================
-// HoverCardContent
-// =============================================================================
+
+
+
 
 const HoverCardContent = React.forwardRef<
   HTMLDivElement,
@@ -204,9 +204,9 @@ const HoverCardContent = React.forwardRef<
   return content;
 });
 
-// =============================================================================
-// HoverCardArrow
-// =============================================================================
+
+
+
 
 const HoverCardArrow = React.forwardRef<HTMLDivElement, HoverCardArrowProps>(
   function HoverCardArrow({ className, ...props }, ref) {
@@ -221,9 +221,9 @@ const HoverCardArrow = React.forwardRef<HTMLDivElement, HoverCardArrowProps>(
   }
 );
 
-// =============================================================================
-// HoverCardHeader - Pre-styled header section
-// =============================================================================
+
+
+
 
 function HoverCardHeader({ className, ...props }: HoverCardHeaderProps) {
   return (
@@ -235,9 +235,9 @@ function HoverCardHeader({ className, ...props }: HoverCardHeaderProps) {
   );
 }
 
-// =============================================================================
-// HoverCardFooter - Pre-styled footer section
-// =============================================================================
+
+
+
 
 function HoverCardFooter({ className, ...props }: HoverCardFooterProps) {
   return (
@@ -252,9 +252,9 @@ function HoverCardFooter({ className, ...props }: HoverCardFooterProps) {
   );
 }
 
-// =============================================================================
-// HoverCardTitle - Pre-styled title
-// =============================================================================
+
+
+
 
 function HoverCardTitle({ className, ...props }: HoverCardTitleProps) {
   return (
@@ -266,9 +266,9 @@ function HoverCardTitle({ className, ...props }: HoverCardTitleProps) {
   );
 }
 
-// =============================================================================
-// HoverCardDescription - Pre-styled description
-// =============================================================================
+
+
+
 
 function HoverCardDescription({
   className,
@@ -283,9 +283,9 @@ function HoverCardDescription({
   );
 }
 
-// =============================================================================
-// HoverCardLoading - Loading state for async content
-// =============================================================================
+
+
+
 
 function HoverCardLoading({
   className,
@@ -307,12 +307,12 @@ function HoverCardLoading({
   );
 }
 
-// =============================================================================
-// HoverCardImage - Pre-styled image container
-// =============================================================================
+
+
+
 
 interface HoverCardImageProps extends React.ComponentProps<"img"> {
-  /** Aspect ratio preset */
+
   aspectRatio?: "video" | "square" | "portrait";
 }
 
@@ -342,9 +342,9 @@ function HoverCardImage({
   );
 }
 
-// =============================================================================
-// Exports
-// =============================================================================
+
+
+
 
 export {
   HoverCard,
@@ -360,9 +360,9 @@ export {
   HoverCardImage,
 };
 
-// =============================================================================
-// Type Exports
-// =============================================================================
+
+
+
 
 export type {
   HoverCardProps,

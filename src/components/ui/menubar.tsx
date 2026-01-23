@@ -10,9 +10,9 @@ import {
   IconChevronRight,
 } from "@tabler/icons-react";
 
-// =============================================================================
-// Types
-// =============================================================================
+
+
+
 
 type MenubarProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -90,9 +90,9 @@ interface MenubarWithContentProps {
   contentProps?: Omit<MenubarContentProps, "children">;
 }
 
-// =============================================================================
-// Menubar Root
-// =============================================================================
+
+
+
 
 const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(function Menubar(
   { className, children, ...props },
@@ -114,9 +114,9 @@ const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(function Menubar(
   );
 });
 
-// =============================================================================
-// MenubarMenu
-// =============================================================================
+
+
+
 
 function MenubarMenu({ children, ...props }: MenubarMenuProps) {
   return (
@@ -126,17 +126,17 @@ function MenubarMenu({ children, ...props }: MenubarMenuProps) {
   );
 }
 
-// =============================================================================
-// MenubarPortal
-// =============================================================================
+
+
+
 
 function MenubarPortal(props: MenubarPortalProps) {
   return <MenuPrimitive.Portal data-slot="menubar-portal" {...props} />;
 }
 
-// =============================================================================
-// MenubarTrigger
-// =============================================================================
+
+
+
 
 const MenubarTrigger = React.forwardRef<HTMLDivElement, MenubarTriggerProps>(
   function MenubarTrigger({ className, children, ...props }, ref) {
@@ -158,9 +158,9 @@ const MenubarTrigger = React.forwardRef<HTMLDivElement, MenubarTriggerProps>(
   }
 );
 
-// =============================================================================
-// MenubarBackdrop
-// =============================================================================
+
+
+
 
 const MenubarBackdrop = React.forwardRef<HTMLDivElement, MenubarBackdropProps>(
   function MenubarBackdrop({ className, ...props }, ref) {
@@ -175,9 +175,9 @@ const MenubarBackdrop = React.forwardRef<HTMLDivElement, MenubarBackdropProps>(
   }
 );
 
-// =============================================================================
-// MenubarContent
-// =============================================================================
+
+
+
 
 const MenubarContent = React.forwardRef<HTMLDivElement, MenubarContentProps>(
   function MenubarContent(
@@ -220,9 +220,9 @@ const MenubarContent = React.forwardRef<HTMLDivElement, MenubarContentProps>(
   }
 );
 
-// =============================================================================
-// MenubarArrow
-// =============================================================================
+
+
+
 
 const MenubarArrow = React.forwardRef<HTMLDivElement, MenubarArrowProps>(
   function MenubarArrow({ className, ...props }, ref) {
@@ -241,9 +241,9 @@ const MenubarArrow = React.forwardRef<HTMLDivElement, MenubarArrowProps>(
   }
 );
 
-// =============================================================================
-// MenubarGroup
-// =============================================================================
+
+
+
 
 const MenubarGroup = React.forwardRef<HTMLDivElement, MenubarGroupProps>(
   function MenubarGroup({ ...props }, ref) {
@@ -253,9 +253,9 @@ const MenubarGroup = React.forwardRef<HTMLDivElement, MenubarGroupProps>(
   }
 );
 
-// =============================================================================
-// MenubarItem
-// =============================================================================
+
+
+
 
 const MenubarItem = React.forwardRef<HTMLDivElement, MenubarItemProps>(
   function MenubarItem(
@@ -317,9 +317,9 @@ const MenubarItem = React.forwardRef<HTMLDivElement, MenubarItemProps>(
   }
 );
 
-// =============================================================================
-// MenubarCheckboxItem
-// =============================================================================
+
+
+
 
 const MenubarCheckboxItem = React.forwardRef<
   HTMLDivElement,
@@ -361,9 +361,9 @@ const MenubarCheckboxItem = React.forwardRef<
   );
 });
 
-// =============================================================================
-// MenubarRadioGroup
-// =============================================================================
+
+
+
 
 const MenubarRadioGroup = React.forwardRef<
   HTMLDivElement,
@@ -380,9 +380,9 @@ const MenubarRadioGroup = React.forwardRef<
   );
 });
 
-// =============================================================================
-// MenubarRadioItem
-// =============================================================================
+
+
+
 
 const MenubarRadioItem = React.forwardRef<
   HTMLDivElement,
@@ -424,9 +424,9 @@ const MenubarRadioItem = React.forwardRef<
   );
 });
 
-// =============================================================================
-// MenubarSeparator
-// =============================================================================
+
+
+
 
 const MenubarSeparator = React.forwardRef<
   HTMLDivElement,
@@ -442,9 +442,9 @@ const MenubarSeparator = React.forwardRef<
   );
 });
 
-// =============================================================================
-// MenubarLabel
-// =============================================================================
+
+
+
 
 const MenubarLabel = React.forwardRef<HTMLDivElement, MenubarLabelProps>(
   function MenubarLabel({ className, inset, ...props }, ref) {
@@ -463,9 +463,9 @@ const MenubarLabel = React.forwardRef<HTMLDivElement, MenubarLabelProps>(
   }
 );
 
-// =============================================================================
-// MenubarShortcut
-// =============================================================================
+
+
+
 
 const MenubarShortcut = React.forwardRef<HTMLSpanElement, MenubarShortcutProps>(
   function MenubarShortcut({ className, ...props }, ref) {
@@ -484,9 +484,9 @@ const MenubarShortcut = React.forwardRef<HTMLSpanElement, MenubarShortcutProps>(
   }
 );
 
-// =============================================================================
-// MenubarSub
-// =============================================================================
+
+
+
 
 function MenubarSub({ children, ...props }: MenubarSubProps) {
   return (
@@ -496,9 +496,9 @@ function MenubarSub({ children, ...props }: MenubarSubProps) {
   );
 }
 
-// =============================================================================
-// MenubarSubTrigger
-// =============================================================================
+
+
+
 
 const MenubarSubTrigger = React.forwardRef<
   HTMLDivElement,
@@ -536,9 +536,9 @@ const MenubarSubTrigger = React.forwardRef<
   );
 });
 
-// =============================================================================
-// MenubarSubContent
-// =============================================================================
+
+
+
 
 const MenubarSubContent = React.forwardRef<
   HTMLDivElement,
@@ -579,9 +579,9 @@ const MenubarSubContent = React.forwardRef<
   );
 });
 
-// =============================================================================
-// MenubarWithContent (Convenience Wrapper)
-// =============================================================================
+
+
+
 
 function MenubarWithContent({
   trigger,
@@ -597,9 +597,9 @@ function MenubarWithContent({
   );
 }
 
-// =============================================================================
-// Exports
-// =============================================================================
+
+
+
 
 export {
   Menubar,
@@ -623,9 +623,9 @@ export {
   MenubarWithContent,
 };
 
-// =============================================================================
-// Type Exports
-// =============================================================================
+
+
+
 
 export type {
   MenubarProps,

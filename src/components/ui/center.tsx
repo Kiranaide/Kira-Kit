@@ -3,19 +3,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
-/**
- * Center variants for centering content
- * @see {@link CenterProps} for usage
- */
+
+
+
+
 const centerVariants = cva("", {
   variants: {
-    /** Centering method */
+
     type: {
       flex: "flex items-center justify-center",
       grid: "grid place-items-center",
       absolute: "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
     },
-    /** Display mode */
+
     inline: {
       true: "",
       false: "",
@@ -39,41 +39,41 @@ type CenterElement = "div" | "span" | "section" | "main" | "article"
 interface CenterProps
   extends React.HTMLAttributes<HTMLElement>,
     VariantProps<typeof centerVariants> {
-  /** Semantic HTML element to render */
+
   as?: CenterElement
-  /** Centering method */
+
   type?: CenterType
 }
 
-/**
- * Center component for centering content horizontally and vertically.
- * Provides multiple centering strategies for different use cases.
- * 
- * @example
- * ```tsx
- * // Flex centering (default)
- * <Center className="h-screen">
- *   <Logo />
- * </Center>
- * 
- * // Grid centering
- * <Center type="grid" className="min-h-64">
- *   <EmptyState />
- * </Center>
- * 
- * // Absolute centering (for overlays)
- * <div className="relative h-96">
- *   <Center type="absolute">
- *     <Spinner />
- *   </Center>
- * </div>
- * 
- * // Inline centering
- * <Center inline className="size-8">
- *   <Icon />
- * </Center>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function Center({
   as: Component = "div",
   className,

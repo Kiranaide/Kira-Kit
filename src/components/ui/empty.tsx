@@ -61,7 +61,7 @@ function Empty({
       className={cn(emptyVariants({ size }), className)}
       {...props}
     >
-      {/* Icon */}
+      {}
       <div className="text-muted-foreground/50">
         {IconComponent ? (
           <IconComponent
@@ -80,7 +80,7 @@ function Empty({
         )}
       </div>
 
-      {/* Title */}
+      {}
       {title && (
         <h3
           className={cn(
@@ -92,7 +92,7 @@ function Empty({
         </h3>
       )}
 
-      {/* Description */}
+      {}
       {description && (
         <p
           className={cn(
@@ -104,16 +104,16 @@ function Empty({
         </p>
       )}
 
-      {/* Action */}
+      {}
       {action && <div className="mt-2">{action}</div>}
 
-      {/* Children */}
+      {}
       {children}
     </div>
   );
 }
 
-// Specific empty state components
+
 function EmptyInbox(props: Omit<EmptyProps, "icon">) {
   return <Empty icon="inbox" title="No messages" {...props} />;
 }

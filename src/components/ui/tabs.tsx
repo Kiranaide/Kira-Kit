@@ -6,9 +6,9 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconX } from "@tabler/icons-react";
 
-// ============================================================================
-// Context for shared props
-// ============================================================================
+
+
+
 
 interface TabsContextValue {
   orientation: "horizontal" | "vertical";
@@ -28,21 +28,21 @@ function useTabsContext() {
   return React.useContext(TabsContext);
 }
 
-// ============================================================================
-// Tabs Root
-// ============================================================================
+
+
+
 
 type TabsListVariant = "default" | "outline" | "pills" | "underline" | "soft" | "card";
 type TabsTriggerColor = "default" | "primary" | "success" | "warning" | "destructive";
 
 interface TabsProps extends TabsPrimitive.Root.Props {
-  /** Orientation of the tabs */
+
   orientation?: "horizontal" | "vertical";
-  /** Visual variant for the tab list */
+
   variant?: TabsListVariant;
-  /** Color scheme for active tab */
+
   color?: TabsTriggerColor;
-  /** Show the sliding indicator by default */
+
   showIndicator?: boolean;
 }
 
@@ -64,14 +64,14 @@ function Tabs({
   );
 }
 
-// ============================================================================
-// Tabs List Variants
-// ============================================================================
+
+
+
 
 const tabsListVariants = cva(
   [
     "inline-flex items-center justify-start text-muted-foreground relative",
-    // Smooth transitions using tailwind-animate
+
     "transition-colors duration-200",
     "motion-reduce:transition-none",
   ],
@@ -102,13 +102,13 @@ const tabsListVariants = cva(
       },
     },
     compoundVariants: [
-      // Vertical underline adjustment
+
       {
         variant: "underline",
         orientation: "vertical",
         className: "border-b-0 border-r border-border",
       },
-      // Color-matched backgrounds for default variant
+
       {
         variant: "default",
         color: "primary",
@@ -129,7 +129,7 @@ const tabsListVariants = cva(
         color: "destructive",
         className: "bg-destructive/10",
       },
-      // Color-matched backgrounds for outline variant
+
       {
         variant: "outline",
         color: "primary",
@@ -150,7 +150,7 @@ const tabsListVariants = cva(
         color: "destructive",
         className: "border-destructive/30 bg-destructive/5",
       },
-      // Color-matched backgrounds for card variant
+
       {
         variant: "card",
         color: "primary",
@@ -181,9 +181,9 @@ const tabsListVariants = cva(
   }
 );
 
-// ============================================================================
-// Internal Tabs Indicator (for default inclusion in TabsList)
-// ============================================================================
+
+
+
 
 function TabsIndicatorInternal() {
   const { orientation, variant, color } = useTabsContext();
@@ -191,7 +191,7 @@ function TabsIndicatorInternal() {
   const isUnderline = variant === "underline";
   const isFill = !isUnderline;
 
-  // Determine position based on orientation and variant
+
   const effectivePosition =
     orientation === "vertical"
       ? isUnderline
@@ -216,7 +216,7 @@ function TabsIndicatorInternal() {
     ].join(" "),
   };
 
-  // Color classes for the indicator
+
   const colorClasses = {
     default: isFill ? "bg-primary/10" : "bg-primary",
     primary: isFill ? "bg-primary/10" : "bg-primary",
@@ -235,7 +235,7 @@ function TabsIndicatorInternal() {
       className={cn(
         "absolute",
         colorClasses[color],
-        // Smooth sliding animation using tailwind-animate
+
         "animate-in fade-in-0 duration-200",
         "transition-all duration-200 ease-out",
         "motion-reduce:transition-none motion-reduce:animate-none",
@@ -246,16 +246,16 @@ function TabsIndicatorInternal() {
   );
 }
 
-// ============================================================================
-// Tabs List
-// ============================================================================
+
+
+
 
 interface TabsListProps
   extends TabsPrimitive.List.Props,
     Omit<VariantProps<typeof tabsListVariants>, "orientation" | "color"> {
-  /** Enable horizontal scrolling for overflow */
+
   scrollable?: boolean;
-  /** Override showing the indicator */
+
   showIndicator?: boolean;
   children: React.ReactNode;
 }
@@ -288,23 +288,23 @@ function TabsList({
   );
 }
 
-// ============================================================================
-// Tabs Trigger Variants
-// ============================================================================
+
+
+
 
 const tabsTriggerVariants = cva(
   [
     "inline-flex items-center justify-center whitespace-nowrap gap-2",
     "rounded-md px-3 py-1.5 text-sm font-medium",
-    "relative z-10", // keep content above indicator
-    // Transitions
+    "relative z-10",
+
     "transition-all duration-200",
     "motion-reduce:transition-none",
-    // Focus
+
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-    // Disabled
+
     "disabled:pointer-events-none disabled:opacity-50",
-    // Touch target for mobile (minimum 44px)
+
     "min-h-[44px] sm:min-h-0",
   ],
   {
@@ -312,7 +312,7 @@ const tabsTriggerVariants = cva(
       variant: {
         default: [
           "text-muted-foreground hover:text-foreground",
-          // Support both data-selected (Base UI) and data-state=selected (safety)
+
           "data-[selected]:bg-background data-[selected]:text-foreground data-[selected]:shadow-md data-[selected]:font-semibold",
           "data-[state=selected]:bg-background data-[state=selected]:text-foreground data-[state=selected]:shadow-md data-[state=selected]:font-semibold",
         ],
@@ -355,13 +355,13 @@ const tabsTriggerVariants = cva(
       },
     },
     compoundVariants: [
-      // Vertical underline adjustment
+
       {
         variant: "underline",
         orientation: "vertical",
         className: "border-b-0 border-r-2 -mr-px mb-0",
       },
-      // Primary color
+
       {
         variant: "default",
         color: "primary",
@@ -395,7 +395,7 @@ const tabsTriggerVariants = cva(
         color: "primary",
         className: "data-[selected]:bg-primary data-[selected]:text-primary-foreground",
       },
-      // Success color
+
       {
         variant: "default",
         color: "success",
@@ -426,7 +426,7 @@ const tabsTriggerVariants = cva(
         color: "success",
         className: "data-[selected]:bg-green-600 data-[selected]:text-white",
       },
-      // Warning color
+
       {
         variant: "default",
         color: "warning",
@@ -457,7 +457,7 @@ const tabsTriggerVariants = cva(
         color: "warning",
         className: "data-[selected]:bg-amber-500 data-[selected]:text-white",
       },
-      // Destructive color
+
       {
         variant: "default",
         color: "destructive",
@@ -497,24 +497,24 @@ const tabsTriggerVariants = cva(
   }
 );
 
-// ============================================================================
-// Tabs Trigger
-// ============================================================================
+
+
+
 
 interface TabsTriggerProps
   extends Omit<TabsPrimitive.Tab.Props, "children">,
     Omit<VariantProps<typeof tabsTriggerVariants>, "orientation"> {
-  /** Tab content */
+
   children: React.ReactNode;
-  /** Icon displayed before label */
+
   icon?: React.ReactNode;
-  /** Badge content (number or element) */
+
   badge?: React.ReactNode;
-  /** Badge color variant */
+
   badgeColor?: "default" | "primary" | "destructive" | "success" | "warning";
-  /** Shows close button on tab */
+
   closable?: boolean;
-  /** Callback when close button clicked */
+
   onClose?: (value: string) => void;
 }
 
@@ -549,7 +549,7 @@ function TabsTrigger({
     onClose?.(value as string);
   };
 
-  // Handle Delete key for closable tabs
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (closable && (e.key === "Delete" || e.key === "Backspace")) {
       e.preventDefault();
@@ -603,9 +603,9 @@ function TabsTrigger({
   );
 }
 
-// ============================================================================
-// Tabs Content Variants
-// ============================================================================
+
+
+
 
 const tabsContentVariants = cva(
   [
@@ -633,16 +633,16 @@ const tabsContentVariants = cva(
   }
 );
 
-// ============================================================================
-// Tabs Content
-// ============================================================================
+
+
+
 
 interface TabsContentProps
   extends TabsPrimitive.Panel.Props,
     Omit<VariantProps<typeof tabsContentVariants>, "orientation"> {
-  /** Only render content when tab is active (lazy loading) */
+
   lazy?: boolean;
-  /** Keep mounted after first render (useful for forms) */
+
   keepMounted?: boolean;
 }
 
@@ -658,29 +658,29 @@ function TabsContent({
   const { orientation } = useTabsContext();
   const [hasBeenActive, setHasBeenActive] = React.useState(false);
 
-  // Track if this panel has ever been active (for lazy loading with keepMounted)
+
   React.useEffect(() => {
-    // We need to check if this panel is currently active
-    // This is a simplified approach - in production you'd use the Tabs context
+
+
     const checkActive = () => {
       const panel = document.querySelector(`[data-slot="tabs-content"][data-value="${value}"]`);
       if (panel && !panel.hasAttribute("hidden")) {
         setHasBeenActive(true);
       }
     };
-    
-    // Check on mount and use MutationObserver for changes
+
+
     checkActive();
     const observer = new MutationObserver(checkActive);
     const panel = document.querySelector(`[data-slot="tabs-content"][data-value="${value}"]`);
     if (panel) {
       observer.observe(panel, { attributes: true, attributeFilter: ["hidden"] });
     }
-    
+
     return () => observer.disconnect();
   }, [value]);
 
-  // Lazy loading logic
+
   const shouldRender = !lazy || hasBeenActive;
 
   return (
@@ -697,21 +697,21 @@ function TabsContent({
   );
 }
 
-// ============================================================================
-// Tabs Indicator (Base UI default animation)
-// ============================================================================
+
+
+
 
 interface TabsIndicatorProps extends TabsPrimitive.Indicator.Props {
-  /** Indicator position for underline variant */
+
   position?: "bottom" | "top" | "left" | "right";
 }
 
 function TabsIndicator({ className, position, ...props }: TabsIndicatorProps) {
   const { orientation, variant, color } = useTabsContext();
 
-  // Determine position based on orientation and variant
+
   const effectivePosition = position ?? (
-    orientation === "vertical" 
+    orientation === "vertical"
       ? (variant === "underline" ? "right" : "left")
       : (variant === "underline" ? "bottom" : "bottom")
   );
@@ -723,7 +723,7 @@ function TabsIndicator({ className, position, ...props }: TabsIndicatorProps) {
     right: "right-0 top-[var(--active-tab-top)] h-[var(--active-tab-height)] w-0.5",
   };
 
-  // Color classes for the indicator
+
   const colorClasses = {
     default: "bg-primary",
     primary: "bg-primary",
@@ -738,7 +738,7 @@ function TabsIndicator({ className, position, ...props }: TabsIndicatorProps) {
       className={cn(
         "absolute",
         colorClasses[color],
-        // Smooth sliding animation using tailwind-animate
+
         "animate-in fade-in-0 duration-200",
         "transition-all duration-200 ease-out",
         "motion-reduce:transition-none motion-reduce:animate-none",
@@ -750,9 +750,9 @@ function TabsIndicator({ className, position, ...props }: TabsIndicatorProps) {
   );
 }
 
-// ============================================================================
-// Scroll Buttons (for scrollable tabs)
-// ============================================================================
+
+
+
 
 interface TabsScrollButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   direction: "left" | "right" | "up" | "down";
@@ -802,9 +802,9 @@ function TabsScrollButton({
   );
 }
 
-// ============================================================================
-// Exports
-// ============================================================================
+
+
+
 
 export {
   Tabs,

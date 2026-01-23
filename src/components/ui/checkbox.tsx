@@ -87,25 +87,25 @@ interface CheckboxProps
     CheckboxPrimitive.Root.Props,
     "checked" | "onCheckedChange" | "defaultChecked"
   > {
-  /** Current checked state. Use for controlled mode. */
+
   checked?: boolean | "indeterminate";
-  /** Default checked state. Use for uncontrolled mode. */
+
   defaultChecked?: boolean;
-  /** Callback when the checked state changes. */
+
   onCheckedChange?: (checked: boolean | "indeterminate") => void;
-  /** Size variant of the checkbox. */
+
   size?: "sm" | "default" | "lg";
-  /** Visual style variant. */
+
   variant?: "default" | "outline" | "filled" | "soft";
-  /** Color scheme for the checked state. */
+
   color?: "default" | "success" | "destructive" | "warning";
-  /** Custom icon to display when checked (replaces checkmark). */
+
   customIcon?: React.ReactNode;
-  /** Shows a loading spinner and disables interaction. */
+
   loading?: boolean;
-  /** Applies error styling. */
+
   error?: boolean;
-  /** Ref to access the hidden input element. */
+
   inputRef?: React.Ref<HTMLInputElement>;
 }
 
@@ -129,7 +129,7 @@ function Checkbox({
   inputRef,
   ...props
 }: CheckboxProps) {
-  // Determine if this is controlled or uncontrolled
+
   const isControlled = checked !== undefined;
   const indicatorRef = React.useRef<HTMLSpanElement>(null);
   const rippleRef = React.useRef<HTMLSpanElement>(null);
@@ -137,14 +137,14 @@ function Checkbox({
     boolean | "indeterminate"
   >(checked ?? defaultChecked);
 
-  // Sync internal state with controlled prop
+
   React.useEffect(() => {
     if (isControlled && checked !== undefined) {
       setInternalChecked(checked);
     }
   }, [checked, isControlled]);
 
-  // Set initial indicator state without animation (runs once on mount)
+
   React.useEffect(() => {
     if (indicatorRef.current) {
       const isActive =

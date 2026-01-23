@@ -8,15 +8,15 @@ import { IconX } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * Badge variant styles
- * @see {@link BadgeProps} for usage
- */
+
+
+
+
 const badgeVariants = cva(
   "gap-1.5 rounded-full border border-transparent font-medium transition-all inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-colors overflow-hidden group/badge",
   {
     variants: {
-      /** Visual style variant */
+
       variant: {
         default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         secondary:
@@ -40,7 +40,7 @@ const badgeVariants = cva(
           "bg-warning/10 text-warning-foreground dark:text-warning",
         "info-soft": "bg-info/10 text-info-foreground dark:text-info",
       },
-      /** Size of the badge */
+
       size: {
         xs: "h-4 px-1.5 text-[10px] [&>svg]:size-2.5",
         sm: "h-5 px-2 text-xs [&>svg]:size-3",
@@ -48,12 +48,12 @@ const badgeVariants = cva(
         lg: "h-7 px-3 text-sm [&>svg]:size-4",
         xl: "h-8 px-4 text-sm [&>svg]:size-4",
       },
-      /** Interactive state for clickable badges */
+
       clickable: {
         true: "cursor-pointer hover:opacity-90 active:scale-95",
         false: "",
       },
-      /** Disabled state */
+
       disabled: {
         true: "opacity-50 cursor-not-allowed pointer-events-none",
         false: "",
@@ -118,22 +118,22 @@ const badgeCloseVariants = cva(
   }
 );
 
-/**
- * Badge component props
- * @example
- * ```tsx
- * <Badge variant="success" icon={<CheckIcon />}>Approved</Badge>
- * <Badge dismissible onClose={() => {}}>Removable</Badge>
- * ```
- */
+
+
+
+
+
+
+
+
 interface BadgeProps
   extends useRender.ComponentProps<"span">,
     VariantProps<typeof badgeVariants> {
-  /** Icon to display in the badge */
+
   icon?: React.ReactNode;
-  /** Position of the icon */
+
   iconPosition?: "left" | "right";
-  /** Show a dot indicator, optionally with a specific color */
+
   dot?:
     | boolean
     | "default"
@@ -144,17 +144,17 @@ interface BadgeProps
     | "info"
     | "outline"
     | "muted";
-  /** Pulse animation for the dot */
+
   dotPulse?: "none" | "continuous" | "once";
-  /** Show a close button */
+
   dismissible?: boolean;
-  /** Callback when badge is dismissed */
+
   onClose?: () => void;
-  /** Show loading spinner */
+
   loading?: boolean;
-  /** Disable the badge */
+
   disabled?: boolean;
-  /** Accessible label for the close button */
+
   closeLabel?: string;
 }
 
@@ -197,7 +197,7 @@ function Badge({
     [dismissible, handleClose]
   );
 
-  // Simplified dot color logic
+
   const dotColor =
     dot === true
       ? "default"
@@ -313,9 +313,9 @@ function Badge({
   });
 }
 
-// ============================================
-// STATUS BADGE (with dot indicator)
-// ============================================
+
+
+
 interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   status: "success" | "warning" | "error" | "info" | "default";
   size?: "sm" | "default" | "lg";
@@ -389,9 +389,9 @@ function StatusBadge({
   );
 }
 
-// ============================================
-// COUNT BADGE (for notifications, counts etc)
-// ============================================
+
+
+
 type CountFormat = "default" | "short" | "commas";
 
 function formatCount(count: number, format: CountFormat, max: number): string {
@@ -478,9 +478,9 @@ function CountBadge({
   );
 }
 
-// ============================================
-// TAG BADGE (for tagging systems)
-// ============================================
+
+
+
 interface TagBadgeProps extends Omit<BadgeProps, "variant"> {
   variant?:
     | "default"
@@ -537,9 +537,9 @@ function TagBadge({
   );
 }
 
-// ============================================
-// BADGE GROUP (for stacking)
-// ============================================
+
+
+
 interface BadgeGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   gap?: "tight" | "normal" | "loose";
   orientation?: "horizontal" | "vertical";

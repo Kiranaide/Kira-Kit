@@ -15,9 +15,9 @@ import {
   IconChevronRight,
 } from "@tabler/icons-react";
 
-// ============================================
-// TYPES
-// ============================================
+
+
+
 interface UploadedFile {
   id: string;
   file: File;
@@ -29,22 +29,22 @@ interface UploadedFile {
 interface FileUploadProps {
   accept?: string;
   multiple?: boolean;
-  maxSize?: number; // in bytes
+  maxSize?: number;
   maxFiles?: number;
   disabled?: boolean;
   className?: string;
   onFilesChange?: (files: UploadedFile[]) => void;
   onUpload?: (files: File[]) => Promise<void>;
-  enablePreview?: boolean; // Enable file preview modal
+  enablePreview?: boolean;
 }
 
-// ============================================
-// FILE UPLOAD COMPONENT
-// ============================================
+
+
+
 function FileUpload({
   accept,
   multiple = false,
-  maxSize = 10 * 1024 * 1024, // 10MB default
+  maxSize = 10 * 1024 * 1024,
   maxFiles = 10,
   disabled = false,
   className,
@@ -67,7 +67,7 @@ function FileUpload({
       for (const file of filesArray) {
         if (files.length + newFiles.length >= maxFiles) break;
 
-        // Check file size
+
         if (file.size > maxSize) {
           newFiles.push({
             id: crypto.randomUUID(),
@@ -77,7 +77,7 @@ function FileUpload({
           continue;
         }
 
-        // Create preview for images and videos
+
         let preview: string | undefined;
         if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
           preview = URL.createObjectURL(file);
@@ -121,7 +121,7 @@ function FileUpload({
     if (e.target.files && e.target.files.length > 0) {
       processFiles(e.target.files);
     }
-    // Reset input value to allow selecting the same file again
+
     e.target.value = "";
   };
 
@@ -142,7 +142,7 @@ function FileUpload({
     }
   };
 
-  // Cleanup preview URLs on unmount
+
   React.useEffect(() => {
     return () => {
       files.forEach((file) => {
@@ -155,7 +155,7 @@ function FileUpload({
 
   return (
     <div className={cn("space-y-4", className)}>
-      {/* Drop Zone */}
+      {}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -189,7 +189,7 @@ function FileUpload({
         </p>
       </div>
 
-      {/* File Previews */}
+      {}
       {files.length > 0 && (
         <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
           {files.map((file) => (
@@ -203,7 +203,7 @@ function FileUpload({
         </div>
       )}
 
-      {/* Preview Modal */}
+      {}
       {previewFile && (
         <FilePreviewModal
           file={previewFile}
@@ -222,7 +222,7 @@ function FileUpload({
         />
       )}
 
-      {/* Upload Button */}
+      {}
       {files.length > 0 && onUpload && (
         <button
           onClick={handleUpload}
@@ -236,9 +236,9 @@ function FileUpload({
   );
 }
 
-// ============================================
-// FILE PREVIEW COMPONENT
-// ============================================
+
+
+
 interface FilePreviewProps {
   file: UploadedFile;
   onRemove: (id: string) => void;
@@ -273,7 +273,7 @@ function FilePreview({ file, onRemove, onPreview }: FilePreviewProps) {
       )}
       onClick={onPreview}
     >
-      {/* Preview */}
+      {}
       <div className="aspect-square bg-muted flex items-center justify-center">
         {isImage && file.preview ? (
           <img
@@ -321,7 +321,7 @@ function FilePreview({ file, onRemove, onPreview }: FilePreviewProps) {
         )}
       </div>
 
-      {/* File Info */}
+      {}
       <div className="p-2">
         <p className="text-xs font-medium truncate" title={file.file.name}>
           {file.file.name}
@@ -334,7 +334,7 @@ function FilePreview({ file, onRemove, onPreview }: FilePreviewProps) {
         )}
       </div>
 
-      {/* Remove Button */}
+      {}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -349,9 +349,9 @@ function FilePreview({ file, onRemove, onPreview }: FilePreviewProps) {
   );
 }
 
-// ============================================
-// FILE PREVIEW MODAL COMPONENT
-// ============================================
+
+
+
 interface FilePreviewModalProps {
   file: UploadedFile;
   allFiles: UploadedFile[];
@@ -376,7 +376,7 @@ function FilePreviewModal({
   const currentIndex = allFiles.findIndex((f) => f.id === file.id);
   const canNavigate = allFiles.length > 1;
 
-  // Keyboard navigation
+
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -392,7 +392,7 @@ function FilePreviewModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose, onNavigate, canNavigate]);
 
-  // Focus trap
+
   React.useEffect(() => {
     const modal = modalRef.current;
     if (!modal) return;
@@ -449,7 +449,7 @@ function FilePreviewModal({
         className="relative w-full h-full max-w-7xl max-h-[90vh] m-4 flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between p-4 bg-background/80 backdrop-blur rounded-t-lg border-b">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg font-semibold truncate">{file.file.name}</h2>
@@ -501,7 +501,7 @@ function FilePreviewModal({
           </div>
         </div>
 
-        {/* Content */}
+        {}
         <div className="flex-1 flex items-center justify-center p-4 bg-muted/30 overflow-hidden">
           {isImage && file.preview ? (
             <img
@@ -553,7 +553,7 @@ function FilePreviewModal({
           )}
         </div>
 
-        {/* Navigation */}
+        {}
         {canNavigate && (
           <>
             <button
@@ -573,7 +573,7 @@ function FilePreviewModal({
           </>
         )}
 
-        {/* Footer */}
+        {}
         {canNavigate && (
           <div className="p-4 bg-background/80 backdrop-blur rounded-b-lg border-t text-center text-sm text-muted-foreground">
             {currentIndex + 1} of {allFiles.length}
@@ -584,9 +584,9 @@ function FilePreviewModal({
   );
 }
 
-// ============================================
-// HELPERS
-// ============================================
+
+
+
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 B";
   const k = 1024;

@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils"
 import { useAnnounce } from "@/hooks/use-announce"
 import { Button } from "@/components/ui/button"
 
-// ============================================================================
-// STEPPER VARIANTS (CVA)
-// ============================================================================
+
+
+
 
 const stepperVariants = cva("flex", {
   variants: {
@@ -102,9 +102,9 @@ const stepperContentVariants = cva("", {
   },
 })
 
-// ============================================================================
-// TYPES
-// ============================================================================
+
+
+
 
 type StepState = "pending" | "active" | "completed" | "error" | "loading" | "skipped"
 
@@ -145,9 +145,9 @@ function useStepperContext() {
   return context
 }
 
-// ============================================================================
-// REDUCED MOTION HOOK
-// ============================================================================
+
+
+
 
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
@@ -167,38 +167,38 @@ function useReducedMotion() {
   return prefersReducedMotion
 }
 
-// ============================================================================
-// STEPPER ROOT
-// ============================================================================
+
+
+
 
 interface StepperProps
   extends Omit<React.HTMLAttributes<HTMLElement>, "onChange">,
     VariantProps<typeof stepperVariants> {
-  /** Current step (0-indexed) */
+
   value?: number
-  /** Default step for uncontrolled mode */
+
   defaultValue?: number
-  /** Callback when step changes */
+
   onValueChange?: (value: number) => void
-  /** Whether steps must be completed sequentially */
+
   linear?: boolean
-  /** Allow editing completed steps (click to go back) */
+
   editable?: boolean
-  /** Completed step indices */
+
   completedSteps?: number[]
-  /** Error step indices */
+
   errorSteps?: number[]
-  /** Loading step indices */
+
   loadingSteps?: number[]
-  /** Skipped step indices */
+
   skippedSteps?: number[]
-  /** Steps that can be skipped */
+
   skippableSteps?: number[]
-  /** Callback when step is skipped */
+
   onSkip?: (step: number) => void
-  /** Callback when wizard completes */
+
   onComplete?: () => void
-  /** localStorage key for persisting progress */
+
   persistKey?: string
   children: React.ReactNode
 }
@@ -262,7 +262,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
       [skippedStepsProp, internalSkippedSteps]
     )
 
-    // Get visible steps (not hidden by conditions)
+
     const visibleSteps = React.useMemo(() => {
       const visible = new Set<number>()
       registeredSteps.forEach((step) => {
@@ -275,18 +275,18 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
     }, [registeredSteps, stepConditions])
 
     const totalSteps = visibleSteps.size
-    
+
     const visibleStepsArray = React.useMemo(
       () => Array.from(visibleSteps).sort((a, b) => a - b),
       [visibleSteps]
     )
-    
+
     const currentVisibleIndex = React.useMemo(
       () => Math.max(visibleStepsArray.indexOf(value), 0),
       [visibleStepsArray, value]
     )
 
-    // Load persisted progress
+
     React.useEffect(() => {
       if (!persistKey) return
       try {
@@ -301,11 +301,11 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
           }
         }
       } catch {
-        // Ignore parse errors
+
       }
     }, [persistKey, isControlled])
 
-    // Save progress when value changes
+
     React.useEffect(() => {
       if (!persistKey) return
       try {
@@ -318,7 +318,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
           })
         )
       } catch {
-        // Ignore storage errors
+
       }
     }, [persistKey, value, internalSkippedSteps, completedSteps])
 
@@ -344,8 +344,8 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
           setUncontrolledValue(newValue)
         }
         onValueChange?.(newValue)
-        
-        // Check if completed
+
+
         if (newValue >= totalSteps - 1 && completedSteps.has(newValue)) {
           onComplete?.()
         }
@@ -414,18 +414,18 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
       (index: number): boolean => {
         if (!isStepVisible(index)) return false
         if (!linear) return editable || index >= value
-        // In linear mode, can go back to completed steps if editable
+
         if (index < value) return editable
-        // Can only go to next step if current is completed
+
         if (index === value + 1 && completedSteps.has(value)) return true
-        // Can stay on current step
+
         if (index === value) return true
         return false
       },
       [linear, value, completedSteps, editable, isStepVisible]
     )
 
-    // GSAP animation for step transitions
+
     React.useEffect(() => {
       if (!stepperRef.current || reducedMotion) return
 
@@ -442,7 +442,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
       }
     }, [value, reducedMotion])
 
-    // Keyboard navigation handler
+
     const handleKeyDown = React.useCallback(
       (e: React.KeyboardEvent) => {
         const isHorizontal = orientation === "horizontal"
@@ -470,7 +470,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
           case "Enter":
           case " ":
             { e.preventDefault()
-            // Activate the currently focused step
+
             const focusedElement: HTMLElement | null = document.activeElement instanceof HTMLElement ? document.activeElement : null
             if (focusedElement?.hasAttribute("data-value")) {
               const stepValue = parseInt(focusedElement.getAttribute("data-value") || "0", 10)
@@ -481,7 +481,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
             }
             return }
           case "Escape":
-            // Cancel editing / blur focus
+
             e.preventDefault()
             ;(e.target as HTMLElement)?.blur()
             return
@@ -583,20 +583,20 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
 )
 Stepper.displayName = "Stepper"
 
-// ============================================================================
-// STEPPER ITEM
-// ============================================================================
+
+
+
 
 interface StepperItemProps extends React.HTMLAttributes<HTMLLIElement> {
-  /** Step index (0-indexed) */
+
   value: number
-  /** Whether this step is optional */
+
   optional?: boolean
-  /** Disable navigation to this step */
+
   disabled?: boolean
-  /** Condition for showing this step (for branching) */
+
   condition?: boolean
-  /** Step title for screen reader announcement */
+
   title?: string
   children: React.ReactNode
 }
@@ -637,13 +637,13 @@ const StepperItem = React.forwardRef<HTMLLIElement, StepperItemProps>(
     const isSkippable = skippableSteps.has(stepValue) || optional
     const isVisible = isStepVisible(stepValue)
 
-    // Register step on mount
+
     React.useEffect(() => {
       registerStep(stepValue, condition)
       return () => unregisterStep(stepValue)
     }, [stepValue, condition, registerStep, unregisterStep])
 
-    // Store ref for focus management
+
     const itemRef = React.useRef<HTMLLIElement>(null)
     React.useEffect(() => {
       if (itemRef.current) {
@@ -708,7 +708,7 @@ const StepperItem = React.forwardRef<HTMLLIElement, StepperItemProps>(
 )
 StepperItem.displayName = "StepperItem"
 
-// Step Item Context
+
 interface StepperItemContextValue {
   stepValue: number
   state: StepState
@@ -729,18 +729,18 @@ function useStepperItemContext() {
   return context
 }
 
-// ============================================================================
-// STEPPER INDICATOR
-// ============================================================================
+
+
+
 
 interface StepperIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Custom icon for completed state */
+
   completedIcon?: React.ReactNode
-  /** Custom icon for error state */
+
   errorIcon?: React.ReactNode
-  /** Custom icon for loading state */
+
   loadingIcon?: React.ReactNode
-  /** Custom content (overrides default number) */
+
   children?: React.ReactNode
 }
 
@@ -788,9 +788,9 @@ const StepperIndicator = React.forwardRef<HTMLDivElement, StepperIndicatorProps>
 )
 StepperIndicator.displayName = "StepperIndicator"
 
-// ============================================================================
-// STEPPER TITLE
-// ============================================================================
+
+
+
 
 interface StepperTitleProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
@@ -824,9 +824,9 @@ const StepperTitle = React.forwardRef<HTMLDivElement, StepperTitleProps>(
 )
 StepperTitle.displayName = "StepperTitle"
 
-// ============================================================================
-// STEPPER DESCRIPTION
-// ============================================================================
+
+
+
 
 interface StepperDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
   children: React.ReactNode
@@ -854,9 +854,9 @@ const StepperDescription = React.forwardRef<HTMLParagraphElement, StepperDescrip
 )
 StepperDescription.displayName = "StepperDescription"
 
-// ============================================================================
-// STEPPER SEPARATOR
-// ============================================================================
+
+
+
 type StepperSeparatorProps = React.HTMLAttributes<HTMLDivElement>
 
 const StepperSeparator = React.forwardRef<HTMLDivElement, StepperSeparatorProps>(
@@ -886,9 +886,9 @@ const StepperSeparator = React.forwardRef<HTMLDivElement, StepperSeparatorProps>
 )
 StepperSeparator.displayName = "StepperSeparator"
 
-// ============================================================================
-// STEPPER CONTENT
-// ============================================================================
+
+
+
 
 interface StepperContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
@@ -912,14 +912,14 @@ const StepperContent = React.forwardRef<HTMLDivElement, StepperContentProps>(
 )
 StepperContent.displayName = "StepperContent"
 
-// ============================================================================
-// STEPPER PANEL
-// ============================================================================
+
+
+
 
 interface StepperPanelProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Step value this panel belongs to */
+
   value: number
-  /** Force show even when not active (for animations) */
+
   forceMount?: boolean
   children: React.ReactNode
 }
@@ -931,7 +931,7 @@ const StepperPanel = React.forwardRef<HTMLDivElement, StepperPanelProps>(
     const reducedMotion = useReducedMotion()
     const isActive = panelValue === value
 
-    // GSAP animation for panel transitions
+
     React.useEffect(() => {
       if (!panelRef.current || reducedMotion) return
 
@@ -974,9 +974,9 @@ const StepperPanel = React.forwardRef<HTMLDivElement, StepperPanelProps>(
 )
 StepperPanel.displayName = "StepperPanel"
 
-// ============================================================================
-// STEPPER ACTIONS (Navigation buttons)
-// ============================================================================
+
+
+
 
 interface StepperActionsProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode
@@ -998,16 +998,16 @@ const StepperActions = React.forwardRef<HTMLDivElement, StepperActionsProps>(
 )
 StepperActions.displayName = "StepperActions"
 
-// ============================================================================
-// PROGRESS VARIANT
-// ============================================================================
+
+
+
 
 interface StepperProgressProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Show step labels below progress bar */
+
   showLabels?: boolean
-  /** Custom labels for each step */
+
   labels?: string[]
-  /** Total number of steps (overrides context when StepperProgress is used standalone) */
+
   steps?: number
 }
 
@@ -1018,32 +1018,32 @@ const StepperProgress = React.forwardRef<HTMLDivElement, StepperProgressProps>(
     const progressRef = React.useRef<HTMLDivElement>(null)
     const previousProgress = React.useRef<number>(0)
 
-    // Determine total steps: explicit prop > labels length > context registered steps
+
     const effectiveTotalSteps = steps ?? (labels.length > 0 ? labels.length : null) ?? visibleStepsCount ?? contextTotalSteps ?? 0
-    
-    // Determine current step index: use context's currentVisibleIndex if steps are registered,
-    // otherwise use value directly (for standalone progress bar usage)
+
+
+
     const hasRegisteredSteps = contextTotalSteps > 0
     const effectiveCurrentIndex = hasRegisteredSteps ? currentVisibleIndex : value
 
-    // Calculate progress percentage
-    const progress = effectiveTotalSteps > 1 
-      ? (effectiveCurrentIndex / (effectiveTotalSteps - 1)) * 100 
+
+    const progress = effectiveTotalSteps > 1
+      ? (effectiveCurrentIndex / (effectiveTotalSteps - 1)) * 100
       : effectiveCurrentIndex > 0 ? 100 : 0
 
-    // Clamp progress between 0 and 100
+
     const clampedProgress = Math.max(0, Math.min(100, progress))
 
-    // Initialize previous progress on mount
+
     React.useEffect(() => {
       previousProgress.current = clampedProgress
     }, [])
 
-    // GSAP animation for progress bar - optimized for performance
+
     React.useEffect(() => {
       if (!progressRef.current) return
 
-      // Only animate if progress actually changed
+
       if (previousProgress.current === clampedProgress) return
 
       if (reducedMotion) {
@@ -1052,7 +1052,7 @@ const StepperProgress = React.forwardRef<HTMLDivElement, StepperProgressProps>(
         return
       }
 
-      // Fast, snappy animation with overwrite to prevent stacking
+
       gsap.to(progressRef.current, {
         width: `${clampedProgress}%`,
         duration: 0.35,
@@ -1099,38 +1099,38 @@ const StepperProgress = React.forwardRef<HTMLDivElement, StepperProgressProps>(
 )
 StepperProgress.displayName = "StepperProgress"
 
-// ============================================================================
-// STEPPER NAVIGATION (Utility component with Next/Back/Skip buttons)
-// ============================================================================
+
+
+
 
 interface StepperNavigationProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Show back button */
+
   showBack?: boolean
-  /** Show next button */
+
   showNext?: boolean
-  /** Show skip button for skippable steps */
+
   showSkip?: boolean
-  /** Label for back button */
+
   backLabel?: string
-  /** Label for next button */
+
   nextLabel?: string
-  /** Label for skip button */
+
   skipLabel?: string
-  /** Label for finish button (on last step) */
+
   finishLabel?: string
-  /** Callback when back is clicked */
+
   onBack?: () => void
-  /** Callback when next is clicked */
+
   onNext?: () => Promise<boolean> | boolean
-  /** Callback when skip is clicked */
+
   onSkip?: () => void
-  /** Callback when finish is clicked */
+
   onFinish?: () => void
-  /** Whether next is disabled */
+
   nextDisabled?: boolean
-  /** Whether back is disabled */
+
   backDisabled?: boolean
-  /** Show loading state on next button */
+
   loading?: boolean
 }
 
@@ -1259,9 +1259,9 @@ const StepperNavigation = React.forwardRef<HTMLDivElement, StepperNavigationProp
 )
 StepperNavigation.displayName = "StepperNavigation"
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
+
+
+
 
 export {
   Stepper,
@@ -1275,13 +1275,13 @@ export {
   StepperActions,
   StepperProgress,
   StepperNavigation,
-  // Variants
+
   stepperVariants,
   stepperItemVariants,
   stepperIndicatorVariants,
   stepperSeparatorVariants,
   stepperContentVariants,
-  // Context hooks
+
   useStepperContext,
   useStepperItemContext,
 }

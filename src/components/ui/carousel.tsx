@@ -23,9 +23,9 @@ import { cn } from "@/lib/utils"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 
-// ============================================================================
-// VARIANTS
-// ============================================================================
+
+
+
 
 const carouselVariants = cva("relative group", {
   variants: {
@@ -134,9 +134,9 @@ const carouselDotVariants = cva(
   }
 )
 
-// ============================================================================
-// TYPES
-// ============================================================================
+
+
+
 
 interface CarouselProps
   extends Omit<React.ComponentPropsWithoutRef<"div">, "onResize" | "onScroll">,
@@ -237,9 +237,9 @@ type CarouselContextValue = {
   setApi?: (api: ReturnType<typeof useEmblaCarousel>[1]) => void
 }
 
-// ============================================================================
-// CONTEXT
-// ============================================================================
+
+
+
 
 const CarouselContext = React.createContext<CarouselContextValue | undefined>(
   undefined
@@ -253,13 +253,13 @@ const useCarousel = () => {
   return context
 }
 
-// ============================================================================
-// HOOKS
-// ============================================================================
 
-/**
- * Hook to use carousel programmatically
- */
+
+
+
+
+
+
 function useCarouselApi() {
   const [api, setApi] = React.useState<ReturnType<typeof useEmblaCarousel>[1]>()
   const [current, setCurrent] = React.useState(0)
@@ -299,9 +299,9 @@ function useCarouselApi() {
   }
 }
 
-/**
- * Hook to get currently visible slide indices
- */
+
+
+
 function useVisibleSlides() {
   const { emblaApi, variant } = useCarousel()
   const [visibleSlides, setVisibleSlides] = React.useState<number[]>([])
@@ -333,9 +333,9 @@ function useVisibleSlides() {
   return visibleSlides
 }
 
-// ============================================================================
-// COMPONENTS
-// ============================================================================
+
+
+
 
 const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
   (
@@ -374,7 +374,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
     const liveRegionRef = React.useRef<HTMLDivElement>(null)
     const dragAnimationRef = React.useRef<gsap.core.Tween | null>(null)
 
-    // Detect reduced motion preference
+
     React.useEffect(() => {
       const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
       setPrefersReducedMotion(mediaQuery.matches)
@@ -396,7 +396,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       duration: prefersReducedMotion ? 0 : 25,
     })
 
-    // Update state when embla changes
+
     React.useEffect(() => {
       if (!emblaApi) return
 
@@ -407,7 +407,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
         setCanScrollNext(emblaApi.canScrollNext())
         onSlideChange?.(index)
 
-        // Announce to screen readers
+
         if (liveRegionRef.current) {
           liveRegionRef.current.textContent = `Slide ${index + 1} of ${emblaApi.scrollSnapList().length}`
         }
@@ -445,7 +445,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       }
     }, [emblaApi, onSlideChange, onInit, onResize, onSettle, onCarouselScroll, setApi])
 
-    // Autoplay logic
+
     React.useEffect(() => {
       if (!emblaApi || !isAutoPlaying || prefersReducedMotion) {
         if (autoplayTimerRef.current) {
@@ -465,7 +465,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       }
     }, [emblaApi, isAutoPlaying, autoplayInterval, prefersReducedMotion])
 
-    // Pause on hover
+
     const handleMouseEnter = React.useCallback(() => {
       if (pauseOnHover && isAutoPlaying) {
         if (autoplayTimerRef.current) {
@@ -482,7 +482,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       }
     }, [pauseOnHover, isAutoPlaying, emblaApi, autoplayInterval, prefersReducedMotion])
 
-    // Pause on focus
+
     const handleFocusIn = React.useCallback(() => {
       if (pauseOnFocus && isAutoPlaying) {
         if (autoplayTimerRef.current) {
@@ -508,7 +508,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       [pauseOnFocus, isAutoPlaying, emblaApi, autoplayInterval, prefersReducedMotion]
     )
 
-    // Keyboard navigation
+
     const handleKeyDown = React.useCallback(
       (e: React.KeyboardEvent) => {
         if (!emblaApi) return
@@ -630,7 +630,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
           onBlur={handleFocusOut}
           {...props}
         >
-          {/* Live region for screen reader announcements */}
+          {}
           <div
             ref={liveRegionRef}
             aria-live="polite"
@@ -1035,7 +1035,7 @@ const CarouselThumbnails = React.forwardRef<
   const { selectedIndex, scrollTo } = useCarousel()
   const thumbnailsRef = React.useRef<HTMLDivElement>(null)
 
-  // Scroll thumbnail into view when selected
+
   React.useEffect(() => {
     if (thumbnailsRef.current) {
       const thumbnail = thumbnailsRef.current.children[selectedIndex] as HTMLElement
@@ -1090,9 +1090,9 @@ const CarouselThumbnails = React.forwardRef<
 })
 CarouselThumbnails.displayName = "CarouselThumbnails"
 
-// ============================================================================
-// LIGHTBOX COMPONENT
-// ============================================================================
+
+
+
 
 const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>(
   ({ className, images, initialIndex = 0, open, onOpenChange, ...props }, ref) => {
@@ -1109,7 +1109,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
     const initialPinchDistanceRef = React.useRef<number | null>(null)
     const initialZoomRef = React.useRef<number>(1)
 
-    // Reset state when opening
+
     React.useEffect(() => {
       if (open) {
         setCurrentIndex(initialIndex)
@@ -1119,17 +1119,17 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
       }
     }, [open, initialIndex])
 
-    // Touch event handlers for mobile gestures
+
     const handleTouchStart = React.useCallback((e: React.TouchEvent) => {
       if (e.touches.length === 1) {
-        // Single touch - track for swipe
+
         touchStartRef.current = {
           x: e.touches[0].clientX,
           y: e.touches[0].clientY,
           time: Date.now(),
         }
       } else if (e.touches.length === 2) {
-        // Two finger touch - pinch to zoom
+
         const distance = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
@@ -1141,12 +1141,12 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
 
     const handleTouchMove = React.useCallback((e: React.TouchEvent) => {
       if (e.touches.length === 1 && touchStartRef.current && zoom === 1) {
-        // Single touch swipe (only when not zoomed)
+
         const deltaX = e.touches[0].clientX - touchStartRef.current.x
         const deltaY = e.touches[0].clientY - touchStartRef.current.y
         setSwipeOffset({ x: deltaX, y: deltaY })
       } else if (e.touches.length === 2 && initialPinchDistanceRef.current !== null) {
-        // Pinch to zoom
+
         const distance = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
@@ -1156,7 +1156,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
         setZoom(newZoom)
         if (newZoom === 1) setPosition({ x: 0, y: 0 })
       } else if (e.touches.length === 1 && zoom > 1) {
-        // Pan when zoomed
+
         if (touchStartRef.current) {
           setPosition({
             x: e.touches[0].clientX - touchStartRef.current.x + position.x,
@@ -1179,11 +1179,11 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
         const velocityX = Math.abs(deltaX) / deltaTime
         const velocityY = Math.abs(deltaY) / deltaTime
 
-        // Swipe threshold: 100px or velocity > 0.5
+
         const SWIPE_THRESHOLD = 100
         const VELOCITY_THRESHOLD = 0.5
 
-        // Vertical swipe to dismiss
+
         if (Math.abs(deltaY) > SWIPE_THRESHOLD || velocityY > VELOCITY_THRESHOLD) {
           if (Math.abs(deltaY) > Math.abs(deltaX)) {
             onOpenChange(false)
@@ -1194,13 +1194,13 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
           }
         }
 
-        // Horizontal swipe to navigate
+
         if (Math.abs(deltaX) > SWIPE_THRESHOLD || velocityX > VELOCITY_THRESHOLD) {
           if (deltaX > 0) {
-            // Swipe right - previous
+
             setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1))
           } else {
-            // Swipe left - next
+
             setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0))
           }
           setZoom(1)
@@ -1208,20 +1208,20 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
         }
       }
 
-      // Reset swipe offset with animation
+
       setSwipeOffset({ x: 0, y: 0 })
       touchStartRef.current = null
       initialPinchDistanceRef.current = null
     }, [zoom, swipeOffset, images.length, onOpenChange])
 
-    // Double tap to zoom
+
     const lastTapRef = React.useRef<number>(0)
     const handleDoubleTap = React.useCallback(() => {
       const now = Date.now()
       const DOUBLE_TAP_DELAY = 300
 
       if (now - lastTapRef.current < DOUBLE_TAP_DELAY) {
-        // Double tap detected
+
         if (zoom === 1) {
           setZoom(2)
         } else {
@@ -1232,7 +1232,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
       lastTapRef.current = now
     }, [zoom])
 
-    // Keyboard navigation
+
     React.useEffect(() => {
       if (!open) return
 
@@ -1285,7 +1285,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
       return () => document.removeEventListener("keydown", handleKeyDown)
     }, [open, images.length, onOpenChange])
 
-    // Lock body scroll when open
+
     React.useEffect(() => {
       if (open) {
         document.body.style.overflow = "hidden"
@@ -1297,7 +1297,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
       }
     }, [open])
 
-    // Pan/drag handling
+
     const handleMouseDown = (e: React.MouseEvent) => {
       if (zoom > 1) {
         setIsDragging(true)
@@ -1321,7 +1321,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
       setIsDragging(false)
     }
 
-    // GSAP animation for zoom
+
     useGSAP(
       () => {
         if (imageRef.current) {
@@ -1337,7 +1337,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
       { dependencies: [zoom, position.x, position.y] }
     )
 
-    // Download handler
+
     const handleDownload = async () => {
       const image = images[currentIndex]
       try {
@@ -1356,7 +1356,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
       }
     }
 
-    // Share handler
+
     const handleShare = async () => {
       const image = images[currentIndex]
       if (navigator.share) {
@@ -1366,7 +1366,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
             url: image.src,
           })
         } catch {
-          // User cancelled or share failed
+
         }
       } else {
         navigator.clipboard.writeText(image.src)
@@ -1388,7 +1388,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
         aria-label="Image lightbox"
         {...props}
       >
-        {/* Close button */}
+        {}
         <button
           type="button"
           className="absolute top-4 right-4 z-50 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
@@ -1398,12 +1398,12 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
           <IconX className="h-5 w-5" />
         </button>
 
-        {/* Counter */}
+        {}
         <div className="absolute top-4 left-4 z-50 rounded-full bg-white/10 px-3 py-1 text-sm text-white">
           {currentIndex + 1} / {images.length}
         </div>
 
-        {/* Toolbar */}
+        {}
         <div className="absolute top-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/10 p-1">
           <button
             type="button"
@@ -1464,7 +1464,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
           </button>
         </div>
 
-        {/* Navigation buttons */}
+        {}
         <button
           type="button"
           className="absolute left-4 top-1/2 z-50 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
@@ -1490,7 +1490,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
           <IconChevronRight className="h-6 w-6" />
         </button>
 
-        {/* Image container */}
+        {}
         <div
           ref={containerRef}
           className={cn(
@@ -1523,14 +1523,14 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
           />
         </div>
 
-        {/* Image title */}
+        {}
         {images[currentIndex].title && (
           <div className="absolute bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-white/10 px-4 py-2 text-white backdrop-blur-sm">
             {images[currentIndex].title}
           </div>
         )}
 
-        {/* Thumbnail strip */}
+        {}
         <div className="absolute bottom-4 left-1/2 z-50 flex max-w-[80vw] -translate-x-1/2 gap-2 overflow-x-auto rounded-lg bg-white/10 p-2 backdrop-blur-sm">
           {images.map((image, index) => (
             <button
@@ -1580,7 +1580,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
           ))}
         </div>
 
-        {/* Keyboard shortcuts help */}
+        {}
         {showKeyboardHelp && (
           <div className="absolute inset-0 z-60 flex items-center justify-center bg-black/80">
             <div className="rounded-lg bg-zinc-900 p-6 text-white shadow-xl">
@@ -1728,9 +1728,9 @@ const CarouselCounter = React.forwardRef<HTMLDivElement, CarouselCounterProps>(
 )
 CarouselCounter.displayName = "CarouselCounter"
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
+
+
+
 
 export {
   Carousel,

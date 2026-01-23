@@ -25,7 +25,7 @@ const drawerVariants = cva(
       },
     },
     compoundVariants: [
-      // Left/Right sizes (Width)
+
       {
         side: ["left", "right"],
         size: "sm",
@@ -51,7 +51,7 @@ const drawerVariants = cva(
         size: "full",
         className: "w-screen max-w-none",
       },
-      // Top/Bottom sizes (Height)
+
       {
         side: ["top", "bottom"],
         size: "sm",

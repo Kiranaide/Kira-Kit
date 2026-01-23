@@ -15,9 +15,9 @@ import { IconGripVertical } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-// ============================================
-// TYPES
-// ============================================
+
+
+
 type Orientation = "horizontal" | "vertical";
 
 interface ResizableContextValue {
@@ -27,24 +27,24 @@ interface ResizableContextValue {
 export type ResizablePanelRef = PanelImperativeHandle;
 export type ResizablePanelGroupRef = GroupImperativeHandle;
 
-// ============================================
-// CONTEXT
-// ============================================
+
+
+
 const ResizableContext = React.createContext<ResizableContextValue>({
   orientation: "horizontal",
 });
 
-// ============================================
-// RESIZABLE PANEL GROUP
-// ============================================
+
+
+
 interface ResizablePanelGroupProps extends Omit<
   React.ComponentProps<typeof Group>,
   "onLayoutChange"
 > {
   className?: string;
-  /** Auto-save layout to localStorage with this key */
+
   autoSaveId?: string;
-  /** Callback when layout changes - receives object { [panelId]: percentage } */
+
   onLayoutChange?: (layout: Layout) => void;
 }
 
@@ -77,18 +77,18 @@ function ResizablePanelGroup({
 }
 ResizablePanelGroup.displayName = "ResizablePanelGroup";
 
-// ============================================
-// RESIZABLE PANEL
-// ============================================
+
+
+
 interface ResizablePanelProps extends Omit<
   React.ComponentProps<typeof Panel>,
   "onResize" | "panelRef"
 > {
-  /** Panel content */
+
   children?: React.ReactNode;
-  /** Ref for imperative control (collapse, expand, resize) */
+
   panelRef?: React.RefObject<PanelImperativeHandle | null>;
-  /** Called when panel resizes - receives { asPercentage, inPixels } */
+
   onResize?: (size: PanelSize, id: string | number | undefined) => void;
 }
 
@@ -110,9 +110,9 @@ function ResizablePanel({
 }
 ResizablePanel.displayName = "ResizablePanel";
 
-// ============================================
-// RESIZABLE HANDLE
-// ============================================
+
+
+
 const handleVariants = cva(
   "relative flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
   {
@@ -133,13 +133,13 @@ interface ResizableHandleProps
   extends
     VariantProps<typeof handleVariants>,
     Omit<React.ComponentProps<typeof Separator>, "orientation"> {
-  /** Show the grip handle icon */
+
   withHandle?: boolean;
-  /** Additional CSS classes */
+
   className?: string;
-  /** Custom styles */
+
   style?: React.CSSProperties;
-  /** Accessible label for the handle */
+
   "aria-label"?: string;
 }
 
@@ -186,21 +186,21 @@ function ResizableHandle({
   );
 }
 
-// ============================================
-// COLLAPSIBLE PANEL (Higher-level component)
-// ============================================
+
+
+
 interface CollapsiblePanelProps extends ResizablePanelProps {
-  /** ID for the panel, required for collapsible */
+
   id: string;
-  /** Whether the panel is collapsible */
+
   collapsible?: boolean;
-  /** Size when collapsed (percentage) */
+
   collapsedSize?: number | string;
-  /** Default size (percentage) */
+
   defaultSize?: number | string;
-  /** Minimum size (percentage) */
+
   minSize?: number | string;
-  /** Maximum size (percentage) */
+
   maxSize?: number | string;
 }
 
@@ -232,7 +232,7 @@ function CollapsiblePanel({
 }
 CollapsiblePanel.displayName = "CollapsiblePanel";
 
-// Re-export the usePanelRef hook from the library
+
 export { usePanelRef };
 
 export {

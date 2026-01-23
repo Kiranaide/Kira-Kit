@@ -5,9 +5,9 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconLoader2 } from "@tabler/icons-react";
 
-// ============================================
-// TOGGLE GROUP VARIANTS
-// ============================================
+
+
+
 const toggleGroupVariants = cva("inline-flex items-center", {
   variants: {
     variant: {
@@ -27,7 +27,7 @@ const toggleGroupVariants = cva("inline-flex items-center", {
     },
   },
   compoundVariants: [
-    // Vertical orientation adjustments
+
     {
       orientation: "vertical",
       variant: "outline",
@@ -41,18 +41,18 @@ const toggleGroupVariants = cva("inline-flex items-center", {
   },
 });
 
-// ============================================
-// TOGGLE GROUP ITEM VARIANTS
-// ============================================
+
+
+
 const toggleGroupItemVariants = cva(
   [
-    // Base styles
+
     "inline-flex items-center justify-center gap-2 text-sm font-medium transition-all",
-    // Focus styles - WCAG 2.4.7
+
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-    // Disabled styles
+
     "disabled:pointer-events-none disabled:opacity-50",
-    // Icon sizing
+
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
   ],
   {
@@ -92,7 +92,7 @@ const toggleGroupItemVariants = cva(
       },
     },
     compoundVariants: [
-      // Vertical outline borders
+
       {
         variant: "outline",
         className:
@@ -107,9 +107,9 @@ const toggleGroupItemVariants = cva(
   }
 );
 
-// ============================================
-// TYPES
-// ============================================
+
+
+
 type ToggleGroupContextValue = {
   variant: VariantProps<typeof toggleGroupVariants>["variant"];
   size: VariantProps<typeof toggleGroupVariants>["size"];
@@ -127,55 +127,55 @@ const ToggleGroupContext = React.createContext<ToggleGroupContextValue>({
 interface ToggleGroupProps
   extends Omit<ToggleGroupPrimitive.Props, "children" | "orientation">,
     VariantProps<typeof toggleGroupVariants> {
-  /**
-   * Required for accessibility - describes the toggle group purpose
-   * @example aria-label="Text formatting options"
-   */
+
+
+
+
   "aria-label": string;
-  /**
-   * Selection mode
-   * @default false (single selection)
-   */
+
+
+
+
   multiple?: boolean;
-  /**
-   * Whether keyboard navigation loops from last to first item
-   * @default true
-   */
+
+
+
+
   loopFocus?: boolean;
-  /**
-   * Children (ToggleGroupItem components)
-   */
+
+
+
   children: React.ReactNode;
 }
 
 interface ToggleGroupItemProps
   extends Omit<TogglePrimitive.Props, "children">,
     Omit<VariantProps<typeof toggleGroupItemVariants>, "variant"> {
-  /**
-   * Unique value for this item (required for selection tracking)
-   */
+
+
+
   value: string;
-  /**
-   * Color variant for pressed state
-   */
+
+
+
   colorVariant?: VariantProps<typeof toggleGroupItemVariants>["colorVariant"];
-  /**
-   * Show loading spinner
-   */
+
+
+
   loading?: boolean;
-  /**
-   * Content to display
-   */
+
+
+
   children?: React.ReactNode;
-  /**
-   * Required for icon-only items
-   */
+
+
+
   "aria-label"?: string;
 }
 
-// ============================================
-// DEVELOPMENT WARNINGS
-// ============================================
+
+
+
 const warnIfMissingAriaLabel = (
   componentName: string,
   props: { "aria-label"?: string; children?: React.ReactNode }
@@ -202,48 +202,48 @@ const warnIfMissingAriaLabel = (
   }
 };
 
-// ============================================
-// TOGGLE GROUP COMPONENT
-// ============================================
-/**
- * A group of toggle buttons where only one (or multiple) can be pressed at a time.
- *
- * @example
- * ```tsx
- * // Single selection (default)
- * <ToggleGroup aria-label="Text alignment">
- *   <ToggleGroupItem value="left"><IconAlignLeft /></ToggleGroupItem>
- *   <ToggleGroupItem value="center"><IconAlignCenter /></ToggleGroupItem>
- *   <ToggleGroupItem value="right"><IconAlignRight /></ToggleGroupItem>
- * </ToggleGroup>
- *
- * // Multiple selection
- * <ToggleGroup aria-label="Text formatting" multiple>
- *   <ToggleGroupItem value="bold"><IconBold /></ToggleGroupItem>
- *   <ToggleGroupItem value="italic"><IconItalic /></ToggleGroupItem>
- *   <ToggleGroupItem value="underline"><IconUnderline /></ToggleGroupItem>
- * </ToggleGroup>
- *
- * // Segmented control style
- * <ToggleGroup aria-label="View mode" variant="segment">
- *   <ToggleGroupItem value="grid">Grid</ToggleGroupItem>
- *   <ToggleGroupItem value="list">List</ToggleGroupItem>
- * </ToggleGroup>
- *
- * // Controlled
- * const [value, setValue] = useState(["bold"]);
- * <ToggleGroup
- *   aria-label="Formatting"
- *   multiple
- *   value={value}
- *   onValueChange={setValue}
- * >
- *   ...
- * </ToggleGroup>
- * ```
- *
- * @see https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function ToggleGroup({
   className,
   variant = "default",
@@ -255,7 +255,7 @@ function ToggleGroup({
   children,
   ...props
 }: ToggleGroupProps) {
-  // Development accessibility warnings
+
   warnIfMissingAriaLabel("ToggleGroup", props);
 
   const contextValue = React.useMemo<ToggleGroupContextValue>(
@@ -286,30 +286,30 @@ function ToggleGroup({
   );
 }
 
-// ============================================
-// TOGGLE GROUP ITEM COMPONENT
-// ============================================
-/**
- * An individual toggle button within a ToggleGroup.
- *
- * @example
- * ```tsx
- * <ToggleGroupItem value="bold" aria-label="Bold">
- *   <IconBold />
- * </ToggleGroupItem>
- *
- * // With text
- * <ToggleGroupItem value="grid">Grid View</ToggleGroupItem>
- *
- * // Loading state
- * <ToggleGroupItem value="sync" loading>Sync</ToggleGroupItem>
- *
- * // With color variant
- * <ToggleGroupItem value="delete" colorVariant="destructive">
- *   <IconTrash />
- * </ToggleGroupItem>
- * ```
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function ToggleGroupItem({
   className,
   value,
@@ -323,15 +323,15 @@ function ToggleGroupItem({
   const ref = React.useRef<HTMLButtonElement>(null);
   const context = React.useContext(ToggleGroupContext);
 
-  // Resolve values from context
+
   const resolvedSize = size ?? context.size ?? "default";
   const resolvedVariant = context.variant ?? "default";
   const isDisabled = disabled || context.disabled || loading;
 
-  // Development accessibility warnings for icon-only items
+
   warnIfMissingAriaLabel("ToggleGroupItem", { children, ...props });
 
-  // Micro-interaction animation
+
   const handlePressedChange: TogglePrimitive.Props["onPressedChange"] =
     React.useCallback(
       (
@@ -340,10 +340,10 @@ function ToggleGroupItem({
           NonNullable<TogglePrimitive.Props["onPressedChange"]>
         >[1]
       ) => {
-        // Call original handler if provided
+
         props.onPressedChange?.(pressed, eventDetails);
 
-        // Animate
+
         if (ref.current && !loading) {
           ref.current.animate(
             [
@@ -392,8 +392,8 @@ function ToggleGroupItem({
   );
 }
 
-// ============================================
-// EXPORTS
-// ============================================
+
+
+
 export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleGroupItemVariants };
 export type { ToggleGroupProps, ToggleGroupItemProps };

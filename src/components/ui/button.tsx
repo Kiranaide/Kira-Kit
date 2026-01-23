@@ -13,19 +13,19 @@ import {
 import { toast } from "sonner";
 import { IconCopy, IconCheck, IconSparkles } from "@tabler/icons-react";
 
-/**
- * Button variant styles using class-variance-authority
- * @see {@link ButtonProps} for component props
- * @example
- * ```tsx
- * <Button variant="destructive" size="lg">Delete</Button>
- * ```
- */
+
+
+
+
+
+
+
+
 const buttonVariants = cva(
   "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-lg border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none cursor-pointer",
   {
     variants: {
-      /** Visual style variant */
+
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         outline:
@@ -58,7 +58,7 @@ const buttonVariants = cva(
         "warning-ghost":
           "text-warning-foreground hover:bg-warning/10 dark:text-warning",
       },
-      /** Button size */
+
       size: {
         default:
           "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
@@ -72,7 +72,7 @@ const buttonVariants = cva(
           "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
         "icon-lg": "size-9",
       },
-      /** Full width button */
+
       fullWidth: {
         true: "w-full",
         false: "",
@@ -86,28 +86,28 @@ const buttonVariants = cva(
   }
 );
 
-/**
- * Button component props
- * @example
- * ```tsx
- * <Button onClick={handleClick} variant="primary" size="lg">Click Me</Button>
- * <Button holdDuration={1500} onHoldComplete={handleDelete} variant="destructive">Hold to Delete</Button>
- * ```
- */
+
+
+
+
+
+
+
+
 interface ButtonProps
   extends VariantProps<typeof buttonVariants>,
     Omit<React.ComponentPropsWithoutRef<"button">, "size"> {
-  /** Duration in ms for hold-to-confirm functionality */
+
   holdDuration?: number;
-  /** Callback when hold duration completes */
+
   onHoldComplete?: () => void;
-  /** Custom color for the hold progress bar */
+
   progressColor?: string;
-  /** Custom color for the ripple effect */
+
   rippleColor?: string;
 }
 
-/** Available button sizes */
+
 type ButtonSize =
   | "xs"
   | "sm"
@@ -491,9 +491,9 @@ interface ExpandableIconButtonProps extends Omit<ButtonProps, "children"> {
   className?: string;
 }
 
-/**
- * Icon button that expands to show text on hover
- */
+
+
+
 function ExpandableIconButton({
   icon,
   label,
@@ -541,7 +541,7 @@ function ExpandableIconButton({
     <Button
       variant={variant}
       className={cn(
-        // Square minimum but allows expansion - h-8 for height, min-w-8 for min width
+
         "h-8 min-w-8 w-auto px-2 gap-0 [&>span]:gap-0",
         expandDirection === "left" && "flex-row-reverse",
         isHoldButton && "[&>span.relative.z-10.flex.items-center]:gap-0",
@@ -575,9 +575,9 @@ function ExpandableIconButton({
   );
 }
 
-/**
- * Loading spinner for button loading states
- */
+
+
+
 function LoadingSpinner({ size }: { size: ButtonSize | null | undefined }) {
   const spinnerRef = React.useRef<SVGSVGElement>(null);
 
@@ -636,9 +636,9 @@ interface LoadingButtonProps extends ButtonProps {
   loadingText?: string;
 }
 
-/**
- * Button with loading state indicator
- */
+
+
+
 function LoadingButton({
   isLoading = false,
   loadingText,
