@@ -119,7 +119,7 @@ const carouselDotVariants = cva(
     variants: {
       state: {
         inactive: "h-2 w-2 bg-muted-foreground/50 hover:bg-muted-foreground/70",
-        active: "h-2 w-6 bg-primary",
+        active: "h-2 w-4 bg-primary",
       },
       size: {
         sm: "",
@@ -637,7 +637,43 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
             aria-atomic="true"
             className="sr-only"
           />
-          {children}
+          {(() => {
+            const childArray = React.Children.toArray(children)
+
+            const isContentNode = (node: React.ReactNode): boolean => {
+              if (!React.isValidElement(node)) return false
+              if (node.type === CarouselContent) return true
+
+              const nodeChildren = (node as React.ReactElement<{ children?: React.ReactNode }>).props.children
+              let found = false
+              React.Children.forEach(nodeChildren, (child) => {
+                if (!found && isContentNode(child)) {
+                  found = true
+                }
+              })
+              return found
+            }
+
+            const main = childArray.find(isContentNode)
+
+            const overlayNav = childArray.filter(
+              (child) =>
+                React.isValidElement(child) &&
+                (child.type === CarouselPrevious || child.type === CarouselNext)
+            )
+
+            const rest = childArray.filter((child) => child !== main && !overlayNav.includes(child))
+
+            return (
+              <>
+                <div className="relative">
+                  {main}
+                  {overlayNav}
+                </div>
+                {rest}
+              </>
+            )
+          })()}
         </div>
       </CarouselContext.Provider>
     )
@@ -650,6 +686,32 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
     const carouselContext = useCarousel()
     const { emblaRef, orientation, variant } = carouselContext
 
+    const indexedChildren = React.useMemo(() => {
+      let nextIndex = 0
+
+      const injectIndex = (node: React.ReactNode): React.ReactNode => {
+        if (!React.isValidElement(node)) return node
+
+        if (node.type === React.Fragment) {
+          const fragmentChildren = React.Children.map((node as React.ReactElement<{ children: React.ReactNode }>).props.children, injectIndex)
+          return <React.Fragment key={node.key}>{fragmentChildren}</React.Fragment>
+        }
+
+        if (node.type === CarouselItem) {
+          const index = nextIndex
+          nextIndex++
+          return React.cloneElement(
+            node as React.ReactElement<{ index: number }>,
+            { index }
+          )
+        }
+
+        return node
+      }
+
+      return React.Children.map(children, injectIndex)
+    }, [children])
+
     return (
       <div ref={emblaRef} className="overflow-hidden">
         <div
@@ -658,7 +720,7 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
           className={cn(carouselContentVariants({ orientation, variant, className }))}
           {...props}
         >
-          {children}
+          {indexedChildren}
         </div>
       </div>
     )
@@ -669,19 +731,13 @@ CarouselContent.displayName = "CarouselContent"
 const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
   ({ className, variant, size, index = 0, children, ...props }, ref) => {
     const carouselContext = useCarousel()
-    const { emblaApi, carouselId, selectedIndex, slideCount, variant: contextVariant, prefersReducedMotion } = carouselContext
+    const { carouselId, selectedIndex, slideCount, variant: contextVariant, prefersReducedMotion } = carouselContext
     const itemRef = React.useRef<HTMLDivElement>(null)
     const itemVariant = variant ?? contextVariant ?? "default"
     const isActive = index === selectedIndex
     const isFade = itemVariant === "fade"
     const isZoom = itemVariant === "zoom"
     const isFlip = itemVariant === "flip"
-
-    const isVisible = React.useMemo(() => {
-      if (!emblaApi || isFade) return isActive
-      const inView = emblaApi.slidesInView()
-      return inView.includes(index)
-    }, [emblaApi, isFade, isActive, index])
 
     useGSAP(() => {
       if (!itemRef.current) return
@@ -723,7 +779,6 @@ const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
         className={cn(
           carouselItemVariants({ variant: itemVariant, size, className }),
           isFade && (isActive ? "opacity-100 z-10" : "opacity-0 z-0"),
-          !isFade && !isVisible && "opacity-50",
           isFlip && "transform-style-3d backface-hidden"
         )}
         {...props}
@@ -811,7 +866,7 @@ const CarouselDots = React.forwardRef<HTMLDivElement, CarouselDotsProps>(
         id={`carousel-dots-${carouselId}`}
         role="tablist"
         aria-label="Slide navigation"
-        className={cn("flex items-center justify-center gap-2", className)}
+        className={cn("flex items-center justify-center gap-1", className)}
         {...props}
       >
         {children ??
@@ -1359,7 +1414,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
           >
             <IconZoomOut className="h-4 w-4" />
           </button>
-          <span className="min-w-[3rem] text-center text-sm text-white">
+          <span className="min-w-12 text-center text-sm text-white">
             {Math.round(zoom * 100)}%
           </span>
           <button
@@ -1527,7 +1582,7 @@ const CarouselLightbox = React.forwardRef<HTMLDivElement, CarouselLightboxProps>
 
         {/* Keyboard shortcuts help */}
         {showKeyboardHelp && (
-          <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/80">
+          <div className="absolute inset-0 z-60 flex items-center justify-center bg-black/80">
             <div className="rounded-lg bg-zinc-900 p-6 text-white shadow-xl">
               <h3 className="mb-4 text-lg font-semibold">Keyboard Shortcuts</h3>
               <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">

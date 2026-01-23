@@ -144,7 +144,7 @@ function BasicDemo() {
         <IconChevronRight className="h-4 w-4" />
       </CarouselNext>
       <CarouselDots className="mt-4" />
-      <CarouselProgressBar className="mt-4" />
+      <CarouselProgressBar className="mt-2" />
     </Carousel>
   )
 }
@@ -460,20 +460,21 @@ const peekCode = `import { Carousel, CarouselContent, CarouselItem } from "@/com
 
 function FadeDemo() {
   return (
-    <Carousel variant="fade" className="w-full max-w-xl mx-auto">
-      <div className="relative h-[300px]">
-        <CarouselContent>
-          {images.slice(0, 4).map((img) => (
-            <CarouselItem key={img.src} variant="fade">
-              <img
-                src={img.src}
-                alt={img.alt}
-                className="w-full h-[300px] object-cover rounded-lg"
-              />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </div>
+    <Carousel
+      variant="fade"
+      className="w-full max-w-xl mx-auto"
+    >
+      <CarouselContent className="h-[300px]">
+        {images.slice(0, 4).map((img, index) => (
+          <CarouselItem key={img.src} variant="fade" index={index}>
+            <img
+              src={img.src}
+              alt={img.alt}
+              className="w-full h-full object-cover rounded-lg"
+            />
+          </CarouselItem>
+        ))}
+      </CarouselContent>
       <CarouselPrevious />
       <CarouselNext />
       <CarouselDots className="mt-4" />
@@ -484,15 +485,20 @@ function FadeDemo() {
 const fadeCode = `import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 
 <Carousel variant="fade">
-  <div className="relative h-[300px]">
-    <CarouselContent>
-      <CarouselItem variant="fade">
-        {/* content */}
+  <CarouselContent className="h-[300px]">
+    {images.map((img) => (
+      <CarouselItem key={img.src} variant="fade">
+        <img
+          src={img.src}
+          alt={img.alt}
+          className="w-full h-full object-cover rounded-lg"
+        />
       </CarouselItem>
-    </CarouselContent>
-  </div>
+    ))}
+  </CarouselContent>
   <CarouselPrevious />
   <CarouselNext />
+  <CarouselDots />
 </Carousel>`
 
 function LoopDemo() {
