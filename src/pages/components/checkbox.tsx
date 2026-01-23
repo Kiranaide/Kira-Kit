@@ -723,7 +723,7 @@ const usageCode = `import {
 // Main Page Component
 // =============================================================================
 
-export function CheckboxPage() {
+export default function CheckboxPage() {
   const features = [
     {
       title: "Accessible",

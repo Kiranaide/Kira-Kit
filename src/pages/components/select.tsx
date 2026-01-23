@@ -907,5 +907,3 @@ export default function SelectPage() {
     </ComponentPage>
   );
 }
-
-export default SelectPage;
