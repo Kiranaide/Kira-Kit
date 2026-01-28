@@ -14,6 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
+  EasyAccordion,
 } from "@/components/ui/accordion";
 import {
   ComponentPage,
@@ -406,6 +407,312 @@ export function VerticalAccordionDemo() {
   )
 }`;
 
+function EasyAccordionDemo() {
+  return (
+    <EasyAccordion
+      defaultValue={["item-1"]}
+      items={[
+        {
+          value: "item-1",
+          title: "What is Kira Kit?",
+          content:
+            "Kira Kit is a modern React component library built with Base UI, Tailwind CSS, and TypeScript. It provides a set of accessible and customizable UI components.",
+        },
+        {
+          value: "item-2",
+          title: "How do I install it?",
+          content:
+            "Simply copy the components you need into your project. Each component is self-contained and can be customized to fit your design system.",
+        },
+        {
+          value: "item-3",
+          title: "Is it accessible?",
+          content:
+            "Yes! All components are built with accessibility in mind, using Base UI primitives that follow WAI-ARIA guidelines.",
+        },
+      ]}
+    />
+  );
+}
+
+const easyAccordionCode = `import { EasyAccordion } from "@/components/ui/accordion"
+
+export function EasyAccordionDemo() {
+  return (
+    <EasyAccordion
+      defaultValue={["item-1"]}
+      items={[
+        {
+          value: "item-1",
+          title: "What is Kira Kit?",
+          content: "Kira Kit is a modern React component library...",
+        },
+        {
+          value: "item-2",
+          title: "How do I install it?",
+          content: "Simply copy the components you need...",
+        },
+        {
+          value: "item-3",
+          title: "Is it accessible?",
+          content: "Yes! All components are built with accessibility...",
+        },
+      ]}
+    />
+  )
+}`;
+
+function EasyAccordionIconsDemo() {
+  return (
+    <EasyAccordion
+      multiple
+      items={[
+        {
+          value: "files",
+          title: "Project Files",
+          icon: <IconFolder className="w-4 h-4" />,
+          content: "Contains all your project source files and assets.",
+        },
+        {
+          value: "docs",
+          title: "Documentation",
+          icon: <IconFile className="w-4 h-4" />,
+          content: "README, CHANGELOG, and other documentation files.",
+        },
+        {
+          value: "config",
+          title: "Configuration",
+          icon: <IconSettings className="w-4 h-4" />,
+          content:
+            "Project configuration files like tsconfig, vite.config, etc.",
+        },
+      ]}
+    />
+  );
+}
+
+const easyAccordionIconsCode = `import { EasyAccordion } from "@/components/ui/accordion"
+import { IconFolder, IconFile, IconSettings } from "@tabler/icons-react"
+
+export function EasyAccordionIconsDemo() {
+  return (
+    <EasyAccordion
+      multiple
+      items={[
+        {
+          value: "files",
+          title: "Project Files",
+          icon: <IconFolder className="w-4 h-4" />,
+          content: "Contains all your project source files...",
+        },
+        {
+          value: "docs",
+          title: "Documentation",
+          icon: <IconFile className="w-4 h-4" />,
+          content: "README, CHANGELOG, and other docs...",
+        },
+        {
+          value: "config",
+          title: "Configuration",
+          icon: <IconSettings className="w-4 h-4" />,
+          content: "Project configuration files...",
+        },
+      ]}
+    />
+  )
+}`;
+
+function EasyAccordionNestedDemo() {
+  return (
+    <EasyAccordion
+      multiple
+      items={[
+        {
+          value: "frontend",
+          title: "Frontend Development",
+          content: "Modern frontend development stack and tools.",
+          children: [
+            {
+              value: "react",
+              title: "React",
+              content: "A JavaScript library for building user interfaces.",
+            },
+            {
+              value: "vue",
+              title: "Vue.js",
+              content: "The Progressive JavaScript Framework.",
+            },
+            {
+              value: "angular",
+              title: "Angular",
+              content: "The modern web developer's platform.",
+            },
+          ],
+        },
+        {
+          value: "backend",
+          title: "Backend Development",
+          content: "Server-side technologies and frameworks.",
+          children: [
+            {
+              value: "node",
+              title: "Node.js",
+              content: "JavaScript runtime built on Chrome's V8 engine.",
+            },
+            {
+              value: "python",
+              title: "Python",
+              content: "A programming language that lets you work quickly.",
+            },
+          ],
+        },
+      ]}
+    />
+  );
+}
+
+const easyAccordionNestedCode = `import { EasyAccordion } from "@/components/ui/accordion"
+
+export function EasyAccordionNestedDemo() {
+  return (
+    <EasyAccordion
+      multiple
+      items={[
+        {
+          value: "frontend",
+          title: "Frontend Development",
+          content: "Modern frontend development stack...",
+          children: [
+            {
+              value: "react",
+              title: "React",
+              content: "A JavaScript library...",
+            },
+            {
+              value: "vue",
+              title: "Vue.js",
+              content: "The Progressive Framework...",
+            },
+          ],
+        },
+        {
+          value: "backend",
+          title: "Backend Development",
+          content: "Server-side technologies...",
+          children: [
+            {
+              value: "node",
+              title: "Node.js",
+              content: "JavaScript runtime...",
+            },
+          ],
+        },
+      ]}
+    />
+  )
+}`;
+
+function EasyAccordionVariantsDemo() {
+  return (
+    <div className="space-y-4">
+      <EasyAccordion
+        items={[
+          {
+            value: "info",
+            title: "Information",
+            icon: <IconInfoCircle className="w-4 h-4" />,
+            variant: "info",
+            content:
+              "This is an informational message with a blue pastel background.",
+          },
+        ]}
+      />
+      <EasyAccordion
+        items={[
+          {
+            value: "success",
+            title: "Success",
+            icon: <IconCheck className="w-4 h-4" />,
+            variant: "success",
+            content:
+              "This indicates a successful action with a green pastel background.",
+          },
+        ]}
+      />
+      <EasyAccordion
+        items={[
+          {
+            value: "warning",
+            title: "Warning",
+            icon: <IconAlertTriangle className="w-4 h-4" />,
+            variant: "warning",
+            content:
+              "This warns about potential issues with a yellow pastel background.",
+          },
+        ]}
+      />
+    </div>
+  );
+}
+
+const easyAccordionVariantsCode = `import { EasyAccordion } from "@/components/ui/accordion"
+import { IconInfoCircle, IconCheck, IconAlertTriangle } from "@tabler/icons-react"
+
+export function EasyAccordionVariantsDemo() {
+  return (
+    <div className="space-y-4">
+      <EasyAccordion
+        items={[
+          {
+            value: "info",
+            title: "Information",
+            icon: <IconInfoCircle className="w-4 h-4" />,
+            variant: "info",
+            content: "Informational message...",
+          },
+        ]}
+      />
+      <EasyAccordion
+        items={[
+          {
+            value: "success",
+            title: "Success",
+            icon: <IconCheck className="w-4 h-4" />,
+            variant: "success",
+            content: "Successful action...",
+          },
+        ]}
+      />
+    </div>
+  )
+}`;
+
+export function VerticalAccordionDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Nested Accordions</p>
+        <Accordion multiple>
+          <AccordionItem value="item-1">
+            <AccordionTrigger>Parent Item 1</AccordionTrigger>
+            <AccordionContent>
+              <p className="mb-2">This is parent content.</p>
+              <Accordion>
+                <AccordionItem value="child-1">
+                  <AccordionTrigger>Nested Child 1</AccordionTrigger>
+                  <AccordionContent inset>
+                    Nested content with inset padding.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+    </div>
+  );
+}
+
 const usageCode = `import {
   Accordion,
   AccordionItem,
@@ -550,6 +857,58 @@ export default function AccordionPage() {
                 code={verticalCode}
               >
                 <VerticalDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "easy",
+            label: "Easy",
+            demo: (
+              <DemoWrapper
+                title="Easy Accordion"
+                description="Easy accordion with default open item and smooth animations."
+                code={easyAccordionCode}
+              >
+                <EasyAccordionDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "easy-icons",
+            label: "Easy Icons",
+            demo: (
+              <DemoWrapper
+                title="Easy Accordion with Icons"
+                description="Easy accordion with icons and smooth animations."
+                code={easyAccordionIconsCode}
+              >
+                <EasyAccordionIconsDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "easy-nested",
+            label: "Easy Nested",
+            demo: (
+              <DemoWrapper
+                title="Easy Nested Accordion"
+                description="Easy nested accordion with smooth animations."
+                code={easyAccordionNestedCode}
+              >
+                <EasyAccordionNestedDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "easy-variants",
+            label: "Easy Variants",
+            demo: (
+              <DemoWrapper
+                title="Easy Accordion with Variants"
+                description="Easy accordion with variants and smooth animations."
+                code={easyAccordionVariantsCode}
+              >
+                <EasyAccordionVariantsDemo />
               </DemoWrapper>
             ),
           },

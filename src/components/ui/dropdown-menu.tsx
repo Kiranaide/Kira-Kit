@@ -6,10 +6,6 @@ import { Menu } from "@base-ui/react/menu";
 import { cn } from "@/lib/utils";
 import { IconChevronRight, IconCheck, IconLoader } from "@tabler/icons-react";
 
-
-
-
-
 type DropdownMenuProps = Menu.Root.Props;
 
 type DropdownMenuPortalProps = Menu.Portal.Props;
@@ -84,10 +80,6 @@ interface DropdownMenuWithContentProps {
   contentProps?: Omit<DropdownMenuContentProps, "children">;
 }
 
-
-
-
-
 function DropdownMenu({ children, ...props }: DropdownMenuProps) {
   return (
     <Menu.Root data-slot="dropdown-menu" {...props}>
@@ -96,17 +88,9 @@ function DropdownMenu({ children, ...props }: DropdownMenuProps) {
   );
 }
 
-
-
-
-
 function DropdownMenuPortal(props: DropdownMenuPortalProps) {
   return <Menu.Portal data-slot="dropdown-menu-portal" {...props} />;
 }
-
-
-
-
 
 const DropdownMenuTrigger = React.forwardRef<
   HTMLDivElement,
@@ -124,10 +108,6 @@ const DropdownMenuTrigger = React.forwardRef<
   );
 });
 
-
-
-
-
 const DropdownMenuBackdrop = React.forwardRef<
   HTMLDivElement,
   DropdownMenuBackdropProps
@@ -141,10 +121,6 @@ const DropdownMenuBackdrop = React.forwardRef<
     />
   );
 });
-
-
-
-
 
 const DropdownMenuContent = React.forwardRef<
   HTMLDivElement,
@@ -188,10 +164,6 @@ const DropdownMenuContent = React.forwardRef<
   );
 });
 
-
-
-
-
 const DropdownMenuArrow = React.forwardRef<
   HTMLDivElement,
   DropdownMenuArrowProps
@@ -210,20 +182,12 @@ const DropdownMenuArrow = React.forwardRef<
   );
 });
 
-
-
-
-
 const DropdownMenuGroup = React.forwardRef<
   HTMLDivElement,
   DropdownMenuGroupProps
 >(function DropdownMenuGroup({ ...props }, ref) {
   return <Menu.Group ref={ref} data-slot="dropdown-menu-group" {...props} />;
 });
-
-
-
-
 
 const DropdownMenuLabel = React.forwardRef<
   HTMLDivElement,
@@ -243,10 +207,6 @@ const DropdownMenuLabel = React.forwardRef<
     />
   );
 });
-
-
-
-
 
 const DropdownMenuItem = React.forwardRef<
   HTMLDivElement,
@@ -276,10 +236,10 @@ const DropdownMenuItem = React.forwardRef<
       className={cn(
         "relative flex flex-row cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none transition-colors",
         "group/dropdown-menu-item [&_.tabler-icon]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
         "data-disabled:pointer-events-none data-disabled:opacity-50",
         variant === "destructive" &&
-          "text-destructive data-[highlighted]:bg-destructive/10 dark:data-[highlighted]:bg-destructive/20 data-[highlighted]:text-destructive",
+          "text-destructive data-highlighted:bg-destructive/10 dark:data-highlighted:bg-destructive/20 data-highlighted:text-destructive",
         inset && "pl-8",
         className,
       )}
@@ -308,17 +268,9 @@ const DropdownMenuItem = React.forwardRef<
   );
 });
 
-
-
-
-
 function DropdownMenuSub({ ...props }: DropdownMenuSubProps) {
   return <Menu.SubmenuRoot data-slot="dropdown-menu-sub" {...props} />;
 }
-
-
-
-
 
 const DropdownMenuSubTrigger = React.forwardRef<
   HTMLDivElement,
@@ -335,8 +287,8 @@ const DropdownMenuSubTrigger = React.forwardRef<
       className={cn(
         "flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none transition-colors",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
-        "data-[popup-open]:bg-accent data-[popup-open]:text-accent-foreground",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+        "data-popup-open:bg-accent data-popup-open:text-accent-foreground",
         inset && "pl-8",
         className,
       )}
@@ -349,16 +301,12 @@ const DropdownMenuSubTrigger = React.forwardRef<
       )}
       {children}
       <IconChevronRight
-        className="ml-auto h-4 w-4 shrink-0 transition-transform data-[popup-open]:translate-x-0.5"
+        className="ml-auto h-4 w-4 shrink-0 transition-transform data-popup-open:translate-x-0.5"
         aria-hidden="true"
       />
     </Menu.SubmenuTrigger>
   );
 });
-
-
-
-
 
 const DropdownMenuSubContent = React.forwardRef<
   HTMLDivElement,
@@ -386,7 +334,7 @@ const DropdownMenuSubContent = React.forwardRef<
           ref={ref}
           data-slot="dropdown-menu-sub-content"
           className={cn(
-            "z-50 min-w-[8rem] overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg",
+            "z-50 min-w-32 overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg",
             "max-h-(--available-height) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none",
             "data-open:animate-in data-closed:animate-out data-open:fade-in-0 data-closed:fade-out-0 data-open:zoom-in-95 data-closed:zoom-out-95",
             "slide-in-from-left-2",
@@ -398,10 +346,6 @@ const DropdownMenuSubContent = React.forwardRef<
     </Menu.Portal>
   );
 });
-
-
-
-
 
 const DropdownMenuCheckboxItem = React.forwardRef<
   HTMLDivElement,
@@ -418,7 +362,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
       className={cn(
         "relative flex cursor-pointer select-none items-center gap-2 rounded-md py-1.5 pl-8 pr-2 text-sm outline-none transition-colors",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
         "data-disabled:pointer-events-none data-disabled:opacity-50",
         className,
       )}
@@ -443,10 +387,6 @@ const DropdownMenuCheckboxItem = React.forwardRef<
   );
 });
 
-
-
-
-
 const DropdownMenuRadioGroup = React.forwardRef<
   HTMLDivElement,
   DropdownMenuRadioGroupProps
@@ -459,10 +399,6 @@ const DropdownMenuRadioGroup = React.forwardRef<
     />
   );
 });
-
-
-
-
 
 const DropdownMenuRadioItem = React.forwardRef<
   HTMLDivElement,
@@ -479,7 +415,7 @@ const DropdownMenuRadioItem = React.forwardRef<
       className={cn(
         "relative flex cursor-pointer select-none items-center gap-2 rounded-md py-1.5 pl-8 pr-2 text-sm outline-none transition-colors",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
         "data-disabled:pointer-events-none data-disabled:opacity-50",
         className,
       )}
@@ -504,10 +440,6 @@ const DropdownMenuRadioItem = React.forwardRef<
   );
 });
 
-
-
-
-
 const DropdownMenuSeparator = React.forwardRef<
   HTMLDivElement,
   DropdownMenuSeparatorProps
@@ -521,10 +453,6 @@ const DropdownMenuSeparator = React.forwardRef<
     />
   );
 });
-
-
-
-
 
 const DropdownMenuShortcut = React.forwardRef<
   HTMLSpanElement,
@@ -544,10 +472,6 @@ const DropdownMenuShortcut = React.forwardRef<
   );
 });
 
-
-
-
-
 function DropdownMenuWithContent({
   trigger,
   children,
@@ -561,10 +485,6 @@ function DropdownMenuWithContent({
     </DropdownMenu>
   );
 }
-
-
-
-
 
 export {
   DropdownMenu,
@@ -586,10 +506,6 @@ export {
   DropdownMenuArrow,
   DropdownMenuWithContent,
 };
-
-
-
-
 
 export type {
   DropdownMenuProps,

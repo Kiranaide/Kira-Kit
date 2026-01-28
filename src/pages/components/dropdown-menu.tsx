@@ -64,17 +64,14 @@ function BasicDemo() {
           <DropdownMenuGroup>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <IconUser className="w-4 h-4 mr-2" />
+            <DropdownMenuItem icon={<IconUser className="w-4 h-4" />}>
               Profile
             </DropdownMenuItem>
-            <DropdownMenuItem>
-              <IconSettings className="w-4 h-4 mr-2" />
+            <DropdownMenuItem icon={<IconSettings className="w-4 h-4" />}>
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <IconLogout className="w-4 h-4 mr-2" />
+            <DropdownMenuItem icon={<IconLogout className="w-4 h-4" />}>
               Logout
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -106,17 +103,14 @@ export function BasicDropdownDemo() {
         <DropdownMenuGroup>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <IconUser className="w-4 h-4 mr-2" />
+          <DropdownMenuItem icon={<IconUser className="w-4 h-4" />}>
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <IconSettings className="w-4 h-4 mr-2" />
+          <DropdownMenuItem icon={<IconSettings className="w-4 h-4" />}>
             Settings
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <IconLogout className="w-4 h-4 mr-2" />
+          <DropdownMenuItem icon={<IconLogout className="w-4 h-4" />}>
             Logout
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -137,8 +131,10 @@ function IconTriggerDemo() {
           <DropdownMenuItem>Duplicate</DropdownMenuItem>
           <DropdownMenuItem>Archive</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">
-            <IconTrash className="w-4 h-4 mr-2" />
+          <DropdownMenuItem
+            variant="destructive"
+            icon={<IconTrash className="w-4 h-4" />}
+          >
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -168,8 +164,7 @@ export function IconTriggerDemo() {
         <DropdownMenuItem>Duplicate</DropdownMenuItem>
         <DropdownMenuItem>Archive</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">
-          <IconTrash className="w-4 h-4 mr-2" />
+        <DropdownMenuItem variant="destructive" icon={<IconTrash className="w-4 h-4" />}>
           Delete
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -453,8 +448,10 @@ function SubmenuDemo() {
             </DropdownMenuPortal>
           </DropdownMenuSub>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">
-            <IconLogout className="w-4 h-4" />
+          <DropdownMenuItem
+            variant="destructive"
+            icon={<IconLogout className="w-4 h-4" />}
+          >
             Logout
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -505,8 +502,7 @@ export function SubmenuDemo() {
           </DropdownMenuPortal>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">
-          <IconLogout className="w-4 h-4" />
+        <DropdownMenuItem variant="destructive" icon={<IconLogout className="w-4 h-4" />}>
           Logout
         </DropdownMenuItem>
       </DropdownMenuContent>

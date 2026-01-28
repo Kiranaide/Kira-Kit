@@ -1,28 +1,33 @@
-import * as React from "react"
-import { IconEye, IconCode } from "@tabler/icons-react"
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
+import * as React from "react";
+import { IconEye, IconCode } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CodeBlock } from "@/components/ui/code-block"
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CodeBlock } from "@/components/ui/code-block";
 
 // =============================================================================
 // PageHeader - Title, version badge, and description
 // =============================================================================
 interface PageHeaderProps {
-  title: string
-  description: string
-  version?: string
-  badge?: React.ReactNode
+  title: string;
+  description: string;
+  version?: string;
+  badge?: React.ReactNode;
 }
 
-export function PageHeader({ title, description, version, badge }: PageHeaderProps) {
+export function PageHeader({
+  title,
+  description,
+  version,
+  badge,
+}: PageHeaderProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -32,16 +37,16 @@ export function PageHeader({ title, description, version, badge }: PageHeaderPro
       </div>
       <p className="text-lg text-muted-foreground">{description}</p>
     </div>
-  )
+  );
 }
 
 // =============================================================================
 // FeatureCard - Single feature highlight card
 // =============================================================================
 interface FeatureCardProps {
-  title: string
-  description: string
-  icon?: React.ReactNode
+  title: string;
+  description: string;
+  icon?: React.ReactNode;
 }
 
 export function FeatureCard({ title, description, icon }: FeatureCardProps) {
@@ -57,14 +62,14 @@ export function FeatureCard({ title, description, icon }: FeatureCardProps) {
         {description}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // =============================================================================
 // FeatureGrid - 3-column grid of feature cards
 // =============================================================================
 interface FeatureGridProps {
-  features: FeatureCardProps[]
+  features: FeatureCardProps[];
 }
 
 export function FeatureGrid({ features }: FeatureGridProps) {
@@ -74,20 +79,20 @@ export function FeatureGrid({ features }: FeatureGridProps) {
         <FeatureCard key={index} {...feature} />
       ))}
     </div>
-  )
+  );
 }
 
 // =============================================================================
 // DemoWrapper - Preview/Code toggle wrapper for examples
 // =============================================================================
 interface DemoWrapperProps {
-  title: string
-  description?: string
-  code: string
-  language?: string
-  children: React.ReactNode
-  className?: string
-  previewClassName?: string
+  title: string;
+  description?: string;
+  code: string;
+  language?: string;
+  children: React.ReactNode;
+  className?: string;
+  previewClassName?: string;
 }
 
 export function DemoWrapper({
@@ -99,7 +104,7 @@ export function DemoWrapper({
   className,
   previewClassName,
 }: DemoWrapperProps) {
-  const [view, setView] = React.useState<"preview" | "code">("preview")
+  const [view, setView] = React.useState<"preview" | "code">("preview");
 
   return (
     <Card className={className}>
@@ -109,14 +114,23 @@ export function DemoWrapper({
             <CardTitle>{title}</CardTitle>
             {description && <CardDescription>{description}</CardDescription>}
           </div>
-          <Tabs value={view} onValueChange={(v) => setView(v as "preview" | "code")}>
+          <Tabs
+            value={view}
+            onValueChange={(v) => setView(v as "preview" | "code")}
+          >
             <TabsList>
-              <TabsTrigger value="preview" className="gap-1.5">
-                <IconEye className="h-4 w-4" />
+              <TabsTrigger
+                value="preview"
+                className="gap-1.5"
+                icon={<IconEye className="h-4 w-4" />}
+              >
                 Preview
               </TabsTrigger>
-              <TabsTrigger value="code" className="gap-1.5">
-                <IconCode className="h-4 w-4" />
+              <TabsTrigger
+                value="code"
+                className="gap-1.5"
+                icon={<IconCode className="h-4 w-4" />}
+              >
                 Code
               </TabsTrigger>
             </TabsList>
@@ -125,33 +139,38 @@ export function DemoWrapper({
       </CardHeader>
       <CardContent className="pt-6">
         {view === "preview" ? (
-          <div className={cn("min-h-[200px]", previewClassName)}>{children}</div>
+          <div className={cn("min-h-[200px]", previewClassName)}>
+            {children}
+          </div>
         ) : (
           <CodeBlock code={code} language={language} />
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // =============================================================================
 // DemoTabs - Tabbed demo sections
 // =============================================================================
 interface DemoTab {
-  value: string
-  label: string
-  demo: React.ReactNode
+  value: string;
+  label: string;
+  demo: React.ReactNode;
 }
 
 interface DemoTabsProps {
-  tabs: DemoTab[]
-  defaultValue?: string
-  className?: string
+  tabs: DemoTab[];
+  defaultValue?: string;
+  className?: string;
 }
 
 export function DemoTabs({ tabs, defaultValue, className }: DemoTabsProps) {
   return (
-    <Tabs defaultValue={defaultValue || tabs[0]?.value} className={cn("space-y-6", className)}>
+    <Tabs
+      defaultValue={defaultValue || tabs[0]?.value}
+      className={cn("space-y-6", className)}
+    >
       <TabsList className="flex-wrap">
         {tabs.map((tab) => (
           <TabsTrigger key={tab.value} value={tab.value}>
@@ -165,15 +184,15 @@ export function DemoTabs({ tabs, defaultValue, className }: DemoTabsProps) {
         </TabsContent>
       ))}
     </Tabs>
-  )
+  );
 }
 
 // =============================================================================
 // KeyboardShortcut - Single keyboard shortcut display
 // =============================================================================
 interface KeyboardShortcutProps {
-  keys: string
-  description: string
+  keys: string;
+  description: string;
 }
 
 export function KeyboardShortcut({ keys, description }: KeyboardShortcutProps) {
@@ -184,19 +203,23 @@ export function KeyboardShortcut({ keys, description }: KeyboardShortcutProps) {
       </kbd>
       <span className="text-sm text-muted-foreground">{description}</span>
     </div>
-  )
+  );
 }
 
 // =============================================================================
 // KeyboardShortcuts - Grid of keyboard shortcuts
 // =============================================================================
 interface KeyboardShortcutsProps {
-  shortcuts: KeyboardShortcutProps[]
-  title?: string
-  description?: string
+  shortcuts: KeyboardShortcutProps[];
+  title?: string;
+  description?: string;
 }
 
-export function KeyboardShortcuts({ shortcuts, title = "Keyboard Navigation", description = "Full keyboard support for accessibility" }: KeyboardShortcutsProps) {
+export function KeyboardShortcuts({
+  shortcuts,
+  title = "Keyboard Navigation",
+  description = "Full keyboard support for accessibility",
+}: KeyboardShortcutsProps) {
   return (
     <Card>
       <CardHeader>
@@ -211,20 +234,25 @@ export function KeyboardShortcuts({ shortcuts, title = "Keyboard Navigation", de
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // =============================================================================
 // UsageBlock - Usage code example section
 // =============================================================================
 interface UsageBlockProps {
-  code: string
-  title?: string
-  description?: string
-  language?: string
+  code: string;
+  title?: string;
+  description?: string;
+  language?: string;
 }
 
-export function UsageBlock({ code, title = "Usage", description = "Basic implementation example", language = "tsx" }: UsageBlockProps) {
+export function UsageBlock({
+  code,
+  title = "Usage",
+  description = "Basic implementation example",
+  language = "tsx",
+}: UsageBlockProps) {
   return (
     <Card>
       <CardHeader>
@@ -235,31 +263,35 @@ export function UsageBlock({ code, title = "Usage", description = "Basic impleme
         <CodeBlock code={code} language={language} />
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // =============================================================================
 // APIReference - API reference table
 // =============================================================================
 interface APIProp {
-  prop: string
-  type: string
-  default?: string
-  description: string
+  prop: string;
+  type: string;
+  default?: string;
+  description: string;
 }
 
 interface APISection {
-  title: string
-  props: APIProp[]
+  title: string;
+  props: APIProp[];
 }
 
 interface APIReferenceProps {
-  sections: APISection[]
-  title?: string
-  description?: string
+  sections: APISection[];
+  title?: string;
+  description?: string;
 }
 
-export function APIReference({ sections, title = "API Reference", description = "Key props and configuration options" }: APIReferenceProps) {
+export function APIReference({
+  sections,
+  title = "API Reference",
+  description = "Key props and configuration options",
+}: APIReferenceProps) {
   return (
     <Card>
       <CardHeader>
@@ -274,9 +306,15 @@ export function APIReference({ sections, title = "API Reference", description = 
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">Prop</th>
-                    <th className="py-2 text-left font-medium w-[200px]">Type</th>
-                    <th className="py-2 text-left font-medium w-[100px]">Default</th>
+                    <th className="py-2 text-left font-medium w-[140px]">
+                      Prop
+                    </th>
+                    <th className="py-2 text-left font-medium w-[200px]">
+                      Type
+                    </th>
+                    <th className="py-2 text-left font-medium w-[100px]">
+                      Default
+                    </th>
                     <th className="py-2 text-left font-medium">Description</th>
                   </tr>
                 </thead>
@@ -284,9 +322,15 @@ export function APIReference({ sections, title = "API Reference", description = 
                   {section.props.map((prop, propIndex) => (
                     <tr key={propIndex}>
                       <td className="py-2 font-mono text-xs">{prop.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{prop.type}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">{prop.default || "-"}</td>
-                      <td className="py-2 text-muted-foreground">{prop.description}</td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {prop.type}
+                      </td>
+                      <td className="py-2 font-mono text-xs text-muted-foreground">
+                        {prop.default || "-"}
+                      </td>
+                      <td className="py-2 text-muted-foreground">
+                        {prop.description}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -296,22 +340,22 @@ export function APIReference({ sections, title = "API Reference", description = 
         ))}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // =============================================================================
 // ChangelogEntry - Single changelog entry
 // =============================================================================
 interface ChangelogChange {
-  type: "added" | "changed" | "fixed" | "deprecated" | "removed" | "breaking"
-  title: string
-  description?: string
+  type: "added" | "changed" | "fixed" | "deprecated" | "removed" | "breaking";
+  title: string;
+  description?: string;
 }
 
 interface ChangelogEntryProps {
-  version: string
-  date: string
-  changes: ChangelogChange[]
+  version: string;
+  date: string;
+  changes: ChangelogChange[];
 }
 
 const changeTypeVariants: Record<ChangelogChange["type"], string> = {
@@ -321,9 +365,13 @@ const changeTypeVariants: Record<ChangelogChange["type"], string> = {
   deprecated: "warning",
   removed: "destructive",
   breaking: "destructive",
-}
+};
 
-export function ChangelogEntry({ version, date, changes }: ChangelogEntryProps) {
+export function ChangelogEntry({
+  version,
+  date,
+  changes,
+}: ChangelogEntryProps) {
   return (
     <div className="relative pl-6 border-l-2 border-border">
       <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-background border-2 border-border" />
@@ -334,32 +382,47 @@ export function ChangelogEntry({ version, date, changes }: ChangelogEntryProps) 
       <div className="space-y-3">
         {changes.map((change, index) => (
           <div key={index} className="flex flex-wrap items-start gap-2">
-            <Badge variant={changeTypeVariants[change.type] as "success" | "secondary" | "info" | "warning" | "destructive"}>
+            <Badge
+              variant={
+                changeTypeVariants[change.type] as
+                  | "success"
+                  | "secondary"
+                  | "info"
+                  | "warning"
+                  | "destructive"
+              }
+            >
               {change.type}
             </Badge>
             <div className="flex-1">
               <span className="font-medium text-sm">{change.title}</span>
               {change.description && (
-                <p className="text-sm text-muted-foreground mt-0.5">{change.description}</p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  {change.description}
+                </p>
               )}
             </div>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 // =============================================================================
 // Changelog - Full changelog section
 // =============================================================================
 interface ChangelogProps {
-  entries: ChangelogEntryProps[]
-  title?: string
-  description?: string
+  entries: ChangelogEntryProps[];
+  title?: string;
+  description?: string;
 }
 
-export function Changelog({ entries, title = "Changelog", description = "Version history and migration notes" }: ChangelogProps) {
+export function Changelog({
+  entries,
+  title = "Changelog",
+  description = "Version history and migration notes",
+}: ChangelogProps) {
   return (
     <Card>
       <CardHeader>
@@ -372,36 +435,39 @@ export function Changelog({ entries, title = "Changelog", description = "Version
         ))}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // =============================================================================
 // ComponentPage - Full component page layout
 // =============================================================================
 interface ComponentPageProps {
-  children: React.ReactNode
-  className?: string
+  children: React.ReactNode;
+  className?: string;
 }
 
 export function ComponentPage({ children, className }: ComponentPageProps) {
   return (
-    <div className={cn("p-8 max-w-6xl space-y-10", className)}>
-      {children}
-    </div>
-  )
+    <div className={cn("p-8 max-w-6xl space-y-10", className)}>{children}</div>
+  );
 }
 
 // =============================================================================
 // Section - Simple section wrapper
 // =============================================================================
 interface SectionProps {
-  title?: string
-  description?: string
-  children: React.ReactNode
-  className?: string
+  title?: string;
+  description?: string;
+  children: React.ReactNode;
+  className?: string;
 }
 
-export function Section({ title, description, children, className }: SectionProps) {
+export function Section({
+  title,
+  description,
+  children,
+  className,
+}: SectionProps) {
   return (
     <section className={cn("space-y-4", className)}>
       {title && (
@@ -414,5 +480,5 @@ export function Section({ title, description, children, className }: SectionProp
       )}
       {children}
     </section>
-  )
+  );
 }

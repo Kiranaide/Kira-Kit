@@ -10,8 +10,6 @@ import {
   endOfMonth,
   startOfYear,
   endOfYear,
-  setMonth,
-  setYear,
 } from "date-fns";
 import {
   IconCalendar,
@@ -23,28 +21,20 @@ import {
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-
-
-
-
-
+import {
+  MonthYearPicker,
+  toggleButtonVariants,
+} from "@/components/ui/calendar";
 
 type DatePickerMode = "single" | "range";
 
-
 type ApplyMode = "immediate" | "confirm";
 
-
 interface DatePreset {
-
   label: string;
 
   getValue: () => Date | { from: Date; to: Date };
 }
-
-
-
-
 
 const datePickerTriggerVariants = cva(
   "flex items-center gap-2 rounded-lg border cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
@@ -68,7 +58,7 @@ const datePickerTriggerVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 const calendarSizeConfig = {
@@ -113,28 +103,11 @@ const calendarSizeConfig = {
   },
 };
 
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-
-
 const singlePresets: DatePreset[] = [
   { label: "Today", getValue: () => new Date() },
   { label: "Yesterday", getValue: () => subDays(new Date(), 1) },
   { label: "A week ago", getValue: () => subDays(new Date(), 7) },
 ];
-
 
 const rangePresets: DatePreset[] = [
   {
@@ -161,10 +134,6 @@ const rangePresets: DatePreset[] = [
   },
 ];
 
-
-
-
-
 function CustomChevron({
   orientation = "down",
   size = "default",
@@ -186,10 +155,6 @@ function CustomChevron({
   }
 }
 
-
-
-
-
 interface MonthCaptionProps {
   displayMonth: Date;
   onMonthChange: (month: Date) => void;
@@ -201,141 +166,53 @@ function MonthCaption({
   onMonthChange,
   size,
 }: MonthCaptionProps) {
-  const [showMonthPicker, setShowMonthPicker] = React.useState(false);
-  const [showYearPicker, setShowYearPicker] = React.useState(false);
-  const sizeConfig = calendarSizeConfig[size];
-
-  const currentYear = displayMonth.getFullYear();
-  const startYear = Math.floor(currentYear / 12) * 12;
-  const years = Array.from({ length: 12 }, (_, i) => startYear + i);
-
-  const handleMonthSelect = (monthIndex: number) => {
-    const newDate = setMonth(displayMonth, monthIndex);
-    onMonthChange(newDate);
-    setShowMonthPicker(false);
-  };
-
-  const handleYearSelect = (year: number) => {
-    const newDate = setYear(displayMonth, year);
-    onMonthChange(newDate);
-    setShowYearPicker(false);
-  };
+  const [pickerView, setPickerView] = React.useState<"month" | "year" | null>(
+    null,
+  );
 
   return (
-    <div className="relative flex items-center gap-1">
+    <div className="relative">
       {}
-      <button
-        type="button"
-        onClick={() => {
-          setShowMonthPicker(!showMonthPicker);
-          setShowYearPicker(false);
-        }}
-        className={cn(
-          sizeConfig.dropdown,
-          "flex items-center gap-1 rounded-md border border-border bg-background font-medium hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-        )}
-      >
-        {format(displayMonth, "MMMM")}
-        <IconChevronDown className={sizeConfig.dropdownIcon} />
-      </button>
+      <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg border border-border">
+        <button
+          type="button"
+          onClick={() => setPickerView(pickerView === "month" ? null : "month")}
+          className={toggleButtonVariants({ active: pickerView === "month" })}
+        >
+          {format(displayMonth, "MMM")}
+        </button>
+        <div className="w-px h-4 bg-border mx-0.5" />
+        <button
+          type="button"
+          onClick={() => setPickerView(pickerView === "year" ? null : "year")}
+          className={toggleButtonVariants({ active: pickerView === "year" })}
+        >
+          {format(displayMonth, "yyyy")}
+        </button>
+      </div>
 
       {}
-      <button
-        type="button"
-        onClick={() => {
-          setShowYearPicker(!showYearPicker);
-          setShowMonthPicker(false);
-        }}
-        className={cn(
-          sizeConfig.dropdown,
-          "flex items-center gap-1 rounded-md border border-border bg-background font-medium hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
-        )}
-      >
-        {format(displayMonth, "yyyy")}
-        <IconChevronDown className={sizeConfig.dropdownIcon} />
-      </button>
-
-      {}
-      {showMonthPicker && (
-        <div className="absolute top-full left-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px] animate-in fade-in-0 zoom-in-95">
-          <div className="grid grid-cols-3 gap-1">
-            {MONTHS.map((month, index) => (
-              <button
-                key={month}
-                type="button"
-                onClick={() => handleMonthSelect(index)}
-                className={cn(
-                  "px-2 py-1.5 rounded-md text-xs font-medium transition-colors",
-                  displayMonth.getMonth() === index
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                )}
-              >
-                {month.slice(0, 3)}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {}
-      {showYearPicker && (
-        <div className="absolute top-full left-0 mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-2 min-w-[180px] animate-in fade-in-0 zoom-in-95">
-          <div className="flex items-center justify-between mb-2">
-            <button
-              type="button"
-              onClick={() => {
-                const newDate = setYear(displayMonth, currentYear - 12);
-                onMonthChange(newDate);
-              }}
-              className="p-1 rounded hover:bg-muted"
-            >
-              <IconChevronLeft className="h-4 w-4" />
-            </button>
-            <span className="text-xs font-medium">
-              {startYear} - {startYear + 11}
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                const newDate = setYear(displayMonth, currentYear + 12);
-                onMonthChange(newDate);
-              }}
-              className="p-1 rounded hover:bg-muted"
-            >
-              <IconChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="grid grid-cols-3 gap-1">
-            {years.map((year) => (
-              <button
-                key={year}
-                type="button"
-                onClick={() => handleYearSelect(year)}
-                className={cn(
-                  "px-2 py-1.5 rounded-md text-xs font-medium transition-colors",
-                  currentYear === year
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                )}
-              >
-                {year}
-              </button>
-            ))}
-          </div>
+      {pickerView && (
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50">
+          <MonthYearPicker
+            key={pickerView}
+            value={displayMonth}
+            onChange={(date) => {
+              onMonthChange(date);
+              setPickerView(null);
+            }}
+            size={size}
+            defaultView={pickerView}
+          />
         </div>
       )}
     </div>
   );
 }
 
-
-
-
-
-interface DatePickerProps
-  extends VariantProps<typeof datePickerTriggerVariants> {
-
+interface DatePickerProps extends VariantProps<
+  typeof datePickerTriggerVariants
+> {
   mode?: DatePickerMode;
 
   value?: Date | { from?: Date; to?: Date };
@@ -358,10 +235,6 @@ interface DatePickerProps
 
   className?: string;
 }
-
-
-
-
 
 function DatePicker({
   mode = "single",
@@ -389,13 +262,11 @@ function DatePicker({
 
   const sizeConfig = calendarSizeConfig[size || "default"];
 
-
   React.useEffect(() => {
     if (isOpen && applyMode === "confirm") {
       setPendingValue(value);
     }
   }, [isOpen, applyMode, value]);
-
 
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -413,7 +284,6 @@ function DatePicker({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [applyMode]);
 
-
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
@@ -426,10 +296,6 @@ function DatePicker({
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, applyMode]);
-
-
-
-
 
   const currentValue = applyMode === "confirm" && isOpen ? pendingValue : value;
 
@@ -455,12 +321,8 @@ function DatePicker({
     return matchers.length > 0 ? matchers : undefined;
   }, [minDate, maxDate]);
 
-
-
-
-
   const handleCalendarSelect = (
-    date: Date | Date[] | { from?: Date; to?: Date } | undefined
+    date: Date | Date[] | { from?: Date; to?: Date } | undefined,
   ) => {
     if (applyMode === "confirm") {
       setPendingValue(date as Date | { from?: Date; to?: Date });
@@ -505,7 +367,7 @@ function DatePicker({
     const today = new Date();
     setMonthState(today);
     handleCalendarSelect(
-      mode === "single" ? today : { from: today, to: today }
+      mode === "single" ? today : { from: today, to: today },
     );
   };
 
@@ -520,12 +382,8 @@ function DatePicker({
     }) => (
       <CustomChevron orientation={props.orientation} size={size || "default"} />
     ),
-    [size]
+    [size],
   );
-
-
-
-
 
   return (
     <div ref={containerRef} className={cn("relative w-full", className)}>
@@ -539,7 +397,7 @@ function DatePicker({
         aria-label={ariaLabel || `Date picker, ${formatValue()}`}
         className={cn(
           datePickerTriggerVariants({ variant, size }),
-          disabled && "opacity-50 pointer-events-none"
+          disabled && "opacity-50 pointer-events-none",
         )}
         onClick={() => setIsOpen(!isOpen)}
         onKeyDown={handleTriggerKeyDown}
@@ -574,7 +432,7 @@ function DatePicker({
           aria-label={`Choose ${mode === "range" ? "date range" : "date"}`}
           className={cn(
             "absolute z-50 mt-2 flex flex-col rounded-xl border border-border bg-popover shadow-xl",
-            "animate-in fade-in-0 zoom-in-95 duration-200"
+            "animate-in fade-in-0 zoom-in-95 duration-200",
           )}
         >
           <div className="flex">
@@ -594,7 +452,7 @@ function DatePicker({
                         "w-full text-left px-3 py-2 rounded-lg",
                         "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                         "transition-colors font-medium",
-                        sizeConfig.caption
+                        sizeConfig.caption,
                       )}
                     >
                       {preset.label}
@@ -617,7 +475,7 @@ function DatePicker({
                   }}
                   className={cn(
                     sizeConfig.nav,
-                    "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   )}
                   aria-label="Previous month"
                 >
@@ -639,7 +497,7 @@ function DatePicker({
                   }}
                   className={cn(
                     sizeConfig.nav,
-                    "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   )}
                   aria-label="Next month"
                 >
@@ -653,7 +511,7 @@ function DatePicker({
                   mode,
                   selected: currentValue as unknown as Date | undefined,
                   onSelect: handleCalendarSelect as (
-                    date: Date | { from?: Date; to?: Date } | undefined
+                    date: Date | { from?: Date; to?: Date } | undefined,
                   ) => void,
                   disabled: disabledMatcher,
                   autoFocus: true,
@@ -672,18 +530,18 @@ function DatePicker({
                     weekdays: "grid grid-cols-7",
                     weekday: cn(
                       sizeConfig.weekday,
-                      "flex items-center justify-center text-muted-foreground font-medium"
+                      "flex items-center justify-center text-muted-foreground font-medium",
                     ),
                     week: "grid grid-cols-7",
                     day: cn(
                       sizeConfig.day,
-                      "flex items-center justify-center p-0"
+                      "flex items-center justify-center p-0",
                     ),
                     day_button: cn(
                       sizeConfig.dayButton,
                       "w-full h-full flex items-center justify-center rounded-md",
                       "hover:bg-muted transition-colors",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     ),
                     selected:
                       "!bg-primary !text-primary-foreground font-medium hover:!bg-primary/90 !rounded-lg",
@@ -698,23 +556,21 @@ function DatePicker({
                     hidden: "invisible",
                   },
                   footer:
-                    applyMode === "immediate"
-                      ? (
-                        <div className="mt-3 pt-3 border-t border-border">
-                          <button
-                            type="button"
-                            onClick={handleTodayClick}
-                            className={cn(
-                              "w-full py-1.5 rounded-lg transition-colors font-medium",
-                              "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                              sizeConfig.caption
-                            )}
-                          >
-                            Today
-                          </button>
-                        </div>
-                      )
-                      : null,
+                    applyMode === "immediate" ? (
+                      <div className="mt-3 pt-3 border-t border-border">
+                        <button
+                          type="button"
+                          onClick={handleTodayClick}
+                          className={cn(
+                            "w-full py-1.5 rounded-lg transition-colors font-medium",
+                            "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                            sizeConfig.caption,
+                          )}
+                        >
+                          Today
+                        </button>
+                      </div>
+                    ) : null,
                 } as unknown as DayPickerProps;
 
                 return <DayPicker {...dayPickerProps} />;
@@ -730,12 +586,12 @@ function DatePicker({
                   ? pendingValue instanceof Date
                     ? format(pendingValue, "PPP")
                     : "from" in pendingValue && pendingValue.from
-                    ? `${format(pendingValue.from, "MMM dd")}${
-                        pendingValue.to
-                          ? ` - ${format(pendingValue.to, "MMM dd, yyyy")}`
-                          : " - ..."
-                      }`
-                    : "Select a date"
+                      ? `${format(pendingValue.from, "MMM dd")}${
+                          pendingValue.to
+                            ? ` - ${format(pendingValue.to, "MMM dd, yyyy")}`
+                            : " - ..."
+                        }`
+                      : "Select a date"
                   : "Select a date"}
               </div>
               <div className="flex items-center gap-2">

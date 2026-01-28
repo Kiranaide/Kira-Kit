@@ -35,7 +35,7 @@ const accordionTriggerVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 const accordionContentVariants = cva("", {
@@ -68,7 +68,7 @@ function Accordion({
     if (scrollIntoView && value.length > 0) {
       const lastOpened = value[value.length - 1];
       const trigger = document.querySelector<HTMLElement>(
-        `[data-accordion-item-value="${lastOpened}"] [data-slot="accordion-trigger"]`
+        `[data-accordion-item-value="${lastOpened}"] [data-slot="accordion-trigger"]`,
       );
       trigger?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
@@ -116,7 +116,7 @@ function AccordionItem({
       className={cn(
         "border border-border rounded-lg overflow-hidden",
         disabled && "opacity-50 cursor-not-allowed",
-        className
+        className,
       )}
       onOpenChange={handleOpenChange}
       disabled={disabled}
@@ -152,7 +152,7 @@ function AccordionTrigger({
   const defaultChevron = (
     <span
       data-accordion-chevron
-      className="inline-block shrink-0 transition-transform duration-300 ease-out [[data-panel-open]_&]:rotate-180"
+      className="inline-block shrink-0 transition-transform duration-300 ease-out in-data-panel-open:rotate-180"
     >
       <IconChevronDown className="h-4 w-4" />
     </span>
@@ -248,7 +248,7 @@ function AccordionContent({
             onComplete: () => {
               gsap.set(panel, { height: "auto" });
             },
-          }
+          },
         );
       } else {
         gsap.set(panel, { height: contentHeight });
@@ -281,7 +281,7 @@ function AccordionContent({
   const skeletonWidths = React.useMemo(() => {
     const widths = ["75%", "85%", "60%", "90%", "70%"];
     return Array.from({ length: skeletonLines }).map(
-      (_, i) => widths[i % widths.length]
+      (_, i) => widths[i % widths.length],
     );
   }, [skeletonLines]);
 
@@ -301,8 +301,8 @@ function AccordionContent({
   const renderContent = shouldRenderChildren
     ? children
     : showSkeleton
-    ? skeleton
-    : null;
+      ? skeleton
+      : null;
 
   return (
     <AccordionPrimitive.Panel
@@ -332,3 +332,102 @@ export {
   accordionContentVariants,
 };
 export type { AccordionTriggerProps, AccordionContentProps };
+
+// ============================================================================
+// EasyAccordion - Simplified single-import API
+// ============================================================================
+
+type AccordionItemData = {
+  value: string;
+  title: React.ReactNode;
+  content: React.ReactNode;
+  disabled?: boolean;
+  icon?: React.ReactNode;
+  variant?: VariantProps<typeof accordionTriggerVariants>["variant"];
+  size?: VariantProps<typeof accordionTriggerVariants>["size"];
+  showArrow?: boolean;
+  chevronIcon?: React.ReactNode;
+  chevronPosition?: "start" | "end";
+  inset?: boolean;
+  lazyMount?: boolean;
+  showSkeleton?: boolean;
+  skeletonLines?: number;
+  children?: AccordionItemData[];
+};
+
+type EasyAccordionProps = Omit<
+  React.ComponentProps<typeof AccordionPrimitive.Root>,
+  "children"
+> & {
+  items: AccordionItemData[];
+  variant?: VariantProps<typeof accordionTriggerVariants>["variant"];
+  size?: VariantProps<typeof accordionTriggerVariants>["size"];
+  scrollIntoView?: boolean;
+};
+
+function renderAccordionItem(
+  item: AccordionItemData,
+  defaultVariant: VariantProps<
+    typeof accordionTriggerVariants
+  >["variant"] = "default",
+  defaultSize: VariantProps<
+    typeof accordionTriggerVariants
+  >["size"] = "default",
+  level: number = 0,
+): React.ReactElement {
+  const hasChildren = item.children && item.children.length > 0;
+
+  return (
+    <AccordionItem key={item.value} value={item.value} disabled={item.disabled}>
+      <AccordionTrigger
+        variant={item.variant ?? defaultVariant}
+        size={item.size ?? defaultSize}
+        icon={item.icon}
+        showArrow={item.showArrow ?? true}
+        chevronIcon={item.chevronIcon}
+        chevronPosition={item.chevronPosition ?? "end"}
+      >
+        {item.title}
+      </AccordionTrigger>
+      <AccordionContent
+        size={item.size ?? defaultSize}
+        inset={item.inset ?? level > 0}
+        lazyMount={item.lazyMount}
+        showSkeleton={item.showSkeleton}
+        skeletonLines={item.skeletonLines}
+      >
+        {item.content}
+        {hasChildren && (
+          <div className={cn("mt-2", level > 0 && "ml-4")}>
+            {item.children!.map((child) =>
+              renderAccordionItem(
+                child,
+                defaultVariant,
+                defaultSize,
+                level + 1,
+              ),
+            )}
+          </div>
+        )}
+      </AccordionContent>
+    </AccordionItem>
+  );
+}
+
+function EasyAccordion({
+  items,
+  variant = "default",
+  size = "default",
+  scrollIntoView = false,
+  className,
+  ...props
+}: EasyAccordionProps) {
+  return (
+    <Accordion scrollIntoView={scrollIntoView} className={className} {...props}>
+      {items.map((item) => renderAccordionItem(item, variant, size, 0))}
+    </Accordion>
+  );
+}
+
+export { EasyAccordion };
+export type { EasyAccordionProps, AccordionItemData };
