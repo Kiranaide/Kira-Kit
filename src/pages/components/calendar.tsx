@@ -1,8 +1,12 @@
-import * as React from "react"
-import { IconCalendar, IconCalendarEvent, IconClock } from "@tabler/icons-react"
-import { DatePicker } from "@/components/ui/date-picker"
-import { Calendar, MonthPicker, YearPicker } from "@/components/ui/calendar"
-import { format, addDays } from "date-fns"
+import * as React from "react";
+import {
+  IconCalendar,
+  IconCalendarEvent,
+  IconClock,
+} from "@tabler/icons-react";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Calendar } from "@/components/ui/calendar";
+import { format, addDays } from "date-fns";
 import {
   ComponentPage,
   PageHeader,
@@ -12,11 +16,11 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
-import { Label } from "@/components/ui/label"
+} from "@/components/docs";
+import { Label } from "@/components/ui/label";
 
 function SingleDateDemo() {
-  const [date, setDate] = React.useState<Date | undefined>()
+  const [date, setDate] = React.useState<Date | undefined>();
   return (
     <div className="max-w-xs">
       <DatePicker
@@ -31,7 +35,7 @@ function SingleDateDemo() {
         </p>
       )}
     </div>
-  )
+  );
 }
 
 const singleDateCode = `import { useState } from "react"
@@ -49,13 +53,13 @@ export function SingleDateDemo() {
       placeholder="Pick a date"
     />
   )
-}`
+}`;
 
 function DateRangeDemo() {
   const [range, setRange] = React.useState<{
-    from?: Date
-    to?: Date
-  }>()
+    from?: Date;
+    to?: Date;
+  }>();
   return (
     <div className="max-w-xs">
       <DatePicker
@@ -71,7 +75,7 @@ function DateRangeDemo() {
         </p>
       )}
     </div>
-  )
+  );
 }
 
 const dateRangeCode = `import { useState } from "react"
@@ -92,35 +96,31 @@ export function DateRangeDemo() {
       placeholder="Select date range"
     />
   )
-}`
+}`;
 
 function WithoutPresetsDemo() {
   return (
     <div className="max-w-xs">
-      <DatePicker
-        mode="single"
-        placeholder="No presets"
-        showPresets={false}
-      />
+      <DatePicker mode="single" placeholder="No presets" showPresets={false} />
     </div>
-  )
+  );
 }
 
 const withoutPresetsCode = `<DatePicker
   mode="single"
   placeholder="No presets"
   showPresets={false}
-/>`
+/>`;
 
 function DisabledDemo() {
   return (
     <div className="max-w-xs">
       <DatePicker mode="single" placeholder="Disabled picker" disabled />
     </div>
-  )
+  );
 }
 
-const disabledCode = `<DatePicker mode="single" placeholder="Disabled picker" disabled />`
+const disabledCode = `<DatePicker mode="single" placeholder="Disabled picker" disabled />`;
 
 function DateConstraintsDemo() {
   return (
@@ -157,7 +157,7 @@ function DateConstraintsDemo() {
         />
       </div>
     </div>
-  )
+  );
 }
 
 const dateConstraintsCode = `import { addDays } from "date-fns"
@@ -179,23 +179,23 @@ const dateConstraintsCode = `import { addDays } from "date-fns"
   placeholder="Select within 7 days"
   minDate={new Date()}
   maxDate={addDays(new Date(), 7)}
-/>`
+/>`;
 
 function SizeVariantsDemo() {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Small (sm)</Label>
+        <Label className="text-sm font-medium text-muted-foreground">
+          Small (sm)
+        </Label>
         <div className="max-w-xs">
-          <DatePicker
-            mode="single"
-            size="sm"
-            placeholder="Small date picker"
-          />
+          <DatePicker mode="single" size="sm" placeholder="Small date picker" />
         </div>
       </div>
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Default</Label>
+        <Label className="text-sm font-medium text-muted-foreground">
+          Default
+        </Label>
         <div className="max-w-xs">
           <DatePicker
             mode="single"
@@ -205,28 +205,28 @@ function SizeVariantsDemo() {
         </div>
       </div>
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Large (lg)</Label>
+        <Label className="text-sm font-medium text-muted-foreground">
+          Large (lg)
+        </Label>
         <div className="max-w-xs">
-          <DatePicker
-            mode="single"
-            size="lg"
-            placeholder="Large date picker"
-          />
+          <DatePicker mode="single" size="lg" placeholder="Large date picker" />
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const sizeVariantsCode = `<DatePicker mode="single" size="sm" placeholder="Small" />
 <DatePicker mode="single" size="default" placeholder="Default" />
-<DatePicker mode="single" size="lg" placeholder="Large" />`
+<DatePicker mode="single" size="lg" placeholder="Large" />`;
 
 function StyleVariantsDemo() {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Default</Label>
+        <Label className="text-sm font-medium text-muted-foreground">
+          Default
+        </Label>
         <div className="max-w-xs">
           <DatePicker
             mode="single"
@@ -236,7 +236,9 @@ function StyleVariantsDemo() {
         </div>
       </div>
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Outline</Label>
+        <Label className="text-sm font-medium text-muted-foreground">
+          Outline
+        </Label>
         <div className="max-w-xs">
           <DatePicker
             mode="single"
@@ -246,7 +248,9 @@ function StyleVariantsDemo() {
         </div>
       </div>
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Ghost</Label>
+        <Label className="text-sm font-medium text-muted-foreground">
+          Ghost
+        </Label>
         <div className="max-w-xs">
           <DatePicker
             mode="single"
@@ -256,19 +260,19 @@ function StyleVariantsDemo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const styleVariantsCode = `<DatePicker mode="single" variant="default" />
 <DatePicker mode="single" variant="outline" />
-<DatePicker mode="single" variant="ghost" />`
+<DatePicker mode="single" variant="ghost" />`;
 
 function ApplyModeDemo() {
-  const [date, setDate] = React.useState<Date | undefined>()
+  const [date, setDate] = React.useState<Date | undefined>();
   const [range, setRange] = React.useState<{
-    from?: Date
-    to?: Date
-  }>()
+    from?: Date;
+    to?: Date;
+  }>();
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -328,7 +332,7 @@ function ApplyModeDemo() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 const applyModeCode = `<DatePicker
@@ -350,10 +354,10 @@ const applyModeCode = `<DatePicker
   value={range}
   onChange={setRange}
   applyMode="confirm"
-/>`
+/>`;
 
 function BasicCalendarDemo() {
-  const [date, setDate] = React.useState<Date | undefined>()
+  const [date, setDate] = React.useState<Date | undefined>();
   return (
     <div className="space-y-4">
       <div className="border border-border rounded-lg inline-block">
@@ -369,7 +373,7 @@ function BasicCalendarDemo() {
         </p>
       )}
     </div>
-  )
+  );
 }
 
 const basicCalendarCode = `import { useState } from "react"
@@ -386,117 +390,123 @@ export function BasicCalendarDemo() {
       onSelect={setDate}
     />
   )
-}`
+}`;
 
 function CalendarSizesDemo() {
   return (
     <div className="flex flex-wrap gap-6">
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Small</Label>
+        <Label className="text-sm font-medium text-muted-foreground">
+          Small
+        </Label>
         <div className="border border-border rounded-lg inline-block">
           <Calendar mode="single" size="sm" />
         </div>
       </div>
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Default</Label>
+        <Label className="text-sm font-medium text-muted-foreground">
+          Default
+        </Label>
         <div className="border border-border rounded-lg inline-block">
           <Calendar mode="single" size="default" />
         </div>
       </div>
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Large</Label>
+        <Label className="text-sm font-medium text-muted-foreground">
+          Large
+        </Label>
         <div className="border border-border rounded-lg inline-block">
           <Calendar mode="single" size="lg" />
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const calendarSizesCode = `<Calendar mode="single" size="sm" />
 <Calendar mode="single" size="default" />
-<Calendar mode="single" size="lg" />`
+<Calendar mode="single" size="lg" />`;
 
 function CalendarWithoutTodayDemo() {
   return (
     <div className="border border-border rounded-lg inline-block">
       <Calendar mode="single" showTodayButton={false} />
     </div>
-  )
+  );
 }
 
-const calendarWithoutTodayCode = `<Calendar mode="single" showTodayButton={false} />`
+const calendarWithoutTodayCode = `<Calendar mode="single" showTodayButton={false} />`;
 
-function MonthPickerDemo() {
-  const [date, setDate] = React.useState<Date | undefined>()
-  return (
-    <div className="space-y-4">
-      <div className="inline-block">
-        <MonthPicker
-          mode="single"
-          selected={date}
-          onSelect={(d) => setDate(d as Date)}
-        />
-      </div>
-      {date && (
-        <p className="text-sm text-muted-foreground">
-          Selected: {format(date, "MMMM yyyy")}
-        </p>
-      )}
-    </div>
-  )
-}
+// function MonthPickerDemo() {
+//   const [date, setDate] = React.useState<Date | undefined>()
+//   return (
+//     <div className="space-y-4">
+//       <div className="inline-block">
+//         <MonthPicker
+//           mode="single"
+//           selected={date}
+//           onSelect={(d) => setDate(d as Date)}
+//         />
+//       </div>
+//       {date && (
+//         <p className="text-sm text-muted-foreground">
+//           Selected: {format(date, "MMMM yyyy")}
+//         </p>
+//       )}
+//     </div>
+//   )
+// }
 
-const monthPickerCode = `import { useState } from "react"
-import { MonthPicker } from "@/components/ui/calendar"
-import { format } from "date-fns"
+// const monthPickerCode = `import { useState } from "react"
+// import { MonthPicker } from "@/components/ui/calendar"
+// import { format } from "date-fns"
 
-export function MonthPickerDemo() {
-  const [date, setDate] = useState<Date | undefined>()
+// export function MonthPickerDemo() {
+//   const [date, setDate] = useState<Date | undefined>()
 
-  return (
-    <MonthPicker
-      mode="single"
-      selected={date}
-      onSelect={setDate}
-    />
-  )
-}`
+//   return (
+//     <MonthPicker
+//       mode="single"
+//       selected={date}
+//       onSelect={setDate}
+//     />
+//   )
+// }`
 
-function YearPickerDemo() {
-  const [year, setYear] = React.useState<number | undefined>()
-  return (
-    <div className="space-y-4">
-      <div className="inline-block">
-        <YearPicker
-          mode="single"
-          selected={year}
-          onSelect={(y) => setYear(y as number)}
-        />
-      </div>
-      {year && (
-        <p className="text-sm text-muted-foreground">
-          Selected: {year}
-        </p>
-      )}
-    </div>
-  )
-}
+// function YearPickerDemo() {
+//   const [year, setYear] = React.useState<number | undefined>()
+//   return (
+//     <div className="space-y-4">
+//       <div className="inline-block">
+//         <YearPicker
+//           mode="single"
+//           selected={year}
+//           onSelect={(y) => setYear(y as number)}
+//         />
+//       </div>
+//       {year && (
+//         <p className="text-sm text-muted-foreground">
+//           Selected: {year}
+//         </p>
+//       )}
+//     </div>
+//   )
+// }
 
-const yearPickerCode = `import { useState } from "react"
-import { YearPicker } from "@/components/ui/calendar"
+// const yearPickerCode = `import { useState } from "react"
+// import { YearPicker } from "@/components/ui/calendar"
 
-export function YearPickerDemo() {
-  const [year, setYear] = useState<number | undefined>()
+// export function YearPickerDemo() {
+//   const [year, setYear] = useState<number | undefined>()
 
-  return (
-    <YearPicker
-      mode="single"
-      selected={year}
-      onSelect={setYear}
-    />
-  )
-}`
+//   return (
+//     <YearPicker
+//       mode="single"
+//       selected={year}
+//       onSelect={setYear}
+//     />
+//   )
+// }`
 
 export default function CalendarPage() {
   return (
@@ -511,17 +521,20 @@ export default function CalendarPage() {
         features={[
           {
             title: "Flexible Selection",
-            description: "Single date and date range modes with immediate or confirm apply options.",
+            description:
+              "Single date and date range modes with immediate or confirm apply options.",
             icon: <IconCalendar className="h-5 w-5" />,
           },
           {
             title: "Customizable",
-            description: "Size variants, style variants, min/max date constraints, and configurable presets.",
+            description:
+              "Size variants, style variants, min/max date constraints, and configurable presets.",
             icon: <IconCalendarEvent className="h-5 w-5" />,
           },
           {
             title: "Accessible",
-            description: "Full keyboard navigation, ARIA attributes, and screen reader support.",
+            description:
+              "Full keyboard navigation, ARIA attributes, and screen reader support.",
             icon: <IconClock className="h-5 w-5" />,
           },
         ]}
@@ -673,44 +686,53 @@ export default function CalendarPage() {
               </DemoWrapper>
             ),
           },
-          {
-            value: "month",
-            label: "Month Picker",
-            demo: (
-              <DemoWrapper
-                title="Month Picker"
-                description="Select a month from the month grid."
-                code={monthPickerCode}
-              >
-                <MonthPickerDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "year",
-            label: "Year Picker",
-            demo: (
-              <DemoWrapper
-                title="Year Picker"
-                description="Select a year from the year grid."
-                code={yearPickerCode}
-              >
-                <YearPickerDemo />
-              </DemoWrapper>
-            ),
-          },
+          // {
+          //   value: "month",
+          //   label: "Month Picker",
+          //   demo: (
+          //     <DemoWrapper
+          //       title="Month Picker"
+          //       description="Select a month from the month grid."
+          //       code={monthPickerCode}
+          //     >
+          //       <MonthPickerDemo />
+          //     </DemoWrapper>
+          //   ),
+          // },
+          // {
+          //   value: "year",
+          //   label: "Year Picker",
+          //   demo: (
+          //     <DemoWrapper
+          //       title="Year Picker"
+          //       description="Select a year from the year grid."
+          //       code={yearPickerCode}
+          //     >
+          //       <YearPickerDemo />
+          //     </DemoWrapper>
+          //   ),
+          // },
         ]}
       />
 
       <KeyboardShortcuts
         shortcuts={[
-          { keys: "Tab / Shift + Tab", description: "Navigate between focusable elements" },
-          { keys: "Arrow Keys", description: "Navigate between days/months/years" },
+          {
+            keys: "Tab / Shift + Tab",
+            description: "Navigate between focusable elements",
+          },
+          {
+            keys: "Arrow Keys",
+            description: "Navigate between days/months/years",
+          },
           { keys: "Home", description: "Go to first day/month/year" },
           { keys: "End", description: "Go to last day/month/year" },
           { keys: "Page Up", description: "Go to previous month/year" },
           { keys: "Page Down", description: "Go to next month/year" },
-          { keys: "Enter / Space", description: "Select focused day/month/year" },
+          {
+            keys: "Enter / Space",
+            description: "Select focused day/month/year",
+          },
           { keys: "Escape", description: "Close the popover" },
         ]}
       />
@@ -944,5 +966,5 @@ import { Calendar, MonthPicker, YearPicker } from "@/components/ui/calendar"
         ]}
       />
     </ComponentPage>
-  )
+  );
 }
