@@ -334,7 +334,7 @@ export {
 export type { AccordionTriggerProps, AccordionContentProps };
 
 // ============================================================================
-// EasyAccordion - Simplified single-import API
+// KiraAccordion - Simplified single-import API
 // ============================================================================
 
 type AccordionItemData = {
@@ -355,7 +355,7 @@ type AccordionItemData = {
   children?: AccordionItemData[];
 };
 
-type EasyAccordionProps = Omit<
+type KiraAccordionProps = Omit<
   React.ComponentProps<typeof AccordionPrimitive.Root>,
   "children"
 > & {
@@ -414,14 +414,14 @@ function renderAccordionItem(
   );
 }
 
-function EasyAccordion({
+function KiraAccordion({
   items,
   variant = "default",
   size = "default",
   scrollIntoView = false,
   className,
   ...props
-}: EasyAccordionProps) {
+}: KiraAccordionProps) {
   return (
     <Accordion scrollIntoView={scrollIntoView} className={className} {...props}>
       {items.map((item) => renderAccordionItem(item, variant, size, 0))}
@@ -429,5 +429,5 @@ function EasyAccordion({
   );
 }
 
-export { EasyAccordion };
-export type { EasyAccordionProps, AccordionItemData };
+export { KiraAccordion };
+export type { KiraAccordionProps, AccordionItemData };
