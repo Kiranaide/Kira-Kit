@@ -76,6 +76,7 @@ import {
   IconSpace,
   IconToggleRight,
   IconPlayerPlay,
+  IconCamera,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -235,6 +236,12 @@ export function AppLayout() {
                     icon={<IconLayoutCards className="w-5 h-5" />}
                   >
                     Card
+                  </SidebarItem>
+                  <SidebarItem
+                    to="/components/camera"
+                    icon={<IconCamera className="w-5 h-5" />}
+                  >
+                    Camera
                   </SidebarItem>
                   <SidebarItem
                     to="/components/carousel"

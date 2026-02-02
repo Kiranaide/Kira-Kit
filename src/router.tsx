@@ -492,6 +492,12 @@ const videoPlayerRoute = createRoute({
   component: lazyRouteComponent(() => import('@/pages/components/video-player')),
 })
 
+const cameraRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/camera",
+  component: lazyRouteComponent(() => import('@/pages/components/camera')),
+})
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -573,6 +579,7 @@ const routeTree = rootRoute.addChildren([
   splitViewRoute,
   toggleGroupRoute,
   videoPlayerRoute,
+  cameraRoute,
 ]);
 
 // Create router

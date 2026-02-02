@@ -14,7 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-  EasyAccordion,
+  KiraAccordion,
 } from "@/components/ui/accordion";
 import {
   ComponentPage,
@@ -407,9 +407,9 @@ export function VerticalAccordionDemo() {
   )
 }`;
 
-function EasyAccordionDemo() {
+function KiraAccordionDemo() {
   return (
-    <EasyAccordion
+    <KiraAccordion
       defaultValue={["item-1"]}
       items={[
         {
@@ -435,11 +435,11 @@ function EasyAccordionDemo() {
   );
 }
 
-const easyAccordionCode = `import { EasyAccordion } from "@/components/ui/accordion"
+const kiraAccordionCode = `import { KiraAccordion } from "@/components/ui/accordion"
 
-export function EasyAccordionDemo() {
+export function KiraAccordionDemo() {
   return (
-    <EasyAccordion
+    <KiraAccordion
       defaultValue={["item-1"]}
       items={[
         {
@@ -462,9 +462,9 @@ export function EasyAccordionDemo() {
   )
 }`;
 
-function EasyAccordionIconsDemo() {
+function KiraAccordionIconsDemo() {
   return (
-    <EasyAccordion
+    <KiraAccordion
       multiple
       items={[
         {
@@ -491,12 +491,12 @@ function EasyAccordionIconsDemo() {
   );
 }
 
-const easyAccordionIconsCode = `import { EasyAccordion } from "@/components/ui/accordion"
+const kiraAccordionIconsCode = `import { KiraAccordion } from "@/components/ui/accordion"
 import { IconFolder, IconFile, IconSettings } from "@tabler/icons-react"
 
-export function EasyAccordionIconsDemo() {
+export function KiraAccordionIconsDemo() {
   return (
-    <EasyAccordion
+    <KiraAccordion
       multiple
       items={[
         {
@@ -522,9 +522,9 @@ export function EasyAccordionIconsDemo() {
   )
 }`;
 
-function EasyAccordionNestedDemo() {
+function KiraAccordionNestedDemo() {
   return (
-    <EasyAccordion
+    <KiraAccordion
       multiple
       items={[
         {
@@ -571,11 +571,11 @@ function EasyAccordionNestedDemo() {
   );
 }
 
-const easyAccordionNestedCode = `import { EasyAccordion } from "@/components/ui/accordion"
+const kiraAccordionNestedCode = `import { KiraAccordion } from "@/components/ui/accordion"
 
-export function EasyAccordionNestedDemo() {
+export function KiraAccordionNestedDemo() {
   return (
-    <EasyAccordion
+    <KiraAccordion
       multiple
       items={[
         {
@@ -612,10 +612,10 @@ export function EasyAccordionNestedDemo() {
   )
 }`;
 
-function EasyAccordionVariantsDemo() {
+function KiraAccordionVariantsDemo() {
   return (
     <div className="space-y-4">
-      <EasyAccordion
+      <KiraAccordion
         items={[
           {
             value: "info",
@@ -627,7 +627,7 @@ function EasyAccordionVariantsDemo() {
           },
         ]}
       />
-      <EasyAccordion
+      <KiraAccordion
         items={[
           {
             value: "success",
@@ -639,7 +639,7 @@ function EasyAccordionVariantsDemo() {
           },
         ]}
       />
-      <EasyAccordion
+      <KiraAccordion
         items={[
           {
             value: "warning",
@@ -655,13 +655,13 @@ function EasyAccordionVariantsDemo() {
   );
 }
 
-const easyAccordionVariantsCode = `import { EasyAccordion } from "@/components/ui/accordion"
+const kiraAccordionVariantsCode = `import { KiraAccordion } from "@/components/ui/accordion"
 import { IconInfoCircle, IconCheck, IconAlertTriangle } from "@tabler/icons-react"
 
-export function EasyAccordionVariantsDemo() {
+export function KiraAccordionVariantsDemo() {
   return (
     <div className="space-y-4">
-      <EasyAccordion
+      <KiraAccordion
         items={[
           {
             value: "info",
@@ -672,7 +672,7 @@ export function EasyAccordionVariantsDemo() {
           },
         ]}
       />
-      <EasyAccordion
+      <KiraAccordion
         items={[
           {
             value: "success",
@@ -867,9 +867,9 @@ export default function AccordionPage() {
               <DemoWrapper
                 title="Easy Accordion"
                 description="Easy accordion with default open item and smooth animations."
-                code={easyAccordionCode}
+                code={kiraAccordionCode}
               >
-                <EasyAccordionDemo />
+                <KiraAccordionDemo />
               </DemoWrapper>
             ),
           },
@@ -880,9 +880,9 @@ export default function AccordionPage() {
               <DemoWrapper
                 title="Easy Accordion with Icons"
                 description="Easy accordion with icons and smooth animations."
-                code={easyAccordionIconsCode}
+                code={kiraAccordionIconsCode}
               >
-                <EasyAccordionIconsDemo />
+                <KiraAccordionIconsDemo />
               </DemoWrapper>
             ),
           },
@@ -893,9 +893,9 @@ export default function AccordionPage() {
               <DemoWrapper
                 title="Easy Nested Accordion"
                 description="Easy nested accordion with smooth animations."
-                code={easyAccordionNestedCode}
+                code={kiraAccordionNestedCode}
               >
-                <EasyAccordionNestedDemo />
+                <KiraAccordionNestedDemo />
               </DemoWrapper>
             ),
           },
@@ -906,9 +906,9 @@ export default function AccordionPage() {
               <DemoWrapper
                 title="Easy Accordion with Variants"
                 description="Easy accordion with variants and smooth animations."
-                code={easyAccordionVariantsCode}
+                code={kiraAccordionVariantsCode}
               >
-                <EasyAccordionVariantsDemo />
+                <KiraAccordionVariantsDemo />
               </DemoWrapper>
             ),
           },

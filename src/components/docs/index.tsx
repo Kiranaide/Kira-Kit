@@ -151,24 +151,61 @@ export function DemoWrapper({
 }
 
 // =============================================================================
-// DemoTabs - Tabbed demo sections
+// DemoTabs - Tabbed demo sections with lazy rendering support
 // =============================================================================
 interface DemoTab {
   value: string;
   label: string;
-  demo: React.ReactNode;
+  /**
+   * Demo content - can be a ReactNode or a render function.
+   * Using a render function enables lazy rendering (content only mounts when tab is active).
+   * This is recommended for heavy components like cameras to prevent resource conflicts.
+   */
+  demo: React.ReactNode | ((isActive: boolean) => React.ReactNode);
 }
 
 interface DemoTabsProps {
   tabs: DemoTab[];
   defaultValue?: string;
   className?: string;
+  /**
+   * When true, only the active tab content is mounted (lazy rendering).
+   * Inactive tabs are unmounted to free resources (e.g., camera streams).
+   * Default: false for backward compatibility
+   */
+  lazyMount?: boolean;
 }
 
-export function DemoTabs({ tabs, defaultValue, className }: DemoTabsProps) {
+export function DemoTabs({
+  tabs,
+  defaultValue,
+  className,
+  lazyMount = false,
+}: DemoTabsProps) {
+  const [activeTab, setActiveTab] = React.useState(
+    defaultValue || tabs[0]?.value
+  );
+
+  const renderTabContent = (tab: DemoTab) => {
+    const isActive = activeTab === tab.value;
+
+    // If demo is a function, call it with isActive state
+    if (typeof tab.demo === "function") {
+      return tab.demo(isActive);
+    }
+
+    // If lazyMount is enabled, only render active tab content
+    if (lazyMount && !isActive) {
+      return null;
+    }
+
+    return tab.demo;
+  };
+
   return (
     <Tabs
-      defaultValue={defaultValue || tabs[0]?.value}
+      value={activeTab}
+      onValueChange={setActiveTab}
       className={cn("space-y-6", className)}
     >
       <TabsList className="flex-wrap">
@@ -180,7 +217,7 @@ export function DemoTabs({ tabs, defaultValue, className }: DemoTabsProps) {
       </TabsList>
       {tabs.map((tab) => (
         <TabsContent key={tab.value} value={tab.value}>
-          {tab.demo}
+          {renderTabContent(tab)}
         </TabsContent>
       ))}
     </Tabs>
