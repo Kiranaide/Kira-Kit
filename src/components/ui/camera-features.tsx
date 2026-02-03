@@ -1,15 +1,4 @@
-/**
- * Camera Features Component
- * Advanced camera features: Face Detection, ID Scanner, Liveness Check, KYC Flow
- *
- * These are kept separate from the main camera component due to heavy dependencies
- * (TensorFlow.js, Tesseract.js)
- *
- * @2025-2026 Best Practices
- * - Lazy loading of heavy ML models
- * - WCAG 2.1 AA compliant
- * - Reduced motion support
- */
+"use client";
 
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -57,10 +46,6 @@ import {
   CHALLENGE_ICONS,
 } from "./camera";
 
-// ============================================================================
-// Variants
-// ============================================================================
-
 const faceDetectionVariants = cva("absolute inset-0 pointer-events-none", {
   variants: {
     showGuide: { true: "", false: "" },
@@ -105,10 +90,6 @@ const kycFlowVariants = cva("relative flex flex-col", {
   defaultVariants: { size: "default" },
 });
 
-// ============================================================================
-// Lazy Load TensorFlow Face Detection
-// ============================================================================
-
 interface FaceDetector {
   estimateFaces(
     video: HTMLVideoElement,
@@ -149,10 +130,6 @@ async function loadFaceDetectionModel(): Promise<FaceDetector> {
   return faceDetectionModelPromise;
 }
 
-// ============================================================================
-// Lazy Load Tesseract OCR
-// ============================================================================
-
 interface TesseractWorker {
   recognize(image: Blob): Promise<{ data: { text: string } }>;
   terminate(): Promise<unknown>;
@@ -172,10 +149,6 @@ async function loadTesseract(): Promise<TesseractModule> {
   }
   return tesseractPromise;
 }
-
-// ============================================================================
-// MRZ Parsing
-// ============================================================================
 
 interface MRZData {
   documentType: string;
@@ -268,10 +241,6 @@ function formatMRZDate(mrzDate: string): string {
     year > 30 ? `19${mrzDate.substring(0, 2)}` : `20${mrzDate.substring(0, 2)}`;
   return `${fullYear}-${month}-${day}`;
 }
-
-// ============================================================================
-// FaceDetection
-// ============================================================================
 
 interface FaceDetectionProps
   extends
@@ -545,10 +514,6 @@ const FaceDetection = React.forwardRef<HTMLDivElement, FaceDetectionProps>(
 );
 
 FaceDetection.displayName = "FaceDetection";
-
-// ============================================================================
-// IdCardScanner
-// ============================================================================
 
 interface IdCardScannerProps
   extends
@@ -895,10 +860,6 @@ function MinimalStateIndicator({
   );
 }
 
-// ============================================================================
-// LivenessCheck
-// ============================================================================
-
 interface LivenessCheckProps
   extends
     Omit<React.ComponentPropsWithoutRef<"div">, "children">,
@@ -1203,10 +1164,6 @@ const LivenessCheck = React.forwardRef<HTMLDivElement, LivenessCheckProps>(
 );
 
 LivenessCheck.displayName = "LivenessCheck";
-
-// ============================================================================
-// KYCFlow
-// ============================================================================
 
 const KYC_STORAGE_KEY = "kyc-flow-progress";
 
@@ -1534,7 +1491,7 @@ const KYCFlow = React.forwardRef<HTMLDivElement, KYCFlowProps>(
             </span>
           </div>
         )}
-        <div className="relative aspect-[4/3] bg-black rounded-lg overflow-hidden">
+        <div className="relative aspect-4/3 bg-black rounded-lg overflow-hidden">
           {renderStepContent()}
           {isProcessing && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-20">
@@ -1647,6 +1604,8 @@ function StepIndicator({
 // ============================================================================
 // Exports
 // ============================================================================
+
+/* eslint-disable react-refresh/only-export-components */
 
 export {
   FaceDetection,

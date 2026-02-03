@@ -19,6 +19,7 @@ import {
   CameraPermissions,
   CameraGuide,
   CameraGrid,
+  CameraScanOverlay,
   CameraControlBar,
   CameraTimer,
   CameraVoiceControl,
@@ -32,6 +33,7 @@ import {
   type CameraSettingsValues,
   type CameraGridType,
   type CameraTimerDuration,
+  type CameraScanOverlayPreset,
 } from "@/components/ui/camera";
 import {
   FaceDetection,
@@ -356,9 +358,126 @@ function EnhancedCameraDemo() {
 }`;
 
 // =============================================================================
-// Grid Overlays Demo
+// Scan Overlay Demo (Face Recognition & ID Card Scanner)
 // =============================================================================
 
+function ScanOverlayDemo() {
+  const [preset, setPreset] =
+    React.useState<CameraScanOverlayPreset>("face-recognition");
+  const [isAligned, setIsAligned] = React.useState(false);
+  const [showStatusText, setShowStatusText] = React.useState(true);
+
+  return (
+    <div className="flex flex-col items-center gap-4 min-h-[400px]">
+      <div className="w-full max-w-md">
+        <Camera mode="photo" autoStart className="w-full" size="default">
+          <CameraPreview />
+          <CameraPermissions />
+          <CameraScanOverlay
+            preset={preset}
+            isAligned={isAligned}
+            status={isAligned ? "aligned" : "scanning"}
+            showStatusText={showStatusText}
+            statusText={
+              preset === "face-recognition"
+                ? isAligned
+                  ? "Hold still"
+                  : "Position your face in the oval"
+                : isAligned
+                  ? "Hold steady"
+                  : "Position document in frame"
+            }
+          />
+        </Camera>
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-2">
+        <Button
+          variant={preset === "face-recognition" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setPreset("face-recognition")}
+        >
+          Face Recognition
+        </Button>
+        <Button
+          variant={preset === "id-card-scanner" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setPreset("id-card-scanner")}
+        >
+          ID Card Scanner
+        </Button>
+        <Button
+          variant={preset === "none" ? "default" : "outline"}
+          size="sm"
+          onClick={() => setPreset("none")}
+        >
+          None
+        </Button>
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            Simulate aligned:
+          </span>
+          <Button
+            variant={isAligned ? "default" : "outline"}
+            size="sm"
+            onClick={() => setIsAligned(!isAligned)}
+          >
+            {isAligned ? "Aligned" : "Not aligned"}
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">
+            Show instruction text:
+          </span>
+          <Button
+            variant={showStatusText ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowStatusText(!showStatusText)}
+          >
+            {showStatusText ? "On" : "Off"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const scanOverlayCode = `import {
+  Camera,
+  CameraPreview,
+  CameraPermissions,
+  CameraScanOverlay,
+} from "@/components/ui/camera"
+
+function ScanOverlayDemo() {
+  const [preset, setPreset] = React.useState("face-recognition")
+  const [isAligned, setIsAligned] = React.useState(false)
+  const [showStatusText, setShowStatusText] = React.useState(true)
+
+  return (
+    <Camera mode="photo" autoStart>
+      <CameraPreview />
+      <CameraPermissions />
+      <CameraScanOverlay
+        preset={preset}
+        isAligned={isAligned}
+        status={isAligned ? "aligned" : "scanning"}
+        showStatusText={showStatusText}
+        statusText={
+          preset === "face-recognition"
+            ? isAligned ? "Hold still" : "Position your face in the oval"
+            : isAligned ? "Hold steady" : "Position document in frame"
+        }
+      />
+    </Camera>
+  )
+}
+
+// Hide text: <CameraScanOverlay showStatusText={false} preset="face-recognition" />`;
+
+// Grid Overlays (composition grids - kept for backward compatibility)
 function GridOverlaysDemo() {
   const [gridType, setGridType] =
     React.useState<CameraGridType>("rule-of-thirds");
@@ -1244,6 +1363,12 @@ const changelog: Array<{
         description:
           "Improved demo flows for IdCardScanner, LivenessCheck, and KYCFlow by adding explicit manual capture for documents, enabling auto-started liveness challenges, and tightening demo state handling so each step can complete as documented.",
       },
+      {
+        type: "changed",
+        title: "CameraScanOverlay Optional Status Text",
+        description:
+          "Status/instruction text in CameraScanOverlay is now optional. Use showStatusText={false} to hide the instruction badge, or omit statusText to use default messages. Demo updated with a toggle to show or hide the text.",
+      },
     ],
   },
   {
@@ -1445,6 +1570,19 @@ export default function CameraPage() {
           code={fullscreenCameraCode}
         >
           <FullscreenCameraDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "scan-overlay",
+      label: "Scan Overlays",
+      demo: (
+        <DemoWrapper
+          title="Scan Overlays (Face & ID)"
+          description="Professional face recognition and ID card scanner overlays for KYC and document verification."
+          code={scanOverlayCode}
+        >
+          <ScanOverlayDemo />
         </DemoWrapper>
       ),
     },

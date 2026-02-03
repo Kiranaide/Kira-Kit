@@ -1,13 +1,4 @@
-/**
- * Camera Component
- * Unified camera component following shadcn/ui patterns
- *
- * @2025-2026 Best Practices
- * - Single file with compound components
- * - WCAG 2.1 AA compliant (44px touch targets, keyboard navigation, ARIA)
- * - Reduced motion support
- * - Haptic feedback integration
- */
+"use client";
 
 import * as React from "react";
 import { Component, type ErrorInfo, type ReactNode } from "react";
@@ -74,6 +65,8 @@ import type {
   LivenessChallenge,
   CameraGuideConfig,
   CameraGuideAnimation,
+  CameraScanOverlayPreset,
+  CameraScanOverlayConfig,
 } from "@/lib/camera/types";
 import {
   HAPTIC_PATTERNS,
@@ -88,6 +81,7 @@ import {
   CAMERA_DEFAULT_GRID,
   CAMERA_DEFAULT_FOCUS,
   CAMERA_DEFAULT_ZOOM,
+  SCAN_OVERLAY_DEFAULTS,
 } from "@/lib/camera/constants";
 import {
   prefersReducedMotion,
@@ -110,10 +104,6 @@ function mergeRefs<T>(
   };
 }
 import { getGuidePreset, type GuidePreset } from "@/lib/camera/guide-presets";
-
-// ============================================================================
-// Context
-// ============================================================================
 
 interface CameraState {
   videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -169,10 +159,6 @@ function useCameraContext(): CameraState & CameraActions {
   const actions = useCameraActions();
   return { ...state, ...actions };
 }
-
-// ============================================================================
-// Variants
-// ============================================================================
 
 const cameraVariants = cva(
   [
@@ -329,10 +315,6 @@ const controlBarVariants = cva(
   }
 );
 
-// ============================================================================
-// Icon sizes
-// ============================================================================
-
 const BUTTON_ICON_SIZES = {
   xs: 16,
   sm: 18,
@@ -358,10 +340,6 @@ const CHALLENGE_ICONS = {
   "turn-up": IconArrowUp,
   "turn-down": IconArrowDown,
 } as const;
-
-// ============================================================================
-// Camera (Root)
-// ============================================================================
 
 interface CameraProps
   extends
@@ -536,10 +514,6 @@ const CameraRoot = React.forwardRef<CameraRef, CameraProps>(
 
 CameraRoot.displayName = "Camera";
 
-// ============================================================================
-// CameraPreview
-// ============================================================================
-
 const previewVariants = cva("absolute inset-0 object-cover", {
   variants: {
     mirror: {
@@ -622,10 +596,6 @@ const CameraPreview = React.forwardRef<HTMLVideoElement, CameraPreviewProps>(
 
 CameraPreview.displayName = "CameraPreview";
 
-// ============================================================================
-// CameraOverlay
-// ============================================================================
-
 interface CameraOverlayProps extends React.ComponentPropsWithoutRef<"div"> {
   interactive?: boolean;
 }
@@ -652,10 +622,6 @@ const CameraOverlay = React.forwardRef<HTMLDivElement, CameraOverlayProps>(
 );
 
 CameraOverlay.displayName = "CameraOverlay";
-
-// ============================================================================
-// CameraCaptureFlash
-// ============================================================================
 
 interface CameraCaptureFlashProps extends React.ComponentPropsWithoutRef<"div"> {
   duration?: number;
@@ -688,10 +654,6 @@ function CameraCaptureFlash({
 }
 
 CameraCaptureFlash.displayName = "CameraCaptureFlash";
-
-// ============================================================================
-// CameraButton
-// ============================================================================
 
 interface CameraButtonProps
   extends
@@ -949,10 +911,6 @@ const CameraButton = React.forwardRef<HTMLButtonElement, CameraButtonProps>(
 );
 
 CameraButton.displayName = "CameraButton";
-
-// ============================================================================
-// Specialized Buttons
-// ============================================================================
 
 interface CaptureButtonProps extends Omit<
   CameraButtonProps,
@@ -1355,10 +1313,6 @@ const ZoomButton = React.forwardRef<HTMLButtonElement, ZoomButtonProps>(
 
 ZoomButton.displayName = "ZoomButton";
 
-// ============================================================================
-// CameraControls
-// ============================================================================
-
 interface CameraControlsProps
   extends
     Omit<React.ComponentPropsWithoutRef<"div">, "children">,
@@ -1497,10 +1451,6 @@ const CameraControls = React.forwardRef<HTMLDivElement, CameraControlsProps>(
 
 CameraControls.displayName = "CameraControls";
 
-// ============================================================================
-// CameraControlBar
-// ============================================================================
-
 interface CameraControlBarProps
   extends
     React.HTMLAttributes<HTMLDivElement>,
@@ -1610,10 +1560,6 @@ const CameraControlBarDivider = React.forwardRef<
 });
 
 CameraControlBarDivider.displayName = "CameraControlBarDivider";
-
-// ============================================================================
-// CameraGuide
-// ============================================================================
 
 type DocumentType = "national-id" | "passport" | "drivers-license" | "custom";
 
@@ -1958,10 +1904,6 @@ function CameraGuide({
 
 CameraGuide.displayName = "CameraGuide";
 
-// ============================================================================
-// CameraGrid
-// ============================================================================
-
 interface CameraGridProps extends Partial<CameraGridConfig> {
   visible?: boolean;
   type?: CameraGridType;
@@ -2122,9 +2064,184 @@ function CameraGrid({
 
 CameraGrid.displayName = "CameraGrid";
 
-// ============================================================================
-// CameraTimer
-// ============================================================================
+type CameraScanOverlayStatus =
+  | "idle"
+  | "scanning"
+  | "aligned"
+  | "processing"
+  | "success"
+  | "error";
+
+interface CameraScanOverlayProps {
+  preset: CameraScanOverlayPreset;
+  isAligned?: boolean;
+  isScanning?: boolean;
+  isProcessing?: boolean;
+  status?: CameraScanOverlayStatus;
+  /** Optional status/instruction text. Omit or set showStatusText={false} to hide the badge. */
+  statusText?: string;
+  /** When false, the status text badge is hidden. Default true. */
+  showStatusText?: boolean;
+  config?: Partial<CameraScanOverlayConfig>;
+  documentType?: "national-id" | "passport" | "drivers-license" | "custom";
+  documentAspectRatio?: number;
+  className?: string;
+}
+
+function CameraScanOverlay({
+  preset,
+  isAligned = false,
+  isScanning = true,
+  isProcessing = false,
+  status = "scanning",
+  statusText,
+  showStatusText = true,
+  config: configOverride,
+  documentType = "national-id",
+  className,
+}: CameraScanOverlayProps) {
+  const reducedMotion = prefersReducedMotion();
+  const defaults = SCAN_OVERLAY_DEFAULTS[preset];
+  const config: CameraScanOverlayConfig = {
+    ...defaults,
+    ...configOverride,
+  };
+  const animationsEnabled =
+    config.animationsEnabled !== false && !reducedMotion;
+
+  if (preset === "none") return null;
+
+  const scanLineDuration = (config.scanLineDuration ?? 2000) / 1000;
+
+  const ScanningLineEl = config.scanLineEnabled ? (
+    <div
+      className="absolute left-0 right-0 h-px pointer-events-none overflow-hidden"
+      style={{
+        top: 0,
+        animation: animationsEnabled
+          ? `scan-line ${scanLineDuration}s linear infinite`
+          : undefined,
+      }}
+      aria-hidden="true"
+    >
+      <div
+        className="h-full w-full"
+        style={{
+          background: `linear-gradient(90deg, transparent 0%, ${config.scanLineColor ?? "#3b82f6"} 50%, transparent 100%)`,
+          opacity: 0.9,
+          boxShadow: config.cornerGlow
+            ? `0 0 8px ${config.scanLineColor ?? "#3b82f6"}`
+            : undefined,
+        }}
+      />
+    </div>
+  ) : null;
+
+  const statusMessage =
+    statusText ??
+    (status === "processing" || isProcessing
+      ? "Processing..."
+      : status === "aligned" ||
+          (isAligned && (status === "scanning" || isScanning))
+        ? "Hold still"
+        : status === "success"
+          ? "Captured"
+          : status === "error"
+            ? "Try again"
+            : "Position in frame");
+
+  const instructionBadge =
+    showStatusText && config.showStatusBadge ? (
+      <div className="absolute bottom-12 left-0 right-0 flex justify-center px-6">
+        <div
+          className={cn(
+            "max-w-md px-4 py-2.5 rounded-lg",
+            "bg-black/70 backdrop-blur-sm",
+            "text-white text-sm text-center leading-relaxed"
+          )}
+          role="status"
+          aria-live="polite"
+        >
+          {statusMessage}
+        </div>
+      </div>
+    ) : null;
+
+  if (preset === "face-recognition") {
+    return (
+      <div
+        className={cn("absolute inset-0 pointer-events-none", className)}
+        data-slot="camera-scan-overlay"
+        data-preset="face-recognition"
+        aria-hidden="true"
+      >
+        <div className="absolute inset-0">
+          <div
+            className={cn(
+              "w-full h-full bg-black/10 backdrop-blur-xs",
+              "mask-[radial-gradient(ellipse_30%_60%_at_center,transparent_0,transparent_55%,white_75%)]",
+              "mask-alpha"
+            )}
+          />
+        </div>
+        <CameraGuide
+          variant="face"
+          isAligned={isAligned}
+          showInstruction={false}
+          showAlignmentIndicator={false}
+          safeZone={{ top: "12%", bottom: "12%", left: "15%", right: "15%" }}
+          config={{
+            animation: "none",
+            strokeWidth: 2,
+            fillColor: "transparent",
+            misalignedColor: "#ffffff",
+            alignedColor: "#22c55e",
+          }}
+        />
+        {ScanningLineEl}
+        {instructionBadge}
+      </div>
+    );
+  }
+
+  if (preset === "id-card-scanner") {
+    return (
+      <div
+        className={cn("absolute inset-0 pointer-events-none", className)}
+        data-slot="camera-scan-overlay"
+        data-preset="id-card-scanner"
+        aria-hidden="true"
+      >
+        <CameraGuide
+          variant="document"
+          documentType={documentType}
+          isAligned={isAligned}
+          showInstruction={false}
+          showAlignmentIndicator={false}
+          safeZone={{
+            top: "15%",
+            bottom: "15%",
+            left: "10%",
+            right: "10%",
+          }}
+          config={{
+            animation: "none",
+            strokeWidth: 3,
+            fillColor: "transparent",
+            misalignedColor: "#ffffff",
+            alignedColor: "#22c55e",
+          }}
+        />
+        {ScanningLineEl}
+        {instructionBadge}
+      </div>
+    );
+  }
+
+  return null;
+}
+
+CameraScanOverlay.displayName = "CameraScanOverlay";
 
 interface CameraTimerProps {
   duration: CameraTimerDuration;
@@ -2243,10 +2360,6 @@ function CameraTimer({
 }
 
 CameraTimer.displayName = "CameraTimer";
-
-// ============================================================================
-// CameraPermissions
-// ============================================================================
 
 interface CameraPermissionsProps
   extends
@@ -2420,10 +2533,6 @@ const CameraPermissions = React.forwardRef<
 );
 
 CameraPermissions.displayName = "CameraPermissions";
-
-// ============================================================================
-// CameraSettings
-// ============================================================================
 
 interface CameraSettingsProps {
   open: boolean;
@@ -2726,10 +2835,6 @@ function CameraSettings({
 
 CameraSettings.displayName = "CameraSettings";
 
-// ============================================================================
-// CameraKeyboardHelp
-// ============================================================================
-
 interface CameraKeyboardHelpProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -2860,10 +2965,6 @@ function CameraKeyboardHelp({
 
 CameraKeyboardHelp.displayName = "CameraKeyboardHelp";
 
-// ============================================================================
-// CameraStatusAnnouncer
-// ============================================================================
-
 interface CameraStatusAnnouncerProps {
   status: CameraStatus;
   customMessages?: Partial<Record<CameraStatus, string>>;
@@ -2958,10 +3059,6 @@ function getProgressDescription(
   const base = `Step ${currentStep} of ${totalSteps}`;
   return stepName ? `${base}: ${stepName}` : base;
 }
-
-// ============================================================================
-// CameraFocusIndicator
-// ============================================================================
 
 interface CameraFocusIndicatorProps {
   point: { x: number; y: number } | null;
@@ -3093,10 +3190,6 @@ function CameraFocusIndicator({
 
 CameraFocusIndicator.displayName = "CameraFocusIndicator";
 
-// ============================================================================
-// CameraZoomIndicator
-// ============================================================================
-
 interface CameraZoomIndicatorProps {
   zoom: number;
   minZoom?: number;
@@ -3195,10 +3288,6 @@ function CameraZoomIndicator({
 }
 
 CameraZoomIndicator.displayName = "CameraZoomIndicator";
-
-// ============================================================================
-// CameraVoiceControl
-// ============================================================================
 
 interface CameraVoiceControlProps {
   enabled: boolean;
@@ -3308,10 +3397,6 @@ function CameraVoiceControl({
 
 CameraVoiceControl.displayName = "CameraVoiceControl";
 
-// ============================================================================
-// CameraErrorBoundary
-// ============================================================================
-
 interface CameraErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode | ((error: Error, reset: () => void) => ReactNode);
@@ -3400,10 +3485,6 @@ class CameraErrorBoundary extends Component<
   }
 }
 
-// ============================================================================
-// Exports
-// ============================================================================
-
 /* eslint-disable react-refresh/only-export-components */
 
 const Camera = Object.assign(CameraRoot, {
@@ -3426,6 +3507,7 @@ const Camera = Object.assign(CameraRoot, {
   ControlBarDivider: CameraControlBarDivider,
   Guide: CameraGuide,
   Grid: CameraGrid,
+  ScanOverlay: CameraScanOverlay,
   Timer: CameraTimer,
   Permissions: CameraPermissions,
   Settings: CameraSettings,
@@ -3458,6 +3540,7 @@ export {
   CameraControlBarDivider,
   CameraGuide,
   CameraGrid,
+  CameraScanOverlay,
   CameraTimer,
   CameraPermissions,
   CameraSettings,
@@ -3486,6 +3569,7 @@ export {
   CHALLENGE_ICONS,
   GRID_ICONS,
   BUTTON_ICON_SIZES,
+  SCAN_OVERLAY_DEFAULTS,
 };
 
 // Re-export types from lib
@@ -3495,6 +3579,8 @@ export type {
   CameraSettingsValues,
   CameraAspectRatio,
   CameraQuality,
+  CameraScanOverlayPreset,
+  CameraScanOverlayConfig,
 } from "@/lib/camera/types";
 
 export type {
@@ -3519,6 +3605,7 @@ export type {
   CameraGuideProps,
   CameraGridProps,
   CameraTimerProps,
+  CameraScanOverlayProps,
   CameraPermissionsProps,
   CameraSettingsProps,
   CameraKeyboardHelpProps,

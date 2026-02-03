@@ -3,6 +3,8 @@
  * Centralized configuration for camera functionality
  */
 
+import type { CameraScanOverlayPreset, CameraScanOverlayConfig } from "./types";
+
 // Lock configuration for concurrent access control
 export const CAMERA_LOCK_TIMEOUT_MS = 5000;
 export const CAMERA_LOCK_POLL_INTERVAL_MS = 100;
@@ -40,7 +42,8 @@ export const MIN_TOUCH_TARGET_SIZE_PX = 44;
 // Browser help links for camera permissions
 export const BROWSER_PERMISSION_HELP_LINKS: Record<string, string> = {
   chrome: "https://support.google.com/chrome/answer/2693767",
-  firefox: "https://support.mozilla.org/en-US/kb/how-manage-your-camera-and-microphone-permissions",
+  firefox:
+    "https://support.mozilla.org/en-US/kb/how-manage-your-camera-and-microphone-permissions",
   safari: "https://support.apple.com/guide/safari/websites-ibrwe2159f50/mac",
   edge: "https://support.microsoft.com/en-us/microsoft-edge/camera-and-microphone-permissions",
   opera: "https://help.opera.com/en/latest/web-preferences/#camera",
@@ -77,36 +80,36 @@ export const ENHANCED_KEYBOARD_SHORTCUTS = {
   capture: [" ", "Enter"],
   record: ["r", "R"],
   stop: ["Escape", "s", "S"],
-  
+
   // Camera control
   switchCamera: ["c", "C"],
   toggleFlash: ["f", "F"],
-  
+
   // Zoom
   zoomIn: ["+", "=", "ArrowUp"],
   zoomOut: ["-", "_", "ArrowDown"],
   zoomReset: ["0"],
   zoom2x: ["2"],
   zoom3x: ["3"],
-  
+
   // Focus
   focusCenter: ["Home"],
-  
+
   // Guides
   toggleGrid: ["g", "G"],
   cycleGrid: ["Shift+g", "Shift+G"],
-  
+
   // Timer
   toggleTimer: ["t", "T"],
   cycleTimer: ["Shift+t", "Shift+T"],
-  
+
   // Settings
   openSettings: [","],
-  
+
   // Navigation
   prevMode: ["ArrowLeft", "["],
   nextMode: ["ArrowRight", "]"],
-  
+
   // Help
   showHelp: ["?", "/"],
 } as const;
@@ -201,6 +204,55 @@ export const CAMERA_DEFAULT_GRID = {
   showIntersectionDots: false,
   dotSize: 4,
   animated: true,
+};
+
+// Scan overlay defaults (face recognition & ID card scanner)
+export const SCAN_OVERLAY_DEFAULTS: Record<
+  CameraScanOverlayPreset,
+  CameraScanOverlayConfig
+> = {
+  none: {
+    frameColor: "#ffffff",
+    frameAlignedColor: "#22c55e",
+    frameStrokeWidth: 2,
+    scanLineEnabled: false,
+    scanLineColor: "#3b82f6",
+    scanLineDuration: 2000,
+    cornersEnabled: false,
+    cornerSize: 24,
+    cornerGlow: false,
+    showStatusBadge: false,
+    showAlignmentIndicator: false,
+    animationsEnabled: false,
+  },
+  "face-recognition": {
+    frameColor: "#ffffff",
+    frameAlignedColor: "#22c55e",
+    frameStrokeWidth: 2,
+    scanLineEnabled: true,
+    scanLineColor: "#3b82f6",
+    scanLineDuration: 2000,
+    cornersEnabled: true,
+    cornerSize: 24,
+    cornerGlow: true,
+    showStatusBadge: true,
+    showAlignmentIndicator: true,
+    animationsEnabled: true,
+  },
+  "id-card-scanner": {
+    frameColor: "#ffffff",
+    frameAlignedColor: "#22c55e",
+    frameStrokeWidth: 3,
+    scanLineEnabled: true,
+    scanLineColor: "#3b82f6",
+    scanLineDuration: 1500,
+    cornersEnabled: true,
+    cornerSize: 32,
+    cornerGlow: true,
+    showStatusBadge: true,
+    showAlignmentIndicator: true,
+    animationsEnabled: true,
+  },
 };
 
 // Haptic feedback patterns
