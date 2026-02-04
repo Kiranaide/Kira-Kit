@@ -4,6 +4,7 @@ import {
   IconCalendarEvent,
   IconClock,
 } from "@tabler/icons-react";
+import type { DateRange } from "react-day-picker";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Calendar } from "@/components/ui/calendar";
 import { format, addDays } from "date-fns";
@@ -56,16 +57,13 @@ export function SingleDateDemo() {
 }`;
 
 function DateRangeDemo() {
-  const [range, setRange] = React.useState<{
-    from?: Date;
-    to?: Date;
-  }>();
+  const [range, setRange] = React.useState<DateRange | undefined>();
   return (
     <div className="max-w-xs">
       <DatePicker
         mode="range"
         value={range}
-        onChange={(d) => setRange(d as { from?: Date; to?: Date })}
+        onChange={(d) => setRange(d as DateRange | undefined)}
         placeholder="Select date range"
       />
       {range?.from && (
@@ -269,10 +267,7 @@ const styleVariantsCode = `<DatePicker mode="single" variant="default" />
 
 function ApplyModeDemo() {
   const [date, setDate] = React.useState<Date | undefined>();
-  const [range, setRange] = React.useState<{
-    from?: Date;
-    to?: Date;
-  }>();
+  const [range, setRange] = React.useState<DateRange | undefined>();
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -318,8 +313,8 @@ function ApplyModeDemo() {
         <div className="max-w-xs">
           <DatePicker
             mode="range"
-            value={range}
-            onChange={(d) => setRange(d as { from?: Date; to?: Date })}
+            value={range as DateRange | undefined}
+            onChange={(d) => setRange(d as DateRange | undefined)}
             placeholder="Select date range (confirm mode)"
             applyMode="confirm"
           />

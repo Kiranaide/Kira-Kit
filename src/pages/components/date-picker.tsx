@@ -1,7 +1,12 @@
-import * as React from "react"
-import { IconCalendar, IconCalendarEvent, IconClock } from "@tabler/icons-react"
-import { DatePicker } from "@/components/ui/date-picker"
-import { format, addDays } from "date-fns"
+import * as React from "react";
+import {
+  IconCalendar,
+  IconCalendarEvent,
+  IconClock,
+} from "@tabler/icons-react";
+import type { DateRange } from "react-day-picker";
+import { DatePicker } from "@/components/ui/date-picker";
+import { format, addDays } from "date-fns";
 import {
   ComponentPage,
   PageHeader,
@@ -11,10 +16,10 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 function SingleDateDemo() {
-  const [date, setDate] = React.useState<Date | undefined>()
+  const [date, setDate] = React.useState<Date | undefined>();
   return (
     <div className="max-w-xs">
       <DatePicker
@@ -29,7 +34,7 @@ function SingleDateDemo() {
         </p>
       )}
     </div>
-  )
+  );
 }
 
 const singleDateCode = `import { useState } from "react"
@@ -47,19 +52,16 @@ export function SingleDateDemo() {
       placeholder="Pick a date"
     />
   )
-}`
+}`;
 
 function DateRangeDemo() {
-  const [range, setRange] = React.useState<{
-    from?: Date
-    to?: Date
-  }>()
+  const [range, setRange] = React.useState<DateRange | undefined>();
   return (
     <div className="max-w-xs">
       <DatePicker
         mode="range"
-        value={range}
-        onChange={(d) => setRange(d as { from?: Date; to?: Date })}
+        value={range as DateRange | undefined}
+        onChange={(d) => setRange(d as DateRange | undefined)}
         placeholder="Select date range"
       />
       {range?.from && (
@@ -69,7 +71,7 @@ function DateRangeDemo() {
         </p>
       )}
     </div>
-  )
+  );
 }
 
 const dateRangeCode = `import { useState } from "react"
@@ -90,35 +92,31 @@ export function DateRangeDemo() {
       placeholder="Select date range"
     />
   )
-}`
+}`;
 
 function WithoutPresetsDemo() {
   return (
     <div className="max-w-xs">
-      <DatePicker
-        mode="single"
-        placeholder="No presets"
-        showPresets={false}
-      />
+      <DatePicker mode="single" placeholder="No presets" showPresets={false} />
     </div>
-  )
+  );
 }
 
 const withoutPresetsCode = `<DatePicker
   mode="single"
   placeholder="No presets"
   showPresets={false}
-/>`
+/>`;
 
 function DisabledDemo() {
   return (
     <div className="max-w-xs">
       <DatePicker mode="single" placeholder="Disabled picker" disabled />
     </div>
-  )
+  );
 }
 
-const disabledCode = `<DatePicker mode="single" placeholder="Disabled picker" disabled />`
+const disabledCode = `<DatePicker mode="single" placeholder="Disabled picker" disabled />`;
 
 function DateConstraintsDemo() {
   return (
@@ -140,7 +138,7 @@ function DateConstraintsDemo() {
         maxDate={addDays(new Date(), 7)}
       />
     </div>
-  )
+  );
 }
 
 const dateConstraintsCode = `import { addDays } from "date-fns"
@@ -162,21 +160,25 @@ const dateConstraintsCode = `import { addDays } from "date-fns"
   placeholder="Select within 7 days"
   minDate={new Date()}
   maxDate={addDays(new Date(), 7)}
-/>`
+/>`;
 
 function SizeVariantsDemo() {
   return (
     <div className="space-y-4">
       <DatePicker mode="single" size="sm" placeholder="Small date picker" />
-      <DatePicker mode="single" size="default" placeholder="Default date picker" />
+      <DatePicker
+        mode="single"
+        size="default"
+        placeholder="Default date picker"
+      />
       <DatePicker mode="single" size="lg" placeholder="Large date picker" />
     </div>
-  )
+  );
 }
 
 const sizeVariantsCode = `<DatePicker mode="single" size="sm" placeholder="Small" />
 <DatePicker mode="single" size="default" placeholder="Default" />
-<DatePicker mode="single" size="lg" placeholder="Large" />`
+<DatePicker mode="single" size="lg" placeholder="Large" />`;
 
 function StyleVariantsDemo() {
   return (
@@ -191,25 +193,18 @@ function StyleVariantsDemo() {
         variant="outline"
         placeholder="Outline variant"
       />
-      <DatePicker
-        mode="single"
-        variant="ghost"
-        placeholder="Ghost variant"
-      />
+      <DatePicker mode="single" variant="ghost" placeholder="Ghost variant" />
     </div>
-  )
+  );
 }
 
 const styleVariantsCode = `<DatePicker mode="single" variant="default" />
 <DatePicker mode="single" variant="outline" />
-<DatePicker mode="single" variant="ghost" />`
+<DatePicker mode="single" variant="ghost" />`;
 
 function ApplyModeDemo() {
-  const [date, setDate] = React.useState<Date | undefined>()
-  const [range, setRange] = React.useState<{
-    from?: Date
-    to?: Date
-  }>()
+  const [date, setDate] = React.useState<Date | undefined>();
+  const [range, setRange] = React.useState<DateRange | undefined>();
   return (
     <div className="space-y-6">
       <DatePicker
@@ -234,18 +229,18 @@ function ApplyModeDemo() {
       <DatePicker
         mode="range"
         value={range}
-        onChange={(d) => setRange(d as { from?: Date; to?: Date })}
+        onChange={(d) => setRange(d as DateRange | undefined)}
         placeholder="Select date range (confirm mode)"
         applyMode="confirm"
       />
-      {range?.from && (
+      {range && range.from && (
         <p className="text-sm text-muted-foreground">
           From: {format(range.from, "PPP")}
           {range.to && ` — To: ${format(range.to, "PPP")}`}
         </p>
       )}
     </div>
-  )
+  );
 }
 
 const applyModeCode = `<DatePicker
@@ -267,7 +262,7 @@ const applyModeCode = `<DatePicker
   value={range}
   onChange={setRange}
   applyMode="confirm"
-/>`
+/>`;
 
 export default function DatePickerPage() {
   return (
@@ -282,17 +277,20 @@ export default function DatePickerPage() {
         features={[
           {
             title: "Flexible Selection",
-            description: "Single date and date range modes with immediate or confirm apply options.",
+            description:
+              "Single date and date range modes with immediate or confirm apply options.",
             icon: <IconCalendar className="h-5 w-5" />,
           },
           {
             title: "Customizable",
-            description: "Size variants, style variants, min/max date constraints, and configurable presets.",
+            description:
+              "Size variants, style variants, min/max date constraints, and configurable presets.",
             icon: <IconCalendarEvent className="h-5 w-5" />,
           },
           {
             title: "Accessible",
-            description: "Full keyboard navigation, ARIA attributes, and screen reader support.",
+            description:
+              "Full keyboard navigation, ARIA attributes, and screen reader support.",
             icon: <IconClock className="h-5 w-5" />,
           },
         ]}
@@ -410,8 +408,14 @@ export default function DatePickerPage() {
 
       <KeyboardShortcuts
         shortcuts={[
-          { keys: "Tab / Shift + Tab", description: "Navigate between focusable elements" },
-          { keys: "Arrow Keys", description: "Navigate between days/months/years" },
+          {
+            keys: "Tab / Shift + Tab",
+            description: "Navigate between focusable elements",
+          },
+          {
+            keys: "Arrow Keys",
+            description: "Navigate between days/months/years",
+          },
           { keys: "Home", description: "Go to first day of month" },
           { keys: "End", description: "Go to last day of month" },
           { keys: "Page Up", description: "Go to previous month" },
@@ -553,5 +557,5 @@ export default function DatePickerPage() {
         ]}
       />
     </ComponentPage>
-  )
+  );
 }

@@ -36,7 +36,6 @@ type ApplyMode = "immediate" | "confirm";
 
 interface DatePreset {
   label: string;
-
   getValue: () => Date | { from: Date; to: Date };
 }
 
@@ -216,25 +215,15 @@ interface DatePickerProps extends VariantProps<
   typeof datePickerTriggerVariants
 > {
   mode?: DatePickerMode;
-
   value?: Date | DateRange;
-
   onChange?: (value: Date | DateRange | undefined) => void;
-
   placeholder?: string;
-
   disabled?: boolean;
-
   showPresets?: boolean;
-
   minDate?: Date;
-
   maxDate?: Date;
-
   applyMode?: ApplyMode;
-
   ariaLabel?: string;
-
   className?: string;
 }
 
