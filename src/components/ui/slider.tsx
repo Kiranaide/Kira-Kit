@@ -30,7 +30,7 @@ const sliderVariants = cva(
       size: "default",
       variant: "default",
     },
-  },
+  }
 );
 
 interface SliderProps
@@ -48,28 +48,21 @@ interface SliderProps
   min?: number;
   max?: number;
   step?: number;
-
   label?: string;
   description?: string;
   error?: string;
   required?: boolean;
   readOnly?: boolean;
-
   tooltipMode?: "always" | "hover" | "on-drag" | "never";
   tooltipPosition?: "top" | "bottom";
   renderTooltip?: (value: number) => React.ReactNode;
-
   markers?: Array<{ value: number; label?: string }>;
   showStepMarkers?: boolean;
-
   thumbLabel?: string;
   thumbIcon?: React.ReactNode;
-
   formatValue?: (value: number) => string;
   getValueText?: (value: number) => string;
-
   dir?: "ltr" | "rtl";
-
   name?: string;
 }
 
@@ -85,28 +78,21 @@ function Slider({
   min = 0,
   max = 100,
   step = 1,
-
   label,
   description,
   error,
   required = false,
   readOnly = false,
-
   tooltipMode = "on-drag",
   tooltipPosition = "top",
   renderTooltip,
-
   markers,
   showStepMarkers = false,
-
   thumbLabel,
   thumbIcon,
-
   formatValue = (v) => String(v),
   getValueText = (v) => String(v),
-
   dir,
-
   name,
   disabled,
   ...props
@@ -125,7 +111,7 @@ function Slider({
       setInternalValue(val);
       onValueChange?.(val);
     },
-    [onValueChange],
+    [onValueChange]
   );
 
   const handleCommitted = React.useCallback(
@@ -136,7 +122,6 @@ function Slider({
       onValueCommitted?.(val);
       setIsDragging(false);
 
-
       if (thumbRef.current) {
         gsap.fromTo(
           thumbRef.current,
@@ -145,18 +130,16 @@ function Slider({
             scale: 1,
             duration: 0.2,
             ease: "power2.out",
-          },
+          }
         );
       }
     },
-    [onValueChange, onValueCommitted],
+    [onValueChange, onValueCommitted]
   );
-
 
   const animateToMarker = React.useCallback(
     (markerValue: number) => {
       if (readOnly || disabled) return;
-
 
       if (thumbRef.current) {
         gsap.fromTo(
@@ -166,14 +149,14 @@ function Slider({
             scale: 1,
             duration: 0.3,
             ease: "back.out(2)",
-          },
+          }
         );
       }
 
       handleChange(markerValue);
       onValueCommitted?.(markerValue);
     },
-    [handleChange, onValueCommitted, readOnly, disabled],
+    [handleChange, onValueCommitted, readOnly, disabled]
   );
 
   const shouldShowTooltip = React.useMemo(() => {
@@ -223,7 +206,6 @@ function Slider({
     return [];
   }, [markers, showStepMarkers, step, min, max]);
 
-
   const hasMarkerLabels = markersToRender.some((m) => m.label);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -241,13 +223,13 @@ function Slider({
       case "PageUp":
         e.preventDefault();
         handleChange(
-          Math.min(currentValue + (props.largeStep || step * 10), max),
+          Math.min(currentValue + (props.largeStep || step * 10), max)
         );
         break;
       case "PageDown":
         e.preventDefault();
         handleChange(
-          Math.max(currentValue - (props.largeStep || step * 10), min),
+          Math.max(currentValue - (props.largeStep || step * 10), min)
         );
         break;
     }
@@ -270,7 +252,7 @@ function Slider({
               id={`${name || "slider"}-description`}
               className={cn(
                 "text-xs",
-                error ? "text-destructive" : "text-muted-foreground",
+                error ? "text-destructive" : "text-muted-foreground"
               )}
             >
               {error || description}
@@ -291,8 +273,8 @@ function Slider({
           step={step}
           className={cn(
             sliderVariants({ size, variant }),
-            error && "[&_[data-slot=slider-range]]:!bg-destructive",
-            className,
+            error && "**:data-[slot=slider-range]:bg-destructive!",
+            className
           )}
           disabled={disabled || readOnly}
           {...props}
@@ -307,7 +289,6 @@ function Slider({
               data-slot="slider-track"
               className="relative w-full rounded-full bg-muted select-none"
             >
-              {}
               {markersToRender.map((marker, index) => {
                 const percent = ((marker.value - min) / (max - min)) * 100;
                 const isActive = marker.value <= currentValue;
@@ -318,7 +299,7 @@ function Slider({
                     key={marker.value}
                     type="button"
                     className={cn(
-                      "absolute top-1/2 z-[1] -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-150",
+                      "absolute top-1/2 z-1 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-150",
                       "size-1",
                       isActive
                         ? "bg-primary-foreground/80"
@@ -328,7 +309,7 @@ function Slider({
                         "cursor-pointer hover:scale-150",
                       disabled && "cursor-not-allowed",
                       isFirst && "ml-1",
-                      isLast && "mr-1",
+                      isLast && "mr-1"
                     )}
                     style={{
                       left: `${isLast ? 99 : percent}%`,
@@ -359,7 +340,7 @@ function Slider({
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   "disabled:pointer-events-none disabled:opacity-50",
                   (isHovering || isDragging) && "scale-110 shadow-lg",
-                  error && "!border-destructive",
+                  error && "border-destructive!"
                 )}
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
@@ -386,7 +367,7 @@ function Slider({
                       tooltipPosition === "top" &&
                         "-top-10 left-1/2 -translate-x-1/2",
                       tooltipPosition === "bottom" &&
-                        "left-1/2 top-full mt-2 -translate-x-1/2",
+                        "left-1/2 top-full mt-2 -translate-x-1/2"
                     )}
                   >
                     {renderTooltip
@@ -399,7 +380,6 @@ function Slider({
           </SliderPrimitive.Control>
         </SliderPrimitive.Root>
 
-        {}
         {hasMarkerLabels && (
           <div className="relative mt-1 w-full">
             {markersToRender.map((marker, index) => {
@@ -422,7 +402,7 @@ function Slider({
                       "cursor-pointer hover:text-primary",
                     disabled && "cursor-not-allowed opacity-50",
                     isFirst && "ml-0.5",
-                    isLast && "mr-0.5",
+                    isLast && "mr-0.5"
                   )}
                   style={{ left: `${percent}%` }}
                   onClick={() => animateToMarker(marker.value)}
@@ -441,7 +421,7 @@ function Slider({
         <div
           className={cn(
             "mt-2 text-sm font-medium tabular-nums text-muted-foreground",
-            hasMarkerLabels && "mt-6",
+            hasMarkerLabels && "mt-6"
           )}
         >
           {formatValue(currentValue)}
@@ -484,28 +464,20 @@ interface RangeSliderProps
   max?: number;
   step?: number;
   formatValue?: (value: number) => string;
-
   label?: string;
   description?: string;
   error?: string;
   required?: boolean;
   readOnly?: boolean;
-
   tooltipMode?: "always" | "hover" | "on-drag" | "never";
   tooltipPosition?: "top" | "bottom";
-
   markers?: Array<{ value: number; label?: string }>;
   showStepMarkers?: boolean;
-
   thumbLabels?: [string, string];
   thumbIcons?: [React.ReactNode, React.ReactNode];
-
   getValueText?: (value: [number, number]) => string;
-
   dir?: "ltr" | "rtl";
-
   name?: string;
-
   minStepsBetweenValues?: number;
 }
 
@@ -522,26 +494,19 @@ function RangeSlider({
   max = 100,
   step = 1,
   formatValue = (v) => String(v),
-
   label,
   description,
   error,
   required = false,
   readOnly = false,
-
   tooltipMode = "on-drag",
   tooltipPosition = "top",
-
   markers,
   showStepMarkers = false,
-
   thumbLabels,
   thumbIcons,
-
   getValueText = (v) => `${v[0]} to ${v[1]}`,
-
   dir,
-
   name,
   disabled,
   minStepsBetweenValues,
@@ -566,7 +531,7 @@ function RangeSlider({
         onValueChange?.(val);
       }
     },
-    [onValueChange],
+    [onValueChange]
   );
 
   const handleCommitted = React.useCallback(
@@ -578,7 +543,6 @@ function RangeSlider({
         onValueCommitted?.(val);
         setIsDragging(false);
 
-
         const activeRef = activeThumb === 0 ? thumb0Ref : thumb1Ref;
         if (activeRef.current) {
           gsap.fromTo(
@@ -588,13 +552,13 @@ function RangeSlider({
               scale: 1,
               duration: 0.2,
               ease: "power2.out",
-            },
+            }
           );
         }
         setActiveThumb(null);
       }
     },
-    [onValueChange, onValueCommitted, activeThumb],
+    [onValueChange, onValueCommitted, activeThumb]
   );
 
   const shouldShowTooltip = React.useMemo(() => {
@@ -617,7 +581,6 @@ function RangeSlider({
     return [];
   }, [markers, showStepMarkers, step, min, max]);
 
-
   const hasMarkerLabels = markersToRender.some((m) => m.label);
 
   const rangeSliderContent = (
@@ -637,7 +600,7 @@ function RangeSlider({
               id={`${name || "range-slider"}-description`}
               className={cn(
                 "text-xs",
-                error ? "text-destructive" : "text-muted-foreground",
+                error ? "text-destructive" : "text-muted-foreground"
               )}
             >
               {error || description}
@@ -659,8 +622,8 @@ function RangeSlider({
           minStepsBetweenValues={minStepsBetweenValues}
           className={cn(
             sliderVariants({ size, variant }),
-            error && "[&_[data-slot=slider-range]]:!bg-destructive",
-            className,
+            error && "**:data-[slot=slider-range]:bg-destructive!",
+            className
           )}
           disabled={disabled || readOnly}
           {...props}
@@ -686,13 +649,13 @@ function RangeSlider({
                   <div
                     key={marker.value}
                     className={cn(
-                      "absolute top-1/2 z-[1] -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-150",
+                      "absolute top-1/2 z-1 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-150",
                       "size-1.5",
                       isInRange
                         ? "bg-primary-foreground/80"
                         : "bg-muted-foreground/40",
                       isFirst && "ml-1",
-                      isLast && "mr-1",
+                      isLast && "mr-1"
                     )}
                     style={{ left: `${isLast ? 99 : percent}%` }}
                     aria-hidden="true"
@@ -717,7 +680,7 @@ function RangeSlider({
                   (isHovering || isDragging) &&
                     activeThumb === 0 &&
                     "scale-110 shadow-lg",
-                  error && "!border-destructive",
+                  error && "border-destructive!"
                 )}
                 onMouseEnter={() => {
                   setIsHovering(true);
@@ -751,7 +714,7 @@ function RangeSlider({
                         tooltipPosition === "top" &&
                           "-top-10 left-1/2 -translate-x-1/2",
                         tooltipPosition === "bottom" &&
-                          "left-1/2 top-full mt-2 -translate-x-1/2",
+                          "left-1/2 top-full mt-2 -translate-x-1/2"
                       )}
                     >
                       {formatValue(currentValue[0])}
@@ -771,7 +734,7 @@ function RangeSlider({
                   (isHovering || isDragging) &&
                     activeThumb === 1 &&
                     "scale-110 shadow-lg",
-                  error && "!border-destructive",
+                  error && "border-destructive!"
                 )}
                 onMouseEnter={() => {
                   setIsHovering(true);
@@ -805,7 +768,7 @@ function RangeSlider({
                         tooltipPosition === "top" &&
                           "-top-10 left-1/2 -translate-x-1/2",
                         tooltipPosition === "bottom" &&
-                          "left-1/2 top-full mt-2 -translate-x-1/2",
+                          "left-1/2 top-full mt-2 -translate-x-1/2"
                       )}
                     >
                       {formatValue(currentValue[1])}
@@ -832,7 +795,7 @@ function RangeSlider({
                     "absolute -translate-x-1/2 text-[10px] transition-colors duration-150",
                     isInRange
                       ? "font-semibold text-primary"
-                      : "text-muted-foreground",
+                      : "text-muted-foreground"
                   )}
                   style={{ left: `${percent}%` }}
                 >
@@ -848,7 +811,7 @@ function RangeSlider({
         <div
           className={cn(
             "mt-2 flex justify-between text-sm font-medium tabular-nums text-muted-foreground",
-            hasMarkerLabels && "mt-6",
+            hasMarkerLabels && "mt-6"
           )}
         >
           <span>{formatValue(currentValue[0])}</span>

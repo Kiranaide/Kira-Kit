@@ -3424,7 +3424,6 @@ class CameraErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error("Camera error boundary caught error:", error, errorInfo);
     this.props.onError?.(error, errorInfo);
   }
 

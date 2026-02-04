@@ -20,10 +20,6 @@ import {
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { cva, type VariantProps } from "class-variance-authority";
 
-
-
-
-
 function useReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
 
@@ -41,10 +37,6 @@ function useReducedMotion() {
 
   return prefersReducedMotion;
 }
-
-
-
-
 
 type Theme = "light" | "dark";
 
@@ -91,15 +83,11 @@ export function useTheme() {
   return context;
 }
 
-
-
-
-
 const MOBILE_BREAKPOINT = 768;
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
-    undefined,
+    undefined
   );
 
   React.useEffect(() => {
@@ -112,10 +100,6 @@ function useIsMobile() {
 
   return !!isMobile;
 }
-
-
-
-
 
 type CollapsibleMode = "offcanvas" | "icon" | "none";
 type SidebarSide = "left" | "right";
@@ -143,19 +127,12 @@ const STORAGE_KEY = "kira-sidebar-collapsed";
 
 interface SidebarProviderProps {
   children: React.ReactNode;
-
   collapsible?: CollapsibleMode;
-
   side?: SidebarSide;
-
   defaultCollapsed?: boolean;
-
   persistState?: boolean;
-
   width?: string;
-
   collapsedWidth?: string;
-
   hoverExpand?: boolean;
 }
 
@@ -182,13 +159,11 @@ export function SidebarProvider({
   const isMobile = useIsMobile();
   const reducedMotion = useReducedMotion();
 
-
   React.useEffect(() => {
     if (persistState && collapsible !== "none") {
       localStorage.setItem(STORAGE_KEY, String(collapsed));
     }
   }, [collapsed, persistState, collapsible]);
-
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -252,43 +227,36 @@ export function useSidebar() {
   return context;
 }
 
-
-
-
-
-const sidebarVariants = cva(
-  "h-screen flex flex-col",
-  {
-    variants: {
-      variant: {
-        default: "bg-sidebar border-sidebar-border",
-        floating:
-          "bg-sidebar m-2 rounded-xl border border-sidebar-border shadow-lg h-[calc(100vh-16px)]",
-        inset: "bg-muted/30",
-      },
-      side: {
-        left: "border-r",
-        right: "border-l",
-      },
+const sidebarVariants = cva("h-screen flex flex-col", {
+  variants: {
+    variant: {
+      default: "bg-sidebar border-sidebar-border",
+      floating:
+        "bg-sidebar m-2 rounded-xl border border-sidebar-border shadow-lg h-[calc(100vh-16px)]",
+      inset: "bg-muted/30",
     },
-    compoundVariants: [
-      {
-        variant: "floating",
-        side: "left",
-        className: "border",
-      },
-      {
-        variant: "floating",
-        side: "right",
-        className: "border",
-      },
-    ],
-    defaultVariants: {
-      variant: "default",
-      side: "left",
+    side: {
+      left: "border-r",
+      right: "border-l",
     },
   },
-);
+  compoundVariants: [
+    {
+      variant: "floating",
+      side: "left",
+      className: "border",
+    },
+    {
+      variant: "floating",
+      side: "right",
+      className: "border",
+    },
+  ],
+  defaultVariants: {
+    variant: "default",
+    side: "left",
+  },
+});
 
 type SidebarVariant = "default" | "floating" | "inset";
 
@@ -317,16 +285,17 @@ export function Sidebar({
     reducedMotion,
   } = useSidebar();
 
-
-  const hoverTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const hoverTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
 
   const sidebarWidth = React.useMemo(() => {
-    if (collapsible === "offcanvas" && collapsed && !isHoverExpanded) return "0px";
-    if (collapsible === "icon" && collapsed && !isHoverExpanded) return collapsedWidth;
+    if (collapsible === "offcanvas" && collapsed && !isHoverExpanded)
+      return "0px";
+    if (collapsible === "icon" && collapsed && !isHoverExpanded)
+      return collapsedWidth;
     return width;
   }, [collapsed, collapsible, width, collapsedWidth, isHoverExpanded]);
-
 
   const handleMouseEnter = React.useCallback(() => {
     if (hoverExpand && collapsed && collapsible === "icon") {
@@ -339,13 +308,11 @@ export function Sidebar({
 
   const handleMouseLeave = React.useCallback(() => {
     if (hoverExpand && isHoverExpanded) {
-
       hoverTimeoutRef.current = setTimeout(() => {
         setIsHoverExpanded(false);
       }, 300);
     }
   }, [hoverExpand, isHoverExpanded, setIsHoverExpanded]);
-
 
   React.useEffect(() => {
     return () => {
@@ -354,7 +321,6 @@ export function Sidebar({
       }
     };
   }, []);
-
 
   if (isMobile) {
     return (
@@ -375,7 +341,7 @@ export function Sidebar({
               variant === "default" && "bg-sidebar",
               variant === "floating" && "bg-sidebar",
               variant === "inset" && "bg-muted/30",
-              className,
+              className
             )}
           >
             {children}
@@ -384,8 +350,6 @@ export function Sidebar({
       </Drawer>
     );
   }
-
-
 
   const sidebarElement = (
     <aside
@@ -401,27 +365,26 @@ export function Sidebar({
       onMouseLeave={handleMouseLeave}
       className={cn(
         sidebarVariants({ variant, side }),
-
         !reducedMotion && "transition-all duration-300 ease-in-out",
         reducedMotion && "transition-none",
-        collapsible === "offcanvas" && collapsed && !isHoverExpanded && "overflow-hidden opacity-0",
-
+        collapsible === "offcanvas" &&
+          collapsed &&
+          !isHoverExpanded &&
+          "overflow-hidden opacity-0",
         isHoverExpanded && "absolute z-50 shadow-xl top-0 bottom-0",
         isHoverExpanded && side === "left" && "left-0",
         isHoverExpanded && side === "right" && "right-0",
-        className,
+        className
       )}
     >
       {children}
     </aside>
   );
 
-
-
   if (hoverExpand && collapsed && collapsible === "icon") {
     return (
       <div
-        className="relative flex-shrink-0"
+        className="relative shrink-0"
         style={{ width: collapsedWidth }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -434,12 +397,7 @@ export function Sidebar({
   return sidebarElement;
 }
 
-
-
-
-
 interface SidebarTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-
   showOnDesktop?: boolean;
 }
 
@@ -450,7 +408,6 @@ export function SidebarTrigger({
 }: SidebarTriggerProps) {
   const { toggleSidebar, isMobile, openMobile } = useSidebar();
 
-
   if (!isMobile && !showOnDesktop) return null;
 
   return (
@@ -460,7 +417,7 @@ export function SidebarTrigger({
       className={cn(
         "p-2 rounded-md hover:bg-muted transition-colors",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        className,
+        className
       )}
       aria-label={openMobile ? "Close navigation menu" : "Open navigation menu"}
       aria-expanded={openMobile}
@@ -476,20 +433,12 @@ export function SidebarTrigger({
   );
 }
 
-
-
-
-
 interface SidebarHeaderProps {
   children?: React.ReactNode;
   className?: string;
-
   showToggle?: boolean;
-
   logo?: React.ReactNode;
-
   title?: string;
-
   sticky?: boolean;
 }
 
@@ -501,9 +450,9 @@ export function SidebarHeader({
   title,
   sticky = false,
 }: SidebarHeaderProps) {
-  const { collapsed, setCollapsed, collapsible, side, isHoverExpanded } = useSidebar();
+  const { collapsed, setCollapsed, collapsible, side, isHoverExpanded } =
+    useSidebar();
   const isExpanded = !collapsed || isHoverExpanded;
-
 
   const canToggle = collapsible !== "none" && showToggle;
 
@@ -515,13 +464,13 @@ export function SidebarHeader({
         side === "right" ? "flex-row-reverse" : "flex-row",
         !isExpanded ? "justify-center" : "justify-between",
         sticky && "sticky top-0 z-10",
-        className,
+        className
       )}
     >
       {isExpanded && (
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {logo || (
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
               <span className="text-primary-foreground font-bold text-sm">
                 K
               </span>
@@ -545,7 +494,7 @@ export function SidebarHeader({
                 onClick={() => setCollapsed(!collapsed)}
                 className={cn(
                   "p-2 rounded-md hover:bg-sidebar-accent transition-colors",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 )}
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                 aria-pressed={!collapsed}
@@ -553,7 +502,7 @@ export function SidebarHeader({
                 <IconLayoutSidebar
                   className={cn(
                     "w-5 h-5 text-sidebar-foreground transition-transform",
-                    collapsed && !isHoverExpanded && "rotate-180",
+                    collapsed && !isHoverExpanded && "rotate-180"
                   )}
                 />
               </button>
@@ -570,14 +519,9 @@ export function SidebarHeader({
   );
 }
 
-
-
-
-
 interface SidebarContentProps {
   children: React.ReactNode;
   className?: string;
-
   showScrollTop?: boolean;
 }
 
@@ -589,7 +533,6 @@ export function SidebarContent({
   const contentRef = React.useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = React.useState(false);
   const { reducedMotion } = useSidebar();
-
 
   const handleScroll = React.useCallback(() => {
     if (contentRef.current) {
@@ -615,18 +558,16 @@ export function SidebarContent({
       className={cn(
         "flex-1 overflow-y-auto overflow-x-hidden py-2 px-2 space-y-1",
         "scrollbar-thin scrollbar-thumb-sidebar-accent scrollbar-track-transparent",
-
         "[&::-webkit-scrollbar]:w-1.5",
         "[&::-webkit-scrollbar-track]:bg-transparent",
         "[&::-webkit-scrollbar-thumb]:bg-sidebar-accent",
         "[&::-webkit-scrollbar-thumb]:rounded-full",
         "[&::-webkit-scrollbar-thumb:hover]:bg-sidebar-accent-foreground/20",
-        className,
+        className
       )}
     >
       {children}
 
-      {}
       {showScrollTop && showScrollButton && (
         <div className="sticky bottom-2 flex justify-center pt-2">
           <button
@@ -635,7 +576,7 @@ export function SidebarContent({
               "p-2 rounded-full bg-sidebar-accent hover:bg-sidebar-accent-foreground/20",
               "shadow-md transition-all",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              "animate-in fade-in-0 zoom-in-95 duration-200",
+              "animate-in fade-in-0 zoom-in-95 duration-200"
             )}
             aria-label="Scroll to top"
           >
@@ -646,10 +587,6 @@ export function SidebarContent({
     </div>
   );
 }
-
-
-
-
 
 interface SidebarSearchProps {
   placeholder?: string;
@@ -672,7 +609,6 @@ export function SidebarSearch({
   const searchValue = value ?? internalValue;
   const setSearchValue = onChange ?? setInternalValue;
 
-
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -694,7 +630,7 @@ export function SidebarSearch({
               onClick={() => inputRef.current?.focus()}
               className={cn(
                 "w-full p-2 rounded-md hover:bg-sidebar-accent transition-colors flex items-center justify-center",
-                className,
+                className
               )}
               aria-label="Search"
             >
@@ -723,7 +659,7 @@ export function SidebarSearch({
             "w-full h-9 pl-9 pr-3 rounded-md border border-sidebar-border bg-sidebar",
             "text-sm text-sidebar-foreground placeholder:text-muted-foreground",
             "focus:outline-none focus:ring-2 focus:ring-ring",
-            "transition-colors",
+            "transition-colors"
           )}
           aria-label="Search navigation"
         />
@@ -741,16 +677,11 @@ export function SidebarSearch({
   );
 }
 
-
-
-
-
 interface SidebarGroupProps {
   label: string;
   children: React.ReactNode;
   defaultOpen?: boolean;
   className?: string;
-
   action?: React.ReactNode;
 }
 
@@ -789,7 +720,7 @@ export function SidebarGroup({
           "w-full flex items-center justify-between px-3 py-2",
           "text-xs font-medium text-muted-foreground uppercase tracking-wider",
           "hover:text-sidebar-foreground transition-colors",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
         )}
         aria-expanded={open}
       >
@@ -800,7 +731,7 @@ export function SidebarGroup({
             className={cn(
               "w-4 h-4",
               !reducedMotion && "transition-transform duration-200",
-              open ? "rotate-0" : "-rotate-90",
+              open ? "rotate-0" : "-rotate-90"
             )}
           />
         </div>
@@ -810,7 +741,7 @@ export function SidebarGroup({
         className={cn(
           "space-y-0.5 overflow-hidden",
           !reducedMotion && "transition-all duration-200",
-          open ? "opacity-100" : "opacity-0 h-0",
+          open ? "opacity-100" : "opacity-0 h-0"
         )}
         style={{
           maxHeight: open ? (contentHeight ?? 1000) : 0,
@@ -821,10 +752,6 @@ export function SidebarGroup({
     </div>
   );
 }
-
-
-
-
 
 const badgeVariants = cva(
   "inline-flex items-center justify-center rounded-full text-xs font-medium",
@@ -848,7 +775,7 @@ const badgeVariants = cva(
       variant: "default",
       size: "default",
     },
-  },
+  }
 );
 
 interface SidebarBadgeProps extends VariantProps<typeof badgeVariants> {
@@ -869,18 +796,12 @@ export function SidebarBadge({
   );
 }
 
-
-
-
-
 interface SidebarItemProps {
   to: string;
   icon?: React.ReactNode;
   children: React.ReactNode;
   level?: number;
-
   badge?: React.ReactNode;
-
   badgeVariant?:
     | "default"
     | "secondary"
@@ -888,12 +809,9 @@ interface SidebarItemProps {
     | "outline"
     | "success"
     | "warning";
-
   shortcut?: string;
-
   disabled?: boolean;
   className?: string;
-
   closeMobileOnClick?: boolean;
 }
 
@@ -909,16 +827,21 @@ export function SidebarItem({
   className,
   closeMobileOnClick = true,
 }: SidebarItemProps) {
-  const { collapsed, side, isMobile, setOpenMobile, isHoverExpanded, reducedMotion } = useSidebar();
+  const {
+    collapsed,
+    side,
+    isMobile,
+    setOpenMobile,
+    isHoverExpanded,
+    reducedMotion,
+  } = useSidebar();
   const matchRoute = useMatchRoute();
   const isActive = matchRoute({ to, fuzzy: false });
   const itemRef = React.useRef<HTMLAnchorElement>(null);
   const isExpanded = !collapsed || isHoverExpanded;
 
-
   React.useEffect(() => {
     if (isActive && itemRef.current) {
-
       requestAnimationFrame(() => {
         itemRef.current?.scrollIntoView({
           behavior: reducedMotion ? "auto" : "smooth",
@@ -952,7 +875,7 @@ export function SidebarItem({
           : "text-sidebar-foreground hover:bg-sidebar-accent",
         disabled && "opacity-50 pointer-events-none",
         !isExpanded && "justify-center px-2 relative",
-        className,
+        className
       )}
     >
       {icon && (
@@ -1011,10 +934,6 @@ export function SidebarItem({
   return linkContent;
 }
 
-
-
-
-
 interface SidebarMenuProps {
   children: React.ReactNode;
   className?: string;
@@ -1032,10 +951,6 @@ export function SidebarMenu({ children, className }: SidebarMenuProps) {
   );
 }
 
-
-
-
-
 interface SidebarMenuItemProps {
   children: React.ReactNode;
   className?: string;
@@ -1052,10 +967,6 @@ export function SidebarMenuItem({ children, className }: SidebarMenuItemProps) {
     </li>
   );
 }
-
-
-
-
 
 interface SidebarMenuButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
@@ -1094,7 +1005,7 @@ export function SidebarMenuButton({
           ? "bg-sidebar-primary text-sidebar-primary-foreground font-medium"
           : "text-sidebar-foreground hover:bg-sidebar-accent",
         !isExpanded && "justify-center px-2",
-        className,
+        className
       )}
       {...props}
     >
@@ -1144,10 +1055,6 @@ export function SidebarMenuButton({
   return buttonContent;
 }
 
-
-
-
-
 interface SidebarMenuSubProps {
   children: React.ReactNode;
   className?: string;
@@ -1165,18 +1072,15 @@ export function SidebarMenuSub({ children, className }: SidebarMenuSubProps) {
       role="menu"
       className={cn(
         "ml-5 pl-2 border-l-2 border-sidebar-border space-y-0.5",
-        !reducedMotion && "animate-in slide-in-from-left-2 fade-in-0 duration-200",
-        className,
+        !reducedMotion &&
+          "animate-in slide-in-from-left-2 fade-in-0 duration-200",
+        className
       )}
     >
       {children}
     </ul>
   );
 }
-
-
-
-
 
 interface SidebarItemGroupProps {
   label: string;
@@ -1217,7 +1121,7 @@ export function SidebarItemGroup({
                 onClick={() => setOpen(!open)}
                 className={cn(
                   "w-full flex items-center justify-center p-2 rounded-lg relative",
-                  "text-sidebar-foreground hover:bg-sidebar-accent transition-colors",
+                  "text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                 )}
                 aria-label={label}
               >
@@ -1262,18 +1166,18 @@ export function SidebarItemGroup({
           "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm",
           "text-sidebar-foreground hover:bg-sidebar-accent",
           !reducedMotion && "transition-all duration-150",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         )}
         aria-expanded={open}
       >
-        {icon && <span className="flex-shrink-0">{icon}</span>}
+        {icon && <span className="shrink-0">{icon}</span>}
         <span className="flex-1 text-left">{label}</span>
         {badge && <SidebarBadge variant={badgeVariant}>{badge}</SidebarBadge>}
         <IconChevronDown
           className={cn(
             "w-4 h-4",
             !reducedMotion && "transition-transform duration-200",
-            open ? "rotate-0" : "-rotate-90",
+            open ? "rotate-0" : "-rotate-90"
           )}
         />
       </button>
@@ -1281,7 +1185,7 @@ export function SidebarItemGroup({
         className={cn(
           "overflow-hidden",
           !reducedMotion && "transition-all duration-200",
-          open ? "opacity-100" : "max-h-0 opacity-0",
+          open ? "opacity-100" : "max-h-0 opacity-0"
         )}
         style={{
           maxHeight: open ? "500px" : "0px",
@@ -1292,10 +1196,6 @@ export function SidebarItemGroup({
     </div>
   );
 }
-
-
-
-
 
 interface SidebarDividerProps {
   className?: string;
@@ -1311,14 +1211,9 @@ export function SidebarDivider({ className }: SidebarDividerProps) {
   );
 }
 
-
-
-
-
 interface SidebarFooterProps {
   children: React.ReactNode;
   className?: string;
-
   sticky?: boolean;
 }
 
@@ -1333,7 +1228,7 @@ export function SidebarFooter({
       className={cn(
         "p-2 border-t border-sidebar-border mt-auto bg-sidebar",
         sticky && "sticky bottom-0 z-10",
-        className,
+        className
       )}
     >
       {children}
@@ -1341,18 +1236,10 @@ export function SidebarFooter({
   );
 }
 
-
-
-
-
 interface SidebarUserProps {
-
   name: string;
-
   email?: string;
-
   avatar?: string | React.ReactNode;
-
   menuItems?: Array<{
     label: string;
     icon?: React.ReactNode;
@@ -1401,7 +1288,7 @@ export function SidebarUser({
               className={cn(
                 "w-full p-2 rounded-lg hover:bg-sidebar-accent transition-colors",
                 "flex items-center justify-center",
-                className,
+                className
               )}
               aria-label={`User menu for ${name}`}
             >
@@ -1431,7 +1318,7 @@ export function SidebarUser({
         className={cn(
           "w-full flex items-center gap-3 p-2 rounded-lg",
           "hover:bg-sidebar-accent transition-colors text-left",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         )}
         aria-haspopup={menuItems ? "menu" : undefined}
         aria-expanded={menuOpen}
@@ -1446,7 +1333,7 @@ export function SidebarUser({
           )}
         </div>
         {menuItems && (
-          <IconDots className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <IconDots className="w-4 h-4 text-muted-foreground shrink-0" />
         )}
       </button>
 
@@ -1464,7 +1351,7 @@ export function SidebarUser({
               "absolute z-50 w-56 rounded-md border border-sidebar-border bg-sidebar shadow-lg",
               "animate-in fade-in-0 zoom-in-95 duration-200",
               side === "left" ? "right-0" : "left-0",
-              "bottom-full mb-1",
+              "bottom-full mb-1"
             )}
           >
             <div className="p-1">
@@ -1481,7 +1368,7 @@ export function SidebarUser({
                     "transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     item.destructive
                       ? "text-destructive hover:bg-destructive/10"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent",
+                      : "text-sidebar-foreground hover:bg-sidebar-accent"
                   )}
                 >
                   {item.icon}
@@ -1495,10 +1382,6 @@ export function SidebarUser({
     </div>
   );
 }
-
-
-
-
 
 interface ThemeToggleProps {
   className?: string;
@@ -1517,9 +1400,11 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
         "text-sidebar-foreground hover:bg-sidebar-accent",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         !isExpanded && "justify-center px-2",
-        className,
+        className
       )}
-      aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+      aria-label={
+        theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+      }
     >
       {theme === "light" ? (
         <IconMoon className="w-5 h-5" />
@@ -1549,12 +1434,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
   return buttonContent;
 }
 
-
-
-
-
 interface SidebarSkeletonProps {
-
   items?: number;
   className?: string;
 }
@@ -1565,7 +1445,6 @@ export function SidebarSkeleton({
 }: SidebarSkeletonProps) {
   const { collapsed, isHoverExpanded } = useSidebar();
   const isExpanded = !collapsed || isHoverExpanded;
-
 
   const widths = [75, 85, 65, 90, 70, 80, 60, 95, 72, 88];
 
@@ -1581,7 +1460,7 @@ export function SidebarSkeleton({
           key={i}
           className={cn(
             "flex items-center gap-3 px-3 py-2 rounded-lg",
-            !isExpanded && "justify-center",
+            !isExpanded && "justify-center"
           )}
         >
           <div className="w-5 h-5 rounded bg-sidebar-accent animate-pulse" />
@@ -1596,10 +1475,6 @@ export function SidebarSkeleton({
     </div>
   );
 }
-
-
-
-
 
 export {
   sidebarVariants,

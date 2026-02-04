@@ -8,15 +8,10 @@ import { IconX } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 
-
-
-
-
 const badgeVariants = cva(
   "gap-1.5 rounded-full border border-transparent font-medium transition-all inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-colors overflow-hidden group/badge",
   {
     variants: {
-
       variant: {
         default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         secondary:
@@ -118,18 +113,8 @@ const badgeCloseVariants = cva(
   }
 );
 
-
-
-
-
-
-
-
-
 interface BadgeProps
-  extends useRender.ComponentProps<"span">,
-    VariantProps<typeof badgeVariants> {
-
+  extends useRender.ComponentProps<"span">, VariantProps<typeof badgeVariants> {
   icon?: React.ReactNode;
 
   iconPosition?: "left" | "right";
@@ -197,19 +182,7 @@ function Badge({
     [dismissible, handleClose]
   );
 
-
-  const dotColor =
-    dot === true
-      ? "default"
-      : ((dot || "default") as
-          | "default"
-          | "secondary"
-          | "destructive"
-          | "success"
-          | "warning"
-          | "info"
-          | "outline"
-          | "muted");
+  const dotColor = dot === true || dot === false ? "default" : dot;
   const hasDot = dot !== false;
 
   const badgeContent = (
@@ -294,9 +267,7 @@ function Badge({
             ? (e: React.KeyboardEvent) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  (props.onClick as (e: React.MouseEvent) => void)?.(
-                    e as unknown as React.MouseEvent
-                  );
+                  (e.currentTarget as HTMLElement).click();
                 }
               }
             : undefined,
@@ -312,9 +283,6 @@ function Badge({
     },
   });
 }
-
-
-
 
 interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   status: "success" | "warning" | "error" | "info" | "default";
@@ -388,9 +356,6 @@ function StatusBadge({
     </span>
   );
 }
-
-
-
 
 type CountFormat = "default" | "short" | "commas";
 
@@ -478,9 +443,6 @@ function CountBadge({
   );
 }
 
-
-
-
 interface TagBadgeProps extends Omit<BadgeProps, "variant"> {
   variant?:
     | "default"
@@ -536,9 +498,6 @@ function TagBadge({
     </Badge>
   );
 }
-
-
-
 
 interface BadgeGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   gap?: "tight" | "normal" | "loose";

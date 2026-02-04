@@ -1,19 +1,15 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
 import {
   IconChevronRight,
   IconSlash,
   IconDots,
   IconHome,
-} from "@tabler/icons-react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
-
-
-
-
+} from "@tabler/icons-react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
 const breadcrumbListVariants = cva(
   "flex flex-wrap items-center gap-1.5 break-words text-sm",
@@ -29,7 +25,7 @@ const breadcrumbListVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 const breadcrumbLinkVariants = cva(
   "inline-flex items-center gap-1.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
@@ -39,144 +35,117 @@ const breadcrumbLinkVariants = cva(
         default: "text-muted-foreground",
         underline:
           "text-muted-foreground underline decoration-dotted underline-offset-4 hover:underline",
-        ghost: "text-muted-foreground hover:bg-accent px-2 py-1 rounded-md -mx-2",
+        ghost:
+          "text-muted-foreground hover:bg-accent px-2 py-1 rounded-md -mx-2",
       },
     },
     defaultVariants: {
       variant: "default",
     },
   }
-)
+);
 
-const breadcrumbSeparatorVariants = cva("flex items-center text-muted-foreground", {
-  variants: {
-    variant: {
-      default: "",
-      slash: "text-muted-foreground/50",
-      chevron: "text-muted-foreground/70",
-      dot: "",
+const breadcrumbSeparatorVariants = cva(
+  "flex items-center text-muted-foreground",
+  {
+    variants: {
+      variant: {
+        default: "",
+        slash: "text-muted-foreground/50",
+        chevron: "text-muted-foreground/70",
+        dot: "",
+      },
+      size: {
+        sm: "[&>svg]:h-3 [&>svg]:w-3",
+        default: "[&>svg]:h-4 [&>svg]:w-4",
+        lg: "[&>svg]:h-5 [&>svg]:w-5",
+      },
     },
-    size: {
-      sm: "[&>svg]:h-3 [&>svg]:w-3",
-      default: "[&>svg]:h-4 [&>svg]:w-4",
-      lg: "[&>svg]:h-5 [&>svg]:w-5",
+    defaultVariants: {
+      variant: "default",
+      size: "default",
     },
-  },
-  defaultVariants: {
-    variant: "default",
-    size: "default",
-  },
-})
-
-
-
-
+  }
+);
 
 interface BreadcrumbProps extends React.ComponentPropsWithoutRef<"nav"> {
-  separator?: React.ReactNode
-  maxItems?: number
-  itemsBeforeCollapse?: number
-  itemsAfterCollapse?: number
+  separator?: React.ReactNode;
+  maxItems?: number;
+  itemsBeforeCollapse?: number;
+  itemsAfterCollapse?: number;
 }
 
 interface BreadcrumbListProps
-  extends React.ComponentPropsWithoutRef<"ol">,
+  extends
+    React.ComponentPropsWithoutRef<"ol">,
     VariantProps<typeof breadcrumbListVariants> {}
 
-interface BreadcrumbItemProps extends React.ComponentPropsWithoutRef<"li"> {}
+type BreadcrumbItemProps = React.ComponentPropsWithoutRef<"li">;
 
 interface BreadcrumbLinkProps
-  extends React.ComponentPropsWithoutRef<"a">,
+  extends
+    React.ComponentPropsWithoutRef<"a">,
     VariantProps<typeof breadcrumbLinkVariants> {
-  asChild?: boolean
+  asChild?: boolean;
 }
 
-interface BreadcrumbPageProps extends React.ComponentPropsWithoutRef<"span"> {}
+type BreadcrumbPageProps = React.ComponentPropsWithoutRef<"span">;
 
 interface BreadcrumbEllipsisProps extends React.ComponentPropsWithoutRef<"span"> {
-  items?: { href: string; label: string }[]
-  onExpand?: () => void
+  items?: { href: string; label: string }[];
+  onExpand?: () => void;
 }
 
 interface BreadcrumbSeparatorProps
-  extends React.ComponentPropsWithoutRef<"li">,
+  extends
+    React.ComponentPropsWithoutRef<"li">,
     VariantProps<typeof breadcrumbSeparatorVariants> {}
 
 interface BreadcrumbHomeProps extends React.ComponentPropsWithoutRef<"a"> {
-  asChild?: boolean
-  showLabel?: boolean
-  label?: string
+  asChild?: boolean;
+  showLabel?: boolean;
+  label?: string;
 }
 
 interface BreadcrumbJsonLdProps {
-  items: { name: string; href: string }[]
+  items: { name: string; href: string }[];
 }
 
 interface BreadcrumbCollapsibleProps {
-  items: { href: string; label: string; current?: boolean }[]
-  maxItems?: number
-  itemsBeforeCollapse?: number
-  itemsAfterCollapse?: number
-  separator?: React.ReactNode
-  size?: "sm" | "default" | "lg"
-  linkVariant?: "default" | "underline" | "ghost"
-  homeIcon?: boolean
+  items: { href: string; label: string; current?: boolean }[];
+  maxItems?: number;
+  itemsBeforeCollapse?: number;
+  itemsAfterCollapse?: number;
+  separator?: React.ReactNode;
+  size?: "sm" | "default" | "lg";
+  linkVariant?: "default" | "underline" | "ghost";
+  homeIcon?: boolean;
 }
 
 interface UseBreadcrumbsOptions {
+  labels?: Record<string, string>;
 
-  labels?: Record<string, string>
+  includeHome?: boolean;
 
-  includeHome?: boolean
+  homeLabel?: string;
 
-  homeLabel?: string
-
-  basePath?: string
+  basePath?: string;
 }
 
 interface BreadcrumbItem {
-  href: string
-  label: string
-  current: boolean
+  href: string;
+  label: string;
+  current: boolean;
 }
-
-
-
-
 
 interface BreadcrumbContextValue {
-  separator?: React.ReactNode
-  size?: "sm" | "default" | "lg"
+  separator?: React.ReactNode;
+  size?: "sm" | "default" | "lg";
 }
 
-const BreadcrumbContext = React.createContext<BreadcrumbContextValue>({})
+const BreadcrumbContext = React.createContext<BreadcrumbContextValue>({});
 
-const useBreadcrumbContext = () => React.useContext(BreadcrumbContext)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const useBreadcrumbContext = () => React.useContext(BreadcrumbContext);
 
 function useBreadcrumbs(
   pathname: string,
@@ -187,84 +156,64 @@ function useBreadcrumbs(
     includeHome = true,
     homeLabel = "Home",
     basePath = "",
-  } = options
+  } = options;
 
   return React.useMemo(() => {
-
-    let path = pathname
+    let path = pathname;
     if (basePath && path.startsWith(basePath)) {
-      path = path.slice(basePath.length)
+      path = path.slice(basePath.length);
     }
 
+    const segments = path.split("/").filter(Boolean);
 
-    const segments = path.split("/").filter(Boolean)
-
-    const items: BreadcrumbItem[] = []
-
+    const items: BreadcrumbItem[] = [];
 
     if (includeHome) {
       items.push({
         href: basePath || "/",
         label: homeLabel,
         current: segments.length === 0,
-      })
+      });
     }
 
-
-    let currentPath = basePath || ""
+    let currentPath = basePath || "";
     segments.forEach((segment, index) => {
-      currentPath += `/${segment}`
-
+      currentPath += `/${segment}`;
 
       const label =
         labels[segment] ||
         segment
           .replace(/-/g, " ")
-          .replace(/\b\w/g, (char) => char.toUpperCase())
+          .replace(/\b\w/g, (char) => char.toUpperCase());
 
       items.push({
         href: currentPath,
         label,
         current: index === segments.length - 1,
-      })
-    })
+      });
+    });
 
-    return items
-  }, [pathname, labels, includeHome, homeLabel, basePath])
+    return items;
+  }, [pathname, labels, includeHome, homeLabel, basePath]);
 }
 
-
-
-
 function useBreadcrumbsFromMatches(
-  matches: { pathname: string; meta?: { title?: string; breadcrumb?: string } }[]
+  matches: {
+    pathname: string;
+    meta?: { title?: string; breadcrumb?: string };
+  }[]
 ): BreadcrumbItem[] {
   return React.useMemo(() => {
     return matches.map((match, index) => ({
       href: match.pathname,
       label: match.meta?.breadcrumb || match.meta?.title || match.pathname,
       current: index === matches.length - 1,
-    }))
-  }, [matches])
+    }));
+  }, [matches]);
 }
 
-
-
-
-
 const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
-  (
-    {
-      className,
-      separator,
-      maxItems,
-      itemsBeforeCollapse,
-      itemsAfterCollapse,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, separator, children, ...props }, ref) => {
     return (
       <BreadcrumbContext.Provider value={{ separator }}>
         <nav
@@ -277,10 +226,10 @@ const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
           {children}
         </nav>
       </BreadcrumbContext.Provider>
-    )
+    );
   }
-)
-Breadcrumb.displayName = "Breadcrumb"
+);
+Breadcrumb.displayName = "Breadcrumb";
 
 const BreadcrumbList = React.forwardRef<HTMLOListElement, BreadcrumbListProps>(
   ({ className, size, ...props }, ref) => (
@@ -293,8 +242,8 @@ const BreadcrumbList = React.forwardRef<HTMLOListElement, BreadcrumbListProps>(
       {...props}
     />
   )
-)
-BreadcrumbList.displayName = "BreadcrumbList"
+);
+BreadcrumbList.displayName = "BreadcrumbList";
 
 const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProps>(
   ({ className, ...props }, ref) => (
@@ -308,12 +257,12 @@ const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProps>(
       {...props}
     />
   )
-)
-BreadcrumbItem.displayName = "BreadcrumbItem"
+);
+BreadcrumbItem.displayName = "BreadcrumbItem";
 
 const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
   ({ className, variant, asChild, children, ...props }, ref) => {
-    const Comp = asChild ? Slot : "a"
+    const Comp = asChild ? Slot : "a";
 
     return (
       <Comp
@@ -324,12 +273,15 @@ const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
         {...props}
       >
         {children}
-        <meta itemProp="name" content={typeof children === "string" ? children : ""} />
+        <meta
+          itemProp="name"
+          content={typeof children === "string" ? children : ""}
+        />
       </Comp>
-    )
+    );
   }
-)
-BreadcrumbLink.displayName = "BreadcrumbLink"
+);
+BreadcrumbLink.displayName = "BreadcrumbLink";
 
 const BreadcrumbPage = React.forwardRef<HTMLSpanElement, BreadcrumbPageProps>(
   ({ className, children, ...props }, ref) => (
@@ -342,143 +294,146 @@ const BreadcrumbPage = React.forwardRef<HTMLSpanElement, BreadcrumbPageProps>(
       {...props}
     >
       {children}
-      <meta itemProp="name" content={typeof children === "string" ? children : ""} />
+      <meta
+        itemProp="name"
+        content={typeof children === "string" ? children : ""}
+      />
     </span>
   )
-)
-BreadcrumbPage.displayName = "BreadcrumbPage"
+);
+BreadcrumbPage.displayName = "BreadcrumbPage";
 
-const BreadcrumbEllipsis = React.forwardRef<HTMLSpanElement, BreadcrumbEllipsisProps>(
-  ({ className, items, onExpand, ...props }, ref) => {
-    const [isOpen, setIsOpen] = React.useState(false)
-    const dropdownRef = React.useRef<HTMLDivElement>(null)
+const BreadcrumbEllipsis = React.forwardRef<
+  HTMLSpanElement,
+  BreadcrumbEllipsisProps
+>(({ className, items, onExpand, ...props }, ref) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
 
+  React.useEffect(() => {
+    if (!isOpen) return;
 
-    React.useEffect(() => {
-      if (!isOpen) return
-
-      const handleClickOutside = (e: MouseEvent) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-          setIsOpen(false)
-        }
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false);
       }
+    };
 
-      document.addEventListener("mousedown", handleClickOutside)
-      return () => document.removeEventListener("mousedown", handleClickOutside)
-    }, [isOpen])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
 
-
-    if (items && items.length > 0) {
-      return (
-        <span
-          ref={ref}
-          data-slot="breadcrumb-ellipsis"
-          className={cn("relative", className)}
-          {...props}
-        >
-          <button
-            type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            onClick={() => {
-              if (onExpand) {
-                onExpand()
-              } else {
-                setIsOpen((prev) => !prev)
-              }
-            }}
-            aria-expanded={isOpen}
-            aria-haspopup="menu"
-            aria-label="Show hidden breadcrumbs"
-          >
-            <IconDots className="h-4 w-4" aria-hidden="true" />
-          </button>
-          {isOpen && (
-            <div
-              ref={dropdownRef}
-              className="absolute left-0 top-full z-50 mt-1 min-w-[150px] rounded-md border bg-popover p-1 shadow-md"
-              role="menu"
-            >
-              {items.map((item, index) => (
-                <a
-                  key={index}
-                  href={item.href}
-                  className="block rounded-sm px-3 py-2 text-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  role="menuitem"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          )}
-        </span>
-      )
-    }
-
-
+  if (items && items.length > 0) {
     return (
       <span
         ref={ref}
         data-slot="breadcrumb-ellipsis"
-        className={cn("flex h-9 w-9 items-center justify-center", className)}
+        className={cn("relative", className)}
         {...props}
       >
-        <IconDots className="h-4 w-4" aria-hidden="true" />
-        <span className="sr-only">More</span>
-      </span>
-    )
-  }
-)
-BreadcrumbEllipsis.displayName = "BreadcrumbEllipsis"
-
-const BreadcrumbSeparator = React.forwardRef<HTMLLIElement, BreadcrumbSeparatorProps>(
-  ({ className, variant = "default", size, children, ...props }, ref) => {
-    const context = useBreadcrumbContext()
-
-    const renderSeparator = () => {
-
-      if (children) return children
-
-
-      if (context.separator) return context.separator
-
-
-      switch (variant) {
-        case "dot":
-          return (
-            <span
-              className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50"
-              aria-hidden="true"
-            />
-          )
-        case "slash":
-          return <IconSlash aria-hidden="true" />
-        case "chevron":
-        default:
-          return <IconChevronRight aria-hidden="true" />
-      }
-    }
-
-    return (
-      <li
-        ref={ref}
-        data-slot="breadcrumb-separator"
-        className={cn(
-          breadcrumbSeparatorVariants({ variant, size, className })
+        <button
+          type="button"
+          className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          onClick={() => {
+            if (onExpand) {
+              onExpand();
+            } else {
+              setIsOpen((prev) => !prev);
+            }
+          }}
+          aria-expanded={isOpen}
+          aria-haspopup="menu"
+          aria-label="Show hidden breadcrumbs"
+        >
+          <IconDots className="h-4 w-4" aria-hidden="true" />
+        </button>
+        {isOpen && (
+          <div
+            ref={dropdownRef}
+            className="absolute left-0 top-full z-50 mt-1 min-w-[150px] rounded-md border bg-popover p-1 shadow-md"
+            role="menu"
+          >
+            {items.map((item, index) => (
+              <a
+                key={index}
+                href={item.href}
+                className="block rounded-sm px-3 py-2 text-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                role="menuitem"
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
         )}
-        aria-hidden="true"
-        {...props}
-      >
-        {renderSeparator()}
-      </li>
-    )
+      </span>
+    );
   }
-)
-BreadcrumbSeparator.displayName = "BreadcrumbSeparator"
+
+  return (
+    <span
+      ref={ref}
+      data-slot="breadcrumb-ellipsis"
+      className={cn("flex h-9 w-9 items-center justify-center", className)}
+      {...props}
+    >
+      <IconDots className="h-4 w-4" aria-hidden="true" />
+      <span className="sr-only">More</span>
+    </span>
+  );
+});
+BreadcrumbEllipsis.displayName = "BreadcrumbEllipsis";
+
+const BreadcrumbSeparator = React.forwardRef<
+  HTMLLIElement,
+  BreadcrumbSeparatorProps
+>(({ className, variant = "default", size, children, ...props }, ref) => {
+  const context = useBreadcrumbContext();
+
+  const renderSeparator = () => {
+    if (children) return children;
+
+    if (context.separator) return context.separator;
+
+    switch (variant) {
+      case "dot":
+        return (
+          <span
+            className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50"
+            aria-hidden="true"
+          />
+        );
+      case "slash":
+        return <IconSlash aria-hidden="true" />;
+      case "chevron":
+      default:
+        return <IconChevronRight aria-hidden="true" />;
+    }
+  };
+
+  return (
+    <li
+      ref={ref}
+      data-slot="breadcrumb-separator"
+      className={cn(breadcrumbSeparatorVariants({ variant, size, className }))}
+      aria-hidden="true"
+      {...props}
+    >
+      {renderSeparator()}
+    </li>
+  );
+});
+BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
 
 const BreadcrumbHome = React.forwardRef<HTMLAnchorElement, BreadcrumbHomeProps>(
-  ({ className, asChild, showLabel = false, label = "Home", ...props }, ref) => {
-    const Comp = asChild ? Slot : "a"
+  (
+    { className, asChild, showLabel = false, label = "Home", ...props },
+    ref
+  ) => {
+    const Comp = asChild ? Slot : "a";
 
     return (
       <Comp
@@ -494,30 +449,16 @@ const BreadcrumbHome = React.forwardRef<HTMLAnchorElement, BreadcrumbHomeProps>(
       >
         <IconHome className="h-4 w-4" aria-hidden="true" />
         {showLabel && <span itemProp="name">{label}</span>}
-        {!showLabel && <span className="sr-only" itemProp="name">{label}</span>}
+        {!showLabel && (
+          <span className="sr-only" itemProp="name">
+            {label}
+          </span>
+        )}
       </Comp>
-    )
+    );
   }
-)
-BreadcrumbHome.displayName = "BreadcrumbHome"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+);
+BreadcrumbHome.displayName = "BreadcrumbHome";
 
 function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
   const jsonLd = React.useMemo(
@@ -536,37 +477,15 @@ function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
       })),
     }),
     [items]
-  )
+  );
 
   return (
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
-  )
+  );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function BreadcrumbCollapsible({
   items,
@@ -578,29 +497,39 @@ function BreadcrumbCollapsible({
   linkVariant,
   homeIcon = false,
 }: BreadcrumbCollapsibleProps) {
-  const [isExpanded, setIsExpanded] = React.useState(false)
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
-  const shouldCollapse = items.length > maxItems && !isExpanded
+  const shouldCollapse = items.length > maxItems && !isExpanded;
 
   const visibleItems = React.useMemo(() => {
-    if (!shouldCollapse) return items
+    if (!shouldCollapse) return items;
 
-    const beforeItems = items.slice(0, itemsBeforeCollapse)
-    const afterItems = items.slice(-itemsAfterCollapse)
-    const hiddenItems = items.slice(itemsBeforeCollapse, -itemsAfterCollapse)
+    const beforeItems = items.slice(0, itemsBeforeCollapse);
+    const afterItems = items.slice(-itemsAfterCollapse);
+    const hiddenItems = items.slice(itemsBeforeCollapse, -itemsAfterCollapse);
 
-    return { beforeItems, afterItems, hiddenItems }
-  }, [items, shouldCollapse, itemsBeforeCollapse, itemsAfterCollapse])
+    return { beforeItems, afterItems, hiddenItems };
+  }, [items, shouldCollapse, itemsBeforeCollapse, itemsAfterCollapse]);
 
-  const renderItem = (item: { href: string; label: string; current?: boolean }, index: number, position: number) => (
+  const renderItem = (
+    item: { href: string; label: string; current?: boolean },
+    index: number,
+    position: number
+  ) => (
     <React.Fragment key={index}>
-      {index > 0 && <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>}
+      {index > 0 && (
+        <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
+      )}
       <BreadcrumbItem>
         <meta itemProp="position" content={String(position)} />
         {item.current ? (
           <BreadcrumbPage>{item.label}</BreadcrumbPage>
         ) : homeIcon && index === 0 ? (
-          <BreadcrumbHome href={item.href} showLabel={false} label={item.label} />
+          <BreadcrumbHome
+            href={item.href}
+            showLabel={false}
+            label={item.label}
+          />
         ) : (
           <BreadcrumbLink href={item.href} variant={linkVariant}>
             {item.label}
@@ -608,38 +537,40 @@ function BreadcrumbCollapsible({
         )}
       </BreadcrumbItem>
     </React.Fragment>
-  )
+  );
 
   if (!shouldCollapse) {
     return (
       <Breadcrumb separator={separator}>
-        <BreadcrumbJsonLd items={items.map((i) => ({ name: i.label, href: i.href }))} />
+        <BreadcrumbJsonLd
+          items={items.map((i) => ({ name: i.label, href: i.href }))}
+        />
         <BreadcrumbList size={size}>
           {items.map((item, index) => renderItem(item, index, index + 1))}
         </BreadcrumbList>
       </Breadcrumb>
-    )
+    );
   }
 
   const { beforeItems, afterItems, hiddenItems } = visibleItems as {
-    beforeItems: typeof items
-    afterItems: typeof items
-    hiddenItems: typeof items
-  }
+    beforeItems: typeof items;
+    afterItems: typeof items;
+    hiddenItems: typeof items;
+  };
 
-  let position = 0
+  let position = 0;
 
   return (
     <Breadcrumb separator={separator}>
-      <BreadcrumbJsonLd items={items.map((i) => ({ name: i.label, href: i.href }))} />
+      <BreadcrumbJsonLd
+        items={items.map((i) => ({ name: i.label, href: i.href }))}
+      />
       <BreadcrumbList size={size}>
-        {}
         {beforeItems.map((item, index) => {
-          position++
-          return renderItem(item, index, position)
+          position++;
+          return renderItem(item, index, position);
         })}
 
-        {}
         <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
         <BreadcrumbItem>
           <BreadcrumbEllipsis
@@ -648,9 +579,8 @@ function BreadcrumbCollapsible({
           />
         </BreadcrumbItem>
 
-        {}
         {afterItems.map((item, index) => {
-          position = items.length - itemsAfterCollapse + index + 1
+          position = items.length - itemsAfterCollapse + index + 1;
           return (
             <React.Fragment key={`after-${index}`}>
               <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
@@ -665,29 +595,22 @@ function BreadcrumbCollapsible({
                 )}
               </BreadcrumbItem>
             </React.Fragment>
-          )
+          );
         })}
       </BreadcrumbList>
     </Breadcrumb>
-  )
+  );
 }
-
-
-
-
 
 interface BreadcrumbResponsiveProps {
-  items: { href: string; label: string; current?: boolean }[]
+  items: { href: string; label: string; current?: boolean }[];
 
-  mobileItems?: number
-  separator?: React.ReactNode
-  size?: "sm" | "default" | "lg"
-  linkVariant?: "default" | "underline" | "ghost"
-  homeIcon?: boolean
+  mobileItems?: number;
+  separator?: React.ReactNode;
+  size?: "sm" | "default" | "lg";
+  linkVariant?: "default" | "underline" | "ghost";
+  homeIcon?: boolean;
 }
-
-
-
 
 function BreadcrumbResponsive({
   items,
@@ -697,14 +620,14 @@ function BreadcrumbResponsive({
   linkVariant,
   homeIcon = false,
 }: BreadcrumbResponsiveProps) {
-
-  const mobileHiddenItems = items.slice(0, -mobileItems)
+  const mobileHiddenItems = items.slice(0, -mobileItems);
 
   return (
     <Breadcrumb separator={separator}>
-      <BreadcrumbJsonLd items={items.map((i) => ({ name: i.label, href: i.href }))} />
+      <BreadcrumbJsonLd
+        items={items.map((i) => ({ name: i.label, href: i.href }))}
+      />
       <BreadcrumbList size={size}>
-        {}
         {mobileHiddenItems.length > 0 && (
           <>
             <BreadcrumbItem className="md:hidden">
@@ -716,14 +639,15 @@ function BreadcrumbResponsive({
           </>
         )}
 
-        {}
         {items.map((item, index) => (
           <React.Fragment key={index}>
             {index > 0 && (
               <BreadcrumbSeparator
                 size={size}
                 className={
-                  index < items.length - mobileItems ? "hidden md:flex" : undefined
+                  index < items.length - mobileItems
+                    ? "hidden md:flex"
+                    : undefined
                 }
               >
                 {separator}
@@ -731,7 +655,9 @@ function BreadcrumbResponsive({
             )}
             <BreadcrumbItem
               className={
-                index < items.length - mobileItems ? "hidden md:inline-flex" : undefined
+                index < items.length - mobileItems
+                  ? "hidden md:inline-flex"
+                  : undefined
               }
             >
               <meta itemProp="position" content={String(index + 1)} />
@@ -749,15 +675,10 @@ function BreadcrumbResponsive({
         ))}
       </BreadcrumbList>
     </Breadcrumb>
-  )
+  );
 }
 
-
-
-
-
 export {
-
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
@@ -766,19 +687,16 @@ export {
   BreadcrumbEllipsis,
   BreadcrumbSeparator,
   BreadcrumbHome,
-
   BreadcrumbJsonLd,
   BreadcrumbCollapsible,
   BreadcrumbResponsive,
-
   useBreadcrumbs,
   useBreadcrumbsFromMatches,
   useBreadcrumbContext,
-
   breadcrumbListVariants,
   breadcrumbLinkVariants,
   breadcrumbSeparatorVariants,
-}
+};
 
 export type {
   BreadcrumbProps,
@@ -794,4 +712,4 @@ export type {
   BreadcrumbResponsiveProps,
   UseBreadcrumbsOptions,
   BreadcrumbItem as BreadcrumbItemType,
-}
+};

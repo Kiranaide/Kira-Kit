@@ -1,22 +1,13 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-
-
-
 type AriaSort = "ascending" | "descending" | "none" | "other";
-
-
-
 
 interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
   striped?: boolean;
   bordered?: boolean;
-
   isGrid?: boolean;
-
   ariaColCount?: number;
-
   ariaRowCount?: number;
 }
 
@@ -93,13 +84,8 @@ function TableFooter({
   );
 }
 
-
-
-
 interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
-
   isSelected?: boolean;
-
   isGridRow?: boolean;
 }
 
@@ -124,15 +110,9 @@ function TableRow({
   );
 }
 
-
-
-
 interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
-
   scope?: "col" | "row" | "colgroup" | "rowgroup";
-
   ariaSort?: AriaSort;
-
   isGridCell?: boolean;
 }
 
@@ -158,11 +138,7 @@ function TableHead({
   );
 }
 
-
-
-
 interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
-
   isGridCell?: boolean;
 }
 
@@ -208,4 +184,10 @@ export {
   TableCaption,
 };
 
-export type { TableProps, TableRowProps, TableHeadProps, TableCellProps, AriaSort };
+export type {
+  TableProps,
+  TableRowProps,
+  TableHeadProps,
+  TableCellProps,
+  AriaSort,
+};

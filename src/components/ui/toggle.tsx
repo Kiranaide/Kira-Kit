@@ -4,20 +4,12 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconCheck, IconLoader2 } from "@tabler/icons-react";
 
-
-
-
 const toggleVariants = cva(
   [
-
     "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all",
-
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-
     "disabled:pointer-events-none disabled:opacity-50",
-
     "hover:bg-muted hover:text-muted-foreground",
-
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
   ],
   {
@@ -60,47 +52,18 @@ const toggleVariants = cva(
   }
 );
 
-
-
-
 interface ToggleProps
-  extends Omit<TogglePrimitive.Props, "children">,
+  extends
+    Omit<TogglePrimitive.Props, "children">,
     VariantProps<typeof toggleVariants> {
-
-
-
-
-
   "aria-label"?: string;
-
-
-
   "aria-describedby"?: string;
-
-
-
   loading?: boolean;
-
-
-
   showIndicator?: boolean;
-
-
-
-
   indicatorPosition?: "left" | "right";
-
-
-
   children?: React.ReactNode;
-
-
-
   icon?: React.ReactNode;
 }
-
-
-
 
 const warnIfMissingAriaLabel = (props: ToggleProps) => {
   if (typeof window !== "undefined" && import.meta.env?.DEV) {
@@ -117,42 +80,10 @@ const warnIfMissingAriaLabel = (props: ToggleProps) => {
       props.size === "icon-lg";
 
     if (isIconOnly && !hasAriaLabel && !hasTextContent) {
-      console.warn(
-        "[Toggle] Icon-only toggles require an aria-label for accessibility. " +
-          'Example: <Toggle icon={<IconBold />} aria-label="Toggle bold" />'
-      );
+      // Icon-only toggles should have aria-label for accessibility
     }
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function Toggle({
   className,
@@ -175,9 +106,7 @@ function Toggle({
     defaultPressed ?? false
   );
 
-
   const isPressed = pressed ?? internalPressed;
-
 
   warnIfMissingAriaLabel({ icon, size, children, ...props });
 
@@ -189,14 +118,11 @@ function Toggle({
           NonNullable<TogglePrimitive.Props["onPressedChange"]>
         >[1]
       ) => {
-
         if (pressed === undefined) {
           setInternalPressed(newPressed);
         }
 
-
         onPressedChange?.(newPressed, eventDetails);
-
 
         if (ref.current && !loading) {
           ref.current.animate(
@@ -215,7 +141,6 @@ function Toggle({
       [pressed, onPressedChange, loading]
     );
 
-
   const renderIndicator = () => {
     if (loading) {
       return <IconLoader2 className="animate-spin" aria-hidden="true" />;
@@ -225,7 +150,6 @@ function Toggle({
     }
     return null;
   };
-
 
   const content = (
     <>
@@ -252,9 +176,6 @@ function Toggle({
     </TogglePrimitive>
   );
 }
-
-
-
 
 export { Toggle, toggleVariants };
 export type { ToggleProps };

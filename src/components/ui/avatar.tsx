@@ -4,15 +4,10 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-
-
-
-
 const avatarVariants = cva(
   "relative flex shrink-0 transition-all duration-200",
   {
     variants: {
-
       size: {
         xs: "h-6 w-6 text-[10px]",
         sm: "h-8 w-8 text-xs",
@@ -55,9 +50,6 @@ const avatarContentVariants = cva("relative flex shrink-0 overflow-hidden", {
     shape: "circle",
   },
 });
-
-
-
 
 const avatarRingVariants = cva("", {
   variants: {
@@ -178,20 +170,10 @@ const gradientVariants = cva(
   }
 );
 
-
-
-
-
-
-
-
-
-
-
 interface AvatarProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
+  extends
+    React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof avatarVariants> {
-
   ring?:
     | "default"
     | "primary"
@@ -220,7 +202,6 @@ function Avatar({
   "aria-label": ariaLabel,
   ...props
 }: AvatarProps) {
-
   const isInteractive = Boolean(onClick);
 
   return (
@@ -235,7 +216,7 @@ function Avatar({
           ? (e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                onClick?.(e as unknown as React.MouseEvent<HTMLSpanElement>);
+                e.currentTarget.click();
               }
             }
           : undefined
@@ -267,10 +248,10 @@ function Avatar({
           aria-hidden="true"
           className={cn(
             statusVariants({ status, size: size || "default" }),
-            statusPosition === "top-right" && "-top-0 -right-0",
-            statusPosition === "top-left" && "-top-0 -left-0",
-            statusPosition === "bottom-right" && "-bottom-0 -right-0",
-            statusPosition === "bottom-left" && "-bottom-0 -left-0"
+            statusPosition === "top-right" && "top-0 right-0",
+            statusPosition === "top-left" && "top-0 left-0",
+            statusPosition === "bottom-right" && "bottom-0 right-0",
+            statusPosition === "bottom-left" && "bottom-0 left-0"
           )}
         />
       )}
@@ -413,9 +394,6 @@ function AutoAvatar({ name, src, ...props }: AutoAvatarProps) {
   );
 }
 
-
-
-
 interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   max?: number;
   overlap?: number;
@@ -482,9 +460,6 @@ function AvatarGroup({
   );
 }
 
-
-
-
 interface AvatarStackProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "xs" | "sm" | "default" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
   showCount?: boolean;
@@ -528,7 +503,7 @@ function AvatarStack({
       {avatars.map((avatar, index) => (
         <div
           key={index}
-          className="flex-shrink-0 ring-2 ring-background rounded-full first:ml-0 -ml-3"
+          className="shrink-0 ring-2 ring-background rounded-full first:ml-0 -ml-3"
           style={{ zIndex: count - index }}
         >
           {avatar}
@@ -537,7 +512,7 @@ function AvatarStack({
       {showCount && (
         <div
           className={cn(
-            "flex-shrink-0 flex items-center justify-center bg-muted text-muted-foreground font-medium rounded-full -ml-3",
+            "shrink-0 flex items-center justify-center bg-muted text-muted-foreground font-medium rounded-full -ml-3",
             sizeClasses[size]
           )}
           style={{ zIndex: 0 }}

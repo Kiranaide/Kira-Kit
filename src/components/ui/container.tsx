@@ -1,15 +1,10 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
-
-
-
-
+import { cn } from "@/lib/utils";
 
 const containerVariants = cva("mx-auto w-full", {
   variants: {
-
     size: {
       sm: "max-w-screen-sm",
       md: "max-w-screen-md",
@@ -19,14 +14,12 @@ const containerVariants = cva("mx-auto w-full", {
       full: "max-w-full",
       prose: "max-w-prose",
     },
-
     padding: {
       none: "",
       sm: "px-3 sm:px-4",
       default: "px-4 sm:px-6 lg:px-8",
       lg: "px-6 sm:px-8 lg:px-12",
     },
-
     centered: {
       true: "flex flex-col items-center",
       false: "",
@@ -37,43 +30,23 @@ const containerVariants = cva("mx-auto w-full", {
     padding: "default",
     centered: false,
   },
-})
+});
 
-type ContainerElement = "div" | "section" | "main" | "article" | "aside" | "header" | "footer"
+type ContainerElement =
+  | "div"
+  | "section"
+  | "main"
+  | "article"
+  | "aside"
+  | "header"
+  | "footer";
 
 interface ContainerProps
-  extends React.HTMLAttributes<HTMLElement>,
+  extends
+    React.HTMLAttributes<HTMLElement>,
     VariantProps<typeof containerVariants> {
-
-  as?: ContainerElement
+  as?: ContainerElement;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function Container({
   as: Component = "div",
@@ -89,8 +62,8 @@ function Container({
       className={cn(containerVariants({ size, padding, centered }), className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Container, containerVariants }
-export type { ContainerProps }
+export { Container, containerVariants };
+export type { ContainerProps };

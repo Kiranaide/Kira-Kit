@@ -1,7 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { DayPicker, type DayPickerProps } from "react-day-picker";
+import {
+  DayPicker,
+  type DateRange,
+  type DayPickerProps,
+} from "react-day-picker";
 import "react-day-picker/style.css";
 import {
   format,
@@ -58,7 +62,7 @@ const datePickerTriggerVariants = cva(
       variant: "default",
       size: "default",
     },
-  },
+  }
 );
 
 const calendarSizeConfig = {
@@ -167,12 +171,11 @@ function MonthCaption({
   size,
 }: MonthCaptionProps) {
   const [pickerView, setPickerView] = React.useState<"month" | "year" | null>(
-    null,
+    null
   );
 
   return (
     <div className="relative">
-      {}
       <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg border border-border">
         <button
           type="button"
@@ -191,7 +194,6 @@ function MonthCaption({
         </button>
       </div>
 
-      {}
       {pickerView && (
         <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50">
           <MonthYearPicker
@@ -215,9 +217,9 @@ interface DatePickerProps extends VariantProps<
 > {
   mode?: DatePickerMode;
 
-  value?: Date | { from?: Date; to?: Date };
+  value?: Date | DateRange;
 
-  onChange?: (value: Date | { from?: Date; to?: Date } | undefined) => void;
+  onChange?: (value: Date | DateRange | undefined) => void;
 
   placeholder?: string;
 
@@ -253,7 +255,7 @@ function DatePicker({
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [pendingValue, setPendingValue] = React.useState<
-    Date | { from?: Date; to?: Date } | undefined
+    Date | DateRange | undefined
   >(undefined);
   const [month, setMonthState] = React.useState<Date>(new Date());
 
@@ -321,18 +323,16 @@ function DatePicker({
     return matchers.length > 0 ? matchers : undefined;
   }, [minDate, maxDate]);
 
-  const handleCalendarSelect = (
-    date: Date | Date[] | { from?: Date; to?: Date } | undefined,
-  ) => {
+  const handleCalendarSelect = (date: Date | DateRange | undefined) => {
     if (applyMode === "confirm") {
-      setPendingValue(date as Date | { from?: Date; to?: Date });
+      setPendingValue(date);
     } else {
-      onChange?.(date as Date | { from?: Date; to?: Date });
+      onChange?.(date);
     }
   };
 
   const handlePresetClick = (preset: DatePreset) => {
-    const presetValue = preset.getValue() as Date | { from?: Date; to?: Date };
+    const presetValue = preset.getValue();
     if (applyMode === "confirm") {
       setPendingValue(presetValue);
     } else {
@@ -367,7 +367,7 @@ function DatePicker({
     const today = new Date();
     setMonthState(today);
     handleCalendarSelect(
-      mode === "single" ? today : { from: today, to: today },
+      mode === "single" ? today : { from: today, to: today }
     );
   };
 
@@ -382,12 +382,11 @@ function DatePicker({
     }) => (
       <CustomChevron orientation={props.orientation} size={size || "default"} />
     ),
-    [size],
+    [size]
   );
 
   return (
     <div ref={containerRef} className={cn("relative w-full", className)}>
-      {}
       <div
         ref={triggerRef}
         role="button"
@@ -397,7 +396,7 @@ function DatePicker({
         aria-label={ariaLabel || `Date picker, ${formatValue()}`}
         className={cn(
           datePickerTriggerVariants({ variant, size }),
-          disabled && "opacity-50 pointer-events-none",
+          disabled && "opacity-50 pointer-events-none"
         )}
         onClick={() => setIsOpen(!isOpen)}
         onKeyDown={handleTriggerKeyDown}
@@ -424,7 +423,6 @@ function DatePicker({
         )}
       </div>
 
-      {}
       {isOpen && (
         <div
           role="dialog"
@@ -432,11 +430,10 @@ function DatePicker({
           aria-label={`Choose ${mode === "range" ? "date range" : "date"}`}
           className={cn(
             "absolute z-50 mt-2 flex flex-col rounded-xl border border-border bg-popover shadow-xl",
-            "animate-in fade-in-0 zoom-in-95 duration-200",
+            "animate-in fade-in-0 zoom-in-95 duration-200"
           )}
         >
           <div className="flex">
-            {}
             {showPresets && (
               <div className="border-r border-border p-4 min-w-[140px] flex flex-col">
                 <div className="text-xs font-semibold text-muted-foreground mb-3">
@@ -452,7 +449,7 @@ function DatePicker({
                         "w-full text-left px-3 py-2 rounded-lg",
                         "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                         "transition-colors font-medium",
-                        sizeConfig.caption,
+                        sizeConfig.caption
                       )}
                     >
                       {preset.label}
@@ -462,9 +459,7 @@ function DatePicker({
               </div>
             )}
 
-            {}
             <div className={sizeConfig.root}>
-              {}
               <div className="flex items-center justify-between mb-3">
                 <button
                   type="button"
@@ -475,7 +470,7 @@ function DatePicker({
                   }}
                   className={cn(
                     sizeConfig.nav,
-                    "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   )}
                   aria-label="Previous month"
                 >
@@ -497,7 +492,7 @@ function DatePicker({
                   }}
                   className={cn(
                     sizeConfig.nav,
-                    "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    "inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   )}
                   aria-label="Next month"
                 >
@@ -505,14 +500,11 @@ function DatePicker({
                 </button>
               </div>
 
-              {}
               {(() => {
                 const dayPickerProps = {
                   mode,
-                  selected: currentValue as unknown as Date | undefined,
-                  onSelect: handleCalendarSelect as (
-                    date: Date | { from?: Date; to?: Date } | undefined,
-                  ) => void,
+                  selected: currentValue,
+                  onSelect: handleCalendarSelect,
                   disabled: disabledMatcher,
                   autoFocus: true,
                   month,
@@ -530,18 +522,18 @@ function DatePicker({
                     weekdays: "grid grid-cols-7",
                     weekday: cn(
                       sizeConfig.weekday,
-                      "flex items-center justify-center text-muted-foreground font-medium",
+                      "flex items-center justify-center text-muted-foreground font-medium"
                     ),
                     week: "grid grid-cols-7",
                     day: cn(
                       sizeConfig.day,
-                      "flex items-center justify-center p-0",
+                      "flex items-center justify-center p-0"
                     ),
                     day_button: cn(
                       sizeConfig.dayButton,
                       "w-full h-full flex items-center justify-center rounded-md",
                       "hover:bg-muted transition-colors",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     ),
                     selected:
                       "!bg-primary !text-primary-foreground font-medium hover:!bg-primary/90 !rounded-lg",
@@ -564,21 +556,20 @@ function DatePicker({
                           className={cn(
                             "w-full py-1.5 rounded-lg transition-colors font-medium",
                             "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                            sizeConfig.caption,
+                            sizeConfig.caption
                           )}
                         >
                           Today
                         </button>
                       </div>
                     ) : null,
-                } as unknown as DayPickerProps;
+                } as DayPickerProps;
 
                 return <DayPicker {...dayPickerProps} />;
               })()}
             </div>
           </div>
 
-          {}
           {applyMode === "confirm" && (
             <div className="flex items-center justify-between gap-2 p-3 border-t border-border">
               <div className={cn("text-muted-foreground", sizeConfig.caption)}>

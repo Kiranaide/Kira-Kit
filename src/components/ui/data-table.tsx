@@ -82,9 +82,6 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-
-
-
 type DataTableDensity = "compact" | "default" | "comfortable";
 
 const densityStyles: Record<DataTableDensity, { row: string; cell: string }> = {
@@ -92,9 +89,6 @@ const densityStyles: Record<DataTableDensity, { row: string; cell: string }> = {
   default: { row: "h-12", cell: "py-2 px-4 text-sm" },
   comfortable: { row: "h-16", cell: "py-4 px-4 text-sm" },
 };
-
-
-
 
 interface DataTableContextValue<TData> {
   table: TableType<TData>;
@@ -104,11 +98,8 @@ interface DataTableContextValue<TData> {
   onLoadMore?: () => void;
   isLoading?: boolean;
   hasNextPage?: boolean;
-
   density: DataTableDensity;
-
   enableKeyboardNavigation?: boolean;
-
   announceChanges?: boolean;
 }
 
@@ -123,41 +114,29 @@ function useDataTable<TData>() {
   return context as DataTableContextValue<TData>;
 }
 
-
-
-
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   children: React.ReactNode;
-
   enableSorting?: boolean;
   enableFiltering?: boolean;
   enablePagination?: boolean;
   enableRowSelection?: boolean;
-  enableColumnOrdering?: boolean;
+
   enableColumnPinning?: boolean;
   enableColumnResizing?: boolean;
   enableExpanding?: boolean;
   enableGrouping?: boolean;
   enableVirtualization?: boolean;
-
   enableKeyboardNavigation?: boolean;
   announceChanges?: boolean;
-
   density?: DataTableDensity;
-
   initialPageSize?: number;
   initialSorting?: SortingState;
-
   onRowSelectionChange?: (selection: RowSelectionState) => void;
-
   getSubRows?: (originalRow: TData) => TData[] | undefined;
-
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
-
   getRowCanExpand?: (row: Row<TData>) => boolean;
-
   estimateRowHeight?: number;
   containerHeight?: number;
   onLoadMore?: () => void;
@@ -172,7 +151,7 @@ function DataTableRoot<TData, TValue>({
   enableSorting = true,
   enableFiltering = true,
   enableRowSelection = false,
-  enableColumnOrdering: _enableColumnOrdering = false,
+
   enableColumnPinning = false,
   enableColumnResizing = false,
   enableExpanding = false,
@@ -194,19 +173,18 @@ function DataTableRoot<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>(initialSorting);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([]);
   const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>(
-    {},
+    {}
   );
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
   const [grouping, setGrouping] = React.useState<GroupingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
-
 
   React.useEffect(() => {
     onRowSelectionChange?.(rowSelection);
@@ -215,56 +193,33 @@ function DataTableRoot<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-
     getCoreRowModel: getCoreRowModel(),
-
-
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
-
-
     onSortingChange: setSorting,
     enableSortingRemoval: enableSorting,
     enableSorting: enableSorting,
-
-
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     enableColumnFilters: enableFiltering,
     enableGlobalFilter: enableFiltering,
-
-
     onRowSelectionChange: setRowSelection,
     enableRowSelection: enableRowSelection,
-
-
     onColumnOrderChange: setColumnOrder,
-
-
     onColumnPinningChange: setColumnPinning,
     enableColumnPinning: enableColumnPinning,
-
-
     enableColumnResizing: enableColumnResizing,
     columnResizeMode: enableColumnResizing ? ("onChange" as const) : undefined,
-
-
     onExpandedChange: setExpanded,
     getSubRows: getSubRows,
     getRowCanExpand: getRowCanExpand,
     enableExpanding: enableExpanding,
-
-
     onGroupingChange: setGrouping,
     enableGrouping: enableGrouping,
-
-
     onColumnVisibilityChange: setColumnVisibility,
-
-
     state: {
       sorting,
       columnFilters,
@@ -276,15 +231,12 @@ function DataTableRoot<TData, TValue>({
       grouping,
       globalFilter,
     },
-
     initialState: {
       pagination: {
         pageSize: initialPageSize,
       },
     },
   });
-
-
 
   const contextValue = React.useMemo(
     () => ({
@@ -299,7 +251,6 @@ function DataTableRoot<TData, TValue>({
       enableKeyboardNavigation,
       announceChanges,
     }),
-
     [
       table,
       enableVirtualization,
@@ -321,7 +272,7 @@ function DataTableRoot<TData, TValue>({
       columnOrder,
       columnPinning,
       grouping,
-    ],
+    ]
   );
 
   return (
@@ -330,9 +281,6 @@ function DataTableRoot<TData, TValue>({
     </DataTableContext.Provider>
   );
 }
-
-
-
 
 interface DataTableSearchProps {
   columnKey?: string;
@@ -371,9 +319,6 @@ function DataTableSearch({
     />
   );
 }
-
-
-
 
 interface DataTableContentProps<TData> {
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
@@ -437,7 +382,7 @@ function DataTableContent<TData>({
     <div
       className={cn(
         "rounded-lg border border-border",
-        stickyHeader && "max-h-[600px] overflow-auto",
+        stickyHeader && "max-h-[600px] overflow-auto"
       )}
     >
       <Table>
@@ -453,28 +398,26 @@ function DataTableContent<TData>({
                 const pinnedLeft = isPinned === "left";
                 const pinnedRight = isPinned === "right";
 
-
                 let leftOffset = 0;
                 if (pinnedLeft) {
                   const leftPinnedColumns = headerGroup.headers.filter(
-                    (h) => h.column.getIsPinned() === "left",
+                    (h) => h.column.getIsPinned() === "left"
                   );
                   const currentIndex = leftPinnedColumns.findIndex(
-                    (h) => h.id === header.id,
+                    (h) => h.id === header.id
                   );
                   for (let i = 0; i < currentIndex; i++) {
                     leftOffset += leftPinnedColumns[i].getSize();
                   }
                 }
 
-
                 let rightOffset = 0;
                 if (pinnedRight) {
                   const rightPinnedColumns = headerGroup.headers.filter(
-                    (h) => h.column.getIsPinned() === "right",
+                    (h) => h.column.getIsPinned() === "right"
                   );
                   const currentIndex = rightPinnedColumns.findIndex(
-                    (h) => h.id === header.id,
+                    (h) => h.id === header.id
                   );
                   for (
                     let i = currentIndex + 1;
@@ -505,7 +448,7 @@ function DataTableContent<TData>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
                     {}
                     {header.column.getCanResize() && (
@@ -516,7 +459,7 @@ function DataTableContent<TData>({
                           "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none transition-colors",
                           header.column.getIsResizing()
                             ? "bg-primary"
-                            : "bg-transparent group-hover:bg-primary/50",
+                            : "bg-transparent group-hover:bg-primary/50"
                         )}
                       />
                     )}
@@ -534,7 +477,7 @@ function DataTableContent<TData>({
                   data-state={row.getIsSelected() && "selected"}
                   className={cn(
                     densityStyles[density]?.row,
-                    expandOnRowClick && row.getCanExpand() && "cursor-pointer",
+                    expandOnRowClick && row.getCanExpand() && "cursor-pointer"
                   )}
                   onClick={
                     expandOnRowClick && row.getCanExpand()
@@ -547,20 +490,18 @@ function DataTableContent<TData>({
                     const pinnedLeft = isPinned === "left";
                     const pinnedRight = isPinned === "right";
 
-
                     let leftOffset = 0;
                     if (pinnedLeft) {
                       const leftPinnedColumns = row
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "left");
                       const currentIndex = leftPinnedColumns.findIndex(
-                        (c) => c.id === cell.id,
+                        (c) => c.id === cell.id
                       );
                       for (let i = 0; i < currentIndex; i++) {
                         leftOffset += leftPinnedColumns[i].column.getSize();
                       }
                     }
-
 
                     let rightOffset = 0;
                     if (pinnedRight) {
@@ -568,7 +509,7 @@ function DataTableContent<TData>({
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "right");
                       const currentIndex = rightPinnedColumns.findIndex(
-                        (c) => c.id === cell.id,
+                        (c) => c.id === cell.id
                       );
                       for (
                         let i = currentIndex + 1;
@@ -584,7 +525,7 @@ function DataTableContent<TData>({
                         key={cell.id}
                         className={cn(
                           densityStyles[density]?.cell,
-                          isPinned && "shadow-sm",
+                          isPinned && "shadow-sm"
                         )}
                         style={{
                           width: cell.column.getSize(),
@@ -599,7 +540,7 @@ function DataTableContent<TData>({
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </TableCell>
                     );
@@ -646,9 +587,6 @@ function DataTableContent<TData>({
   );
 }
 
-
-
-
 interface DataTableVirtualizedContentProps<TData> {
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
   stickyHeader?: boolean;
@@ -689,7 +627,6 @@ function DataTableVirtualizedContent<TData>({
       ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0)
       : 0;
 
-
   React.useEffect(() => {
     const parent = parentRef.current;
     if (!parent || !onLoadMore || !hasNextPage || isLoading) return;
@@ -716,34 +653,35 @@ function DataTableVirtualizedContent<TData>({
           className={cn(stickyHeader && "sticky top-0 bg-background z-10")}
         >
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className={densityStyles[density]?.row}>
+            <TableRow
+              key={headerGroup.id}
+              className={densityStyles[density]?.row}
+            >
               {headerGroup.headers.map((header) => {
                 const isPinned = header.column.getIsPinned();
                 const pinnedLeft = isPinned === "left";
                 const pinnedRight = isPinned === "right";
 
-
                 let leftOffset = 0;
                 if (pinnedLeft) {
                   const leftPinnedColumns = headerGroup.headers.filter(
-                    (h) => h.column.getIsPinned() === "left",
+                    (h) => h.column.getIsPinned() === "left"
                   );
                   const currentIndex = leftPinnedColumns.findIndex(
-                    (h) => h.id === header.id,
+                    (h) => h.id === header.id
                   );
                   for (let i = 0; i < currentIndex; i++) {
                     leftOffset += leftPinnedColumns[i].getSize();
                   }
                 }
 
-
                 let rightOffset = 0;
                 if (pinnedRight) {
                   const rightPinnedColumns = headerGroup.headers.filter(
-                    (h) => h.column.getIsPinned() === "right",
+                    (h) => h.column.getIsPinned() === "right"
                   );
                   const currentIndex = rightPinnedColumns.findIndex(
-                    (h) => h.id === header.id,
+                    (h) => h.id === header.id
                   );
                   for (
                     let i = currentIndex + 1;
@@ -774,7 +712,7 @@ function DataTableVirtualizedContent<TData>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
                     {}
                     {header.column.getCanResize() && (
@@ -785,7 +723,7 @@ function DataTableVirtualizedContent<TData>({
                           "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none transition-colors",
                           header.column.getIsResizing()
                             ? "bg-primary"
-                            : "bg-transparent group-hover:bg-primary/50",
+                            : "bg-transparent group-hover:bg-primary/50"
                         )}
                       />
                     )}
@@ -813,7 +751,7 @@ function DataTableVirtualizedContent<TData>({
                   data-state={row.getIsSelected() && "selected"}
                   className={cn(
                     densityStyles[density]?.row,
-                    expandOnRowClick && row.getCanExpand() && "cursor-pointer",
+                    expandOnRowClick && row.getCanExpand() && "cursor-pointer"
                   )}
                   onClick={
                     expandOnRowClick && row.getCanExpand()
@@ -826,20 +764,18 @@ function DataTableVirtualizedContent<TData>({
                     const pinnedLeft = isPinned === "left";
                     const pinnedRight = isPinned === "right";
 
-
                     let leftOffset = 0;
                     if (pinnedLeft) {
                       const leftPinnedCells = row
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "left");
                       const currentIndex = leftPinnedCells.findIndex(
-                        (c) => c.id === cell.id,
+                        (c) => c.id === cell.id
                       );
                       for (let i = 0; i < currentIndex; i++) {
                         leftOffset += leftPinnedCells[i].column.getSize();
                       }
                     }
-
 
                     let rightOffset = 0;
                     if (pinnedRight) {
@@ -847,7 +783,7 @@ function DataTableVirtualizedContent<TData>({
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "right");
                       const currentIndex = rightPinnedCells.findIndex(
-                        (c) => c.id === cell.id,
+                        (c) => c.id === cell.id
                       );
                       for (
                         let i = currentIndex + 1;
@@ -863,7 +799,7 @@ function DataTableVirtualizedContent<TData>({
                         key={cell.id}
                         className={cn(
                           densityStyles[density]?.cell,
-                          isPinned && "shadow-sm",
+                          isPinned && "shadow-sm"
                         )}
                         style={{
                           width: cell.column.getSize(),
@@ -878,7 +814,7 @@ function DataTableVirtualizedContent<TData>({
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </TableCell>
                     );
@@ -932,9 +868,6 @@ function DataTableVirtualizedContent<TData>({
   );
 }
 
-
-
-
 interface DataTableReorderableContentProps<TData> {
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
   stickyHeader?: boolean;
@@ -952,7 +885,6 @@ function DataTableReorderableContent<TData>({
   const rows = table.getRowModel().rows;
   const [items, setItems] = React.useState(() => rows.map((row) => row.id));
 
-
   React.useEffect(() => {
     const newItems = rows.map((row) => row.id);
     setItems(newItems);
@@ -962,7 +894,7 @@ function DataTableReorderableContent<TData>({
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -979,7 +911,6 @@ function DataTableReorderableContent<TData>({
     }
   };
 
-
   const rowMap = React.useMemo(() => {
     const map = new Map<string, Row<TData>>();
     rows.forEach((row) => {
@@ -987,7 +918,6 @@ function DataTableReorderableContent<TData>({
     });
     return map;
   }, [rows]);
-
 
   const orderedRows = items
     .map((id) => rowMap.get(id))
@@ -997,7 +927,7 @@ function DataTableReorderableContent<TData>({
     <div
       className={cn(
         "rounded-lg border border-border",
-        stickyHeader && "max-h-[600px] overflow-auto",
+        stickyHeader && "max-h-[600px] overflow-auto"
       )}
     >
       <DndContext
@@ -1011,8 +941,11 @@ function DataTableReorderableContent<TData>({
               stickyHeader ? "sticky top-0 bg-background z-10" : undefined
             }
           >
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className={densityStyles[density]?.row}>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow
+                key={headerGroup.id}
+                className={densityStyles[density]?.row}
+              >
                 {headerGroup.headers.map((header) => {
                   const isPinned = header.column.getIsPinned();
                   const pinnedLeft = isPinned === "left";
@@ -1021,10 +954,10 @@ function DataTableReorderableContent<TData>({
                   let leftOffset = 0;
                   if (pinnedLeft) {
                     const leftPinnedColumns = headerGroup.headers.filter(
-                      (h) => h.column.getIsPinned() === "left",
+                      (h) => h.column.getIsPinned() === "left"
                     );
                     const currentIndex = leftPinnedColumns.findIndex(
-                      (h) => h.id === header.id,
+                      (h) => h.id === header.id
                     );
                     for (let i = 0; i < currentIndex; i++) {
                       leftOffset += leftPinnedColumns[i].getSize();
@@ -1034,10 +967,10 @@ function DataTableReorderableContent<TData>({
                   let rightOffset = 0;
                   if (pinnedRight) {
                     const rightPinnedColumns = headerGroup.headers.filter(
-                      (h) => h.column.getIsPinned() === "right",
+                      (h) => h.column.getIsPinned() === "right"
                     );
                     const currentIndex = rightPinnedColumns.findIndex(
-                      (h) => h.id === header.id,
+                      (h) => h.id === header.id
                     );
                     for (
                       let i = currentIndex + 1;
@@ -1068,7 +1001,7 @@ function DataTableReorderableContent<TData>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                       {header.column.getCanResize() && (
                         <div
@@ -1078,7 +1011,7 @@ function DataTableReorderableContent<TData>({
                             "absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none transition-colors",
                             header.column.getIsResizing()
                               ? "bg-primary"
-                              : "bg-transparent group-hover:bg-primary/50",
+                              : "bg-transparent group-hover:bg-primary/50"
                           )}
                         />
                       )}
@@ -1120,9 +1053,6 @@ function DataTableReorderableContent<TData>({
   );
 }
 
-
-
-
 interface DataTableSortableRowProps<TData> {
   row: Row<TData>;
   renderSubComponent?: (props: { row: Row<TData> }) => React.ReactNode;
@@ -1160,7 +1090,7 @@ function DataTableSortableRow<TData>({
           "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
           densityStyles[density]?.row,
           expandOnRowClick && row.getCanExpand() && "cursor-pointer",
-          isDragging && "ring-2 ring-primary",
+          isDragging && "ring-2 ring-primary"
         )}
         onClick={
           expandOnRowClick && row.getCanExpand()
@@ -1179,7 +1109,7 @@ function DataTableSortableRow<TData>({
               .getVisibleCells()
               .filter((c) => c.column.getIsPinned() === "left");
             const currentIndex = leftPinnedColumns.findIndex(
-              (c) => c.id === cell.id,
+              (c) => c.id === cell.id
             );
             for (let i = 0; i < currentIndex; i++) {
               leftOffset += leftPinnedColumns[i].column.getSize();
@@ -1192,13 +1122,12 @@ function DataTableSortableRow<TData>({
               .getVisibleCells()
               .filter((c) => c.column.getIsPinned() === "right");
             const currentIndex = rightPinnedColumns.findIndex(
-              (c) => c.id === cell.id,
+              (c) => c.id === cell.id
             );
             for (let i = currentIndex + 1; i < rightPinnedColumns.length; i++) {
               rightOffset += rightPinnedColumns[i].column.getSize();
             }
           }
-
 
           const isDragHandle = cell.column.id === "drag";
 
@@ -1208,7 +1137,7 @@ function DataTableSortableRow<TData>({
               className={cn(
                 densityStyles[density]?.cell,
                 isPinned && "shadow-sm",
-                isDragHandle && "cursor-grab active:cursor-grabbing",
+                isDragHandle && "cursor-grab active:cursor-grabbing"
               )}
               style={{
                 width: cell.column.getSize(),
@@ -1241,9 +1170,6 @@ function DataTableSortableRow<TData>({
   );
 }
 
-
-
-
 function DataTablePageCount() {
   const { table } = useDataTable();
 
@@ -1253,9 +1179,6 @@ function DataTablePageCount() {
     </div>
   );
 }
-
-
-
 
 function DataTableRowCount() {
   const { table } = useDataTable();
@@ -1274,9 +1197,6 @@ function DataTableRowCount() {
     </div>
   );
 }
-
-
-
 
 interface DataTablePaginationProps {
   showPageSize?: boolean;
@@ -1317,7 +1237,7 @@ function DataTablePagination({
                 "rounded-md border border-input bg-background px-2 focus:outline-none focus:ring-2 focus:ring-ring",
                 size === "sm" && "h-7 text-xs",
                 size === "default" && "h-8 text-sm",
-                size === "lg" && "h-9 text-base",
+                size === "lg" && "h-9 text-base"
               )}
             >
               {pageSizeOptions.map((s) => (
@@ -1391,9 +1311,6 @@ function DataTablePagination({
   );
 }
 
-
-
-
 interface DataTableColumnHeaderProps<
   TData,
   TValue,
@@ -1422,7 +1339,6 @@ function DataTableColumnHeader<TData, TValue>({
     );
   }
 
-
   const handleSort = () => {
     const currentSort = column.getIsSorted();
     if (currentSort === false) {
@@ -1439,7 +1355,7 @@ function DataTableColumnHeader<TData, TValue>({
       <button
         className={cn(
           "flex items-center gap-1 -ml-3 px-3 py-1.5 rounded-md hover:bg-muted",
-          isPinned && "bg-muted/50",
+          isPinned && "bg-muted/50"
         )}
         onClick={handleSort}
       >
@@ -1458,9 +1374,6 @@ function DataTableColumnHeader<TData, TValue>({
     </div>
   );
 }
-
-
-
 
 interface DataTableColumnPinningMenuProps<TData, TValue> {
   column: import("@tanstack/react-table").Column<TData, TValue>;
@@ -1536,9 +1449,6 @@ function DataTableColumnPinningMenu<TData, TValue>({
   );
 }
 
-
-
-
 function createSelectColumn<TData>(): ColumnDef<TData> {
   return {
     id: "select",
@@ -1552,7 +1462,6 @@ function createSelectColumn<TData>(): ColumnDef<TData> {
               isAllSelected ? true : isSomeSelected ? "indeterminate" : false
             }
             onCheckedChange={(value) => {
-
               const shouldSelect = value === true || value === "indeterminate";
               table.toggleAllPageRowsSelected(shouldSelect);
             }}
@@ -1568,7 +1477,6 @@ function createSelectColumn<TData>(): ColumnDef<TData> {
             checked={row.getIsSelected()}
             disabled={!row.getCanSelect()}
             onCheckedChange={(value) => {
-
               row.toggleSelected(value === true);
             }}
             aria-label="Select row"
@@ -1584,16 +1492,11 @@ function createSelectColumn<TData>(): ColumnDef<TData> {
   };
 }
 
-
-
-
 function createExpandColumn<TData>(): ColumnDef<TData> {
   return {
     id: "expand",
     header: () => <div className="w-10" />,
     cell: ({ row }) => {
-
-
       const canExpand = row.getCanExpand();
       const isExpanded = row.getIsExpanded();
 
@@ -1608,7 +1511,7 @@ function createExpandColumn<TData>(): ColumnDef<TData> {
               <IconChevronRight
                 className={cn(
                   "h-4 w-4 text-muted-foreground transition-transform",
-                  isExpanded && "rotate-90",
+                  isExpanded && "rotate-90"
                 )}
               />
             </button>
@@ -1626,9 +1529,6 @@ function createExpandColumn<TData>(): ColumnDef<TData> {
   };
 }
 
-
-
-
 function createDragHandleColumn<TData>(): ColumnDef<TData> {
   return {
     id: "drag",
@@ -1643,9 +1543,6 @@ function createDragHandleColumn<TData>(): ColumnDef<TData> {
     size: 40,
   };
 }
-
-
-
 
 function DataTableColumnVisibility() {
   const { table } = useDataTable();
@@ -1667,9 +1564,6 @@ function DataTableColumnVisibility() {
     </div>
   );
 }
-
-
-
 
 interface DataTableEditableCellProps {
   value: string | number;
@@ -1745,7 +1639,7 @@ function DataTableEditableCell({
         onKeyDown={handleKeyDown}
         className={cn(
           "w-full border border-primary rounded px-2 py-1 bg-background",
-          className,
+          className
         )}
       >
         {options.map((option) => (
@@ -1764,7 +1658,7 @@ function DataTableEditableCell({
       value={editValue}
       onChange={(e) =>
         setEditValue(
-          type === "number" ? Number(e.target.value) : e.target.value,
+          type === "number" ? Number(e.target.value) : e.target.value
         )
       }
       onBlur={handleSave}
@@ -1775,20 +1669,10 @@ function DataTableEditableCell({
   );
 }
 
-
-
-
-
-
-
 interface DataTableSkeletonProps {
-
   rows?: number;
-
   columns?: number;
-
   showHeader?: boolean;
-
   className?: string;
 }
 
@@ -1831,19 +1715,11 @@ function DataTableSkeleton({
   );
 }
 
-
-
-
 interface DataTableEmptyStateProps {
-
   icon?: React.ReactNode;
-
   title?: string;
-
   description?: string;
-
   action?: React.ReactNode;
-
   className?: string;
 }
 
@@ -1858,7 +1734,7 @@ function DataTableEmptyState({
     <div
       className={cn(
         "flex flex-col items-center justify-center py-12 text-center",
-        className,
+        className
       )}
     >
       <div className="mb-4 text-muted-foreground">
@@ -1871,15 +1747,9 @@ function DataTableEmptyState({
   );
 }
 
-
-
-
 interface DataTableBulkActionsProps {
-
   children: React.ReactNode;
-
   className?: string;
-
   onClearSelection?: () => void;
 }
 
@@ -1907,7 +1777,7 @@ function DataTableBulkActions({
     <div
       className={cn(
         "flex items-center gap-3 rounded-lg border border-border bg-muted/50 px-4 py-2",
-        className,
+        className
       )}
       role="toolbar"
       aria-label="Bulk actions"
@@ -1930,30 +1800,18 @@ function DataTableBulkActions({
   );
 }
 
-
-
-
 interface RowAction<TData> {
-
   label: string;
-
   icon?: React.ReactNode;
-
   onClick: (row: TData) => void;
-
   destructive?: boolean;
-
   disabled?: boolean;
-
   separator?: boolean;
 }
 
 interface DataTableRowActionsProps<TData> {
-
   row: TData;
-
   actions: RowAction<TData>[];
-
   className?: string;
 }
 
@@ -1997,21 +1855,12 @@ function DataTableRowActions<TData>({
   );
 }
 
-
-
-
-
-
 type StatusVariant = "default" | "success" | "warning" | "error" | "info";
 
 interface StatusCellProps {
-
   value: string;
-
   statusMap?: Record<string, StatusVariant>;
-
   dot?: boolean;
-
   className?: string;
 }
 
@@ -2061,19 +1910,12 @@ function StatusCell({
   );
 }
 
-
 interface DateCellProps {
-
   value: Date | string | number | null | undefined;
-
   format?: Intl.DateTimeFormatOptions;
-
   showRelative?: boolean;
-
   locale?: string;
-
   fallback?: string;
-
   className?: string;
 }
 
@@ -2141,19 +1983,12 @@ function DateCell({
   return <span className={className}>{formatted}</span>;
 }
 
-
 interface CurrencyCellProps {
-
   value: number | null | undefined;
-
   currency?: string;
-
   locale?: string;
-
   colorCode?: boolean;
-
   fallback?: string;
-
   className?: string;
 }
 
@@ -2187,17 +2022,11 @@ function CurrencyCell({
   return <span className={cn(colorClass, className)}>{formatted}</span>;
 }
 
-
 interface AvatarCellProps {
-
   src?: string | null;
-
   name: string;
-
   showName?: boolean;
-
   size?: "sm" | "default" | "lg";
-
   className?: string;
 }
 
@@ -2234,21 +2063,13 @@ function AvatarCell({
   );
 }
 
-
 interface ActionsCellProps<TData> {
-
   row: TData;
-
   onEdit?: (row: TData) => void;
-
   onView?: (row: TData) => void;
-
   onDelete?: (row: TData) => void;
-
   onDuplicate?: (row: TData) => void;
-
   customActions?: RowAction<TData>[];
-
   className?: string;
 }
 
@@ -2287,7 +2108,6 @@ function ActionsCell<TData>({
     });
   }
 
-
   actions.push(...customActions);
 
   if (onDelete) {
@@ -2308,9 +2128,6 @@ function ActionsCell<TData>({
     <DataTableRowActions row={row} actions={actions} className={className} />
   );
 }
-
-
-
 
 function DataTablePinningControls() {
   const { table } = useDataTable();
@@ -2348,17 +2165,10 @@ function DataTablePinningControls() {
   );
 }
 
-
-
-
 interface DataTableDensityToggleProps {
-
   value?: DataTableDensity;
-
   defaultValue?: DataTableDensity;
-
   onValueChange?: (density: DataTableDensity) => void;
-
   className?: string;
 }
 
@@ -2389,7 +2199,7 @@ function DataTableDensityToggle({
     <div
       className={cn(
         "flex items-center gap-1 rounded-lg border border-border p-1",
-        className,
+        className
       )}
     >
       {densityOptions.map((option) => (
@@ -2407,21 +2217,11 @@ function DataTableDensityToggle({
   );
 }
 
-
-
-
-
-
 interface NumberRangeFilterProps {
-
   columnId: string;
-
   minPlaceholder?: string;
-
   maxPlaceholder?: string;
-
   step?: number;
-
   className?: string;
 }
 
@@ -2476,22 +2276,16 @@ function NumberRangeFilter({
   );
 }
 
-
 interface MultiSelectFilterOption {
   value: string;
   label: string;
 }
 
 interface MultiSelectFilterProps {
-
   columnId: string;
-
   options: MultiSelectFilterOption[];
-
   placeholder?: string;
-
   searchable?: boolean;
-
   className?: string;
 }
 
@@ -2511,7 +2305,7 @@ function MultiSelectFilter({
 
   const filteredOptions = searchable
     ? options.filter((opt) =>
-        opt.label.toLowerCase().includes(search.toLowerCase()),
+        opt.label.toLowerCase().includes(search.toLowerCase())
       )
     : options;
 
@@ -2595,11 +2389,8 @@ function MultiSelectFilter({
   );
 }
 
-
 interface DateRangeFilterProps {
-
   columnId: string;
-
   className?: string;
 }
 
@@ -2644,15 +2435,11 @@ function DateRangeFilter({ columnId, className }: DateRangeFilterProps) {
   );
 }
 
-
-
-
 function getDensityStyles(density: DataTableDensity) {
   return densityStyles[density];
 }
 
 export {
-
   DataTableRoot,
   DataTableSearch,
   DataTableContent,
@@ -2662,35 +2449,26 @@ export {
   DataTableColumnVisibility,
   DataTablePinningControls,
   DataTableDensityToggle,
-
   DataTableColumnHeader,
-
   createSelectColumn,
   createExpandColumn,
   createDragHandleColumn,
-
   DataTableEditableCell,
-
   DataTableSkeleton,
   DataTableEmptyState,
   DataTableBulkActions,
   DataTableRowActions,
-
   StatusCell,
   DateCell,
   CurrencyCell,
   AvatarCell,
   ActionsCell,
-
   NumberRangeFilter,
   MultiSelectFilter,
   DateRangeFilter,
-
   getDensityStyles,
-
   useDataTable,
 };
-
 
 export type {
   DataTableProps,

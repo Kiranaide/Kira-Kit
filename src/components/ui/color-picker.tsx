@@ -103,13 +103,10 @@ type OklchColor = {
   h: number;
 };
 
-
 function rgbaToOklch(rgb: RgbaColor): OklchColor {
-
   const r = rgb.r / 255;
   const g = rgb.g / 255;
   const b = rgb.b / 255;
-
 
   const toLinear = (c: number) =>
     c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
@@ -117,22 +114,18 @@ function rgbaToOklch(rgb: RgbaColor): OklchColor {
   const lg = toLinear(g);
   const lb = toLinear(b);
 
-
   const lLms = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
   const mLms = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
   const sLms = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
-
 
   const lCbrt = Math.cbrt(lLms);
   const mCbrt = Math.cbrt(mLms);
   const sCbrt = Math.cbrt(sLms);
 
-
   const L = 0.2104542553 * lCbrt + 0.793617785 * mCbrt - 0.0040720468 * sCbrt;
   const a = 1.9779984951 * lCbrt - 2.428592205 * mCbrt + 0.4505937099 * sCbrt;
   const bVal =
     0.0259040371 * lCbrt + 0.7827717662 * mCbrt - 0.808675766 * sCbrt;
-
 
   const c = Math.sqrt(a * a + bVal * bVal);
   let h = Math.atan2(bVal, a) * (180 / Math.PI);
@@ -145,15 +138,12 @@ function rgbaToOklch(rgb: RgbaColor): OklchColor {
   };
 }
 
-
 function oklchToRgba(oklch: OklchColor): RgbaColor {
   const { l: L, c, h } = oklch;
-
 
   const hRad = (h * Math.PI) / 180;
   const a = c * Math.cos(hRad);
   const b = c * Math.sin(hRad);
-
 
   const lCbrt = L + 0.3963377774 * a + 0.2158037573 * b;
   const mCbrt = L - 0.1055613458 * a - 0.0638541728 * b;
@@ -163,11 +153,9 @@ function oklchToRgba(oklch: OklchColor): RgbaColor {
   const mLms = mCbrt * mCbrt * mCbrt;
   const sLms = sCbrt * sCbrt * sCbrt;
 
-
   const lr = 4.0767416621 * lLms - 3.3077115913 * mLms + 0.2309699292 * sLms;
   const lg = -1.2684380046 * lLms + 2.6097574011 * mLms - 0.3413193965 * sLms;
   const lb = -0.0041960863 * lLms - 0.7034186147 * mLms + 1.707614701 * sLms;
-
 
   const toSrgb = (c: number) =>
     c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
@@ -239,11 +227,8 @@ function generateHarmonies(hsva: HsvaColor): ColorHarmony[] {
 type ColorPickerProps = {
   value?: `#${string}` | HsvaColor | HslaColor | RgbaColor;
   defaultValue?: `#${string}` | HsvaColor | HslaColor | RgbaColor;
-
   type?: "hex" | "hsl" | "rgb" | "hexa" | "oklch";
-
   format?: "hex" | "hsl" | "rgb" | "hexa" | "oklch";
-
   size?: "sm" | "default" | "lg";
   swatches?: HexColor[];
   hideContrastRatio?: boolean;
@@ -254,7 +239,6 @@ type ColorPickerProps = {
   showBackgroundPreview?: boolean;
   className?: string;
   onValueChange?: (value: ColorPickerValue) => void;
-
   onOpenChange?: (open: boolean) => void;
   children?: React.ReactNode;
   disabled?: boolean;
@@ -289,7 +273,6 @@ function ColorPicker({
   onFocus,
   onError,
 }: ColorPickerProps) {
-
   const initialFormat = format ?? type ?? "hex";
   const [colorType, setColorType] = React.useState<
     "hex" | "hsl" | "rgb" | "hexa" | "oklch"
@@ -311,7 +294,6 @@ function ColorPicker({
     ReturnType<typeof setTimeout> | undefined
   >(undefined);
   const [announcement, setAnnouncement] = React.useState("");
-
 
   const sizeClasses = {
     sm: { swatch: "h-6 w-6", input: "w-20 text-xs" },
@@ -357,7 +339,6 @@ function ColorPicker({
       oklch: rgbaToOklch(rgb),
     });
 
-
     if (announcementTimeoutRef.current) {
       clearTimeout(announcementTimeoutRef.current);
     }
@@ -384,7 +365,7 @@ function ColorPicker({
       const newColor = hexToHsva(result.sRGBHex);
       handleValueChange(newColor);
     } catch {
-      console.log("Eyedropper cancelled");
+      // Eyedropper was cancelled
     }
   };
 
@@ -416,7 +397,7 @@ function ColorPicker({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      console.error("Failed to copy");
+      // Copy failed silently
     }
   };
 
@@ -547,7 +528,6 @@ function ColorPicker({
     }
   };
 
-
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     onOpenChange?.(open);
@@ -585,7 +565,6 @@ function ColorPicker({
       </PopoverTrigger>
       <PopoverContent className={cn("w-[340px] p-0", className)}>
         <div className="space-y-3 p-4">
-          {}
           <div aria-live="polite" aria-atomic="true" className="sr-only">
             {announcement}
           </div>
@@ -655,14 +634,12 @@ function ColorPicker({
                 aria-valuetext={`${Math.round(alpha * 100)}%`}
                 onKeyDown={handleAlphaKeyDown}
               >
-                {}
                 <div
                   className="absolute inset-0 w-full h-4 rounded-md overflow-hidden"
                   style={{
                     background: `repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 50% / 8px 8px`,
                   }}
                 />
-                {}
                 <div
                   className="absolute inset-0 w-full h-4 rounded-md border"
                   style={{
@@ -671,7 +648,6 @@ function ColorPicker({
                     )})`,
                   }}
                 />
-                {}
                 <div
                   className="absolute top-0 h-4 w-4 rounded-full border-2 border-white shadow-md pointer-events-none transition-transform"
                   style={{
@@ -681,7 +657,6 @@ function ColorPicker({
                       "0 0 0 1px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.2)",
                   }}
                 />
-                {}
                 <input
                   type="range"
                   min={0}
@@ -1096,11 +1071,7 @@ function ValidationBadge({
       )}
       icon={isValid ? <IconCheck /> : <IconX />}
     >
-      {
-
-
-
-}
+      {}
       <span className="leading-none">{children}</span>
     </Badge>
   );
@@ -1260,13 +1231,13 @@ function ObjectColorInput({
             ? char === "h"
               ? Math.round((value as HslaColor).h)
               : char === "s"
-              ? Math.round((value as HslaColor).s)
-              : Math.round((value as HslaColor).l)
+                ? Math.round((value as HslaColor).s)
+                : Math.round((value as HslaColor).l)
             : char === "r"
-            ? (value as RgbaColor).r
-            : char === "g"
-            ? (value as RgbaColor).g
-            : (value as RgbaColor).b;
+              ? (value as RgbaColor).r
+              : char === "g"
+                ? (value as RgbaColor).g
+                : (value as RgbaColor).b;
 
         const maxValue = label === "hsl" ? (char === "h" ? 360 : 100) : 255;
 
@@ -1277,10 +1248,10 @@ function ObjectColorInput({
               {char === "h"
                 ? "Hue"
                 : char === "s"
-                ? "Saturation"
-                : char === "l"
-                ? "Lightness"
-                : char.toUpperCase()}
+                  ? "Saturation"
+                  : char === "l"
+                    ? "Lightness"
+                    : char.toUpperCase()}
             </label>
             <Input
               id={`${inputId}-${char}`}
@@ -1305,10 +1276,10 @@ function ObjectColorInput({
                 char === "h"
                   ? "hue"
                   : char === "s"
-                  ? "saturation"
-                  : char === "l"
-                  ? "lightness"
-                  : char
+                    ? "saturation"
+                    : char === "l"
+                      ? "lightness"
+                      : char
               }`}
               name={name ? `${name}-${char}` : undefined}
               required={required}
@@ -1396,6 +1367,5 @@ function OklchColorInput({
 
 export { ColorPicker };
 export type { ColorPickerProps, ColorPickerValue, ColorHarmony, OklchColor };
-
 
 export { getColorAsHsva, rgbaToOklch, oklchToRgba, hslaToHsva };

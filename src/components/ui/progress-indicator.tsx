@@ -35,7 +35,7 @@ const indicatorVariants = cva(
       variant: "default",
       state: "pending",
     },
-  },
+  }
 );
 
 const lineVariants = cva("flex-1 transition-all duration-300", {
@@ -116,7 +116,7 @@ function ProgressIndicator({
       className={cn(
         "flex",
         isHorizontal ? "flex-row items-center gap-2" : "flex-col gap-1",
-        className,
+        className
       )}
       {...props}
     >
@@ -131,7 +131,7 @@ function ProgressIndicator({
               className={cn(
                 "flex flex-col items-center gap-1",
                 isClickable && "cursor-pointer hover:opacity-80",
-                !isHorizontal && "w-full",
+                !isHorizontal && "w-full"
               )}
               onClick={() => isClickable && onStepClick?.(step.value)}
             >
@@ -147,7 +147,7 @@ function ProgressIndicator({
                     "border-warning bg-warning text-warning-foreground",
                   variant === "destructive" &&
                     state === "completed" &&
-                    "border-destructive bg-destructive text-destructive-foreground",
+                    "border-destructive bg-destructive text-destructive-foreground"
                 )}
               >
                 {state === "completed" ? (
@@ -172,7 +172,7 @@ function ProgressIndicator({
                 <div
                   className={cn(
                     "text-center",
-                    showDescription && "min-w-[80px]",
+                    showDescription && "min-w-[80px]"
                   )}
                 >
                   <p
@@ -182,7 +182,7 @@ function ProgressIndicator({
                         ? "text-foreground"
                         : state === "completed"
                           ? "text-foreground"
-                          : "text-muted-foreground",
+                          : "text-muted-foreground"
                     )}
                   >
                     {step.label}
@@ -202,7 +202,7 @@ function ProgressIndicator({
                 className={cn(
                   lineVariants({ size, variant, state: getLineState(index) }),
                   isHorizontal ? "flex-1" : "w-0.5 h-4 self-center",
-                  lineVariantClass[variant as keyof typeof lineVariantClass],
+                  lineVariantClass[variant as keyof typeof lineVariantClass]
                 )}
               />
             )}

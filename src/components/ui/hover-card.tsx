@@ -6,16 +6,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconLoader2 } from "@tabler/icons-react";
 
-
-
-
-
 type HoverCardProps = PreviewCardPrimitive.Root.Props;
 
 type HoverCardTriggerProps = PreviewCardPrimitive.Trigger.Props;
 
 interface HoverCardContentProps
-  extends PreviewCardPrimitive.Popup.Props,
+  extends
+    PreviewCardPrimitive.Popup.Props,
     VariantProps<typeof hoverCardContentVariants> {
   side?: PreviewCardPrimitive.Positioner.Props["side"];
   sideOffset?: PreviewCardPrimitive.Positioner.Props["sideOffset"];
@@ -26,23 +23,18 @@ interface HoverCardContentProps
   collisionPadding?: PreviewCardPrimitive.Positioner.Props["collisionPadding"];
   sticky?: PreviewCardPrimitive.Positioner.Props["sticky"];
   portalled?: boolean;
-
   variant?: "default" | "blur";
-
   delay?: number;
-
   closeDelay?: number;
 }
 
 type HoverCardArrowProps = PreviewCardPrimitive.Arrow.Props;
 
-interface HoverCardAnchorProps
-  extends React.ComponentProps<typeof PreviewCardPrimitive.Trigger> {
-
+interface HoverCardAnchorProps extends React.ComponentProps<
+  typeof PreviewCardPrimitive.Trigger
+> {
   href?: string;
-
   target?: string;
-
   rel?: string;
 }
 
@@ -55,13 +47,8 @@ type HoverCardTitleProps = React.ComponentProps<"h4">;
 type HoverCardDescriptionProps = React.ComponentProps<"p">;
 
 interface HoverCardLoadingProps extends React.ComponentProps<"div"> {
-
   message?: string;
 }
-
-
-
-
 
 const hoverCardContentVariants = cva(
   "z-[100] rounded-lg border border-border bg-popover p-4 shadow-lg outline-none data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[var(--transform-origin)]",
@@ -86,10 +73,6 @@ const hoverCardContentVariants = cva(
   }
 );
 
-
-
-
-
 function HoverCard({ children, ...props }: HoverCardProps) {
   return (
     <PreviewCardPrimitive.Root data-slot="hover-card" {...props}>
@@ -97,10 +80,6 @@ function HoverCard({ children, ...props }: HoverCardProps) {
     </PreviewCardPrimitive.Root>
   );
 }
-
-
-
-
 
 function HoverCardTrigger({
   className,
@@ -117,11 +96,6 @@ function HoverCardTrigger({
     </PreviewCardPrimitive.Trigger>
   );
 }
-
-
-
-
-
 
 function HoverCardAnchor({
   className,
@@ -140,7 +114,7 @@ function HoverCardAnchor({
           target={target}
           rel={rel}
           className={cn(
-            "text-primary underline underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring cursor-pointer",
+            "text-primary underline underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:no-underline focus-visible:outline focus-visible:outline-ring cursor-pointer",
             className
           )}
         />
@@ -151,10 +125,6 @@ function HoverCardAnchor({
     </PreviewCardPrimitive.Trigger>
   );
 }
-
-
-
-
 
 const HoverCardContent = React.forwardRef<
   HTMLDivElement,
@@ -204,10 +174,6 @@ const HoverCardContent = React.forwardRef<
   return content;
 });
 
-
-
-
-
 const HoverCardArrow = React.forwardRef<HTMLDivElement, HoverCardArrowProps>(
   function HoverCardArrow({ className, ...props }, ref) {
     return (
@@ -221,10 +187,6 @@ const HoverCardArrow = React.forwardRef<HTMLDivElement, HoverCardArrowProps>(
   }
 );
 
-
-
-
-
 function HoverCardHeader({ className, ...props }: HoverCardHeaderProps) {
   return (
     <div
@@ -234,10 +196,6 @@ function HoverCardHeader({ className, ...props }: HoverCardHeaderProps) {
     />
   );
 }
-
-
-
-
 
 function HoverCardFooter({ className, ...props }: HoverCardFooterProps) {
   return (
@@ -252,10 +210,6 @@ function HoverCardFooter({ className, ...props }: HoverCardFooterProps) {
   );
 }
 
-
-
-
-
 function HoverCardTitle({ className, ...props }: HoverCardTitleProps) {
   return (
     <h4
@@ -265,10 +219,6 @@ function HoverCardTitle({ className, ...props }: HoverCardTitleProps) {
     />
   );
 }
-
-
-
-
 
 function HoverCardDescription({
   className,
@@ -282,10 +232,6 @@ function HoverCardDescription({
     />
   );
 }
-
-
-
-
 
 function HoverCardLoading({
   className,
@@ -307,12 +253,7 @@ function HoverCardLoading({
   );
 }
 
-
-
-
-
 interface HoverCardImageProps extends React.ComponentProps<"img"> {
-
   aspectRatio?: "video" | "square" | "portrait";
 }
 
@@ -342,10 +283,6 @@ function HoverCardImage({
   );
 }
 
-
-
-
-
 export {
   HoverCard,
   HoverCardTrigger,
@@ -359,10 +296,6 @@ export {
   HoverCardLoading,
   HoverCardImage,
 };
-
-
-
-
 
 export type {
   HoverCardProps,

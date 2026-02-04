@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import * as React from "react";
 import {
   useMemo,
@@ -20,53 +18,28 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
-
-
-
-
 type FieldApiLike = Pick<
   AnyFieldApi,
   "name" | "state" | "handleChange" | "handleBlur" | "setValue" | "getValue"
 >;
 
-
-
-
-
 interface FieldContextValue {
-
   id: string;
-
   disabled?: boolean;
-
   required?: boolean;
-
   readOnly?: boolean;
-
   invalid?: boolean;
-
   descriptionId: string;
-
   errorId: string;
-
   touched?: boolean;
-
   validating?: boolean;
 }
 
 const FieldContext = createContext<FieldContextValue | null>(null);
 
-
-
-
-
 function useFieldContext() {
   return useContext(FieldContext);
 }
-
-
-
-
 
 function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
@@ -81,15 +54,9 @@ function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   );
 }
 
-
-
-
-
 interface FieldLegendProps extends React.ComponentProps<"legend"> {
   variant?: "legend" | "label";
-
   showRequired?: boolean;
-
   requiredIndicator?: React.ReactNode;
 }
 
@@ -128,12 +95,7 @@ function FieldLegend({
   );
 }
 
-
-
-
-
 interface FieldGroupProps extends React.ComponentProps<"div"> {
-
   variant?: "default" | "outline";
 }
 
@@ -147,7 +109,7 @@ function FieldGroup({
       data-slot="field-group"
       data-variant={variant}
       className={cn(
-        "gap-5 data-[slot=checkbox-group]:gap-3 [&>[data-slot=field-group]]:gap-4 group/field-group @container/field-group flex w-full flex-col",
+        "gap-5 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4 group/field-group @container/field-group flex w-full flex-col",
         variant === "outline" && "rounded-lg border border-input p-4",
         className
       )}
@@ -155,10 +117,6 @@ function FieldGroup({
     />
   );
 }
-
-
-
-
 
 const fieldVariants = cva(
   "data-[invalid=true]:text-destructive gap-2 group/field flex w-full",
@@ -179,17 +137,11 @@ const fieldVariants = cva(
 );
 
 interface FieldProps
-  extends React.ComponentProps<"div">,
-    VariantProps<typeof fieldVariants> {
-
+  extends React.ComponentProps<"div">, VariantProps<typeof fieldVariants> {
   disabled?: boolean;
-
   required?: boolean;
-
   readOnly?: boolean;
-
   invalid?: boolean;
-
   id?: string;
 }
 
@@ -238,10 +190,6 @@ function Field({
   );
 }
 
-
-
-
-
 function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   const context = useFieldContext();
 
@@ -258,14 +206,8 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-
-
-
-
 interface FieldLabelProps extends React.ComponentProps<typeof Label> {
-
   showRequired?: boolean;
-
   requiredIndicator?: React.ReactNode;
 }
 
@@ -286,7 +228,7 @@ function FieldLabel({
       data-slot="field-label"
       htmlFor={labelFor}
       className={cn(
-        "has-data-checked:bg-primary/5 has-data-checked:border-primary dark:has-data-checked:bg-primary/10 gap-2 group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:rounded-lg has-[>[data-slot=field]]:border [&>*]:data-[slot=field]:p-2.5 group/field-label peer/field-label flex w-fit leading-snug",
+        "has-data-checked:bg-primary/5 has-data-checked:border-primary dark:has-data-checked:bg-primary/10 gap-2 group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:rounded-lg has-[>[data-slot=field]]:border *:data-[slot=field]:p-2.5 group/field-label peer/field-label flex w-fit leading-snug",
         "has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col",
         context?.disabled && "cursor-not-allowed",
         className
@@ -303,12 +245,7 @@ function FieldLabel({
   );
 }
 
-
-
-
-
 interface FieldTitleProps extends React.ComponentProps<"div"> {
-
   showRequired?: boolean;
 
   requiredIndicator?: React.ReactNode;
@@ -344,12 +281,7 @@ function FieldTitle({
   );
 }
 
-
-
-
-
 interface FieldDescriptionProps extends React.ComponentProps<"p"> {
-
   id?: string;
 }
 
@@ -362,7 +294,7 @@ function FieldDescription({ className, id, ...props }: FieldDescriptionProps) {
       id={descId}
       data-slot="field-description"
       className={cn(
-        "text-muted-foreground text-left text-sm [[data-variant=legend]+&]:-mt-1.5 leading-normal font-normal group-has-[[data-orientation=horizontal]]/field:text-balance",
+        "text-muted-foreground text-left text-sm [[data-variant=legend]+&]:-mt-1.5 leading-normal font-normal group-has-data-[orientation=horizontal]/field:text-balance",
         "last:mt-0 nth-last-2:-mt-1",
         "[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4",
         context?.disabled && "opacity-50",
@@ -373,21 +305,12 @@ function FieldDescription({ className, id, ...props }: FieldDescriptionProps) {
   );
 }
 
-
 const FieldHelperText = FieldDescription;
 
-
-
-
-
 interface FieldCharacterCountProps extends React.ComponentProps<"span"> {
-
   current: number;
-
   max: number;
-
   warningThreshold?: number;
-
   showOnlyNearLimit?: boolean;
 }
 
@@ -402,7 +325,6 @@ function FieldCharacterCount({
   const percentage = (current / max) * 100;
   const isWarning = percentage >= warningThreshold && current <= max;
   const isError = current > max;
-
 
   if (showOnlyNearLimit && percentage < warningThreshold) {
     return null;
@@ -427,10 +349,6 @@ function FieldCharacterCount({
     </span>
   );
 }
-
-
-
-
 
 function FieldSeparator({
   children,
@@ -462,14 +380,8 @@ function FieldSeparator({
   );
 }
 
-
-
-
-
 interface FieldValidationIconProps extends React.ComponentProps<"span"> {
-
   state: "valid" | "invalid" | "validating";
-
   size?: "sm" | "default" | "lg";
 }
 
@@ -579,10 +491,6 @@ function FieldValidationIcon({
   );
 }
 
-
-
-
-
 type ZodValidatorOptions = {
   onChange?: boolean | number;
   onBlur?: boolean;
@@ -612,7 +520,6 @@ type ZodValidatorReturn<T> = {
 };
 
 function createZodValidator<T>(
-
   schema: ZodType<T, any, any>,
   options: ZodValidatorOptions = { onChange: true, onSubmit: true }
 ): ZodValidatorReturn<T> {
@@ -679,10 +586,6 @@ function createZodValidator<T>(
   return result;
 }
 
-
-
-
-
 interface FieldErrorProps extends React.ComponentProps<"div"> {
   errors?: Array<{ message?: string } | undefined> | string[] | null;
   field?: FieldApiLike | AnyFieldApi;
@@ -744,7 +647,6 @@ function FieldError({
     );
   }, [children, metaErrors, showErrors]);
 
-
   useEffect(() => {
     if (errorRef.current && content) {
       animate(errorRef.current, {
@@ -791,25 +693,16 @@ function FieldError({
   );
 }
 
-
 const FieldErrorText = FieldError;
-
-
-
-
 
 interface FormFieldProps {
   name: string;
-
   form: any;
   children: (field: FieldApiLike) => React.ReactNode;
   className?: string;
   orientation?: "vertical" | "horizontal" | "responsive";
-
   disabled?: boolean;
-
   required?: boolean;
-
   readOnly?: boolean;
 }
 
@@ -848,10 +741,6 @@ function FormField({
     />
   );
 }
-
-
-
-
 
 interface FieldInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   field?: FieldApiLike;
@@ -916,12 +805,7 @@ function FieldInput({
   );
 }
 
-
-
-
-
 interface FieldRowProps extends React.ComponentProps<"div"> {
-
   gap?: "sm" | "default" | "lg";
 }
 
@@ -952,14 +836,6 @@ function FieldRow({
   );
 }
 
-
-
-
-
-
-
-
-
 export {
   Field,
   FieldLabel,
@@ -981,10 +857,6 @@ export {
   createZodValidator,
   useFieldContext,
 };
-
-
-
-
 
 export type {
   FieldProps,

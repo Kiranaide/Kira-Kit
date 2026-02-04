@@ -289,9 +289,7 @@ export const CAMERA_CONSTRAINTS: Record<CameraMode, MediaStreamConstraints> = {
   },
 };
 
-// ============================================================================
-// Enhanced Camera Types (2025-2026)
-// ============================================================================
+// Enhanced Camera Types
 
 export type CameraTimerDuration = 0 | 3 | 5 | 10;
 

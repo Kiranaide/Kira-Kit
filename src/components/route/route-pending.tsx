@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
-import { useLocation } from '@tanstack/react-router'
-import { Spinner } from '@/components/ui/spinner'
+import { useEffect, useState } from "react";
+import { useLocation } from "@tanstack/react-router";
+import { Spinner } from "@/components/ui/spinner";
 import {
   SkeletonCard,
   SkeletonHeading,
@@ -10,31 +10,33 @@ import {
   SkeletonButton,
   SkeletonTableRow,
   SkeletonListItem,
-} from '@/components/ui/skeleton'
+} from "@/components/ui/skeleton";
 
 function getSkeletonDelay(pathname: string): number {
-  if (pathname === '/') return 1500
-  if (pathname.startsWith('/components/')) return 500
-  return 1000
+  if (pathname === "/") return 1500;
+  if (pathname.startsWith("/components/")) return 500;
+  return 1000;
 }
 
 function getRouteName(pathname: string): string {
-  if (pathname === '/') return 'Home'
-  const match = pathname.match(/^\/components\/(.+)$/)
+  if (pathname === "/") return "Home";
+  const match = pathname.match(/^\/components\/(.+)$/);
   if (match) {
-    const componentName = match[1]
+    const componentName = match[1];
     return componentName
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ')
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   }
-  return 'page'
+  return "page";
 }
 
-function getSkeletonType(pathname: string): 'component' | 'overview' | 'generic' {
-  if (pathname === '/') return 'overview'
-  if (pathname.startsWith('/components/')) return 'component'
-  return 'generic'
+function getSkeletonType(
+  pathname: string
+): "component" | "overview" | "generic" {
+  if (pathname === "/") return "overview";
+  if (pathname.startsWith("/components/")) return "component";
+  return "generic";
 }
 
 function ComponentPageSkeleton() {
@@ -88,7 +90,7 @@ function ComponentPageSkeleton() {
         <SkeletonTableRow columns={4} />
       </div>
     </div>
-  )
+  );
 }
 
 function OverviewPageSkeleton() {
@@ -103,7 +105,7 @@ function OverviewPageSkeleton() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 function GenericPageSkeleton() {
@@ -130,28 +132,28 @@ function GenericPageSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function SkeletonImage() {
   return (
     <div className="w-full aspect-video rounded-md bg-muted motion-safe:animate-pulse motion-reduce:opacity-70" />
-  )
+  );
 }
 
 export function RoutePending() {
-  const location = useLocation()
-  const [showSkeleton, setShowSkeleton] = useState(false)
+  const location = useLocation();
+  const [showSkeleton, setShowSkeleton] = useState(false);
 
-  const delay = getSkeletonDelay(location.pathname)
+  const delay = getSkeletonDelay(location.pathname);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSkeleton(true), delay)
-    return () => clearTimeout(timer)
-  }, [location.pathname, delay])
+    const timer = setTimeout(() => setShowSkeleton(true), delay);
+    return () => clearTimeout(timer);
+  }, [location.pathname, delay]);
 
-  const routeName = getRouteName(location.pathname)
-  const skeletonType = getSkeletonType(location.pathname)
+  const routeName = getRouteName(location.pathname);
+  const skeletonType = getSkeletonType(location.pathname);
 
   return (
     <div
@@ -163,17 +165,19 @@ export function RoutePending() {
       <div className="w-full max-w-4xl p-8 space-y-8">
         <div className="flex flex-col items-center space-y-4">
           <Spinner size="lg" variant="default" />
-          <p className="text-sm text-muted-foreground">Loading {routeName}...</p>
+          <p className="text-sm text-muted-foreground">
+            Loading {routeName}...
+          </p>
         </div>
 
         {showSkeleton && (
           <div className="w-full">
-            {skeletonType === 'component' && <ComponentPageSkeleton />}
-            {skeletonType === 'overview' && <OverviewPageSkeleton />}
-            {skeletonType === 'generic' && <GenericPageSkeleton />}
+            {skeletonType === "component" && <ComponentPageSkeleton />}
+            {skeletonType === "overview" && <OverviewPageSkeleton />}
+            {skeletonType === "generic" && <GenericPageSkeleton />}
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }

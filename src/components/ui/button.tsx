@@ -13,19 +13,10 @@ import {
 import { toast } from "sonner";
 import { IconCopy, IconCheck, IconSparkles } from "@tabler/icons-react";
 
-
-
-
-
-
-
-
-
 const buttonVariants = cva(
   "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-lg border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none cursor-pointer",
   {
     variants: {
-
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         outline:
@@ -58,7 +49,6 @@ const buttonVariants = cva(
         "warning-ghost":
           "text-warning-foreground hover:bg-warning/10 dark:text-warning",
       },
-
       size: {
         default:
           "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
@@ -72,7 +62,6 @@ const buttonVariants = cva(
           "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
         "icon-lg": "size-9",
       },
-
       fullWidth: {
         true: "w-full",
         false: "",
@@ -86,27 +75,15 @@ const buttonVariants = cva(
   }
 );
 
-
-
-
-
-
-
-
-
 interface ButtonProps
-  extends VariantProps<typeof buttonVariants>,
+  extends
+    VariantProps<typeof buttonVariants>,
     Omit<React.ComponentPropsWithoutRef<"button">, "size"> {
-
   holdDuration?: number;
-
   onHoldComplete?: () => void;
-
   progressColor?: string;
-
   rippleColor?: string;
 }
-
 
 type ButtonSize =
   | "xs"
@@ -401,7 +378,8 @@ const buttonGroupVariants = cva(
 );
 
 interface ButtonGroupProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof buttonGroupVariants> {
   animated?: boolean;
   animationStagger?: number;
@@ -420,9 +398,7 @@ function ButtonGroup({
   React.useEffect(() => {
     if (!animated || !containerRef.current) return;
 
-    const buttons = containerRef.current.querySelectorAll(
-      "[data-slot=button]"
-    );
+    const buttons = containerRef.current.querySelectorAll("[data-slot=button]");
 
     if (buttons.length > 0) {
       animate(buttons, {
@@ -491,9 +467,6 @@ interface ExpandableIconButtonProps extends Omit<ButtonProps, "children"> {
   className?: string;
 }
 
-
-
-
 function ExpandableIconButton({
   icon,
   label,
@@ -541,7 +514,6 @@ function ExpandableIconButton({
     <Button
       variant={variant}
       className={cn(
-
         "h-8 min-w-8 w-auto px-2 gap-0 [&>span]:gap-0",
         expandDirection === "left" && "flex-row-reverse",
         isHoldButton && "[&>span.relative.z-10.flex.items-center]:gap-0",
@@ -574,9 +546,6 @@ function ExpandableIconButton({
     </Button>
   );
 }
-
-
-
 
 function LoadingSpinner({ size }: { size: ButtonSize | null | undefined }) {
   const spinnerRef = React.useRef<SVGSVGElement>(null);
@@ -635,9 +604,6 @@ interface LoadingButtonProps extends ButtonProps {
   isLoading?: boolean;
   loadingText?: string;
 }
-
-
-
 
 function LoadingButton({
   isLoading = false,

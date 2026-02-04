@@ -25,7 +25,6 @@ const drawerVariants = cva(
       },
     },
     compoundVariants: [
-
       {
         side: ["left", "right"],
         size: "sm",
@@ -110,7 +109,7 @@ function DrawerOverlay({
       data-slot="drawer-overlay"
       className={cn(
         "fixed inset-0 z-50 bg-black/50",
-        "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0",
+        "data-starting-style:opacity-0 data-ending-style:opacity-0",
         "transition-opacity duration-300",
         className
       )}
@@ -120,8 +119,7 @@ function DrawerOverlay({
 }
 
 interface DrawerContentProps
-  extends DialogPrimitive.Popup.Props,
-    VariantProps<typeof drawerVariants> {
+  extends DialogPrimitive.Popup.Props, VariantProps<typeof drawerVariants> {
   showCloseButton?: boolean;
 }
 

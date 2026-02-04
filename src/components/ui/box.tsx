@@ -1,14 +1,10 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
-
-
-
+import { cn } from "@/lib/utils";
 
 const boxVariants = cva("", {
   variants: {
-
     rounded: {
       none: "rounded-none",
       sm: "rounded-sm",
@@ -20,7 +16,6 @@ const boxVariants = cva("", {
       "3xl": "rounded-3xl",
       full: "rounded-full",
     },
-
     shadow: {
       none: "shadow-none",
       sm: "shadow-sm",
@@ -30,7 +25,6 @@ const boxVariants = cva("", {
       xl: "shadow-xl",
       "2xl": "shadow-2xl",
     },
-
     p: {
       0: "p-0",
       1: "p-1",
@@ -43,7 +37,6 @@ const boxVariants = cva("", {
       10: "p-10",
       12: "p-12",
     },
-
     px: {
       0: "px-0",
       1: "px-1",
@@ -54,7 +47,6 @@ const boxVariants = cva("", {
       6: "px-6",
       8: "px-8",
     },
-
     py: {
       0: "py-0",
       1: "py-1",
@@ -65,7 +57,6 @@ const boxVariants = cva("", {
       6: "py-6",
       8: "py-8",
     },
-
     m: {
       0: "m-0",
       1: "m-1",
@@ -77,7 +68,6 @@ const boxVariants = cva("", {
       8: "m-8",
       auto: "m-auto",
     },
-
     display: {
       block: "block",
       "inline-block": "inline-block",
@@ -88,7 +78,6 @@ const boxVariants = cva("", {
       "inline-grid": "inline-grid",
       hidden: "hidden",
     },
-
     position: {
       static: "static",
       relative: "relative",
@@ -98,10 +87,7 @@ const boxVariants = cva("", {
     },
   },
   defaultVariants: {},
-})
-
-
-
+});
 
 type BoxElement =
   | "div"
@@ -120,62 +106,23 @@ type BoxElement =
   | "li"
   | "figure"
   | "figcaption"
-  | "address"
+  | "address";
 
 interface BoxProps
-  extends Omit<React.HTMLAttributes<HTMLElement>, "display">,
+  extends
+    Omit<React.HTMLAttributes<HTMLElement>, "display">,
     VariantProps<typeof boxVariants> {
-
-  as?: BoxElement
-
-  bg?: string
-
-  color?: string
-
-  w?: string
-
-  h?: string
-
-  minW?: string
-
-  minH?: string
-
-  maxW?: string
-
-  maxH?: string
-
-  border?: boolean | string
+  as?: BoxElement;
+  bg?: string;
+  color?: string;
+  w?: string;
+  h?: string;
+  minW?: string;
+  minH?: string;
+  maxW?: string;
+  maxH?: string;
+  border?: boolean | string;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function Box({
   as: Component = "div",
@@ -209,8 +156,8 @@ function Box({
     maxW && `max-w-${maxW}`,
     maxH && `max-h-${maxH}`,
     border === true && "border",
-    typeof border === "string" && `border-${border}`,
-  )
+    typeof border === "string" && `border-${border}`
+  );
 
   return (
     <Component
@@ -222,8 +169,8 @@ function Box({
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Box, boxVariants }
-export type { BoxProps, BoxElement }
+export { Box, boxVariants };
+export type { BoxProps, BoxElement };

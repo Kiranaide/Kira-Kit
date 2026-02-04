@@ -2,12 +2,8 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-
-
-
 const textareaVariants = cva(
   [
-
     "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50",
     "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
     "aria-invalid:border-destructive dark:aria-invalid:border-destructive/50",
@@ -39,17 +35,12 @@ const textareaVariants = cva(
   }
 );
 
-
-
-
 interface TextareaProps
-  extends Omit<React.ComponentProps<"textarea">, "size">,
+  extends
+    Omit<React.ComponentProps<"textarea">, "size">,
     VariantProps<typeof textareaVariants> {
-
   minRows?: number;
-
   maxRows?: number;
-
   autoSize?: boolean;
 }
 
@@ -63,8 +54,6 @@ function Textarea({
   style,
   ...props
 }: TextareaProps) {
-
-
   const lineHeight = size === "sm" ? 20 : size === "lg" ? 28 : 24;
   const paddingY = size === "sm" ? 12 : size === "lg" ? 20 : 16;
 
@@ -90,17 +79,10 @@ function Textarea({
   );
 }
 
-
-
-
 interface TextareaWithCounterProps extends TextareaProps {
-
   maxLength: number;
-
   warningThreshold?: number;
-
   showRemaining?: boolean;
-
   renderCounter?: (props: {
     current: number;
     max: number;
@@ -108,7 +90,6 @@ interface TextareaWithCounterProps extends TextareaProps {
     isWarning: boolean;
     isError: boolean;
   }) => React.ReactNode;
-
   wrapperClassName?: string;
 }
 
@@ -136,13 +117,11 @@ function TextareaWithCounter({
   const isWarning = currentLength >= maxLength * warningThreshold;
   const isError = currentLength >= maxLength;
 
-
   const generatedCounterId = React.useId();
   const generatedTextareaId = React.useId();
   const counterId = generatedCounterId;
   const textareaId = id ?? generatedTextareaId;
   const counterElementId = `${counterId}-counter`;
-
 
   const combinedAriaDescribedBy = ariaDescribedBy
     ? `${ariaDescribedBy} ${counterElementId}`
@@ -200,9 +179,6 @@ function TextareaWithCounter({
     </div>
   );
 }
-
-
-
 
 export { Textarea, TextareaWithCounter, textareaVariants };
 export type { TextareaProps, TextareaWithCounterProps };

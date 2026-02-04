@@ -28,7 +28,7 @@ function DialogOverlay({
       data-slot="dialog-overlay"
       className={cn(
         "fixed inset-0 z-50 bg-black/50 backdrop-blur-sm",
-        "data-[starting-style]:opacity-0 data-[ending-style]:opacity-0",
+        "data-starting-style:opacity-0 data-ending-style:opacity-0",
         "transition-opacity duration-200",
         className
       )}
@@ -57,8 +57,8 @@ function DialogContent({
         className={cn(
           "fixed left-1/2 top-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2",
           "bg-background border border-border rounded-xl p-6 shadow-xl",
-          "data-[starting-style]:opacity-0 data-[starting-style]:scale-95",
-          "data-[ending-style]:opacity-0 data-[ending-style]:scale-95",
+          "data-starting-style:opacity-0 data-starting-style:scale-95",
+          "data-ending-style:opacity-0 data-ending-style:scale-95",
           "transition-all duration-200",
           "flex flex-col",
           size === "sm" && "max-w-sm",

@@ -1,43 +1,13 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-type SpacerAxis = "horizontal" | "vertical"
+type SpacerAxis = "horizontal" | "vertical";
 
 interface SpacerProps extends React.HTMLAttributes<HTMLDivElement> {
-
-  size?: number | "auto"
-
-  axis?: SpacerAxis
+  size?: number | "auto";
+  axis?: SpacerAxis;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function Spacer({
   size = "auto",
@@ -53,7 +23,7 @@ function Spacer({
         className={cn("flex-1", className)}
         {...props}
       />
-    )
+    );
   }
 
   const sizeMap: Record<number, string> = {
@@ -70,7 +40,7 @@ function Spacer({
     16: axis === "horizontal" ? "w-16" : "h-16",
     20: axis === "horizontal" ? "w-20" : "h-20",
     24: axis === "horizontal" ? "w-24" : "h-24",
-  }
+  };
 
   return (
     <div
@@ -79,8 +49,8 @@ function Spacer({
       className={cn(sizeMap[size] ?? "", className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Spacer }
-export type { SpacerProps, SpacerAxis }
+export { Spacer };
+export type { SpacerProps, SpacerAxis };

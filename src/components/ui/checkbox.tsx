@@ -82,12 +82,10 @@ const checkboxIndicatorVariants = cva(
   }
 );
 
-interface CheckboxProps
-  extends Omit<
-    CheckboxPrimitive.Root.Props,
-    "checked" | "onCheckedChange" | "defaultChecked"
-  > {
-
+interface CheckboxProps extends Omit<
+  CheckboxPrimitive.Root.Props,
+  "checked" | "onCheckedChange" | "defaultChecked"
+> {
   checked?: boolean | "indeterminate";
 
   defaultChecked?: boolean;
@@ -129,7 +127,6 @@ function Checkbox({
   inputRef,
   ...props
 }: CheckboxProps) {
-
   const isControlled = checked !== undefined;
   const indicatorRef = React.useRef<HTMLSpanElement>(null);
   const rippleRef = React.useRef<HTMLSpanElement>(null);
@@ -137,13 +134,11 @@ function Checkbox({
     boolean | "indeterminate"
   >(checked ?? defaultChecked);
 
-
   React.useEffect(() => {
-    if (isControlled && checked !== undefined) {
+    if (isControlled) {
       setInternalChecked(checked);
     }
   }, [checked, isControlled]);
-
 
   React.useEffect(() => {
     if (indicatorRef.current) {
@@ -152,7 +147,7 @@ function Checkbox({
       indicatorRef.current.style.transform = isActive ? "scale(1)" : "scale(0)";
       indicatorRef.current.style.opacity = isActive ? "1" : "0";
     }
-  }, []);
+  }, [internalChecked]);
 
   const handleChange = (newChecked: boolean | "indeterminate") => {
     if (disabled || readOnly || loading) return;
@@ -210,9 +205,9 @@ function Checkbox({
         className={cn(
           checkboxVariants({ variant, color, size }),
           "relative overflow-hidden",
-          "data-[invalid]:border-destructive data-[invalid]:data-[checked]:bg-destructive",
-          "data-[focused]:ring-2 data-[focused]:ring-ring data-[focused]:ring-offset-2",
-          error && "border-destructive data-[checked]:bg-destructive",
+          "data-invalid:border-destructive data-invalid:data-checked:bg-destructive",
+          "data-focused:ring-2 data-focused:ring-ring data-focused:ring-offset-2",
+          error && "border-destructive data-checked:bg-destructive",
           className
         )}
         {...props}
@@ -271,23 +266,20 @@ function CheckboxWithLabel({
   const checkboxId = id || generatedId;
 
   const content = (
-    <>
-      <div className="flex flex-col gap-0.5">
-        <label
-          htmlFor={checkboxId}
-          className={cn(
-            "text-sm font-medium leading-none cursor-pointer",
-            (props.disabled || props.readOnly) &&
-              "cursor-not-allowed opacity-70"
-          )}
-        >
-          {label}
-        </label>
-        {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+    <div className="flex flex-col gap-0.5">
+      <label
+        htmlFor={checkboxId}
+        className={cn(
+          "text-sm font-medium leading-none cursor-pointer",
+          (props.disabled || props.readOnly) && "cursor-not-allowed opacity-70"
         )}
-      </div>
-    </>
+      >
+        {label}
+      </label>
+      {description && (
+        <p className="text-sm text-muted-foreground">{description}</p>
+      )}
+    </div>
   );
 
   return (
@@ -535,7 +527,7 @@ function CheckboxCard({
         "relative flex flex-col gap-2 rounded-lg border-2 bg-transparent cursor-pointer transition-all",
         "hover:bg-muted/50",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[disabled]:hover:bg-transparent",
+        "data-disabled:cursor-not-allowed data-disabled:opacity-50 data-disabled:hover:bg-transparent",
         currentSize.padding,
         error && "border-destructive",
         className

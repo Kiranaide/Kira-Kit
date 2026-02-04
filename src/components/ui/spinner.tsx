@@ -5,36 +5,34 @@ import { animate } from "animejs";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-const spinnerVariants = cva(
-  "inline-flex shrink-0 animate-spin",
-  {
-    variants: {
-      size: {
-        xs: "h-3 w-3",
-        sm: "h-4 w-4",
-        default: "h-5 w-5",
-        md: "h-6 w-6",
-        lg: "h-8 w-8",
-        xl: "h-10 w-10",
-      },
-      variant: {
-        default: "text-primary",
-        muted: "text-muted-foreground",
-        destructive: "text-destructive",
-        warning: "text-warning",
-        success: "text-success",
-        info: "text-info",
-      },
+const spinnerVariants = cva("inline-flex shrink-0 animate-spin", {
+  variants: {
+    size: {
+      xs: "h-3 w-3",
+      sm: "h-4 w-4",
+      default: "h-5 w-5",
+      md: "h-6 w-6",
+      lg: "h-8 w-8",
+      xl: "h-10 w-10",
     },
-    defaultVariants: {
-      size: "default",
-      variant: "default",
+    variant: {
+      default: "text-primary",
+      muted: "text-muted-foreground",
+      destructive: "text-destructive",
+      warning: "text-warning",
+      success: "text-success",
+      info: "text-info",
     },
   },
-);
+  defaultVariants: {
+    size: "default",
+    variant: "default",
+  },
+});
 
 export interface SpinnerProps
-  extends React.SVGAttributes<SVGElement>,
+  extends
+    React.SVGAttributes<SVGElement>,
     VariantProps<typeof spinnerVariants> {
   label?: string;
 }
@@ -81,7 +79,7 @@ const Spinner = React.forwardRef<SVGSVGElement, SpinnerProps>(
         />
       </svg>
     );
-  },
+  }
 );
 
 Spinner.displayName = "Spinner";

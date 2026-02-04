@@ -15,9 +15,6 @@ import { IconGripVertical } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-
-
-
 type Orientation = "horizontal" | "vertical";
 
 interface ResizableContextValue {
@@ -27,24 +24,16 @@ interface ResizableContextValue {
 export type ResizablePanelRef = PanelImperativeHandle;
 export type ResizablePanelGroupRef = GroupImperativeHandle;
 
-
-
-
 const ResizableContext = React.createContext<ResizableContextValue>({
   orientation: "horizontal",
 });
-
-
-
 
 interface ResizablePanelGroupProps extends Omit<
   React.ComponentProps<typeof Group>,
   "onLayoutChange"
 > {
   className?: string;
-
   autoSaveId?: string;
-
   onLayoutChange?: (layout: Layout) => void;
 }
 
@@ -66,7 +55,7 @@ function ResizablePanelGroup({
         data-slot="resizable-panel-group"
         className={cn(
           "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
-          className,
+          className
         )}
         {...props}
       >
@@ -77,18 +66,12 @@ function ResizablePanelGroup({
 }
 ResizablePanelGroup.displayName = "ResizablePanelGroup";
 
-
-
-
 interface ResizablePanelProps extends Omit<
   React.ComponentProps<typeof Panel>,
   "onResize" | "panelRef"
 > {
-
   children?: React.ReactNode;
-
   panelRef?: React.RefObject<PanelImperativeHandle | null>;
-
   onResize?: (size: PanelSize, id: string | number | undefined) => void;
 }
 
@@ -110,9 +93,6 @@ function ResizablePanel({
 }
 ResizablePanel.displayName = "ResizablePanel";
 
-
-
-
 const handleVariants = cva(
   "relative flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
   {
@@ -126,20 +106,16 @@ const handleVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  },
+  }
 );
 
 interface ResizableHandleProps
   extends
     VariantProps<typeof handleVariants>,
     Omit<React.ComponentProps<typeof Separator>, "orientation"> {
-
   withHandle?: boolean;
-
   className?: string;
-
   style?: React.CSSProperties;
-
   "aria-label"?: string;
 }
 
@@ -174,7 +150,7 @@ function ResizableHandle({
         <div
           className={cn(
             "z-10 flex items-center justify-center rounded-sm border bg-border",
-            isVertical ? "h-3 w-4" : "h-4 w-3",
+            isVertical ? "h-3 w-4" : "h-4 w-3"
           )}
         >
           <IconGripVertical
@@ -186,21 +162,12 @@ function ResizableHandle({
   );
 }
 
-
-
-
 interface CollapsiblePanelProps extends ResizablePanelProps {
-
   id: string;
-
   collapsible?: boolean;
-
   collapsedSize?: number | string;
-
   defaultSize?: number | string;
-
   minSize?: number | string;
-
   maxSize?: number | string;
 }
 
@@ -231,7 +198,6 @@ function CollapsiblePanel({
   );
 }
 CollapsiblePanel.displayName = "CollapsiblePanel";
-
 
 export { usePanelRef };
 

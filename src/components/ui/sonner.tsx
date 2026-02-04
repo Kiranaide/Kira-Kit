@@ -3,26 +3,6 @@ import { Toaster as Sonner } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const Toaster = ({
   position = "top-right",
   expand = false,
@@ -48,19 +28,17 @@ const Toaster = ({
         classNames: {
           toast: [
             "group toast",
-
             "group-[.toaster]:bg-background",
             "group-[.toaster]:text-foreground",
             "group-[.toaster]:border-border",
             "group-[.toaster]:shadow-lg",
             "group-[.toaster]:rounded-lg",
-
             "group-[.toaster]:overflow-visible",
-
             "motion-reduce:transition-none",
           ].join(" "),
           title: "group-[.toast]:font-semibold",
-          description: "group-[.toast]:text-muted-foreground group-[.toast]:text-sm",
+          description:
+            "group-[.toast]:text-muted-foreground group-[.toast]:text-sm",
           actionButton: [
             "group-[.toast]:bg-primary",
             "group-[.toast]:text-primary-foreground",
@@ -82,12 +60,10 @@ const Toaster = ({
             "group-[.toast]:text-sm",
           ].join(" "),
           closeButton: [
-
             "group-[.toast]:!left-auto",
             "group-[.toast]:!right-2",
             "group-[.toast]:!top-2",
             "group-[.toast]:!transform-none",
-
             "group-[.toast]:bg-background",
             "group-[.toast]:text-muted-foreground",
             "group-[.toast]:border",
@@ -101,11 +77,9 @@ const Toaster = ({
             "group-[.toast]:hover:bg-muted",
             "group-[.toast]:hover:text-foreground",
             "group-[.toast]:transition-colors",
-
             "group-[.toast]:[&_svg]:h-3",
             "group-[.toast]:[&_svg]:w-3",
           ].join(" "),
-
           error: [
             "group-[.toaster]:!bg-destructive/10",
             "group-[.toaster]:!border-destructive",

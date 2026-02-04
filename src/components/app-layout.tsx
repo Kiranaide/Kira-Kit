@@ -86,7 +86,6 @@ export function AppLayout() {
         <SidebarProvider>
           <Toaster />
           <div className="flex h-screen overflow-hidden">
-            {/* Mobile Header - only visible on small screens */}
             <header className="fixed top-0 left-0 right-0 z-40 flex items-center h-14 px-4 border-b border-border bg-background md:hidden">
               <SidebarTrigger />
               <div className="flex items-center gap-2 ml-2">
@@ -99,7 +98,6 @@ export function AppLayout() {
               </div>
             </header>
 
-            {/* Sidebar - hidden on mobile, visible on md+ */}
             <Sidebar>
               <SidebarHeader />
               <SidebarContent>

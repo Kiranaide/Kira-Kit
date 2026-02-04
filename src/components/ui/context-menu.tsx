@@ -10,10 +10,6 @@ import {
   IconPointFilled,
 } from "@tabler/icons-react";
 
-
-
-
-
 export type ContextMenuProps = ContextMenuPrimitive.Root.Props;
 
 function ContextMenu({ children, ...props }: ContextMenuProps) {
@@ -23,10 +19,6 @@ function ContextMenu({ children, ...props }: ContextMenuProps) {
     </ContextMenuPrimitive.Root>
   );
 }
-
-
-
-
 
 export type ContextMenuTriggerProps = ContextMenuPrimitive.Trigger.Props;
 
@@ -46,10 +38,6 @@ const ContextMenuTrigger = React.forwardRef<
   );
 });
 
-
-
-
-
 export type ContextMenuBackdropProps = ContextMenuPrimitive.Backdrop.Props;
 
 const ContextMenuBackdrop = React.forwardRef<
@@ -65,10 +53,6 @@ const ContextMenuBackdrop = React.forwardRef<
     />
   );
 });
-
-
-
-
 
 export interface ContextMenuContentProps
   extends ContextMenuPrimitive.Popup.Props {
@@ -109,7 +93,7 @@ const ContextMenuContent = React.forwardRef<
           ref={ref}
           data-slot="context-menu-content"
           className={cn(
-            "z-50 min-w-[10rem] overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-lg",
+            "z-50 min-w-40 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-lg",
             "animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
             className
           )}
@@ -119,10 +103,6 @@ const ContextMenuContent = React.forwardRef<
     </ContextMenuPrimitive.Portal>
   );
 });
-
-
-
-
 
 export type ContextMenuArrowProps = ContextMenuPrimitive.Arrow.Props;
 
@@ -143,10 +123,6 @@ const ContextMenuArrow = React.forwardRef<
     />
   );
 });
-
-
-
-
 
 export interface ContextMenuItemProps extends ContextMenuPrimitive.Item.Props {
   inset?: boolean;
@@ -182,12 +158,12 @@ const ContextMenuItem = React.forwardRef<HTMLDivElement, ContextMenuItemProps>(
         data-loading={loading}
         className={cn(
           "relative flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none transition-colors",
-          "data-[highlighted]:relative data-[highlighted]:z-0 data-[highlighted]:before:absolute data-[highlighted]:before:inset-x-1 data-[highlighted]:before:inset-y-0 data-[highlighted]:before:z-[-1] data-[highlighted]:before:rounded-sm",
-          "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
-          "data-[focused]:ring-2 data-[focused]:ring-ring data-[focused]:ring-offset-2",
-          "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+          "data-highlighted:relative data-highlighted:z-0 data-highlighted:before:absolute data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] data-highlighted:before:rounded-sm",
+          "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+          "data-focused:ring-2 data-focused:ring-ring data-focused:ring-offset-2",
+          "data-disabled:pointer-events-none data-disabled:opacity-50",
           variant === "destructive" &&
-            "data-[variant=destructive]:text-destructive data-[variant=destructive]:data-[highlighted]:bg-destructive/10 data-[variant=destructive]:data-[highlighted]:text-destructive",
+            "data-[variant=destructive]:text-destructive data-[variant=destructive]:data-highlighted:bg-destructive/10 data-[variant=destructive]:data-highlighted:text-destructive",
           inset && "pl-8",
           className
         )}
@@ -220,10 +196,6 @@ const ContextMenuItem = React.forwardRef<HTMLDivElement, ContextMenuItemProps>(
   }
 );
 
-
-
-
-
 export interface ContextMenuCheckboxItemProps
   extends ContextMenuPrimitive.CheckboxItem.Props {
   icon?: React.ReactNode;
@@ -246,9 +218,9 @@ const ContextMenuCheckboxItem = React.forwardRef<
       data-inset={inset}
       className={cn(
         "relative flex cursor-pointer select-none items-center gap-2 rounded-md py-1.5 pl-8 pr-2 text-sm outline-none transition-colors",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
-        "data-[focused]:ring-2 data-[focused]:ring-ring data-[focused]:ring-offset-2",
-        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+        "data-focused:ring-2 data-focused:ring-ring data-focused:ring-offset-2",
+        "data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       closeOnClick={closeOnClick}
@@ -272,10 +244,6 @@ const ContextMenuCheckboxItem = React.forwardRef<
   );
 });
 
-
-
-
-
 export type ContextMenuRadioGroupProps = ContextMenuPrimitive.RadioGroup.Props;
 
 const ContextMenuRadioGroup = React.forwardRef<
@@ -290,10 +258,6 @@ const ContextMenuRadioGroup = React.forwardRef<
     />
   );
 });
-
-
-
-
 
 export interface ContextMenuRadioItemProps
   extends ContextMenuPrimitive.RadioItem.Props {
@@ -316,9 +280,9 @@ const ContextMenuRadioItem = React.forwardRef<
       data-inset={inset}
       className={cn(
         "relative flex cursor-pointer select-none items-center gap-2 rounded-md py-1.5 pl-8 pr-2 text-sm outline-none transition-colors",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
-        "data-[focused]:ring-2 data-[focused]:ring-ring data-[focused]:ring-offset-2",
-        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+        "data-focused:ring-2 data-focused:ring-ring data-focused:ring-offset-2",
+        "data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       closeOnClick={closeOnClick}
@@ -342,10 +306,6 @@ const ContextMenuRadioItem = React.forwardRef<
   );
 });
 
-
-
-
-
 export type ContextMenuSeparatorProps = ContextMenuPrimitive.Separator.Props;
 
 const ContextMenuSeparator = React.forwardRef<
@@ -362,10 +322,6 @@ const ContextMenuSeparator = React.forwardRef<
   );
 });
 
-
-
-
-
 export type ContextMenuGroupProps = ContextMenuPrimitive.Group.Props;
 
 const ContextMenuGroup = React.forwardRef<
@@ -380,10 +336,6 @@ const ContextMenuGroup = React.forwardRef<
     />
   );
 });
-
-
-
-
 
 export interface ContextMenuLabelProps
   extends ContextMenuPrimitive.GroupLabel.Props {
@@ -409,10 +361,6 @@ const ContextMenuLabel = React.forwardRef<
   );
 });
 
-
-
-
-
 export type ContextMenuShortcutProps = React.HTMLAttributes<HTMLSpanElement>;
 
 const ContextMenuShortcut = React.forwardRef<
@@ -433,10 +381,6 @@ const ContextMenuShortcut = React.forwardRef<
   );
 });
 
-
-
-
-
 export type ContextMenuSubProps = ContextMenuPrimitive.SubmenuRoot.Props;
 
 function ContextMenuSub({ ...props }: ContextMenuSubProps) {
@@ -444,10 +388,6 @@ function ContextMenuSub({ ...props }: ContextMenuSubProps) {
     <ContextMenuPrimitive.SubmenuRoot data-slot="context-menu-sub" {...props} />
   );
 }
-
-
-
-
 
 export interface ContextMenuSubTriggerProps
   extends ContextMenuPrimitive.SubmenuTrigger.Props {
@@ -469,9 +409,9 @@ const ContextMenuSubTrigger = React.forwardRef<
       data-inset={inset}
       className={cn(
         "flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none transition-colors",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
-        "data-[focused]:ring-2 data-[focused]:ring-ring data-[focused]:ring-offset-2",
-        "data-[popup-open]:bg-accent data-[popup-open]:text-accent-foreground",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+        "data-focused:ring-2 data-focused:ring-ring data-focused:ring-offset-2",
+        "data-popup-open:bg-accent data-popup-open:text-accent-foreground",
         inset && "pl-8",
         className
       )}
@@ -484,16 +424,12 @@ const ContextMenuSubTrigger = React.forwardRef<
       )}
       {children}
       <IconChevronRight
-        className="ml-auto h-4 w-4 shrink-0 transition-transform data-[popup-open]:translate-x-0.5"
+        className="ml-auto h-4 w-4 shrink-0 transition-transform data-popup-open:translate-x-0.5"
         aria-hidden="true"
       />
     </ContextMenuPrimitive.SubmenuTrigger>
   );
 });
-
-
-
-
 
 export interface ContextMenuSubContentProps
   extends ContextMenuPrimitive.Popup.Props {
@@ -529,7 +465,7 @@ const ContextMenuSubContent = React.forwardRef<
           ref={ref}
           data-slot="context-menu-sub-content"
           className={cn(
-            "z-50 min-w-[10rem] overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-lg",
+            "z-50 min-w-40 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-lg",
             "animate-in fade-in-0 zoom-in-95 slide-in-from-left-2",
             className
           )}
@@ -539,10 +475,6 @@ const ContextMenuSubContent = React.forwardRef<
     </ContextMenuPrimitive.Portal>
   );
 });
-
-
-
-
 
 export interface ContextMenuWithContentProps {
   trigger: React.ReactNode;
@@ -564,10 +496,6 @@ function ContextMenuWithContent({
     </ContextMenu>
   );
 }
-
-
-
-
 
 export {
   ContextMenu,

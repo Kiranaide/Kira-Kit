@@ -6,9 +6,6 @@ import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-
-
-
 const radioGroupVariants = cva("grid gap-2", {
   variants: {
     orientation: {
@@ -23,9 +20,7 @@ const radioGroupVariants = cva("grid gap-2", {
 
 interface RadioGroupProps
   extends RadioGroupPrimitive.Props, VariantProps<typeof radioGroupVariants> {
-
   error?: boolean;
-
   errorMessage?: string;
 }
 
@@ -77,9 +72,6 @@ function RadioGroup({
   );
 }
 
-
-
-
 const radioItemVariants = cva(
   "relative aspect-square rounded-full border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center transition-all",
   {
@@ -102,7 +94,7 @@ const radioItemVariants = cva(
       size: "default",
       color: "default",
     },
-  },
+  }
 );
 
 const indicatorColorVariants: Record<string, string> = {
@@ -133,7 +125,7 @@ function RadioIndicatorIcon({
           scale: 1,
           duration: 0.4,
           ease: "elastic.out(1, 0.6)",
-        },
+        }
       );
     }
   }, []);
@@ -147,7 +139,7 @@ function RadioIndicatorIcon({
         size === "sm" && "h-2 w-2",
         size === "default" && "h-2.5 w-2.5",
         size === "lg" && "h-3 w-3",
-        !size && "h-2.5 w-2.5",
+        !size && "h-2.5 w-2.5"
       )}
     />
   );
@@ -171,9 +163,6 @@ function RadioGroupItem({
     </RadioPrimitive.Root>
   );
 }
-
-
-
 
 interface RadioWithLabelProps extends RadioGroupItemProps {
   label: string;
@@ -206,9 +195,6 @@ function RadioWithLabel({
   );
 }
 
-
-
-
 interface RadioCardProps extends RadioPrimitive.Root.Props {
   label: string;
   description?: string;
@@ -231,15 +217,15 @@ function RadioCard({
         "relative flex flex-col gap-2 p-4 rounded-lg border-2 border-input bg-transparent cursor-pointer transition-colors",
         "hover:border-primary/50 hover:bg-muted/50",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        "data-[checked]:border-primary data-[checked]:bg-primary/5",
+        "data-checked:border-primary data-checked:bg-primary/5",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        className,
+        className
       )}
       {...props}
     >
       <div className="flex items-start gap-3">
         {icon && (
-          <div className="shrink-0 text-muted-foreground data-[checked]:text-primary">
+          <div className="shrink-0 text-muted-foreground data-checked:text-primary">
             {icon}
           </div>
         )}
@@ -259,9 +245,6 @@ function RadioCard({
   );
 }
 
-
-
-
 const radioButtonGroupVariants = cva(
   "inline-flex rounded-lg bg-muted p-1 gap-1",
   {
@@ -275,7 +258,7 @@ const radioButtonGroupVariants = cva(
     defaultVariants: {
       size: "default",
     },
-  },
+  }
 );
 
 interface RadioButtonGroupProps
@@ -313,7 +296,7 @@ const radioButtonVariants = cva(
     defaultVariants: {
       size: "default",
     },
-  },
+  }
 );
 
 interface RadioButtonProps
@@ -333,8 +316,8 @@ function RadioButton({
       className={cn(
         radioButtonVariants({ size }),
         "text-muted-foreground",
-        "data-[checked]:bg-background data-[checked]:text-foreground data-[checked]:shadow-sm",
-        className,
+        "data-checked:bg-background data-checked:text-foreground data-checked:shadow-sm",
+        className
       )}
       {...props}
     >

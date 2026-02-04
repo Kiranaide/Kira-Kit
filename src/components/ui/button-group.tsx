@@ -88,33 +88,22 @@ const useButtonGroupContext = () => {
   return context;
 };
 
-interface ButtonGroupProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
-
+interface ButtonGroupProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
   orientation?: ButtonGroupOrientation;
-
   size?: ButtonGroupSize;
-
   gap?: ButtonGroupGap;
-
   justify?: ButtonGroupJustify;
-
   value?: string | string[] | null;
-
   onChange?: (value: string | string[]) => void;
-
   selectionMode?: SelectionMode;
-
   connected?: boolean;
-
   animated?: boolean;
-
   animationStagger?: number;
-
   variant?: ButtonProps["variant"];
-
   disabled?: boolean;
-
   loop?: boolean;
 }
 
@@ -152,22 +141,29 @@ function ButtonGroup({
     [selectionMode, value, onChange, orientation, variant, disabled, loop]
   );
 
-  useGSAP(() => {
-    if (!animated || !containerRef.current) return;
+  useGSAP(
+    () => {
+      if (!animated || !containerRef.current) return;
 
-    const buttons = containerRef.current.querySelectorAll("[data-slot=button]");
+      const buttons =
+        containerRef.current.querySelectorAll("[data-slot=button]");
 
-    if (buttons.length > 0) {
-      gsap.from(buttons, {
-        opacity: 0,
-        y: orientation === "vertical" ? -10 : 0,
-        x: orientation === "horizontal" ? -10 : 0,
-        stagger: animationStagger / 1000,
-        duration: 0.3,
-        ease: "power2.out",
-      });
+      if (buttons.length > 0) {
+        gsap.from(buttons, {
+          opacity: 0,
+          y: orientation === "vertical" ? -10 : 0,
+          x: orientation === "horizontal" ? -10 : 0,
+          stagger: animationStagger / 1000,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      }
+    },
+    {
+      scope: containerRef,
+      dependencies: [animated, orientation, animationStagger],
     }
-  }, { scope: containerRef, dependencies: [animated, orientation, animationStagger] });
+  );
 
   const processChildren = () => {
     const childArray = React.Children.toArray(children).filter(
@@ -194,7 +190,6 @@ function ButtonGroup({
             positionClasses = "rounded-none border-r-0";
           }
         } else {
-
           if (isFirst && count > 1) {
             positionClasses = "rounded-b-none border-b-0";
           } else if (isLast && count > 1) {
@@ -332,7 +327,6 @@ function ToggleGroupItem({
     const isVertical = orientation === "vertical";
     const lastIndex = buttons.length - 1;
 
-
     if (key === "Home") {
       nextIndex = 0;
       buttons[nextIndex]?.focus();
@@ -343,7 +337,6 @@ function ToggleGroupItem({
       buttons[nextIndex]?.focus();
       return;
     }
-
 
     if (
       (isVertical && (key === "ArrowDown" || key === "ArrowUp")) ||
@@ -368,17 +361,20 @@ function ToggleGroupItem({
 
   const itemRef = React.useRef<HTMLButtonElement>(null);
 
-  useGSAP(() => {
-    if (isSelected && itemRef.current) {
-      gsap.to(itemRef.current, {
-        scale: 0.95,
-        duration: 0.1,
-        yoyo: true,
-        repeat: 1,
-        ease: "power1.inOut",
-      });
-    }
-  }, { scope: itemRef, dependencies: [isSelected] });
+  useGSAP(
+    () => {
+      if (isSelected && itemRef.current) {
+        gsap.to(itemRef.current, {
+          scale: 0.95,
+          duration: 0.1,
+          yoyo: true,
+          repeat: 1,
+          ease: "power1.inOut",
+        });
+      }
+    },
+    { scope: itemRef, dependencies: [isSelected] }
+  );
 
   const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!itemRef.current) return;
@@ -388,7 +384,8 @@ function ToggleGroupItem({
     const y = e.clientY - rect.top;
 
     const ripple = document.createElement("span");
-    ripple.className = "absolute rounded-full bg-current opacity-20 pointer-events-none";
+    ripple.className =
+      "absolute rounded-full bg-current opacity-20 pointer-events-none";
     ripple.style.left = `${x}px`;
     ripple.style.top = `${y}px`;
     ripple.style.width = "0";
@@ -438,7 +435,11 @@ function ToggleGroupItem({
       data-slot="toggle-group-item"
       data-selected={isSelected}
       variant={effectiveVariant}
-      className={cn("relative overflow-hidden", getSelectedClassName(), className)}
+      className={cn(
+        "relative overflow-hidden",
+        getSelectedClassName(),
+        className
+      )}
       onClick={handleClick}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}
@@ -449,8 +450,8 @@ function ToggleGroupItem({
         selectionMode === "single"
           ? "radio"
           : selectionMode === "multiple"
-          ? "checkbox"
-          : undefined
+            ? "checkbox"
+            : undefined
       }
       tabIndex={selectionMode === "single" && !isSelected ? -1 : 0}
       {...props}

@@ -1,15 +1,17 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { IconX, IconInfoCircle, IconCheck, IconAlertTriangle, IconAlertCircle } from "@tabler/icons-react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { useGSAP } from "@gsap/react"
-import gsap from "gsap"
-import { cn } from "@/lib/utils"
-
-
-
-
+import * as React from "react";
+import {
+  IconX,
+  IconInfoCircle,
+  IconCheck,
+  IconAlertTriangle,
+  IconAlertCircle,
+} from "@tabler/icons-react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { cn } from "@/lib/utils";
 
 const announcementBarVariants = cva(
   "relative flex w-full items-center justify-between gap-4 px-4 py-3 text-sm transition-all",
@@ -25,7 +27,8 @@ const announcementBarVariants = cva(
       position: {
         top: "sticky top-0 z-50",
         bottom: "fixed bottom-0 left-0 right-0 z-50",
-        floating: "fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded-lg shadow-lg max-w-2xl mx-auto border",
+        floating:
+          "fixed top-4 left-1/2 -translate-x-1/2 z-50 rounded-lg shadow-lg max-w-2xl mx-auto border",
       },
       priority: {
         low: "",
@@ -67,119 +70,108 @@ const announcementBarVariants = cva(
       priority: "normal",
     },
   }
-)
+);
 
+type AnnouncementVariant =
+  | "default"
+  | "info"
+  | "success"
+  | "warning"
+  | "destructive";
+type AnnouncementPosition = "top" | "bottom" | "floating";
+type AnnouncementPriority = "low" | "normal" | "high" | "critical";
+type AnnouncementUrgency = "polite" | "assertive";
+type AnimationType = "slide" | "fade" | "scale" | "none";
+type PersistMode = "session" | "persistent";
 
+interface AnnouncementBarProps
+  extends
+    React.ComponentPropsWithoutRef<"div">,
+    VariantProps<typeof announcementBarVariants> {
+  priority?: AnnouncementPriority;
 
+  urgency?: AnnouncementUrgency;
 
+  autoDismiss?: number;
 
-type AnnouncementVariant = "default" | "info" | "success" | "warning" | "destructive"
-type AnnouncementPosition = "top" | "bottom" | "floating"
-type AnnouncementPriority = "low" | "normal" | "high" | "critical"
-type AnnouncementUrgency = "polite" | "assertive"
-type AnimationType = "slide" | "fade" | "scale" | "none"
-type PersistMode = "session" | "persistent"
+  showProgress?: boolean;
 
-interface AnnouncementBarProps extends React.ComponentPropsWithoutRef<"div">, VariantProps<typeof announcementBarVariants> {
+  marquee?: boolean;
 
-  priority?: AnnouncementPriority
+  icon?: React.ReactNode;
 
-  urgency?: AnnouncementUrgency
+  dismissible?: boolean;
 
-  autoDismiss?: number
+  persistMode?: PersistMode;
 
-  showProgress?: boolean
+  expiresAt?: Date;
 
-  marquee?: boolean
+  onDismiss?: () => void;
 
-  icon?: React.ReactNode
+  animation?: AnimationType;
 
-  dismissible?: boolean
-
-  persistMode?: PersistMode
-
-  expiresAt?: Date
-
-  onDismiss?: () => void
-
-  animation?: AnimationType
-
-  announcementId?: string
+  announcementId?: string;
 }
 
 interface AnnouncementBarContentProps extends React.ComponentPropsWithoutRef<"div"> {
-
-  marquee?: boolean
+  marquee?: boolean;
 }
 
-type AnnouncementBarActionProps = React.ComponentPropsWithoutRef<"a">
+type AnnouncementBarActionProps = React.ComponentPropsWithoutRef<"a">;
 
 interface AnnouncementBarDismissProps extends React.ComponentPropsWithoutRef<"button"> {
-
-  label?: string
+  label?: string;
 }
 
 interface AnnouncementBarIconProps extends React.ComponentPropsWithoutRef<"span"> {
+  icon?: React.ReactNode;
 
-  icon?: React.ReactNode
-
-  variant?: AnnouncementVariant
+  variant?: AnnouncementVariant;
 }
 
 interface AnnouncementBarProgressProps extends React.ComponentPropsWithoutRef<"div"> {
+  value: number;
 
-  value: number
-
-  variant?: AnnouncementVariant
+  variant?: AnnouncementVariant;
 }
-
-
-
-
 
 interface AnnouncementBarContextValue {
-  variant: AnnouncementVariant
-  priority: AnnouncementPriority
-  urgency: AnnouncementUrgency
-  isPaused: boolean
-  setIsPaused: (paused: boolean) => void
+  variant: AnnouncementVariant;
+  priority: AnnouncementPriority;
+  urgency: AnnouncementUrgency;
+  isPaused: boolean;
+  setIsPaused: (paused: boolean) => void;
 }
 
-const AnnouncementBarContext = React.createContext<AnnouncementBarContextValue | undefined>(undefined)
+const AnnouncementBarContext = React.createContext<
+  AnnouncementBarContextValue | undefined
+>(undefined);
 
 function useAnnouncementBar() {
-  const context = React.useContext(AnnouncementBarContext)
+  const context = React.useContext(AnnouncementBarContext);
   if (!context) {
-    throw new Error("useAnnouncementBar must be used within AnnouncementBar")
+    throw new Error("useAnnouncementBar must be used within AnnouncementBar");
   }
-  return context
+  return context;
 }
-
-
-
-
 
 function useReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
 
   React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
-    setPrefersReducedMotion(mediaQuery.matches)
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
 
     const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches)
-    }
+      setPrefersReducedMotion(e.matches);
+    };
 
-    mediaQuery.addEventListener("change", handleChange)
-    return () => mediaQuery.removeEventListener("change", handleChange)
-  }, [])
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
-  return prefersReducedMotion
+  return prefersReducedMotion;
 }
-
-
-
-
 
 const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
   (
@@ -198,34 +190,35 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
     },
     ref
   ) => {
-    const [isVisible, setIsVisible] = React.useState(true)
-    const [progress, setProgress] = React.useState(100)
-    const [isPaused, setIsPaused] = React.useState(false)
-    const reducedMotion = useReducedMotion()
-    const timerRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
-    const startTimeRef = React.useRef<number>(0)
-    const remainingTimeRef = React.useRef<number>(autoDismiss || 0)
-    const barRef = React.useRef<HTMLDivElement>(null)
+    const [isVisible, setIsVisible] = React.useState(true);
+    const [progress, setProgress] = React.useState(100);
+    const [isPaused, setIsPaused] = React.useState(false);
+    const reducedMotion = useReducedMotion();
+    const timerRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+    const startTimeRef = React.useRef<number>(0);
+    const remainingTimeRef = React.useRef<number>(autoDismiss || 0);
+    const barRef = React.useRef<HTMLDivElement>(null);
 
-    React.useImperativeHandle(ref, () => barRef.current!)
-
+    React.useImperativeHandle(ref, () => barRef.current!);
 
     const handleDismiss = React.useCallback(() => {
       if (!barRef.current || reducedMotion || animation === "none") {
-        setIsVisible(false)
-        onDismiss?.()
-        return
+        setIsVisible(false);
+        onDismiss?.();
+        return;
       }
 
-      const exitProps: { opacity: number; y?: number; scale?: number } = { opacity: 0 }
+      const exitProps: { opacity: number; y?: number; scale?: number } = {
+        opacity: 0,
+      };
 
       switch (animation) {
         case "slide":
-          exitProps.y = position === "bottom" ? 16 : -16
-          break
+          exitProps.y = position === "bottom" ? 16 : -16;
+          break;
         case "scale":
-          exitProps.scale = 0.95
-          break
+          exitProps.scale = 0.95;
+          break;
       }
 
       gsap.to(barRef.current, {
@@ -233,94 +226,93 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
         duration: 0.2,
         ease: "power2.in",
         onComplete: () => {
-          setIsVisible(false)
-          onDismiss?.()
+          setIsVisible(false);
+          onDismiss?.();
         },
-      })
-    }, [reducedMotion, animation, position, onDismiss])
+      });
+    }, [reducedMotion, animation, position, onDismiss]);
 
+    useGSAP(
+      () => {
+        if (reducedMotion || animation === "none" || !barRef.current) return;
 
-    useGSAP(() => {
-      if (reducedMotion || animation === "none" || !barRef.current) return
+        const initialProps: { opacity: number; y?: number; scale?: number } = {
+          opacity: 0,
+        };
 
-      const initialProps: { opacity: number; y?: number; scale?: number } = { opacity: 0 }
+        switch (animation) {
+          case "slide":
+            initialProps.y = position === "bottom" ? 16 : -16;
+            break;
+          case "scale":
+            initialProps.scale = 0.95;
+            break;
+        }
 
-      switch (animation) {
-        case "slide":
-          initialProps.y = position === "bottom" ? 16 : -16
-          break
-        case "scale":
-          initialProps.scale = 0.95
-          break
-      }
-
-      gsap.fromTo(
-        barRef.current,
-        initialProps,
-        {
+        gsap.fromTo(barRef.current, initialProps, {
           opacity: 1,
           y: 0,
           scale: 1,
           duration: 0.3,
           ease: "power2.out",
-        }
-      )
-    }, { scope: barRef, dependencies: [reducedMotion, animation, position] })
-
+        });
+      },
+      { scope: barRef, dependencies: [reducedMotion, animation, position] }
+    );
 
     React.useEffect(() => {
-      if (!autoDismiss || !isVisible) return
+      if (!autoDismiss || !isVisible) return;
 
       const startTimer = () => {
-        startTimeRef.current = Date.now()
+        startTimeRef.current = Date.now();
         timerRef.current = setInterval(() => {
-          const elapsed = Date.now() - startTimeRef.current
-          const remaining = remainingTimeRef.current - elapsed
+          const elapsed = Date.now() - startTimeRef.current;
+          const remaining = remainingTimeRef.current - elapsed;
 
           if (remaining <= 0) {
-            handleDismiss()
+            handleDismiss();
           } else {
-            setProgress((remaining / autoDismiss) * 100)
+            setProgress((remaining / autoDismiss) * 100);
           }
-        }, 50)
-      }
+        }, 50);
+      };
 
       if (!isPaused) {
-        startTimer()
+        startTimer();
       }
 
       return () => {
         if (timerRef.current) {
-          clearInterval(timerRef.current)
-          remainingTimeRef.current = remainingTimeRef.current - (Date.now() - startTimeRef.current)
+          clearInterval(timerRef.current);
+          remainingTimeRef.current =
+            remainingTimeRef.current - (Date.now() - startTimeRef.current);
         }
-      }
-    }, [autoDismiss, isVisible, isPaused, handleDismiss])
-
+      };
+    }, [autoDismiss, isVisible, isPaused, handleDismiss]);
 
     const handleMouseEnter = () => {
       if (autoDismiss) {
-        setIsPaused(true)
+        setIsPaused(true);
         if (timerRef.current) {
-          clearInterval(timerRef.current)
-          remainingTimeRef.current = remainingTimeRef.current - (Date.now() - startTimeRef.current)
+          clearInterval(timerRef.current);
+          remainingTimeRef.current =
+            remainingTimeRef.current - (Date.now() - startTimeRef.current);
         }
       }
-    }
+    };
 
     const handleMouseLeave = () => {
       if (autoDismiss) {
-        setIsPaused(false)
+        setIsPaused(false);
       }
-    }
-
+    };
 
     const getAriaLive = () => {
-      if (priority === "critical") return "assertive"
-      return urgency
-    }
+      if (priority === "critical") return "assertive";
+      return urgency;
+    };
 
-    if (!isVisible) return null
+    if (!isVisible) return null;
 
     return (
       <AnnouncementBarContext.Provider
@@ -348,21 +340,18 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
           {...props}
         >
           {children}
-
-          {}
           {showProgress && autoDismiss && (
-            <AnnouncementBarProgress value={progress} variant={variant || "default"} />
+            <AnnouncementBarProgress
+              value={progress}
+              variant={variant || "default"}
+            />
           )}
         </div>
       </AnnouncementBarContext.Provider>
-    )
+    );
   }
-)
-AnnouncementBar.displayName = "AnnouncementBar"
-
-
-
-
+);
+AnnouncementBar.displayName = "AnnouncementBar";
 
 const variantIcons: Record<AnnouncementVariant, React.ReactNode> = {
   default: <IconInfoCircle className="h-5 w-5" aria-hidden="true" />,
@@ -370,197 +359,181 @@ const variantIcons: Record<AnnouncementVariant, React.ReactNode> = {
   success: <IconCheck className="h-5 w-5" aria-hidden="true" />,
   warning: <IconAlertTriangle className="h-5 w-5" aria-hidden="true" />,
   destructive: <IconAlertCircle className="h-5 w-5" aria-hidden="true" />,
-}
+};
 
-const AnnouncementBarIcon = React.forwardRef<HTMLSpanElement, AnnouncementBarIconProps>(
-  ({ className, icon, variant, ...props }, ref) => {
-    const context = React.useContext(AnnouncementBarContext)
-    const currentVariant = variant || context?.variant || "default"
-    const iconElement = icon || variantIcons[currentVariant]
+const AnnouncementBarIcon = React.forwardRef<
+  HTMLSpanElement,
+  AnnouncementBarIconProps
+>(({ className, icon, variant, ...props }, ref) => {
+  const context = React.useContext(AnnouncementBarContext);
+  const currentVariant = variant || context?.variant || "default";
+  const iconElement = icon || variantIcons[currentVariant];
 
-    return (
-      <span
-        ref={ref}
-        data-slot="announcement-bar-icon"
-        className={cn("flex-shrink-0", className)}
-        {...props}
-      >
-        {iconElement}
-      </span>
-    )
-  }
-)
-AnnouncementBarIcon.displayName = "AnnouncementBarIcon"
-
-
-
-
-
-const AnnouncementBarContent = React.forwardRef<HTMLDivElement, AnnouncementBarContentProps>(
-  ({ className, marquee = false, children, ...props }, ref) => {
-    const reducedMotion = useReducedMotion()
-    const showMarquee = marquee && !reducedMotion
-
-    return (
-      <div
-        ref={ref}
-        data-slot="announcement-bar-content"
-        className={cn(
-          "flex flex-1 items-center gap-3 min-w-0",
-          showMarquee && "overflow-hidden",
-          className
-        )}
-        {...props}
-      >
-        {showMarquee ? (
-          <div className="animate-marquee whitespace-nowrap">
-            {children}
-          </div>
-        ) : (
-          children
-        )}
-      </div>
-    )
-  }
-)
-AnnouncementBarContent.displayName = "AnnouncementBarContent"
-
-
-
-
-
-const AnnouncementBarAction = React.forwardRef<HTMLAnchorElement, AnnouncementBarActionProps>(
-  ({ className, ...props }, ref) => (
-    <a
+  return (
+    <span
       ref={ref}
-      data-slot="announcement-bar-action"
+      data-slot="announcement-bar-icon"
+      className={cn("shrink-0", className)}
+      {...props}
+    >
+      {iconElement}
+    </span>
+  );
+});
+AnnouncementBarIcon.displayName = "AnnouncementBarIcon";
+
+const AnnouncementBarContent = React.forwardRef<
+  HTMLDivElement,
+  AnnouncementBarContentProps
+>(({ className, marquee = false, children, ...props }, ref) => {
+  const reducedMotion = useReducedMotion();
+  const showMarquee = marquee && !reducedMotion;
+
+  return (
+    <div
+      ref={ref}
+      data-slot="announcement-bar-content"
       className={cn(
-        "inline-flex items-center gap-1.5 font-medium underline underline-offset-4 hover:no-underline",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded",
-        "transition-colors",
+        "flex flex-1 items-center gap-3 min-w-0",
+        showMarquee && "overflow-hidden",
         className
       )}
       {...props}
-    />
-  )
-)
-AnnouncementBarAction.displayName = "AnnouncementBarAction"
+    >
+      {showMarquee ? (
+        <div className="animate-marquee whitespace-nowrap">{children}</div>
+      ) : (
+        children
+      )}
+    </div>
+  );
+});
+AnnouncementBarContent.displayName = "AnnouncementBarContent";
 
+const AnnouncementBarAction = React.forwardRef<
+  HTMLAnchorElement,
+  AnnouncementBarActionProps
+>(({ className, ...props }, ref) => (
+  <a
+    ref={ref}
+    data-slot="announcement-bar-action"
+    className={cn(
+      "inline-flex items-center gap-1.5 font-medium underline underline-offset-4 hover:no-underline",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded",
+      "transition-colors",
+      className
+    )}
+    {...props}
+  />
+));
+AnnouncementBarAction.displayName = "AnnouncementBarAction";
 
+const AnnouncementBarDismiss = React.forwardRef<
+  HTMLButtonElement,
+  AnnouncementBarDismissProps
+>(({ className, label = "Dismiss announcement", onClick, ...props }, ref) => {
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
 
-
-
-const AnnouncementBarDismiss = React.forwardRef<HTMLButtonElement, AnnouncementBarDismissProps>(
-  ({ className, label = "Dismiss announcement", onClick, ...props }, ref) => {
-    const buttonRef = React.useRef<HTMLButtonElement>(null)
-
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (buttonRef.current) {
-        gsap.to(buttonRef.current, {
-          scale: 0.9,
-          duration: 0.1,
-          yoyo: true,
-          repeat: 1,
-          ease: "power1.inOut",
-        })
-      }
-      onClick?.(e)
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (buttonRef.current) {
+      gsap.to(buttonRef.current, {
+        scale: 0.9,
+        duration: 0.1,
+        yoyo: true,
+        repeat: 1,
+        ease: "power1.inOut",
+      });
     }
+    onClick?.(e);
+  };
 
-    return (
-      <button
-        ref={ref}
-        type="button"
-        data-slot="announcement-bar-dismiss"
-        className={cn(
+  return (
+    <button
+      ref={ref}
+      type="button"
+      data-slot="announcement-bar-dismiss"
+      className={cn(
+        "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md",
+        "opacity-70 transition-opacity hover:opacity-100",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:pointer-events-none",
 
-          "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md",
-          "opacity-70 transition-opacity hover:opacity-100",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          "disabled:pointer-events-none",
+        "-m-2",
+        className
+      )}
+      aria-label={label}
+      onClick={handleClick}
+      {...props}
+    >
+      <IconX className="h-4 w-4" aria-hidden="true" />
+    </button>
+  );
+});
+AnnouncementBarDismiss.displayName = "AnnouncementBarDismiss";
 
-          "-m-2",
-          className
-        )}
-        aria-label={label}
-        onClick={handleClick}
-        {...props}
-      >
-        <IconX className="h-4 w-4" aria-hidden="true" />
-      </button>
-    )
-  }
-)
-AnnouncementBarDismiss.displayName = "AnnouncementBarDismiss"
+const AnnouncementBarProgress = React.forwardRef<
+  HTMLDivElement,
+  AnnouncementBarProgressProps
+>(({ className, value, variant = "default", ...props }, ref) => {
+  const progressColors: Record<AnnouncementVariant, string> = {
+    default: "bg-muted-foreground/30",
+    info: "bg-primary/30",
+    success: "bg-success/30",
+    warning: "bg-warning/30",
+    destructive: "bg-destructive/30",
+  };
 
+  const barColors: Record<AnnouncementVariant, string> = {
+    default: "bg-muted-foreground",
+    info: "bg-primary",
+    success: "bg-success",
+    warning: "bg-warning",
+    destructive: "bg-destructive",
+  };
 
-
-
-
-const AnnouncementBarProgress = React.forwardRef<HTMLDivElement, AnnouncementBarProgressProps>(
-  ({ className, value, variant = "default", ...props }, ref) => {
-    const progressColors: Record<AnnouncementVariant, string> = {
-      default: "bg-muted-foreground/30",
-      info: "bg-primary/30",
-      success: "bg-success/30",
-      warning: "bg-warning/30",
-      destructive: "bg-destructive/30",
-    }
-
-    const barColors: Record<AnnouncementVariant, string> = {
-      default: "bg-muted-foreground",
-      info: "bg-primary",
-      success: "bg-success",
-      warning: "bg-warning",
-      destructive: "bg-destructive",
-    }
-
-    return (
+  return (
+    <div
+      ref={ref}
+      data-slot="announcement-bar-progress"
+      role="progressbar"
+      aria-valuenow={Math.round(value)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label="Time remaining"
+      className={cn(
+        "absolute bottom-0 left-0 right-0 h-1",
+        progressColors[variant],
+        className
+      )}
+      {...props}
+    >
       <div
-        ref={ref}
-        data-slot="announcement-bar-progress"
-        role="progressbar"
-        aria-valuenow={Math.round(value)}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label="Time remaining"
-        className={cn(
-          "absolute bottom-0 left-0 right-0 h-1",
-          progressColors[variant],
-          className
-        )}
-        {...props}
-      >
-        <div
-          className={cn("h-full transition-all duration-100", barColors[variant])}
-          style={{ width: `${value}%` }}
-        />
-      </div>
-    )
-  }
-)
-AnnouncementBarProgress.displayName = "AnnouncementBarProgress"
-
-
-
-
+        className={cn("h-full transition-all duration-100", barColors[variant])}
+        style={{ width: `${value}%` }}
+      />
+    </div>
+  );
+});
+AnnouncementBarProgress.displayName = "AnnouncementBarProgress";
 
 interface AnnouncementStackProps {
-  children: React.ReactNode
-  className?: string
+  children: React.ReactNode;
+  className?: string;
 
-  position?: "top" | "bottom"
+  position?: "top" | "bottom";
 
-  maxVisible?: number
+  maxVisible?: number;
 }
 
 interface AnnouncementStackContextValue {
-  announcements: string[]
-  addAnnouncement: (id: string) => void
-  removeAnnouncement: (id: string) => void
+  announcements: string[];
+  addAnnouncement: (id: string) => void;
+  removeAnnouncement: (id: string) => void;
 }
 
-const AnnouncementStackContext = React.createContext<AnnouncementStackContextValue | undefined>(undefined)
+const AnnouncementStackContext = React.createContext<
+  AnnouncementStackContextValue | undefined
+>(undefined);
 
 function AnnouncementStack({
   children,
@@ -568,35 +541,39 @@ function AnnouncementStack({
   position = "top",
   maxVisible = 3,
 }: AnnouncementStackProps) {
-  const [announcements, setAnnouncements] = React.useState<string[]>([])
-  const [isHovered, setIsHovered] = React.useState(false)
-  const [isExpanded, setIsExpanded] = React.useState(false)
+  const [announcements, setAnnouncements] = React.useState<string[]>([]);
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
   const addAnnouncement = React.useCallback((id: string) => {
-    setAnnouncements((prev) => [...prev, id])
-  }, [])
+    setAnnouncements((prev) => [...prev, id]);
+  }, []);
 
   const removeAnnouncement = React.useCallback((id: string) => {
-    setAnnouncements((prev) => prev.filter((a) => a !== id))
-  }, [])
+    setAnnouncements((prev) => prev.filter((a) => a !== id));
+  }, []);
 
-  const childArray = React.Children.toArray(children)
-  const visibleCount = isExpanded ? childArray.length : maxVisible
-  const hasHidden = childArray.length > maxVisible
+  const childArray = React.Children.toArray(children);
+  const visibleCount = isExpanded ? childArray.length : maxVisible;
+  const hasHidden = childArray.length > maxVisible;
 
   return (
-    <AnnouncementStackContext.Provider value={{ announcements, addAnnouncement, removeAnnouncement }}>
+    <AnnouncementStackContext.Provider
+      value={{ announcements, addAnnouncement, removeAnnouncement }}
+    >
       <div
         data-slot="announcement-stack"
         className={cn(
           "flex flex-col gap-1",
-          position === "top" ? "sticky top-0 z-50" : "fixed bottom-0 left-0 right-0 z-50",
+          position === "top"
+            ? "sticky top-0 z-50"
+            : "fixed bottom-0 left-0 right-0 z-50",
           className
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => {
-          setIsHovered(false)
-          setIsExpanded(false)
+          setIsHovered(false);
+          setIsExpanded(false);
         }}
       >
         {childArray.slice(0, visibleCount).map((child, index) => (
@@ -604,15 +581,19 @@ function AnnouncementStack({
             key={index}
             className={cn(
               "transition-all duration-200",
-              !isHovered && index > 0 && !isExpanded && "opacity-80 scale-[0.98]",
-              !isHovered && index > 1 && !isExpanded && "opacity-60 scale-[0.96]"
+              !isHovered &&
+                index > 0 &&
+                !isExpanded &&
+                "opacity-80 scale-[0.98]",
+              !isHovered &&
+                index > 1 &&
+                !isExpanded &&
+                "opacity-60 scale-[0.96]"
             )}
           >
             {child}
           </div>
         ))}
-
-        {}
         {hasHidden && !isExpanded && isHovered && (
           <button
             type="button"
@@ -628,84 +609,67 @@ function AnnouncementStack({
         )}
       </div>
     </AnnouncementStackContext.Provider>
-  )
+  );
 }
-
-
-
-
-
-
-
 
 function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
   const [isDismissed, setIsDismissed] = React.useState(() => {
-    if (typeof window === "undefined") return false
+    if (typeof window === "undefined") return false;
     try {
-      const storage = mode === "persistent" ? localStorage : sessionStorage
-      return storage.getItem(`announcement-${key}`) === "dismissed"
+      const storage = mode === "persistent" ? localStorage : sessionStorage;
+      return storage.getItem(`announcement-${key}`) === "dismissed";
     } catch {
-      return false
+      return false;
     }
-  })
+  });
 
   const dismiss = React.useCallback(() => {
-    setIsDismissed(true)
+    setIsDismissed(true);
     if (typeof window !== "undefined") {
       try {
-        const storage = mode === "persistent" ? localStorage : sessionStorage
-        storage.setItem(`announcement-${key}`, "dismissed")
+        const storage = mode === "persistent" ? localStorage : sessionStorage;
+        storage.setItem(`announcement-${key}`, "dismissed");
       } catch {
-
       }
     }
-  }, [key, mode])
+  }, [key, mode]);
 
   const reset = React.useCallback(() => {
-    setIsDismissed(false)
+    setIsDismissed(false);
     if (typeof window !== "undefined") {
       try {
-        const storage = mode === "persistent" ? localStorage : sessionStorage
-        storage.removeItem(`announcement-${key}`)
+        const storage = mode === "persistent" ? localStorage : sessionStorage;
+        storage.removeItem(`announcement-${key}`);
       } catch {
-
       }
     }
-  }, [key, mode])
+  }, [key, mode]);
 
-  return [isDismissed, dismiss, reset] as const
+  return [isDismissed, dismiss, reset] as const;
 }
-
-
-
 
 function useAnnouncementExpiry(expiresAt?: Date) {
   const [isExpired, setIsExpired] = React.useState(() => {
-    if (!expiresAt) return false
-    return new Date() > expiresAt
-  })
+    if (!expiresAt) return false;
+    return new Date() > expiresAt;
+  });
 
   React.useEffect(() => {
-    if (!expiresAt) return
+    if (!expiresAt) return;
 
     const checkExpiry = () => {
-      setIsExpired(new Date() > expiresAt)
-    }
+      setIsExpired(new Date() > expiresAt);
+    };
 
-    checkExpiry()
-    const interval = setInterval(checkExpiry, 1000)
-    return () => clearInterval(interval)
-  }, [expiresAt])
+    checkExpiry();
+    const interval = setInterval(checkExpiry, 1000);
+    return () => clearInterval(interval);
+  }, [expiresAt]);
 
-  return isExpired
+  return isExpired;
 }
 
-
-
-
-
-
-const AnnouncementDismiss = AnnouncementBarDismiss
+const AnnouncementDismiss = AnnouncementBarDismiss;
 
 export {
   AnnouncementBar,
@@ -719,9 +683,8 @@ export {
   useAnnouncementExpiry,
   useAnnouncementBar,
   announcementBarVariants,
-
   AnnouncementDismiss,
-}
+};
 
 export type {
   AnnouncementBarProps,
@@ -737,4 +700,4 @@ export type {
   AnnouncementUrgency,
   AnimationType,
   PersistMode,
-}
+};

@@ -3,13 +3,8 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-
-
-
-
 const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
   variants: {
-
     size: {
       xs: "data-[orientation=horizontal]:h-px data-[orientation=vertical]:w-px",
       sm: "data-[orientation=horizontal]:h-px data-[orientation=vertical]:w-px",
@@ -19,7 +14,6 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
       lg: "data-[orientation=horizontal]:h-1 data-[orientation=vertical]:w-1",
       xl: "data-[orientation=horizontal]:h-1.5 data-[orientation=vertical]:w-1.5",
     },
-
     lineStyle: {
       solid: "bg-border",
       dashed:
@@ -28,7 +22,6 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
         "bg-transparent border-0 border-t border-dotted border-border data-[orientation=vertical]:border-t-0 data-[orientation=vertical]:border-l",
       gradient: "bg-gradient-to-r from-border/0 via-border to-border/0",
     },
-
     gradient: {
       none: "",
       fade: "from-border/0 via-border to-border/0",
@@ -36,13 +29,11 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
       rainbow:
         "bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500",
     },
-
     animated: {
       none: "",
       pulse: "animate-pulse",
       shimmer: "animate-[shimmer_2s_infinite]",
     },
-
     color: {
       default: "",
       primary: "",
@@ -55,7 +46,6 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
     },
   },
   compoundVariants: [
-
     { lineStyle: "solid", color: "default", className: "bg-border" },
     { lineStyle: "solid", color: "primary", className: "bg-primary" },
     { lineStyle: "solid", color: "secondary", className: "bg-secondary" },
@@ -64,7 +54,6 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
     { lineStyle: "solid", color: "success", className: "bg-success" },
     { lineStyle: "solid", color: "warning", className: "bg-warning" },
     { lineStyle: "solid", color: "info", className: "bg-info" },
-
     {
       lineStyle: "gradient",
       gradient: "fade",
@@ -83,7 +72,6 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
       className:
         "bg-gradient-to-r data-[orientation=vertical]:bg-gradient-to-b",
     },
-
     { lineStyle: "dashed", color: "default", className: "border-border" },
     { lineStyle: "dashed", color: "primary", className: "border-primary" },
     {
@@ -126,35 +114,15 @@ const separatorVariants = cva("shrink-0 data-[orientation=horizontal]:w-full", {
   },
 });
 
-
-
-
-
-
-
-
-
-
-
-
 export interface SeparatorProps
   extends SeparatorPrimitive.Props, VariantProps<typeof separatorVariants> {
-
   label?: React.ReactNode;
-
   labelAlign?: "start" | "center" | "end";
-
   labelIcon?: React.ReactNode;
-
   labelIconPosition?: "left" | "right";
-
   spacing?: "none" | "sm" | "default" | "lg";
-
   decorative?: boolean;
 }
-
-
-
 
 export function Separator({
   className,
@@ -172,7 +140,6 @@ export function Separator({
   decorative,
   ...props
 }: SeparatorProps) {
-
   const spacingClasses = {
     none: "",
     sm: orientation === "horizontal" ? "my-2" : "mx-2",
@@ -196,7 +163,7 @@ export function Separator({
           "flex items-center gap-3 w-full",
           orientation === "vertical" && "flex-col h-full w-auto",
           spacing && spacingClasses[spacing],
-          className,
+          className
         )}
       >
         {showLeftLine && (
@@ -213,7 +180,7 @@ export function Separator({
               }),
               "overflow-hidden",
               orientation === "horizontal" && "flex-1",
-              orientation === "vertical" && "flex-1 min-h-4 w-px",
+              orientation === "vertical" && "flex-1 min-h-4 w-px"
             )}
             data-orientation={orientation}
           />
@@ -221,7 +188,7 @@ export function Separator({
         <span
           className={cn(
             "flex items-center text-xs text-muted-foreground uppercase tracking-wider font-medium whitespace-nowrap px-2 select-none",
-            orientation === "vertical" && "py-1",
+            orientation === "vertical" && "py-1"
           )}
         >
           {labelIcon && labelIconPosition === "left" && (
@@ -246,7 +213,7 @@ export function Separator({
               }),
               "overflow-hidden",
               orientation === "horizontal" && "flex-1",
-              orientation === "vertical" && "flex-1 min-h-4 w-px",
+              orientation === "vertical" && "flex-1 min-h-4 w-px"
             )}
             data-orientation={orientation}
           />
@@ -263,7 +230,7 @@ export function Separator({
         separatorVariants({ size, lineStyle, color, gradient, animated }),
         spacing && spacingClasses[spacing],
         "overflow-hidden",
-        className,
+        className
       )}
       data-orientation={orientation}
       {...props}

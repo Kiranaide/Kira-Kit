@@ -3,7 +3,6 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 
-
 interface NavigationMenuContextValue {
   openMenu: string | null;
   setOpenMenu: (id: string | null) => void;
@@ -14,11 +13,8 @@ interface NavigationMenuContextValue {
 const NavigationMenuContext =
   React.createContext<NavigationMenuContextValue | null>(null);
 
-
 interface NavigationMenuProps extends React.HTMLAttributes<HTMLElement> {
-
   openOnHover?: boolean;
-
   hoverDelay?: number;
 }
 
@@ -46,7 +42,6 @@ function NavigationMenu({
   );
 }
 
-
 function NavigationMenuList({
   className,
   ...props
@@ -59,7 +54,6 @@ function NavigationMenuList({
     />
   );
 }
-
 
 function NavigationMenuItem({
   className,
@@ -74,10 +68,8 @@ function NavigationMenuItem({
   );
 }
 
-
 const navigationMenuTriggerStyle =
   "group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[popup-open]:bg-muted";
-
 
 interface NavigationMenuDropdownProps extends Omit<
   MenuPrimitive.Root.Props,
@@ -93,10 +85,10 @@ function NavigationMenuDropdown({
 }: NavigationMenuDropdownProps) {
   const context = React.useContext(NavigationMenuContext);
   const hoverTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null,
+    null
   );
   const closeTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
-    null,
+    null
   );
 
   const isOpen = context?.openMenu === menuId;
@@ -109,18 +101,16 @@ function NavigationMenuDropdown({
         context.setOpenMenu(open ? menuId : null);
       }
     },
-    [context, menuId],
+    [context, menuId]
   );
 
   const handleMouseEnter = React.useCallback(() => {
     if (!openOnHover) return;
 
-
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = null;
     }
-
 
     hoverTimeoutRef.current = setTimeout(() => {
       handleOpenChange(true);
@@ -130,18 +120,15 @@ function NavigationMenuDropdown({
   const handleMouseLeave = React.useCallback(() => {
     if (!openOnHover) return;
 
-
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
       hoverTimeoutRef.current = null;
     }
 
-
     closeTimeoutRef.current = setTimeout(() => {
       handleOpenChange(false);
     }, hoverDelay);
   }, [openOnHover, hoverDelay, handleOpenChange]);
-
 
   React.useEffect(() => {
     return () => {
@@ -181,7 +168,7 @@ function NavigationMenuTrigger({
     >
       {children}
       <svg
-        className="h-3 w-3 transition-transform duration-200 group-data-[popup-open]:rotate-180"
+        className="h-3 w-3 transition-transform duration-200 group-data-popup-open:rotate-180"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -196,7 +183,6 @@ function NavigationMenuTrigger({
     </MenuPrimitive.Trigger>
   );
 }
-
 
 interface NavigationMenuContentProps extends MenuPrimitive.Popup.Props {
   megaMenu?: boolean;
@@ -214,10 +200,10 @@ function NavigationMenuContent({
           data-slot="navigation-menu-content"
           data-mega-menu={megaMenu || undefined}
           className={cn(
-            "z-[100] w-full rounded-lg border border-border bg-popover shadow-lg md:w-auto",
+            "z-100 w-full rounded-lg border border-border bg-popover shadow-lg md:w-auto",
             megaMenu ? "p-0" : "p-4",
             "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2",
-            className,
+            className
           )}
           {...props}
         />
@@ -225,7 +211,6 @@ function NavigationMenuContent({
     </MenuPrimitive.Portal>
   );
 }
-
 
 interface NavigationMenuLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   to?: string;
@@ -242,7 +227,7 @@ function NavigationMenuLink({
   const baseClass = cn(
     navigationMenuTriggerStyle,
     active && "bg-muted",
-    className,
+    className
   );
 
   if (to) {
@@ -260,7 +245,6 @@ function NavigationMenuLink({
   );
 }
 
-
 function NavigationMenuHeader({
   className,
   children,
@@ -277,7 +261,6 @@ function NavigationMenuHeader({
   );
 }
 
-
 function NavigationMenuFooter({
   className,
   children,
@@ -288,7 +271,7 @@ function NavigationMenuFooter({
       data-slot="navigation-menu-footer"
       className={cn(
         "flex items-center justify-between border-t border-border bg-muted/50 px-4 py-3 text-xs text-muted-foreground",
-        className,
+        className
       )}
       {...props}
     >
@@ -296,7 +279,6 @@ function NavigationMenuFooter({
     </div>
   );
 }
-
 
 interface NavigationMenuSectionProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -320,7 +302,6 @@ function NavigationMenuSection({
   );
 }
 
-
 interface NavigationMenuViewAllProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   title: string;
   description?: string;
@@ -339,7 +320,7 @@ function NavigationMenuViewAll({
       data-slot="navigation-menu-view-all"
       className={cn(
         "group flex items-center gap-2 rounded-md p-3 text-sm transition-colors hover:bg-muted",
-        className,
+        className
       )}
       {...props}
     >
@@ -365,7 +346,6 @@ function NavigationMenuViewAll({
     </a>
   );
 }
-
 
 interface ListItemProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   to?: string;
@@ -403,7 +383,7 @@ function ListItem({
 
   const baseClass = cn(
     "flex select-none items-start gap-3 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-muted focus:bg-muted",
-    className,
+    className
   );
 
   if (to) {
@@ -421,11 +401,6 @@ function ListItem({
   );
 }
 
-
-
-
-
-
 function NavigationMenuSub({
   children,
   ...props
@@ -436,7 +411,6 @@ function NavigationMenuSub({
     </MenuPrimitive.SubmenuRoot>
   );
 }
-
 
 interface NavigationMenuSubTriggerProps
   extends MenuPrimitive.SubmenuTrigger.Props {
@@ -457,9 +431,9 @@ function NavigationMenuSubTrigger({
       className={cn(
         "group flex w-full cursor-default select-none items-center gap-2 rounded-md px-3 py-2 text-sm outline-none transition-colors",
         "hover:bg-muted focus:bg-muted",
-        "data-[popup-open]:bg-muted",
+        "data-popup-open:bg-muted",
         inset && "pl-8",
-        className,
+        className
       )}
       {...props}
     >
@@ -470,7 +444,7 @@ function NavigationMenuSubTrigger({
       )}
       <span className="flex-1">{children}</span>
       <svg
-        className="h-4 w-4 text-muted-foreground transition-transform group-data-[popup-open]:rotate-90"
+        className="h-4 w-4 text-muted-foreground transition-transform group-data-popup-open:rotate-90"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -485,7 +459,6 @@ function NavigationMenuSubTrigger({
     </MenuPrimitive.SubmenuTrigger>
   );
 }
-
 
 interface NavigationMenuSubContentProps extends MenuPrimitive.Popup.Props {
   sideOffset?: number;
@@ -507,10 +480,10 @@ function NavigationMenuSubContent({
         <MenuPrimitive.Popup
           data-slot="navigation-menu-sub-content"
           className={cn(
-            "z-[110] min-w-[180px] rounded-lg border border-border bg-popover p-1 shadow-lg",
+            "z-110 min-w-[180px] rounded-lg border border-border bg-popover p-1 shadow-lg",
             "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95",
             "data-[side=right]:slide-in-from-left-2 data-[side=left]:slide-in-from-right-2",
-            className,
+            className
           )}
           {...props}
         />
@@ -518,7 +491,6 @@ function NavigationMenuSubContent({
     </MenuPrimitive.Portal>
   );
 }
-
 
 interface NavigationMenuSubItemProps extends MenuPrimitive.Item.Props {
   inset?: boolean;
@@ -538,9 +510,9 @@ function NavigationMenuSubItem({
       className={cn(
         "flex w-full cursor-default select-none items-center gap-2 rounded-md px-3 py-2 text-sm outline-none transition-colors",
         "hover:bg-muted focus:bg-muted",
-        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "data-disabled:pointer-events-none data-disabled:opacity-50",
         inset && "pl-8",
-        className,
+        className
       )}
       {...props}
     >

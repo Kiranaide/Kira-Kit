@@ -10,74 +10,48 @@ import {
 } from "@/components/ui/tooltip";
 import { IconInfoCircle } from "@tabler/icons-react";
 
-
-
-
-
 interface LabelProps
-  extends Omit<React.ComponentProps<"label">, "prefix">,
+  extends
+    Omit<React.ComponentProps<"label">, "prefix">,
     VariantProps<typeof labelVariants> {
-
   size?: "sm" | "md" | "lg";
-
   required?: boolean;
-
   optional?: boolean;
-
   hint?: React.ReactNode;
-
   error?: boolean;
-
   disabled?: boolean;
-
   icon?: React.ReactNode;
-
   iconAfter?: React.ReactNode;
-
   tooltip?: React.ReactNode;
-
   counter?: number | string;
-
   as?: "label" | "span" | "div";
-
   truncate?: boolean;
-
   srOnly?: React.ReactNode;
-
   requiredIndicator?: React.ReactNode;
-
   optionalText?: string;
 }
 
 interface LabelHintProps
-  extends React.ComponentProps<"span">,
+  extends
+    React.ComponentProps<"span">,
     VariantProps<typeof labelHintVariants> {}
 
 interface LabelRequiredProps extends React.ComponentProps<"span"> {
-
   indicator?: React.ReactNode;
 }
 
 interface LabelOptionalProps extends React.ComponentProps<"span"> {
-
   text?: string;
 }
 
 interface LabelCounterProps extends React.ComponentProps<"span"> {
-
   count: number | string;
-
   max?: number;
 }
 
 interface LabelIconProps extends React.ComponentProps<"span"> {
-
   position?: "before" | "after";
 }
-
-
-
-
 
 const labelVariants = cva(
   "text-sm leading-none font-medium group-data-[disabled=true]:opacity-50 peer-disabled:opacity-50 flex items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed",
@@ -113,10 +87,6 @@ const labelHintVariants = cva("text-muted-foreground text-xs font-normal", {
   },
 });
 
-
-
-
-
 function Label({
   className,
   size = "md",
@@ -141,13 +111,10 @@ function Label({
 
   const content = (
     <>
-      {}
       {srOnly && <span className="sr-only">{srOnly}</span>}
 
-      {}
       {icon && <LabelIcon position="before">{icon}</LabelIcon>}
 
-      {}
       <span
         className={cn(
           truncate && "truncate max-w-[200px]",
@@ -157,23 +124,18 @@ function Label({
         {children}
       </span>
 
-      {}
       {required && (
         <LabelRequired indicator={requiredIndicator} aria-hidden="true" />
       )}
 
-      {}
       {optional && !required && (
         <LabelOptional text={optionalText} aria-hidden="true" />
       )}
 
-      {}
       {counter !== undefined && <LabelCounter count={counter} />}
 
-      {}
       {iconAfter && <LabelIcon position="after">{iconAfter}</LabelIcon>}
 
-      {}
       {tooltip && (
         <Tooltip>
           <TooltipTrigger
@@ -191,7 +153,6 @@ function Label({
         </Tooltip>
       )}
 
-      {}
       {hint && (
         <LabelHint size={size} className="ml-1">
           {hint}
@@ -220,10 +181,6 @@ function Label({
   );
 }
 
-
-
-
-
 function LabelHint({ className, size = "md", ...props }: LabelHintProps) {
   return (
     <span
@@ -233,10 +190,6 @@ function LabelHint({ className, size = "md", ...props }: LabelHintProps) {
     />
   );
 }
-
-
-
-
 
 function LabelRequired({
   className,
@@ -254,10 +207,6 @@ function LabelRequired({
   );
 }
 
-
-
-
-
 function LabelOptional({
   className,
   text = "optional",
@@ -274,10 +223,6 @@ function LabelOptional({
   );
 }
 
-
-
-
-
 function LabelCounter({
   className,
   count,
@@ -291,7 +236,7 @@ function LabelCounter({
     <span
       data-slot="label-counter"
       className={cn(
-        "inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-xs font-medium rounded-full bg-muted text-muted-foreground",
+        "inline-flex items-center justify-center min-w-5 h-5 px-1.5 text-xs font-medium rounded-full bg-muted text-muted-foreground",
         className
       )}
       {...props}
@@ -300,10 +245,6 @@ function LabelCounter({
     </span>
   );
 }
-
-
-
-
 
 function LabelIcon({
   className,
@@ -326,10 +267,6 @@ function LabelIcon({
   );
 }
 
-
-
-
-
 type LabelDescriptionProps = React.ComponentProps<"p">;
 
 function LabelDescription({ className, ...props }: LabelDescriptionProps) {
@@ -345,12 +282,7 @@ function LabelDescription({ className, ...props }: LabelDescriptionProps) {
   );
 }
 
-
-
-
-
 interface LabelGroupProps extends React.ComponentProps<"div"> {
-
   label: React.ReactNode;
 
   description?: React.ReactNode;
@@ -379,10 +311,6 @@ function LabelGroup({
   );
 }
 
-
-
-
-
 export {
   Label,
   LabelHint,
@@ -393,10 +321,6 @@ export {
   LabelDescription,
   LabelGroup,
 };
-
-
-
-
 
 export type {
   LabelProps,

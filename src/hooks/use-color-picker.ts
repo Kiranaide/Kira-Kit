@@ -221,7 +221,7 @@ export function useColorPicker(options: UseColorPickerOptions = {}): UseColorPic
         const newColor = hexToHsva(hex);
         setColor(newColor);
       } catch {
-        console.error("Invalid hex color:", hex);
+        // Invalid hex color, ignoring
       }
     },
     [setColor]

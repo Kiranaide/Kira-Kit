@@ -10,10 +10,6 @@ import {
   IconChevronRight,
 } from "@tabler/icons-react";
 
-
-
-
-
 type MenubarProps = React.HTMLAttributes<HTMLDivElement>;
 
 type MenubarMenuProps = MenuPrimitive.Root.Props;
@@ -90,10 +86,6 @@ interface MenubarWithContentProps {
   contentProps?: Omit<MenubarContentProps, "children">;
 }
 
-
-
-
-
 const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(function Menubar(
   { className, children, ...props },
   ref
@@ -114,10 +106,6 @@ const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(function Menubar(
   );
 });
 
-
-
-
-
 function MenubarMenu({ children, ...props }: MenubarMenuProps) {
   return (
     <MenuPrimitive.Root data-slot="menubar-menu" {...props}>
@@ -126,17 +114,9 @@ function MenubarMenu({ children, ...props }: MenubarMenuProps) {
   );
 }
 
-
-
-
-
 function MenubarPortal(props: MenubarPortalProps) {
   return <MenuPrimitive.Portal data-slot="menubar-portal" {...props} />;
 }
-
-
-
-
 
 const MenubarTrigger = React.forwardRef<HTMLDivElement, MenubarTriggerProps>(
   function MenubarTrigger({ className, children, ...props }, ref) {
@@ -147,7 +127,7 @@ const MenubarTrigger = React.forwardRef<HTMLDivElement, MenubarTriggerProps>(
         className={cn(
           "flex cursor-pointer select-none items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium outline-none transition-colors",
           "hover:bg-muted focus-visible:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          "data-[popup-open]:bg-muted",
+          "data-popup-open:bg-muted",
           className
         )}
         {...props}
@@ -157,10 +137,6 @@ const MenubarTrigger = React.forwardRef<HTMLDivElement, MenubarTriggerProps>(
     );
   }
 );
-
-
-
-
 
 const MenubarBackdrop = React.forwardRef<HTMLDivElement, MenubarBackdropProps>(
   function MenubarBackdrop({ className, ...props }, ref) {
@@ -174,10 +150,6 @@ const MenubarBackdrop = React.forwardRef<HTMLDivElement, MenubarBackdropProps>(
     );
   }
 );
-
-
-
-
 
 const MenubarContent = React.forwardRef<HTMLDivElement, MenubarContentProps>(
   function MenubarContent(
@@ -206,7 +178,7 @@ const MenubarContent = React.forwardRef<HTMLDivElement, MenubarContentProps>(
             ref={ref}
             data-slot="menubar-content"
             className={cn(
-              "z-[100] min-w-[12rem] overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-lg",
+              "z-100 min-w-48 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-lg",
               "max-h-(--available-height) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none",
               "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95",
               "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
@@ -219,10 +191,6 @@ const MenubarContent = React.forwardRef<HTMLDivElement, MenubarContentProps>(
     );
   }
 );
-
-
-
-
 
 const MenubarArrow = React.forwardRef<HTMLDivElement, MenubarArrowProps>(
   function MenubarArrow({ className, ...props }, ref) {
@@ -241,10 +209,6 @@ const MenubarArrow = React.forwardRef<HTMLDivElement, MenubarArrowProps>(
   }
 );
 
-
-
-
-
 const MenubarGroup = React.forwardRef<HTMLDivElement, MenubarGroupProps>(
   function MenubarGroup({ ...props }, ref) {
     return (
@@ -252,10 +216,6 @@ const MenubarGroup = React.forwardRef<HTMLDivElement, MenubarGroupProps>(
     );
   }
 );
-
-
-
-
 
 const MenubarItem = React.forwardRef<HTMLDivElement, MenubarItemProps>(
   function MenubarItem(
@@ -283,10 +243,10 @@ const MenubarItem = React.forwardRef<HTMLDivElement, MenubarItemProps>(
         className={cn(
           "relative flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none transition-colors",
           "group/menubar-item [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-          "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
-          "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+          "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+          "data-disabled:pointer-events-none data-disabled:opacity-50",
           variant === "destructive" &&
-            "text-destructive data-[highlighted]:bg-destructive/10 dark:data-[highlighted]:bg-destructive/20 data-[highlighted]:text-destructive",
+            "text-destructive data-highlighted:bg-destructive/10 dark:data-highlighted:bg-destructive/20 data-highlighted:text-destructive",
           inset && "pl-8",
           className
         )}
@@ -317,10 +277,6 @@ const MenubarItem = React.forwardRef<HTMLDivElement, MenubarItemProps>(
   }
 );
 
-
-
-
-
 const MenubarCheckboxItem = React.forwardRef<
   HTMLDivElement,
   MenubarCheckboxItemProps
@@ -336,8 +292,8 @@ const MenubarCheckboxItem = React.forwardRef<
       className={cn(
         "relative flex cursor-pointer select-none items-center gap-2 rounded-md py-1.5 pl-8 pr-2 text-sm outline-none transition-colors",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
-        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+        "data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       closeOnClick={closeOnClick}
@@ -361,10 +317,6 @@ const MenubarCheckboxItem = React.forwardRef<
   );
 });
 
-
-
-
-
 const MenubarRadioGroup = React.forwardRef<
   HTMLDivElement,
   MenubarRadioGroupProps
@@ -379,10 +331,6 @@ const MenubarRadioGroup = React.forwardRef<
     </MenuPrimitive.RadioGroup>
   );
 });
-
-
-
-
 
 const MenubarRadioItem = React.forwardRef<
   HTMLDivElement,
@@ -399,8 +347,8 @@ const MenubarRadioItem = React.forwardRef<
       className={cn(
         "relative flex cursor-pointer select-none items-center gap-2 rounded-md py-1.5 pl-8 pr-2 text-sm outline-none transition-colors",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
-        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+        "data-disabled:pointer-events-none data-disabled:opacity-50",
         className
       )}
       closeOnClick={closeOnClick}
@@ -424,10 +372,6 @@ const MenubarRadioItem = React.forwardRef<
   );
 });
 
-
-
-
-
 const MenubarSeparator = React.forwardRef<
   HTMLDivElement,
   MenubarSeparatorProps
@@ -441,10 +385,6 @@ const MenubarSeparator = React.forwardRef<
     />
   );
 });
-
-
-
-
 
 const MenubarLabel = React.forwardRef<HTMLDivElement, MenubarLabelProps>(
   function MenubarLabel({ className, inset, ...props }, ref) {
@@ -463,10 +403,6 @@ const MenubarLabel = React.forwardRef<HTMLDivElement, MenubarLabelProps>(
   }
 );
 
-
-
-
-
 const MenubarShortcut = React.forwardRef<HTMLSpanElement, MenubarShortcutProps>(
   function MenubarShortcut({ className, ...props }, ref) {
     return (
@@ -484,10 +420,6 @@ const MenubarShortcut = React.forwardRef<HTMLSpanElement, MenubarShortcutProps>(
   }
 );
 
-
-
-
-
 function MenubarSub({ children, ...props }: MenubarSubProps) {
   return (
     <MenuPrimitive.SubmenuRoot data-slot="menubar-sub" {...props}>
@@ -495,10 +427,6 @@ function MenubarSub({ children, ...props }: MenubarSubProps) {
     </MenuPrimitive.SubmenuRoot>
   );
 }
-
-
-
-
 
 const MenubarSubTrigger = React.forwardRef<
   HTMLDivElement,
@@ -515,8 +443,8 @@ const MenubarSubTrigger = React.forwardRef<
       className={cn(
         "flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none transition-colors",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        "data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground",
-        "data-[popup-open]:bg-accent data-[popup-open]:text-accent-foreground",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+        "data-popup-open:bg-accent data-popup-open:text-accent-foreground",
         inset && "pl-8",
         className
       )}
@@ -529,16 +457,12 @@ const MenubarSubTrigger = React.forwardRef<
       )}
       {children}
       <IconChevronRight
-        className="ml-auto h-4 w-4 shrink-0 transition-transform data-[popup-open]:translate-x-0.5"
+        className="ml-auto h-4 w-4 shrink-0 transition-transform data-popup-open:translate-x-0.5"
         aria-hidden="true"
       />
     </MenuPrimitive.SubmenuTrigger>
   );
 });
-
-
-
-
 
 const MenubarSubContent = React.forwardRef<
   HTMLDivElement,
@@ -566,7 +490,7 @@ const MenubarSubContent = React.forwardRef<
           ref={ref}
           data-slot="menubar-sub-content"
           className={cn(
-            "z-[100] min-w-[8rem] overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-lg",
+            "z-100 min-w-32 overflow-hidden rounded-lg border border-border bg-popover p-1 shadow-lg",
             "max-h-(--available-height) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none",
             "data-open:animate-in data-closed:animate-out data-open:fade-in-0 data-closed:fade-out-0 data-closed:zoom-out-95 data-open:zoom-in-95",
             "slide-in-from-left-2",
@@ -578,10 +502,6 @@ const MenubarSubContent = React.forwardRef<
     </MenuPrimitive.Portal>
   );
 });
-
-
-
-
 
 function MenubarWithContent({
   trigger,
@@ -596,10 +516,6 @@ function MenubarWithContent({
     </MenubarMenu>
   );
 }
-
-
-
-
 
 export {
   Menubar,
@@ -622,10 +538,6 @@ export {
   MenubarArrow,
   MenubarWithContent,
 };
-
-
-
-
 
 export type {
   MenubarProps,

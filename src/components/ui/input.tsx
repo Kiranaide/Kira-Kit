@@ -34,7 +34,8 @@ const inputVariants = cva(
 );
 
 interface InputProps
-  extends Omit<React.ComponentProps<"input">, "prefix" | "size">,
+  extends
+    Omit<React.ComponentProps<"input">, "prefix" | "size">,
     VariantProps<typeof inputVariants> {
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
@@ -81,7 +82,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [copied, setCopied] = React.useState(false);
 
-
     React.useImperativeHandle(ref, () => inputRef.current!);
 
     const isNumeric = type === "number";
@@ -89,10 +89,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const effectiveSize = size || "default";
 
-
     const hasValue = String(value || "").length > 0;
     const showClearButton = showClear && hasValue && !disabled;
-
 
     const handleClear = () => {
       onClear?.();
@@ -107,7 +105,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       inputRef.current?.focus();
     };
 
-
     const handleCopy = async () => {
       const textToCopy = inputRef.current?.value || String(value || "");
       try {
@@ -121,7 +118,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         onCopyError?.(error as Error);
       }
     };
-
 
     const prefixPadding = {
       xs: "pl-7",
@@ -151,7 +147,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       lg: "pr-3",
     }[effectiveSize];
 
-
     const buttonHeight = {
       xs: "h-6",
       sm: "h-7",
@@ -173,7 +168,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       lg: "h-3.5 w-3.5",
     }[effectiveSize];
 
-
     const handleIncrement = () => {
       if (disabled) return;
 
@@ -186,12 +180,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       if (max !== undefined && typeof max === "number" && newValue > max)
         return;
 
-
       if (onIncrement) {
         onIncrement();
         return;
       }
-
 
       if (onChange) {
         const syntheticEvent = {
@@ -213,12 +205,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       if (min !== undefined && typeof min === "number" && newValue < min)
         return;
 
-
       if (onDecrement) {
         onDecrement();
         return;
       }
-
 
       if (onChange) {
         const syntheticEvent = {
@@ -254,7 +244,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       />
     );
 
-
     if (showButtons) {
       const numericValue =
         typeof value === "number" ? value : parseFloat(String(value || 0)) || 0;
@@ -262,14 +251,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         typeof min === "number"
           ? min
           : min !== undefined
-          ? parseFloat(String(min))
-          : undefined;
+            ? parseFloat(String(min))
+            : undefined;
       const maxValue =
         typeof max === "number"
           ? max
           : max !== undefined
-          ? parseFloat(String(max))
-          : undefined;
+            ? parseFloat(String(max))
+            : undefined;
       const canDecrement = minValue === undefined || numericValue > minValue;
       const canIncrement = maxValue === undefined || numericValue < maxValue;
 
@@ -330,14 +319,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       );
     }
 
-
     const actionIconSize = {
       xs: "h-3 w-3",
       sm: "h-3.5 w-3.5",
       default: "h-4 w-4",
       lg: "h-4 w-4",
     }[effectiveSize];
-
 
     const actionButtons = (showClearButton || showCopy) && (
       <div className="flex items-center gap-0.5">
@@ -404,7 +391,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       </div>
     );
 
-
     const combinedSuffix = (suffix || actionButtons) && (
       <div className="flex items-center gap-1">
         {suffix}
@@ -412,15 +398,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       </div>
     );
 
-
     const actionButtonsPadding =
       showClear || showCopy ? (showClear && showCopy ? "pr-14" : "pr-9") : "";
-
 
     if (!prefix && !combinedSuffix) {
       return inputElement;
     }
-
 
     return (
       <div className="relative flex items-center">
@@ -453,14 +436,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 );
 Input.displayName = "Input";
 
-
-
-
 interface NumericInputProps
-  extends Omit<
-      React.ComponentProps<"input">,
-      "type" | "onChange" | "value" | "size"
-    >,
+  extends
+    Omit<React.ComponentProps<"input">, "type" | "onChange" | "value" | "size">,
     VariantProps<typeof inputVariants> {
   value?: number;
   onChange?: (value: number) => void;
@@ -469,10 +447,6 @@ interface NumericInputProps
   step?: number;
   showButtons?: boolean;
 }
-
-
-
-
 
 function NumericInput({
   value = 0,
@@ -523,14 +497,6 @@ function NumericInput({
     />
   );
 }
-
-
-
-
-
-
-
-
 
 type FormattedInputBaseProps = Omit<
   React.ComponentProps<"input">,
@@ -795,9 +761,6 @@ function DecimalInput({
   );
 }
 
-
-
-
 interface TextareaFixedProps extends React.ComponentProps<"textarea"> {
   rows?: number;
 }
@@ -816,11 +779,10 @@ function TextareaFixed({ className, rows = 3, ...props }: TextareaFixedProps) {
   );
 }
 
-
-
-
-interface InputWithLabelProps
-  extends Omit<React.ComponentProps<"input">, "size"> {
+interface InputWithLabelProps extends Omit<
+  React.ComponentProps<"input">,
+  "size"
+> {
   label: string;
   description?: string;
   error?: string;
@@ -862,11 +824,10 @@ function InputWithLabel({
   );
 }
 
-
-
-
-interface InputWithButtonProps
-  extends Omit<React.ComponentProps<"input">, "size"> {
+interface InputWithButtonProps extends Omit<
+  React.ComponentProps<"input">,
+  "size"
+> {
   buttonText?: string;
   buttonIcon?: React.ReactNode;
   onButtonClick?: () => void;
@@ -923,11 +884,10 @@ function InputWithButton({
   );
 }
 
-
-
-
-interface InputWithSpinnerProps
-  extends Omit<React.ComponentProps<"input">, "size"> {
+interface InputWithSpinnerProps extends Omit<
+  React.ComponentProps<"input">,
+  "size"
+> {
   isLoading?: boolean;
   size?: VariantProps<typeof inputVariants>["size"];
 }
@@ -954,11 +914,10 @@ function InputWithSpinner({
   );
 }
 
-
-
-
-interface InputWithTooltipProps
-  extends Omit<React.ComponentProps<"input">, "size"> {
+interface InputWithTooltipProps extends Omit<
+  React.ComponentProps<"input">,
+  "size"
+> {
   tooltip: string;
   size?: VariantProps<typeof inputVariants>["size"];
 }
@@ -979,11 +938,10 @@ function InputWithTooltip({
   );
 }
 
-
-
-
-interface InputWithDropdownProps
-  extends Omit<React.ComponentProps<"input">, "onSelect" | "size"> {
+interface InputWithDropdownProps extends Omit<
+  React.ComponentProps<"input">,
+  "onSelect" | "size"
+> {
   options: { value: string; label: string }[];
   onOptionSelect?: (value: string) => void;
   dropdownPosition?: "left" | "right";
@@ -1005,7 +963,6 @@ function InputWithDropdown({
     options.find((o) => o.value === dropdownValue) || options[0]
   );
   const containerRef = React.useRef<HTMLDivElement>(null);
-
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -1103,9 +1060,6 @@ function InputWithDropdown({
   );
 }
 
-
-
-
 interface InputClusterProps {
   children: React.ReactNode;
   className?: string;
@@ -1139,11 +1093,10 @@ function InputCluster({ children, className }: InputClusterProps) {
   );
 }
 
-
-
-
-interface SearchInputProps
-  extends Omit<React.ComponentProps<"input">, "size" | "onChange"> {
+interface SearchInputProps extends Omit<
+  React.ComponentProps<"input">,
+  "size" | "onChange"
+> {
   value?: string;
   onChange?: (value: string) => void;
   onSearch?: (value: string) => void;
@@ -1187,7 +1140,6 @@ function SearchInput({
     }
     onChange?.(newValue);
 
-
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
@@ -1217,7 +1169,6 @@ function SearchInput({
     }
   };
 
-
   React.useEffect(() => {
     return () => {
       if (debounceRef.current) {
@@ -1228,7 +1179,6 @@ function SearchInput({
 
   return (
     <div className="relative flex items-center">
-      {}
       <div className="absolute left-2.5 flex items-center pointer-events-none text-muted-foreground z-10">
         <svg
           className={iconSize}
@@ -1258,12 +1208,8 @@ function SearchInput({
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-
         showClear={showClear}
         onClear={handleClear}
-
-
-
         suffix={
           isLoading ? (
             <IconLoader2
@@ -1276,10 +1222,6 @@ function SearchInput({
     </div>
   );
 }
-
-
-
-
 
 type OTPInputType = "numeric" | "alphanumeric" | "alphabetic";
 
@@ -1326,9 +1268,9 @@ const otpContainerVariants = cva("flex items-center", {
 });
 
 interface OTPInputProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
+  extends
+    Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
     VariantProps<typeof otpInputVariants> {
-
   length?: 4 | 5 | 6 | 7 | 8;
 
   type?: OTPInputType;
@@ -1366,7 +1308,6 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       length = 6,
       type = "numeric",
       mask = false,
-      autoSubmit = false,
       value = "",
       onChange,
       onComplete,
@@ -1387,11 +1328,14 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
   ) => {
     const baseId = React.useId();
     const [values, setValues] = React.useState<string[]>(() =>
-      value.split("").slice(0, length).concat(Array(length).fill("")).slice(0, length)
+      value
+        .split("")
+        .slice(0, length)
+        .concat(Array(length).fill(""))
+        .slice(0, length)
     );
     const [focusedIndex, setFocusedIndex] = React.useState<number | null>(null);
     const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
-
 
     React.useEffect(() => {
       const newValues = value
@@ -1402,13 +1346,11 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       setValues(newValues);
     }, [value, length]);
 
-
     React.useEffect(() => {
       if (autoFocus && inputRefs.current[0]) {
         inputRefs.current[0].focus();
       }
     }, [autoFocus]);
-
 
     React.useImperativeHandle(ref, () => ({
       focus: () => inputRefs.current[0]?.focus(),
@@ -1430,7 +1372,6 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       },
     }));
 
-
     const isValidChar = React.useCallback(
       (char: string): boolean => {
         switch (type) {
@@ -1447,13 +1388,11 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       [type]
     );
 
-
     const handleOTPChange = React.useCallback(
       (index: number, inputValue: string) => {
         const char = inputValue.slice(-1).toUpperCase();
 
         if (!char) {
-
           const newValues = [...values];
           newValues[index] = "";
           setValues(newValues);
@@ -1462,7 +1401,6 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
         }
 
         if (!isValidChar(char)) {
-
           const input = inputRefs.current[index];
           if (input) {
             input.style.transform = "translateX(-4px)";
@@ -1489,11 +1427,9 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
         const newValue = newValues.join("");
         onChange?.(newValue);
 
-
         if (index < length - 1) {
           inputRefs.current[index + 1]?.focus();
         }
-
 
         if (newValues.every((v) => v !== "")) {
           onComplete?.(newValue);
@@ -1501,7 +1437,6 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       },
       [values, length, isValidChar, onChange, onComplete]
     );
-
 
     const handlePaste = React.useCallback(
       (e: React.ClipboardEvent) => {
@@ -1519,11 +1454,9 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
         setValues(newValues);
         onChange?.(chars.join(""));
 
-
         const nextEmptyIndex = newValues.findIndex((v) => v === "");
         const focusIndex = nextEmptyIndex === -1 ? length - 1 : nextEmptyIndex;
         inputRefs.current[focusIndex]?.focus();
-
 
         if (chars.length === length) {
           onComplete?.(chars.join(""));
@@ -1532,20 +1465,17 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       [length, isValidChar, onChange, onComplete]
     );
 
-
     const handleKeyDown = React.useCallback(
       (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
         switch (e.key) {
           case "Backspace":
             e.preventDefault();
             if (values[index]) {
-
               const newValues = [...values];
               newValues[index] = "";
               setValues(newValues);
               onChange?.(newValues.join(""));
             } else if (index > 0) {
-
               const newValues = [...values];
               newValues[index - 1] = "";
               setValues(newValues);
@@ -1592,21 +1522,15 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       [values, length, onChange]
     );
 
+    const handleFocus = React.useCallback((index: number) => {
+      setFocusedIndex(index);
 
-    const handleFocus = React.useCallback(
-      (index: number) => {
-        setFocusedIndex(index);
-
-        inputRefs.current[index]?.select();
-      },
-      []
-    );
-
+      inputRefs.current[index]?.select();
+    }, []);
 
     const handleBlur = React.useCallback(() => {
       setFocusedIndex(null);
     }, []);
-
 
     const renderSeparator = (index: number) => {
       if (separatorAfter !== undefined && index === separatorAfter) {
@@ -1670,10 +1594,6 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
 
 OTPInput.displayName = "OTPInput";
 
-
-
-
-
 import {
   IconStar,
   IconStarFilled,
@@ -1723,9 +1643,9 @@ const ratingItemVariants = cva(
 );
 
 interface RatingProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
+  extends
+    Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
     VariantProps<typeof ratingVariants> {
-
   value?: number;
 
   defaultValue?: number;
@@ -1787,19 +1707,16 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
     const [internalValue, setInternalValue] = React.useState(defaultValue);
     const [hoverValue, setHoverValue] = React.useState<number | null>(null);
 
-
     const currentValue = controlledValue ?? internalValue;
 
-
     const displayValue = hoverValue ?? currentValue;
-
 
     const handleRatingChange = React.useCallback(
       (newValue: number) => {
         if (disabled || readOnly) return;
 
-
-        const finalValue = allowClear && newValue === currentValue ? 0 : newValue;
+        const finalValue =
+          allowClear && newValue === currentValue ? 0 : newValue;
 
         if (controlledValue === undefined) {
           setInternalValue(finalValue);
@@ -1808,7 +1725,6 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       },
       [disabled, readOnly, allowClear, currentValue, controlledValue, onChange]
     );
-
 
     const handleMouseMove = React.useCallback(
       (index: number, e: React.MouseEvent<HTMLButtonElement>) => {
@@ -1827,7 +1743,6 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       [disabled, readOnly, allowHalf]
     );
 
-
     const handleClick = React.useCallback(
       (index: number, e: React.MouseEvent<HTMLButtonElement>) => {
         if (disabled || readOnly) return;
@@ -1844,7 +1759,6 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       },
       [disabled, readOnly, allowHalf, handleRatingChange]
     );
-
 
     const handleKeyDown = React.useCallback(
       (e: React.KeyboardEvent) => {
@@ -1881,28 +1795,31 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
         }
         onChange?.(newValue);
       },
-      [disabled, readOnly, allowHalf, max, currentValue, controlledValue, onChange]
+      [
+        disabled,
+        readOnly,
+        allowHalf,
+        max,
+        currentValue,
+        controlledValue,
+        onChange,
+      ]
     );
-
 
     const renderStar = React.useCallback(
       (index: number) => {
         const fillAmount = displayValue - index;
 
         if (fillAmount >= 1) {
-
           return filledIcon || <IconStarFilled />;
         } else if (fillAmount >= 0.5 && allowHalf) {
-
           return halfIcon || <IconStarHalfFilled />;
         } else {
-
           return emptyIcon || <IconStar />;
         }
       },
       [displayValue, allowHalf, filledIcon, halfIcon, emptyIcon]
     );
-
 
     const getTooltip = React.useCallback(
       (value: number) => {
@@ -1912,12 +1829,12 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       [tooltipFormatter, max]
     );
 
-
     const stars = React.useMemo(() => {
       return Array.from({ length: max }, (_, index) => {
         const starValue = index + 1;
         const isFilled = displayValue >= starValue;
-        const isHalfFilled = allowHalf && displayValue >= index + 0.5 && displayValue < starValue;
+        const isHalfFilled =
+          allowHalf && displayValue >= index + 0.5 && displayValue < starValue;
 
         return (
           <button
@@ -1993,28 +1910,27 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
 
 Rating.displayName = "Rating";
 
-interface RatingDisplayProps
-  extends Omit<RatingProps, "onChange" | "allowClear" | "allowHalf"> {
-
+interface RatingDisplayProps extends Omit<
+  RatingProps,
+  "onChange" | "allowClear" | "allowHalf"
+> {
   showFraction?: boolean;
 
   reviewCount?: number;
 }
 
 const RatingDisplay = React.forwardRef<HTMLDivElement, RatingDisplayProps>(
-  ({ value = 0, showFraction = true, reviewCount, className, ...props }, ref) => {
+  (
+    { value = 0, showFraction = true, reviewCount, className, ...props },
+    ref
+  ) => {
     return (
       <div
         ref={ref}
         className={cn("inline-flex items-center gap-2", className)}
         {...props}
       >
-        <Rating
-          value={value}
-          readOnly
-          allowHalf={showFraction}
-          {...props}
-        />
+        <Rating value={value} readOnly allowHalf={showFraction} {...props} />
         {showFraction && (
           <span className="text-sm font-medium tabular-nums">
             {value.toFixed(1)}
@@ -2047,11 +1963,9 @@ export {
   PercentageInput,
   DecimalInput,
   SearchInput,
-
   OTPInput,
   otpInputVariants,
   otpContainerVariants,
-
   Rating,
   RatingDisplay,
   ratingVariants,
@@ -2070,11 +1984,9 @@ export type {
   PercentageInputProps,
   DecimalInputProps,
   SearchInputProps,
-
   OTPInputProps,
   OTPInputRef,
   OTPInputType,
-
   RatingProps,
   RatingDisplayProps,
 };

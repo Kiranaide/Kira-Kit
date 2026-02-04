@@ -1,13 +1,3 @@
-/**
- * Unified Camera Hook
- * Single hook that combines all camera functionality with feature flags
- *
- * @2025-2026 Best Practices
- * - Consolidates 13 individual hooks into one
- * - Feature flags for optional functionality
- * - Clean API with sensible defaults
- */
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import type {
   CameraConstraints,
@@ -44,17 +34,9 @@ import {
   checkCameraPermissionStatus,
 } from "@/lib/camera/utils";
 
-// ============================================================================
-// Module-level Lock
-// ============================================================================
-
 let globalCameraLock = false;
 let globalLockHolder: string | null = null;
 const lockWaitQueue: Array<() => void> = [];
-
-// ============================================================================
-// Helper Functions
-// ============================================================================
 
 const waitForTracksToEnd = (
   tracks: MediaStreamTrack[],
@@ -158,10 +140,6 @@ const releaseLock = (instanceId: string): void => {
     if (next) next();
   }
 };
-
-// ============================================================================
-// Types
-// ============================================================================
 
 export interface UseCameraOptions {
   // Core options
@@ -283,10 +261,6 @@ export interface UseCameraReturn {
   toggleVoiceListening: () => void;
 }
 
-// ============================================================================
-// Hook Implementation
-// ============================================================================
-
 export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   const {
     facingMode: initialFacingMode = "user",
@@ -308,7 +282,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     onGestureEnd: _onGestureEnd,
   } = options;
 
-  // ========== Refs ==========
   const videoRef = useRef<HTMLVideoElement>(null);
   const gestureContainerRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -320,7 +293,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   const timerIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const flashTrackRef = useRef<MediaStreamTrack | null>(null);
 
-  // ========== Core State ==========
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [status, setStatus] = useState<CameraStatus>("idle");
   const [error, setError] = useState<CameraError | null>(null);
@@ -329,20 +301,15 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     useState<CameraFacingMode>(initialFacingMode);
   const [isRetrying, setIsRetrying] = useState(false);
 
-  // ========== Devices State ==========
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
-  // ========== Recording State ==========
   const [isRecording, setIsRecording] = useState(false);
 
-  // ========== Flash State ==========
   const [isFlashSupported, setIsFlashSupported] = useState(false);
   const [isFlashOn, setIsFlashOn] = useState(false);
 
-  // ========== Visibility State ==========
   const [isPaused, setIsPaused] = useState(false);
 
-  // ========== Zoom & Focus State ==========
   const {
     minZoom = GESTURE_CONFIG.pinchToZoom.minZoom,
     maxZoom = GESTURE_CONFIG.pinchToZoom.maxZoom,
@@ -351,12 +318,10 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   const [focusPoint, setFocusPoint] = useState<Point | null>(null);
   const [isFocusing, setIsFocusing] = useState(false);
 
-  // ========== Timer State ==========
   const [timerDuration, setTimerDuration] = useState<CameraTimerDuration>(0);
   const [timerRemaining, setTimerRemaining] = useState(0);
   const [isTimerActive, setIsTimerActive] = useState(false);
 
-  // ========== Voice State ==========
   const [isVoiceListening, setIsVoiceListening] = useState(false);
   const [isVoiceSupported] = useState(
     typeof window !== "undefined" &&
@@ -365,17 +330,14 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   const [lastVoiceCommand, _setLastVoiceCommand] =
     useState<CameraVoiceCommand | null>(null);
 
-  // ========== Permission State ==========
   const [permissionState, setPermissionState] = useState<
     "granted" | "denied" | "prompt" | "unknown"
   >("unknown");
 
-  // ========== Status Change Notification ==========
   useEffect(() => {
     onStatusChange?.(status);
   }, [status, onStatusChange]);
 
-  // ========== Error Helper ==========
   const createError = useCallback(
     (
       code: CameraErrorCode,
@@ -391,7 +353,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     [onError]
   );
 
-  // ========== Canvas Helper ==========
   const getCanvas = useCallback((): HTMLCanvasElement => {
     if (!canvasRef.current) {
       canvasRef.current = document.createElement("canvas");
@@ -399,7 +360,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     return canvasRef.current;
   }, []);
 
-  // ========== Attach Stream to Video ==========
   const attachStreamToVideo = useCallback(
     async (
       video: HTMLVideoElement,
@@ -432,13 +392,12 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
       try {
         await video.play();
       } catch {
-        // Ignore autoplay errors
+        // Autoplay errors are expected and can be ignored
       }
     },
     []
   );
 
-  // ========== Device Enumeration ==========
   const refreshDevices = useCallback(async (): Promise<void> => {
     try {
       const allDevices = await navigator.mediaDevices.enumerateDevices();
@@ -451,12 +410,11 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
           groupId: device.groupId,
         }));
       setDevices(videoDevices);
-    } catch (err) {
-      console.error("Failed to enumerate devices:", err);
+    } catch {
+      // Device enumeration failed, will retry on next attempt
     }
   }, []);
 
-  // ========== Start Camera ==========
   const start = useCallback(
     async (overrideOptions?: {
       facingMode?: CameraFacingMode;
@@ -470,7 +428,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
 
       const lockAcquired = await acquireLock(instanceIdRef.current);
       if (!lockAcquired) {
-        console.warn("Camera lock timeout");
         return;
       }
 
@@ -511,12 +468,9 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
         const mediaStream = await acquireMediaStreamWithRetry(
           mediaConstraints,
           MEDIA_RETRY_MAX_ATTEMPTS,
-          (attempt, maxRetries) => {
+          () => {
             if (isMountedRef.current) {
               setIsRetrying(true);
-              console.warn(
-                `Camera busy, retrying (${attempt}/${maxRetries})...`
-              );
             }
           }
         );
@@ -540,7 +494,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
             setActiveDeviceId(settings.deviceId);
           }
 
-          // Check flash support
           flashTrackRef.current = videoTrack;
           const flashSupported = isTorchSupported(videoTrack);
           setIsFlashSupported(flashSupported);
@@ -600,7 +553,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     [facingMode, activeDeviceId, constraints, attachStreamToVideo, createError]
   );
 
-  // ========== Stop Camera ==========
   const stop = useCallback(async (): Promise<void> => {
     releaseLock(instanceIdRef.current);
 
@@ -624,7 +576,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     }
   }, []);
 
-  // ========== Capture ==========
   const capture = useCallback((): CaptureResult | null => {
     const video = videoRef.current;
     if (!video || video.readyState !== 4) {
@@ -640,7 +591,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
       return null;
     }
 
-    // Mirror horizontally if using front camera
     if (facingMode === "user") {
       ctx.translate(canvas.width, 0);
       ctx.scale(-1, 1);
@@ -676,7 +626,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     onCapture,
   ]);
 
-  // ========== Recording ==========
   const startRecording = useCallback(() => {
     if (!streamRef.current) return;
 
@@ -735,7 +684,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     }
   }, []);
 
-  // ========== Camera Switch ==========
   const switchCamera = useCallback(async () => {
     const newFacingMode = facingMode === "user" ? "environment" : "user";
     setFacingMode(newFacingMode);
@@ -751,7 +699,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     [stop, start]
   );
 
-  // ========== Flash ==========
   const toggleFlashAction = useCallback(async () => {
     const track = flashTrackRef.current;
     if (!track || !isFlashSupported) return;
@@ -762,7 +709,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     }
   }, [isFlashSupported, isFlashOn]);
 
-  // ========== Permission ==========
   const requestPermission = useCallback(async (): Promise<boolean> => {
     try {
       const state = await checkCameraPermissionStatus();
@@ -805,7 +751,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     }
   }, [createError]);
 
-  // ========== Zoom ==========
   const clampZoom = useCallback(
     (value: number) => Math.max(minZoom, Math.min(maxZoom, value)),
     [minZoom, maxZoom]
@@ -837,7 +782,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     setZoom(1);
   }, [setZoom]);
 
-  // ========== Focus ==========
   const focusAt = useCallback((point: Point) => {
     setFocusPoint(point);
     setIsFocusing(true);
@@ -849,7 +793,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     setIsFocusing(false);
   }, []);
 
-  // ========== Timer ==========
   const startTimer = useCallback(() => {
     if (timerDuration === 0) {
       capture();
@@ -885,7 +828,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     setTimerRemaining(0);
   }, []);
 
-  // ========== Voice Control ==========
   const startVoiceListening = useCallback(() => {
     if (!isVoiceSupported || !enableVoiceControl) return;
     setIsVoiceListening(true);
@@ -903,7 +845,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     }
   }, [isVoiceListening, startVoiceListening, stopVoiceListening]);
 
-  // ========== Keyboard Shortcuts ==========
   useEffect(() => {
     if (!enableKeyboardShortcuts || status !== "ready") return;
 
@@ -969,7 +910,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     cancelTimer,
   ]);
 
-  // ========== Visibility Change ==========
   useEffect(() => {
     const handleVisibilityChange = () => {
       const isHidden = document.hidden;
@@ -993,7 +933,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     };
   }, [status, isRecording, pauseRecording, resumeRecording]);
 
-  // ========== Device Change Listener ==========
   useEffect(() => {
     const handleDeviceChange = () => {
       refreshDevices();
@@ -1010,7 +949,6 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     };
   }, [refreshDevices]);
 
-  // ========== Cleanup ==========
   useEffect(() => {
     isMountedRef.current = true;
 
@@ -1025,15 +963,11 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
         clearInterval(timerIntervalRef.current);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
-    // Refs
     videoRef,
     gestureContainerRef,
-
-    // State
     stream,
     status,
     error,
@@ -1043,32 +977,20 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     isRecording,
     isPaused,
     isRetrying,
-
-    // Flash
     isFlashSupported,
     isFlashOn,
-
-    // Zoom & Focus
     zoom,
     minZoom,
     maxZoom,
     focusPoint,
     isFocusing,
-
-    // Timer
     timerDuration,
     timerRemaining,
     isTimerActive,
-
-    // Voice
     isVoiceListening,
     isVoiceSupported,
     lastVoiceCommand,
-
-    // Permissions
     permissionState,
-
-    // Actions
     start,
     stop,
     capture,
@@ -1081,28 +1003,21 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     toggleFlash: toggleFlashAction,
     requestPermission,
     refreshDevices,
-
-    // Zoom & Focus actions
     setZoom,
     zoomIn,
     zoomOut,
     resetZoom,
     focusAt,
     unlockFocus,
-
-    // Timer actions
     setTimerDuration,
     startTimer,
     cancelTimer,
-
-    // Voice actions
     startVoiceListening,
     stopVoiceListening,
     toggleVoiceListening,
   };
 }
 
-// ========== Utility Export ==========
 export function getShortcutHint(
   action: keyof typeof KEYBOARD_SHORTCUTS
 ): string {

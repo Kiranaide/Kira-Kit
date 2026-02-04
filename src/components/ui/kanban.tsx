@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   IconPlus,
   IconGripVertical,
@@ -10,7 +10,7 @@ import {
   IconArrowRight,
   IconCheck,
   IconX,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 import {
   DndContext,
   closestCenter,
@@ -25,90 +25,84 @@ import {
   type DragEndEvent,
   type UniqueIdentifier,
   useDroppable,
-} from "@dnd-kit/core"
+} from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
-
-
-
-
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
 interface KanbanCardData {
-  id: string
-  title: string
-  description?: string
-  priority?: "low" | "medium" | "high" | "critical"
-  assignee?: { id: string; name: string; avatar?: string }
-  tags?: string[]
-  dueDate?: string
-  attachments?: number
-  comments?: number
-  checklist?: { completed: number; total: number }
-  cover?: string
+  id: string;
+  title: string;
+  description?: string;
+  priority?: "low" | "medium" | "high" | "critical";
+  assignee?: { id: string; name: string; avatar?: string };
+  tags?: string[];
+  dueDate?: string;
+  attachments?: number;
+  comments?: number;
+  checklist?: { completed: number; total: number };
+  cover?: string;
 }
 
 interface KanbanColumnData {
-  id: string
-  title: string
-  cards: KanbanCardData[]
-  color?: string
-  limit?: number
-  collapsed?: boolean
+  id: string;
+  title: string;
+  cards: KanbanCardData[];
+  color?: string;
+  limit?: number;
+  collapsed?: boolean;
 }
 
 interface KanbanContextValue {
-
-  columns: KanbanColumnData[]
-  setColumns: React.Dispatch<React.SetStateAction<KanbanColumnData[]>>
-  activeId: UniqueIdentifier | null
-  activeCard: KanbanCardData | null
-  variant: "default" | "compact" | "minimal"
-  columnSize: "sm" | "default" | "lg" | "auto"
-
-  focusedCardId: string | null
-  setFocusedCardId: (id: string | null) => void
-  isGrabbed: boolean
-  setIsGrabbed: (grabbed: boolean) => void
-
-  showMoveDialog: boolean
-  setShowMoveDialog: (show: boolean) => void
-  moveDialogCard: KanbanCardData | null
-  setMoveDialogCard: (card: KanbanCardData | null) => void
-  moveDialogSourceColumn: string | null
-  setMoveDialogSourceColumn: (columnId: string | null) => void
-
-  announce: (message: string) => void
-  addCard: (columnId: string, card: KanbanCardData) => void
-  removeCard: (columnId: string, cardId: string) => void
-  moveCard: (cardId: string, sourceColumnId: string, targetColumnId: string, targetIndex?: number) => void
-  addColumn: (column: KanbanColumnData) => void
-  removeColumn: (columnId: string) => void
-
-  onColumnsChange?: (columns: KanbanColumnData[]) => void
-  onCardClick?: (card: KanbanCardData, columnId: string) => void
-  onCardAdd?: (columnId: string) => void
+  columns: KanbanColumnData[];
+  setColumns: React.Dispatch<React.SetStateAction<KanbanColumnData[]>>;
+  activeId: UniqueIdentifier | null;
+  activeCard: KanbanCardData | null;
+  variant: "default" | "compact" | "minimal";
+  columnSize: "sm" | "default" | "lg" | "auto";
+  focusedCardId: string | null;
+  setFocusedCardId: (id: string | null) => void;
+  isGrabbed: boolean;
+  setIsGrabbed: (grabbed: boolean) => void;
+  showMoveDialog: boolean;
+  setShowMoveDialog: (show: boolean) => void;
+  moveDialogCard: KanbanCardData | null;
+  setMoveDialogCard: (card: KanbanCardData | null) => void;
+  moveDialogSourceColumn: string | null;
+  setMoveDialogSourceColumn: (columnId: string | null) => void;
+  announce: (message: string) => void;
+  addCard: (columnId: string, card: KanbanCardData) => void;
+  removeCard: (columnId: string, cardId: string) => void;
+  moveCard: (
+    cardId: string,
+    sourceColumnId: string,
+    targetColumnId: string,
+    targetIndex?: number
+  ) => void;
+  addColumn: (column: KanbanColumnData) => void;
+  removeColumn: (columnId: string) => void;
+  onColumnsChange?: (columns: KanbanColumnData[]) => void;
+  onCardClick?: (card: KanbanCardData, columnId: string) => void;
+  onCardAdd?: (columnId: string) => void;
 }
 
-const KanbanContext = React.createContext<KanbanContextValue | undefined>(undefined)
+const KanbanContext = React.createContext<KanbanContextValue | undefined>(
+  undefined
+);
 
 function useKanban() {
-  const context = React.useContext(KanbanContext)
+  const context = React.useContext(KanbanContext);
   if (!context) {
-    throw new Error("useKanban must be used within a Kanban component")
+    throw new Error("useKanban must be used within a Kanban component");
   }
-  return context
+  return context;
 }
-
-
-
-
 
 const kanbanVariants = cva("flex gap-4 overflow-x-auto pb-4", {
   variants: {
@@ -121,7 +115,7 @@ const kanbanVariants = cva("flex gap-4 overflow-x-auto pb-4", {
   defaultVariants: {
     variant: "default",
   },
-})
+});
 
 const kanbanColumnVariants = cva(
   "flex-shrink-0 rounded-lg bg-muted/50 p-3 flex flex-col max-h-[calc(100vh-200px)]",
@@ -138,7 +132,7 @@ const kanbanColumnVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 const kanbanCardVariants = cva(
   "rounded-md border bg-card p-3 shadow-sm transition-all cursor-grab active:cursor-grabbing",
@@ -152,36 +146,28 @@ const kanbanCardVariants = cva(
       },
     },
   }
-)
-
-
-
-
+);
 
 function useReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
 
   React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
-    setPrefersReducedMotion(mediaQuery.matches)
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
 
     const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches)
-    }
+      setPrefersReducedMotion(e.matches);
+    };
 
-    mediaQuery.addEventListener("change", handleChange)
-    return () => mediaQuery.removeEventListener("change", handleChange)
-  }, [])
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
-  return prefersReducedMotion
+  return prefersReducedMotion;
 }
 
-
-
-
-
 interface AnnouncerProps {
-  message: string
+  message: string;
 }
 
 function Announcer({ message }: AnnouncerProps) {
@@ -194,72 +180,73 @@ function Announcer({ message }: AnnouncerProps) {
     >
       {message}
     </div>
-  )
+  );
 }
-
-
-
-
 
 interface MoveDialogProps {
-  card: KanbanCardData
-  sourceColumnId: string
-  columns: KanbanColumnData[]
-  onMove: (targetColumnId: string, targetIndex?: number) => void
-  onClose: () => void
+  card: KanbanCardData;
+  sourceColumnId: string;
+  columns: KanbanColumnData[];
+  onMove: (targetColumnId: string, targetIndex?: number) => void;
+  onClose: () => void;
 }
 
-function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDialogProps) {
-  const [selectedColumn, setSelectedColumn] = React.useState<string | null>(null)
-  const [selectedPosition, setSelectedPosition] = React.useState<number>(0)
-  const dialogRef = React.useRef<HTMLDivElement>(null)
-
+function MoveDialog({
+  card,
+  sourceColumnId,
+  columns,
+  onMove,
+  onClose,
+}: MoveDialogProps) {
+  const [selectedColumn, setSelectedColumn] = React.useState<string | null>(
+    null
+  );
+  const [selectedPosition, setSelectedPosition] = React.useState<number>(0);
+  const dialogRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    const dialog = dialogRef.current
-    if (!dialog) return
+    const dialog = dialogRef.current;
+    if (!dialog) return;
 
     const focusableElements = dialog.querySelectorAll<HTMLElement>(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    )
-    const firstElement = focusableElements[0]
-    const lastElement = focusableElements[focusableElements.length - 1]
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
 
-    firstElement?.focus()
+    firstElement?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose()
-        return
+        onClose();
+        return;
       }
 
       if (e.key === "Tab") {
         if (e.shiftKey && document.activeElement === firstElement) {
-          e.preventDefault()
-          lastElement?.focus()
+          e.preventDefault();
+          lastElement?.focus();
         } else if (!e.shiftKey && document.activeElement === lastElement) {
-          e.preventDefault()
-          firstElement?.focus()
+          e.preventDefault();
+          firstElement?.focus();
         }
       }
-    }
+    };
 
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [onClose])
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
-  const targetColumn = columns.find((c) => c.id === selectedColumn)
+  const targetColumn = columns.find((c) => c.id === selectedColumn);
 
   return (
     <>
-      {}
       <div
         className="fixed inset-0 z-50 bg-black/50"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {}
       <div
         ref={dialogRef}
         role="dialog"
@@ -291,17 +278,18 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
           </p>
         </div>
 
-        {}
         <div className="space-y-3 mb-4">
-          <label className="text-sm font-medium">Select destination column:</label>
+          <label className="text-sm font-medium">
+            Select destination column:
+          </label>
           <div className="grid gap-2">
             {columns.map((column) => (
               <button
                 key={column.id}
                 type="button"
                 onClick={() => {
-                  setSelectedColumn(column.id)
-                  setSelectedPosition(column.cards.length)
+                  setSelectedColumn(column.id);
+                  setSelectedPosition(column.cards.length);
                 }}
                 className={cn(
                   "flex items-center justify-between p-3 rounded-md border text-left transition-colors",
@@ -323,7 +311,6 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
           </div>
         </div>
 
-        {}
         {selectedColumn && targetColumn && (
           <div className="space-y-3 mb-6">
             <label className="text-sm font-medium">Select position:</label>
@@ -346,7 +333,6 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
           </div>
         )}
 
-        {}
         <div className="flex justify-end gap-3">
           <button
             type="button"
@@ -362,7 +348,7 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
             type="button"
             onClick={() => {
               if (selectedColumn) {
-                onMove(selectedColumn, selectedPosition)
+                onMove(selectedColumn, selectedPosition);
               }
             }}
             disabled={!selectedColumn}
@@ -378,33 +364,25 @@ function MoveDialog({ card, sourceColumnId, columns, onMove, onClose }: MoveDial
         </div>
       </div>
     </>
-  )
+  );
 }
 
-
-
-
-
-interface KanbanProps extends React.ComponentPropsWithoutRef<"div">, VariantProps<typeof kanbanVariants> {
-
-  columns?: KanbanColumnData[]
-
-  onColumnsChange?: (columns: KanbanColumnData[]) => void
-
-  columnSize?: "sm" | "default" | "lg" | "auto"
-
-  enableKeyboard?: boolean
-
-  onCardClick?: (card: KanbanCardData, columnId: string) => void
-
-  onCardAdd?: (columnId: string) => void
-
+interface KanbanProps
+  extends
+    React.ComponentPropsWithoutRef<"div">,
+    VariantProps<typeof kanbanVariants> {
+  columns?: KanbanColumnData[];
+  onColumnsChange?: (columns: KanbanColumnData[]) => void;
+  columnSize?: "sm" | "default" | "lg" | "auto";
+  enableKeyboard?: boolean;
+  onCardClick?: (card: KanbanCardData, columnId: string) => void;
+  onCardAdd?: (columnId: string) => void;
   announcements?: {
-    onDragStart?: (card: KanbanCardData) => string
-    onDragOver?: (card: KanbanCardData, column: KanbanColumnData) => string
-    onDrop?: (card: KanbanCardData, column: KanbanColumnData) => string
-    onCancel?: () => string
-  }
+    onDragStart?: (card: KanbanCardData) => string;
+    onDragOver?: (card: KanbanCardData, column: KanbanColumnData) => string;
+    onDrop?: (card: KanbanCardData, column: KanbanColumnData) => string;
+    onCancel?: () => string;
+  };
 }
 
 const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
@@ -424,28 +402,35 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
     },
     ref
   ) => {
-    const [columns, setColumns] = React.useState<KanbanColumnData[]>(initialColumns)
-    const [activeId, setActiveId] = React.useState<UniqueIdentifier | null>(null)
-    const [activeCard, setActiveCard] = React.useState<KanbanCardData | null>(null)
-    const [announcement, setAnnouncement] = React.useState("")
+    const [columns, setColumns] =
+      React.useState<KanbanColumnData[]>(initialColumns);
+    const [activeId, setActiveId] = React.useState<UniqueIdentifier | null>(
+      null
+    );
+    const [activeCard, setActiveCard] = React.useState<KanbanCardData | null>(
+      null
+    );
+    const [announcement, setAnnouncement] = React.useState("");
 
+    const [focusedCardId, setFocusedCardId] = React.useState<string | null>(
+      null
+    );
+    const [isGrabbed, setIsGrabbed] = React.useState(false);
 
-    const [focusedCardId, setFocusedCardId] = React.useState<string | null>(null)
-    const [isGrabbed, setIsGrabbed] = React.useState(false)
+    const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+    const [moveDialogCard, setMoveDialogCard] =
+      React.useState<KanbanCardData | null>(null);
+    const [moveDialogSourceColumn, setMoveDialogSourceColumn] = React.useState<
+      string | null
+    >(null);
 
-
-    const [showMoveDialog, setShowMoveDialog] = React.useState(false)
-    const [moveDialogCard, setMoveDialogCard] = React.useState<KanbanCardData | null>(null)
-    const [moveDialogSourceColumn, setMoveDialogSourceColumn] = React.useState<string | null>(null)
-
-    const reducedMotion = useReducedMotion()
-
+    const reducedMotion = useReducedMotion();
 
     React.useEffect(() => {
       if (initialColumns.length > 0) {
-        setColumns(initialColumns)
+        setColumns(initialColumns);
       }
-    }, [initialColumns])
+    }, [initialColumns]);
 
     const sensors = useSensors(
       useSensor(MouseSensor, {
@@ -462,192 +447,224 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
       useSensor(KeyboardSensor, {
         coordinateGetter: sortableKeyboardCoordinates,
       })
-    )
+    );
 
     const announce = React.useCallback((message: string) => {
-      setAnnouncement(message)
-    }, [])
+      setAnnouncement(message);
+    }, []);
 
     const findCardAndColumn = (cardId: UniqueIdentifier) => {
       for (const column of columns) {
-        const card = column.cards.find((c) => c.id === cardId)
-        if (card) return { card, column }
+        const card = column.cards.find((c) => c.id === cardId);
+        if (card) return { card, column };
       }
-      return null
-    }
+      return null;
+    };
 
+    const addCard = React.useCallback(
+      (columnId: string, card: KanbanCardData) => {
+        setColumns((prev) => {
+          const newColumns = prev.map((col) => {
+            if (col.id === columnId) {
+              return { ...col, cards: [...col.cards, card] };
+            }
+            return col;
+          });
+          onColumnsChange?.(newColumns);
+          return newColumns;
+        });
+      },
+      [onColumnsChange]
+    );
 
-    const addCard = React.useCallback((columnId: string, card: KanbanCardData) => {
-      setColumns((prev) => {
-        const newColumns = prev.map((col) => {
-          if (col.id === columnId) {
-            return { ...col, cards: [...col.cards, card] }
+    const removeCard = React.useCallback(
+      (columnId: string, cardId: string) => {
+        setColumns((prev) => {
+          const newColumns = prev.map((col) => {
+            if (col.id === columnId) {
+              return {
+                ...col,
+                cards: col.cards.filter((c) => c.id !== cardId),
+              };
+            }
+            return col;
+          });
+          onColumnsChange?.(newColumns);
+          return newColumns;
+        });
+      },
+      [onColumnsChange]
+    );
+
+    const moveCardFn = React.useCallback(
+      (
+        cardId: string,
+        sourceColumnId: string,
+        targetColumnId: string,
+        targetIndex?: number
+      ) => {
+        setColumns((prev) => {
+          const sourceCol = prev.find((c) => c.id === sourceColumnId);
+          const card = sourceCol?.cards.find((c) => c.id === cardId);
+          if (!card) return prev;
+
+          const newColumns = prev.map((col) => ({
+            ...col,
+            cards: col.cards.filter((c) => c.id !== cardId),
+          }));
+
+          const targetIdx = newColumns.findIndex(
+            (c) => c.id === targetColumnId
+          );
+          if (targetIdx !== -1) {
+            const insertIdx = targetIndex ?? newColumns[targetIdx].cards.length;
+            newColumns[targetIdx] = {
+              ...newColumns[targetIdx],
+              cards: [
+                ...newColumns[targetIdx].cards.slice(0, insertIdx),
+                card,
+                ...newColumns[targetIdx].cards.slice(insertIdx),
+              ],
+            };
           }
-          return col
-        })
-        onColumnsChange?.(newColumns)
-        return newColumns
-      })
-    }, [onColumnsChange])
 
-    const removeCard = React.useCallback((columnId: string, cardId: string) => {
-      setColumns((prev) => {
-        const newColumns = prev.map((col) => {
-          if (col.id === columnId) {
-            return { ...col, cards: col.cards.filter((c) => c.id !== cardId) }
-          }
-          return col
-        })
-        onColumnsChange?.(newColumns)
-        return newColumns
-      })
-    }, [onColumnsChange])
+          onColumnsChange?.(newColumns);
+          return newColumns;
+        });
+      },
+      [onColumnsChange]
+    );
 
-    const moveCardFn = React.useCallback((
-      cardId: string,
-      sourceColumnId: string,
+    const addColumn = React.useCallback(
+      (column: KanbanColumnData) => {
+        setColumns((prev) => {
+          const newColumns = [...prev, column];
+          onColumnsChange?.(newColumns);
+          return newColumns;
+        });
+      },
+      [onColumnsChange]
+    );
+
+    const removeColumn = React.useCallback(
+      (columnId: string) => {
+        setColumns((prev) => {
+          const newColumns = prev.filter((c) => c.id !== columnId);
+          onColumnsChange?.(newColumns);
+          return newColumns;
+        });
+      },
+      [onColumnsChange]
+    );
+
+    const handleDragStart = (event: DragStartEvent) => {
+      const result = findCardAndColumn(event.active.id);
+      if (result) {
+        setActiveId(event.active.id);
+        setActiveCard(result.card);
+        const message =
+          announcements?.onDragStart?.(result.card) ||
+          `Grabbed ${result.card.title}. Use arrow keys to move, Space to drop, Escape to cancel.`;
+        announce(message);
+      }
+    };
+
+    const handleDragOver = (event: DragOverEvent) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const activeResult = findCardAndColumn(active.id);
+      if (!activeResult) return;
+
+      const overColumn = columns.find((c) => c.id === over.id);
+      if (overColumn) {
+        const message =
+          announcements?.onDragOver?.(activeResult.card, overColumn) ||
+          `Over ${overColumn.title} column`;
+        announce(message);
+      }
+    };
+
+    const handleDragEnd = (event: DragEndEvent) => {
+      const { active, over } = event;
+
+      setActiveId(null);
+      setActiveCard(null);
+
+      if (!over) {
+        announce(announcements?.onCancel?.() || "Drop cancelled");
+        return;
+      }
+
+      const activeResult = findCardAndColumn(active.id);
+      if (!activeResult) return;
+
+      let targetColumn = columns.find((c) => c.id === over.id);
+      let targetIndex: number | undefined;
+
+      if (!targetColumn) {
+        const overResult = findCardAndColumn(over.id);
+        if (overResult) {
+          targetColumn = overResult.column;
+          targetIndex = overResult.column.cards.findIndex(
+            (c) => c.id === over.id
+          );
+        }
+      }
+
+      if (!targetColumn) {
+        announce(announcements?.onCancel?.() || "Drop cancelled");
+        return;
+      }
+
+      moveCardFn(
+        String(active.id),
+        activeResult.column.id,
+        targetColumn.id,
+        targetIndex
+      );
+
+      const message =
+        announcements?.onDrop?.(activeResult.card, targetColumn) ||
+        `Dropped ${activeResult.card.title} in ${targetColumn.title}`;
+      announce(message);
+    };
+
+    const handleDragCancel = () => {
+      setActiveId(null);
+      setActiveCard(null);
+      announce(announcements?.onCancel?.() || "Drag cancelled");
+    };
+
+    const handleMoveFromDialog = (
       targetColumnId: string,
       targetIndex?: number
     ) => {
-      setColumns((prev) => {
-        const sourceCol = prev.find((c) => c.id === sourceColumnId)
-        const card = sourceCol?.cards.find((c) => c.id === cardId)
-        if (!card) return prev
+      if (!moveDialogCard || !moveDialogSourceColumn) return;
 
-        const newColumns = prev.map((col) => ({
-          ...col,
-          cards: col.cards.filter((c) => c.id !== cardId),
-        }))
+      moveCardFn(
+        moveDialogCard.id,
+        moveDialogSourceColumn,
+        targetColumnId,
+        targetIndex
+      );
 
-        const targetIdx = newColumns.findIndex((c) => c.id === targetColumnId)
-        if (targetIdx !== -1) {
-          const insertIdx = targetIndex ?? newColumns[targetIdx].cards.length
-          newColumns[targetIdx] = {
-            ...newColumns[targetIdx],
-            cards: [
-              ...newColumns[targetIdx].cards.slice(0, insertIdx),
-              card,
-              ...newColumns[targetIdx].cards.slice(insertIdx),
-            ],
-          }
-        }
+      const targetColumn = columns.find((c) => c.id === targetColumnId);
+      announce(
+        `Moved ${moveDialogCard.title} to ${targetColumn?.title || "column"}`
+      );
 
-        onColumnsChange?.(newColumns)
-        return newColumns
-      })
-    }, [onColumnsChange])
-
-    const addColumn = React.useCallback((column: KanbanColumnData) => {
-      setColumns((prev) => {
-        const newColumns = [...prev, column]
-        onColumnsChange?.(newColumns)
-        return newColumns
-      })
-    }, [onColumnsChange])
-
-    const removeColumn = React.useCallback((columnId: string) => {
-      setColumns((prev) => {
-        const newColumns = prev.filter((c) => c.id !== columnId)
-        onColumnsChange?.(newColumns)
-        return newColumns
-      })
-    }, [onColumnsChange])
-
-    const handleDragStart = (event: DragStartEvent) => {
-      const result = findCardAndColumn(event.active.id)
-      if (result) {
-        setActiveId(event.active.id)
-        setActiveCard(result.card)
-        const message = announcements?.onDragStart?.(result.card) ||
-          `Grabbed ${result.card.title}. Use arrow keys to move, Space to drop, Escape to cancel.`
-        announce(message)
-      }
-    }
-
-    const handleDragOver = (event: DragOverEvent) => {
-      const { active, over } = event
-      if (!over || active.id === over.id) return
-
-      const activeResult = findCardAndColumn(active.id)
-      if (!activeResult) return
-
-
-      const overColumn = columns.find((c) => c.id === over.id)
-      if (overColumn) {
-        const message = announcements?.onDragOver?.(activeResult.card, overColumn) ||
-          `Over ${overColumn.title} column`
-        announce(message)
-      }
-    }
-
-    const handleDragEnd = (event: DragEndEvent) => {
-      const { active, over } = event
-
-      setActiveId(null)
-      setActiveCard(null)
-
-      if (!over) {
-        announce(announcements?.onCancel?.() || "Drop cancelled")
-        return
-      }
-
-      const activeResult = findCardAndColumn(active.id)
-      if (!activeResult) return
-
-
-      let targetColumn = columns.find((c) => c.id === over.id)
-      let targetIndex: number | undefined
-
-      if (!targetColumn) {
-
-        const overResult = findCardAndColumn(over.id)
-        if (overResult) {
-          targetColumn = overResult.column
-          targetIndex = overResult.column.cards.findIndex((c) => c.id === over.id)
-        }
-      }
-
-      if (!targetColumn) {
-        announce(announcements?.onCancel?.() || "Drop cancelled")
-        return
-      }
-
-
-      moveCardFn(String(active.id), activeResult.column.id, targetColumn.id, targetIndex)
-
-      const message = announcements?.onDrop?.(activeResult.card, targetColumn) ||
-        `Dropped ${activeResult.card.title} in ${targetColumn.title}`
-      announce(message)
-    }
-
-    const handleDragCancel = () => {
-      setActiveId(null)
-      setActiveCard(null)
-      announce(announcements?.onCancel?.() || "Drag cancelled")
-    }
-
-
-    const handleMoveFromDialog = (targetColumnId: string, targetIndex?: number) => {
-      if (!moveDialogCard || !moveDialogSourceColumn) return
-
-      moveCardFn(moveDialogCard.id, moveDialogSourceColumn, targetColumnId, targetIndex)
-
-      const targetColumn = columns.find((c) => c.id === targetColumnId)
-      announce(`Moved ${moveDialogCard.title} to ${targetColumn?.title || "column"}`)
-
-      setShowMoveDialog(false)
-      setMoveDialogCard(null)
-      setMoveDialogSourceColumn(null)
-    }
-
+      setShowMoveDialog(false);
+      setMoveDialogCard(null);
+      setMoveDialogSourceColumn(null);
+    };
 
     const allCardIds = React.useMemo(
       () => columns.flatMap((col) => col.cards.map((c) => c.id)),
       [columns]
-    )
+    );
 
-
-    const hasChildren = React.Children.count(children) > 0
+    const hasChildren = React.Children.count(children) > 0;
 
     return (
       <KanbanContext.Provider
@@ -684,8 +701,8 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
 
         {}
         <div className="sr-only">
-          Kanban board. Use Tab to navigate between cards.
-          Press Space or Enter to grab a card, arrow keys to move, Space to drop, Escape to cancel.
+          Kanban board. Use Tab to navigate between cards. Press Space or Enter
+          to grab a card, arrow keys to move, Space to drop, Escape to cancel.
           Press M to open the move dialog for accessible card movement.
         </div>
 
@@ -706,17 +723,31 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
             {...props}
           >
             {hasChildren ? (
-
-              <SortableContext items={allCardIds} strategy={verticalListSortingStrategy}>
+              <SortableContext
+                items={allCardIds}
+                strategy={verticalListSortingStrategy}
+              >
                 {children}
               </SortableContext>
             ) : (
-
-              <SortableContext items={allCardIds} strategy={verticalListSortingStrategy}>
+              <SortableContext
+                items={allCardIds}
+                strategy={verticalListSortingStrategy}
+              >
                 {columns.map((column) => (
-                  <KanbanColumn key={column.id} id={column.id} title={column.title} data={column}>
+                  <KanbanColumn
+                    key={column.id}
+                    id={column.id}
+                    title={column.title}
+                    data={column}
+                  >
                     {column.cards.map((card) => (
-                      <KanbanCard key={card.id} id={card.id} columnId={column.id} data={card} />
+                      <KanbanCard
+                        key={card.id}
+                        id={card.id}
+                        columnId={column.id}
+                        data={card}
+                      />
                     ))}
                   </KanbanColumn>
                 ))}
@@ -732,7 +763,9 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
                   "cursor-grabbing shadow-lg ring-2 ring-primary"
                 )}
               >
-                <p className="font-medium text-foreground">{activeCard.title}</p>
+                <p className="font-medium text-foreground">
+                  {activeCard.title}
+                </p>
                 {activeCard.description && (
                   <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
                     {activeCard.description}
@@ -751,54 +784,59 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
             columns={columns}
             onMove={handleMoveFromDialog}
             onClose={() => {
-              setShowMoveDialog(false)
-              setMoveDialogCard(null)
-              setMoveDialogSourceColumn(null)
+              setShowMoveDialog(false);
+              setMoveDialogCard(null);
+              setMoveDialogSourceColumn(null);
             }}
           />
         )}
       </KanbanContext.Provider>
-    )
+    );
   }
-)
-Kanban.displayName = "Kanban"
-
-
-
-
+);
+Kanban.displayName = "Kanban";
 
 interface KanbanColumnProps extends React.ComponentPropsWithoutRef<"div"> {
-
-  id: string
-
-  title: string
-
-  data?: KanbanColumnData
-
-  color?: string
-
-  limit?: number
-
-  collapsed?: boolean
+  id: string;
+  title: string;
+  data?: KanbanColumnData;
+  color?: string;
+  limit?: number;
+  collapsed?: boolean;
 }
 
 const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
-  ({ id, title, data, color, limit, collapsed: initialCollapsed = false, className, children, ...props }, ref) => {
-    const { columnSize, onCardAdd } = useKanban()
-    const { setNodeRef, isOver } = useDroppable({ id })
-    const [isCollapsed, setIsCollapsed] = React.useState(data?.collapsed ?? initialCollapsed)
+  (
+    {
+      id,
+      title,
+      data,
+      color,
+      limit,
+      collapsed: initialCollapsed = false,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const { columnSize, onCardAdd } = useKanban();
+    const { setNodeRef, isOver } = useDroppable({ id });
+    const [isCollapsed, setIsCollapsed] = React.useState(
+      data?.collapsed ?? initialCollapsed
+    );
 
-    const columnColor = data?.color ?? color
-    const columnLimit = data?.limit ?? limit
-    const cardCount = data?.cards.length ?? React.Children.count(children)
-    const isOverLimit = columnLimit ? cardCount > columnLimit : false
+    const columnColor = data?.color ?? color;
+    const columnLimit = data?.limit ?? limit;
+    const cardCount = data?.cards.length ?? React.Children.count(children);
+    const isOverLimit = columnLimit ? cardCount > columnLimit : false;
 
     return (
       <div
         ref={(node) => {
-          setNodeRef(node)
-          if (typeof ref === "function") ref(node)
-          else if (ref) ref.current = node
+          setNodeRef(node);
+          if (typeof ref === "function") ref(node);
+          else if (ref) ref.current = node;
         }}
         data-slot="kanban-column"
         data-column-id={id}
@@ -875,7 +913,9 @@ const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
                 className="h-20 border-2 border-dashed border-muted-foreground/20 rounded-md flex items-center justify-center"
                 aria-hidden="true"
               >
-                <span className="text-sm text-muted-foreground">Drop cards here</span>
+                <span className="text-sm text-muted-foreground">
+                  Drop cards here
+                </span>
               </div>
             )}
           </div>
@@ -899,24 +939,16 @@ const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
           </button>
         )}
       </div>
-    )
+    );
   }
-)
-KanbanColumn.displayName = "KanbanColumn"
-
-
-
-
+);
+KanbanColumn.displayName = "KanbanColumn";
 
 interface KanbanCardProps extends React.ComponentPropsWithoutRef<"div"> {
-
-  id: string
-
-  columnId: string
-
-  data?: KanbanCardData
-
-  priority?: "low" | "medium" | "high" | "critical"
+  id: string;
+  columnId: string;
+  data?: KanbanCardData;
+  priority?: "low" | "medium" | "high" | "critical";
 }
 
 const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
@@ -934,7 +966,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
       announce,
       onCardClick,
       onColumnsChange,
-    } = useKanban()
+    } = useKanban();
 
     const {
       attributes,
@@ -943,136 +975,140 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
       transform,
       transition,
       isDragging,
-    } = useSortable({ id })
+    } = useSortable({ id });
 
-    const cardRef = React.useRef<HTMLDivElement>(null)
-    const isFocused = focusedCardId === id
-    const cardData = data ?? { id, title: "" }
-    const cardPriority = data?.priority ?? priority
-
+    const cardRef = React.useRef<HTMLDivElement>(null);
+    const isFocused = focusedCardId === id;
+    const cardData = data ?? { id, title: "" };
+    const cardPriority = data?.priority ?? priority;
 
     React.useEffect(() => {
       if (isFocused && cardRef.current) {
-        cardRef.current.focus()
+        cardRef.current.focus();
       }
-    }, [isFocused])
+    }, [isFocused]);
 
     const style = {
       transform: CSS.Transform.toString(transform),
       transition,
-    }
+    };
 
     const handleContextMenu = (e: React.MouseEvent) => {
-      e.preventDefault()
-      setMoveDialogCard(cardData)
-      setMoveDialogSourceColumn(columnId)
-      setShowMoveDialog(true)
-    }
+      e.preventDefault();
+      setMoveDialogCard(cardData);
+      setMoveDialogSourceColumn(columnId);
+      setShowMoveDialog(true);
+    };
 
     const handleClick = () => {
-      onCardClick?.(cardData, columnId)
-    }
-
+      onCardClick?.(cardData, columnId);
+    };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-      const column = columns.find((c) => c.id === columnId)
-      if (!column) return
+      const column = columns.find((c) => c.id === columnId);
+      if (!column) return;
 
-      const cardIndex = column.cards.findIndex((c) => c.id === id)
+      const cardIndex = column.cards.findIndex((c) => c.id === id);
 
       switch (e.key) {
         case " ":
         case "Enter":
-          e.preventDefault()
+          e.preventDefault();
           if (isGrabbed) {
-            setIsGrabbed(false)
-            announce(`Dropped ${cardData.title}`)
+            setIsGrabbed(false);
+            announce(`Dropped ${cardData.title}`);
           } else {
-            setIsGrabbed(true)
-            announce(`Grabbed ${cardData.title}. Use arrow keys to move, Space to drop, Escape to cancel.`)
+            setIsGrabbed(true);
+            announce(
+              `Grabbed ${cardData.title}. Use arrow keys to move, Space to drop, Escape to cancel.`
+            );
           }
-          break
+          break;
 
         case "Escape":
           if (isGrabbed) {
-            e.preventDefault()
-            setIsGrabbed(false)
-            announce("Drag cancelled")
+            e.preventDefault();
+            setIsGrabbed(false);
+            announce("Drag cancelled");
           }
-          break
+          break;
 
         case "ArrowUp":
-          e.preventDefault()
+          e.preventDefault();
           if (isGrabbed && cardIndex > 0) {
-
-            const newCards = [...column.cards]
-            ;[newCards[cardIndex - 1], newCards[cardIndex]] = [newCards[cardIndex], newCards[cardIndex - 1]]
+            const newCards = [...column.cards];
+            [newCards[cardIndex - 1], newCards[cardIndex]] = [
+              newCards[cardIndex],
+              newCards[cardIndex - 1],
+            ];
             const newColumns = columns.map((col) =>
               col.id === columnId ? { ...col, cards: newCards } : col
-            )
-            onColumnsChange?.(newColumns)
-            announce(`Moved to position ${cardIndex}`)
+            );
+            onColumnsChange?.(newColumns);
+            announce(`Moved to position ${cardIndex}`);
           } else if (!isGrabbed && cardIndex > 0) {
-            setFocusedCardId(column.cards[cardIndex - 1].id)
+            setFocusedCardId(column.cards[cardIndex - 1].id);
           }
-          break
+          break;
 
         case "ArrowDown":
-          e.preventDefault()
+          e.preventDefault();
           if (isGrabbed && cardIndex < column.cards.length - 1) {
-
-            const newCards = [...column.cards]
-            ;[newCards[cardIndex], newCards[cardIndex + 1]] = [newCards[cardIndex + 1], newCards[cardIndex]]
+            const newCards = [...column.cards];
+            [newCards[cardIndex], newCards[cardIndex + 1]] = [
+              newCards[cardIndex + 1],
+              newCards[cardIndex],
+            ];
             const newColumns = columns.map((col) =>
               col.id === columnId ? { ...col, cards: newCards } : col
-            )
-            onColumnsChange?.(newColumns)
-            announce(`Moved to position ${cardIndex + 2}`)
+            );
+            onColumnsChange?.(newColumns);
+            announce(`Moved to position ${cardIndex + 2}`);
           } else if (!isGrabbed && cardIndex < column.cards.length - 1) {
-            setFocusedCardId(column.cards[cardIndex + 1].id)
+            setFocusedCardId(column.cards[cardIndex + 1].id);
           }
-          break
+          break;
 
         case "ArrowLeft":
         case "ArrowRight": {
-          e.preventDefault()
-          const columnIndex = columns.findIndex((c) => c.id === columnId)
-          const direction = e.key === "ArrowLeft" ? -1 : 1
-          const targetColumnIndex = columnIndex + direction
+          e.preventDefault();
+          const columnIndex = columns.findIndex((c) => c.id === columnId);
+          const direction = e.key === "ArrowLeft" ? -1 : 1;
+          const targetColumnIndex = columnIndex + direction;
 
           if (targetColumnIndex >= 0 && targetColumnIndex < columns.length) {
-            const targetCol = columns[targetColumnIndex]
+            const targetCol = columns[targetColumnIndex];
 
             if (isGrabbed) {
-              moveCard(id, columnId, targetCol.id)
-              announce(`Moved to ${targetCol.title}`)
+              moveCard(id, columnId, targetCol.id);
+              announce(`Moved to ${targetCol.title}`);
             } else if (targetCol.cards.length > 0) {
-              setFocusedCardId(targetCol.cards[0].id)
+              setFocusedCardId(targetCol.cards[0].id);
             }
           }
-          break
+          break;
         }
 
         case "m":
         case "M":
-          e.preventDefault()
-          setMoveDialogCard(cardData)
-          setMoveDialogSourceColumn(columnId)
-          setShowMoveDialog(true)
-          break
+          e.preventDefault();
+          setMoveDialogCard(cardData);
+          setMoveDialogSourceColumn(columnId);
+          setShowMoveDialog(true);
+          break;
       }
-    }
+    };
 
-
-    const { role: _role, tabIndex: _tabIndex, ...restAttributes } = attributes
+    const { role: _role, tabIndex: _tabIndex, ...restAttributes } = attributes;
 
     return (
       <div
         ref={(node) => {
-          setNodeRef(node)
-          if (typeof ref === "function") ref(node)
-          else if (ref) ref.current = node
-          ;(cardRef as React.MutableRefObject<HTMLDivElement | null>).current = node
+          setNodeRef(node);
+          if (typeof ref === "function") ref(node);
+          else if (ref) ref.current = node;
+          (cardRef as React.MutableRefObject<HTMLDivElement | null>).current =
+            node;
         }}
         data-slot="kanban-card"
         data-card-id={id}
@@ -1100,7 +1136,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
           <>
             <div className="flex items-start gap-2">
               <IconGripVertical
-                className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5"
+                className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5"
                 aria-hidden="true"
               />
               <div className="flex-1 min-w-0">
@@ -1150,14 +1186,10 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
           </>
         )}
       </div>
-    )
+    );
   }
-)
-KanbanCard.displayName = "KanbanCard"
-
-
-
-
+);
+KanbanCard.displayName = "KanbanCard";
 
 interface KanbanHeaderProps extends React.ComponentPropsWithoutRef<"div"> {}
 
@@ -1172,49 +1204,42 @@ const KanbanHeader = React.forwardRef<HTMLDivElement, KanbanHeaderProps>(
       {children}
     </div>
   )
-)
-KanbanHeader.displayName = "KanbanHeader"
-
-
-
-
+);
+KanbanHeader.displayName = "KanbanHeader";
 
 interface KanbanAddColumnProps extends React.ComponentPropsWithoutRef<"button"> {}
 
-const KanbanAddColumn = React.forwardRef<HTMLButtonElement, KanbanAddColumnProps>(
-  ({ className, children, ...props }, ref) => {
-    const { columnSize } = useKanban()
+const KanbanAddColumn = React.forwardRef<
+  HTMLButtonElement,
+  KanbanAddColumnProps
+>(({ className, children, ...props }, ref) => {
+  const { columnSize } = useKanban();
 
-    return (
-      <button
-        ref={ref}
-        type="button"
-        data-slot="kanban-add-column"
-        className={cn(
-          kanbanColumnVariants({ size: columnSize }),
-          "border-2 border-dashed border-muted-foreground/30 bg-transparent",
-          "flex items-center justify-center gap-2 text-muted-foreground",
-          "hover:border-muted-foreground/50 hover:bg-muted/30 transition-colors",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          className
-        )}
-        {...props}
-      >
-        {children ?? (
-          <>
-            <IconPlus className="h-5 w-5" />
-            <span>Add Column</span>
-          </>
-        )}
-      </button>
-    )
-  }
-)
-KanbanAddColumn.displayName = "KanbanAddColumn"
-
-
-
-
+  return (
+    <button
+      ref={ref}
+      type="button"
+      data-slot="kanban-add-column"
+      className={cn(
+        kanbanColumnVariants({ size: columnSize }),
+        "border-2 border-dashed border-muted-foreground/30 bg-transparent",
+        "flex items-center justify-center gap-2 text-muted-foreground",
+        "hover:border-muted-foreground/50 hover:bg-muted/30 transition-colors",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        className
+      )}
+      {...props}
+    >
+      {children ?? (
+        <>
+          <IconPlus className="h-5 w-5" />
+          <span>Add Column</span>
+        </>
+      )}
+    </button>
+  );
+});
+KanbanAddColumn.displayName = "KanbanAddColumn";
 
 export {
   Kanban,
@@ -1226,7 +1251,7 @@ export {
   kanbanVariants,
   kanbanColumnVariants,
   kanbanCardVariants,
-}
+};
 
 export type {
   KanbanCardData,
@@ -1237,4 +1262,4 @@ export type {
   KanbanHeaderProps,
   KanbanAddColumnProps,
   KanbanContextValue,
-}
+};

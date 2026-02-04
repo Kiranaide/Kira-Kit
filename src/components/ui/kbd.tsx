@@ -26,8 +26,7 @@ const kbdVariants = cva(
 );
 
 interface KbdProps
-  extends React.HTMLAttributes<HTMLElement>,
-    VariantProps<typeof kbdVariants> {}
+  extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof kbdVariants> {}
 
 function Kbd({ className, variant, size, children, ...props }: KbdProps) {
   return (
@@ -40,7 +39,6 @@ function Kbd({ className, variant, size, children, ...props }: KbdProps) {
     </kbd>
   );
 }
-
 
 function KbdShortcut({
   keys,

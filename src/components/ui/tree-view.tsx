@@ -8,9 +8,6 @@ import {
 } from "@tabler/icons-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
-
-
-
 export interface TreeNode {
   id: string;
   name: string;
@@ -40,9 +37,6 @@ function useTreeView() {
   }
   return context;
 }
-
-
-
 
 interface TreeViewProps {
   data: TreeNode[];
@@ -89,7 +83,6 @@ function TreeView({
     });
   }, []);
 
-
   const getAllChildIds = (node: TreeNode): string[] => {
     const ids: string[] = [];
     if (node.children) {
@@ -100,7 +93,6 @@ function TreeView({
     }
     return ids;
   };
-
 
   const findNodeById = (nodes: TreeNode[], id: string): TreeNode | null => {
     for (const node of nodes) {
@@ -125,11 +117,9 @@ function TreeView({
         const childIds = getAllChildIds(node);
 
         if (isSelected) {
-
           next.delete(id);
           childIds.forEach((childId) => next.delete(childId));
         } else {
-
           next.add(id);
           childIds.forEach((childId) => next.add(childId));
         }
@@ -194,9 +184,6 @@ function TreeView({
   );
 }
 
-
-
-
 interface TreeNodeListProps {
   nodes: TreeNode[];
   level: number;
@@ -216,9 +203,6 @@ function TreeNodeList({ nodes, level }: TreeNodeListProps) {
     </ul>
   );
 }
-
-
-
 
 interface TreeNodeItemProps {
   node: TreeNode;
@@ -275,10 +259,8 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
       aria-selected={isSelected}
       className="relative"
     >
-      {}
       {showLines && level > 0 && (
         <>
-          {}
           <span
             aria-hidden="true"
             className="absolute border-t border-border z-0"
@@ -288,7 +270,6 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
               width: "12px",
             }}
           />
-          {}
           {!isLast && (
             <span
               aria-hidden="true"
@@ -311,7 +292,6 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
         )}
         style={{ paddingLeft: `${level * 24 + 8}px` }}
       >
-        {}
         {selectionMode === "multiple" && isSelected && (
           <span
             aria-hidden="true"
@@ -319,7 +299,6 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
           />
         )}
 
-        {}
         {selectionMode === "multiple" && (
           <Checkbox
             checked={isSelected}
@@ -343,7 +322,6 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
           className="flex items-center gap-1.5 flex-1 min-w-0"
           aria-label={node.name}
         >
-          {}
           {hasChildren ? (
             <IconChevronRight
               aria-hidden="true"
@@ -356,18 +334,14 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
             <span className="w-3.5" aria-hidden="true" />
           )}
 
-          {}
           <span className="shrink-0">{getIcon()}</span>
 
-          {}
           <span className="truncate">{node.name}</span>
         </button>
       </div>
 
-      {}
       {hasChildren && isExpanded && (
         <div className="relative">
-          {}
           {showLines && node.children && node.children.length > 0 && (
             <span
               aria-hidden="true"

@@ -1,7 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { IconChevronLeft, IconChevronRight, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronDown,
+  IconChevronUp,
+} from "@tabler/icons-react";
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -14,7 +19,10 @@ import { cn } from "@/lib/utils";
 
 type Orientation = "horizontal" | "vertical";
 
-export interface SplitViewProps extends Omit<React.ComponentProps<typeof ResizablePanelGroup>, "orientation"> {
+export interface SplitViewProps extends Omit<
+  React.ComponentProps<typeof ResizablePanelGroup>,
+  "orientation"
+> {
   children?: React.ReactNode;
   orientation?: Orientation;
   defaultSize?: number;
@@ -75,7 +83,9 @@ const SplitView = React.forwardRef<SplitViewRef, SplitViewProps>(
     };
 
     const handleResize = (size: { asPercentage: number }) => {
-      setIsCollapsed(size.asPercentage <= parseFloat(String(collapsedSize)) + 1);
+      setIsCollapsed(
+        size.asPercentage <= parseFloat(String(collapsedSize)) + 1
+      );
     };
 
     const isVertical = orientation === "vertical";
@@ -117,7 +127,9 @@ const SplitView = React.forwardRef<SplitViewRef, SplitViewProps>(
           </div>
         </CollapsiblePanel>
 
-        <ResizableHandle aria-label={`Resize ${isVertical ? "vertical" : "horizontal"} split view`} />
+        <ResizableHandle
+          aria-label={`Resize ${isVertical ? "vertical" : "horizontal"} split view`}
+        />
 
         <ResizablePanel id="main" className="min-w-0">
           <div className="flex h-full flex-col">

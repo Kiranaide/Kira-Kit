@@ -5,9 +5,6 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconLoader2 } from "@tabler/icons-react";
 
-
-
-
 const toggleGroupVariants = cva("inline-flex items-center", {
   variants: {
     variant: {
@@ -27,7 +24,6 @@ const toggleGroupVariants = cva("inline-flex items-center", {
     },
   },
   compoundVariants: [
-
     {
       orientation: "vertical",
       variant: "outline",
@@ -41,18 +37,11 @@ const toggleGroupVariants = cva("inline-flex items-center", {
   },
 });
 
-
-
-
 const toggleGroupItemVariants = cva(
   [
-
     "inline-flex items-center justify-center gap-2 text-sm font-medium transition-all",
-
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-
     "disabled:pointer-events-none disabled:opacity-50",
-
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
   ],
   {
@@ -92,7 +81,6 @@ const toggleGroupItemVariants = cva(
       },
     },
     compoundVariants: [
-
       {
         variant: "outline",
         className:
@@ -106,9 +94,6 @@ const toggleGroupItemVariants = cva(
     },
   }
 );
-
-
-
 
 type ToggleGroupContextValue = {
   variant: VariantProps<typeof toggleGroupVariants>["variant"];
@@ -125,56 +110,25 @@ const ToggleGroupContext = React.createContext<ToggleGroupContextValue>({
 });
 
 interface ToggleGroupProps
-  extends Omit<ToggleGroupPrimitive.Props, "children" | "orientation">,
+  extends
+    Omit<ToggleGroupPrimitive.Props, "children" | "orientation">,
     VariantProps<typeof toggleGroupVariants> {
-
-
-
-
   "aria-label": string;
-
-
-
-
   multiple?: boolean;
-
-
-
-
   loopFocus?: boolean;
-
-
-
   children: React.ReactNode;
 }
 
 interface ToggleGroupItemProps
-  extends Omit<TogglePrimitive.Props, "children">,
+  extends
+    Omit<TogglePrimitive.Props, "children">,
     Omit<VariantProps<typeof toggleGroupItemVariants>, "variant"> {
-
-
-
   value: string;
-
-
-
   colorVariant?: VariantProps<typeof toggleGroupItemVariants>["colorVariant"];
-
-
-
   loading?: boolean;
-
-
-
   children?: React.ReactNode;
-
-
-
   "aria-label"?: string;
 }
-
-
-
 
 const warnIfMissingAriaLabel = (
   componentName: string,
@@ -188,61 +142,13 @@ const warnIfMissingAriaLabel = (
         props.children.trim().length > 0;
 
       if (componentName === "ToggleGroup") {
-        console.warn(
-          `[${componentName}] Missing required aria-label prop. ` +
-            'Example: <ToggleGroup aria-label="Text formatting options">'
-        );
+        // ToggleGroup should have aria-label for accessibility
       } else if (!hasTextChildren) {
-        console.warn(
-          `[${componentName}] Icon-only items require aria-label. ` +
-            'Example: <ToggleGroupItem aria-label="Bold" value="bold"><IconBold /></ToggleGroupItem>'
-        );
+        // Icon-only items should have aria-label for accessibility
       }
     }
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function ToggleGroup({
   className,
@@ -255,7 +161,6 @@ function ToggleGroup({
   children,
   ...props
 }: ToggleGroupProps) {
-
   warnIfMissingAriaLabel("ToggleGroup", props);
 
   const contextValue = React.useMemo<ToggleGroupContextValue>(
@@ -286,30 +191,6 @@ function ToggleGroup({
   );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function ToggleGroupItem({
   className,
   value,
@@ -323,14 +204,11 @@ function ToggleGroupItem({
   const ref = React.useRef<HTMLButtonElement>(null);
   const context = React.useContext(ToggleGroupContext);
 
-
   const resolvedSize = size ?? context.size ?? "default";
   const resolvedVariant = context.variant ?? "default";
   const isDisabled = disabled || context.disabled || loading;
 
-
   warnIfMissingAriaLabel("ToggleGroupItem", { children, ...props });
-
 
   const handlePressedChange: TogglePrimitive.Props["onPressedChange"] =
     React.useCallback(
@@ -340,9 +218,7 @@ function ToggleGroupItem({
           NonNullable<TogglePrimitive.Props["onPressedChange"]>
         >[1]
       ) => {
-
         props.onPressedChange?.(pressed, eventDetails);
-
 
         if (ref.current && !loading) {
           ref.current.animate(
@@ -392,8 +268,10 @@ function ToggleGroupItem({
   );
 }
 
-
-
-
-export { ToggleGroup, ToggleGroupItem, toggleGroupVariants, toggleGroupItemVariants };
+export {
+  ToggleGroup,
+  ToggleGroupItem,
+  toggleGroupVariants,
+  toggleGroupItemVariants,
+};
 export type { ToggleGroupProps, ToggleGroupItemProps };

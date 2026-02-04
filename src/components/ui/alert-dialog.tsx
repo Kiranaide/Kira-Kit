@@ -238,7 +238,8 @@ const alertDialogMediaVariants = cva(
 );
 
 interface AlertDialogMediaProps
-  extends React.ComponentProps<"div">,
+  extends
+    React.ComponentProps<"div">,
     VariantProps<typeof alertDialogMediaVariants> {}
 
 function AlertDialogMedia({
@@ -446,8 +447,9 @@ function AlertDialogList({
   );
 }
 
-interface AlertDialogCloseProps
-  extends React.ComponentProps<typeof AlertDialogPrimitive.Close> {
+interface AlertDialogCloseProps extends React.ComponentProps<
+  typeof AlertDialogPrimitive.Close
+> {
   variant?: "outline" | "ghost" | "secondary";
   size?: "icon-xs" | "icon-sm" | "icon" | "default" | "sm";
 }

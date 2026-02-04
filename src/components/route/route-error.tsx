@@ -1,70 +1,80 @@
-import { useRef, useEffect, useState } from 'react'
-import { useRouter, type ErrorComponentProps } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
-import { IconAlertCircle, IconRefresh, IconHome, IconChevronRight, IconChevronDown } from '@tabler/icons-react'
+import { useRef, useEffect, useState } from "react";
+import { useRouter, type ErrorComponentProps } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  IconAlertCircle,
+  IconRefresh,
+  IconHome,
+  IconChevronRight,
+  IconChevronDown,
+} from "@tabler/icons-react";
 
-const ERROR_MESSAGES: Record<string, { title: string; description: string; badge: string }> = {
+const ERROR_MESSAGES: Record<
+  string,
+  { title: string; description: string; badge: string }
+> = {
   ChunkLoadError: {
-    title: 'Failed to load page',
-    description: 'There was a network error while loading this page. Please check your connection.',
-    badge: 'Network Error',
+    title: "Failed to load page",
+    description:
+      "There was a network error while loading this page. Please check your connection.",
+    badge: "Network Error",
   },
   NotFound: {
-    title: 'Page not found',
-    description: 'The page you\'re looking for doesn\'t exist or has been moved.',
-    badge: 'Not Found',
+    title: "Page not found",
+    description: "The page you're looking for doesn't exist or has been moved.",
+    badge: "Not Found",
   },
   default: {
-    title: 'Something went wrong',
-    description: 'An unexpected error occurred. Please try again.',
-    badge: 'Error',
+    title: "Something went wrong",
+    description: "An unexpected error occurred. Please try again.",
+    badge: "Error",
   },
-}
+};
 
 function getErrorInfo(error: Error) {
-  const name = error.name || 'Error'
-  const message = error.message || 'An unknown error occurred'
+  const name = error.name;
+  const message = error.message;
 
-  if (name.includes('ChunkLoadError') || message.includes('Loading chunk')) {
-    return ERROR_MESSAGES.ChunkLoadError
+  if (name.includes("ChunkLoadError") || message.includes("Loading chunk")) {
+    return ERROR_MESSAGES.ChunkLoadError;
   }
-  if (name.includes('NotFound') || message.includes('404')) {
-    return ERROR_MESSAGES.NotFound
+  if (name.includes("NotFound") || message.includes("404")) {
+    return ERROR_MESSAGES.NotFound;
   }
 
-  return ERROR_MESSAGES.default
+  return ERROR_MESSAGES.default;
 }
 
 export function RouteError({ error, reset }: ErrorComponentProps) {
-  const router = useRouter()
-  const [showDetails, setShowDetails] = useState(false)
-  const retryButtonRef = useRef<HTMLButtonElement>(null)
+  const router = useRouter();
+  const [showDetails, setShowDetails] = useState(false);
+  const retryButtonRef = useRef<HTMLButtonElement>(null);
 
-  const errorInfo = getErrorInfo(error)
+  const errorInfo = getErrorInfo(error);
 
   useEffect(() => {
-    retryButtonRef.current?.focus()
-  }, [])
+    retryButtonRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        router.navigate({ to: '/' })
+      if (e.key === "Escape") {
+        router.navigate({ to: "/" });
       }
-    }
-    window.addEventListener('keydown', handleEscape)
-    return () => window.removeEventListener('keydown', handleEscape)
-  }, [router])
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [router]);
 
   const handleRetry = () => {
-    reset()
-  }
+    reset();
+  };
 
   const handleGoHome = () => {
-    router.navigate({ to: '/' })
-  }
+    router.navigate({ to: "/" });
+  };
 
   return (
     <div
@@ -76,7 +86,10 @@ export function RouteError({ error, reset }: ErrorComponentProps) {
       <div className="w-full max-w-md p-8 space-y-6">
         <div className="flex justify-center">
           <div className="p-4 rounded-full bg-destructive/10">
-            <IconAlertCircle className="w-12 h-12 text-destructive" aria-hidden="true" />
+            <IconAlertCircle
+              className="w-12 h-12 text-destructive"
+              aria-hidden="true"
+            />
           </div>
         </div>
 
@@ -85,8 +98,12 @@ export function RouteError({ error, reset }: ErrorComponentProps) {
         </div>
 
         <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold text-foreground">{errorInfo.title}</h2>
-          <p className="text-sm text-muted-foreground">{errorInfo.description}</p>
+          <h2 className="text-2xl font-bold text-foreground">
+            {errorInfo.title}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {errorInfo.description}
+          </p>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -99,11 +116,7 @@ export function RouteError({ error, reset }: ErrorComponentProps) {
             <IconRefresh className="w-4 h-4 mr-2" aria-hidden="true" />
             Try Again
           </Button>
-          <Button
-            onClick={handleGoHome}
-            variant="outline"
-            className="w-full"
-          >
+          <Button onClick={handleGoHome} variant="outline" className="w-full">
             <IconHome className="w-4 h-4 mr-2" aria-hidden="true" />
             Go Home
           </Button>
@@ -118,7 +131,11 @@ export function RouteError({ error, reset }: ErrorComponentProps) {
             >
               View Error Details
               <span className="ml-auto" aria-hidden="true">
-                {showDetails ? <IconChevronDown className="w-4 h-4" /> : <IconChevronRight className="w-4 h-4" />}
+                {showDetails ? (
+                  <IconChevronDown className="w-4 h-4" />
+                ) : (
+                  <IconChevronRight className="w-4 h-4" />
+                )}
               </span>
             </Button>
           </DialogTrigger>
@@ -127,12 +144,12 @@ export function RouteError({ error, reset }: ErrorComponentProps) {
               <h3 className="font-semibold text-foreground">Error Details</h3>
               <pre className="p-4 text-xs bg-muted rounded-lg overflow-auto max-h-64 text-muted-foreground">
                 {error.name}: {error.message}
-                {error.stack && '\n\n' + error.stack}
+                {error.stack && "\n\n" + error.stack}
               </pre>
             </div>
           </DialogContent>
         </Dialog>
       </div>
     </div>
-  )
+  );
 }

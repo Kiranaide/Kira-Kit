@@ -15,9 +15,6 @@ import {
   IconChevronRight,
 } from "@tabler/icons-react";
 
-
-
-
 interface UploadedFile {
   id: string;
   file: File;
@@ -37,9 +34,6 @@ interface FileUploadProps {
   onUpload?: (files: File[]) => Promise<void>;
   enablePreview?: boolean;
 }
-
-
-
 
 function FileUpload({
   accept,
@@ -67,7 +61,6 @@ function FileUpload({
       for (const file of filesArray) {
         if (files.length + newFiles.length >= maxFiles) break;
 
-
         if (file.size > maxSize) {
           newFiles.push({
             id: crypto.randomUUID(),
@@ -76,7 +69,6 @@ function FileUpload({
           });
           continue;
         }
-
 
         let preview: string | undefined;
         if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
@@ -142,7 +134,6 @@ function FileUpload({
     }
   };
 
-
   React.useEffect(() => {
     return () => {
       files.forEach((file) => {
@@ -155,7 +146,6 @@ function FileUpload({
 
   return (
     <div className={cn("space-y-4", className)}>
-      {}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -189,7 +179,6 @@ function FileUpload({
         </p>
       </div>
 
-      {}
       {files.length > 0 && (
         <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
           {files.map((file) => (
@@ -203,7 +192,6 @@ function FileUpload({
         </div>
       )}
 
-      {}
       {previewFile && (
         <FilePreviewModal
           file={previewFile}
@@ -222,7 +210,6 @@ function FileUpload({
         />
       )}
 
-      {}
       {files.length > 0 && onUpload && (
         <button
           onClick={handleUpload}
@@ -235,9 +222,6 @@ function FileUpload({
     </div>
   );
 }
-
-
-
 
 interface FilePreviewProps {
   file: UploadedFile;
@@ -273,7 +257,6 @@ function FilePreview({ file, onRemove, onPreview }: FilePreviewProps) {
       )}
       onClick={onPreview}
     >
-      {}
       <div className="aspect-square bg-muted flex items-center justify-center">
         {isImage && file.preview ? (
           <img
@@ -321,7 +304,6 @@ function FilePreview({ file, onRemove, onPreview }: FilePreviewProps) {
         )}
       </div>
 
-      {}
       <div className="p-2">
         <p className="text-xs font-medium truncate" title={file.file.name}>
           {file.file.name}
@@ -334,7 +316,6 @@ function FilePreview({ file, onRemove, onPreview }: FilePreviewProps) {
         )}
       </div>
 
-      {}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -348,9 +329,6 @@ function FilePreview({ file, onRemove, onPreview }: FilePreviewProps) {
     </div>
   );
 }
-
-
-
 
 interface FilePreviewModalProps {
   file: UploadedFile;
@@ -376,7 +354,6 @@ function FilePreviewModal({
   const currentIndex = allFiles.findIndex((f) => f.id === file.id);
   const canNavigate = allFiles.length > 1;
 
-
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -391,7 +368,6 @@ function FilePreviewModal({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose, onNavigate, canNavigate]);
-
 
   React.useEffect(() => {
     const modal = modalRef.current;
@@ -583,9 +559,6 @@ function FilePreviewModal({
     </div>
   );
 }
-
-
-
 
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 B";

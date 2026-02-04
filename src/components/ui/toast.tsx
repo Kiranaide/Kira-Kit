@@ -10,9 +10,6 @@ import {
   IconLoader2,
 } from "@tabler/icons-react";
 
-
-
-
 const toastVariants = cva(
   "group pointer-events-auto relative flex w-full items-center gap-3 overflow-hidden rounded-lg border p-4 shadow-lg transition-all",
   {
@@ -33,15 +30,16 @@ const toastVariants = cva(
   }
 );
 
-
-
-
-type ToastType = "default" | "success" | "error" | "warning" | "info" | "loading";
+type ToastType =
+  | "default"
+  | "success"
+  | "error"
+  | "warning"
+  | "info"
+  | "loading";
 
 interface ToastOptions extends ExternalToast {
-
   icon?: React.ReactNode;
-
   className?: string;
 }
 
@@ -53,10 +51,6 @@ interface PromiseToastOptions<T> {
   duration?: number;
 }
 
-
-
-
-
 const DURATION = {
   default: 5000,
   success: 4000,
@@ -65,9 +59,6 @@ const DURATION = {
   info: 5000,
   loading: Infinity,
 } as const;
-
-
-
 
 const ToastIcons: Record<ToastType, React.ReactNode> = {
   default: null,
@@ -78,12 +69,7 @@ const ToastIcons: Record<ToastType, React.ReactNode> = {
   loading: <IconLoader2 className="h-5 w-5 animate-spin" data-icon />,
 };
 
-
-
-
-
 const getAriaConfig = (type: ToastType) => {
-
   if (type === "error" || type === "warning") {
     return {
       role: "alert" as const,
@@ -99,9 +85,6 @@ const getAriaConfig = (type: ToastType) => {
   };
 };
 
-
-
-
 const createToast = (type: ToastType) => {
   return (message: string, options?: ToastOptions) => {
     const {
@@ -114,16 +97,15 @@ const createToast = (type: ToastType) => {
     const ariaConfig = getAriaConfig(type);
     const defaultIcon = icon ?? ToastIcons[type];
 
-
-    const sonnerMethod = type === "default" || type === "loading"
-      ? sonnerToast
-      : sonnerToast[type as "success" | "error" | "warning" | "info"];
+    const sonnerMethod =
+      type === "default" || type === "loading"
+        ? sonnerToast
+        : sonnerToast[type as "success" | "error" | "warning" | "info"];
 
     return sonnerMethod(message, {
       duration,
       icon: defaultIcon,
       className: cn(toastVariants({ variant: type }), className),
-
 
       ...rest,
 
@@ -132,104 +114,22 @@ const createToast = (type: ToastType) => {
   };
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const toast = Object.assign(
-
-  (message: string, options?: ToastOptions) => createToast("default")(message, options),
+  (message: string, options?: ToastOptions) =>
+    createToast("default")(message, options),
   {
-
-
-
-
     success: createToast("success"),
-
-
-
-
-
-
     error: createToast("error"),
-
-
-
-
-
     warning: createToast("warning"),
-
-
-
-
-
     info: createToast("info"),
-
-
-
-
-
     loading: createToast("loading"),
-
-
-
-
     message: (title: string, options?: ToastOptions) => {
       return sonnerToast.message(title, {
         duration: DURATION.default,
         ...options,
       });
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-    promise: <T,>(
-      promise: Promise<T>,
-      options: PromiseToastOptions<T>
-    ) => {
+    promise: <T,>(promise: Promise<T>, options: PromiseToastOptions<T>) => {
       return sonnerToast.promise(promise, {
         loading: options.loading,
         success: options.success,
@@ -238,21 +138,6 @@ export const toast = Object.assign(
         duration: options.duration ?? DURATION.success,
       });
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     custom: (
       render: (id: string | number) => React.ReactElement,
       options?: ToastOptions
@@ -262,10 +147,6 @@ export const toast = Object.assign(
         ...options,
       });
     },
-
-
-
-
     dismiss: (id?: string | number) => {
       if (id !== undefined) {
         sonnerToast.dismiss(id);
@@ -273,26 +154,11 @@ export const toast = Object.assign(
         sonnerToast.dismiss();
       }
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     update: (
       id: string | number,
       options: ToastOptions & { message?: string; type?: ToastType }
     ) => {
       const { message, type = "default", ...rest } = options;
-
 
       sonnerToast.dismiss(id);
 
@@ -303,37 +169,12 @@ export const toast = Object.assign(
   }
 );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export function useToast() {
-
   return {
     toast,
     dismiss: toast.dismiss,
   };
 }
-
-
-
 
 export { toastVariants };
 export type { ToastOptions, ToastType, PromiseToastOptions };

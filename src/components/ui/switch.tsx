@@ -6,21 +6,13 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconLoader } from "@tabler/icons-react";
 
-
-
-
-
 const switchTrackVariants = cva(
   [
     "relative inline-flex shrink-0 items-center rounded-full cursor-pointer",
-
     "transition-[background-color,box-shadow] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
     "motion-reduce:transition-none",
-
     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-
     "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
-
     "touch-action-manipulation",
   ],
   {
@@ -42,10 +34,6 @@ const switchTrackVariants = cva(
     },
   }
 );
-
-
-
-
 
 const switchThumbVariants = cva(
   [
@@ -72,60 +60,31 @@ const switchThumbVariants = cva(
   }
 );
 
-
-
-
-
-interface SwitchProps
-  extends Omit<
-    SwitchPrimitive.Root.Props,
-    "checked" | "onCheckedChange" | "defaultChecked"
-  > {
-
+interface SwitchProps extends Omit<
+  SwitchPrimitive.Root.Props,
+  "checked" | "onCheckedChange" | "defaultChecked"
+> {
   checked?: boolean;
-
   defaultChecked?: boolean;
-
   onCheckedChange?: (checked: boolean) => void;
-
   size?: "sm" | "default" | "lg";
-
   color?: "default" | "success" | "destructive" | "warning";
-
   label?: string;
-
   description?: string;
-
   loading?: boolean;
-
   error?: boolean;
-
   errorMessage?: string;
-
   thumbIcon?: React.ReactNode;
-
   thumbIconChecked?: React.ReactNode;
-
   inputRef?: React.Ref<HTMLInputElement>;
-
   name?: string;
-
   value?: string;
-
   required?: boolean;
-
   labelPosition?: "start" | "end";
-
   touchTarget?: boolean;
-
   checkedLabel?: string;
-
   uncheckedLabel?: string;
 }
-
-
-
-
 
 function Switch({
   className,
@@ -158,18 +117,10 @@ function Switch({
   const descriptionId = `${switchId}-description`;
   const errorId = `${switchId}-error`;
 
-
   const isControlled = checked !== undefined;
-  const [internalChecked, setInternalChecked] = React.useState(
-    checked ?? defaultChecked
-  );
+  const [internalChecked, setInternalChecked] = React.useState(defaultChecked);
 
-
-  React.useEffect(() => {
-    if (isControlled && checked !== undefined) {
-      setInternalChecked(checked);
-    }
-  }, [checked, isControlled]);
+  const effectiveChecked = isControlled ? !!checked : internalChecked;
 
   const handleCheckedChange = (newChecked: boolean) => {
     if (!isControlled) {
@@ -197,19 +148,15 @@ function Switch({
     size === "sm"
       ? "h-2.5 w-2.5"
       : size === "default"
-      ? "h-3 w-3"
-      : "h-3.5 w-3.5";
+        ? "h-3 w-3"
+        : "h-3.5 w-3.5";
 
+  const ariaDescribedBy =
+    [description ? descriptionId : null, errorMessage ? errorId : null]
+      .filter(Boolean)
+      .join(" ") || undefined;
 
-  const ariaDescribedBy = [
-    description ? descriptionId : null,
-    errorMessage ? errorId : null,
-  ]
-    .filter(Boolean)
-    .join(" ") || undefined;
-
-
-  const stateLabel = internalChecked
+  const stateLabel = effectiveChecked
     ? checkedLabel || "On"
     : uncheckedLabel || "Off";
 
@@ -229,24 +176,18 @@ function Switch({
       aria-invalid={error || !!errorMessage || undefined}
       aria-errormessage={errorMessage ? errorId : undefined}
       className={({ checked: isChecked }) =>
-        cn(
-          switchTrackVariants({ size, touchTarget }),
-          getColorClass(isChecked)
-        )
+        cn(switchTrackVariants({ size, touchTarget }), getColorClass(isChecked))
       }
       {...props}
     >
       <SwitchPrimitive.Thumb className={cn(switchThumbVariants({ size }))}>
         {loading ? (
           <IconLoader
-            className={cn(
-              "animate-spin text-muted-foreground",
-              iconSizeClass
-            )}
+            className={cn("animate-spin text-muted-foreground", iconSizeClass)}
           />
         ) : (
           <ThumbIcon
-            checked={internalChecked}
+            checked={effectiveChecked}
             thumbIcon={thumbIcon}
             thumbIconChecked={thumbIconChecked}
             iconSizeClass={iconSizeClass}
@@ -256,13 +197,11 @@ function Switch({
     </SwitchPrimitive.Root>
   );
 
-
   const liveRegion = (checkedLabel || uncheckedLabel) && (
     <span className="sr-only" aria-live="polite" aria-atomic="true">
       {stateLabel}
     </span>
   );
-
 
   if (!label && !description && !errorMessage) {
     return (
@@ -321,10 +260,6 @@ function Switch({
   );
 }
 
-
-
-
-
 function ThumbIcon({
   checked,
   thumbIcon,
@@ -366,12 +301,7 @@ function ThumbIcon({
   return null;
 }
 
-
-
-
-
 interface SwitchWithLabelProps extends SwitchProps {
-
   label: string;
 
   description?: string;
@@ -408,12 +338,7 @@ function SwitchWithLabel({
   );
 }
 
-
-
-
-
 interface SwitchGroupProps extends React.HTMLAttributes<HTMLDivElement> {
-
   label?: string;
 
   orientation?: "horizontal" | "vertical";
@@ -433,22 +358,28 @@ function SwitchGroup({
       aria-label={label}
       data-slot="switch-group"
       className={cn(
-        orientation === "vertical" ? "flex flex-col gap-3" : "flex flex-row gap-4 flex-wrap",
+        orientation === "vertical"
+          ? "flex flex-col gap-3"
+          : "flex flex-row gap-4 flex-wrap",
         className
       )}
       {...props}
     >
       {label && (
-        <span className="text-sm font-medium text-foreground mb-1">{label}</span>
+        <span className="text-sm font-medium text-foreground mb-1">
+          {label}
+        </span>
       )}
       {children}
     </div>
   );
 }
 
-
-
-
-
-export { Switch, SwitchWithLabel, SwitchGroup, switchTrackVariants, switchThumbVariants };
+export {
+  Switch,
+  SwitchWithLabel,
+  SwitchGroup,
+  switchTrackVariants,
+  switchThumbVariants,
+};
 export type { SwitchProps, SwitchWithLabelProps, SwitchGroupProps };

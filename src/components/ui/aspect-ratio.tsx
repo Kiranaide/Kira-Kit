@@ -53,7 +53,8 @@ const presetRatios: Record<AspectRatioPreset, number> = {
 };
 
 interface AspectRatioProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof aspectRatioVariants> {
   ratio?: number | AspectRatioPreset;
   loading?: boolean;
@@ -109,8 +110,7 @@ function AspectRatio({
   );
 }
 
-interface ResponsiveAspectRatioProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+interface ResponsiveAspectRatioProps extends React.HTMLAttributes<HTMLDivElement> {
   base: number | AspectRatioPreset;
   md?: number | AspectRatioPreset;
   lg?: number | AspectRatioPreset;

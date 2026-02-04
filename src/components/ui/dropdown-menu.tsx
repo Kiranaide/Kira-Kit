@@ -136,7 +136,7 @@ const DropdownMenuContent = React.forwardRef<
     showBackdrop = false,
     ...props
   },
-  ref,
+  ref
 ) {
   return (
     <Menu.Portal keepMounted={keepMounted}>
@@ -155,7 +155,7 @@ const DropdownMenuContent = React.forwardRef<
             "max-h-(--available-height) w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none",
             "data-open:animate-in data-closed:animate-out data-open:fade-in-0 data-closed:fade-out-0 data-open:zoom-in-95 data-closed:zoom-out-95",
             "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-            className,
+            className
           )}
           {...props}
         />
@@ -175,7 +175,7 @@ const DropdownMenuArrow = React.forwardRef<
       className={cn(
         "z-50 h-2 w-4",
         "[&>polygon]:fill-popover [&>polygon]:stroke-border",
-        className,
+        className
       )}
       {...props}
     />
@@ -201,7 +201,7 @@ const DropdownMenuLabel = React.forwardRef<
       className={cn(
         "px-2 py-1.5 text-xs font-semibold text-muted-foreground",
         inset && "pl-8",
-        className,
+        className
       )}
       {...props}
     />
@@ -224,7 +224,7 @@ const DropdownMenuItem = React.forwardRef<
     closeOnClick,
     ...props
   },
-  ref,
+  ref
 ) {
   return (
     <Menu.Item
@@ -241,7 +241,7 @@ const DropdownMenuItem = React.forwardRef<
         variant === "destructive" &&
           "text-destructive data-highlighted:bg-destructive/10 dark:data-highlighted:bg-destructive/20 data-highlighted:text-destructive",
         inset && "pl-8",
-        className,
+        className
       )}
       disabled={disabled || loading}
       closeOnClick={closeOnClick}
@@ -277,7 +277,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
   DropdownMenuSubTriggerProps
 >(function DropdownMenuSubTrigger(
   { className, inset, icon, children, ...props },
-  ref,
+  ref
 ) {
   return (
     <Menu.SubmenuTrigger
@@ -290,7 +290,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
         "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
         "data-popup-open:bg-accent data-popup-open:text-accent-foreground",
         inset && "pl-8",
-        className,
+        className
       )}
       {...props}
     >
@@ -320,7 +320,7 @@ const DropdownMenuSubContent = React.forwardRef<
     keepMounted = false,
     ...props
   },
-  ref,
+  ref
 ) {
   return (
     <Menu.Portal keepMounted={keepMounted}>
@@ -338,7 +338,7 @@ const DropdownMenuSubContent = React.forwardRef<
             "max-h-(--available-height) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none",
             "data-open:animate-in data-closed:animate-out data-open:fade-in-0 data-closed:fade-out-0 data-open:zoom-in-95 data-closed:zoom-out-95",
             "slide-in-from-left-2",
-            className,
+            className
           )}
           {...props}
         />
@@ -352,7 +352,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
   DropdownMenuCheckboxItemProps
 >(function DropdownMenuCheckboxItem(
   { className, children, icon, iconChecked, inset, closeOnClick, ...props },
-  ref,
+  ref
 ) {
   return (
     <Menu.CheckboxItem
@@ -364,7 +364,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
         "data-disabled:pointer-events-none data-disabled:opacity-50",
-        className,
+        className
       )}
       closeOnClick={closeOnClick}
       {...props}
@@ -405,7 +405,7 @@ const DropdownMenuRadioItem = React.forwardRef<
   DropdownMenuRadioItemProps
 >(function DropdownMenuRadioItem(
   { className, children, icon, inset, closeOnClick, ...props },
-  ref,
+  ref
 ) {
   return (
     <Menu.RadioItem
@@ -417,7 +417,7 @@ const DropdownMenuRadioItem = React.forwardRef<
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
         "data-disabled:pointer-events-none data-disabled:opacity-50",
-        className,
+        className
       )}
       closeOnClick={closeOnClick}
       {...props}
@@ -465,7 +465,7 @@ const DropdownMenuShortcut = React.forwardRef<
       aria-hidden="true"
       className={cn(
         "ml-auto text-xs tracking-widest text-muted-foreground",
-        className,
+        className
       )}
       {...props}
     />

@@ -1,12 +1,15 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const cardVariants = {
   default: "ring-foreground/10 bg-card",
-  interactive: "ring-foreground/10 bg-card hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer",
-  gradient: "bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/5 ring-primary/20",
-  glass: "bg-background/60 dark:bg-background/40 backdrop-blur-xl backdrop-saturate-150 border border-border/50 shadow-lg ring-0",
+  interactive:
+    "ring-foreground/10 bg-card hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer",
+  gradient:
+    "bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/5 ring-primary/20",
+  glass:
+    "bg-background/60 dark:bg-background/40 backdrop-blur-xl backdrop-saturate-150 border border-border/50 shadow-lg ring-0",
   outline: "bg-transparent border-2 border-border ring-0",
   elevated: "ring-foreground/10 bg-card shadow-lg",
   bordered: "bg-card border-2 border-border ring-0",
@@ -22,7 +25,17 @@ function Card({
   ...props
 }: React.ComponentProps<"div"> & {
   size?: "default" | "sm";
-  variant?: "default" | "interactive" | "gradient" | "glass" | "outline" | "elevated" | "bordered" | "flat" | "elevated2" | "soft";
+  variant?:
+    | "default"
+    | "interactive"
+    | "gradient"
+    | "glass"
+    | "outline"
+    | "elevated"
+    | "bordered"
+    | "flat"
+    | "elevated2"
+    | "soft";
 }) {
   return (
     <div
@@ -36,7 +49,7 @@ function Card({
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
@@ -49,17 +62,20 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-title"
-      className={cn("text-base leading-snug font-medium group-data-[size=sm]/card:text-sm", className)}
+      className={cn(
+        "text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
+        className
+      )}
       {...props}
     />
-  )
+  );
 }
 
 function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
@@ -69,7 +85,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
       className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
-  )
+  );
 }
 
 function CardAction({ className, ...props }: React.ComponentProps<"div">) {
@@ -82,7 +98,7 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
@@ -92,17 +108,20 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
       className={cn("px-4 group-data-[size=sm]/card:px-3", className)}
       {...props}
     />
-  )
+  );
 }
 
 function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-footer"
-      className={cn("bg-muted/50 rounded-b-xl border-t p-4 group-data-[size=sm]/card:p-3 flex items-center", className)}
+      className={cn(
+        "bg-muted/50 rounded-b-xl border-t p-4 group-data-[size=sm]/card:p-3 flex items-center",
+        className
+      )}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -113,4 +132,4 @@ export {
   CardAction,
   CardDescription,
   CardContent,
-}
+};

@@ -1,9 +1,6 @@
 import * as React from "react";
 import type { Table } from "@tanstack/react-table";
 
-// ============================================
-// USE DATA TABLE PERSISTENCE HOOK
-// ============================================
 // Persists table state to localStorage or URL params
 
 interface PersistableState {
@@ -152,8 +149,8 @@ export function useDataTablePersistence<TData>(
       if (state.globalFilter && persist.globalFilter) {
         table.setGlobalFilter(state.globalFilter);
       }
-    } catch (error) {
-      console.warn("Failed to restore table state:", error);
+    } catch {
+      // Failed to restore state, will use defaults
     }
   }, [table, storageKey, storage, persist]);
 

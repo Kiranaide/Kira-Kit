@@ -1,9 +1,13 @@
-import * as React from "react"
-import { IconTrendingUp, IconTrendingDown, IconMinus } from "@tabler/icons-react"
-import { Area, AreaChart, ResponsiveContainer } from "recharts"
-import { cva, type VariantProps } from "class-variance-authority"
-import { gsap } from "gsap"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import {
+  IconTrendingUp,
+  IconTrendingDown,
+  IconMinus,
+} from "@tabler/icons-react";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import { cva, type VariantProps } from "class-variance-authority";
+import { gsap } from "gsap";
+import { cn } from "@/lib/utils";
 import {
   Drawer,
   DrawerContent,
@@ -11,28 +15,24 @@ import {
   DrawerTitle,
   DrawerDescription,
   DrawerBody,
-} from "@/components/ui/drawer"
-
-
-
-
+} from "@/components/ui/drawer";
 
 function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
 
   React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
-    setPrefersReducedMotion(mediaQuery.matches)
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
 
     const handler = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches)
-    }
+      setPrefersReducedMotion(event.matches);
+    };
 
-    mediaQuery.addEventListener("change", handler)
-    return () => mediaQuery.removeEventListener("change", handler)
-  }, [])
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
 
-  return prefersReducedMotion
+  return prefersReducedMotion;
 }
 
 function useCountUp(
@@ -41,52 +41,50 @@ function useCountUp(
   enabled: boolean = true,
   decimals: number = 0
 ): number {
-  const [displayValue, setDisplayValue] = React.useState(0)
-  const reducedMotion = useReducedMotion()
-  const previousValue = React.useRef(0)
+  const [displayValue, setDisplayValue] = React.useState(0);
+  const reducedMotion = useReducedMotion();
+  const previousValue = React.useRef(0);
 
   React.useEffect(() => {
     if (!enabled || reducedMotion) {
-      setDisplayValue(value)
-      previousValue.current = value
-      return
+      setDisplayValue(value);
+      previousValue.current = value;
+      return;
     }
 
-    const obj = { val: previousValue.current }
+    const obj = { val: previousValue.current };
     gsap.to(obj, {
       val: value,
       duration,
       ease: "power2.out",
       onUpdate: () => {
-        setDisplayValue(obj.val)
+        setDisplayValue(obj.val);
       },
       onComplete: () => {
-        previousValue.current = value
+        previousValue.current = value;
       },
-    })
+    });
 
     return () => {
-      gsap.killTweensOf(obj)
-    }
-  }, [value, duration, enabled, reducedMotion])
+      gsap.killTweensOf(obj);
+    };
+  }, [value, duration, enabled, reducedMotion]);
 
-  return decimals > 0 ? Number(displayValue.toFixed(decimals)) : Math.round(displayValue)
+  return decimals > 0
+    ? Number(displayValue.toFixed(decimals))
+    : Math.round(displayValue);
 }
 
-
-
-
-
-type FormatType = "currency" | "percentage" | "compact" | "number" | "custom"
+type FormatType = "currency" | "percentage" | "compact" | "number" | "custom";
 
 interface FormatOptions {
-  format?: FormatType
-  currency?: string
-  locale?: string
-  decimals?: number
-  prefix?: string
-  suffix?: string
-  formatter?: (value: number) => string
+  format?: FormatType;
+  currency?: string;
+  locale?: string;
+  decimals?: number;
+  prefix?: string;
+  suffix?: string;
+  formatter?: (value: number) => string;
 }
 
 function formatValue(value: number, options: FormatOptions = {}): string {
@@ -98,13 +96,13 @@ function formatValue(value: number, options: FormatOptions = {}): string {
     prefix = "",
     suffix = "",
     formatter,
-  } = options
+  } = options;
 
   if (formatter) {
-    return `${prefix}${formatter(value)}${suffix}`
+    return `${prefix}${formatter(value)}${suffix}`;
   }
 
-  let formatted: string
+  let formatted: string;
 
   switch (format) {
     case "currency":
@@ -113,33 +111,29 @@ function formatValue(value: number, options: FormatOptions = {}): string {
         currency,
         minimumFractionDigits: decimals ?? 0,
         maximumFractionDigits: decimals ?? 0,
-      }).format(value)
-      break
+      }).format(value);
+      break;
     case "percentage":
-      formatted = `${value.toFixed(decimals ?? 1)}%`
-      break
+      formatted = `${value.toFixed(decimals ?? 1)}%`;
+      break;
     case "compact":
       formatted = new Intl.NumberFormat(locale, {
         notation: "compact",
         compactDisplay: "short",
         maximumFractionDigits: decimals ?? 1,
-      }).format(value)
-      break
+      }).format(value);
+      break;
     case "number":
     default:
       formatted = new Intl.NumberFormat(locale, {
         minimumFractionDigits: decimals ?? 0,
         maximumFractionDigits: decimals ?? 0,
-      }).format(value)
-      break
+      }).format(value);
+      break;
   }
 
-  return `${prefix}${formatted}${suffix}`
+  return `${prefix}${formatted}${suffix}`;
 }
-
-
-
-
 
 const statsCardVariants = cva(
   "relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-200",
@@ -149,11 +143,11 @@ const statsCardVariants = cva(
         default: "border-border",
         outline: "border-2",
         filled: "bg-muted/50 border-transparent",
-        gradient: "bg-gradient-to-br from-primary/10 to-primary/5 border-transparent",
+        gradient:
+          "bg-gradient-to-br from-primary/10 to-primary/5 border-transparent",
         interactive:
           "border-border cursor-pointer hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        glass:
-          "bg-background/60 backdrop-blur-xl border-border/50 shadow-lg",
+        glass: "bg-background/60 backdrop-blur-xl border-border/50 shadow-lg",
       },
       size: {
         sm: "p-3",
@@ -174,7 +168,7 @@ const statsCardVariants = cva(
       status: "default",
     },
   }
-)
+);
 
 const statsCardIconVariants = cva(
   "flex items-center justify-center rounded-lg shrink-0",
@@ -199,7 +193,7 @@ const statsCardIconVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 const statsCardHeaderVariants = cva("flex items-start justify-between gap-2", {
   variants: {
@@ -212,7 +206,7 @@ const statsCardHeaderVariants = cva("flex items-start justify-between gap-2", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
 const statsCardValueVariants = cva("font-bold tracking-tight tabular-nums", {
   variants: {
@@ -225,7 +219,7 @@ const statsCardValueVariants = cva("font-bold tracking-tight tabular-nums", {
   defaultVariants: {
     size: "default",
   },
-})
+});
 
 const statsCardTrendVariants = cva(
   "inline-flex items-center gap-1 text-sm font-medium",
@@ -241,12 +235,12 @@ const statsCardTrendVariants = cva(
       trend: "neutral",
     },
   }
-)
+);
 
 const statsCardDescriptionVariants = cva("text-sm text-muted-foreground", {
   variants: {},
   defaultVariants: {},
-})
+});
 
 const statsCardProgressVariants = cva(
   "relative h-1.5 w-full overflow-hidden rounded-full bg-muted",
@@ -263,101 +257,102 @@ const statsCardProgressVariants = cva(
       variant: "default",
     },
   }
-)
-
-
-
-
+);
 
 interface StatsCardContextValue {
-  id: string
-  isInteractive: boolean
-  size: "sm" | "default" | "lg"
+  id: string;
+  isInteractive: boolean;
+  size: "sm" | "default" | "lg";
 }
 
-const StatsCardContext = React.createContext<StatsCardContextValue | null>(null)
+const StatsCardContext = React.createContext<StatsCardContextValue | null>(
+  null
+);
 
 function useStatsCardContext() {
-  const context = React.useContext(StatsCardContext)
+  const context = React.useContext(StatsCardContext);
   if (!context) {
-    throw new Error("StatsCard components must be used within a StatsCard")
+    throw new Error("StatsCard components must be used within a StatsCard");
   }
-  return context
+  return context;
 }
 
 interface StatsCardProps
-  extends React.ComponentPropsWithoutRef<"article">,
+  extends
+    React.ComponentPropsWithoutRef<"article">,
     VariantProps<typeof statsCardVariants> {
-  loading?: boolean
-  drawerContent?: React.ReactNode
-  drawerTitle?: string
-  drawerDescription?: string
-  onOpenChange?: (open: boolean) => void
+  loading?: boolean;
+  drawerContent?: React.ReactNode;
+  drawerTitle?: string;
+  drawerDescription?: string;
+  onOpenChange?: (open: boolean) => void;
 }
 
 interface StatsCardIconProps
-  extends React.ComponentPropsWithoutRef<"div">,
+  extends
+    React.ComponentPropsWithoutRef<"div">,
     VariantProps<typeof statsCardIconVariants> {}
 
 interface StatsCardHeaderProps
-  extends React.ComponentPropsWithoutRef<"div">,
+  extends
+    React.ComponentPropsWithoutRef<"div">,
     VariantProps<typeof statsCardHeaderVariants> {}
 
-type StatsCardTitleProps = React.ComponentPropsWithoutRef<"h3">
+type StatsCardTitleProps = React.ComponentPropsWithoutRef<"h3">;
 
-type StatsCardActionProps = React.ComponentPropsWithoutRef<"div">
+type StatsCardActionProps = React.ComponentPropsWithoutRef<"div">;
 
 interface StatsCardValueProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "children">,
+  extends
+    Omit<React.ComponentPropsWithoutRef<"div">, "children">,
     VariantProps<typeof statsCardValueVariants>,
     FormatOptions {
-  value?: number
-  animate?: boolean
-  animationDuration?: number
-  children?: React.ReactNode
+  value?: number;
+  animate?: boolean;
+  animationDuration?: number;
+  children?: React.ReactNode;
 }
 
 interface StatsCardTrendProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "trend">,
+  extends
+    Omit<React.ComponentPropsWithoutRef<"div">, "trend">,
     VariantProps<typeof statsCardTrendVariants> {
-  value: number
-  showIcon?: boolean
-  showSign?: boolean
-  comparison?: string
+  value: number;
+  showIcon?: boolean;
+  showSign?: boolean;
+  comparison?: string;
 }
 
 interface StatsCardDescriptionProps
-  extends React.ComponentPropsWithoutRef<"p">,
+  extends
+    React.ComponentPropsWithoutRef<"p">,
     VariantProps<typeof statsCardDescriptionVariants> {}
 
 interface StatsCardProgressProps
-  extends React.ComponentPropsWithoutRef<"div">,
+  extends
+    React.ComponentPropsWithoutRef<"div">,
     VariantProps<typeof statsCardProgressVariants> {
-  value: number
-  max?: number
-  showLabel?: boolean
+  value: number;
+  max?: number;
+  showLabel?: boolean;
 }
 
-type StatsCardSparkProps = React.ComponentPropsWithoutRef<"div">
+type StatsCardSparkProps = React.ComponentPropsWithoutRef<"div">;
 
 interface StatsCardSparklineProps extends React.ComponentPropsWithoutRef<"div"> {
-  data: number[]
-  trend?: "up" | "down" | "neutral"
+  data: number[];
+  trend?: "up" | "down" | "neutral";
 }
 
-type StatsCardFooterProps = React.ComponentPropsWithoutRef<"div">
+type StatsCardFooterProps = React.ComponentPropsWithoutRef<"div">;
 
-type StatsCardTimeRangeProps = React.ComponentPropsWithoutRef<"span">
+type StatsCardTimeRangeProps = React.ComponentPropsWithoutRef<"span">;
 
 interface StatsCardSkeletonProps extends React.ComponentPropsWithoutRef<"div"> {
-  showSparkline?: boolean
-  showIcon?: boolean
-  showProgress?: boolean
+  showSparkline?: boolean;
+  showIcon?: boolean;
+  showProgress?: boolean;
 }
-
-
-
-
 
 const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
   (
@@ -377,33 +372,34 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
     },
     ref
   ) => {
-    const id = React.useId()
-    const [drawerOpen, setDrawerOpen] = React.useState(false)
-    const isInteractive = variant === "interactive" || !!onClick || !!drawerContent
+    const id = React.useId();
+    const [drawerOpen, setDrawerOpen] = React.useState(false);
+    const isInteractive =
+      variant === "interactive" || !!onClick || !!drawerContent;
 
     const handleClick = (e: React.MouseEvent<HTMLElement>) => {
       if (drawerContent) {
-        setDrawerOpen(true)
+        setDrawerOpen(true);
       }
-      onClick?.(e)
-    }
+      onClick?.(e);
+    };
 
     const handleDrawerOpenChange = (open: boolean) => {
-      setDrawerOpen(open)
-      onOpenChange?.(open)
-    }
+      setDrawerOpen(open);
+      onOpenChange?.(open);
+    };
 
     const contextValue = React.useMemo(
       () => ({ id, isInteractive, size: size || "default" }),
       [id, isInteractive, size]
-    )
+    );
 
     if (loading) {
       return (
         <StatsCardContext.Provider value={contextValue}>
           <StatsCardSkeleton className={className} />
         </StatsCardContext.Provider>
-      )
+      );
     }
 
     const cardContent = (
@@ -418,8 +414,8 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
           isInteractive
             ? (e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault()
-                  handleClick(e as unknown as React.MouseEvent<HTMLElement>)
+                  e.preventDefault();
+                  handleClick(e as unknown as React.MouseEvent<HTMLElement>);
                 }
               }
             : undefined
@@ -429,7 +425,7 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
       >
         {children}
       </article>
-    )
+    );
 
     if (drawerContent) {
       return (
@@ -447,17 +443,17 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
             </DrawerContent>
           </Drawer>
         </StatsCardContext.Provider>
-      )
+      );
     }
 
     return (
       <StatsCardContext.Provider value={contextValue}>
         {cardContent}
       </StatsCardContext.Provider>
-    )
+    );
   }
-)
-StatsCard.displayName = "StatsCard"
+);
+StatsCard.displayName = "StatsCard";
 
 const StatsCardIcon = React.forwardRef<HTMLDivElement, StatsCardIconProps>(
   ({ className, variant, size, ...props }, ref) => (
@@ -469,8 +465,8 @@ const StatsCardIcon = React.forwardRef<HTMLDivElement, StatsCardIconProps>(
       {...props}
     />
   )
-)
-StatsCardIcon.displayName = "StatsCardIcon"
+);
+StatsCardIcon.displayName = "StatsCardIcon";
 
 const StatsCardHeader = React.forwardRef<HTMLDivElement, StatsCardHeaderProps>(
   ({ className, size, ...props }, ref) => (
@@ -481,24 +477,25 @@ const StatsCardHeader = React.forwardRef<HTMLDivElement, StatsCardHeaderProps>(
       {...props}
     />
   )
-)
-StatsCardHeader.displayName = "StatsCardHeader"
+);
+StatsCardHeader.displayName = "StatsCardHeader";
 
-const StatsCardTitle = React.forwardRef<HTMLHeadingElement, StatsCardTitleProps>(
-  ({ className, ...props }, ref) => {
-    const { id } = useStatsCardContext()
-    return (
-      <h3
-        ref={ref}
-        id={`${id}-title`}
-        data-slot="stats-card-title"
-        className={cn("text-sm font-medium text-muted-foreground", className)}
-        {...props}
-      />
-    )
-  }
-)
-StatsCardTitle.displayName = "StatsCardTitle"
+const StatsCardTitle = React.forwardRef<
+  HTMLHeadingElement,
+  StatsCardTitleProps
+>(({ className, ...props }, ref) => {
+  const { id } = useStatsCardContext();
+  return (
+    <h3
+      ref={ref}
+      id={`${id}-title`}
+      data-slot="stats-card-title"
+      className={cn("text-sm font-medium text-muted-foreground", className)}
+      {...props}
+    />
+  );
+});
+StatsCardTitle.displayName = "StatsCardTitle";
 
 const StatsCardAction = React.forwardRef<HTMLDivElement, StatsCardActionProps>(
   ({ className, ...props }, ref) => (
@@ -509,8 +506,8 @@ const StatsCardAction = React.forwardRef<HTMLDivElement, StatsCardActionProps>(
       {...props}
     />
   )
-)
-StatsCardAction.displayName = "StatsCardAction"
+);
+StatsCardAction.displayName = "StatsCardAction";
 
 const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
   (
@@ -532,13 +529,13 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
     },
     ref
   ) => {
-    const { id } = useStatsCardContext()
+    const { id } = useStatsCardContext();
     const animatedValue = useCountUp(
       value ?? 0,
       animationDuration,
       animate && value !== undefined,
       decimals ?? (format === "percentage" ? 1 : 0)
-    )
+    );
 
     const displayValue =
       children ??
@@ -552,7 +549,7 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
             suffix,
             formatter,
           })
-        : null)
+        : null);
 
     return (
       <div
@@ -567,10 +564,10 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
       >
         {displayValue}
       </div>
-    )
+    );
   }
-)
-StatsCardValue.displayName = "StatsCardValue"
+);
+StatsCardValue.displayName = "StatsCardValue";
 
 const StatsCardTrend = React.forwardRef<HTMLDivElement, StatsCardTrendProps>(
   (
@@ -585,29 +582,29 @@ const StatsCardTrend = React.forwardRef<HTMLDivElement, StatsCardTrendProps>(
     },
     ref
   ) => {
-    const isPositive = Number(value) > 0
-    const isNegative = Number(value) < 0
-    const isNeutral = Number(value) === 0
+    const isPositive = Number(value) > 0;
+    const isNegative = Number(value) < 0;
+    const isNeutral = Number(value) === 0;
 
     const trendValue =
       showSign && !isNeutral
         ? `${isPositive ? "+" : ""}${Number(value)}%`
-        : `${Math.abs(Number(value))}%`
+        : `${Math.abs(Number(value))}%`;
 
     const TrendIcon = isPositive
       ? IconTrendingUp
       : isNegative
         ? IconTrendingDown
-        : IconMinus
+        : IconMinus;
 
     const computedTrend =
-      trend || (isPositive ? "up" : isNegative ? "down" : "neutral")
+      trend || (isPositive ? "up" : isNegative ? "down" : "neutral");
 
     const screenReaderText = isPositive
       ? `Increased by ${Math.abs(value)} percent`
       : isNegative
         ? `Decreased by ${Math.abs(value)} percent`
-        : "No change"
+        : "No change";
 
     return (
       <div
@@ -621,7 +618,10 @@ const StatsCardTrend = React.forwardRef<HTMLDivElement, StatsCardTrendProps>(
         {showIcon && <TrendIcon className="h-4 w-4" aria-hidden="true" />}
         <span aria-hidden="true">{trendValue}</span>
         {comparison && (
-          <span className="text-muted-foreground font-normal" aria-hidden="true">
+          <span
+            className="text-muted-foreground font-normal"
+            aria-hidden="true"
+          >
             {comparison}
           </span>
         )}
@@ -630,10 +630,10 @@ const StatsCardTrend = React.forwardRef<HTMLDivElement, StatsCardTrendProps>(
           {comparison ? ` ${comparison}` : ""}
         </span>
       </div>
-    )
+    );
   }
-)
-StatsCardTrend.displayName = "StatsCardTrend"
+);
+StatsCardTrend.displayName = "StatsCardTrend";
 
 const StatsCardDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -645,22 +645,33 @@ const StatsCardDescription = React.forwardRef<
     className={cn(statsCardDescriptionVariants({ className }))}
     {...props}
   />
-))
-StatsCardDescription.displayName = "StatsCardDescription"
+));
+StatsCardDescription.displayName = "StatsCardDescription";
 
-const StatsCardProgress = React.forwardRef<HTMLDivElement, StatsCardProgressProps>(
-  ({ className, variant, value, max = 100, showLabel = false, ...props }, ref) => {
-    const percentage = Math.min(100, Math.max(0, (value / max) * 100))
+const StatsCardProgress = React.forwardRef<
+  HTMLDivElement,
+  StatsCardProgressProps
+>(
+  (
+    { className, variant, value, max = 100, showLabel = false, ...props },
+    ref
+  ) => {
+    const percentage = Math.min(100, Math.max(0, (value / max) * 100));
 
     const indicatorColor = {
       default: "bg-primary",
       success: "bg-success",
       warning: "bg-warning",
       destructive: "bg-destructive",
-    }
+    };
 
     return (
-      <div ref={ref} data-slot="stats-card-progress" className="space-y-1" {...props}>
+      <div
+        ref={ref}
+        data-slot="stats-card-progress"
+        className="space-y-1"
+        {...props}
+      >
         {showLabel && (
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>{value}</span>
@@ -684,10 +695,10 @@ const StatsCardProgress = React.forwardRef<HTMLDivElement, StatsCardProgressProp
           />
         </div>
       </div>
-    )
+    );
   }
-)
-StatsCardProgress.displayName = "StatsCardProgress"
+);
+StatsCardProgress.displayName = "StatsCardProgress";
 
 const StatsCardSpark = React.forwardRef<HTMLDivElement, StatsCardSparkProps>(
   ({ className, children, ...props }, ref) => (
@@ -701,48 +712,49 @@ const StatsCardSpark = React.forwardRef<HTMLDivElement, StatsCardSparkProps>(
       {children}
     </div>
   )
-)
-StatsCardSpark.displayName = "StatsCardSpark"
+);
+StatsCardSpark.displayName = "StatsCardSpark";
 
-const StatsCardSparkline = React.forwardRef<HTMLDivElement, StatsCardSparklineProps>(
-  ({ className, data, trend = "neutral", ...props }, ref) => {
-    const reducedMotion = useReducedMotion()
-    const color =
-      trend === "up" ? "#22c55e" : trend === "down" ? "#ef4444" : "#6b7280"
-    const chartData = data.map((value, index) => ({ index, value }))
-    const gradientId = React.useId()
+const StatsCardSparkline = React.forwardRef<
+  HTMLDivElement,
+  StatsCardSparklineProps
+>(({ className, data, trend = "neutral", ...props }, ref) => {
+  const reducedMotion = useReducedMotion();
+  const color =
+    trend === "up" ? "#22c55e" : trend === "down" ? "#ef4444" : "#6b7280";
+  const chartData = data.map((value, index) => ({ index, value }));
+  const gradientId = React.useId();
 
-    return (
-      <div
-        ref={ref}
-        data-slot="stats-card-sparkline"
-        className={cn("h-16 w-full", className)}
-        {...props}
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData}>
-            <defs>
-              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={color} stopOpacity={0.3} />
-                <stop offset="95%" stopColor={color} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke={color}
-              strokeWidth={1.5}
-              fill={`url(#${gradientId})`}
-              isAnimationActive={!reducedMotion}
-              animationDuration={500}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    )
-  }
-)
-StatsCardSparkline.displayName = "StatsCardSparkline"
+  return (
+    <div
+      ref={ref}
+      data-slot="stats-card-sparkline"
+      className={cn("h-16 w-full", className)}
+      {...props}
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData}>
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={color} stopOpacity={0.3} />
+              <stop offset="95%" stopColor={color} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke={color}
+            strokeWidth={1.5}
+            fill={`url(#${gradientId})`}
+            isAnimationActive={!reducedMotion}
+            animationDuration={500}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+});
+StatsCardSparkline.displayName = "StatsCardSparkline";
 
 const StatsCardFooter = React.forwardRef<HTMLDivElement, StatsCardFooterProps>(
   ({ className, ...props }, ref) => (
@@ -756,23 +768,36 @@ const StatsCardFooter = React.forwardRef<HTMLDivElement, StatsCardFooterProps>(
       {...props}
     />
   )
-)
-StatsCardFooter.displayName = "StatsCardFooter"
+);
+StatsCardFooter.displayName = "StatsCardFooter";
 
-const StatsCardTimeRange = React.forwardRef<HTMLSpanElement, StatsCardTimeRangeProps>(
-  ({ className, ...props }, ref) => (
-    <span
-      ref={ref}
-      data-slot="stats-card-time-range"
-      className={cn("text-xs text-muted-foreground", className)}
-      {...props}
-    />
-  )
-)
-StatsCardTimeRange.displayName = "StatsCardTimeRange"
+const StatsCardTimeRange = React.forwardRef<
+  HTMLSpanElement,
+  StatsCardTimeRangeProps
+>(({ className, ...props }, ref) => (
+  <span
+    ref={ref}
+    data-slot="stats-card-time-range"
+    className={cn("text-xs text-muted-foreground", className)}
+    {...props}
+  />
+));
+StatsCardTimeRange.displayName = "StatsCardTimeRange";
 
-const StatsCardSkeleton = React.forwardRef<HTMLDivElement, StatsCardSkeletonProps>(
-  ({ className, showSparkline = false, showIcon = false, showProgress = false, ...props }, ref) => (
+const StatsCardSkeleton = React.forwardRef<
+  HTMLDivElement,
+  StatsCardSkeletonProps
+>(
+  (
+    {
+      className,
+      showSparkline = false,
+      showIcon = false,
+      showProgress = false,
+      ...props
+    },
+    ref
+  ) => (
     <div
       ref={ref}
       data-slot="stats-card-skeleton"
@@ -786,9 +811,7 @@ const StatsCardSkeleton = React.forwardRef<HTMLDivElement, StatsCardSkeletonProp
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 space-y-2">
-          {showIcon && (
-            <div className="h-10 w-10 rounded-lg bg-muted" />
-          )}
+          {showIcon && <div className="h-10 w-10 rounded-lg bg-muted" />}
           <div className="h-4 w-24 rounded bg-muted" />
           <div className="h-8 w-32 rounded bg-muted" />
           <div className="h-4 w-16 rounded bg-muted" />
@@ -797,17 +820,11 @@ const StatsCardSkeleton = React.forwardRef<HTMLDivElement, StatsCardSkeletonProp
       {showProgress && (
         <div className="mt-3 h-1.5 w-full rounded-full bg-muted" />
       )}
-      {showSparkline && (
-        <div className="mt-3 h-16 w-full rounded bg-muted" />
-      )}
+      {showSparkline && <div className="mt-3 h-16 w-full rounded bg-muted" />}
     </div>
   )
-)
-StatsCardSkeleton.displayName = "StatsCardSkeleton"
-
-
-
-
+);
+StatsCardSkeleton.displayName = "StatsCardSkeleton";
 
 export {
   StatsCard,
@@ -834,7 +851,7 @@ export {
   formatValue,
   useCountUp,
   useReducedMotion,
-}
+};
 
 export type {
   StatsCardProps,
@@ -853,4 +870,4 @@ export type {
   StatsCardSkeletonProps,
   FormatType,
   FormatOptions,
-}
+};

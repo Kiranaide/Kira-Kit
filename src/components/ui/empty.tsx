@@ -32,7 +32,8 @@ const emptyIcons = {
 };
 
 interface EmptyProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof emptyVariants> {
   icon?: keyof typeof emptyIcons | React.ReactNode;
   title?: string;
@@ -61,7 +62,6 @@ function Empty({
       className={cn(emptyVariants({ size }), className)}
       {...props}
     >
-      {}
       <div className="text-muted-foreground/50">
         {IconComponent ? (
           <IconComponent
@@ -69,8 +69,8 @@ function Empty({
               size === "sm"
                 ? "h-10 w-10"
                 : size === "lg"
-                ? "h-16 w-16"
-                : "h-12 w-12"
+                  ? "h-16 w-16"
+                  : "h-12 w-12"
             )}
             strokeWidth={1.5}
             aria-hidden="true"
@@ -80,7 +80,6 @@ function Empty({
         )}
       </div>
 
-      {}
       {title && (
         <h3
           className={cn(
@@ -92,7 +91,6 @@ function Empty({
         </h3>
       )}
 
-      {}
       {description && (
         <p
           className={cn(
@@ -104,15 +102,12 @@ function Empty({
         </p>
       )}
 
-      {}
       {action && <div className="mt-2">{action}</div>}
 
-      {}
       {children}
     </div>
   );
 }
-
 
 function EmptyInbox(props: Omit<EmptyProps, "icon">) {
   return <Empty icon="inbox" title="No messages" {...props} />;

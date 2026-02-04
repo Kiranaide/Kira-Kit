@@ -124,7 +124,7 @@ async function loadFaceDetectionModel(): Promise<FaceDetector> {
         runtime: "tfjs",
         maxFaces: 5,
       });
-      return detector as unknown as FaceDetector;
+      return detector as FaceDetector;
     })();
   }
   return faceDetectionModelPromise;
@@ -144,7 +144,7 @@ let tesseractPromise: Promise<TesseractModule> | null = null;
 async function loadTesseract(): Promise<TesseractModule> {
   if (!tesseractPromise) {
     tesseractPromise = import("tesseract.js").then(
-      (mod) => (mod.default || mod) as unknown as TesseractModule
+      (mod) => (mod.default || mod) as TesseractModule
     );
   }
   return tesseractPromise;
@@ -345,8 +345,8 @@ const FaceDetection = React.forwardRef<HTMLDivElement, FaceDetectionProps>(
           setIsAligned(false);
           onAlignmentChange?.(false);
         }
-      } catch (err) {
-        console.error("Face detection error:", err);
+      } catch {
+        // Face detection failed silently
       }
     }, [
       videoRef,
@@ -426,10 +426,9 @@ const FaceDetection = React.forwardRef<HTMLDivElement, FaceDetectionProps>(
           detectorRef.current = detector;
           setIsLoading(false);
           runDetectionLoop();
-        } catch (err) {
-          console.error("Failed to load face detection model:", err);
-          if (mounted) setIsLoading(false);
-        }
+      } catch {
+        setIsLoading(false);
+      }
       })();
 
       return () => {
@@ -602,9 +601,8 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
         const worker = tesseractWorkerRef.current;
         const { data } = await worker.recognize(imageBlob);
         return data.text;
-      } catch (err) {
-        console.error("OCR failed:", err);
-        throw err;
+      } catch {
+        onScanError?.(new Error("Failed to read document"));
       }
     }, []);
 
@@ -616,7 +614,7 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
         if (!result) throw new Error("Failed to capture image");
 
         const text = await performOCR(result.blob);
-        const mrzData = template.mrzEnabled ? parseMRZ(text) : null;
+        const mrzData = template.mrzEnabled && text ? parseMRZ(text) : null;
 
         const fields: Record<string, { value: string; confidence: number }> =
           {};
@@ -644,10 +642,12 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
             id_number: /(?:id|number)[:\s]*([A-Z0-9]+)/i,
             date_of_birth: /(?:dob|birth)[:\s]*(\d{2}[/-]\d{2}[/-]\d{4})/i,
           };
-          for (const [field, pattern] of Object.entries(patterns)) {
-            const match = text.match(pattern);
-            if (match)
-              fields[field] = { value: match[1].trim(), confidence: 0.7 };
+          if (text) {
+            for (const [field, pattern] of Object.entries(patterns)) {
+              const match = text.match(pattern);
+              if (match)
+                fields[field] = { value: match[1].trim(), confidence: 0.7 };
+            }
           }
         }
 
@@ -1179,7 +1179,7 @@ function saveSession(data: KYCSessionData): void {
   try {
     sessionStorage.setItem(KYC_STORAGE_KEY, JSON.stringify(data));
   } catch {
-    console.warn("Failed to save KYC session");
+    // Session save failed silently
   }
 }
 
@@ -1600,12 +1600,6 @@ function StepIndicator({
     </div>
   );
 }
-
-// ============================================================================
-// Exports
-// ============================================================================
-
-/* eslint-disable react-refresh/only-export-components */
 
 export {
   FaceDetection,

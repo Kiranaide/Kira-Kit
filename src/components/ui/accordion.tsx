@@ -35,7 +35,7 @@ const accordionTriggerVariants = cva(
       variant: "default",
       size: "default",
     },
-  },
+  }
 );
 
 const accordionContentVariants = cva("", {
@@ -68,7 +68,7 @@ function Accordion({
     if (scrollIntoView && value.length > 0) {
       const lastOpened = value[value.length - 1];
       const trigger = document.querySelector<HTMLElement>(
-        `[data-accordion-item-value="${lastOpened}"] [data-slot="accordion-trigger"]`,
+        `[data-accordion-item-value="${lastOpened}"] [data-slot="accordion-trigger"]`
       );
       trigger?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
@@ -116,7 +116,7 @@ function AccordionItem({
       className={cn(
         "border border-border rounded-lg overflow-hidden",
         disabled && "opacity-50 cursor-not-allowed",
-        className,
+        className
       )}
       onOpenChange={handleOpenChange}
       disabled={disabled}
@@ -248,7 +248,7 @@ function AccordionContent({
             onComplete: () => {
               gsap.set(panel, { height: "auto" });
             },
-          },
+          }
         );
       } else {
         gsap.set(panel, { height: contentHeight });
@@ -281,7 +281,7 @@ function AccordionContent({
   const skeletonWidths = React.useMemo(() => {
     const widths = ["75%", "85%", "60%", "90%", "70%"];
     return Array.from({ length: skeletonLines }).map(
-      (_, i) => widths[i % widths.length],
+      (_, i) => widths[i % widths.length]
     );
   }, [skeletonLines]);
 
@@ -333,9 +333,7 @@ export {
 };
 export type { AccordionTriggerProps, AccordionContentProps };
 
-// ============================================================================
 // KiraAccordion - Simplified single-import API
-// ============================================================================
 
 type AccordionItemData = {
   value: string;
@@ -373,7 +371,7 @@ function renderAccordionItem(
   defaultSize: VariantProps<
     typeof accordionTriggerVariants
   >["size"] = "default",
-  level: number = 0,
+  level: number = 0
 ): React.ReactElement {
   const hasChildren = item.children && item.children.length > 0;
 
@@ -399,13 +397,8 @@ function renderAccordionItem(
         {item.content}
         {hasChildren && (
           <div className={cn("mt-2", level > 0 && "ml-4")}>
-            {item.children!.map((child) =>
-              renderAccordionItem(
-                child,
-                defaultVariant,
-                defaultSize,
-                level + 1,
-              ),
+            {item.children?.map((child) =>
+              renderAccordionItem(child, defaultVariant, defaultSize, level + 1)
             )}
           </div>
         )}

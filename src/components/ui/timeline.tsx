@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { useVirtualizer } from "@tanstack/react-virtual"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   IconCircleFilled,
   IconCircleCheck,
@@ -10,13 +10,9 @@ import {
   IconInfoCircle,
   IconAlertTriangle,
   IconChevronDown,
-} from "@tabler/icons-react"
-import gsap from "gsap"
-import { cn } from "@/lib/utils"
-
-
-
-
+} from "@tabler/icons-react";
+import gsap from "gsap";
+import { cn } from "@/lib/utils";
 
 const timelineVariants = cva("relative", {
   variants: {
@@ -41,7 +37,7 @@ const timelineVariants = cva("relative", {
     layout: "left",
     variant: "default",
   },
-})
+});
 
 const timelineItemVariants = cva("relative flex group", {
   variants: {
@@ -68,7 +64,7 @@ const timelineItemVariants = cva("relative flex group", {
     layout: "left",
     status: "default",
   },
-})
+});
 
 const timelineDotVariants = cva(
   "relative z-10 flex shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200",
@@ -86,7 +82,8 @@ const timelineDotVariants = cva(
         warning: "border-amber-500 bg-amber-500 text-white",
         error: "border-red-500 bg-red-500 text-white",
         info: "border-blue-500 bg-blue-500 text-white",
-        active: "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25",
+        active:
+          "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25",
       },
     },
     defaultVariants: {
@@ -94,7 +91,7 @@ const timelineDotVariants = cva(
       status: "default",
     },
   }
-)
+);
 
 const timelineConnectorVariants = cva("transition-all duration-300", {
   variants: {
@@ -118,7 +115,7 @@ const timelineConnectorVariants = cva("transition-all duration-300", {
     variant: "solid",
     status: "default",
   },
-})
+});
 
 const timelineContentVariants = cva("flex-1 pb-8", {
   variants: {
@@ -137,36 +134,32 @@ const timelineContentVariants = cva("flex-1 pb-8", {
     orientation: "vertical",
     layout: "left",
   },
-})
+});
 
-
-
-
-
-type TimelineStatus = "default" | "success" | "warning" | "error" | "info"
+type TimelineStatus = "default" | "success" | "warning" | "error" | "info";
 
 interface TimelineItemData<T = unknown> {
-  id: string
-  datetime?: Date | string
-  title: string
-  description?: string
-  icon?: React.ReactNode
-  status?: TimelineStatus
-  avatar?: { src: string; alt: string; fallback?: string }
-  actions?: React.ReactNode
-  collapsible?: boolean
-  defaultCollapsed?: boolean
-  data?: T
+  id: string;
+  datetime?: Date | string;
+  title: string;
+  description?: string;
+  icon?: React.ReactNode;
+  status?: TimelineStatus;
+  avatar?: { src: string; alt: string; fallback?: string };
+  actions?: React.ReactNode;
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
+  data?: T;
 }
 
 interface TimelineContextValue {
-  orientation: "vertical" | "horizontal"
-  layout: "left" | "right" | "alternating" | "centered"
-  variant: "default" | "compact" | "minimal"
-  connectorVariant: "solid" | "dashed" | "gradient"
-  size: "sm" | "default" | "lg" | "xl"
-  collapsible: boolean
-  animate: boolean
+  orientation: "vertical" | "horizontal";
+  layout: "left" | "right" | "alternating" | "centered";
+  variant: "default" | "compact" | "minimal";
+  connectorVariant: "solid" | "dashed" | "gradient";
+  size: "sm" | "default" | "lg" | "xl";
+  collapsible: boolean;
+  animate: boolean;
 }
 
 const TimelineContext = React.createContext<TimelineContextValue>({
@@ -177,61 +170,49 @@ const TimelineContext = React.createContext<TimelineContextValue>({
   size: "default",
   collapsible: false,
   animate: true,
-})
+});
 
 function useTimelineContext() {
-  return React.useContext(TimelineContext)
+  return React.useContext(TimelineContext);
 }
-
-
-
-
 
 function useReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
 
   React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
-    setPrefersReducedMotion(mediaQuery.matches)
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
 
     const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches)
-    }
+      setPrefersReducedMotion(e.matches);
+    };
 
-    mediaQuery.addEventListener("change", handleChange)
-    return () => mediaQuery.removeEventListener("change", handleChange)
-  }, [])
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
 
-  return prefersReducedMotion
+  return prefersReducedMotion;
 }
 
-
-
-
-
 interface TimelineProps<T = unknown>
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children">,
+  extends
+    Omit<React.HTMLAttributes<HTMLDivElement>, "children">,
     VariantProps<typeof timelineVariants> {
-
-  items?: TimelineItemData<T>[]
-
-  connectorVariant?: "solid" | "dashed" | "gradient"
-
-  size?: "sm" | "default" | "lg" | "xl"
-
-  collapsible?: boolean
-
-  virtualized?: boolean
-
-  estimateSize?: number
-
-  animate?: boolean
-
-  groupBy?: "day" | "week" | "month" | "year" | ((item: TimelineItemData<T>) => string)
-
-  renderItem?: (item: TimelineItemData<T>, index: number) => React.ReactNode
-
-  children?: React.ReactNode
+  items?: TimelineItemData<T>[];
+  connectorVariant?: "solid" | "dashed" | "gradient";
+  size?: "sm" | "default" | "lg" | "xl";
+  collapsible?: boolean;
+  virtualized?: boolean;
+  estimateSize?: number;
+  animate?: boolean;
+  groupBy?:
+    | "day"
+    | "week"
+    | "month"
+    | "year"
+    | ((item: TimelineItemData<T>) => string);
+  renderItem?: (item: TimelineItemData<T>, index: number) => React.ReactNode;
+  children?: React.ReactNode;
 }
 
 function TimelineRoot<T>({
@@ -251,71 +232,77 @@ function TimelineRoot<T>({
   children,
   ...props
 }: TimelineProps<T>) {
-  const parentRef = React.useRef<HTMLDivElement>(null)
-  const reducedMotion = useReducedMotion()
-  const shouldAnimate = animate && !reducedMotion
-
+  const parentRef = React.useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
+  const shouldAnimate = animate && !reducedMotion;
 
   const groupedItems = React.useMemo(() => {
-    if (!items || !groupBy) return null
+    if (!items || !groupBy) return null;
 
-    const groups: Record<string, TimelineItemData<T>[]> = {}
+    const groups: Record<string, TimelineItemData<T>[]> = {};
 
     items.forEach((item) => {
-      let groupKey: string
+      let groupKey: string;
 
       if (typeof groupBy === "function") {
-        groupKey = groupBy(item)
+        groupKey = groupBy(item);
       } else if (item.datetime) {
-        const date = new Date(item.datetime)
+        const date = new Date(item.datetime);
         switch (groupBy) {
           case "day":
-            groupKey = date.toLocaleDateString()
-            break
+            groupKey = date.toLocaleDateString();
+            break;
           case "week":
-            const weekStart = new Date(date)
-            weekStart.setDate(date.getDate() - date.getDay())
-            groupKey = `Week of ${weekStart.toLocaleDateString()}`
-            break
+            const weekStart = new Date(date);
+            weekStart.setDate(date.getDate() - date.getDay());
+            groupKey = `Week of ${weekStart.toLocaleDateString()}`;
+            break;
           case "month":
-            groupKey = date.toLocaleDateString(undefined, { month: "long", year: "numeric" })
-            break
+            groupKey = date.toLocaleDateString(undefined, {
+              month: "long",
+              year: "numeric",
+            });
+            break;
           case "year":
-            groupKey = date.getFullYear().toString()
-            break
+            groupKey = date.getFullYear().toString();
+            break;
           default:
-            groupKey = "Unknown"
+            groupKey = "Unknown";
         }
       } else {
-        groupKey = "Unknown"
+        groupKey = "Unknown";
       }
 
       if (!groups[groupKey]) {
-        groups[groupKey] = []
+        groups[groupKey] = [];
       }
-      groups[groupKey].push(item)
-    })
+      groups[groupKey].push(item);
+    });
 
-    return groups
-  }, [items, groupBy])
-
+    return groups;
+  }, [items, groupBy]);
 
   const virtualizer = useVirtualizer({
     count: items?.length ?? 0,
     getScrollElement: () => parentRef.current,
     estimateSize: () => estimateSize,
     enabled: virtualized && !!items,
-  })
-
+  });
 
   React.useEffect(() => {
-    if (!parentRef.current || !shouldAnimate || !items) return
+    if (!parentRef.current || !shouldAnimate || !items) return;
 
-    const timelineItems = parentRef.current.querySelectorAll("[data-timeline-item]")
+    const timelineItems = parentRef.current.querySelectorAll(
+      "[data-timeline-item]"
+    );
 
     gsap.fromTo(
       timelineItems,
-      { opacity: 0, x: orientation === "horizontal" ? 0 : -20, y: orientation === "horizontal" ? 20 : 0 },
+      {
+        opacity: 0,
+        x: orientation === "horizontal" ? 0 : -20,
+        y: orientation === "horizontal" ? 20 : 0,
+      },
       {
         opacity: 1,
         x: 0,
@@ -324,8 +311,8 @@ function TimelineRoot<T>({
         stagger: 0.08,
         ease: "power2.out",
       }
-    )
-  }, [items, shouldAnimate, orientation])
+    );
+  }, [items, shouldAnimate, orientation]);
 
   const contextValue = React.useMemo(
     () => ({
@@ -337,9 +324,16 @@ function TimelineRoot<T>({
       collapsible,
       animate: shouldAnimate,
     }),
-    [orientation, layout, variant, connectorVariant, size, collapsible, shouldAnimate]
-  )
-
+    [
+      orientation,
+      layout,
+      variant,
+      connectorVariant,
+      size,
+      collapsible,
+      shouldAnimate,
+    ]
+  );
 
   if (virtualized && items) {
     return (
@@ -365,7 +359,7 @@ function TimelineRoot<T>({
             }}
           >
             {virtualizer.getVirtualItems().map((virtualItem) => {
-              const item = items[virtualItem.index]
+              const item = items[virtualItem.index];
               return (
                 <div
                   key={item.id}
@@ -390,27 +384,34 @@ function TimelineRoot<T>({
                       collapsible={item.collapsible}
                       defaultCollapsed={item.defaultCollapsed}
                     >
-                      <TimelineDot status={item.status}>{item.icon}</TimelineDot>
+                      <TimelineDot status={item.status}>
+                        {item.icon}
+                      </TimelineDot>
                       <TimelineConnector />
                       <TimelineContent>
-                        {item.datetime && <TimelineTime datetime={item.datetime} />}
+                        {item.datetime && (
+                          <TimelineTime datetime={item.datetime} />
+                        )}
                         <TimelineTitle>{item.title}</TimelineTitle>
                         {item.description && (
-                          <TimelineDescription>{item.description}</TimelineDescription>
+                          <TimelineDescription>
+                            {item.description}
+                          </TimelineDescription>
                         )}
-                        {item.actions && <TimelineActions>{item.actions}</TimelineActions>}
+                        {item.actions && (
+                          <TimelineActions>{item.actions}</TimelineActions>
+                        )}
                       </TimelineContent>
                     </TimelineItem>
                   )}
                 </div>
-              )
+              );
             })}
           </div>
         </div>
       </TimelineContext.Provider>
-    )
+    );
   }
-
 
   if (groupedItems) {
     return (
@@ -420,7 +421,10 @@ function TimelineRoot<T>({
           role="feed"
           aria-label="Timeline"
           data-slot="timeline"
-          className={cn(timelineVariants({ orientation, layout, variant }), className)}
+          className={cn(
+            timelineVariants({ orientation, layout, variant }),
+            className
+          )}
           {...props}
         >
           {Object.entries(groupedItems).map(([groupKey, groupItems]) => (
@@ -441,12 +445,18 @@ function TimelineRoot<T>({
                     <TimelineDot status={item.status}>{item.icon}</TimelineDot>
                     <TimelineConnector />
                     <TimelineContent>
-                      {item.datetime && <TimelineTime datetime={item.datetime} />}
+                      {item.datetime && (
+                        <TimelineTime datetime={item.datetime} />
+                      )}
                       <TimelineTitle>{item.title}</TimelineTitle>
                       {item.description && (
-                        <TimelineDescription>{item.description}</TimelineDescription>
+                        <TimelineDescription>
+                          {item.description}
+                        </TimelineDescription>
                       )}
-                      {item.actions && <TimelineActions>{item.actions}</TimelineActions>}
+                      {item.actions && (
+                        <TimelineActions>{item.actions}</TimelineActions>
+                      )}
                     </TimelineContent>
                   </TimelineItem>
                 )
@@ -455,9 +465,8 @@ function TimelineRoot<T>({
           ))}
         </div>
       </TimelineContext.Provider>
-    )
+    );
   }
-
 
   if (items) {
     return (
@@ -467,7 +476,10 @@ function TimelineRoot<T>({
           role="feed"
           aria-label="Timeline"
           data-slot="timeline"
-          className={cn(timelineVariants({ orientation, layout, variant }), className)}
+          className={cn(
+            timelineVariants({ orientation, layout, variant }),
+            className
+          )}
           {...props}
         >
           {items.map((item, index) =>
@@ -486,18 +498,21 @@ function TimelineRoot<T>({
                   {item.datetime && <TimelineTime datetime={item.datetime} />}
                   <TimelineTitle>{item.title}</TimelineTitle>
                   {item.description && (
-                    <TimelineDescription>{item.description}</TimelineDescription>
+                    <TimelineDescription>
+                      {item.description}
+                    </TimelineDescription>
                   )}
-                  {item.actions && <TimelineActions>{item.actions}</TimelineActions>}
+                  {item.actions && (
+                    <TimelineActions>{item.actions}</TimelineActions>
+                  )}
                 </TimelineContent>
               </TimelineItem>
             )
           )}
         </div>
       </TimelineContext.Provider>
-    )
+    );
   }
-
 
   return (
     <TimelineContext.Provider value={contextValue}>
@@ -506,34 +521,30 @@ function TimelineRoot<T>({
         role="feed"
         aria-label="Timeline"
         data-slot="timeline"
-        className={cn(timelineVariants({ orientation, layout, variant }), className)}
+        className={cn(
+          timelineVariants({ orientation, layout, variant }),
+          className
+        )}
         {...props}
       >
         {children}
       </div>
     </TimelineContext.Provider>
-  )
+  );
 }
 
-
-
-
-
 interface TimelineItemProps extends React.HTMLAttributes<HTMLDivElement> {
-
-  status?: TimelineStatus
-
-  collapsible?: boolean
-
-  defaultCollapsed?: boolean
-  children: React.ReactNode
+  status?: TimelineStatus;
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
+  children: React.ReactNode;
 }
 
 interface TimelineItemContextValue {
-  status: TimelineStatus
-  collapsed: boolean
-  setCollapsed: (collapsed: boolean) => void
-  isLast: boolean
+  status: TimelineStatus;
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
+  isLast: boolean;
 }
 
 const TimelineItemContext = React.createContext<TimelineItemContextValue>({
@@ -541,20 +552,33 @@ const TimelineItemContext = React.createContext<TimelineItemContextValue>({
   collapsed: false,
   setCollapsed: () => {},
   isLast: false,
-})
+});
 
 function useTimelineItemContext() {
-  return React.useContext(TimelineItemContext)
+  return React.useContext(TimelineItemContext);
 }
 
 const TimelineItem = React.forwardRef<HTMLDivElement, TimelineItemProps>(
-  ({ status = "default", collapsible: itemCollapsible, defaultCollapsed = false, className, children, ...props }, ref) => {
-    const { orientation, layout, collapsible: globalCollapsible } = useTimelineContext()
-    const [collapsed, setCollapsed] = React.useState(defaultCollapsed)
-    const isCollapsible = itemCollapsible ?? globalCollapsible
+  (
+    {
+      status = "default",
+      collapsible: itemCollapsible,
+      defaultCollapsed = false,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const {
+      orientation,
+      layout,
+      collapsible: globalCollapsible,
+    } = useTimelineContext();
+    const [collapsed, setCollapsed] = React.useState(defaultCollapsed);
+    const isCollapsible = itemCollapsible ?? globalCollapsible;
 
-
-    const itemLayout = layout === "alternating" ? "left" : layout
+    const itemLayout = layout === "alternating" ? "left" : layout;
 
     const itemContextValue = React.useMemo(
       () => ({
@@ -564,7 +588,7 @@ const TimelineItem = React.forwardRef<HTMLDivElement, TimelineItemProps>(
         isLast: false,
       }),
       [status, collapsed, isCollapsible]
-    )
+    );
 
     return (
       <TimelineItemContext.Provider value={itemContextValue}>
@@ -584,46 +608,40 @@ const TimelineItem = React.forwardRef<HTMLDivElement, TimelineItemProps>(
           {children}
         </div>
       </TimelineItemContext.Provider>
-    )
+    );
   }
-)
-TimelineItem.displayName = "TimelineItem"
-
-
-
-
+);
+TimelineItem.displayName = "TimelineItem";
 
 interface TimelineDotProps extends React.HTMLAttributes<HTMLDivElement> {
-
-  status?: TimelineStatus | "active"
-  children?: React.ReactNode
+  status?: TimelineStatus | "active";
+  children?: React.ReactNode;
 }
 
 const TimelineDot = React.forwardRef<HTMLDivElement, TimelineDotProps>(
   ({ status: statusProp, className, children, ...props }, ref) => {
-    const { size } = useTimelineContext()
-    const { status: itemStatus } = useTimelineItemContext()
-    const status = statusProp ?? itemStatus
+    const { size } = useTimelineContext();
+    const { status: itemStatus } = useTimelineItemContext();
+    const status = statusProp ?? itemStatus;
 
     const renderIcon = () => {
-      if (children) return children
+      if (children) return children;
 
-
-      if (size === "sm" || size === "default") return null
+      if (size === "sm" || size === "default") return null;
 
       switch (status) {
         case "success":
-          return <IconCircleCheck className="h-3 w-3" />
+          return <IconCircleCheck className="h-3 w-3" />;
         case "error":
-          return <IconAlertCircle className="h-3 w-3" />
+          return <IconAlertCircle className="h-3 w-3" />;
         case "warning":
-          return <IconAlertTriangle className="h-3 w-3" />
+          return <IconAlertTriangle className="h-3 w-3" />;
         case "info":
-          return <IconInfoCircle className="h-3 w-3" />
+          return <IconInfoCircle className="h-3 w-3" />;
         default:
-          return <IconCircleFilled className="h-1.5 w-1.5" />
+          return <IconCircleFilled className="h-1.5 w-1.5" />;
       }
-    }
+    };
 
     return (
       <div
@@ -635,81 +653,89 @@ const TimelineDot = React.forwardRef<HTMLDivElement, TimelineDotProps>(
       >
         {renderIcon()}
       </div>
-    )
+    );
   }
-)
-TimelineDot.displayName = "TimelineDot"
-
-
-
-
+);
+TimelineDot.displayName = "TimelineDot";
 
 interface TimelineConnectorProps extends React.HTMLAttributes<HTMLDivElement> {
-
-  variant?: "solid" | "dashed" | "gradient"
+  variant?: "solid" | "dashed" | "gradient";
 }
 
-const TimelineConnector = React.forwardRef<HTMLDivElement, TimelineConnectorProps>(
-  ({ variant: variantProp, className, ...props }, ref) => {
-    const { orientation, connectorVariant } = useTimelineContext()
-    const variant = variantProp ?? connectorVariant
+const TimelineConnector = React.forwardRef<
+  HTMLDivElement,
+  TimelineConnectorProps
+>(({ variant: variantProp, className, ...props }, ref) => {
+  const { orientation, connectorVariant } = useTimelineContext();
+  const variant = variantProp ?? connectorVariant;
 
-    return (
-      <div
-        ref={ref}
-        data-slot="timeline-connector"
-        role="presentation"
-        aria-hidden="true"
-        className={cn(
-          timelineConnectorVariants({ orientation, variant }),
-          orientation === "vertical" && "h-[calc(100%-1rem)]",
-          className
-        )}
-        {...props}
-      />
-    )
-  }
-)
-TimelineConnector.displayName = "TimelineConnector"
-
-
-
-
+  return (
+    <div
+      ref={ref}
+      data-slot="timeline-connector"
+      role="presentation"
+      aria-hidden="true"
+      className={cn(
+        timelineConnectorVariants({ orientation, variant }),
+        orientation === "vertical" && "h-[calc(100%-1rem)]",
+        className
+      )}
+      {...props}
+    />
+  );
+});
+TimelineConnector.displayName = "TimelineConnector";
 
 interface TimelineContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const TimelineContent = React.forwardRef<HTMLDivElement, TimelineContentProps>(
   ({ className, children, ...props }, ref) => {
-    const { orientation, layout, collapsible } = useTimelineContext()
-    const { collapsed, setCollapsed } = useTimelineItemContext()
-    const contentRef = React.useRef<HTMLDivElement>(null)
-    const reducedMotion = useReducedMotion()
-
+    const { orientation, layout, collapsible } = useTimelineContext();
+    const { collapsed, setCollapsed } = useTimelineItemContext();
+    const contentRef = React.useRef<HTMLDivElement>(null);
+    const reducedMotion = useReducedMotion();
 
     React.useEffect(() => {
-      if (!contentRef.current || !collapsible || reducedMotion) return
+      if (!contentRef.current || !collapsible || reducedMotion) return;
 
-      const content = contentRef.current.querySelector("[data-collapsible-content]")
-      if (!content) return
+      const content = contentRef.current.querySelector(
+        "[data-collapsible-content]"
+      );
+      if (!content) return;
 
       if (collapsed) {
-        gsap.to(content, { height: 0, opacity: 0, duration: 0.2, ease: "power2.inOut" })
+        gsap.to(content, {
+          height: 0,
+          opacity: 0,
+          duration: 0.2,
+          ease: "power2.inOut",
+        });
       } else {
-        gsap.to(content, { height: "auto", opacity: 1, duration: 0.2, ease: "power2.inOut" })
+        gsap.to(content, {
+          height: "auto",
+          opacity: 1,
+          duration: 0.2,
+          ease: "power2.inOut",
+        });
       }
-    }, [collapsed, collapsible, reducedMotion])
+    }, [collapsed, collapsible, reducedMotion]);
 
     return (
       <div
         ref={(node) => {
-          if (typeof ref === "function") ref(node)
-          else if (ref) ref.current = node
-          ;(contentRef as React.MutableRefObject<HTMLDivElement | null>).current = node
+          if (typeof ref === "function") ref(node);
+          else if (ref) ref.current = node;
+          (
+            contentRef as React.MutableRefObject<HTMLDivElement | null>
+          ).current = node;
         }}
         data-slot="timeline-content"
-        className={cn(timelineContentVariants({ orientation, layout }), className)}
+        className={cn(
+          timelineContentVariants({ orientation, layout }),
+          className
+        )}
         {...props}
       >
         {collapsible ? (
@@ -720,7 +746,9 @@ const TimelineContent = React.forwardRef<HTMLDivElement, TimelineContentProps>(
               className="flex w-full items-center justify-between text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
               aria-expanded={!collapsed}
             >
-              <span className="flex-1">{React.Children.toArray(children)[0]}</span>
+              <span className="flex-1">
+                {React.Children.toArray(children)[0]}
+              </span>
               <IconChevronDown
                 className={cn(
                   "h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200",
@@ -736,22 +764,15 @@ const TimelineContent = React.forwardRef<HTMLDivElement, TimelineContentProps>(
           children
         )}
       </div>
-    )
+    );
   }
-)
-TimelineContent.displayName = "TimelineContent"
-
-
-
-
+);
+TimelineContent.displayName = "TimelineContent";
 
 interface TimelineTimeProps extends React.HTMLAttributes<HTMLTimeElement> {
-
-  datetime: Date | string
-
-  format?: Intl.DateTimeFormatOptions
-
-  relative?: boolean
+  datetime: Date | string;
+  format?: Intl.DateTimeFormatOptions;
+  relative?: boolean;
 }
 
 const TimelineTime = React.forwardRef<HTMLTimeElement, TimelineTimeProps>(
@@ -765,26 +786,31 @@ const TimelineTime = React.forwardRef<HTMLTimeElement, TimelineTimeProps>(
     },
     ref
   ) => {
-    const date = datetime instanceof Date ? datetime : new Date(datetime)
-    const isoString = date.toISOString()
+    const date = datetime instanceof Date ? datetime : new Date(datetime);
+    const isoString = date.toISOString();
 
     const formatRelative = (date: Date): string => {
-      const now = new Date()
-      const diffMs = now.getTime() - date.getTime()
-      const diffSecs = Math.floor(diffMs / 1000)
-      const diffMins = Math.floor(diffSecs / 60)
-      const diffHours = Math.floor(diffMins / 60)
-      const diffDays = Math.floor(diffHours / 24)
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffSecs = Math.floor(diffMs / 1000);
+      const diffMins = Math.floor(diffSecs / 60);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
 
-      if (diffSecs < 60) return "Just now"
-      if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`
-      if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`
-      if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`
+      if (diffSecs < 60) return "Just now";
+      if (diffMins < 60)
+        return `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`;
+      if (diffHours < 24)
+        return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+      if (diffDays < 7)
+        return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
 
-      return date.toLocaleDateString(undefined, format)
-    }
+      return date.toLocaleDateString(undefined, format);
+    };
 
-    const displayText = relative ? formatRelative(date) : date.toLocaleString(undefined, format)
+    const displayText = relative
+      ? formatRelative(date)
+      : date.toLocaleString(undefined, format);
 
     return (
       <time
@@ -796,22 +822,18 @@ const TimelineTime = React.forwardRef<HTMLTimeElement, TimelineTimeProps>(
       >
         {displayText}
       </time>
-    )
+    );
   }
-)
-TimelineTime.displayName = "TimelineTime"
-
-
-
-
+);
+TimelineTime.displayName = "TimelineTime";
 
 interface TimelineTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const TimelineTitle = React.forwardRef<HTMLHeadingElement, TimelineTitleProps>(
   ({ className, children, ...props }, ref) => {
-    const { status } = useTimelineItemContext()
+    const { status } = useTimelineItemContext();
 
     return (
       <h3
@@ -826,41 +848,34 @@ const TimelineTitle = React.forwardRef<HTMLHeadingElement, TimelineTitleProps>(
       >
         {children}
       </h3>
-    )
+    );
   }
-)
-TimelineTitle.displayName = "TimelineTitle"
-
-
-
-
+);
+TimelineTitle.displayName = "TimelineTitle";
 
 interface TimelineDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-const TimelineDescription = React.forwardRef<HTMLParagraphElement, TimelineDescriptionProps>(
-  ({ className, children, ...props }, ref) => {
-    return (
-      <p
-        ref={ref}
-        data-slot="timeline-description"
-        className={cn("mt-1 text-sm text-muted-foreground", className)}
-        {...props}
-      >
-        {children}
-      </p>
-    )
-  }
-)
-TimelineDescription.displayName = "TimelineDescription"
-
-
-
-
+const TimelineDescription = React.forwardRef<
+  HTMLParagraphElement,
+  TimelineDescriptionProps
+>(({ className, children, ...props }, ref) => {
+  return (
+    <p
+      ref={ref}
+      data-slot="timeline-description"
+      className={cn("mt-1 text-sm text-muted-foreground", className)}
+      {...props}
+    >
+      {children}
+    </p>
+  );
+});
+TimelineDescription.displayName = "TimelineDescription";
 
 interface TimelineActionsProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const TimelineActions = React.forwardRef<HTMLDivElement, TimelineActionsProps>(
@@ -874,24 +889,20 @@ const TimelineActions = React.forwardRef<HTMLDivElement, TimelineActionsProps>(
       >
         {children}
       </div>
-    )
+    );
   }
-)
-TimelineActions.displayName = "TimelineActions"
-
-
-
-
+);
+TimelineActions.displayName = "TimelineActions";
 
 interface TimelineAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
-  src?: string
-  alt?: string
-  fallback?: string
+  src?: string;
+  alt?: string;
+  fallback?: string;
 }
 
 const TimelineAvatar = React.forwardRef<HTMLDivElement, TimelineAvatarProps>(
   ({ src, alt, fallback, className, ...props }, ref) => {
-    const [imgError, setImgError] = React.useState(false)
+    const [imgError, setImgError] = React.useState(false);
 
     return (
       <div
@@ -916,15 +927,10 @@ const TimelineAvatar = React.forwardRef<HTMLDivElement, TimelineAvatarProps>(
           </span>
         )}
       </div>
-    )
+    );
   }
-)
-TimelineAvatar.displayName = "TimelineAvatar"
-
-
-
-
-
+);
+TimelineAvatar.displayName = "TimelineAvatar";
 
 const Timeline = Object.assign(TimelineRoot, {
   Item: TimelineItem,
@@ -936,7 +942,7 @@ const Timeline = Object.assign(TimelineRoot, {
   Description: TimelineDescription,
   Actions: TimelineActions,
   Avatar: TimelineAvatar,
-})
+});
 
 export {
   Timeline,
@@ -950,16 +956,14 @@ export {
   TimelineDescription,
   TimelineActions,
   TimelineAvatar,
-
   timelineVariants,
   timelineItemVariants,
   timelineDotVariants,
   timelineConnectorVariants,
   timelineContentVariants,
-
   useTimelineContext,
   useTimelineItemContext,
-}
+};
 
 export type {
   TimelineProps,
@@ -974,4 +978,4 @@ export type {
   TimelineAvatarProps,
   TimelineItemData,
   TimelineStatus,
-}
+};

@@ -14,10 +14,6 @@ import {
 } from "@tabler/icons-react";
 import { animate, stagger } from "animejs";
 
-
-
-
-
 const Select = SelectPrimitive.Root;
 
 function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
@@ -34,7 +30,7 @@ function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
-      className={cn("flex flex-1 text-left text-left", className)}
+      className={cn("flex flex-1 text-left", className)}
       {...props}
     />
   );
@@ -56,13 +52,13 @@ function SelectTrigger({
         "flex w-full items-center justify-between rounded-lg border border-input bg-transparent px-2 py-1 text-sm transition-colors select-none gap-1.5",
         "dark:bg-input/30 dark:hover:bg-input/50",
         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-        "data-[placeholder]:text-muted-foreground",
+        "data-placeholder:text-muted-foreground",
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 aria-invalid:ring-[3px]",
         "data-[size=default]:h-8 data-[size=sm]:h-7 data-[size=sm]:rounded-[min(var(--radius-md),10px)]",
         "*:data-[slot=select-value]:flex *:data-[slot=select-value]:gap-1.5 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:items-center",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        className,
+        className
       )}
       {...props}
     >
@@ -104,7 +100,7 @@ function SelectContent({
           data-slot="select-content"
           className={cn(
             "bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 min-w-36 rounded-lg shadow-md ring-1 duration-100 relative isolate z-50 max-h-(--available-height) w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto",
-            className,
+            className
           )}
           {...props}
         >
@@ -139,8 +135,8 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2 relative flex w-full cursor-default items-center outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        className,
+        "focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2 relative flex w-full cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        className
       )}
       {...props}
     >
@@ -180,7 +176,7 @@ function SelectScrollUpButton({
       data-slot="select-scroll-up-button"
       className={cn(
         "bg-popover z-10 flex cursor-default items-center justify-center py-1 [&_svg:not([class*='size-'])]:size-4 top-0 w-full",
-        className,
+        className
       )}
       {...props}
     >
@@ -198,7 +194,7 @@ function SelectScrollDownButton({
       data-slot="select-scroll-down-button"
       className={cn(
         "bg-popover z-10 flex cursor-default items-center justify-center py-1 [&_svg:not([class*='size-'])]:size-4 bottom-0 w-full",
-        className,
+        className
       )}
       {...props}
     >
@@ -206,9 +202,6 @@ function SelectScrollDownButton({
     </SelectPrimitive.ScrollDownArrow>
   );
 }
-
-
-
 
 interface SelectOption {
   value: string;
@@ -222,22 +215,19 @@ interface AutocompleteOption {
   disabled?: boolean;
 }
 
-
 interface GroupedSelectOption<T extends SelectOption = SelectOption> {
   label: string;
   options: T[];
 }
 
-
 function isGroupedOptions<T extends SelectOption>(
-  options: T[] | GroupedSelectOption<T>[],
+  options: T[] | GroupedSelectOption<T>[]
 ): options is GroupedSelectOption<T>[] {
   return options.length > 0 && "options" in options[0];
 }
 
-
 function flattenOptions<T extends SelectOption>(
-  options: T[] | GroupedSelectOption<T>[],
+  options: T[] | GroupedSelectOption<T>[]
 ): T[] {
   if (isGroupedOptions(options)) {
     return options.flatMap((group) => group.options);
@@ -245,20 +235,14 @@ function flattenOptions<T extends SelectOption>(
   return options;
 }
 
-
-
-
-
-
 interface SelectFieldProps<T extends SelectOption = SelectOption> {
-
   options?: T[] | GroupedSelectOption<T>[];
 
   value?: string | string[];
 
   onChange?: (
     value: string | string[],
-    selectedOptions: T | T[] | null,
+    selectedOptions: T | T[] | null
   ) => void;
 
   multiple?: boolean;
@@ -295,10 +279,6 @@ interface SelectFieldProps<T extends SelectOption = SelectOption> {
 
   filterFn?: (option: T, query: string) => boolean;
 
-
-
-
-
   required?: boolean;
 
   "aria-label"?: string;
@@ -311,19 +291,11 @@ interface SelectFieldProps<T extends SelectOption = SelectOption> {
 
   name?: string;
 
-
-
-
-
   onOpenChange?: (open: boolean) => void;
 
   onSearchChange?: (query: string) => void;
 
   onClearAll?: () => void;
-
-
-
-
 
   variant?: "default" | "ghost" | "outline";
 
@@ -331,19 +303,11 @@ interface SelectFieldProps<T extends SelectOption = SelectOption> {
 
   hideChevron?: boolean;
 
-
-
-
-
   emptyMessage?: string | React.ReactNode;
 
   loadingMessage?: string | React.ReactNode;
 
   searchingMessage?: string | React.ReactNode;
-
-
-
-
 
   virtualize?: boolean;
 
@@ -352,13 +316,11 @@ interface SelectFieldProps<T extends SelectOption = SelectOption> {
   overscan?: number;
 }
 
-
 function fuzzyMatch(text: string, query: string): boolean {
   const pattern = query.toLowerCase().split("").join(".*");
   const regex = new RegExp(pattern);
   return regex.test(text.toLowerCase());
 }
-
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = React.useState<T>(value);
@@ -414,7 +376,7 @@ function SelectField<T extends SelectOption = SelectOption>({
 }: SelectFieldProps<T>) {
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState<T[]>(
-    flattenOptions(initialOptions) as T[],
+    flattenOptions(initialOptions) as T[]
   );
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -424,11 +386,12 @@ function SelectField<T extends SelectOption = SelectOption>({
   const triggerRef = React.useRef<HTMLDivElement>(null);
   const cacheRef = React.useRef<Map<string, T[]>>(new Map());
   const typeaheadRef = React.useRef("");
-  const typeaheadTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const typeaheadTimeoutRef = React.useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
   const debouncedQuery = useDebounce(inputValue, debounceMs);
   const listId = React.useId();
   const triggerId = React.useId();
-
 
   const handleOpenChange = React.useCallback(
     (open: boolean) => {
@@ -438,15 +401,13 @@ function SelectField<T extends SelectOption = SelectOption>({
         setHighlightedIndex(-1);
       }
     },
-    [onOpenChange],
+    [onOpenChange]
   );
-
 
   const selectedValues = React.useMemo(() => {
     if (value === undefined || value === null) return [];
     return Array.isArray(value) ? value : [value];
   }, [value]);
-
 
   React.useEffect(() => {
     if (!async) {
@@ -455,14 +416,12 @@ function SelectField<T extends SelectOption = SelectOption>({
     }
   }, [initialOptions, async]);
 
-
   React.useEffect(() => {
     if (!async || !onSearch) return;
 
     if (!debouncedQuery && !isOpen) {
       return;
     }
-
 
     if (cacheOptions && cacheRef.current.has(debouncedQuery)) {
       setOptions(cacheRef.current.get(debouncedQuery) || []);
@@ -494,7 +453,6 @@ function SelectField<T extends SelectOption = SelectOption>({
     };
   }, [debouncedQuery, isOpen, async, onSearch, cacheOptions]);
 
-
   const filteredOptions = React.useMemo(() => {
     if (async) {
       return options;
@@ -514,15 +472,13 @@ function SelectField<T extends SelectOption = SelectOption>({
     });
   }, [options, inputValue, fuzzyMatching, filterFn, async]);
 
-
   const showCreateOption = React.useMemo(() => {
     if (!creatable || !inputValue.trim()) return false;
     const normalizedInput = inputValue.trim().toLowerCase();
     return !filteredOptions.some(
-      (opt) => opt.label.toLowerCase() === normalizedInput,
+      (opt) => opt.label.toLowerCase() === normalizedInput
     );
   }, [creatable, inputValue, filteredOptions]);
-
 
   React.useEffect(() => {
     if (isOpen && listRef.current && !isLoading) {
@@ -565,7 +521,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     const newOptions = options.filter((o) => newValues.includes(o.value));
     onChange?.(
       multiple ? newValues : "",
-      multiple ? (newOptions as T[]) : null,
+      multiple ? (newOptions as T[]) : null
     );
   };
 
@@ -592,11 +548,9 @@ function SelectField<T extends SelectOption = SelectOption>({
     }
   };
 
-
   const enabledOptions = React.useMemo(() => {
     return filteredOptions.filter((opt) => !opt.disabled);
   }, [filteredOptions]);
-
 
   const handleTypeahead = React.useCallback(
     (char: string) => {
@@ -606,12 +560,12 @@ function SelectField<T extends SelectOption = SelectOption>({
       typeaheadRef.current += char.toLowerCase();
 
       const matchIndex = enabledOptions.findIndex((opt) =>
-        opt.label.toLowerCase().startsWith(typeaheadRef.current),
+        opt.label.toLowerCase().startsWith(typeaheadRef.current)
       );
 
       if (matchIndex !== -1) {
         const actualIndex = filteredOptions.findIndex(
-          (opt) => opt.value === enabledOptions[matchIndex].value,
+          (opt) => opt.value === enabledOptions[matchIndex].value
         );
         setHighlightedIndex(actualIndex);
       }
@@ -620,7 +574,7 @@ function SelectField<T extends SelectOption = SelectOption>({
         typeaheadRef.current = "";
       }, 500);
     },
-    [enabledOptions, filteredOptions],
+    [enabledOptions, filteredOptions]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -708,7 +662,6 @@ function SelectField<T extends SelectOption = SelectOption>({
         break;
 
       case "Tab":
-
         handleOpenChange(false);
         break;
 
@@ -721,14 +674,12 @@ function SelectField<T extends SelectOption = SelectOption>({
         break;
 
       default:
-
         if (!searchable && e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
           handleTypeahead(e.key);
         }
         break;
     }
   };
-
 
   const handleClearAll = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -738,7 +689,7 @@ function SelectField<T extends SelectOption = SelectOption>({
   };
 
   const selectedOptions = options.filter((o) =>
-    selectedValues.includes(o.value),
+    selectedValues.includes(o.value)
   );
   const displayedTags = selectedOptions.slice(0, maxDisplayedTags);
   const remainingCount = selectedOptions.length - maxDisplayedTags;
@@ -756,26 +707,25 @@ function SelectField<T extends SelectOption = SelectOption>({
       "border-destructive ring-destructive/20 focus-within:border-destructive focus-within:ring-destructive/30",
 
     size === "sm" && "min-h-7 rounded-[min(var(--radius-md),10px)]",
-    disabled && "opacity-50 pointer-events-none cursor-not-allowed",
+    disabled && "opacity-50 pointer-events-none cursor-not-allowed"
   );
 
   const popupClasses = cn(
     "absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border bg-popover p-1 shadow-md",
-    "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95",
+    "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95"
   );
 
   const itemClasses = (
     isHighlighted: boolean,
     isSelected: boolean,
-    isDisabled?: boolean,
+    isDisabled?: boolean
   ) =>
     cn(
       "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none cursor-pointer",
       isHighlighted && "bg-accent text-accent-foreground",
       isSelected && "font-medium",
-      isDisabled && "opacity-50 pointer-events-none cursor-not-allowed",
+      isDisabled && "opacity-50 pointer-events-none cursor-not-allowed"
     );
-
 
   const activeDescendantId =
     highlightedIndex >= 0 && highlightedIndex < filteredOptions.length
@@ -784,7 +734,6 @@ function SelectField<T extends SelectOption = SelectOption>({
 
   return (
     <div className={cn("relative w-full", className)}>
-      {}
       {name && (
         <input
           type="hidden"
@@ -793,7 +742,6 @@ function SelectField<T extends SelectOption = SelectOption>({
         />
       )}
 
-      {}
       <div
         ref={triggerRef}
         id={triggerId}
@@ -813,7 +761,6 @@ function SelectField<T extends SelectOption = SelectOption>({
         aria-labelledby={ariaLabelledby}
         aria-describedby={ariaDescribedby}
       >
-        {}
         {leftIcon && (
           <span className="shrink-0 text-muted-foreground">{leftIcon}</span>
         )}
@@ -822,7 +769,6 @@ function SelectField<T extends SelectOption = SelectOption>({
           <IconSearch className="h-4 w-4 text-muted-foreground shrink-0" />
         )}
 
-        {}
         {multiple &&
           displayedTags.map((opt) => (
             <span
@@ -847,7 +793,6 @@ function SelectField<T extends SelectOption = SelectOption>({
           </span>
         )}
 
-        {}
         {searchable ? (
           <input
             ref={inputRef}
@@ -868,7 +813,7 @@ function SelectField<T extends SelectOption = SelectOption>({
           <span
             className={cn(
               "flex-1 text-sm text-left truncate",
-              !selectedOptions.length && "text-muted-foreground",
+              !selectedOptions.length && "text-muted-foreground"
             )}
           >
             {!multiple && selectedOptions.length > 0
@@ -877,12 +822,10 @@ function SelectField<T extends SelectOption = SelectOption>({
           </span>
         )}
 
-        {}
         {isLoading && (
           <IconLoader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
         )}
 
-        {}
         {!isLoading && !multiple && selectedValues.length > 0 && (
           <button
             type="button"
@@ -894,7 +837,6 @@ function SelectField<T extends SelectOption = SelectOption>({
           </button>
         )}
 
-        {}
         {!isLoading && selectedValues.length > 0 && multiple && (
           <button
             type="button"
@@ -906,18 +848,16 @@ function SelectField<T extends SelectOption = SelectOption>({
           </button>
         )}
 
-        {}
         {!isLoading && !hideChevron && (
           <IconChevronDown
             className={cn(
               "h-4 w-4 text-muted-foreground shrink-0 transition-transform",
-              isOpen && "rotate-180",
+              isOpen && "rotate-180"
             )}
           />
         )}
       </div>
 
-      {}
       {isOpen && (
         <div
           ref={listRef}
@@ -927,14 +867,12 @@ function SelectField<T extends SelectOption = SelectOption>({
           aria-multiselectable={multiple}
           aria-label={ariaLabel}
         >
-          {}
           {isLoading ? (
             <div className="flex items-center justify-center py-4 gap-2 text-sm text-muted-foreground">
               <IconLoader2 className="h-4 w-4 animate-spin" />
               {loadingMessage || "Loading..."}
             </div>
           ) : filteredOptions.length === 0 && !showCreateOption ? (
-
             <div className="py-4 text-center text-sm text-muted-foreground">
               {emptyMessage ||
                 (inputValue
@@ -944,7 +882,6 @@ function SelectField<T extends SelectOption = SelectOption>({
                     : "No options")}
             </div>
           ) : (
-
             <>
               {filteredOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value);
@@ -960,14 +897,12 @@ function SelectField<T extends SelectOption = SelectOption>({
                     className={itemClasses(
                       isHighlighted,
                       isSelected,
-                      option.disabled,
+                      option.disabled
                     )}
                     onClick={() =>
                       !option.disabled && handleSelect(option.value)
                     }
                     onMouseDown={(e) => {
-
-
                       e.preventDefault();
                     }}
                     onMouseEnter={() => setHighlightedIndex(index)}
@@ -978,7 +913,7 @@ function SelectField<T extends SelectOption = SelectOption>({
                           "h-4 w-4 border rounded flex items-center justify-center shrink-0",
                           isSelected
                             ? "bg-primary border-primary"
-                            : "border-input",
+                            : "border-input"
                         )}
                       >
                         {isSelected && (
@@ -996,7 +931,6 @@ function SelectField<T extends SelectOption = SelectOption>({
                 );
               })}
 
-              {}
               {showCreateOption && (
                 <div
                   id={`${listId}-option-${filteredOptions.length}`}
@@ -1006,9 +940,9 @@ function SelectField<T extends SelectOption = SelectOption>({
                   className={cn(
                     itemClasses(
                       highlightedIndex === filteredOptions.length,
-                      false,
+                      false
                     ),
-                    "text-primary",
+                    "text-primary"
                   )}
                   onClick={handleCreate}
                   onMouseEnter={() =>
@@ -1028,16 +962,6 @@ function SelectField<T extends SelectOption = SelectOption>({
   );
 }
 
-
-
-
-
-
-
-
-
-
-
 interface MultiSelectProps {
   options: SelectOption[];
   value?: string[];
@@ -1048,9 +972,6 @@ interface MultiSelectProps {
   maxDisplayedTags?: number;
   showSearchIcon?: boolean;
 }
-
-
-
 
 function MultiSelect({
   options,
@@ -1077,10 +998,6 @@ function MultiSelect({
   );
 }
 
-
-
-
-
 interface AsyncSelectProps {
   loadOptions: (query: string) => Promise<SelectOption[]>;
   value?: string;
@@ -1092,9 +1009,6 @@ interface AsyncSelectProps {
   cacheOptions?: boolean;
   showSearchIcon?: boolean;
 }
-
-
-
 
 function AsyncSelect({
   loadOptions,
@@ -1125,10 +1039,6 @@ function AsyncSelect({
   );
 }
 
-
-
-
-
 interface CreatableSelectProps {
   options: SelectOption[];
   value?: string;
@@ -1139,9 +1049,6 @@ interface CreatableSelectProps {
   className?: string;
   createLabel?: string;
 }
-
-
-
 
 function CreatableSelect({
   options,
@@ -1168,10 +1075,6 @@ function CreatableSelect({
   );
 }
 
-
-
-
-
 interface AutocompleteProps {
   options?: AutocompleteOption[];
   value?: string | string[];
@@ -1186,9 +1089,6 @@ interface AutocompleteProps {
   autoHighlight?: boolean;
   className?: string;
 }
-
-
-
 
 function Autocomplete({
   options: initialOptions = [],
@@ -1220,12 +1120,7 @@ function Autocomplete({
   );
 }
 
-
-
-
-
 export {
-
   Select,
   SelectContent,
   SelectGroup,
@@ -1236,23 +1131,17 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-
   SelectField,
-
   MultiSelect,
   AsyncSelect,
   CreatableSelect,
   Autocomplete,
-
-  fuzzyMatch,
-  useDebounce,
 };
 
 export type {
   SelectOption,
   AutocompleteOption,
   SelectFieldProps,
-
   MultiSelectProps,
   AsyncSelectProps,
   CreatableSelectProps,

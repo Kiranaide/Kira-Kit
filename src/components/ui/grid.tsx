@@ -1,8 +1,8 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
-import { resolveResponsive, type ResponsiveValue } from "@/components/ui/flex"
+import { cn } from "@/lib/utils";
+import { resolveResponsive, type ResponsiveValue } from "@/components/ui/flex";
 
 const colsMap: Record<string, string> = {
   "1": "grid-cols-1",
@@ -19,7 +19,7 @@ const colsMap: Record<string, string> = {
   "12": "grid-cols-12",
   none: "grid-cols-none",
   subgrid: "grid-cols-subgrid",
-}
+};
 
 const rowsMap: Record<string, string> = {
   "1": "grid-rows-1",
@@ -30,7 +30,7 @@ const rowsMap: Record<string, string> = {
   "6": "grid-rows-6",
   none: "grid-rows-none",
   subgrid: "grid-rows-subgrid",
-}
+};
 
 const gapMap: Record<string, string> = {
   "0": "gap-0",
@@ -46,7 +46,7 @@ const gapMap: Record<string, string> = {
   "16": "gap-16",
   "20": "gap-20",
   "24": "gap-24",
-}
+};
 
 const gapXMap: Record<string, string> = {
   "0": "gap-x-0",
@@ -59,7 +59,7 @@ const gapXMap: Record<string, string> = {
   "8": "gap-x-8",
   "10": "gap-x-10",
   "12": "gap-x-12",
-}
+};
 
 const gapYMap: Record<string, string> = {
   "0": "gap-y-0",
@@ -72,7 +72,7 @@ const gapYMap: Record<string, string> = {
   "8": "gap-y-8",
   "10": "gap-y-10",
   "12": "gap-y-12",
-}
+};
 
 const flowMap: Record<string, string> = {
   row: "grid-flow-row",
@@ -80,7 +80,7 @@ const flowMap: Record<string, string> = {
   dense: "grid-flow-dense",
   "row-dense": "grid-flow-row-dense",
   "column-dense": "grid-flow-col-dense",
-}
+};
 
 const alignMap: Record<string, string> = {
   start: "items-start",
@@ -88,25 +88,21 @@ const alignMap: Record<string, string> = {
   center: "items-center",
   stretch: "items-stretch",
   baseline: "items-baseline",
-}
+};
 
 const justifyMap: Record<string, string> = {
   start: "justify-items-start",
   end: "justify-items-end",
   center: "justify-items-center",
   stretch: "justify-items-stretch",
-}
+};
 
 const placeMap: Record<string, string> = {
   start: "place-items-start",
   end: "place-items-end",
   center: "place-items-center",
   stretch: "place-items-stretch",
-}
-
-
-
-
+};
 
 const gridVariants = cva("grid", {
   variants: {
@@ -118,66 +114,52 @@ const gridVariants = cva("grid", {
   defaultVariants: {
     inline: false,
   },
-})
+});
 
-type GridCols = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | "none" | "subgrid"
-type GridRows = 1 | 2 | 3 | 4 | 5 | 6 | "none" | "subgrid"
-type GridGap = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24
-type GridFlow = "row" | "column" | "dense" | "row-dense" | "column-dense"
-type GridAlign = "start" | "end" | "center" | "stretch" | "baseline"
-type GridJustify = "start" | "end" | "center" | "stretch"
-type GridPlace = "start" | "end" | "center" | "stretch"
-type GridElement = "div" | "section" | "main" | "article" | "aside" | "ul" | "ol" | "form"
+type GridCols =
+  | 1
+  | 2
+  | 3
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9
+  | 10
+  | 11
+  | 12
+  | "none"
+  | "subgrid";
+type GridRows = 1 | 2 | 3 | 4 | 5 | 6 | "none" | "subgrid";
+type GridGap = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24;
+type GridFlow = "row" | "column" | "dense" | "row-dense" | "column-dense";
+type GridAlign = "start" | "end" | "center" | "stretch" | "baseline";
+type GridJustify = "start" | "end" | "center" | "stretch";
+type GridPlace = "start" | "end" | "center" | "stretch";
+type GridElement =
+  | "div"
+  | "section"
+  | "main"
+  | "article"
+  | "aside"
+  | "ul"
+  | "ol"
+  | "form";
 
 interface GridProps
-  extends React.HTMLAttributes<HTMLElement>,
-    VariantProps<typeof gridVariants> {
-
-  as?: GridElement
-
-  cols?: ResponsiveValue<GridCols>
-
-  rows?: ResponsiveValue<GridRows>
-
-  gap?: ResponsiveValue<GridGap>
-
-  gapX?: ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12>
-
-  gapY?: ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12>
-
-  flow?: GridFlow
-
-  align?: ResponsiveValue<GridAlign>
-
-  justify?: ResponsiveValue<GridJustify>
-
-  place?: ResponsiveValue<GridPlace>
+  extends React.HTMLAttributes<HTMLElement>, VariantProps<typeof gridVariants> {
+  as?: GridElement;
+  cols?: ResponsiveValue<GridCols>;
+  rows?: ResponsiveValue<GridRows>;
+  gap?: ResponsiveValue<GridGap>;
+  gapX?: ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12>;
+  gapY?: ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12>;
+  flow?: GridFlow;
+  align?: ResponsiveValue<GridAlign>;
+  justify?: ResponsiveValue<GridJustify>;
+  place?: ResponsiveValue<GridPlace>;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function Grid({
   as: Component = "div",
@@ -203,8 +185,8 @@ function Grid({
     flow ? flowMap[flow] : "",
     resolveResponsive(align, alignMap),
     resolveResponsive(justify, justifyMap),
-    resolveResponsive(place, placeMap),
-  )
+    resolveResponsive(place, placeMap)
+  );
 
   return (
     <Component
@@ -212,9 +194,8 @@ function Grid({
       className={cn(gridVariants({ inline }), responsiveClasses, className)}
       {...props}
     />
-  )
+  );
 }
-
 
 const colSpanMap: Record<string, string> = {
   "1": "col-span-1",
@@ -230,7 +211,7 @@ const colSpanMap: Record<string, string> = {
   "11": "col-span-11",
   "12": "col-span-12",
   full: "col-span-full",
-}
+};
 
 const rowSpanMap: Record<string, string> = {
   "1": "row-span-1",
@@ -240,7 +221,7 @@ const rowSpanMap: Record<string, string> = {
   "5": "row-span-5",
   "6": "row-span-6",
   full: "row-span-full",
-}
+};
 
 const colStartMap: Record<string, string> = {
   "1": "col-start-1",
@@ -257,7 +238,7 @@ const colStartMap: Record<string, string> = {
   "12": "col-start-12",
   "13": "col-start-13",
   auto: "col-start-auto",
-}
+};
 
 const colEndMap: Record<string, string> = {
   "1": "col-end-1",
@@ -274,7 +255,7 @@ const colEndMap: Record<string, string> = {
   "12": "col-end-12",
   "13": "col-end-13",
   auto: "col-end-auto",
-}
+};
 
 const rowStartMap: Record<string, string> = {
   "1": "row-start-1",
@@ -285,7 +266,7 @@ const rowStartMap: Record<string, string> = {
   "6": "row-start-6",
   "7": "row-start-7",
   auto: "row-start-auto",
-}
+};
 
 const rowEndMap: Record<string, string> = {
   "1": "row-end-1",
@@ -296,7 +277,7 @@ const rowEndMap: Record<string, string> = {
   "6": "row-end-6",
   "7": "row-end-7",
   auto: "row-end-auto",
-}
+};
 
 const selfAlignMap: Record<string, string> = {
   start: "self-start",
@@ -304,7 +285,7 @@ const selfAlignMap: Record<string, string> = {
   center: "self-center",
   stretch: "self-stretch",
   auto: "self-auto",
-}
+};
 
 const justifySelfMap: Record<string, string> = {
   start: "justify-self-start",
@@ -312,44 +293,38 @@ const justifySelfMap: Record<string, string> = {
   center: "justify-self-center",
   stretch: "justify-self-stretch",
   auto: "justify-self-auto",
-}
+};
 
-type ColSpan = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | "full"
-type RowSpan = 1 | 2 | 3 | 4 | 5 | 6 | "full"
-type ColPosition = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | "auto"
-type RowPosition = 1 | 2 | 3 | 4 | 5 | 6 | 7 | "auto"
-type SelfAlign = "start" | "end" | "center" | "stretch" | "auto"
+type ColSpan = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | "full";
+type RowSpan = 1 | 2 | 3 | 4 | 5 | 6 | "full";
+type ColPosition =
+  | 1
+  | 2
+  | 3
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9
+  | 10
+  | 11
+  | 12
+  | 13
+  | "auto";
+type RowPosition = 1 | 2 | 3 | 4 | 5 | 6 | 7 | "auto";
+type SelfAlign = "start" | "end" | "center" | "stretch" | "auto";
 
 interface GridItemProps extends React.HTMLAttributes<HTMLDivElement> {
-
-  colSpan?: ResponsiveValue<ColSpan>
-
-  rowSpan?: ResponsiveValue<RowSpan>
-
-  colStart?: ColPosition
-
-  colEnd?: ColPosition
-
-  rowStart?: RowPosition
-
-  rowEnd?: RowPosition
-
-  alignSelf?: SelfAlign
-
-  justifySelf?: SelfAlign
+  colSpan?: ResponsiveValue<ColSpan>;
+  rowSpan?: ResponsiveValue<RowSpan>;
+  colStart?: ColPosition;
+  colEnd?: ColPosition;
+  rowStart?: RowPosition;
+  rowEnd?: RowPosition;
+  alignSelf?: SelfAlign;
+  justifySelf?: SelfAlign;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 function GridItem({
   className,
@@ -372,13 +347,13 @@ function GridItem({
     rowEnd ? rowEndMap[String(rowEnd)] : "",
     alignSelf ? selfAlignMap[alignSelf] : "",
     justifySelf ? justifySelfMap[justifySelf] : "",
-    className,
-  )
+    className
+  );
 
-  return <div data-slot="grid-item" className={classes} {...props} />
+  return <div data-slot="grid-item" className={classes} {...props} />;
 }
 
-export { Grid, GridItem, gridVariants }
+export { Grid, GridItem, gridVariants };
 export type {
   GridProps,
   GridItemProps,
@@ -390,4 +365,4 @@ export type {
   GridJustify,
   ColSpan,
   RowSpan,
-}
+};

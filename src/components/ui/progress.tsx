@@ -3,10 +3,6 @@ import { Progress as ProgressPrimitive } from "@base-ui/react/progress";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-
-
-
-
 const progressVariants = cva(
   "relative w-full overflow-hidden rounded-full bg-muted",
   {
@@ -29,7 +25,7 @@ const progressVariants = cva(
       size: "default",
       variant: "default",
     },
-  },
+  }
 );
 
 const indicatorVariants = cva(
@@ -54,39 +50,25 @@ const indicatorVariants = cva(
       animated: false,
       indeterminate: false,
     },
-  },
+  }
 );
-
-
-
-
 
 interface ProgressProps
   extends
     Omit<ProgressPrimitive.Root.Props, "value">,
     VariantProps<typeof progressVariants> {
-
   value?: number | null;
-
   max?: number;
-
   showLabel?: boolean;
-
   striped?: boolean;
-
   animated?: boolean;
-
   "aria-label"?: string;
-
   getAriaValueText?: (
     formattedValue: string | null,
-    value: number | null,
+    value: number | null
   ) => string;
-
   locale?: Intl.LocalesArgument;
-
   format?: Intl.NumberFormatOptions;
-
   onComplete?: () => void;
 }
 
@@ -112,7 +94,6 @@ function Progress({
   const isComplete = percentage >= 100;
   const previousCompleteRef = React.useRef(false);
 
-
   const formattedValue = React.useMemo(() => {
     if (isIndeterminate) return null;
     const formatter = new Intl.NumberFormat(locale, {
@@ -123,17 +104,15 @@ function Progress({
     return formatter.format(safeValue / max);
   }, [safeValue, max, locale, format, isIndeterminate]);
 
-
   const ariaValueText = React.useMemo(() => {
     if (getAriaValueText) {
       return getAriaValueText(
         formattedValue,
-        isIndeterminate ? null : safeValue,
+        isIndeterminate ? null : safeValue
       );
     }
     return undefined;
   }, [getAriaValueText, formattedValue, safeValue, isIndeterminate]);
-
 
   React.useEffect(() => {
     if (isComplete && !previousCompleteRef.current && onComplete) {
@@ -141,7 +120,6 @@ function Progress({
     }
     previousCompleteRef.current = isComplete;
   }, [isComplete, onComplete]);
-
 
   const dataAttributes = {
     "data-complete": isComplete ? "" : undefined,
@@ -167,7 +145,7 @@ function Progress({
                 striped,
                 animated: striped && animated,
                 indeterminate: isIndeterminate,
-              }),
+              })
             )}
             style={isIndeterminate ? undefined : { width: `${percentage}%` }}
           />
@@ -181,10 +159,6 @@ function Progress({
     </div>
   );
 }
-
-
-
-
 
 interface ProgressLabelProps extends React.HTMLAttributes<HTMLLabelElement> {
   htmlFor?: string;
@@ -200,12 +174,10 @@ function ProgressLabel({ className, ...props }: ProgressLabelProps) {
   );
 }
 
-
-
-
-
-interface ProgressValueProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children"> {
-
+interface ProgressValueProps extends Omit<
+  React.HTMLAttributes<HTMLSpanElement>,
+  "children"
+> {
   children?:
     | ((formattedValue: string | null, value: number | null) => React.ReactNode)
     | null;
@@ -252,10 +224,6 @@ function ProgressValue({
     </span>
   );
 }
-
-
-
-
 
 interface Segment {
   value: number;
@@ -308,7 +276,7 @@ function SegmentedProgress({
           size === "lg" && "h-3",
           size === "xl" && "h-4",
           (!size || size === "default") && "h-2",
-          className,
+          className
         )}
       >
         {segments.map((segment, index) => {
@@ -319,7 +287,7 @@ function SegmentedProgress({
               data-slot="progress-segment"
               className={cn(
                 "h-full transition-all duration-300 ease-in-out first:rounded-l-full last:rounded-r-full",
-                segmentVariantColors[segment.variant || "default"],
+                segmentVariantColors[segment.variant || "default"]
               )}
               style={{ width: `${segmentPercent}%` }}
               title={segment.label}
@@ -334,7 +302,7 @@ function SegmentedProgress({
               <div
                 className={cn(
                   "w-2.5 h-2.5 rounded-full",
-                  segmentVariantColors[segment.variant || "default"],
+                  segmentVariantColors[segment.variant || "default"]
                 )}
               />
               <span className="text-muted-foreground">
@@ -348,26 +316,16 @@ function SegmentedProgress({
   );
 }
 
-
-
-
-
 interface CircularProgressProps
   extends React.SVGProps<SVGSVGElement>, VariantProps<typeof progressVariants> {
-
   value?: number | null;
-
   max?: number;
-
   showLabel?: boolean;
-
   indeterminate?: boolean;
-
   "aria-label"?: string;
-
   getAriaValueText?: (
     formattedValue: string | null,
-    value: number | null,
+    value: number | null
   ) => string;
 }
 
@@ -383,7 +341,6 @@ function CircularProgress({
   className,
   ...props
 }: CircularProgressProps) {
-
   const isIndeterminate = value === null || indeterminateProp;
   const safeValue = isIndeterminate ? 0 : (value ?? 0);
   const percentage = Math.min(100, Math.max(0, (safeValue / max) * 100));
@@ -415,18 +372,16 @@ function CircularProgress({
 
   const sizeValue = sizeClasses[size || "default"];
 
-
   const formattedValue = isIndeterminate ? null : `${Math.round(percentage)}%`;
   const ariaValueText = React.useMemo(() => {
     if (getAriaValueText) {
       return getAriaValueText(
         formattedValue,
-        isIndeterminate ? null : safeValue,
+        isIndeterminate ? null : safeValue
       );
     }
     return undefined;
   }, [getAriaValueText, formattedValue, safeValue, isIndeterminate]);
-
 
   const dataAttributes = {
     "data-complete": percentage >= 100 ? "" : undefined,
@@ -448,7 +403,7 @@ function CircularProgress({
       className={cn(
         "relative inline-flex items-center justify-center",
         sizeValue,
-        className,
+        className
       )}
       {...dataAttributes}
     >
@@ -499,7 +454,7 @@ function CircularProgress({
             strokeLinecap="round"
             className={cn(
               variantColors[variant || "default"],
-              "transition-all duration-500 ease-in-out",
+              "transition-all duration-500 ease-in-out"
             )}
             style={{
               transformOrigin: "50% 50%",

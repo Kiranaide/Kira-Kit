@@ -39,12 +39,11 @@ const collapsibleTriggerVariants = cva(
   }
 );
 
-type CollapsibleRootProps = React.ComponentProps<typeof CollapsiblePrimitive.Root>;
+type CollapsibleRootProps = React.ComponentProps<
+  typeof CollapsiblePrimitive.Root
+>;
 
-function Collapsible({
-  className,
-  ...props
-}: CollapsibleRootProps) {
+function Collapsible({ className, ...props }: CollapsibleRootProps) {
   return (
     <CollapsiblePrimitive.Root
       data-slot="collapsible"
@@ -81,7 +80,7 @@ function CollapsibleTrigger({
   const defaultChevron = (
     <IconChevronDown
       data-collapsible-chevron
-      className="h-4 w-4 transition-transform duration-300 ease-out [[data-panel-open]_&]:rotate-180"
+      className="h-4 w-4 transition-transform duration-300 ease-out in-data-panel-open:rotate-180"
     />
   );
 
@@ -240,8 +239,8 @@ function CollapsibleContent({
   const renderContent = shouldRenderChildren
     ? children
     : showSkeleton
-    ? skeleton
-    : null;
+      ? skeleton
+      : null;
 
   return (
     <CollapsiblePrimitive.Panel
@@ -255,7 +254,10 @@ function CollapsibleContent({
       }}
       {...props}
     >
-      <div ref={contentRef} className={cn(collapsibleContentVariants({ size }))}>
+      <div
+        ref={contentRef}
+        className={cn(collapsibleContentVariants({ size }))}
+      >
         {renderContent}
       </div>
     </CollapsiblePrimitive.Panel>
@@ -268,4 +270,8 @@ export {
   CollapsibleContent,
   collapsibleTriggerVariants,
 };
-export type { CollapsibleRootProps, CollapsibleTriggerProps, CollapsibleContentProps };
+export type {
+  CollapsibleRootProps,
+  CollapsibleTriggerProps,
+  CollapsibleContentProps,
+};

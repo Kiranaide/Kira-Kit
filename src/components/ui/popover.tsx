@@ -3,12 +3,7 @@ import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-
-
-
-
 interface PopoverProps extends PopoverPrimitive.Root.Props {
-
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -22,33 +17,17 @@ function Popover({ onOpenChange, ...props }: PopoverProps) {
   );
 }
 
-
-
-
-
 function PopoverTrigger({ ...props }: PopoverPrimitive.Trigger.Props) {
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
 }
-
-
-
-
 
 function PopoverPortal({ ...props }: PopoverPrimitive.Portal.Props) {
   return <PopoverPrimitive.Portal data-slot="popover-portal" {...props} />;
 }
 
-
-
-
-
 function PopoverClose({ ...props }: PopoverPrimitive.Close.Props) {
   return <PopoverPrimitive.Close data-slot="popover-close" {...props} />;
 }
-
-
-
-
 
 const popoverContentVariants = cva(
   "z-50 rounded-lg border p-4 shadow-lg outline-none data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
@@ -70,48 +49,23 @@ const popoverContentVariants = cva(
       size: "md",
       variant: "default",
     },
-  },
+  }
 );
-
-
-
-
 
 interface PopoverContentProps
   extends
     Omit<PopoverPrimitive.Popup.Props, "initialFocus" | "finalFocus">,
     VariantProps<typeof popoverContentVariants> {
-
   side?: PopoverPrimitive.Positioner.Props["side"];
-
   sideOffset?: PopoverPrimitive.Positioner.Props["sideOffset"];
-
   align?: PopoverPrimitive.Positioner.Props["align"];
-
   alignOffset?: PopoverPrimitive.Positioner.Props["alignOffset"];
-
   arrowPadding?: PopoverPrimitive.Positioner.Props["arrowPadding"];
-
   collisionBoundary?: PopoverPrimitive.Positioner.Props["collisionBoundary"];
-
   collisionPadding?: PopoverPrimitive.Positioner.Props["collisionPadding"];
-
   sticky?: PopoverPrimitive.Positioner.Props["sticky"];
-
-
-
-
-
-
   initialFocus?: PopoverPrimitive.Popup.Props["initialFocus"];
-
-
-
-
-
-
   finalFocus?: PopoverPrimitive.Popup.Props["finalFocus"];
-
   role?: "dialog" | "tooltip" | "listbox" | "menu";
 }
 
@@ -157,10 +111,6 @@ function PopoverContent({
   );
 }
 
-
-
-
-
 function PopoverBackdrop({
   className,
   ...props
@@ -170,16 +120,12 @@ function PopoverBackdrop({
       data-slot="popover-backdrop"
       className={cn(
         "fixed inset-0 z-40 bg-black/40 backdrop-blur-sm data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0",
-        className,
+        className
       )}
       {...props}
     />
   );
 }
-
-
-
-
 
 const popoverArrowVariants = cva("", {
   variants: {
@@ -208,12 +154,7 @@ function PopoverArrow({ className, variant, ...props }: PopoverArrowProps) {
   );
 }
 
-
-
-
-
 interface PopoverTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
-
   as?: "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
@@ -232,11 +173,6 @@ function PopoverTitle({
   );
 }
 
-
-
-
-
-
 interface PopoverDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
 
 function PopoverDescription({ className, ...props }: PopoverDescriptionProps) {
@@ -248,10 +184,6 @@ function PopoverDescription({ className, ...props }: PopoverDescriptionProps) {
     />
   );
 }
-
-
-
-
 
 export {
   Popover,

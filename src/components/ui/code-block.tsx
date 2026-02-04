@@ -3,7 +3,6 @@ import { IconCopy, IconCheck } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-
 type MonacoTheme =
   | "vitesse-dark"
   | "vitesse-light"
@@ -45,7 +44,6 @@ interface CodeBlockProps extends VariantProps<typeof codeBlockVariants> {
   editable?: boolean;
   onChange?: (value: string) => void;
 }
-
 
 interface MonacoEditor {
   getValue: () => string;
@@ -100,7 +98,11 @@ function CodeBlock({
   const [copied, setCopied] = React.useState(false);
   const [isMonacoReady, setIsMonacoReady] = React.useState(false);
   const [resolvedTheme, setResolvedTheme] = React.useState<MonacoTheme>(
-    themeMode === "light" ? lightTheme : themeMode === "dark" ? darkTheme : theme
+    themeMode === "light"
+      ? lightTheme
+      : themeMode === "dark"
+        ? darkTheme
+        : theme
   );
   const componentId = React.useId();
   const editorContainerRef = React.useRef<HTMLDivElement | null>(null);
@@ -112,7 +114,6 @@ function CodeBlock({
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
 
   React.useEffect(() => {
     if (themeMode !== "system") {
@@ -130,7 +131,6 @@ function CodeBlock({
     return () => media.removeEventListener("change", listener);
   }, [themeMode, lightTheme, darkTheme]);
 
-
   const calculatedHeight = React.useMemo(() => {
     if (height !== "auto") {
       return typeof height === "number" ? `${height}px` : height;
@@ -140,7 +140,6 @@ function CodeBlock({
     const padding = 32;
     return `${Math.max(lineCount * lineHeight + padding, 100)}px`;
   }, [height, code, fontSize]);
-
 
   React.useEffect(() => {
     let isMounted = true;
@@ -154,18 +153,15 @@ function CodeBlock({
 
         if (!isMounted || !editorContainerRef.current) return;
 
-
         const monaco = (await init({ theme: resolvedTheme })) as MonacoInstance;
 
         if (!isMounted || !editorContainerRef.current) return;
-
 
         const uri =
           monaco.Uri?.parse?.(
             `inmemory://code-block/${componentId}.${language}`
           ) ?? undefined;
         const model = monaco.editor.createModel(code, language, uri);
-
 
         const editor = monaco.editor.create(editorContainerRef.current, {
           model,
@@ -196,15 +192,14 @@ function CodeBlock({
         modelRef.current = model;
         setIsMonacoReady(true);
 
-
         if (editable && onChange) {
           changeListener = model.onDidChangeContent(() => {
             const currentCode = model.getValue();
             onChange(currentCode);
           });
         }
-      } catch (error) {
-        console.error("Failed to initialize modern-monaco:", error);
+      } catch {
+        // Monaco initialization failed silently
       }
     };
 
@@ -216,9 +211,6 @@ function CodeBlock({
       editorInstanceRef.current?.dispose();
       modelRef.current?.dispose();
     };
-
-
-
   }, [
     language,
     resolvedTheme,
@@ -233,7 +225,6 @@ function CodeBlock({
     componentId,
   ]);
 
-
   React.useEffect(() => {
     const model = modelRef.current;
     if (model && model.getValue() !== code) {
@@ -246,7 +237,6 @@ function CodeBlock({
       data-slot="code-block"
       className={cn(codeBlockVariants({ variant, className }))}
     >
-      {}
       <div className="flex items-center justify-between px-3 py-1.5 bg-zinc-900 border-b border-zinc-800">
         <div className="flex items-center gap-2">
           <div className="flex gap-1.5">
@@ -274,12 +264,10 @@ function CodeBlock({
         </div>
       </div>
 
-      {}
       <div
         className="overflow-hidden relative"
         style={{ height: calculatedHeight, minHeight: "100px" }}
       >
-        {}
         <div
           ref={editorContainerRef}
           className="w-full h-full"
@@ -289,7 +277,6 @@ function CodeBlock({
           }}
         />
 
-        {}
         {!isMonacoReady && (
           <div
             className="absolute inset-0 overflow-auto bg-zinc-950"

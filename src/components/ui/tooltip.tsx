@@ -3,22 +3,15 @@ import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-
-
-
 const tooltipContentVariants = cva(
   [
-
     "z-50 overflow-hidden rounded-md px-3 py-1.5 text-sm shadow-md",
-
     "animate-in fade-in-0 zoom-in-95",
     "data-[ending-style]:animate-out data-[ending-style]:fade-out-0 data-[ending-style]:zoom-out-95",
-
     "data-[side=bottom]:slide-in-from-top-2",
     "data-[side=left]:slide-in-from-right-2",
     "data-[side=right]:slide-in-from-left-2",
     "data-[side=top]:slide-in-from-bottom-2",
-
     "motion-reduce:animate-none",
   ],
   {
@@ -43,9 +36,6 @@ const tooltipContentVariants = cva(
   }
 );
 
-
-
-
 const tooltipArrowVariants = cva(
   [
     "data-[side=bottom]:top-[-6px]",
@@ -69,9 +59,6 @@ const tooltipArrowVariants = cva(
   }
 );
 
-
-
-
 type TooltipContextValue = {
   variant: VariantProps<typeof tooltipContentVariants>["variant"];
   id: string;
@@ -87,180 +74,68 @@ const TooltipContext = React.createContext<TooltipContextValue>({
 });
 
 interface TooltipProviderProps {
-
-
-
-
   delayDuration?: number;
-
-
-
-
   closeDelayDuration?: number;
-
-
-
   children: React.ReactNode;
 }
 
 interface TooltipProps
-  extends Omit<TooltipPrimitive.Root.Props, "children">,
+  extends
+    Omit<TooltipPrimitive.Root.Props, "children">,
     VariantProps<typeof tooltipContentVariants> {
-
-
-
-
   delayDuration?: number;
-
-
-
-
   closeDelayDuration?: number;
-
-
-
   children: React.ReactNode;
 }
 
 interface TooltipTriggerProps extends TooltipPrimitive.Trigger.Props {
-
-
-
   className?: string;
 }
 
 interface TooltipContentProps
-  extends Omit<TooltipPrimitive.Popup.Props, "children">,
+  extends
+    Omit<TooltipPrimitive.Popup.Props, "children">,
     VariantProps<typeof tooltipContentVariants> {
-
-
-
-
   side?: "top" | "right" | "bottom" | "left";
-
-
-
-
   align?: "start" | "center" | "end";
-
-
-
-
   sideOffset?: number;
-
-
-
-
   maxWidth?: number | string;
-
-
-
-
   showArrow?: boolean;
-
-
-
   children: React.ReactNode;
 }
 
-interface TooltipArrowProps extends Omit<TooltipPrimitive.Arrow.Props, "render"> {
-
-
-
+interface TooltipArrowProps extends Omit<
+  TooltipPrimitive.Arrow.Props,
+  "render"
+> {
   className?: string;
 }
 
-
-
-
-interface SimpleTooltipProps extends VariantProps<typeof tooltipContentVariants> {
-
-
-
+interface SimpleTooltipProps extends VariantProps<
+  typeof tooltipContentVariants
+> {
   content: React.ReactNode;
-
-
-
   children: React.ReactElement;
-
-
-
-
   side?: "top" | "right" | "bottom" | "left";
-
-
-
-
   align?: "start" | "center" | "end";
-
-
-
-
   showArrow?: boolean;
-
-
-
-
   sideOffset?: number;
-
-
-
-
   delayDuration?: number;
-
-
-
-
   closeDelayDuration?: number;
-
-
-
   open?: boolean;
-
-
-
   onOpenChange?: (
     open: boolean,
     eventDetails: TooltipPrimitive.Root.ChangeEventDetails
   ) => void;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function TooltipProvider({
   delayDuration: _delayDuration = 500,
   closeDelayDuration: _closeDelayDuration = 200,
   children,
 }: TooltipProviderProps) {
-
   return <>{children}</>;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function Tooltip({
   delayDuration = 500,
@@ -273,7 +148,6 @@ function Tooltip({
 }: TooltipProps) {
   const [internalOpen, setInternalOpen] = React.useState(false);
   const id = React.useId();
-
 
   const isOpen = controlledOpen ?? internalOpen;
 
@@ -289,8 +163,6 @@ function Tooltip({
     },
     [controlledOpen, onOpenChange]
   );
-
-
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -325,27 +197,17 @@ function Tooltip({
   );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-function TooltipTrigger({ className, children, ...props }: TooltipTriggerProps) {
+function TooltipTrigger({
+  className,
+  children,
+  ...props
+}: TooltipTriggerProps) {
   const { id, delayDuration, closeDelayDuration } =
     React.useContext(TooltipContext);
 
   return (
     <TooltipPrimitive.Trigger
       data-slot="tooltip-trigger"
-
       aria-describedby={id}
       delay={delayDuration}
       closeDelay={closeDelayDuration}
@@ -356,19 +218,6 @@ function TooltipTrigger({ className, children, ...props }: TooltipTriggerProps) 
     </TooltipPrimitive.Trigger>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function TooltipContent({
   className,
@@ -411,12 +260,6 @@ function TooltipContent({
   );
 }
 
-
-
-
-
-
-
 function TooltipArrow({
   className,
   variant,
@@ -428,7 +271,10 @@ function TooltipArrow({
   return (
     <TooltipPrimitive.Arrow
       data-slot="tooltip-arrow"
-      className={cn(tooltipArrowVariants({ variant: resolvedVariant }), className)}
+      className={cn(
+        tooltipArrowVariants({ variant: resolvedVariant }),
+        className
+      )}
       {...props}
     >
       <svg width="12" height="6" viewBox="0 0 12 6" aria-hidden="true">
@@ -437,29 +283,6 @@ function TooltipArrow({
     </TooltipPrimitive.Arrow>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function SimpleTooltip({
   content,
@@ -497,9 +320,6 @@ function SimpleTooltip({
     </Tooltip>
   );
 }
-
-
-
 
 export {
   Tooltip,

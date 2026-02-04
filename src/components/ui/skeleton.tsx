@@ -2,10 +2,6 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-
-
-
-
 const skeletonVariants = cva("rounded-md bg-muted", {
   variants: {
     variant: {
@@ -26,52 +22,34 @@ const skeletonVariants = cva("rounded-md bg-muted", {
   },
 });
 
-
-
-
-
 interface SkeletonRootProps extends React.HTMLAttributes<HTMLDivElement> {
-
   loading?: boolean;
-
   "aria-label"?: string;
-
   "aria-live"?: "polite" | "assertive" | "off";
-
   children: React.ReactNode;
 }
 
 interface SkeletonBoneProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof skeletonVariants> {
-
   delay?: number;
-
   duration?: number;
 }
 
 interface SkeletonLinesProps extends Omit<SkeletonBoneProps, "children"> {
-
   count?: number;
-
   gap?: "sm" | "md" | "lg";
-
   lastLineWidth?: "full" | "3/4" | "1/2" | "2/3";
 }
 
 interface SkeletonImageProps extends SkeletonBoneProps {
-
   aspectRatio?: string;
 }
 
 interface SkeletonAvatarProps extends Omit<SkeletonBoneProps, "variant"> {
-
   size?: "sm" | "md" | "lg" | "xl";
 }
-
-
-
-
 
 function SkeletonRoot({
   loading = true,
@@ -92,15 +70,10 @@ function SkeletonRoot({
       {...props}
     >
       {children}
-      {}
       {ariaLabel && <span className="sr-only">{ariaLabel}</span>}
     </div>
   );
 }
-
-
-
-
 
 function SkeletonBone({
   className,
@@ -140,23 +113,11 @@ function SkeletonBone({
   );
 }
 
-
-
-
-
 function SkeletonText({ className, ...props }: SkeletonBoneProps) {
   return (
-    <SkeletonBone
-      variant="text"
-      className={cn("h-4", className)}
-      {...props}
-    />
+    <SkeletonBone variant="text" className={cn("h-4", className)} {...props} />
   );
 }
-
-
-
-
 
 function SkeletonLines({
   count = 3,
@@ -189,19 +150,13 @@ function SkeletonLines({
         <SkeletonText
           key={index}
           delay={delay ? delay + index * 50 : undefined}
-          className={cn(
-            index === count - 1 && lastWidthClasses[lastLineWidth]
-          )}
+          className={cn(index === count - 1 && lastWidthClasses[lastLineWidth])}
           {...props}
         />
       ))}
     </div>
   );
 }
-
-
-
-
 
 function SkeletonHeading({ className, ...props }: SkeletonBoneProps) {
   return (
@@ -212,10 +167,6 @@ function SkeletonHeading({ className, ...props }: SkeletonBoneProps) {
     />
   );
 }
-
-
-
-
 
 function SkeletonAvatar({
   size = "md",
@@ -238,19 +189,9 @@ function SkeletonAvatar({
   );
 }
 
-
-
-
-
 function SkeletonButton({ className, ...props }: SkeletonBoneProps) {
-  return (
-    <SkeletonBone className={cn("h-9 w-24", className)} {...props} />
-  );
+  return <SkeletonBone className={cn("h-9 w-24", className)} {...props} />;
 }
-
-
-
-
 
 function SkeletonImage({
   aspectRatio = "16/9",
@@ -270,10 +211,6 @@ function SkeletonImage({
   );
 }
 
-
-
-
-
 function SkeletonCard({ className, ...props }: SkeletonBoneProps) {
   return (
     <div
@@ -289,12 +226,7 @@ function SkeletonCard({ className, ...props }: SkeletonBoneProps) {
   );
 }
 
-
-
-
-
 interface SkeletonTableRowProps extends SkeletonBoneProps {
-
   columns?: number;
 }
 
@@ -322,10 +254,6 @@ function SkeletonTableRow({
   );
 }
 
-
-
-
-
 function SkeletonListItem({ className, delay, ...props }: SkeletonBoneProps) {
   return (
     <div
@@ -350,13 +278,8 @@ function SkeletonListItem({ className, delay, ...props }: SkeletonBoneProps) {
   );
 }
 
-
-
-
-
-interface LegacySkeletonProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof skeletonVariants> {}
+type LegacySkeletonProps = React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof skeletonVariants>;
 
 function SkeletonLegacy({ className, variant, ...props }: LegacySkeletonProps) {
   return (
@@ -381,10 +304,6 @@ function SkeletonLegacy({ className, variant, ...props }: LegacySkeletonProps) {
   );
 }
 
-
-
-
-
 const SkeletonCompound = Object.assign(SkeletonRoot, {
   Root: SkeletonRoot,
   Bone: SkeletonBone,
@@ -399,16 +318,9 @@ const SkeletonCompound = Object.assign(SkeletonRoot, {
   ListItem: SkeletonListItem,
 });
 
-
-
-
-
 export {
-
   SkeletonLegacy as Skeleton,
-
   SkeletonCompound as SkeletonGroup,
-
   SkeletonRoot,
   SkeletonBone,
   SkeletonText,
@@ -420,7 +332,6 @@ export {
   SkeletonCard,
   SkeletonTableRow,
   SkeletonListItem,
-
   skeletonVariants,
 };
 

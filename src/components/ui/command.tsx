@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { IconSearch } from "@tabler/icons-react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
-import { Command as CmdkCommand } from "cmdk"
+import * as React from "react";
+import { IconSearch } from "@tabler/icons-react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
+import { Command as CmdkCommand } from "cmdk";
 
 const commandVariants = cva(
   "flex h-full w-full flex-col overflow-hidden rounded-md bg-background text-foreground",
@@ -26,7 +26,7 @@ const commandVariants = cva(
       size: "default",
     },
   }
-)
+);
 
 const commandItemVariants = cva(
   "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
@@ -41,7 +41,7 @@ const commandItemVariants = cva(
       variant: "default",
     },
   }
-)
+);
 
 const commandShortcutVariants = cva(
   "ml-auto text-xs tracking-widest opacity-60",
@@ -56,27 +56,44 @@ const commandShortcutVariants = cva(
       variant: "default",
     },
   }
-)
+);
 
 interface CommandProps extends VariantProps<typeof commandVariants> {}
-interface CommandInputProps extends React.ComponentPropsWithoutRef<typeof CmdkCommand.Input> {}
-interface CommandListProps extends React.ComponentPropsWithoutRef<typeof CmdkCommand.List> {}
-interface CommandEmptyProps extends React.ComponentPropsWithoutRef<typeof CmdkCommand.Empty> {}
-interface CommandGroupProps extends React.ComponentPropsWithoutRef<typeof CmdkCommand.Group> {}
-interface CommandItemProps extends React.ComponentPropsWithoutRef<typeof CmdkCommand.Item>, VariantProps<typeof commandItemVariants> {}
-interface CommandShortcutProps extends React.ComponentPropsWithoutRef<"span">, VariantProps<typeof commandShortcutVariants> {}
-interface CommandSeparatorProps extends React.ComponentPropsWithoutRef<typeof CmdkCommand.Separator> {}
+interface CommandInputProps extends React.ComponentPropsWithoutRef<
+  typeof CmdkCommand.Input
+> {}
+interface CommandListProps extends React.ComponentPropsWithoutRef<
+  typeof CmdkCommand.List
+> {}
+interface CommandEmptyProps extends React.ComponentPropsWithoutRef<
+  typeof CmdkCommand.Empty
+> {}
+interface CommandGroupProps extends React.ComponentPropsWithoutRef<
+  typeof CmdkCommand.Group
+> {}
+interface CommandItemProps
+  extends
+    React.ComponentPropsWithoutRef<typeof CmdkCommand.Item>,
+    VariantProps<typeof commandItemVariants> {}
+interface CommandShortcutProps
+  extends
+    React.ComponentPropsWithoutRef<"span">,
+    VariantProps<typeof commandShortcutVariants> {}
+interface CommandSeparatorProps extends React.ComponentPropsWithoutRef<
+  typeof CmdkCommand.Separator
+> {}
 
-const Command = React.forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<typeof CmdkCommand> & CommandProps>(
-  ({ className, variant, size, ...props }, ref) => (
-    <CmdkCommand
-      ref={ref}
-      className={cn(commandVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
-)
-Command.displayName = "Command"
+const Command = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentPropsWithoutRef<typeof CmdkCommand> & CommandProps
+>(({ className, variant, size, ...props }, ref) => (
+  <CmdkCommand
+    ref={ref}
+    className={cn(commandVariants({ variant, size, className }))}
+    {...props}
+  />
+));
+Command.displayName = "Command";
 
 const CommandInput = React.forwardRef<HTMLInputElement, CommandInputProps>(
   ({ className, ...props }, ref) => (
@@ -92,19 +109,22 @@ const CommandInput = React.forwardRef<HTMLInputElement, CommandInputProps>(
       />
     </div>
   )
-)
-CommandInput.displayName = "CommandInput"
+);
+CommandInput.displayName = "CommandInput";
 
 const CommandList = React.forwardRef<HTMLDivElement, CommandListProps>(
   ({ className, ...props }, ref) => (
     <CmdkCommand.List
       ref={ref}
-      className={cn("max-h-[300px] overflow-y-auto overflow-x-hidden", className)}
+      className={cn(
+        "max-h-[300px] overflow-y-auto overflow-x-hidden",
+        className
+      )}
       {...props}
     />
   )
-)
-CommandList.displayName = "CommandList"
+);
+CommandList.displayName = "CommandList";
 
 const CommandEmpty = React.forwardRef<HTMLDivElement, CommandEmptyProps>(
   (props, ref) => (
@@ -114,8 +134,8 @@ const CommandEmpty = React.forwardRef<HTMLDivElement, CommandEmptyProps>(
       {...props}
     />
   )
-)
-CommandEmpty.displayName = "CommandEmpty"
+);
+CommandEmpty.displayName = "CommandEmpty";
 
 const CommandGroup = React.forwardRef<HTMLDivElement, CommandGroupProps>(
   ({ className, ...props }, ref) => (
@@ -128,19 +148,20 @@ const CommandGroup = React.forwardRef<HTMLDivElement, CommandGroupProps>(
       {...props}
     />
   )
-)
-CommandGroup.displayName = "CommandGroup"
+);
+CommandGroup.displayName = "CommandGroup";
 
-const CommandSeparator = React.forwardRef<HTMLDivElement, CommandSeparatorProps>(
-  ({ className, ...props }, ref) => (
-    <CmdkCommand.Separator
-      ref={ref}
-      className={cn("-mx-1 h-px bg-border", className)}
-      {...props}
-    />
-  )
-)
-CommandSeparator.displayName = "CommandSeparator"
+const CommandSeparator = React.forwardRef<
+  HTMLDivElement,
+  CommandSeparatorProps
+>(({ className, ...props }, ref) => (
+  <CmdkCommand.Separator
+    ref={ref}
+    className={cn("-mx-1 h-px bg-border", className)}
+    {...props}
+  />
+));
+CommandSeparator.displayName = "CommandSeparator";
 
 const CommandItem = React.forwardRef<HTMLDivElement, CommandItemProps>(
   ({ className, variant, ...props }, ref) => (
@@ -150,13 +171,23 @@ const CommandItem = React.forwardRef<HTMLDivElement, CommandItemProps>(
       {...props}
     />
   )
-)
-CommandItem.displayName = "CommandItem"
+);
+CommandItem.displayName = "CommandItem";
 
-const CommandShortcut = ({ className, variant, ...props }: CommandShortcutProps) => {
-  return <span className={cn(commandShortcutVariants({ variant, className }))} cmdk-shortcut="" {...props} />
-}
-CommandShortcut.displayName = "CommandShortcut"
+const CommandShortcut = ({
+  className,
+  variant,
+  ...props
+}: CommandShortcutProps) => {
+  return (
+    <span
+      className={cn(commandShortcutVariants({ variant, className }))}
+      cmdk-shortcut=""
+      {...props}
+    />
+  );
+};
+CommandShortcut.displayName = "CommandShortcut";
 
 export {
   Command,
@@ -170,7 +201,7 @@ export {
   commandVariants,
   commandItemVariants,
   commandShortcutVariants,
-}
+};
 
 export type {
   CommandProps,
@@ -181,4 +212,4 @@ export type {
   CommandItemProps,
   CommandShortcutProps,
   CommandSeparatorProps,
-}
+};

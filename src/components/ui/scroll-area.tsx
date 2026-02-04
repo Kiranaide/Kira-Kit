@@ -1,44 +1,17 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-type ScrollAreaOrientation = "vertical" | "horizontal" | "both"
-type ScrollbarSize = "thin" | "default" | "thick"
+type ScrollAreaOrientation = "vertical" | "horizontal" | "both";
+type ScrollbarSize = "thin" | "default" | "thick";
 
 interface ScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {
-
-  orientation?: ScrollAreaOrientation
-
-  scrollbarSize?: ScrollbarSize
-
-  "aria-label"?: string
+  orientation?: ScrollAreaOrientation;
+  scrollbarSize?: ScrollbarSize;
+  "aria-label"?: string;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function ScrollArea({
   className,
@@ -49,15 +22,17 @@ function ScrollArea({
 }: ScrollAreaProps) {
   const scrollbarSizeMap = {
     thin: "[&::-webkit-scrollbar]:size-1.5 [&::-webkit-scrollbar-thumb]:size-1.5",
-    default: "[&::-webkit-scrollbar]:size-2.5 [&::-webkit-scrollbar-thumb]:size-2.5",
-    thick: "[&::-webkit-scrollbar]:size-3.5 [&::-webkit-scrollbar-thumb]:size-3.5",
-  }
+    default:
+      "[&::-webkit-scrollbar]:size-2.5 [&::-webkit-scrollbar-thumb]:size-2.5",
+    thick:
+      "[&::-webkit-scrollbar]:size-3.5 [&::-webkit-scrollbar-thumb]:size-3.5",
+  };
 
   const overflowClass = {
     vertical: "overflow-y-auto overflow-x-hidden",
     horizontal: "overflow-x-auto overflow-y-hidden",
     both: "overflow-auto",
-  }[orientation]
+  }[orientation];
 
   return (
     <div
@@ -83,15 +58,12 @@ function ScrollArea({
     >
       {children}
     </div>
-  )
+  );
 }
-
-
-
 
 function SimpleScrollArea(props: ScrollAreaProps) {
-  return <ScrollArea {...props} />
+  return <ScrollArea {...props} />;
 }
 
-export { ScrollArea, SimpleScrollArea }
-export type { ScrollAreaProps, ScrollAreaOrientation, ScrollbarSize }
+export { ScrollArea, SimpleScrollArea };
+export type { ScrollAreaProps, ScrollAreaOrientation, ScrollbarSize };

@@ -89,7 +89,8 @@ interface ToastProps {
 }
 
 interface AlertProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof alertVariants> {
   showIcon?: boolean;
   closable?: boolean;
@@ -279,7 +280,6 @@ function Alert({
       onPointerLeave={handlePointerLeave}
       {...props}
     >
-      {}
       {holdToClose && (
         <div
           ref={progressRef}

@@ -12,9 +12,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CodeBlock } from "@/components/ui/code-block";
 
-// =============================================================================
-// PageHeader - Title, version badge, and description
-// =============================================================================
 interface PageHeaderProps {
   title: string;
   description: string;
@@ -40,9 +37,6 @@ export function PageHeader({
   );
 }
 
-// =============================================================================
-// FeatureCard - Single feature highlight card
-// =============================================================================
 interface FeatureCardProps {
   title: string;
   description: string;
@@ -65,9 +59,6 @@ export function FeatureCard({ title, description, icon }: FeatureCardProps) {
   );
 }
 
-// =============================================================================
-// FeatureGrid - 3-column grid of feature cards
-// =============================================================================
 interface FeatureGridProps {
   features: FeatureCardProps[];
 }
@@ -82,9 +73,6 @@ export function FeatureGrid({ features }: FeatureGridProps) {
   );
 }
 
-// =============================================================================
-// DemoWrapper - Preview/Code toggle wrapper for examples
-// =============================================================================
 interface DemoWrapperProps {
   title: string;
   description?: string;
@@ -116,7 +104,7 @@ export function DemoWrapper({
           </div>
           <Tabs
             value={view}
-            onValueChange={(v) => setView(v as "preview" | "code")}
+            onValueChange={(v) => setView(v === "code" ? "code" : "preview")}
           >
             <TabsList>
               <TabsTrigger
@@ -150,17 +138,9 @@ export function DemoWrapper({
   );
 }
 
-// =============================================================================
-// DemoTabs - Tabbed demo sections with lazy rendering support
-// =============================================================================
 interface DemoTab {
   value: string;
   label: string;
-  /**
-   * Demo content - can be a ReactNode or a render function.
-   * Using a render function enables lazy rendering (content only mounts when tab is active).
-   * This is recommended for heavy components like cameras to prevent resource conflicts.
-   */
   demo: React.ReactNode | ((isActive: boolean) => React.ReactNode);
 }
 
@@ -168,11 +148,6 @@ interface DemoTabsProps {
   tabs: DemoTab[];
   defaultValue?: string;
   className?: string;
-  /**
-   * When true, only the active tab content is mounted (lazy rendering).
-   * Inactive tabs are unmounted to free resources (e.g., camera streams).
-   * Default: false for backward compatibility
-   */
   lazyMount?: boolean;
 }
 
@@ -189,12 +164,10 @@ export function DemoTabs({
   const renderTabContent = (tab: DemoTab) => {
     const isActive = activeTab === tab.value;
 
-    // If demo is a function, call it with isActive state
     if (typeof tab.demo === "function") {
       return tab.demo(isActive);
     }
 
-    // If lazyMount is enabled, only render active tab content
     if (lazyMount && !isActive) {
       return null;
     }
@@ -224,9 +197,6 @@ export function DemoTabs({
   );
 }
 
-// =============================================================================
-// KeyboardShortcut - Single keyboard shortcut display
-// =============================================================================
 interface KeyboardShortcutProps {
   keys: string;
   description: string;
@@ -243,9 +213,6 @@ export function KeyboardShortcut({ keys, description }: KeyboardShortcutProps) {
   );
 }
 
-// =============================================================================
-// KeyboardShortcuts - Grid of keyboard shortcuts
-// =============================================================================
 interface KeyboardShortcutsProps {
   shortcuts: KeyboardShortcutProps[];
   title?: string;
@@ -274,9 +241,6 @@ export function KeyboardShortcuts({
   );
 }
 
-// =============================================================================
-// UsageBlock - Usage code example section
-// =============================================================================
 interface UsageBlockProps {
   code: string;
   title?: string;
@@ -303,9 +267,6 @@ export function UsageBlock({
   );
 }
 
-// =============================================================================
-// APIReference - API reference table
-// =============================================================================
 interface APIProp {
   prop: string;
   type: string;
@@ -380,9 +341,6 @@ export function APIReference({
   );
 }
 
-// =============================================================================
-// ChangelogEntry - Single changelog entry
-// =============================================================================
 interface ChangelogChange {
   type: "added" | "changed" | "fixed" | "deprecated" | "removed" | "breaking";
   title: string;
@@ -395,7 +353,10 @@ interface ChangelogEntryProps {
   changes: ChangelogChange[];
 }
 
-const changeTypeVariants: Record<ChangelogChange["type"], string> = {
+const changeTypeVariants: Record<
+  ChangelogChange["type"],
+  React.ComponentProps<typeof Badge>["variant"]
+> = {
   added: "success",
   changed: "secondary",
   fixed: "info",
@@ -419,16 +380,7 @@ export function ChangelogEntry({
       <div className="space-y-3">
         {changes.map((change, index) => (
           <div key={index} className="flex flex-wrap items-start gap-2">
-            <Badge
-              variant={
-                changeTypeVariants[change.type] as
-                  | "success"
-                  | "secondary"
-                  | "info"
-                  | "warning"
-                  | "destructive"
-              }
-            >
+            <Badge variant={changeTypeVariants[change.type]}>
               {change.type}
             </Badge>
             <div className="flex-1">
@@ -446,9 +398,6 @@ export function ChangelogEntry({
   );
 }
 
-// =============================================================================
-// Changelog - Full changelog section
-// =============================================================================
 interface ChangelogProps {
   entries: ChangelogEntryProps[];
   title?: string;
@@ -475,9 +424,6 @@ export function Changelog({
   );
 }
 
-// =============================================================================
-// ComponentPage - Full component page layout
-// =============================================================================
 interface ComponentPageProps {
   children: React.ReactNode;
   className?: string;
@@ -489,9 +435,6 @@ export function ComponentPage({ children, className }: ComponentPageProps) {
   );
 }
 
-// =============================================================================
-// Section - Simple section wrapper
-// =============================================================================
 interface SectionProps {
   title?: string;
   description?: string;
