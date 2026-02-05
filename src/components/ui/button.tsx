@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { animate, stagger } from "animejs";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
@@ -83,6 +84,8 @@ interface ButtonProps
   onHoldComplete?: () => void;
   progressColor?: string;
   rippleColor?: string;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 type ButtonSize =
@@ -120,6 +123,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       progressColor,
       rippleColor,
       disabled,
+      leftIcon,
+      rightIcon,
       children,
       onPointerDown,
       onPointerUp,
@@ -129,7 +134,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const progressRef = React.useRef<HTMLDivElement>(null);
-    const animationRef = React.useRef<ReturnType<typeof animate> | null>(null);
     const buttonRef = React.useRef<HTMLButtonElement>(null);
     const [isHolding, setIsHolding] = React.useState(false);
     const [ripples, setRipples] = React.useState<
@@ -137,6 +141,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     >([]);
     const rippleIdRef = React.useRef(0);
     const [isKeyboardHolding, setIsKeyboardHolding] = React.useState(false);
+    const holdTweenRef = React.useRef<gsap.core.Tween | null>(null);
 
     const getRippleColor = (): string => {
       if (rippleColor) return rippleColor;
@@ -186,10 +191,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const handlePressAnimation = (): void => {
       if (disabled || !buttonRef.current) return;
 
-      animate(buttonRef.current, {
-        scale: [1, 0.96, 1],
-        duration: 200,
-        easing: "easeOutQuad",
+      gsap.to(buttonRef.current, {
+        scale: 0.96,
+        duration: 0.1,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1,
       });
     };
 
@@ -205,32 +212,38 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
       setRipples((prev) => [...prev, { id, x, y }]);
 
-      const rippleElement = document.getElementById(`ripple-${id}`);
-      if (rippleElement) {
-        animate(rippleElement, {
-          scale: [0, 1.5],
-          opacity: [0.5, 0],
-          duration: 600,
-          easing: "easeOutQuad",
-        });
-      }
-
       setTimeout(() => {
-        setRipples((prev) => prev.filter((r) => r.id !== id));
-      }, 600);
+        const rippleElement = document.getElementById(`ripple-${id}`);
+        if (rippleElement) {
+          gsap.fromTo(
+            rippleElement,
+            { scale: 0, opacity: 0.5 },
+            {
+              scale: 1.5,
+              opacity: 0,
+              duration: 0.6,
+              ease: "power2.out",
+              onComplete: () => {
+                setRipples((prev) => prev.filter((r) => r.id !== id));
+              },
+            }
+          );
+        }
+      }, 0);
     };
 
     const resetProgress = (): void => {
       setIsHolding(false);
       setIsKeyboardHolding(false);
-      if (animationRef.current) {
-        animationRef.current.pause();
+      if (holdTweenRef.current) {
+        holdTweenRef.current.kill();
+        holdTweenRef.current = null;
       }
       if (progressRef.current) {
-        animate(progressRef.current, {
+        gsap.to(progressRef.current, {
           width: "0%",
-          duration: 150,
-          ease: "outQuad",
+          duration: 0.15,
+          ease: "power2.out",
         });
       }
     };
@@ -241,10 +254,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       setIsHolding(true);
 
       if (progressRef.current) {
-        animationRef.current = animate(progressRef.current, {
-          width: ["0%", "100%"],
-          duration: holdDuration || 1000,
-          ease: "linear",
+        gsap.set(progressRef.current, { width: "0%" });
+        holdTweenRef.current = gsap.to(progressRef.current, {
+          width: "100%",
+          duration: (holdDuration || 1000) / 1000,
+          ease: "none",
           onComplete: () => {
             onHoldComplete?.();
             resetProgress();
@@ -302,6 +316,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const isHoldButton = !!onHoldComplete;
 
+    const renderContent = () => {
+      if (leftIcon || rightIcon) {
+        return (
+          <>
+            {leftIcon && <span className="shrink-0">{leftIcon}</span>}
+            {children}
+            {rightIcon && <span className="shrink-0">{rightIcon}</span>}
+          </>
+        );
+      }
+      return children;
+    };
+
     return (
       <ButtonPrimitive
         ref={ref}
@@ -330,7 +357,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               }}
             />
             <span className="relative z-10 flex items-center gap-2">
-              {children}
+              {renderContent()}
             </span>
           </>
         )}
@@ -352,7 +379,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               />
             ))}
             <span className="relative z-10 flex items-center gap-2">
-              {children}
+              {renderContent()}
             </span>
           </>
         )}
@@ -361,94 +388,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 );
 Button.displayName = "Button";
-
-const buttonGroupVariants = cva(
-  "inline-flex items-center rounded-lg border border-border",
-  {
-    variants: {
-      orientation: {
-        horizontal: "flex-row",
-        vertical: "flex-col",
-      },
-    },
-    defaultVariants: {
-      orientation: "horizontal",
-    },
-  }
-);
-
-interface ButtonGroupProps
-  extends
-    React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof buttonGroupVariants> {
-  animated?: boolean;
-  animationStagger?: number;
-}
-
-function ButtonGroup({
-  className,
-  orientation = "horizontal",
-  children,
-  animated = false,
-  animationStagger = 50,
-  ...props
-}: ButtonGroupProps) {
-  const containerRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (!animated || !containerRef.current) return;
-
-    const buttons = containerRef.current.querySelectorAll("[data-slot=button]");
-
-    if (buttons.length > 0) {
-      animate(buttons, {
-        opacity: [0, 1],
-        translateY: orientation === "vertical" ? [-10, 0] : [0, 0],
-        translateX: orientation === "horizontal" ? [-10, 0] : [0, 0],
-        delay: stagger(animationStagger),
-        duration: 300,
-        easing: "easeOutQuad",
-      });
-    }
-  }, [animated, orientation, animationStagger]);
-
-  return (
-    <div
-      ref={containerRef}
-      data-slot="button-group"
-      role="group"
-      className={cn(buttonGroupVariants({ orientation }), className)}
-      {...props}
-    >
-      {React.Children.map(children, (child, index) => {
-        if (!React.isValidElement(child)) return child;
-
-        const isFirst = index === 0;
-        const isLast = React.Children.count(children) - 1;
-
-        return React.cloneElement(
-          child as React.ReactElement<React.ComponentProps<typeof Button>>,
-          {
-            className: cn(
-              (child as React.ReactElement<React.ComponentProps<typeof Button>>)
-                .props.className,
-              orientation === "horizontal"
-                ? {
-                    "rounded-r-none border-r-0": !isLast,
-                    "rounded-l-none": !isFirst,
-                  }
-                : {
-                    "rounded-b-none border-b-0": !isLast,
-                    "rounded-t-none": !isFirst,
-                  },
-              "border-0 shadow-none"
-            ),
-          }
-        );
-      })}
-    </div>
-  );
-}
 
 interface HoldButtonProps extends ButtonProps {
   holdDuration?: number;
@@ -467,28 +406,34 @@ interface ExpandableIconButtonProps extends Omit<ButtonProps, "children"> {
   className?: string;
 }
 
-function ExpandableIconButton({
-  icon,
-  label,
-  expandDirection = "right",
-  className,
-  onMouseEnter,
-  onMouseLeave,
-  variant,
-  ...props
-}: ExpandableIconButtonProps) {
+const ExpandableIconButton = React.forwardRef<
+  HTMLButtonElement,
+  ExpandableIconButtonProps
+>(function ExpandableIconButton(
+  {
+    icon,
+    label,
+    expandDirection = "right",
+    className,
+    onMouseEnter,
+    onMouseLeave,
+    variant,
+    ...props
+  },
+  ref
+) {
   const textRef = React.useRef<HTMLSpanElement>(null);
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (textRef.current) {
       const textWidth = textRef.current.scrollWidth;
-      animate(textRef.current, {
-        width: ["0px", `${textWidth}px`],
-        opacity: [0, 1],
-        marginLeft: expandDirection === "right" ? ["0px", "8px"] : 0,
-        marginRight: expandDirection === "left" ? ["0px", "8px"] : 0,
-        duration: 200,
-        easing: "easeOutQuad",
+      gsap.to(textRef.current, {
+        width: textWidth,
+        opacity: 1,
+        marginLeft: expandDirection === "right" ? 8 : 0,
+        marginRight: expandDirection === "left" ? 8 : 0,
+        duration: 0.2,
+        ease: "power2.out",
       });
     }
     onMouseEnter?.(e);
@@ -496,13 +441,13 @@ function ExpandableIconButton({
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (textRef.current) {
-      animate(textRef.current, {
-        width: "0px",
+      gsap.to(textRef.current, {
+        width: 0,
         opacity: 0,
         marginLeft: 0,
         marginRight: 0,
-        duration: 150,
-        easing: "easeInQuad",
+        duration: 0.15,
+        ease: "power2.in",
       });
     }
     onMouseLeave?.(e);
@@ -512,6 +457,7 @@ function ExpandableIconButton({
 
   return (
     <Button
+      ref={ref}
       variant={variant}
       className={cn(
         "h-8 min-w-8 w-auto px-2 gap-0 [&>span]:gap-0",
@@ -545,18 +491,19 @@ function ExpandableIconButton({
       </span>
     </Button>
   );
-}
+});
+ExpandableIconButton.displayName = "ExpandableIconButton";
 
 function LoadingSpinner({ size }: { size: ButtonSize | null | undefined }) {
   const spinnerRef = React.useRef<SVGSVGElement>(null);
 
-  React.useEffect(() => {
+  useGSAP(() => {
     if (spinnerRef.current) {
-      animate(spinnerRef.current, {
-        rotate: "360deg",
-        duration: 1000,
-        easing: "linear",
-        loop: true,
+      gsap.to(spinnerRef.current, {
+        rotation: 360,
+        duration: 1,
+        ease: "none",
+        repeat: -1,
       });
     }
   }, []);
@@ -576,7 +523,7 @@ function LoadingSpinner({ size }: { size: ButtonSize | null | undefined }) {
   return (
     <svg
       ref={spinnerRef}
-      className={cn("animate-spin", spinnerSize)}
+      className={cn(spinnerSize)}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -612,6 +559,8 @@ function LoadingButton({
   disabled,
   size = "default",
   className,
+  leftIcon,
+  rightIcon,
   ...props
 }: LoadingButtonProps) {
   return (
@@ -621,11 +570,12 @@ function LoadingButton({
       aria-busy={isLoading}
       aria-disabled={disabled || isLoading}
       size={size}
+      leftIcon={isLoading ? <LoadingSpinner size={size} /> : leftIcon}
+      rightIcon={!isLoading ? rightIcon : undefined}
       {...props}
     >
       {isLoading ? (
         <>
-          <LoadingSpinner size={size} />
           {(loadingText || children) && (
             <span className="sr-only">{loadingText || "Loading"}</span>
           )}
@@ -673,14 +623,15 @@ function CopyButton({
       size={size}
       variant={variant}
       disabled={copied || props.disabled}
+      leftIcon={
+        copied ? (
+          <IconCheck className={iconSize} />
+        ) : (
+          <IconCopy className={iconSize} />
+        )
+      }
       {...props}
-    >
-      {copied ? (
-        <IconCheck className={iconSize} />
-      ) : (
-        <IconCopy className={iconSize} />
-      )}
-    </Button>
+    />
   );
 }
 
@@ -729,12 +680,17 @@ function IconButtonWithTooltip({
   tooltip,
   tooltipSide = "top",
   className,
+  "aria-label": ariaLabel,
   ...props
 }: IconButtonWithTooltipProps) {
   return (
     <Tooltip>
       <TooltipTrigger>
-        <Button className={className} {...props}>
+        <Button
+          className={className}
+          aria-label={ariaLabel || tooltip}
+          {...props}
+        >
           {icon}
         </Button>
       </TooltipTrigger>
@@ -782,6 +738,8 @@ function CompoundButton({
         containerClass,
         className
       )}
+      leftIcon={iconPosition === "left" ? icon : undefined}
+      rightIcon={iconPosition === "right" ? icon : undefined}
       {...props}
     >
       <div className="flex items-center gap-2 w-full">
@@ -851,12 +809,19 @@ function AsyncButton({
       disabled={status !== "idle"}
       size={size}
       variant={variant}
+      leftIcon={
+        status === "loading" ? (
+          <LoadingSpinner size={size} />
+        ) : status === "success" ? (
+          <IconSparkles className={iconSize} />
+        ) : undefined
+      }
+      aria-live="polite"
+      aria-busy={status === "loading"}
       {...props}
     >
-      {status === "loading" && <LoadingSpinner size={size} />}
       {status === "loading" && <span className="sr-only">{loadingText}</span>}
       {status === "loading" && loadingText}
-      {status === "success" && <IconSparkles className={iconSize} />}
       {status === "success" && children}
       {status === "idle" && children}
     </Button>
@@ -882,10 +847,12 @@ function QuickActionButton({
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (buttonRef.current) {
-      animate(buttonRef.current, {
-        scale: [1, 0.95, 1],
-        duration: 150,
-        easing: "easeOutQuad",
+      gsap.to(buttonRef.current, {
+        scale: 0.95,
+        duration: 0.075,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1,
       });
     }
     props.onClick?.(e);
@@ -923,7 +890,324 @@ function QuickActionButton({
   );
 }
 
-export { buttonVariants, buttonGroupVariants, getButtonIconSize };
+interface KiraButtonProps extends ButtonProps {
+  loading?: boolean;
+  loadingText?: string;
+  tooltip?: string;
+  tooltipSide?: "top" | "right" | "bottom" | "left";
+  expandable?: boolean;
+  expandLabel?: string;
+  onAsyncClick?: () => Promise<void>;
+  asyncLoadingText?: string;
+  asyncSuccessMessage?: string;
+  asyncErrorMessage?: string;
+  asyncSuccessDuration?: number;
+  copyText?: string;
+  copySuccessMessage?: string;
+  copyConfirmDuration?: number;
+  formLabel?: string;
+  formDescription?: string;
+  formError?: string;
+  quickAction?: boolean;
+  quickActionDescription?: string;
+  compound?: boolean;
+  compoundDescription?: string;
+  compoundIconPosition?: "left" | "right";
+  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
+}
+
+function KiraButton({
+  loading,
+  loadingText,
+  tooltip,
+  tooltipSide = "top",
+  expandable,
+  expandLabel,
+  onAsyncClick,
+  asyncLoadingText = "Loading...",
+  asyncSuccessMessage,
+  asyncErrorMessage = "Action failed",
+  asyncSuccessDuration = 1500,
+  copyText,
+  copySuccessMessage = "Copied!",
+  copyConfirmDuration = 2000,
+  formLabel,
+  formDescription,
+  formError,
+  quickAction,
+  quickActionDescription,
+  compound,
+  compoundDescription,
+  compoundIconPosition = "left",
+  icon,
+  iconPosition = "left",
+  leftIcon,
+  rightIcon,
+  children,
+  className,
+  size = "default",
+  variant = "default",
+  disabled,
+  onClick,
+  ...props
+}: KiraButtonProps) {
+  const [asyncStatus, setAsyncStatus] = React.useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [copied, setCopied] = React.useState(false);
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const generatedId = React.useId();
+  const buttonId = props.id || generatedId;
+
+  const isLoading = loading || asyncStatus === "loading";
+
+  const handleAsyncClick = async () => {
+    if (!onAsyncClick || asyncStatus !== "idle") return;
+
+    setAsyncStatus("loading");
+
+    try {
+      await onAsyncClick();
+      setAsyncStatus("success");
+      if (asyncSuccessMessage) {
+        toast.success(asyncSuccessMessage);
+      }
+      setTimeout(() => setAsyncStatus("idle"), asyncSuccessDuration);
+    } catch {
+      setAsyncStatus("error");
+      toast.error(asyncErrorMessage);
+      setTimeout(() => setAsyncStatus("idle"), asyncSuccessDuration);
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!copyText) return;
+
+    try {
+      await navigator.clipboard.writeText(copyText);
+      setCopied(true);
+      toast.success(copySuccessMessage);
+      setTimeout(() => setCopied(false), copyConfirmDuration);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (copyText) {
+      handleCopy();
+    } else if (onAsyncClick) {
+      handleAsyncClick();
+    }
+
+    // Quick action animation
+    if (quickAction && buttonRef.current) {
+      gsap.to(buttonRef.current, {
+        scale: 0.95,
+        duration: 0.075,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1,
+      });
+    }
+
+    onClick?.(e);
+  };
+
+  const effectiveLeftIcon = React.useMemo(() => {
+    if (isLoading) {
+      return <LoadingSpinner size={size} />;
+    }
+    if (copied) {
+      return <IconCheck className={getButtonIconSize(size)} />;
+    }
+    if (asyncStatus === "success") {
+      return <IconSparkles className={getButtonIconSize(size)} />;
+    }
+    if (icon && iconPosition === "left") {
+      return icon;
+    }
+    return leftIcon;
+  }, [isLoading, copied, asyncStatus, icon, iconPosition, leftIcon, size]);
+
+  const effectiveRightIcon = React.useMemo(() => {
+    if (isLoading) {
+      return undefined;
+    }
+    if (icon && iconPosition === "right") {
+      return icon;
+    }
+    return rightIcon;
+  }, [isLoading, icon, iconPosition, rightIcon]);
+
+  const buttonContent = () => {
+    // Quick action layout
+    if (quickAction) {
+      const iconSize = (() => {
+        switch (size) {
+          case "xs":
+          case "sm":
+            return "h-4 w-4";
+          case "lg":
+          case "icon-lg":
+            return "h-6 w-6";
+          default:
+            return "h-5 w-5";
+        }
+      })();
+
+      return (
+        <>
+          <span className={iconSize}>{effectiveLeftIcon}</span>
+          <span className="text-xs font-medium">{children}</span>
+          {quickActionDescription && (
+            <span className="text-[10px] opacity-70">
+              {quickActionDescription}
+            </span>
+          )}
+        </>
+      );
+    }
+
+    // Compound layout
+    if (compound) {
+      const containerClass = (() => {
+        switch (size) {
+          case "xs":
+            return "py-1 px-2";
+          case "sm":
+            return "py-1.5 px-2.5";
+          case "lg":
+            return "py-2.5 px-4";
+          default:
+            return "py-2 px-3";
+        }
+      })();
+
+      const iconSize = getButtonIconSize(size);
+
+      return (
+        <div className={cn("flex flex-col items-start gap-1", containerClass)}>
+          <div className="flex items-center gap-2 w-full">
+            {compoundIconPosition === "left" && (
+              <span className="shrink-0">{effectiveLeftIcon}</span>
+            )}
+            <span className="font-medium">{children}</span>
+            {compoundIconPosition === "right" && (
+              <span className={cn("shrink-0 ml-auto", iconSize)}>
+                {effectiveLeftIcon}
+              </span>
+            )}
+          </div>
+          {compoundDescription && (
+            <span className="text-xs opacity-70 w-full">
+              {compoundDescription}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    // Loading state with text
+    if (isLoading) {
+      const displayText =
+        loadingText ||
+        (asyncStatus === "loading" ? asyncLoadingText : undefined);
+      if (displayText) {
+        return (
+          <>
+            <span className="sr-only">{displayText}</span>
+            {displayText}
+          </>
+        );
+      }
+    }
+
+    // Default content
+    return children;
+  };
+
+  const buildButton = () => {
+    const buttonClasses = cn(
+      className,
+      quickAction && "flex-col items-center gap-1 h-auto py-3 px-4",
+      compound && "h-auto"
+    );
+
+    if (expandable && expandLabel) {
+      return (
+        <ExpandableIconButton
+          ref={buttonRef}
+          icon={icon || leftIcon || <IconSparkles />}
+          label={expandLabel}
+          className={buttonClasses}
+          size={size}
+          variant={variant}
+          disabled={disabled || isLoading || copied}
+          onClick={handleClick}
+          {...props}
+        />
+      );
+    }
+
+    return (
+      <Button
+        ref={buttonRef}
+        id={buttonId}
+        className={buttonClasses}
+        size={size}
+        variant={variant}
+        disabled={disabled || isLoading || copied}
+        leftIcon={quickAction || compound ? undefined : effectiveLeftIcon}
+        rightIcon={quickAction || compound ? undefined : effectiveRightIcon}
+        onClick={handleClick}
+        aria-label={tooltip}
+        aria-busy={isLoading}
+        aria-live={onAsyncClick ? "polite" : undefined}
+        aria-invalid={formError ? true : undefined}
+        {...props}
+      >
+        {buttonContent()}
+      </Button>
+    );
+  };
+
+  const wrapWithTooltip = (element: React.ReactNode) => {
+    if (!tooltip) return element;
+
+    return (
+      <Tooltip>
+        <TooltipTrigger>{element}</TooltipTrigger>
+        <TooltipContent side={tooltipSide}>{tooltip}</TooltipContent>
+      </Tooltip>
+    );
+  };
+
+  const wrapWithFormLabel = (element: React.ReactNode) => {
+    if (!formLabel) return element;
+
+    return (
+      <div className="space-y-1.5">
+        <label
+          htmlFor={buttonId}
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          {formLabel}
+        </label>
+        {element}
+        {formDescription && !formError && (
+          <p className="text-xs text-muted-foreground">{formDescription}</p>
+        )}
+        {formError && <p className="text-xs text-destructive">{formError}</p>}
+      </div>
+    );
+  };
+
+  return wrapWithFormLabel(wrapWithTooltip(buildButton()));
+}
+
+export { buttonVariants, getButtonIconSize };
 export {
   Button,
   HoldButton,
@@ -935,7 +1219,7 @@ export {
   CompoundButton,
   AsyncButton,
   QuickActionButton,
-  ButtonGroup,
+  KiraButton,
 };
 export type {
   ButtonProps,
@@ -949,5 +1233,5 @@ export type {
   CompoundButtonProps,
   AsyncButtonProps,
   QuickActionButtonProps,
-  ButtonGroupProps,
+  KiraButtonProps,
 };
