@@ -3,10 +3,107 @@
 import * as React from "react";
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 import { cva, type VariantProps } from "class-variance-authority";
-import { IconChevronDown } from "@tabler/icons-react";
-import gsap from "gsap";
+import {
+  IconChevronDown,
+  IconGripVertical,
+  IconLoader2,
+  IconRefresh,
+  IconChevronsDown,
+  IconChevronsUp,
+} from "@tabler/icons-react";
+
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+  defaultDropAnimationSideEffects,
+  type DragEndEvent,
+  type DragStartEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { cn } from "@/lib/utils";
+
+interface AccordionItemData {
+  value: string;
+  title: React.ReactNode;
+  content: React.ReactNode;
+  disabled?: boolean;
+  icon?: React.ReactNode;
+  variant?: VariantProps<typeof accordionTriggerVariants>["variant"];
+  size?: VariantProps<typeof accordionTriggerVariants>["size"];
+  showArrow?: boolean;
+  chevronIcon?: React.ReactNode;
+  chevronPosition?: "start" | "end";
+  inset?: boolean;
+  lazyMount?: boolean;
+  showSkeleton?: boolean;
+  skeletonLines?: number;
+  loading?: boolean;
+  error?: Error | null;
+  onRetry?: () => void;
+  children?: AccordionItemData[];
+}
+
+interface KiraAccordionProps extends Omit<
+  React.ComponentProps<typeof AccordionPrimitive.Root>,
+  "children"
+> {
+  items: AccordionItemData[];
+  variant?: VariantProps<typeof accordionTriggerVariants>["variant"];
+  size?: VariantProps<typeof accordionTriggerVariants>["size"];
+  scrollIntoView?: boolean;
+  draggable?: boolean;
+  onReorder?: (items: AccordionItemData[]) => void;
+  asyncLoading?: boolean;
+  onItemOpen?: (item: AccordionItemData) => void | Promise<void>;
+  onItemClose?: (item: AccordionItemData) => void;
+  nested?: boolean;
+  showExpandAll?: boolean;
+  dragHandlePosition?: "start" | "end";
+}
+
+function useReducedMotion(): boolean {
+  const [reducedMotion, setReducedMotion] = React.useState(false);
+
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mediaQuery.matches);
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      setReducedMotion(event.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  return reducedMotion;
+}
+
+function flattenItems(items: AccordionItemData[]): AccordionItemData[] {
+  const flat: AccordionItemData[] = [];
+
+  for (const item of items) {
+    flat.push(item);
+    if (item.children) {
+      flat.push(...flattenItems(item.children));
+    }
+  }
+
+  return flat;
+}
 
 const accordionTriggerVariants = cva(
   "flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [[data-panel-open]_&]:rounded-b-none rounded-lg",
@@ -52,13 +149,21 @@ const accordionContentVariants = cva("", {
   },
 });
 
-function Accordion({
-  className,
-  scrollIntoView = false,
-  ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Root> & {
+interface AccordionProps extends React.ComponentProps<
+  typeof AccordionPrimitive.Root
+> {
   scrollIntoView?: boolean;
-}) {
+}
+
+const Accordion = React.forwardRef<
+  React.ElementRef<typeof AccordionPrimitive.Root>,
+  AccordionProps
+>(function Accordion(
+  { className, scrollIntoView = false, children, ...props },
+  forwardedRef
+) {
+  const reducedMotion = useReducedMotion();
+
   const handleValueChange: AccordionPrimitive.Root.Props["onValueChange"] = (
     value,
     ...args
@@ -70,19 +175,25 @@ function Accordion({
       const trigger = document.querySelector<HTMLElement>(
         `[data-accordion-item-value="${lastOpened}"] [data-slot="accordion-trigger"]`
       );
-      trigger?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      trigger?.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+        block: "nearest",
+      });
     }
   };
 
   return (
     <AccordionPrimitive.Root
+      ref={forwardedRef}
       data-slot="accordion"
       className={cn("w-full space-y-1", className)}
       onValueChange={handleValueChange}
       {...props}
-    />
+    >
+      {children}
+    </AccordionPrimitive.Root>
   );
-}
+});
 
 function AccordionItem({
   className,
@@ -136,6 +247,10 @@ type AccordionTriggerProps = Omit<
   chevronIcon?: React.ReactNode;
   chevronPosition?: "start" | "end";
   icon?: React.ReactNode;
+  loading?: boolean;
+  error?: Error | null;
+  onRetry?: () => void;
+  dragHandle?: React.ReactNode;
 };
 
 function AccordionTrigger({
@@ -147,14 +262,21 @@ function AccordionTrigger({
   chevronIcon,
   chevronPosition = "end",
   icon,
+  loading = false,
+  error = null,
+  onRetry,
+  dragHandle,
   ...props
 }: AccordionTriggerProps) {
-  const defaultChevron = (
+  const defaultChevron = <IconChevronDown className="h-4 w-4" />;
+
+  const chevronElement = chevronIcon || defaultChevron;
+  const animatedChevron = (
     <span
       data-accordion-chevron
       className="inline-block shrink-0 transition-transform duration-300 ease-out in-data-panel-open:rotate-180"
     >
-      <IconChevronDown className="h-4 w-4" />
+      {chevronElement}
     </span>
   );
 
@@ -166,14 +288,32 @@ function AccordionTrigger({
         {...props}
       >
         <span className="flex items-center gap-2 flex-1 min-w-0">
-          {chevronPosition === "start" && (showArrow || chevronIcon) && (
-            <span className="shrink-0">{chevronIcon || defaultChevron}</span>
+          {dragHandle && (
+            <span
+              className="shrink-0 cursor-grab active:cursor-grabbing touch-none"
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              {dragHandle}
+            </span>
           )}
+          {chevronPosition === "start" && showArrow && animatedChevron}
           {icon && <span className="shrink-0 flex items-center">{icon}</span>}
           <span className="flex-1 min-w-0 truncate">{children}</span>
-          {chevronPosition === "end" && (showArrow || chevronIcon) && (
-            <span className="shrink-0">{chevronIcon || defaultChevron}</span>
+          {loading && <IconLoader2 className="h-4 w-4 shrink-0 animate-spin" />}
+          {error && !loading && onRetry && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onRetry();
+              }}
+              className="shrink-0 p-1 rounded hover:bg-destructive/20 text-destructive"
+              aria-label="Retry loading content"
+            >
+              <IconRefresh className="h-4 w-4" />
+            </button>
           )}
+          {chevronPosition === "end" && showArrow && animatedChevron}
         </span>
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
@@ -190,6 +330,9 @@ type AccordionContentProps = Omit<
   lazyMount?: boolean;
   showSkeleton?: boolean;
   skeletonLines?: number;
+  loading?: boolean;
+  error?: Error | null;
+  onRetry?: () => void;
 };
 
 function AccordionContent({
@@ -200,82 +343,40 @@ function AccordionContent({
   lazyMount = false,
   showSkeleton = false,
   skeletonLines = 3,
+  loading = false,
+  error = null,
+  onRetry,
   ...props
 }: AccordionContentProps) {
-  const panelRef = React.useRef<HTMLDivElement>(null);
-  const contentRef = React.useRef<HTMLDivElement>(null);
   const [hasBeenOpened, setHasBeenOpened] = React.useState(false);
-  const animationRef = React.useRef<gsap.core.Tween | null>(null);
-
+  const panelRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const panel = panelRef.current;
-    const content = contentRef.current;
-    if (!panel || !content) return;
+    if (!panel) return;
 
-    let prevOpen = panel.hasAttribute("data-open");
-
-    if (prevOpen) {
-      panel.style.height = "auto";
-      panel.style.opacity = "1";
+    if (panel.hasAttribute("data-open")) {
       setHasBeenOpened(true);
-    } else {
-      panel.style.height = "0";
-      panel.style.opacity = "0";
     }
 
-    const handleStateChange = () => {
-      const isOpen = panel.hasAttribute("data-open");
-
-      if (isOpen === prevOpen) return;
-
-      if (animationRef.current) {
-        animationRef.current.kill();
-        animationRef.current = null;
-      }
-
-      const contentHeight = content.scrollHeight;
-
-      if (isOpen) {
-        setHasBeenOpened(true);
-        animationRef.current = gsap.fromTo(
-          panel,
-          { height: 0, opacity: 0 },
-          {
-            height: contentHeight,
-            opacity: 1,
-            duration: 0.3,
-            ease: "power2.out",
-            onComplete: () => {
-              gsap.set(panel, { height: "auto" });
-            },
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (
+          mutation.type === "attributes" &&
+          mutation.attributeName === "data-open"
+        ) {
+          if (panel.hasAttribute("data-open")) {
+            setHasBeenOpened(true);
           }
-        );
-      } else {
-        gsap.set(panel, { height: contentHeight });
-        void panel.offsetHeight;
-        animationRef.current = gsap.to(panel, {
-          height: 0,
-          opacity: 0,
-          duration: 0.3,
-          ease: "power2.in",
-        });
-      }
-
-      prevOpen = isOpen;
-    };
-
-    const observer = new MutationObserver(handleStateChange);
-    observer.observe(panel, {
-      attributes: true,
-      attributeFilter: ["data-open", "data-closed"],
+        }
+      });
     });
 
-    return () => {
-      observer.disconnect();
-      if (animationRef.current) {
-        animationRef.current.kill();
-      }
-    };
+    observer.observe(panel, {
+      attributes: true,
+      attributeFilter: ["data-open"],
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const skeletonWidths = React.useMemo(() => {
@@ -298,70 +399,362 @@ function AccordionContent({
   );
 
   const shouldRenderChildren = !lazyMount || hasBeenOpened;
-  const renderContent = shouldRenderChildren
-    ? children
-    : showSkeleton
-      ? skeleton
-      : null;
+
+  let renderContent: React.ReactNode = null;
+  if (loading) {
+    renderContent = skeleton;
+  } else if (error) {
+    renderContent = (
+      <div className="px-4 py-3 text-destructive">
+        <p className="text-sm font-medium">Error loading content</p>
+        <p className="text-xs opacity-80 mt-1">{error.message}</p>
+        {onRetry && (
+          <button
+            onClick={onRetry}
+            className="mt-2 text-xs flex items-center gap-1 hover:underline"
+          >
+            <IconRefresh className="h-3 w-3" />
+            Retry
+          </button>
+        )}
+      </div>
+    );
+  } else if (shouldRenderChildren) {
+    renderContent = children;
+  } else if (showSkeleton) {
+    renderContent = skeleton;
+  }
 
   return (
     <AccordionPrimitive.Panel
       ref={panelRef}
       data-slot="accordion-panel"
       keepMounted
-      className={cn("overflow-hidden", inset && "pl-8", className)}
-      style={{
-        height: 0,
-        opacity: 0,
-      }}
+      className={cn(
+        "overflow-hidden h-(--accordion-panel-height) transition-[height] ease-out data-ending-style:h-0 data-starting-style:h-0",
+        inset && "pl-8",
+        className
+      )}
       {...props}
     >
-      <div ref={contentRef} className={cn(accordionContentVariants({ size }))}>
+      <div className={cn(accordionContentVariants({ size }))}>
         {renderContent}
       </div>
     </AccordionPrimitive.Panel>
   );
 }
 
-export {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-  accordionTriggerVariants,
-  accordionContentVariants,
-};
-export type { AccordionTriggerProps, AccordionContentProps };
+interface SortableAccordionItemProps {
+  item: AccordionItemData;
+  defaultVariant: VariantProps<typeof accordionTriggerVariants>["variant"];
+  defaultSize: VariantProps<typeof accordionTriggerVariants>["size"];
+  level: number;
+  dragHandlePosition: "start" | "end";
+  nested?: boolean;
+  onItemOpen?: (item: AccordionItemData) => void | Promise<void>;
+  onItemClose?: (item: AccordionItemData) => void;
+  asyncLoading?: boolean;
+}
 
-// KiraAccordion - Simplified single-import API
+function SortableAccordionItem({
+  item,
+  defaultVariant,
+  defaultSize,
+  level,
+  dragHandlePosition,
+  nested,
+  onItemOpen,
+  onItemClose,
+  asyncLoading,
+}: SortableAccordionItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.value, disabled: item.disabled });
 
-type AccordionItemData = {
-  value: string;
-  title: React.ReactNode;
-  content: React.ReactNode;
-  disabled?: boolean;
-  icon?: React.ReactNode;
-  variant?: VariantProps<typeof accordionTriggerVariants>["variant"];
-  size?: VariantProps<typeof accordionTriggerVariants>["size"];
-  showArrow?: boolean;
-  chevronIcon?: React.ReactNode;
-  chevronPosition?: "start" | "end";
-  inset?: boolean;
-  lazyMount?: boolean;
-  showSkeleton?: boolean;
-  skeletonLines?: number;
-  children?: AccordionItemData[];
-};
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
-type KiraAccordionProps = Omit<
-  React.ComponentProps<typeof AccordionPrimitive.Root>,
-  "children"
-> & {
-  items: AccordionItemData[];
-  variant?: VariantProps<typeof accordionTriggerVariants>["variant"];
-  size?: VariantProps<typeof accordionTriggerVariants>["size"];
-  scrollIntoView?: boolean;
-};
+  const handleOpen = React.useCallback(async () => {
+    if (asyncLoading && onItemOpen) {
+      await onItemOpen(item);
+    } else {
+      onItemOpen?.(item);
+    }
+  }, [asyncLoading, onItemOpen, item]);
+
+  const handleClose = React.useCallback(() => {
+    onItemClose?.(item);
+  }, [onItemClose, item]);
+
+  const dragHandle = (
+    <span
+      {...attributes}
+      {...listeners}
+      className="shrink-0 p-1 rounded hover:bg-muted cursor-grab active:cursor-grabbing touch-none"
+      aria-label="Drag to reorder"
+    >
+      <IconGripVertical className="h-4 w-4 text-muted-foreground" />
+    </span>
+  );
+
+  const hasChildren = nested && item.children && item.children.length > 0;
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <AccordionItem
+        value={item.value}
+        disabled={item.disabled}
+        onOpen={handleOpen}
+        onClose={handleClose}
+      >
+        <AccordionTrigger
+          variant={item.variant ?? defaultVariant}
+          size={item.size ?? defaultSize}
+          icon={item.icon}
+          showArrow={item.showArrow ?? true}
+          chevronIcon={item.chevronIcon}
+          chevronPosition={item.chevronPosition ?? "end"}
+          loading={item.loading}
+          error={item.error}
+          onRetry={item.onRetry}
+          dragHandle={dragHandlePosition === "start" ? dragHandle : undefined}
+        >
+          {item.title}
+        </AccordionTrigger>
+        <AccordionContent
+          size={item.size ?? defaultSize}
+          inset={item.inset ?? level > 0}
+          lazyMount={item.lazyMount}
+          showSkeleton={item.showSkeleton}
+          skeletonLines={item.skeletonLines}
+          loading={item.loading}
+          error={item.error}
+          onRetry={item.onRetry}
+        >
+          {item.content}
+          {hasChildren && (
+            <div className={cn("mt-2 space-y-1", level > 0 && "ml-4")}>
+              {item.children?.map((child) => (
+                <SortableAccordionItem
+                  key={child.value}
+                  item={child}
+                  defaultVariant={defaultVariant}
+                  defaultSize={defaultSize}
+                  level={level + 1}
+                  dragHandlePosition={dragHandlePosition}
+                  nested={nested}
+                  onItemOpen={onItemOpen}
+                  onItemClose={onItemClose}
+                  asyncLoading={asyncLoading}
+                />
+              ))}
+            </div>
+          )}
+        </AccordionContent>
+      </AccordionItem>
+    </div>
+  );
+}
+
+function KiraAccordion({
+  items: initialItems,
+  variant = "default",
+  size = "default",
+  scrollIntoView = false,
+  draggable = false,
+  onReorder,
+  asyncLoading = false,
+  onItemOpen,
+  onItemClose,
+  nested = false,
+  showExpandAll = false,
+  dragHandlePosition = "start",
+  className,
+  ...props
+}: KiraAccordionProps) {
+  const [items, setItems] = React.useState(initialItems);
+  const [activeId, setActiveId] = React.useState<string | null>(null);
+  const [openValues, setOpenValues] = React.useState<string[]>([]);
+  const accordionRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragStart = React.useCallback((event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  }, []);
+
+  const handleDragEnd = React.useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      setActiveId(null);
+
+      if (over && active.id !== over.id) {
+        setItems((items) => {
+          const flatItems = flattenItems(items);
+          const oldIndex = flatItems.findIndex(
+            (item) => item.value === active.id
+          );
+          const newIndex = flatItems.findIndex(
+            (item) => item.value === over.id
+          );
+
+          if (oldIndex === -1 || newIndex === -1) return items;
+
+          const newFlatItems = arrayMove(flatItems, oldIndex, newIndex);
+
+          onReorder?.(newFlatItems);
+          return newFlatItems;
+        });
+      }
+    },
+    [onReorder]
+  );
+
+  const handleExpandAll = React.useCallback(() => {
+    const allValues = flattenItems(items).map((item) => item.value);
+    setOpenValues(allValues);
+  }, [items]);
+
+  const handleCollapseAll = React.useCallback(() => {
+    setOpenValues([]);
+  }, []);
+
+  const accordionContent = (
+    <Accordion
+      ref={accordionRef}
+      scrollIntoView={scrollIntoView}
+      className={className}
+      value={openValues}
+      onValueChange={(value, ...args) => {
+        setOpenValues(value);
+        props.onValueChange?.(value, ...args);
+      }}
+      {...props}
+    >
+      {draggable ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={items.map((item) => item.value)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-1">
+              {items.map((item) => (
+                <SortableAccordionItem
+                  key={item.value}
+                  item={item}
+                  defaultVariant={variant}
+                  defaultSize={size}
+                  level={0}
+                  dragHandlePosition={dragHandlePosition}
+                  nested={nested}
+                  onItemOpen={onItemOpen}
+                  onItemClose={onItemClose}
+                  asyncLoading={asyncLoading}
+                />
+              ))}
+            </div>
+          </SortableContext>
+          <DragOverlay
+            dropAnimation={{
+              sideEffects: defaultDropAnimationSideEffects({
+                styles: { active: { opacity: "0.5" } },
+              }),
+            }}
+          >
+            {activeId ? (
+              <div className="opacity-50">
+                {(() => {
+                  const item = flattenItems(items).find(
+                    (i) => i.value === activeId
+                  );
+                  return item ? (
+                    <AccordionItem value={item.value} disabled={item.disabled}>
+                      <AccordionTrigger
+                        variant={item.variant ?? variant}
+                        size={item.size ?? size}
+                        icon={item.icon}
+                        showArrow={item.showArrow ?? true}
+                        chevronIcon={item.chevronIcon}
+                        chevronPosition={item.chevronPosition ?? "end"}
+                      >
+                        {item.title}
+                      </AccordionTrigger>
+                    </AccordionItem>
+                  ) : null;
+                })()}
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      ) : (
+        items.map((item) =>
+          renderAccordionItem(
+            item,
+            variant,
+            size,
+            0,
+            nested,
+            onItemOpen,
+            onItemClose,
+            asyncLoading
+          )
+        )
+      )}
+    </Accordion>
+  );
+
+  return (
+    <div className="space-y-2">
+      {showExpandAll && (
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={handleExpandAll}
+            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-muted hover:bg-muted/80 transition-colors"
+            aria-label="Expand all accordion items"
+          >
+            <IconChevronsDown className="h-3.5 w-3.5" />
+            Expand All
+          </button>
+          <button
+            onClick={handleCollapseAll}
+            className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-muted hover:bg-muted/80 transition-colors"
+            aria-label="Collapse all accordion items"
+          >
+            <IconChevronsUp className="h-3.5 w-3.5" />
+            Collapse All
+          </button>
+        </div>
+      )}
+      {accordionContent}
+    </div>
+  );
+}
 
 function renderAccordionItem(
   item: AccordionItemData,
@@ -371,12 +764,34 @@ function renderAccordionItem(
   defaultSize: VariantProps<
     typeof accordionTriggerVariants
   >["size"] = "default",
-  level: number = 0
+  level: number = 0,
+  nested?: boolean,
+  onItemOpen?: (item: AccordionItemData) => void | Promise<void>,
+  onItemClose?: (item: AccordionItemData) => void,
+  asyncLoading?: boolean
 ): React.ReactElement {
-  const hasChildren = item.children && item.children.length > 0;
+  const hasChildren = nested && item.children && item.children.length > 0;
+
+  const handleOpen = async () => {
+    if (asyncLoading && onItemOpen) {
+      await onItemOpen(item);
+    } else {
+      onItemOpen?.(item);
+    }
+  };
+
+  const handleClose = () => {
+    onItemClose?.(item);
+  };
 
   return (
-    <AccordionItem key={item.value} value={item.value} disabled={item.disabled}>
+    <AccordionItem
+      key={item.value}
+      value={item.value}
+      disabled={item.disabled}
+      onOpen={handleOpen}
+      onClose={handleClose}
+    >
       <AccordionTrigger
         variant={item.variant ?? defaultVariant}
         size={item.size ?? defaultSize}
@@ -384,6 +799,9 @@ function renderAccordionItem(
         showArrow={item.showArrow ?? true}
         chevronIcon={item.chevronIcon}
         chevronPosition={item.chevronPosition ?? "end"}
+        loading={item.loading}
+        error={item.error}
+        onRetry={item.onRetry}
       >
         {item.title}
       </AccordionTrigger>
@@ -393,12 +811,24 @@ function renderAccordionItem(
         lazyMount={item.lazyMount}
         showSkeleton={item.showSkeleton}
         skeletonLines={item.skeletonLines}
+        loading={item.loading}
+        error={item.error}
+        onRetry={item.onRetry}
       >
         {item.content}
         {hasChildren && (
-          <div className={cn("mt-2", level > 0 && "ml-4")}>
+          <div className={cn("mt-2 space-y-1", level > 0 && "ml-4")}>
             {item.children?.map((child) =>
-              renderAccordionItem(child, defaultVariant, defaultSize, level + 1)
+              renderAccordionItem(
+                child,
+                defaultVariant,
+                defaultSize,
+                level + 1,
+                nested,
+                onItemOpen,
+                onItemClose,
+                asyncLoading
+              )
             )}
           </div>
         )}
@@ -407,20 +837,22 @@ function renderAccordionItem(
   );
 }
 
-function KiraAccordion({
-  items,
-  variant = "default",
-  size = "default",
-  scrollIntoView = false,
-  className,
-  ...props
-}: KiraAccordionProps) {
-  return (
-    <Accordion scrollIntoView={scrollIntoView} className={className} {...props}>
-      {items.map((item) => renderAccordionItem(item, variant, size, 0))}
-    </Accordion>
-  );
-}
+/* eslint-disable react-refresh/only-export-components */
 
-export { KiraAccordion };
-export type { KiraAccordionProps, AccordionItemData };
+export {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+  KiraAccordion,
+  accordionTriggerVariants,
+  accordionContentVariants,
+  useReducedMotion,
+};
+
+export type {
+  AccordionItemData,
+  AccordionTriggerProps,
+  AccordionContentProps,
+  KiraAccordionProps,
+};

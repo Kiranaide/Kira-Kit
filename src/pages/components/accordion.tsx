@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   IconFolder,
   IconFile,
@@ -15,6 +16,7 @@ import {
   AccordionTrigger,
   AccordionContent,
   KiraAccordion,
+  type AccordionItemData,
 } from "@/components/ui/accordion";
 import {
   ComponentPage,
@@ -25,6 +27,7 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 function BasicDemo() {
@@ -526,6 +529,7 @@ function KiraAccordionNestedDemo() {
   return (
     <KiraAccordion
       multiple
+      nested
       items={[
         {
           value: "frontend",
@@ -684,6 +688,150 @@ export function KiraAccordionVariantsDemo() {
         ]}
       />
     </div>
+  )
+}`;
+
+function DraggableDemo() {
+  const [items, setItems] = React.useState([
+    {
+      value: "item-1",
+      title: "First Item",
+      content: "This is the first item. Drag the handle to reorder.",
+    },
+    {
+      value: "item-2",
+      title: "Second Item",
+      content: "This is the second item. Drag the handle to reorder.",
+    },
+    {
+      value: "item-3",
+      title: "Third Item",
+      content: "This is the third item. Drag the handle to reorder.",
+    },
+    {
+      value: "item-4",
+      title: "Fourth Item",
+      content: "This is the fourth item. Drag the handle to reorder.",
+    },
+  ]);
+
+  return (
+    <KiraAccordion
+      draggable
+      items={items}
+      onReorder={(newItems) => setItems(newItems as typeof items)}
+      showExpandAll
+    />
+  );
+}
+
+const draggableCode = `import { KiraAccordion } from "@/components/ui/accordion"
+import { useState } from "react"
+
+export function DraggableDemo() {
+  const [items, setItems] = useState([
+    { value: "item-1", title: "First Item", content: "Content..." },
+    { value: "item-2", title: "Second Item", content: "Content..." },
+  ])
+
+  return (
+    <KiraAccordion
+      draggable
+      items={items}
+      onReorder={setItems}
+      showExpandAll
+    />
+  )
+}`;
+
+function AsyncLoadingDemo() {
+  const [items, setItems] = React.useState<AccordionItemData[]>([
+    {
+      value: "item-1",
+      title: "Async Item 1",
+      content: "This content was loaded asynchronously!",
+      loading: false,
+    },
+    {
+      value: "item-2",
+      title: "Async Item 2",
+      content: "",
+      loading: true,
+    },
+    {
+      value: "item-3",
+      title: "Error Item",
+      content: "",
+      error: new Error("Failed to load content"),
+      onRetry: () => alert("Retry clicked!"),
+    },
+  ]);
+
+  return (
+    <KiraAccordion
+      asyncLoading
+      items={items}
+      onItemOpen={async (item) => {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setItems((prev) =>
+          prev.map((i) =>
+            i.value === item.value
+              ? { ...i, loading: false, content: "Loaded content!" }
+              : i
+          )
+        );
+      }}
+    />
+  );
+}
+
+const asyncLoadingCode = `import { KiraAccordion } from "@/components/ui/accordion"
+
+export function AsyncLoadingDemo() {
+  const [items, setItems] = useState([
+    { value: "item-1", title: "Async Item", content: "", loading: true },
+  ])
+
+  return (
+    <KiraAccordion
+      asyncLoading
+      items={items}
+      onItemOpen={async (item) => {
+        // Load data asynchronously
+        const data = await fetchData(item.value)
+        setItems(prev => prev.map(i => 
+          i.value === item.value 
+            ? { ...i, loading: false, content: data } 
+            : i
+        ))
+      }}
+    />
+  )
+}`;
+
+function ExpandCollapseDemo() {
+  return (
+    <KiraAccordion
+      multiple
+      showExpandAll
+      items={[
+        { value: "item-1", title: "Item 1", content: "Content for item 1" },
+        { value: "item-2", title: "Item 2", content: "Content for item 2" },
+        { value: "item-3", title: "Item 3", content: "Content for item 3" },
+      ]}
+    />
+  );
+}
+
+const expandCollapseCode = `import { KiraAccordion } from "@/components/ui/accordion"
+
+export function ExpandCollapseDemo() {
+  return (
+    <KiraAccordion
+      multiple
+      showExpandAll
+      items={[...]}
+    />
   )
 }`;
 
@@ -912,6 +1060,45 @@ export default function AccordionPage() {
               </DemoWrapper>
             ),
           },
+          {
+            value: "draggable",
+            label: "Draggable",
+            demo: (
+              <DemoWrapper
+                title="Draggable Accordion"
+                description="Drag and drop to reorder items with dedicated drag handles."
+                code={draggableCode}
+              >
+                <DraggableDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "async",
+            label: "Async Loading",
+            demo: (
+              <DemoWrapper
+                title="Async Loading"
+                description="Async loading states with skeleton, loading spinner, and error retry."
+                code={asyncLoadingCode}
+              >
+                <AsyncLoadingDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "expand-collapse",
+            label: "Expand All",
+            demo: (
+              <DemoWrapper
+                title="Expand/Collapse All"
+                description="Bulk expand and collapse functionality with showExpandAll prop."
+                code={expandCollapseCode}
+              >
+                <ExpandCollapseDemo />
+              </DemoWrapper>
+            ),
+          },
         ]}
       />
 
@@ -1110,6 +1297,96 @@ export default function AccordionPage() {
             ],
           },
         ]}
+      />
+
+      <Changelog
+        entries={[
+          {
+            version: "2.0.0",
+            date: "5 February 2026",
+            changes: [
+              {
+                type: "added",
+                title: "Drag-and-Drop Support",
+                description:
+                  "Added draggable prop with dedicated drag handles using @dnd-kit for cross-level reordering with visual feedback.",
+              },
+              {
+                type: "added",
+                title: "Async Loading States",
+                description:
+                  "Added asyncLoading prop with skeleton loading, spinner indicators, and error retry functionality.",
+              },
+              {
+                type: "added",
+                title: "Expand/Collapse All",
+                description:
+                  "Added showExpandAll prop to display bulk expand and collapse buttons for accordion groups.",
+              },
+              {
+                type: "added",
+                title: "WCAG 2.2 AA Accessibility",
+                description:
+                  "Full accessibility compliance with prefers-reduced-motion detection, keyboard navigation, and error boundaries.",
+              },
+              {
+                type: "added",
+                title: "Nested Accordion Support",
+                description:
+                  "Full support for recursive accordion structures with proper indentation and variant inheritance.",
+              },
+              {
+                type: "changed",
+                title: "Single-File Architecture",
+                description:
+                  "Refactored to single-file architecture following shadcn/ui patterns for better maintainability.",
+              },
+              {
+                type: "changed",
+                title: "TypeScript Strict Mode",
+                description:
+                  "Improved TypeScript strict mode compliance with better type definitions.",
+              },
+              {
+                type: "changed",
+                title: "Animation Optimization",
+                description:
+                  "Optimized animations with will-change CSS hints and reduced motion fallbacks.",
+              },
+            ],
+          },
+          {
+            version: "1.0.0",
+            date: "15 January 2026",
+            changes: [
+              {
+                type: "added",
+                title: "Initial Release",
+                description:
+                  "Basic accordion functionality with Base UI integration for accessible primitives.",
+              },
+              {
+                type: "added",
+                title: "GSAP Animations",
+                description:
+                  "Smooth expand/collapse animations using GSAP library.",
+              },
+              {
+                type: "added",
+                title: "Variant Support",
+                description: "Support for variants, sizes, and custom icons.",
+              },
+              {
+                type: "added",
+                title: "KiraAccordion",
+                description:
+                  "All-in-one data-driven component for simplified usage.",
+              },
+            ],
+          },
+        ]}
+        title="Changelog"
+        description="Version history and changes for the Accordion component."
       />
     </ComponentPage>
   );
