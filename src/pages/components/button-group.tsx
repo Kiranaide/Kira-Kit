@@ -10,12 +10,24 @@ import {
   IconStrikethrough,
   IconList,
   IconListNumbers,
+  IconHome,
+  IconUser,
+  IconSettings,
+  IconCircleCheck,
+  IconClock,
+  IconArchive,
+  IconCut,
+  IconCopy,
+  IconClipboard,
+  IconMinimize,
+  IconMaximize,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   ButtonGroup,
   ToggleGroupItem,
   ButtonGroupToolbar,
+  KiraButtonGroup,
 } from "@/components/ui/button-group";
 import {
   ComponentPage,
@@ -25,6 +37,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 import { Tabs } from "@/components/ui/tabs";
 
@@ -613,6 +626,215 @@ function MultiSelectDemo() {
   <Button variant="outline">Third</Button>
 </ButtonGroup>`;
 
+function KiraButtonGroupDemo() {
+  const [singleValue, setSingleValue] = useState<string>("center");
+  const [multiValue, setMultiValue] = useState<string[]>(["bold"]);
+
+  const configItems = [
+    { value: "home", label: "Home", icon: <IconHome className="w-4 h-4" /> },
+    {
+      value: "profile",
+      label: "Profile",
+      icon: <IconUser className="w-4 h-4" />,
+    },
+    {
+      value: "settings",
+      label: "Settings",
+      icon: <IconSettings className="w-4 h-4" />,
+    },
+  ];
+
+  const filterItems = [
+    {
+      value: "active",
+      label: "Active",
+      icon: <IconCircleCheck className="w-4 h-4" />,
+    },
+    {
+      value: "pending",
+      label: "Pending",
+      icon: <IconClock className="w-4 h-4" />,
+    },
+    {
+      value: "archived",
+      label: "Archived",
+      icon: <IconArchive className="w-4 h-4" />,
+    },
+  ];
+
+  const toolbarItems = [
+    { value: "cut", label: "Cut", icon: <IconCut className="w-4 h-4" /> },
+    { value: "copy", label: "Copy", icon: <IconCopy className="w-4 h-4" /> },
+    {
+      value: "paste",
+      label: "Paste",
+      icon: <IconClipboard className="w-4 h-4" />,
+    },
+  ];
+
+  const sizeItems = [
+    {
+      value: "small",
+      label: "Small",
+      icon: <IconMinimize className="w-4 h-4" />,
+    },
+    {
+      value: "medium",
+      label: "Medium",
+      icon: <IconMaximize className="w-4 h-4" />,
+    },
+    {
+      value: "large",
+      label: "Large",
+      icon: <IconMaximize className="w-4 h-4" />,
+    },
+  ];
+
+  const handleSingleChange = (value: string | string[]) => {
+    if (typeof value === "string") {
+      setSingleValue(value);
+    }
+  };
+
+  const handleMultiChange = (value: string | string[]) => {
+    if (Array.isArray(value)) {
+      setMultiValue(value);
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">Items Configuration</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Define button groups using a simple items array with icons, labels,
+            and values.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-6 p-4 bg-muted/30 rounded-lg border">
+          <KiraButtonGroup
+            items={configItems}
+            value={singleValue}
+            onChange={handleSingleChange}
+            selectionMode="single"
+          />
+          <span className="text-sm text-muted-foreground">
+            Selected: {singleValue}
+          </span>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">Multiple Selection</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Select multiple items simultaneously with checkbox-like behavior.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-6 p-4 bg-muted/30 rounded-lg border">
+          <KiraButtonGroup
+            items={filterItems}
+            value={multiValue}
+            onChange={handleMultiChange}
+            selectionMode="multiple"
+          />
+          <span className="text-sm text-muted-foreground">
+            Selected: {multiValue.join(", ")}
+          </span>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">Toolbar Wrapper</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Wrap button groups in a toolbar with an accessible label for better
+            semantics.
+          </p>
+        </div>
+        <div className="p-4 bg-muted/30 rounded-lg border">
+          <KiraButtonGroup
+            items={toolbarItems}
+            toolbar
+            toolbarLabel="Clipboard actions"
+            selectionMode="single"
+            value="copy"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">Size Variants</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Button groups support all standard button sizes.
+          </p>
+        </div>
+        <div className="flex flex-col gap-4 p-4 bg-muted/30 rounded-lg border">
+          <KiraButtonGroup
+            items={sizeItems.slice(0, 3)}
+            size="xs"
+            selectionMode="single"
+            value="small"
+          />
+          <KiraButtonGroup
+            items={sizeItems.slice(0, 3)}
+            size="sm"
+            selectionMode="single"
+            value="small"
+          />
+          <KiraButtonGroup
+            items={sizeItems.slice(0, 3)}
+            size="default"
+            selectionMode="single"
+            value="small"
+          />
+          <KiraButtonGroup
+            items={sizeItems.slice(0, 3)}
+            size="lg"
+            selectionMode="single"
+            value="small"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const kiraButtonGroupCode = `import { KiraButtonGroup } from "@/components/ui/button-group"
+
+const items = [
+  { value: "left", label: "Left", icon: <IconAlignLeft className="w-4 h-4" /> },
+  { value: "center", label: "Center", icon: <IconAlignCenter className="w-4 h-4" /> },
+  { value: "right", label: "Right", icon: <IconAlignRight className="w-4 h-4" /> },
+]
+
+<KiraButtonGroup
+  items={items}
+  value={selectedValue}
+  onChange={setSelectedValue}
+  selectionMode="single"
+/>
+
+<KiraButtonGroup
+  items={formatItems}
+  value={selectedValues}
+  onChange={setSelectedValues}
+  selectionMode="multiple"
+/>
+
+// With toolbar wrapper
+<KiraButtonGroup
+  items={viewItems}
+  toolbar
+  toolbarLabel="View options"
+  selectionMode="single"
+/>
+
+<KiraButtonGroup items={items} size="sm" selectionMode="single" />
+<KiraButtonGroup items={items} size="lg" selectionMode="single" />`;
+
 export default function ButtonGroupPage() {
   return (
     <ComponentPage>
@@ -703,6 +925,19 @@ export default function ButtonGroupPage() {
                   code={toolbarCode}
                 >
                   <ToolbarDemo />
+                </DemoWrapper>
+              ),
+            },
+            {
+              value: "kira-button-group",
+              label: "KiraButtonGroup",
+              demo: (
+                <DemoWrapper
+                  title="KiraButtonGroup"
+                  description="Items-based API for button groups with selection and toolbar wrapper."
+                  code={kiraButtonGroupCode}
+                >
+                  <KiraButtonGroupDemo />
                 </DemoWrapper>
               ),
             },
@@ -844,6 +1079,88 @@ export default function ButtonGroupPage() {
                 type: "ButtonProps",
                 default: "-",
                 description: "All props from Button component.",
+              },
+            ],
+          },
+          {
+            title: "KiraButtonGroup",
+            props: [
+              {
+                prop: "items",
+                type: "KiraButtonGroupItem[]",
+                default: "-",
+                description: "Array of items to render as buttons.",
+              },
+              {
+                prop: "children",
+                type: "ReactNode",
+                default: "-",
+                description: "Alternative to items - render custom children.",
+              },
+              {
+                prop: "value",
+                type: "string | string[] | null",
+                default: "-",
+                description: "Controlled value for selection.",
+              },
+              {
+                prop: "onChange",
+                type: "(value: string | string[]) => void",
+                default: "-",
+                description: "Callback when selection changes.",
+              },
+              {
+                prop: "selectionMode",
+                type: "none | single | multiple",
+                default: "none",
+                description: "Selection mode for the group.",
+              },
+              {
+                prop: "toolbar",
+                type: "boolean",
+                default: "false",
+                description: "Wrap the group in a toolbar wrapper.",
+              },
+              {
+                prop: "toolbarLabel",
+                type: "string",
+                default: "-",
+                description: "Accessible label for the toolbar.",
+              },
+              {
+                prop: "allowEmpty",
+                type: "boolean",
+                default: "true",
+                description: "Allow empty selection in single mode.",
+              },
+              {
+                prop: "onItemClick",
+                type: "(value: string) => void",
+                default: "-",
+                description: "Callback when an item is clicked.",
+              },
+              {
+                prop: "...ButtonGroup",
+                type: "ButtonGroupProps",
+                default: "-",
+                description: "All props from ButtonGroup component.",
+              },
+            ],
+          },
+        ]}
+      />
+
+      <Changelog
+        entries={[
+          {
+            version: "2.0.0",
+            date: "5 February 2026",
+            changes: [
+              {
+                type: "added",
+                title: "KiraButtonGroup",
+                description:
+                  "Items-based component with selection modes and optional toolbar wrapper.",
               },
             ],
           },

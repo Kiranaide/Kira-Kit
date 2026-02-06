@@ -204,26 +204,23 @@ function IconPropsDemo() {
           Using leftIcon and rightIcon Props (Recommended)
         </h3>
         <div className="flex flex-wrap gap-3">
-          <Button 
-            variant="default" 
-            leftIcon={<IconMail className="w-4 h-4" />}
-          >
+          <Button variant="default" leftIcon={<IconMail className="w-4 h-4" />}>
             Send Email
           </Button>
-          <Button 
-            variant="secondary" 
+          <Button
+            variant="secondary"
             leftIcon={<IconDownload className="w-4 h-4" />}
           >
             Download
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             rightIcon={<IconArrowRight className="w-4 h-4" />}
           >
             Continue
           </Button>
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             leftIcon={<IconArrowLeft className="w-4 h-4" />}
           >
             Back
@@ -235,15 +232,15 @@ function IconPropsDemo() {
           Both Icons
         </h3>
         <div className="flex flex-wrap gap-3">
-          <Button 
-            variant="default" 
+          <Button
+            variant="default"
             leftIcon={<IconRefresh className="w-4 h-4" />}
             rightIcon={<IconArrowRight className="w-4 h-4" />}
           >
             Sync & Continue
           </Button>
-          <Button 
-            variant="secondary" 
+          <Button
+            variant="secondary"
             leftIcon={<IconUpload className="w-4 h-4" />}
             rightIcon={<IconArrowRight className="w-4 h-4" />}
           >
@@ -266,7 +263,9 @@ function IconPropsDemo() {
             <span className="flex items-center gap-2">
               <IconCircleCheck className="w-4 h-4" />
               <span>Success with Badge</span>
-              <span className="bg-white/20 text-white text-xs px-1.5 py-0.5 rounded">3</span>
+              <span className="bg-white/20 text-white text-xs px-1.5 py-0.5 rounded">
+                3
+              </span>
             </span>
           </Button>
         </div>
@@ -612,7 +611,8 @@ function KiraButtonDemo() {
         <div>
           <h3 className="text-base font-semibold mb-2">Basic Features</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            KiraButton combines icons, loading states, tooltips, and expandable layouts in one component.
+            KiraButton combines icons, loading states, tooltips, and expandable
+            layouts in one component.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/30 rounded-lg border">
@@ -646,7 +646,8 @@ function KiraButtonDemo() {
         <div>
           <h3 className="text-base font-semibold mb-2">Quick Action Layout</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Perfect for toolbars and action menus with icon + label + optional description.
+            Perfect for toolbars and action menus with icon + label + optional
+            description.
           </p>
         </div>
         <div className="flex flex-wrap items-start gap-4 p-4 bg-muted/30 rounded-lg border">
@@ -689,7 +690,8 @@ function KiraButtonDemo() {
         <div>
           <h3 className="text-base font-semibold mb-2">Form Integration</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Built-in label, description, and error state support for form contexts.
+            Built-in label, description, and error state support for form
+            contexts.
           </p>
         </div>
         <div className="grid gap-4 p-4 bg-muted/30 rounded-lg border max-w-md">
@@ -757,14 +759,58 @@ function KiraButtonDemo() {
           </p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-muted/30 rounded-lg border">
-          <KiraButton icon={<IconMail className="w-4 h-4" />} size="sm">Default</KiraButton>
-          <KiraButton icon={<IconMail className="w-4 h-4" />} variant="secondary" size="sm">Secondary</KiraButton>
-          <KiraButton icon={<IconMail className="w-4 h-4" />} variant="outline" size="sm">Outline</KiraButton>
-          <KiraButton icon={<IconMail className="w-4 h-4" />} variant="ghost" size="sm">Ghost</KiraButton>
-          <KiraButton icon={<IconTrash className="w-4 h-4" />} variant="destructive" size="sm">Destructive</KiraButton>
-          <KiraButton icon={<IconInfoCircle className="w-4 h-4" />} variant="info" size="sm">Info</KiraButton>
-          <KiraButton icon={<IconCircleCheck className="w-4 h-4" />} variant="success" size="sm">Success</KiraButton>
-          <KiraButton icon={<IconAlertCircle className="w-4 h-4" />} variant="warning" size="sm">Warning</KiraButton>
+          <KiraButton icon={<IconMail className="w-4 h-4" />} size="sm">
+            Default
+          </KiraButton>
+          <KiraButton
+            icon={<IconMail className="w-4 h-4" />}
+            variant="secondary"
+            size="sm"
+          >
+            Secondary
+          </KiraButton>
+          <KiraButton
+            icon={<IconMail className="w-4 h-4" />}
+            variant="outline"
+            size="sm"
+          >
+            Outline
+          </KiraButton>
+          <KiraButton
+            icon={<IconMail className="w-4 h-4" />}
+            variant="ghost"
+            size="sm"
+          >
+            Ghost
+          </KiraButton>
+          <KiraButton
+            icon={<IconTrash className="w-4 h-4" />}
+            variant="destructive"
+            size="sm"
+          >
+            Destructive
+          </KiraButton>
+          <KiraButton
+            icon={<IconInfoCircle className="w-4 h-4" />}
+            variant="info"
+            size="sm"
+          >
+            Info
+          </KiraButton>
+          <KiraButton
+            icon={<IconCircleCheck className="w-4 h-4" />}
+            variant="success"
+            size="sm"
+          >
+            Success
+          </KiraButton>
+          <KiraButton
+            icon={<IconAlertCircle className="w-4 h-4" />}
+            variant="warning"
+            size="sm"
+          >
+            Warning
+          </KiraButton>
         </div>
       </div>
     </div>
@@ -1213,17 +1259,20 @@ export default function ButtonPage() {
               {
                 type: "added",
                 title: "Unified KiraButton Component",
-                description: "Added KiraButton - a powerful unified component that combines all button features (icons, loading, tooltips, expandable, async actions, copy, form integration, quick actions, compound layouts) into a single, easy-to-use API.",
+                description:
+                  "Added KiraButton - a powerful unified component that combines all button features (icons, loading, tooltips, expandable, async actions, copy, form integration, quick actions, compound layouts) into a single, easy-to-use API.",
               },
               {
                 type: "fixed",
                 title: "Icon Duplication Bug",
-                description: "Fixed icon duplication issue in Quick Action and Compound layouts where icons were appearing twice.",
+                description:
+                  "Fixed icon duplication issue in Quick Action and Compound layouts where icons were appearing twice.",
               },
               {
                 type: "changed",
                 title: "Demo Page Enhancement",
-                description: "Enhanced KiraButton demo tab with improved layout, better organization, and comprehensive examples showcasing all features.",
+                description:
+                  "Enhanced KiraButton demo tab with improved layout, better organization, and comprehensive examples showcasing all features.",
               },
             ],
           },
@@ -1234,27 +1283,32 @@ export default function ButtonPage() {
               {
                 type: "changed",
                 title: "Animation Library Migration",
-                description: "Migrated from anime.js to GSAP for consistency with design system standards and better performance.",
+                description:
+                  "Migrated from anime.js to GSAP for consistency with design system standards and better performance.",
               },
               {
                 type: "added",
                 title: "Icon Props API",
-                description: "Added leftIcon and rightIcon props as the standard way to add icons to buttons, while maintaining flexible children support for custom layouts.",
+                description:
+                  "Added leftIcon and rightIcon props as the standard way to add icons to buttons, while maintaining flexible children support for custom layouts.",
               },
               {
                 type: "changed",
                 title: "ButtonGroup Consolidation",
-                description: "Removed duplicate ButtonGroup implementation from button.tsx. Import from button-group.tsx instead.",
+                description:
+                  "Removed duplicate ButtonGroup implementation from button.tsx. Import from button-group.tsx instead.",
               },
               {
                 type: "fixed",
                 title: "Accessibility Improvements",
-                description: "Added aria-busy support for LoadingButton, improved aria-label handling for IconButtonWithTooltip, and added aria-live regions for AsyncButton status changes.",
+                description:
+                  "Added aria-busy support for LoadingButton, improved aria-label handling for IconButtonWithTooltip, and added aria-live regions for AsyncButton status changes.",
               },
               {
                 type: "added",
                 title: "GSAP React Integration",
-                description: "Integrated @gsap/react for better React lifecycle management and animation cleanup.",
+                description:
+                  "Integrated @gsap/react for better React lifecycle management and animation cleanup.",
               },
             ],
           },

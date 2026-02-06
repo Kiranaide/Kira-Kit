@@ -240,7 +240,7 @@ function ButtonGroup({
   );
 }
 
-interface ToggleGroupItemProps extends Omit<ButtonProps, "onClick" | "ref"> {
+interface ToggleGroupItemProps extends Omit<ButtonProps, "ref"> {
   value: string;
 }
 
@@ -494,6 +494,130 @@ function ButtonGroupToolbar({
   );
 }
 
+interface KiraButtonGroupItem {
+  value: string;
+  label: string;
+  icon?: React.ReactNode;
+  disabled?: boolean;
+}
+
+interface KiraButtonGroupProps extends Omit<
+  ButtonGroupProps,
+  "children" | "onChange"
+> {
+  // Items configuration
+  items?: KiraButtonGroupItem[];
+  children?: React.ReactNode;
+
+  // Selection
+  value?: string | string[] | null;
+  onChange?: (value: string | string[]) => void;
+  selectionMode?: SelectionMode;
+
+  // Toolbar wrapper
+  toolbar?: boolean;
+  toolbarLabel?: string;
+
+  // Quick selection helpers
+  allowEmpty?: boolean;
+
+  // Callbacks
+  onItemClick?: (value: string) => void;
+}
+
+function KiraButtonGroup({
+  items,
+  children,
+  value,
+  onChange,
+  selectionMode = "none",
+  allowEmpty = true,
+  toolbar = false,
+  toolbarLabel,
+  onItemClick,
+  className,
+  ...props
+}: KiraButtonGroupProps) {
+  const handleChange = (newValue: string | string[]) => {
+    if (selectionMode === "single" && !allowEmpty && newValue === "") {
+      return;
+    }
+
+    onChange?.(newValue);
+  };
+
+  const handleItemClick = (itemValue: string) => {
+    onItemClick?.(itemValue);
+  };
+
+  const renderContent = () => {
+    if (items && items.length > 0) {
+      return items.map((item) => (
+        <ToggleGroupItem
+          key={item.value}
+          value={item.value}
+          disabled={item.disabled}
+          leftIcon={item.icon}
+          onClick={() => handleItemClick(item.value)}
+        >
+          {item.label}
+        </ToggleGroupItem>
+      ));
+    }
+
+    return children;
+  };
+
+  const groupContent = (
+    <ButtonGroup
+      value={value}
+      onChange={handleChange}
+      selectionMode={selectionMode}
+      className={className}
+      {...props}
+    >
+      {renderContent()}
+    </ButtonGroup>
+  );
+
+  if (toolbar) {
+    return (
+      <ButtonGroupToolbar label={toolbarLabel} {...props}>
+        {items ? (
+          <ButtonGroup
+            value={value}
+            onChange={handleChange}
+            selectionMode={selectionMode}
+            {...props}
+          >
+            {items.map((item) => (
+              <ToggleGroupItem
+                key={item.value}
+                value={item.value}
+                disabled={item.disabled}
+                leftIcon={item.icon}
+                onClick={() => handleItemClick(item.value)}
+              >
+                {item.label}
+              </ToggleGroupItem>
+            ))}
+          </ButtonGroup>
+        ) : (
+          children
+        )}
+      </ButtonGroupToolbar>
+    );
+  }
+
+  return groupContent;
+}
+
 export { buttonGroupVariants, buttonGroupSizeVariants };
-export { ButtonGroup, ToggleGroupItem, ButtonGroupToolbar };
-export type { ButtonGroupProps, ToggleGroupItemProps, ButtonGroupToolbarProps };
+export { ButtonGroup, ToggleGroupItem, ButtonGroupToolbar, KiraButtonGroup };
+export type {
+  ButtonGroupProps,
+  ToggleGroupItemProps,
+  ButtonGroupToolbarProps,
+  KiraButtonGroupProps,
+  KiraButtonGroupItem,
+};
