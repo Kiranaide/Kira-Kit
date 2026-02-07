@@ -71,6 +71,7 @@ interface ButtonGroupContextValue {
   variant?: ButtonProps["variant"];
   disabled?: boolean;
   loop?: boolean;
+  dir?: "ltr" | "rtl";
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -105,6 +106,7 @@ interface ButtonGroupProps extends Omit<
   variant?: ButtonProps["variant"];
   disabled?: boolean;
   loop?: boolean;
+  dir?: "ltr" | "rtl";
 }
 
 function ButtonGroup({
@@ -122,6 +124,7 @@ function ButtonGroup({
   variant,
   disabled = false,
   loop = true,
+  dir,
   children,
   ...props
 }: ButtonGroupProps) {
@@ -136,9 +139,10 @@ function ButtonGroup({
       variant,
       disabled,
       loop,
+      dir,
       containerRef,
     }),
-    [selectionMode, value, onChange, orientation, variant, disabled, loop]
+    [selectionMode, value, onChange, orientation, variant, disabled, loop, dir]
   );
 
   useGSAP(
@@ -182,12 +186,22 @@ function ButtonGroup({
 
       if (connected) {
         if (orientation === "horizontal") {
-          if (isFirst && count > 1) {
-            positionClasses = "rounded-r-none border-r-0";
-          } else if (isLast && count > 1) {
-            positionClasses = "rounded-l-none";
-          } else if (isMiddle) {
-            positionClasses = "rounded-none border-r-0";
+          if (dir === "rtl") {
+            if (isFirst && count > 1) {
+              positionClasses = "rounded-r-md rounded-l-none border-l-0";
+            } else if (isLast && count > 1) {
+              positionClasses = "rounded-l-md rounded-r-none";
+            } else if (isMiddle) {
+              positionClasses = "rounded-none border-l-0";
+            }
+          } else {
+            if (isFirst && count > 1) {
+              positionClasses = "rounded-r-none border-r-0";
+            } else if (isLast && count > 1) {
+              positionClasses = "rounded-l-none";
+            } else if (isMiddle) {
+              positionClasses = "rounded-none border-r-0";
+            }
           }
         } else {
           if (isFirst && count > 1) {
@@ -223,6 +237,7 @@ function ButtonGroup({
         role={role}
         aria-orientation={orientation}
         data-connected={connected}
+        dir={dir}
         className={cn(
           buttonGroupVariants({ orientation, connected }),
           buttonGroupSizeVariants({
@@ -434,6 +449,8 @@ function ToggleGroupItem({
       ref={itemRef}
       data-slot="toggle-group-item"
       data-selected={isSelected}
+      data-state={isSelected ? "on" : "off"}
+      data-disabled={isDisabled || undefined}
       variant={effectiveVariant}
       className={cn(
         "relative overflow-hidden",
@@ -498,30 +515,33 @@ interface KiraButtonGroupItem {
   value: string;
   label: string;
   icon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
   disabled?: boolean;
+  loading?: boolean;
+  variant?: ButtonProps["variant"];
+  className?: string;
+  "aria-label"?: string;
 }
 
 interface KiraButtonGroupProps extends Omit<
   ButtonGroupProps,
-  "children" | "onChange"
+  "children" | "onChange" | "defaultValue"
 > {
-  // Items configuration
   items?: KiraButtonGroupItem[];
   children?: React.ReactNode;
-
-  // Selection
   value?: string | string[] | null;
+  defaultValue?: string | string[] | null;
   onChange?: (value: string | string[]) => void;
+  onValueChange?: (value: string | string[]) => void;
   selectionMode?: SelectionMode;
-
-  // Toolbar wrapper
+  type?: "single" | "multiple";
+  required?: boolean;
+  rovingFocus?: boolean;
+  dir?: "ltr" | "rtl";
+  fullWidth?: boolean;
   toolbar?: boolean;
   toolbarLabel?: string;
-
-  // Quick selection helpers
   allowEmpty?: boolean;
-
-  // Callbacks
   onItemClick?: (value: string) => void;
 }
 
@@ -529,8 +549,15 @@ function KiraButtonGroup({
   items,
   children,
   value,
+  defaultValue,
   onChange,
+  onValueChange,
   selectionMode = "none",
+  type,
+  required = false,
+  rovingFocus = true,
+  dir,
+  fullWidth = false,
   allowEmpty = true,
   toolbar = false,
   toolbarLabel,
@@ -538,12 +565,38 @@ function KiraButtonGroup({
   className,
   ...props
 }: KiraButtonGroupProps) {
+  const [internalValue, setInternalValue] = React.useState<
+    string | string[] | null
+  >(defaultValue ?? null);
+
+  const isControlled = value !== undefined;
+  const currentValue = isControlled ? value : internalValue;
+
+  const resolvedSelectionMode = type
+    ? type === "single"
+      ? "single"
+      : "multiple"
+    : selectionMode;
+
   const handleChange = (newValue: string | string[]) => {
-    if (selectionMode === "single" && !allowEmpty && newValue === "") {
+    if (required) {
+      if (resolvedSelectionMode === "single" && newValue === "") return;
+      if (
+        resolvedSelectionMode === "multiple" &&
+        Array.isArray(newValue) &&
+        newValue.length === 0
+      )
+        return;
+    }
+
+    if (resolvedSelectionMode === "single" && !allowEmpty && newValue === "") {
       return;
     }
 
+    if (!isControlled) setInternalValue(newValue);
+
     onChange?.(newValue);
+    onValueChange?.(newValue);
   };
 
   const handleItemClick = (itemValue: string) => {
@@ -558,9 +611,22 @@ function KiraButtonGroup({
           value={item.value}
           disabled={item.disabled}
           leftIcon={item.icon}
+          rightIcon={item.rightIcon}
+          variant={item.variant}
+          className={item.className}
+          aria-label={item["aria-label"]}
           onClick={() => handleItemClick(item.value)}
         >
-          {item.label}
+          {item.loading ? (
+            <>
+              <span className="animate-spin" aria-hidden="true">
+                ⏳
+              </span>
+              {item.label}
+            </>
+          ) : (
+            item.label
+          )}
         </ToggleGroupItem>
       ));
     }
@@ -570,10 +636,11 @@ function KiraButtonGroup({
 
   const groupContent = (
     <ButtonGroup
-      value={value}
+      value={currentValue}
       onChange={handleChange}
-      selectionMode={selectionMode}
-      className={className}
+      selectionMode={resolvedSelectionMode}
+      className={cn(fullWidth && "w-full", className)}
+      dir={dir}
       {...props}
     >
       {renderContent()}
@@ -585,9 +652,11 @@ function KiraButtonGroup({
       <ButtonGroupToolbar label={toolbarLabel} {...props}>
         {items ? (
           <ButtonGroup
-            value={value}
+            value={currentValue}
             onChange={handleChange}
-            selectionMode={selectionMode}
+            selectionMode={resolvedSelectionMode}
+            className={cn(fullWidth && "w-full")}
+            dir={dir}
             {...props}
           >
             {items.map((item) => (
@@ -596,9 +665,22 @@ function KiraButtonGroup({
                 value={item.value}
                 disabled={item.disabled}
                 leftIcon={item.icon}
+                rightIcon={item.rightIcon}
+                variant={item.variant}
+                className={item.className}
+                aria-label={item["aria-label"]}
                 onClick={() => handleItemClick(item.value)}
               >
-                {item.label}
+                {item.loading ? (
+                  <>
+                    <span className="animate-spin" aria-hidden="true">
+                      ⏳
+                    </span>
+                    {item.label}
+                  </>
+                ) : (
+                  item.label
+                )}
               </ToggleGroupItem>
             ))}
           </ButtonGroup>

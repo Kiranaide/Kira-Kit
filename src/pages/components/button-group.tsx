@@ -19,8 +19,6 @@ import {
   IconCut,
   IconCopy,
   IconClipboard,
-  IconMinimize,
-  IconMaximize,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -629,6 +627,7 @@ function MultiSelectDemo() {
 function KiraButtonGroupDemo() {
   const [singleValue, setSingleValue] = useState<string>("center");
   const [multiValue, setMultiValue] = useState<string[]>(["bold"]);
+  const [requiredValue, setRequiredValue] = useState<string>("home");
 
   const configItems = [
     { value: "home", label: "Home", icon: <IconHome className="w-4 h-4" /> },
@@ -654,6 +653,7 @@ function KiraButtonGroupDemo() {
       value: "pending",
       label: "Pending",
       icon: <IconClock className="w-4 h-4" />,
+      loading: true,
     },
     {
       value: "archived",
@@ -672,21 +672,38 @@ function KiraButtonGroupDemo() {
     },
   ];
 
-  const sizeItems = [
+  const stylingItems = [
     {
-      value: "small",
-      label: "Small",
-      icon: <IconMinimize className="w-4 h-4" />,
+      value: "edit",
+      label: "Edit",
+      icon: <IconCopy className="w-4 h-4" />,
+      variant: "outline" as const,
     },
     {
-      value: "medium",
-      label: "Medium",
-      icon: <IconMaximize className="w-4 h-4" />,
+      value: "duplicate",
+      label: "Duplicate",
+      icon: <IconCopy className="w-4 h-4" />,
+      variant: "secondary" as const,
     },
     {
-      value: "large",
-      label: "Large",
-      icon: <IconMaximize className="w-4 h-4" />,
+      value: "delete",
+      label: "Delete",
+      icon: <IconArchive className="w-4 h-4" />,
+      variant: "destructive" as const,
+      className: "font-bold",
+    },
+  ];
+
+  const rightIconItems = [
+    {
+      value: "prev",
+      label: "Previous",
+      icon: <IconAlignLeft className="w-4 h-4" />,
+    },
+    {
+      value: "next",
+      label: "Next",
+      rightIcon: <IconAlignRight className="w-4 h-4" />,
     },
   ];
 
@@ -699,6 +716,12 @@ function KiraButtonGroupDemo() {
   const handleMultiChange = (value: string | string[]) => {
     if (Array.isArray(value)) {
       setMultiValue(value);
+    }
+  };
+
+  const handleRequiredChange = (value: string | string[]) => {
+    if (typeof value === "string") {
+      setRequiredValue(value);
     }
   };
 
@@ -717,7 +740,7 @@ function KiraButtonGroupDemo() {
             items={configItems}
             value={singleValue}
             onChange={handleSingleChange}
-            selectionMode="single"
+            type="single"
           />
           <span className="text-sm text-muted-foreground">
             Selected: {singleValue}
@@ -737,11 +760,134 @@ function KiraButtonGroupDemo() {
             items={filterItems}
             value={multiValue}
             onChange={handleMultiChange}
-            selectionMode="multiple"
+            type="multiple"
           />
           <span className="text-sm text-muted-foreground">
-            Selected: {multiValue.join(", ")}
+            Selected: {multiValue.join(", ") || "none"}
           </span>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">
+            Uncontrolled Mode (defaultValue)
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Use defaultValue for uncontrolled components that don't need state
+            management.
+          </p>
+        </div>
+        <div className="p-4 bg-muted/30 rounded-lg border">
+          <KiraButtonGroup
+            items={configItems}
+            defaultValue="profile"
+            type="single"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">Required Selection</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Prevent empty selection with the required prop. Try clicking the
+            selected item - it won&apos;t deselect.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-6 p-4 bg-muted/30 rounded-lg border">
+          <KiraButtonGroup
+            items={configItems}
+            value={requiredValue}
+            onChange={handleRequiredChange}
+            selectionMode="single"
+            required
+          />
+          <span className="text-sm text-muted-foreground">
+            Selected: {requiredValue}
+          </span>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">Loading States</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Show loading indicators on individual items.
+          </p>
+        </div>
+        <div className="p-4 bg-muted/30 rounded-lg border">
+          <KiraButtonGroup
+            items={filterItems}
+            type="single"
+            defaultValue="pending"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">Right Icons</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Add icons to the right side of items.
+          </p>
+        </div>
+        <div className="p-4 bg-muted/30 rounded-lg border">
+          <KiraButtonGroup
+            items={rightIconItems}
+            type="single"
+            defaultValue="next"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">RTL Support</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Right-to-left direction support for internationalization.
+          </p>
+        </div>
+        <div className="p-4 bg-muted/30 rounded-lg border" dir="rtl">
+          <KiraButtonGroup
+            items={configItems}
+            dir="rtl"
+            type="single"
+            defaultValue="settings"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">Full Width</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Make the button group take full width of its container.
+          </p>
+        </div>
+        <div className="p-4 bg-muted/30 rounded-lg border">
+          <KiraButtonGroup
+            items={configItems}
+            fullWidth
+            type="single"
+            defaultValue="profile"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-semibold mb-2">Per-Item Styling</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Custom variant and className per item for flexible styling.
+          </p>
+        </div>
+        <div className="p-4 bg-muted/30 rounded-lg border">
+          <KiraButtonGroup
+            items={stylingItems}
+            type="single"
+            defaultValue="duplicate"
+          />
         </div>
       </div>
 
@@ -758,8 +904,8 @@ function KiraButtonGroupDemo() {
             items={toolbarItems}
             toolbar
             toolbarLabel="Clipboard actions"
-            selectionMode="single"
-            value="copy"
+            type="single"
+            defaultValue="copy"
           />
         </div>
       </div>
@@ -768,34 +914,63 @@ function KiraButtonGroupDemo() {
         <div>
           <h3 className="text-base font-semibold mb-2">Size Variants</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Button groups support all standard button sizes.
+            Button groups support all standard button sizes: xs, sm, default,
+            and lg.
           </p>
         </div>
-        <div className="flex flex-col gap-4 p-4 bg-muted/30 rounded-lg border">
-          <KiraButtonGroup
-            items={sizeItems.slice(0, 3)}
-            size="xs"
-            selectionMode="single"
-            value="small"
-          />
-          <KiraButtonGroup
-            items={sizeItems.slice(0, 3)}
-            size="sm"
-            selectionMode="single"
-            value="small"
-          />
-          <KiraButtonGroup
-            items={sizeItems.slice(0, 3)}
-            size="default"
-            selectionMode="single"
-            value="small"
-          />
-          <KiraButtonGroup
-            items={sizeItems.slice(0, 3)}
-            size="lg"
-            selectionMode="single"
-            value="small"
-          />
+        <div className="flex flex-wrap items-center gap-4 p-4 bg-muted/30 rounded-lg border">
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] text-muted-foreground">xs</span>
+            <KiraButtonGroup
+              items={[
+                { value: "1", label: "XS" },
+                { value: "2", label: "Extra" },
+                { value: "3", label: "Small" },
+              ]}
+              size="xs"
+              type="single"
+              defaultValue="1"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] text-muted-foreground">sm</span>
+            <KiraButtonGroup
+              items={[
+                { value: "1", label: "SM" },
+                { value: "2", label: "Small" },
+                { value: "3", label: "Size" },
+              ]}
+              size="sm"
+              type="single"
+              defaultValue="1"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] text-muted-foreground">default</span>
+            <KiraButtonGroup
+              items={[
+                { value: "1", label: "Default" },
+                { value: "2", label: "Normal" },
+                { value: "3", label: "Medium" },
+              ]}
+              size="default"
+              type="single"
+              defaultValue="1"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] text-muted-foreground">lg</span>
+            <KiraButtonGroup
+              items={[
+                { value: "1", label: "LG" },
+                { value: "2", label: "Large" },
+                { value: "3", label: "Big" },
+              ]}
+              size="lg"
+              type="single"
+              defaultValue="1"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -841,7 +1016,7 @@ export default function ButtonGroupPage() {
       <PageHeader
         title="Button Group"
         description="Groups multiple buttons together with seamless styling, supporting connected/disconnected modes, radio/checkbox selection, and animated entrances."
-        version="1.0"
+        version="2.1"
       />
 
       <FeatureGrid features={features} />
@@ -1104,16 +1279,60 @@ export default function ButtonGroupPage() {
                 description: "Controlled value for selection.",
               },
               {
+                prop: "defaultValue",
+                type: "string | string[] | null",
+                default: "-",
+                description: "Default value for uncontrolled mode.",
+              },
+              {
                 prop: "onChange",
                 type: "(value: string | string[]) => void",
                 default: "-",
                 description: "Callback when selection changes.",
               },
               {
+                prop: "onValueChange",
+                type: "(value: string | string[]) => void",
+                default: "-",
+                description: "Alias for onChange (Radix API compatibility).",
+              },
+              {
                 prop: "selectionMode",
                 type: "none | single | multiple",
                 default: "none",
                 description: "Selection mode for the group.",
+              },
+              {
+                prop: "type",
+                type: "single | multiple",
+                default: "-",
+                description:
+                  "Alias for selectionMode (Radix API compatibility).",
+              },
+              {
+                prop: "required",
+                type: "boolean",
+                default: "false",
+                description: "Require at least one item to be selected.",
+              },
+              {
+                prop: "rovingFocus",
+                type: "boolean",
+                default: "true",
+                description:
+                  "Enable roving tabindex (API reserved for future use).",
+              },
+              {
+                prop: "dir",
+                type: "ltr | rtl",
+                default: "-",
+                description: "Text direction for RTL language support.",
+              },
+              {
+                prop: "fullWidth",
+                type: "boolean",
+                default: "false",
+                description: "Make the group take full width of container.",
               },
               {
                 prop: "toolbar",
@@ -1147,11 +1366,130 @@ export default function ButtonGroupPage() {
               },
             ],
           },
+          {
+            title: "KiraButtonGroupItem",
+            props: [
+              {
+                prop: "value",
+                type: "string",
+                default: "-",
+                description: "Unique value for the item.",
+              },
+              {
+                prop: "label",
+                type: "string",
+                default: "-",
+                description: "Display label for the item.",
+              },
+              {
+                prop: "icon",
+                type: "ReactNode",
+                default: "-",
+                description: "Icon to display on the left side.",
+              },
+              {
+                prop: "rightIcon",
+                type: "ReactNode",
+                default: "-",
+                description: "Icon to display on the right side.",
+              },
+              {
+                prop: "disabled",
+                type: "boolean",
+                default: "false",
+                description: "Disable this specific item.",
+              },
+              {
+                prop: "loading",
+                type: "boolean",
+                default: "false",
+                description: "Show loading spinner on the item.",
+              },
+              {
+                prop: "variant",
+                type: "Button variant",
+                default: "-",
+                description: "Custom variant for this item.",
+              },
+              {
+                prop: "className",
+                type: "string",
+                default: "-",
+                description: "Custom CSS classes for this item.",
+              },
+              {
+                prop: "aria-label",
+                type: "string",
+                default: "-",
+                description: "Accessible label for this item.",
+              },
+            ],
+          },
         ]}
       />
 
       <Changelog
         entries={[
+          {
+            version: "2.1.0",
+            date: "7 February 2026",
+            changes: [
+              {
+                type: "added",
+                title: "Uncontrolled Mode",
+                description:
+                  "Added defaultValue prop for uncontrolled components that don't require state management.",
+              },
+              {
+                type: "added",
+                title: "Type Alias",
+                description:
+                  "Added type prop as an alias for selectionMode, accepting 'single' | 'multiple' for Radix API compatibility.",
+              },
+              {
+                type: "added",
+                title: "onValueChange Alias",
+                description:
+                  "Added onValueChange callback as an alias for onChange for consistency with Radix ToggleGroup API.",
+              },
+              {
+                type: "added",
+                title: "Required Selection",
+                description:
+                  "Added required prop to prevent empty selection, ensuring at least one item remains selected in single mode.",
+              },
+              {
+                type: "added",
+                title: "RTL Support",
+                description:
+                  "Added dir prop ('ltr' | 'rtl') for right-to-left language support and internationalization.",
+              },
+              {
+                type: "added",
+                title: "Full Width Layout",
+                description:
+                  "Added fullWidth prop to make button groups take the full width of their container.",
+              },
+              {
+                type: "added",
+                title: "Enhanced Item Configuration",
+                description:
+                  "KiraButtonGroupItem now supports rightIcon, loading state, custom variant, className, and aria-label per item.",
+              },
+              {
+                type: "added",
+                title: "Better Data Attributes",
+                description:
+                  "Added data-state ('on' | 'off') and data-disabled attributes to ToggleGroupItem for better accessibility and styling.",
+              },
+              {
+                type: "added",
+                title: "Roving Focus API",
+                description:
+                  "Added rovingFocus prop for future implementation of roving tabindex control.",
+              },
+            ],
+          },
           {
             version: "2.0.0",
             date: "5 February 2026",
