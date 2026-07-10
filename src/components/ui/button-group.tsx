@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -24,7 +25,7 @@ const buttonGroupVariants = cva(
       orientation: "horizontal",
       connected: true,
     },
-  }
+  },
 );
 
 const buttonGroupSizeVariants = cva("inline-flex", {
@@ -76,14 +77,14 @@ interface ButtonGroupContextValue {
 }
 
 const ButtonGroupContext = React.createContext<ButtonGroupContextValue | null>(
-  null
+  null,
 );
 
 const useButtonGroupContext = () => {
   const context = React.useContext(ButtonGroupContext);
   if (!context) {
     throw new Error(
-      "ButtonGroup compound components must be used within a ButtonGroup"
+      "ButtonGroup compound components must be used within a ButtonGroup",
     );
   }
   return context;
@@ -142,7 +143,7 @@ function ButtonGroup({
       dir,
       containerRef,
     }),
-    [selectionMode, value, onChange, orientation, variant, disabled, loop, dir]
+    [selectionMode, value, onChange, orientation, variant, disabled, loop, dir],
   );
 
   useGSAP(
@@ -166,12 +167,12 @@ function ButtonGroup({
     {
       scope: containerRef,
       dependencies: [animated, orientation, animationStagger],
-    }
+    },
   );
 
   const processChildren = () => {
     const childArray = React.Children.toArray(children).filter(
-      React.isValidElement
+      React.isValidElement,
     );
     const count = childArray.length;
 
@@ -220,9 +221,9 @@ function ButtonGroup({
           className: cn(
             (child as React.ReactElement<{ className?: string }>).props
               .className,
-            positionClasses
+            positionClasses,
           ),
-        }
+        },
       );
     });
   };
@@ -245,7 +246,7 @@ function ButtonGroup({
             gap: connected && !gap ? undefined : gap,
             justify,
           }),
-          className
+          className,
         )}
         {...props}
       >
@@ -330,10 +331,10 @@ function ToggleGroupItem({
     if (!container) return;
 
     const buttons = Array.from(
-      container.querySelectorAll("[data-slot=button]")
+      container.querySelectorAll("[data-slot=button]"),
     ) as HTMLElement[];
     const currentIndex = buttons.findIndex(
-      (btn) => btn === document.activeElement
+      (btn) => btn === document.activeElement,
     );
 
     if (currentIndex === -1) return;
@@ -388,7 +389,7 @@ function ToggleGroupItem({
         });
       }
     },
-    { scope: itemRef, dependencies: [isSelected] }
+    { scope: itemRef, dependencies: [isSelected] },
   );
 
   const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -455,7 +456,7 @@ function ToggleGroupItem({
       className={cn(
         "relative overflow-hidden",
         getSelectedClassName(),
-        className
+        className,
       )}
       onClick={handleClick}
       onMouseDown={handleMouseDown}

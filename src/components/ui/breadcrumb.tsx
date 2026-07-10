@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { useRender } from "@base-ui/react/use-render";
+import { mergeProps } from "@base-ui/react/merge-props";
 import {
   IconChevronRight,
   IconSlash,
@@ -24,7 +25,7 @@ const breadcrumbListVariants = cva(
     defaultVariants: {
       size: "default",
     },
-  }
+  },
 );
 
 const breadcrumbLinkVariants = cva(
@@ -42,7 +43,7 @@ const breadcrumbLinkVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 const breadcrumbSeparatorVariants = cva(
@@ -65,7 +66,7 @@ const breadcrumbSeparatorVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 interface BreadcrumbProps extends React.ComponentPropsWithoutRef<"nav"> {
@@ -86,7 +87,7 @@ interface BreadcrumbLinkProps
   extends
     React.ComponentPropsWithoutRef<"a">,
     VariantProps<typeof breadcrumbLinkVariants> {
-  asChild?: boolean;
+  render?: useRender.RenderProp;
 }
 
 type BreadcrumbPageProps = React.ComponentPropsWithoutRef<"span">;
@@ -102,7 +103,7 @@ interface BreadcrumbSeparatorProps
     VariantProps<typeof breadcrumbSeparatorVariants> {}
 
 interface BreadcrumbHomeProps extends React.ComponentPropsWithoutRef<"a"> {
-  asChild?: boolean;
+  render?: useRender.RenderProp;
   showLabel?: boolean;
   label?: string;
 }
@@ -149,7 +150,7 @@ const useBreadcrumbContext = () => React.useContext(BreadcrumbContext);
 
 function useBreadcrumbs(
   pathname: string,
-  options: UseBreadcrumbsOptions = {}
+  options: UseBreadcrumbsOptions = {},
 ): BreadcrumbItem[] {
   const {
     labels = {},
@@ -201,7 +202,7 @@ function useBreadcrumbsFromMatches(
   matches: {
     pathname: string;
     meta?: { title?: string; breadcrumb?: string };
-  }[]
+  }[],
 ): BreadcrumbItem[] {
   return React.useMemo(() => {
     return matches.map((match, index) => ({
@@ -227,7 +228,7 @@ const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
         </nav>
       </BreadcrumbContext.Provider>
     );
-  }
+  },
 );
 Breadcrumb.displayName = "Breadcrumb";
 
@@ -241,7 +242,7 @@ const BreadcrumbList = React.forwardRef<HTMLOListElement, BreadcrumbListProps>(
       className={cn(breadcrumbListVariants({ size, className }))}
       {...props}
     />
-  )
+  ),
 );
 BreadcrumbList.displayName = "BreadcrumbList";
 
@@ -256,30 +257,35 @@ const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProps>(
       className={cn("inline-flex items-center gap-1.5", className)}
       {...props}
     />
-  )
+  ),
 );
 BreadcrumbItem.displayName = "BreadcrumbItem";
 
 const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
-  ({ className, variant, asChild, children, ...props }, ref) => {
-    const Comp = asChild ? Slot : "a";
-
-    return (
-      <Comp
-        ref={ref}
-        data-slot="breadcrumb-link"
-        itemProp="item"
-        className={cn(breadcrumbLinkVariants({ variant, className }))}
-        {...props}
-      >
-        {children}
-        <meta
-          itemProp="name"
-          content={typeof children === "string" ? children : ""}
-        />
-      </Comp>
-    );
-  }
+  ({ className, variant, render, children, ...props }, ref) => {
+    return useRender({
+      defaultTagName: "a",
+      render,
+      props: mergeProps<"a">(
+        {
+          ref,
+          "data-slot": "breadcrumb-link",
+          itemProp: "item",
+          className: cn(breadcrumbLinkVariants({ variant, className })),
+          children: (
+            <>
+              {children}
+              <meta
+                itemProp="name"
+                content={typeof children === "string" ? children : ""}
+              />
+            </>
+          ),
+        },
+        props,
+      ),
+    });
+  },
 );
 BreadcrumbLink.displayName = "BreadcrumbLink";
 
@@ -299,7 +305,7 @@ const BreadcrumbPage = React.forwardRef<HTMLSpanElement, BreadcrumbPageProps>(
         content={typeof children === "string" ? children : ""}
       />
     </span>
-  )
+  ),
 );
 BreadcrumbPage.displayName = "BreadcrumbPage";
 
@@ -353,7 +359,7 @@ const BreadcrumbEllipsis = React.forwardRef<
         {isOpen && (
           <div
             ref={dropdownRef}
-            className="absolute left-0 top-full z-50 mt-1 min-w-[150px] rounded-md border bg-popover p-1 shadow-md"
+            className="absolute left-0 top-full z-50 mt-1 min-w-37.5 rounded-md border bg-popover p-1 shadow-md"
             role="menu"
           >
             {items.map((item, index) => (
@@ -429,34 +435,36 @@ const BreadcrumbSeparator = React.forwardRef<
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
 
 const BreadcrumbHome = React.forwardRef<HTMLAnchorElement, BreadcrumbHomeProps>(
-  (
-    { className, asChild, showLabel = false, label = "Home", ...props },
-    ref
-  ) => {
-    const Comp = asChild ? Slot : "a";
-
-    return (
-      <Comp
-        ref={ref}
-        data-slot="breadcrumb-home"
-        itemProp="item"
-        className={cn(
-          "inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
-          className
-        )}
-        aria-label={showLabel ? undefined : label}
-        {...props}
-      >
-        <IconHome className="h-4 w-4" aria-hidden="true" />
-        {showLabel && <span itemProp="name">{label}</span>}
-        {!showLabel && (
-          <span className="sr-only" itemProp="name">
-            {label}
-          </span>
-        )}
-      </Comp>
-    );
-  }
+  ({ className, render, showLabel = false, label = "Home", ...props }, ref) => {
+    return useRender({
+      defaultTagName: "a",
+      render,
+      props: mergeProps<"a">(
+        {
+          ref,
+          "data-slot": "breadcrumb-home",
+          itemProp: "item",
+          className: cn(
+            "inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
+            className,
+          ),
+          "aria-label": showLabel ? undefined : label,
+          children: (
+            <>
+              <IconHome className="h-4 w-4" aria-hidden="true" />
+              {showLabel && <span itemProp="name">{label}</span>}
+              {!showLabel && (
+                <span className="sr-only" itemProp="name">
+                  {label}
+                </span>
+              )}
+            </>
+          ),
+        },
+        props,
+      ),
+    });
+  },
 );
 BreadcrumbHome.displayName = "BreadcrumbHome";
 
@@ -476,7 +484,7 @@ function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
             : item.href,
       })),
     }),
-    [items]
+    [items],
   );
 
   return (
@@ -514,7 +522,7 @@ function BreadcrumbCollapsible({
   const renderItem = (
     item: { href: string; label: string; current?: boolean },
     index: number,
-    position: number
+    position: number,
   ) => (
     <React.Fragment key={index}>
       {index > 0 && (

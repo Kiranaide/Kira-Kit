@@ -53,7 +53,7 @@ const features = [
   {
     title: "Animated",
     description:
-      "Smooth entrance animations with staggered delays using animejs and prefers-reduced-motion support.",
+      "Smooth entrance animations with staggered delays using GSAP and prefers-reduced-motion support.",
   },
 ];
 
@@ -1083,7 +1083,7 @@ export default function ButtonGroupPage() {
               demo: (
                 <DemoWrapper
                   title="Animated Entrance"
-                  description="Buttons animate on mount with staggered delay using animejs."
+                  description="Buttons animate on mount with staggered delay using GSAP."
                   code={animationCode}
                 >
                   <AnimationDemo />

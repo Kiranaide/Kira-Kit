@@ -5,14 +5,16 @@ import {
   IconRefresh,
   IconRocket,
   IconSparkles,
+  IconBell,
 } from "@tabler/icons-react";
 
 import {
   Alert,
   AlertTitle,
   AlertDescription,
-  AlertWithHeading,
+  KiraAlert,
 } from "@/components/ui/alert";
+import { toast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
@@ -43,170 +45,125 @@ export function BasicAlertDemo() {
 
 const variantsCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
-export function AlertVariantsDemo() {
-  return (
-    <div className="space-y-4">
-      <Alert variant="default">
-        <AlertTitle>Default</AlertTitle>
-        <AlertDescription>This is a default alert with neutral styling.</AlertDescription>
-      </Alert>
-
-      <Alert variant="info">
-        <AlertTitle>Information</AlertTitle>
-        <AlertDescription>This is an informational alert with helpful context.</AlertDescription>
-      </Alert>
-
-      <Alert variant="success">
-        <AlertTitle>Success</AlertTitle>
-        <AlertDescription>Your action was completed successfully.</AlertDescription>
-      </Alert>
-
-      <Alert variant="warning">
-        <AlertTitle>Warning</AlertTitle>
-        <AlertDescription>Please review this information carefully.</AlertDescription>
-      </Alert>
-
-      <Alert variant="destructive">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>Something went wrong. Please try again.</AlertDescription>
-      </Alert>
-    </div>
-  )
-}`;
+<Alert variant="info">
+  <AlertTitle>Information</AlertTitle>
+  <AlertDescription>Helpful context.</AlertDescription>
+</Alert>
+<Alert variant="success">…</Alert>
+<Alert variant="warning">…</Alert>
+<Alert variant="destructive">…</Alert>`;
 
 const iconsCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
-export function AlertIconsDemo() {
-  return (
-    <div className="space-y-4">
-      {/* Default icons are shown automatically based on variant */}
-      <Alert variant="info">
-        <AlertTitle>With Default Icon</AlertTitle>
-        <AlertDescription>Icons are shown by default for each variant.</AlertDescription>
-      </Alert>
+// Default icons per variant
+<Alert variant="info">
+  <AlertTitle>With Default Icon</AlertTitle>
+  <AlertDescription>Icons are shown by default.</AlertDescription>
+</Alert>
 
-      {/* Disable icons */}
-      <Alert variant="info" showIcon={false}>
-        <AlertTitle>No Icon</AlertTitle>
-        <AlertDescription>Set showIcon={false} to hide the icon.</AlertDescription>
-      </Alert>
-    </div>
-  )
-}`;
+// Disable icons
+<Alert variant="info" showIcon={false}>
+  <AlertTitle>No Icon</AlertTitle>
+</Alert>`;
 
 const dismissibleCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
-export function DismissibleAlertDemo() {
-  return (
-    <div className="space-y-4">
-      {/* Closable with X button */}
-      <Alert variant="info" closable onClose={() => console.log("Closed!")}>
-        <AlertTitle>Dismissible Alert</AlertTitle>
-        <AlertDescription>Click the X button to dismiss this alert.</AlertDescription>
-      </Alert>
+<Alert variant="info" closable onClose={() => {}}>
+  <AlertTitle>Dismissible Alert</AlertTitle>
+  <AlertDescription>Click the X button to dismiss.</AlertDescription>
+</Alert>`;
 
-      {/* Hold to close */}
-      <Alert variant="warning" holdToClose onClose={() => console.log("Dismissed!")}>
-        <AlertTitle>Hold to Dismiss</AlertTitle>
-        <AlertDescription>Hold to dismiss this alert with progress indicator.</AlertDescription>
-      </Alert>
+const softBannerCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
-      {/* Combined */}
-      <Alert variant="success" closable holdToClose onClose={() => console.log("Closed!")}>
-        <AlertTitle>Both Options</AlertTitle>
-        <AlertDescription>Click X or hold to dismiss.</AlertDescription>
-      </Alert>
-    </div>
-  )
-}`;
+// Soft palette (matches Badge *-soft)
+<Alert variant="success-soft">
+  <AlertTitle>Saved</AlertTitle>
+  <AlertDescription>Your changes were saved.</AlertDescription>
+</Alert>
 
-const actionsCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
+// Left accent border
+<Alert variant="info" leftAccent>
+  <AlertTitle>Note</AlertTitle>
+</Alert>
 
-export function AlertActionsDemo() {
-  return (
-    <Alert variant="info">
-      <div className="flex flex-1 items-start justify-between gap-4">
-        <div>
-          <AlertTitle>New update available</AlertTitle>
-          <AlertDescription>
-            A new version of the application is ready to install.
-          </AlertDescription>
-        </div>
-        <div className="flex gap-2 shrink-0">
-          <Button variant="outline" size="sm">Later</Button>
-          <Button size="sm">Update now</Button>
-        </div>
-      </div>
-    </Alert>
-  )
-}`;
+// Full-width banner
+<Alert variant="warning" banner>
+  <AlertDescription>Scheduled maintenance tonight at 2am UTC.</AlertDescription>
+</Alert>`;
 
-const customCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
-import { IconRocket } from "@tabler/icons-react"
+const actionsCode = `import { KiraAlert } from "@/components/ui/alert"
 
-export function CustomAlertDemo() {
-  return (
-    <div className="space-y-4">
-      {/* Outline variants */}
-      <Alert variant="outline-info">
-        <AlertTitle>Outline Info</AlertTitle>
-        <AlertDescription>Outline style with border only.</AlertDescription>
-      </Alert>
+<KiraAlert
+  variant="info"
+  title="New update available"
+  description="A new version is ready to install."
+  actions={[
+    { label: "Update now", onClick: () => {} },
+    { label: "Later", variant: "outline" },
+  ]}
+/>`;
 
-      {/* Different sizes */}
-      <Alert size="sm" variant="info">
-        <AlertTitle>Small Alert</AlertTitle>
-        <AlertDescription>Compact padding for tight spaces.</AlertDescription>
-      </Alert>
+const expandableCode = `import { KiraAlert } from "@/components/ui/alert"
 
-      <Alert size="lg" variant="info">
-        <AlertTitle>Large Alert</AlertTitle>
-        <AlertDescription>Generous padding for emphasis.</AlertDescription>
-      </Alert>
+<KiraAlert
+  variant="destructive"
+  title="Deployment failed"
+  description="Build step exited with code 1."
+  expandable
+  expandedContent={<pre>Error: missing env var DATABASE_URL…</pre>}
+/>`;
 
-      {/* AlertWithHeading convenience component */}
-      <AlertWithHeading
-        variant="success"
-        title="Quick API"
-        description="Use AlertWithHeading for simpler usage."
-        closable
-      />
-    </div>
-  )
-}`;
+const copyCode = `import { KiraAlert } from "@/components/ui/alert"
 
-const usageCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+<KiraAlert
+  variant="warning"
+  title="API key rotated"
+  description="sk_live_51H8xY2eZvKq…"
+  copyable
+  timestamp={new Date()}
+/>`;
 
-// Basic with icon
+const kiraCode = `import { KiraAlert } from "@/components/ui/alert"
+
+<KiraAlert
+  variant="success"
+  title="Payment successful"
+  description="Your payment of $49.99 has been processed."
+  timestamp={new Date()}
+  actions={[{ label: "View receipt", variant: "outline" }]}
+  dismissible
+/>`;
+
+const usageCode = `import { Alert, AlertTitle, AlertDescription, KiraAlert } from "@/components/ui/alert"
+
+// Composable
 <Alert variant="info">
   <AlertTitle>Title</AlertTitle>
   <AlertDescription>Description</AlertDescription>
 </Alert>
 
-// Closable with X button
-<Alert variant="warning" closable onClose={() => {}} />
+// Closable
+<Alert variant="warning" closable onClose={() => {}}>…</Alert>
 
-// Hold to close
-<Alert variant="info" holdToClose holdDuration={1500} onClose={() => {}}>
-  <AlertTitle>Hold to Dismiss</AlertTitle>
-  <AlertDescription>Hold to dismiss this alert</AlertDescription>
-</Alert>
+// Soft / banner / left accent
+<Alert variant="success-soft">…</Alert>
+<Alert variant="warning" banner>…</Alert>
+<Alert variant="info" leftAccent>…</Alert>
 
-// Combined: closable + holdToClose
-<Alert variant="success" closable holdToClose onClose={() => {}}>
-  <AlertTitle>Both Options</AlertTitle>
-  <AlertDescription>Click X or hold to dismiss</AlertDescription>
-</Alert>
+// KiraAlert (prop-driven)
+<KiraAlert
+  variant="info"
+  title="Update available"
+  description="A new version is ready."
+  actions={[{ label: "Update", onClick: () => {} }]}
+  copyable
+  timestamp={new Date()}
+  dismissible
+/>
 
-// Toast alert
-<Alert 
-  toast 
-  toastProps={{ position: "bottom-right", duration: 5000 }}
-  variant="success"
->
-  <AlertTitle>Toast</AlertTitle>
-</Alert>`;
+// For transient notifications, use the toast() API instead
+import { toast } from "@/components/ui/toast"
+toast.success("Saved")`;
 
 // =============================================================================
 // Demo Components
@@ -266,10 +223,6 @@ function VariantsDemo() {
         <AlertTitle>Success</AlertTitle>
         <AlertDescription>Outline success alert.</AlertDescription>
       </Alert>
-      <Alert variant="outline-warning">
-        <AlertTitle>Warning</AlertTitle>
-        <AlertDescription>Outline warning alert.</AlertDescription>
-      </Alert>
       <Alert variant="outline-destructive">
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>Outline destructive alert.</AlertDescription>
@@ -287,28 +240,12 @@ function IconsDemo() {
           Icons are shown automatically based on variant type.
         </AlertDescription>
       </Alert>
-
       <Alert variant="success">
         <AlertTitle>Success Icon</AlertTitle>
         <AlertDescription>
           Each variant has its own semantic icon.
         </AlertDescription>
       </Alert>
-
-      <Alert variant="warning">
-        <AlertTitle>Warning Icon</AlertTitle>
-        <AlertDescription>
-          Warning variant shows an alert triangle.
-        </AlertDescription>
-      </Alert>
-
-      <Alert variant="destructive">
-        <AlertTitle>Error Icon</AlertTitle>
-        <AlertDescription>
-          Destructive variant shows an error icon.
-        </AlertDescription>
-      </Alert>
-
       <h4 className="text-sm font-medium pt-4">Without Icon</h4>
       <Alert variant="info" showIcon={false}>
         <AlertTitle>No Icon Alert</AlertTitle>
@@ -324,20 +261,9 @@ function DismissibleDemo() {
   const [alerts, setAlerts] = useState({
     closable1: true,
     closable2: true,
-    hold1: true,
-    hold2: true,
-    combined: true,
   });
 
-  const resetAlerts = () => {
-    setAlerts({
-      closable1: true,
-      closable2: true,
-      hold1: true,
-      hold2: true,
-      combined: true,
-    });
-  };
+  const resetAlerts = () => setAlerts({ closable1: true, closable2: true });
 
   return (
     <div className="space-y-4">
@@ -347,8 +273,6 @@ function DismissibleDemo() {
           Reset Alerts
         </Button>
       </div>
-
-      <h4 className="text-sm font-medium">Closable with X Button</h4>
       {alerts.closable1 && (
         <Alert
           variant="info"
@@ -371,48 +295,43 @@ function DismissibleDemo() {
           <AlertDescription>This one is also dismissible.</AlertDescription>
         </Alert>
       )}
+    </div>
+  );
+}
 
-      <h4 className="text-sm font-medium pt-4">Hold to Close</h4>
-      {alerts.hold1 && (
-        <Alert
-          variant="info"
-          holdToClose
-          onClose={() => setAlerts((prev) => ({ ...prev, hold1: false }))}
-        >
-          <AlertTitle>Hold to Dismiss</AlertTitle>
-          <AlertDescription>
-            Hold to dismiss. Progress bar animates while holding.
-          </AlertDescription>
-        </Alert>
-      )}
-      {alerts.hold2 && (
-        <Alert
-          variant="destructive"
-          holdToClose
-          holdDuration={2000}
-          onClose={() => setAlerts((prev) => ({ ...prev, hold2: false }))}
-        >
-          <AlertTitle>Longer Hold Duration</AlertTitle>
-          <AlertDescription>
-            Hold for 2 seconds to dismiss this one.
-          </AlertDescription>
-        </Alert>
-      )}
+function SoftBannerDemo() {
+  return (
+    <div className="space-y-4">
+      <h4 className="text-sm font-medium">Soft palette</h4>
+      <Alert variant="info-soft">
+        <AlertTitle>Information</AlertTitle>
+        <AlertDescription>Softer, tinted background.</AlertDescription>
+      </Alert>
+      <Alert variant="success-soft">
+        <AlertTitle>Saved</AlertTitle>
+        <AlertDescription>Your changes were saved.</AlertDescription>
+      </Alert>
+      <Alert variant="warning-soft">
+        <AlertTitle>Careful</AlertTitle>
+        <AlertDescription>Double-check before continuing.</AlertDescription>
+      </Alert>
 
-      <h4 className="text-sm font-medium pt-4">Combined: Closable + Hold</h4>
-      {alerts.combined && (
-        <Alert
-          variant="success"
-          closable
-          holdToClose
-          onClose={() => setAlerts((prev) => ({ ...prev, combined: false }))}
-        >
-          <AlertTitle>Click X or Hold to Dismiss</AlertTitle>
-          <AlertDescription>
-            This alert can be closed by clicking the X button or by holding.
-          </AlertDescription>
-        </Alert>
-      )}
+      <h4 className="text-sm font-medium pt-4">Left accent border</h4>
+      <Alert variant="info" leftAccent>
+        <AlertTitle>Note</AlertTitle>
+        <AlertDescription>Accent border draws the eye.</AlertDescription>
+      </Alert>
+      <Alert variant="destructive" leftAccent>
+        <AlertTitle>Danger</AlertTitle>
+        <AlertDescription>This needs your attention.</AlertDescription>
+      </Alert>
+
+      <h4 className="text-sm font-medium pt-4">Full-width banner</h4>
+      <Alert variant="warning" banner showIcon>
+        <AlertDescription>
+          Scheduled maintenance tonight at 2:00 AM UTC.
+        </AlertDescription>
+      </Alert>
     </div>
   );
 }
@@ -420,130 +339,131 @@ function DismissibleDemo() {
 function ActionsDemo() {
   return (
     <div className="space-y-4">
-      <Alert variant="info">
-        <div className="flex flex-1 items-start justify-between gap-4">
-          <div>
-            <AlertTitle>New update available</AlertTitle>
-            <AlertDescription>
-              A new version of the application is ready to install.
-            </AlertDescription>
-          </div>
-          <div className="flex gap-2 shrink-0">
-            <Button variant="outline" size="sm">
-              Later
-            </Button>
-            <Button size="sm">
-              <IconDownload className="w-4 h-4 mr-1" />
-              Update
-            </Button>
-          </div>
-        </div>
-      </Alert>
-
-      <Alert variant="warning">
-        <div className="flex flex-1 items-start justify-between gap-4">
-          <div>
-            <AlertTitle>Storage almost full</AlertTitle>
-            <AlertDescription>
-              You've used 90% of your storage quota. Consider upgrading your
-              plan.
-            </AlertDescription>
-          </div>
-          <Button variant="outline" size="sm">
-            Manage Storage
-          </Button>
-        </div>
-      </Alert>
-
-      <Alert variant="destructive">
-        <div className="flex flex-1 items-start justify-between gap-4">
-          <div>
-            <AlertTitle>Delete confirmation</AlertTitle>
-            <AlertDescription>
-              Are you sure you want to delete this item? This action cannot be
-              undone.
-            </AlertDescription>
-          </div>
-          <div className="flex gap-2 shrink-0">
-            <Button variant="outline" size="sm">
-              Cancel
-            </Button>
-            <Button variant="destructive" size="sm">
-              <IconTrash className="w-4 h-4 mr-1" />
-              Delete
-            </Button>
-          </div>
-        </div>
-      </Alert>
-
-      <Alert variant="success">
-        <div className="flex flex-1 items-start justify-between gap-4">
-          <div>
-            <AlertTitle>Payment successful</AlertTitle>
-            <AlertDescription>
-              Your payment of $49.99 has been processed successfully.
-            </AlertDescription>
-          </div>
-          <Button variant="outline" size="sm">
-            View Receipt
-          </Button>
-        </div>
-      </Alert>
+      <KiraAlert
+        variant="info"
+        title="New update available"
+        description="A new version of the application is ready to install."
+        actions={[
+          {
+            label: (
+              <>
+                <IconDownload className="w-4 h-4 mr-1" />
+                Update
+              </>
+            ),
+            onClick: () => toast.success("Updating…"),
+          },
+          { label: "Later", variant: "outline" },
+        ]}
+      />
+      <KiraAlert
+        variant="destructive"
+        title="Delete confirmation"
+        description="Are you sure? This action cannot be undone."
+        actions={[
+          {
+            label: (
+              <>
+                <IconTrash className="w-4 h-4 mr-1" />
+                Delete
+              </>
+            ),
+            variant: "destructive",
+            onClick: () => toast.error("Deleted"),
+          },
+          { label: "Cancel", variant: "outline" },
+        ]}
+      />
     </div>
   );
 }
 
-function CustomDemo() {
+function ExpandableDemo() {
   return (
     <div className="space-y-4">
-      <h4 className="text-sm font-medium">Size Variants</h4>
-      <Alert size="xs" variant="info">
-        <AlertTitle>Extra Small</AlertTitle>
-        <AlertDescription>Size xs alert with compact padding.</AlertDescription>
-      </Alert>
-      <Alert size="sm" variant="info">
-        <AlertTitle>Small</AlertTitle>
-        <AlertDescription>
-          Size sm alert with moderate padding.
-        </AlertDescription>
-      </Alert>
-      <Alert size="default" variant="info">
-        <AlertTitle>Default</AlertTitle>
-        <AlertDescription>Default size alert.</AlertDescription>
-      </Alert>
-      <Alert size="lg" variant="info">
-        <AlertTitle>Large</AlertTitle>
-        <AlertDescription>
-          Size lg alert with generous padding.
-        </AlertDescription>
-      </Alert>
-
-      <h4 className="text-sm font-medium pt-4">
-        AlertWithHeading (Convenience API)
-      </h4>
-      <AlertWithHeading
+      <KiraAlert
+        variant="destructive"
+        title="Deployment failed"
+        description="Build step exited with code 1."
+        expandable
+        expandedContent={
+          <pre className="whitespace-pre-wrap rounded bg-black/5 p-2 text-xs dark:bg-white/10">
+            {`Error: missing env var DATABASE_URL
+  at loadConfig (config.ts:42)
+  at bootstrap (index.ts:11)`}
+          </pre>
+        }
+      />
+      <KiraAlert
         variant="info"
-        title="Quick Info"
-        description="Use AlertWithHeading for a simpler API."
+        title="3 items need review"
+        description="Some records were imported with warnings."
+        expandable
+        expandedContent={
+          <ul className="list-disc pl-4">
+            <li>Row 12 — missing email</li>
+            <li>Row 34 — duplicate ID</li>
+            <li>Row 58 — invalid date</li>
+          </ul>
+        }
       />
-      <AlertWithHeading
-        variant="success"
-        title="Saved Successfully"
-        description="Your changes have been saved."
-        closable
-      />
+    </div>
+  );
+}
 
-      <h4 className="text-sm font-medium pt-4">Custom Styled</h4>
+function CopyTimestampDemo() {
+  return (
+    <div className="space-y-4">
+      <KiraAlert
+        variant="warning"
+        title="API key rotated"
+        description="sk_live_51H8xY2eZvKq9mNp3wRtBcDf"
+        copyable
+        timestamp={new Date(Date.now() - 2 * 60 * 1000)}
+      />
+      <KiraAlert
+        variant="info"
+        icon={<IconBell className="text-info" />}
+        title="New sign-in detected"
+        description="Chrome on macOS · San Francisco, CA"
+        copyable
+        copyText="New sign-in: Chrome on macOS, San Francisco"
+        timestamp={new Date(Date.now() - 90 * 60 * 1000)}
+      />
+    </div>
+  );
+}
+
+function KiraDemo() {
+  const [show, setShow] = useState(true);
+  return (
+    <div className="space-y-4">
+      {show ? (
+        <KiraAlert
+          variant="success"
+          title="Payment successful"
+          description="Your payment of $49.99 has been processed."
+          timestamp={new Date()}
+          actions={[{ label: "View receipt", variant: "outline" }]}
+          copyable
+          dismissible
+          onClose={() => setShow(false)}
+        />
+      ) : (
+        <Button variant="outline" size="sm" onClick={() => setShow(true)}>
+          <IconRefresh className="w-4 h-4 mr-2" />
+          Restore
+        </Button>
+      )}
       <Alert className="border-2 border-dashed border-primary bg-primary/5">
         <IconRocket className="h-5 w-5 text-primary" />
         <div>
           <AlertTitle className="text-primary">Launch Ready!</AlertTitle>
           <AlertDescription>
-            Your application is ready for deployment.
+            Custom styling still works — compose freely.
           </AlertDescription>
         </div>
       </Alert>
-
       <Alert className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border-purple-500/20">
         <IconSparkles className="h-5 w-5 text-purple-500" />
         <div>
@@ -560,147 +480,6 @@ function CustomDemo() {
 }
 
 // =============================================================================
-// Toast Demo (keeping the original interactive demo)
-// =============================================================================
-
-type ToastConfig = {
-  id: string;
-  variant: "info" | "success" | "warning" | "destructive";
-  position:
-    | "top-left"
-    | "top-center"
-    | "top-right"
-    | "bottom-left"
-    | "bottom-center"
-    | "bottom-right";
-  title: string;
-  description: string;
-  duration?: number;
-  action?: { label: string; onClick: () => void };
-};
-
-function ToastDemo() {
-  const [activeToasts, setActiveToasts] = useState<ToastConfig[]>([]);
-
-  const showToast = (config: Omit<ToastConfig, "id">) => {
-    const id = `toast-${Date.now()}`;
-    setActiveToasts((prev) => [...prev, { ...config, id }]);
-  };
-
-  const removeToast = (id: string) => {
-    setActiveToasts((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  return (
-    <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Click buttons to show toast notifications. They auto-dismiss after a few
-        seconds.
-      </p>
-      <div className="flex flex-wrap gap-2">
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() =>
-            showToast({
-              variant: "success",
-              position: "bottom-right",
-              title: "Success!",
-              description: "Your action was completed successfully.",
-              duration: 4000,
-            })
-          }
-        >
-          Success Toast
-        </Button>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() =>
-            showToast({
-              variant: "info",
-              position: "top-right",
-              title: "Information",
-              description: "Here's some helpful information for you.",
-              duration: 4000,
-            })
-          }
-        >
-          Info Toast
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() =>
-            showToast({
-              variant: "warning",
-              position: "bottom-center",
-              title: "Warning",
-              description: "Please review this before proceeding.",
-              duration: 4000,
-            })
-          }
-        >
-          Warning Toast
-        </Button>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() =>
-            showToast({
-              variant: "destructive",
-              position: "top-center",
-              title: "Error",
-              description: "Something went wrong. Please try again.",
-              duration: 5000,
-            })
-          }
-        >
-          Error Toast
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() =>
-            showToast({
-              variant: "info",
-              position: "top-right",
-              title: "With Action",
-              description: "Click the action button before it dismisses.",
-              duration: 6000,
-              action: {
-                label: "Undo",
-                onClick: () => console.log("Undo clicked!"),
-              },
-            })
-          }
-        >
-          Toast with Action
-        </Button>
-      </div>
-
-      {activeToasts.map((toast) => (
-        <Alert
-          key={toast.id}
-          toast
-          toastProps={{
-            position: toast.position,
-            duration: toast.duration,
-            dismissable: true,
-            action: toast.action,
-          }}
-          variant={toast.variant}
-          onClose={() => removeToast(toast.id)}
-        >
-          <AlertTitle>{toast.title}</AlertTitle>
-          <AlertDescription>{toast.description}</AlertDescription>
-        </Alert>
-      ))}
-    </div>
-  );
-}
-
-// =============================================================================
 // API Reference Data
 // =============================================================================
 
@@ -710,7 +489,7 @@ const apiSections = [
     props: [
       {
         prop: "variant",
-        type: '"default" | "info" | "success" | "warning" | "destructive" | "outline-*"',
+        type: '"default" | "info" | "success" | "warning" | "destructive" | "*-soft" | "outline-*"',
         default: '"default"',
         description: "Visual style variant of the alert",
       },
@@ -719,6 +498,18 @@ const apiSections = [
         type: '"xs" | "sm" | "default" | "lg"',
         default: '"default"',
         description: "Size of the alert padding",
+      },
+      {
+        prop: "banner",
+        type: "boolean",
+        default: "false",
+        description: "Full-width, edge-to-edge (no rounding)",
+      },
+      {
+        prop: "leftAccent",
+        type: "boolean",
+        default: "false",
+        description: "Add a colored left accent border",
       },
       {
         prop: "closable",
@@ -733,98 +524,74 @@ const apiSections = [
         description: "Show the variant-specific icon",
       },
       {
-        prop: "holdToClose",
-        type: "boolean",
-        default: "false",
-        description: "Enable hold-to-dismiss with progress indicator",
-      },
-      {
-        prop: "holdDuration",
-        type: "number",
-        default: "1500",
-        description: "Duration in ms to hold before dismissing",
-      },
-      {
         prop: "onClose",
         type: "() => void",
         default: "-",
         description: "Callback when alert is dismissed",
       },
+    ],
+  },
+  {
+    title: "KiraAlert",
+    props: [
       {
-        prop: "toast",
-        type: "boolean",
-        default: "false",
-        description: "Render as a toast notification",
+        prop: "title / description",
+        type: "ReactNode",
+        default: "-",
+        description: "Alert heading and body",
       },
       {
-        prop: "toastProps",
-        type: "ToastProps",
+        prop: "icon",
+        type: "ReactNode",
         default: "-",
-        description:
-          "Configuration for toast behavior (position, duration, etc.)",
+        description: "Override the auto icon",
+      },
+      {
+        prop: "actions",
+        type: "{ label; onClick?; variant? }[]",
+        default: "-",
+        description: "Action button row under the body",
+      },
+      {
+        prop: "expandable / expandedContent",
+        type: "boolean / ReactNode",
+        default: "false",
+        description: "Collapsible extra content behind Show more / less",
+      },
+      {
+        prop: "copyable / copyText",
+        type: "boolean / string",
+        default: "false",
+        description: "Copy-to-clipboard affordance",
+      },
+      {
+        prop: "timestamp",
+        type: "Date",
+        default: "-",
+        description: "Self-updating relative time (e.g. '2m ago')",
+      },
+      {
+        prop: "dismissible",
+        type: "boolean",
+        default: "false",
+        description: "Show a close button",
       },
     ],
   },
   {
-    title: "AlertTitle",
+    title: "AlertTitle / AlertDescription",
     props: [
       {
         prop: "className",
         type: "string",
         default: "-",
-        description: "Additional CSS classes for the title",
+        description: "Additional CSS classes",
       },
       {
         prop: "children",
         type: "ReactNode",
         default: "-",
-        description: "Title content",
-      },
-    ],
-  },
-  {
-    title: "AlertDescription",
-    props: [
-      {
-        prop: "className",
-        type: "string",
-        default: "-",
-        description: "Additional CSS classes for the description",
-      },
-      {
-        prop: "children",
-        type: "ReactNode",
-        default: "-",
-        description: "Description content",
-      },
-    ],
-  },
-  {
-    title: "AlertWithHeading",
-    props: [
-      {
-        prop: "title",
-        type: "string",
-        default: "-",
-        description: "Alert title text",
-      },
-      {
-        prop: "description",
-        type: "string",
-        default: "-",
-        description: "Alert description text",
-      },
-      {
-        prop: "variant",
-        type: "AlertVariant",
-        default: '"default"',
-        description: "Visual style variant",
-      },
-      {
-        prop: "closable",
-        type: "boolean",
-        default: "false",
-        description: "Show close button",
+        description: "Content",
       },
     ],
   },
@@ -843,12 +610,12 @@ const features = [
   {
     title: "Semantic Variants",
     description:
-      "Info, success, warning, and destructive variants with appropriate colors and icons.",
+      "Filled, soft, outline, banner, and left-accent styles with matching icons.",
   },
   {
-    title: "Composable",
+    title: "KiraAlert",
     description:
-      "Build complex alerts with AlertTitle, AlertDescription, and custom content.",
+      "One prop-driven component: title, actions, expandable, copy, and timestamp.",
   },
 ];
 
@@ -876,7 +643,7 @@ const demoTabs = [
     demo: (
       <DemoWrapper
         title="Semantic Variants"
-        description="All available alert variants including filled and outline styles."
+        description="Filled and outline styles for every variant."
         code={variantsCode}
       >
         <VariantsDemo />
@@ -897,12 +664,25 @@ const demoTabs = [
     ),
   },
   {
+    value: "soft-banner",
+    label: "Soft & Banner",
+    demo: (
+      <DemoWrapper
+        title="Soft, Banner & Left Accent"
+        description="Softer palette, full-width banners, and accent borders."
+        code={softBannerCode}
+      >
+        <SoftBannerDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "dismissible",
     label: "Dismissible",
     demo: (
       <DemoWrapper
         title="Dismissible Alerts"
-        description="Closable alerts with X button and hold-to-dismiss functionality."
+        description="Closable alerts with an X button (respects reduced motion)."
         code={dismissibleCode}
       >
         <DismissibleDemo />
@@ -911,11 +691,11 @@ const demoTabs = [
   },
   {
     value: "actions",
-    label: "Actions",
+    label: "Action Row",
     demo: (
       <DemoWrapper
         title="Alerts with Actions"
-        description="Alerts with action buttons for user interaction."
+        description="KiraAlert renders a button row from an actions array."
         code={actionsCode}
       >
         <ActionsDemo />
@@ -923,70 +703,41 @@ const demoTabs = [
     ),
   },
   {
-    value: "custom",
-    label: "Custom",
+    value: "expandable",
+    label: "Expandable",
     demo: (
       <DemoWrapper
-        title="Custom Styled Alerts"
-        description="Size variants, convenience components, and custom styling."
-        code={customCode}
+        title="Expandable Alerts"
+        description="Progressive disclosure with Show more / less."
+        code={expandableCode}
       >
-        <CustomDemo />
+        <ExpandableDemo />
       </DemoWrapper>
     ),
   },
   {
-    value: "toast",
-    label: "Toast",
+    value: "copy-timestamp",
+    label: "Copy & Timestamp",
     demo: (
       <DemoWrapper
-        title="Toast Notifications"
-        description="Alert used as toast notifications with positioning and auto-dismiss."
-        code={`import { useState } from "react"
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
-
-export function ToastDemo() {
-  const [toasts, setToasts] = useState([])
-
-  const showToast = (config) => {
-    const id = Date.now()
-    setToasts(prev => [...prev, { ...config, id }])
-  }
-
-  return (
-    <div>
-      <Button onClick={() => showToast({
-        variant: "success",
-        position: "bottom-right",
-        title: "Success!",
-        description: "Action completed.",
-        duration: 4000,
-      })}>
-        Show Toast
-      </Button>
-
-      {toasts.map(toast => (
-        <Alert
-          key={toast.id}
-          toast
-          toastProps={{
-            position: toast.position,
-            duration: toast.duration,
-            dismissable: true,
-          }}
-          variant={toast.variant}
-          onClose={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
-        >
-          <AlertTitle>{toast.title}</AlertTitle>
-          <AlertDescription>{toast.description}</AlertDescription>
-        </Alert>
-      ))}
-    </div>
-  )
-}`}
+        title="Copy & Timestamp"
+        description="Copy-to-clipboard and a self-updating relative time."
+        code={copyCode}
       >
-        <ToastDemo />
+        <CopyTimestampDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraAlert",
+    demo: (
+      <DemoWrapper
+        title="KiraAlert"
+        description="Everything composed through one prop-driven component."
+        code={kiraCode}
+      >
+        <KiraDemo />
       </DemoWrapper>
     ),
   },
@@ -1001,8 +752,8 @@ export default function AlertPage() {
     <ComponentPage>
       <PageHeader
         title="Alert"
-        version="v1.0"
-        description="Displays a callout for user attention with semantic variants, dismissible options, and toast support."
+        version="v2.0"
+        description="Displays a callout for user attention with semantic variants, soft/banner styles, and a prop-driven KiraAlert. For transient notifications, use the toast() API."
       />
 
       <FeatureGrid features={features} />

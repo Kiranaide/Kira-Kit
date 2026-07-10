@@ -14,7 +14,9 @@ import {
   AnnouncementBarContent,
   AnnouncementBarAction,
   AnnouncementBarDismiss,
+  AnnouncementBarCountdown,
   AnnouncementStack,
+  KiraAnnouncementBar,
   useAnnouncementDismiss,
   useAnnouncementExpiry,
 } from "@/components/ui/announcement-bar"
@@ -744,13 +746,133 @@ function AccessibilityDemo() {
   )
 }
 
+// =============================================================================
+// Countdown
+// =============================================================================
+const countdownCode = `import { AnnouncementBar, AnnouncementBarIcon, AnnouncementBarContent, AnnouncementBarCountdown } from "@/components/ui/announcement-bar"
+
+const saleEnds = new Date(Date.now() + 2 * 60 * 60 * 1000) // 2h from now
+
+<AnnouncementBar variant="warning">
+  <AnnouncementBarIcon />
+  <AnnouncementBarContent>Flash sale — 30% off everything</AnnouncementBarContent>
+  <AnnouncementBarCountdown to={saleEnds} prefix="Ends in" />
+</AnnouncementBar>`
+
+function CountdownDemo() {
+  const saleEnds = React.useMemo(
+    () => new Date(Date.now() + 2 * 60 * 60 * 1000 + 12 * 1000),
+    []
+  )
+  return (
+    <AnnouncementBar variant="warning" position="top" className="relative">
+      <AnnouncementBarIcon icon={<IconClock className="h-5 w-5" />} />
+      <AnnouncementBarContent>Flash sale — 30% off everything</AnnouncementBarContent>
+      <AnnouncementBarCountdown to={saleEnds} prefix="Ends in" />
+    </AnnouncementBar>
+  )
+}
+
+// =============================================================================
+// Rotating messages
+// =============================================================================
+const rotatingCode = `import { KiraAnnouncementBar } from "@/components/ui/announcement-bar"
+
+<KiraAnnouncementBar
+  variant="info"
+  messages={[
+    "🚀 New: real-time collaboration is live",
+    "🎁 Refer a friend and get 1 month free",
+    "📊 Analytics dashboard just got faster",
+  ]}
+  rotateInterval={3000}
+/>`
+
+function RotatingDemo() {
+  return (
+    <KiraAnnouncementBar
+      variant="info"
+      position="top"
+      className="relative"
+      messages={[
+        "🚀 New: real-time collaboration is live",
+        "🎁 Refer a friend and get 1 month free",
+        "📊 Analytics dashboard just got faster",
+      ]}
+      rotateInterval={3000}
+    />
+  )
+}
+
+// =============================================================================
+// Consent / cookie
+// =============================================================================
+const consentCode = `import { KiraAnnouncementBar } from "@/components/ui/announcement-bar"
+
+<KiraAnnouncementBar
+  variant="default"
+  position="bottom"
+  consent
+  message="We use cookies to improve your experience."
+  onAccept={() => save("accepted")}
+  onReject={() => save("rejected")}
+/>`
+
+function ConsentDemo() {
+  const [choice, setChoice] = React.useState<string | null>(null)
+  return (
+    <div className="space-y-3">
+      <KiraAnnouncementBar
+        variant="default"
+        position="top"
+        className="relative"
+        consent
+        icon={<IconBell className="h-5 w-5" />}
+        message="We use cookies to improve your experience."
+        onAccept={() => setChoice("accepted")}
+        onReject={() => setChoice("rejected")}
+      />
+      {choice && (
+        <p className="text-sm text-muted-foreground">You chose: {choice}</p>
+      )}
+    </div>
+  )
+}
+
+// =============================================================================
+// KiraAnnouncementBar (prop-driven)
+// =============================================================================
+const kiraCode = `import { KiraAnnouncementBar } from "@/components/ui/announcement-bar"
+
+<KiraAnnouncementBar
+  variant="success"
+  icon={<IconRocket />}
+  message="Version 2.0 is here"
+  action={{ label: "See what's new", href: "#", variant: "button" }}
+  dismissible
+/>`
+
+function KiraDemo() {
+  return (
+    <KiraAnnouncementBar
+      variant="success"
+      position="top"
+      className="relative"
+      icon={<IconRocket className="h-5 w-5" />}
+      message="Version 2.0 is here"
+      action={{ label: "See what's new", href: "#", variant: "button" }}
+      dismissible
+    />
+  )
+}
+
 export default function AnnouncementBarPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Announcement Bar"
         description="Site-wide notification banner with accessibility, animations, and stacking support"
-        version="v1.0"
+        version="v2.0"
       />
 
       <FeatureGrid
@@ -785,6 +907,10 @@ export default function AnnouncementBarPage() {
           { value: "dismiss", label: "Dismiss", demo: <DemoWrapper title="Dismiss Persistence" description="Choose between localStorage (persistent) or sessionStorage (session only)" code={dismissCode}><DismissDemo /></DemoWrapper> },
           { value: "expiry", label: "Expiry", demo: <DemoWrapper title="Expiration Date" description="Auto-hide announcements after a specific date/time" code={expiryCode}><ExpiryDemo /></DemoWrapper> },
           { value: "action", label: "Action", demo: <DemoWrapper title="With Action CTA" description="Include a call-to-action link or button" code={actionCode}><ActionDemo /></DemoWrapper> },
+          { value: "countdown", label: "Countdown", demo: <DemoWrapper title="Live Countdown" description="Show time remaining until an event or sale ends" code={countdownCode}><CountdownDemo /></DemoWrapper> },
+          { value: "rotating", label: "Rotating", demo: <DemoWrapper title="Rotating Messages" description="Cycle through multiple messages with a fade (respects reduced motion)" code={rotatingCode}><RotatingDemo /></DemoWrapper> },
+          { value: "consent", label: "Consent", demo: <DemoWrapper title="Cookie / Consent" description="Accept or reject pattern with persistence" code={consentCode}><ConsentDemo /></DemoWrapper> },
+          { value: "kira", label: "KiraAnnouncementBar", demo: <DemoWrapper title="KiraAnnouncementBar" description="One prop-driven component: message + icon + action + dismiss" code={kiraCode}><KiraDemo /></DemoWrapper> },
           { value: "accessibility", label: "Accessibility", demo: <DemoWrapper title="Accessibility Features" description="WCAG 2.2 AA compliant with proper ARIA attributes" code={accessibilityCode}><AccessibilityDemo /></DemoWrapper> },
         ]}
       />
@@ -822,10 +948,16 @@ function Example() {
             props: [
               { prop: "variant", type: "'default' | 'info' | 'success' | 'warning' | 'destructive'", default: "'default'", description: "Visual style variant of the announcement bar" },
               { prop: "priority", type: "'low' | 'normal' | 'high' | 'critical'", default: "'normal'", description: "Affects visual weight and screen reader behavior. Critical uses role='alert'" },
-              { prop: "position", type: "'default' | 'floating'", default: "'default'", description: "Positioning of the announcement bar" },
+              { prop: "position", type: "'top' | 'bottom' | 'floating'", default: "'top'", description: "Positioning of the announcement bar" },
               { prop: "animation", type: "'slide' | 'fade' | 'scale' | 'none'", default: "'slide'", description: "Animation type on mount/dismiss. Respects prefers-reduced-motion" },
               { prop: "autoDismiss", type: "number", default: "undefined", description: "Auto-dismiss after specified milliseconds. Hover pauses countdown" },
               { prop: "showProgress", type: "boolean", default: "false", description: "Shows a progress bar for auto-dismiss countdown" },
+              { prop: "icon", type: "ReactNode", default: "undefined", description: "When set, auto-renders a leading icon (composed mode)" },
+              { prop: "marquee", type: "boolean", default: "false", description: "Scroll the content horizontally (respects reduced motion)" },
+              { prop: "dismissible", type: "boolean", default: "false", description: "When set, auto-renders a dismiss button (composed mode)" },
+              { prop: "expiresAt", type: "Date", default: "undefined", description: "Auto-hide the bar after this date/time" },
+              { prop: "persistMode", type: "'session' | 'persistent'", default: "'persistent'", description: "Storage backing for announcementId dismissal" },
+              { prop: "announcementId", type: "string", default: "undefined", description: "Persist dismissal across reloads under this key" },
               { prop: "onDismiss", type: "() => void", default: "undefined", description: "Callback fired when the announcement is dismissed" },
               { prop: "urgency", type: "'polite' | 'assertive'", default: "'polite'", description: "ARIA live region urgency for screen readers" },
             ],

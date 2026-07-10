@@ -1,12 +1,17 @@
 "use client";
 
+/* eslint-disable react-refresh/only-export-components */
+
 import * as React from "react";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
-import { IconX } from "@tabler/icons-react";
+import { IconX, IconTrendingUp, IconTrendingDown } from "@tabler/icons-react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
 import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const badgeVariants = cva(
   "gap-1.5 rounded-full border border-transparent font-medium transition-all inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-colors overflow-hidden group/badge",
@@ -53,12 +58,18 @@ const badgeVariants = cva(
         true: "opacity-50 cursor-not-allowed pointer-events-none",
         false: "",
       },
+
+      shimmer: {
+        true: "relative before:absolute before:inset-0 before:-translate-x-full before:animate-badge-shimmer before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent",
+        false: "",
+      },
     },
     defaultVariants: {
       variant: "default",
       size: "default",
       clickable: false,
       disabled: false,
+      shimmer: false,
     },
   }
 );
@@ -141,6 +152,15 @@ interface BadgeProps
   disabled?: boolean;
 
   closeLabel?: string;
+
+  /** Light sweep effect, e.g. to highlight a "New" badge. Respects reduced motion. */
+  shimmer?: boolean;
+
+  /** Directional trend arrow rendered before the content. */
+  trend?: "up" | "down";
+
+  /** Preset shorthand that sets sensible variant + label styling. */
+  preset?: "beta" | "new" | "version";
 }
 
 function Badge({
@@ -156,21 +176,46 @@ function Badge({
   loading = false,
   disabled = false,
   closeLabel = "Remove",
+  shimmer = false,
+  trend,
+  preset,
   render,
   children,
   ...props
 }: BadgeProps) {
   const [isVisible, setIsVisible] = React.useState(true);
   const [isClosing, setIsClosing] = React.useState(false);
+  const reducedMotion = useReducedMotion();
+
+  // Preset shorthands: resolve variant + default content when not overridden.
+  const presetVariant: NonNullable<BadgeProps["variant"]> | undefined =
+    preset === "beta"
+      ? "warning-soft"
+      : preset === "new"
+        ? "success-soft"
+        : preset === "version"
+          ? "secondary"
+          : undefined;
+  const resolvedVariant = presetVariant ?? variant;
+  const resolvedChildren =
+    children ??
+    (preset === "beta"
+      ? "Beta"
+      : preset === "new"
+        ? "New"
+        : undefined);
 
   const handleClose = React.useCallback(() => {
     if (loading || disabled) return;
     setIsClosing(true);
-    setTimeout(() => {
-      setIsVisible(false);
-      onClose?.();
-    }, 150);
-  }, [loading, disabled, onClose]);
+    setTimeout(
+      () => {
+        setIsVisible(false);
+        onClose?.();
+      },
+      reducedMotion ? 0 : 150
+    );
+  }, [loading, disabled, onClose, reducedMotion]);
 
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent) => {
@@ -194,12 +239,18 @@ function Badge({
               color: dotColor,
               size,
               pulse:
-                dotPulse === "continuous" || dotPulse === "once"
+                !reducedMotion &&
+                (dotPulse === "continuous" || dotPulse === "once")
                   ? dotPulse
                   : "none",
             })
           )}
         />
+      )}
+      {trend && (
+        <span className="shrink-0 flex items-center [&>svg]:w-[1em] [&>svg]:h-[1em]">
+          {trend === "up" ? <IconTrendingUp /> : <IconTrendingDown />}
+        </span>
       )}
       {icon && (
         <span className="shrink-0 flex items-center [&>svg]:w-[1em] [&>svg]:h-[1em]">
@@ -225,7 +276,9 @@ function Badge({
           )}
         </span>
       )}
-      <span className={cn(dismissible && !loading && "pr-1")}>{children}</span>
+      <span className={cn(dismissible && !loading && "pr-1")}>
+        {resolvedChildren}
+      </span>
       {dismissible && !loading && (
         <button
           type="button"
@@ -247,13 +300,15 @@ function Badge({
   return useRender({
     defaultTagName: isVisible ? "span" : "div",
     props: mergeProps<"span">(
+      { "data-slot": "badge" } as React.HTMLAttributes<HTMLSpanElement>,
       {
         className: cn(
           badgeVariants({
-            variant,
+            variant: resolvedVariant,
             size,
             clickable: props.onClick ? true : false,
             disabled,
+            shimmer: shimmer && !reducedMotion,
           }),
           iconPosition === "right" && "flex-row-reverse",
           isClosing && "opacity-0 scale-95 transition-all duration-150",
@@ -278,7 +333,7 @@ function Badge({
     render,
     state: {
       slot: "badge",
-      variant,
+      variant: resolvedVariant,
       size,
     },
   });
@@ -291,6 +346,27 @@ interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   label?: string;
 }
 
+// Maps the status vocabulary onto the shared Badge dot colors + soft variants,
+// so StatusBadge inherits Badge's sizing/spacing instead of re-declaring it.
+const STATUS_TO_DOT: Record<
+  StatusBadgeProps["status"],
+  NonNullable<Exclude<BadgeProps["dot"], boolean>>
+> = {
+  success: "success",
+  warning: "warning",
+  error: "destructive",
+  info: "info",
+  default: "muted",
+};
+
+const STATUS_LABELS: Record<StatusBadgeProps["status"], string> = {
+  success: "Success",
+  warning: "Warning",
+  error: "Error",
+  info: "Info",
+  default: "Unknown",
+};
+
 function StatusBadge({
   status,
   size = "default",
@@ -300,60 +376,21 @@ function StatusBadge({
   children,
   ...props
 }: StatusBadgeProps) {
-  const statusColors = {
-    success: "bg-success",
-    warning: "bg-warning",
-    error: "bg-destructive",
-    info: "bg-info",
-    default: "bg-muted-foreground",
-  };
-
-  const statusLabels = {
-    success: "Success",
-    warning: "Warning",
-    error: "Error",
-    info: "Info",
-    default: "Unknown",
-  };
-
-  const sizeClasses = {
-    sm: "h-5 px-2 text-xs gap-1.5",
-    default: "h-6 px-2.5 text-xs gap-2",
-    lg: "h-7 px-3 text-sm gap-2",
-  };
-
-  const dotSizes = {
-    sm: "h-1.5 w-1.5",
-    default: "h-2 w-2",
-    lg: "h-2.5 w-2.5",
-  };
-
-  const displayLabel = label || statusLabels[status];
+  const displayLabel = label || STATUS_LABELS[status];
 
   return (
-    <span
-      data-slot="status-badge"
-      role="status"
-      className={cn(
-        "inline-flex items-center rounded-full bg-muted text-muted-foreground font-medium",
-        sizeClasses[size],
-        className
-      )}
+    <Badge
+      variant="ghost"
+      size={size}
+      dot={STATUS_TO_DOT[status]}
+      dotPulse={pulse}
+      className={className}
+      {...({ "data-slot": "status-badge", role: "status" } as object)}
       {...props}
     >
-      <span
-        aria-hidden="true"
-        className={cn(
-          "rounded-full shrink-0",
-          statusColors[status],
-          dotSizes[size],
-          (pulse === "continuous" || pulse === "once") &&
-            "animate-ping opacity-75"
-        )}
-      />
-      <span>{displayLabel}</span>
+      {displayLabel}
       {children}
-    </span>
+    </Badge>
   );
 }
 
@@ -385,6 +422,8 @@ interface CountBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
   pulse?: boolean;
+  /** Animate the number rolling from its previous value. Respects reduced motion. */
+  animateCount?: boolean;
 }
 
 function CountBadge({
@@ -396,37 +435,47 @@ function CountBadge({
   icon,
   iconPosition = "left",
   pulse = false,
+  animateCount = false,
   className,
   ...props
 }: CountBadgeProps) {
+  const reducedMotion = useReducedMotion();
+  const showPulse = pulse && count > 0 && !reducedMotion;
   const displayCount = formatCount(count, format, max);
-  const showPulse = pulse && count > 0;
 
-  const sizeClasses = {
-    xs: "min-w-4 h-4 px-1 text-[10px] gap-0.5",
-    sm: "min-w-5 h-5 px-1.5 text-xs gap-1",
-    default: "min-w-6 h-6 px-2 text-xs gap-1",
-  };
-
-  const variantClasses = {
-    default: "bg-primary text-primary-foreground",
-    destructive: "bg-destructive text-destructive-foreground",
-    secondary: "bg-secondary text-secondary-foreground",
-  };
-
-  const iconSizes = {
-    xs: "w-2.5 h-2.5",
-    sm: "w-3 h-3",
-    default: "w-3.5 h-3.5",
-  };
+  // Number ticker: tween a displayed integer toward `count` on change.
+  const numberRef = React.useRef<HTMLSpanElement>(null);
+  const prevCount = React.useRef(count);
+  useGSAP(() => {
+    const el = numberRef.current;
+    if (!el || !animateCount || format !== "default") return;
+    const from = prevCount.current;
+    prevCount.current = count;
+    if (reducedMotion || from === count) {
+      el.textContent = displayCount;
+      return;
+    }
+    const obj = { val: from };
+    gsap.to(obj, {
+      val: count,
+      duration: 0.6,
+      ease: "power2.out",
+      onUpdate: () => {
+        const v = Math.round(obj.val);
+        el.textContent = v > max ? `${max}+` : String(v);
+      },
+    });
+  }, [count, animateCount, reducedMotion, format, displayCount, max]);
 
   return (
     <span
       data-slot="count-badge"
       className={cn(
-        "inline-flex items-center justify-center rounded-full font-medium tabular-nums",
-        sizeClasses[size],
-        variantClasses[variant],
+        badgeVariants({ variant, size }),
+        "justify-center tabular-nums px-2",
+        size === "xs" && "min-w-4",
+        size === "sm" && "min-w-5",
+        size === "default" && "min-w-6",
         iconPosition === "right" && "flex-row-reverse",
         showPulse && "animate-badge-pulse",
         className
@@ -434,11 +483,11 @@ function CountBadge({
       {...props}
     >
       {icon && (
-        <span className={cn("shrink-0 flex items-center", iconSizes[size])}>
+        <span className="shrink-0 flex items-center [&>svg]:w-[1em] [&>svg]:h-[1em]">
           {icon}
         </span>
       )}
-      <span>{displayCount}</span>
+      <span ref={numberRef}>{displayCount}</span>
     </span>
   );
 }
@@ -537,6 +586,227 @@ function BadgeGroup({
   );
 }
 
+// =============================================================================
+// TagInput — keyboard-removable tag collection
+// =============================================================================
+
+interface TagInputProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+  /** Current tags (controlled). */
+  value: string[];
+  /** Fired whenever the tag list changes (add or remove). */
+  onChange: (tags: string[]) => void;
+  variant?: TagBadgeProps["variant"];
+  size?: BadgeProps["size"];
+  placeholder?: string;
+  /** Disable adding via the inline input (removal-only). */
+  readOnlyInput?: boolean;
+  "aria-label"?: string;
+}
+
+function TagInput({
+  value,
+  onChange,
+  variant = "secondary",
+  size = "sm",
+  placeholder = "Add tag…",
+  readOnlyInput = false,
+  className,
+  "aria-label": ariaLabel = "Tags",
+  ...props
+}: TagInputProps) {
+  const [draft, setDraft] = React.useState("");
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const removeAt = (index: number) => {
+    onChange(value.filter((_, i) => i !== index));
+  };
+
+  const addDraft = () => {
+    const next = draft.trim();
+    if (!next || value.includes(next)) {
+      setDraft("");
+      return;
+    }
+    onChange([...value, next]);
+    setDraft("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addDraft();
+    } else if (e.key === "Backspace" && draft === "" && value.length > 0) {
+      e.preventDefault();
+      removeAt(value.length - 1);
+    }
+  };
+
+  return (
+    <div
+      data-slot="tag-input"
+      role="group"
+      aria-label={ariaLabel}
+      onClick={() => inputRef.current?.focus()}
+      className={cn(
+        "flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-background p-2 text-sm focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px] transition-colors",
+        className
+      )}
+      {...props}
+    >
+      {value.map((tag, i) => (
+        <TagBadge
+          key={`${tag}-${i}`}
+          variant={variant}
+          size={size}
+          removable
+          onRemove={() => removeAt(i)}
+          closeLabel={`Remove ${tag}`}
+        >
+          {tag}
+        </TagBadge>
+      ))}
+      {!readOnlyInput && (
+        <input
+          ref={inputRef}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={addDraft}
+          placeholder={value.length === 0 ? placeholder : ""}
+          className="flex-1 min-w-24 bg-transparent outline-none placeholder:text-muted-foreground"
+        />
+      )}
+    </div>
+  );
+}
+
+// =============================================================================
+// KiraBadge — one prop-driven entry point over every badge mode
+// =============================================================================
+
+interface KiraBadgeProps {
+  mode?: "badge" | "status" | "count" | "tag" | "dot";
+  // Shared
+  variant?: BadgeProps["variant"];
+  size?: BadgeProps["size"];
+  className?: string;
+  children?: React.ReactNode;
+  // badge / tag
+  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
+  trend?: "up" | "down";
+  shimmer?: boolean;
+  preset?: BadgeProps["preset"];
+  dismissible?: boolean;
+  onClose?: () => void;
+  // status
+  status?: StatusBadgeProps["status"];
+  label?: string;
+  pulse?: "none" | "continuous" | "once";
+  // count
+  count?: number;
+  max?: number;
+  format?: CountFormat;
+  animateCount?: boolean;
+  // dot
+  dot?: BadgeProps["dot"];
+  dotPulse?: BadgeProps["dotPulse"];
+}
+
+function KiraBadge({
+  mode = "badge",
+  variant,
+  size,
+  className,
+  children,
+  icon,
+  iconPosition,
+  trend,
+  shimmer,
+  preset,
+  dismissible,
+  onClose,
+  status = "default",
+  label,
+  pulse = "none",
+  count = 0,
+  max,
+  format,
+  animateCount,
+  dot,
+  dotPulse,
+}: KiraBadgeProps) {
+  if (mode === "status") {
+    return (
+      <StatusBadge
+        status={status}
+        size={size === "sm" || size === "lg" ? size : "default"}
+        pulse={pulse}
+        label={label}
+        className={className}
+      />
+    );
+  }
+
+  if (mode === "count") {
+    return (
+      <CountBadge
+        count={count}
+        max={max}
+        format={format}
+        size={size === "xs" || size === "sm" ? size : "default"}
+        variant={
+          variant === "destructive" || variant === "secondary"
+            ? variant
+            : "default"
+        }
+        icon={icon}
+        iconPosition={iconPosition}
+        pulse={pulse !== "none"}
+        animateCount={animateCount}
+        className={className}
+      />
+    );
+  }
+
+  if (mode === "tag") {
+    return (
+      <TagBadge
+        variant={variant as TagBadgeProps["variant"]}
+        size={size}
+        icon={icon}
+        iconPosition={iconPosition}
+        removable={dismissible}
+        onRemove={onClose}
+        className={className}
+      >
+        {children}
+      </TagBadge>
+    );
+  }
+
+  // "badge" and "dot" both render the base Badge; "dot" just forces a dot.
+  return (
+    <Badge
+      variant={variant}
+      size={size}
+      icon={icon}
+      iconPosition={iconPosition}
+      trend={trend}
+      shimmer={shimmer}
+      preset={preset}
+      dismissible={dismissible}
+      onClose={onClose}
+      dot={mode === "dot" ? (dot ?? true) : dot}
+      dotPulse={dotPulse}
+      className={className}
+    >
+      {children}
+    </Badge>
+  );
+}
+
 export {
   Badge,
   badgeVariants,
@@ -544,6 +814,8 @@ export {
   CountBadge,
   TagBadge,
   BadgeGroup,
+  TagInput,
+  KiraBadge,
   formatCount,
 };
 export type {
@@ -552,4 +824,6 @@ export type {
   CountBadgeProps,
   TagBadgeProps,
   BadgeGroupProps,
+  TagInputProps,
+  KiraBadgeProps,
 };

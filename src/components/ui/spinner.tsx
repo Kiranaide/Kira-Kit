@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { animate } from "animejs";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -39,23 +38,9 @@ export interface SpinnerProps
 
 const Spinner = React.forwardRef<SVGSVGElement, SpinnerProps>(
   ({ className, size, variant, label = "Loading", ...props }, ref) => {
-    const spinnerRef = React.useRef<SVGSVGElement>(null);
-
-    React.useEffect(() => {
-      const svgRef = ref ? (ref as React.RefObject<SVGSVGElement>) : spinnerRef;
-      if (svgRef?.current) {
-        animate(svgRef.current, {
-          rotate: "360deg",
-          duration: 1000,
-          easing: "linear",
-          loop: true,
-        });
-      }
-    }, [ref]);
-
     return (
       <svg
-        ref={ref || spinnerRef}
+        ref={ref}
         className={cn(spinnerVariants({ size, variant }), className)}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

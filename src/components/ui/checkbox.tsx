@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { animate } from "animejs";
+import gsap from "gsap";
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
@@ -152,33 +152,55 @@ function Checkbox({
   const handleChange = (newChecked: boolean | "indeterminate") => {
     if (disabled || readOnly || loading) return;
 
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     if (indicatorRef.current) {
-      if (newChecked === true || newChecked === "indeterminate") {
-        animate(indicatorRef.current, {
-          scale: [0, 1.1, 0.95, 1],
-          opacity: [0, 1],
-          rotate: ["-10deg", "0deg"],
-          duration: 200,
-          easing: "outElastic(1, 0.5)",
+      if (prefersReducedMotion) {
+        const isActive = newChecked === true || newChecked === "indeterminate";
+        gsap.set(indicatorRef.current, {
+          scale: isActive ? 1 : 0,
+          opacity: isActive ? 1 : 0,
+          rotate: 0,
         });
+      } else if (newChecked === true || newChecked === "indeterminate") {
+        gsap.fromTo(
+          indicatorRef.current,
+          { scale: 0, opacity: 0, rotate: -10 },
+          {
+            keyframes: {
+              scale: [0, 1.1, 0.95, 1],
+              opacity: [0, 1, 1, 1],
+              rotate: [-10, 0, 0, 0],
+            },
+            duration: 0.2,
+            ease: "elastic.out(1, 0.5)",
+          }
+        );
       } else {
-        animate(indicatorRef.current, {
-          scale: [1, 0.9, 0],
-          opacity: [1, 0],
-          rotate: ["0deg", "10deg"],
-          duration: 150,
-          ease: "easeOutQuad",
-        });
+        gsap.fromTo(
+          indicatorRef.current,
+          { scale: 1, opacity: 1, rotate: 0 },
+          {
+            keyframes: {
+              scale: [1, 0.9, 0],
+              opacity: [1, 1, 0],
+              rotate: [0, 10, 10],
+            },
+            duration: 0.15,
+            ease: "power1.out",
+          }
+        );
       }
     }
 
-    if (rippleRef.current) {
-      animate(rippleRef.current, {
-        scale: [0.5, 1.5],
-        opacity: [0.3, 0],
-        duration: 300,
-        easing: "easeOutQuad",
-      });
+    if (rippleRef.current && !prefersReducedMotion) {
+      gsap.fromTo(
+        rippleRef.current,
+        { scale: 0.5, opacity: 0.3 },
+        { scale: 1.5, opacity: 0, duration: 0.3, ease: "power1.out" }
+      );
     }
 
     setInternalChecked(newChecked);

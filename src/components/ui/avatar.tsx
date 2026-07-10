@@ -1,11 +1,36 @@
 "use client";
 
+/* eslint-disable react-refresh/only-export-components */
+
 import * as React from "react";
+import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar";
 import { cva, type VariantProps } from "class-variance-authority";
+import { IconPlus } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+type AvatarSize =
+  | "xs"
+  | "sm"
+  | "default"
+  | "lg"
+  | "xl"
+  | "2xl"
+  | "3xl"
+  | "4xl";
 
 const avatarVariants = cva(
-  "relative flex shrink-0 transition-all duration-200",
+  "relative inline-flex shrink-0 items-center justify-center overflow-hidden align-middle select-none",
   {
     variants: {
       size: {
@@ -18,15 +43,13 @@ const avatarVariants = cva(
         "3xl": "h-24 w-24 text-2xl",
         "4xl": "h-32 w-32 text-3xl",
       },
-
       shape: {
         circle: "rounded-full",
         square: "rounded-none",
         rounded: "rounded-lg",
       },
-
       interactive: {
-        true: "cursor-pointer hover:opacity-90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        true: "cursor-pointer transition-opacity hover:opacity-90 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         false: "",
       },
     },
@@ -37,19 +60,6 @@ const avatarVariants = cva(
     },
   }
 );
-
-const avatarContentVariants = cva("relative flex shrink-0 overflow-hidden", {
-  variants: {
-    shape: {
-      circle: "rounded-full",
-      square: "rounded-none",
-      rounded: "rounded-lg",
-    },
-  },
-  defaultVariants: {
-    shape: "circle",
-  },
-});
 
 const avatarRingVariants = cva("", {
   variants: {
@@ -63,17 +73,8 @@ const avatarRingVariants = cva("", {
       warning: "ring-2 ring-warning ring-offset-2 ring-offset-background",
       info: "ring-2 ring-info ring-offset-2 ring-offset-background",
     },
-
-    shape: {
-      circle: "rounded-full",
-      square: "rounded-none",
-      rounded: "rounded-lg",
-    },
   },
-  defaultVariants: {
-    ring: "default",
-    shape: "circle",
-  },
+  defaultVariants: { ring: "default" },
 });
 
 const statusVariants = cva(
@@ -87,7 +88,6 @@ const statusVariants = cva(
         away: "bg-warning",
         offline_gray: "bg-muted",
       },
-
       size: {
         xs: "h-2.5 w-2.5",
         sm: "h-3 w-3",
@@ -99,10 +99,10 @@ const statusVariants = cva(
         "4xl": "h-8 w-8",
       },
       position: {
-        "bottom-right": "-bottom-0.5 -right-0.5",
-        "bottom-left": "-bottom-0.5 -left-0.5",
-        "top-right": "-top-0.5 -right-0.5",
-        "top-left": "-top-0.5 -left-0.5",
+        "bottom-right": "bottom-0 right-0",
+        "bottom-left": "bottom-0 left-0",
+        "top-right": "top-0 right-0",
+        "top-left": "top-0 left-0",
       },
     },
     defaultVariants: {
@@ -113,7 +113,7 @@ const statusVariants = cva(
   }
 );
 
-const badgeVariants = cva(
+const avatarBadgeVariants = cva(
   "absolute rounded-full border-2 border-background flex items-center justify-center font-medium z-10",
   {
     variants: {
@@ -164,15 +164,30 @@ const gradientVariants = cva(
         pink: "from-pink-400/20 via-pink-400/10 to-pink-400/5",
       },
     },
-    defaultVariants: {
-      gradient: "default",
-    },
+    defaultVariants: { gradient: "default" },
   }
 );
 
+// Pixel sizes per token — used for numeric spacing math (fixes the old
+// AvatarStack bug that used a class name like "w-8" as a CSS length).
+const sizePx: Record<AvatarSize, number> = {
+  xs: 24,
+  sm: 32,
+  default: 40,
+  lg: 48,
+  xl: 64,
+  "2xl": 80,
+  "3xl": 96,
+  "4xl": 128,
+};
+
+// -----------------------------------------------------------------------------
+// Avatar (Base UI Root)
+// -----------------------------------------------------------------------------
+
 interface AvatarProps
   extends
-    React.HTMLAttributes<HTMLSpanElement>,
+    React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>,
     VariantProps<typeof avatarVariants> {
   ring?:
     | "default"
@@ -182,114 +197,130 @@ interface AvatarProps
     | "success"
     | "warning"
     | "info";
-
   status?: "online" | "offline" | "busy" | "away" | "offline_gray";
-
   statusPosition?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
-
+  /** Pulse the status dot (e.g. for "online"). Respects reduced motion. */
+  statusPulse?: boolean;
+  /**
+   * Corner badge, typically an `<AvatarBadge />`. Rendered next to (not
+   * inside) the avatar's image so it isn't clipped by its overflow-hidden
+   * shape — same reasoning as `status` above.
+   */
+  badge?: React.ReactNode;
+  onClick?: React.MouseEventHandler<HTMLSpanElement>;
   "aria-label"?: string;
 }
 
 function Avatar({
   className,
-  size,
+  size = "default",
   shape = "circle",
   ring,
   status,
-  statusPosition = "top-right",
+  statusPosition = "bottom-right",
+  statusPulse = false,
+  badge,
   children,
   onClick,
   "aria-label": ariaLabel,
   ...props
 }: AvatarProps) {
   const isInteractive = Boolean(onClick);
+  const reducedMotion = useReducedMotion();
 
   return (
-    <span
-      data-slot="avatar"
-      role={ariaLabel ? "img" : undefined}
-      aria-label={ariaLabel}
-      tabIndex={isInteractive ? 0 : undefined}
-      onClick={onClick}
-      onKeyDown={
-        isInteractive
-          ? (e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                e.currentTarget.click();
+    // The status dot must live outside the image-clipping box: `Avatar`'s
+    // own `overflow-hidden` (needed to crop the image/fallback to its
+    // shape) would otherwise clip a corner-positioned dot that sits right
+    // at the circle's edge, cutting most of it off. This wrapper is an
+    // unstyled, size-less positioning context (it shrinks to fit its one
+    // child) so the dot can be a sibling instead.
+    <span data-slot="avatar-wrapper" className="relative inline-flex shrink-0 align-middle">
+      <AvatarPrimitive.Root
+        data-slot="avatar"
+        role={ariaLabel ? "img" : undefined}
+        aria-label={ariaLabel}
+        tabIndex={isInteractive ? 0 : undefined}
+        onClick={onClick}
+        onKeyDown={
+          isInteractive
+            ? (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  (e.currentTarget as HTMLElement).click();
+                }
               }
-            }
-          : undefined
-      }
-      className={cn(
-        "relative inline-flex",
-        avatarVariants({ size, shape, interactive: isInteractive }),
-        className
-      )}
-      {...props}
-    >
-      <span
-        data-slot="avatar-content"
-        className={cn(avatarContentVariants({ shape }), "h-full w-full")}
+            : undefined
+        }
+        className={cn(
+          avatarVariants({ size, shape, interactive: isInteractive }),
+          ring && ring !== "default" && avatarRingVariants({ ring }),
+          className
+        )}
+        {...props}
       >
         {children}
-      </span>
-      {ring && ring !== "default" && (
-        <span
-          aria-hidden="true"
-          className={cn(
-            "absolute inset-0 pointer-events-none",
-            avatarRingVariants({ ring, shape })
-          )}
-        />
-      )}
+      </AvatarPrimitive.Root>
       {status && (
         <span
           aria-hidden="true"
           className={cn(
-            statusVariants({ status, size: size || "default" }),
-            statusPosition === "top-right" && "top-0 right-0",
-            statusPosition === "top-left" && "top-0 left-0",
-            statusPosition === "bottom-right" && "bottom-0 right-0",
-            statusPosition === "bottom-left" && "bottom-0 left-0"
+            statusVariants({ status, size: size ?? "default", position: statusPosition })
           )}
-        />
+        >
+          {statusPulse && status === "online" && !reducedMotion && (
+            <span className="absolute inset-0 rounded-full bg-success animate-ping" />
+          )}
+        </span>
       )}
+      {badge}
     </span>
   );
 }
 
-interface AvatarImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-  onLoad?: () => void;
+// -----------------------------------------------------------------------------
+// AvatarImage (Base UI Image, blur-up)
+// -----------------------------------------------------------------------------
+
+interface AvatarImageProps
+  extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image> {
+  onLoadingStatusChange?: (
+    status: "idle" | "loading" | "loaded" | "error"
+  ) => void;
 }
 
 function AvatarImage({
   className,
-  src,
-  alt = "",
-  onLoad,
+  onLoadingStatusChange,
   ...props
 }: AvatarImageProps) {
-  const [hasError, setHasError] = React.useState(false);
-
-  if (hasError || !src) {
-    return null;
-  }
+  const [loaded, setLoaded] = React.useState(false);
+  const reducedMotion = useReducedMotion();
 
   return (
-    <img
+    <AvatarPrimitive.Image
       data-slot="avatar-image"
-      src={src}
-      alt={alt}
-      className={cn("aspect-square h-full w-full object-cover", className)}
-      onError={() => setHasError(true)}
-      onLoad={onLoad}
+      className={cn(
+        "aspect-square h-full w-full object-cover",
+        !reducedMotion && "transition-[filter,opacity] duration-500",
+        !loaded && "scale-105 blur-md",
+        className
+      )}
+      onLoadingStatusChange={(status) => {
+        if (status === "loaded") setLoaded(true);
+        onLoadingStatusChange?.(status);
+      }}
       {...props}
     />
   );
 }
 
-interface AvatarFallbackProps extends React.HTMLAttributes<HTMLSpanElement> {
+// -----------------------------------------------------------------------------
+// AvatarFallback (Base UI Fallback)
+// -----------------------------------------------------------------------------
+
+interface AvatarFallbackProps
+  extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback> {
   variant?: "default" | "gradient";
   gradient?: "default" | "blue" | "purple" | "green" | "orange" | "pink";
 }
@@ -301,38 +332,29 @@ function AvatarFallback({
   children,
   ...props
 }: AvatarFallbackProps) {
-  if (variant === "gradient") {
-    return (
-      <span
-        data-slot="avatar-fallback"
-        className={cn(
-          "flex h-full w-full items-center justify-center font-medium",
-          gradientVariants({ gradient }),
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </span>
-    );
-  }
-
   return (
-    <span
+    <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        "flex h-full w-full items-center justify-center bg-muted font-medium text-muted-foreground",
+        "flex h-full w-full items-center justify-center font-medium",
+        variant === "gradient"
+          ? gradientVariants({ gradient })
+          : "bg-muted text-muted-foreground",
         className
       )}
       {...props}
     >
       {children}
-    </span>
+    </AvatarPrimitive.Fallback>
   );
 }
 
-interface AvatarBadgeProps {
-  className?: string;
+// -----------------------------------------------------------------------------
+// AvatarBadge
+// -----------------------------------------------------------------------------
+
+interface AvatarBadgeProps
+  extends Omit<React.HTMLAttributes<HTMLSpanElement>, "content"> {
   variant?:
     | "default"
     | "secondary"
@@ -341,10 +363,9 @@ interface AvatarBadgeProps {
     | "warning"
     | "info"
     | "outline";
-  size?: "xs" | "sm" | "default" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
+  size?: AvatarSize;
   position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
   content?: React.ReactNode;
-  children?: React.ReactNode;
 }
 
 function AvatarBadge({
@@ -353,15 +374,43 @@ function AvatarBadge({
   size = "default",
   position = "top-right",
   content,
+  children,
   ...props
 }: AvatarBadgeProps) {
   return (
     <span
       data-slot="avatar-badge"
-      className={cn(badgeVariants({ variant, size, position }), className)}
+      className={cn(avatarBadgeVariants({ variant, size, position }), className)}
       {...props}
     >
-      {content}
+      {content ?? children}
+    </span>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// AvatarTyping — animated typing dots
+// -----------------------------------------------------------------------------
+
+function AvatarTyping({ className }: { className?: string }) {
+  const reducedMotion = useReducedMotion();
+  return (
+    <span
+      data-slot="avatar-typing"
+      role="status"
+      aria-label="typing"
+      className={cn("inline-flex items-center gap-0.5", className)}
+    >
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className={cn(
+            "h-1 w-1 rounded-full bg-muted-foreground",
+            !reducedMotion && "animate-badge-pulse"
+          )}
+          style={!reducedMotion ? { animationDelay: `${i * 0.15}s` } : undefined}
+        />
+      ))}
     </span>
   );
 }
@@ -374,94 +423,132 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-interface AutoAvatarProps extends Omit<AvatarProps, "children"> {
-  name: string;
-  src?: string;
-  children?: React.ReactNode;
-}
-
-function AutoAvatar({ name, src, ...props }: AutoAvatarProps) {
-  const [imageError, setImageError] = React.useState(false);
-  const initials = React.useMemo(() => getInitials(name), [name]);
-
-  return (
-    <Avatar {...props}>
-      {src && !imageError ? (
-        <AvatarImage src={src} alt={name} onError={() => setImageError(true)} />
-      ) : null}
-      {(!src || imageError) && <AvatarFallback>{initials}</AvatarFallback>}
-    </Avatar>
-  );
-}
+// -----------------------------------------------------------------------------
+// AvatarGroup — overlapped, tooltips, expandable overflow
+// -----------------------------------------------------------------------------
 
 interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   max?: number;
+  /** Overlap in px (negative overlaps). */
   overlap?: number;
-  size?: "xs" | "sm" | "default" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
+  size?: AvatarSize;
+  /** Show a per-avatar tooltip using each child's `data-name`. */
+  tooltips?: boolean;
+  /** Names for the overflow popover (index-aligned with hidden children). */
+  overflowNames?: string[];
+  /** Render an "add member" affordance at the end. */
+  onAddMember?: () => void;
 }
 
 function AvatarGroup({
   max = 3,
   overlap = -8,
   size = "default",
+  tooltips = false,
+  overflowNames,
+  onAddMember,
   className,
   children,
   ...props
 }: AvatarGroupProps) {
   const avatars = React.Children.toArray(children);
-  const visibleAvatars = avatars.slice(0, max);
-  const remainingCount = avatars.length - max;
+  const visible = avatars.slice(0, max);
+  const hidden = avatars.slice(max);
+  const remaining = hidden.length;
 
-  const sizeClasses = {
-    xs: "h-6 w-6 text-[10px]",
-    sm: "h-8 w-8 text-xs",
-    default: "h-10 w-10 text-sm",
-    lg: "h-12 w-12 text-base",
-    xl: "h-16 w-16 text-lg",
-    "2xl": "h-20 w-20 text-xl",
-    "3xl": "h-24 w-24 text-2xl",
-    "4xl": "h-32 w-32 text-3xl",
+  const overflowChipSize = cn(
+    "flex items-center justify-center bg-muted text-muted-foreground font-medium rounded-full ring-2 ring-background",
+    avatarVariants({ size })
+  );
+
+  const wrap = (node: React.ReactNode, index: number) => {
+    const name =
+      (React.isValidElement(node) &&
+        (node.props as { "data-name"?: string })["data-name"]) ||
+      undefined;
+    if (!tooltips || !name) return node;
+    return (
+      <Tooltip key={index}>
+        <TooltipTrigger render={<span>{node as React.ReactElement}</span>} />
+        <TooltipContent>{name}</TooltipContent>
+      </Tooltip>
+    );
   };
 
   return (
     <div
       data-slot="avatar-group"
       className={cn("flex items-center", className)}
-      style={{ marginLeft: `${Math.abs(overlap)}px` }}
       {...props}
     >
-      {visibleAvatars.map((avatar, index) => (
+      {visible.map((avatar, index) => (
         <div
           key={index}
           className="ring-2 ring-background rounded-full"
           style={{
             marginLeft: index === 0 ? 0 : `${overlap}px`,
-            zIndex: visibleAvatars.length - index,
+            zIndex: visible.length - index,
           }}
         >
-          {avatar}
+          {wrap(avatar, index)}
         </div>
       ))}
-      {remainingCount > 0 && (
-        <div
+
+      {remaining > 0 && (
+        <Popover>
+          <PopoverTrigger
+            render={
+              <button
+                type="button"
+                className={overflowChipSize}
+                style={{ marginLeft: `${overlap}px`, zIndex: 0 }}
+                aria-label={`Show ${remaining} more`}
+              >
+                +{remaining}
+              </button>
+            }
+          />
+          <PopoverContent className="w-auto max-w-xs">
+            <div className="flex flex-wrap gap-2">
+              {hidden.map((avatar, i) => (
+                <div key={i} className="flex flex-col items-center gap-1">
+                  {avatar}
+                  {overflowNames?.[i] && (
+                    <span className="text-[10px] text-muted-foreground">
+                      {overflowNames[i]}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </PopoverContent>
+        </Popover>
+      )}
+
+      {onAddMember && (
+        <button
+          type="button"
+          onClick={onAddMember}
+          aria-label="Add member"
           className={cn(
-            "ring-2 ring-background rounded-full flex items-center justify-center bg-muted text-muted-foreground font-medium",
-            sizeClasses[size]
+            overflowChipSize,
+            "border border-dashed border-border hover:bg-muted/80"
           )}
-          style={{
-            marginLeft: `${overlap}px`,
-            zIndex: 0,
-          }}
+          style={{ marginLeft: `${overlap}px` }}
         >
-          +{remainingCount}
-        </div>
+          <IconPlus className="h-4 w-4" />
+        </button>
       )}
     </div>
   );
 }
 
+// -----------------------------------------------------------------------------
+// AvatarStack — horizontally scrollable overlap (fixed padding)
+// -----------------------------------------------------------------------------
+
 interface AvatarStackProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: "xs" | "sm" | "default" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
+  size?: AvatarSize;
   showCount?: boolean;
 }
 
@@ -475,17 +562,6 @@ function AvatarStack({
   const avatars = React.Children.toArray(children);
   const count = avatars.length;
 
-  const sizeClasses = {
-    xs: "h-6 w-6",
-    sm: "h-8 w-8",
-    default: "h-10 w-10",
-    lg: "h-12 w-12",
-    xl: "h-16 w-16",
-    "2xl": "h-20 w-20",
-    "3xl": "h-24 w-24",
-    "4xl": "h-32 w-32",
-  };
-
   return (
     <div
       data-slot="avatar-stack"
@@ -493,11 +569,8 @@ function AvatarStack({
         "flex items-center overflow-x-auto scrollbar-hide",
         className
       )}
-      style={{
-        paddingLeft: `${
-          sizeClasses[size as keyof typeof sizeClasses].split(" ")[1]
-        }`,
-      }}
+      // Numeric left pad so the first (negatively-margined) avatar isn't clipped.
+      style={{ paddingLeft: `${Math.round(sizePx[size] / 3)}px` }}
       {...props}
     >
       {avatars.map((avatar, index) => (
@@ -509,11 +582,11 @@ function AvatarStack({
           {avatar}
         </div>
       ))}
-      {showCount && (
+      {showCount && count > 0 && (
         <div
           className={cn(
             "shrink-0 flex items-center justify-center bg-muted text-muted-foreground font-medium rounded-full -ml-3",
-            sizeClasses[size]
+            avatarVariants({ size })
           )}
           style={{ zIndex: 0 }}
         >
@@ -524,19 +597,84 @@ function AvatarStack({
   );
 }
 
+// -----------------------------------------------------------------------------
+// KiraAvatar — one prop-driven avatar (supersedes AutoAvatar)
+// -----------------------------------------------------------------------------
+
+interface KiraAvatarProps extends Omit<AvatarProps, "children"> {
+  name: string;
+  src?: string;
+  /** Fallback icon shown when there's no image and no initials. */
+  icon?: React.ReactNode;
+  /** Corner badge (e.g. a count). */
+  badge?: React.ReactNode;
+  badgePosition?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
+  /** Last-seen text shown in a tooltip on hover. */
+  lastSeen?: string;
+  gradient?: AvatarFallbackProps["gradient"];
+}
+
+function KiraAvatar({
+  name,
+  src,
+  icon,
+  badge,
+  badgePosition = "top-right",
+  lastSeen,
+  gradient,
+  size = "default",
+  ...avatarProps
+}: KiraAvatarProps) {
+  const initials = React.useMemo(() => getInitials(name), [name]);
+
+  const buildAvatar = () => (
+    <Avatar
+      size={size}
+      aria-label={name}
+      data-name={name}
+      badge={
+        badge && (
+          <AvatarBadge
+            size={size ?? "default"}
+            position={badgePosition}
+            content={badge}
+          />
+        )
+      }
+      {...avatarProps}
+    >
+      {src && <AvatarImage src={src} alt={name} />}
+      <AvatarFallback variant={gradient ? "gradient" : "default"} gradient={gradient}>
+        {icon ?? initials}
+      </AvatarFallback>
+    </Avatar>
+  );
+
+  if (lastSeen) {
+    return (
+      <Tooltip>
+        <TooltipTrigger render={<span>{buildAvatar()}</span>} />
+        <TooltipContent>Last seen {lastSeen}</TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return buildAvatar();
+}
+
 export {
   Avatar,
   AvatarImage,
   AvatarFallback,
   AvatarBadge,
+  AvatarTyping,
   AvatarGroup,
   AvatarStack,
-  AutoAvatar,
+  KiraAvatar,
   avatarVariants,
-  avatarContentVariants,
   avatarRingVariants,
   statusVariants,
-  badgeVariants,
+  avatarBadgeVariants,
   gradientVariants,
   getInitials,
 };
@@ -547,5 +685,6 @@ export type {
   AvatarBadgeProps,
   AvatarGroupProps,
   AvatarStackProps,
-  AutoAvatarProps,
+  KiraAvatarProps,
+  AvatarSize,
 };

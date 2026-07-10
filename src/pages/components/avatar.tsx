@@ -3,11 +3,12 @@ import {
   AvatarImage,
   AvatarFallback,
   AvatarBadge,
+  AvatarTyping,
   AvatarGroup,
   AvatarStack,
-  AutoAvatar,
+  KiraAvatar,
 } from "@/components/ui/avatar";
-import { IconAccessible, IconPalette, IconStack2 } from "@tabler/icons-react";
+import { IconAccessible, IconPalette, IconStack2, IconUser } from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -208,69 +209,148 @@ const ringsCode = `import { Avatar, AvatarFallback } from "@/components/ui/avata
 function BadgeDemo() {
   return (
     <div className="flex items-center gap-8">
-      <div className="relative">
-        <Avatar size="lg">
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-        <AvatarBadge content="5" size="sm" />
-      </div>
-      <div className="relative">
-        <Avatar size="lg">
-          <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
-          <AvatarFallback>VC</AvatarFallback>
-        </Avatar>
-        <AvatarBadge variant="success" content="✓" size="default" />
-      </div>
-      <div className="relative">
-        <Avatar size="lg">
-          <AvatarFallback>AB</AvatarFallback>
-        </Avatar>
-        <AvatarBadge variant="destructive" content="!" />
-      </div>
-      <div className="relative">
-        <Avatar size="lg">
-          <AvatarFallback>GM</AvatarFallback>
-        </Avatar>
-        <AvatarBadge variant="info" content="12" />
-      </div>
+      <Avatar size="lg" badge={<AvatarBadge content="5" size="sm" />}>
+        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+      <Avatar
+        size="lg"
+        badge={<AvatarBadge variant="success" content="✓" size="default" />}
+      >
+        <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
+        <AvatarFallback>VC</AvatarFallback>
+      </Avatar>
+      <Avatar
+        size="lg"
+        badge={<AvatarBadge variant="destructive" content="!" />}
+      >
+        <AvatarFallback>AB</AvatarFallback>
+      </Avatar>
+      <Avatar size="lg" badge={<AvatarBadge variant="info" content="12" />}>
+        <AvatarFallback>GM</AvatarFallback>
+      </Avatar>
     </div>
   );
 }
 
 const badgeCode = `import { Avatar, AvatarImage, AvatarFallback, AvatarBadge } from "@/components/ui/avatar"
 
-<div className="relative">
-  <Avatar size="lg">
-    <AvatarImage src="..." alt="..." />
-    <AvatarFallback>CN</AvatarFallback>
-  </Avatar>
-  <AvatarBadge content="5" size="sm" />
-</div>
+// Pass badge via the \`badge\` prop — it's rendered next to (not inside)
+// the avatar's image, so it isn't clipped by its overflow-hidden shape.
+<Avatar size="lg" badge={<AvatarBadge content="5" size="sm" />}>
+  <AvatarImage src="..." alt="..." />
+  <AvatarFallback>CN</AvatarFallback>
+</Avatar>
 
 // Variants
-<AvatarBadge variant="success" content="✓" />
-<AvatarBadge variant="destructive" content="!" />
-<AvatarBadge variant="info" content="12" />`;
+<Avatar badge={<AvatarBadge variant="success" content="✓" />}>...</Avatar>
+<Avatar badge={<AvatarBadge variant="destructive" content="!" />}>...</Avatar>
+<Avatar badge={<AvatarBadge variant="info" content="12" />}>...</Avatar>`;
 
-function AutoAvatarDemo() {
+function KiraAvatarDemo() {
   return (
     <div className="flex items-center gap-4">
-      <AutoAvatar name="John Doe" size="lg" />
-      <AutoAvatar name="Jane Smith" size="lg" />
-      <AutoAvatar name="Bob Johnson" size="lg" />
-      <AutoAvatar name="Alice" size="lg" />
-      <AutoAvatar name="Charlie Brown" size="lg" />
+      <KiraAvatar name="John Doe" size="lg" status="online" statusPulse />
+      <KiraAvatar
+        name="Jane Smith"
+        src="https://github.com/shadcn.png"
+        size="lg"
+        badge="3"
+      />
+      <KiraAvatar name="Bob Johnson" size="lg" gradient="purple" />
+      <KiraAvatar name="Alice" size="lg" lastSeen="2h ago" status="away" />
+      <KiraAvatar name="Team" size="lg" icon={<IconUser className="h-5 w-5" />} />
     </div>
   );
 }
 
-const autoAvatarCode = `import { AutoAvatar } from "@/components/ui/avatar"
+const kiraAvatarCode = `import { KiraAvatar } from "@/components/ui/avatar"
 
-// Automatically generates initials from name
-<AutoAvatar name="John Doe" size="lg" />
-<AutoAvatar name="Jane Smith" size="lg" />
-<AutoAvatar name="Alice" size="lg" />`;
+// Name → initials, plus status / badge / gradient / last-seen in one prop set
+<KiraAvatar name="John Doe" status="online" statusPulse />
+<KiraAvatar name="Jane Smith" src="https://…" badge="3" />
+<KiraAvatar name="Bob Johnson" gradient="purple" />
+<KiraAvatar name="Alice" lastSeen="2h ago" status="away" />`;
+
+function LoadingDemo() {
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Image → initials → icon fallback chain. Broken URLs fall back
+        automatically; images blur-up as they decode.
+      </p>
+      <div className="flex items-center gap-4">
+        <Avatar size="lg">
+          <AvatarImage src="https://github.com/shadcn.png" alt="Loaded" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+        <Avatar size="lg">
+          <AvatarImage src="https://broken.example/nope.png" alt="Broken" />
+          <AvatarFallback>JD</AvatarFallback>
+        </Avatar>
+        <Avatar size="lg">
+          <AvatarImage src="https://broken.example/nope.png" alt="Icon" />
+          <AvatarFallback>
+            <IconUser className="h-5 w-5" />
+          </AvatarFallback>
+        </Avatar>
+      </div>
+    </div>
+  );
+}
+
+const loadingCode = `import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+
+// Base UI drives real load/error state — fallback shows on error,
+// and AvatarImage blur-ups as it decodes.
+<Avatar>
+  <AvatarImage src="https://…" alt="User" />
+  <AvatarFallback>CN</AvatarFallback>   {/* initials */}
+</Avatar>
+<Avatar>
+  <AvatarImage src={brokenUrl} alt="User" />
+  <AvatarFallback><IconUser /></AvatarFallback>  {/* icon */}
+</Avatar>`;
+
+function PresenceDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">
+          Pulsing online ring
+        </p>
+        <div className="flex items-center gap-6">
+          <Avatar size="lg" status="online" statusPulse>
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+          <Avatar size="lg" status="online" statusPulse>
+            <AvatarFallback>ON</AvatarFallback>
+          </Avatar>
+        </div>
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground mb-3">Typing indicator</p>
+        <div className="flex items-center gap-3">
+          <Avatar size="default">
+            <AvatarFallback>JD</AvatarFallback>
+          </Avatar>
+          <AvatarTyping />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const presenceCode = `import { Avatar, AvatarFallback, AvatarTyping } from "@/components/ui/avatar"
+
+// Pulsing online ring (respects reduced motion)
+<Avatar status="online" statusPulse>
+  <AvatarFallback>ON</AvatarFallback>
+</Avatar>
+
+// Typing indicator
+<AvatarTyping />`;
 
 function GradientDemo() {
   return (
@@ -342,25 +422,38 @@ function GroupDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">
-          Large size with status
+          With tooltips + expandable overflow
         </p>
-        <AvatarGroup max={4} size="lg">
-          <Avatar size="lg" status="online">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <AvatarGroup max={3} tooltips overflowNames={["Dana", "Erin"]}>
+          <Avatar data-name="Cody">
+            <AvatarImage src="https://github.com/shadcn.png" alt="Cody" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <Avatar size="lg" status="online">
-            <AvatarImage src="https://github.com/vercel.png" alt="@vercel" />
+          <Avatar data-name="Vera">
+            <AvatarImage src="https://github.com/vercel.png" alt="Vera" />
             <AvatarFallback>VC</AvatarFallback>
           </Avatar>
-          <Avatar size="lg" status="busy">
+          <Avatar data-name="Abe">
             <AvatarFallback>AB</AvatarFallback>
           </Avatar>
-          <Avatar size="lg" status="away">
+          <Avatar data-name="Dana">
             <AvatarFallback>CD</AvatarFallback>
           </Avatar>
-          <Avatar size="lg" status="offline">
+          <Avatar data-name="Erin">
             <AvatarFallback>EF</AvatarFallback>
+          </Avatar>
+        </AvatarGroup>
+      </div>
+      <div>
+        <p className="text-sm text-muted-foreground mb-2">
+          With add-member affordance
+        </p>
+        <AvatarGroup max={3} onAddMember={() => {}}>
+          <Avatar>
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+          <Avatar>
+            <AvatarFallback>VC</AvatarFallback>
           </Avatar>
         </AvatarGroup>
       </div>
@@ -448,7 +541,7 @@ export default function AvatarPage() {
     {
       title: "Composable",
       description:
-        "AvatarGroup, AvatarStack, AutoAvatar, and gradient fallbacks.",
+        "AvatarGroup, AvatarStack, KiraAvatar, and gradient fallbacks.",
       icon: <IconStack2 className="w-4 h-4 text-primary" />,
     },
   ];
@@ -533,15 +626,28 @@ export default function AvatarPage() {
       ),
     },
     {
-      value: "auto",
-      label: "AutoAvatar",
+      value: "loading",
+      label: "Loading & Fallback",
       demo: (
         <DemoWrapper
-          title="Auto Avatar"
-          description="Automatically generates initials from name"
-          code={autoAvatarCode}
+          title="Loading & Fallback Chain"
+          description="Real load/error state with blur-up; image → initials → icon"
+          code={loadingCode}
         >
-          <AutoAvatarDemo />
+          <LoadingDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "presence",
+      label: "Presence & Typing",
+      demo: (
+        <DemoWrapper
+          title="Presence & Typing"
+          description="Pulsing online ring and a typing indicator (reduced-motion aware)"
+          code={presenceCode}
+        >
+          <PresenceDemo />
         </DemoWrapper>
       ),
     },
@@ -584,16 +690,29 @@ export default function AvatarPage() {
         </DemoWrapper>
       ),
     },
+    {
+      value: "kira",
+      label: "KiraAvatar",
+      demo: (
+        <DemoWrapper
+          title="KiraAvatar"
+          description="One prop-driven component: name + src + status + badge + gradient + last-seen"
+          code={kiraAvatarCode}
+        >
+          <KiraAvatarDemo />
+        </DemoWrapper>
+      ),
+    },
   ];
 
-  const usageCode = `import { 
-  Avatar, 
-  AvatarImage, 
-  AvatarFallback, 
-  AvatarBadge, 
-  AvatarGroup, 
-  AvatarStack, 
-  AutoAvatar 
+  const usageCode = `import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  AvatarBadge,
+  AvatarGroup,
+  AvatarStack,
+  KiraAvatar
 } from "@/components/ui/avatar"
 
 // Basic
@@ -608,31 +727,29 @@ export default function AvatarPage() {
 // Shapes: circle, rounded, square
 <Avatar shape="rounded">...</Avatar>
 
-// Status indicators
-<Avatar status="online">...</Avatar>
-<Avatar status="busy" statusPosition="bottom-right">...</Avatar>
+// Status indicators (statusPulse for a pulsing online ring)
+<Avatar status="online" statusPulse>...</Avatar>
 
 // Ring colors
 <Avatar ring="primary">...</Avatar>
 
-// Badge with notification count
-<div className="relative">
-  <Avatar><AvatarFallback>CN</AvatarFallback></Avatar>
-  <AvatarBadge content="5" />
-</div>
+// Badge with notification count — pass it via the \`badge\` prop so it's
+// rendered next to (not inside) the avatar, avoiding the overflow-hidden clip
+<Avatar badge={<AvatarBadge content="5" />}>
+  <AvatarFallback>CN</AvatarFallback>
+</Avatar>
 
-// Auto avatar with initials
-<AutoAvatar name="John Doe" size="lg" />
+// KiraAvatar — one prop-driven component
+<KiraAvatar name="John Doe" status="online" badge="3" lastSeen="2h ago" />
 
-// Avatar group
-<AvatarGroup max={3}>
-  <Avatar>...</Avatar>
-  <Avatar>...</Avatar>
+// Avatar group (tooltips + expandable overflow)
+<AvatarGroup max={3} tooltips>
+  <Avatar data-name="Cody">...</Avatar>
+  <Avatar data-name="Vera">...</Avatar>
 </AvatarGroup>
 
 // Avatar stack (scrollable)
 <AvatarStack>
-  <Avatar>...</Avatar>
   <Avatar>...</Avatar>
 </AvatarStack>`;
 
@@ -669,6 +786,13 @@ export default function AvatarPage() {
           type: '"primary" | "success" | "warning" | "destructive"',
           default: "-",
           description: "Ring color",
+        },
+        {
+          prop: "badge",
+          type: "ReactNode",
+          default: "-",
+          description:
+            "Corner badge, e.g. <AvatarBadge />. Rendered outside the clipped image so it isn't cut off.",
         },
       ],
     },
@@ -742,19 +866,43 @@ export default function AvatarPage() {
       ],
     },
     {
-      title: "AutoAvatar",
+      title: "KiraAvatar",
       props: [
         {
           prop: "name",
           type: "string",
           default: "-",
-          description: "Name to generate initials from",
+          description: "Generates initials and aria-label; enables tooltips",
+        },
+        {
+          prop: "src",
+          type: "string",
+          default: "-",
+          description: "Image URL (falls back to initials/icon)",
+        },
+        {
+          prop: "badge",
+          type: "ReactNode",
+          default: "-",
+          description: "Corner badge content",
+        },
+        {
+          prop: "lastSeen",
+          type: "string",
+          default: "-",
+          description: "Shows a last-seen tooltip on hover",
+        },
+        {
+          prop: "icon",
+          type: "ReactNode",
+          default: "-",
+          description: "Fallback icon when no image/initials",
         },
         {
           prop: "...props",
           type: "AvatarProps",
           default: "-",
-          description: "All Avatar props",
+          description: "size, shape, status, statusPulse, ring, gradient",
         },
       ],
     },

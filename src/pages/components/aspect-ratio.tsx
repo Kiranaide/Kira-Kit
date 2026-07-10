@@ -1,4 +1,10 @@
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { useState } from "react";
+import {
+  AspectRatio,
+  ResponsiveAspectRatio,
+  AspectRatioImage,
+  KiraAspectRatio,
+} from "@/components/ui/aspect-ratio";
 import {
   ComponentPage,
   PageHeader,
@@ -377,13 +383,153 @@ function WithVideoDemo() {
   );
 }
 
+// =============================================================================
+// Blur-up image loading
+// =============================================================================
+const blurUpCode = `import { AspectRatio, AspectRatioImage } from "@/components/ui/aspect-ratio"
+
+<AspectRatio ratio="16:9" className="rounded-lg">
+  <AspectRatioImage
+    src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=1200&q=80"
+    alt="Sunset landscape"
+  />
+</AspectRatio>`;
+
+function BlurUpDemo() {
+  const [key, setKey] = useState(0);
+  return (
+    <div className="space-y-3 max-w-md">
+      <AspectRatio ratio="16:9" className="rounded-lg bg-muted">
+        <AspectRatioImage
+          key={key}
+          src={`https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=1200&q=80&sig=${key}`}
+          alt="Sunset landscape"
+        />
+      </AspectRatio>
+      <button
+        onClick={() => setKey((k) => k + 1)}
+        className="text-sm text-primary underline underline-offset-4"
+      >
+        Reload image
+      </button>
+      <p className="text-xs text-muted-foreground">
+        The image fades and un-blurs once decoded. Snaps instantly under reduced motion.
+      </p>
+    </div>
+  );
+}
+
+// =============================================================================
+// Zoom on hover
+// =============================================================================
+const zoomCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
+
+<AspectRatio ratio="4:3" zoomOnHover className="rounded-lg">
+  <img src="..." alt="Product" />
+</AspectRatio>`;
+
+function ZoomDemo() {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 max-w-2xl">
+      <AspectRatio ratio="4:3" zoomOnHover className="rounded-lg">
+        <img
+          src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&q=80"
+          alt="Product"
+        />
+      </AspectRatio>
+      <AspectRatio ratio="4:3" zoomOnHover className="rounded-lg">
+        <img
+          src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
+          alt="Product"
+        />
+      </AspectRatio>
+    </div>
+  );
+}
+
+// =============================================================================
+// Responsive (breakpoint) ratios
+// =============================================================================
+const responsiveCode = `import { ResponsiveAspectRatio } from "@/components/ui/aspect-ratio"
+
+// Portrait on mobile, widescreen on desktop
+<ResponsiveAspectRatio base="1:1" md="4:3" lg="16:9" className="rounded-lg">
+  <img src="..." alt="Responsive" />
+</ResponsiveAspectRatio>`;
+
+function ResponsiveDemo() {
+  return (
+    <div className="space-y-3 max-w-2xl">
+      <ResponsiveAspectRatio
+        base="1:1"
+        md="4:3"
+        lg="16:9"
+        className="rounded-lg bg-muted"
+      >
+        <img
+          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80"
+          alt="Responsive landscape"
+        />
+      </ResponsiveAspectRatio>
+      <p className="text-xs text-muted-foreground">
+        Resize the window: 1:1 on mobile → 4:3 at md → 16:9 at lg. Static
+        Tailwind breakpoint classes (no broken CSS attr()).
+      </p>
+    </div>
+  );
+}
+
+// =============================================================================
+// KiraAspectRatio (prop-driven)
+// =============================================================================
+const kiraCode = `import { KiraAspectRatio } from "@/components/ui/aspect-ratio"
+
+// Image with blur-up
+<KiraAspectRatio type="image" ratio="16:9" src="..." alt="Photo" className="rounded-lg" />
+
+// Video embed
+<KiraAspectRatio type="embed" ratio="16:9" src="https://www.youtube.com/embed/…" alt="Video" />`;
+
+function KiraDemo() {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 max-w-3xl">
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">type=&quot;image&quot;</p>
+        <KiraAspectRatio
+          type="image"
+          ratio="16:9"
+          src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80"
+          alt="Forest"
+          zoomOnHover
+          className="rounded-lg bg-muted"
+        />
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">type=&quot;embed&quot;</p>
+        <KiraAspectRatio
+          type="embed"
+          ratio="16:9"
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+          alt="YouTube video"
+          className="rounded-lg"
+          embedProps={{
+            allow:
+              "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+            allowFullScreen: true,
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function AspectRatioPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Aspect Ratio"
         description="Maintains a consistent width-to-height ratio for responsive media."
-        version="1.0"
+        version="2.0"
       />
 
       <FeatureGrid
@@ -474,6 +620,58 @@ export default function AspectRatioPage() {
               </DemoWrapper>
             ),
           },
+          {
+            value: "blur-up",
+            label: "Blur-up Image",
+            demo: (
+              <DemoWrapper
+                title="Blur-up Image"
+                description="AspectRatioImage fades and un-blurs once the image decodes."
+                code={blurUpCode}
+              >
+                <BlurUpDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "zoom",
+            label: "Zoom on Hover",
+            demo: (
+              <DemoWrapper
+                title="Zoom on Hover"
+                description="Subtle scale on hover, disabled under reduced motion."
+                code={zoomCode}
+              >
+                <ZoomDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "responsive",
+            label: "Responsive",
+            demo: (
+              <DemoWrapper
+                title="Responsive Ratios"
+                description="Different ratios per breakpoint via ResponsiveAspectRatio."
+                code={responsiveCode}
+              >
+                <ResponsiveDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "kira",
+            label: "KiraAspectRatio",
+            demo: (
+              <DemoWrapper
+                title="KiraAspectRatio"
+                description="One prop-driven component for image, video, and embeds."
+                code={kiraCode}
+              >
+                <KiraDemo />
+              </DemoWrapper>
+            ),
+          },
         ]}
       />
 
@@ -542,6 +740,13 @@ export default function AspectRatioPage() {
                 default: "loading",
                 description: "Explicitly control the skeleton display state.",
               },
+              {
+                prop: "zoomOnHover",
+                type: "boolean",
+                default: "false",
+                description:
+                  "Scale the media up slightly on hover (respects reduced motion).",
+              },
             ],
           },
           {
@@ -584,6 +789,60 @@ export default function AspectRatioPage() {
                 default: "false",
                 description:
                   "Shows a skeleton loading state while content loads.",
+              },
+            ],
+          },
+          {
+            title: "AspectRatioImage",
+            props: [
+              {
+                prop: "src",
+                type: "string",
+                default: "-",
+                description: "Image source. Fades and un-blurs on load.",
+              },
+              {
+                prop: "placeholderSrc",
+                type: "string",
+                default: "-",
+                description:
+                  "Optional low-res image shown blurred until the full image loads.",
+              },
+              {
+                prop: "...props",
+                type: "img attributes",
+                default: "-",
+                description: "All standard <img> attributes (alt, srcSet, …).",
+              },
+            ],
+          },
+          {
+            title: "KiraAspectRatio",
+            props: [
+              {
+                prop: "type",
+                type: "'image' | 'video' | 'embed'",
+                default: "'image'",
+                description: "Which media element to render for `src`.",
+              },
+              {
+                prop: "src",
+                type: "string",
+                default: "-",
+                description: "Media source URL.",
+              },
+              {
+                prop: "ratio / fit / zoomOnHover",
+                type: "AspectRatio props",
+                default: "-",
+                description: "All AspectRatio props are forwarded.",
+              },
+              {
+                prop: "videoProps / embedProps",
+                type: "element attributes",
+                default: "-",
+                description:
+                  "Props forwarded to the underlying <video> or <iframe>.",
               },
             ],
           },

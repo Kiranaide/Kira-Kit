@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { IconAlertTriangle } from "@tabler/icons-react";
 
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
+  AlertDialogClose,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -13,8 +15,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
   AlertDialogWarning,
+  KiraAlertDialog,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import {
   ComponentPage,
   PageHeader,
@@ -26,7 +30,189 @@ import {
   APIReference,
 } from "@/components/docs";
 
+// =============================================================================
+// Interactive KiraAlertDialog demos
+// =============================================================================
+
+function TypeToConfirmDemo() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex justify-center py-8">
+      <Button variant="destructive" onClick={() => setOpen(true)}>
+        Delete project
+      </Button>
+      <KiraAlertDialog
+        open={open}
+        onOpenChange={setOpen}
+        variant="destructive"
+        title="Delete project"
+        description="This permanently deletes the project and all its data."
+        confirmText="DELETE"
+        confirmLabel="Delete project"
+        onConfirm={() => {
+          toast.success("Project deleted");
+          setOpen(false);
+        }}
+      />
+    </div>
+  );
+}
+
+function TimedConfirmDemo() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex justify-center py-8">
+      <Button variant="outline" onClick={() => setOpen(true)}>
+        Wipe cache
+      </Button>
+      <KiraAlertDialog
+        open={open}
+        onOpenChange={setOpen}
+        variant="warning"
+        title="Wipe cache?"
+        description="The confirm button unlocks after a short cooldown."
+        confirmDelay={3}
+        confirmLabel="Wipe now"
+        onConfirm={() => {
+          toast.success("Cache wiped");
+          setOpen(false);
+        }}
+      />
+    </div>
+  );
+}
+
+function AsyncConfirmDemo() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex justify-center py-8">
+      <Button variant="outline" onClick={() => setOpen(true)}>
+        Save changes
+      </Button>
+      <KiraAlertDialog
+        open={open}
+        onOpenChange={setOpen}
+        variant="info"
+        title="Save changes?"
+        description="Shows a spinner, then a checkmark before closing."
+        confirmLabel="Save"
+        shortcut="⌘↵"
+        onConfirmAsync={() =>
+          new Promise<void>((resolve) => setTimeout(resolve, 1200))
+        }
+      />
+    </div>
+  );
+}
+
+function ScrollableFullDemo() {
+  return (
+    <div className="flex justify-center py-8">
+      <AlertDialog>
+        <AlertDialogTrigger
+          render={<Button variant="outline">Open full-screen terms</Button>}
+        />
+        <AlertDialogContent size="full">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Terms of Service</AlertDialogTitle>
+            <AlertDialogDescription>
+              Scroll to review the full terms.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <p key={i}>
+                {i + 1}. Lorem ipsum dolor sit amet, consectetur adipiscing
+                elit. Sed do eiusmod tempor incididunt ut labore et dolore magna
+                aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+              </p>
+            ))}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Decline</AlertDialogCancel>
+            <AlertDialogAction>Accept</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
+function CloseButtonDemo() {
+  return (
+    <div className="flex justify-center py-8">
+      <AlertDialog>
+        <AlertDialogTrigger
+          render={<Button variant="outline">Open with close button</Button>}
+        />
+        <AlertDialogContent showCloseButton>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Standalone close</AlertDialogTitle>
+            <AlertDialogDescription>
+              The X in the corner is an AlertDialogClose. showCloseButton adds it
+              automatically.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Dismiss</AlertDialogCancel>
+          </AlertDialogFooter>
+          <AlertDialogClose />
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
 export default function AlertDialogPage() {
+  const typeConfirmCode = `import { KiraAlertDialog } from "@/components/ui/alert-dialog"
+
+const [open, setOpen] = useState(false)
+
+<KiraAlertDialog
+  open={open}
+  onOpenChange={setOpen}
+  variant="destructive"
+  title="Delete project"
+  description="This permanently deletes the project."
+  confirmText="DELETE"          // must be typed to enable confirm
+  confirmLabel="Delete project"
+  onConfirm={handleDelete}
+/>`;
+
+  const timedConfirmCode = `import { KiraAlertDialog } from "@/components/ui/alert-dialog"
+
+<KiraAlertDialog
+  variant="warning"
+  title="Wipe cache?"
+  confirmDelay={3}              // confirm unlocks after 3s
+  confirmLabel="Wipe now"
+  onConfirm={handleWipe}
+/>`;
+
+  const asyncConfirmCode = `import { KiraAlertDialog } from "@/components/ui/alert-dialog"
+
+<KiraAlertDialog
+  variant="info"
+  title="Save changes?"
+  confirmLabel="Save"
+  shortcut="⌘↵"                 // Cmd/Ctrl+Enter confirms
+  onConfirmAsync={async () => { await save() }}  // spinner → checkmark → close
+/>`;
+
+  const scrollableCode = `import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog"
+
+// size="full" scrolls the body between a fixed header and footer
+<AlertDialogContent size="full">
+  <AlertDialogHeader>…</AlertDialogHeader>
+  <div>{longContent}</div>
+  <AlertDialogFooter>…</AlertDialogFooter>
+</AlertDialogContent>`;
+
+  const closeCode = `import { AlertDialogContent, AlertDialogClose } from "@/components/ui/alert-dialog"
+
+// Either pass showCloseButton, or drop an <AlertDialogClose /> in yourself
+<AlertDialogContent showCloseButton>…</AlertDialogContent>`;
+
   const basicCode = `import {
   AlertDialog,
   AlertDialogTrigger,
@@ -153,7 +339,7 @@ export function CustomAlertDialog() {
       <PageHeader
         title="Alert Dialog"
         description="Modal dialog for important confirmations that require user action."
-        version="v1.0"
+        version="v2.0"
       />
 
       <FeatureGrid
@@ -298,6 +484,71 @@ export function CustomAlertDialog() {
               </DemoWrapper>
             ),
           },
+          {
+            value: "type-to-confirm",
+            label: "Type to Confirm",
+            demo: (
+              <DemoWrapper
+                title="Type-to-Confirm"
+                description="Require typing an exact word before the destructive action unlocks."
+                code={typeConfirmCode}
+              >
+                <TypeToConfirmDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "timed",
+            label: "Timed Confirm",
+            demo: (
+              <DemoWrapper
+                title="Timed Confirm"
+                description="Confirm button stays disabled for a short cooldown."
+                code={timedConfirmCode}
+              >
+                <TimedConfirmDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "async",
+            label: "Async Confirm",
+            demo: (
+              <DemoWrapper
+                title="Async Confirm"
+                description="Awaits the handler, shows a checkmark, then closes. ⌘↵ confirms."
+                code={asyncConfirmCode}
+              >
+                <AsyncConfirmDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "scrollable",
+            label: "Scrollable Full",
+            demo: (
+              <DemoWrapper
+                title="Scrollable Full-Screen"
+                description="size='full' scrolls the body between a fixed header and footer."
+                code={scrollableCode}
+              >
+                <ScrollableFullDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "close",
+            label: "Close Button",
+            demo: (
+              <DemoWrapper
+                title="Close Button"
+                description="A standalone AlertDialogClose in the corner."
+                code={closeCode}
+              >
+                <CloseButtonDemo />
+              </DemoWrapper>
+            ),
+          },
         ]}
       />
 
@@ -322,7 +573,7 @@ export function CustomAlertDialog() {
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogAction,
-  AlertDialogWithIcon,
+  KiraAlertDialog,
   AlertDialogWarning,
   AlertDialogList,
   AlertDialogClose,
@@ -376,11 +627,12 @@ export function CustomAlertDialog() {
 />
 
 // Convenience component
-<AlertDialogWithIcon
+<KiraAlertDialog
   variant="destructive"
   title="Delete Item?"
   description="This cannot be undone."
   confirmLabel="Delete"
+  confirmText="DELETE"
   onConfirm={handleDelete}
 />`}
       />
@@ -439,8 +691,9 @@ export function CustomAlertDialog() {
               {
                 prop: "duration",
                 type: "number",
-                default: "100",
-                description: "Animation duration in milliseconds.",
+                default: "per-size",
+                description:
+                  "Entrance animation duration (ms). Overrides the size default.",
               },
             ],
           },
@@ -554,11 +807,11 @@ export function CustomAlertDialog() {
             ],
           },
           {
-            title: "AlertDialogWithIcon",
+            title: "KiraAlertDialog",
             props: [
               {
                 prop: "variant",
-                type: '"info" | "success" | "warning" | "danger" | "destructive"',
+                type: '"info" | "success" | "warning" | "destructive"',
                 default: '"info"',
                 description: "Variant that determines the icon and styling.",
               },
@@ -575,28 +828,37 @@ export function CustomAlertDialog() {
                 description: "Description text for the dialog.",
               },
               {
-                prop: "confirmLabel",
+                prop: "confirmText",
                 type: "string",
-                default: '"Confirm"',
-                description: "Text for the confirm button.",
+                default: "undefined",
+                description:
+                  "Require typing this exact string to enable confirm (renders an input).",
               },
               {
-                prop: "cancelLabel",
-                type: "string",
-                default: '"Cancel"',
-                description: "Text for the cancel button.",
+                prop: "confirmDelay",
+                type: "number",
+                default: "undefined",
+                description:
+                  "Disable confirm for N seconds with a live countdown.",
               },
               {
-                prop: "loading",
-                type: "boolean",
-                default: "false",
-                description: "Show loading state on the confirm button.",
+                prop: "onConfirmAsync",
+                type: "() => Promise<void>",
+                default: "undefined",
+                description:
+                  "Async confirm; shows a spinner then a checkmark before closing.",
               },
               {
                 prop: "onConfirm",
                 type: "() => void | Promise<void>",
                 default: "undefined",
                 description: "Callback when confirm button is clicked.",
+              },
+              {
+                prop: "confirmLabel / cancelLabel",
+                type: "string",
+                default: '"Confirm" / "Cancel"',
+                description: "Button labels.",
               },
               {
                 prop: "size",
@@ -608,7 +870,8 @@ export function CustomAlertDialog() {
                 prop: "shortcut",
                 type: "string",
                 default: "undefined",
-                description: "Keyboard shortcut for the confirm action.",
+                description:
+                  "Confirm shortcut hint; ⌘/Ctrl+Enter also triggers confirm.",
               },
             ],
           },

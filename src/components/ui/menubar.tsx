@@ -118,7 +118,7 @@ function MenubarPortal(props: MenubarPortalProps) {
   return <MenuPrimitive.Portal data-slot="menubar-portal" {...props} />;
 }
 
-const MenubarTrigger = React.forwardRef<HTMLDivElement, MenubarTriggerProps>(
+const MenubarTrigger = React.forwardRef<HTMLButtonElement, MenubarTriggerProps>(
   function MenubarTrigger({ className, children, ...props }, ref) {
     return (
       <MenuPrimitive.Trigger

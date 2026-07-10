@@ -3,7 +3,6 @@
 import * as React from "react";
 import {
   useMemo,
-  useEffect,
   useRef,
   useId,
   createContext,
@@ -12,7 +11,8 @@ import {
 import { cva, type VariantProps } from "class-variance-authority";
 import type { AnyFieldApi } from "@tanstack/react-form";
 import { z, type ZodType } from "zod";
-import { animate } from "animejs";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
@@ -393,14 +393,21 @@ function FieldValidationIcon({
 }: FieldValidationIconProps) {
   const iconRef = useRef<HTMLSpanElement>(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     if (iconRef.current && state !== "validating") {
-      animate(iconRef.current, {
-        scale: [0, 1.1, 1],
-        opacity: [0, 1],
-        duration: 300,
-        easing: "easeOutBack",
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.fromTo(
+          iconRef.current,
+          { scale: 0, opacity: 0 },
+          {
+            keyframes: { scale: [0, 1.1, 1], opacity: [0, 1, 1] },
+            duration: 0.3,
+            ease: "back.out(1.7)",
+          }
+        );
       });
+      return () => mm.revert();
     }
   }, [state]);
 
@@ -647,14 +654,17 @@ function FieldError({
     );
   }, [children, metaErrors, showErrors]);
 
-  useEffect(() => {
+  useGSAP(() => {
     if (errorRef.current && content) {
-      animate(errorRef.current, {
-        opacity: [0, 1],
-        translateY: [-4, 0],
-        duration: 200,
-        easing: "easeOutQuad",
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        gsap.fromTo(
+          errorRef.current,
+          { opacity: 0, y: -4 },
+          { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }
+        );
       });
+      return () => mm.revert();
     }
   }, [content]);
 

@@ -10,6 +10,7 @@ import {
   IconRefresh,
   IconChevronsDown,
   IconChevronsUp,
+  IconSearch,
 } from "@tabler/icons-react";
 
 import {
@@ -34,6 +35,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 interface AccordionItemData {
   value: string;
@@ -54,6 +56,8 @@ interface AccordionItemData {
   error?: Error | null;
   onRetry?: () => void;
   children?: AccordionItemData[];
+  /** Explicit text used for search when `title` is not a plain string. */
+  searchText?: string;
 }
 
 interface KiraAccordionProps extends Omit<
@@ -72,24 +76,11 @@ interface KiraAccordionProps extends Omit<
   nested?: boolean;
   showExpandAll?: boolean;
   dragHandlePosition?: "start" | "end";
-}
-
-function useReducedMotion(): boolean {
-  const [reducedMotion, setReducedMotion] = React.useState(false);
-
-  React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mediaQuery.matches);
-
-    const handleChange = (event: MediaQueryListEvent) => {
-      setReducedMotion(event.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  return reducedMotion;
+  /** Render a filter input above the items. */
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  /** Persist open state (and reorder) to storage under this key. */
+  persistKey?: string;
 }
 
 function flattenItems(items: AccordionItemData[]): AccordionItemData[] {
@@ -103,6 +94,35 @@ function flattenItems(items: AccordionItemData[]): AccordionItemData[] {
   }
 
   return flat;
+}
+
+/** Text used to match an item during search. */
+function itemSearchText(item: AccordionItemData): string {
+  if (item.searchText) return item.searchText;
+  if (typeof item.title === "string") return item.title;
+  return "";
+}
+
+/** Recursively keep items (and ancestors) whose title/searchText match `query`. */
+function filterItems(
+  items: AccordionItemData[],
+  query: string,
+): AccordionItemData[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return items;
+  const result: AccordionItemData[] = [];
+  for (const item of items) {
+    const selfMatch = itemSearchText(item).toLowerCase().includes(q);
+    const filteredChildren = item.children
+      ? filterItems(item.children, query)
+      : undefined;
+    if (selfMatch || (filteredChildren && filteredChildren.length > 0)) {
+      result.push(
+        filteredChildren ? { ...item, children: filteredChildren } : item,
+      );
+    }
+  }
+  return result;
 }
 
 const accordionTriggerVariants = cva(
@@ -132,7 +152,7 @@ const accordionTriggerVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 const accordionContentVariants = cva("", {
@@ -160,7 +180,7 @@ const Accordion = React.forwardRef<
   AccordionProps
 >(function Accordion(
   { className, scrollIntoView = false, children, ...props },
-  forwardedRef
+  forwardedRef,
 ) {
   const reducedMotion = useReducedMotion();
 
@@ -173,7 +193,7 @@ const Accordion = React.forwardRef<
     if (scrollIntoView && value.length > 0) {
       const lastOpened = value[value.length - 1];
       const trigger = document.querySelector<HTMLElement>(
-        `[data-accordion-item-value="${lastOpened}"] [data-slot="accordion-trigger"]`
+        `[data-accordion-item-value="${lastOpened}"] [data-slot="accordion-trigger"]`,
       );
       trigger?.scrollIntoView({
         behavior: reducedMotion ? "auto" : "smooth",
@@ -227,7 +247,7 @@ function AccordionItem({
       className={cn(
         "border border-border rounded-lg overflow-hidden",
         disabled && "opacity-50 cursor-not-allowed",
-        className
+        className,
       )}
       onOpenChange={handleOpenChange}
       disabled={disabled}
@@ -251,6 +271,7 @@ type AccordionTriggerProps = Omit<
   error?: Error | null;
   onRetry?: () => void;
   dragHandle?: React.ReactNode;
+  dragHandlePosition?: "start" | "end";
 };
 
 function AccordionTrigger({
@@ -266,15 +287,20 @@ function AccordionTrigger({
   error = null,
   onRetry,
   dragHandle,
+  dragHandlePosition = "start",
   ...props
 }: AccordionTriggerProps) {
   const defaultChevron = <IconChevronDown className="h-4 w-4" />;
+  const reducedMotion = useReducedMotion();
 
   const chevronElement = chevronIcon || defaultChevron;
   const animatedChevron = (
     <span
       data-accordion-chevron
-      className="inline-block shrink-0 transition-transform duration-300 ease-out in-data-panel-open:rotate-180"
+      className={cn(
+        "inline-block shrink-0 in-data-panel-open:rotate-180",
+        !reducedMotion && "transition-transform duration-300 ease-out",
+      )}
     >
       {chevronElement}
     </span>
@@ -288,7 +314,7 @@ function AccordionTrigger({
         {...props}
       >
         <span className="flex items-center gap-2 flex-1 min-w-0">
-          {dragHandle && (
+          {dragHandle && dragHandlePosition === "start" && (
             <span
               className="shrink-0 cursor-grab active:cursor-grabbing touch-none"
               onClick={(e) => e.stopPropagation()}
@@ -314,6 +340,15 @@ function AccordionTrigger({
             </button>
           )}
           {chevronPosition === "end" && showArrow && animatedChevron}
+          {dragHandle && dragHandlePosition === "end" && (
+            <span
+              className="shrink-0 cursor-grab active:cursor-grabbing touch-none"
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              {dragHandle}
+            </span>
+          )}
         </span>
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
@@ -382,7 +417,7 @@ function AccordionContent({
   const skeletonWidths = React.useMemo(() => {
     const widths = ["75%", "85%", "60%", "90%", "70%"];
     return Array.from({ length: skeletonLines }).map(
-      (_, i) => widths[i % widths.length]
+      (_, i) => widths[i % widths.length],
     );
   }, [skeletonLines]);
 
@@ -399,6 +434,7 @@ function AccordionContent({
   );
 
   const shouldRenderChildren = !lazyMount || hasBeenOpened;
+  const reducedMotion = useReducedMotion();
 
   let renderContent: React.ReactNode = null;
   if (loading) {
@@ -431,9 +467,10 @@ function AccordionContent({
       data-slot="accordion-panel"
       keepMounted
       className={cn(
-        "overflow-hidden h-(--accordion-panel-height) transition-[height] ease-out data-ending-style:h-0 data-starting-style:h-0",
+        "overflow-hidden h-(--accordion-panel-height) data-ending-style:h-0 data-starting-style:h-0",
+        !reducedMotion && "transition-[height] ease-out",
         inset && "pl-8",
-        className
+        className,
       )}
       {...props}
     >
@@ -498,7 +535,10 @@ function SortableAccordionItem({
     <span
       {...attributes}
       {...listeners}
-      className="shrink-0 p-1 rounded hover:bg-muted cursor-grab active:cursor-grabbing touch-none"
+      // Negative margin cancels the padding's effect on layout/flow so the
+      // trigger keeps the same padding/height as a non-draggable item,
+      // while still giving the grip icon a comfortable hover/hit target.
+      className="shrink-0 -m-1 p-1 rounded hover:bg-muted cursor-grab active:cursor-grabbing touch-none"
       aria-label="Drag to reorder"
     >
       <IconGripVertical className="h-4 w-4 text-muted-foreground" />
@@ -525,7 +565,8 @@ function SortableAccordionItem({
           loading={item.loading}
           error={item.error}
           onRetry={item.onRetry}
-          dragHandle={dragHandlePosition === "start" ? dragHandle : undefined}
+          dragHandle={dragHandle}
+          dragHandlePosition={dragHandlePosition}
         >
           {item.title}
         </AccordionTrigger>
@@ -577,17 +618,65 @@ function KiraAccordion({
   nested = false,
   showExpandAll = false,
   dragHandlePosition = "start",
+  searchable = false,
+  searchPlaceholder = "Search…",
+  persistKey,
   className,
   ...props
 }: KiraAccordionProps) {
-  const [items, setItems] = React.useState(initialItems);
+  // When reorder is controlled (onReorder given), treat initialItems as the
+  // source of truth. Otherwise seed local state once and let drag mutate it —
+  // no effect that clobbers local reorder on every parent re-render.
+  const controlled = Boolean(onReorder);
+  const [localItems, setLocalItems] = React.useState(initialItems);
+  const items = controlled ? initialItems : localItems;
+  const setItems = React.useCallback(
+    (updater: React.SetStateAction<AccordionItemData[]>) => {
+      if (controlled) {
+        const next =
+          typeof updater === "function"
+            ? (updater as (p: AccordionItemData[]) => AccordionItemData[])(
+                initialItems,
+              )
+            : updater;
+        onReorder?.(next);
+      } else {
+        setLocalItems(updater);
+      }
+    },
+    [controlled, initialItems, onReorder],
+  );
+
+  const [query, setQuery] = React.useState("");
   const [activeId, setActiveId] = React.useState<string | null>(null);
-  const [openValues, setOpenValues] = React.useState<string[]>([]);
+  const [openValues, setOpenValues] = React.useState<string[]>(() => {
+    if (!persistKey || typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem(`accordion-open-${persistKey}`);
+      return stored ? (JSON.parse(stored) as string[]) : [];
+    } catch {
+      return [];
+    }
+  });
   const accordionRef = React.useRef<HTMLDivElement>(null);
 
+  // Persist open state when it changes.
   React.useEffect(() => {
-    setItems(initialItems);
-  }, [initialItems]);
+    if (!persistKey || typeof window === "undefined") return;
+    try {
+      localStorage.setItem(
+        `accordion-open-${persistKey}`,
+        JSON.stringify(openValues),
+      );
+    } catch {
+      // ignore storage failures (private mode / quota)
+    }
+  }, [persistKey, openValues]);
+
+  const visibleItems = React.useMemo(
+    () => (searchable ? filterItems(items, query) : items),
+    [searchable, items, query],
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -597,7 +686,7 @@ function KiraAccordion({
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragStart = React.useCallback((event: DragStartEvent) => {
@@ -613,10 +702,10 @@ function KiraAccordion({
         setItems((items) => {
           const flatItems = flattenItems(items);
           const oldIndex = flatItems.findIndex(
-            (item) => item.value === active.id
+            (item) => item.value === active.id,
           );
           const newIndex = flatItems.findIndex(
-            (item) => item.value === over.id
+            (item) => item.value === over.id,
           );
 
           if (oldIndex === -1 || newIndex === -1) return items;
@@ -628,7 +717,7 @@ function KiraAccordion({
         });
       }
     },
-    [onReorder]
+    [onReorder, setItems],
   );
 
   const handleExpandAll = React.useCallback(() => {
@@ -647,7 +736,7 @@ function KiraAccordion({
       className={className}
       value={openValues}
       onValueChange={(value, ...args) => {
-        setOpenValues(value);
+        setOpenValues(value as string[]);
         props.onValueChange?.(value, ...args);
       }}
       {...props}
@@ -660,11 +749,11 @@ function KiraAccordion({
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={items.map((item) => item.value)}
+            items={visibleItems.map((item) => item.value)}
             strategy={verticalListSortingStrategy}
           >
             <div className="space-y-1">
-              {items.map((item) => (
+              {visibleItems.map((item) => (
                 <SortableAccordionItem
                   key={item.value}
                   item={item}
@@ -691,7 +780,7 @@ function KiraAccordion({
               <div className="opacity-50">
                 {(() => {
                   const item = flattenItems(items).find(
-                    (i) => i.value === activeId
+                    (i) => i.value === activeId,
                   );
                   return item ? (
                     <AccordionItem value={item.value} disabled={item.disabled}>
@@ -713,7 +802,7 @@ function KiraAccordion({
           </DragOverlay>
         </DndContext>
       ) : (
-        items.map((item) =>
+        visibleItems.map((item) =>
           renderAccordionItem(
             item,
             variant,
@@ -722,8 +811,8 @@ function KiraAccordion({
             nested,
             onItemOpen,
             onItemClose,
-            asyncLoading
-          )
+            asyncLoading,
+          ),
         )
       )}
     </Accordion>
@@ -751,7 +840,26 @@ function KiraAccordion({
           </button>
         </div>
       )}
-      {accordionContent}
+      {searchable && (
+        <div className="relative">
+          <IconSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={searchPlaceholder}
+            aria-label="Search accordion items"
+            className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          />
+        </div>
+      )}
+      {searchable && visibleItems.length === 0 ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">
+          No matching items
+        </p>
+      ) : (
+        accordionContent
+      )}
     </div>
   );
 }
@@ -768,7 +876,7 @@ function renderAccordionItem(
   nested?: boolean,
   onItemOpen?: (item: AccordionItemData) => void | Promise<void>,
   onItemClose?: (item: AccordionItemData) => void,
-  asyncLoading?: boolean
+  asyncLoading?: boolean,
 ): React.ReactElement {
   const hasChildren = nested && item.children && item.children.length > 0;
 
@@ -827,8 +935,8 @@ function renderAccordionItem(
                 nested,
                 onItemOpen,
                 onItemClose,
-                asyncLoading
-              )
+                asyncLoading,
+              ),
             )}
           </div>
         )}
@@ -847,7 +955,6 @@ export {
   KiraAccordion,
   accordionTriggerVariants,
   accordionContentVariants,
-  useReducedMotion,
 };
 
 export type {

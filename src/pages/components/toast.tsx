@@ -267,7 +267,7 @@ export function ToastActionsDemo() {
 // Demo: Promise
 // =============================================================================
 function PromiseDemo() {
-  const [loadingId, setLoadingId] = useState<string | number | null>(null);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const simulateAsync = () =>
     new Promise<{ name: string }>((resolve, reject) => {
@@ -525,207 +525,51 @@ export function ToastDismissDemo() {
 }`;
 
 // =============================================================================
-// Demo: Custom
+// Demo: Stacking & Swipe
 // =============================================================================
-function CustomDemo() {
+function StackingDemo() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex flex-wrap gap-4">
         <Button
           variant="outline"
-          onClick={() =>
-            toast.custom((id) => (
-              <div className="flex items-center gap-3 bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/30 rounded-lg p-4 shadow-lg">
-                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                  <span className="text-xl">🎉</span>
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold">Congratulations!</p>
-                  <p className="text-sm text-muted-foreground">
-                    You've unlocked a new achievement.
-                  </p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => toast.dismiss(id)}
-                >
-                  Dismiss
-                </Button>
-              </div>
-            ))
-          }
+          onClick={() => {
+            toast.success("File uploaded");
+            toast.info("Processing…");
+            toast("Almost done");
+            toast.success("Complete");
+          }}
         >
-          Custom Toast
+          Show a burst of toasts
         </Button>
-
-        <Button
-          variant="outline"
-          onClick={() =>
-            toast.custom(() => (
-              <div className="flex items-center gap-2 bg-background border rounded-lg p-4 shadow-lg">
-                <span className="text-lg">📦</span>
-                <span>Your package is on its way!</span>
-              </div>
-            ))
-          }
-        >
-          JSX Content
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-const customCode = `import { toast } from "@/components/ui/toast"
-import { Button } from "@/components/ui/button"
-
-export function ToastCustomDemo() {
-  return (
-    <div className="flex flex-wrap gap-4">
-      {/* Fully custom toast */}
-      <Button
-        variant="outline"
-        onClick={() =>
-          toast.custom((id) => (
-            <div className="flex items-center gap-3 bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/30 rounded-lg p-4 shadow-lg">
-              <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                <span className="text-xl">🎉</span>
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold">Congratulations!</p>
-                <p className="text-sm text-muted-foreground">
-                  You've unlocked a new achievement.
-                </p>
-              </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => toast.dismiss(id)}
-              >
-                Dismiss
-              </Button>
-            </div>
-          ))
-        }
-      >
-        Custom Toast
-      </Button>
-
-      {/* Simple JSX content */}
-      <Button
-        variant="outline"
-        onClick={() =>
-          toast.custom(() => (
-            <div className="flex items-center gap-2 bg-background border rounded-lg p-4 shadow-lg">
-              <span className="text-lg">📦</span>
-              <span>Your package is on its way!</span>
-            </div>
-          ))
-        }
-      >
-        JSX Content
-      </Button>
-    </div>
-  )
-}`;
-
-// =============================================================================
-// Demo: Positions
-// =============================================================================
-function PositionsDemo() {
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-4">
-        <Button
-          variant="outline"
-          onClick={() => toast("Top Left", { position: "top-left" })}
-        >
-          Top Left
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => toast("Top Center", { position: "top-center" })}
-        >
-          Top Center
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => toast("Top Right", { position: "top-right" })}
-        >
-          Top Right
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => toast("Bottom Left", { position: "bottom-left" })}
-        >
-          Bottom Left
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => toast("Bottom Center", { position: "bottom-center" })}
-        >
-          Bottom Center
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => toast("Bottom Right", { position: "bottom-right" })}
-        >
-          Bottom Right
+        <Button variant="destructive" onClick={() => toast.dismiss()}>
+          Dismiss All
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">
-        Click each button to see the toast appear in different positions.
+        Toasts stack in the viewport (max 3 visible, older ones collapse). Hover
+        to expand the stack, and swipe right or down to dismiss an individual
+        toast.
       </p>
     </div>
   );
 }
 
-const positionsCode = `import { toast } from "@/components/ui/toast"
+const stackingCode = `import { toast } from "@/components/ui/toast"
 import { Button } from "@/components/ui/button"
 
-export function ToastPositionsDemo() {
-  return (
-    <div className="grid grid-cols-3 gap-4">
-      <Button
-        variant="outline"
-        onClick={() => toast("Top Left", { position: "top-left" })}
-      >
-        Top Left
-      </Button>
-      <Button
-        variant="outline"
-        onClick={() => toast("Top Center", { position: "top-center" })}
-      >
-        Top Center
-      </Button>
-      <Button
-        variant="outline"
-        onClick={() => toast("Top Right", { position: "top-right" })}
-      >
-        Top Right
-      </Button>
-      <Button
-        variant="outline"
-        onClick={() => toast("Bottom Left", { position: "bottom-left" })}
-      >
-        Bottom Left
-      </Button>
-      <Button
-        variant="outline"
-        onClick={() => toast("Bottom Center", { position: "bottom-center" })}
-      >
-        Bottom Center
-      </Button>
-      <Button
-        variant="outline"
-        onClick={() => toast("Bottom Right", { position: "bottom-right" })}
-      >
-        Bottom Right
-      </Button>
-    </div>
-  )
-}`;
+// Base UI stacks toasts in a single viewport (limit=3 by default).
+// Hover to expand; swipe right/down to dismiss.
+<Button
+  onClick={() => {
+    toast.success("File uploaded")
+    toast.info("Processing…")
+    toast("Almost done")
+    toast.success("Complete")
+  }}
+>
+  Show a burst of toasts
+</Button>`;
 
 // =============================================================================
 // Usage Code
@@ -767,15 +611,7 @@ toast.promise(saveData(), {
   loading: "Saving...",
   success: (data) => \`Saved \${data.name}\`,
   error: (err) => \`Error: \${err.message}\`
-})
-
-// Custom JSX
-toast.custom((id) => (
-  <div className="p-4 bg-primary text-primary-foreground rounded-lg">
-    Custom toast content
-    <button onClick={() => toast.dismiss(id)}>Close</button>
-  </div>
-))`;
+})`;
 
 // =============================================================================
 // API Reference Data
@@ -812,36 +648,14 @@ const apiSections = [
           "Duration in ms before auto-dismiss. Use Infinity for persistent",
       },
       {
-        prop: "position",
-        type: "Position",
-        default: '"bottom-right"',
-        description: "Screen position for the toast",
+        prop: "icon",
+        type: "ReactNode",
+        description: "Override the default variant icon",
       },
       {
         prop: "action",
         type: "{ label: string; onClick: () => void }",
         description: "Action button configuration",
-      },
-      {
-        prop: "id",
-        type: "string | number",
-        description: "Custom ID for programmatic control",
-      },
-      {
-        prop: "dismissible",
-        type: "boolean",
-        default: "true",
-        description: "Whether the toast can be dismissed by the user",
-      },
-      {
-        prop: "onDismiss",
-        type: "(toast: Toast) => void",
-        description: "Callback when toast is dismissed",
-      },
-      {
-        prop: "onAutoClose",
-        type: "(toast: Toast) => void",
-        description: "Callback when toast auto-closes",
       },
     ],
   },
@@ -880,53 +694,13 @@ const apiSections = [
       },
       {
         prop: "toast.promise()",
-        type: "(promise, { loading, success, error }) => id",
+        type: "(promise, { loading, success, error }) => Promise",
         description: "Show toast states based on promise resolution",
-      },
-      {
-        prop: "toast.custom()",
-        type: "(jsx | (id) => jsx) => id",
-        description: "Show a fully custom toast component",
       },
       {
         prop: "toast.dismiss()",
         type: "(id?) => void",
         description: "Dismiss a specific toast or all toasts if no ID",
-      },
-    ],
-  },
-  {
-    title: "Position",
-    props: [
-      {
-        prop: '"top-left"',
-        type: "string",
-        description: "Top left corner of the screen",
-      },
-      {
-        prop: '"top-center"',
-        type: "string",
-        description: "Top center of the screen",
-      },
-      {
-        prop: '"top-right"',
-        type: "string",
-        description: "Top right corner of the screen",
-      },
-      {
-        prop: '"bottom-left"',
-        type: "string",
-        description: "Bottom left corner of the screen",
-      },
-      {
-        prop: '"bottom-center"',
-        type: "string",
-        description: "Bottom center of the screen",
-      },
-      {
-        prop: '"bottom-right"',
-        type: "string",
-        description: "Bottom right corner of the screen (default)",
       },
     ],
   },
@@ -943,15 +717,15 @@ const features = [
     icon: <IconAccessible className="h-4 w-4" />,
   },
   {
-    title: "6 Positions",
+    title: "Stacking & Swipe",
     description:
-      "Display toasts in any corner or center position. Configurable per-toast or globally via Toaster component.",
+      "Base UI viewport stacks toasts (max 3), expands on hover, and supports swipe-to-dismiss.",
     icon: <IconLayoutGrid className="h-4 w-4" />,
   },
   {
     title: "Rich Actions",
     description:
-      "Support for action buttons, promise-based toasts, custom JSX content, and programmatic control via IDs.",
+      "Action buttons, promise-based toasts, and programmatic control via IDs.",
     icon: <IconClick className="h-4 w-4" />,
   },
 ];
@@ -1026,28 +800,15 @@ const demoTabs = [
     ),
   },
   {
-    value: "custom",
-    label: "Custom",
+    value: "stacking",
+    label: "Stacking & Swipe",
     demo: (
       <DemoWrapper
-        title="Custom JSX Toasts"
-        description="Create fully custom toast components with JSX content."
-        code={customCode}
+        title="Stacking & Swipe"
+        description="Toasts stack in a single viewport; hover to expand, swipe to dismiss."
+        code={stackingCode}
       >
-        <CustomDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "positions",
-    label: "Positions",
-    demo: (
-      <DemoWrapper
-        title="Toast Positions"
-        description="Display toasts in any of the 6 available screen positions."
-        code={positionsCode}
-      >
-        <PositionsDemo />
+        <StackingDemo />
       </DemoWrapper>
     ),
   },
@@ -1061,8 +822,8 @@ export default function ToastPage() {
     <ComponentPage>
       <PageHeader
         title="Toast"
-        version="v1.0"
-        description="A succinct message that is displayed temporarily. Built using Sonner with enhanced accessibility (WCAG 2.2 AA compliant)."
+        version="v2.0"
+        description="A succinct message displayed temporarily. Built on Base UI Toast with stacking, swipe-to-dismiss, and WCAG 2.2 AA accessibility."
       />
 
       <FeatureGrid features={features} />

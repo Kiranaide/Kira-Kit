@@ -31,7 +31,7 @@ import {
   Changelog,
 } from "@/components/docs"
 import { Card } from "@/components/ui/card"
-import { toast } from "sonner"
+import { toast } from "@/components/ui/toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 function BasicIconButtonDemo() {

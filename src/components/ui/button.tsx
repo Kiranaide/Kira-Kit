@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -11,7 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { IconCopy, IconCheck, IconSparkles } from "@tabler/icons-react";
 
 const buttonVariants = cva(
@@ -73,7 +74,7 @@ const buttonVariants = cva(
       size: "default",
       fullWidth: false,
     },
-  }
+  },
 );
 
 interface ButtonProps
@@ -89,14 +90,7 @@ interface ButtonProps
 }
 
 type ButtonSize =
-  | "xs"
-  | "sm"
-  | "default"
-  | "lg"
-  | "icon"
-  | "icon-xs"
-  | "icon-sm"
-  | "icon-lg";
+  "xs" | "sm" | "default" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg";
 
 const getButtonIconSize = (size: ButtonSize | null | undefined): string => {
   const sizes: Record<string, string> = {
@@ -131,7 +125,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       onPointerLeave,
       ...props
     },
-    ref
+    ref,
   ) => {
     const progressRef = React.useRef<HTMLDivElement>(null);
     const buttonRef = React.useRef<HTMLButtonElement>(null);
@@ -226,7 +220,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               onComplete: () => {
                 setRipples((prev) => prev.filter((r) => r.id !== id));
               },
-            }
+            },
           );
         }
       }, 0);
@@ -336,7 +330,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           buttonVariants({ variant, size, className }),
           "relative overflow-hidden",
-          disabled && "cursor-not-allowed"
+          disabled && "cursor-not-allowed",
         )}
         disabled={disabled}
         onPointerDown={handlePointerDown}
@@ -385,7 +379,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </ButtonPrimitive>
     );
-  }
+  },
 );
 Button.displayName = "Button";
 
@@ -420,7 +414,7 @@ const ExpandableIconButton = React.forwardRef<
     variant,
     ...props
   },
-  ref
+  ref,
 ) {
   const textRef = React.useRef<HTMLSpanElement>(null);
 
@@ -463,7 +457,7 @@ const ExpandableIconButton = React.forwardRef<
         "h-8 min-w-8 w-auto px-2 gap-0 [&>span]:gap-0",
         expandDirection === "left" && "flex-row-reverse",
         isHoldButton && "[&>span.relative.z-10.flex.items-center]:gap-0",
-        className
+        className,
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -473,7 +467,7 @@ const ExpandableIconButton = React.forwardRef<
       <span
         className={cn(
           "shrink-0 flex items-center justify-center size-4",
-          isHoldButton && "relative z-10"
+          isHoldButton && "relative z-10",
         )}
       >
         {icon}
@@ -482,7 +476,7 @@ const ExpandableIconButton = React.forwardRef<
         ref={textRef}
         className={cn(
           "overflow-hidden whitespace-nowrap text-sm",
-          isHoldButton && "relative z-10"
+          isHoldButton && "relative z-10",
         )}
         style={{ width: 0, opacity: 0 }}
         aria-hidden="true"
@@ -736,7 +730,7 @@ function CompoundButton({
       className={cn(
         "flex-col items-start h-auto gap-1",
         containerClass,
-        className
+        className,
       )}
       leftIcon={iconPosition === "left" ? icon : undefined}
       rightIcon={iconPosition === "right" ? icon : undefined}
@@ -1132,7 +1126,7 @@ function KiraButton({
     const buttonClasses = cn(
       className,
       quickAction && "flex-col items-center gap-1 h-auto py-3 px-4",
-      compound && "h-auto"
+      compound && "h-auto",
     );
 
     if (expandable && expandLabel) {

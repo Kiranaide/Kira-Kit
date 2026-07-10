@@ -11,7 +11,7 @@ import {
   ThemeToggle,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/sonner";
+import { KiraToastProvider } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   IconHome,
@@ -84,7 +84,7 @@ export function AppLayout() {
     <ThemeProvider>
       <TooltipProvider>
         <SidebarProvider>
-          <Toaster />
+          <KiraToastProvider />
           <div className="flex h-screen overflow-hidden">
             <header className="fixed top-0 left-0 right-0 z-40 flex items-center h-14 px-4 border-b border-border bg-background md:hidden">
               <SidebarTrigger />

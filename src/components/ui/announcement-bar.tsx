@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import {
   IconX,
@@ -12,6 +13,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const announcementBarVariants = cva(
   "relative flex w-full items-center justify-between gap-4 px-4 py-3 text-sm transition-all",
@@ -69,15 +71,11 @@ const announcementBarVariants = cva(
       position: "top",
       priority: "normal",
     },
-  }
+  },
 );
 
 type AnnouncementVariant =
-  | "default"
-  | "info"
-  | "success"
-  | "warning"
-  | "destructive";
+  "default" | "info" | "success" | "warning" | "destructive";
 type AnnouncementPosition = "top" | "bottom" | "floating";
 type AnnouncementPriority = "low" | "normal" | "high" | "critical";
 type AnnouncementUrgency = "polite" | "assertive";
@@ -89,27 +87,16 @@ interface AnnouncementBarProps
     React.ComponentPropsWithoutRef<"div">,
     VariantProps<typeof announcementBarVariants> {
   priority?: AnnouncementPriority;
-
   urgency?: AnnouncementUrgency;
-
   autoDismiss?: number;
-
   showProgress?: boolean;
-
   marquee?: boolean;
-
   icon?: React.ReactNode;
-
   dismissible?: boolean;
-
   persistMode?: PersistMode;
-
   expiresAt?: Date;
-
   onDismiss?: () => void;
-
   animation?: AnimationType;
-
   announcementId?: string;
 }
 
@@ -117,7 +104,10 @@ interface AnnouncementBarContentProps extends React.ComponentPropsWithoutRef<"di
   marquee?: boolean;
 }
 
-type AnnouncementBarActionProps = React.ComponentPropsWithoutRef<"a">;
+interface AnnouncementBarActionProps extends React.ComponentPropsWithoutRef<"a"> {
+  /** Visual treatment: an underlined link (default), or a solid/outline button. */
+  variant?: "link" | "button" | "outline";
+}
 
 interface AnnouncementBarDismissProps extends React.ComponentPropsWithoutRef<"button"> {
   label?: string;
@@ -155,24 +145,6 @@ function useAnnouncementBar() {
   return context;
 }
 
-function useReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
-
-  React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  return prefersReducedMotion;
-}
-
 const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
   (
     {
@@ -183,25 +155,39 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
       urgency = "polite",
       autoDismiss,
       showProgress = false,
+      marquee = false,
+      icon,
+      dismissible = false,
+      persistMode = "persistent",
+      expiresAt,
+      announcementId,
       onDismiss,
       animation = "slide",
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [isVisible, setIsVisible] = React.useState(true);
     const [progress, setProgress] = React.useState(100);
     const [isPaused, setIsPaused] = React.useState(false);
     const reducedMotion = useReducedMotion();
-    const timerRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+    const timerRef = React.useRef<number | null>(null);
     const startTimeRef = React.useRef<number>(0);
     const remainingTimeRef = React.useRef<number>(autoDismiss || 0);
     const barRef = React.useRef<HTMLDivElement>(null);
 
+    // Persisted dismissal (keyed by announcementId) and time-based expiry.
+    const [isDismissedStored, dismissStored] = useAnnouncementDismiss(
+      announcementId ?? "",
+      persistMode,
+    );
+    const isExpired = useAnnouncementExpiry(expiresAt);
+
     React.useImperativeHandle(ref, () => barRef.current!);
 
     const handleDismiss = React.useCallback(() => {
+      if (announcementId) dismissStored();
       if (!barRef.current || reducedMotion || animation === "none") {
         setIsVisible(false);
         onDismiss?.();
@@ -230,7 +216,14 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
           onDismiss?.();
         },
       });
-    }, [reducedMotion, animation, position, onDismiss]);
+    }, [
+      reducedMotion,
+      animation,
+      position,
+      onDismiss,
+      announcementId,
+      dismissStored,
+    ]);
 
     useGSAP(
       () => {
@@ -257,24 +250,35 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
           ease: "power2.out",
         });
       },
-      { scope: barRef, dependencies: [reducedMotion, animation, position] }
+      { scope: barRef, dependencies: [reducedMotion, animation, position] },
     );
 
     React.useEffect(() => {
       if (!autoDismiss || !isVisible) return;
 
+      // Drive the countdown from requestAnimationFrame instead of a 50ms
+      // setInterval. A fixed-interval JS timer whose value feeds into a
+      // CSS `transition` (see AnnouncementBarProgress) fights the
+      // transition on every tick — each update restarts a new transition
+      // from a still-interpolating position, which reads as laggy/stepped
+      // motion. rAF updates every frame, so the bar can be driven directly
+      // without a competing CSS transition, for a smooth 60fps countdown.
       const startTimer = () => {
         startTimeRef.current = Date.now();
-        timerRef.current = setInterval(() => {
+
+        const tick = () => {
           const elapsed = Date.now() - startTimeRef.current;
           const remaining = remainingTimeRef.current - elapsed;
 
           if (remaining <= 0) {
             handleDismiss();
-          } else {
-            setProgress((remaining / autoDismiss) * 100);
+            return;
           }
-        }, 50);
+          setProgress((remaining / autoDismiss) * 100);
+          timerRef.current = requestAnimationFrame(tick);
+        };
+
+        timerRef.current = requestAnimationFrame(tick);
       };
 
       if (!isPaused) {
@@ -283,7 +287,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
 
       return () => {
         if (timerRef.current) {
-          clearInterval(timerRef.current);
+          cancelAnimationFrame(timerRef.current);
           remainingTimeRef.current =
             remainingTimeRef.current - (Date.now() - startTimeRef.current);
         }
@@ -294,7 +298,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
       if (autoDismiss) {
         setIsPaused(true);
         if (timerRef.current) {
-          clearInterval(timerRef.current);
+          cancelAnimationFrame(timerRef.current);
           remainingTimeRef.current =
             remainingTimeRef.current - (Date.now() - startTimeRef.current);
         }
@@ -312,7 +316,22 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
       return urgency;
     };
 
-    if (!isVisible) return null;
+    if (!isVisible || isDismissedStored || isExpired) return null;
+
+    // Auto-compose sub-parts when the convenience props are used. If children
+    // are supplied, they take over and these are ignored.
+    const composed = (
+      <>
+        {icon !== undefined && (
+          <AnnouncementBarIcon icon={icon} variant={variant || "default"} />
+        )}
+        <AnnouncementBarContent marquee={marquee}>
+          {children}
+        </AnnouncementBarContent>
+        {dismissible && <AnnouncementBarDismiss onClick={handleDismiss} />}
+      </>
+    );
+    const useComposed = icon !== undefined || dismissible || marquee;
 
     return (
       <AnnouncementBarContext.Provider
@@ -335,11 +354,11 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           className={cn(
-            announcementBarVariants({ variant, position, priority, className })
+            announcementBarVariants({ variant, position, priority, className }),
           )}
           {...props}
         >
-          {children}
+          {useComposed ? composed : children}
           {showProgress && autoDismiss && (
             <AnnouncementBarProgress
               value={progress}
@@ -349,7 +368,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
         </div>
       </AnnouncementBarContext.Provider>
     );
-  }
+  },
 );
 AnnouncementBar.displayName = "AnnouncementBar";
 
@@ -396,7 +415,7 @@ const AnnouncementBarContent = React.forwardRef<
       className={cn(
         "flex flex-1 items-center gap-3 min-w-0",
         showMarquee && "overflow-hidden",
-        className
+        className,
       )}
       {...props}
     >
@@ -413,15 +432,19 @@ AnnouncementBarContent.displayName = "AnnouncementBarContent";
 const AnnouncementBarAction = React.forwardRef<
   HTMLAnchorElement,
   AnnouncementBarActionProps
->(({ className, ...props }, ref) => (
+>(({ className, variant = "link", ...props }, ref) => (
   <a
     ref={ref}
     data-slot="announcement-bar-action"
     className={cn(
-      "inline-flex items-center gap-1.5 font-medium underline underline-offset-4 hover:no-underline",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded",
-      "transition-colors",
-      className
+      "inline-flex items-center gap-1.5 font-medium rounded transition-colors",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      variant === "link" && "underline underline-offset-4 hover:no-underline",
+      variant === "button" &&
+        "h-8 px-3 bg-foreground text-background hover:bg-foreground/90",
+      variant === "outline" &&
+        "h-8 px-3 border border-current/30 hover:bg-current/10",
+      className,
     )}
     {...props}
   />
@@ -459,7 +482,7 @@ const AnnouncementBarDismiss = React.forwardRef<
         "disabled:pointer-events-none",
 
         "-m-2",
-        className
+        className,
       )}
       aria-label={label}
       onClick={handleClick}
@@ -503,12 +526,12 @@ const AnnouncementBarProgress = React.forwardRef<
       className={cn(
         "absolute bottom-0 left-0 right-0 h-1",
         progressColors[variant],
-        className
+        className,
       )}
       {...props}
     >
       <div
-        className={cn("h-full transition-all duration-100", barColors[variant])}
+        className={cn("h-full", barColors[variant])}
         style={{ width: `${value}%` }}
       />
     </div>
@@ -568,7 +591,7 @@ function AnnouncementStack({
           position === "top"
             ? "sticky top-0 z-50"
             : "fixed bottom-0 left-0 right-0 z-50",
-          className
+          className,
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => {
@@ -588,7 +611,7 @@ function AnnouncementStack({
               !isHovered &&
                 index > 1 &&
                 !isExpanded &&
-                "opacity-60 scale-[0.96]"
+                "opacity-60 scale-[0.96]",
             )}
           >
             {child}
@@ -601,7 +624,7 @@ function AnnouncementStack({
             className={cn(
               "w-full py-2 text-xs text-muted-foreground hover:text-foreground",
               "bg-muted/50 backdrop-blur-sm rounded transition-colors",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             )}
           >
             +{childArray.length - maxVisible} more announcements
@@ -630,6 +653,7 @@ function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
         const storage = mode === "persistent" ? localStorage : sessionStorage;
         storage.setItem(`announcement-${key}`, "dismissed");
       } catch {
+        /* empty */
       }
     }
   }, [key, mode]);
@@ -641,6 +665,7 @@ function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
         const storage = mode === "persistent" ? localStorage : sessionStorage;
         storage.removeItem(`announcement-${key}`);
       } catch {
+        /* empty */
       }
     }
   }, [key, mode]);
@@ -669,7 +694,229 @@ function useAnnouncementExpiry(expiresAt?: Date) {
   return isExpired;
 }
 
+/**
+ * Live "time remaining until `target`" string, updated every second.
+ * Returns `null` once the target has passed.
+ */
+function computeCountdown(target?: Date): string | null {
+  if (!target) return null;
+  const diff = target.getTime() - Date.now();
+  if (diff <= 0) return null;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
+
+function useCountdown(target?: Date): string | null {
+  const targetTime = target?.getTime();
+  const [label, setLabel] = React.useState<string | null>(() =>
+    computeCountdown(target)
+  );
+  // Recompute immediately when the target changes (adjust-state-on-prop-change).
+  const [prevTarget, setPrevTarget] = React.useState(targetTime);
+  if (targetTime !== prevTarget) {
+    setPrevTarget(targetTime);
+    setLabel(
+      computeCountdown(targetTime !== undefined ? new Date(targetTime) : undefined)
+    );
+  }
+
+  React.useEffect(() => {
+    if (targetTime === undefined) return;
+    const t = new Date(targetTime);
+    const interval = setInterval(() => setLabel(computeCountdown(t)), 1000);
+    return () => clearInterval(interval);
+  }, [targetTime]);
+
+  return label;
+}
+
+interface AnnouncementBarCountdownProps extends React.ComponentPropsWithoutRef<"span"> {
+  to: Date;
+  prefix?: string;
+}
+
+const AnnouncementBarCountdown = React.forwardRef<
+  HTMLSpanElement,
+  AnnouncementBarCountdownProps
+>(({ to, prefix = "Ends in", className, ...props }, ref) => {
+  const label = useCountdown(to);
+  if (!label) return null;
+  return (
+    <span
+      ref={ref}
+      data-slot="announcement-bar-countdown"
+      className={cn("tabular-nums font-medium", className)}
+      {...props}
+    >
+      {prefix} {label}
+    </span>
+  );
+});
+AnnouncementBarCountdown.displayName = "AnnouncementBarCountdown";
+
+// =============================================================================
+// AnnouncementRotator — cycles through messages with a fade
+// =============================================================================
+
+interface AnnouncementRotatorProps extends React.ComponentPropsWithoutRef<"div"> {
+  messages: React.ReactNode[];
+  /** Interval between messages in ms. */
+  rotateInterval?: number;
+}
+
+const AnnouncementRotator = React.forwardRef<
+  HTMLDivElement,
+  AnnouncementRotatorProps
+>(({ messages, rotateInterval = 4000, className, ...props }, ref) => {
+  const [index, setIndex] = React.useState(0);
+  const reducedMotion = useReducedMotion();
+  const innerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (messages.length <= 1) return;
+    const interval = setInterval(() => {
+      setIndex((i) => (i + 1) % messages.length);
+    }, rotateInterval);
+    return () => clearInterval(interval);
+  }, [messages.length, rotateInterval]);
+
+  useGSAP(
+    () => {
+      if (reducedMotion || !innerRef.current) return;
+      gsap.fromTo(
+        innerRef.current,
+        { opacity: 0, y: 4 },
+        { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" },
+      );
+    },
+    { dependencies: [index, reducedMotion] },
+  );
+
+  return (
+    <div
+      ref={ref}
+      data-slot="announcement-rotator"
+      aria-live="polite"
+      className={cn("min-w-0 flex-1", className)}
+      {...props}
+    >
+      <div ref={innerRef}>{messages[index]}</div>
+    </div>
+  );
+});
+AnnouncementRotator.displayName = "AnnouncementRotator";
+
 const AnnouncementDismiss = AnnouncementBarDismiss;
+
+// =============================================================================
+// KiraAnnouncementBar — one prop-driven announcement bar
+// =============================================================================
+
+interface KiraAnnouncementBarProps extends Omit<
+  AnnouncementBarProps,
+  "children"
+> {
+  /** Single message. Ignored if `messages` is provided. */
+  message?: React.ReactNode;
+  /** Rotating messages carousel. */
+  messages?: React.ReactNode[];
+  rotateInterval?: number;
+  /** Inline call-to-action. */
+  action?: {
+    label: React.ReactNode;
+    href?: string;
+    onClick?: () => void;
+    variant?: AnnouncementBarActionProps["variant"];
+  };
+  /** Live countdown target rendered before the action. */
+  countdownTo?: Date;
+  countdownPrefix?: string;
+  /** Cookie/consent mode: renders Accept / Reject buttons. */
+  consent?: boolean;
+  onAccept?: () => void;
+  onReject?: () => void;
+  acceptLabel?: string;
+  rejectLabel?: string;
+}
+
+function KiraAnnouncementBar({
+  message,
+  messages,
+  rotateInterval,
+  action,
+  countdownTo,
+  countdownPrefix,
+  consent = false,
+  onAccept,
+  onReject,
+  acceptLabel = "Accept",
+  rejectLabel = "Reject",
+  icon,
+  dismissible,
+  variant = "default",
+  onDismiss,
+  ...barProps
+}: KiraAnnouncementBarProps) {
+  const buildBody = () => {
+    if (messages && messages.length > 0) {
+      return (
+        <AnnouncementRotator
+          messages={messages}
+          rotateInterval={rotateInterval}
+        />
+      );
+    }
+    return <AnnouncementBarContent>{message}</AnnouncementBarContent>;
+  };
+
+  const buildTrailing = () => {
+    if (consent) {
+      return (
+        <div className="flex shrink-0 items-center gap-2">
+          <AnnouncementBarAction variant="outline" onClick={onReject}>
+            {rejectLabel}
+          </AnnouncementBarAction>
+          <AnnouncementBarAction variant="button" onClick={onAccept}>
+            {acceptLabel}
+          </AnnouncementBarAction>
+        </div>
+      );
+    }
+    return (
+      <div className="flex shrink-0 items-center gap-3">
+        {countdownTo && (
+          <AnnouncementBarCountdown to={countdownTo} prefix={countdownPrefix} />
+        )}
+        {action && (
+          <AnnouncementBarAction
+            href={action.href}
+            onClick={action.onClick}
+            variant={action.variant ?? "link"}
+          >
+            {action.label}
+          </AnnouncementBarAction>
+        )}
+        {dismissible && <AnnouncementDismiss onClick={onDismiss} />}
+      </div>
+    );
+  };
+
+  return (
+    <AnnouncementBar variant={variant} onDismiss={onDismiss} {...barProps}>
+      {icon !== undefined && (
+        <AnnouncementBarIcon icon={icon} variant={variant || "default"} />
+      )}
+      {buildBody()}
+      {buildTrailing()}
+    </AnnouncementBar>
+  );
+}
 
 export {
   AnnouncementBar,
@@ -678,9 +925,13 @@ export {
   AnnouncementBarAction,
   AnnouncementBarDismiss,
   AnnouncementBarProgress,
+  AnnouncementBarCountdown,
+  AnnouncementRotator,
   AnnouncementStack,
+  KiraAnnouncementBar,
   useAnnouncementDismiss,
   useAnnouncementExpiry,
+  useCountdown,
   useAnnouncementBar,
   announcementBarVariants,
   AnnouncementDismiss,
@@ -693,7 +944,10 @@ export type {
   AnnouncementBarDismissProps,
   AnnouncementBarIconProps,
   AnnouncementBarProgressProps,
+  AnnouncementBarCountdownProps,
+  AnnouncementRotatorProps,
   AnnouncementStackProps,
+  KiraAnnouncementBarProps,
   AnnouncementVariant,
   AnnouncementPosition,
   AnnouncementPriority,

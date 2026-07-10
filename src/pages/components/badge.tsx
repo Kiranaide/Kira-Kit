@@ -1,10 +1,14 @@
+import { useState } from "react";
 import {
   Badge,
   StatusBadge,
   CountBadge,
   TagBadge,
   BadgeGroup,
+  TagInput,
+  KiraBadge,
 } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   IconCheck,
   IconX,
@@ -464,6 +468,169 @@ const badgeGroupCode = `import { Badge, BadgeGroup } from "@/components/ui/badge
 </BadgeGroup>`;
 
 // =============================================================================
+// Demo: Number ticker (animated count)
+// =============================================================================
+function NumberTickerDemo() {
+  const [count, setCount] = useState(3);
+  return (
+    <div className="flex flex-col items-start gap-4">
+      <div className="flex items-center gap-3">
+        <div className="relative">
+          <IconBell className="w-6 h-6 text-muted-foreground" />
+          <span className="absolute -top-2 -right-2">
+            <CountBadge count={count} animateCount size="sm" variant="destructive" />
+          </span>
+        </div>
+        <CountBadge count={count} animateCount />
+      </div>
+      <div className="flex gap-2">
+        <Button size="sm" variant="outline" onClick={() => setCount((c) => Math.max(0, c - 3))}>
+          −3
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => setCount((c) => c + 3)}>
+          +3
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => setCount((c) => c + 25)}>
+          +25
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        The number rolls to its new value. Disabled automatically under reduced-motion.
+      </p>
+    </div>
+  );
+}
+
+const numberTickerCode = `import { CountBadge } from "@/components/ui/badge"
+
+// animateCount rolls the number to its new value on change
+<CountBadge count={count} animateCount />
+<CountBadge count={count} animateCount size="sm" variant="destructive" />`;
+
+// =============================================================================
+// Demo: Trends & shimmer
+// =============================================================================
+function TrendsShimmerDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">Trend arrows</h3>
+        <div className="flex flex-wrap gap-3">
+          <Badge variant="success-soft" trend="up">
+            12.5%
+          </Badge>
+          <Badge variant="destructive-soft" trend="down">
+            3.2%
+          </Badge>
+          <Badge variant="secondary" trend="up">
+            Revenue
+          </Badge>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">Shimmer</h3>
+        <div className="flex flex-wrap gap-3">
+          <Badge variant="primary-soft" shimmer>
+            Featured
+          </Badge>
+          <Badge variant="success" shimmer icon={<IconStar />}>
+            Pro
+          </Badge>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const trendsShimmerCode = `import { Badge } from "@/components/ui/badge"
+
+// Trend arrows
+<Badge variant="success-soft" trend="up">12.5%</Badge>
+<Badge variant="destructive-soft" trend="down">3.2%</Badge>
+
+// Shimmer sweep (respects reduced motion)
+<Badge variant="primary-soft" shimmer>Featured</Badge>`;
+
+// =============================================================================
+// Demo: Beta / version presets
+// =============================================================================
+function PresetsDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Badge preset="beta" />
+      <Badge preset="new" shimmer />
+      <Badge preset="version">v2.0.0</Badge>
+      <span className="inline-flex items-center gap-2 text-sm">
+        Settings
+        <Badge preset="beta" size="xs" />
+      </span>
+    </div>
+  );
+}
+
+const presetsCode = `import { Badge } from "@/components/ui/badge"
+
+<Badge preset="beta" />            {/* → "Beta", warning-soft */}
+<Badge preset="new" shimmer />     {/* → "New", success-soft + shimmer */}
+<Badge preset="version">v2.0.0</Badge>`;
+
+// =============================================================================
+// Demo: Tag input (keyboard-removable)
+// =============================================================================
+function TagInputDemo() {
+  const [tags, setTags] = useState<string[]>(["design", "frontend", "a11y"]);
+  return (
+    <div className="max-w-md space-y-2">
+      <TagInput value={tags} onChange={setTags} aria-label="Project tags" />
+      <p className="text-xs text-muted-foreground">
+        Type + Enter to add. Backspace on an empty field removes the last tag.
+      </p>
+    </div>
+  );
+}
+
+const tagInputCode = `import { TagInput } from "@/components/ui/badge"
+
+const [tags, setTags] = useState(["design", "frontend", "a11y"])
+
+<TagInput value={tags} onChange={setTags} aria-label="Project tags" />
+// Enter / comma adds · Backspace on empty input removes last`;
+
+// =============================================================================
+// Demo: KiraBadge (prop-driven)
+// =============================================================================
+function KiraBadgeDemo() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          One component, every mode
+        </h3>
+        <div className="flex flex-wrap items-center gap-3">
+          <KiraBadge mode="badge" variant="success" trend="up">
+            Growth
+          </KiraBadge>
+          <KiraBadge mode="status" status="success" />
+          <KiraBadge mode="count" count={128} animateCount />
+          <KiraBadge mode="dot" variant="warning">
+            Pending
+          </KiraBadge>
+          <KiraBadge mode="badge" preset="new" shimmer />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const kiraBadgeCode = `import { KiraBadge } from "@/components/ui/badge"
+
+<KiraBadge mode="badge" variant="success" trend="up">Growth</KiraBadge>
+<KiraBadge mode="status" status="success" />
+<KiraBadge mode="count" count={128} animateCount />
+<KiraBadge mode="dot" variant="warning">Pending</KiraBadge>
+<KiraBadge mode="badge" preset="new" shimmer />`;
+
+// =============================================================================
 // Main Page Component
 // =============================================================================
 
@@ -605,6 +772,71 @@ export default function BadgePage() {
         </DemoWrapper>
       ),
     },
+    {
+      value: "ticker",
+      label: "Number Ticker",
+      demo: (
+        <DemoWrapper
+          title="Animated Count"
+          description="CountBadge rolls to its new value; snaps under reduced motion"
+          code={numberTickerCode}
+        >
+          <NumberTickerDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "trends",
+      label: "Trends & Shimmer",
+      demo: (
+        <DemoWrapper
+          title="Trends & Shimmer"
+          description="Directional trend arrows and a light shimmer sweep"
+          code={trendsShimmerCode}
+        >
+          <TrendsShimmerDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "presets",
+      label: "Beta / Version",
+      demo: (
+        <DemoWrapper
+          title="Preset Badges"
+          description="Shorthand presets for Beta, New, and version tags"
+          code={presetsCode}
+        >
+          <PresetsDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "tag-input",
+      label: "Tag Input",
+      demo: (
+        <DemoWrapper
+          title="Tag Input"
+          description="Keyboard-removable tag collection (Enter to add, Backspace to remove)"
+          code={tagInputCode}
+        >
+          <TagInputDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "kira",
+      label: "KiraBadge",
+      demo: (
+        <DemoWrapper
+          title="KiraBadge"
+          description="One prop-driven component covering badge / status / count / tag / dot"
+          code={kiraBadgeCode}
+        >
+          <KiraBadgeDemo />
+        </DemoWrapper>
+      ),
+    },
   ];
 
   const usageCode = `import { 
@@ -710,6 +942,24 @@ export default function BadgePage() {
           description: "Show loading spinner",
         },
         {
+          prop: "trend",
+          type: '"up" | "down"',
+          default: "-",
+          description: "Directional trend arrow before content",
+        },
+        {
+          prop: "shimmer",
+          type: "boolean",
+          default: "false",
+          description: "Light sweep effect (respects reduced motion)",
+        },
+        {
+          prop: "preset",
+          type: '"beta" | "new" | "version"',
+          default: "-",
+          description: "Shorthand variant + default label",
+        },
+        {
           prop: "onClick",
           type: "() => void",
           default: "-",
@@ -773,6 +1023,12 @@ export default function BadgePage() {
           default: "false",
           description: "Pulse animation",
         },
+        {
+          prop: "animateCount",
+          type: "boolean",
+          default: "false",
+          description: "Roll the number to its new value (respects reduced motion)",
+        },
       ],
     },
     {
@@ -812,6 +1068,52 @@ export default function BadgePage() {
           type: '"horizontal" | "vertical"',
           default: '"horizontal"',
           description: "Layout direction",
+        },
+      ],
+    },
+    {
+      title: "TagInput",
+      props: [
+        {
+          prop: "value",
+          type: "string[]",
+          default: "-",
+          description: "Current tags (controlled)",
+        },
+        {
+          prop: "onChange",
+          type: "(tags: string[]) => void",
+          default: "-",
+          description: "Fired on add / remove",
+        },
+        {
+          prop: "placeholder",
+          type: "string",
+          default: '"Add tag…"',
+          description: "Empty-state input placeholder",
+        },
+        {
+          prop: "readOnlyInput",
+          type: "boolean",
+          default: "false",
+          description: "Removal-only (hide the input)",
+        },
+      ],
+    },
+    {
+      title: "KiraBadge",
+      props: [
+        {
+          prop: "mode",
+          type: '"badge" | "status" | "count" | "tag" | "dot"',
+          default: '"badge"',
+          description: "Which badge behavior to render",
+        },
+        {
+          prop: "...props",
+          type: "Badge / Status / Count / Tag props",
+          default: "-",
+          description: "Mode-specific props (variant, count, status, trend, …)",
         },
       ],
     },

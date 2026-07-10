@@ -12,7 +12,8 @@ import {
   IconSearch,
   IconLoader2,
 } from "@tabler/icons-react";
-import { animate, stagger } from "animejs";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 const Select = SelectPrimitive.Root;
 
@@ -480,17 +481,25 @@ function SelectField<T extends SelectOption = SelectOption>({
     );
   }, [creatable, inputValue, filteredOptions]);
 
-  React.useEffect(() => {
+  useGSAP(() => {
     if (isOpen && listRef.current && !isLoading) {
       const items = listRef.current.querySelectorAll("[data-option]");
       if (items.length > 0) {
-        animate(items, {
-          opacity: [0, 1],
-          translateY: [-10, 0],
-          delay: stagger(30),
-          duration: 200,
-          ease: "outQuad",
+        const mm = gsap.matchMedia();
+        mm.add("(prefers-reduced-motion: no-preference)", () => {
+          gsap.fromTo(
+            items,
+            { opacity: 0, y: -10 },
+            {
+              opacity: 1,
+              y: 0,
+              stagger: 0.03,
+              duration: 0.2,
+              ease: "power2.out",
+            }
+          );
         });
+        return () => mm.revert();
       }
     }
   }, [isOpen, filteredOptions.length, isLoading]);

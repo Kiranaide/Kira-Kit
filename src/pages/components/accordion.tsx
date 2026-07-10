@@ -744,6 +744,65 @@ export function DraggableDemo() {
   )
 }`;
 
+function SearchDemo() {
+  const items = [
+    { value: "install", title: "Installation", content: "Run bun install." },
+    { value: "config", title: "Configuration", content: "Edit vite.config.ts." },
+    { value: "theming", title: "Theming", content: "Tokens live in index.css." },
+    { value: "a11y", title: "Accessibility", content: "WCAG 2.2 AA throughout." },
+    { value: "deploy", title: "Deployment", content: "Push to Vercel." },
+  ];
+  return <KiraAccordion searchable searchPlaceholder="Search docs…" items={items} />;
+}
+
+const searchCode = `import { KiraAccordion } from "@/components/ui/accordion"
+
+<KiraAccordion
+  searchable
+  searchPlaceholder="Search docs…"
+  items={items}
+/>`;
+
+function PersistedDemo() {
+  const items = [
+    { value: "s1", title: "Section 1", content: "Open me, then reload the page." },
+    { value: "s2", title: "Section 2", content: "My open state is remembered." },
+    { value: "s3", title: "Section 3", content: "Stored under the persistKey." },
+  ];
+  return <KiraAccordion persistKey="demo-docs" items={items} />;
+}
+
+const persistedCode = `import { KiraAccordion } from "@/components/ui/accordion"
+
+// Open state is saved to localStorage under this key and restored on reload
+<KiraAccordion persistKey="demo-docs" items={items} />`;
+
+function EndHandleDemo() {
+  const [items, setItems] = React.useState([
+    { value: "a", title: "Alpha", content: "Handle on the right." },
+    { value: "b", title: "Bravo", content: "Handle on the right." },
+    { value: "c", title: "Charlie", content: "Handle on the right." },
+  ]);
+  return (
+    <KiraAccordion
+      draggable
+      dragHandlePosition="end"
+      items={items}
+      onReorder={(newItems) => setItems(newItems as typeof items)}
+    />
+  );
+}
+
+const endHandleCode = `import { KiraAccordion } from "@/components/ui/accordion"
+
+// Drag handle rendered at the end (trailing) of each trigger
+<KiraAccordion
+  draggable
+  dragHandlePosition="end"
+  items={items}
+  onReorder={setItems}
+/>`;
+
 function AsyncLoadingDemo() {
   const [items, setItems] = React.useState<AccordionItemData[]>([
     {
@@ -1070,6 +1129,45 @@ export default function AccordionPage() {
                 code={draggableCode}
               >
                 <DraggableDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "end-handle",
+            label: "End Handle",
+            demo: (
+              <DemoWrapper
+                title="Trailing Drag Handle"
+                description="dragHandlePosition='end' renders the handle after the title."
+                code={endHandleCode}
+              >
+                <EndHandleDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "search",
+            label: "Search",
+            demo: (
+              <DemoWrapper
+                title="Searchable Accordion"
+                description="Filter items by title as you type (recursive for nested items)."
+                code={searchCode}
+              >
+                <SearchDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "persisted",
+            label: "Persisted",
+            demo: (
+              <DemoWrapper
+                title="Persisted Open State"
+                description="Open sections are saved to storage and restored on reload."
+                code={persistedCode}
+              >
+                <PersistedDemo />
               </DemoWrapper>
             ),
           },

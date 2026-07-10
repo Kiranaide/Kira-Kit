@@ -93,7 +93,7 @@ function DropdownMenuPortal(props: DropdownMenuPortalProps) {
 }
 
 const DropdownMenuTrigger = React.forwardRef<
-  HTMLDivElement,
+  HTMLButtonElement,
   DropdownMenuTriggerProps
 >(function DropdownMenuTrigger({ className, children, ...props }, ref) {
   return (

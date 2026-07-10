@@ -94,6 +94,10 @@
   /* Animation tokens for consistent motion */
   --animate-shimmer: shimmer 2s infinite;
   --animate-skeleton-wave: skeleton-wave 2s ease-in-out infinite;
+  --animate-badge-pulse: badge-pulse 2s ease-in-out infinite;
+  --animate-ping-once: ping-once 0.8s cubic-bezier(0, 0, 0.2, 1);
+  --animate-badge-shimmer: badge-shimmer 1.75s linear infinite;
+  --animate-marquee: marquee 18s linear infinite;
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -236,6 +240,52 @@
   }
   50% {
     opacity: 0.5;
+  }
+}
+
+/* Badge pulse - gentle attention pulse for count/notification badges */
+@keyframes badge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+/* Ping once - single expanding ring (for one-shot "new" indication) */
+@keyframes ping-once {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Badge shimmer - light sweep across a "new" badge. A single 0%->100%
+   linear pass (matching the plain `shimmer` keyframes above) so the sweep
+   travels smoothly all the way to the end, instead of reaching the edge
+   early and then sitting idle for the rest of the cycle (which reads as
+   the highlight getting "stuck" partway through). */
+@keyframes badge-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Marquee - continuous horizontal scroll for announcement content */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
   }
 }
 
