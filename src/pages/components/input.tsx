@@ -16,6 +16,8 @@ import {
   OTPInput,
   Rating,
   RatingDisplay,
+  PasswordInput,
+  TagInput,
 } from "@/components/ui/input";
 import type { OTPInputRef } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +44,7 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 // =============================================================================
@@ -1168,6 +1171,109 @@ function RatingDemo() {
 }
 
 // =============================================================================
+// Password / Counter / Tags demos
+// =============================================================================
+
+function PasswordDemo() {
+  const [pwd, setPwd] = useState("");
+
+  return (
+    <div className="max-w-sm space-y-6">
+      <div className="space-y-2">
+        <Label>Password (with visibility toggle)</Label>
+        <PasswordInput placeholder="Enter password" />
+      </div>
+      <div className="space-y-2">
+        <Label>With strength meter</Label>
+        <PasswordInput
+          value={pwd}
+          onChange={(e) => setPwd(e.target.value)}
+          showStrength
+          placeholder="Try mixing cases, numbers & symbols"
+        />
+      </div>
+    </div>
+  );
+}
+
+const passwordCode = `import { PasswordInput } from "@/components/ui/input"
+
+// Masked by default, with an accessible show/hide toggle.
+<PasswordInput placeholder="Enter password" />
+
+// Live strength meter + requirement checklist.
+<PasswordInput
+  value={pwd}
+  onChange={(e) => setPwd(e.target.value)}
+  showStrength
+/>`;
+
+function CounterDemo() {
+  const [bio, setBio] = useState("");
+  const [handle, setHandle] = useState("");
+
+  return (
+    <div className="max-w-sm space-y-6">
+      <div className="space-y-2">
+        <Label>Username (max 20)</Label>
+        <Input
+          value={handle}
+          onChange={(e) => setHandle(e.target.value)}
+          maxLength={20}
+          showCount
+          placeholder="username"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Bio (max 160)</Label>
+        <TextareaFixed
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          maxLength={160}
+          rows={3}
+          placeholder="Tell us about yourself..."
+        />
+        <p className="text-right text-xs tabular-nums text-muted-foreground">
+          {bio.length}/160
+        </p>
+      </div>
+    </div>
+  );
+}
+
+const counterCode = `import { Input } from "@/components/ui/input"
+
+// Live character counter (needs a controlled value + maxLength).
+<Input value={handle} onChange={...} maxLength={20} showCount />`;
+
+function TagsDemo() {
+  const [tags, setTags] = useState<string[]>(["design", "react"]);
+
+  return (
+    <div className="max-w-sm space-y-6">
+      <div className="space-y-2">
+        <Label>Tags (Enter or comma to add, Backspace to remove)</Label>
+        <TagInput value={tags} onChange={setTags} maxTags={6} />
+        <p className="text-xs text-muted-foreground">
+          {tags.length}/6 tags — {tags.join(", ") || "none yet"}
+        </p>
+      </div>
+      <div className="space-y-2">
+        <Label>Uncontrolled</Label>
+        <TagInput defaultValue={["one"]} placeholder="Add a tag…" />
+      </div>
+    </div>
+  );
+}
+
+const tagsCode = `import { TagInput } from "@/components/ui/input"
+
+<TagInput value={tags} onChange={setTags} maxTags={6} />
+
+// Uncontrolled
+<TagInput defaultValue={["one"]} placeholder="Add a tag…" />`;
+
+// =============================================================================
 // Main Page Component
 // =============================================================================
 
@@ -1616,13 +1722,52 @@ export default function InputPage() {
         </DemoWrapper>
       ),
     },
+    {
+      value: "password",
+      label: "Password",
+      demo: (
+        <DemoWrapper
+          title="Password Input"
+          description="Masked by default with an accessible show/hide toggle, plus an optional live strength meter and requirement checklist. Lets you drop the 'confirm password' field."
+          code={passwordCode}
+        >
+          <PasswordDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "counter",
+      label: "Counter",
+      demo: (
+        <DemoWrapper
+          title="Character Counter"
+          description="A live n/max counter that announces politely and warns when the limit is reached. Works on Input and TextareaFixed."
+          code={counterCode}
+        >
+          <CounterDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "tags",
+      label: "Tags",
+      demo: (
+        <DemoWrapper
+          title="Tag Input"
+          description="Type and press Enter or comma to add a tag; Backspace removes the last. Supports controlled and uncontrolled use, dedupe, and a max count."
+          code={tagsCode}
+        >
+          <TagsDemo />
+        </DemoWrapper>
+      ),
+    },
   ];
 
   return (
     <ComponentPage>
       <PageHeader
         title="Input"
-        version="v2.0"
+        version="v2.1"
         description="A comprehensive collection of input components for forms and data entry. Includes basic inputs, textareas, numeric inputs, formatted inputs, OTP, ratings, and composable patterns."
       />
 
@@ -1638,6 +1783,41 @@ export default function InputPage() {
       />
 
       <APIReference sections={apiSections} />
+
+      <Changelog
+        entries={[
+          {
+            version: "2.1.0",
+            date: "10 July 2026",
+            changes: [
+              {
+                type: "added",
+                title: "Password Input & Strength Meter",
+                description:
+                  "Added PasswordInput with a masked-by-default field, an accessible show/hide toggle that doesn't steal focus, and an optional live strength meter with a requirement checklist.",
+              },
+              {
+                type: "added",
+                title: "Character Counter",
+                description:
+                  "Input and TextareaFixed gained a showCount prop that renders a live n/max counter (aria-live polite) which warns at the limit.",
+              },
+              {
+                type: "added",
+                title: "Tag Input",
+                description:
+                  "Added TagInput for chip-style entry: Enter/comma to add, Backspace to remove, with dedupe, maxTags, and controlled/uncontrolled modes.",
+              },
+              {
+                type: "fixed",
+                title: "OTP Shake & Icons",
+                description:
+                  "Replaced the OTP invalid-shake setTimeout chain with a single reduced-motion-safe CSS keyframe, and swapped the hand-drawn clear/copy SVGs for Tabler icons with larger tap targets.",
+              },
+            ],
+          },
+        ]}
+      />
     </ComponentPage>
   );
 }

@@ -5,7 +5,9 @@ import * as React from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { cva } from "class-variance-authority";
+import { IconLoader2 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Button, type ButtonProps } from "@/components/ui/button";
 
 const buttonGroupVariants = cva(
@@ -20,10 +22,15 @@ const buttonGroupVariants = cva(
         true: "gap-0",
         false: "gap-1",
       },
+      shape: {
+        default: "",
+        pill: "rounded-full [&>[data-slot=button]]:rounded-full",
+      },
     },
     defaultVariants: {
       orientation: "horizontal",
       connected: true,
+      shape: "default",
     },
   },
 );
@@ -62,6 +69,7 @@ type ButtonGroupOrientation = "horizontal" | "vertical";
 type ButtonGroupSize = "xs" | "sm" | "default" | "lg";
 type ButtonGroupGap = "none" | "sm" | "default" | "lg";
 type ButtonGroupJustify = "start" | "center" | "end" | "between" | "around";
+type ButtonGroupShape = "default" | "pill";
 type SelectionMode = "none" | "single" | "multiple";
 
 interface ButtonGroupContextValue {
@@ -73,6 +81,7 @@ interface ButtonGroupContextValue {
   disabled?: boolean;
   loop?: boolean;
   dir?: "ltr" | "rtl";
+  segmented?: boolean;
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -98,10 +107,16 @@ interface ButtonGroupProps extends Omit<
   size?: ButtonGroupSize;
   gap?: ButtonGroupGap;
   justify?: ButtonGroupJustify;
+  shape?: ButtonGroupShape;
   value?: string | string[] | null;
   onChange?: (value: string | string[]) => void;
   selectionMode?: SelectionMode;
   connected?: boolean;
+  /**
+   * Segmented-control mode: renders an animated sliding pill behind the
+   * selected item. Only meaningful with `selectionMode="single"`.
+   */
+  segmented?: boolean;
   animated?: boolean;
   animationStagger?: number;
   variant?: ButtonProps["variant"];
@@ -116,10 +131,12 @@ function ButtonGroup({
   size,
   gap,
   justify,
+  shape = "default",
   value = null,
   onChange,
   selectionMode = "none",
   connected = true,
+  segmented = false,
   animated = false,
   animationStagger = 50,
   variant,
@@ -130,9 +147,10 @@ function ButtonGroup({
   ...props
 }: ButtonGroupProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const indicatorRef = React.useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
 
-  const contextValue = React.useMemo<ButtonGroupContextValue>(
-    () => ({
+  const contextValue: ButtonGroupContextValue = {
       selectionMode,
       value: value !== undefined ? value : null,
       onChange: (newValue) => onChange?.(newValue),
@@ -141,14 +159,13 @@ function ButtonGroup({
       disabled,
       loop,
       dir,
+      segmented,
       containerRef,
-    }),
-    [selectionMode, value, onChange, orientation, variant, disabled, loop, dir],
-  );
+    };
 
   useGSAP(
     () => {
-      if (!animated || !containerRef.current) return;
+      if (!animated || reducedMotion || !containerRef.current) return;
 
       const buttons =
         containerRef.current.querySelectorAll("[data-slot=button]");
@@ -166,7 +183,46 @@ function ButtonGroup({
     },
     {
       scope: containerRef,
-      dependencies: [animated, orientation, animationStagger],
+      dependencies: [animated, orientation, animationStagger, reducedMotion],
+    },
+  );
+
+  // Segmented sliding pill: measure the selected item and move an absolutely
+  // positioned indicator behind it. Snaps instantly under reduced motion.
+  const singleValue =
+    selectionMode === "single" && typeof value === "string" ? value : null;
+
+  useGSAP(
+    () => {
+      const container = containerRef.current;
+      const indicator = indicatorRef.current;
+      if (!segmented || !container || !indicator) return;
+
+      const selected = container.querySelector<HTMLElement>(
+        '[data-slot=toggle-group-item][data-selected="true"]',
+      );
+
+      if (!selected) {
+        gsap.to(indicator, { autoAlpha: 0, duration: 0 });
+        return;
+      }
+
+      const cRect = container.getBoundingClientRect();
+      const sRect = selected.getBoundingClientRect();
+
+      gsap.to(indicator, {
+        autoAlpha: 1,
+        width: sRect.width,
+        height: sRect.height,
+        x: sRect.left - cRect.left,
+        y: sRect.top - cRect.top,
+        duration: reducedMotion ? 0 : 0.25,
+        ease: "power3.out",
+      });
+    },
+    {
+      scope: containerRef,
+      dependencies: [segmented, singleValue, orientation, reducedMotion],
     },
   );
 
@@ -185,7 +241,7 @@ function ButtonGroup({
 
       let positionClasses = "";
 
-      if (connected) {
+      if (connected && !segmented) {
         if (orientation === "horizontal") {
           if (dir === "rtl") {
             if (isFirst && count > 1) {
@@ -238,18 +294,33 @@ function ButtonGroup({
         role={role}
         aria-orientation={orientation}
         data-connected={connected}
+        data-segmented={segmented || undefined}
         dir={dir}
         className={cn(
-          buttonGroupVariants({ orientation, connected }),
+          buttonGroupVariants({ orientation, connected, shape }),
           buttonGroupSizeVariants({
             size,
             gap: connected && !gap ? undefined : gap,
             justify,
           }),
+          segmented &&
+            "relative bg-muted p-1 rounded-lg gap-1 data-[connected=true]:gap-1",
+          segmented && shape === "pill" && "rounded-full",
           className,
         )}
         {...props}
       >
+        {segmented && (
+          <div
+            ref={indicatorRef}
+            data-slot="segmented-indicator"
+            aria-hidden="true"
+            className={cn(
+              "invisible absolute left-0 top-0 z-0 rounded-md bg-background shadow-sm",
+              shape === "pill" && "rounded-full",
+            )}
+          />
+        )}
         {processChildren()}
       </div>
     </ButtonGroupContext.Provider>
@@ -275,21 +346,22 @@ function ToggleGroupItem({
     variant: groupVariant,
     disabled: groupDisabled,
     loop,
+    segmented,
     containerRef,
   } = useButtonGroupContext();
 
+  const reducedMotion = useReducedMotion();
   const isDisabled = localDisabled ?? groupDisabled ?? false;
 
   const effectiveVariant =
     localVariant !== "outline" ? localVariant : groupVariant || "outline";
 
-  const isSelected = React.useMemo(() => {
-    if (selectionMode === "none" || groupValue === null) return false;
-    if (selectionMode === "single") {
-      return groupValue === value;
-    }
-    return Array.isArray(groupValue) && groupValue.includes(value);
-  }, [selectionMode, groupValue, value]);
+  const isSelected =
+      selectionMode === "none" || groupValue === null
+        ? false
+        : selectionMode === "single"
+          ? groupValue === value
+          : Array.isArray(groupValue) && groupValue.includes(value);
 
   const handleClick = () => {
     if (selectionMode === "none" || isDisabled) {
@@ -379,7 +451,7 @@ function ToggleGroupItem({
 
   useGSAP(
     () => {
-      if (isSelected && itemRef.current) {
+      if (isSelected && !reducedMotion && itemRef.current) {
         gsap.to(itemRef.current, {
           scale: 0.95,
           duration: 0.1,
@@ -389,11 +461,11 @@ function ToggleGroupItem({
         });
       }
     },
-    { scope: itemRef, dependencies: [isSelected] },
+    { scope: itemRef, dependencies: [isSelected, reducedMotion] },
   );
 
   const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!itemRef.current) return;
+    if (!itemRef.current || reducedMotion) return;
 
     const rect = itemRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -452,10 +524,17 @@ function ToggleGroupItem({
       data-selected={isSelected}
       data-state={isSelected ? "on" : "off"}
       data-disabled={isDisabled || undefined}
-      variant={effectiveVariant}
+      variant={segmented ? "ghost" : effectiveVariant}
       className={cn(
         "relative overflow-hidden",
-        getSelectedClassName(),
+        // In segmented mode the sliding pill IS the selected background, so the
+        // item stays transparent and only sits above the indicator.
+        segmented
+          ? cn(
+              "z-10 bg-transparent hover:bg-transparent",
+              isSelected ? "text-foreground" : "text-muted-foreground",
+            )
+          : getSelectedClassName(),
         className,
       )}
       onClick={handleClick}
@@ -556,7 +635,6 @@ function KiraButtonGroup({
   selectionMode = "none",
   type,
   required = false,
-  rovingFocus = true,
   dir,
   fullWidth = false,
   allowEmpty = true,
@@ -604,43 +682,39 @@ function KiraButtonGroup({
     onItemClick?.(itemValue);
   };
 
-  const renderContent = () => {
-    if (items && items.length > 0) {
-      return items.map((item) => (
-        <ToggleGroupItem
-          key={item.value}
-          value={item.value}
-          disabled={item.disabled}
-          leftIcon={item.icon}
-          rightIcon={item.rightIcon}
-          variant={item.variant}
-          className={item.className}
-          aria-label={item["aria-label"]}
-          onClick={() => handleItemClick(item.value)}
-        >
-          {item.loading ? (
-            <>
-              <span className="animate-spin" aria-hidden="true">
-                ⏳
-              </span>
-              {item.label}
-            </>
+  const renderItems = () =>
+    items?.map((item) => (
+      <ToggleGroupItem
+        key={item.value}
+        value={item.value}
+        disabled={item.disabled || item.loading}
+        leftIcon={
+          item.loading ? (
+            <IconLoader2 className="size-4 animate-spin" aria-hidden="true" />
           ) : (
-            item.label
-          )}
-        </ToggleGroupItem>
-      ));
-    }
+            item.icon
+          )
+        }
+        rightIcon={item.rightIcon}
+        variant={item.variant}
+        className={item.className}
+        aria-label={item["aria-label"]}
+        aria-busy={item.loading || undefined}
+        onClick={() => handleItemClick(item.value)}
+      >
+        {item.label}
+      </ToggleGroupItem>
+    ));
 
-    return children;
-  };
+  const renderContent = () =>
+    items && items.length > 0 ? renderItems() : children;
 
-  const groupContent = (
+  const group = (
     <ButtonGroup
       value={currentValue}
       onChange={handleChange}
       selectionMode={resolvedSelectionMode}
-      className={cn(fullWidth && "w-full", className)}
+      className={cn(fullWidth && "w-full", !toolbar && className)}
       dir={dir}
       {...props}
     >
@@ -650,49 +724,21 @@ function KiraButtonGroup({
 
   if (toolbar) {
     return (
-      <ButtonGroupToolbar label={toolbarLabel} {...props}>
-        {items ? (
-          <ButtonGroup
-            value={currentValue}
-            onChange={handleChange}
-            selectionMode={resolvedSelectionMode}
-            className={cn(fullWidth && "w-full")}
-            dir={dir}
-            {...props}
-          >
-            {items.map((item) => (
-              <ToggleGroupItem
-                key={item.value}
-                value={item.value}
-                disabled={item.disabled}
-                leftIcon={item.icon}
-                rightIcon={item.rightIcon}
-                variant={item.variant}
-                className={item.className}
-                aria-label={item["aria-label"]}
-                onClick={() => handleItemClick(item.value)}
-              >
-                {item.loading ? (
-                  <>
-                    <span className="animate-spin" aria-hidden="true">
-                      ⏳
-                    </span>
-                    {item.label}
-                  </>
-                ) : (
-                  item.label
-                )}
-              </ToggleGroupItem>
-            ))}
-          </ButtonGroup>
-        ) : (
-          children
-        )}
+      <ButtonGroupToolbar
+        label={toolbarLabel}
+        className={className}
+        value={currentValue}
+        onChange={handleChange}
+        selectionMode={resolvedSelectionMode}
+        dir={dir}
+        {...props}
+      >
+        {renderContent()}
       </ButtonGroupToolbar>
     );
   }
 
-  return groupContent;
+  return group;
 }
 
 export { buttonGroupVariants, buttonGroupSizeVariants };

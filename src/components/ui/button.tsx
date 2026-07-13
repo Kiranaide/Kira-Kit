@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   Tooltip,
   TooltipContent,
@@ -136,6 +137,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const rippleIdRef = React.useRef(0);
     const [isKeyboardHolding, setIsKeyboardHolding] = React.useState(false);
     const holdTweenRef = React.useRef<gsap.core.Tween | null>(null);
+    const reducedMotion = useReducedMotion();
 
     const getRippleColor = (): string => {
       if (rippleColor) return rippleColor;
@@ -183,7 +185,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const handlePressAnimation = (): void => {
-      if (disabled || !buttonRef.current) return;
+      if (disabled || reducedMotion || !buttonRef.current) return;
 
       gsap.to(buttonRef.current, {
         scale: 0.96,
@@ -195,7 +197,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const handleRipple = (e: React.PointerEvent<HTMLButtonElement>): void => {
-      if (disabled) return;
+      if (disabled || reducedMotion) return;
 
       const rect = buttonRef.current?.getBoundingClientRect();
       if (!rect) return;
@@ -417,6 +419,7 @@ const ExpandableIconButton = React.forwardRef<
   ref,
 ) {
   const textRef = React.useRef<HTMLSpanElement>(null);
+  const reducedMotion = useReducedMotion();
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (textRef.current) {
@@ -426,7 +429,7 @@ const ExpandableIconButton = React.forwardRef<
         opacity: 1,
         marginLeft: expandDirection === "right" ? 8 : 0,
         marginRight: expandDirection === "left" ? 8 : 0,
-        duration: 0.2,
+        duration: reducedMotion ? 0 : 0.2,
         ease: "power2.out",
       });
     }
@@ -440,7 +443,7 @@ const ExpandableIconButton = React.forwardRef<
         opacity: 0,
         marginLeft: 0,
         marginRight: 0,
-        duration: 0.15,
+        duration: reducedMotion ? 0 : 0.15,
         ease: "power2.in",
       });
     }
@@ -488,11 +491,23 @@ const ExpandableIconButton = React.forwardRef<
 });
 ExpandableIconButton.displayName = "ExpandableIconButton";
 
+const SPINNER_SIZES: Record<string, string> = {
+  xs: "h-3 w-3",
+  sm: "h-3.5 w-3.5",
+  default: "h-4 w-4",
+  lg: "h-4.5 w-4.5",
+  icon: "h-4 w-4",
+  "icon-xs": "h-3 w-3",
+  "icon-sm": "h-3.5 w-3.5",
+  "icon-lg": "h-4.5 w-4.5",
+};
+
 function LoadingSpinner({ size }: { size: ButtonSize | null | undefined }) {
   const spinnerRef = React.useRef<SVGSVGElement>(null);
+  const reducedMotion = useReducedMotion();
 
   useGSAP(() => {
-    if (spinnerRef.current) {
+    if (spinnerRef.current && !reducedMotion) {
       gsap.to(spinnerRef.current, {
         rotation: 360,
         duration: 1,
@@ -500,24 +515,14 @@ function LoadingSpinner({ size }: { size: ButtonSize | null | undefined }) {
         repeat: -1,
       });
     }
-  }, []);
+  }, [reducedMotion]);
 
-  const spinnerSizes: Record<string, string> = {
-    xs: "h-3 w-3",
-    sm: "h-3.5 w-3.5",
-    default: "h-4 w-4",
-    lg: "h-4.5 w-4.5",
-    icon: "h-4 w-4",
-    "icon-xs": "h-3 w-3",
-    "icon-sm": "h-3.5 w-3.5",
-    "icon-lg": "h-4.5 w-4.5",
-  };
-  const spinnerSize = spinnerSizes[size || "default"] || "h-4 w-4";
+  const spinnerSize = SPINNER_SIZES[size || "default"] || "h-4 w-4";
 
   return (
     <svg
       ref={spinnerRef}
-      className={cn(spinnerSize)}
+      className={cn(spinnerSize, reducedMotion && "animate-spin")}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -598,12 +603,17 @@ function CopyButton({
 }: CopyButtonProps) {
   const [copied, setCopied] = React.useState(false);
 
+  React.useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(false), confirmDuration);
+    return () => clearTimeout(timer);
+  }, [copied, confirmDuration]);
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       toast.success(successMessage);
-      setTimeout(() => setCopied(false), confirmDuration);
     } catch {
       toast.error("Failed to copy");
     }
@@ -776,6 +786,12 @@ function AsyncButton({
     "idle" | "loading" | "success" | "error"
   >("idle");
 
+  React.useEffect(() => {
+    if (status === "idle") return;
+    const timer = setTimeout(() => setStatus("idle"), successDuration);
+    return () => clearTimeout(timer);
+  }, [status, successDuration]);
+
   const handleClick = async () => {
     if (status !== "idle") return;
 
@@ -787,11 +803,9 @@ function AsyncButton({
       if (successMessage) {
         toast.success(successMessage);
       }
-      setTimeout(() => setStatus("idle"), successDuration);
     } catch {
       setStatus("error");
       toast.error(errorMessage);
-      setTimeout(() => setStatus("idle"), successDuration);
     }
   };
 
@@ -838,9 +852,10 @@ function QuickActionButton({
   ...props
 }: QuickActionButtonProps) {
   const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const reducedMotion = useReducedMotion();
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (buttonRef.current) {
+    if (buttonRef.current && !reducedMotion) {
       gsap.to(buttonRef.current, {
         scale: 0.95,
         duration: 0.075,
@@ -884,11 +899,13 @@ function QuickActionButton({
   );
 }
 
-interface KiraButtonProps extends ButtonProps {
+interface KiraButtonProps extends Omit<ButtonProps, "onToggle"> {
   loading?: boolean;
   loadingText?: string;
   tooltip?: string;
   tooltipSide?: "top" | "right" | "bottom" | "left";
+  /** Tooltip shown only while the button is disabled, explaining why. */
+  disabledReason?: string;
   expandable?: boolean;
   expandLabel?: string;
   onAsyncClick?: () => Promise<void>;
@@ -909,6 +926,15 @@ interface KiraButtonProps extends ButtonProps {
   compoundIconPosition?: "left" | "right";
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
+  /** Optimistic toggle mode (like/favorite/bookmark). */
+  toggle?: boolean;
+  pressed?: boolean;
+  defaultPressed?: boolean;
+  /** Async toggle handler; the pressed state flips instantly and rolls back if this rejects. */
+  onToggle?: (pressed: boolean) => void | Promise<void>;
+  pressedIcon?: React.ReactNode;
+  unpressedIcon?: React.ReactNode;
+  toggleErrorMessage?: string;
 }
 
 function KiraButton({
@@ -916,6 +942,7 @@ function KiraButton({
   loadingText,
   tooltip,
   tooltipSide = "top",
+  disabledReason,
   expandable,
   expandLabel,
   onAsyncClick,
@@ -936,6 +963,13 @@ function KiraButton({
   compoundIconPosition = "left",
   icon,
   iconPosition = "left",
+  toggle,
+  pressed,
+  defaultPressed = false,
+  onToggle,
+  pressedIcon,
+  unpressedIcon,
+  toggleErrorMessage = "Couldn't update",
   leftIcon,
   rightIcon,
   children,
@@ -951,10 +985,33 @@ function KiraButton({
   >("idle");
   const [copied, setCopied] = React.useState(false);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const reducedMotion = useReducedMotion();
   const generatedId = React.useId();
   const buttonId = props.id || generatedId;
 
+  // Optimistic toggle: server-truth state + an optimistic overlay that rolls
+  // back automatically if onToggle rejects.
+  const isToggleControlled = pressed !== undefined;
+  const [pressedState, setPressedState] = React.useState(defaultPressed);
+  const committedPressed = (isToggleControlled ? pressed : pressedState) ?? false;
+  const [optimisticPressed, setOptimisticPressed] = React.useOptimistic(
+    committedPressed,
+    (_prev: boolean, next: boolean) => next,
+  );
+
   const isLoading = loading || asyncStatus === "loading";
+
+  React.useEffect(() => {
+    if (asyncStatus === "idle") return;
+    const timer = setTimeout(() => setAsyncStatus("idle"), asyncSuccessDuration);
+    return () => clearTimeout(timer);
+  }, [asyncStatus, asyncSuccessDuration]);
+
+  React.useEffect(() => {
+    if (!copied) return;
+    const timer = setTimeout(() => setCopied(false), copyConfirmDuration);
+    return () => clearTimeout(timer);
+  }, [copied, copyConfirmDuration]);
 
   const handleAsyncClick = async () => {
     if (!onAsyncClick || asyncStatus !== "idle") return;
@@ -967,11 +1024,9 @@ function KiraButton({
       if (asyncSuccessMessage) {
         toast.success(asyncSuccessMessage);
       }
-      setTimeout(() => setAsyncStatus("idle"), asyncSuccessDuration);
     } catch {
       setAsyncStatus("error");
       toast.error(asyncErrorMessage);
-      setTimeout(() => setAsyncStatus("idle"), asyncSuccessDuration);
     }
   };
 
@@ -982,21 +1037,34 @@ function KiraButton({
       await navigator.clipboard.writeText(copyText);
       setCopied(true);
       toast.success(copySuccessMessage);
-      setTimeout(() => setCopied(false), copyConfirmDuration);
     } catch {
       toast.error("Failed to copy");
     }
   };
 
+  const handleToggle = async () => {
+    const next = !committedPressed;
+    setOptimisticPressed(next); // flips the UI instantly
+    try {
+      await onToggle?.(next);
+      if (!isToggleControlled) setPressedState(next); // commit truth
+    } catch {
+      // optimistic value auto-reverts to committedPressed on the next render
+      toast.error(toggleErrorMessage);
+    }
+  };
+
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (copyText) {
+    if (toggle) {
+      React.startTransition(handleToggle);
+    } else if (copyText) {
       handleCopy();
     } else if (onAsyncClick) {
       handleAsyncClick();
     }
 
-    // Quick action animation
-    if (quickAction && buttonRef.current) {
+    // Quick-action press micro-interaction (reduced-motion gated).
+    if (quickAction && buttonRef.current && !reducedMotion) {
       gsap.to(buttonRef.current, {
         scale: 0.95,
         duration: 0.075,
@@ -1009,31 +1077,36 @@ function KiraButton({
     onClick?.(e);
   };
 
-  const effectiveLeftIcon = React.useMemo(() => {
-    if (isLoading) {
-      return <LoadingSpinner size={size} />;
-    }
-    if (copied) {
-      return <IconCheck className={getButtonIconSize(size)} />;
-    }
-    if (asyncStatus === "success") {
-      return <IconSparkles className={getButtonIconSize(size)} />;
-    }
-    if (icon && iconPosition === "left") {
-      return icon;
-    }
-    return leftIcon;
-  }, [isLoading, copied, asyncStatus, icon, iconPosition, leftIcon, size]);
+  const effectiveLeftIcon = (() => {
+      if (isLoading) {
+        return <LoadingSpinner size={size} />;
+      }
+      if (copied) {
+        return <IconCheck className={getButtonIconSize(size)} />;
+      }
+      if (asyncStatus === "success") {
+        // Standardized success affordance: a checkmark, matching the
+        // alert-dialog confirm pattern (was IconSparkles).
+        return <IconCheck className={getButtonIconSize(size)} />;
+      }
+      if (toggle) {
+        return optimisticPressed ? pressedIcon : unpressedIcon;
+      }
+      if (icon && iconPosition === "left") {
+        return icon;
+      }
+      return leftIcon;
+    })();
 
-  const effectiveRightIcon = React.useMemo(() => {
-    if (isLoading) {
-      return undefined;
-    }
-    if (icon && iconPosition === "right") {
-      return icon;
-    }
-    return rightIcon;
-  }, [isLoading, icon, iconPosition, rightIcon]);
+  const effectiveRightIcon = (() => {
+      if (isLoading) {
+        return undefined;
+      }
+      if (icon && iconPosition === "right") {
+        return icon;
+      }
+      return rightIcon;
+    })();
 
   const buttonContent = () => {
     // Quick action layout
@@ -1158,6 +1231,7 @@ function KiraButton({
         onClick={handleClick}
         aria-label={tooltip}
         aria-busy={isLoading}
+        aria-pressed={toggle ? optimisticPressed : undefined}
         aria-live={onAsyncClick ? "polite" : undefined}
         aria-invalid={formError ? true : undefined}
         {...props}
@@ -1168,12 +1242,23 @@ function KiraButton({
   };
 
   const wrapWithTooltip = (element: React.ReactNode) => {
-    if (!tooltip) return element;
+    // While disabled, a disabledReason takes precedence and explains why.
+    const tooltipContent = disabled && disabledReason ? disabledReason : tooltip;
+    if (!tooltipContent) return element;
+
+    // A disabled button emits no pointer events, so wrap it in a span that
+    // carries the hover target when we need the disabled-reason tooltip.
+    const trigger =
+      disabled && disabledReason ? (
+        <span className="inline-flex">{element}</span>
+      ) : (
+        element
+      );
 
     return (
       <Tooltip>
-        <TooltipTrigger>{element}</TooltipTrigger>
-        <TooltipContent side={tooltipSide}>{tooltip}</TooltipContent>
+        <TooltipTrigger>{trigger}</TooltipTrigger>
+        <TooltipContent side={tooltipSide}>{tooltipContent}</TooltipContent>
       </Tooltip>
     );
   };

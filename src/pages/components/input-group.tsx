@@ -1,11 +1,19 @@
+import { useState } from "react";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
   InputGroupText,
+  KiraInputGroup,
 } from "@/components/ui/input-group";
-import { IconSearch, IconEye, IconCopy, IconMail } from "@tabler/icons-react";
+import {
+  IconSearch,
+  IconEye,
+  IconCopy,
+  IconMail,
+  IconCurrencyDollar,
+} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -14,6 +22,7 @@ import {
   DemoTabs,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 function IconDemo() {
@@ -179,13 +188,91 @@ export function MyInputGroup() {
   )
 }`;
 
+function KiraDemo() {
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [unit, setUnit] = useState("usd");
+
+  return (
+    <div className="max-w-sm space-y-4">
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">
+          Leading icon + clearable
+        </p>
+        <KiraInputGroup
+          leadingIcon={<IconSearch className="w-4 h-4" />}
+          placeholder="Search..."
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          clearable
+        />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">
+          Amount with inline unit selector
+        </p>
+        <KiraInputGroup
+          leadingIcon={<IconCurrencyDollar className="w-4 h-4" />}
+          placeholder="0.00"
+          inputMode="decimal"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          units={[
+            { value: "usd", label: "USD" },
+            { value: "eur", label: "EUR" },
+            { value: "gbp", label: "GBP" },
+          ]}
+          unitValue={unit}
+          onUnitChange={setUnit}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">
+          Leading text + character counter
+        </p>
+        <KiraInputGroup
+          leadingText="@"
+          placeholder="handle"
+          maxLength={15}
+          counter
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
+      </div>
+    </div>
+  );
+}
+
+const kiraCode = `import { KiraInputGroup } from "@/components/ui/input-group"
+import { IconCurrencyDollar } from "@tabler/icons-react"
+
+// Prop-driven wrapper: leading icon/text, trailing, unit selector,
+// clearable, and a character counter — all behind one API.
+<KiraInputGroup
+  leadingIcon={<IconCurrencyDollar className="w-4 h-4" />}
+  placeholder="0.00"
+  value={amount}
+  onChange={(e) => setAmount(e.target.value)}
+  units={[
+    { value: "usd", label: "USD" },
+    { value: "eur", label: "EUR" },
+  ]}
+  unitValue={unit}
+  onUnitChange={setUnit}
+  clearable
+/>
+
+<KiraInputGroup leadingText="@" maxLength={15} counter value={v} onChange={...} />`;
+
 export default function InputGroupPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Input Group"
         description="Input with addons, icons, and buttons attached."
-        version="v1.0"
+        version="v2.1"
       />
 
       <FeatureGrid
@@ -246,6 +333,19 @@ export default function InputGroupPage() {
                 code={buttonCode}
               >
                 <ButtonDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "kira",
+            label: "KiraInputGroup",
+            demo: (
+              <DemoWrapper
+                title="KiraInputGroup"
+                description="A prop-driven wrapper that composes leading icon/text, an inline unit/currency selector, a clear button, and a live character counter behind one API."
+                code={kiraCode}
+              >
+                <KiraDemo />
               </DemoWrapper>
             ),
           },
@@ -342,6 +442,76 @@ export default function InputGroupPage() {
                 type: "string",
                 default: "-",
                 description: "Additional CSS classes for the text.",
+              },
+            ],
+          },
+          {
+            title: "KiraInputGroup",
+            props: [
+              {
+                prop: "leadingIcon",
+                type: "ReactNode",
+                default: "-",
+                description: "Icon rendered in the inline-start addon.",
+              },
+              {
+                prop: "leadingText",
+                type: "string",
+                default: "-",
+                description: "Text rendered in the inline-start addon (e.g. @ or https://).",
+              },
+              {
+                prop: "units",
+                type: "{ value; label }[]",
+                default: "-",
+                description: "Options for the inline-end unit/currency selector.",
+              },
+              {
+                prop: "unitValue / onUnitChange",
+                type: "string / (v) => void",
+                default: "-",
+                description: "Controlled value and change handler for the unit selector.",
+              },
+              {
+                prop: "clearable",
+                type: "boolean",
+                default: "false",
+                description: "Show a clear button when the field has a value.",
+              },
+              {
+                prop: "counter",
+                type: "boolean",
+                default: "false",
+                description: "Show a live character counter (pair with maxLength).",
+              },
+            ],
+          },
+        ]}
+      />
+
+      <Changelog
+        entries={[
+          {
+            version: "2.1.0",
+            date: "10 July 2026",
+            changes: [
+              {
+                type: "added",
+                title: "KiraInputGroup",
+                description:
+                  "Added a prop-driven KiraInputGroup that composes leading icon/text, an inline unit/currency selector, a clear button, and a live character counter behind a single API — matching the Kira* convention used across the library.",
+              },
+              {
+                type: "added",
+                title: "Inline Unit Selector",
+                description:
+                  "Exposed InputGroupUnitSelect, a compact dropdown addon for units and currencies that sits flush against the input.",
+              },
+              {
+                type: "changed",
+                title: "Accessibility Polish",
+                description:
+                  "Added a data-slot to InputGroupText and ensured icon-only addon buttons meet the 24px minimum target size.",
               },
             ],
           },

@@ -14,6 +14,7 @@ import {
   IconSend,
   IconSettings,
   IconHeart,
+  IconStar,
   IconPlayerPlay,
   IconInfoCircle,
   IconCircleCheck,
@@ -883,6 +884,93 @@ const disabledCode = `import { Button } from "@/components/ui/button"
 <Button variant="secondary" disabled>Disabled Secondary</Button>
 <Button variant="outline" disabled>Disabled Outline</Button>`;
 
+const toggleCode = `import { KiraButton } from "@/components/ui/button"
+import { IconHeart, IconHeartFilled } from "@tabler/icons-react"
+
+// Optimistic toggle: flips instantly, rolls back + toasts if onToggle rejects.
+<KiraButton
+  toggle
+  variant="outline"
+  defaultPressed={false}
+  pressedIcon={<IconHeartFilled className="w-4 h-4 text-red-500" />}
+  unpressedIcon={<IconHeart className="w-4 h-4" />}
+  onToggle={async (pressed) => {
+    await likePost(pressed) // may throw → auto-revert
+  }}
+>
+  Like
+</KiraButton>
+
+// Disabled with an explanation on hover.
+<KiraButton disabled disabledReason="Complete the form first">
+  Submit
+</KiraButton>`;
+
+function ToggleDemo() {
+  const [liked, setLiked] = React.useState(false);
+  const [bookmarked, setBookmarked] = React.useState(false);
+
+  // Simulated async that fails ~1 in 3 to show optimistic rollback.
+  const flaky = (setter: (v: boolean) => void, next: boolean) =>
+    new Promise<void>((resolve, reject) =>
+      setTimeout(() => {
+        if (Math.random() < 0.33) {
+          reject(new Error("network"));
+        } else {
+          setter(next);
+          resolve();
+        }
+      }, 600),
+    );
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Optimistic toggle (flips instantly, reverts on failure)
+        </h3>
+        <div className="flex flex-wrap gap-3">
+          <KiraButton
+            toggle
+            variant="outline"
+            pressed={liked}
+            pressedIcon={<IconHeart className="w-4 h-4 text-red-500 fill-red-500" />}
+            unpressedIcon={<IconHeart className="w-4 h-4" />}
+            onToggle={(next) => flaky(setLiked, next)}
+          >
+            {liked ? "Liked" : "Like"}
+          </KiraButton>
+          <KiraButton
+            toggle
+            variant="outline"
+            pressed={bookmarked}
+            pressedIcon={<IconStar className="w-4 h-4 text-amber-500 fill-amber-500" />}
+            unpressedIcon={<IconStar className="w-4 h-4" />}
+            onToggle={(next) => flaky(setBookmarked, next)}
+          >
+            {bookmarked ? "Saved" : "Save"}
+          </KiraButton>
+        </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          The request fails ~1 in 3 times to demonstrate automatic rollback.
+        </p>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Disabled with a reason (hover the button)
+        </h3>
+        <KiraButton
+          disabled
+          disabledReason="Complete all required fields before submitting."
+        >
+          Submit
+        </KiraButton>
+      </div>
+    </div>
+  );
+}
+
 // =============================================================================
 // Main Page Component
 // =============================================================================
@@ -1024,6 +1112,19 @@ export default function ButtonPage() {
           code={kiraButtonCode}
         >
           <KiraButtonDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "toggle",
+      label: "Optimistic Toggle",
+      demo: (
+        <DemoWrapper
+          title="Optimistic Toggle & Disabled Reason"
+          description="Toggle buttons update instantly and roll back automatically if the async handler rejects. Disabled buttons can explain themselves on hover."
+          code={toggleCode}
+        >
+          <ToggleDemo />
         </DemoWrapper>
       ),
     },
@@ -1237,7 +1338,7 @@ export default function ButtonPage() {
       <PageHeader
         title="Button"
         description="A versatile button component with multiple variants, sizes, and interactive features like hold-to-confirm and loading states."
-        version="v2.0"
+        version="v2.2"
       />
 
       <FeatureGrid features={features} />
@@ -1252,6 +1353,36 @@ export default function ButtonPage() {
 
       <Changelog
         entries={[
+          {
+            version: "2.2.0",
+            date: "10 July 2026",
+            changes: [
+              {
+                type: "added",
+                title: "Optimistic Toggle Buttons",
+                description:
+                  "KiraButton gained a `toggle` mode built on React 19's useOptimistic: the pressed state flips instantly and rolls back with a toast if the async onToggle handler rejects. Pairs with aria-pressed and pressed/unpressed icons.",
+              },
+              {
+                type: "added",
+                title: "Disabled Reason Tooltips",
+                description:
+                  "KiraButton now accepts `disabledReason` — a tooltip shown only while the button is disabled that explains why, so disabled controls are never a dead end.",
+              },
+              {
+                type: "changed",
+                title: "Reduced-Motion Gating",
+                description:
+                  "Every GSAP animation (ripple, press-scale, spinner, expandable width, quick-action press) now respects prefers-reduced-motion via the shared useReducedMotion hook. The loading spinner falls back to a CSS spin.",
+              },
+              {
+                type: "changed",
+                title: "Standardized Async Success",
+                description:
+                  "Async success now flashes a checkmark (IconCheck) instead of a sparkle, matching the confirm pattern used across the system.",
+              },
+            ],
+          },
           {
             version: "2.1.0",
             date: "5 February 2026",

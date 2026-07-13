@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { IconX, IconChevronDown } from "@tabler/icons-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -107,6 +108,7 @@ function InputGroupButton({
 function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
+      data-slot="input-group-text"
       className={cn(
         "text-muted-foreground gap-2 text-sm [&_svg:not([class*='size-'])]:size-4 flex items-center [&_svg]:pointer-events-none",
         className
@@ -148,6 +150,195 @@ function InputGroupTextarea({
   );
 }
 
+// =============================================================================
+// KiraInputGroup — prop-driven wrapper over the compound parts
+// =============================================================================
+
+interface UnitOption {
+  value: string;
+  label: string;
+}
+
+/** Compact unit/currency selector for use as an inline-end addon. */
+function InputGroupUnitSelect({
+  options,
+  value,
+  onValueChange,
+}: {
+  options: UnitOption[];
+  value?: string;
+  onValueChange?: (value: string) => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [selected, setSelected] = React.useState(
+    () => options.find((o) => o.value === value) ?? options[0],
+  );
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  // Adjust selection when the controlled value changes (during render).
+  const [prevValue, setPrevValue] = React.useState(value);
+  if (value !== prevValue) {
+    setPrevValue(value);
+    const match = options.find((o) => o.value === value);
+    if (match) setSelected(match);
+  }
+
+  React.useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <Button
+        type="button"
+        variant="ghost"
+        size="xs"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="gap-1"
+      >
+        {selected?.label}
+        <IconChevronDown className="size-3.5" />
+      </Button>
+      {open && (
+        <div
+          role="listbox"
+          className="absolute right-0 top-full z-50 mt-1 min-w-20 rounded-lg border bg-popover p-1 shadow-md"
+        >
+          {options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              role="option"
+              aria-selected={selected?.value === option.value}
+              onClick={() => {
+                setSelected(option);
+                onValueChange?.(option.value);
+                setOpen(false);
+              }}
+              className={cn(
+                "w-full rounded-md px-2 py-1 text-left text-sm hover:bg-muted",
+                selected?.value === option.value && "bg-muted",
+              )}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface KiraInputGroupProps
+  extends Omit<React.ComponentProps<"input">, "prefix" | "size"> {
+  leadingIcon?: React.ReactNode;
+  leadingText?: string;
+  trailing?: React.ReactNode;
+  /** Inline unit/currency selector rendered as an inline-end addon. */
+  units?: UnitOption[];
+  unitValue?: string;
+  onUnitChange?: (value: string) => void;
+  clearable?: boolean;
+  onClear?: () => void;
+  /** Show a live character counter addon (needs a controlled `value`). */
+  counter?: boolean;
+}
+
+function KiraInputGroup({
+  leadingIcon,
+  leadingText,
+  trailing,
+  units,
+  unitValue,
+  onUnitChange,
+  clearable,
+  onClear,
+  counter,
+  value,
+  onChange,
+  maxLength,
+  className,
+  ...props
+}: KiraInputGroupProps) {
+  const hasValue = String(value ?? "").length > 0;
+  const showClear = clearable && hasValue && !props.disabled;
+  const currentLength = String(value ?? "").length;
+
+  const handleClear = () => {
+    onClear?.();
+    onChange?.({
+      target: { value: "" },
+    } as React.ChangeEvent<HTMLInputElement>);
+  };
+
+  const hasLead = leadingIcon || leadingText;
+  const hasTrail = trailing || showClear || counter || units;
+
+  return (
+    <InputGroup className={className}>
+      {hasLead && (
+        <InputGroupAddon align="inline-start">
+          {leadingIcon}
+          {leadingText && <InputGroupText>{leadingText}</InputGroupText>}
+        </InputGroupAddon>
+      )}
+      <InputGroupInput
+        value={value}
+        onChange={onChange}
+        maxLength={maxLength}
+        {...props}
+      />
+      {hasTrail && (
+        <InputGroupAddon align="inline-end">
+          {counter && (
+            <InputGroupText
+              aria-live="polite"
+              className="tabular-nums text-xs"
+            >
+              <span
+                className={cn(
+                  maxLength !== undefined &&
+                    currentLength >= maxLength &&
+                    "text-destructive",
+                )}
+              >
+                {currentLength}
+              </span>
+              {maxLength !== undefined && `/${maxLength}`}
+            </InputGroupText>
+          )}
+          {showClear && (
+            <InputGroupButton
+              size="icon-xs"
+              onClick={handleClear}
+              aria-label="Clear input"
+            >
+              <IconX className="size-3.5" />
+            </InputGroupButton>
+          )}
+          {trailing}
+          {units && units.length > 0 && (
+            <InputGroupUnitSelect
+              options={units}
+              value={unitValue}
+              onValueChange={onUnitChange}
+            />
+          )}
+        </InputGroupAddon>
+      )}
+    </InputGroup>
+  );
+}
+
 export {
   InputGroup,
   InputGroupAddon,
@@ -155,4 +346,7 @@ export {
   InputGroupText,
   InputGroupInput,
   InputGroupTextarea,
+  InputGroupUnitSelect,
+  KiraInputGroup,
 };
+export type { KiraInputGroupProps, UnitOption };

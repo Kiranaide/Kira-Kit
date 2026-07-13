@@ -1010,13 +1010,107 @@ const items = [
 <KiraButtonGroup items={items} size="sm" selectionMode="single" />
 <KiraButtonGroup items={items} size="lg" selectionMode="single" />`;
 
+function SegmentedDemo() {
+  const [view, setView] = useState<string>("list");
+  const [range, setRange] = useState<string>("week");
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Segmented control (animated sliding pill)
+        </h3>
+        <KiraButtonGroup
+          segmented
+          type="single"
+          value={view}
+          onChange={(v) => setView(v as string)}
+          items={[
+            { value: "list", label: "List" },
+            { value: "board", label: "Board" },
+            { value: "calendar", label: "Calendar" },
+          ]}
+        />
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Pill shape
+        </h3>
+        <KiraButtonGroup
+          segmented
+          shape="pill"
+          type="single"
+          value={range}
+          onChange={(v) => setRange(v as string)}
+          items={[
+            { value: "day", label: "Day" },
+            { value: "week", label: "Week" },
+            { value: "month", label: "Month" },
+          ]}
+        />
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Icon-only, dense
+        </h3>
+        <KiraButtonGroup
+          segmented
+          type="single"
+          size="sm"
+          defaultValue="center"
+          items={[
+            {
+              value: "left",
+              label: "",
+              icon: <IconAlignLeft className="w-4 h-4" />,
+              "aria-label": "Align left",
+            },
+            {
+              value: "center",
+              label: "",
+              icon: <IconAlignCenter className="w-4 h-4" />,
+              "aria-label": "Align center",
+            },
+            {
+              value: "right",
+              label: "",
+              icon: <IconAlignRight className="w-4 h-4" />,
+              "aria-label": "Align right",
+            },
+          ]}
+        />
+      </div>
+    </div>
+  );
+}
+
+const segmentedCode = `import { KiraButtonGroup } from "@/components/ui/button-group"
+
+// Animated sliding pill behind the selected item.
+<KiraButtonGroup
+  segmented
+  type="single"
+  value={view}
+  onChange={setView}
+  items={[
+    { value: "list", label: "List" },
+    { value: "board", label: "Board" },
+    { value: "calendar", label: "Calendar" },
+  ]}
+/>
+
+// Fully-rounded pill shape.
+<KiraButtonGroup segmented shape="pill" type="single" items={rangeItems} />`;
+
 export default function ButtonGroupPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Button Group"
         description="Groups multiple buttons together with seamless styling, supporting connected/disconnected modes, radio/checkbox selection, and animated entrances."
-        version="2.1"
+        version="2.2"
       />
 
       <FeatureGrid features={features} />
@@ -1116,6 +1210,19 @@ export default function ButtonGroupPage() {
                 </DemoWrapper>
               ),
             },
+            {
+              value: "segmented",
+              label: "Segmented",
+              demo: (
+                <DemoWrapper
+                  title="Segmented Control"
+                  description="An animated pill slides behind the selected item. Supports a fully-rounded pill shape and dense icon-only layouts. The slide snaps instantly under reduced motion."
+                  code={segmentedCode}
+                >
+                  <SegmentedDemo />
+                </DemoWrapper>
+              ),
+            },
           ]}
         />
       </Tabs>
@@ -1141,6 +1248,19 @@ export default function ButtonGroupPage() {
                 type: "xs | sm | default | lg",
                 default: "default",
                 description: "Size variant applied to all buttons.",
+              },
+              {
+                prop: "segmented",
+                type: "boolean",
+                default: "false",
+                description:
+                  "Segmented-control mode: renders an animated sliding pill behind the selected item (single selection).",
+              },
+              {
+                prop: "shape",
+                type: "default | pill",
+                default: "default",
+                description: "Corner shape; pill fully rounds the container and items.",
               },
               {
                 prop: "gap",
@@ -1430,6 +1550,36 @@ export default function ButtonGroupPage() {
 
       <Changelog
         entries={[
+          {
+            version: "2.2.0",
+            date: "10 July 2026",
+            changes: [
+              {
+                type: "added",
+                title: "Segmented Control",
+                description:
+                  "Added a `segmented` mode that renders an animated sliding pill behind the selected item, plus a `shape=\"pill\"` variant for fully-rounded groups. The slide respects prefers-reduced-motion.",
+              },
+              {
+                type: "fixed",
+                title: "Per-Item Loading Indicator",
+                description:
+                  "Replaced the ⏳ emoji loading placeholder with a proper IconLoader2 spinner, and busy items now expose aria-busy and become disabled.",
+              },
+              {
+                type: "changed",
+                title: "Reduced-Motion Gating",
+                description:
+                  "The staggered entrance, selected press-tween, and click ripple now respect prefers-reduced-motion.",
+              },
+              {
+                type: "changed",
+                title: "KiraButtonGroup Cleanup",
+                description:
+                  "De-duplicated the toolbar rendering path so items render through a single code path regardless of the toolbar wrapper.",
+              },
+            ],
+          },
           {
             version: "2.1.0",
             date: "7 February 2026",

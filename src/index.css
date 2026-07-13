@@ -98,6 +98,7 @@
   --animate-ping-once: ping-once 0.8s cubic-bezier(0, 0, 0.2, 1);
   --animate-badge-shimmer: badge-shimmer 1.75s linear infinite;
   --animate-marquee: marquee 18s linear infinite;
+  --animate-shake: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -287,6 +288,14 @@
   100% {
     transform: translateX(-100%);
   }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
 }
 
 /* Progress bar animations */
