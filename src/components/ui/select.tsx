@@ -4,6 +4,7 @@ import * as React from "react";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 
 import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   IconCheck,
   IconChevronUp,
@@ -65,8 +66,9 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon
+        data-slot="select-icon"
         render={
-          <IconChevronDown className="text-muted-foreground size-4 pointer-events-none transition-transform [[data-state=open]>&]:rotate-180" />
+          <IconChevronDown className="text-muted-foreground size-4 pointer-events-none transition-transform data-popup-open:rotate-180" />
         }
       />
     </SelectPrimitive.Trigger>
@@ -87,9 +89,11 @@ function SelectContent({
     SelectPrimitive.Positioner.Props,
     "align" | "alignOffset" | "side" | "sideOffset" | "alignItemWithTrigger"
   >) {
+  const reducedMotion = useReducedMotion();
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Positioner
+        data-slot="select-positioner"
         side={side}
         sideOffset={sideOffset}
         align={align}
@@ -100,13 +104,17 @@ function SelectContent({
         <SelectPrimitive.Popup
           data-slot="select-content"
           className={cn(
-            "bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 min-w-36 rounded-lg shadow-md ring-1 duration-100 relative isolate z-50 max-h-(--available-height) w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto",
+            "bg-popover text-popover-foreground ring-foreground/10 min-w-36 rounded-lg shadow-md ring-1 duration-100 relative isolate z-50 max-h-(--available-height) w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto",
+            !reducedMotion &&
+              "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
             className
           )}
           {...props}
         >
           <SelectScrollUpButton />
-          <SelectPrimitive.List>{children}</SelectPrimitive.List>
+          <SelectPrimitive.List data-slot="select-list">
+            {children}
+          </SelectPrimitive.List>
           <SelectScrollDownButton />
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>
@@ -141,10 +149,14 @@ function SelectItem({
       )}
       {...props}
     >
-      <SelectPrimitive.ItemText className="flex flex-1 gap-2 shrink-0 whitespace-nowrap">
+      <SelectPrimitive.ItemText
+        data-slot="select-item-text"
+        className="flex flex-1 gap-2 shrink-0 whitespace-nowrap"
+      >
         {children}
       </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator
+        data-slot="select-item-indicator"
         render={
           <span className="pointer-events-none absolute right-2 flex size-4 items-center justify-center" />
         }
@@ -309,12 +321,6 @@ interface SelectFieldProps<T extends SelectOption = SelectOption> {
   loadingMessage?: string | React.ReactNode;
 
   searchingMessage?: string | React.ReactNode;
-
-  virtualize?: boolean;
-
-  virtualItemHeight?: number;
-
-  overscan?: number;
 }
 
 function fuzzyMatch(text: string, query: string): boolean {
@@ -376,6 +382,7 @@ function SelectField<T extends SelectOption = SelectOption>({
   searchingMessage,
 }: SelectFieldProps<T>) {
   const [inputValue, setInputValue] = React.useState("");
+  const reducedMotion = useReducedMotion();
   const [options, setOptions] = React.useState<T[]>(
     flattenOptions(initialOptions) as T[]
   );
@@ -410,12 +417,15 @@ function SelectField<T extends SelectOption = SelectOption>({
     return Array.isArray(value) ? value : [value];
   }, [value]);
 
-  React.useEffect(() => {
+  // Sync options from props during render (not an effect) so a changing
+  // `initialOptions`/`async` updates the list without a cascading render.
+  const [prevSync, setPrevSync] = React.useState({ initialOptions, async });
+  if (prevSync.initialOptions !== initialOptions || prevSync.async !== async) {
+    setPrevSync({ initialOptions, async });
     if (!async) {
-      const flattened = flattenOptions(initialOptions) as T[];
-      setOptions(flattened);
+      setOptions(flattenOptions(initialOptions) as T[]);
     }
-  }, [initialOptions, async]);
+  }
 
   React.useEffect(() => {
     if (!async || !onSearch) return;
@@ -676,6 +686,9 @@ function SelectField<T extends SelectOption = SelectOption>({
 
       case "Backspace":
         if (!inputValue && multiple && selectedValues.length > 0) {
+          // Bound on both the trigger and the input; stop the bubble so an
+          // empty-input Backspace doesn't remove two tags.
+          e.stopPropagation();
           const newValues = selectedValues.slice(0, -1);
           const newOptions = options.filter((o) => newValues.includes(o.value));
           onChange?.(newValues, newOptions as T[]);
@@ -721,7 +734,8 @@ function SelectField<T extends SelectOption = SelectOption>({
 
   const popupClasses = cn(
     "absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border bg-popover p-1 shadow-md",
-    "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95"
+    !reducedMotion &&
+      "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95"
   );
 
   const itemClasses = (
@@ -742,7 +756,7 @@ function SelectField<T extends SelectOption = SelectOption>({
       : undefined;
 
   return (
-    <div className={cn("relative w-full", className)}>
+    <div data-slot="select-field" className={cn("relative w-full", className)}>
       {name && (
         <input
           type="hidden"
@@ -754,6 +768,7 @@ function SelectField<T extends SelectOption = SelectOption>({
       <div
         ref={triggerRef}
         id={triggerId}
+        data-slot="select-field-trigger"
         className={triggerClasses}
         onClick={() => !disabled && handleOpenChange(!isOpen)}
         onKeyDown={handleKeyDown}
@@ -782,6 +797,7 @@ function SelectField<T extends SelectOption = SelectOption>({
           displayedTags.map((opt) => (
             <span
               key={opt.value}
+              data-slot="select-field-tag"
               className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md bg-muted shrink-0"
             >
               {opt.label}
@@ -806,6 +822,7 @@ function SelectField<T extends SelectOption = SelectOption>({
           <input
             ref={inputRef}
             type="text"
+            data-slot="select-field-input"
             value={inputValue}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
@@ -814,7 +831,7 @@ function SelectField<T extends SelectOption = SelectOption>({
               multiple && selectedValues.length > 0 ? "" : placeholder
             }
             disabled={disabled}
-            className="flex-1 min-w-[80px] bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
+            className="flex-1 min-w-20 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
             aria-autocomplete="list"
             aria-controls={isOpen ? listId : undefined}
           />
@@ -871,6 +888,7 @@ function SelectField<T extends SelectOption = SelectOption>({
         <div
           ref={listRef}
           id={listId}
+          data-slot="select-field-list"
           className={popupClasses}
           role="listbox"
           aria-multiselectable={multiple}
@@ -899,6 +917,7 @@ function SelectField<T extends SelectOption = SelectOption>({
                   <div
                     key={option.value}
                     id={`${listId}-option-${index}`}
+                    data-slot="select-field-option"
                     data-option
                     role="option"
                     aria-selected={isSelected}
@@ -943,6 +962,7 @@ function SelectField<T extends SelectOption = SelectOption>({
               {showCreateOption && (
                 <div
                   id={`${listId}-option-${filteredOptions.length}`}
+                  data-slot="select-field-create"
                   data-option
                   role="option"
                   aria-selected={false}
@@ -971,161 +991,154 @@ function SelectField<T extends SelectOption = SelectOption>({
   );
 }
 
-interface MultiSelectProps {
-  options: SelectOption[];
-  value?: string[];
-  onChange?: (value: string[]) => void;
+// === KiraSelect: one prop-driven combobox ===
+
+interface KiraSelectProps<T extends SelectOption = SelectOption> {
+  options: T[] | GroupedSelectOption<T>[];
+  value?: string | string[];
+  defaultValue?: string | string[];
+  onChange?: (value: string | string[], option: T | T[] | null) => void;
+  multiple?: boolean;
+  searchable?: boolean;
+  async?: boolean;
+  onSearch?: (query: string) => Promise<T[]>;
+  creatable?: boolean;
+  onCreateOption?: (inputValue: string) => void;
+  createLabel?: string;
   placeholder?: string;
   disabled?: boolean;
-  className?: string;
+  size?: "sm" | "default";
+  variant?: "default" | "ghost" | "outline";
+  leftIcon?: React.ReactNode;
+  hideChevron?: boolean;
   maxDisplayedTags?: number;
-  showSearchIcon?: boolean;
+  emptyMessage?: string | React.ReactNode;
+  loadingMessage?: string | React.ReactNode;
+  searchingMessage?: string | React.ReactNode;
+  /** Marks the control invalid: sets aria-invalid + destructive ring. */
+  invalid?: boolean;
+  required?: boolean;
+  name?: string;
+  className?: string;
+  "aria-label"?: string;
 }
 
-function MultiSelect({
+function KiraSelect<T extends SelectOption = SelectOption>({
   options,
-  value = [],
+  value,
+  defaultValue,
   onChange,
+  multiple = false,
+  searchable = false,
+  async = false,
+  onSearch,
+  creatable = false,
+  onCreateOption,
+  createLabel = "Create",
   placeholder = "Select...",
   disabled = false,
-  className,
+  size = "default",
+  variant = "default",
+  leftIcon,
+  hideChevron = false,
   maxDisplayedTags = 3,
-  showSearchIcon = false,
-}: MultiSelectProps) {
-  return (
-    <SelectField
-      options={options}
-      value={value}
-      onChange={(val) => onChange?.(val as string[])}
-      multiple
-      placeholder={placeholder}
-      disabled={disabled}
-      className={className}
-      maxDisplayedTags={maxDisplayedTags}
-      showSearchIcon={showSearchIcon}
-    />
-  );
-}
-
-interface AsyncSelectProps {
-  loadOptions: (query: string) => Promise<SelectOption[]>;
-  value?: string;
-  onChange?: (value: string, option: SelectOption | null) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  className?: string;
-  debounceMs?: number;
-  cacheOptions?: boolean;
-  showSearchIcon?: boolean;
-}
-
-function AsyncSelect({
-  loadOptions,
-  value,
-  onChange,
-  placeholder = "Search...",
-  disabled = false,
+  emptyMessage,
+  loadingMessage,
+  searchingMessage,
+  invalid,
+  required,
+  name,
   className,
-  debounceMs = 300,
-  cacheOptions = true,
-  showSearchIcon = false,
-}: AsyncSelectProps) {
+  "aria-label": ariaLabel,
+}: KiraSelectProps<T>) {
+  // Uncontrolled fallback for the simple Base UI path.
+  const [internalValue, setInternalValue] = React.useState<
+    string | string[] | undefined
+  >(defaultValue);
+  const isControlled = value !== undefined;
+  const currentValue = isControlled ? value : internalValue;
+
+  const isRich = searchable || async || creatable || multiple;
+  const flat = React.useMemo(() => flattenOptions(options), [options]);
+
+  // --- Rich path: delegate to the SelectField state machine ---
+  if (isRich) {
+    return (
+      <SelectField<T>
+        options={options}
+        value={currentValue}
+        onChange={(val, opt) => {
+          if (!isControlled) setInternalValue(val);
+          onChange?.(val, opt);
+        }}
+        multiple={multiple}
+        searchable={searchable || async || creatable}
+        async={async}
+        onSearch={onSearch}
+        creatable={creatable}
+        onCreateOption={onCreateOption}
+        createLabel={createLabel}
+        placeholder={placeholder}
+        disabled={disabled}
+        size={size}
+        variant={variant}
+        leftIcon={leftIcon}
+        hideChevron={hideChevron}
+        maxDisplayedTags={maxDisplayedTags}
+        emptyMessage={emptyMessage}
+        loadingMessage={loadingMessage}
+        searchingMessage={searchingMessage}
+        aria-invalid={invalid}
+        required={required}
+        name={name}
+        aria-label={ariaLabel}
+        className={className}
+      />
+    );
+  }
+
+  // --- Simple path: native Base UI Select ---
+  const renderItems = (items: T[]) =>
+    items.map((opt) => (
+      <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>
+        {opt.label}
+      </SelectItem>
+    ));
+
   return (
-    <SelectField
-      value={value}
-      onChange={(val, opt) =>
-        onChange?.(val as string, opt as SelectOption | null)
-      }
-      async
-      onSearch={loadOptions}
-      placeholder={placeholder}
+    <Select
+      value={(currentValue as string) ?? ""}
+      onValueChange={(val) => {
+        if (!isControlled) setInternalValue(val as string);
+        const opt = flat.find((o) => o.value === val) ?? null;
+        onChange?.(val as string, opt);
+      }}
       disabled={disabled}
-      className={className}
-      debounceMs={debounceMs}
-      cacheOptions={cacheOptions}
-      showSearchIcon={showSearchIcon}
-    />
-  );
-}
-
-interface CreatableSelectProps {
-  options: SelectOption[];
-  value?: string;
-  onChange?: (value: string, option: SelectOption) => void;
-  onCreateOption?: (inputValue: string) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  className?: string;
-  createLabel?: string;
-}
-
-function CreatableSelect({
-  options,
-  value,
-  onChange,
-  onCreateOption,
-  placeholder = "Select or type to create...",
-  disabled = false,
-  className,
-  createLabel = "Create",
-}: CreatableSelectProps) {
-  return (
-    <SelectField
-      options={options}
-      value={value}
-      onChange={(val, opt) => onChange?.(val as string, opt as SelectOption)}
-      creatable
-      onCreateOption={onCreateOption}
-      placeholder={placeholder}
-      disabled={disabled}
-      className={className}
-      createLabel={createLabel}
-    />
-  );
-}
-
-interface AutocompleteProps {
-  options?: AutocompleteOption[];
-  value?: string | string[];
-  onChange?: (value: string | string[]) => void;
-  onSearch?: (query: string) => Promise<AutocompleteOption[]>;
-  placeholder?: string;
-  disabled?: boolean;
-  multiple?: boolean;
-  limit?: number;
-  debounceMs?: number;
-  fuzzyMatching?: boolean;
-  autoHighlight?: boolean;
-  className?: string;
-}
-
-function Autocomplete({
-  options: initialOptions = [],
-  value,
-  onChange,
-  onSearch,
-  placeholder = "Search...",
-  disabled = false,
-  multiple = false,
-  debounceMs = 300,
-  fuzzyMatching = true,
-  className,
-}: AutocompleteProps) {
-  return (
-    <SelectField
-      options={initialOptions}
-      value={value}
-      onChange={(val) => onChange?.(val)}
-      multiple={multiple}
-      async={!!onSearch}
-      onSearch={onSearch}
-      placeholder={placeholder}
-      disabled={disabled}
-      className={className}
-      debounceMs={debounceMs}
-      fuzzyMatching={fuzzyMatching}
-      showSearchIcon
-    />
+      name={name}
+      required={required}
+    >
+      <SelectTrigger
+        size={size}
+        aria-invalid={invalid}
+        aria-label={ariaLabel}
+        className={className}
+      >
+        {leftIcon && (
+          <span className="shrink-0 text-muted-foreground">{leftIcon}</span>
+        )}
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent>
+        {isGroupedOptions(options)
+          ? options.map((group) => (
+              <SelectGroup key={group.label}>
+                <SelectLabel>{group.label}</SelectLabel>
+                {renderItems(group.options)}
+              </SelectGroup>
+            ))
+          : renderItems(options)}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -1141,18 +1154,13 @@ export {
   SelectTrigger,
   SelectValue,
   SelectField,
-  MultiSelect,
-  AsyncSelect,
-  CreatableSelect,
-  Autocomplete,
+  KiraSelect,
 };
 
 export type {
   SelectOption,
   AutocompleteOption,
+  GroupedSelectOption,
   SelectFieldProps,
-  MultiSelectProps,
-  AsyncSelectProps,
-  CreatableSelectProps,
-  AutocompleteProps,
+  KiraSelectProps,
 };

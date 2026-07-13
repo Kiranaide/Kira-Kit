@@ -1,10 +1,11 @@
 "use client";
 
+import * as React from "react";
 import {
   Label,
-  LabelHint,
   LabelGroup,
   LabelDescription,
+  KiraLabel,
 } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -31,6 +32,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 // =============================================================================
@@ -528,10 +530,7 @@ export function StatesDemo() {
 function WithHintDemo() {
   return (
     <div className="space-y-2 max-w-md">
-      <Label
-        hint={<LabelHint>Must be a valid email address</LabelHint>}
-        htmlFor="with-hint"
-      >
+      <Label hint="Must be a valid email address" htmlFor="with-hint">
         Email Address
       </Label>
       <Input id="with-hint" type="email" placeholder="you@example.com" />
@@ -539,16 +538,13 @@ function WithHintDemo() {
   );
 }
 
-const withHintCode = `import { Label, LabelHint } from "@/components/ui/label"
+const withHintCode = `import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 
 export function WithHintDemo() {
   return (
     <div className="space-y-2">
-      <Label
-        hint={<LabelHint>Must be a valid email address</LabelHint>}
-        htmlFor="email"
-      >
+      <Label hint="Must be a valid email address" htmlFor="email">
         Email Address
       </Label>
       <Input id="email" type="email" placeholder="you@example.com" />
@@ -835,6 +831,43 @@ const features = [
 // =============================================================================
 const apiSections = [
   {
+    title: "KiraLabel",
+    props: [
+      {
+        prop: "description",
+        type: "ReactNode",
+        description: "Renders a description below the label (folds LabelGroup).",
+      },
+      {
+        prop: "count",
+        type: "number",
+        description: "Live character count shown inline with aria-live.",
+      },
+      {
+        prop: "maxCount",
+        type: "number",
+        description: "Upper bound for count; near-limit and over show warn/error colours.",
+      },
+      {
+        prop: "validationState",
+        type: '"valid" | "invalid" | "validating"',
+        description: "Drives label colour and the validation message tone.",
+      },
+      {
+        prop: "validationMessage",
+        type: "ReactNode",
+        description: "Inline status message (role=status, aria-live).",
+      },
+      {
+        prop: "field",
+        type: "boolean",
+        default: "false",
+        description:
+          "Render Base UI's Field.Label for automatic control association inside a <Field.Root>.",
+      },
+    ],
+  },
+  {
     title: "Label",
     props: [
       {
@@ -984,6 +1017,109 @@ const apiSections = [
 // =============================================================================
 // Demo Tabs Configuration
 // =============================================================================
+// =============================================================================
+// Demo: KiraLabel (unified API)
+// =============================================================================
+function KiraLabelDemo() {
+  return (
+    <div className="space-y-4 max-w-md">
+      <KiraLabel
+        htmlFor="kira-email"
+        icon={<IconMail />}
+        required
+        description="We'll never share your email."
+      >
+        Email
+      </KiraLabel>
+      <Input id="kira-email" type="email" placeholder="you@example.com" />
+    </div>
+  );
+}
+
+const kiraLabelCode = `import { KiraLabel } from "@/components/ui/label"
+
+<KiraLabel
+  htmlFor="email"
+  icon={<IconMail />}
+  required
+  description="We'll never share your email."
+>
+  Email
+</KiraLabel>`;
+
+// =============================================================================
+// Demo: Live character counter
+// =============================================================================
+function CounterLabelDemo() {
+  const [value, setValue] = React.useState("");
+  const maxCount = 60;
+  return (
+    <div className="space-y-2 max-w-md">
+      <KiraLabel htmlFor="kira-bio" count={value.length} maxCount={maxCount}>
+        Bio
+      </KiraLabel>
+      <Input
+        id="kira-bio"
+        value={value}
+        maxLength={maxCount}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Tell us about yourself"
+      />
+    </div>
+  );
+}
+
+const counterLabelCode = `import { KiraLabel } from "@/components/ui/label"
+
+const [value, setValue] = useState("")
+
+<KiraLabel htmlFor="bio" count={value.length} maxCount={60}>
+  Bio
+</KiraLabel>
+<Input value={value} maxLength={60} onChange={(e) => setValue(e.target.value)} />`;
+
+// =============================================================================
+// Demo: Inline validation
+// =============================================================================
+function ValidationLabelDemo() {
+  const [value, setValue] = React.useState("");
+  const state = value.length === 0 ? undefined : value.includes("@") ? "valid" : "invalid";
+  return (
+    <div className="space-y-2 max-w-md">
+      <KiraLabel
+        htmlFor="kira-validate"
+        validationState={state}
+        validationMessage={
+          state === "invalid"
+            ? "Enter a valid email address."
+            : state === "valid"
+              ? "Looks good."
+              : undefined
+        }
+      >
+        Email
+      </KiraLabel>
+      <Input
+        id="kira-validate"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="you@example.com"
+        aria-invalid={state === "invalid"}
+      />
+    </div>
+  );
+}
+
+const validationLabelCode = `import { KiraLabel } from "@/components/ui/label"
+
+<KiraLabel
+  htmlFor="email"
+  validationState={valid ? "valid" : "invalid"}
+  validationMessage={valid ? "Looks good." : "Enter a valid email address."}
+>
+  Email
+</KiraLabel>`;
+
 const demoTabs = [
   {
     value: "basic",
@@ -995,6 +1131,45 @@ const demoTabs = [
         code={basicLabelCode}
       >
         <BasicLabelDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraLabel",
+    demo: (
+      <DemoWrapper
+        title="KiraLabel (unified API)"
+        description="One prop-driven component: icon, required, hint, description, counter, and validation."
+        code={kiraLabelCode}
+      >
+        <KiraLabelDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "char-count",
+    label: "Counter (live)",
+    demo: (
+      <DemoWrapper
+        title="Live character counter"
+        description="count/maxCount update as you type, with a near-limit warning colour and aria-live."
+        code={counterLabelCode}
+      >
+        <CounterLabelDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "validation",
+    label: "Validation",
+    demo: (
+      <DemoWrapper
+        title="Inline validation"
+        description="validationState drives colour; validationMessage renders a linked aria-live status."
+        code={validationLabelCode}
+      >
+        <ValidationLabelDemo />
       </DemoWrapper>
     ),
   },
@@ -1152,7 +1327,7 @@ export default function LabelPage() {
       <PageHeader
         title="Label"
         description="Accessible form labels for inputs and form elements with enhanced features including icons, tooltips, counters, and more."
-        version="v1.0"
+        version="v2.0"
       />
 
       <FeatureGrid features={features} />
@@ -1169,6 +1344,40 @@ export default function LabelPage() {
         sections={apiSections}
         title="API Reference"
         description="Complete props reference for Label components."
+      />
+
+      <Changelog
+        entries={[
+          {
+            version: "v2.0.0",
+            date: "2026-07-13",
+            changes: [
+              {
+                type: "added",
+                title: "KiraLabel mega-component",
+                description:
+                  "One prop-driven label with description, live character counter, inline validation, and an opt-in Base UI Field.Label path for automatic control association.",
+              },
+              {
+                type: "fixed",
+                title: "Duplicate disabled styling & gap",
+                description:
+                  "Disabled opacity and the label gap are no longer applied in two places.",
+              },
+              {
+                type: "breaking",
+                title: "truncate no longer hard-caps width",
+                description:
+                  "The arbitrary max-w-[200px] was removed; truncation now flex-clamps to the available width.",
+              },
+              {
+                type: "changed",
+                title: "labelVariants / labelHintVariants exported",
+                description: "Variant helpers are now part of the public API.",
+              },
+            ],
+          },
+        ]}
       />
     </ComponentPage>
   );

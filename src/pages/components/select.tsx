@@ -8,15 +8,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  MultiSelect,
-  AsyncSelect,
-  CreatableSelect,
-  Autocomplete,
-  SelectField,
+  KiraSelect,
   type SelectOption,
-  type AutocompleteOption,
 } from "@/components/ui/select";
 import {
   ComponentPage,
@@ -27,6 +20,7 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 // =============================================================================
@@ -125,16 +119,45 @@ export function BasicSelectDemo() {
   )
 }`;
 
+// KiraSelect is the single prop-driven API — the demos below all use it.
+
+function KiraBasicDemo() {
+  const [value, setValue] = React.useState<string>("");
+  return (
+    <div className="space-y-4 max-w-sm">
+      <KiraSelect
+        options={fruits}
+        value={value}
+        onChange={(val) => setValue(val as string)}
+        placeholder="Select a fruit"
+      />
+      {value && (
+        <p className="text-sm text-muted-foreground">Selected: {value}</p>
+      )}
+    </div>
+  );
+}
+
+const kiraBasicCode = `import { KiraSelect } from "@/components/ui/select"
+
+<KiraSelect
+  options={fruits}
+  value={value}
+  onChange={(val) => setValue(val as string)}
+  placeholder="Select a fruit"
+/>`;
+
 function MultiSelectDemo() {
   const [multiValue, setMultiValue] = React.useState<string[]>([]);
 
   return (
     <div className="space-y-4">
       <div className="max-w-sm">
-        <MultiSelect
+        <KiraSelect
           options={fruits}
+          multiple
           value={multiValue}
-          onChange={setMultiValue}
+          onChange={(val) => setMultiValue(val as string[])}
           placeholder="Select fruits..."
         />
       </div>
@@ -147,26 +170,15 @@ function MultiSelectDemo() {
   );
 }
 
-const multiSelectCode = `import { MultiSelect, type SelectOption } from "@/components/ui/select"
+const multiSelectCode = `import { KiraSelect } from "@/components/ui/select"
 
-const options: SelectOption[] = [
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-  { value: "orange", label: "Orange" },
-]
-
-export function MultiSelectDemo() {
-  const [selected, setSelected] = useState<string[]>([])
-
-  return (
-    <MultiSelect
-      options={options}
-      value={selected}
-      onChange={setSelected}
-      placeholder="Select fruits..."
-    />
-  )
-}`;
+<KiraSelect
+  options={options}
+  multiple
+  value={selected}
+  onChange={(val) => setSelected(val as string[])}
+  placeholder="Select fruits..."
+/>`;
 
 function AsyncSelectDemo() {
   const [asyncValue, setAsyncValue] = React.useState("");
@@ -174,10 +186,12 @@ function AsyncSelectDemo() {
   return (
     <div className="space-y-4">
       <div className="max-w-sm">
-        <AsyncSelect
-          loadOptions={searchUsers}
+        <KiraSelect
+          options={[]}
+          async
+          onSearch={searchUsers}
           value={asyncValue}
-          onChange={(val) => setAsyncValue(val)}
+          onChange={(val) => setAsyncValue(val as string)}
           placeholder="Search users..."
         />
       </div>
@@ -190,224 +204,53 @@ function AsyncSelectDemo() {
   );
 }
 
-const asyncSelectCode = `import { AsyncSelect, type SelectOption } from "@/components/ui/select"
+const asyncSelectCode = `import { KiraSelect } from "@/components/ui/select"
 
-const searchUsers = async (query: string): Promise<SelectOption[]> => {
+const searchUsers = async (query: string) => {
   const res = await fetch(\`/api/users?q=\${query}\`)
   return res.json()
 }
 
-export function AsyncSelectDemo() {
-  const [value, setValue] = useState("")
-
-  return (
-    <AsyncSelect
-      loadOptions={searchUsers}
-      value={value}
-      onChange={setValue}
-      placeholder="Search users..."
-    />
-  )
-}`;
+<KiraSelect
+  options={[]}
+  async
+  onSearch={searchUsers}
+  value={value}
+  onChange={(val) => setValue(val as string)}
+  placeholder="Search users..."
+/>`;
 
 function AutocompleteDemo() {
-  const [autocompleteValue, setAutocompleteValue] = React.useState<string>("");
+  const [value, setValue] = React.useState<string>("");
 
   return (
     <div className="space-y-4">
       <div className="max-w-sm">
-        <Autocomplete
-          options={fruits as AutocompleteOption[]}
+        <KiraSelect
+          options={fruits}
+          searchable
+          value={value}
+          onChange={(v) => setValue(v as string)}
           placeholder="Search fruits..."
-          onChange={(v) => setAutocompleteValue(v as string)}
         />
       </div>
-      {autocompleteValue && (
-        <p className="text-sm text-muted-foreground">
-          Selected: {autocompleteValue}
-        </p>
+      {value && (
+        <p className="text-sm text-muted-foreground">Selected: {value}</p>
       )}
     </div>
   );
 }
 
-const autocompleteCode = `import { Autocomplete, type AutocompleteOption } from "@/components/ui/select"
+const autocompleteCode = `import { KiraSelect } from "@/components/ui/select"
 
-const options: AutocompleteOption[] = [
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-]
-
-export function AutocompleteDemo() {
-  const [value, setValue] = useState("")
-
-  return (
-    <Autocomplete
-      options={options}
-      placeholder="Search fruits..."
-      onChange={setValue}
-    />
-  )
-}`;
-
-function AutocompleteMultiDemo() {
-  const [autocompleteMulti, setAutocompleteMulti] = React.useState<string[]>(
-    [],
-  );
-
-  return (
-    <div className="space-y-4">
-      <div className="max-w-sm">
-        <Autocomplete
-          options={fruits as AutocompleteOption[]}
-          multiple
-          placeholder="Select multiple fruits..."
-          value={autocompleteMulti}
-          onChange={(v) => setAutocompleteMulti(v as string[])}
-        />
-      </div>
-      <p className="text-sm text-muted-foreground">
-        Selected: {autocompleteMulti.length} items
-      </p>
-    </div>
-  );
-}
-
-const autocompleteMultiCode = `import { Autocomplete, type AutocompleteOption } from "@/components/ui/select"
-
-export function AutocompleteMultiDemo() {
-  const [values, setValues] = useState<string[]>([])
-
-  return (
-    <Autocomplete
-      options={options}
-      multiple
-      placeholder="Select multiple fruits..."
-      value={values}
-      onChange={setValues}
-    />
-  )
-}`;
-
-function AutocompleteAsyncDemo() {
-  return (
-    <div className="space-y-4">
-      <div className="max-w-sm">
-        <Autocomplete
-          onSearch={
-            searchUsers as (query: string) => Promise<AutocompleteOption[]>
-          }
-          debounceMs={300}
-          placeholder="Type to search users..."
-        />
-      </div>
-    </div>
-  );
-}
-
-const autocompleteAsyncCode = `import { Autocomplete, type AutocompleteOption } from "@/components/ui/select"
-
-const searchUsers = async (query: string): Promise<AutocompleteOption[]> => {
-  const res = await fetch(\`/api/users?q=\${query}\`)
-  return res.json()
-}
-
-export function AutocompleteAsyncDemo() {
-  return (
-    <Autocomplete
-      onSearch={searchUsers}
-      debounceMs={300}
-      placeholder="Type to search users..."
-    />
-  )
-}`;
-
-function TriggerVariantsDemo() {
-  return (
-    <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Default</p>
-          <SelectField options={fruits} placeholder="Default trigger" />
-        </div>
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Ghost</p>
-          <SelectField
-            options={fruits}
-            variant="ghost"
-            placeholder="Ghost trigger"
-          />
-        </div>
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Outline</p>
-          <SelectField
-            options={fruits}
-            variant="outline"
-            placeholder="Outline trigger"
-          />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">With Left Icon</p>
-          <SelectField
-            options={fruits}
-            leftIcon={<IconUser className="w-4 h-4" />}
-            placeholder="Select user..."
-          />
-        </div>
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Invalid State</p>
-          <SelectField
-            options={fruits}
-            aria-invalid={true}
-            placeholder="Error state"
-          />
-        </div>
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">No Chevron</p>
-          <SelectField options={fruits} hideChevron placeholder="No chevron" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const triggerVariantsCode = `import { SelectField, type SelectOption } from "@/components/ui/select"
-import { IconUser } from "@tabler/icons-react"
-
-const options: SelectOption[] = [
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-]
-
-export function TriggerVariantsDemo() {
-  return (
-    <div className="grid grid-cols-3 gap-4">
-      {/* Default */}
-      <SelectField options={options} placeholder="Default trigger" />
-
-      {/* Ghost */}
-      <SelectField options={options} variant="ghost" placeholder="Ghost" />
-
-      {/* Outline */}
-      <SelectField options={options} variant="outline" placeholder="Outline" />
-
-      {/* With Icon */}
-      <SelectField
-        options={options}
-        leftIcon={<IconUser className="w-4 h-4" />}
-        placeholder="Select user..."
-      />
-
-      {/* Invalid */}
-      <SelectField options={options} aria-invalid placeholder="Error state" />
-
-      {/* No Chevron */}
-      <SelectField options={options} hideChevron placeholder="No chevron" />
-    </div>
-  )
-}`;
+// searchable makes the single-select filter as you type
+<KiraSelect
+  options={options}
+  searchable
+  value={value}
+  onChange={(v) => setValue(v as string)}
+  placeholder="Search fruits..."
+/>`;
 
 function CreatableSelectDemo() {
   const [creatableOptions, setCreatableOptions] =
@@ -417,10 +260,11 @@ function CreatableSelectDemo() {
   return (
     <div className="space-y-4">
       <div className="max-w-sm">
-        <CreatableSelect
+        <KiraSelect
           options={creatableOptions}
+          creatable
           value={creatableValue}
-          onChange={(val) => setCreatableValue(val)}
+          onChange={(val) => setCreatableValue(val as string)}
           onCreateOption={(inputValue) => {
             const newOption = {
               value: inputValue.toLowerCase(),
@@ -441,29 +285,90 @@ function CreatableSelectDemo() {
   );
 }
 
-const creatableSelectCode = `import { CreatableSelect, type SelectOption } from "@/components/ui/select"
+const creatableSelectCode = `import { KiraSelect } from "@/components/ui/select"
 
-export function CreatableSelectDemo() {
-  const [options, setOptions] = useState<SelectOption[]>(initialOptions)
-  const [value, setValue] = useState("")
+<KiraSelect
+  options={options}
+  creatable
+  value={value}
+  onChange={(val) => setValue(val as string)}
+  onCreateOption={(input) => {
+    const opt = { value: input.toLowerCase(), label: input }
+    setOptions((prev) => [...prev, opt])
+    setValue(opt.value)
+  }}
+  placeholder="Select or create..."
+/>`;
 
+function VariantsDemo() {
   return (
-    <CreatableSelect
-      options={options}
-      value={value}
-      onChange={setValue}
-      onCreateOption={(inputValue) => {
-        const newOption = {
-          value: inputValue.toLowerCase(),
-          label: inputValue,
-        }
-        setOptions((prev) => [...prev, newOption])
-        setValue(newOption.value)
-      }}
-      placeholder="Select or create..."
-    />
-  )
-}`;
+    <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Default</p>
+          <KiraSelect options={fruits} searchable placeholder="Default" />
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Ghost</p>
+          <KiraSelect
+            options={fruits}
+            searchable
+            variant="ghost"
+            placeholder="Ghost"
+          />
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Outline</p>
+          <KiraSelect
+            options={fruits}
+            searchable
+            variant="outline"
+            placeholder="Outline"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">With Left Icon</p>
+          <KiraSelect
+            options={fruits}
+            searchable
+            leftIcon={<IconUser className="w-4 h-4" />}
+            placeholder="Select user..."
+          />
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Invalid State</p>
+          <KiraSelect
+            options={fruits}
+            searchable
+            invalid
+            placeholder="Error state"
+          />
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">No Chevron</p>
+          <KiraSelect
+            options={fruits}
+            searchable
+            hideChevron
+            placeholder="No chevron"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const variantsCode = `import { KiraSelect } from "@/components/ui/select"
+import { IconUser } from "@tabler/icons-react"
+
+<KiraSelect options={options} searchable placeholder="Default" />
+<KiraSelect options={options} searchable variant="ghost" placeholder="Ghost" />
+<KiraSelect options={options} searchable variant="outline" placeholder="Outline" />
+<KiraSelect options={options} searchable leftIcon={<IconUser />} placeholder="User" />
+<KiraSelect options={options} searchable invalid placeholder="Error state" />
+<KiraSelect options={options} searchable hideChevron placeholder="No chevron" />`;
 
 function DisabledDemo() {
   return (
@@ -505,30 +410,19 @@ export function DisabledDemo() {
 // Code Examples
 // =============================================================================
 
-const usageCode = `import { MultiSelect, AsyncSelect, Autocomplete } from "@/components/ui/select"
+const usageCode = `import { KiraSelect } from "@/components/ui/select"
 
-// Multi Select
-<MultiSelect
-  options={[{ value: "1", label: "Option 1" }]}
-  value={selected}
-  onChange={setSelected}
-/>
+// One component, behaviour chosen by props:
+<KiraSelect options={options} />                       // basic
+<KiraSelect options={options} multiple />              // multi
+<KiraSelect options={[]} async onSearch={loadOptions} /> // async
+<KiraSelect options={options} creatable onCreateOption={create} /> // creatable
+<KiraSelect options={options} searchable />            // autocomplete
 
-// Async Select
-<AsyncSelect
-  loadOptions={async (query) => {
-    const res = await fetch(\`/api/search?q=\${query}\`)
-    return res.json()
-  }}
-  onChange={(val, option) => console.log(val, option)}
-/>
-
-// Autocomplete with async search
-<Autocomplete
-  onSearch={searchUsers}
-  debounceMs={300}
-  placeholder="Type to search..."
-/>`;
+// Low-level primitives are still available for full control:
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select"`;
 
 // =============================================================================
 // Features
@@ -536,19 +430,19 @@ const usageCode = `import { MultiSelect, AsyncSelect, Autocomplete } from "@/com
 
 const features = [
   {
+    title: "One API",
+    description:
+      "KiraSelect covers basic, multi, async, autocomplete, and creatable — behaviour is chosen by props, not by picking a different component.",
+  },
+  {
     title: "Accessible",
     description:
       "Full WAI-ARIA combobox pattern with keyboard navigation, screen reader announcements, and focus management.",
   },
   {
-    title: "Searchable",
+    title: "Searchable & async",
     description:
-      "Built-in fuzzy search, async data loading with debouncing, and loading states for seamless UX.",
-  },
-  {
-    title: "Composable",
-    description:
-      "Multiple variants: basic, multi-select, async, autocomplete, and creatable with custom styling support.",
+      "Built-in fuzzy search, debounced async loading, loading states, and reduced-motion-gated animations.",
   },
 ];
 
@@ -573,7 +467,78 @@ const keyboardShortcuts = [
 
 const apiSections = [
   {
-    title: "Select",
+    title: "KiraSelect",
+    props: [
+      {
+        prop: "options",
+        type: "SelectOption[] | GroupedSelectOption[]",
+        description: "Options to display (flat or grouped)",
+      },
+      {
+        prop: "value / defaultValue",
+        type: "string | string[]",
+        description: "Selected value(s); array when multiple",
+      },
+      {
+        prop: "onChange",
+        type: "(value, option) => void",
+        description: "Called with the new value and matching option(s)",
+      },
+      {
+        prop: "multiple",
+        type: "boolean",
+        default: "false",
+        description: "Tag-style multi-select",
+      },
+      {
+        prop: "searchable",
+        type: "boolean",
+        default: "false",
+        description: "Filter options as you type (autocomplete)",
+      },
+      {
+        prop: "async",
+        type: "boolean",
+        default: "false",
+        description: "Load options via onSearch with debouncing",
+      },
+      {
+        prop: "onSearch",
+        type: "(query) => Promise<SelectOption[]>",
+        description: "Async loader (required when async)",
+      },
+      {
+        prop: "creatable",
+        type: "boolean",
+        default: "false",
+        description: "Offer to create an option from the query",
+      },
+      {
+        prop: "onCreateOption",
+        type: "(input: string) => void",
+        description: "Called when a new option is created",
+      },
+      {
+        prop: "variant",
+        type: "'default' | 'ghost' | 'outline'",
+        default: "'default'",
+        description: "Trigger style (rich path)",
+      },
+      {
+        prop: "invalid",
+        type: "boolean",
+        default: "false",
+        description: "Sets aria-invalid + destructive ring",
+      },
+      {
+        prop: "leftIcon / hideChevron / maxDisplayedTags",
+        type: "ReactNode / boolean / number",
+        description: "Trigger adornments and tag overflow cap",
+      },
+    ],
+  },
+  {
+    title: "Select (primitive)",
     props: [
       { prop: "value", type: "string", description: "Controlled value" },
       {
@@ -592,174 +557,6 @@ const apiSections = [
         default: "false",
         description: "Disable the select",
       },
-      { prop: "open", type: "boolean", description: "Controlled open state" },
-      {
-        prop: "onOpenChange",
-        type: "(open: boolean) => void",
-        description: "Called when open state changes",
-      },
-    ],
-  },
-  {
-    title: "MultiSelect",
-    props: [
-      {
-        prop: "options",
-        type: "SelectOption[]",
-        description: "Array of options to display",
-      },
-      { prop: "value", type: "string[]", description: "Selected values" },
-      {
-        prop: "onChange",
-        type: "(value: string[]) => void",
-        description: "Called when selection changes",
-      },
-      { prop: "placeholder", type: "string", description: "Placeholder text" },
-      {
-        prop: "disabled",
-        type: "boolean",
-        default: "false",
-        description: "Disable the select",
-      },
-      {
-        prop: "maxItems",
-        type: "number",
-        description: "Maximum number of selectable items",
-      },
-      {
-        prop: "searchable",
-        type: "boolean",
-        default: "true",
-        description: "Enable search filtering",
-      },
-    ],
-  },
-  {
-    title: "AsyncSelect",
-    props: [
-      {
-        prop: "loadOptions",
-        type: "(query: string) => Promise<SelectOption[]>",
-        description: "Async function to load options",
-      },
-      { prop: "value", type: "string", description: "Selected value" },
-      {
-        prop: "onChange",
-        type: "(value: string, option?: SelectOption) => void",
-        description: "Called when value changes",
-      },
-      { prop: "placeholder", type: "string", description: "Placeholder text" },
-      {
-        prop: "debounceMs",
-        type: "number",
-        default: "300",
-        description: "Debounce delay for search",
-      },
-      {
-        prop: "minChars",
-        type: "number",
-        default: "0",
-        description: "Minimum characters before search",
-      },
-    ],
-  },
-  {
-    title: "Autocomplete",
-    props: [
-      {
-        prop: "options",
-        type: "AutocompleteOption[]",
-        description: "Static options array",
-      },
-      {
-        prop: "onSearch",
-        type: "(query: string) => Promise<AutocompleteOption[]>",
-        description: "Async search function",
-      },
-      {
-        prop: "value",
-        type: "string | string[]",
-        description: "Selected value(s)",
-      },
-      {
-        prop: "onChange",
-        type: "(value: string | string[]) => void",
-        description: "Called when value changes",
-      },
-      {
-        prop: "multiple",
-        type: "boolean",
-        default: "false",
-        description: "Enable multi-select mode",
-      },
-      { prop: "placeholder", type: "string", description: "Placeholder text" },
-      {
-        prop: "debounceMs",
-        type: "number",
-        default: "300",
-        description: "Debounce delay for async search",
-      },
-    ],
-  },
-  {
-    title: "CreatableSelect",
-    props: [
-      {
-        prop: "options",
-        type: "SelectOption[]",
-        description: "Array of options",
-      },
-      { prop: "value", type: "string", description: "Selected value" },
-      {
-        prop: "onChange",
-        type: "(value: string) => void",
-        description: "Called when value changes",
-      },
-      {
-        prop: "onCreateOption",
-        type: "(inputValue: string) => void",
-        description: "Called when creating new option",
-      },
-      { prop: "placeholder", type: "string", description: "Placeholder text" },
-      {
-        prop: "createLabel",
-        type: "(input: string) => string",
-        description: "Custom create option label",
-      },
-    ],
-  },
-  {
-    title: "SelectField",
-    props: [
-      {
-        prop: "options",
-        type: "SelectOption[]",
-        description: "Array of options",
-      },
-      { prop: "value", type: "string", description: "Selected value" },
-      {
-        prop: "onValueChange",
-        type: "(value: string) => void",
-        description: "Called when value changes",
-      },
-      { prop: "placeholder", type: "string", description: "Placeholder text" },
-      {
-        prop: "variant",
-        type: "'default' | 'ghost' | 'outline'",
-        default: "'default'",
-        description: "Trigger style variant",
-      },
-      {
-        prop: "leftIcon",
-        type: "ReactNode",
-        description: "Icon to show on the left",
-      },
-      {
-        prop: "hideChevron",
-        type: "boolean",
-        default: "false",
-        description: "Hide the dropdown chevron",
-      },
     ],
   },
 ];
@@ -771,14 +568,27 @@ const apiSections = [
 const demoTabs = [
   {
     value: "basic",
-    label: "Basic",
+    label: "Basic (primitive)",
     demo: (
       <DemoWrapper
         title="Basic Select"
-        description="Standard dropdown select with single selection."
+        description="Low-level primitives for full control over the markup."
         code={basicSelectCode}
       >
         <BasicSelectDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraSelect",
+    demo: (
+      <DemoWrapper
+        title="KiraSelect (single API)"
+        description="Prop-driven select from an options array — the recommended entry point."
+        code={kiraBasicCode}
+      >
+        <KiraBasicDemo />
       </DemoWrapper>
     ),
   },
@@ -788,7 +598,7 @@ const demoTabs = [
     demo: (
       <DemoWrapper
         title="Multi Select"
-        description="Select multiple items with search and animated list items."
+        description="Tag-style multi-select with search and animated list items."
         code={multiSelectCode}
       >
         <MultiSelectDemo />
@@ -812,41 +622,12 @@ const demoTabs = [
     value: "autocomplete",
     label: "Autocomplete",
     demo: (
-      <div className="space-y-6">
-        <DemoWrapper
-          title="Autocomplete"
-          description="Searchable input with fuzzy matching, keyboard navigation, and auto-highlight."
-          code={autocompleteCode}
-        >
-          <AutocompleteDemo />
-        </DemoWrapper>
-        <DemoWrapper
-          title="Multi-select Autocomplete"
-          description="Multi-select with inline tags, fuzzy matching, and backspace to remove."
-          code={autocompleteMultiCode}
-        >
-          <AutocompleteMultiDemo />
-        </DemoWrapper>
-        <DemoWrapper
-          title="Async Autocomplete"
-          description="Async search with debouncing and loading indicator."
-          code={autocompleteAsyncCode}
-        >
-          <AutocompleteAsyncDemo />
-        </DemoWrapper>
-      </div>
-    ),
-  },
-  {
-    value: "variants",
-    label: "Variants",
-    demo: (
       <DemoWrapper
-        title="Trigger Variants"
-        description="Different trigger styles including ghost, outline, icons, and states."
-        code={triggerVariantsCode}
+        title="Autocomplete"
+        description="A searchable single-select with fuzzy matching and keyboard navigation."
+        code={autocompleteCode}
       >
-        <TriggerVariantsDemo />
+        <AutocompleteDemo />
       </DemoWrapper>
     ),
   },
@@ -860,6 +641,19 @@ const demoTabs = [
         code={creatableSelectCode}
       >
         <CreatableSelectDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "variants",
+    label: "Variants",
+    demo: (
+      <DemoWrapper
+        title="Trigger Variants"
+        description="Ghost, outline, left icon, invalid, and no-chevron — all via KiraSelect props."
+        code={variantsCode}
+      >
+        <VariantsDemo />
       </DemoWrapper>
     ),
   },
@@ -887,8 +681,8 @@ export default function SelectPage() {
     <ComponentPage>
       <PageHeader
         title="Select"
-        version="v2.0"
-        description="Dropdown selection component with multiple variants including multi-select, async loading, autocomplete, and creatable options."
+        version="v3.0"
+        description="Dropdown selection with a single prop-driven API (KiraSelect) covering multi-select, async loading, autocomplete, and creatable options."
       />
 
       <FeatureGrid features={features} />
@@ -904,6 +698,47 @@ export default function SelectPage() {
       />
 
       <APIReference sections={apiSections} />
+
+      <Changelog
+        entries={[
+          {
+            version: "v3.0.0",
+            date: "2026-07-13",
+            changes: [
+              {
+                type: "added",
+                title: "KiraSelect — single combobox API",
+                description:
+                  "One prop-driven component covering basic, multiple, searchable, async, and creatable. Routes to the Base UI Select (simple) or the SelectField engine (rich).",
+              },
+              {
+                type: "breaking",
+                title: "Removed MultiSelect / AsyncSelect / CreatableSelect / Autocomplete",
+                description:
+                  "Migrate to <KiraSelect multiple />, <KiraSelect async onSearch={…} />, <KiraSelect creatable />, and <KiraSelect searchable /> respectively.",
+              },
+              {
+                type: "fixed",
+                title: "Chevron rotation & tag removal",
+                description:
+                  "The trigger chevron now rotates on open (correct Base UI data attribute); Backspace no longer removes two tags at once.",
+              },
+              {
+                type: "fixed",
+                title: "Reduced motion",
+                description:
+                  "Popup enter/exit animations on both the primitive and the field are gated on prefers-reduced-motion.",
+              },
+              {
+                type: "removed",
+                title: "Dead virtualization props",
+                description:
+                  "virtualize / virtualItemHeight / overscan were never implemented and have been removed.",
+              },
+            ],
+          },
+        ]}
+      />
     </ComponentPage>
   );
 }

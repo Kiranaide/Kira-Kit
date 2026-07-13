@@ -130,7 +130,7 @@ function TableHead({
       role={isGridCell ? "columnheader" : undefined}
       aria-sort={ariaSort}
       className={cn(
-        "h-10 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
+        "h-10 px-4 text-left align-middle font-medium text-muted-foreground has-[[role=checkbox]]:pr-0",
         className
       )}
       {...props}
@@ -152,7 +152,7 @@ function TableCell({
       data-slot="table-cell"
       role={isGridCell ? "gridcell" : undefined}
       className={cn(
-        "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+        "p-4 align-middle has-[[role=checkbox]]:pr-0",
         className
       )}
       {...props}

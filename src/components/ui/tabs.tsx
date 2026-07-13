@@ -1,10 +1,12 @@
+/* eslint-disable react-refresh/only-export-components */
 "use client";
 
 import * as React from "react";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { IconX } from "@tabler/icons-react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { IconX, IconPlus } from "@tabler/icons-react";
 
 interface TabsContextValue {
   orientation: "horizontal" | "vertical";
@@ -93,10 +95,6 @@ const tabsListVariants = cva(
         horizontal: "flex-row",
         vertical: "flex-col items-stretch",
       },
-      scrollable: {
-        true: "overflow-x-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent",
-        false: "",
-      },
     },
     compoundVariants: [
       {
@@ -171,54 +169,31 @@ const tabsListVariants = cva(
       variant: "default",
       color: "default",
       orientation: "horizontal",
-      scrollable: false,
     },
   }
 );
 
+// Indicator is underline-only: for every other variant the trigger's own
+// data-[active] background owns the "pill", so a second fill layer here would
+// double the selected treatment. Base UI supplies --active-tab-* on the span.
 function TabsIndicatorInternal() {
   const { orientation, variant, color } = useTabsContext();
+  const reducedMotion = useReducedMotion();
 
-  const isUnderline = variant === "underline";
-  const isFill = !isUnderline;
+  if (variant !== "underline") return null;
 
-  const effectivePosition =
+  const position =
     orientation === "vertical"
-      ? isUnderline
-        ? "right"
-        : "fill"
-      : isUnderline
-        ? "bottom"
-        : "fill";
-
-  const positionClasses = {
-    bottom:
-      "bottom-0 left-[var(--active-tab-left)] w-[var(--active-tab-width)] h-0.5",
-    top: "top-0 left-[var(--active-tab-left)] w-[var(--active-tab-width)] h-0.5",
-    left: "left-0 top-[var(--active-tab-top)] h-[var(--active-tab-height)] w-0.5",
-    right:
-      "right-0 top-[var(--active-tab-top)] h-[var(--active-tab-height)] w-0.5",
-    fill: [
-      "left-[var(--active-tab-left)]",
-      "top-[var(--active-tab-top)]",
-      "w-[var(--active-tab-width)]",
-      "h-[var(--active-tab-height)]",
-      "rounded-md",
-      "opacity-80",
-    ].join(" "),
-  };
+      ? "right-0 top-[var(--active-tab-top)] h-[var(--active-tab-height)] w-0.5"
+      : "bottom-0 left-[var(--active-tab-left)] w-[var(--active-tab-width)] h-0.5";
 
   const colorClasses = {
-    default: isFill ? "bg-primary/10" : "bg-primary",
-    primary: isFill ? "bg-primary/10" : "bg-primary",
-    success: isFill ? "bg-green-600/10" : "bg-green-600",
-    warning: isFill ? "bg-amber-500/10" : "bg-amber-500",
-    destructive: isFill ? "bg-destructive/10" : "bg-destructive",
+    default: "bg-primary",
+    primary: "bg-primary",
+    success: "bg-green-600",
+    warning: "bg-amber-500",
+    destructive: "bg-destructive",
   };
-
-  const shapeClasses = isUnderline
-    ? ""
-    : "border border-border/50 shadow-sm backdrop-blur-sm pointer-events-none z-0";
 
   return (
     <TabsPrimitive.Indicator
@@ -226,12 +201,9 @@ function TabsIndicatorInternal() {
       className={cn(
         "absolute",
         colorClasses[color],
-
-        "animate-in fade-in-0 duration-200",
-        "transition-all duration-200 ease-out",
-        "motion-reduce:transition-none motion-reduce:animate-none",
-        positionClasses[effectivePosition],
-        shapeClasses
+        !reducedMotion &&
+          "animate-in fade-in-0 duration-200 transition-all ease-out",
+        position
       )}
     />
   );
@@ -241,7 +213,6 @@ interface TabsListProps
   extends
     TabsPrimitive.List.Props,
     Omit<VariantProps<typeof tabsListVariants>, "orientation" | "color"> {
-  scrollable?: boolean;
   showIndicator?: boolean;
   children: React.ReactNode;
 }
@@ -249,7 +220,6 @@ interface TabsListProps
 function TabsList({
   className,
   variant,
-  scrollable = false,
   showIndicator: showIndicatorProp,
   children,
   ...props
@@ -272,7 +242,6 @@ function TabsList({
           variant: finalVariant,
           color,
           orientation,
-          scrollable,
         }),
         className
       )}
@@ -300,34 +269,27 @@ const tabsTriggerVariants = cva(
       variant: {
         default: [
           "text-muted-foreground hover:text-foreground",
-
-          "data-[selected]:bg-background data-[selected]:text-foreground data-[selected]:shadow-md data-[selected]:font-semibold",
-          "data-[state=selected]:bg-background data-[state=selected]:text-foreground data-[state=selected]:shadow-md data-[state=selected]:font-semibold",
+          "data-[active]:bg-background data-[active]:text-foreground data-[active]:shadow-md data-[active]:font-semibold",
         ],
         outline: [
           "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-          "data-[selected]:bg-primary data-[selected]:text-foreground data-[selected]:font-semibold data-[selected]:shadow-md",
-          "data-[state=selected]:bg-primary data-[state=selected]:text-foreground data-[state=selected]:font-semibold data-[state=selected]:shadow-md",
+          "data-[active]:bg-primary data-[active]:text-foreground data-[active]:font-semibold data-[active]:shadow-md",
         ],
         pills: [
           "text-muted-foreground border border-transparent hover:text-foreground hover:bg-muted/50",
-          "data-[selected]:bg-primary data-[selected]:text-foreground data-[selected]:border-primary data-[selected]:font-semibold data-[selected]:shadow-md",
-          "data-[state=selected]:bg-primary data-[state=selected]:text-foreground data-[state=selected]:border-primary data-[state=selected]:font-semibold data-[state=selected]:shadow-md",
+          "data-[active]:bg-primary data-[active]:text-foreground data-[active]:border-primary data-[active]:font-semibold data-[active]:shadow-md",
         ],
         underline: [
           "text-muted-foreground rounded-none border-b-2 border-transparent -mb-px hover:text-foreground hover:border-muted-foreground/30",
-          "data-[selected]:text-primary data-[selected]:border-primary data-[selected]:font-semibold",
-          "data-[state=selected]:text-primary data-[state=selected]:border-primary data-[state=selected]:font-semibold",
+          "data-[active]:text-primary data-[active]:border-primary data-[active]:font-semibold",
         ],
         soft: [
           "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-          "data-[selected]:bg-primary/10 data-[selected]:text-foreground data-[selected]:font-semibold",
-          "data-[state=selected]:bg-primary/10 data-[state=selected]:text-foreground data-[state=selected]:font-semibold",
+          "data-[active]:bg-primary/10 data-[active]:text-foreground data-[active]:font-semibold",
         ],
         card: [
           "text-muted-foreground hover:text-foreground",
-          "data-[selected]:bg-card data-[selected]:text-foreground data-[selected]:shadow-lg data-[selected]:font-semibold data-[selected]:border data-[selected]:border-border",
-          "data-[state=selected]:bg-card data-[state=selected]:text-foreground data-[state=selected]:shadow-lg data-[state=selected]:font-semibold data-[state=selected]:border data-[state=selected]:border-border",
+          "data-[active]:bg-card data-[active]:text-foreground data-[active]:shadow-lg data-[active]:font-semibold data-[active]:border data-[active]:border-border",
         ],
       },
       color: {
@@ -352,142 +314,139 @@ const tabsTriggerVariants = cva(
       {
         variant: "default",
         color: "primary",
-        className:
-          "data-[selected]:bg-primary data-[selected]:text-foreground data-[state=selected]:bg-primary data-[state=selected]:text-foreground",
+        className: "data-[active]:bg-primary data-[active]:text-foreground",
       },
       {
         variant: "outline",
         color: "primary",
-        className:
-          "data-[selected]:bg-primary data-[selected]:text-foreground data-[state=selected]:bg-primary data-[state=selected]:text-foreground",
+        className: "data-[active]:bg-primary data-[active]:text-foreground",
       },
       {
         variant: "pills",
         color: "primary",
-        className:
-          "data-[selected]:bg-primary data-[selected]:text-foreground data-[state=selected]:bg-primary data-[state=selected]:text-foreground",
+        className: "data-[active]:bg-primary data-[active]:text-foreground",
       },
       {
         variant: "soft",
         color: "primary",
-        className: "data-[selected]:bg-primary/10 data-[selected]:text-primary",
+        className: "data-[active]:bg-primary/10 data-[active]:text-primary",
       },
       {
         variant: "underline",
         color: "primary",
         className:
-          "data-[selected]:text-primary data-[selected]:border-primary",
+          "data-[active]:text-primary data-[active]:border-primary",
       },
       {
         variant: "card",
         color: "primary",
         className:
-          "data-[selected]:bg-primary data-[selected]:text-primary-foreground",
+          "data-[active]:bg-primary data-[active]:text-primary-foreground",
       },
 
       {
         variant: "default",
         color: "success",
-        className: "data-[selected]:bg-green-600 data-[selected]:text-white",
+        className: "data-[active]:bg-green-600 data-[active]:text-white",
       },
       {
         variant: "outline",
         color: "success",
-        className: "data-[selected]:bg-green-600 data-[selected]:text-white",
+        className: "data-[active]:bg-green-600 data-[active]:text-white",
       },
       {
         variant: "pills",
         color: "success",
         className:
-          "data-[selected]:bg-green-600 data-[selected]:text-white data-[selected]:border-green-600",
+          "data-[active]:bg-green-600 data-[active]:text-white data-[active]:border-green-600",
       },
       {
         variant: "soft",
         color: "success",
         className:
-          "data-[selected]:bg-green-500/10 data-[selected]:text-green-600",
+          "data-[active]:bg-green-500/10 data-[active]:text-green-600",
       },
       {
         variant: "underline",
         color: "success",
         className:
-          "data-[selected]:text-green-600 data-[selected]:border-green-600",
+          "data-[active]:text-green-600 data-[active]:border-green-600",
       },
       {
         variant: "card",
         color: "success",
-        className: "data-[selected]:bg-green-600 data-[selected]:text-white",
+        className: "data-[active]:bg-green-600 data-[active]:text-white",
       },
 
       {
         variant: "default",
         color: "warning",
-        className: "data-[selected]:bg-amber-500 data-[selected]:text-white",
+        className: "data-[active]:bg-amber-500 data-[active]:text-white",
       },
       {
         variant: "outline",
         color: "warning",
-        className: "data-[selected]:bg-amber-500 data-[selected]:text-white",
+        className: "data-[active]:bg-amber-500 data-[active]:text-white",
       },
       {
         variant: "pills",
         color: "warning",
         className:
-          "data-[selected]:bg-amber-500 data-[selected]:text-white data-[selected]:border-amber-500",
+          "data-[active]:bg-amber-500 data-[active]:text-white data-[active]:border-amber-500",
       },
       {
         variant: "soft",
         color: "warning",
         className:
-          "data-[selected]:bg-amber-500/10 data-[selected]:text-amber-600",
+          "data-[active]:bg-amber-500/10 data-[active]:text-amber-600",
       },
       {
         variant: "underline",
         color: "warning",
         className:
-          "data-[selected]:text-amber-600 data-[selected]:border-amber-500",
+          "data-[active]:text-amber-600 data-[active]:border-amber-500",
       },
       {
         variant: "card",
         color: "warning",
-        className: "data-[selected]:bg-amber-500 data-[selected]:text-white",
+        className: "data-[active]:bg-amber-500 data-[active]:text-white",
       },
 
       {
         variant: "default",
         color: "destructive",
         className:
-          "data-[selected]:bg-destructive data-[selected]:text-destructive-foreground",
+          "data-[active]:bg-destructive data-[active]:text-destructive-foreground",
       },
       {
         variant: "outline",
         color: "destructive",
         className:
-          "data-[selected]:bg-destructive data-[selected]:text-destructive-foreground",
+          "data-[active]:bg-destructive data-[active]:text-destructive-foreground",
       },
       {
         variant: "pills",
         color: "destructive",
         className:
-          "data-[selected]:bg-destructive data-[selected]:text-destructive-foreground data-[selected]:border-destructive",
+          "data-[active]:bg-destructive data-[active]:text-destructive-foreground data-[active]:border-destructive",
       },
       {
         variant: "soft",
         color: "destructive",
         className:
-          "data-[selected]:bg-destructive/10 data-[selected]:text-destructive",
+          "data-[active]:bg-destructive/10 data-[active]:text-destructive",
       },
       {
         variant: "underline",
         color: "destructive",
         className:
-          "data-[selected]:text-destructive data-[selected]:border-destructive",
+          "data-[active]:text-destructive data-[active]:border-destructive",
       },
       {
         variant: "card",
         color: "destructive",
         className:
-          "data-[selected]:bg-destructive data-[selected]:text-destructive-foreground",
+          "data-[active]:bg-destructive data-[active]:text-destructive-foreground",
       },
     ],
     defaultVariants: {
@@ -569,13 +528,18 @@ function TabsTrigger({
       {...props}
     >
       {icon && (
-        <span className="shrink-0 [&_svg]:h-4 [&_svg]:w-4" aria-hidden="true">
+        <span
+          data-slot="tabs-icon"
+          className="shrink-0 [&_svg]:h-4 [&_svg]:w-4"
+          aria-hidden="true"
+        >
           {icon}
         </span>
       )}
       <span className="truncate">{children}</span>
       {badge !== undefined && (
         <span
+          data-slot="tabs-badge"
           className={cn(
             "inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-medium min-w-5",
             badgeColorClasses[badgeColor]
@@ -586,6 +550,7 @@ function TabsTrigger({
       )}
       {closable && (
         <button
+          data-slot="tabs-close"
           type="button"
           aria-label={`Close ${typeof children === "string" ? children : "tab"}`}
           onClick={handleClose}
@@ -649,152 +614,173 @@ function TabsContent({
   ...props
 }: TabsContentProps) {
   const { orientation } = useTabsContext();
-  const [hasBeenActive, setHasBeenActive] = React.useState(false);
 
-  React.useEffect(() => {
-    const checkActive = () => {
-      const panel = document.querySelector(
-        `[data-slot="tabs-content"][data-value="${value}"]`
-      );
-      if (panel && !panel.hasAttribute("hidden")) {
-        setHasBeenActive(true);
-      }
-    };
-
-    checkActive();
-    const observer = new MutationObserver(checkActive);
-    const panel = document.querySelector(
-      `[data-slot="tabs-content"][data-value="${value}"]`
-    );
-    if (panel) {
-      observer.observe(panel, {
-        attributes: true,
-        attributeFilter: ["hidden"],
-      });
-    }
-
-    return () => observer.disconnect();
-  }, [value]);
-
-  const shouldRender = !lazy || hasBeenActive;
-
+  // `lazy` uses Base UI's native unmount: the panel is not in the DOM until its
+  // tab is first selected, and unmounts again when left. `keepMounted` is the
+  // escape hatch for panels that must retain internal state across visits.
   return (
     <TabsPrimitive.Panel
       data-slot="tabs-content"
       data-value={value}
       value={value}
-      keepMounted={keepMounted}
+      keepMounted={lazy ? false : keepMounted}
       className={cn(tabsContentVariants({ animation, orientation }), className)}
       {...props}
     >
-      {shouldRender ? children : null}
+      {children}
     </TabsPrimitive.Panel>
   );
 }
 
-interface TabsIndicatorProps extends TabsPrimitive.Indicator.Props {
-  position?: "bottom" | "top" | "left" | "right";
+interface TabItem {
+  value: string;
+  label: React.ReactNode;
+  icon?: React.ReactNode;
+  badge?: React.ReactNode;
+  badgeColor?: "default" | "primary" | "destructive" | "success" | "warning";
+  content?: React.ReactNode;
+  disabled?: boolean;
+  closable?: boolean;
 }
 
-function TabsIndicator({ className, position, ...props }: TabsIndicatorProps) {
-  const { orientation, variant, color } = useTabsContext();
-
-  const effectivePosition =
-    position ??
-    (orientation === "vertical"
-      ? variant === "underline"
-        ? "right"
-        : "left"
-      : variant === "underline"
-        ? "bottom"
-        : "bottom");
-
-  const positionClasses = {
-    bottom:
-      "bottom-0 left-[var(--active-tab-left)] w-[var(--active-tab-width)] h-0.5",
-    top: "top-0 left-[var(--active-tab-left)] w-[var(--active-tab-width)] h-0.5",
-    left: "left-0 top-[var(--active-tab-top)] h-[var(--active-tab-height)] w-0.5",
-    right:
-      "right-0 top-[var(--active-tab-top)] h-[var(--active-tab-height)] w-0.5",
-  };
-
-  const colorClasses = {
-    default: "bg-primary",
-    primary: "bg-primary",
-    success: "bg-green-600",
-    warning: "bg-amber-500",
-    destructive: "bg-destructive",
-  };
-
-  return (
-    <TabsPrimitive.Indicator
-      data-slot="tabs-indicator"
-      className={cn(
-        "absolute",
-        colorClasses[color],
-
-        "animate-in fade-in-0 duration-200",
-        "transition-all duration-200 ease-out",
-        "motion-reduce:transition-none motion-reduce:animate-none",
-        positionClasses[effectivePosition],
-        className
-      )}
-      {...props}
-    />
-  );
+interface KiraTabsProps {
+  items: TabItem[];
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  variant?: TabsListVariant;
+  color?: TabsTriggerColor;
+  orientation?: "horizontal" | "vertical";
+  showIndicator?: boolean;
+  animation?: TabsContentProps["animation"];
+  lazy?: boolean;
+  /** Show a trailing "+" button. Return a new TabItem to append & select it. */
+  addable?: boolean;
+  onAdd?: () => TabItem | void;
+  onClose?: (value: string) => void;
+  className?: string;
+  listClassName?: string;
+  contentClassName?: string;
 }
 
-interface TabsScrollButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  direction: "left" | "right" | "up" | "down";
-  visible?: boolean;
-}
-
-function TabsScrollButton({
-  direction,
-  visible = true,
+/**
+ * Prop-driven Tabs: pass an `items` array and get the full family wired up,
+ * including optional closable tabs (auto-selects a neighbour on close) and an
+ * add-tab (+) button. Built from the primitives above — no duplicated styling.
+ */
+function KiraTabs({
+  items: itemsProp,
+  value,
+  defaultValue,
+  onValueChange,
+  variant = "default",
+  color = "default",
+  orientation = "horizontal",
+  showIndicator = true,
+  animation = "fade",
+  lazy = false,
+  addable = false,
+  onAdd,
+  onClose,
   className,
-  ...props
-}: TabsScrollButtonProps) {
-  if (!visible) return null;
+  listClassName,
+  contentClassName,
+}: KiraTabsProps) {
+  // Own the item list so closable/addable can mutate it. When the parent passes
+  // a fresh `itemsProp`, adopt it (adjust-on-prop-change via a render-time state
+  // prev-value, not an effect — react-compiler safe).
+  const [items, setItems] = React.useState(itemsProp);
+  const [prevItemsProp, setPrevItemsProp] = React.useState(itemsProp);
+  if (itemsProp !== prevItemsProp) {
+    setPrevItemsProp(itemsProp);
+    setItems(itemsProp);
+  }
 
-  const isHorizontal = direction === "left" || direction === "right";
-  const isStart = direction === "left" || direction === "up";
+  const isControlled = value !== undefined;
+  const [internalValue, setInternalValue] = React.useState(
+    defaultValue ?? itemsProp[0]?.value
+  );
+  const activeValue = isControlled ? value : internalValue;
+
+  const selectValue = (next: string) => {
+    if (!isControlled) setInternalValue(next);
+    onValueChange?.(next);
+  };
+
+  const handleClose = (closedValue: string) => {
+    const idx = items.findIndex((i) => i.value === closedValue);
+    const next = items.filter((i) => i.value !== closedValue);
+    // If the active tab was closed, move to a neighbour.
+    if (activeValue === closedValue && next.length > 0) {
+      const neighbour = next[Math.max(0, idx - 1)];
+      selectValue(neighbour.value);
+    }
+    setItems(next);
+    onClose?.(closedValue);
+  };
+
+  const handleAdd = () => {
+    const created = onAdd?.();
+    if (created) {
+      setItems((prev) => [...prev, created]);
+      selectValue(created.value);
+    }
+  };
 
   return (
-    <button
-      type="button"
-      aria-label={`Scroll ${direction}`}
-      className={cn(
-        "absolute z-10 flex items-center justify-center",
-        "w-8 h-full bg-linear-to-r from-background to-transparent",
-        isHorizontal ? "top-0" : "left-0",
-        isStart
-          ? isHorizontal
-            ? "left-0"
-            : "top-0"
-          : isHorizontal
-            ? "right-0 rotate-180"
-            : "bottom-0 rotate-180",
-        "opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity",
-        className
-      )}
-      {...props}
+    <Tabs
+      value={activeValue}
+      onValueChange={selectValue}
+      variant={variant}
+      color={color}
+      orientation={orientation}
+      showIndicator={showIndicator}
+      className={className}
     >
-      <svg
-        className="h-4 w-4 text-muted-foreground"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M15 19l-7-7 7-7"
-        />
-      </svg>
-    </button>
+      <TabsList className={listClassName}>
+        {items.map((item) => (
+          <TabsTrigger
+            key={item.value}
+            value={item.value}
+            icon={item.icon}
+            badge={item.badge}
+            badgeColor={item.badgeColor}
+            disabled={item.disabled}
+            closable={item.closable}
+            onClose={handleClose}
+          >
+            {item.label}
+          </TabsTrigger>
+        ))}
+        {addable && (
+          <button
+            data-slot="tabs-add"
+            type="button"
+            onClick={handleAdd}
+            aria-label="Add tab"
+            className={cn(
+              "inline-flex items-center justify-center rounded-md p-1.5 shrink-0",
+              "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "transition-colors duration-150"
+            )}
+          >
+            <IconPlus className="h-4 w-4" aria-hidden="true" />
+          </button>
+        )}
+      </TabsList>
+      {items.map((item) => (
+        <TabsContent
+          key={item.value}
+          value={item.value}
+          animation={animation}
+          lazy={lazy}
+          className={contentClassName}
+        >
+          {item.content}
+        </TabsContent>
+      ))}
+    </Tabs>
   );
 }
 
@@ -803,8 +789,7 @@ export {
   TabsList,
   TabsTrigger,
   TabsContent,
-  TabsIndicator,
-  TabsScrollButton,
+  KiraTabs,
   tabsListVariants,
   tabsTriggerVariants,
   tabsContentVariants,
@@ -816,6 +801,6 @@ export type {
   TabsListProps,
   TabsTriggerProps,
   TabsContentProps,
-  TabsIndicatorProps,
-  TabsScrollButtonProps,
+  TabItem,
+  KiraTabsProps,
 };

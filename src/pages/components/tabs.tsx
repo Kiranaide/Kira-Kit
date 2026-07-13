@@ -11,7 +11,8 @@ import {
   IconAccessible,
 } from "@tabler/icons-react";
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent, KiraTabs } from "@/components/ui/tabs";
+import type { TabItem } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
@@ -30,6 +31,7 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 function BasicDemo() {
@@ -696,7 +698,7 @@ const usageCode = `import {
   TabsList,
   TabsTrigger,
   TabsContent,
-  TabsIndicator,
+  KiraTabs,
 } from "@/components/ui/tabs"
 
 // Basic usage
@@ -719,32 +721,28 @@ const usageCode = `import {
   Closable Tab
 </TabsTrigger>
 
-// Vertical orientation
-<Tabs orientation="vertical">...</Tabs>
-
-// Color-matched backgrounds
-<Tabs color="primary">
-  <TabsList> {/* Gets bg-primary/10 */}
-    ...
-  </TabsList>
-</Tabs>
-
-// Underline with auto indicator
+// Underline with auto indicator (underline variant only)
 <Tabs variant="underline">
   <TabsList> {/* Indicator included automatically */}
     ...
   </TabsList>
 </Tabs>
 
-// Lazy loading
+// Lazy loading — unmounts on leave, remounts on re-entry
 <TabsContent value="tab1" lazy>
   Heavy content loaded on demand
 </TabsContent>
 
-// With animations
-<TabsContent value="tab1" animation="slide">
-  Content slides in from right
-</TabsContent>`;
+// KiraTabs — prop-driven, with closable + add-tab
+<KiraTabs
+  variant="underline"
+  addable
+  onAdd={() => ({ value: crypto.randomUUID(), label: "New", content: "..." })}
+  items={[
+    { value: "a", label: "First", content: "One", closable: true },
+    { value: "b", label: "Second", content: "Two", closable: true },
+  ]}
+/>`;
 
 const apiSections = [
   {
@@ -767,7 +765,7 @@ const apiSections = [
       },
       {
         prop: "variant",
-        type: '"default" | "underline" | "pills" | "soft" | "card"',
+        type: '"default" | "outline" | "underline" | "pills" | "soft" | "card"',
         default: '"default"',
         description: "Visual style variant",
       },
@@ -817,7 +815,7 @@ const apiSections = [
       },
       {
         prop: "badgeColor",
-        type: '"default" | "primary" | "destructive"',
+        type: '"default" | "primary" | "destructive" | "success" | "warning"',
         default: '"default"',
         description: "Badge color variant",
       },
@@ -846,27 +844,183 @@ const apiSections = [
         prop: "lazy",
         type: "boolean",
         default: "false",
-        description: "Only render content when first activated",
+        description:
+          "Mount content only when first activated; unmounts on leave (use keepMounted to retain state)",
       },
       {
         prop: "animation",
-        type: '"fade" | "slide" | "slideUp" | "zoom"',
+        type: '"none" | "fade" | "slide" | "slideUp" | "zoom"',
         default: '"fade"',
         description: "Entrance animation style",
       },
     ],
   },
   {
-    title: "TabsIndicator",
+    title: "KiraTabs",
     props: [
       {
-        prop: "className",
-        type: "string",
-        description: "Custom classes for the indicator",
+        prop: "items",
+        type: "TabItem[]",
+        description:
+          "Tabs as data: { value, label, icon?, badge?, content?, closable?, disabled? }",
+      },
+      {
+        prop: "variant / color / orientation",
+        type: "same as Tabs",
+        description: "Forwarded to the underlying Tabs",
+      },
+      {
+        prop: "addable",
+        type: "boolean",
+        default: "false",
+        description: "Show a trailing + button",
+      },
+      {
+        prop: "onAdd",
+        type: "() => TabItem | void",
+        description: "Return a new item to append and select it",
+      },
+      {
+        prop: "onClose",
+        type: "(value: string) => void",
+        description: "Called after a closable tab is removed",
+      },
+      {
+        prop: "lazy",
+        type: "boolean",
+        default: "false",
+        description: "Native unmount for inactive panels",
       },
     ],
   },
 ];
+
+const kiraCode = `import { KiraTabs } from "@/components/ui/tabs"
+
+// Tabs as data — closable tabs auto-select a neighbour on close,
+// and the + button appends a new tab.
+const [id, setId] = useState(3)
+
+<KiraTabs
+  variant="underline"
+  addable
+  onAdd={() => {
+    const value = \`tab-\${id}\`
+    setId((n) => n + 1)
+    return { value, label: \`Tab \${id}\`, content: "Fresh panel", closable: true }
+  }}
+  items={[
+    { value: "tab-1", label: "First", content: "First panel", closable: true },
+    { value: "tab-2", label: "Second", content: "Second panel", closable: true },
+  ]}
+/>`;
+
+function KiraBasicDemo() {
+  const items: TabItem[] = [
+    {
+      value: "overview",
+      label: "Overview",
+      icon: <IconHome />,
+      content: (
+        <Card>
+          <CardHeader>
+            <CardTitle>Overview</CardTitle>
+            <CardDescription>Declared as an items array.</CardDescription>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            KiraTabs wires the list, triggers, and panels from a single prop.
+          </CardContent>
+        </Card>
+      ),
+    },
+    {
+      value: "activity",
+      label: "Activity",
+      icon: <IconBell />,
+      badge: 3,
+      badgeColor: "primary",
+      content: (
+        <Card>
+          <CardHeader>
+            <CardTitle>Activity</CardTitle>
+            <CardDescription>Icons and badges come from data too.</CardDescription>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            No JSX plumbing per tab.
+          </CardContent>
+        </Card>
+      ),
+    },
+    {
+      value: "settings",
+      label: "Settings",
+      icon: <IconSettings />,
+      content: (
+        <Card>
+          <CardHeader>
+            <CardTitle>Settings</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Everything the primitives support, driven by props.
+          </CardContent>
+        </Card>
+      ),
+    },
+  ];
+  return <KiraTabs variant="pills" items={items} />;
+}
+
+const editorInitialItems: TabItem[] = [
+  {
+    value: "tab-1",
+    label: "index.ts",
+    content: (
+      <div className="rounded-md border bg-muted/30 p-4 font-mono text-sm">
+        export const one = 1
+      </div>
+    ),
+    closable: true,
+  },
+  {
+    value: "tab-2",
+    label: "utils.ts",
+    content: (
+      <div className="rounded-md border bg-muted/30 p-4 font-mono text-sm">
+        export const two = 2
+      </div>
+    ),
+    closable: true,
+  },
+];
+
+function KiraEditorDemo() {
+  const [nextId, setNextId] = React.useState(3);
+  // Uncontrolled: KiraTabs owns the tab list, so close (auto-selects a
+  // neighbour) and add both work without the parent tracking items. The
+  // initial array is module-level so a re-render never resets the list.
+  return (
+    <KiraTabs
+      variant="underline"
+      items={editorInitialItems}
+      addable
+      onAdd={() => {
+        const value = `tab-${nextId}`;
+        setNextId((n) => n + 1);
+        const created: TabItem = {
+          value,
+          label: `untitled-${nextId}.ts`,
+          content: (
+            <div className="rounded-md border bg-muted/30 p-4 font-mono text-sm">
+              // new file
+            </div>
+          ),
+          closable: true,
+        };
+        return created;
+      }}
+    />
+  );
+}
 
 const demoTabs = [
   {
@@ -879,6 +1033,32 @@ const demoTabs = [
         code={basicCode}
       >
         <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraTabs",
+    demo: (
+      <DemoWrapper
+        title="KiraTabs (items array)"
+        description="Prop-driven tabs from a single data array — icons, badges, and panels included."
+        code={kiraCode}
+      >
+        <KiraBasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "editor",
+    label: "Closable + Add",
+    demo: (
+      <DemoWrapper
+        title="Editor tabs"
+        description="Closable tabs auto-select a neighbour on close; the + button appends a new tab."
+        code={kiraCode}
+      >
+        <KiraEditorDemo />
       </DemoWrapper>
     ),
   },
@@ -955,7 +1135,7 @@ export default function TabsPage() {
       <PageHeader
         title="Tabs"
         description="Switch between different views with full accessibility, RTL support, and multiple style variants."
-        version="v1.0"
+        version="v2.0"
       />
 
       <FeatureGrid features={features} />
@@ -974,6 +1154,47 @@ export default function TabsPage() {
         sections={apiSections}
         title="API Reference"
         description="Props and configuration options for Tabs components."
+      />
+
+      <Changelog
+        entries={[
+          {
+            version: "v2.0.0",
+            date: "2026-07-13",
+            changes: [
+              {
+                type: "added",
+                title: "KiraTabs mega-component",
+                description:
+                  "Prop-driven tabs from an items array, with closable tabs (auto-selects a neighbour) and an add-tab (+) button.",
+              },
+              {
+                type: "breaking",
+                title: "Removed TabsIndicator & TabsScrollButton",
+                description:
+                  "The underline indicator is now automatic inside TabsList; the scroll button + scrollable prop were no-ops (needed an uninstalled plugin) and were removed.",
+              },
+              {
+                type: "breaking",
+                title: "lazy now uses native unmount",
+                description:
+                  "Lazy panels unmount on leave and remount on re-entry (losing internal state). Pass keepMounted to retain state. Also fixes a cross-talk bug between tab groups sharing a value.",
+              },
+              {
+                type: "changed",
+                title: "Indicator is underline-only",
+                description:
+                  "The fill pill behind non-underline variants was removed — the trigger's own selected background owns the highlight, ending the double treatment.",
+              },
+              {
+                type: "fixed",
+                title: "Reduced motion",
+                description:
+                  "The indicator's transition is gated on prefers-reduced-motion via the shared hook.",
+              },
+            ],
+          },
+        ]}
       />
     </ComponentPage>
   );
