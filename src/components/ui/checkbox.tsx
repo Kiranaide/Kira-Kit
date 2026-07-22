@@ -1,10 +1,14 @@
+/* eslint-disable react-refresh/only-export-components */
 "use client";
 
 import * as React from "react";
 import gsap from "gsap";
 import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
+import { CheckboxGroup as CheckboxGroupPrimitive } from "@base-ui/react/checkbox-group";
 import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { SimpleTooltip } from "@/components/ui/tooltip";
 import { IconCheck, IconMinus, IconLoader } from "@tabler/icons-react";
 
 const checkboxVariants = cva(
@@ -67,7 +71,7 @@ const checkboxVariants = cva(
 );
 
 const checkboxIndicatorVariants = cva(
-  "flex items-center justify-center text-current w-full h-full transition-all duration-150",
+  "flex items-center justify-center text-current w-full h-full",
   {
     variants: {
       size: {
@@ -82,35 +86,41 @@ const checkboxIndicatorVariants = cva(
   }
 );
 
-interface CheckboxProps extends Omit<
-  CheckboxPrimitive.Root.Props,
-  "checked" | "onCheckedChange" | "defaultChecked"
-> {
+const indicatorIconSize = {
+  sm: "h-3 w-3",
+  default: "h-3.5 w-3.5",
+  lg: "h-4 w-4",
+} as const;
+
+type CheckboxSize = "sm" | "default" | "lg";
+type CheckboxVariant = "default" | "outline" | "filled" | "soft";
+type CheckboxColor = "default" | "success" | "destructive" | "warning";
+
+interface CheckboxProps
+  extends Omit<
+    CheckboxPrimitive.Root.Props,
+    "checked" | "onCheckedChange" | "defaultChecked" | "indeterminate"
+  > {
+  /** `true` / `false` / `"indeterminate"`. Omit for uncontrolled (see `defaultChecked`). */
   checked?: boolean | "indeterminate";
-
   defaultChecked?: boolean;
-
   onCheckedChange?: (checked: boolean | "indeterminate") => void;
-
-  size?: "sm" | "default" | "lg";
-
-  variant?: "default" | "outline" | "filled" | "soft";
-
-  color?: "default" | "success" | "destructive" | "warning";
-
+  size?: CheckboxSize;
+  variant?: CheckboxVariant;
+  color?: CheckboxColor;
   customIcon?: React.ReactNode;
-
+  /** Spinner in the indicator; blocks toggling. */
   loading?: boolean;
-
   error?: boolean;
-
+  /** When disabled, wrap in a tooltip explaining why. */
+  disabledReason?: React.ReactNode;
   inputRef?: React.Ref<HTMLInputElement>;
 }
 
 function Checkbox({
   className,
   checked,
-  defaultChecked = false,
+  defaultChecked,
   onCheckedChange,
   size = "default",
   variant = "default",
@@ -119,110 +129,53 @@ function Checkbox({
   loading = false,
   error = false,
   disabled,
+  disabledReason,
   readOnly,
-  name,
-  value,
-  required,
-  id,
-  inputRef,
   ...props
 }: CheckboxProps) {
-  const isControlled = checked !== undefined;
-  const indicatorRef = React.useRef<HTMLSpanElement>(null);
+  const reduced = useReducedMotion();
   const rippleRef = React.useRef<HTMLSpanElement>(null);
-  const [internalChecked, setInternalChecked] = React.useState<
-    boolean | "indeterminate"
-  >(checked ?? defaultChecked);
+  const boxRef = React.useRef<HTMLButtonElement>(null);
 
-  React.useEffect(() => {
-    if (isControlled) {
-      setInternalChecked(checked);
-    }
-  }, [checked, isControlled]);
+  // Split the public tri-state prop at the boundary; Base UI owns the state.
+  const controlledIndeterminate =
+    checked === "indeterminate" ? true : undefined;
+  const controlledChecked = checked === undefined ? undefined : checked === true;
 
-  React.useEffect(() => {
-    if (indicatorRef.current) {
-      const isActive =
-        internalChecked === true || internalChecked === "indeterminate";
-      indicatorRef.current.style.transform = isActive ? "scale(1)" : "scale(0)";
-      indicatorRef.current.style.opacity = isActive ? "1" : "0";
-    }
-  }, [internalChecked]);
+  const handleChange = (next: boolean) => {
+    if (loading) return;
 
-  const handleChange = (newChecked: boolean | "indeterminate") => {
-    if (disabled || readOnly || loading) return;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (indicatorRef.current) {
-      if (prefersReducedMotion) {
-        const isActive = newChecked === true || newChecked === "indeterminate";
-        gsap.set(indicatorRef.current, {
-          scale: isActive ? 1 : 0,
-          opacity: isActive ? 1 : 0,
-          rotate: 0,
-        });
-      } else if (newChecked === true || newChecked === "indeterminate") {
-        gsap.fromTo(
-          indicatorRef.current,
-          { scale: 0, opacity: 0, rotate: -10 },
-          {
-            keyframes: {
-              scale: [0, 1.1, 0.95, 1],
-              opacity: [0, 1, 1, 1],
-              rotate: [-10, 0, 0, 0],
-            },
-            duration: 0.2,
-            ease: "elastic.out(1, 0.5)",
-          }
-        );
-      } else {
-        gsap.fromTo(
-          indicatorRef.current,
-          { scale: 1, opacity: 1, rotate: 0 },
-          {
-            keyframes: {
-              scale: [1, 0.9, 0],
-              opacity: [1, 1, 0],
-              rotate: [0, 10, 10],
-            },
-            duration: 0.15,
-            ease: "power1.out",
-          }
-        );
-      }
-    }
-
-    if (rippleRef.current && !prefersReducedMotion) {
+    // Indicator scale/opacity is CSS-driven off data-checked (one writer).
+    // GSAP only decorates separate elements: the ripple and a press pop.
+    if (!reduced && rippleRef.current) {
       gsap.fromTo(
         rippleRef.current,
         { scale: 0.5, opacity: 0.3 },
         { scale: 1.5, opacity: 0, duration: 0.3, ease: "power1.out" }
       );
     }
+    if (!reduced && boxRef.current) {
+      // Press micro-interaction < 150ms (transform only).
+      gsap.fromTo(
+        boxRef.current,
+        { scale: 0.9 },
+        { scale: 1, duration: 0.12, ease: "power2.out" }
+      );
+    }
 
-    setInternalChecked(newChecked);
-    onCheckedChange?.(newChecked);
+    onCheckedChange?.(next);
   };
 
-  const isIndeterminate = internalChecked === "indeterminate";
-  const isChecked = internalChecked === true;
-
-  return (
+  const box = (
     <div className="relative inline-flex items-center">
       <CheckboxPrimitive.Root
+        ref={boxRef}
         data-slot="checkbox"
-        id={id}
-        name={name}
-        value={value}
-        checked={isChecked}
-        indeterminate={isIndeterminate}
+        checked={controlledChecked}
+        defaultChecked={defaultChecked}
+        indeterminate={controlledIndeterminate}
         disabled={disabled || loading}
         readOnly={readOnly}
-        required={required}
-        inputRef={inputRef}
         onCheckedChange={handleChange}
         className={cn(
           checkboxVariants({ variant, color, size }),
@@ -235,52 +188,66 @@ function Checkbox({
         {...props}
       >
         <CheckboxPrimitive.Indicator
-          ref={indicatorRef}
-          className={cn(checkboxIndicatorVariants({ size }))}
-          style={{
-            transform: isChecked || isIndeterminate ? "scale(1)" : "scale(0)",
-            opacity: isChecked || isIndeterminate ? 1 : 0,
-          }}
+          data-slot="checkbox-indicator"
+          className={cn(
+            "group/ind",
+            checkboxIndicatorVariants({ size }),
+            // Resting/initial state via CSS (GSAP inline styles take over on toggle).
+            "scale-0 opacity-0 data-[checked]:scale-100 data-[checked]:opacity-100",
+            "data-[indeterminate]:scale-100 data-[indeterminate]:opacity-100",
+            !reduced && "transition-[transform,opacity] duration-150"
+          )}
           keepMounted
         >
           {loading ? (
             <IconLoader
-              className={cn(
-                "animate-spin",
-                size === "sm" && "h-3 w-3",
-                size === "default" && "h-3.5 w-3.5",
-                size === "lg" && "h-4 w-4"
-              )}
+              className={cn("animate-spin", indicatorIconSize[size])}
               strokeWidth={3}
             />
           ) : customIcon ? (
             customIcon
-          ) : isIndeterminate ? (
-            <IconMinus strokeWidth={3} />
           ) : (
-            <IconCheck strokeWidth={3} />
+            // Indicator carries data-indeterminate; swap minus vs check via CSS.
+            <>
+              <IconMinus
+                strokeWidth={3}
+                className="hidden group-data-[indeterminate]/ind:block"
+              />
+              <IconCheck
+                strokeWidth={3}
+                className="group-data-[indeterminate]/ind:hidden"
+              />
+            </>
           )}
         </CheckboxPrimitive.Indicator>
         <span
           ref={rippleRef}
+          data-slot="checkbox-ripple"
           className="absolute inset-0 rounded-sm bg-primary/30 scale-0 opacity-0 pointer-events-none"
         />
       </CheckboxPrimitive.Root>
     </div>
   );
+
+  if (disabled && disabledReason) {
+    return <SimpleTooltip content={disabledReason}>{box}</SimpleTooltip>;
+  }
+  return box;
 }
 
 interface CheckboxWithLabelProps extends CheckboxProps {
   label: string;
   description?: string;
   labelPlacement?: "right" | "left";
+  /** Wrapper className (the checkbox's own className still targets the box). */
+  wrapperClassName?: string;
 }
 
 function CheckboxWithLabel({
   label,
   description,
   labelPlacement = "right",
-  className,
+  wrapperClassName,
   id,
   ...props
 }: CheckboxWithLabelProps) {
@@ -305,7 +272,10 @@ function CheckboxWithLabel({
   );
 
   return (
-    <div className={cn("flex items-start gap-3", className)}>
+    <div
+      data-slot="checkbox-with-label"
+      className={cn("flex items-start gap-3", wrapperClassName)}
+    >
       {labelPlacement === "left" && content}
       <Checkbox id={checkboxId} {...props} />
       {labelPlacement === "right" && content}
@@ -323,16 +293,18 @@ interface CheckboxGroupOption {
 interface CheckboxGroupProps {
   options: CheckboxGroupOption[];
   value?: string[];
+  defaultValue?: string[];
   onChange?: (value: string[]) => void;
   label?: string;
   description?: string;
   showSelectAll?: boolean;
   selectAllLabel?: string;
-  allValues?: string[];
+  /** Show a live "n/total selected" indicator. */
+  showProgress?: boolean;
   orientation?: "vertical" | "horizontal";
-  size?: "sm" | "default" | "lg";
-  variant?: "default" | "outline" | "filled" | "soft";
-  color?: "default" | "success" | "destructive" | "warning";
+  size?: CheckboxSize;
+  variant?: CheckboxVariant;
+  color?: CheckboxColor;
   className?: string;
   disabled?: boolean;
   error?: boolean;
@@ -340,13 +312,14 @@ interface CheckboxGroupProps {
 
 function CheckboxGroup({
   options,
-  value = [],
+  value,
+  defaultValue,
   onChange,
   label,
   description,
   showSelectAll = false,
   selectAllLabel = "Select all",
-  allValues,
+  showProgress = false,
   orientation = "vertical",
   size = "default",
   variant = "default",
@@ -355,41 +328,76 @@ function CheckboxGroup({
   disabled = false,
   error = false,
 }: CheckboxGroupProps) {
-  const allChecked =
-    allValues && allValues.length > 0
-      ? allValues.every((v) => value.includes(v))
-      : options.length > 0 && options.every((opt) => value.includes(opt.value));
-  const someChecked = options.some((opt) => value.includes(opt.value));
-  const isIndeterminate = someChecked && !allChecked;
-
-  const effectiveAllValues = allValues || options.map((o) => o.value);
-
-  const handleSelectAll = (checked: boolean | "indeterminate") => {
-    if (checked === true) {
-      onChange?.(
-        effectiveAllValues.filter(
-          (v) => !options.find((o) => o.value === v)?.disabled
-        )
-      );
-    } else {
-      onChange?.([]);
-    }
-  };
-
-  const handleItemChange = (itemValue: string, checked: boolean) => {
-    if (checked) {
-      const newValue = [...value, itemValue];
-      onChange?.([...new Set(newValue)]);
-    } else {
-      onChange?.(value.filter((v) => v !== itemValue));
-    }
-  };
+  const allValues = React.useMemo(() => options.map((o) => o.value), [options]);
 
   return (
-    <div
+    <CheckboxGroupPrimitive
       data-slot="checkbox-group"
+      value={value}
+      defaultValue={defaultValue}
+      onValueChange={(v) => onChange?.(v)}
+      allValues={allValues}
+      disabled={disabled}
       className={cn("flex flex-col gap-3", className)}
-    >
+      render={
+        <CheckboxGroupInner
+          options={options}
+          label={label}
+          description={description}
+          showSelectAll={showSelectAll}
+          selectAllLabel={selectAllLabel}
+          showProgress={showProgress}
+          orientation={orientation}
+          size={size}
+          variant={variant}
+          color={color}
+          disabled={disabled}
+          error={error}
+          allValues={allValues}
+          value={value}
+        />
+      }
+    />
+  );
+}
+
+// Rendered inside the primitive so children pick up the group context.
+function CheckboxGroupInner({
+  options,
+  label,
+  description,
+  showSelectAll,
+  selectAllLabel,
+  showProgress,
+  orientation,
+  size,
+  variant,
+  color,
+  disabled,
+  error,
+  allValues,
+  value,
+  ...divProps
+}: {
+  options: CheckboxGroupOption[];
+  label?: string;
+  description?: string;
+  showSelectAll: boolean;
+  selectAllLabel: string;
+  showProgress: boolean;
+  orientation: "vertical" | "horizontal";
+  size: CheckboxSize;
+  variant: CheckboxVariant;
+  color: CheckboxColor;
+  disabled: boolean;
+  error: boolean;
+  allValues: string[];
+  value?: string[];
+} & Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">) {
+  const selectedCount = value ? value.length : 0;
+
+  return (
+    <div {...divProps}>
       {(label || description) && (
         <div className="flex flex-col gap-0.5">
           {label && (
@@ -400,19 +408,27 @@ function CheckboxGroup({
           )}
         </div>
       )}
+      {showProgress && (
+        <p
+          data-slot="checkbox-group-progress"
+          className="text-xs text-muted-foreground tabular-nums"
+          aria-live="polite"
+        >
+          {selectedCount}/{allValues.length} selected
+        </p>
+      )}
       {showSelectAll && (
+        // `parent` lets Base UI derive checked/indeterminate from the group's
+        // `allValues` + `value` — no hand-rolled parent hook needed.
         <CheckboxWithLabel
+          parent
           label={selectAllLabel}
-          checked={
-            allChecked ? true : isIndeterminate ? "indeterminate" : false
-          }
-          onCheckedChange={handleSelectAll}
           size={size}
           variant={variant}
           color={color}
           disabled={disabled}
           error={error}
-          className="pb-2 border-b border-border"
+          wrapperClassName="pb-2 border-b border-border"
         />
       )}
       <div
@@ -424,12 +440,9 @@ function CheckboxGroup({
         {options.map((option) => (
           <CheckboxWithLabel
             key={option.value}
+            name={option.value}
             label={option.label}
             description={option.description}
-            checked={value.includes(option.value)}
-            onCheckedChange={(checked) =>
-              handleItemChange(option.value, checked === true)
-            }
             size={size}
             variant={variant}
             color={color}
@@ -442,19 +455,13 @@ function CheckboxGroup({
   );
 }
 
-interface CheckboxCardProps {
+interface CheckboxCardProps
+  extends Omit<CheckboxProps, "customIcon" | "onCheckedChange"> {
   label: string;
   description?: string;
   icon?: React.ReactNode;
-  size?: "sm" | "default" | "lg";
-  variant?: "default" | "outline" | "filled" | "soft";
-  color?: "default" | "success" | "destructive" | "warning";
   showIndicator?: boolean;
-  error?: boolean;
-  checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
-  disabled?: boolean;
-  className?: string;
 }
 
 function CheckboxCard({
@@ -466,142 +473,111 @@ function CheckboxCard({
   color = "default",
   showIndicator = true,
   error = false,
-  checked = false,
+  checked,
+  defaultChecked,
   onCheckedChange,
   disabled = false,
+  disabledReason,
   className,
+  name,
+  value,
+  id,
 }: CheckboxCardProps) {
-  const [internalChecked, setInternalChecked] = React.useState(checked);
+  const generatedId = React.useId();
+  const cardId = id || generatedId;
 
-  React.useEffect(() => {
-    setInternalChecked(checked);
-  }, [checked]);
+  const padding = size === "sm" ? "p-3" : size === "lg" ? "p-5" : "p-4";
 
-  const handleClick = () => {
-    if (disabled) return;
-    const newChecked = !internalChecked;
-    setInternalChecked(newChecked);
-    onCheckedChange?.(newChecked);
-  };
-
-  const sizeClasses: Record<
-    string,
-    { indicator: string; icon: string; padding: string }
-  > = {
-    sm: { indicator: "h-4 w-4", icon: "h-3 w-3", padding: "p-3" },
-    default: { indicator: "h-5 w-5", icon: "h-3.5 w-3.5", padding: "p-4" },
-    lg: { indicator: "h-6 w-6", icon: "h-4 w-4", padding: "p-5" },
-  };
-
-  const currentSize = sizeClasses[size];
-
-  const getVariantClasses = () => {
-    if (variant === "outline") {
-      return internalChecked
-        ? "bg-primary/10 border-primary text-primary"
-        : "border-2 border-input bg-transparent";
-    }
-    if (variant === "filled") {
-      return internalChecked
-        ? "bg-primary text-primary-foreground border-primary"
-        : "bg-muted border-transparent";
-    }
-    if (variant === "soft") {
-      return internalChecked
-        ? "bg-primary text-primary-foreground"
-        : "bg-primary/20 border-transparent";
-    }
-    return internalChecked
-      ? "bg-primary text-primary-foreground border-primary"
-      : "border-primary bg-transparent";
-  };
-
-  const getColorClasses = () => {
-    if (!internalChecked) return "";
-    if (color === "success")
-      return "bg-success border-success text-success-foreground";
-    if (color === "destructive")
-      return "bg-destructive border-destructive text-destructive-foreground";
-    if (color === "warning")
-      return "bg-warning border-warning text-warning-foreground";
-    return "";
-  };
-
-  return (
-    <div
+  const card = (
+    <label
+      htmlFor={cardId}
       data-slot="checkbox-card"
       data-disabled={disabled || undefined}
-      data-checked={internalChecked || undefined}
       data-error={error || undefined}
-      onClick={handleClick}
-      role="checkbox"
-      aria-checked={internalChecked}
-      aria-disabled={disabled}
-      aria-label={label}
-      tabIndex={disabled ? -1 : 0}
-      onKeyDown={(e) => {
-        if (e.key === " " || e.key === "Enter") {
-          e.preventDefault();
-          handleClick();
-        }
-      }}
       className={cn(
-        "relative flex flex-col gap-2 rounded-lg border-2 bg-transparent cursor-pointer transition-all",
+        "group relative flex items-start gap-3 rounded-lg border-2 border-input bg-transparent cursor-pointer transition-all",
         "hover:bg-muted/50",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "has-data-[checked]:border-primary has-data-[checked]:bg-primary/5",
+        "has-data-[checked]:ring-1 has-data-[checked]:ring-primary/40",
+        "has-focus-visible:ring-2 has-focus-visible:ring-ring has-focus-visible:ring-offset-2",
         "data-disabled:cursor-not-allowed data-disabled:opacity-50 data-disabled:hover:bg-transparent",
-        currentSize.padding,
+        padding,
         error && "border-destructive",
         className
       )}
     >
-      <div className="flex items-start gap-3">
-        {showIndicator && (
-          <div className="shrink-0 mt-0.5">
-            <div
-              className={cn(
-                "flex items-center justify-center rounded-sm transition-all",
-                currentSize.indicator,
-                getVariantClasses(),
-                getColorClasses()
-              )}
-            >
-              {internalChecked && (
-                <IconCheck className={currentSize.icon} strokeWidth={3} />
-              )}
-            </div>
-          </div>
-        )}
-        {icon && (
-          <div
-            className={cn(
-              "shrink-0 text-muted-foreground transition-colors",
-              internalChecked &&
-                (color === "destructive" ? "text-destructive" : "text-primary")
-            )}
-            data-slot="checkbox-card-icon"
-          >
-            {icon}
-          </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <span
-            className={cn(
-              "text-sm font-medium cursor-pointer select-none",
-              disabled && "cursor-not-allowed"
-            )}
-          >
-            {label}
-          </span>
-          {description && (
-            <p className="text-sm text-muted-foreground mt-0.5">
-              {description}
-            </p>
-          )}
+      {showIndicator && (
+        <div className="shrink-0 mt-0.5">
+          <Checkbox
+            id={cardId}
+            name={name}
+            value={value}
+            size={size}
+            variant={variant}
+            color={color}
+            error={error}
+            checked={checked}
+            defaultChecked={defaultChecked}
+            onCheckedChange={(c) => onCheckedChange?.(c === true)}
+            disabled={disabled}
+          />
         </div>
+      )}
+      {icon && (
+        <div
+          className={cn(
+            "shrink-0 text-muted-foreground transition-colors",
+            "group-has-data-[checked]:text-primary"
+          )}
+          data-slot="checkbox-card-icon"
+        >
+          {icon}
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <span className="text-sm font-medium select-none">{label}</span>
+        {description && (
+          <p className="text-sm text-muted-foreground mt-0.5">{description}</p>
+        )}
       </div>
-    </div>
+    </label>
   );
+
+  if (disabled && disabledReason) {
+    return <SimpleTooltip content={disabledReason}>{card}</SimpleTooltip>;
+  }
+  return card;
+}
+
+type KiraCheckboxProps =
+  | ({ mode?: "checkbox" } & CheckboxProps)
+  | ({ mode: "label" } & CheckboxWithLabelProps)
+  | ({ mode: "card" } & CheckboxCardProps)
+  | ({ mode: "group" } & CheckboxGroupProps);
+
+function KiraCheckbox(props: KiraCheckboxProps) {
+  switch (props.mode) {
+    case "label": {
+      const { mode, ...rest } = props;
+      void mode;
+      return <CheckboxWithLabel {...rest} />;
+    }
+    case "card": {
+      const { mode, ...rest } = props;
+      void mode;
+      return <CheckboxCard {...rest} />;
+    }
+    case "group": {
+      const { mode, ...rest } = props;
+      void mode;
+      return <CheckboxGroup {...rest} />;
+    }
+    default: {
+      const { mode, ...rest } = props as { mode?: "checkbox" } & CheckboxProps;
+      void mode;
+      return <Checkbox {...rest} />;
+    }
+  }
 }
 
 export {
@@ -609,6 +585,7 @@ export {
   CheckboxWithLabel,
   CheckboxGroup,
   CheckboxCard,
+  KiraCheckbox,
   checkboxVariants,
 };
 export type {
@@ -617,4 +594,5 @@ export type {
   CheckboxGroupProps,
   CheckboxGroupOption,
   CheckboxCardProps,
+  KiraCheckboxProps,
 };

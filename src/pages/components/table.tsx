@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Table,
   TableHeader,
@@ -7,7 +8,10 @@ import {
   TableCell,
   TableCaption,
   TableFooter,
+  KiraTable,
+  type KiraTableColumn,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
   PageHeader,
@@ -16,6 +20,7 @@ import {
   DemoTabs,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 const invoices = [
@@ -406,13 +411,134 @@ const borderlessCode = `import {
   </TableBody>
 </Table>`;
 
+type Invoice = (typeof invoices)[number];
+
+const kiraColumns: KiraTableColumn<Invoice>[] = [
+  { key: "invoice", header: "Invoice", sortable: true, stickyColumn: true },
+  { key: "paymentStatus", header: "Status", sortable: true },
+  { key: "paymentMethod", header: "Method" },
+  { key: "totalAmount", header: "Amount", sortable: true, align: "right" },
+];
+
+function KiraTableDemo() {
+  const [selected, setSelected] = useState<string[]>([]);
+  return (
+    <div className="space-y-3">
+      <KiraTable
+        label="Recent invoices"
+        columns={kiraColumns}
+        data={invoices}
+        getRowId={(row) => row.invoice}
+        caption="Sortable, selectable — click a header to sort."
+        striped
+        selectable
+        onSelectionChange={setSelected}
+        defaultSort={{ key: "invoice", dir: "asc" }}
+      />
+      <p className="text-sm text-muted-foreground" aria-live="polite">
+        {selected.length} row{selected.length === 1 ? "" : "s"} selected
+      </p>
+    </div>
+  );
+}
+
+const kiraCode = `import { KiraTable, type KiraTableColumn } from "@/components/ui/table"
+
+const columns: KiraTableColumn<Invoice>[] = [
+  { key: "invoice", header: "Invoice", sortable: true, stickyColumn: true },
+  { key: "paymentStatus", header: "Status", sortable: true },
+  { key: "totalAmount", header: "Amount", sortable: true, align: "right" },
+]
+
+<KiraTable
+  label="Recent invoices"
+  columns={columns}
+  data={invoices}
+  getRowId={(row) => row.invoice}
+  striped
+  selectable
+  onSelectionChange={setSelected}
+  defaultSort={{ key: "invoice", dir: "asc" }}
+/>`;
+
+function DensityDemo() {
+  return (
+    <div className="space-y-6">
+      {(["comfortable", "compact", "dense"] as const).map((density) => (
+        <div key={density}>
+          <p className="text-sm font-medium mb-2 capitalize">{density}</p>
+          <div className="rounded-lg border border-border">
+            <Table density={density}>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Invoice</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {invoices.slice(0, 3).map((invoice) => (
+                  <TableRow key={invoice.invoice}>
+                    <TableCell className="font-medium">
+                      {invoice.invoice}
+                    </TableCell>
+                    <TableCell>{invoice.paymentStatus}</TableCell>
+                    <TableCell className="text-right">
+                      {invoice.totalAmount}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const densityCode = `<Table density="comfortable"> {/* 48px header rows */}
+<Table density="compact">     {/* 40px */}
+<Table density="dense">       {/* 32px — dashboards */}`;
+
+function StatesDemo() {
+  const [loading, setLoading] = useState(false);
+  const [empty, setEmpty] = useState(false);
+  return (
+    <div className="space-y-3">
+      <div className="flex gap-2">
+        <Button size="sm" variant="outline" onClick={() => setLoading((v) => !v)}>
+          {loading ? "Show data" : "Show loading"}
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => setEmpty((v) => !v)}>
+          {empty ? "Show data" : "Show empty"}
+        </Button>
+      </div>
+      <KiraTable
+        label="Invoice states"
+        columns={kiraColumns}
+        data={empty ? [] : invoices}
+        getRowId={(row) => row.invoice}
+        loading={loading}
+        empty="No invoices yet — create your first one."
+      />
+    </div>
+  );
+}
+
+const statesCode = `{/* Skeleton shimmer while fetching */}
+<KiraTable columns={columns} data={data} loading={isLoading} />
+
+{/* Centered empty state when data is [] */}
+<KiraTable columns={columns} data={[]} empty="No invoices yet." />`;
+
 export default function TablePage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Table"
-        description="A responsive table component for displaying tabular data with support for striped and bordered variants."
-        version="1.0"
+        description="A responsive, accessible table primitive with density, sticky header/columns, headless sort + selection, and the config-driven KiraTable."
+        version="2.0"
       />
 
       <FeatureGrid
@@ -437,6 +563,45 @@ export default function TablePage() {
 
       <DemoTabs
         tabs={[
+          {
+            value: "kira",
+            label: "KiraTable",
+            demo: (
+              <DemoWrapper
+                title="KiraTable"
+                description="Config-driven table: pass columns + data and get sorting, tri-state selection, sticky columns, loading and empty states for free."
+                code={kiraCode}
+              >
+                <KiraTableDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "density",
+            label: "Density",
+            demo: (
+              <DemoWrapper
+                title="Density"
+                description="Three row heights via the density prop — comfortable, compact, and dense for data-heavy dashboards."
+                code={densityCode}
+              >
+                <DensityDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "states",
+            label: "Loading & Empty",
+            demo: (
+              <DemoWrapper
+                title="Loading & Empty States"
+                description="TableSkeleton shimmer while data loads and a centered TableEmpty state when there are no rows."
+                code={statesCode}
+              >
+                <StatesDemo />
+              </DemoWrapper>
+            ),
+          },
           {
             value: "basic",
             label: "Basic",
@@ -538,6 +703,26 @@ export default function TablePage() {
           {
             title: "Table",
             props: [
+              {
+                prop: "density",
+                type: "'comfortable' | 'compact' | 'dense'",
+                default: "comfortable",
+                description: "Row height / cell padding preset.",
+              },
+              {
+                prop: "stickyHeader",
+                type: "boolean",
+                default: "false",
+                description:
+                  "Freeze the header while the body scrolls (needs the scroll container).",
+              },
+              {
+                prop: "label",
+                type: "string",
+                default: "-",
+                description:
+                  "Accessible name for the scroll region; makes the wrapper a focusable role='region' (WCAG 2.1.1).",
+              },
               {
                 prop: "striped",
                 type: "boolean",
@@ -642,12 +827,108 @@ export default function TablePage() {
             ],
           },
           {
+            title: "KiraTable",
+            props: [
+              {
+                prop: "columns",
+                type: "KiraTableColumn<T>[]",
+                default: "-",
+                description:
+                  "Column config: { key, header, align?, stickyColumn?, sortable?, cell? }.",
+              },
+              {
+                prop: "data",
+                type: "T[]",
+                default: "-",
+                description: "Row data; rendered via each column's key or cell().",
+              },
+              {
+                prop: "selectable",
+                type: "boolean",
+                default: "false",
+                description:
+                  "Add a leading checkbox column with a tri-state select-all header.",
+              },
+              {
+                prop: "loading",
+                type: "boolean",
+                default: "false",
+                description: "Render TableSkeleton shimmer rows instead of data.",
+              },
+              {
+                prop: "empty",
+                type: "ReactNode",
+                default: "'No results.'",
+                description: "Message shown when data is empty.",
+              },
+              {
+                prop: "defaultSort",
+                type: "{ key: keyof T; dir: SortDirection }",
+                default: "-",
+                description: "Initial sort column and direction.",
+              },
+              {
+                prop: "onSelectionChange",
+                type: "(ids: string[]) => void",
+                default: "-",
+                description: "Called with selected row ids (needs getRowId).",
+              },
+            ],
+          },
+          {
             title: "TableFooter",
             props: [],
           },
           {
             title: "TableCaption",
             props: [],
+          },
+        ]}
+      />
+
+      <Changelog
+        entries={[
+          {
+            version: "2.0",
+            date: "2026-07-22",
+            changes: [
+              {
+                type: "added",
+                title: "KiraTable mega-component",
+                description:
+                  "Config-driven columns + data with headless sort, tri-state row selection, sticky columns, loading and empty states.",
+              },
+              {
+                type: "added",
+                title: "Density, sticky header & sticky columns",
+                description:
+                  "density prop (comfortable/compact/dense) via cva, stickyHeader, and a stickyColumn prop on TableHead/TableCell.",
+              },
+              {
+                type: "added",
+                title: "SortableTableHead + useTableSort / useRowSelection",
+                description:
+                  "Nested-button sortable header (aria-sort on th, direction in aria-label) and two headless hooks powering KiraTable.",
+              },
+              {
+                type: "added",
+                title: "TableEmpty & TableSkeleton",
+                description:
+                  "Centered empty-state row and aria-hidden shimmer rows using the animate-skeleton-wave keyframe.",
+              },
+              {
+                type: "added",
+                title: "Focusable scroll region",
+                description:
+                  "label prop makes the overflow wrapper a keyboard-focusable role='region' (WCAG 2.1.1).",
+              },
+              {
+                type: "fixed",
+                title: "Reduced-motion row hover",
+                description:
+                  "Row hover transition is now gated behind useReducedMotion().",
+              },
+            ],
           },
         ]}
       />

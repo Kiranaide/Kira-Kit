@@ -87,7 +87,7 @@ const REGISTRY_DEPENDENCY_MAP: Record<string, string[]> = {
   stats: [],
   "stats-card": [],
   switch: [],
-  table: [],
+  table: ["checkbox"],
   tabs: [],
   textarea: [],
   timeline: [],

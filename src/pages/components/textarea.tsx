@@ -5,7 +5,11 @@ import {
   IconAccessible,
 } from "@tabler/icons-react";
 
-import { Textarea, TextareaWithCounter } from "@/components/ui/textarea";
+import {
+  Textarea,
+  TextareaWithCounter,
+  KiraTextarea,
+} from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
@@ -16,6 +20,7 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 // =============================================================================
@@ -218,7 +223,40 @@ export function AccessibilityDemo() {
   )
 }`;
 
-const usageCode = `import { Textarea, TextareaWithCounter } from "@/components/ui/textarea"
+const kiraCode = `import { useState } from "react"
+import { KiraTextarea } from "@/components/ui/textarea"
+
+export function KiraTextareaDemo() {
+  const [messages, setMessages] = useState<string[]>([])
+
+  return (
+    <KiraTextarea
+      label="Comment"
+      description="Press Cmd/Ctrl + Enter to submit."
+      maxLength={280}
+      showCount
+      clearable
+      submitOn="mod-enter"
+      onSubmit={(v) => setMessages((m) => [...m, v])}
+      placeholder="Share your thoughts..."
+    />
+  )
+}`;
+
+const submitCode = `import { KiraTextarea } from "@/components/ui/textarea"
+
+// Cmd/Ctrl + Enter (default) — safe for multi-line editing
+<KiraTextarea submitOn="mod-enter" onSubmit={handleSend} />
+
+// Plain Enter submits, Shift + Enter inserts a newline (chat-style)
+<KiraTextarea submitOn="enter" onSubmit={handleSend} />`;
+
+const clearCode = `import { KiraTextarea } from "@/components/ui/textarea"
+
+// Clear button appears when there's content; keeps focus on clear
+<KiraTextarea clearable label="Notes" placeholder="Type then clear..." />`;
+
+const usageCode = `import { Textarea, TextareaWithCounter, KiraTextarea } from "@/components/ui/textarea"
 
 // Basic textarea
 <Textarea placeholder="Type here..." />
@@ -249,6 +287,17 @@ const usageCode = `import { Textarea, TextareaWithCounter } from "@/components/u
   aria-describedby="helper-text"
   aria-required
   aria-invalid={hasError}
+/>
+
+// KiraTextarea — label + counter + clear + keyboard submit in one API
+<KiraTextarea
+  label="Comment"
+  description="Cmd/Ctrl + Enter to submit."
+  maxLength={280}
+  showCount
+  clearable
+  submitOn="mod-enter"
+  onSubmit={(value) => console.log(value)}
 />`;
 
 // =============================================================================
@@ -463,6 +512,82 @@ function AccessibilityDemo() {
 // FEATURES
 // =============================================================================
 
+function KiraDemo() {
+  const [messages, setMessages] = React.useState<string[]>([]);
+
+  return (
+    <div className="max-w-md space-y-4">
+      <KiraTextarea
+        label="Comment"
+        description="Press Cmd/Ctrl + Enter to submit."
+        maxLength={280}
+        showCount
+        clearable
+        submitOn="mod-enter"
+        onSubmit={(v) => setMessages((m) => [...m, v])}
+        placeholder="Share your thoughts..."
+      />
+      {messages.length > 0 && (
+        <ul className="space-y-1.5 text-sm">
+          {messages.map((m, i) => (
+            <li
+              key={i}
+              className="rounded-md border border-border bg-muted/40 px-3 py-1.5"
+            >
+              {m}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function SubmitDemo() {
+  const [sent, setSent] = React.useState<string | null>(null);
+
+  return (
+    <div className="max-w-md space-y-6">
+      <KiraTextarea
+        label="Mod + Enter (default)"
+        description="Cmd/Ctrl + Enter submits; Enter inserts a newline."
+        submitOn="mod-enter"
+        onSubmit={setSent}
+        placeholder="Write a paragraph, then Cmd/Ctrl + Enter..."
+      />
+      <KiraTextarea
+        label="Enter to send (chat-style)"
+        description="Enter submits; Shift + Enter inserts a newline."
+        submitOn="enter"
+        onSubmit={setSent}
+        placeholder="Type a message and press Enter..."
+      />
+      {sent && (
+        <p className="text-sm text-muted-foreground">
+          Last submitted: <span className="text-foreground">{sent}</span>
+        </p>
+      )}
+    </div>
+  );
+}
+
+function ClearDemo() {
+  return (
+    <div className="max-w-md">
+      <KiraTextarea
+        clearable
+        label="Notes"
+        defaultValue="Clear me — the button keeps focus on the field."
+        placeholder="Type something, then clear it..."
+      />
+    </div>
+  );
+}
+
+// =============================================================================
+// FEATURES
+// =============================================================================
+
 const features = [
   {
     title: "Auto-resize",
@@ -569,6 +694,66 @@ const apiSections = [
       },
     ],
   },
+  {
+    title: "KiraTextarea",
+    props: [
+      {
+        prop: "label",
+        type: "string",
+        description: "Visible label rendered above the textarea",
+      },
+      {
+        prop: "description",
+        type: "string",
+        description: "Helper text linked via aria-describedby",
+      },
+      {
+        prop: "error",
+        type: "string",
+        description: "Error message; sets aria-invalid and role=alert",
+      },
+      {
+        prop: "maxLength",
+        type: "number",
+        description: "Enables the accessible character counter",
+      },
+      {
+        prop: "showCount",
+        type: "boolean",
+        default: "false",
+        description: "Show current/max counter (requires maxLength)",
+      },
+      {
+        prop: "showRemaining",
+        type: "boolean",
+        default: "false",
+        description: "Show remaining count instead of current/max",
+      },
+      {
+        prop: "hardLimit",
+        type: "boolean",
+        default: "false",
+        description: "Enforce native maxLength truncation instead of soft over-limit",
+      },
+      {
+        prop: "clearable",
+        type: "boolean",
+        default: "false",
+        description: "Show a clear button when the field has content",
+      },
+      {
+        prop: "onSubmit",
+        type: "(value: string) => void",
+        description: "Fires on the submit combo with the trimmed value",
+      },
+      {
+        prop: "submitOn",
+        type: '"enter" | "mod-enter"',
+        default: '"mod-enter"',
+        description: "Which key combo triggers onSubmit",
+      },
+    ],
+  },
 ];
 
 // =============================================================================
@@ -576,6 +761,45 @@ const apiSections = [
 // =============================================================================
 
 const demoTabs = [
+  {
+    value: "kira",
+    label: "Kira",
+    demo: (
+      <DemoWrapper
+        title="KiraTextarea"
+        description="One prop-driven API: label, description, accessible counter, clear button, and keyboard submit."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "submit",
+    label: "Submit",
+    demo: (
+      <DemoWrapper
+        title="Keyboard Submit"
+        description="Cmd/Ctrl + Enter (default) or plain Enter (chat-style). IME composition is guarded."
+        code={submitCode}
+      >
+        <SubmitDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "clear",
+    label: "Clear",
+    demo: (
+      <DemoWrapper
+        title="Clear Button"
+        description="Appears when the field has content, empties the value, and keeps focus on the textarea."
+        code={clearCode}
+      >
+        <ClearDemo />
+      </DemoWrapper>
+    ),
+  },
   {
     value: "basic",
     label: "Basic",
@@ -678,13 +902,13 @@ export default function TextareaPage() {
     <ComponentPage>
       <PageHeader
         title="Textarea"
-        version="v1.0"
-        description="Multi-line text input with auto-resize, character counter, size variants, and full accessibility support."
+        version="v2.0"
+        description="Multi-line text input with auto-resize, an accessible character counter, keyboard submit, a clear button, and the unified KiraTextarea API."
       />
 
       <FeatureGrid features={features} />
 
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
+      <DemoTabs tabs={demoTabs} defaultValue="kira" />
 
       <KeyboardShortcuts shortcuts={keyboardShortcuts} />
 
@@ -697,7 +921,48 @@ export default function TextareaPage() {
       <APIReference
         sections={apiSections}
         title="API Reference"
-        description="Props for Textarea and TextareaWithCounter components"
+        description="Props for Textarea, TextareaWithCounter, and KiraTextarea"
+      />
+
+      <Changelog
+        entries={[
+          {
+            version: "v2.0",
+            date: "2026-07-22",
+            changes: [
+              {
+                type: "added",
+                title: "KiraTextarea",
+                description:
+                  "One prop-driven API bundling label, description, error, accessible counter, clear button, and keyboard submit.",
+              },
+              {
+                type: "added",
+                title: "Keyboard submit",
+                description:
+                  'onSubmit with submitOn "enter" or "mod-enter"; guards IME composition and skips empty values.',
+              },
+              {
+                type: "added",
+                title: "Clear button",
+                description:
+                  "clearable prop shows an IconX button that empties the value and keeps focus on the field.",
+              },
+              {
+                type: "changed",
+                title: "Accessible character counter",
+                description:
+                  "TextareaWithCounter now uses the 3-element GOV.UK/USWDS pattern: static hint, aria-hidden visible counter, and a debounced sr-only live region — no more per-keystroke screen-reader flooding.",
+              },
+              {
+                type: "changed",
+                title: "Soft character limit",
+                description:
+                  "Over-limit input is allowed and flagged via aria-invalid instead of silent truncation. Opt back into truncation with hardLimit.",
+              },
+            ],
+          },
+        ]}
       />
     </ComponentPage>
   );

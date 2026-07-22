@@ -4,6 +4,7 @@ import {
   CheckboxWithLabel,
   CheckboxGroup,
   CheckboxCard,
+  KiraCheckbox,
 } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,6 +18,7 @@ import {
   IconCheck,
   IconPalette,
   IconAccessible,
+  IconLock,
 } from "@tabler/icons-react";
 import {
   ComponentPage,
@@ -27,6 +29,7 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 // =============================================================================
@@ -676,6 +679,108 @@ export function CheckboxCardDemo() {
 }`;
 
 // =============================================================================
+// Kira / Loading / Progress demos (v2.0)
+// =============================================================================
+
+function KiraDemo() {
+  const [fruits, setFruits] = React.useState<string[]>(["apple"]);
+  return (
+    <div className="flex flex-col gap-6 max-w-md">
+      <KiraCheckbox mode="checkbox" variant="soft" color="success" defaultChecked />
+      <KiraCheckbox
+        mode="label"
+        label="Enable notifications"
+        description="One prop-driven API — switch modes without new imports."
+      />
+      <KiraCheckbox
+        mode="group"
+        label="Fruits"
+        options={[
+          { value: "apple", label: "Apple" },
+          { value: "banana", label: "Banana" },
+          { value: "orange", label: "Orange" },
+        ]}
+        value={fruits}
+        onChange={setFruits}
+        showSelectAll
+        showProgress
+      />
+    </div>
+  );
+}
+
+const kiraCode = `import { KiraCheckbox } from "@/components/ui/checkbox"
+
+// One component, four modes — driven by \`mode\`
+<KiraCheckbox mode="checkbox" variant="soft" color="success" defaultChecked />
+<KiraCheckbox mode="label" label="Enable notifications" description="…" />
+<KiraCheckbox mode="card" label="Mobile App" icon={<IconDeviceMobile />} />
+<KiraCheckbox
+  mode="group"
+  label="Fruits"
+  options={[{ value: "apple", label: "Apple" }]}
+  value={fruits}
+  onChange={setFruits}
+  showSelectAll
+  showProgress
+/>`;
+
+function LoadingDemo() {
+  return (
+    <div className="flex flex-col gap-4">
+      <CheckboxWithLabel label="Saving preference…" description="Spinner blocks toggling until resolved." loading />
+      <div className="flex items-center gap-3">
+        <Checkbox loading />
+        <Checkbox loading variant="outline" size="lg" />
+      </div>
+      <CheckboxCard
+        label="Provisioning"
+        description="Async state on a card."
+        icon={<IconSettings className="h-5 w-5" />}
+        variant="outline"
+        loading
+      />
+    </div>
+  );
+}
+
+const loadingCode = `import { Checkbox, CheckboxWithLabel } from "@/components/ui/checkbox"
+
+// \`loading\` shows a spinner in the indicator and blocks toggling
+<CheckboxWithLabel label="Saving preference…" loading />
+<Checkbox loading variant="outline" size="lg" />`;
+
+function DisabledReasonDemo() {
+  return (
+    <div className="flex flex-col gap-4">
+      <CheckboxWithLabel
+        label="Delete account"
+        description="Hover the box — a tooltip explains why it's locked."
+        disabled
+        disabledReason="Requires an admin role"
+      />
+      <CheckboxCard
+        label="Enterprise SSO"
+        description="Available on the Team plan."
+        icon={<IconLock className="h-5 w-5" />}
+        variant="outline"
+        disabled
+        disabledReason="Upgrade to unlock"
+      />
+    </div>
+  );
+}
+
+const disabledReasonCode = `import { CheckboxWithLabel } from "@/components/ui/checkbox"
+
+// \`disabledReason\` wraps a disabled box in a tooltip
+<CheckboxWithLabel
+  label="Delete account"
+  disabled
+  disabledReason="Requires an admin role"
+/>`;
+
+// =============================================================================
 // Usage Code
 // =============================================================================
 
@@ -684,10 +789,20 @@ const usageCode = `import {
   CheckboxWithLabel,
   CheckboxGroup,
   CheckboxCard,
+  KiraCheckbox,
 } from "@/components/ui/checkbox"
 
 // Basic checkbox
 <Checkbox id="terms" />
+
+// Loading (spinner blocks toggling) and disabled-with-reason
+<Checkbox loading />
+<CheckboxWithLabel label="Delete" disabled disabledReason="Admin only" />
+
+// KiraCheckbox — one prop-driven API, four modes
+<KiraCheckbox mode="checkbox" variant="soft" color="success" defaultChecked />
+<KiraCheckbox mode="label" label="Enable notifications" description="…" />
+<KiraCheckbox mode="group" options={fruitOptions} showSelectAll showProgress />
 
 // With variants and colors
 <Checkbox variant="outline" color="success" size="lg" checked />
@@ -746,6 +861,45 @@ export default function CheckboxPage() {
   ];
 
   const demoTabs = [
+    {
+      value: "kira",
+      label: "Kira",
+      demo: (
+        <DemoWrapper
+          title="KiraCheckbox"
+          description="One prop-driven API for all four modes: checkbox, label, card, group."
+          code={kiraCode}
+        >
+          <KiraDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "loading",
+      label: "Loading",
+      demo: (
+        <DemoWrapper
+          title="Loading State"
+          description="A spinner replaces the indicator and blocks toggling while async work runs."
+          code={loadingCode}
+        >
+          <LoadingDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "disabled-reason",
+      label: "Disabled reason",
+      demo: (
+        <DemoWrapper
+          title="Disabled Reason"
+          description="Explain why a control is locked via an accessible tooltip on hover/focus."
+          code={disabledReasonCode}
+        >
+          <DisabledReasonDemo />
+        </DemoWrapper>
+      ),
+    },
     {
       value: "basic",
       label: "Basic",
@@ -998,6 +1152,12 @@ export default function CheckboxPage() {
           description: "Label for the select all checkbox.",
         },
         {
+          prop: "showProgress",
+          type: "boolean",
+          default: "false",
+          description: "Show a live 'n/total selected' indicator.",
+        },
+        {
           prop: "label",
           type: "string",
           description: "Group label.",
@@ -1040,19 +1200,31 @@ export default function CheckboxPage() {
         },
       ],
     },
+    {
+      title: "KiraCheckbox",
+      props: [
+        {
+          prop: "mode",
+          type: "'checkbox' | 'label' | 'card' | 'group'",
+          default: "'checkbox'",
+          description:
+            "Selects which underlying component renders; remaining props are those of the chosen mode.",
+        },
+      ],
+    },
   ];
 
   return (
     <ComponentPage>
       <PageHeader
         title="Checkbox"
-        version="v1.0"
+        version="v2.0"
         description="A control that allows the user to toggle between checked and unchecked states with support for variants, colors, indeterminate state, and more."
       />
 
       <FeatureGrid features={features} />
 
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
+      <DemoTabs tabs={demoTabs} defaultValue="kira" />
 
       <KeyboardShortcuts shortcuts={keyboardShortcuts} />
 
@@ -1063,6 +1235,47 @@ export default function CheckboxPage() {
       />
 
       <APIReference sections={apiSections} />
+
+      <Changelog
+        entries={[
+          {
+            version: "v2.0",
+            date: "2026-07-22",
+            changes: [
+              {
+                type: "added",
+                title: "KiraCheckbox mega-component",
+                description:
+                  "One prop-driven API covering checkbox, label, card, and group modes.",
+              },
+              {
+                type: "added",
+                title: "Loading state",
+                description:
+                  "`loading` shows a spinner in the indicator and blocks toggling.",
+              },
+              {
+                type: "added",
+                title: "Disabled reason tooltip",
+                description:
+                  "`disabledReason` wraps a disabled control in an accessible tooltip.",
+              },
+              {
+                type: "added",
+                title: "Group progress indicator",
+                description:
+                  "CheckboxGroup `showProgress` renders a live n/total selected count.",
+              },
+              {
+                type: "changed",
+                title: "Reduced-motion gating",
+                description:
+                  "Indicator animation is gated behind useReducedMotion().",
+              },
+            ],
+          },
+        ]}
+      />
     </ComponentPage>
   );
 }

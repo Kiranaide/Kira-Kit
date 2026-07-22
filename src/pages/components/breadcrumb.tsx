@@ -10,6 +10,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbHome,
   BreadcrumbCollapsible,
+  KiraBreadcrumb,
 } from "@/components/ui/breadcrumb"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -19,6 +20,7 @@ import {
   IconCode,
   IconAccessible,
   IconPalette,
+  IconStar,
 } from "@tabler/icons-react"
 import {
   ComponentPage,
@@ -28,6 +30,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs"
 
 // =============================================================================
@@ -641,6 +644,127 @@ import { IconShoppingCart } from "@tabler/icons-react"
 </BreadcrumbLink>`
 
 // =============================================================================
+// KiraBreadcrumb / Scroll / Copy + Actions demos
+// =============================================================================
+
+const kiraItems = [
+  { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop" },
+  { href: "/shop/clothing", label: "Clothing" },
+  { href: "/shop/clothing/mens", label: "Men's" },
+  { href: "/shop/clothing/mens/jackets", label: "Jackets", current: true },
+]
+
+function KiraDemo() {
+  return (
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <h3 className="font-medium text-sm text-muted-foreground">Flat trail (items[])</h3>
+        <KiraBreadcrumb items={kiraItems} homeIcon />
+      </div>
+      <div className="space-y-2">
+        <h3 className="font-medium text-sm text-muted-foreground">Collapse (maxItems=3)</h3>
+        <KiraBreadcrumb items={kiraItems} collapse maxItems={3} homeIcon />
+      </div>
+      <div className="space-y-2">
+        <h3 className="font-medium text-sm text-muted-foreground">Responsive (mobile-first)</h3>
+        <KiraBreadcrumb items={kiraItems} responsive homeIcon linkVariant="underline" />
+      </div>
+    </div>
+  )
+}
+
+const kiraCode = `import { KiraBreadcrumb } from "@/components/ui/breadcrumb"
+
+const items = [
+  { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop" },
+  { href: "/shop/clothing", label: "Clothing" },
+  { href: "/shop/clothing/mens/jackets", label: "Jackets", current: true },
+]
+
+// One prop-driven API over the whole family (emits SEO JSON-LD by default)
+<KiraBreadcrumb items={items} homeIcon />
+
+// Collapse the middle of a long trail behind an ellipsis
+<KiraBreadcrumb items={items} collapse maxItems={3} homeIcon />
+
+// Mobile-first: hide all but the last crumbs
+<KiraBreadcrumb items={items} responsive />`
+
+function ScrollDemo() {
+  const deepItems = [
+    { href: "/", label: "Home" },
+    { href: "/workspace", label: "Workspace" },
+    { href: "/workspace/engineering", label: "Engineering" },
+    { href: "/workspace/engineering/frontend", label: "Frontend" },
+    { href: "/workspace/engineering/frontend/design-system", label: "Design System" },
+    { href: "/workspace/engineering/frontend/design-system/components", label: "Components" },
+    { href: "/workspace/engineering/frontend/design-system/components/breadcrumb", label: "Breadcrumb", current: true },
+  ]
+
+  return (
+    <div className="max-w-md space-y-2">
+      <h3 className="font-medium text-sm text-muted-foreground">
+        Horizontally scrollable with edge fade masks
+      </h3>
+      <KiraBreadcrumb items={deepItems} overflow="scroll" homeIcon />
+    </div>
+  )
+}
+
+const scrollCode = `import { KiraBreadcrumb } from "@/components/ui/breadcrumb"
+
+// "scroll" keeps every crumb in a horizontally scrollable row
+// with edge fade masks — mobile-friendly alternative to collapsing
+<KiraBreadcrumb items={deepItems} overflow="scroll" homeIcon />`
+
+function CopyActionsDemo() {
+  return (
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <h3 className="font-medium text-sm text-muted-foreground">Copy path affordance</h3>
+        <KiraBreadcrumb items={kiraItems} homeIcon copyPath />
+      </div>
+      <div className="space-y-2">
+        <h3 className="font-medium text-sm text-muted-foreground">Custom actions + copy</h3>
+        <KiraBreadcrumb
+          items={kiraItems}
+          homeIcon
+          copyPath
+          actions={
+            <button
+              type="button"
+              aria-label="Star this page"
+              className="grid size-8 place-items-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <IconStar className="h-4 w-4" />
+            </button>
+          }
+        />
+      </div>
+    </div>
+  )
+}
+
+const copyActionsCode = `import { KiraBreadcrumb } from "@/components/ui/breadcrumb"
+import { IconStar } from "@tabler/icons-react"
+
+// Copy the current path to the clipboard (flashes a check for ~1.5s)
+<KiraBreadcrumb items={items} homeIcon copyPath />
+
+// Drop page-level actions inline with the trail
+<KiraBreadcrumb
+  items={items}
+  copyPath
+  actions={
+    <button type="button" aria-label="Star this page">
+      <IconStar className="h-4 w-4" />
+    </button>
+  }
+/>`
+
+// =============================================================================
 // Usage Code
 // =============================================================================
 
@@ -772,6 +896,45 @@ const features = [
 
 const demoTabs = [
   {
+    value: "kira",
+    label: "Kira",
+    demo: (
+      <DemoWrapper
+        title="KiraBreadcrumb"
+        description="One prop-driven API over the whole family: items[], collapse, responsive, and SEO JSON-LD out of the box."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "scroll",
+    label: "Scroll overflow",
+    demo: (
+      <DemoWrapper
+        title="Scroll Overflow"
+        description="A horizontally scrollable trail with edge fade masks — a mobile-friendly alternative to ellipsis-collapsing."
+        code={scrollCode}
+      >
+        <ScrollDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "copy-actions",
+    label: "Copy + Actions",
+    demo: (
+      <DemoWrapper
+        title="Copy Path & Actions"
+        description="A copy-current-path affordance and a right-aligned region for page-level actions."
+        code={copyActionsCode}
+      >
+        <CopyActionsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "basic",
     label: "Basic",
     demo: (
@@ -848,13 +1011,13 @@ export default function BreadcrumbExamplePage() {
       <PageHeader
         title="Breadcrumb"
         description="Accessible breadcrumb navigation with Schema.org structured data for SEO, responsive collapse, router integration via asChild, and auto-generation from pathname. WCAG 2.1 AA compliant."
-        version="v1.0"
+        version="v2.0"
         badge={<Badge variant="outline">Enhanced</Badge>}
       />
 
       <FeatureGrid features={features} />
 
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
+      <DemoTabs tabs={demoTabs} defaultValue="kira" />
 
       <UsageBlock
         code={usageCode}
@@ -866,6 +1029,47 @@ export default function BreadcrumbExamplePage() {
         sections={apiSections}
         title="API Reference"
         description="Props and configuration options for all breadcrumb components."
+      />
+
+      <Changelog
+        entries={[
+          {
+            version: "v2.0",
+            date: "2026-07-22",
+            changes: [
+              {
+                type: "added",
+                title: "KiraBreadcrumb",
+                description:
+                  "One prop-driven entry point over the whole family: items[], separator, size, collapse, responsive, overflow, actions, copyPath, and SEO JSON-LD.",
+              },
+              {
+                type: "added",
+                title: "Copy path & actions",
+                description:
+                  "BreadcrumbCopy copies the current path (with a copied-check flash) and BreadcrumbActions provides a right-aligned region for page-level actions.",
+              },
+              {
+                type: "added",
+                title: "Scroll overflow mode",
+                description:
+                  'overflow="scroll" keeps every crumb in a horizontally scrollable row with edge fade masks — a mobile-friendly alternative to collapsing.',
+              },
+              {
+                type: "fixed",
+                title: "data-slot type errors",
+                description:
+                  "Resolved two TS2353 errors on BreadcrumbLink and BreadcrumbHome by moving data-slot into a cast mergeProps arg.",
+              },
+              {
+                type: "changed",
+                title: "Reduced-motion gating",
+                description:
+                  "Link/home transitions and the ellipsis dropdown animation now respect prefers-reduced-motion via the shared hook and gsap.matchMedia.",
+              },
+            ],
+          },
+        ]}
       />
     </ComponentPage>
   )
