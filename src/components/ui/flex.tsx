@@ -28,7 +28,9 @@ function resolveResponsive<T extends string | number>(
     .filter(([, val]) => val !== undefined)
     .map(([breakpoint, val]) => {
       const cls = classMap[String(val)];
+
       if (!cls) return "";
+
       return breakpoint === "base"
         ? cls
         : cls
@@ -99,9 +101,13 @@ const flexVariants = cva("", {
 });
 
 type FlexDirection = "row" | "row-reverse" | "column" | "column-reverse";
+
 type FlexWrap = "nowrap" | "wrap" | "wrap-reverse";
+
 type FlexJustify = "start" | "end" | "center" | "between" | "around" | "evenly";
+
 type FlexAlign = "start" | "end" | "center" | "baseline" | "stretch";
+
 type FlexGap = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24;
 
 type FlexElement =
@@ -160,6 +166,7 @@ function Flex({
 }
 
 export { Flex, flexVariants, resolveResponsive };
+
 export type {
   FlexProps,
   FlexDirection,

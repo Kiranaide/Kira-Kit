@@ -967,6 +967,7 @@ function KiraBasicDemo() {
       ),
     },
   ];
+
   return <KiraTabs variant="pills" items={items} />;
 }
 
@@ -995,6 +996,7 @@ const editorInitialItems: TabItem[] = [
 
 function KiraEditorDemo() {
   const [nextId, setNextId] = React.useState(3);
+
   // Uncontrolled: KiraTabs owns the tab list, so close (auto-selects a
   // neighbour) and add both work without the parent tracking items. The
   // initial array is module-level so a re-render never resets the list.
@@ -1006,6 +1008,7 @@ function KiraEditorDemo() {
       onAdd={() => {
         const value = `tab-${nextId}`;
         setNextId((n) => n + 1);
+
         const created: TabItem = {
           value,
           label: `untitled-${nextId}.ts`,
@@ -1016,6 +1019,7 @@ function KiraEditorDemo() {
           ),
           closable: true,
         };
+
         return created;
       }}
     />

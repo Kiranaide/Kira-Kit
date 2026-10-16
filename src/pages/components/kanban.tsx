@@ -127,6 +127,7 @@ function DataDrivenDemo() {
       title: "New Card",
       description: "Click to edit",
     }
+
     setColumns((prev) =>
       prev.map((col) =>
         col.id === columnId ? { ...col, cards: [...col.cards, newCard] } : col
@@ -200,6 +201,7 @@ function CompositionDemo() {
       title: "New Column",
       cards: [],
     }
+
     setColumns((prev) => [...prev, newColumn])
   }
 

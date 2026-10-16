@@ -407,6 +407,7 @@ function FieldValidationIcon({
           }
         );
       });
+
       return () => mm.revert();
     }
   }, [state]);
@@ -535,10 +536,13 @@ function createZodValidator<T>(
   if (options.onChange !== false) {
     result.onChange = ({ value }: { value: T }) => {
       const parseResult = schema.safeParse(value);
+
       if (!parseResult.success) {
         const issue = parseResult.error.issues[0];
+
         return issue?.message;
       }
+
       return undefined;
     };
 
@@ -553,10 +557,13 @@ function createZodValidator<T>(
       }) => {
         if (signal.aborted) return undefined;
         const parseResult = await schema.safeParseAsync(value);
+
         if (!parseResult.success) {
           const issue = parseResult.error.issues[0];
+
           return issue?.message;
         }
+
         return undefined;
       };
     }
@@ -565,10 +572,13 @@ function createZodValidator<T>(
   if (options.onBlur) {
     result.onBlur = ({ value }: { value: T }) => {
       const parseResult = schema.safeParse(value);
+
       if (!parseResult.success) {
         const issue = parseResult.error.issues[0];
+
         return issue?.message;
       }
+
       return undefined;
     };
   }
@@ -576,16 +586,21 @@ function createZodValidator<T>(
   if (options.onSubmit !== false) {
     result.onSubmit = ({ value }: { value: T }) => {
       const parseResult = schema.safeParse(value);
+
       if (!parseResult.success) {
         const errors: Record<string, string> = {};
+
         for (const issue of parseResult.error.issues) {
           const path = issue.path.join(".");
+
           if (path) {
             errors[path] = issue.message;
           }
         }
+
         return Object.keys(errors).length > 0 ? errors : undefined;
       }
+
       return undefined;
     };
   }
@@ -619,6 +634,7 @@ function FieldError({
     if (field && "state" in field) {
       return field.state.meta.errors;
     }
+
     return errors;
   }, [field, errors]);
 
@@ -664,6 +680,7 @@ function FieldError({
           { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }
         );
       });
+
       return () => mm.revert();
     }
   }, [content]);
@@ -887,4 +904,5 @@ export type {
 };
 
 export type { AnyFieldApi as FieldApi };
+
 export { z };

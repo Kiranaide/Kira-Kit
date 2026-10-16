@@ -76,10 +76,15 @@ const announcementBarVariants = cva(
 
 type AnnouncementVariant =
   "default" | "info" | "success" | "warning" | "destructive";
+
 type AnnouncementPosition = "top" | "bottom" | "floating";
+
 type AnnouncementPriority = "low" | "normal" | "high" | "critical";
+
 type AnnouncementUrgency = "polite" | "assertive";
+
 type AnimationType = "slide" | "fade" | "scale" | "none";
+
 type PersistMode = "session" | "persistent";
 
 interface AnnouncementBarProps
@@ -139,9 +144,11 @@ const AnnouncementBarContext = React.createContext<
 
 function useAnnouncementBar() {
   const context = React.useContext(AnnouncementBarContext);
+
   if (!context) {
     throw new Error("useAnnouncementBar must be used within AnnouncementBar");
   }
+
   return context;
 }
 
@@ -182,15 +189,18 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
       announcementId ?? "",
       persistMode,
     );
+
     const isExpired = useAnnouncementExpiry(expiresAt);
 
     React.useImperativeHandle(ref, () => barRef.current!);
 
     const handleDismiss = React.useCallback(() => {
       if (announcementId) dismissStored();
+
       if (!barRef.current || reducedMotion || animation === "none") {
         setIsVisible(false);
         onDismiss?.();
+
         return;
       }
 
@@ -272,8 +282,10 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
 
           if (remaining <= 0) {
             handleDismiss();
+
             return;
           }
+
           setProgress((remaining / autoDismiss) * 100);
           timerRef.current = requestAnimationFrame(tick);
         };
@@ -297,6 +309,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
     const handleMouseEnter = () => {
       if (autoDismiss) {
         setIsPaused(true);
+
         if (timerRef.current) {
           cancelAnimationFrame(timerRef.current);
           remainingTimeRef.current =
@@ -313,6 +326,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
 
     const getAriaLive = () => {
       if (priority === "critical") return "assertive";
+
       return urgency;
     };
 
@@ -331,6 +345,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
         {dismissible && <AnnouncementBarDismiss onClick={handleDismiss} />}
       </>
     );
+
     const useComposed = icon !== undefined || dismissible || marquee;
 
     return (
@@ -370,6 +385,7 @@ const AnnouncementBar = React.forwardRef<HTMLDivElement, AnnouncementBarProps>(
     );
   },
 );
+
 AnnouncementBar.displayName = "AnnouncementBar";
 
 const variantIcons: Record<AnnouncementVariant, React.ReactNode> = {
@@ -399,6 +415,7 @@ const AnnouncementBarIcon = React.forwardRef<
     </span>
   );
 });
+
 AnnouncementBarIcon.displayName = "AnnouncementBarIcon";
 
 const AnnouncementBarContent = React.forwardRef<
@@ -427,6 +444,7 @@ const AnnouncementBarContent = React.forwardRef<
     </div>
   );
 });
+
 AnnouncementBarContent.displayName = "AnnouncementBarContent";
 
 const AnnouncementBarAction = React.forwardRef<
@@ -449,6 +467,7 @@ const AnnouncementBarAction = React.forwardRef<
     {...props}
   />
 ));
+
 AnnouncementBarAction.displayName = "AnnouncementBarAction";
 
 const AnnouncementBarDismiss = React.forwardRef<
@@ -467,6 +486,7 @@ const AnnouncementBarDismiss = React.forwardRef<
         ease: "power1.inOut",
       });
     }
+
     onClick?.(e);
   };
 
@@ -492,6 +512,7 @@ const AnnouncementBarDismiss = React.forwardRef<
     </button>
   );
 });
+
 AnnouncementBarDismiss.displayName = "AnnouncementBarDismiss";
 
 const AnnouncementBarProgress = React.forwardRef<
@@ -537,6 +558,7 @@ const AnnouncementBarProgress = React.forwardRef<
     </div>
   );
 });
+
 AnnouncementBarProgress.displayName = "AnnouncementBarProgress";
 
 interface AnnouncementStackProps {
@@ -638,8 +660,10 @@ function AnnouncementStack({
 function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
   const [isDismissed, setIsDismissed] = React.useState(() => {
     if (typeof window === "undefined") return false;
+
     try {
       const storage = mode === "persistent" ? localStorage : sessionStorage;
+
       return storage.getItem(`announcement-${key}`) === "dismissed";
     } catch {
       return false;
@@ -648,6 +672,7 @@ function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
 
   const dismiss = React.useCallback(() => {
     setIsDismissed(true);
+
     if (typeof window !== "undefined") {
       try {
         const storage = mode === "persistent" ? localStorage : sessionStorage;
@@ -660,6 +685,7 @@ function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
 
   const reset = React.useCallback(() => {
     setIsDismissed(false);
+
     if (typeof window !== "undefined") {
       try {
         const storage = mode === "persistent" ? localStorage : sessionStorage;
@@ -676,6 +702,7 @@ function useAnnouncementDismiss(key: string, mode: PersistMode = "persistent") {
 function useAnnouncementExpiry(expiresAt?: Date) {
   const [isExpired, setIsExpired] = React.useState(() => {
     if (!expiresAt) return false;
+
     return new Date() > expiresAt;
   });
 
@@ -688,6 +715,7 @@ function useAnnouncementExpiry(expiresAt?: Date) {
 
     checkExpiry();
     const interval = setInterval(checkExpiry, 1000);
+
     return () => clearInterval(interval);
   }, [expiresAt]);
 
@@ -701,28 +729,36 @@ function useAnnouncementExpiry(expiresAt?: Date) {
 function computeCountdown(target?: Date): string | null {
   if (!target) return null;
   const diff = target.getTime() - Date.now();
+
   if (diff <= 0) return null;
-  const d = Math.floor(diff / 86400000);
-  const h = Math.floor((diff % 86400000) / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  const s = Math.floor((diff % 60000) / 1000);
+  const d = Math.floor(diff / 86_400_000);
+  const h = Math.floor((diff % 86_400_000) / 3_600_000);
+  const m = Math.floor((diff % 3_600_000) / 60_000);
+  const s = Math.floor((diff % 60_000) / 1000);
+
   if (d > 0) return `${d}d ${h}h`;
+
   if (h > 0) return `${h}h ${m}m`;
+
   if (m > 0) return `${m}m ${s}s`;
+
   return `${s}s`;
 }
 
 function useCountdown(target?: Date): string | null {
   const targetTime = target?.getTime();
+
   const [label, setLabel] = React.useState<string | null>(() =>
     computeCountdown(target)
   );
+
   // Recompute immediately when the target changes (adjust-state-on-prop-change).
   const [prevTarget, setPrevTarget] = React.useState(targetTime);
+
   if (targetTime !== prevTarget) {
     setPrevTarget(targetTime);
     setLabel(
-      computeCountdown(targetTime !== undefined ? new Date(targetTime) : undefined)
+      computeCountdown(targetTime === undefined ? undefined : new Date(targetTime))
     );
   }
 
@@ -730,6 +766,7 @@ function useCountdown(target?: Date): string | null {
     if (targetTime === undefined) return;
     const t = new Date(targetTime);
     const interval = setInterval(() => setLabel(computeCountdown(t)), 1000);
+
     return () => clearInterval(interval);
   }, [targetTime]);
 
@@ -746,7 +783,9 @@ const AnnouncementBarCountdown = React.forwardRef<
   AnnouncementBarCountdownProps
 >(({ to, prefix = "Ends in", className, ...props }, ref) => {
   const label = useCountdown(to);
+
   if (!label) return null;
+
   return (
     <span
       ref={ref}
@@ -758,6 +797,7 @@ const AnnouncementBarCountdown = React.forwardRef<
     </span>
   );
 });
+
 AnnouncementBarCountdown.displayName = "AnnouncementBarCountdown";
 
 // =============================================================================
@@ -780,9 +820,11 @@ const AnnouncementRotator = React.forwardRef<
 
   React.useEffect(() => {
     if (messages.length <= 1) return;
+
     const interval = setInterval(() => {
       setIndex((i) => (i + 1) % messages.length);
     }, rotateInterval);
+
     return () => clearInterval(interval);
   }, [messages.length, rotateInterval]);
 
@@ -810,6 +852,7 @@ const AnnouncementRotator = React.forwardRef<
     </div>
   );
 });
+
 AnnouncementRotator.displayName = "AnnouncementRotator";
 
 const AnnouncementDismiss = AnnouncementBarDismiss;
@@ -872,6 +915,7 @@ function KiraAnnouncementBar({
         />
       );
     }
+
     return <AnnouncementBarContent>{message}</AnnouncementBarContent>;
   };
 
@@ -888,6 +932,7 @@ function KiraAnnouncementBar({
         </div>
       );
     }
+
     return (
       <div className="flex shrink-0 items-center gap-3">
         {countdownTo && (

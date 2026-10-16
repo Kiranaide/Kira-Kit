@@ -35,8 +35,10 @@ export async function init(options: InitOptions): Promise<void> {
   welcome("Kira Kit CLI");
 
   const existingConfig = readConfig(cwd);
+
   if (existingConfig) {
     warning("Kira Kit is already initialized in this project.");
+
     const { confirm } = await inquirer.prompt([
       {
         type: "confirm",
@@ -45,6 +47,7 @@ export async function init(options: InitOptions): Promise<void> {
         default: false,
       },
     ]);
+
     if (!confirm) {
       return;
     }
@@ -62,6 +65,7 @@ export async function init(options: InitOptions): Promise<void> {
   const utilsAlias = await inputAlias("utils", "@/lib/utils");
 
   const utilsDir = join(cwd, utilsAlias.replace("@/", "src/"));
+
   const componentsUiDir = join(
     cwd,
     componentsAlias.replace("@/", "src/"),
@@ -93,6 +97,7 @@ export async function init(options: InitOptions): Promise<void> {
   if (existsSync(cssFilePath)) {
     const content = readFileSync(cssFilePath, "utf-8");
     const hasVariables = content.includes(":root {");
+
     if (!hasVariables) {
       const cssContent = generateCss(colorToUse);
       writeFileSync(cssFilePath, cssContent, "utf-8");
@@ -102,9 +107,11 @@ export async function init(options: InitOptions): Promise<void> {
     // Create it if it doesn't exist
     const cssContent = generateCss(colorToUse);
     const cssDir = dirname(cssFilePath);
+
     if (!existsSync(cssDir)) {
       mkdirSync(cssDir, { recursive: true });
     }
+
     writeFileSync(cssFilePath, cssContent, "utf-8");
     success("Created src/index.css with dynamic palette");
   }

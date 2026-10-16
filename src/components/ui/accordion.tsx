@@ -88,6 +88,7 @@ function flattenItems(items: AccordionItemData[]): AccordionItemData[] {
 
   for (const item of items) {
     flat.push(item);
+
     if (item.children) {
       flat.push(...flattenItems(item.children));
     }
@@ -99,7 +100,9 @@ function flattenItems(items: AccordionItemData[]): AccordionItemData[] {
 /** Text used to match an item during search. */
 function itemSearchText(item: AccordionItemData): string {
   if (item.searchText) return item.searchText;
+
   if (typeof item.title === "string") return item.title;
+
   return "";
 }
 
@@ -109,19 +112,24 @@ function filterItems(
   query: string,
 ): AccordionItemData[] {
   const q = query.trim().toLowerCase();
+
   if (!q) return items;
   const result: AccordionItemData[] = [];
+
   for (const item of items) {
     const selfMatch = itemSearchText(item).toLowerCase().includes(q);
+
     const filteredChildren = item.children
       ? filterItems(item.children, query)
       : undefined;
+
     if (selfMatch || (filteredChildren && filteredChildren.length > 0)) {
       result.push(
         filteredChildren ? { ...item, children: filteredChildren } : item,
       );
     }
   }
+
   return result;
 }
 
@@ -192,9 +200,11 @@ const Accordion = React.forwardRef<
 
     if (scrollIntoView && value.length > 0) {
       const lastOpened = value[value.length - 1];
+
       const trigger = document.querySelector<HTMLElement>(
         `[data-accordion-item-value="${lastOpened}"] [data-slot="accordion-trigger"]`,
       );
+
       trigger?.scrollIntoView({
         behavior: reducedMotion ? "auto" : "smooth",
         block: "nearest",
@@ -236,6 +246,7 @@ function AccordionItem({
     } else if (!open && wasOpenRef.current) {
       onClose?.();
     }
+
     wasOpenRef.current = open;
     props.onOpenChange?.(open, ...args);
   };
@@ -294,6 +305,7 @@ function AccordionTrigger({
   const reducedMotion = useReducedMotion();
 
   const chevronElement = chevronIcon || defaultChevron;
+
   const animatedChevron = (
     <span
       data-accordion-chevron
@@ -387,6 +399,7 @@ function AccordionContent({
   const panelRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const panel = panelRef.current;
+
     if (!panel) return;
 
     if (panel.hasAttribute("data-open")) {
@@ -416,6 +429,7 @@ function AccordionContent({
 
   const skeletonWidths = React.useMemo(() => {
     const widths = ["75%", "85%", "60%", "90%", "70%"];
+
     return Array.from({ length: skeletonLines }).map(
       (_, i) => widths[i % widths.length],
     );
@@ -437,6 +451,7 @@ function AccordionContent({
   const reducedMotion = useReducedMotion();
 
   let renderContent: React.ReactNode = null;
+
   if (loading) {
     renderContent = skeleton;
   } else if (error) {
@@ -630,6 +645,7 @@ function KiraAccordion({
   const controlled = Boolean(onReorder);
   const [localItems, setLocalItems] = React.useState(initialItems);
   const items = controlled ? initialItems : localItems;
+
   const setItems = React.useCallback(
     (updater: React.SetStateAction<AccordionItemData[]>) => {
       if (controlled) {
@@ -639,6 +655,7 @@ function KiraAccordion({
                 initialItems,
               )
             : updater;
+
         onReorder?.(next);
       } else {
         setLocalItems(updater);
@@ -649,20 +666,25 @@ function KiraAccordion({
 
   const [query, setQuery] = React.useState("");
   const [activeId, setActiveId] = React.useState<string | null>(null);
+
   const [openValues, setOpenValues] = React.useState<string[]>(() => {
     if (!persistKey || typeof window === "undefined") return [];
+
     try {
       const stored = localStorage.getItem(`accordion-open-${persistKey}`);
+
       return stored ? (JSON.parse(stored) as string[]) : [];
     } catch {
       return [];
     }
   });
+
   const accordionRef = React.useRef<HTMLDivElement>(null);
 
   // Persist open state when it changes.
   React.useEffect(() => {
     if (!persistKey || typeof window === "undefined") return;
+
     try {
       localStorage.setItem(
         `accordion-open-${persistKey}`,
@@ -701,9 +723,11 @@ function KiraAccordion({
       if (over && active.id !== over.id) {
         setItems((items) => {
           const flatItems = flattenItems(items);
+
           const oldIndex = flatItems.findIndex(
             (item) => item.value === active.id,
           );
+
           const newIndex = flatItems.findIndex(
             (item) => item.value === over.id,
           );
@@ -713,6 +737,7 @@ function KiraAccordion({
           const newFlatItems = arrayMove(flatItems, oldIndex, newIndex);
 
           onReorder?.(newFlatItems);
+
           return newFlatItems;
         });
       }
@@ -782,6 +807,7 @@ function KiraAccordion({
                   const item = flattenItems(items).find(
                     (i) => i.value === activeId,
                   );
+
                   return item ? (
                     <AccordionItem value={item.value} disabled={item.disabled}>
                       <AccordionTrigger

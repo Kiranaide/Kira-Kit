@@ -335,6 +335,7 @@ function ResizeDemo() {
   const [resize, setResize] = React.useState<
     "none" | "vertical" | "horizontal" | "both"
   >("none");
+
   const [useMinRows, setUseMinRows] = React.useState(false);
   const [useMaxRows, setUseMaxRows] = React.useState(false);
 

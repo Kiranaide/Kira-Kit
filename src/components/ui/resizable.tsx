@@ -22,6 +22,7 @@ interface ResizableContextValue {
 }
 
 export type ResizablePanelRef = PanelImperativeHandle;
+
 export type ResizablePanelGroupRef = GroupImperativeHandle;
 
 const ResizableContext = React.createContext<ResizableContextValue>({
@@ -64,6 +65,7 @@ function ResizablePanelGroup({
     </ResizableContext.Provider>
   );
 }
+
 ResizablePanelGroup.displayName = "ResizablePanelGroup";
 
 interface ResizablePanelProps extends Omit<
@@ -91,6 +93,7 @@ function ResizablePanel({
     />
   );
 }
+
 ResizablePanel.displayName = "ResizablePanel";
 
 const handleVariants = cva(
@@ -197,6 +200,7 @@ function CollapsiblePanel({
     </ResizablePanel>
   );
 }
+
 CollapsiblePanel.displayName = "CollapsiblePanel";
 
 export { usePanelRef };
@@ -207,6 +211,7 @@ export {
   ResizableHandle,
   CollapsiblePanel,
 };
+
 export type {
   ResizablePanelGroupProps,
   ResizablePanelProps,

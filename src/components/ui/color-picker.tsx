@@ -89,6 +89,7 @@ function hslaToHsva(color: HslaColor): HsvaColor {
   }
 
   const maxVal = Math.max(r, g, b);
+
   return {
     h,
     s: Math.round(r * 100),
@@ -110,6 +111,7 @@ function rgbaToOklch(rgb: RgbaColor): OklchColor {
 
   const toLinear = (c: number) =>
     c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+
   const lr = toLinear(r);
   const lg = toLinear(g);
   const lb = toLinear(b);
@@ -124,11 +126,13 @@ function rgbaToOklch(rgb: RgbaColor): OklchColor {
 
   const L = 0.2104542553 * lCbrt + 0.793617785 * mCbrt - 0.0040720468 * sCbrt;
   const a = 1.9779984951 * lCbrt - 2.428592205 * mCbrt + 0.4505937099 * sCbrt;
+
   const bVal =
     0.0259040371 * lCbrt + 0.7827717662 * mCbrt - 0.808675766 * sCbrt;
 
   const c = Math.sqrt(a * a + bVal * bVal);
   let h = Math.atan2(bVal, a) * (180 / Math.PI);
+
   if (h < 0) h += 360;
 
   return {
@@ -188,6 +192,7 @@ function generateHarmonies(hsva: HsvaColor): ColorHarmony[] {
 
   const hexFromHSL = (h: number, s: number, l: number): string => {
     const result = hslaToHsva({ h, s, l, a: 1 });
+
     return hsvaToHex(result);
   };
 
@@ -274,12 +279,15 @@ function ColorPicker({
   onError,
 }: ColorPickerProps) {
   const initialFormat = format ?? type ?? "hex";
+
   const [colorType, setColorType] = React.useState<
     "hex" | "hsl" | "rgb" | "hexa" | "oklch"
   >(initialFormat);
+
   const [colorHsv, setColorHsv] = React.useState<HsvaColor>(
     value ? getColorAsHsva(value) : getColorAsHsva(defaultValue)
   );
+
   const [alpha, setAlpha] = React.useState(defaultAlpha);
   const [isOpen, setIsOpen] = React.useState(false);
   const [showTypeMenu, setShowTypeMenu] = React.useState(false);
@@ -290,9 +298,11 @@ function ColorPicker({
 
   const saturationRef = React.useRef<HTMLDivElement>(null);
   const hueRef = React.useRef<HTMLDivElement>(null);
+
   const announcementTimeoutRef = React.useRef<
     ReturnType<typeof setTimeout> | undefined
   >(undefined);
+
   const [announcement, setAnnouncement] = React.useState("");
 
   const sizeClasses = {
@@ -300,13 +310,16 @@ function ColorPicker({
     default: { swatch: "h-8 w-8", input: "w-24" },
     lg: { swatch: "h-10 w-10", input: "w-28 text-base" },
   };
+
   const currentSize = sizeClasses[size];
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
+
     const win = window as Window & {
       EyeDropper?: new () => { open: () => Promise<{ sRGBHex: string }> };
     };
+
     setEyedropperSupported(typeof win.EyeDropper !== "undefined");
   }, []);
 
@@ -319,12 +332,13 @@ function ColorPicker({
   const handleValueChange = (color: HsvaColor, newAlpha?: number) => {
     setColorHsv(color);
     const hexColor = hsvaToHex(color);
-    const finalAlpha = newAlpha !== undefined ? newAlpha : alpha;
+    const finalAlpha = newAlpha === undefined ? alpha : newAlpha;
 
     setRecentColors((prev) => {
       const filtered = prev.filter(
         (c) => c.toLowerCase() !== hexColor.toLowerCase()
       );
+
       return [hexColor as HexColor, ...filtered].slice(0, 8);
     });
 
@@ -342,6 +356,7 @@ function ColorPicker({
     if (announcementTimeoutRef.current) {
       clearTimeout(announcementTimeoutRef.current);
     }
+
     announcementTimeoutRef.current = setTimeout(() => {
       setAnnouncement(`Color changed to ${hexColor}`);
     }, 500);
@@ -359,6 +374,7 @@ function ColorPicker({
       const win = window as Window & {
         EyeDropper?: new () => { open: () => Promise<{ sRGBHex: string }> };
       };
+
       if (!win.EyeDropper) return;
       const eyeDropper = new win.EyeDropper();
       const result = await eyeDropper.open();
@@ -376,6 +392,7 @@ function ColorPicker({
     const hexaColor = hsvaToHexa({ ...colorHsv, a: alpha });
 
     let colorValue: string;
+
     switch (colorType) {
       case "hexa":
         colorValue = hexaColor;
@@ -403,6 +420,7 @@ function ColorPicker({
 
   const handleSaturationKeyDown = (e: React.KeyboardEvent) => {
     const step = e.shiftKey ? 10 : 1;
+
     switch (e.key) {
       case "ArrowRight":
         e.preventDefault();
@@ -433,6 +451,7 @@ function ColorPicker({
 
   const handleHueKeyDown = (e: React.KeyboardEvent) => {
     const step = e.shiftKey ? 15 : 1;
+
     switch (e.key) {
       case "ArrowRight":
       case "ArrowUp":
@@ -457,6 +476,7 @@ function ColorPicker({
 
   const handleAlphaKeyDown = (e: React.KeyboardEvent) => {
     const step = e.shiftKey ? 0.1 : 0.01;
+
     switch (e.key) {
       case "ArrowRight":
       case "ArrowUp":
@@ -499,6 +519,7 @@ function ColorPicker({
     "#2CADF6",
     "#6462FC",
   ];
+
   const allSwatches = hideDefaultSwatches
     ? swatches
     : [...defaultSwatches, ...swatches];
@@ -506,23 +527,30 @@ function ColorPicker({
   const formatColorValue = (): string => {
     const hexColor = hsvaToHex(colorHsv);
     const hexaColor = hsvaToHexa({ ...colorHsv, a: alpha });
+
     switch (colorType) {
       case "hexa":
         return hexaColor;
       case "rgb": {
         const rgb = hsvaToRgba(colorHsv);
+
         return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
       }
+
       case "hsl": {
         const hsl = hsvaToHsla(colorHsv);
+
         return `hsl(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(
           hsl.l
         )}%)`;
       }
+
       case "oklch": {
         const oklch = rgbaToOklch(hsvaToRgba(colorHsv));
+
         return `oklch(${oklch.l} ${oklch.c} ${oklch.h})`;
       }
+
       default:
         return showAlpha ? hexaColor : hexColor;
     }
@@ -790,12 +818,15 @@ function ColorPicker({
                   onChange={(e) => {
                     try {
                       const hex = e.target.value;
+
                       if (hex.length >= 7) {
                         const newColor = hexToHsva(hex.substring(0, 7));
+
                         const newAlpha =
                           hex.length >= 9
                             ? parseInt(hex.substring(7, 9), 16) / 255
                             : alpha;
+
                         handleValueChange(newColor, newAlpha);
                       }
                     } catch {
@@ -1060,6 +1091,7 @@ function ValidationBadge({
   children?: React.ReactNode;
 }) {
   const isValid = ratio > ratioLimit;
+
   return (
     <Badge
       variant="outline"
@@ -1097,6 +1129,7 @@ function ContrastRatio({ color, alpha = 1 }: ContrastRatioProps) {
 
     const toSRGB = (c: number) => {
       const channel = c / 255;
+
       return channel <= 0.03928
         ? channel / 12.92
         : ((channel + 0.055) / 1.055) ** 2.4;
@@ -1366,6 +1399,7 @@ function OklchColorInput({
 }
 
 export { ColorPicker };
+
 export type { ColorPickerProps, ColorPickerValue, ColorHarmony, OklchColor };
 
 export { getColorAsHsva, rgbaToOklch, oklchToRgba, hslaToHsva };

@@ -380,7 +380,7 @@ function CompoundDemo() {
         </Button>
         <Button
           size="sm"
-          variant={!isLoading ? "default" : "outline"}
+          variant={isLoading ? "outline" : "default"}
           onClick={() => setIsLoading(false)}
         >
           Loaded

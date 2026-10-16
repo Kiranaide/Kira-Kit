@@ -56,7 +56,9 @@ const stackVariants = cva("flex", {
 });
 
 type StackDirection = "vertical" | "horizontal";
+
 type StackAlign = "start" | "end" | "center" | "baseline" | "stretch";
+
 type StackJustify =
   | "start"
   | "end"
@@ -64,7 +66,9 @@ type StackJustify =
   | "between"
   | "around"
   | "evenly";
+
 type StackGap = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24;
+
 type StackElement =
   | "div"
   | "section"
@@ -116,6 +120,7 @@ function Stack({
     if (!dividers) return children;
 
     const childArray = React.Children.toArray(children).filter(Boolean);
+
     const divider = dividerElement ?? (
       <Separator
         orientation={direction === "vertical" ? "horizontal" : "vertical"}
@@ -155,4 +160,5 @@ function VStack(props: Omit<StackProps, "direction">) {
 }
 
 export { Stack, HStack, VStack, stackVariants };
+
 export type { StackProps, StackDirection, StackAlign, StackJustify, StackGap };

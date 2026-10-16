@@ -14,20 +14,25 @@ import {
 
 function getSkeletonDelay(pathname: string): number {
   if (pathname === "/") return 1500;
+
   if (pathname.startsWith("/components/")) return 500;
+
   return 1000;
 }
 
 function getRouteName(pathname: string): string {
   if (pathname === "/") return "Home";
   const match = pathname.match(/^\/components\/(.+)$/);
+
   if (match) {
     const componentName = match[1];
+
     return componentName
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   }
+
   return "page";
 }
 
@@ -35,7 +40,9 @@ function getSkeletonType(
   pathname: string
 ): "component" | "overview" | "generic" {
   if (pathname === "/") return "overview";
+
   if (pathname.startsWith("/components/")) return "component";
+
   return "generic";
 }
 
@@ -149,6 +156,7 @@ export function RoutePending() {
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSkeleton(true), delay);
+
     return () => clearTimeout(timer);
   }, [location.pathname, delay]);
 

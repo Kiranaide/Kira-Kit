@@ -148,6 +148,7 @@ function CollapsibleContent({
   React.useEffect(() => {
     const panel = panelRef.current;
     const content = contentRef.current;
+
     if (!panel || !content) return;
 
     let prevOpen = panel.hasAttribute("data-open");
@@ -210,6 +211,7 @@ function CollapsibleContent({
 
     return () => {
       observer.disconnect();
+
       if (animationRef.current) {
         animationRef.current.kill();
       }
@@ -218,6 +220,7 @@ function CollapsibleContent({
 
   const skeletonWidths = React.useMemo(() => {
     const widths = ["75%", "85%", "60%", "90%", "70%"];
+
     return Array.from({ length: skeletonLines }).map(
       (_, i) => widths[i % widths.length]
     );
@@ -236,6 +239,7 @@ function CollapsibleContent({
   );
 
   const shouldRenderChildren = !lazyMount || hasBeenOpened;
+
   const renderContent = shouldRenderChildren
     ? children
     : showSkeleton
@@ -270,6 +274,7 @@ export {
   CollapsibleContent,
   collapsibleTriggerVariants,
 };
+
 export type {
   CollapsibleRootProps,
   CollapsibleTriggerProps,

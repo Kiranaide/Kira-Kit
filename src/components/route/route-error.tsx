@@ -33,13 +33,14 @@ const ERROR_MESSAGES: Record<
   },
 };
 
-function getErrorInfo(error: Error) {
-  const name = error.name;
-  const message = error.message;
+function getErrorInfo(error: unknown) {
+  const name = error instanceof Error ? error.name : "";
+  const message = error instanceof Error ? error.message : "";
 
   if (name.includes("ChunkLoadError") || message.includes("Loading chunk")) {
     return ERROR_MESSAGES.ChunkLoadError;
   }
+
   if (name.includes("NotFound") || message.includes("404")) {
     return ERROR_MESSAGES.NotFound;
   }
@@ -64,7 +65,9 @@ export function RouteError({ error, reset }: ErrorComponentProps) {
         router.navigate({ to: "/" });
       }
     };
+
     window.addEventListener("keydown", handleEscape);
+
     return () => window.removeEventListener("keydown", handleEscape);
   }, [router]);
 
@@ -143,8 +146,9 @@ export function RouteError({ error, reset }: ErrorComponentProps) {
             <div className="space-y-2">
               <h3 className="font-semibold text-foreground">Error Details</h3>
               <pre className="p-4 text-xs bg-muted rounded-lg overflow-auto max-h-64 text-muted-foreground">
-                {error.name}: {error.message}
-                {error.stack && "\n\n" + error.stack}
+                {error instanceof Error
+                  ? `${error.name}: ${error.message}${error.stack ? "\n\n" + error.stack : ""}`
+                  : String(error)}
               </pre>
             </div>
           </DialogContent>

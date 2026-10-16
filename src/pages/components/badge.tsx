@@ -333,8 +333,8 @@ function CountBadgeDemo() {
         </h4>
         <div className="flex flex-wrap items-center gap-3">
           <CountBadge count={1500} format="short" />
-          <CountBadge count={25000} format="short" />
-          <CountBadge count={1500000} format="short" />
+          <CountBadge count={25_000} format="short" />
+          <CountBadge count={1_500_000} format="short" />
         </div>
       </div>
       <div>
@@ -472,6 +472,7 @@ const badgeGroupCode = `import { Badge, BadgeGroup } from "@/components/ui/badge
 // =============================================================================
 function NumberTickerDemo() {
   const [count, setCount] = useState(3);
+
   return (
     <div className="flex flex-col items-start gap-4">
       <div className="flex items-center gap-3">
@@ -579,6 +580,7 @@ const presetsCode = `import { Badge } from "@/components/ui/badge"
 // =============================================================================
 function TagInputDemo() {
   const [tags, setTags] = useState<string[]>(["design", "frontend", "a11y"]);
+
   return (
     <div className="max-w-md space-y-2">
       <TagInput value={tags} onChange={setTags} aria-label="Project tags" />

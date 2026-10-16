@@ -150,9 +150,11 @@ const StepperContext = React.createContext<StepperContextValue | null>(null);
 
 function useStepperContext() {
   const context = React.useContext(StepperContext);
+
   if (!context) {
     throw new Error("Stepper components must be used within Stepper");
   }
+
   return context;
 }
 
@@ -168,6 +170,7 @@ function useReducedMotion() {
     };
 
     mediaQuery.addEventListener("change", handleChange);
+
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
@@ -220,15 +223,19 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
   ) => {
     const [uncontrolledValue, setUncontrolledValue] =
       React.useState(defaultValue);
+
     const [registeredSteps, setRegisteredSteps] = React.useState<Set<number>>(
       new Set()
     );
+
     const [stepConditions, setStepConditions] = React.useState<
       Map<number, boolean>
     >(new Map());
+
     const [internalSkippedSteps, setInternalSkippedSteps] = React.useState<
       Set<number>
     >(new Set(skippedStepsProp));
+
     const stepperRef = React.useRef<HTMLElement>(null);
     const stepRefs = React.useRef<Map<number, HTMLElement>>(new Map());
     const reducedMotion = useReducedMotion();
@@ -241,18 +248,22 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
       () => new Set(completedStepsProp),
       [completedStepsProp]
     );
+
     const errorSteps = React.useMemo(
       () => new Set(errorStepsProp),
       [errorStepsProp]
     );
+
     const loadingSteps = React.useMemo(
       () => new Set(loadingStepsProp),
       [loadingStepsProp]
     );
+
     const skippableSteps = React.useMemo(
       () => new Set(skippableStepsProp),
       [skippableStepsProp]
     );
+
     const skippedSteps = React.useMemo(
       () => new Set([...skippedStepsProp, ...internalSkippedSteps]),
       [skippedStepsProp, internalSkippedSteps]
@@ -262,10 +273,12 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
       const visible = new Set<number>();
       registeredSteps.forEach((step) => {
         const condition = stepConditions.get(step);
+
         if (condition === undefined || condition === true) {
           visible.add(step);
         }
       });
+
       return visible;
     }, [registeredSteps, stepConditions]);
 
@@ -283,13 +296,17 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
 
     React.useEffect(() => {
       if (!persistKey) return;
+
       try {
         const saved = localStorage.getItem(`stepper-${persistKey}`);
+
         if (saved) {
           const data = JSON.parse(saved);
+
           if (!isControlled && typeof data.currentStep === "number") {
             setUncontrolledValue(data.currentStep);
           }
+
           if (Array.isArray(data.skippedSteps)) {
             setInternalSkippedSteps(new Set(data.skippedSteps));
           }
@@ -299,6 +316,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
 
     React.useEffect(() => {
       if (!persistKey) return;
+
       try {
         localStorage.setItem(
           `stepper-${persistKey}`,
@@ -322,9 +340,11 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
           Array.from(visibleSteps)
             .sort((a, b) => a - b)
             .indexOf(step) + 1;
+
         const message = title
           ? `Step ${visibleIndex} of ${totalSteps}: ${title}`
           : `Step ${visibleIndex} of ${totalSteps}`;
+
         announce(message);
       },
       [visibleSteps, totalSteps, announce]
@@ -335,6 +355,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
         if (!isControlled) {
           setUncontrolledValue(newValue);
         }
+
         onValueChange?.(newValue);
 
         if (newValue >= totalSteps - 1 && completedSteps.has(newValue)) {
@@ -347,6 +368,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
     const registerStep = React.useCallback(
       (index: number, condition?: boolean) => {
         setRegisteredSteps((prev) => new Set([...prev, index]));
+
         if (condition !== undefined) {
           setStepConditions((prev) => new Map(prev).set(index, condition));
         }
@@ -358,11 +380,13 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
       setRegisteredSteps((prev) => {
         const next = new Set(prev);
         next.delete(index);
+
         return next;
       });
       setStepConditions((prev) => {
         const next = new Map(prev);
         next.delete(index);
+
         return next;
       });
     }, []);
@@ -381,12 +405,14 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
       setInternalSkippedSteps((prev) => {
         const next = new Set(prev);
         next.delete(index);
+
         return next;
       });
     }, []);
 
     const focusStep = React.useCallback((index: number) => {
       const stepElement = stepRefs.current.get(index);
+
       if (stepElement) {
         stepElement.focus();
       }
@@ -395,10 +421,15 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
     const getStepState = React.useCallback(
       (index: number): StepState => {
         if (loadingSteps.has(index)) return "loading";
+
         if (errorSteps.has(index)) return "error";
+
         if (skippedSteps.has(index)) return "skipped";
+
         if (index === value) return "active";
+
         if (completedSteps.has(index) || index < value) return "completed";
+
         return "pending";
       },
       [value, completedSteps, errorSteps, loadingSteps, skippedSteps]
@@ -407,6 +438,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
     const canNavigateTo = React.useCallback(
       (index: number): boolean => {
         if (!isStepVisible(index)) return false;
+
         if (!linear) return editable || index >= value;
 
         if (index < value) return editable;
@@ -414,6 +446,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
         if (index === value + 1 && completedSteps.has(value)) return true;
 
         if (index === value) return true;
+
         return false;
       },
       [linear, value, completedSteps, editable, isStepVisible]
@@ -438,9 +471,11 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
     const handleKeyDown = React.useCallback(
       (e: React.KeyboardEvent) => {
         const isHorizontal = orientation === "horizontal";
+
         const visibleStepsArray = Array.from(visibleSteps).sort(
           (a, b) => a - b
         );
+
         const currentIndex = visibleStepsArray.indexOf(value);
         let targetIndex = currentIndex;
 
@@ -472,27 +507,33 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
               document.activeElement instanceof HTMLElement
                 ? document.activeElement
                 : null;
+
             if (focusedElement?.hasAttribute("data-value")) {
               const stepValue = parseInt(
                 focusedElement.getAttribute("data-value") || "0",
                 10
               );
+
               if (canNavigateTo(stepValue)) {
                 handleValueChange(stepValue);
                 announceStep(stepValue);
               }
             }
+
             return;
           }
+
           case "Escape":
             e.preventDefault();
             (e.target as HTMLElement)?.blur();
+
             return;
           default:
             return;
         }
 
         const targetStep = visibleStepsArray[targetIndex];
+
         if (targetStep !== undefined) {
           focusStep(targetStep);
         }
@@ -579,7 +620,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
           {...props}
         >
           <ol
-            role="list"
+            
             className={cn(
               "flex",
               orientation === "vertical" ? "flex-col" : "flex-row items-center",
@@ -593,6 +634,7 @@ const Stepper = React.forwardRef<HTMLElement, StepperProps>(
     );
   }
 );
+
 Stepper.displayName = "Stepper";
 
 interface StepperItemProps extends React.HTMLAttributes<HTMLLIElement> {
@@ -642,6 +684,7 @@ const StepperItem = React.forwardRef<HTMLLIElement, StepperItemProps>(
 
     React.useEffect(() => {
       registerStep(stepValue, condition);
+
       return () => unregisterStep(stepValue);
     }, [stepValue, condition, registerStep, unregisterStep]);
 
@@ -650,6 +693,7 @@ const StepperItem = React.forwardRef<HTMLLIElement, StepperItemProps>(
       if (itemRef.current) {
         stepRefs.current.set(stepValue, itemRef.current);
       }
+
       return () => {
         stepRefs.current.delete(stepValue);
       };
@@ -679,7 +723,7 @@ const StepperItem = React.forwardRef<HTMLLIElement, StepperItemProps>(
           (itemRef as React.MutableRefObject<HTMLLIElement | null>).current =
             node;
         }}
-        role="listitem"
+        
         id={`stepper-step-${stepValue}`}
         aria-current={isActive ? "step" : undefined}
         aria-disabled={disabled || !isClickable}
@@ -717,6 +761,7 @@ const StepperItem = React.forwardRef<HTMLLIElement, StepperItemProps>(
     );
   }
 );
+
 StepperItem.displayName = "StepperItem";
 
 interface StepperItemContextValue {
@@ -735,11 +780,13 @@ const StepperItemContext = React.createContext<StepperItemContextValue | null>(
 
 function useStepperItemContext() {
   const context = React.useContext(StepperItemContext);
+
   if (!context) {
     throw new Error(
       "StepperIndicator/StepperContent must be used within StepperItem"
     );
   }
+
   return context;
 }
 
@@ -770,6 +817,7 @@ const StepperIndicator = React.forwardRef<
 
     const renderContent = () => {
       if (children) return children;
+
       switch (state) {
         case "completed":
           return completedIcon;
@@ -795,6 +843,7 @@ const StepperIndicator = React.forwardRef<
     );
   }
 );
+
 StepperIndicator.displayName = "StepperIndicator";
 
 interface StepperTitleProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -827,6 +876,7 @@ const StepperTitle = React.forwardRef<HTMLDivElement, StepperTitleProps>(
     );
   }
 );
+
 StepperTitle.displayName = "StepperTitle";
 
 interface StepperDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
@@ -854,6 +904,7 @@ const StepperDescription = React.forwardRef<
     </p>
   );
 });
+
 StepperDescription.displayName = "StepperDescription";
 
 type StepperSeparatorProps = React.HTMLAttributes<HTMLDivElement>;
@@ -888,6 +939,7 @@ const StepperSeparator = React.forwardRef<
     />
   );
 });
+
 StepperSeparator.displayName = "StepperSeparator";
 
 interface StepperContentProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -910,6 +962,7 @@ const StepperContent = React.forwardRef<HTMLDivElement, StepperContentProps>(
     );
   }
 );
+
 StepperContent.displayName = "StepperContent";
 
 interface StepperPanelProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -970,6 +1023,7 @@ const StepperPanel = React.forwardRef<HTMLDivElement, StepperPanelProps>(
     );
   }
 );
+
 StepperPanel.displayName = "StepperPanel";
 
 interface StepperActionsProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -990,6 +1044,7 @@ const StepperActions = React.forwardRef<HTMLDivElement, StepperActionsProps>(
     );
   }
 );
+
 StepperActions.displayName = "StepperActions";
 
 interface StepperProgressProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -1006,6 +1061,7 @@ const StepperProgress = React.forwardRef<HTMLDivElement, StepperProgressProps>(
       visibleStepsCount,
       currentVisibleIndex,
     } = useStepperContext();
+
     const reducedMotion = useReducedMotion();
     const progressRef = React.useRef<HTMLDivElement>(null);
     const previousProgress = React.useRef<number>(0);
@@ -1018,6 +1074,7 @@ const StepperProgress = React.forwardRef<HTMLDivElement, StepperProgressProps>(
       0;
 
     const hasRegisteredSteps = contextTotalSteps > 0;
+
     const effectiveCurrentIndex = hasRegisteredSteps
       ? currentVisibleIndex
       : value;
@@ -1043,6 +1100,7 @@ const StepperProgress = React.forwardRef<HTMLDivElement, StepperProgressProps>(
       if (reducedMotion) {
         gsap.set(progressRef.current, { width: `${clampedProgress}%` });
         previousProgress.current = clampedProgress;
+
         return;
       }
 
@@ -1097,6 +1155,7 @@ const StepperProgress = React.forwardRef<HTMLDivElement, StepperProgressProps>(
     );
   }
 );
+
 StepperProgress.displayName = "StepperProgress";
 
 interface StepperNavigationProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -1166,11 +1225,13 @@ const StepperNavigation = React.forwardRef<
     const handleNext = async () => {
       if (isLastStep) {
         onFinish?.();
+
         return;
       }
 
       if (onNext) {
         const canProceed = await onNext();
+
         if (!canProceed) return;
       }
 
@@ -1185,6 +1246,7 @@ const StepperNavigation = React.forwardRef<
         onSkip();
       } else {
         skipStep(value);
+
         if (value < totalSteps - 1) {
           onValueChange(value + 1);
           announceStep(value + 1);
@@ -1247,6 +1309,7 @@ const StepperNavigation = React.forwardRef<
     );
   }
 );
+
 StepperNavigation.displayName = "StepperNavigation";
 
 export {

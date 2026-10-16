@@ -101,6 +101,7 @@ export function calculatePageRange(
   maxPages: number = 5
 ): PageRangeItem[] {
   if (pageCount <= 0) return [];
+
   if (pageCount === 1) return [{ type: "page", page: 1, isActive: true }];
 
   const result: PageRangeItem[] = [];
@@ -110,6 +111,7 @@ export function calculatePageRange(
     for (let i = 1; i <= pageCount; i++) {
       result.push({ type: "page", page: i, isActive: i === currentPage });
     }
+
     return result;
   }
 
@@ -162,6 +164,7 @@ export function calculatePageRange(
  */
 function clampPage(page: number, pageCount: number): number {
   if (pageCount <= 0) return 1;
+
   return Math.max(1, Math.min(page, pageCount));
 }
 
@@ -170,6 +173,7 @@ function clampPage(page: number, pageCount: number): number {
  */
 function calculatePageCount(total: number, pageSize: number): number {
   if (total <= 0 || pageSize <= 0) return 0;
+
   return Math.ceil(total / pageSize);
 }
 
@@ -235,9 +239,11 @@ export function usePagination(
   const setPage = React.useCallback(
     (newPage: number) => {
       const clampedPage = clampPage(newPage, pageCount);
+
       if (!isControlled) {
         setInternalPage(clampedPage);
       }
+
       onPageChange?.(clampedPage);
     },
     [isControlled, pageCount, onPageChange]
@@ -270,10 +276,12 @@ export function usePagination(
       if (newSize <= 0) return;
       setPageSizeState(newSize);
       onPageSizeChange?.(newSize);
+
       // Reset to page 1 when page size changes
       if (!isControlled) {
         setInternalPage(1);
       }
+
       onPageChange?.(1);
     },
     [isControlled, onPageChange, onPageSizeChange]
@@ -287,6 +295,7 @@ export function usePagination(
     if (!isControlled) {
       setInternalPage(1);
     }
+
     onPageChange?.(1);
   }, [isControlled, onPageChange]);
 
@@ -304,6 +313,7 @@ export function usePagination(
   const getPageData = React.useCallback(
     <T>(data: T[]): T[] => {
       if (!data || data.length === 0) return [];
+
       return data.slice(startIndex, endIndex + 1);
     },
     [startIndex, endIndex]
@@ -459,23 +469,28 @@ export function useUrlPagination(
     };
 
     window.addEventListener("popstate", handlePopState);
+
     return () => window.removeEventListener("popstate", handlePopState);
   }, [getParamsFromUrl]);
 
   const searchParamsString = React.useMemo(() => {
     const params = new URLSearchParams();
+
     if (pagination.page !== 1) {
       params.set(pageParam, String(pagination.page));
     }
+
     if (pagination.pageSize !== defaultPageSize) {
       params.set(pageSizeParam, String(pagination.pageSize));
     }
+
     return params.toString();
   }, [pagination.page, pagination.pageSize, pageParam, pageSizeParam, defaultPageSize]);
 
   const buildUrl = React.useCallback(
     (basePath?: string) => {
-      const path = basePath ?? (typeof window !== "undefined" ? window.location.pathname : "/");
+      const path = basePath ?? (typeof window === "undefined" ? "/" : window.location.pathname);
+
       return searchParamsString ? `${path}?${searchParamsString}` : path;
     },
     [searchParamsString]

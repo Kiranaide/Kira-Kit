@@ -164,6 +164,7 @@ function FormExample() {
     sms: false,
     push: true,
   });
+
   const [theme, setTheme] = React.useState("light");
 
   return (

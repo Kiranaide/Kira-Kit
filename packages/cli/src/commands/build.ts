@@ -2,9 +2,13 @@ import { join } from "path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 
 const COMPONENTS_DIR = "./src/components/ui";
+
 const HOOKS_DIR = "./src/hooks";
+
 const OUTPUT_DIR = "./public/r";
+
 const REGISTRY_NAME = "kira-kit";
+
 const HOMEPAGE = "https://kira-kit.vercel.app";
 
 import {
@@ -44,6 +48,7 @@ function extractDependencies(content: string): string[] {
       `from\\s+["']${importKey.replace("/", "\\/")}`,
       "g",
     );
+
     if (regex.test(content)) {
       npmDeps.forEach((dep) => deps.add(dep));
     }
@@ -64,6 +69,7 @@ function getHookDependencies(content: string): string[] {
 
   const hookImportRegex = /from\s+["']@\/hooks\/([^"']+)["']/g;
   let match;
+
   while ((match = hookImportRegex.exec(content)) !== null) {
     const hookName = match[1].replace(".tsx", "").replace(".ts", "");
     hooks.add(hookName);
@@ -84,8 +90,10 @@ function getRegistryDependencies(
 
   const uiImportRegex = /from\s+["']@\/components\/ui\/([^"']+)["']/g;
   let match;
+
   while ((match = uiImportRegex.exec(content)) !== null) {
     const importedComponent = match[1].replace(".tsx", "").replace(".ts", "");
+
     if (importedComponent !== componentName) {
       deps.add(importedComponent);
     }
@@ -119,6 +127,7 @@ function generateRegistryItem(filePath: string): RegistryItem {
 
   for (const hookName of hookDeps) {
     const hookPath = join(HOOKS_DIR, `${hookName}.ts`);
+
     if (existsSync(hookPath)) {
       const hookContent = readFileSync(hookPath, "utf-8");
       files.push({
@@ -150,11 +159,13 @@ export function buildRegistry(): void {
   if (!existsSync(COMPONENTS_DIR)) {
     console.log(`📦 Components directory not found: ${COMPONENTS_DIR}`);
     console.log("Make sure you're running from the kira-kit root directory.");
+
     return;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { readdirSync } = require("fs");
+
   const files = readdirSync(COMPONENTS_DIR)
     .filter((f: string) => f.endsWith(".tsx"))
     .sort();

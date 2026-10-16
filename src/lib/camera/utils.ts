@@ -14,9 +14,13 @@ export function detectBrowser(): string {
   const ua = navigator.userAgent.toLowerCase();
   
   if (ua.includes("edg/")) return "edge";
+
   if (ua.includes("opr/") || ua.includes("opera")) return "opera";
+
   if (ua.includes("chrome")) return "chrome";
+
   if (ua.includes("safari") && !ua.includes("chrome")) return "safari";
+
   if (ua.includes("firefox")) return "firefox";
   
   return "default";
@@ -27,6 +31,7 @@ export function detectBrowser(): string {
  */
 export function getPermissionHelpLink(): string {
   const browser = detectBrowser();
+
   return BROWSER_PERMISSION_HELP_LINKS[browser] || BROWSER_PERMISSION_HELP_LINKS.default;
 }
 
@@ -49,9 +54,11 @@ export async function checkCameraPermissionStatus(): Promise<"granted" | "denied
     if (typeof navigator === "undefined" || !navigator.permissions) {
       return "prompt";
     }
+
     const permission = await navigator.permissions.query({
       name: "camera" as PermissionName,
     });
+
     return permission.state as "granted" | "denied" | "prompt";
   } catch {
     // Permissions API not supported
@@ -65,6 +72,7 @@ export async function checkCameraPermissionStatus(): Promise<"granted" | "denied
 export function isTorchSupported(track: MediaStreamTrack): boolean {
   try {
     const capabilities = track.getCapabilities() as MediaTrackCapabilities & { torch?: boolean };
+
     return Boolean(capabilities.torch);
   } catch {
     return false;
@@ -79,6 +87,7 @@ export async function toggleTorch(track: MediaStreamTrack, enabled: boolean): Pr
     await track.applyConstraints({
       advanced: [{ torch: enabled } as MediaTrackConstraintSet],
     });
+
     return true;
   } catch {
     return false;
@@ -99,6 +108,7 @@ export function triggerHaptic(pattern: number | number[] = 50): void {
  */
 export function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false;
+
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
@@ -107,6 +117,7 @@ export function prefersReducedMotion(): boolean {
  */
 export function prefersHighContrast(): boolean {
   if (typeof window === "undefined") return false;
+
   return window.matchMedia("(forced-colors: active)").matches;
 }
 
@@ -145,6 +156,7 @@ export function dataUrlToBlob(dataUrl: string): Blob {
  */
 export function isMobileDevice(): boolean {
   if (typeof navigator === "undefined") return false;
+
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
@@ -155,6 +167,7 @@ export async function hasMultipleCameras(): Promise<boolean> {
   try {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter((d) => d.kind === "videoinput");
+
     return videoDevices.length > 1;
   } catch {
     return false;
@@ -195,8 +208,10 @@ export function throttle<T extends (...args: unknown[]) => void>(
   delay: number
 ): (...args: Parameters<T>) => void {
   let lastCall = 0;
+
   return (...args: Parameters<T>) => {
     const now = Date.now();
+
     if (now - lastCall >= delay) {
       lastCall = now;
       fn(...args);

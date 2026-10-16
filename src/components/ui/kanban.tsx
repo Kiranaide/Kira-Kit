@@ -98,9 +98,11 @@ const KanbanContext = React.createContext<KanbanContextValue | undefined>(
 
 function useKanban() {
   const context = React.useContext(KanbanContext);
+
   if (!context) {
     throw new Error("useKanban must be used within a Kanban component");
   }
+
   return context;
 }
 
@@ -160,6 +162,7 @@ function useReducedMotion() {
     };
 
     mediaQuery.addEventListener("change", handleChange);
+
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
@@ -201,16 +204,19 @@ function MoveDialog({
   const [selectedColumn, setSelectedColumn] = React.useState<string | null>(
     null
   );
+
   const [selectedPosition, setSelectedPosition] = React.useState<number>(0);
   const dialogRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const dialog = dialogRef.current;
+
     if (!dialog) return;
 
     const focusableElements = dialog.querySelectorAll<HTMLElement>(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
+
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
 
@@ -219,6 +225,7 @@ function MoveDialog({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
+
         return;
       }
 
@@ -234,6 +241,7 @@ function MoveDialog({
     };
 
     document.addEventListener("keydown", handleKeyDown);
+
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
@@ -404,22 +412,28 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
   ) => {
     const [columns, setColumns] =
       React.useState<KanbanColumnData[]>(initialColumns);
+
     const [activeId, setActiveId] = React.useState<UniqueIdentifier | null>(
       null
     );
+
     const [activeCard, setActiveCard] = React.useState<KanbanCardData | null>(
       null
     );
+
     const [announcement, setAnnouncement] = React.useState("");
 
     const [focusedCardId, setFocusedCardId] = React.useState<string | null>(
       null
     );
+
     const [isGrabbed, setIsGrabbed] = React.useState(false);
 
     const [showMoveDialog, setShowMoveDialog] = React.useState(false);
+
     const [moveDialogCard, setMoveDialogCard] =
       React.useState<KanbanCardData | null>(null);
+
     const [moveDialogSourceColumn, setMoveDialogSourceColumn] = React.useState<
       string | null
     >(null);
@@ -456,8 +470,10 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
     const findCardAndColumn = (cardId: UniqueIdentifier) => {
       for (const column of columns) {
         const card = column.cards.find((c) => c.id === cardId);
+
         if (card) return { card, column };
       }
+
       return null;
     };
 
@@ -468,9 +484,12 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
             if (col.id === columnId) {
               return { ...col, cards: [...col.cards, card] };
             }
+
             return col;
           });
+
           onColumnsChange?.(newColumns);
+
           return newColumns;
         });
       },
@@ -487,9 +506,12 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
                 cards: col.cards.filter((c) => c.id !== cardId),
               };
             }
+
             return col;
           });
+
           onColumnsChange?.(newColumns);
+
           return newColumns;
         });
       },
@@ -506,6 +528,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
         setColumns((prev) => {
           const sourceCol = prev.find((c) => c.id === sourceColumnId);
           const card = sourceCol?.cards.find((c) => c.id === cardId);
+
           if (!card) return prev;
 
           const newColumns = prev.map((col) => ({
@@ -516,6 +539,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
           const targetIdx = newColumns.findIndex(
             (c) => c.id === targetColumnId
           );
+
           if (targetIdx !== -1) {
             const insertIdx = targetIndex ?? newColumns[targetIdx].cards.length;
             newColumns[targetIdx] = {
@@ -529,6 +553,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
           }
 
           onColumnsChange?.(newColumns);
+
           return newColumns;
         });
       },
@@ -540,6 +565,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
         setColumns((prev) => {
           const newColumns = [...prev, column];
           onColumnsChange?.(newColumns);
+
           return newColumns;
         });
       },
@@ -551,6 +577,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
         setColumns((prev) => {
           const newColumns = prev.filter((c) => c.id !== columnId);
           onColumnsChange?.(newColumns);
+
           return newColumns;
         });
       },
@@ -559,28 +586,35 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
 
     const handleDragStart = (event: DragStartEvent) => {
       const result = findCardAndColumn(event.active.id);
+
       if (result) {
         setActiveId(event.active.id);
         setActiveCard(result.card);
+
         const message =
           announcements?.onDragStart?.(result.card) ||
           `Grabbed ${result.card.title}. Use arrow keys to move, Space to drop, Escape to cancel.`;
+
         announce(message);
       }
     };
 
     const handleDragOver = (event: DragOverEvent) => {
       const { active, over } = event;
+
       if (!over || active.id === over.id) return;
 
       const activeResult = findCardAndColumn(active.id);
+
       if (!activeResult) return;
 
       const overColumn = columns.find((c) => c.id === over.id);
+
       if (overColumn) {
         const message =
           announcements?.onDragOver?.(activeResult.card, overColumn) ||
           `Over ${overColumn.title} column`;
+
         announce(message);
       }
     };
@@ -593,10 +627,12 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
 
       if (!over) {
         announce(announcements?.onCancel?.() || "Drop cancelled");
+
         return;
       }
 
       const activeResult = findCardAndColumn(active.id);
+
       if (!activeResult) return;
 
       let targetColumn = columns.find((c) => c.id === over.id);
@@ -604,6 +640,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
 
       if (!targetColumn) {
         const overResult = findCardAndColumn(over.id);
+
         if (overResult) {
           targetColumn = overResult.column;
           targetIndex = overResult.column.cards.findIndex(
@@ -614,6 +651,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
 
       if (!targetColumn) {
         announce(announcements?.onCancel?.() || "Drop cancelled");
+
         return;
       }
 
@@ -627,6 +665,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
       const message =
         announcements?.onDrop?.(activeResult.card, targetColumn) ||
         `Dropped ${activeResult.card.title} in ${targetColumn.title}`;
+
       announce(message);
     };
 
@@ -794,6 +833,7 @@ const Kanban = React.forwardRef<HTMLDivElement, KanbanProps>(
     );
   }
 );
+
 Kanban.displayName = "Kanban";
 
 interface KanbanColumnProps extends React.ComponentPropsWithoutRef<"div"> {
@@ -822,6 +862,7 @@ const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
   ) => {
     const { columnSize, onCardAdd } = useKanban();
     const { setNodeRef, isOver } = useDroppable({ id });
+
     const [isCollapsed, setIsCollapsed] = React.useState(
       data?.collapsed ?? initialCollapsed
     );
@@ -835,6 +876,7 @@ const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
       <div
         ref={(node) => {
           setNodeRef(node);
+
           if (typeof ref === "function") ref(node);
           else if (ref) ref.current = node;
         }}
@@ -942,6 +984,7 @@ const KanbanColumn = React.forwardRef<HTMLDivElement, KanbanColumnProps>(
     );
   }
 );
+
 KanbanColumn.displayName = "KanbanColumn";
 
 interface KanbanCardProps extends React.ComponentPropsWithoutRef<"div"> {
@@ -1006,6 +1049,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
       const column = columns.find((c) => c.id === columnId);
+
       if (!column) return;
 
       const cardIndex = column.cards.findIndex((c) => c.id === id);
@@ -1014,6 +1058,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
         case " ":
         case "Enter":
           e.preventDefault();
+
           if (isGrabbed) {
             setIsGrabbed(false);
             announce(`Dropped ${cardData.title}`);
@@ -1023,6 +1068,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
               `Grabbed ${cardData.title}. Use arrow keys to move, Space to drop, Escape to cancel.`
             );
           }
+
           break;
 
         case "Escape":
@@ -1031,42 +1077,51 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
             setIsGrabbed(false);
             announce("Drag cancelled");
           }
+
           break;
 
         case "ArrowUp":
           e.preventDefault();
+
           if (isGrabbed && cardIndex > 0) {
             const newCards = [...column.cards];
             [newCards[cardIndex - 1], newCards[cardIndex]] = [
               newCards[cardIndex],
               newCards[cardIndex - 1],
             ];
+
             const newColumns = columns.map((col) =>
               col.id === columnId ? { ...col, cards: newCards } : col
             );
+
             onColumnsChange?.(newColumns);
             announce(`Moved to position ${cardIndex}`);
           } else if (!isGrabbed && cardIndex > 0) {
             setFocusedCardId(column.cards[cardIndex - 1].id);
           }
+
           break;
 
         case "ArrowDown":
           e.preventDefault();
+
           if (isGrabbed && cardIndex < column.cards.length - 1) {
             const newCards = [...column.cards];
             [newCards[cardIndex], newCards[cardIndex + 1]] = [
               newCards[cardIndex + 1],
               newCards[cardIndex],
             ];
+
             const newColumns = columns.map((col) =>
               col.id === columnId ? { ...col, cards: newCards } : col
             );
+
             onColumnsChange?.(newColumns);
             announce(`Moved to position ${cardIndex + 2}`);
           } else if (!isGrabbed && cardIndex < column.cards.length - 1) {
             setFocusedCardId(column.cards[cardIndex + 1].id);
           }
+
           break;
 
         case "ArrowLeft":
@@ -1086,6 +1141,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
               setFocusedCardId(targetCol.cards[0].id);
             }
           }
+
           break;
         }
 
@@ -1105,6 +1161,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
       <div
         ref={(node) => {
           setNodeRef(node);
+
           if (typeof ref === "function") ref(node);
           else if (ref) ref.current = node;
           (cardRef as React.MutableRefObject<HTMLDivElement | null>).current =
@@ -1189,6 +1246,7 @@ const KanbanCard = React.forwardRef<HTMLDivElement, KanbanCardProps>(
     );
   }
 );
+
 KanbanCard.displayName = "KanbanCard";
 
 interface KanbanHeaderProps extends React.ComponentPropsWithoutRef<"div"> {}
@@ -1205,6 +1263,7 @@ const KanbanHeader = React.forwardRef<HTMLDivElement, KanbanHeaderProps>(
     </div>
   )
 );
+
 KanbanHeader.displayName = "KanbanHeader";
 
 interface KanbanAddColumnProps extends React.ComponentPropsWithoutRef<"button"> {}
@@ -1239,6 +1298,7 @@ const KanbanAddColumn = React.forwardRef<
     </button>
   );
 });
+
 KanbanAddColumn.displayName = "KanbanAddColumn";
 
 export {

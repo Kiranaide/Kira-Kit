@@ -168,6 +168,7 @@ function useBreadcrumbs(
 
   return React.useMemo(() => {
     let path = pathname;
+
     if (basePath && path.startsWith(basePath)) {
       path = path.slice(basePath.length);
     }
@@ -237,6 +238,7 @@ const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
     );
   },
 );
+
 Breadcrumb.displayName = "Breadcrumb";
 
 const BreadcrumbList = React.forwardRef<HTMLOListElement, BreadcrumbListProps>(
@@ -251,6 +253,7 @@ const BreadcrumbList = React.forwardRef<HTMLOListElement, BreadcrumbListProps>(
     />
   ),
 );
+
 BreadcrumbList.displayName = "BreadcrumbList";
 
 const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProps>(
@@ -266,11 +269,13 @@ const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProps>(
     />
   ),
 );
+
 BreadcrumbItem.displayName = "BreadcrumbItem";
 
 const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
   ({ className, variant, render, children, ...props }, ref) => {
     const reduced = useReducedMotion();
+
     return useRender({
       defaultTagName: "a",
       render,
@@ -300,6 +305,7 @@ const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
     });
   },
 );
+
 BreadcrumbLink.displayName = "BreadcrumbLink";
 
 const BreadcrumbPage = React.forwardRef<HTMLSpanElement, BreadcrumbPageProps>(
@@ -320,6 +326,7 @@ const BreadcrumbPage = React.forwardRef<HTMLSpanElement, BreadcrumbPageProps>(
     </span>
   ),
 );
+
 BreadcrumbPage.displayName = "BreadcrumbPage";
 
 const BreadcrumbEllipsis = React.forwardRef<
@@ -342,6 +349,7 @@ const BreadcrumbEllipsis = React.forwardRef<
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
@@ -356,6 +364,7 @@ const BreadcrumbEllipsis = React.forwardRef<
         { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" },
       );
     });
+
     return () => mm.revert();
   }, [isOpen]);
 
@@ -420,6 +429,7 @@ const BreadcrumbEllipsis = React.forwardRef<
     </span>
   );
 });
+
 BreadcrumbEllipsis.displayName = "BreadcrumbEllipsis";
 
 const BreadcrumbSeparator = React.forwardRef<
@@ -461,11 +471,13 @@ const BreadcrumbSeparator = React.forwardRef<
     </li>
   );
 });
+
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator";
 
 const BreadcrumbHome = React.forwardRef<HTMLAnchorElement, BreadcrumbHomeProps>(
   ({ className, render, showLabel = false, label = "Home", ...props }, ref) => {
     const reduced = useReducedMotion();
+
     return useRender({
       defaultTagName: "a",
       render,
@@ -499,6 +511,7 @@ const BreadcrumbHome = React.forwardRef<HTMLAnchorElement, BreadcrumbHomeProps>(
     });
   },
 );
+
 BreadcrumbHome.displayName = "BreadcrumbHome";
 
 function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
@@ -512,9 +525,9 @@ function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
         name: item.name,
         item: item.href.startsWith("http")
           ? item.href
-          : typeof window !== "undefined"
-            ? `${window.location.origin}${item.href}`
-            : item.href,
+          : typeof window === "undefined"
+            ? item.href
+            : `${window.location.origin}${item.href}`,
       })),
     }),
     [items],
@@ -609,6 +622,7 @@ function BreadcrumbCollapsible({
       <BreadcrumbList size={size}>
         {beforeItems.map((item, index) => {
           position++;
+
           return renderItem(item, index, position);
         })}
 
@@ -622,6 +636,7 @@ function BreadcrumbCollapsible({
 
         {afterItems.map((item, index) => {
           position = items.length - itemsAfterCollapse + index + 1;
+
           return (
             <React.Fragment key={`after-${index}`}>
               <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
@@ -764,7 +779,8 @@ function BreadcrumbCopy({
   const handleCopy = () => {
     const text =
       value ??
-      (typeof window !== "undefined" ? window.location.href : "");
+      (typeof window === "undefined" ? "" : window.location.href);
+
     if (!text || typeof navigator === "undefined" || !navigator.clipboard)
       return;
     void navigator.clipboard.writeText(text).then(() => {
@@ -895,6 +911,7 @@ function KiraBreadcrumb({
   // Flat trail. In "scroll" mode the list is a horizontally scrollable row
   // with edge fade masks instead of collapsing.
   const scroll = overflow === "scroll";
+
   return (
     <Breadcrumb separator={separator} className={cn("flex items-center", className)}>
       {jsonLd && (

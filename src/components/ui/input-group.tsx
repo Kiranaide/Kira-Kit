@@ -59,6 +59,7 @@ function InputGroupAddon({
         if ((e.target as HTMLElement).closest("button")) {
           return;
         }
+
         e.currentTarget.parentElement?.querySelector("input")?.focus();
       }}
       {...props}
@@ -170,27 +171,34 @@ function InputGroupUnitSelect({
   onValueChange?: (value: string) => void;
 }) {
   const [open, setOpen] = React.useState(false);
+
   const [selected, setSelected] = React.useState(
     () => options.find((o) => o.value === value) ?? options[0],
   );
+
   const ref = React.useRef<HTMLDivElement>(null);
 
   // Adjust selection when the controlled value changes (during render).
   const [prevValue, setPrevValue] = React.useState(value);
+
   if (value !== prevValue) {
     setPrevValue(value);
     const match = options.find((o) => o.value === value);
+
     if (match) setSelected(match);
   }
 
   React.useEffect(() => {
     if (!open) return;
+
     const onDoc = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
       }
     };
+
     document.addEventListener("mousedown", onDoc);
+
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
 
@@ -349,4 +357,5 @@ export {
   InputGroupUnitSelect,
   KiraInputGroup,
 };
+
 export type { KiraInputGroupProps, UnitOption };

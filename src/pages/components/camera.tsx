@@ -65,6 +65,7 @@ function EnhancedCameraDemo() {
   const [capturedImage, setCapturedImage] = React.useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [keyboardHelpOpen, setKeyboardHelpOpen] = React.useState(false);
+
   const [settings, setSettings] = React.useState<CameraSettingsValues>(
     CAMERA_DEFAULT_SETTINGS
   );
@@ -222,9 +223,9 @@ function EnhancedCameraContent({
         />
         <CameraButton
           action="grid"
-          variant={settings.grid !== "none" ? "primary" : "secondary"}
+          variant={settings.grid === "none" ? "secondary" : "primary"}
           isActive={settings.grid !== "none"}
-          badge={settings.grid !== "none" ? settings.grid : undefined}
+          badge={settings.grid === "none" ? undefined : settings.grid}
           onClick={cycleGrid}
         />
         <CameraButton
@@ -364,6 +365,7 @@ function EnhancedCameraDemo() {
 function ScanOverlayDemo() {
   const [preset, setPreset] =
     React.useState<CameraScanOverlayPreset>("face-recognition");
+
   const [isAligned, setIsAligned] = React.useState(false);
   const [showStatusText, setShowStatusText] = React.useState(true);
 

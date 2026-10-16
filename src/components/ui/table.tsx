@@ -14,7 +14,9 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Checkbox } from "@/components/ui/checkbox";
 
 type AriaSort = "ascending" | "descending" | "none" | "other";
+
 type TableDensity = "comfortable" | "compact" | "dense";
+
 type SortDirection = "asc" | "desc" | "none";
 
 // Density drives cell padding via a static class map (no interpolation → no JIT purge).
@@ -156,6 +158,7 @@ function TableRow({
   ...props
 }: TableRowProps) {
   const reduced = useReducedMotion();
+
   return (
     <tr
       data-slot="table-row"
@@ -270,6 +273,7 @@ function SortableTableHead({
   ...props
 }: SortableTableHeadProps) {
   const reduced = useReducedMotion();
+
   const nextLabel =
     sortState === "asc"
       ? "descending"
@@ -391,23 +395,30 @@ function useTableSort<T>(
   const [sortKey, setSortKey] = React.useState<keyof T | null>(
     initial?.key ?? null,
   );
+
   const [sortDir, setSortDir] = React.useState<SortDirection>(
     initial?.dir ?? "none",
   );
 
   const sorted = React.useMemo(() => {
     if (!sortKey || sortDir === "none") return data;
+
     // slice()+sort keeps `data` immutable without needing the es2023 lib target.
     return data.slice().sort((a: T, b: T) => {
       const av = a[sortKey];
       const bv = b[sortKey];
+
       if (av == null && bv == null) return 0;
+
       if (av == null) return 1;
+
       if (bv == null) return -1;
+
       const cmp =
         typeof av === "number" && typeof bv === "number"
           ? av - bv
           : String(av).localeCompare(String(bv));
+
       return sortDir === "asc" ? cmp : -cmp;
     });
   }, [data, sortKey, sortDir]);
@@ -417,8 +428,10 @@ function useTableSort<T>(
       if (sortKey !== key) {
         setSortKey(key);
         setSortDir("asc");
+
         return;
       }
+
       // asc → desc → none, cycling on the same column.
       setSortDir((prev) =>
         prev === "asc" ? "desc" : prev === "desc" ? "none" : "asc",
@@ -445,8 +458,10 @@ function useRowSelection<T>(rows: T[], getId: (row: T) => string) {
   const toggle = React.useCallback((id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
+
       if (next.has(id)) next.delete(id);
       else next.add(id);
+
       return next;
     });
   }, []);
@@ -454,6 +469,7 @@ function useRowSelection<T>(rows: T[], getId: (row: T) => string) {
   const toggleAll = React.useCallback(() => {
     setSelected((prev) => {
       const allSelected = ids.length > 0 && ids.every((id) => prev.has(id));
+
       return allSelected ? new Set() : new Set(ids);
     });
   }, [ids]);
@@ -529,6 +545,7 @@ function KiraTable<T>({
 
   const { sorted, sortKey, sortDir, toggle } = useTableSort(data, defaultSort);
   const selection = useRowSelection(sorted, idOf);
+
   const { selected, isAllSelected, isSomeSelected, toggle: toggleRow, toggleAll } =
     selection;
 
@@ -544,11 +561,15 @@ function KiraTable<T>({
   const [announce, setAnnounce] = React.useState("");
   React.useEffect(() => {
     const col = columns.find((c) => c.key === sortKey);
+
     if (!col || sortDir === "none") {
       const t = setTimeout(() => setAnnounce(""), 400);
+
       return () => clearTimeout(t);
     }
+
     const dirWord = sortDir === "asc" ? "ascending" : "descending";
+
     const t = setTimeout(
       () =>
         setAnnounce(
@@ -558,6 +579,7 @@ function KiraTable<T>({
         ),
       400,
     );
+
     return () => clearTimeout(t);
   }, [sortKey, sortDir, columns]);
 
@@ -628,6 +650,7 @@ function KiraTable<T>({
               sorted.map((row) => {
                 const id = idOf(row);
                 const isSel = selected.has(id);
+
                 return (
                   <TableRow key={id} isSelected={selectable ? isSel : undefined}>
                     {selectable && (

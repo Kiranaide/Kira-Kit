@@ -48,9 +48,11 @@ function FileUpload({
 }: FileUploadProps) {
   const [files, setFiles] = React.useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = React.useState(false);
+
   const [previewFile, setPreviewFile] = React.useState<UploadedFile | null>(
     null
   );
+
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const processFiles = React.useCallback(
@@ -71,6 +73,7 @@ function FileUpload({
         }
 
         let preview: string | undefined;
+
         if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
           preview = URL.createObjectURL(file);
         }
@@ -91,6 +94,7 @@ function FileUpload({
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+
     if (!disabled) {
       setIsDragging(true);
     }
@@ -104,6 +108,7 @@ function FileUpload({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
+
     if (!disabled && e.dataTransfer.files.length > 0) {
       processFiles(e.dataTransfer.files);
     }
@@ -119,9 +124,11 @@ function FileUpload({
 
   const removeFile = (id: string) => {
     const file = files.find((f) => f.id === id);
+
     if (file?.preview) {
       URL.revokeObjectURL(file.preview);
     }
+
     const updatedFiles = files.filter((f) => f.id !== id);
     setFiles(updatedFiles);
     onFilesChange?.(updatedFiles);
@@ -201,10 +208,12 @@ function FileUpload({
             const currentIndex = files.findIndex(
               (f) => f.id === previewFile.id
             );
+
             const newIndex =
               direction === "prev"
                 ? (currentIndex - 1 + files.length) % files.length
                 : (currentIndex + 1) % files.length;
+
             setPreviewFile(files[newIndex]);
           }}
         />
@@ -238,12 +247,14 @@ function FilePreview({ file, onRemove, onPreview }: FilePreviewProps) {
 
   const toggleVideo = (e: React.MouseEvent) => {
     e.stopPropagation();
+
     if (videoRef.current) {
       if (videoPlaying) {
         videoRef.current.pause();
       } else {
         videoRef.current.play();
       }
+
       setVideoPlaying(!videoPlaying);
     }
   };
@@ -366,17 +377,21 @@ function FilePreviewModal({
     };
 
     window.addEventListener("keydown", handleKeyDown);
+
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose, onNavigate, canNavigate]);
 
   React.useEffect(() => {
     const modal = modalRef.current;
+
     if (!modal) return;
 
     const focusableElements = modal.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
+
     const firstElement = focusableElements[0] as HTMLElement;
+
     const lastElement = focusableElements[
       focusableElements.length - 1
     ] as HTMLElement;
@@ -400,6 +415,7 @@ function FilePreviewModal({
     };
 
     modal.addEventListener("keydown", handleTabKey as EventListener);
+
     return () =>
       modal.removeEventListener("keydown", handleTabKey as EventListener);
   }, []);
@@ -565,8 +581,10 @@ function formatFileSize(bytes: number): string {
   const k = 1024;
   const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
 }
 
 export { FileUpload, FilePreview };
+
 export type { FileUploadProps, UploadedFile };

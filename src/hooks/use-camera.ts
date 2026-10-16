@@ -35,7 +35,9 @@ import {
 } from "@/lib/camera/utils";
 
 let globalCameraLock = false;
+
 let globalLockHolder: string | null = null;
+
 const lockWaitQueue: Array<() => void> = [];
 
 const waitForTracksToEnd = (
@@ -45,12 +47,15 @@ const waitForTracksToEnd = (
   return new Promise((resolve) => {
     if (tracks.length === 0) {
       resolve();
+
       return;
     }
 
     const activeTracks = tracks.filter((t) => t.readyState === "live");
+
     if (activeTracks.length === 0) {
       resolve();
+
       return;
     }
 
@@ -59,6 +64,7 @@ const waitForTracksToEnd = (
 
     const onEnded = () => {
       endedCount++;
+
       if (endedCount >= activeTracks.length && !resolved) {
         resolved = true;
         resolve();
@@ -104,6 +110,7 @@ const acquireMediaStreamWithRetry = async (
         await delay(retryDelay);
         continue;
       }
+
       throw err;
     }
   }
@@ -121,6 +128,7 @@ const acquireLock = async (
     if (Date.now() - startTime > timeoutMs) {
       return false;
     }
+
     await new Promise<void>((resolve) => {
       lockWaitQueue.push(resolve);
       setTimeout(resolve, 100);
@@ -129,6 +137,7 @@ const acquireLock = async (
 
   globalCameraLock = true;
   globalLockHolder = instanceId;
+
   return true;
 };
 
@@ -137,6 +146,7 @@ const releaseLock = (instanceId: string): void => {
     globalCameraLock = false;
     globalLockHolder = null;
     const next = lockWaitQueue.shift();
+
     if (next) next();
   }
 };
@@ -297,8 +307,10 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   const [status, setStatus] = useState<CameraStatus>("idle");
   const [error, setError] = useState<CameraError | null>(null);
   const [activeDeviceId, setActiveDeviceId] = useState<string | null>(null);
+
   const [facingMode, setFacingMode] =
     useState<CameraFacingMode>(initialFacingMode);
+
   const [isRetrying, setIsRetrying] = useState(false);
 
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
@@ -314,6 +326,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     minZoom = GESTURE_CONFIG.pinchToZoom.minZoom,
     maxZoom = GESTURE_CONFIG.pinchToZoom.maxZoom,
   } = gestureOptions;
+
   const [zoom, setZoomState] = useState(1);
   const [focusPoint, setFocusPoint] = useState<Point | null>(null);
   const [isFocusing, setIsFocusing] = useState(false);
@@ -323,10 +336,12 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   const [isTimerActive, setIsTimerActive] = useState(false);
 
   const [isVoiceListening, setIsVoiceListening] = useState(false);
+
   const [isVoiceSupported] = useState(
     typeof window !== "undefined" &&
       ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
   );
+
   const [lastVoiceCommand, _setLastVoiceCommand] =
     useState<CameraVoiceCommand | null>(null);
 
@@ -348,6 +363,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
       const err: CameraError = { code, message, recoverable, suggestion };
       setError(err);
       onError?.(err);
+
       return err;
     },
     [onError]
@@ -357,6 +373,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     if (!canvasRef.current) {
       canvasRef.current = document.createElement("canvas");
     }
+
     return canvasRef.current;
   }, []);
 
@@ -370,6 +387,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
       await new Promise<void>((resolve, reject) => {
         if (video.readyState >= 1) {
           resolve();
+
           return;
         }
 
@@ -401,6 +419,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   const refreshDevices = useCallback(async (): Promise<void> => {
     try {
       const allDevices = await navigator.mediaDevices.enumerateDevices();
+
       const videoDevices = allDevices
         .filter((device) => device.kind === "videoinput")
         .map((device, index) => ({
@@ -409,6 +428,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
           label: device.label || `Camera ${index + 1}`,
           groupId: device.groupId,
         }));
+
       setDevices(videoDevices);
     } catch {
       // Device enumeration failed, will retry on next attempt
@@ -421,23 +441,27 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
       deviceId?: string | null;
     }): Promise<void> => {
       const effectiveFacingMode = overrideOptions?.facingMode ?? facingMode;
+
       const effectiveDeviceId =
-        overrideOptions?.deviceId !== undefined
-          ? overrideOptions.deviceId
-          : activeDeviceId;
+        overrideOptions?.deviceId === undefined
+          ? activeDeviceId
+          : overrideOptions.deviceId;
 
       const lockAcquired = await acquireLock(instanceIdRef.current);
+
       if (!lockAcquired) {
         return;
       }
 
       if (streamRef.current) {
         releaseLock(instanceIdRef.current);
+
         return;
       }
 
       if (!isMountedRef.current) {
         releaseLock(instanceIdRef.current);
+
         return;
       }
 
@@ -481,6 +505,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
 
         if (!isMountedRef.current) {
           mediaStream.getTracks().forEach((track) => track.stop());
+
           return;
         }
 
@@ -488,8 +513,10 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
         setStream(mediaStream);
 
         const videoTrack = mediaStream.getVideoTracks()[0];
+
         if (videoTrack) {
           const settings = videoTrack.getSettings();
+
           if (settings.deviceId) {
             setActiveDeviceId(settings.deviceId);
           }
@@ -501,6 +528,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
 
         if (videoRef.current && isMountedRef.current) {
           await attachStreamToVideo(videoRef.current, mediaStream);
+
           if (isMountedRef.current) {
             setStatus("ready");
           }
@@ -509,6 +537,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
         if (!isMountedRef.current) return;
 
         setIsRetrying(false);
+
         const errorMessage =
           err instanceof Error ? err.message : "Unknown error";
 
@@ -578,6 +607,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
 
   const capture = useCallback((): CaptureResult | null => {
     const video = videoRef.current;
+
     if (!video || video.readyState !== 4) {
       return null;
     }
@@ -587,6 +617,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     canvas.height = video.videoHeight;
 
     const ctx = canvas.getContext("2d");
+
     if (!ctx) {
       return null;
     }
@@ -616,6 +647,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     }
 
     onCapture?.(result);
+
     return result;
   }, [
     facingMode,
@@ -652,8 +684,10 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   const stopRecording = useCallback(async (): Promise<Blob | null> => {
     return new Promise((resolve) => {
       const mediaRecorder = mediaRecorderRef.current;
+
       if (!mediaRecorder) {
         resolve(null);
+
         return;
       }
 
@@ -661,6 +695,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
         const blob = new Blob(recordedChunksRef.current, {
           type: "video/webm",
         });
+
         recordedChunksRef.current = [];
         setIsRecording(false);
         resolve(blob);
@@ -672,6 +707,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
 
   const pauseRecording = useCallback(() => {
     const mediaRecorder = mediaRecorderRef.current;
+
     if (mediaRecorder && mediaRecorder.state === "recording") {
       mediaRecorder.pause();
     }
@@ -679,6 +715,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
 
   const resumeRecording = useCallback(() => {
     const mediaRecorder = mediaRecorderRef.current;
+
     if (mediaRecorder && mediaRecorder.state === "paused") {
       mediaRecorder.resume();
     }
@@ -701,9 +738,11 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
 
   const toggleFlashAction = useCallback(async () => {
     const track = flashTrackRef.current;
+
     if (!track || !isFlashSupported) return;
 
     const success = await toggleTorch(track, !isFlashOn);
+
     if (success) {
       setIsFlashOn(!isFlashOn);
     }
@@ -721,6 +760,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
           "Enable camera access in browser settings."
         );
         setPermissionState("denied");
+
         return false;
       }
 
@@ -729,8 +769,10 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
           const testStream = await navigator.mediaDevices.getUserMedia({
             video: true,
           });
+
           testStream.getTracks().forEach((track) => track.stop());
           setPermissionState("granted");
+
           return true;
         } catch {
           createError(
@@ -740,11 +782,13 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
             "Please allow camera access."
           );
           setPermissionState("denied");
+
           return false;
         }
       }
 
       setPermissionState("granted");
+
       return true;
     } catch {
       return false;
@@ -796,6 +840,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   const startTimer = useCallback(() => {
     if (timerDuration === 0) {
       capture();
+
       return;
     }
 
@@ -805,15 +850,19 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     timerIntervalRef.current = setInterval(() => {
       setTimerRemaining((prev) => {
         const next = prev - 1;
+
         if (next <= 0) {
           if (timerIntervalRef.current) {
             clearInterval(timerIntervalRef.current);
             timerIntervalRef.current = null;
           }
+
           setIsTimerActive(false);
           capture();
+
           return 0;
         }
+
         return next;
       });
     }, 1000);
@@ -824,6 +873,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
       clearInterval(timerIntervalRef.current);
       timerIntervalRef.current = null;
     }
+
     setIsTimerActive(false);
     setTimerRemaining(0);
   }, []);
@@ -850,6 +900,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
+
       if (
         target.tagName === "INPUT" ||
         target.tagName === "TEXTAREA" ||
@@ -867,23 +918,29 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
           break;
         case KEYBOARD_SHORTCUTS.record:
           event.preventDefault();
+
           if (isRecording) {
             stopRecording();
           } else {
             startRecording();
           }
+
           break;
         case KEYBOARD_SHORTCUTS.switchCamera:
           event.preventDefault();
+
           if (devices.length > 1) {
             switchCamera();
           }
+
           break;
         case KEYBOARD_SHORTCUTS.toggleFlash:
           event.preventDefault();
+
           if (isFlashSupported) {
             toggleFlashAction();
           }
+
           break;
         case KEYBOARD_SHORTCUTS.cancel:
           event.preventDefault();
@@ -893,6 +950,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     };
 
     document.addEventListener("keydown", handleKeyDown);
+
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
@@ -913,9 +971,11 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
   useEffect(() => {
     const handleVisibilityChange = () => {
       const isHidden = document.hidden;
+
       if (isHidden) {
         if (status === "ready") {
           setIsPaused(true);
+
           if (isRecording) {
             pauseRecording();
           }
@@ -928,6 +988,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
@@ -959,6 +1020,7 @@ export function useCamera(options: UseCameraOptions = {}): UseCameraReturn {
     return () => {
       isMountedRef.current = false;
       stop();
+
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }
@@ -1022,7 +1084,10 @@ export function getShortcutHint(
   action: keyof typeof KEYBOARD_SHORTCUTS
 ): string {
   const key = KEYBOARD_SHORTCUTS[action];
+
   if (key === " ") return "Space";
+
   if (key === "Escape") return "Esc";
+
   return key.toUpperCase();
 }

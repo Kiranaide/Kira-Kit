@@ -69,6 +69,7 @@ function CustomControlsDemo() {
       } else {
         videoRef.current.play()
       }
+
       setIsPlaying(!isPlaying)
     }
   }
@@ -110,6 +111,7 @@ function CustomControlsDemo() {
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60)
     const seconds = Math.floor(time % 60)
+
     return `${minutes}:${seconds.toString().padStart(2, "0")}`
   }
 
@@ -239,6 +241,7 @@ function KeyboardShortcutsDemo() {
       } else {
         videoRef.current.play()
       }
+
       setIsPlaying(!isPlaying)
     }
   }
@@ -252,6 +255,7 @@ function KeyboardShortcutsDemo() {
   const changeSpeed = (delta: number) => {
     const newSpeed = Math.max(0.25, Math.min(2, speed + delta))
     setSpeed(newSpeed)
+
     if (videoRef.current) {
       videoRef.current.playbackRate = newSpeed
     }
@@ -373,6 +377,7 @@ function PictureInPictureDemo() {
   useEffect(() => {
     videoRef.current?.addEventListener("enterpictureinpicture", handlePiPChange)
     videoRef.current?.addEventListener("leavepictureinpicture", handlePiPChange)
+
     return () => {
       videoRef.current?.removeEventListener("enterpictureinpicture", handlePiPChange)
       videoRef.current?.removeEventListener("leavepictureinpicture", handlePiPChange)
@@ -463,6 +468,7 @@ function PlaybackSpeedDemo() {
 
   const changeSpeed = (newSpeed: number) => {
     setSpeed(newSpeed)
+
     if (videoRef.current) {
       videoRef.current.playbackRate = newSpeed
     }

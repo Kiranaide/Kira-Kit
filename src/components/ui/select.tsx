@@ -90,6 +90,7 @@ function SelectContent({
     "align" | "alignOffset" | "side" | "sideOffset" | "alignItemWithTrigger"
   >) {
   const reducedMotion = useReducedMotion();
+
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Positioner
@@ -245,6 +246,7 @@ function flattenOptions<T extends SelectOption>(
   if (isGroupedOptions(options)) {
     return options.flatMap((group) => group.options);
   }
+
   return options;
 }
 
@@ -326,6 +328,7 @@ interface SelectFieldProps<T extends SelectOption = SelectOption> {
 function fuzzyMatch(text: string, query: string): boolean {
   const pattern = query.toLowerCase().split("").join(".*");
   const regex = new RegExp(pattern);
+
   return regex.test(text.toLowerCase());
 }
 
@@ -334,6 +337,7 @@ function useDebounce<T>(value: T, delay: number): T {
 
   React.useEffect(() => {
     const timer = setTimeout(() => setDebouncedValue(value), delay);
+
     return () => clearTimeout(timer);
   }, [value, delay]);
 
@@ -383,9 +387,11 @@ function SelectField<T extends SelectOption = SelectOption>({
 }: SelectFieldProps<T>) {
   const [inputValue, setInputValue] = React.useState("");
   const reducedMotion = useReducedMotion();
+
   const [options, setOptions] = React.useState<T[]>(
     flattenOptions(initialOptions) as T[]
   );
+
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
   const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
@@ -394,9 +400,11 @@ function SelectField<T extends SelectOption = SelectOption>({
   const triggerRef = React.useRef<HTMLDivElement>(null);
   const cacheRef = React.useRef<Map<string, T[]>>(new Map());
   const typeaheadRef = React.useRef("");
+
   const typeaheadTimeoutRef = React.useRef<ReturnType<
     typeof setTimeout
   > | null>(null);
+
   const debouncedQuery = useDebounce(inputValue, debounceMs);
   const listId = React.useId();
   const triggerId = React.useId();
@@ -405,6 +413,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     (open: boolean) => {
       setIsOpen(open);
       onOpenChange?.(open);
+
       if (!open) {
         setHighlightedIndex(-1);
       }
@@ -414,14 +423,17 @@ function SelectField<T extends SelectOption = SelectOption>({
 
   const selectedValues = React.useMemo(() => {
     if (value === undefined || value === null) return [];
+
     return Array.isArray(value) ? value : [value];
   }, [value]);
 
   // Sync options from props during render (not an effect) so a changing
   // `initialOptions`/`async` updates the list without a cascading render.
   const [prevSync, setPrevSync] = React.useState({ initialOptions, async });
+
   if (prevSync.initialOptions !== initialOptions || prevSync.async !== async) {
     setPrevSync({ initialOptions, async });
+
     if (!async) {
       setOptions(flattenOptions(initialOptions) as T[]);
     }
@@ -436,6 +448,7 @@ function SelectField<T extends SelectOption = SelectOption>({
 
     if (cacheOptions && cacheRef.current.has(debouncedQuery)) {
       setOptions(cacheRef.current.get(debouncedQuery) || []);
+
       return;
     }
 
@@ -446,9 +459,11 @@ function SelectField<T extends SelectOption = SelectOption>({
       .then((results) => {
         if (!cancelled) {
           setOptions(results as T[]);
+
           if (cacheOptions) {
             cacheRef.current.set(debouncedQuery, results as T[]);
           }
+
           setIsLoading(false);
         }
       })
@@ -477,6 +492,7 @@ function SelectField<T extends SelectOption = SelectOption>({
       if (filterFn) {
         return filterFn(opt, inputValue);
       }
+
       return fuzzyMatching
         ? fuzzyMatch(opt.label, inputValue)
         : opt.label.toLowerCase().includes(inputValue.toLowerCase());
@@ -486,6 +502,7 @@ function SelectField<T extends SelectOption = SelectOption>({
   const showCreateOption = React.useMemo(() => {
     if (!creatable || !inputValue.trim()) return false;
     const normalizedInput = inputValue.trim().toLowerCase();
+
     return !filteredOptions.some(
       (opt) => opt.label.toLowerCase() === normalizedInput
     );
@@ -494,6 +511,7 @@ function SelectField<T extends SelectOption = SelectOption>({
   useGSAP(() => {
     if (isOpen && listRef.current && !isLoading) {
       const items = listRef.current.querySelectorAll("[data-option]");
+
       if (items.length > 0) {
         const mm = gsap.matchMedia();
         mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -509,6 +527,7 @@ function SelectField<T extends SelectOption = SelectOption>({
             }
           );
         });
+
         return () => mm.revert();
       }
     }
@@ -528,6 +547,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     } else {
       onChange?.(optionValue, option || null);
       setIsOpen(false);
+
       if (option) {
         setInputValue(option.label);
       }
@@ -562,6 +582,7 @@ function SelectField<T extends SelectOption = SelectOption>({
     const newValue = e.target.value;
     setInputValue(newValue);
     onSearchChange?.(newValue);
+
     if (!isOpen) {
       handleOpenChange(true);
     }
@@ -576,6 +597,7 @@ function SelectField<T extends SelectOption = SelectOption>({
       if (typeaheadTimeoutRef.current) {
         clearTimeout(typeaheadTimeoutRef.current);
       }
+
       typeaheadRef.current += char.toLowerCase();
 
       const matchIndex = enabledOptions.findIndex((opt) =>
@@ -586,6 +608,7 @@ function SelectField<T extends SelectOption = SelectOption>({
         const actualIndex = filteredOptions.findIndex(
           (opt) => opt.value === enabledOptions[matchIndex].value
         );
+
         setHighlightedIndex(actualIndex);
       }
 
@@ -607,61 +630,77 @@ function SelectField<T extends SelectOption = SelectOption>({
 
       case "ArrowDown":
         e.preventDefault();
-        if (!isOpen) {
-          handleOpenChange(true);
-        } else {
+
+        if (isOpen) {
           setHighlightedIndex((prev) => {
             const next = prev + 1;
+
             return next >= optionCount ? 0 : next;
           });
+        } else {
+          handleOpenChange(true);
         }
+
         break;
 
       case "ArrowUp":
         e.preventDefault();
-        if (!isOpen) {
-          handleOpenChange(true);
-        } else {
+
+        if (isOpen) {
           setHighlightedIndex((prev) => {
             const next = prev - 1;
+
             return next < 0 ? optionCount - 1 : next;
           });
+        } else {
+          handleOpenChange(true);
         }
+
         break;
 
       case "Home":
         e.preventDefault();
+
         if (isOpen) {
           setHighlightedIndex(0);
         }
+
         break;
 
       case "End":
         e.preventDefault();
+
         if (isOpen) {
           setHighlightedIndex(optionCount - 1);
         }
+
         break;
 
       case "PageUp":
         e.preventDefault();
+
         if (isOpen) {
           setHighlightedIndex((prev) => Math.max(0, prev - 10));
         }
+
         break;
 
       case "PageDown":
         e.preventDefault();
+
         if (isOpen) {
           setHighlightedIndex((prev) => Math.min(optionCount - 1, prev + 10));
         }
+
         break;
 
       case "Enter":
         e.preventDefault();
+
         if (isOpen && highlightedIndex >= 0) {
           if (highlightedIndex < filteredOptions.length) {
             const option = filteredOptions[highlightedIndex];
+
             if (!option.disabled) {
               handleSelect(option.value);
             }
@@ -671,6 +710,7 @@ function SelectField<T extends SelectOption = SelectOption>({
         } else if (!isOpen) {
           handleOpenChange(true);
         }
+
         break;
 
       case " ": // Space
@@ -678,6 +718,7 @@ function SelectField<T extends SelectOption = SelectOption>({
           e.preventDefault();
           handleOpenChange(true);
         }
+
         break;
 
       case "Tab":
@@ -693,12 +734,14 @@ function SelectField<T extends SelectOption = SelectOption>({
           const newOptions = options.filter((o) => newValues.includes(o.value));
           onChange?.(newValues, newOptions as T[]);
         }
+
         break;
 
       default:
         if (!searchable && e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
           handleTypeahead(e.key);
         }
+
         break;
     }
   };
@@ -713,6 +756,7 @@ function SelectField<T extends SelectOption = SelectOption>({
   const selectedOptions = options.filter((o) =>
     selectedValues.includes(o.value)
   );
+
   const displayedTags = selectedOptions.slice(0, maxDisplayedTags);
   const remainingCount = selectedOptions.length - maxDisplayedTags;
 
@@ -913,6 +957,7 @@ function SelectField<T extends SelectOption = SelectOption>({
               {filteredOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value);
                 const isHighlighted = index === highlightedIndex;
+
                 return (
                   <div
                     key={option.value}
@@ -1055,6 +1100,7 @@ function KiraSelect<T extends SelectOption = SelectOption>({
   const [internalValue, setInternalValue] = React.useState<
     string | string[] | undefined
   >(defaultValue);
+
   const isControlled = value !== undefined;
   const currentValue = isControlled ? value : internalValue;
 

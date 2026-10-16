@@ -235,7 +235,7 @@ function AutoDismissDemo() {
       {showAutoDismiss ? (
         <AnnouncementBar
           variant="success"
-          autoDismiss={10000}
+          autoDismiss={10_000}
           showProgress
           onDismiss={() => setShowAutoDismiss(false)}
         >
@@ -529,6 +529,7 @@ export function DismissDemo() {
 function DismissDemo() {
   const [isPersistentDismissed, persistentDismiss, resetPersistent] =
     useAnnouncementDismiss("persistent-demo", "persistent")
+
   const [isSessionDismissed, sessionDismiss, resetSession] =
     useAnnouncementDismiss("session-demo", "session")
 
@@ -536,7 +537,14 @@ function DismissDemo() {
     <div className="grid gap-4 md:grid-cols-2">
       <div className="p-4 border rounded-lg space-y-3">
         <h3 className="font-medium">Persistent (localStorage)</h3>
-        {!isPersistentDismissed ? (
+        {isPersistentDismissed ? (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Dismissed</span>
+            <Button size="sm" variant="outline" onClick={resetPersistent}>
+              Reset
+            </Button>
+          </div>
+        ) : (
           <AnnouncementBar variant="info" className="relative">
             <AnnouncementBarIcon />
             <AnnouncementBarContent>
@@ -544,19 +552,19 @@ function DismissDemo() {
             </AnnouncementBarContent>
             <AnnouncementBarDismiss onClick={persistentDismiss} />
           </AnnouncementBar>
-        ) : (
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Dismissed</span>
-            <Button size="sm" variant="outline" onClick={resetPersistent}>
-              Reset
-            </Button>
-          </div>
         )}
       </div>
 
       <div className="p-4 border rounded-lg space-y-3">
         <h3 className="font-medium">Session (sessionStorage)</h3>
-        {!isSessionDismissed ? (
+        {isSessionDismissed ? (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Dismissed</span>
+            <Button size="sm" variant="outline" onClick={resetSession}>
+              Reset
+            </Button>
+          </div>
+        ) : (
           <AnnouncementBar variant="success" className="relative">
             <AnnouncementBarIcon />
             <AnnouncementBarContent>
@@ -564,13 +572,6 @@ function DismissDemo() {
             </AnnouncementBarContent>
             <AnnouncementBarDismiss onClick={sessionDismiss} />
           </AnnouncementBar>
-        ) : (
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Dismissed</span>
-            <Button size="sm" variant="outline" onClick={resetSession}>
-              Reset
-            </Button>
-          </div>
         )}
       </div>
     </div>
@@ -611,7 +612,13 @@ function ExpiryDemo() {
   const expiryDate = React.useMemo(() => new Date(Date.now() + 60 * 1000), [])
   const isExpired = useAnnouncementExpiry(expiryDate)
 
-  return !isExpired ? (
+  return isExpired ? (
+    <div className="p-4 border rounded-lg bg-muted/30">
+      <p className="text-sm text-muted-foreground">
+        This announcement has expired. Refresh the page to see it again.
+      </p>
+    </div>
+  ) : (
     <AnnouncementBar variant="warning">
       <AnnouncementBarIcon />
       <AnnouncementBarContent>
@@ -619,12 +626,6 @@ function ExpiryDemo() {
       </AnnouncementBarContent>
       <AnnouncementBarDismiss />
     </AnnouncementBar>
-  ) : (
-    <div className="p-4 border rounded-lg bg-muted/30">
-      <p className="text-sm text-muted-foreground">
-        This announcement has expired. Refresh the page to see it again.
-      </p>
-    </div>
   )
 }
 
@@ -764,6 +765,7 @@ function CountdownDemo() {
     () => new Date(Date.now() + 2 * 60 * 60 * 1000 + 12 * 1000),
     []
   )
+
   return (
     <AnnouncementBar variant="warning" position="top" className="relative">
       <AnnouncementBarIcon icon={<IconClock className="h-5 w-5" />} />
@@ -820,6 +822,7 @@ const consentCode = `import { KiraAnnouncementBar } from "@/components/ui/announ
 
 function ConsentDemo() {
   const [choice, setChoice] = React.useState<string | null>(null)
+
   return (
     <div className="space-y-3">
       <KiraAnnouncementBar

@@ -51,6 +51,7 @@ export function readConfig(cwd: string): ComponentsConfig | null {
 
   try {
     const content = readFileSync(configPath, "utf-8");
+
     return JSON.parse(content) as ComponentsConfig;
   } catch {
     return null;

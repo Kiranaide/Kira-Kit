@@ -16,5 +16,6 @@ export async function selectBaseColor(): Promise<string> {
       default: "neutral",
     },
   ]);
+
   return baseColor;
 }

@@ -7,23 +7,29 @@ import type { CameraScanOverlayPreset, CameraScanOverlayConfig } from "./types";
 
 // Lock configuration for concurrent access control
 export const CAMERA_LOCK_TIMEOUT_MS = 5000;
+
 export const CAMERA_LOCK_POLL_INTERVAL_MS = 100;
 
 // Retry configuration for media acquisition
 export const MEDIA_RETRY_MAX_ATTEMPTS = 3;
+
 export const MEDIA_RETRY_BASE_DELAY_MS = 300;
 
 // Track release configuration
 export const TRACK_END_TIMEOUT_MS = 500;
+
 export const HARDWARE_RELEASE_DELAY_MS = 100;
 
 // Detection throttling
 export const FACE_DETECTION_INTERVAL_MS = 100; // 10fps
+
 export const DOCUMENT_ALIGNMENT_CHECK_INTERVAL_MS = 200;
+
 export const AUTO_CAPTURE_DEBOUNCE_MS = 1500;
 
 // Capture configuration
 export const DEFAULT_CAPTURE_QUALITY = 0.95;
+
 export const DEFAULT_CAPTURE_FORMAT = "image/jpeg" as const;
 
 // Video recording codecs (in order of preference)

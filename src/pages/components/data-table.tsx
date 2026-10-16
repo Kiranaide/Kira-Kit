@@ -177,6 +177,7 @@ const selectionColumns: ColumnDef<User>[] = [
 export default function DataTablePage() {
   const [showSkeleton, setShowSkeleton] = React.useState(false);
   const [showEmpty, setShowEmpty] = React.useState(false);
+
   const [density, setDensity] = React.useState<
     "compact" | "default" | "comfortable"
   >("default");

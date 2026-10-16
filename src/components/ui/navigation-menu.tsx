@@ -84,9 +84,11 @@ function NavigationMenuDropdown({
   ...props
 }: NavigationMenuDropdownProps) {
   const context = React.useContext(NavigationMenuContext);
+
   const hoverTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
+
   const closeTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
@@ -133,6 +135,7 @@ function NavigationMenuDropdown({
   React.useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
     };
   }, []);

@@ -506,11 +506,11 @@ function ValidationDemo() {
   const [showError, setShowError] = React.useState(false);
 
   const handleSubmit = () => {
-    if (!selectedPlan) {
-      setShowError(true);
-    } else {
+    if (selectedPlan) {
       setShowError(false);
       alert(`Selected plan: ${selectedPlan}`);
+    } else {
+      setShowError(true);
     }
   };
 

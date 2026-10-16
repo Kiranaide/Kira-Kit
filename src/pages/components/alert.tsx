@@ -436,6 +436,7 @@ function CopyTimestampDemo() {
 
 function KiraDemo() {
   const [show, setShow] = useState(true);
+
   return (
     <div className="space-y-4">
       {show ? (

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { IconAlignLeft, IconAlignCenter, IconAlignRight, IconAlignJustified, IconBold, IconItalic, IconUnderline, IconAccessible, IconPalette, IconStack2 } from "@tabler/icons-react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ToggleGroup, ToggleGroupItem, KiraToggleGroup } from "@/components/ui/toggle-group";
+import { Toggle } from "@/components/ui/toggle";
+import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
   PageHeader,
@@ -10,6 +12,7 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 function MultipleSelectionDemo() {
@@ -480,6 +483,620 @@ export function MixedContentDemo() {
   )
 }`;
 
+function OneSelectedAlwaysDemo() {
+  const [value, setValue] = useState<string[]>(["day"]);
+
+  return (
+    <div className="space-y-4">
+      <ToggleGroup
+        aria-label="Date range"
+        variant="segment"
+        value={value}
+        onValueChange={setValue}
+      >
+        <ToggleGroupItem value="day">Day</ToggleGroupItem>
+        <ToggleGroupItem value="week">Week</ToggleGroupItem>
+        <ToggleGroupItem value="month">Month</ToggleGroupItem>
+      </ToggleGroup>
+      <p className="text-sm text-muted-foreground">
+        Selected: {value.join(", ") || "None"} — clicking the active segment
+        cannot clear it.
+      </p>
+
+      <div className="space-y-2 border-t pt-4">
+        <p className="text-sm text-muted-foreground">
+          <code>allowEmpty</code> opts out, for filter-style groups
+        </p>
+        <ToggleGroup aria-label="Optional filter" variant="segment" allowEmpty>
+          <ToggleGroupItem value="starred">Starred</ToggleGroupItem>
+          <ToggleGroupItem value="mine">Mine</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+    </div>
+  );
+}
+
+const oneSelectedAlwaysCode = `import { useState } from "react"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
+export function OneSelectedAlwaysDemo() {
+  const [value, setValue] = useState<string[]>(["day"])
+
+  return (
+    <>
+      {/* Single-select keeps one segment selected always (default) */}
+      <ToggleGroup
+        aria-label="Date range"
+        variant="segment"
+        value={value}
+        onValueChange={setValue}
+      >
+        <ToggleGroupItem value="day">Day</ToggleGroupItem>
+        <ToggleGroupItem value="week">Week</ToggleGroupItem>
+        <ToggleGroupItem value="month">Month</ToggleGroupItem>
+      </ToggleGroup>
+
+      {/* Opt out for filter-style groups */}
+      <ToggleGroup aria-label="Optional filter" variant="segment" allowEmpty>
+        <ToggleGroupItem value="starred">Starred</ToggleGroupItem>
+        <ToggleGroupItem value="mine">Mine</ToggleGroupItem>
+      </ToggleGroup>
+    </>
+  )
+}`;
+
+function SemanticsDemo() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          <code>semantics="current"</code> (default) — the active segment gets{" "}
+          <code>aria-current="true"</code>, conveying "one of a set"
+        </p>
+        <ToggleGroup aria-label="View mode" variant="segment" defaultValue={["grid"]}>
+          <ToggleGroupItem value="grid">Grid</ToggleGroupItem>
+          <ToggleGroupItem value="list">List</ToggleGroupItem>
+          <ToggleGroupItem value="board">Board</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          <code>semantics="radio"</code> — ARIA17-normative for a
+          mutually-exclusive set. See the Radio Mode tab for the keyboard
+          behaviour.
+        </p>
+        <ToggleGroup
+          aria-label="View mode (radio semantics)"
+          variant="segment"
+          semantics="radio"
+          defaultValue={["grid"]}
+        >
+          <ToggleGroupItem value="grid">Grid</ToggleGroupItem>
+          <ToggleGroupItem value="list">List</ToggleGroupItem>
+          <ToggleGroupItem value="board">Board</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          <code>semantics="toggle"</code> — on/off buttons with{" "}
+          <code>aria-pressed</code>
+        </p>
+        <ToggleGroup
+          aria-label="View mode (toggle semantics)"
+          variant="segment"
+          semantics="toggle"
+          defaultValue={["grid"]}
+        >
+          <ToggleGroupItem value="grid">Grid</ToggleGroupItem>
+          <ToggleGroupItem value="list">List</ToggleGroupItem>
+          <ToggleGroupItem value="board">Board</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Multi-select is always <code>aria-pressed</code> — independent toggles,
+          per the APG
+        </p>
+        <ToggleGroup aria-label="Text formatting" multiple defaultValue={["bold"]}>
+          <ToggleGroupItem value="bold" aria-label="Bold">
+            <IconBold className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="italic" aria-label="Italic">
+            <IconItalic className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+    </div>
+  );
+}
+
+const semanticsCode = `import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
+{/* Default: aria-current="true" on the active segment (Primer/eBay model) */}
+<ToggleGroup aria-label="View mode" variant="segment" defaultValue={["grid"]}>
+  <ToggleGroupItem value="grid">Grid</ToggleGroupItem>
+  <ToggleGroupItem value="list">List</ToggleGroupItem>
+</ToggleGroup>
+
+{/* Opt into aria-pressed on/off semantics */}
+<ToggleGroup
+  aria-label="View mode"
+  variant="segment"
+  semantics="toggle"
+  defaultValue={["grid"]}
+>
+  <ToggleGroupItem value="grid">Grid</ToggleGroupItem>
+  <ToggleGroupItem value="list">List</ToggleGroupItem>
+</ToggleGroup>`;
+
+function RadioModeDemo() {
+  const [value, setValue] = useState<string[]>(["standard"]);
+
+  return (
+    <div className="space-y-4">
+      <ToggleGroup
+        aria-label="Shipping speed"
+        variant="segment"
+        semantics="radio"
+        showSelectedIcon
+        value={value}
+        onValueChange={setValue}
+      >
+        <ToggleGroupItem value="standard">Standard</ToggleGroupItem>
+        <ToggleGroupItem value="express">Express</ToggleGroupItem>
+        <ToggleGroupItem value="overnight">Overnight</ToggleGroupItem>
+      </ToggleGroup>
+      <p className="text-sm text-muted-foreground">
+        Selected: {value.join(", ")}
+      </p>
+      <ul className="list-disc space-y-1 pl-5 text-xs text-muted-foreground">
+        <li>
+          Tab once to enter the group — the selected segment is the only tab
+          stop. Arrow keys move focus <em>and</em> selection
+          (selection-follows-focus).
+        </li>
+        <li>
+          The container is <code>role="radiogroup"</code>; each segment is{" "}
+          <code>role="radio"</code> with <code>aria-checked</code> — never{" "}
+          <code>aria-pressed</code>.
+        </li>
+        <li>
+          A radio group has no "none" state, so <code>allowEmpty</code> is
+          ignored: pressing the checked segment keeps it checked.
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+const radioModeCode = `import { useState } from "react"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
+export function RadioModeDemo() {
+  const [value, setValue] = useState<string[]>(["standard"])
+
+  return (
+    <ToggleGroup
+      aria-label="Shipping speed"
+      variant="segment"
+      semantics="radio"
+      showSelectedIcon
+      value={value}
+      onValueChange={setValue}
+    >
+      <ToggleGroupItem value="standard">Standard</ToggleGroupItem>
+      <ToggleGroupItem value="express">Express</ToggleGroupItem>
+      <ToggleGroupItem value="overnight">Overnight</ToggleGroupItem>
+    </ToggleGroup>
+  )
+}`;
+
+function FormFieldDemo() {
+  const [value, setValue] = useState<string[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [entries, setEntries] = useState<string[] | null>(null);
+  const invalid = submitted && value.length === 0;
+
+  return (
+    <form
+      className="space-y-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setSubmitted(true);
+        // The proof: read the real FormData the browser built from the DOM.
+        setEntries(
+          new FormData(e.currentTarget).getAll("billing").map(String)
+        );
+      }}
+    >
+      <ToggleGroup
+        aria-label="Billing period"
+        variant="segment"
+        multiple
+        required
+        name="billing"
+        invalid={invalid}
+        errorMessage="Pick a billing period to continue."
+        value={value}
+        onValueChange={setValue}
+      >
+        <ToggleGroupItem value="monthly">Monthly</ToggleGroupItem>
+        <ToggleGroupItem value="yearly">Yearly</ToggleGroupItem>
+      </ToggleGroup>
+      <Button type="submit" size="sm">
+        Submit
+      </Button>
+      {entries && (
+        <pre
+          data-slot="formdata-readout"
+          className="rounded-md border bg-muted/50 p-3 text-xs"
+        >
+          formData.getAll("billing") ={" "}
+          {JSON.stringify(entries)}
+        </pre>
+      )}
+      <p className="text-xs text-muted-foreground">
+        Select both and submit: two separate entries, not one comma-joined
+        string. Select none: <code>[]</code> — an empty selection emits no
+        hidden input at all, so the key is absent rather than blank.
+      </p>
+      <p className="text-xs text-muted-foreground">
+        Per ARIA21, <code>aria-invalid</code> appears only after validation runs
+        — not on mount. <code>required</code> is <code>aria-required</code> only:
+        browsers skip native validation on hidden inputs, so enforce it in your
+        submit handler.
+      </p>
+    </form>
+  );
+}
+
+const formFieldCode = `import { useState } from "react"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
+export function FormFieldDemo() {
+  const [value, setValue] = useState<string[]>([])
+  const [entries, setEntries] = useState<string[] | null>(null)
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        // name="billing" emits one hidden input per selected value,
+        // so getAll returns each value as its own entry.
+        setEntries(new FormData(e.currentTarget).getAll("billing").map(String))
+      }}
+    >
+      <ToggleGroup
+        aria-label="Billing period"
+        variant="segment"
+        multiple
+        required
+        name="billing"
+        errorMessage="Pick a billing period to continue."
+        value={value}
+        onValueChange={setValue}
+      >
+        <ToggleGroupItem value="monthly">Monthly</ToggleGroupItem>
+        <ToggleGroupItem value="yearly">Yearly</ToggleGroupItem>
+      </ToggleGroup>
+      <button type="submit">Submit</button>
+      {entries && <pre>{JSON.stringify(entries)}</pre>}
+    </form>
+  )
+}`;
+
+function SelectedIconDemo() {
+  return (
+    <ToggleGroup
+      aria-label="Sort order"
+      variant="segment"
+      showSelectedIcon
+      defaultValue={["newest"]}
+    >
+      <ToggleGroupItem value="newest">Newest</ToggleGroupItem>
+      <ToggleGroupItem value="oldest">Oldest</ToggleGroupItem>
+      <ToggleGroupItem value="popular">Popular</ToggleGroupItem>
+    </ToggleGroup>
+  );
+}
+
+const selectedIconCode = `import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
+export function SelectedIconDemo() {
+  return (
+    <ToggleGroup
+      aria-label="Sort order"
+      variant="segment"
+      showSelectedIcon
+      defaultValue={["newest"]}
+    >
+      <ToggleGroupItem value="newest">Newest</ToggleGroupItem>
+      <ToggleGroupItem value="oldest">Oldest</ToggleGroupItem>
+      <ToggleGroupItem value="popular">Popular</ToggleGroupItem>
+    </ToggleGroup>
+  )
+}`;
+
+function OverflowDemo() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          <code>overflowMode="scroll"</code> — segments never wrap; the row
+          scrolls instead
+        </p>
+        <div className="max-w-[260px]">
+          <ToggleGroup
+            aria-label="Workspace"
+            variant="segment"
+            overflowMode="scroll"
+            defaultValue={["overview"]}
+          >
+            <ToggleGroupItem value="overview">Overview</ToggleGroupItem>
+            <ToggleGroupItem value="activity">Activity</ToggleGroupItem>
+            <ToggleGroupItem value="members">Members</ToggleGroupItem>
+            <ToggleGroupItem value="settings">Settings</ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          <code>overflowMode="hideLabels"</code> — collapses to icons, with the
+          label kept as the accessible name and shown on hover
+        </p>
+        <ToggleGroup
+          aria-label="Text alignment"
+          variant="segment"
+          overflowMode="hideLabels"
+          defaultValue={["left"]}
+        >
+          <ToggleGroupItem value="left">
+            <IconAlignLeft className="h-4 w-4" />
+            Left
+          </ToggleGroupItem>
+          <ToggleGroupItem value="center">
+            <IconAlignCenter className="h-4 w-4" />
+            Center
+          </ToggleGroupItem>
+          <ToggleGroupItem value="right">
+            <IconAlignRight className="h-4 w-4" />
+            Right
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+    </div>
+  );
+}
+
+const overflowCode = `import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
+{/* Never wrap — scroll the row instead */}
+<ToggleGroup
+  aria-label="Workspace"
+  variant="segment"
+  overflowMode="scroll"
+  defaultValue={["overview"]}
+>
+  <ToggleGroupItem value="overview">Overview</ToggleGroupItem>
+  <ToggleGroupItem value="activity">Activity</ToggleGroupItem>
+  <ToggleGroupItem value="members">Members</ToggleGroupItem>
+</ToggleGroup>
+
+{/* Collapse to icon-only; the text stays as the accessible name + tooltip */}
+<ToggleGroup
+  aria-label="Text alignment"
+  variant="segment"
+  overflowMode="hideLabels"
+  defaultValue={["left"]}
+>
+  <ToggleGroupItem value="left">
+    <IconAlignLeft className="h-4 w-4" />
+    Left
+  </ToggleGroupItem>
+  <ToggleGroupItem value="center">
+    <IconAlignCenter className="h-4 w-4" />
+    Center
+  </ToggleGroupItem>
+</ToggleGroup>`;
+
+function SlidingIndicatorDemo() {
+  const [value, setValue] = useState<string[]>(["week"]);
+
+  return (
+    <div className="space-y-4">
+      <ToggleGroup
+        aria-label="Date range"
+        variant="segment"
+        slidingIndicator
+        value={value}
+        onValueChange={setValue}
+      >
+        <ToggleGroupItem value="day">Day</ToggleGroupItem>
+        <ToggleGroupItem value="week">Week</ToggleGroupItem>
+        <ToggleGroupItem value="month">Month</ToggleGroupItem>
+      </ToggleGroup>
+      <ul className="list-disc space-y-1 pl-5 text-xs text-muted-foreground">
+        <li>
+          The pill is measured from the pressed item, not guessed from an index,
+          so it survives uneven segment widths.
+        </li>
+        <li>
+          Single-select only — a multi-select group has no one active item to
+          slide to, so the pill turns itself off.
+        </li>
+        <li>
+          Reduced-motion gated: with the OS setting on, the pill jumps instead of
+          sliding. Selection also changes weight and text colour, so it is never
+          signalled by the moving fill alone.
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+const slidingIndicatorCode = `import { useState } from "react"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
+export function SlidingIndicatorDemo() {
+  const [value, setValue] = useState<string[]>(["week"])
+
+  return (
+    <ToggleGroup
+      aria-label="Date range"
+      variant="segment"
+      slidingIndicator
+      value={value}
+      onValueChange={setValue}
+    >
+      <ToggleGroupItem value="day">Day</ToggleGroupItem>
+      <ToggleGroupItem value="week">Week</ToggleGroupItem>
+      <ToggleGroupItem value="month">Month</ToggleGroupItem>
+    </ToggleGroup>
+  )
+}`;
+
+function KiraGroupDemo() {
+  const [failNext, setFailNext] = useState(false);
+  const [density, setDensity] = useState<string[]>(["comfortable"]);
+
+  const save = () =>
+    new Promise<void>((resolve, reject) =>
+      setTimeout(
+        () => (failNext ? reject(new Error("offline")) : resolve()),
+        900
+      )
+    );
+
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          <code>items</code> as data, with <code>label</code> /{" "}
+          <code>description</code> wired to{" "}
+          <code>aria-labelledby</code> / <code>aria-describedby</code>.
+        </p>
+        <KiraToggleGroup
+          aria-label="Row density"
+          variant="segment"
+          label="Row density"
+          description="Applies to every table in this workspace."
+          items={[
+            { value: "compact", label: "Compact" },
+            { value: "comfortable", label: "Comfortable" },
+            { value: "spacious", label: "Spacious" },
+          ]}
+          value={density}
+          onValueChange={setDensity}
+        />
+      </div>
+
+      <div className="space-y-2 border-t pt-4">
+        <p className="text-sm text-muted-foreground">
+          <code>dense</code> collapses to icon-only, moving each label into a
+          tooltip and onto <code>aria-label</code>.
+        </p>
+        <KiraToggleGroup
+          aria-label="Text alignment"
+          variant="outline"
+          dense
+          defaultValue={["left"]}
+          items={[
+            {
+              value: "left",
+              label: "Align left",
+              icon: <IconAlignLeft className="h-4 w-4" />,
+            },
+            {
+              value: "center",
+              label: "Align center",
+              icon: <IconAlignCenter className="h-4 w-4" />,
+            },
+            {
+              value: "right",
+              label: "Align right",
+              icon: <IconAlignRight className="h-4 w-4" />,
+            },
+          ]}
+        />
+      </div>
+
+      <div className="space-y-2 border-t pt-4">
+        <p className="text-sm text-muted-foreground">
+          <code>onValueChangeAsync</code> flips instantly (
+          <code>useOptimistic</code>), shows a spinner on the pending item, then
+          commits — or rolls back and toasts on rejection. Flip the switch, then
+          pick a plan.
+        </p>
+        <div className="flex flex-wrap items-center gap-4">
+          <KiraToggleGroup
+            aria-label="Plan"
+            variant="segment"
+            defaultValue={["starter"]}
+            onValueChangeAsync={save}
+            asyncErrorMessage="Couldn't switch plans — try again."
+            items={[
+              { value: "starter", label: "Starter" },
+              { value: "pro", label: "Pro" },
+              { value: "team", label: "Team" },
+            ]}
+          />
+          <Toggle
+            variant="outline"
+            size="sm"
+            pressed={failNext}
+            onPressedChange={setFailNext}
+          >
+            Simulate failure
+          </Toggle>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const kiraGroupCode = `import { KiraToggleGroup } from "@/components/ui/toggle-group"
+
+{/* Items as data, with label/description wired to ARIA */}
+<KiraToggleGroup
+  aria-label="Row density"
+  variant="segment"
+  label="Row density"
+  description="Applies to every table in this workspace."
+  items={[
+    { value: "compact", label: "Compact" },
+    { value: "comfortable", label: "Comfortable" },
+    { value: "spacious", label: "Spacious" },
+  ]}
+/>
+
+{/* dense: icon-only, labels become tooltips + aria-label */}
+<KiraToggleGroup
+  aria-label="Text alignment"
+  dense
+  defaultValue={["left"]}
+  items={[
+    { value: "left", label: "Align left", icon: <IconAlignLeft className="h-4 w-4" /> },
+    { value: "center", label: "Align center", icon: <IconAlignCenter className="h-4 w-4" /> },
+  ]}
+/>
+
+{/* Optimistic async: flips instantly, rolls back + toasts on rejection */}
+<KiraToggleGroup
+  aria-label="Plan"
+  variant="segment"
+  defaultValue={["starter"]}
+  onValueChangeAsync={async (value) => { await api.setPlan(value) }}
+  asyncErrorMessage="Couldn't switch plans — try again."
+  items={[
+    { value: "starter", label: "Starter" },
+    { value: "pro", label: "Pro" },
+  ]}
+/>`;
+
 export default function ToggleGroupPage() {
   const features = [
     {
@@ -500,9 +1117,9 @@ export default function ToggleGroupPage() {
   ];
 
   const keyboardShortcuts = [
-    { keys: "Space / Enter", description: "Toggle the focused item" },
-    { keys: "Arrow Left / Right", description: "Navigate items (horizontal)" },
-    { keys: "Arrow Up / Down", description: "Navigate items (vertical)" },
+    { keys: "Space / Enter", description: "Toggle the focused item (selects, never deselects, in radio mode)" },
+    { keys: "Arrow Left / Right", description: "Navigate items (horizontal). Also selects under semantics=\"radio\"" },
+    { keys: "Arrow Up / Down", description: "Navigate items (vertical). Also selects under semantics=\"radio\"" },
     { keys: "Home", description: "Focus first item" },
     { keys: "End", description: "Focus last item" },
     { keys: "Tab", description: "Move focus out of group" },
@@ -603,6 +1220,109 @@ const [value, setValue] = useState<string[]>([])
           type: "boolean",
           default: "false",
           description: "Disables all toggle items in the group.",
+        },
+        {
+          prop: "semantics",
+          type: '"current" | "radio" | "toggle"',
+          default: '"current"',
+          description:
+            'ARIA model for single-select groups. "current" puts aria-current="true" on the active segment (Primer/eBay); "radio" is ARIA17-normative — role="radiogroup" + role="radio"/aria-checked, one tab stop, arrow keys move and select; "toggle" keeps aria-pressed on/off buttons. Ignored when multiple is set — multi-select is always aria-pressed.',
+        },
+        {
+          prop: "allowEmpty",
+          type: "boolean",
+          default: "false",
+          description:
+            'Allow the last selected item to be deselected. Off by default: single-select segmented controls keep one item selected always. Ignored under semantics="radio" — a radio group has no "none" state.',
+        },
+        {
+          prop: "showSelectedIcon",
+          type: "boolean",
+          default: "false",
+          description:
+            "Render a checkmark on the selected item (Material 3's default selected affordance).",
+        },
+        {
+          prop: "overflowMode",
+          type: '"none" | "scroll" | "hideLabels"',
+          default: '"none"',
+          description:
+            "Tight-width behaviour. Segments never wrap: 'scroll' keeps one line and scrolls, 'hideLabels' collapses to icon-only with the label as accessible name + tooltip.",
+        },
+        {
+          prop: "required",
+          type: "boolean",
+          default: "false",
+          description: "Forwards aria-required on the group.",
+        },
+        {
+          prop: "invalid",
+          type: "boolean",
+          default: "false",
+          description:
+            "Forwards aria-invalid. Per ARIA21, set only after validation runs — not on mount.",
+        },
+        {
+          prop: "errorMessage",
+          type: "React.ReactNode",
+          description:
+            "Error text rendered below the group and linked via aria-describedby when invalid.",
+        },
+        {
+          prop: "slidingIndicator",
+          type: "boolean",
+          default: "false",
+          description:
+            "Animate a sliding pill behind the active item. Single-selection only; reduced-motion gated.",
+        },
+        {
+          prop: "name",
+          type: "string",
+          description:
+            "Submits with the enclosing form: one hidden input per selected value, so formData.getAll(name) returns each value as its own entry (not a comma-joined string). An empty selection emits no input at all, leaving the key absent rather than blank. Note required is aria-required only — browsers skip native validation on hidden inputs, so enforce it in your submit handler.",
+        },
+      ],
+    },
+    {
+      title: "KiraToggleGroup",
+      props: [
+        {
+          prop: "items",
+          type: "KiraToggleGroupItem[]",
+          description:
+            "Items as data — each becomes a ToggleGroupItem. Supports value, label, icon, tooltip, disabled, disabledReason, loading, colorVariant.",
+        },
+        {
+          prop: "onValueChangeAsync",
+          type: "(value: string[]) => Promise<void>",
+          description:
+            "Async selection handler. Selection flips instantly via useOptimistic, shows a spinner on the pending item, then commits — or rolls back and toasts if this rejects.",
+        },
+        {
+          prop: "asyncErrorMessage",
+          type: "string",
+          default: '"Couldn\'t update"',
+          description:
+            "Toast text shown when onValueChangeAsync rejects. Distinct from errorMessage, which is the inline validation text rendered below the group.",
+        },
+        {
+          prop: "dense",
+          type: "boolean",
+          default: "false",
+          description:
+            "Render labels as tooltips only, for an icon-only dense bar. The label is kept as the accessible name.",
+        },
+        {
+          prop: "label",
+          type: "React.ReactNode",
+          description:
+            "Label rendered above the group and wired via aria-labelledby.",
+        },
+        {
+          prop: "description",
+          type: "React.ReactNode",
+          description:
+            "Supporting text rendered below the group and wired via aria-describedby.",
         },
       ],
     },
@@ -764,14 +1484,118 @@ const [value, setValue] = useState<string[]>([])
         </DemoWrapper>
       ),
     },
+    {
+      value: "one-selected",
+      label: "One Selected Always",
+      demo: (
+        <DemoWrapper
+          title="One Selected Always"
+          description="Single-select segmented controls never allow an empty selection — pressing the active segment can't clear it. Material 3, Apple HIG, eBay and the VA design system all agree. Pass allowEmpty to opt out for filter-style groups."
+          code={oneSelectedAlwaysCode}
+        >
+          <OneSelectedAlwaysDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "semantics",
+      label: "ARIA Semantics",
+      demo: (
+        <DemoWrapper
+          title="ARIA Semantics"
+          description='Single-select groups default to aria-current="true" on the active segment (the Primer/eBay model), conveying "one of a set is active". Pass semantics="toggle" for aria-pressed on/off buttons. Multi-select groups are always aria-pressed, per the APG.'
+          code={semanticsCode}
+        >
+          <SemanticsDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "radio-mode",
+      label: "Radio Mode",
+      demo: (
+        <DemoWrapper
+          title='semantics="radio"'
+          description='The ARIA17-normative model for a mutually-exclusive set: role="radiogroup" on the container, role="radio" + aria-checked on each segment, one tab stop, and arrow keys that move focus and selection together. Use it when the group is a real form field. allowEmpty is ignored — a radio group has no "none" state.'
+          code={radioModeCode}
+        >
+          <RadioModeDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "form-field",
+      label: "Form Field",
+      demo: (
+        <DemoWrapper
+          title="Form Field Semantics"
+          description="required forwards aria-required; invalid forwards aria-invalid and links errorMessage via aria-describedby. Per ARIA21, set invalid only after validation runs — never on mount."
+          code={formFieldCode}
+        >
+          <FormFieldDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "selected-icon",
+      label: "Selected Icon",
+      demo: (
+        <DemoWrapper
+          title="Selected Checkmark"
+          description="showSelectedIcon renders a checkmark on the active segment — Material 3's default affordance, so selection isn't signalled by background colour alone."
+          code={selectedIconCode}
+        >
+          <SelectedIconDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "sliding",
+      label: "Sliding Indicator",
+      demo: (
+        <DemoWrapper
+          title="Sliding Pill Indicator"
+          description="The defining 2026 segmented-control affordance: a pill that slides behind the active segment. Position is measured from the pressed item rather than guessed from an index, so it survives uneven widths. Single-select only, and reduced-motion gated — with the OS setting on it jumps instead of sliding."
+          code={slidingIndicatorCode}
+        >
+          <SlidingIndicatorDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "kira",
+      label: "KiraToggleGroup",
+      demo: (
+        <DemoWrapper
+          title="KiraToggleGroup"
+          description="One prop-driven entry point over the group family: items as data, label/description wired to ARIA, dense icon-only mode with tooltips, and optimistic async selection that rolls back with a toast when the handler rejects."
+          code={kiraGroupCode}
+        >
+          <KiraGroupDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "overflow",
+      label: "Overflow",
+      demo: (
+        <DemoWrapper
+          title="Responsive Overflow"
+          description="Segments must never wrap. overflowMode='scroll' keeps them on one line and scrolls; 'hideLabels' collapses to icon-only while keeping the label as the accessible name and tooltip."
+          code={overflowCode}
+        >
+          <OverflowDemo />
+        </DemoWrapper>
+      ),
+    },
   ];
 
   return (
     <ComponentPage>
       <PageHeader
         title="Toggle Group"
-        description="A group of toggle buttons where one or multiple items can be selected. Supports single/multiple selection, various visual styles, and full keyboard accessibility."
-        version="v1.0"
+        description="A group of toggle buttons where one or multiple items can be selected. Three ARIA models (aria-current, radiogroup, aria-pressed), a sliding indicator, one-selected-always, form-field semantics, and full keyboard accessibility."
+        version="v2.1"
       />
 
       <FeatureGrid features={features} />
@@ -786,6 +1610,59 @@ const [value, setValue] = useState<string[]>([])
       />
 
       <APIReference sections={apiSections} />
+
+      <Changelog
+        entries={[
+          {
+            version: "2.1.0",
+            date: "8 August 2026",
+            changes: [
+              {
+                type: "added",
+                title: "Form Submission",
+                description:
+                  "New `name` prop emits one hidden input per selected value, so formData.getAll(name) returns each value as its own entry — matching native checkbox/radio behaviour rather than a comma-joined string. An empty selection emits no input at all, leaving the key absent. This makes semantics=\"radio\", required, invalid and errorMessage usable in a real form instead of visual-only.",
+              },
+              {
+                type: "added",
+                title: "Radio Semantics",
+                description:
+                  'semantics="radio" applies the ARIA17-normative model for a mutually-exclusive set: role="radiogroup" on the container, role="radio" + aria-checked on each segment, one tab stop, and arrow keys that move focus and selection together (selection-follows-focus). Each mode exposes exactly one state attribute — aria-pressed and aria-checked are never both present.',
+              },
+              {
+                type: "added",
+                title: "Sliding Indicator, Selected Icon, Overflow Modes",
+                description:
+                  "slidingIndicator animates a pill behind the active segment, measured from the pressed item so it survives uneven widths (single-select only, reduced-motion gated). showSelectedIcon renders a checkmark on the active item so selection isn't signalled by colour alone. overflowMode handles tight widths without wrapping: 'scroll' keeps one line, 'hideLabels' collapses to icon-only with the label kept as accessible name and tooltip.",
+              },
+              {
+                type: "added",
+                title: "Form-Field Semantics",
+                description:
+                  "required forwards aria-required; invalid forwards aria-invalid and links errorMessage via aria-describedby. Per ARIA21, set invalid only after validation runs — not on mount. A dev-only warning fires when a segmented control exceeds the 2–5 segment consensus.",
+              },
+              {
+                type: "fixed",
+                title: "Async Rollback Now Explains Itself",
+                description:
+                  "KiraToggleGroup's optimistic path had a finally but no catch, so a rejected onValueChangeAsync rolled back silently while its KiraToggle sibling toasted. It now surfaces asyncErrorMessage via toast.error, matching the rest of the system.",
+              },
+              {
+                type: "breaking",
+                title: 'Single-Select Now Defaults to aria-current',
+                description:
+                  'Single-select groups previously exposed aria-pressed on every item. They now emit aria-current="true" on the active segment (the Primer/eBay model), conveying "one of a set is active" rather than a set of independent on/off buttons. Pass semantics="toggle" to restore the previous behaviour. Multi-select groups are unaffected — they remain aria-pressed, per the APG.',
+              },
+              {
+                type: "breaking",
+                title: "Single-Select No Longer Allows an Empty Selection",
+                description:
+                  "Pressing the active segment used to clear the group. Single-select segmented controls now keep one item selected always (Material 3, Apple HIG, eBay and the VA design system all agree), so selection can only move, never empty. Pass allowEmpty to restore the previous behaviour for filter-style groups. Ignored under semantics=\"radio\", which has no \"none\" state.",
+              },
+            ],
+          },
+        ]}
+      />
     </ComponentPage>
   );
 }

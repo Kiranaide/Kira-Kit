@@ -100,14 +100,18 @@ export function useAsyncDataTable<TData>(
     pageIndex: 0,
     pageSize: initialPageSize,
   });
+
   const [sorting, setSorting] = React.useState<SortingState>(initialSorting);
+
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(initialColumnFilters);
+
   const [globalFilter, setGlobalFilter] = React.useState("");
 
   // Debounced filter values
   const [debouncedFilters, setDebouncedFilters] =
     React.useState<ColumnFiltersState>(initialColumnFilters);
+
   const [debouncedGlobalFilter, setDebouncedGlobalFilter] = React.useState("");
 
   // Refs for tracking
@@ -142,6 +146,7 @@ export function useAsyncDataTable<TData>(
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
+
     abortControllerRef.current = new AbortController();
 
     setIsLoading(true);
@@ -161,6 +166,7 @@ export function useAsyncDataTable<TData>(
       if (err instanceof Error && err.name === "AbortError") {
         return; // Ignore aborted requests
       }
+
       setError(err instanceof Error ? err : new Error("Failed to fetch data"));
     } finally {
       setIsLoading(false);

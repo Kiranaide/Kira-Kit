@@ -91,13 +91,17 @@ function ProgressIndicator({
 }: ProgressIndicatorProps) {
   const getStepState = (index: number): "pending" | "active" | "completed" => {
     if (index === currentStep) return "active";
+
     if (index < currentStep) return "completed";
+
     return "pending";
   };
 
   const getLineState = (index: number): "pending" | "active" | "completed" => {
     if (index < currentStep) return "completed";
+
     if (index === currentStep) return "active";
+
     return "pending";
   };
 
@@ -214,4 +218,5 @@ function ProgressIndicator({
 }
 
 export { ProgressIndicator, indicatorVariants, lineVariants };
+
 export type { ProgressIndicatorProps };

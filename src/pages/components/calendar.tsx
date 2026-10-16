@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 
 function SingleDateDemo() {
   const [date, setDate] = React.useState<Date | undefined>();
+
   return (
     <div className="max-w-xs">
       <DatePicker
@@ -58,6 +59,7 @@ export function SingleDateDemo() {
 
 function DateRangeDemo() {
   const [range, setRange] = React.useState<DateRange | undefined>();
+
   return (
     <div className="max-w-xs">
       <DatePicker
@@ -268,6 +270,7 @@ const styleVariantsCode = `<DatePicker mode="single" variant="default" />
 function ApplyModeDemo() {
   const [date, setDate] = React.useState<Date | undefined>();
   const [range, setRange] = React.useState<DateRange | undefined>();
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -353,6 +356,7 @@ const applyModeCode = `<DatePicker
 
 function BasicCalendarDemo() {
   const [date, setDate] = React.useState<Date | undefined>();
+
   return (
     <div className="space-y-4">
       <div className="border border-border rounded-lg inline-block">

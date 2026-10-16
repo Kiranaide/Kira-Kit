@@ -102,6 +102,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const handleClear = () => {
       onClear?.();
+
       if (onChange && inputRef.current) {
         const event = new Event("input", { bubbles: true });
         Object.defineProperty(event, "target", {
@@ -110,11 +111,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         });
         onChange(event as unknown as React.ChangeEvent<HTMLInputElement>);
       }
+
       inputRef.current?.focus();
     };
 
     const handleCopy = async () => {
       const textToCopy = inputRef.current?.value || String(value || "");
+
       try {
         await navigator.clipboard.writeText(textToCopy);
         setCopied(true);
@@ -181,8 +184,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
       const currentValue =
         typeof value === "number" ? value : parseFloat(String(value || 0)) || 0;
+
       const stepValue =
         typeof step === "number" ? step : parseFloat(String(step || 1)) || 1;
+
       const newValue = currentValue + stepValue;
 
       if (max !== undefined && typeof max === "number" && newValue > max)
@@ -190,6 +195,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
       if (onIncrement) {
         onIncrement();
+
         return;
       }
 
@@ -197,6 +203,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         const syntheticEvent = {
           target: { value: String(newValue) },
         } as React.ChangeEvent<HTMLInputElement>;
+
         onChange(syntheticEvent);
       }
     };
@@ -206,8 +213,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
       const currentValue =
         typeof value === "number" ? value : parseFloat(String(value || 0)) || 0;
+
       const stepValue =
         typeof step === "number" ? step : parseFloat(String(step || 1)) || 1;
+
       const newValue = currentValue - stepValue;
 
       if (min !== undefined && typeof min === "number" && newValue < min)
@@ -215,6 +224,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
       if (onDecrement) {
         onDecrement();
+
         return;
       }
 
@@ -222,6 +232,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         const syntheticEvent = {
           target: { value: String(newValue) },
         } as React.ChangeEvent<HTMLInputElement>;
+
         onChange(syntheticEvent);
       }
     };
@@ -255,6 +266,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     // Live character counter (opt-in via showCount). Announced politely.
     const currentLength = String(value ?? "").length;
+
     const counter = showCount ? (
       <div
         className="mt-1 text-right text-xs tabular-nums text-muted-foreground"
@@ -286,18 +298,21 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     if (showButtons) {
       const numericValue =
         typeof value === "number" ? value : parseFloat(String(value || 0)) || 0;
+
       const minValue =
         typeof min === "number"
           ? min
-          : min !== undefined
-            ? parseFloat(String(min))
-            : undefined;
+          : min === undefined
+            ? undefined
+            : parseFloat(String(min));
+
       const maxValue =
         typeof max === "number"
           ? max
-          : max !== undefined
-            ? parseFloat(String(max))
-            : undefined;
+          : max === undefined
+            ? undefined
+            : parseFloat(String(max));
+
       const canDecrement = minValue === undefined || numericValue > minValue;
       const canIncrement = maxValue === undefined || numericValue < maxValue;
 
@@ -437,6 +452,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
+
 Input.displayName = "Input";
 
 interface NumericInputProps
@@ -465,19 +481,23 @@ function NumericInput({
 }: NumericInputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(e.target.value) || 0;
+
     if (min !== undefined && newValue < min) return;
+
     if (max !== undefined && newValue > max) return;
     onChange?.(newValue);
   };
 
   const handleIncrement = () => {
     const newValue = (value || 0) + step;
+
     if (max !== undefined && newValue > max) return;
     onChange?.(newValue);
   };
 
   const handleDecrement = () => {
     const newValue = (value || 0) - step;
+
     if (min !== undefined && newValue < min) return;
     onChange?.(newValue);
   };
@@ -554,6 +574,7 @@ function CurrencyInput({
     if (!digits) {
       setInternalValue(null);
       onChange?.(null);
+
       return;
     }
 
@@ -616,6 +637,7 @@ function PercentageInput({
     if (!digits) {
       setInternalValue(null);
       onChange?.(null);
+
       return;
     }
 
@@ -681,6 +703,7 @@ function DecimalInput({
     if (!digits) {
       setInternalValue(null);
       onChange?.(null);
+
       return;
     }
 
@@ -902,9 +925,11 @@ function InputWithDropdown({
   ...props
 }: InputWithDropdownProps) {
   const [isOpen, setIsOpen] = React.useState(false);
+
   const [selectedOption, setSelectedOption] = React.useState(
     options.find((o) => o.value === dropdownValue) || options[0]
   );
+
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -920,6 +945,7 @@ function InputWithDropdown({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
@@ -1018,6 +1044,7 @@ function InputCluster({ children, className }: InputClusterProps) {
 
         const isFirst = index === 0;
         const isLast = index === childArray.length - 1;
+
         const childClassName = (child.props as Record<string, unknown>)
           .className as string | undefined;
 
@@ -1065,9 +1092,10 @@ function SearchInput({
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const effectiveValue = value !== undefined ? value : internalValue;
+  const effectiveValue = value === undefined ? internalValue : value;
 
   const effectiveSize = size || "default";
+
   const iconSize = {
     xs: "h-3 w-3",
     sm: "h-3.5 w-3.5",
@@ -1081,11 +1109,13 @@ function SearchInput({
     if (value === undefined) {
       setInternalValue(newValue);
     }
+
     onChange?.(newValue);
 
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
+
     debounceRef.current = setTimeout(() => {
       onSearch?.(newValue);
     }, debounceMs);
@@ -1095,6 +1125,7 @@ function SearchInput({
     if (value === undefined) {
       setInternalValue("");
     }
+
     onChange?.("");
     onSearch?.("");
   };
@@ -1104,8 +1135,10 @@ function SearchInput({
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
       }
+
       onSearch?.(effectiveValue);
     }
+
     if (e.key === "Escape") {
       handleClear();
       inputRef.current?.blur();
@@ -1270,6 +1303,7 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
     ref
   ) => {
     const baseId = React.useId();
+
     const [values, setValues] = React.useState<string[]>(() =>
       value
         .split("")
@@ -1277,17 +1311,20 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
         .concat(Array(length).fill(""))
         .slice(0, length)
     );
+
     const [prevValue, setPrevValue] = React.useState(value);
     const [focusedIndex, setFocusedIndex] = React.useState<number | null>(null);
     const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
     if (value !== prevValue) {
       setPrevValue(value);
+
       const newValues = value
         .split("")
         .slice(0, length)
         .concat(Array(length).fill(""))
         .slice(0, length);
+
       setValues(newValues);
     }
 
@@ -1312,6 +1349,7 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
           .slice(0, length)
           .concat(Array(length).fill(""))
           .slice(0, length);
+
         setValues(newValues);
         onChange?.(newValue.slice(0, length));
       },
@@ -1342,6 +1380,7 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
           newValues[index] = "";
           setValues(newValues);
           onChange?.(newValues.join(""));
+
           return;
         }
 
@@ -1349,17 +1388,21 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
           // Rejected char: run the shake keyframe once. The class removes
           // itself on animation end; reduced-motion neutralizes it globally.
           const input = inputRefs.current[index];
+
           if (input) {
             input.classList.remove("animate-shake");
             // Force reflow so re-adding the class restarts the animation.
             void input.offsetWidth;
             input.classList.add("animate-shake");
+
             const clear = () => {
               input.classList.remove("animate-shake");
               input.removeEventListener("animationend", clear);
             };
+
             input.addEventListener("animationend", clear);
           }
+
           return;
         }
 
@@ -1413,6 +1456,7 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
         switch (e.key) {
           case "Backspace":
             e.preventDefault();
+
             if (values[index]) {
               const newValues = [...values];
               newValues[index] = "";
@@ -1425,30 +1469,37 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
               onChange?.(newValues.join(""));
               inputRefs.current[index - 1]?.focus();
             }
+
             break;
 
           case "Delete":
             e.preventDefault();
+
             if (values[index]) {
               const newValues = [...values];
               newValues[index] = "";
               setValues(newValues);
               onChange?.(newValues.join(""));
             }
+
             break;
 
           case "ArrowLeft":
             e.preventDefault();
+
             if (index > 0) {
               inputRefs.current[index - 1]?.focus();
             }
+
             break;
 
           case "ArrowRight":
             e.preventDefault();
+
             if (index < length - 1) {
               inputRefs.current[index + 1]?.focus();
             }
+
             break;
 
           case "Home":
@@ -1486,6 +1537,7 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
           </span>
         );
       }
+
       return null;
     };
 
@@ -1656,11 +1708,14 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
 
     const handleRatingChange = (newValue: number) => {
          if (disabled || readOnly) return;
+
          const finalValue =
            allowClear && newValue === currentValue ? 0 : newValue;
+
          if (controlledValue === undefined) {
            setInternalValue(finalValue);
          }
+
          onChange?.(finalValue);
        };
 
@@ -1672,6 +1727,7 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
           const rect = e.currentTarget.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const isLeftHalf = x < rect.width / 2;
+
           if (allowHalf && isLeftHalf) {
             setHoverValue(index + 0.5);
           } else {
@@ -1687,6 +1743,7 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
           const rect = e.currentTarget.getBoundingClientRect();
           const x = e.clientX - rect.left;
           const isLeftHalf = x < rect.width / 2;
+
           if (allowHalf && isLeftHalf) {
             handleRatingChange(index + 0.5);
           } else {
@@ -1698,6 +1755,7 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
           if (disabled || readOnly) return;
           const step = allowHalf ? 0.5 : 1;
           let newValue = currentValue;
+
           switch (e.key) {
             case "ArrowRight":
             case "ArrowUp":
@@ -1720,14 +1778,17 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
             default:
               return;
           }
+
           if (controlledValue === undefined) {
             setInternalValue(newValue);
           }
+
           onChange?.(newValue);
         };
 
     const renderStar = (index: number) => {
           const fillAmount = displayValue - index;
+
           if (fillAmount >= 1) {
             return filledIcon || <IconStarFilled />;
           } else if (fillAmount >= 0.5 && allowHalf) {
@@ -1739,14 +1800,17 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
 
     const getTooltip = (value: number) => {
          if (tooltipFormatter) return tooltipFormatter(value);
+
          return `${value} of ${max}`;
        };
 
     const stars = Array.from({ length: max }, (_, index) => {
           const starValue = index + 1;
           const isFilled = displayValue >= starValue;
+
           const isHalfFilled =
             allowHalf && displayValue >= index + 0.5 && displayValue < starValue;
+
           return (
             <button
               key={index}
@@ -1864,9 +1928,11 @@ function scorePassword(value: string): PasswordStrength {
     { label: "A number", met: /\d/.test(value) },
     { label: "A symbol", met: /[^A-Za-z0-9]/.test(value) },
   ];
+
   const met = checks.filter((c) => c.met).length;
   const labels = ["Very weak", "Weak", "Fair", "Good", "Strong"];
   const score = (value ? met : 0) as PasswordStrength["score"];
+
   return { score, label: labels[score], checks };
 }
 
@@ -2017,8 +2083,11 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
 
     const addTag = (raw: string) => {
       const tag = raw.trim();
+
       if (!tag) return;
+
       if (maxTags !== undefined && tags.length >= maxTags) return;
+
       if (!allowDuplicates && tags.includes(tag)) return;
       commit([...tags, tag]);
       setDraft("");
@@ -2110,6 +2179,7 @@ export {
   PasswordInput,
   TagInput,
 };
+
 export type {
   InputProps,
   NumericInputProps,

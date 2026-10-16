@@ -25,4 +25,7 @@ public/r
 *.njsproj
 *.sln
 *.sw?
+
 .cursor/*
+tools
+

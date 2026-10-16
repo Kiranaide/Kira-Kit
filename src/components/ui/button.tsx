@@ -104,6 +104,7 @@ const getButtonIconSize = (size: ButtonSize | null | undefined): string => {
     "icon-sm": "h-3.5 w-3.5",
     "icon-lg": "h-5 w-5",
   };
+
   return sizes[size || "default"] || "h-4 w-4";
 };
 
@@ -131,9 +132,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const progressRef = React.useRef<HTMLDivElement>(null);
     const buttonRef = React.useRef<HTMLButtonElement>(null);
     const [isHolding, setIsHolding] = React.useState(false);
+
     const [ripples, setRipples] = React.useState<
       Array<{ id: number; x: number; y: number }>
     >([]);
+
     const rippleIdRef = React.useRef(0);
     const [isKeyboardHolding, setIsKeyboardHolding] = React.useState(false);
     const holdTweenRef = React.useRef<gsap.core.Tween | null>(null);
@@ -163,6 +166,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       };
 
       const safeVariant: string = variant || "default";
+
       return colors[safeVariant] || "rgba(0, 0, 0, 0.1)";
     };
 
@@ -181,6 +185,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       };
 
       const safeVariant: string = variant || "default";
+
       return colors[safeVariant] || "hsl(var(--primary) / 0.4)";
     };
 
@@ -200,6 +205,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       if (disabled || reducedMotion) return;
 
       const rect = buttonRef.current?.getBoundingClientRect();
+
       if (!rect) return;
 
       const x = e.clientX - rect.left;
@@ -210,6 +216,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
       setTimeout(() => {
         const rippleElement = document.getElementById(`ripple-${id}`);
+
         if (rippleElement) {
           gsap.fromTo(
             rippleElement,
@@ -231,10 +238,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const resetProgress = (): void => {
       setIsHolding(false);
       setIsKeyboardHolding(false);
+
       if (holdTweenRef.current) {
         holdTweenRef.current.kill();
         holdTweenRef.current = null;
       }
+
       if (progressRef.current) {
         gsap.to(progressRef.current, {
           width: "0%",
@@ -266,6 +275,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
       if (disabled) {
         onPointerDown?.(e);
+
         return;
       }
 
@@ -283,6 +293,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       if (onHoldComplete) {
         resetProgress();
       }
+
       onPointerUp?.(e);
     };
 
@@ -290,6 +301,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       if (onHoldComplete && (isHolding || isKeyboardHolding)) {
         resetProgress();
       }
+
       onPointerLeave?.(e);
     };
 
@@ -299,6 +311,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         setIsKeyboardHolding(true);
         startHold();
       }
+
       props.onKeyDown?.(e);
     };
 
@@ -307,6 +320,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         setIsKeyboardHolding(false);
         resetProgress();
       }
+
       props.onKeyUp?.(e);
     };
 
@@ -322,6 +336,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </>
         );
       }
+
       return children;
     };
 
@@ -383,6 +398,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
   },
 );
+
 Button.displayName = "Button";
 
 interface HoldButtonProps extends ButtonProps {
@@ -433,6 +449,7 @@ const ExpandableIconButton = React.forwardRef<
         ease: "power2.out",
       });
     }
+
     onMouseEnter?.(e);
   };
 
@@ -447,6 +464,7 @@ const ExpandableIconButton = React.forwardRef<
         ease: "power2.in",
       });
     }
+
     onMouseLeave?.(e);
   };
 
@@ -489,6 +507,7 @@ const ExpandableIconButton = React.forwardRef<
     </Button>
   );
 });
+
 ExpandableIconButton.displayName = "ExpandableIconButton";
 
 const SPINNER_SIZES: Record<string, string> = {
@@ -570,7 +589,7 @@ function LoadingButton({
       aria-disabled={disabled || isLoading}
       size={size}
       leftIcon={isLoading ? <LoadingSpinner size={size} /> : leftIcon}
-      rightIcon={!isLoading ? rightIcon : undefined}
+      rightIcon={isLoading ? undefined : rightIcon}
       {...props}
     >
       {isLoading ? (
@@ -606,6 +625,7 @@ function CopyButton({
   React.useEffect(() => {
     if (!copied) return;
     const timer = setTimeout(() => setCopied(false), confirmDuration);
+
     return () => clearTimeout(timer);
   }, [copied, confirmDuration]);
 
@@ -721,6 +741,7 @@ function CompoundButton({
 }: CompoundButtonProps) {
   const containerClass = (() => {
     const safeSize = size || "default";
+
     switch (safeSize) {
       case "xs":
         return "py-1 px-2";
@@ -789,6 +810,7 @@ function AsyncButton({
   React.useEffect(() => {
     if (status === "idle") return;
     const timer = setTimeout(() => setStatus("idle"), successDuration);
+
     return () => clearTimeout(timer);
   }, [status, successDuration]);
 
@@ -800,6 +822,7 @@ function AsyncButton({
     try {
       await onAsyncClick();
       setStatus("success");
+
       if (successMessage) {
         toast.success(successMessage);
       }
@@ -864,11 +887,13 @@ function QuickActionButton({
         repeat: 1,
       });
     }
+
     props.onClick?.(e);
   };
 
   const iconSize = (() => {
     const safeSize = size || "default";
+
     switch (safeSize) {
       case "xs":
       case "sm":
@@ -983,6 +1008,7 @@ function KiraButton({
   const [asyncStatus, setAsyncStatus] = React.useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
+
   const [copied, setCopied] = React.useState(false);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const reducedMotion = useReducedMotion();
@@ -994,6 +1020,7 @@ function KiraButton({
   const isToggleControlled = pressed !== undefined;
   const [pressedState, setPressedState] = React.useState(defaultPressed);
   const committedPressed = (isToggleControlled ? pressed : pressedState) ?? false;
+
   const [optimisticPressed, setOptimisticPressed] = React.useOptimistic(
     committedPressed,
     (_prev: boolean, next: boolean) => next,
@@ -1004,12 +1031,14 @@ function KiraButton({
   React.useEffect(() => {
     if (asyncStatus === "idle") return;
     const timer = setTimeout(() => setAsyncStatus("idle"), asyncSuccessDuration);
+
     return () => clearTimeout(timer);
   }, [asyncStatus, asyncSuccessDuration]);
 
   React.useEffect(() => {
     if (!copied) return;
     const timer = setTimeout(() => setCopied(false), copyConfirmDuration);
+
     return () => clearTimeout(timer);
   }, [copied, copyConfirmDuration]);
 
@@ -1021,6 +1050,7 @@ function KiraButton({
     try {
       await onAsyncClick();
       setAsyncStatus("success");
+
       if (asyncSuccessMessage) {
         toast.success(asyncSuccessMessage);
       }
@@ -1045,8 +1075,10 @@ function KiraButton({
   const handleToggle = async () => {
     const next = !committedPressed;
     setOptimisticPressed(next); // flips the UI instantly
+
     try {
       await onToggle?.(next);
+
       if (!isToggleControlled) setPressedState(next); // commit truth
     } catch {
       // optimistic value auto-reverts to committedPressed on the next render
@@ -1081,20 +1113,25 @@ function KiraButton({
       if (isLoading) {
         return <LoadingSpinner size={size} />;
       }
+
       if (copied) {
         return <IconCheck className={getButtonIconSize(size)} />;
       }
+
       if (asyncStatus === "success") {
         // Standardized success affordance: a checkmark, matching the
         // alert-dialog confirm pattern (was IconSparkles).
         return <IconCheck className={getButtonIconSize(size)} />;
       }
+
       if (toggle) {
         return optimisticPressed ? pressedIcon : unpressedIcon;
       }
+
       if (icon && iconPosition === "left") {
         return icon;
       }
+
       return leftIcon;
     })();
 
@@ -1102,9 +1139,11 @@ function KiraButton({
       if (isLoading) {
         return undefined;
       }
+
       if (icon && iconPosition === "right") {
         return icon;
       }
+
       return rightIcon;
     })();
 
@@ -1181,6 +1220,7 @@ function KiraButton({
       const displayText =
         loadingText ||
         (asyncStatus === "loading" ? asyncLoadingText : undefined);
+
       if (displayText) {
         return (
           <>
@@ -1244,6 +1284,7 @@ function KiraButton({
   const wrapWithTooltip = (element: React.ReactNode) => {
     // While disabled, a disabledReason takes precedence and explains why.
     const tooltipContent = disabled && disabledReason ? disabledReason : tooltip;
+
     if (!tooltipContent) return element;
 
     // A disabled button emits no pointer events, so wrap it in a span that
@@ -1287,6 +1328,7 @@ function KiraButton({
 }
 
 export { buttonVariants, getButtonIconSize };
+
 export {
   Button,
   HoldButton,
@@ -1300,6 +1342,7 @@ export {
   QuickActionButton,
   KiraButton,
 };
+
 export type {
   ButtonProps,
   ButtonSize,

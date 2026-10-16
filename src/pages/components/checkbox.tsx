@@ -684,6 +684,7 @@ export function CheckboxCardDemo() {
 
 function KiraDemo() {
   const [fruits, setFruits] = React.useState<string[]>(["apple"]);
+
   return (
     <div className="flex flex-col gap-6 max-w-md">
       <KiraCheckbox mode="checkbox" variant="soft" color="success" defaultChecked />

@@ -173,4 +173,5 @@ function Box({
 }
 
 export { Box, boxVariants };
+
 export type { BoxProps, BoxElement };

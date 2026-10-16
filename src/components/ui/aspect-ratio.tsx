@@ -79,6 +79,7 @@ const aspectClass: Record<AspectRatioPreset, string> = {
   "3:4": "aspect-[3/4]",
   "2:3": "aspect-[2/3]",
 };
+
 const aspectClassMd: Record<AspectRatioPreset, string> = {
   "1:1": "md:aspect-square",
   "4:3": "md:aspect-[4/3]",
@@ -89,6 +90,7 @@ const aspectClassMd: Record<AspectRatioPreset, string> = {
   "3:4": "md:aspect-[3/4]",
   "2:3": "md:aspect-[2/3]",
 };
+
 const aspectClassLg: Record<AspectRatioPreset, string> = {
   "1:1": "lg:aspect-square",
   "4:3": "lg:aspect-[4/3]",
@@ -99,6 +101,7 @@ const aspectClassLg: Record<AspectRatioPreset, string> = {
   "3:4": "lg:aspect-[3/4]",
   "2:3": "lg:aspect-[2/3]",
 };
+
 const aspectClassXl: Record<AspectRatioPreset, string> = {
   "1:1": "xl:aspect-square",
   "4:3": "xl:aspect-[4/3]",
@@ -139,6 +142,7 @@ function AspectRatio({
   ...props
 }: AspectRatioProps) {
   const reducedMotion = useReducedMotion();
+
   // Use a static preset class when possible (better than inline for known
   // ratios), otherwise fall back to the inline aspect-ratio property.
   const presetClass =
@@ -215,6 +219,7 @@ function ResponsiveAspectRatio({
   const inlineStyle: React.CSSProperties & Record<string, string | number> = {
     ...style,
   };
+
   if (!basePreset) inlineStyle.aspectRatio = toRatioValue(base);
 
   return (
@@ -352,13 +357,17 @@ function KiraAspectRatio({
 }: KiraAspectRatioProps) {
   const buildMedia = () => {
     if (children) return children;
+
     if (!src) return null;
+
     if (type === "video") {
       return <AspectRatioVideo src={src} {...videoProps} />;
     }
+
     if (type === "embed") {
       return <AspectRatioEmbed src={src} title={alt} {...embedProps} />;
     }
+
     return (
       <AspectRatioImage src={src} alt={alt} placeholderSrc={placeholderSrc} />
     );
@@ -381,6 +390,7 @@ export {
   aspectRatioVariants,
   presetRatios,
 };
+
 export type {
   AspectRatioProps,
   ResponsiveAspectRatioProps,

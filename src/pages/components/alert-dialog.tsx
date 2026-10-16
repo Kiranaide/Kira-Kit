@@ -36,6 +36,7 @@ import {
 
 function TypeToConfirmDemo() {
   const [open, setOpen] = useState(false);
+
   return (
     <div className="flex justify-center py-8">
       <Button variant="destructive" onClick={() => setOpen(true)}>
@@ -60,6 +61,7 @@ function TypeToConfirmDemo() {
 
 function TimedConfirmDemo() {
   const [open, setOpen] = useState(false);
+
   return (
     <div className="flex justify-center py-8">
       <Button variant="outline" onClick={() => setOpen(true)}>
@@ -84,6 +86,7 @@ function TimedConfirmDemo() {
 
 function AsyncConfirmDemo() {
   const [open, setOpen] = useState(false);
+
   return (
     <div className="flex justify-center py-8">
       <Button variant="outline" onClick={() => setOpen(true)}>

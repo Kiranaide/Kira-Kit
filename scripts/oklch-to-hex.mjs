@@ -156,24 +156,32 @@ function parseOklch(str) {
   if (str === "transparent") return null;
   const alphaMatch = str.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\/\s*([\d.]+)%?\)/);
   const noAlphaMatch = str.match(/oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/);
+
   if (alphaMatch) {
     const [, l, c, h, a] = alphaMatch;
+
     return { mode: "oklch", l: +l, c: +c, h: +h, alpha: +a / 100 };
   }
+
   if (noAlphaMatch) {
     const [, l, c, h] = noAlphaMatch;
+
     return { mode: "oklch", l: +l, c: +c, h: +h };
   }
+
   return null;
 }
 
 function toHex(oklchStr) {
   if (oklchStr === "transparent") return "#00000000";
   const parsed = parseOklch(oklchStr);
+
   if (!parsed) return null;
+
   if (parsed.alpha !== undefined && parsed.alpha < 1) {
     return formatHex8(parsed);
   }
+
   return formatHex(parsed);
 }
 
@@ -183,6 +191,7 @@ const result = { light: {}, dark: {}, primitives: {} };
 for (const [name, val] of Object.entries(lightTokens)) {
   result.light[name] = { oklch: val, hex: toHex(val) };
 }
+
 for (const [name, val] of Object.entries(darkTokens)) {
   result.dark[name] = { oklch: val, hex: toHex(val) };
 }
@@ -190,9 +199,10 @@ for (const [name, val] of Object.entries(darkTokens)) {
 // Generate primitive ramps
 for (const [rampName, config] of Object.entries(ramps)) {
   result.primitives[rampName] = {};
+
   for (const step of config.steps) {
-    const c = step.c !== undefined ? step.c : config.chroma;
-    const h = step.h !== undefined ? step.h : config.hue;
+    const c = step.c === undefined ? config.chroma : step.c;
+    const h = step.h === undefined ? config.hue : step.h;
     const color = { mode: "oklch", l: step.l, c, h };
     result.primitives[rampName][step.name] = {
       oklch: `oklch(${step.l} ${c} ${h})`,

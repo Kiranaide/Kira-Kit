@@ -40,6 +40,7 @@ const fruits: SelectOption[] = [
 
 const searchUsers = async (query: string): Promise<SelectOption[]> => {
   await new Promise((resolve) => setTimeout(resolve, 500));
+
   const allUsers = [
     { value: "1", label: "John Doe" },
     { value: "2", label: "Jane Smith" },
@@ -50,7 +51,9 @@ const searchUsers = async (query: string): Promise<SelectOption[]> => {
     { value: "7", label: "Edward Norton" },
     { value: "8", label: "Fiona Green" },
   ];
+
   if (!query) return allUsers;
+
   return allUsers.filter((u) =>
     u.label.toLowerCase().includes(query.toLowerCase()),
   );
@@ -123,6 +126,7 @@ export function BasicSelectDemo() {
 
 function KiraBasicDemo() {
   const [value, setValue] = React.useState<string>("");
+
   return (
     <div className="space-y-4 max-w-sm">
       <KiraSelect
@@ -255,6 +259,7 @@ const autocompleteCode = `import { KiraSelect } from "@/components/ui/select"
 function CreatableSelectDemo() {
   const [creatableOptions, setCreatableOptions] =
     React.useState<SelectOption[]>(fruits);
+
   const [creatableValue, setCreatableValue] = React.useState<string>("");
 
   return (
@@ -270,6 +275,7 @@ function CreatableSelectDemo() {
               value: inputValue.toLowerCase(),
               label: inputValue,
             };
+
             setCreatableOptions((prev) => [...prev, newOption]);
             setCreatableValue(newOption.value);
           }}

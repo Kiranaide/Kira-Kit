@@ -29,6 +29,7 @@ function useReducedMotion(): boolean {
     };
 
     mediaQuery.addEventListener("change", handler);
+
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
@@ -49,6 +50,7 @@ function useCountUp(
     if (!enabled || reducedMotion) {
       setDisplayValue(value);
       previousValue.current = value;
+
       return;
     }
 
@@ -271,9 +273,11 @@ const StatsCardContext = React.createContext<StatsCardContextValue | null>(
 
 function useStatsCardContext() {
   const context = React.useContext(StatsCardContext);
+
   if (!context) {
     throw new Error("StatsCard components must be used within a StatsCard");
   }
+
   return context;
 }
 
@@ -374,6 +378,7 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
   ) => {
     const id = React.useId();
     const [drawerOpen, setDrawerOpen] = React.useState(false);
+
     const isInteractive =
       variant === "interactive" || !!onClick || !!drawerContent;
 
@@ -381,6 +386,7 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
       if (drawerContent) {
         setDrawerOpen(true);
       }
+
       onClick?.(e);
     };
 
@@ -406,7 +412,7 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
       <article
         ref={ref}
         data-slot="stats-card"
-        role="article"
+        
         aria-labelledby={`${id}-title`}
         tabIndex={isInteractive ? 0 : undefined}
         onClick={isInteractive ? handleClick : undefined}
@@ -453,6 +459,7 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
     );
   }
 );
+
 StatsCard.displayName = "StatsCard";
 
 const StatsCardIcon = React.forwardRef<HTMLDivElement, StatsCardIconProps>(
@@ -466,6 +473,7 @@ const StatsCardIcon = React.forwardRef<HTMLDivElement, StatsCardIconProps>(
     />
   )
 );
+
 StatsCardIcon.displayName = "StatsCardIcon";
 
 const StatsCardHeader = React.forwardRef<HTMLDivElement, StatsCardHeaderProps>(
@@ -478,6 +486,7 @@ const StatsCardHeader = React.forwardRef<HTMLDivElement, StatsCardHeaderProps>(
     />
   )
 );
+
 StatsCardHeader.displayName = "StatsCardHeader";
 
 const StatsCardTitle = React.forwardRef<
@@ -485,6 +494,7 @@ const StatsCardTitle = React.forwardRef<
   StatsCardTitleProps
 >(({ className, ...props }, ref) => {
   const { id } = useStatsCardContext();
+
   return (
     <h3
       ref={ref}
@@ -495,6 +505,7 @@ const StatsCardTitle = React.forwardRef<
     />
   );
 });
+
 StatsCardTitle.displayName = "StatsCardTitle";
 
 const StatsCardAction = React.forwardRef<HTMLDivElement, StatsCardActionProps>(
@@ -507,6 +518,7 @@ const StatsCardAction = React.forwardRef<HTMLDivElement, StatsCardActionProps>(
     />
   )
 );
+
 StatsCardAction.displayName = "StatsCardAction";
 
 const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
@@ -530,6 +542,7 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
     ref
   ) => {
     const { id } = useStatsCardContext();
+
     const animatedValue = useCountUp(
       value ?? 0,
       animationDuration,
@@ -539,8 +552,9 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
 
     const displayValue =
       children ??
-      (value !== undefined
-        ? formatValue(animate ? animatedValue : value, {
+      (value === undefined
+        ? null
+        : formatValue(animate ? animatedValue : value, {
             format,
             currency,
             locale,
@@ -548,8 +562,7 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
             prefix,
             suffix,
             formatter,
-          })
-        : null);
+          }));
 
     return (
       <div
@@ -567,6 +580,7 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
     );
   }
 );
+
 StatsCardValue.displayName = "StatsCardValue";
 
 const StatsCardTrend = React.forwardRef<HTMLDivElement, StatsCardTrendProps>(
@@ -633,6 +647,7 @@ const StatsCardTrend = React.forwardRef<HTMLDivElement, StatsCardTrendProps>(
     );
   }
 );
+
 StatsCardTrend.displayName = "StatsCardTrend";
 
 const StatsCardDescription = React.forwardRef<
@@ -646,6 +661,7 @@ const StatsCardDescription = React.forwardRef<
     {...props}
   />
 ));
+
 StatsCardDescription.displayName = "StatsCardDescription";
 
 const StatsCardProgress = React.forwardRef<
@@ -698,6 +714,7 @@ const StatsCardProgress = React.forwardRef<
     );
   }
 );
+
 StatsCardProgress.displayName = "StatsCardProgress";
 
 const StatsCardSpark = React.forwardRef<HTMLDivElement, StatsCardSparkProps>(
@@ -713,6 +730,7 @@ const StatsCardSpark = React.forwardRef<HTMLDivElement, StatsCardSparkProps>(
     </div>
   )
 );
+
 StatsCardSpark.displayName = "StatsCardSpark";
 
 const StatsCardSparkline = React.forwardRef<
@@ -720,8 +738,10 @@ const StatsCardSparkline = React.forwardRef<
   StatsCardSparklineProps
 >(({ className, data, trend = "neutral", ...props }, ref) => {
   const reducedMotion = useReducedMotion();
+
   const color =
     trend === "up" ? "#22c55e" : trend === "down" ? "#ef4444" : "#6b7280";
+
   const chartData = data.map((value, index) => ({ index, value }));
   const gradientId = React.useId();
 
@@ -754,6 +774,7 @@ const StatsCardSparkline = React.forwardRef<
     </div>
   );
 });
+
 StatsCardSparkline.displayName = "StatsCardSparkline";
 
 const StatsCardFooter = React.forwardRef<HTMLDivElement, StatsCardFooterProps>(
@@ -769,6 +790,7 @@ const StatsCardFooter = React.forwardRef<HTMLDivElement, StatsCardFooterProps>(
     />
   )
 );
+
 StatsCardFooter.displayName = "StatsCardFooter";
 
 const StatsCardTimeRange = React.forwardRef<
@@ -782,6 +804,7 @@ const StatsCardTimeRange = React.forwardRef<
     {...props}
   />
 ));
+
 StatsCardTimeRange.displayName = "StatsCardTimeRange";
 
 const StatsCardSkeleton = React.forwardRef<
@@ -824,6 +847,7 @@ const StatsCardSkeleton = React.forwardRef<
     </div>
   )
 );
+
 StatsCardSkeleton.displayName = "StatsCardSkeleton";
 
 export {

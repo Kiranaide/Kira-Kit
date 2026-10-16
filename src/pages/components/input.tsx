@@ -607,7 +607,7 @@ function NumericDemo() {
 function FormattedDemo() {
   const [currencyValue, setCurrencyValue] = useState<number | null>(1234.56);
   const [percentageValue, setPercentageValue] = useState<number | null>(12.5);
-  const [decimalValue, setDecimalValue] = useState<number | null>(98765.43);
+  const [decimalValue, setDecimalValue] = useState<number | null>(98_765.43);
 
   return (
     <div className="max-w-sm space-y-4">

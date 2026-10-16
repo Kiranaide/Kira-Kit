@@ -45,6 +45,7 @@ function LiveRegion({
       const timer = setTimeout(() => {
         setCurrentMessage(undefined);
       }, clearAfter);
+
       return () => clearTimeout(timer);
     }
   }, [message, clearAfter]);
@@ -109,6 +110,7 @@ function LiveRegionProvider({
       options?: { politeness?: "polite" | "assertive" }
     ) => {
       const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
       const newAnnouncement: Announcement = {
         id,
         message,
@@ -175,9 +177,11 @@ function LiveRegionProvider({
 
 function useLiveRegion() {
   const context = React.useContext(LiveRegionContext);
+
   if (!context) {
     throw new Error("useLiveRegion must be used within a LiveRegionProvider");
   }
+
   return context;
 }
 
@@ -185,4 +189,5 @@ function useLiveRegion() {
 // EXPORTS
 // ============================================
 export { LiveRegion, LiveRegionProvider, useLiveRegion };
+
 export type { LiveRegionProps, LiveRegionContextValue };

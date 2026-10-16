@@ -64,9 +64,11 @@ export function useAnnounce(options: UseAnnounceOptions = {}) {
       if (politeRef.current) {
         document.body.removeChild(politeRef.current);
       }
+
       if (assertiveRef.current) {
         document.body.removeChild(assertiveRef.current);
       }
+
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -78,6 +80,7 @@ export function useAnnounce(options: UseAnnounceOptions = {}) {
       if (!mounted) return;
 
       const politeness = announceOptions?.politeness ?? defaultPoliteness;
+
       const region =
         politeness === "assertive" ? assertiveRef.current : politeRef.current;
 
@@ -115,6 +118,7 @@ export function useAnnounce(options: UseAnnounceOptions = {}) {
     if (politeRef.current) {
       politeRef.current.textContent = "";
     }
+
     if (assertiveRef.current) {
       assertiveRef.current.textContent = "";
     }

@@ -131,12 +131,19 @@ type GridCols =
   | 12
   | "none"
   | "subgrid";
+
 type GridRows = 1 | 2 | 3 | 4 | 5 | 6 | "none" | "subgrid";
+
 type GridGap = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24;
+
 type GridFlow = "row" | "column" | "dense" | "row-dense" | "column-dense";
+
 type GridAlign = "start" | "end" | "center" | "stretch" | "baseline";
+
 type GridJustify = "start" | "end" | "center" | "stretch";
+
 type GridPlace = "start" | "end" | "center" | "stretch";
+
 type GridElement =
   | "div"
   | "section"
@@ -296,7 +303,9 @@ const justifySelfMap: Record<string, string> = {
 };
 
 type ColSpan = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | "full";
+
 type RowSpan = 1 | 2 | 3 | 4 | 5 | 6 | "full";
+
 type ColPosition =
   | 1
   | 2
@@ -312,7 +321,9 @@ type ColPosition =
   | 12
   | 13
   | "auto";
+
 type RowPosition = 1 | 2 | 3 | 4 | 5 | 6 | 7 | "auto";
+
 type SelfAlign = "start" | "end" | "center" | "stretch" | "auto";
 
 interface GridItemProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -354,6 +365,7 @@ function GridItem({
 }
 
 export { Grid, GridItem, gridVariants };
+
 export type {
   GridProps,
   GridItemProps,

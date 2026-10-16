@@ -243,9 +243,11 @@ function DatePicker({
   className,
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false);
+
   const [pendingValue, setPendingValue] = React.useState<
     Date | DateRange | undefined
   >(undefined);
+
   const [month, setMonthState] = React.useState<Date>(new Date());
 
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -268,10 +270,13 @@ function DatePicker({
         if (applyMode === "confirm") {
           setPendingValue(undefined);
         }
+
         setIsOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
+
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [applyMode]);
 
@@ -281,10 +286,13 @@ function DatePicker({
         if (applyMode === "confirm") {
           setPendingValue(undefined);
         }
+
         setIsOpen(false);
       }
     };
+
     document.addEventListener("keydown", handleKeyDown);
+
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, applyMode]);
 
@@ -292,23 +300,33 @@ function DatePicker({
 
   const formatValue = () => {
     const displayValue = value;
+
     if (!displayValue) return placeholder;
+
     if (displayValue instanceof Date) {
       return format(displayValue, "MMM dd, yyyy");
     }
+
     if ("from" in displayValue) {
       const { from, to } = displayValue;
+
       if (!from) return placeholder;
+
       if (!to) return format(from, "MMM dd, yyyy") + " - ...";
+
       return `${format(from, "MMM dd")} - ${format(to, "MMM dd, yyyy")}`;
     }
+
     return placeholder;
   };
 
   const disabledMatcher = React.useMemo(() => {
     const matchers: Array<{ before: Date } | { after: Date }> = [];
+
     if (minDate) matchers.push({ before: minDate });
+
     if (maxDate) matchers.push({ after: maxDate });
+
     return matchers.length > 0 ? matchers : undefined;
   }, [minDate, maxDate]);
 
@@ -322,6 +340,7 @@ function DatePicker({
 
   const handlePresetClick = (preset: DatePreset) => {
     const presetValue = preset.getValue();
+
     if (applyMode === "confirm") {
       setPendingValue(presetValue);
     } else {
@@ -599,4 +618,5 @@ function DatePicker({
 }
 
 export { DatePicker, datePickerTriggerVariants };
+
 export type { DatePickerProps, DatePreset, ApplyMode };

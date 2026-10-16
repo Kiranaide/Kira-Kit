@@ -67,6 +67,7 @@ export function useDataTablePersistence<TData>(
     } else {
       const storageObj =
         storage === "localStorage" ? localStorage : sessionStorage;
+
       setHasSavedState(storageObj.getItem(storageKey) !== null);
     }
   }, [storageKey, storage]);
@@ -76,12 +77,18 @@ export function useDataTablePersistence<TData>(
     const toSave: Record<string, unknown> = {};
 
     if (persist.sorting) toSave.sorting = state.sorting;
+
     if (persist.columnFilters) toSave.columnFilters = state.columnFilters;
+
     if (persist.columnVisibility)
       toSave.columnVisibility = state.columnVisibility;
+
     if (persist.columnOrder) toSave.columnOrder = state.columnOrder;
+
     if (persist.columnPinning) toSave.columnPinning = state.columnPinning;
+
     if (persist.pagination) toSave.pagination = state.pagination;
+
     if (persist.globalFilter) toSave.globalFilter = state.globalFilter;
 
     return toSave;
@@ -98,6 +105,7 @@ export function useDataTablePersistence<TData>(
     } else {
       const storageObj =
         storage === "localStorage" ? localStorage : sessionStorage;
+
       storageObj.setItem(storageKey, serialized);
     }
 
@@ -110,6 +118,7 @@ export function useDataTablePersistence<TData>(
     if (storage === "url") {
       const params = new URLSearchParams(window.location.search);
       const encoded = params.get(storageKey);
+
       if (encoded) {
         try {
           serialized = atob(encoded);
@@ -120,6 +129,7 @@ export function useDataTablePersistence<TData>(
     } else {
       const storageObj =
         storage === "localStorage" ? localStorage : sessionStorage;
+
       serialized = storageObj.getItem(storageKey);
     }
 
@@ -131,21 +141,27 @@ export function useDataTablePersistence<TData>(
       if (state.sorting && persist.sorting) {
         table.setSorting(state.sorting);
       }
+
       if (state.columnFilters && persist.columnFilters) {
         table.setColumnFilters(state.columnFilters);
       }
+
       if (state.columnVisibility && persist.columnVisibility) {
         table.setColumnVisibility(state.columnVisibility);
       }
+
       if (state.columnOrder && persist.columnOrder) {
         table.setColumnOrder(state.columnOrder);
       }
+
       if (state.columnPinning && persist.columnPinning) {
         table.setColumnPinning(state.columnPinning);
       }
+
       if (state.pagination && persist.pagination) {
         table.setPagination(state.pagination);
       }
+
       if (state.globalFilter && persist.globalFilter) {
         table.setGlobalFilter(state.globalFilter);
       }
@@ -162,6 +178,7 @@ export function useDataTablePersistence<TData>(
     } else {
       const storageObj =
         storage === "localStorage" ? localStorage : sessionStorage;
+
       storageObj.removeItem(storageKey);
     }
 

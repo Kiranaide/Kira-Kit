@@ -5,6 +5,7 @@ const oklch = converter("oklch");
 
 function generatePalette(primaryColor: string) {
   const p = oklch(primaryColor);
+
   if (!p) throw new Error(`Invalid color: ${primaryColor}`);
   const h = p.h || 0;
   const c = p.c || 0.15;

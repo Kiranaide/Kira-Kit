@@ -752,6 +752,7 @@ function SearchDemo() {
     { value: "a11y", title: "Accessibility", content: "WCAG 2.2 AA throughout." },
     { value: "deploy", title: "Deployment", content: "Push to Vercel." },
   ];
+
   return <KiraAccordion searchable searchPlaceholder="Search docs…" items={items} />;
 }
 
@@ -769,6 +770,7 @@ function PersistedDemo() {
     { value: "s2", title: "Section 2", content: "My open state is remembered." },
     { value: "s3", title: "Section 3", content: "Stored under the persistKey." },
   ];
+
   return <KiraAccordion persistKey="demo-docs" items={items} />;
 }
 
@@ -783,6 +785,7 @@ function EndHandleDemo() {
     { value: "b", title: "Bravo", content: "Handle on the right." },
     { value: "c", title: "Charlie", content: "Handle on the right." },
   ]);
+
   return (
     <KiraAccordion
       draggable

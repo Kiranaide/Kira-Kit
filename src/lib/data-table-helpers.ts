@@ -183,6 +183,7 @@ export function createColumnHelper<TData>() {
         header: options.header ?? formatHeader(accessorKey),
         cell: options.cell ?? (({ getValue }) => {
           const value = getValue();
+
           return typeof value === "number" ? value.toLocaleString() : value;
         }),
         enableSorting: options.enableSorting ?? true,
@@ -209,9 +210,12 @@ export function createColumnHelper<TData>() {
         header: options.header ?? formatHeader(accessorKey),
         cell: options.cell ?? (({ getValue }) => {
           const value = getValue();
+
           if (!value) return "—";
           const date = value instanceof Date ? value : new Date(value as string | number);
+
           if (isNaN(date.getTime())) return "—";
+
           return new Intl.DateTimeFormat("en", format).format(date);
         }),
         enableSorting: options.enableSorting ?? true,
@@ -238,6 +242,7 @@ export function createColumnHelper<TData>() {
         header: options.header ?? formatHeader(accessorKey),
         cell: options.cell ?? (({ getValue }) => {
           const value = getValue();
+
           return value ? "Yes" : "No";
         }),
         enableSorting: options.enableSorting ?? true,
@@ -391,13 +396,17 @@ export function exportToCSV<TData extends Record<string, unknown>>(
   if (data.length === 0) return;
 
   const headers = columns.map(formatHeader);
+
   const rows = data.map((row) =>
     columns.map((col) => {
       const value = row[col];
+
       if (value === null || value === undefined) return "";
+
       if (typeof value === "string" && value.includes(",")) {
         return `"${value.replace(/"/g, '""')}"`;
       }
+
       return String(value);
     })
   );

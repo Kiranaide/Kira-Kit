@@ -158,6 +158,7 @@ function MonthYearPicker({
   className,
 }: MonthYearPickerProps) {
   const [view, setView] = React.useState<"month" | "year">(defaultView);
+
   const [displayYear, setDisplayYear] = React.useState(
     value?.getFullYear() ?? new Date().getFullYear()
   );
@@ -174,6 +175,7 @@ function MonthYearPicker({
 
   const handlePrev = () =>
     setDisplayYear((prev) => prev - (view === "year" ? 10 : 1));
+
   const handleNext = () =>
     setDisplayYear((prev) => prev + (view === "year" ? 10 : 1));
 
@@ -182,6 +184,7 @@ function MonthYearPicker({
       setYear(value ?? new Date(), displayYear),
       monthIndex
     );
+
     onChange?.(newDate);
   };
 
@@ -245,8 +248,10 @@ function MonthYearPicker({
                 const isSelected =
                   value?.getMonth() === idx &&
                   value?.getFullYear() === displayYear;
+
                 const isToday =
                   currentMonth === idx && currentYear === displayYear;
+
                 return (
                   <button
                     key={month}
@@ -268,8 +273,10 @@ function MonthYearPicker({
                 (year) => {
                   const isSelected = value?.getFullYear() === year;
                   const isToday = currentYear === year;
+
                   const isOutside =
                     year < startDecade || year >= startDecade + 10;
+
                   return (
                     <button
                       key={year}
@@ -476,15 +483,20 @@ function Calendar({
     const matchers: Array<
       { before: Date } | { after: Date } | ((date: Date) => boolean)
     > = [];
+
     if (minDate) matchers.push({ before: minDate });
+
     if (maxDate) matchers.push({ after: maxDate });
+
     if (disabled) matchers.push(disabled);
+
     return matchers.length > 0 ? matchers : undefined;
   }, [minDate, maxDate, disabled]);
 
   const handleTodayClick = React.useCallback(() => {
     const today = new Date();
     setMonth(today);
+
     if (mode === "single") {
       onSelect?.(today);
     } else if (mode === "range") {
@@ -591,9 +603,7 @@ function Calendar({
             hidden: "invisible",
           },
           footer:
-            footer !== undefined ? (
-              footer
-            ) : showTodayButton ? (
+            footer === undefined ? showTodayButton ? (
               <div className="mt-3 pt-3 border-t border-border">
                 <button
                   type="button"
@@ -607,7 +617,9 @@ function Calendar({
                   Today
                 </button>
               </div>
-            ) : null,
+            ) : null : (
+              footer
+            ),
         } as DayPickerProps;
 
         return <DayPicker {...dayPickerProps} />;
@@ -623,4 +635,5 @@ export {
   toggleButtonVariants,
   gridCellVariants,
 };
+
 export type { CalendarProps, MonthYearPickerProps };

@@ -10,9 +10,11 @@ export async function writeFile(
   content: string
 ): Promise<void> {
   const dir = dirname(filePath);
+
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }
+
   writeFileSync(filePath, content, "utf-8");
 }
 
@@ -21,9 +23,11 @@ export async function copyFile(
   destination: string
 ): Promise<void> {
   const dir = dirname(destination);
+
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }
+
   cpSync(source, destination);
 }
 
@@ -34,6 +38,7 @@ export async function copyDirectory(
   if (!existsSync(destination)) {
     mkdirSync(destination, { recursive: true });
   }
+
   cpSync(source, destination, { recursive: true });
 }
 

@@ -81,8 +81,10 @@ interface ToastOptions {
 function createToast(type: ToastType) {
   return (title: React.ReactNode, options?: ToastOptions): string => {
     const { description, duration, icon, action } = options ?? {};
+
     const resolvedTimeout =
       duration === Infinity ? 0 : (duration ?? DURATION[type]);
+
     return manager.add({
       title,
       description,
@@ -241,4 +243,5 @@ function useToast() {
 }
 
 export { toast, useToast, KiraToastProvider, KiraToaster, toastVariants };
+
 export type { ToastType, ToastOptions, ToastData, PromiseToastOptions };

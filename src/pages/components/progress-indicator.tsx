@@ -170,6 +170,7 @@ export function VariantsDemo() {
 
 function SizesDemo() {
   const currentStep = 1;
+
   const steps = [
     { label: "Step 1", value: 0 },
     { label: "Step 2", value: 1 },

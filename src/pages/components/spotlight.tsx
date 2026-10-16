@@ -213,6 +213,7 @@ function AsyncSearchDemo() {
   const handleSearch = async (query: string) => {
     if (!query) {
       setItems([]);
+
       return;
     }
 

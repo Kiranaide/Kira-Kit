@@ -95,6 +95,7 @@ function mergeRefs<T>(
   return (value: T) => {
     for (const ref of refs) {
       if (!ref) continue;
+
       if (typeof ref === "function") {
         ref(value);
       } else {
@@ -103,6 +104,7 @@ function mergeRefs<T>(
     }
   };
 }
+
 import { getGuidePreset, type GuidePreset } from "@/lib/camera/guide-presets";
 
 interface CameraState {
@@ -136,27 +138,33 @@ interface CameraActions {
 }
 
 const CameraStateContext = React.createContext<CameraState | null>(null);
+
 const CameraActionsContext = React.createContext<CameraActions | null>(null);
 
 function useCameraState(): CameraState {
   const context = React.useContext(CameraStateContext);
+
   if (!context) {
     throw new Error("useCameraState must be used within a Camera component");
   }
+
   return context;
 }
 
 function useCameraActions(): CameraActions {
   const context = React.useContext(CameraActionsContext);
+
   if (!context) {
     throw new Error("useCameraActions must be used within a Camera component");
   }
+
   return context;
 }
 
 function useCameraContext(): CameraState & CameraActions {
   const state = useCameraState();
   const actions = useCameraActions();
+
   return { ...state, ...actions };
 }
 
@@ -404,6 +412,7 @@ const CameraRoot = React.forwardRef<CameraRef, CameraProps>(
       onError,
       onStatusChange: (status: CameraStatus) => {
         onStatusChange?.(status);
+
         if (status === "ready") {
           onReady?.();
         }
@@ -541,8 +550,10 @@ const CameraPreview = React.forwardRef<HTMLVideoElement, CameraPreviewProps>(
   ) => {
     const { videoRef, status, facingMode } = useCameraState();
     const shouldMirror = mirror ?? facingMode === "user";
+
     const isLoading =
       status === "initializing" || status === "requesting-permission";
+
     const reducedMotion = prefersReducedMotion();
 
     return (
@@ -636,6 +647,7 @@ function CameraCaptureFlash({
   const reducedMotion = prefersReducedMotion();
 
   if (status !== "capturing") return null;
+
   if (reducedMotion) return null;
 
   return (
@@ -733,6 +745,7 @@ const CameraButton = React.forwardRef<HTMLButtonElement, CameraButtonProps>(
       )
         return;
       const pattern = HAPTIC_PATTERNS[hapticPattern];
+
       if (Array.isArray(pattern)) {
         navigator.vibrate(pattern.slice());
       } else {
@@ -761,12 +774,15 @@ const CameraButton = React.forwardRef<HTMLButtonElement, CameraButtonProps>(
       if (reducedMotion || pressAnimation === "none" || !isPressed) {
         return {};
       }
+
       if (pressAnimation === "scale") {
         return { transform: "scale(0.92)" };
       }
+
       if (pressAnimation === "bounce") {
         return { transform: "scale(0.95)" };
       }
+
       return {};
     }, [isPressed, pressAnimation, reducedMotion]);
 
@@ -799,7 +815,9 @@ const CameraButton = React.forwardRef<HTMLButtonElement, CameraButtonProps>(
 
     const renderIcon = () => {
       const resolvedIcon = icon ?? getDefaultIcon();
+
       if (!resolvedIcon) return null;
+
       return (
         <span
           className="flex items-center justify-center"
@@ -817,6 +835,7 @@ const CameraButton = React.forwardRef<HTMLButtonElement, CameraButtonProps>(
 
     const renderBadge = () => {
       if (!badge) return null;
+
       return (
         <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-500 px-1.5 text-[10px] font-semibold text-white">
           {badge}
@@ -836,6 +855,7 @@ const CameraButton = React.forwardRef<HTMLButtonElement, CameraButtonProps>(
           />
         );
       }
+
       if (indicator === "ring") {
         return (
           <span
@@ -847,11 +867,13 @@ const CameraButton = React.forwardRef<HTMLButtonElement, CameraButtonProps>(
           />
         );
       }
+
       return null;
     };
 
     const renderPulse = () => {
       if (!pulse || reducedMotion) return null;
+
       return (
         <span
           className="absolute inset-0 rounded-full animate-ping opacity-75"
@@ -938,6 +960,7 @@ const CaptureButton = React.forwardRef<HTMLButtonElement, CaptureButtonProps>(
       md: { button: "xl" as const, icon: 28 },
       lg: { button: "xl" as const, icon: 32 },
     };
+
     const { button: buttonSize, icon: iconSize } = sizeMap[size];
 
     return (
@@ -996,11 +1019,13 @@ const RecordButton = React.forwardRef<HTMLButtonElement, RecordButtonProps>(
       md: { button: "lg" as const, icon: 24 },
       lg: { button: "xl" as const, icon: 28 },
     };
+
     const { button: buttonSize, icon: iconSize } = sizeMap[size];
 
     const formatDuration = (seconds: number) => {
       const mins = Math.floor(seconds / 60);
       const secs = seconds % 60;
+
       return `${mins}:${secs.toString().padStart(2, "0")}`;
     };
 
@@ -1230,6 +1255,7 @@ const AspectRatioButton = React.forwardRef<
       const options = ASPECT_RATIOS.map(
         (opt) => opt.name
       ) as CameraAspectRatio[];
+
       const currentIndex = options.indexOf(aspectRatio);
       const nextIndex = (currentIndex + 1) % options.length;
       onAspectRatioChange?.(options[nextIndex]);
@@ -1289,6 +1315,7 @@ const ZoomButton = React.forwardRef<HTMLButtonElement, ZoomButtonProps>(
       if (zoomAction === "reset" && zoom && zoom !== 1) {
         return `${zoom.toFixed(1)}x`;
       }
+
       return undefined;
     }, [zoomAction, zoom]);
 
@@ -1351,6 +1378,7 @@ const CameraControls = React.forwardRef<HTMLDivElement, CameraControlsProps>(
   ) => {
     const { status, isRecording, isFlashSupported, isFlashOn, devices } =
       useCameraState();
+
     const {
       capture,
       startRecording,
@@ -1367,9 +1395,11 @@ const CameraControls = React.forwardRef<HTMLDivElement, CameraControlsProps>(
 
     const handleCapture = React.useCallback(() => {
       const result = capture();
+
       if (result) {
         onCapture?.();
       }
+
       setTimeout(() => captureButtonRef.current?.focus(), 200);
     }, [capture, onCapture]);
 
@@ -1489,6 +1519,7 @@ const CameraControlBar = React.forwardRef<
 
     const floatingStyles = React.useMemo(() => {
       if (position !== "floating" || !floatingPosition) return {};
+
       return {
         top: floatingPosition.top,
         bottom: floatingPosition.bottom,
@@ -1595,6 +1626,7 @@ const variantToPreset: Record<string, GuidePreset> = {
   face: "face-oval",
   document: "id-front",
 };
+
 const documentTypeToPreset: Record<DocumentType, GuidePreset> = {
   "national-id": "id-front",
   passport: "passport",
@@ -1628,17 +1660,21 @@ function CameraGuide({
 
   const effectivePreset = React.useMemo(() => {
     if (preset) return preset;
+
     if (variant === "document" && documentType) {
       return documentTypeToPreset[documentType];
     }
+
     if (variant) {
       return variantToPreset[variant];
     }
+
     return "custom";
   }, [preset, variant, documentType]);
 
   const guideConfig = React.useMemo(() => {
     const presetConfig = getGuidePreset(effectivePreset);
+
     return {
       shape: presetConfig.shape,
       aspectRatio: presetConfig.aspectRatio,
@@ -1659,6 +1695,7 @@ function CameraGuide({
 
   const currentColor = React.useMemo(() => {
     if (isAligned) return guideConfig.alignedColor;
+
     if (alignmentProgress !== undefined) {
       const r1 = parseInt(guideConfig.misalignedColor.slice(1, 3), 16);
       const g1 = parseInt(guideConfig.misalignedColor.slice(3, 5), 16);
@@ -1669,8 +1706,10 @@ function CameraGuide({
       const r = Math.round(r1 + (r2 - r1) * alignmentProgress);
       const g = Math.round(g1 + (g2 - g1) * alignmentProgress);
       const b = Math.round(b1 + (b2 - b1) * alignmentProgress);
+
       return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
     }
+
     return guideConfig.misalignedColor;
   }, [
     isAligned,
@@ -1681,17 +1720,20 @@ function CameraGuide({
 
   const animationStyles = React.useMemo(() => {
     if (respectReducedMotion && reducedMotion) return {};
+
     if (guideConfig.animation === "pulse") {
       return {
         animation: `pulse ${guideConfig.animationDuration}ms ease-in-out infinite`,
       };
     }
+
     if (guideConfig.animation === "glow") {
       return {
         animation: `glow ${guideConfig.animationDuration}ms ease-in-out infinite`,
         boxShadow: `0 0 20px ${currentColor}40`,
       };
     }
+
     return {};
   }, [
     guideConfig.animation,
@@ -1703,6 +1745,7 @@ function CameraGuide({
 
   const safeZoneStyle = React.useMemo<React.CSSProperties | undefined>(() => {
     if (!safeZone) return undefined;
+
     return {
       paddingTop: safeZone.top,
       paddingBottom: safeZone.bottom,
@@ -1714,6 +1757,7 @@ function CameraGuide({
   const renderGuide = () => {
     const { shape, cornerStyle, cornerSize, strokeWidth, fillColor } =
       guideConfig;
+
     const strokeStyle: React.CSSProperties = {
       stroke: currentColor,
       strokeWidth,
@@ -1736,6 +1780,7 @@ function CameraGuide({
     if (shape === "rectangle" || shape === "square") {
       if (cornerStyle === "bracket" && cornerSize) {
         const cs = cornerSize;
+
         return (
           <svg
             className="w-full h-full"
@@ -1766,7 +1811,9 @@ function CameraGuide({
           </svg>
         );
       }
+
       const radius = cornerStyle === "rounded" ? 8 : 0;
+
       return (
         <svg
           className="w-full h-full"
@@ -1786,6 +1833,7 @@ function CameraGuide({
         </svg>
       );
     }
+
     return null;
   };
 
@@ -1795,11 +1843,13 @@ function CameraGuide({
     "bottom-right": "bottom-4 right-4",
     "bottom-left": "bottom-4 left-4",
   };
+
   const instructionPositionClasses = {
     top: "top-8",
     bottom: "bottom-8",
     inside: "bottom-4",
   };
+
   const displayInstruction =
     instruction || getGuidePreset(effectivePreset).defaultInstruction;
 
@@ -1930,6 +1980,7 @@ function CameraGrid({
     strokeWidth: lineWidth,
     opacity,
   };
+
   const dotStyle: React.CSSProperties = { fill: color, opacity: opacity * 1.5 };
   const animationClass = animated && !reducedMotion ? "animate-fade-in" : "";
 
@@ -1961,6 +2012,7 @@ function CameraGrid({
     const phi = 1.618;
     const goldenX = 100 / phi;
     const goldenY = 100 / phi;
+
     return (
       <svg
         className={cn(
@@ -2102,10 +2154,12 @@ function CameraScanOverlay({
 }: CameraScanOverlayProps) {
   const reducedMotion = prefersReducedMotion();
   const defaults = SCAN_OVERLAY_DEFAULTS[preset];
+
   const config: CameraScanOverlayConfig = {
     ...defaults,
     ...configOverride,
   };
+
   const animationsEnabled =
     config.animationsEnabled !== false && !reducedMotion;
 
@@ -2414,8 +2468,10 @@ const CameraPermissions = React.forwardRef<
     if (!shouldShow) return null;
 
     const isRequesting = status === "requesting-permission";
+
     const isDenied =
       status === "permission-denied" || error?.code === "PERMISSION_DENIED";
+
     const isError = status === "error" && !isDenied;
 
     const getContent = () => {
@@ -2430,6 +2486,7 @@ const CameraPermissions = React.forwardRef<
           showHelp: false,
         };
       }
+
       if (isDenied) {
         return {
           icon: IconCameraOff,
@@ -2441,6 +2498,7 @@ const CameraPermissions = React.forwardRef<
           showHelp: showHelpLink,
         };
       }
+
       return {
         icon: IconAlertCircle,
         iconClass: "",
@@ -2457,9 +2515,11 @@ const CameraPermissions = React.forwardRef<
 
     const handleRetry = async () => {
       onRetry?.();
+
       if (isDenied) {
         await requestPermission();
       }
+
       await start();
     };
 
@@ -2814,6 +2874,7 @@ function CameraSettings({
     position === "left" || position === "right" || position === "bottom"
       ? position
       : "bottom";
+
   const isBottomSheet = side === "bottom";
 
   return (
@@ -2852,6 +2913,7 @@ function CameraKeyboardHelp({
 }: CameraKeyboardHelpProps) {
   const shortcutGroups = React.useMemo(() => {
     const allDescriptions = { ...KEYBOARD_DESCRIPTIONS, ...customDescriptions };
+
     return [
       {
         label: "Primary Actions",
@@ -2934,6 +2996,7 @@ function CameraKeyboardHelp({
                         customShortcuts?.[key] ||
                         []),
                     ];
+
                     return (
                       <div
                         key={key}
@@ -2990,9 +3053,11 @@ function CameraStatusAnnouncer({
   React.useEffect(() => {
     if (!enabled) return;
     const message = customMessages?.[status] ?? STATUS_ANNOUNCEMENTS[status];
+
     const fullMessage = additionalMessage
       ? `${message}. ${additionalMessage}`
       : message;
+
     if (fullMessage && fullMessage !== announcement) {
       requestAnimationFrame(() => {
         setKey((k) => k + 1);
@@ -3057,6 +3122,7 @@ function getProgressDescription(
   stepName?: string
 ): string {
   const base = `Step ${currentStep} of ${totalSteps}`;
+
   return stepName ? `${base}: ${stepName}` : base;
 }
 
@@ -3218,18 +3284,22 @@ function CameraZoomIndicator({
   const [isVisible, setIsVisible] = React.useState(
     !showOnChange || alwaysVisible
   );
+
   const hideTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   React.useEffect(() => {
     if (showOnChange && !alwaysVisible) {
       setIsVisible(true);
+
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current);
       }
+
       hideTimerRef.current = setTimeout(() => {
         setIsVisible(false);
       }, hideDelay);
     }
+
     return () => {
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current);
@@ -3241,12 +3311,15 @@ function CameraZoomIndicator({
     if (format === "multiplier") {
       return `${zoom.toFixed(1)}x`;
     }
+
     const percentage = ((zoom - minZoom) / (maxZoom - minZoom)) * 100;
+
     return `${Math.round(percentage)}%`;
   }, [zoom, format, minZoom, maxZoom]);
 
   const barWidth = React.useMemo(() => {
     const percentage = ((zoom - minZoom) / (maxZoom - minZoom)) * 100;
+
     return `${Math.max(0, Math.min(100, percentage))}%`;
   }, [zoom, minZoom, maxZoom]);
 
@@ -3441,6 +3514,7 @@ class CameraErrorBoundary extends Component<
         if (typeof fallback === "function") {
           return fallback(error, this.handleReset);
         }
+
         return fallback;
       }
 

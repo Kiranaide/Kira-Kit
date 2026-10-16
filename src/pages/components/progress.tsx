@@ -129,6 +129,7 @@ function AnimatedDemo() {
     const timer = setInterval(() => {
       setProgress((prev) => (prev >= 100 ? 0 : prev + 5));
     }, 500);
+
     return () => clearInterval(timer);
   }, []);
 
@@ -354,12 +355,15 @@ function OnCompleteDemo() {
   const handleStart = () => {
     setCompleted(false);
     setProgress(0);
+
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
+
           return 100;
         }
+
         return prev + 10;
       });
     }, 200);
@@ -579,8 +583,10 @@ function LoadingExampleDemo() {
           setTimeout(() => {
             setIsLoading(false);
           }, 500);
+
           return 100;
         }
+
         return prev + 2;
       });
     }, 50);

@@ -397,6 +397,7 @@ const blurUpCode = `import { AspectRatio, AspectRatioImage } from "@/components/
 
 function BlurUpDemo() {
   const [key, setKey] = useState(0);
+
   return (
     <div className="space-y-3 max-w-md">
       <AspectRatio ratio="16:9" className="rounded-lg bg-muted">

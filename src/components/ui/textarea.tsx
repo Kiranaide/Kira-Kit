@@ -122,9 +122,11 @@ function TextareaWithCounter({
   ...props
 }: TextareaWithCounterProps) {
   const reduced = useReducedMotion();
+
   const [internalValue, setInternalValue] = React.useState(
     (defaultValue as string) ?? ""
   );
+
   const isControlled = value !== undefined;
   const currentValue = isControlled ? String(value) : internalValue;
   const currentLength = currentValue.length;
@@ -152,6 +154,7 @@ function TextareaWithCounter({
           : `${Math.abs(remaining)} characters over limit`
       );
     }, 400);
+
     return () => clearTimeout(t);
   }, [remaining]);
 
@@ -257,9 +260,11 @@ function KiraTextarea({
 }: KiraTextareaProps) {
   const reduced = useReducedMotion();
   const ref = React.useRef<HTMLTextAreaElement>(null);
+
   const [internalValue, setInternalValue] = React.useState(
     (defaultValue as string) ?? ""
   );
+
   const isControlled = value !== undefined;
   const currentValue = isControlled ? String(value) : internalValue;
 
@@ -268,6 +273,7 @@ function KiraTextarea({
   const descId = description ? `${generatedId}-desc` : undefined;
   const errId = error ? `${generatedId}-err` : undefined;
   const hintId = maxLength ? `${generatedId}-hint` : undefined;
+
   const describedBy =
     [ariaDescribedBy, descId, errId, hintId].filter(Boolean).join(" ") ||
     undefined;
@@ -283,13 +289,17 @@ function KiraTextarea({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     onKeyDown?.(e);
+
     if (!onSubmit || e.nativeEvent.isComposing) return; // guard IME
+
     const combo =
       submitOn === "enter"
         ? e.key === "Enter" && !e.shiftKey
         : e.key === "Enter" && (e.metaKey || e.ctrlKey);
+
     if (!combo) return;
     const trimmed = currentValue.trim();
+
     if (!trimmed) return;
     e.preventDefault();
     onSubmit(trimmed);
@@ -297,12 +307,14 @@ function KiraTextarea({
 
   const clear = () => {
     setValue("");
+
     // Notify controlled callers via a synthetic-ish change on the ref.
     if (ref.current) {
       const setter = Object.getOwnPropertyDescriptor(
         window.HTMLTextAreaElement.prototype,
         "value"
       )?.set;
+
       setter?.call(ref.current, "");
       ref.current.dispatchEvent(new Event("input", { bubbles: true }));
       ref.current.focus();
@@ -311,16 +323,19 @@ function KiraTextarea({
 
   const currentLength = currentValue.length;
   const remaining = maxLength ? maxLength - currentLength : 0;
+
   const isWarning =
     maxLength != null &&
     currentLength >= maxLength * (warningThreshold ?? 0.8) &&
     remaining >= 0;
+
   const isError = maxLength != null && currentLength > maxLength;
 
   // Debounced sr-only announce for the counter.
   const [announce, setAnnounce] = React.useState("");
   React.useEffect(() => {
     if (maxLength == null) return;
+
     const t = setTimeout(() => {
       setAnnounce(
         remaining >= 0
@@ -328,6 +343,7 @@ function KiraTextarea({
           : `${Math.abs(remaining)} characters over limit`
       );
     }, 400);
+
     return () => clearTimeout(t);
   }, [remaining, maxLength]);
 
@@ -414,4 +430,5 @@ function KiraTextarea({
 }
 
 export { Textarea, TextareaWithCounter, KiraTextarea, textareaVariants };
+
 export type { TextareaProps, TextareaWithCounterProps, KiraTextareaProps };

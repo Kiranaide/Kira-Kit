@@ -9,12 +9,17 @@ function detectPackageManager(): "bun" | "pnpm" | "npm" | "yarn" {
   const userAgent = process.env.npm_config_user_agent || "";
 
   if (userAgent.startsWith("bun")) return "bun";
+
   if (userAgent.startsWith("pnpm")) return "pnpm";
+
   if (userAgent.startsWith("yarn")) return "yarn";
+
   if (userAgent.startsWith("npm")) return "npm";
 
   if (process.env.BUN_INSTALL) return "bun";
+
   if (process.env.PNPM_HOME) return "pnpm";
+
   if (process.env.YARN_ENABLE_IMMUTABLE_CACHE === "false") return "yarn";
 
   return "bun";
@@ -84,6 +89,7 @@ export async function parseDependencies(
       `from\\s+["']${pkg.replace("/", "\\/")}[@^~]?[\\d.]*["']`,
       "g"
     );
+
     if (regex.test(componentContent)) {
       deps.add(pkg);
     }

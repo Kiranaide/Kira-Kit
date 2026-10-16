@@ -188,6 +188,7 @@ function useReducedMotion() {
     };
 
     mediaQuery.addEventListener("change", handleChange);
+
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
@@ -248,6 +249,7 @@ function TimelineRoot<T>({
         groupKey = groupBy(item);
       } else if (item.datetime) {
         const date = new Date(item.datetime);
+
         switch (groupBy) {
           case "day":
             groupKey = date.toLocaleDateString();
@@ -276,6 +278,7 @@ function TimelineRoot<T>({
       if (!groups[groupKey]) {
         groups[groupKey] = [];
       }
+
       groups[groupKey].push(item);
     });
 
@@ -360,6 +363,7 @@ function TimelineRoot<T>({
           >
             {virtualizer.getVirtualItems().map((virtualItem) => {
               const item = items[virtualItem.index];
+
               return (
                 <div
                   key={item.id}
@@ -575,6 +579,7 @@ const TimelineItem = React.forwardRef<HTMLDivElement, TimelineItemProps>(
       layout,
       collapsible: globalCollapsible,
     } = useTimelineContext();
+
     const [collapsed, setCollapsed] = React.useState(defaultCollapsed);
     const isCollapsible = itemCollapsible ?? globalCollapsible;
 
@@ -611,6 +616,7 @@ const TimelineItem = React.forwardRef<HTMLDivElement, TimelineItemProps>(
     );
   }
 );
+
 TimelineItem.displayName = "TimelineItem";
 
 interface TimelineDotProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -656,6 +662,7 @@ const TimelineDot = React.forwardRef<HTMLDivElement, TimelineDotProps>(
     );
   }
 );
+
 TimelineDot.displayName = "TimelineDot";
 
 interface TimelineConnectorProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -684,6 +691,7 @@ const TimelineConnector = React.forwardRef<
     />
   );
 });
+
 TimelineConnector.displayName = "TimelineConnector";
 
 interface TimelineContentProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -703,6 +711,7 @@ const TimelineContent = React.forwardRef<HTMLDivElement, TimelineContentProps>(
       const content = contentRef.current.querySelector(
         "[data-collapsible-content]"
       );
+
       if (!content) return;
 
       if (collapsed) {
@@ -767,6 +776,7 @@ const TimelineContent = React.forwardRef<HTMLDivElement, TimelineContentProps>(
     );
   }
 );
+
 TimelineContent.displayName = "TimelineContent";
 
 interface TimelineTimeProps extends React.HTMLAttributes<HTMLTimeElement> {
@@ -798,10 +808,13 @@ const TimelineTime = React.forwardRef<HTMLTimeElement, TimelineTimeProps>(
       const diffDays = Math.floor(diffHours / 24);
 
       if (diffSecs < 60) return "Just now";
+
       if (diffMins < 60)
         return `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`;
+
       if (diffHours < 24)
         return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+
       if (diffDays < 7)
         return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
 
@@ -825,6 +838,7 @@ const TimelineTime = React.forwardRef<HTMLTimeElement, TimelineTimeProps>(
     );
   }
 );
+
 TimelineTime.displayName = "TimelineTime";
 
 interface TimelineTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
@@ -851,6 +865,7 @@ const TimelineTitle = React.forwardRef<HTMLHeadingElement, TimelineTitleProps>(
     );
   }
 );
+
 TimelineTitle.displayName = "TimelineTitle";
 
 interface TimelineDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
@@ -872,6 +887,7 @@ const TimelineDescription = React.forwardRef<
     </p>
   );
 });
+
 TimelineDescription.displayName = "TimelineDescription";
 
 interface TimelineActionsProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -892,6 +908,7 @@ const TimelineActions = React.forwardRef<HTMLDivElement, TimelineActionsProps>(
     );
   }
 );
+
 TimelineActions.displayName = "TimelineActions";
 
 interface TimelineAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -930,6 +947,7 @@ const TimelineAvatar = React.forwardRef<HTMLDivElement, TimelineAvatarProps>(
     );
   }
 );
+
 TimelineAvatar.displayName = "TimelineAvatar";
 
 const Timeline = Object.assign(TimelineRoot, {

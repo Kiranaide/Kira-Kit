@@ -93,7 +93,9 @@ const indicatorIconSize = {
 } as const;
 
 type CheckboxSize = "sm" | "default" | "lg";
+
 type CheckboxVariant = "default" | "outline" | "filled" | "soft";
+
 type CheckboxColor = "default" | "success" | "destructive" | "warning";
 
 interface CheckboxProps
@@ -140,6 +142,7 @@ function Checkbox({
   // Split the public tri-state prop at the boundary; Base UI owns the state.
   const controlledIndeterminate =
     checked === "indeterminate" ? true : undefined;
+
   const controlledChecked = checked === undefined ? undefined : checked === true;
 
   const handleChange = (next: boolean) => {
@@ -154,6 +157,7 @@ function Checkbox({
         { scale: 1.5, opacity: 0, duration: 0.3, ease: "power1.out" }
       );
     }
+
     if (!reduced && boxRef.current) {
       // Press micro-interaction < 150ms (transform only).
       gsap.fromTo(
@@ -232,6 +236,7 @@ function Checkbox({
   if (disabled && disabledReason) {
     return <SimpleTooltip content={disabledReason}>{box}</SimpleTooltip>;
   }
+
   return box;
 }
 
@@ -546,6 +551,7 @@ function CheckboxCard({
   if (disabled && disabledReason) {
     return <SimpleTooltip content={disabledReason}>{card}</SimpleTooltip>;
   }
+
   return card;
 }
 
@@ -560,21 +566,28 @@ function KiraCheckbox(props: KiraCheckboxProps) {
     case "label": {
       const { mode, ...rest } = props;
       void mode;
+
       return <CheckboxWithLabel {...rest} />;
     }
+
     case "card": {
       const { mode, ...rest } = props;
       void mode;
+
       return <CheckboxCard {...rest} />;
     }
+
     case "group": {
       const { mode, ...rest } = props;
       void mode;
+
       return <CheckboxGroup {...rest} />;
     }
+
     default: {
       const { mode, ...rest } = props as { mode?: "checkbox" } & CheckboxProps;
       void mode;
+
       return <Checkbox {...rest} />;
     }
   }
@@ -588,6 +601,7 @@ export {
   KiraCheckbox,
   checkboxVariants,
 };
+
 export type {
   CheckboxProps,
   CheckboxWithLabelProps,

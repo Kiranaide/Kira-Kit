@@ -97,6 +97,7 @@ function CodeBlock({
 }: CodeBlockProps) {
   const [copied, setCopied] = React.useState(false);
   const [isMonacoReady, setIsMonacoReady] = React.useState(false);
+
   const [resolvedTheme, setResolvedTheme] = React.useState<MonacoTheme>(
     themeMode === "light"
       ? lightTheme
@@ -104,6 +105,7 @@ function CodeBlock({
         ? darkTheme
         : theme
   );
+
   const componentId = React.useId();
   const editorContainerRef = React.useRef<HTMLDivElement | null>(null);
   const editorInstanceRef = React.useRef<MonacoEditor | null>(null);
@@ -118,16 +120,19 @@ function CodeBlock({
   React.useEffect(() => {
     if (themeMode !== "system") {
       setResolvedTheme(themeMode === "light" ? lightTheme : darkTheme);
+
       return;
     }
 
     const media = window.matchMedia("(prefers-color-scheme: dark)");
+
     const listener = (event: MediaQueryListEvent) => {
       setResolvedTheme(event.matches ? darkTheme : lightTheme);
     };
 
     setResolvedTheme(media.matches ? darkTheme : lightTheme);
     media.addEventListener("change", listener);
+
     return () => media.removeEventListener("change", listener);
   }, [themeMode, lightTheme, darkTheme]);
 
@@ -135,9 +140,11 @@ function CodeBlock({
     if (height !== "auto") {
       return typeof height === "number" ? `${height}px` : height;
     }
+
     const lineCount = code.split("\n").length;
     const lineHeight = Math.round(fontSize * 1.5);
     const padding = 32;
+
     return `${Math.max(lineCount * lineHeight + padding, 100)}px`;
   }, [height, code, fontSize]);
 
@@ -161,6 +168,7 @@ function CodeBlock({
           monaco.Uri?.parse?.(
             `inmemory://code-block/${componentId}.${language}`
           ) ?? undefined;
+
         const model = monaco.editor.createModel(code, language, uri);
 
         const editor = monaco.editor.create(editorContainerRef.current, {
@@ -227,6 +235,7 @@ function CodeBlock({
 
   React.useEffect(() => {
     const model = modelRef.current;
+
     if (model && model.getValue() !== code) {
       model.setValue(code);
     }

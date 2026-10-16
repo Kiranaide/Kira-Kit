@@ -59,26 +59,33 @@ const commandShortcutVariants = cva(
 );
 
 interface CommandProps extends VariantProps<typeof commandVariants> {}
+
 interface CommandInputProps extends React.ComponentPropsWithoutRef<
   typeof CmdkCommand.Input
 > {}
+
 interface CommandListProps extends React.ComponentPropsWithoutRef<
   typeof CmdkCommand.List
 > {}
+
 interface CommandEmptyProps extends React.ComponentPropsWithoutRef<
   typeof CmdkCommand.Empty
 > {}
+
 interface CommandGroupProps extends React.ComponentPropsWithoutRef<
   typeof CmdkCommand.Group
 > {}
+
 interface CommandItemProps
   extends
     React.ComponentPropsWithoutRef<typeof CmdkCommand.Item>,
     VariantProps<typeof commandItemVariants> {}
+
 interface CommandShortcutProps
   extends
     React.ComponentPropsWithoutRef<"span">,
     VariantProps<typeof commandShortcutVariants> {}
+
 interface CommandSeparatorProps extends React.ComponentPropsWithoutRef<
   typeof CmdkCommand.Separator
 > {}
@@ -93,6 +100,7 @@ const Command = React.forwardRef<
     {...props}
   />
 ));
+
 Command.displayName = "Command";
 
 const CommandInput = React.forwardRef<HTMLInputElement, CommandInputProps>(
@@ -110,6 +118,7 @@ const CommandInput = React.forwardRef<HTMLInputElement, CommandInputProps>(
     </div>
   )
 );
+
 CommandInput.displayName = "CommandInput";
 
 const CommandList = React.forwardRef<HTMLDivElement, CommandListProps>(
@@ -124,6 +133,7 @@ const CommandList = React.forwardRef<HTMLDivElement, CommandListProps>(
     />
   )
 );
+
 CommandList.displayName = "CommandList";
 
 const CommandEmpty = React.forwardRef<HTMLDivElement, CommandEmptyProps>(
@@ -135,6 +145,7 @@ const CommandEmpty = React.forwardRef<HTMLDivElement, CommandEmptyProps>(
     />
   )
 );
+
 CommandEmpty.displayName = "CommandEmpty";
 
 const CommandGroup = React.forwardRef<HTMLDivElement, CommandGroupProps>(
@@ -149,6 +160,7 @@ const CommandGroup = React.forwardRef<HTMLDivElement, CommandGroupProps>(
     />
   )
 );
+
 CommandGroup.displayName = "CommandGroup";
 
 const CommandSeparator = React.forwardRef<
@@ -161,6 +173,7 @@ const CommandSeparator = React.forwardRef<
     {...props}
   />
 ));
+
 CommandSeparator.displayName = "CommandSeparator";
 
 const CommandItem = React.forwardRef<HTMLDivElement, CommandItemProps>(
@@ -172,6 +185,7 @@ const CommandItem = React.forwardRef<HTMLDivElement, CommandItemProps>(
     />
   )
 );
+
 CommandItem.displayName = "CommandItem";
 
 const CommandShortcut = ({
@@ -187,6 +201,7 @@ const CommandShortcut = ({
     />
   );
 };
+
 CommandShortcut.displayName = "CommandShortcut";
 
 export {

@@ -9,6 +9,7 @@ import { listComponents } from "./commands/list";
 import type { InitOptions, AddOptions } from "./types";
 
 const __filename = fileURLToPath(import.meta.url);
+
 const __dirname = dirname(__filename);
 
 const program = new Command();
@@ -32,12 +33,19 @@ program
     const createSrcPath = resolve(__dirname, "..", "..", "create", "src", "index.ts");
 
     const args = [createSrcPath];
+
     if (name) args.push(name);
+
     if (options.framework) args.push("--framework", String(options.framework));
+
     if (options.router) args.push("--router", String(options.router));
+
     if (options.install === true) args.push("--install");
+
     if (options.install === false) args.push("--no-install");
+
     if (options.git === true) args.push("--git");
+
     if (options.git === false) args.push("--no-git");
 
     const child = spawn(

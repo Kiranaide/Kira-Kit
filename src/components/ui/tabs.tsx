@@ -33,6 +33,7 @@ type TabsListVariant =
   | "underline"
   | "soft"
   | "card";
+
 type TabsTriggerColor =
   | "default"
   | "primary"
@@ -230,6 +231,7 @@ function TabsList({
     color,
     showIndicator: contextShowIndicator,
   } = useTabsContext();
+
   const finalVariant = variant ?? contextVariant;
   const shouldShowIndicator = showIndicatorProp ?? contextShowIndicator;
 
@@ -487,6 +489,7 @@ function TabsTrigger({
     variant: contextVariant,
     color: contextColor,
   } = useTabsContext();
+
   const finalVariant = variant ?? contextVariant;
   const finalColor = color ?? contextColor;
 
@@ -691,15 +694,18 @@ function KiraTabs({
   // prev-value, not an effect — react-compiler safe).
   const [items, setItems] = React.useState(itemsProp);
   const [prevItemsProp, setPrevItemsProp] = React.useState(itemsProp);
+
   if (itemsProp !== prevItemsProp) {
     setPrevItemsProp(itemsProp);
     setItems(itemsProp);
   }
 
   const isControlled = value !== undefined;
+
   const [internalValue, setInternalValue] = React.useState(
     defaultValue ?? itemsProp[0]?.value
   );
+
   const activeValue = isControlled ? value : internalValue;
 
   const selectValue = (next: string) => {
@@ -710,17 +716,20 @@ function KiraTabs({
   const handleClose = (closedValue: string) => {
     const idx = items.findIndex((i) => i.value === closedValue);
     const next = items.filter((i) => i.value !== closedValue);
+
     // If the active tab was closed, move to a neighbour.
     if (activeValue === closedValue && next.length > 0) {
       const neighbour = next[Math.max(0, idx - 1)];
       selectValue(neighbour.value);
     }
+
     setItems(next);
     onClose?.(closedValue);
   };
 
   const handleAdd = () => {
     const created = onAdd?.();
+
     if (created) {
       setItems((prev) => [...prev, created]);
       selectValue(created.value);

@@ -16,10 +16,12 @@ export async function fetchRegistryItem(
       if (response.status === 404) {
         return null;
       }
+
       throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
     }
 
     const data = await response.json();
+
     return data as RegistryItem;
   } catch (error) {
     if (error instanceof TypeError && error.message.includes("fetch")) {
@@ -27,6 +29,7 @@ export async function fetchRegistryItem(
         `Unable to fetch from ${url}. Make sure you're connected to the internet.`,
       );
     }
+
     throw error;
   }
 }
@@ -51,6 +54,7 @@ export async function fetchRegistryIndex(cwd: string = process.cwd()): Promise<{
   }
 
   const data = await response.json();
+
   return data as {
     name: string;
     homepage: string;
@@ -72,6 +76,7 @@ export async function fetchAllRegistries(
 
   for (const component of index.components) {
     const item = await fetchRegistryItem(component.name, cwd);
+
     if (item) {
       items.push(item);
     }

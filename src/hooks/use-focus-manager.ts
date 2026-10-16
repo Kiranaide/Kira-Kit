@@ -68,6 +68,7 @@ export function useFocusManager(
   const [position, setPositionState] = React.useState<FocusPosition>(
     initialPosition
   );
+
   const containerRef = React.useRef<HTMLElement>(null);
 
   // Clamp position to valid range
@@ -109,6 +110,7 @@ export function useFocusManager(
             } else if (wrap) {
               row = rowCount - 1;
             }
+
             break;
           case "down":
             if (row < rowCount - 1) {
@@ -116,6 +118,7 @@ export function useFocusManager(
             } else if (wrap) {
               row = 0;
             }
+
             break;
           case "left":
             if (col > 0) {
@@ -123,6 +126,7 @@ export function useFocusManager(
             } else if (wrap) {
               col = colCount - 1;
             }
+
             break;
           case "right":
             if (col < colCount - 1) {
@@ -130,11 +134,13 @@ export function useFocusManager(
             } else if (wrap) {
               col = 0;
             }
+
             break;
         }
 
         const newPosition = { row, col };
         onPositionChange?.(newPosition);
+
         return newPosition;
       });
     },
@@ -164,6 +170,7 @@ export function useFocusManager(
   const getTabIndex = React.useCallback(
     (row: number, col: number): 0 | -1 => {
       if (!enabled) return -1;
+
       return position.row === row && position.col === col ? 0 : -1;
     },
     [enabled, position]
@@ -215,6 +222,7 @@ export function useFocusManager(
           } else {
             moveToRowStart();
           }
+
           break;
         case "End":
           if (event.ctrlKey || event.metaKey) {
@@ -222,6 +230,7 @@ export function useFocusManager(
           } else {
             moveToRowEnd();
           }
+
           break;
         default:
           handled = false;

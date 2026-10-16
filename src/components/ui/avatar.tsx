@@ -394,6 +394,7 @@ function AvatarBadge({
 
 function AvatarTyping({ className }: { className?: string }) {
   const reducedMotion = useReducedMotion();
+
   return (
     <span
       data-slot="avatar-typing"
@@ -408,7 +409,7 @@ function AvatarTyping({ className }: { className?: string }) {
             "h-1 w-1 rounded-full bg-muted-foreground",
             !reducedMotion && "animate-badge-pulse"
           )}
-          style={!reducedMotion ? { animationDelay: `${i * 0.15}s` } : undefined}
+          style={reducedMotion ? undefined : { animationDelay: `${i * 0.15}s` }}
         />
       ))}
     </span>
@@ -417,9 +418,11 @@ function AvatarTyping({ className }: { className?: string }) {
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
+
   if (parts.length === 1) {
     return parts[0].slice(0, 2).toUpperCase();
   }
+
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
@@ -466,7 +469,9 @@ function AvatarGroup({
       (React.isValidElement(node) &&
         (node.props as { "data-name"?: string })["data-name"]) ||
       undefined;
+
     if (!tooltips || !name) return node;
+
     return (
       <Tooltip key={index}>
         <TooltipTrigger render={<span>{node as React.ReactElement}</span>} />
@@ -678,6 +683,7 @@ export {
   gradientVariants,
   getInitials,
 };
+
 export type {
   AvatarProps,
   AvatarImageProps,

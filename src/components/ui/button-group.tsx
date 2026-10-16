@@ -66,10 +66,15 @@ const buttonGroupSizeVariants = cva("inline-flex", {
 });
 
 type ButtonGroupOrientation = "horizontal" | "vertical";
+
 type ButtonGroupSize = "xs" | "sm" | "default" | "lg";
+
 type ButtonGroupGap = "none" | "sm" | "default" | "lg";
+
 type ButtonGroupJustify = "start" | "center" | "end" | "between" | "around";
+
 type ButtonGroupShape = "default" | "pill";
+
 type SelectionMode = "none" | "single" | "multiple";
 
 interface ButtonGroupContextValue {
@@ -91,11 +96,13 @@ const ButtonGroupContext = React.createContext<ButtonGroupContextValue | null>(
 
 const useButtonGroupContext = () => {
   const context = React.useContext(ButtonGroupContext);
+
   if (!context) {
     throw new Error(
       "ButtonGroup compound components must be used within a ButtonGroup",
     );
   }
+
   return context;
 };
 
@@ -152,7 +159,7 @@ function ButtonGroup({
 
   const contextValue: ButtonGroupContextValue = {
       selectionMode,
-      value: value !== undefined ? value : null,
+      value: value === undefined ? null : value,
       onChange: (newValue) => onChange?.(newValue),
       orientation,
       variant,
@@ -196,6 +203,7 @@ function ButtonGroup({
     () => {
       const container = containerRef.current;
       const indicator = indicatorRef.current;
+
       if (!segmented || !container || !indicator) return;
 
       const selected = container.querySelector<HTMLElement>(
@@ -204,6 +212,7 @@ function ButtonGroup({
 
       if (!selected) {
         gsap.to(indicator, { autoAlpha: 0, duration: 0 });
+
         return;
       }
 
@@ -230,6 +239,7 @@ function ButtonGroup({
     const childArray = React.Children.toArray(children).filter(
       React.isValidElement,
     );
+
     const count = childArray.length;
 
     return childArray.map((child, index) => {
@@ -354,7 +364,7 @@ function ToggleGroupItem({
   const isDisabled = localDisabled ?? groupDisabled ?? false;
 
   const effectiveVariant =
-    localVariant !== "outline" ? localVariant : groupVariant || "outline";
+    localVariant === "outline" ? groupVariant || "outline" : localVariant;
 
   const isSelected =
       selectionMode === "none" || groupValue === null
@@ -400,11 +410,13 @@ function ToggleGroupItem({
 
   const handleKeyboardNavigation = (key: string) => {
     const container = containerRef.current;
+
     if (!container) return;
 
     const buttons = Array.from(
       container.querySelectorAll("[data-slot=button]"),
     ) as HTMLElement[];
+
     const currentIndex = buttons.findIndex(
       (btn) => btn === document.activeElement,
     );
@@ -418,11 +430,14 @@ function ToggleGroupItem({
     if (key === "Home") {
       nextIndex = 0;
       buttons[nextIndex]?.focus();
+
       return;
     }
+
     if (key === "End") {
       nextIndex = lastIndex;
       buttons[nextIndex]?.focus();
+
       return;
     }
 
@@ -443,6 +458,7 @@ function ToggleGroupItem({
           nextIndex = Math.max(currentIndex - 1, 0);
         }
       }
+
       buttons[nextIndex]?.focus();
     }
   };
@@ -497,6 +513,7 @@ function ToggleGroupItem({
 
   const getSelectedClassName = (): string => {
     if (!isSelected) return "";
+
     switch (effectiveVariant) {
       case "outline":
         return "bg-primary text-primary-foreground hover:bg-primary/90";
@@ -575,7 +592,7 @@ function ButtonGroupToolbar({
     <div
       role="toolbar"
       aria-labelledby={labelId}
-      aria-label={!label ? "Button group toolbar" : undefined}
+      aria-label={label ? undefined : "Button group toolbar"}
       className={cn("flex flex-col gap-2", className)}
     >
       {label && (
@@ -660,6 +677,7 @@ function KiraButtonGroup({
   const handleChange = (newValue: string | string[]) => {
     if (required) {
       if (resolvedSelectionMode === "single" && newValue === "") return;
+
       if (
         resolvedSelectionMode === "multiple" &&
         Array.isArray(newValue) &&
@@ -742,7 +760,9 @@ function KiraButtonGroup({
 }
 
 export { buttonGroupVariants, buttonGroupSizeVariants };
+
 export { ButtonGroup, ToggleGroupItem, ButtonGroupToolbar, KiraButtonGroup };
+
 export type {
   ButtonGroupProps,
   ToggleGroupItemProps,

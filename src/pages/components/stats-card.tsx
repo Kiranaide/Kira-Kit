@@ -141,7 +141,7 @@ function WithIconsDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Revenue</StatsCardTitle>
-            <StatsCardValue value={12345} format="currency" />
+            <StatsCardValue value={12_345} format="currency" />
             <StatsCardTrend value={12.5} showSign />
           </div>
         </div>
@@ -180,7 +180,7 @@ function WithIconsDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Page Views</StatsCardTitle>
-            <StatsCardValue value={45678} format="compact" />
+            <StatsCardValue value={45_678} format="compact" />
             <StatsCardTrend value={15.3} showSign />
           </div>
         </div>
@@ -372,7 +372,7 @@ function InteractiveCardsDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Total Revenue</StatsCardTitle>
-            <StatsCardValue value={12345} format="currency" />
+            <StatsCardValue value={12_345} format="currency" />
             <StatsCardTrend value={12.5} comparison="vs last month" />
           </div>
         </div>
@@ -474,7 +474,7 @@ function WithActionMenuDemo() {
             </DropdownMenu>
           </StatsCardAction>
         </StatsCardHeader>
-        <StatsCardValue value={12345} format="currency" />
+        <StatsCardValue value={12_345} format="currency" />
         <StatsCardTrend value={12.5} />
       </StatsCard>
 
@@ -572,7 +572,7 @@ function LoadingStatesDemo() {
             </StatsCardIcon>
             <div className="flex-1">
               <StatsCardTitle>Revenue</StatsCardTitle>
-              <StatsCardValue value={12345} format="currency" />
+              <StatsCardValue value={12_345} format="currency" />
               <StatsCardTrend value={12.5} />
             </div>
           </div>
@@ -615,7 +615,7 @@ function ProgressGoalsDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Sales Goal</StatsCardTitle>
-            <StatsCardValue value={75000} format="currency" />
+            <StatsCardValue value={75_000} format="currency" />
             <StatsCardProgress value={75} max={100} variant="success" />
             <StatsCardDescription>75% of $100,000 target</StatsCardDescription>
           </div>
@@ -673,7 +673,7 @@ function WithSparklinesDemo() {
         <StatsCardHeader>
           <StatsCardTitle>Revenue</StatsCardTitle>
         </StatsCardHeader>
-        <StatsCardValue value={12345} format="currency" />
+        <StatsCardValue value={12_345} format="currency" />
         <StatsCardTrend value={12.5} />
         <StatsCardSpark>
           <StatsCardSparkline
@@ -739,7 +739,7 @@ function ValueFormattingDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Currency (USD)</StatsCardTitle>
-            <StatsCardValue value={12345.67} format="currency" currency="USD" decimals={2} />
+            <StatsCardValue value={12_345.67} format="currency" currency="USD" decimals={2} />
           </div>
         </div>
       </StatsCard>
@@ -763,7 +763,7 @@ function ValueFormattingDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Compact Number</StatsCardTitle>
-            <StatsCardValue value={1234567} format="compact" />
+            <StatsCardValue value={1_234_567} format="compact" />
           </div>
         </div>
       </StatsCard>
@@ -803,7 +803,7 @@ function AnimatedValuesDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Animated Currency</StatsCardTitle>
-            <StatsCardValue value={12345} format="currency" animate animationDuration={1.5} />
+            <StatsCardValue value={12_345} format="currency" animate animationDuration={1.5} />
             <StatsCardTrend value={12.5} />
           </div>
         </div>
@@ -848,12 +848,13 @@ const animatedValuesCode = `import { StatsCard, StatsCardValue } from "@/compone
 />`
 
 function RealtimeUpdatesDemo() {
-  const [liveValue, setLiveValue] = React.useState(12345)
+  const [liveValue, setLiveValue] = React.useState(12_345)
 
   React.useEffect(() => {
     const interval = setInterval(() => {
       setLiveValue((prev) => prev + Math.floor(Math.random() * 100) - 50)
     }, 3000)
+
     return () => clearInterval(interval)
   }, [])
 
@@ -867,7 +868,7 @@ function RealtimeUpdatesDemo() {
           <div className="flex-1">
             <StatsCardTitle>Live Revenue</StatsCardTitle>
             <StatsCardValue value={liveValue} format="currency" animate animationDuration={0.5} />
-            <StatsCardTrend value={((liveValue - 12345) / 12345) * 100} />
+            <StatsCardTrend value={((liveValue - 12_345) / 12_345) * 100} />
             <StatsCardFooter>
               <StatsCardTimeRange>Live • Updates every 3s</StatsCardTimeRange>
             </StatsCardFooter>
@@ -931,7 +932,7 @@ function DashboardGridDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Total Revenue</StatsCardTitle>
-            <StatsCardValue value={12345} format="currency" animate />
+            <StatsCardValue value={12_345} format="currency" animate />
             <StatsCardTrend value={12.5} showSign comparison="vs last month" />
           </div>
         </div>
@@ -1043,7 +1044,7 @@ function CompactDashboardDemo() {
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
       <StatsCard size="sm">
         <StatsCardTitle>Revenue</StatsCardTitle>
-        <StatsCardValue size="sm" value={12345} format="compact" />
+        <StatsCardValue size="sm" value={12_345} format="compact" />
         <StatsCardTrend value={12.5} />
       </StatsCard>
 

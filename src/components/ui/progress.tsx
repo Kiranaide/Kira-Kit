@@ -96,11 +96,13 @@ function Progress({
 
   const formattedValue = React.useMemo(() => {
     if (isIndeterminate) return null;
+
     const formatter = new Intl.NumberFormat(locale, {
       style: "percent",
       maximumFractionDigits: 0,
       ...format,
     });
+
     return formatter.format(safeValue / max);
   }, [safeValue, max, locale, format, isIndeterminate]);
 
@@ -111,6 +113,7 @@ function Progress({
         isIndeterminate ? null : safeValue
       );
     }
+
     return undefined;
   }, [getAriaValueText, formattedValue, safeValue, isIndeterminate]);
 
@@ -118,6 +121,7 @@ function Progress({
     if (isComplete && !previousCompleteRef.current && onComplete) {
       onComplete();
     }
+
     previousCompleteRef.current = isComplete;
   }, [isComplete, onComplete]);
 
@@ -201,11 +205,13 @@ function ProgressValue({
 
   const formattedValue = React.useMemo(() => {
     if (isIndeterminate) return null;
+
     const formatter = new Intl.NumberFormat(locale, {
       style: "percent",
       maximumFractionDigits: 0,
       ...format,
     });
+
     return formatter.format(safeValue / max);
   }, [safeValue, max, locale, format, isIndeterminate]);
 
@@ -281,6 +287,7 @@ function SegmentedProgress({
       >
         {segments.map((segment, index) => {
           const segmentPercent = (segment.value / total) * 100;
+
           return (
             <div
               key={index}
@@ -373,6 +380,7 @@ function CircularProgress({
   const sizeValue = sizeClasses[size || "default"];
 
   const formattedValue = isIndeterminate ? null : `${Math.round(percentage)}%`;
+
   const ariaValueText = React.useMemo(() => {
     if (getAriaValueText) {
       return getAriaValueText(
@@ -380,6 +388,7 @@ function CircularProgress({
         isIndeterminate ? null : safeValue
       );
     }
+
     return undefined;
   }, [getAriaValueText, formattedValue, safeValue, isIndeterminate]);
 
@@ -482,6 +491,7 @@ export {
   progressVariants,
   indicatorVariants,
 };
+
 export type {
   ProgressProps,
   CircularProgressProps,

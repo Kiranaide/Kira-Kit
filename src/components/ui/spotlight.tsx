@@ -128,6 +128,7 @@ function useReducedMotion() {
     };
 
     mediaQuery.addEventListener("change", handleChange);
+
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
@@ -151,9 +152,11 @@ const SpotlightContext = React.createContext<SpotlightContextValue | null>(
 
 function useSpotlightContext() {
   const context = React.useContext(SpotlightContext);
+
   if (!context) {
     throw new Error("Spotlight components must be used within Spotlight");
   }
+
   return context;
 }
 
@@ -186,6 +189,7 @@ function SpotlightRoot<T>({
   const defaultFilter = React.useCallback(
     (item: SpotlightItem<T>, searchQuery: string): boolean => {
       const q = searchQuery.toLowerCase();
+
       return (
         item.label.toLowerCase().includes(q) ||
         (item.description?.toLowerCase().includes(q) ?? false) ||
@@ -197,6 +201,7 @@ function SpotlightRoot<T>({
 
   const allItems = React.useMemo((): SpotlightItem<T>[] => {
     const fromGroups = groups.flatMap((g) => g.items);
+
     return [...fromGroups, ...items];
   }, [groups, items]);
 
@@ -204,8 +209,10 @@ function SpotlightRoot<T>({
     if (!query) {
       return recentItems.length > 0 ? recentItems : allItems;
     }
+
     if (disableFilter) return allItems;
     const filterFn = filter || defaultFilter;
+
     return allItems.filter((item) => filterFn(item, query));
   }, [query, allItems, recentItems, disableFilter, filter, defaultFilter]);
 
@@ -214,10 +221,13 @@ function SpotlightRoot<T>({
       if (recentItems.length > 0) {
         return [{ id: "recent", label: "Recent", items: recentItems }];
       }
+
       return groups;
     }
+
     if (disableFilter) return groups;
     const filterFn = filter || defaultFilter;
+
     return groups
       .map((g) => ({
         ...g,
@@ -271,9 +281,11 @@ function SpotlightRoot<T>({
           break;
         case "Enter":
           e.preventDefault();
+
           if (filteredItems[selectedIndex]) {
             handleItemSelect(filteredItems[selectedIndex]);
           }
+
           break;
         case "Escape":
           e.preventDefault();
@@ -294,9 +306,11 @@ function SpotlightRoot<T>({
 
   React.useEffect(() => {
     if (!listRef.current) return;
+
     const selectedElement = listRef.current.querySelector(
       `[data-spotlight-index="${selectedIndex}"]`
     );
+
     selectedElement?.scrollIntoView({ block: "nearest" });
   }, [selectedIndex]);
 
@@ -421,6 +435,7 @@ function SpotlightRoot<T>({
                       const flatIndex = filteredItems.findIndex(
                         (i) => i.id === item.id
                       );
+
                       return (
                         <SpotlightItem
                           key={item.id}
@@ -509,6 +524,7 @@ function SpotlightItem({
 }: SpotlightItemComponentProps) {
   const { selectedIndex, setSelectedIndex, onItemSelect } =
     useSpotlightContext();
+
   const isSelected = selectedIndex === index;
 
   return (
@@ -628,6 +644,7 @@ const SpotlightSearch = React.forwardRef<
     </div>
   );
 });
+
 SpotlightSearch.displayName = "SpotlightSearch";
 
 interface LegacySpotlightRecentProps {
@@ -659,6 +676,7 @@ const SpotlightRecent = React.forwardRef<
     </div>
   );
 });
+
 SpotlightRecent.displayName = "SpotlightRecent";
 
 interface LegacySpotlightSuggestionsProps {
@@ -689,6 +707,7 @@ const SpotlightSuggestions = React.forwardRef<
     </div>
   );
 });
+
 SpotlightSuggestions.displayName = "SpotlightSuggestions";
 
 interface LegacySpotlightResultsProps {
@@ -705,6 +724,7 @@ const SpotlightResults = React.forwardRef<
     </div>
   );
 });
+
 SpotlightResults.displayName = "SpotlightResults";
 
 const Spotlight = Object.assign(SpotlightRoot, {

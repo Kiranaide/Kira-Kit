@@ -351,6 +351,7 @@ interface KiraLabelProps
 function KiraLabelCounter({ count, maxCount }: { count: number; maxCount?: number }) {
   const over = maxCount !== undefined && count > maxCount;
   const near = maxCount !== undefined && !over && count >= maxCount * 0.8;
+
   return (
     <span
       data-slot="label-char-count"

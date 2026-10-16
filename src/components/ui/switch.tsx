@@ -126,12 +126,15 @@ function Switch({
     if (!isControlled) {
       setInternalChecked(newChecked);
     }
+
     onCheckedChange?.(newChecked);
   };
 
   const getColorClass = (isChecked: boolean) => {
     if (!isChecked) return "bg-muted-foreground/30";
+
     if (error || errorMessage) return "bg-destructive";
+
     switch (color) {
       case "success":
         return "bg-success";
@@ -282,6 +285,7 @@ function ThumbIcon({
         </span>
       );
     }
+
     if (thumbIcon) {
       return (
         <span className={cn(wrapperClass, "text-primary", iconSizeClass)}>
@@ -298,6 +302,7 @@ function ThumbIcon({
       </span>
     );
   }
+
   return null;
 }
 
@@ -382,4 +387,5 @@ export {
   switchTrackVariants,
   switchThumbVariants,
 };
+
 export type { SwitchProps, SwitchWithLabelProps, SwitchGroupProps };

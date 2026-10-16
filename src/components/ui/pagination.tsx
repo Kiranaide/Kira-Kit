@@ -31,6 +31,7 @@ const PaginationContext = React.createContext<PaginationContextValue | null>(
 
 function usePaginationContext() {
   const context = React.useContext(PaginationContext);
+
   return context;
 }
 
@@ -243,7 +244,7 @@ function PaginationContent({
         "*:data-mobile-hide:hidden *:data-mobile-hide:sm:flex",
         className
       )}
-      role="list"
+      
       aria-label={
         context ? `Page ${context.page} of ${context.pageCount}` : undefined
       }
@@ -301,6 +302,7 @@ function PaginationLink({
   const handleClick = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(e);
+
       if (page !== undefined && context?.setPage && !e.defaultPrevented) {
         context.setPage(page);
       }
@@ -331,12 +333,14 @@ function PaginationFirst({
   ...props
 }: Omit<React.ComponentProps<typeof PaginationLink>, "page" | "isActive">) {
   const context = usePaginationContext();
+
   const disabled =
     props.disabled ?? context?.disabled ?? context?.isFirst ?? false;
 
   const handleClick = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(e);
+
       if (!e.defaultPrevented) {
         context?.firstPage();
       }
@@ -367,12 +371,14 @@ function PaginationPrevious({
   showLabel?: boolean;
 }) {
   const context = usePaginationContext();
+
   const disabled =
     props.disabled ?? context?.disabled ?? (context ? !context.hasPrev : false);
 
   const handleClick = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(e);
+
       if (!e.defaultPrevented) {
         context?.prevPage();
       }
@@ -404,12 +410,14 @@ function PaginationNext({
   showLabel?: boolean;
 }) {
   const context = usePaginationContext();
+
   const disabled =
     props.disabled ?? context?.disabled ?? (context ? !context.hasNext : false);
 
   const handleClick = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(e);
+
       if (!e.defaultPrevented) {
         context?.nextPage();
       }
@@ -438,12 +446,14 @@ function PaginationLast({
   ...props
 }: Omit<React.ComponentProps<typeof PaginationLink>, "page" | "isActive">) {
   const context = usePaginationContext();
+
   const disabled =
     props.disabled ?? context?.disabled ?? context?.isLast ?? false;
 
   const handleClick = React.useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(e);
+
       if (!e.defaultPrevented) {
         context?.lastPage();
       }
@@ -470,6 +480,7 @@ function PaginationEllipsis({
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) {
   const context = usePaginationContext();
+
   const sizeClasses = {
     sm: "h-7 w-7",
     default: "h-8 w-8",
@@ -509,6 +520,7 @@ function PaginationPages({
   const mobilePages = React.useMemo(() => {
     if (!context) return [];
     const pages = context.getPageRange();
+
     if (pages.length <= mobileMaxPages + 2) return pages;
 
     const { page, pageCount } = context;
@@ -549,6 +561,7 @@ function PaginationPages({
     if (item.type === "ellipsis") {
       return renderEllipsis?.(item.key) ?? <PaginationEllipsis />;
     }
+
     return <PaginationLink page={item.page} isActive={item.isActive} />;
   };
 
@@ -730,6 +743,7 @@ function PaginationJump({
     (e: React.FormEvent) => {
       e.preventDefault();
       const pageNum = parseInt(value, 10);
+
       if (!isNaN(pageNum) && pageNum >= 1 && context) {
         const clampedPage = Math.min(pageNum, context.pageCount);
         onJump?.(clampedPage);

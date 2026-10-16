@@ -11,29 +11,36 @@ export async function addComponents(options: AddOptions): Promise<void> {
   const cwd = options.cwd || process.cwd();
 
   const config = readConfig(cwd);
+
   if (!config) {
     error("No components.json found. Run 'kira-kit init' first.");
+
     return;
   }
 
   const aliases = getAliases(cwd);
+
   const componentsDir = join(
     cwd,
     aliases.components.replace("@/", "src/"),
     "ui",
   );
+
   const hooksDir = join(cwd, aliases.hooks.replace("@/", "src/"));
 
   if (options.all) {
     await addAllComponents(componentsDir, hooksDir, cwd, options);
+
     return;
   }
 
   const components = options.components;
+
   if (components.length === 0) {
     error(
       "No components specified. Use 'kira-kit add button' or 'kira-kit add --all'",
     );
+
     return;
   }
 
@@ -76,6 +83,7 @@ export async function addComponents(options: AddOptions): Promise<void> {
     const deps = await parseDependencies(
       registryItem.files.map((f) => f.content).join("\n"),
     );
+
     allDependencies.push(...deps);
 
     spin.stop(`Installed ${componentName}`);
@@ -88,6 +96,7 @@ export async function addComponents(options: AddOptions): Promise<void> {
 
   if (allDependencies.length > 0) {
     const uniqueDeps = [...new Set(allDependencies)].sort();
+
     const missingDeps = uniqueDeps.filter((dep) => {
       return (
         !existsSync(join(cwd, "node_modules", dep)) &&
@@ -111,6 +120,7 @@ export async function addComponents(options: AddOptions): Promise<void> {
     const failed = options.components.filter(
       (c) => !installedComponents.includes(c),
     );
+
     warning(`Failed to add: ${failed.join(", ")}`);
   }
 
@@ -124,6 +134,7 @@ async function addAllComponents(
   options: AddOptions,
 ): Promise<void> {
   info("Fetching registry index...");
+
   try {
     const index = await fetchRegistryIndex(cwd);
     const allComponents = index.components.map((c) => c.name);

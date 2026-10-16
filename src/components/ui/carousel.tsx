@@ -249,15 +249,18 @@ const CarouselContext = React.createContext<CarouselContextValue | undefined>(
 
 const useCarousel = () => {
   const context = React.useContext(CarouselContext);
+
   if (!context) {
     throw new Error("useCarousel must be used within a Carousel component");
   }
+
   return context;
 };
 
 function useCarouselApi() {
   const [api, setApi] =
     React.useState<ReturnType<typeof useEmblaCarousel>[1]>();
+
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
   const [canScrollPrev, setCanScrollPrev] = React.useState(false);
@@ -280,6 +283,7 @@ function useCarouselApi() {
 
   const scrollPrev = React.useCallback(() => api?.scrollPrev(), [api]);
   const scrollNext = React.useCallback(() => api?.scrollNext(), [api]);
+
   const scrollTo = React.useCallback(
     (index: number) => api?.scrollTo(index),
     [api]
@@ -354,17 +358,21 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
     ref
   ) => {
     const carouselId = useId();
+
     const [prefersReducedMotion, setPrefersReducedMotion] =
       React.useState(false);
+
     const [isAutoPlaying, setIsAutoPlaying] = React.useState(autoplay);
     const [selectedIndex, setSelectedIndex] = React.useState(0);
     const [slideCount, setSlideCount] = React.useState(0);
     const [canScrollPrev, setCanScrollPrev] = React.useState(false);
     const [canScrollNext, setCanScrollNext] = React.useState(false);
     const [isDragging, setIsDragging] = React.useState(false);
+
     const autoplayTimerRef = React.useRef<ReturnType<
       typeof setInterval
     > | null>(null);
+
     const containerRef = React.useRef<HTMLDivElement>(null);
     const liveRegionRef = React.useRef<HTMLDivElement>(null);
     const dragAnimationRef = React.useRef<gsap.core.Tween | null>(null);
@@ -375,11 +383,14 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
 
       const handleChange = (e: MediaQueryListEvent) => {
         setPrefersReducedMotion(e.matches);
+
         if (e.matches) {
           setIsAutoPlaying(false);
         }
       };
+
       mediaQuery.addEventListener("change", handleChange);
+
       return () => mediaQuery.removeEventListener("change", handleChange);
     }, []);
 
@@ -450,6 +461,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
         if (autoplayTimerRef.current) {
           clearInterval(autoplayTimerRef.current);
         }
+
         return;
       }
 
@@ -557,10 +569,12 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       () => emblaApi?.scrollPrev(),
       [emblaApi]
     );
+
     const scrollNext = React.useCallback(
       () => emblaApi?.scrollNext(),
       [emblaApi]
     );
+
     const scrollTo = React.useCallback(
       (index: number) => emblaApi?.scrollTo(index),
       [emblaApi]
@@ -571,6 +585,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
 
       const handlePointerDown = () => {
         setIsDragging(true);
+
         if (dragAnimationRef.current) dragAnimationRef.current.kill();
         dragAnimationRef.current = gsap.to(".embla__container", {
           scale: 0.98,
@@ -582,6 +597,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
 
       const handlePointerUp = () => {
         setIsDragging(false);
+
         if (dragAnimationRef.current) {
           dragAnimationRef.current.kill();
           dragAnimationRef.current = gsap.to(".embla__container", {
@@ -633,6 +649,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
         <div
           ref={(node) => {
             containerRef.current = node;
+
             if (typeof ref === "function") ref(node);
             else if (ref) ref.current = node;
           }}
@@ -659,17 +676,20 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
 
             const isContentNode = (node: React.ReactNode): boolean => {
               if (!React.isValidElement(node)) return false;
+
               if (node.type === CarouselContent) return true;
 
               const nodeChildren = (
                 node as React.ReactElement<{ children?: React.ReactNode }>
               ).props.children;
+
               let found = false;
               React.Children.forEach(nodeChildren, (child) => {
                 if (!found && isContentNode(child)) {
                   found = true;
                 }
               });
+
               return found;
             };
 
@@ -700,6 +720,7 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
     );
   }
 );
+
 Carousel.displayName = "Carousel";
 
 const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
@@ -719,6 +740,7 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
               .children,
             injectIndex
           );
+
           return (
             <React.Fragment key={node.key}>{fragmentChildren}</React.Fragment>
           );
@@ -727,6 +749,7 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
         if (node.type === CarouselItem) {
           const index = nextIndex;
           nextIndex++;
+
           return React.cloneElement(
             node as React.ReactElement<{ index: number }>,
             { index }
@@ -755,11 +778,13 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
     );
   }
 );
+
 CarouselContent.displayName = "CarouselContent";
 
 const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
   ({ className, variant, size, index = 0, children, ...props }, ref) => {
     const carouselContext = useCarousel();
+
     const {
       carouselId,
       selectedIndex,
@@ -767,6 +792,7 @@ const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
       variant: contextVariant,
       prefersReducedMotion,
     } = carouselContext;
+
     const itemRef = React.useRef<HTMLDivElement>(null);
     const itemVariant = variant ?? contextVariant ?? "default";
     const isActive = index === selectedIndex;
@@ -776,6 +802,7 @@ const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
 
     useGSAP(() => {
       if (!itemRef.current) return;
+
       if (prefersReducedMotion) return;
 
       if (isZoom) {
@@ -801,6 +828,7 @@ const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
       <div
         ref={(node) => {
           itemRef.current = node;
+
           if (typeof ref === "function") ref(node);
           else if (ref) ref.current = node;
         }}
@@ -823,6 +851,7 @@ const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
     );
   }
 );
+
 CarouselItem.displayName = "CarouselItem";
 
 const CarouselPrevious = React.forwardRef<
@@ -855,6 +884,7 @@ const CarouselPrevious = React.forwardRef<
     </button>
   );
 });
+
 CarouselPrevious.displayName = "CarouselPrevious";
 
 const CarouselNext = React.forwardRef<HTMLButtonElement, CarouselNextProps>(
@@ -886,6 +916,7 @@ const CarouselNext = React.forwardRef<HTMLButtonElement, CarouselNextProps>(
     );
   }
 );
+
 CarouselNext.displayName = "CarouselNext";
 
 const CarouselDots = React.forwardRef<HTMLDivElement, CarouselDotsProps>(
@@ -917,6 +948,7 @@ const CarouselDots = React.forwardRef<HTMLDivElement, CarouselDotsProps>(
     );
   }
 );
+
 CarouselDots.displayName = "CarouselDots";
 
 const CarouselDot = React.forwardRef<HTMLButtonElement, CarouselDotProps>(
@@ -954,6 +986,7 @@ const CarouselDot = React.forwardRef<HTMLButtonElement, CarouselDotProps>(
     );
   }
 );
+
 CarouselDot.displayName = "CarouselDot";
 
 const CarouselAutoplayButton = React.forwardRef<
@@ -998,6 +1031,7 @@ const CarouselAutoplayButton = React.forwardRef<
     );
   }
 );
+
 CarouselAutoplayButton.displayName = "CarouselAutoplayButton";
 
 const CarouselProgress = React.forwardRef<
@@ -1024,6 +1058,7 @@ const CarouselProgress = React.forwardRef<
     </div>
   );
 });
+
 CarouselProgress.displayName = "CarouselProgress";
 
 const CarouselProgressBar = React.forwardRef<
@@ -1032,6 +1067,7 @@ const CarouselProgressBar = React.forwardRef<
 >(({ className, animated = true, ...props }, ref) => {
   const { selectedIndex, slideCount, prefersReducedMotion } = useCarousel();
   const progressRef = React.useRef<HTMLDivElement>(null);
+
   const progress =
     slideCount > 0 ? ((selectedIndex + 1) / slideCount) * 100 : 0;
 
@@ -1075,6 +1111,7 @@ const CarouselProgressBar = React.forwardRef<
     </div>
   );
 });
+
 CarouselProgressBar.displayName = "CarouselProgressBar";
 
 const CarouselThumbnails = React.forwardRef<
@@ -1089,6 +1126,7 @@ const CarouselThumbnails = React.forwardRef<
       const thumbnail = thumbnailsRef.current.children[
         selectedIndex
       ] as HTMLElement;
+
       if (thumbnail) {
         thumbnail.scrollIntoView({
           behavior: "smooth",
@@ -1138,6 +1176,7 @@ const CarouselThumbnails = React.forwardRef<
     </div>
   );
 });
+
 CarouselThumbnails.displayName = "CarouselThumbnails";
 
 const CarouselLightbox = React.forwardRef<
@@ -1157,11 +1196,13 @@ const CarouselLightbox = React.forwardRef<
     const imageRef = React.useRef<HTMLImageElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
     const dragStart = React.useRef({ x: 0, y: 0 });
+
     const touchStartRef = React.useRef<{
       x: number;
       y: number;
       time: number;
     } | null>(null);
+
     const initialPinchDistanceRef = React.useRef<number | null>(null);
     const initialZoomRef = React.useRef<number>(1);
 
@@ -1187,6 +1228,7 @@ const CarouselLightbox = React.forwardRef<
             e.touches[0].clientX - e.touches[1].clientX,
             e.touches[0].clientY - e.touches[1].clientY
           );
+
           initialPinchDistanceRef.current = distance;
           initialZoomRef.current = zoom;
         }
@@ -1208,12 +1250,16 @@ const CarouselLightbox = React.forwardRef<
             e.touches[0].clientX - e.touches[1].clientX,
             e.touches[0].clientY - e.touches[1].clientY
           );
+
           const scale = distance / initialPinchDistanceRef.current;
+
           const newZoom = Math.min(
             Math.max(initialZoomRef.current * scale, 1),
             4
           );
+
           setZoom(newZoom);
+
           if (newZoom === 1) setPosition({ x: 0, y: 0 });
         } else if (e.touches.length === 1 && zoom > 1) {
           if (touchStartRef.current) {
@@ -1252,6 +1298,7 @@ const CarouselLightbox = React.forwardRef<
             setSwipeOffset({ x: 0, y: 0 });
             touchStartRef.current = null;
             initialPinchDistanceRef.current = null;
+
             return;
           }
         }
@@ -1269,6 +1316,7 @@ const CarouselLightbox = React.forwardRef<
               prev < images.length - 1 ? prev + 1 : 0
             );
           }
+
           setZoom(1);
           setPosition({ x: 0, y: 0 });
         }
@@ -1280,6 +1328,7 @@ const CarouselLightbox = React.forwardRef<
     }, [zoom, swipeOffset, images.length, onOpenChange]);
 
     const lastTapRef = React.useRef<number>(0);
+
     const handleDoubleTap = React.useCallback(() => {
       const now = Date.now();
       const DOUBLE_TAP_DELAY = 300;
@@ -1292,6 +1341,7 @@ const CarouselLightbox = React.forwardRef<
           setPosition({ x: 0, y: 0 });
         }
       }
+
       lastTapRef.current = now;
     }, [zoom]);
 
@@ -1328,7 +1378,9 @@ const CarouselLightbox = React.forwardRef<
             e.preventDefault();
             setZoom((prev) => {
               const newZoom = Math.max(prev - 0.5, 1);
+
               if (newZoom === 1) setPosition({ x: 0, y: 0 });
+
               return newZoom;
             });
             break;
@@ -1344,6 +1396,7 @@ const CarouselLightbox = React.forwardRef<
       };
 
       document.addEventListener("keydown", handleKeyDown);
+
       return () => document.removeEventListener("keydown", handleKeyDown);
     }, [open, images.length, onOpenChange]);
 
@@ -1353,6 +1406,7 @@ const CarouselLightbox = React.forwardRef<
       } else {
         document.body.style.overflow = "";
       }
+
       return () => {
         document.body.style.overflow = "";
       };
@@ -1398,6 +1452,7 @@ const CarouselLightbox = React.forwardRef<
 
     const handleDownload = async () => {
       const image = images[currentIndex];
+
       try {
         const response = await fetch(image.src);
         const blob = await response.blob();
@@ -1416,6 +1471,7 @@ const CarouselLightbox = React.forwardRef<
 
     const handleShare = async () => {
       const image = images[currentIndex];
+
       if (navigator.share) {
         try {
           await navigator.share({
@@ -1701,6 +1757,7 @@ const CarouselLightbox = React.forwardRef<
     );
   }
 );
+
 CarouselLightbox.displayName = "CarouselLightbox";
 
 const CarouselImage = React.forwardRef<HTMLImageElement, CarouselImageProps>(
@@ -1781,6 +1838,7 @@ const CarouselImage = React.forwardRef<HTMLImageElement, CarouselImageProps>(
     );
   }
 );
+
 CarouselImage.displayName = "CarouselImage";
 
 const CarouselCounter = React.forwardRef<HTMLDivElement, CarouselCounterProps>(
@@ -1801,6 +1859,7 @@ const CarouselCounter = React.forwardRef<HTMLDivElement, CarouselCounterProps>(
     );
   }
 );
+
 CarouselCounter.displayName = "CarouselCounter";
 
 export {

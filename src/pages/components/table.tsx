@@ -422,6 +422,7 @@ const kiraColumns: KiraTableColumn<Invoice>[] = [
 
 function KiraTableDemo() {
   const [selected, setSelected] = useState<string[]>([]);
+
   return (
     <div className="space-y-3">
       <KiraTable
@@ -504,6 +505,7 @@ const densityCode = `<Table density="comfortable"> {/* 48px header rows */}
 function StatesDemo() {
   const [loading, setLoading] = useState(false);
   const [empty, setEmpty] = useState(false);
+
   return (
     <div className="space-y-3">
       <div className="flex gap-2">

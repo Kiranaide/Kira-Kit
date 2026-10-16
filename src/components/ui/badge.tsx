@@ -196,7 +196,9 @@ function Badge({
         : preset === "version"
           ? "secondary"
           : undefined;
+
   const resolvedVariant = presetVariant ?? variant;
+
   const resolvedChildren =
     children ??
     (preset === "beta"
@@ -398,18 +400,23 @@ type CountFormat = "default" | "short" | "commas";
 
 function formatCount(count: number, format: CountFormat, max: number): string {
   if (format === "short") {
-    if (count >= 1000000) {
-      return `${(count / 1000000).toFixed(1).replace(/\.0$/, "")}M+`;
+    if (count >= 1_000_000) {
+      return `${(count / 1_000_000).toFixed(1).replace(/\.0$/, "")}M+`;
     }
+
     if (count >= 1000) {
       return `${(count / 1000).toFixed(1).replace(/\.0$/, "")}k+`;
     }
+
     return count > max ? `${max}+` : count.toString();
   }
+
   if (format === "commas") {
     const formatted = count.toLocaleString();
+
     return count > max ? `${max.toLocaleString()}+` : formatted;
   }
+
   return count > max ? `${max}+` : count.toString();
 }
 
@@ -448,13 +455,17 @@ function CountBadge({
   const prevCount = React.useRef(count);
   useGSAP(() => {
     const el = numberRef.current;
+
     if (!el || !animateCount || format !== "default") return;
     const from = prevCount.current;
     prevCount.current = count;
+
     if (reducedMotion || from === count) {
       el.textContent = displayCount;
+
       return;
     }
+
     const obj = { val: from };
     gsap.to(obj, {
       val: count,
@@ -624,10 +635,13 @@ function TagInput({
 
   const addDraft = () => {
     const next = draft.trim();
+
     if (!next || value.includes(next)) {
       setDraft("");
+
       return;
     }
+
     onChange([...value, next]);
     setDraft("");
   };
@@ -818,6 +832,7 @@ export {
   KiraBadge,
   formatCount,
 };
+
 export type {
   BadgeProps,
   StatusBadgeProps,

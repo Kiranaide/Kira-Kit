@@ -117,16 +117,20 @@ async function loadFaceDetectionModel(): Promise<FaceDetector> {
         import("@tensorflow/tfjs-core"),
         import("@tensorflow-models/face-detection"),
       ]);
+
       await import("@tensorflow/tfjs-backend-webgl");
       await tf.ready();
       const model = faceDetection.SupportedModels.MediaPipeFaceDetector;
+
       const detector = await faceDetection.createDetector(model, {
         runtime: "tfjs",
         maxFaces: 5,
       });
+
       return detector as FaceDetector;
     })();
   }
+
   return faceDetectionModelPromise;
 }
 
@@ -147,6 +151,7 @@ async function loadTesseract(): Promise<TesseractModule> {
       (mod) => (mod.default || mod) as TesseractModule
     );
   }
+
   return tesseractPromise;
 }
 
@@ -174,17 +179,21 @@ function parseMRZ(text: string): MRZData | null {
   if (lines.length >= 2 && lines[0].length >= 44 && lines[1].length >= 44) {
     return parseTD3(lines[0], lines[1]);
   }
+
   if (lines.length >= 3 && lines[0].length >= 30) {
     return parseTD1(lines[0], lines[1], lines[2]);
   }
+
   if (lines.length >= 2 && lines[0].length >= 36) {
     return parseTD2(lines[0], lines[1]);
   }
+
   return null;
 }
 
 function parseTD3(line1: string, line2: string): MRZData {
   const names = line1.substring(5, 44).split("<<");
+
   return {
     documentType: line1.substring(0, 2).replace(/<+/g, ""),
     countryCode: line1.substring(2, 5),
@@ -204,6 +213,7 @@ function parseTD1(line1: string, line2: string, line3: string): MRZData {
     .replace(/<+/g, " ")
     .trim()
     .split(/\s{2,}/);
+
   return {
     documentType: line1.substring(0, 2).replace(/<+/g, ""),
     countryCode: line1.substring(2, 5),
@@ -219,6 +229,7 @@ function parseTD1(line1: string, line2: string, line3: string): MRZData {
 
 function parseTD2(line1: string, line2: string): MRZData {
   const names = line1.substring(5, 36).split("<<");
+
   return {
     documentType: line1.substring(0, 2).replace(/<+/g, ""),
     countryCode: line1.substring(2, 5),
@@ -237,8 +248,10 @@ function formatMRZDate(mrzDate: string): string {
   const year = parseInt(mrzDate.substring(0, 2), 10);
   const month = mrzDate.substring(2, 4);
   const day = mrzDate.substring(4, 6);
+
   const fullYear =
     year > 30 ? `19${mrzDate.substring(0, 2)}` : `20${mrzDate.substring(0, 2)}`;
+
   return `${fullYear}-${month}-${day}`;
 }
 
@@ -290,12 +303,15 @@ const FaceDetection = React.forwardRef<HTMLDivElement, FaceDetectionProps>(
       ): boolean => {
         const centerX = videoWidth / 2;
         const centerY = videoHeight / 2;
+
         const faceCenter = {
           x: face.boundingBox.x + face.boundingBox.width / 2,
           y: face.boundingBox.y + face.boundingBox.height / 2,
         };
+
         const toleranceX = videoWidth * FACE_CENTER_TOLERANCE_PERCENT;
         const toleranceY = videoHeight * FACE_CENTER_TOLERANCE_PERCENT;
+
         return (
           Math.abs(faceCenter.x - centerX) < toleranceX &&
           Math.abs(faceCenter.y - centerY) < toleranceY
@@ -307,12 +323,14 @@ const FaceDetection = React.forwardRef<HTMLDivElement, FaceDetectionProps>(
     const detectFaces = React.useCallback(async () => {
       const video = videoRef.current;
       const detector = detectorRef.current;
+
       if (!video || !detector || video.readyState !== 4) return;
 
       try {
         const rawFaces = await detector.estimateFaces(video, {
           flipHorizontal: false,
         });
+
         const detectedFaces: DetectedFace[] = rawFaces.map((face: RawFace) => ({
           boundingBox: {
             x: face.box.xMin,
@@ -337,6 +355,7 @@ const FaceDetection = React.forwardRef<HTMLDivElement, FaceDetectionProps>(
             video.videoWidth,
             video.videoHeight
           );
+
           if (aligned !== isAligned) {
             setIsAligned(aligned);
             onAlignmentChange?.(aligned);
@@ -365,8 +384,10 @@ const FaceDetection = React.forwardRef<HTMLDivElement, FaceDetectionProps>(
           lastDetectionTimeRef.current = timestamp;
           detectFaces();
         }
+
         animationFrameRef.current = requestAnimationFrame(loop);
       };
+
       animationFrameRef.current = requestAnimationFrame(loop);
     }, [detectFaces]);
 
@@ -375,6 +396,7 @@ const FaceDetection = React.forwardRef<HTMLDivElement, FaceDetectionProps>(
       const canvas = canvasRef.current;
       const video = videoRef.current;
       const ctx = canvas.getContext("2d");
+
       if (!ctx) return;
 
       canvas.width = video.videoWidth;
@@ -422,6 +444,7 @@ const FaceDetection = React.forwardRef<HTMLDivElement, FaceDetectionProps>(
       (async () => {
         try {
           const detector = await loadFaceDetectionModel();
+
           if (!mounted) return;
           detectorRef.current = detector;
           setIsLoading(false);
@@ -433,6 +456,7 @@ const FaceDetection = React.forwardRef<HTMLDivElement, FaceDetectionProps>(
 
       return () => {
         mounted = false;
+
         if (animationFrameRef.current)
           cancelAnimationFrame(animationFrameRef.current);
       };
@@ -546,17 +570,21 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
     const { capture } = useCameraActions();
 
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
+
     const alignmentCheckRef = React.useRef<
       ReturnType<typeof setInterval> | undefined
     >(undefined);
+
     const autoCaptureTimeoutRef = React.useRef<
       ReturnType<typeof setTimeout> | undefined
     >(undefined);
+
     const tesseractWorkerRef = React.useRef<TesseractWorker | null>(null);
 
     const [state, setState] = React.useState<
       "idle" | "scanning" | "processing" | "success" | "error"
     >("idle");
+
     const [isAligned, setIsAligned] = React.useState(false);
     const [errorMessage, setErrorMessage] = React.useState<string>("");
 
@@ -566,8 +594,10 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
     const detectDocumentEdges = React.useCallback(
       (video: HTMLVideoElement): boolean => {
         const canvas = canvasRef.current;
+
         if (!canvas) return false;
         const ctx = canvas.getContext("2d");
+
         if (!ctx) return false;
 
         const sampleWidth = 100;
@@ -580,6 +610,7 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
         const data = imageData.data;
 
         let contrastSum = 0;
+
         for (let i = 0; i < data.length - 4; i += 4) {
           const r1 = data[i];
           const r2 = data[i + 4];
@@ -587,6 +618,7 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
         }
 
         const avgContrast = contrastSum / (data.length / 4);
+
         return avgContrast > 15;
       },
       []
@@ -595,11 +627,14 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
     const performOCR = React.useCallback(async (imageBlob: Blob) => {
       try {
         const Tesseract = await loadTesseract();
+
         if (!tesseractWorkerRef.current) {
           tesseractWorkerRef.current = await Tesseract.createWorker("eng");
         }
+
         const worker = tesseractWorkerRef.current;
         const { data } = await worker.recognize(imageBlob);
+
         return data.text;
       } catch {
         onScanError?.(new Error("Failed to read document"));
@@ -611,6 +646,7 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
 
       try {
         const result = capture();
+
         if (!result) throw new Error("Failed to capture image");
 
         const text = await performOCR(result.blob);
@@ -618,6 +654,7 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
 
         const fields: Record<string, { value: string; confidence: number }> =
           {};
+
         if (mrzData) {
           fields.document_number = {
             value: mrzData.documentNumber,
@@ -642,9 +679,11 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
             id_number: /(?:id|number)[:\s]*([A-Z0-9]+)/i,
             date_of_birth: /(?:dob|birth)[:\s]*(\d{2}[/-]\d{2}[/-]\d{4})/i,
           };
+
           if (text) {
             for (const [field, pattern] of Object.entries(patterns)) {
               const match = text.match(pattern);
+
               if (match)
                 fields[field] = { value: match[1].trim(), confidence: 0.7 };
             }
@@ -658,6 +697,7 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
           croppedImage: result.blob,
           confidence: mrzData ? 0.9 : 0.6,
         };
+
         setState("success");
         onScanComplete?.(scanResult);
       } catch (err) {
@@ -682,6 +722,7 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
 
       alignmentCheckRef.current = setInterval(() => {
         const video = videoRef.current;
+
         if (!video || video.readyState !== 4) return;
 
         const aligned = detectDocumentEdges(video);
@@ -704,6 +745,7 @@ const IdCardScanner = React.forwardRef<HTMLDivElement, IdCardScannerProps>(
 
       return () => {
         if (alignmentCheckRef.current) clearInterval(alignmentCheckRef.current);
+
         if (autoCaptureTimeoutRef.current)
           clearTimeout(autoCaptureTimeoutRef.current);
       };
@@ -836,6 +878,7 @@ function MinimalStateIndicator({
       ariaLabel: errorMessage || "Scan failed",
     },
   };
+
   const config = stateConfig[state];
   const Icon = config.icon;
 
@@ -888,6 +931,7 @@ const LivenessCheck = React.forwardRef<HTMLDivElement, LivenessCheckProps>(
   ) => {
     const { videoRef, status } = useCameraState();
     const startTimeRef = React.useRef<number>(0);
+
     const challengeTimeoutRef = React.useRef<
       ReturnType<typeof setTimeout> | undefined
     >(undefined);
@@ -895,16 +939,20 @@ const LivenessCheck = React.forwardRef<HTMLDivElement, LivenessCheckProps>(
     const [state, setState] = React.useState<
       "idle" | "active" | "completed" | "failed"
     >("idle");
+
     const [currentChallengeIndex, setCurrentChallengeIndex] = React.useState(0);
+
     const [completedChallenges, setCompletedChallenges] = React.useState<
       string[]
     >([]);
+
     const [failedChallenges, setFailedChallenges] = React.useState<string[]>(
       []
     );
 
     const reducedMotion = prefersReducedMotion();
     const currentChallenge = challenges[currentChallengeIndex];
+
     const progress =
       challenges.length > 0
         ? ((completedChallenges.length + failedChallenges.length) /
@@ -916,6 +964,7 @@ const LivenessCheck = React.forwardRef<HTMLDivElement, LivenessCheckProps>(
       (passed: boolean) => {
         setState(passed ? "completed" : "failed");
         const duration = Date.now() - startTimeRef.current;
+
         const result: LivenessResult = {
           passed,
           score: completedChallenges.length / challenges.length,
@@ -923,6 +972,7 @@ const LivenessCheck = React.forwardRef<HTMLDivElement, LivenessCheckProps>(
           failedChallenges,
           duration,
         };
+
         onComplete?.(result);
       },
       [challenges.length, completedChallenges, failedChallenges, onComplete]
@@ -932,8 +982,10 @@ const LivenessCheck = React.forwardRef<HTMLDivElement, LivenessCheckProps>(
       if (!currentChallenge) return;
       setCompletedChallenges((prev) => [...prev, currentChallenge.id]);
       onChallengeComplete?.(currentChallenge);
+
       if (challengeTimeoutRef.current)
         clearTimeout(challengeTimeoutRef.current);
+
       if (currentChallengeIndex < challenges.length - 1) {
         setCurrentChallengeIndex((prev) => prev + 1);
       } else {
@@ -950,6 +1002,7 @@ const LivenessCheck = React.forwardRef<HTMLDivElement, LivenessCheckProps>(
       if (!currentChallenge) return;
       setFailedChallenges((prev) => [...prev, currentChallenge.id]);
       onChallengeFailed?.(currentChallenge);
+
       if (currentChallengeIndex < challenges.length - 1) {
         setCurrentChallengeIndex((prev) => prev + 1);
       } else {
@@ -978,6 +1031,7 @@ const LivenessCheck = React.forwardRef<HTMLDivElement, LivenessCheckProps>(
         () => failChallenge(),
         currentChallenge.timeout
       );
+
       return () => {
         if (challengeTimeoutRef.current)
           clearTimeout(challengeTimeoutRef.current);
@@ -987,6 +1041,7 @@ const LivenessCheck = React.forwardRef<HTMLDivElement, LivenessCheckProps>(
     React.useEffect(() => {
       if (autoStart && status === "ready" && state === "idle") {
         const video = videoRef.current;
+
         if (video && video.readyState === 4) {
           requestAnimationFrame(() => startCheck());
         }
@@ -1020,6 +1075,7 @@ const LivenessCheck = React.forwardRef<HTMLDivElement, LivenessCheckProps>(
                 const isCompleted = completedChallenges.includes(challenge.id);
                 const isFailed = failedChallenges.includes(challenge.id);
                 const isCurrent = index === currentChallengeIndex;
+
                 return (
                   <div
                     key={challenge.id}
@@ -1186,12 +1242,16 @@ function saveSession(data: KYCSessionData): void {
 function loadSession(): KYCSessionData | null {
   try {
     const stored = sessionStorage.getItem(KYC_STORAGE_KEY);
+
     if (!stored) return null;
     const data = JSON.parse(stored) as KYCSessionData;
+
     if (Date.now() - data.timestamp > 30 * 60 * 1000) {
       sessionStorage.removeItem(KYC_STORAGE_KEY);
+
       return null;
     }
+
     return data;
   } catch {
     return null;
@@ -1269,25 +1329,31 @@ const KYCFlow = React.forwardRef<HTMLDivElement, KYCFlowProps>(
     const [currentStepIndex, setCurrentStepIndex] = React.useState(() => {
       if (enablePersistence) {
         const session = loadSession();
+
         return session?.currentStepIndex ?? 0;
       }
+
       return 0;
     });
 
     const [completedSteps, setCompletedSteps] = React.useState<string[]>(() => {
       if (enablePersistence) {
         const session = loadSession();
+
         return session?.completedSteps ?? [];
       }
+
       return [];
     });
 
     const [documentFront, setDocumentFront] = React.useState<Blob | null>(null);
     const [documentBack, setDocumentBack] = React.useState<Blob | null>(null);
     const [selfie, setSelfie] = React.useState<Blob | null>(null);
+
     const [extractedFields, setExtractedFields] = React.useState<
       Record<string, { value: string; confidence: number }>
     >({});
+
     const [livenessScore, setLivenessScore] = React.useState(0);
     const [isProcessing, setIsProcessing] = React.useState(false);
 
@@ -1299,6 +1365,7 @@ const KYCFlow = React.forwardRef<HTMLDivElement, KYCFlowProps>(
       return steps.filter((step) => {
         if (step.type === "document-back" && documentType === "passport")
           return false;
+
         return true;
       });
     }, [steps, documentType]);
@@ -1327,6 +1394,7 @@ const KYCFlow = React.forwardRef<HTMLDivElement, KYCFlowProps>(
     const completeStep = React.useCallback(
       (stepId: string) => {
         setCompletedSteps((prev) => [...prev, stepId]);
+
         if (isLastStep) {
           const result: KYCResult = {
             documentFront: documentFront ?? undefined,
@@ -1336,6 +1404,7 @@ const KYCFlow = React.forwardRef<HTMLDivElement, KYCFlowProps>(
             livenessScore,
             completedAt: Date.now(),
           };
+
           if (enablePersistence) clearSession();
           onComplete?.(result);
         } else {
@@ -1357,6 +1426,7 @@ const KYCFlow = React.forwardRef<HTMLDivElement, KYCFlowProps>(
     const handleDocumentScan = React.useCallback(
       (result: IdScanResult, stepType: "document-front" | "document-back") => {
         setIsProcessing(true);
+
         if (stepType === "document-front") setDocumentFront(result.rawImage);
         else setDocumentBack(result.rawImage);
         setExtractedFields((prev) => ({ ...prev, ...result.fields }));
@@ -1379,6 +1449,7 @@ const KYCFlow = React.forwardRef<HTMLDivElement, KYCFlowProps>(
     const handleLivenessComplete = React.useCallback(
       (result: LivenessResult) => {
         setLivenessScore(result.score);
+
         if (result.passed) completeStep(currentStep.id);
       },
       [currentStep, completeStep]
@@ -1394,10 +1465,12 @@ const KYCFlow = React.forwardRef<HTMLDivElement, KYCFlowProps>(
 
     const renderStepContent = () => {
       if (!currentStep) return null;
+
       const cameraMode =
         currentStep.type === "selfie" || currentStep.type === "liveness"
           ? "face-detection"
           : "id-scanner";
+
       const facingMode =
         cameraMode === "face-detection" ? "user" : "environment";
 

@@ -51,21 +51,27 @@ const userSchema = z.object({
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
+
 type UserFormValues = z.infer<typeof userSchema>;
 
 function validateSchema<T>(schema: z.ZodSchema<T>) {
   return ({ value }: { value: T }) => {
     const result = schema.safeParse(value);
+
     if (!result.success) {
       const errors: Record<string, string> = {};
+
       for (const issue of result.error.issues) {
         const path = issue.path.join(".");
+
         if (path) {
           errors[path] = issue.message;
         }
       }
+
       return errors;
     }
+
     return undefined;
   };
 }
@@ -86,6 +92,7 @@ export default function FieldPage() {
       onChange: validateSchema(loginSchema),
       onSubmit: ({ value }) => {
         console.log("Login form submitted:", value);
+
         return undefined;
       },
     },

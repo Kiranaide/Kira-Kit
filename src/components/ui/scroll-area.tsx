@@ -5,6 +5,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 type ScrollAreaOrientation = "vertical" | "horizontal" | "both";
+
 type ScrollbarSize = "thin" | "default" | "thick";
 
 interface ScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -66,4 +67,5 @@ function SimpleScrollArea(props: ScrollAreaProps) {
 }
 
 export { ScrollArea, SimpleScrollArea };
+
 export type { ScrollAreaProps, ScrollAreaOrientation, ScrollbarSize };

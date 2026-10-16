@@ -9,9 +9,13 @@ import { join, basename } from "path";
 
 // Configuration
 const COMPONENTS_DIR = "./src/components/ui";
+
 const HOOKS_DIR = "./src/hooks";
+
 const OUTPUT_DIR = "./public/r";
+
 const REGISTRY_NAME = "kira-kit";
+
 const HOMEPAGE = "https://kira-kit.vercel.app";
 
 // Dependency mappings - npm packages used by components
@@ -92,8 +96,8 @@ const REGISTRY_DEPENDENCY_MAP: Record<string, string[]> = {
   textarea: [],
   timeline: [],
   toast: [],
-  toggle: [],
-  "toggle-group": ["toggle"],
+  toggle: ["toast", "tooltip"],
+  "toggle-group": ["toggle", "tooltip", "toast"],
   tooltip: [],
   "tree-view": ["checkbox"],
 };
@@ -136,6 +140,7 @@ function extractDependencies(content: string): string[] {
       `from\\s+["']${importKey.replace("/", "\\/")}`,
       "g"
     );
+
     if (regex.test(content)) {
       npmDeps.forEach((dep) => deps.add(dep));
     }
@@ -161,6 +166,7 @@ function getHookDependencies(content: string): string[] {
   // Scan for @/hooks/* imports
   const hookImportRegex = /from\s+["']@\/hooks\/([^"']+)["']/g;
   let match;
+
   while ((match = hookImportRegex.exec(content)) !== null) {
     const hookName = match[1].replace(".tsx", "").replace(".ts", "");
     hooks.add(hookName);
@@ -186,8 +192,10 @@ function getRegistryDependencies(
   // Also scan for @/components/ui/* imports
   const uiImportRegex = /from\s+["']@\/components\/ui\/([^"']+)["']/g;
   let match;
+
   while ((match = uiImportRegex.exec(content)) !== null) {
     const importedComponent = match[1].replace(".tsx", "").replace(".ts", "");
+
     if (importedComponent !== componentName) {
       deps.add(importedComponent);
     }
@@ -229,6 +237,7 @@ function generateRegistryItem(filePath: string): RegistryItem {
   // Include hook files if component imports them
   for (const hookName of hookDeps) {
     const hookPath = join(HOOKS_DIR, `${hookName}.ts`);
+
     if (existsSync(hookPath)) {
       const hookContent = readFileSync(hookPath, "utf-8");
       files.push({

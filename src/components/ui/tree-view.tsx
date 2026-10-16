@@ -32,9 +32,11 @@ const TreeViewContext = React.createContext<TreeViewContextValue | null>(null);
 
 function useTreeView() {
   const context = React.useContext(TreeViewContext);
+
   if (!context) {
     throw new Error("useTreeView must be used within TreeView");
   }
+
   return context;
 }
 
@@ -62,11 +64,13 @@ function TreeView({
   const [expandedNodes, setExpandedNodes] = React.useState<Set<string>>(
     new Set(defaultExpandedNodes)
   );
+
   const [selectedNode, setSelectedNode] = React.useState<string | null>(
     selectionMode === "single" && defaultSelectedNodes.length > 0
       ? defaultSelectedNodes[0]
       : null
   );
+
   const [selectedNodes, setSelectedNodes] = React.useState<Set<string>>(
     new Set(selectionMode === "multiple" ? defaultSelectedNodes : [])
   );
@@ -74,34 +78,41 @@ function TreeView({
   const toggleNode = React.useCallback((id: string) => {
     setExpandedNodes((prev) => {
       const next = new Set(prev);
+
       if (next.has(id)) {
         next.delete(id);
       } else {
         next.add(id);
       }
+
       return next;
     });
   }, []);
 
   const getAllChildIds = (node: TreeNode): string[] => {
     const ids: string[] = [];
+
     if (node.children) {
       for (const child of node.children) {
         ids.push(child.id);
         ids.push(...getAllChildIds(child));
       }
     }
+
     return ids;
   };
 
   const findNodeById = (nodes: TreeNode[], id: string): TreeNode | null => {
     for (const node of nodes) {
       if (node.id === id) return node;
+
       if (node.children) {
         const found = findNodeById(node.children, id);
+
         if (found) return found;
       }
     }
+
     return null;
   };
 
@@ -143,6 +154,7 @@ function TreeView({
       } else {
         setSelectedNode(id);
       }
+
       onSelect?.(node);
     },
     [onSelect, selectionMode, toggleSelection]
@@ -159,14 +171,19 @@ function TreeView({
             const findNode = (nodes: TreeNode[]): TreeNode | null => {
               for (const node of nodes) {
                 if (node.id === id) return node;
+
                 if (node.children) {
                   const found = findNode(node.children);
+
                   if (found) return found;
                 }
               }
+
               return null;
             };
+
             const node = findNode(data);
+
             if (node) handleSelect(id, node);
           }
         },
@@ -222,8 +239,10 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
     onSelect,
     showLines,
   } = useTreeView();
+
   const isExpanded = expandedNodes.has(node.id);
   const hasChildren = node.children && node.children.length > 0;
+
   const isSelected =
     selectionMode === "multiple"
       ? selectedNodes.has(node.id)
@@ -233,11 +252,13 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
     if (hasChildren && !node.isFile) {
       toggleNode(node.id);
     }
+
     setSelectedNode(node.id);
   };
 
   const getIcon = () => {
     if (node.icon) return node.icon;
+
     if (node.isFile)
       return (
         <IconFile
@@ -245,6 +266,7 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
           aria-hidden="true"
         />
       );
+
     return isExpanded ? (
       <IconFolderOpen className="h-4 w-4 text-yellow-500" aria-hidden="true" />
     ) : (
@@ -315,6 +337,7 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
         <button
           onClick={() => {
             handleClick();
+
             if (selectionMode === "single") {
               onSelect?.(node);
             }
@@ -361,4 +384,5 @@ function TreeNodeItem({ node, level, isLast }: TreeNodeItemProps) {
 }
 
 export { TreeView };
+
 export type { TreeViewProps };

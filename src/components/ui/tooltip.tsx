@@ -159,6 +159,7 @@ function Tooltip({
       if (controlledOpen === undefined) {
         setInternalOpen(newOpen);
       }
+
       onOpenChange?.(newOpen, eventDetails);
     },
     [controlledOpen, onOpenChange]
@@ -175,6 +176,7 @@ function Tooltip({
     };
 
     document.addEventListener("keydown", handleEscape);
+
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen]);
 

@@ -98,6 +98,7 @@ function AlertDialogOverlay({
   );
 
   const blurClass = blurless ? "" : overlayBlurMap[blur];
+
   const colorClass =
     overlayColorMap[color][opacity] ?? overlayColorMap[color][50];
 
@@ -132,6 +133,7 @@ function AlertDialogContent({
 }: AlertDialogContentProps) {
   const contentRef = React.useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+
   const sizeClasses = {
     sm: "max-w-xs",
     default: "max-w-xs sm:max-w-sm",
@@ -148,8 +150,9 @@ function AlertDialogContent({
     xl: 0.45,
     full: 0.45,
   };
+
   const entranceDuration =
-    duration !== undefined ? duration / 1000 : durationMap[size];
+    duration === undefined ? durationMap[size] : duration / 1000;
 
   useGSAP(
     () => {
@@ -604,6 +607,7 @@ function KiraAlertDialog({
 
   const [typed, setTyped] = React.useState("");
   const [remaining, setRemaining] = React.useState(confirmDelay ?? 0);
+
   const [asyncState, setAsyncState] = React.useState<
     "idle" | "loading" | "success"
   >("idle");
@@ -611,8 +615,10 @@ function KiraAlertDialog({
   // Reset transient state on the closed→open transition (during render, per
   // the React "adjust state when a prop changes" guidance — no effect needed).
   const [prevOpen, setPrevOpen] = React.useState(open);
+
   if (open !== prevOpen) {
     setPrevOpen(open);
+
     if (open) {
       setTyped("");
       setAsyncState("idle");
@@ -623,27 +629,34 @@ function KiraAlertDialog({
   // Countdown cooldown while the dialog is open (effect only manages the timer).
   React.useEffect(() => {
     if (!open || !confirmDelay) return;
+
     const interval = setInterval(() => {
       setRemaining((r) => {
         if (r <= 1) {
           clearInterval(interval);
+
           return 0;
         }
+
         return r - 1;
       });
     }, 1000);
+
     return () => clearInterval(interval);
   }, [open, confirmDelay]);
 
   const typeGateUnmet = confirmText != null && typed !== confirmText;
   const delayUnmet = remaining > 0;
+
   const confirmDisabled =
     loading || asyncState === "loading" || typeGateUnmet || delayUnmet;
 
   const handleConfirm = React.useCallback(async () => {
     if (confirmDisabled) return;
+
     if (onConfirmAsync) {
       setAsyncState("loading");
+
       try {
         await onConfirmAsync();
         setAsyncState("success");
@@ -651,21 +664,26 @@ function KiraAlertDialog({
       } catch {
         setAsyncState("idle");
       }
+
       return;
     }
+
     await onConfirm?.();
   }, [confirmDisabled, onConfirmAsync, onConfirm, onOpenChange]);
 
   // Wire the shortcut (e.g. "⌘↵" / "Enter") to actually confirm.
   React.useEffect(() => {
     if (!open || !shortcut) return;
+
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         handleConfirm();
       }
     };
+
     window.addEventListener("keydown", handler);
+
     return () => window.removeEventListener("keydown", handler);
   }, [open, shortcut, handleConfirm]);
 
@@ -757,6 +775,7 @@ export {
   AlertDialogWarning,
   KiraAlertDialog,
 };
+
 export type {
   AlertDialogActionProps,
   AlertDialogCloseProps,

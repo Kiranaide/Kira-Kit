@@ -408,7 +408,7 @@ function DismissDemo() {
           variant="outline"
           onClick={() =>
             toast.info("This will stay longer", {
-              duration: 10000,
+              duration: 10_000,
             })
           }
         >

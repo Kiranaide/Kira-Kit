@@ -10,8 +10,11 @@ export async function detectProjectType(cwd: string): Promise<ProjectType> {
   for (const file of files) {
     if (existsSync(join(cwd, file))) {
       if (file === "next.config.js") return "nextjs";
+
       if (file === "vite.config.ts") return "vite";
+
       if (file === "remix.config.js") return "remix";
+
       if (file === "gatsby-config.js") return "gatsby";
     }
   }
@@ -52,6 +55,7 @@ export async function confirmProjectType(
       default: true,
     },
   ]);
+
   return confirm;
 }
 
@@ -67,5 +71,6 @@ export async function inputAlias(
       default: defaultValue,
     },
   ]);
+
   return alias;
 }

@@ -32,6 +32,7 @@ function useReducedMotion() {
     };
 
     mediaQuery.addEventListener("change", handleChange);
+
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
@@ -51,11 +52,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = React.useState<Theme>(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("kira-theme") as Theme;
+
       if (stored) return stored;
+
       return window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
     }
+
     return "light";
   });
 
@@ -79,7 +83,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
   const context = React.useContext(ThemeContext);
+
   if (!context) throw new Error("useTheme must be used within ThemeProvider");
+
   return context;
 }
 
@@ -95,6 +101,7 @@ function useIsMobile() {
     const onChange = () => setIsMobile(mql.matches);
     mql.addEventListener("change", onChange);
     setIsMobile(mql.matches);
+
     return () => mql.removeEventListener("change", onChange);
   }, []);
 
@@ -102,6 +109,7 @@ function useIsMobile() {
 }
 
 type CollapsibleMode = "offcanvas" | "icon" | "none";
+
 type SidebarSide = "left" | "right";
 
 interface SidebarContextValue {
@@ -148,12 +156,16 @@ export function SidebarProvider({
 }: SidebarProviderProps) {
   const [collapsed, setCollapsed] = React.useState(() => {
     if (collapsible === "none") return false;
+
     if (persistState && typeof window !== "undefined") {
       const stored = localStorage.getItem(STORAGE_KEY);
+
       if (stored !== null) return stored === "true";
     }
+
     return defaultCollapsed;
   });
+
   const [openMobile, setOpenMobile] = React.useState(false);
   const [isHoverExpanded, setIsHoverExpanded] = React.useState(false);
   const isMobile = useIsMobile();
@@ -169,6 +181,7 @@ export function SidebarProvider({
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "b") {
         e.preventDefault();
+
         if (isMobile) {
           setOpenMobile((prev) => !prev);
         } else if (collapsible !== "none") {
@@ -178,6 +191,7 @@ export function SidebarProvider({
     };
 
     window.addEventListener("keydown", handleKeyDown);
+
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMobile, collapsible]);
 
@@ -222,8 +236,10 @@ export function SidebarProvider({
 
 export function useSidebar() {
   const context = React.useContext(SidebarContext);
+
   if (!context)
     throw new Error("useSidebar must be used within SidebarProvider");
+
   return context;
 }
 
@@ -292,8 +308,10 @@ export function Sidebar({
   const sidebarWidth = React.useMemo(() => {
     if (collapsible === "offcanvas" && collapsed && !isHoverExpanded)
       return "0px";
+
     if (collapsible === "icon" && collapsed && !isHoverExpanded)
       return collapsedWidth;
+
     return width;
   }, [collapsed, collapsible, width, collapsedWidth, isHoverExpanded]);
 
@@ -302,6 +320,7 @@ export function Sidebar({
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current);
       }
+
       setIsHoverExpanded(true);
     }
   }, [hoverExpand, collapsed, collapsible, setIsHoverExpanded]);
@@ -452,6 +471,7 @@ export function SidebarHeader({
 }: SidebarHeaderProps) {
   const { collapsed, setCollapsed, collapsible, side, isHoverExpanded } =
     useSidebar();
+
   const isExpanded = !collapsed || isHoverExpanded;
 
   const canToggle = collapsible !== "none" && showToggle;
@@ -462,7 +482,7 @@ export function SidebarHeader({
       className={cn(
         "p-4 flex items-center border-b border-sidebar-border bg-sidebar",
         side === "right" ? "flex-row-reverse" : "flex-row",
-        !isExpanded ? "justify-center" : "justify-between",
+        isExpanded ? "justify-between" : "justify-center",
         sticky && "sticky top-0 z-10",
         className
       )}
@@ -618,6 +638,7 @@ export function SidebarSearch({
     };
 
     window.addEventListener("keydown", handleKeyDown);
+
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
@@ -835,6 +856,7 @@ export function SidebarItem({
     isHoverExpanded,
     reducedMotion,
   } = useSidebar();
+
   const matchRoute = useMatchRoute();
   const isActive = matchRoute({ to, fuzzy: false });
   const itemRef = React.useRef<HTMLAnchorElement>(null);

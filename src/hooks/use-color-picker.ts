@@ -63,6 +63,7 @@ function hslaToHsva(color: HslaColor): HsvaColor {
   }
 
   const maxVal = Math.max(r, g, b);
+
   return {
     h,
     s: Math.round(r * 100),
@@ -77,6 +78,7 @@ function generateHarmonies(hsva: HsvaColor): ColorHarmony[] {
 
   const hexFromHSL = (h: number, s: number, l: number): string => {
     const result = hslaToHsva({ h, s, l, a: 1 });
+
     return hsvaToHex(result);
   };
 
@@ -164,6 +166,7 @@ export function useColorPicker(options: UseColorPickerOptions = {}): UseColorPic
         return hslaToHsva({ ...value, a: 1 });
       }
     }
+
     if (typeof defaultValue === "string") {
       return hexToHsva(defaultValue);
     } else if ("h" in defaultValue && "s" in defaultValue && "v" in defaultValue) {
@@ -171,6 +174,7 @@ export function useColorPicker(options: UseColorPickerOptions = {}): UseColorPic
     } else if ("r" in defaultValue) {
       return rgbaToHsva(defaultValue);
     }
+
     return hslaToHsva({ ...defaultValue, a: 1 });
   });
 
@@ -195,13 +199,14 @@ export function useColorPicker(options: UseColorPickerOptions = {}): UseColorPic
 
   const setColor = React.useCallback(
     (color: HsvaColor, newAlpha?: number) => {
-      const finalAlpha = newAlpha !== undefined ? newAlpha : alpha;
+      const finalAlpha = newAlpha === undefined ? alpha : newAlpha;
       setColorHsv(color);
       const hexColor = hsvaToHex(color);
       setRecentColors((prev) => {
         const filtered = prev.filter(
           (c) => c.toLowerCase() !== hexColor.toLowerCase()
         );
+
         return [hexColor as HexColor, ...filtered].slice(0, maxRecentColors);
       });
       onValueChange?.({
@@ -241,6 +246,7 @@ export function useColorPicker(options: UseColorPickerOptions = {}): UseColorPic
         const filtered = prev.filter(
           (c) => c.toLowerCase() !== hex.toLowerCase()
         );
+
         return [hex as HexColor, ...filtered].slice(0, maxRecentColors);
       });
     },
@@ -259,6 +265,7 @@ export function useColorPicker(options: UseColorPickerOptions = {}): UseColorPic
       const hexaColor = hsvaToHexa({ ...colorHsv, a: alpha });
 
       let colorValue: string;
+
       switch (format) {
         case "hexa":
           colorValue = hexaColor;
@@ -274,6 +281,7 @@ export function useColorPicker(options: UseColorPickerOptions = {}): UseColorPic
       }
 
       await navigator.clipboard.writeText(colorValue);
+
       return colorValue;
     },
     [colorHsv, alpha, showAlpha]
@@ -315,6 +323,7 @@ export function useColorPicker(options: UseColorPickerOptions = {}): UseColorPic
 
     const toSRGB = (c: number) => {
       const channel = c / 255;
+
       return channel <= 0.03928
         ? channel / 12.92
         : ((channel + 0.055) / 1.055) ** 2.4;

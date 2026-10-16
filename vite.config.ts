@@ -21,6 +21,7 @@ function mediapipeNamedExports(): Plugin {
     "@mediapipe/face_detection": "FaceDetection",
     "@mediapipe/face_mesh": "FaceMesh",
   }
+
   return {
     name: "mediapipe-named-exports",
     transform: {
@@ -30,12 +31,14 @@ function mediapipeNamedExports(): Plugin {
         for (const [pkg, exportName] of Object.entries(shims)) {
           if (id.includes(`/${pkg}/`) || id.includes(`\\${pkg}\\`)) {
             const g = "typeof globalThis!=='undefined'?globalThis:self"
+
             return {
               code: `${code}\nexport const ${exportName} = (${g}).${exportName};\n`,
               map: null,
             }
           }
         }
+
         return null
       },
     },

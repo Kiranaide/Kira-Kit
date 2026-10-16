@@ -36,6 +36,7 @@ const centerVariants = cva("", {
 });
 
 type CenterType = "flex" | "grid" | "absolute";
+
 type CenterElement = "div" | "span" | "section" | "main" | "article";
 
 interface CenterProps
@@ -63,4 +64,5 @@ function Center({
 }
 
 export { Center, centerVariants };
+
 export type { CenterProps, CenterType };

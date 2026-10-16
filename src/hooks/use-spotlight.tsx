@@ -53,6 +53,7 @@ export function SpotlightProvider({
       if (prev) {
         setQuery("")
       }
+
       return !prev
     })
   }, [])
@@ -87,6 +88,7 @@ export function SpotlightProvider({
     }
 
     document.addEventListener("keydown", handleKeyDown)
+
     return () => document.removeEventListener("keydown", handleKeyDown)
   }, [shortcut, disableShortcut, toggleSpotlight])
 
@@ -111,9 +113,11 @@ export function SpotlightProvider({
 
 export function useSpotlight() {
   const context = React.useContext(SpotlightContext)
+
   if (!context) {
     throw new Error("useSpotlight must be used within a SpotlightProvider")
   }
+
   return context
 }
 
@@ -158,6 +162,7 @@ export function useSpotlightState(options: UseSpotlightStateOptions = {}) {
       if (!isControlled) {
         setUncontrolledOpen(newValue)
       }
+
       onOpenChange?.(newValue)
 
       if (!newValue) {
@@ -170,6 +175,7 @@ export function useSpotlightState(options: UseSpotlightStateOptions = {}) {
 
   const openSpotlight = React.useCallback(() => setOpen(true), [setOpen])
   const closeSpotlight = React.useCallback(() => setOpen(false), [setOpen])
+
   const toggleSpotlight = React.useCallback(
     () => setOpen((prev) => !prev),
     [setOpen]
@@ -191,6 +197,7 @@ export function useSpotlightState(options: UseSpotlightStateOptions = {}) {
     }
 
     document.addEventListener("keydown", handleKeyDown)
+
     return () => document.removeEventListener("keydown", handleKeyDown)
   }, [enableShortcut, shortcut, toggleSpotlight])
 
@@ -213,4 +220,5 @@ export function useSpotlightState(options: UseSpotlightStateOptions = {}) {
 }
 
 export { SpotlightContext }
+
 export type { SpotlightContextValue, SpotlightProviderProps, UseSpotlightStateOptions }

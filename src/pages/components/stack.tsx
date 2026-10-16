@@ -306,6 +306,7 @@ function TeamMembersDemo() {
     { name: "Bob Smith", role: "Designer", avatar: "BS" },
     { name: "Carol White", role: "Product Manager", avatar: "CW" },
   ];
+
   return (
     <VStack dividers className="border rounded-lg bg-background">
       {users.map((user) => (
@@ -339,6 +340,7 @@ function FeatureCardsDemo() {
     { icon: IconCheck, title: "Verified", desc: "Trusted by millions" },
     { icon: IconAlertCircle, title: "Support", desc: "24/7 assistance" },
   ];
+
   return (
     <HStack gap={4} className="overflow-x-auto pb-2">
       {features.map((feature) => (

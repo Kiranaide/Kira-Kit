@@ -161,9 +161,13 @@ function Slider({
 
   const shouldShowTooltip = React.useMemo(() => {
     if (tooltipMode === "never") return false;
+
     if (tooltipMode === "always") return true;
+
     if (tooltipMode === "hover") return isHovering;
+
     if (tooltipMode === "on-drag") return isDragging;
+
     return false;
   }, [tooltipMode, isHovering, isDragging]);
 
@@ -171,9 +175,13 @@ function Slider({
     const ariaAttrs: Record<string, string | boolean | undefined> = {};
 
     if (label) ariaAttrs["aria-label"] = label;
+
     if (description) ariaAttrs["aria-describedby"] = description;
+
     if (required) ariaAttrs["aria-required"] = true;
+
     if (readOnly) ariaAttrs["aria-readonly"] = true;
+
     if (disabled) ariaAttrs["aria-disabled"] = true;
 
     ariaAttrs["aria-valuetext"] = getValueText(currentValue);
@@ -196,13 +204,17 @@ function Slider({
 
   const markersToRender = React.useMemo(() => {
     if (markers) return markers;
+
     if (showStepMarkers && step > 0) {
       const steps: Array<{ value: number; label?: string }> = [];
+
       for (let v = min; v <= max; v += step) {
         steps.push({ value: v });
       }
+
       return steps;
     }
+
     return [];
   }, [markers, showStepMarkers, step, min, max]);
 
@@ -294,6 +306,7 @@ function Slider({
                 const isActive = marker.value <= currentValue;
                 const isFirst = index === 0;
                 const isLast = index === markersToRender.length - 1;
+
                 return (
                   <button
                     key={marker.value}
@@ -388,6 +401,7 @@ function Slider({
               const isActive = currentValue === marker.value;
               const isFirst = index === 0;
               const isLast = index === markersToRender.length - 1;
+
               return (
                 <button
                   key={marker.value}
@@ -514,6 +528,7 @@ function RangeSlider({
 }: RangeSliderProps) {
   const [internalValue, setInternalValue] =
     React.useState<[number, number]>(defaultValue);
+
   const [isDragging, setIsDragging] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
   const [activeThumb, setActiveThumb] = React.useState<0 | 1 | null>(null);
@@ -544,6 +559,7 @@ function RangeSlider({
         setIsDragging(false);
 
         const activeRef = activeThumb === 0 ? thumb0Ref : thumb1Ref;
+
         if (activeRef.current) {
           gsap.fromTo(
             activeRef.current,
@@ -555,6 +571,7 @@ function RangeSlider({
             }
           );
         }
+
         setActiveThumb(null);
       }
     },
@@ -563,21 +580,29 @@ function RangeSlider({
 
   const shouldShowTooltip = React.useMemo(() => {
     if (tooltipMode === "never") return false;
+
     if (tooltipMode === "always") return true;
+
     if (tooltipMode === "hover") return isHovering;
+
     if (tooltipMode === "on-drag") return isDragging;
+
     return false;
   }, [tooltipMode, isHovering, isDragging]);
 
   const markersToRender = React.useMemo(() => {
     if (markers) return markers;
+
     if (showStepMarkers && step > 0) {
       const steps: Array<{ value: number; label?: string }> = [];
+
       for (let v = min; v <= max; v += step) {
         steps.push({ value: v });
       }
+
       return steps;
     }
+
     return [];
   }, [markers, showStepMarkers, step, min, max]);
 
@@ -642,9 +667,11 @@ function RangeSlider({
                 const percent = ((marker.value - min) / (max - min)) * 100;
                 const isFirst = index === 0;
                 const isLast = index === markersToRender.length - 1;
+
                 const isInRange =
                   marker.value >= currentValue[0] &&
                   marker.value <= currentValue[1];
+
                 return (
                   <div
                     key={marker.value}
@@ -688,6 +715,7 @@ function RangeSlider({
                 }}
                 onMouseLeave={() => {
                   setIsHovering(false);
+
                   if (!isDragging) setActiveThumb(null);
                 }}
                 onPointerDown={() => setActiveThumb(0)}
@@ -742,6 +770,7 @@ function RangeSlider({
                 }}
                 onMouseLeave={() => {
                   setIsHovering(false);
+
                   if (!isDragging) setActiveThumb(null);
                 }}
                 onPointerDown={() => setActiveThumb(1)}
@@ -785,9 +814,11 @@ function RangeSlider({
             {markersToRender.map((marker) => {
               if (!marker.label) return null;
               const percent = ((marker.value - min) / (max - min)) * 100;
+
               const isInRange =
                 marker.value >= currentValue[0] &&
                 marker.value <= currentValue[1];
+
               return (
                 <span
                   key={marker.value}
@@ -841,4 +872,5 @@ function RangeSlider({
 }
 
 export { Slider, RangeSlider, sliderVariants };
+
 export type { SliderProps, RangeSliderProps };

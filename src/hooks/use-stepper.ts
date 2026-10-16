@@ -143,9 +143,11 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
   } = options
 
   const [uncontrolledStep, setUncontrolledStep] = React.useState(initialStep)
+
   const [completedSteps, setCompletedSteps] = React.useState<Set<number>>(
     new Set()
   )
+
   const [skippedSteps, setSkippedSteps] = React.useState<Set<number>>(new Set())
   const [errorStep, setErrorStep] = React.useState<number | null>(null)
   const [isValidating, setIsValidating] = React.useState(false)
@@ -161,12 +163,15 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
   // Calculate visible steps based on conditions
   const visibleSteps = React.useMemo(() => {
     const visible: number[] = []
+
     for (let i = 0; i < totalSteps; i++) {
       const condition = stepConditions[i]
+
       if (condition === undefined || condition === true) {
         visible.push(i)
       }
     }
+
     return visible
   }, [totalSteps, stepConditions])
 
@@ -176,16 +181,21 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
   // Load progress from storage on mount
   React.useEffect(() => {
     if (!persistKey) return
+
     try {
       const saved = localStorage.getItem(`stepper-${persistKey}`)
+
       if (saved) {
         const data = JSON.parse(saved)
+
         if (!isControlled && typeof data.currentStep === "number") {
           setUncontrolledStep(data.currentStep)
         }
+
         if (Array.isArray(data.completedSteps)) {
           setCompletedSteps(new Set(data.completedSteps))
         }
+
         if (Array.isArray(data.skippedSteps)) {
           setSkippedSteps(new Set(data.skippedSteps))
         }
@@ -197,6 +207,7 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
 
   const saveProgress = React.useCallback(() => {
     if (!persistKey) return
+
     try {
       localStorage.setItem(
         `stepper-${persistKey}`,
@@ -213,16 +224,21 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
 
   const loadProgress = React.useCallback(() => {
     if (!persistKey) return
+
     try {
       const saved = localStorage.getItem(`stepper-${persistKey}`)
+
       if (saved) {
         const data = JSON.parse(saved)
+
         if (!isControlled && typeof data.currentStep === "number") {
           setUncontrolledStep(data.currentStep)
         }
+
         if (Array.isArray(data.completedSteps)) {
           setCompletedSteps(new Set(data.completedSteps))
         }
+
         if (Array.isArray(data.skippedSteps)) {
           setSkippedSteps(new Set(data.skippedSteps))
         }
@@ -234,6 +250,7 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
 
   const clearProgress = React.useCallback(() => {
     if (!persistKey) return
+
     try {
       localStorage.removeItem(`stepper-${persistKey}`)
     } catch {
@@ -253,6 +270,7 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
       if (!isControlled) {
         setUncontrolledStep(newStep)
       }
+
       onStepChange?.(newStep, direction)
     },
     [isControlled, onStepChange]
@@ -261,19 +279,24 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
   const validateStep = React.useCallback(
     async (step: number): Promise<boolean> => {
       const validator = validators[step]
+
       if (!validator) return true
 
       setIsValidating(true)
+
       try {
         const result = await validator()
-        if (!result) {
-          setErrorStep(step)
-        } else {
+
+        if (result) {
           setErrorStep(null)
+        } else {
+          setErrorStep(step)
         }
+
         return result
       } catch {
         setErrorStep(step)
+
         return false
       } finally {
         setIsValidating(false)
@@ -290,12 +313,18 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
   const canNavigateTo = React.useCallback(
     (targetStep: number): boolean => {
       if (!isVisible(targetStep)) return false
+
       if (targetStep < 0 || targetStep >= totalSteps) return false
+
       if (!linear) return editable || targetStep >= currentStep
+
       // In linear mode, can only go to completed steps or next uncompleted
       if (targetStep < currentStep) return editable
+
       if (targetStep === currentStep) return true
+
       if (targetStep === currentStep + 1) return true
+
       return completedSteps.has(targetStep - 1)
     },
     [linear, totalSteps, currentStep, completedSteps, editable, isVisible]
@@ -304,7 +333,9 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
   const getNextVisibleStep = React.useCallback(
     (from: number): number | null => {
       const currentIndex = visibleSteps.indexOf(from)
+
       if (currentIndex === -1 || currentIndex >= visibleSteps.length - 1) return null
+
       return visibleSteps[currentIndex + 1]
     },
     [visibleSteps]
@@ -313,7 +344,9 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
   const getPrevVisibleStep = React.useCallback(
     (from: number): number | null => {
       const currentIndex = visibleSteps.indexOf(from)
+
       if (currentIndex <= 0) return null
+
       return visibleSteps[currentIndex - 1]
     },
     [visibleSteps]
@@ -321,15 +354,18 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
 
   const next = React.useCallback(async (): Promise<boolean> => {
     const nextStep = getNextVisibleStep(currentStep)
+
     if (nextStep === null) return false
 
     // Validate current step
     const isValid = await validateStep(currentStep)
+
     if (!isValid) return false
 
     // Check before change callback
     if (onBeforeStepChange) {
       const canProceed = await onBeforeStepChange(currentStep, nextStep)
+
       if (!canProceed) return false
     }
 
@@ -347,6 +383,7 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
 
   const prev = React.useCallback(() => {
     const prevStep = getPrevVisibleStep(currentStep)
+
     if (prevStep === null) return
     setStep(prevStep, "prev")
   }, [currentStep, getPrevVisibleStep, setStep])
@@ -358,12 +395,14 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
       // If going forward, validate current step
       if (targetStep > currentStep) {
         const isValid = await validateStep(currentStep)
+
         if (!isValid) return false
       }
 
       // Check before change callback
       if (onBeforeStepChange) {
         const canProceed = await onBeforeStepChange(currentStep, targetStep)
+
         if (!canProceed) return false
       }
 
@@ -371,16 +410,19 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
       if (targetStep > currentStep) {
         setCompletedSteps((prev) => {
           const next = new Set(prev)
+
           for (let i = currentStep; i < targetStep; i++) {
             if (isVisible(i)) {
               next.add(i)
             }
           }
+
           return next
         })
       }
 
       setStep(targetStep, "goto")
+
       return true
     },
     [canNavigateTo, currentStep, validateStep, onBeforeStepChange, setStep, isVisible]
@@ -390,6 +432,7 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
     if (!skippableSteps.has(currentStep)) return
 
     const nextStep = getNextVisibleStep(currentStep)
+
     if (nextStep === null) return
 
     setSkippedSteps((prev) => new Set([...prev, currentStep]))
@@ -410,6 +453,7 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
     setSkippedSteps((prev) => {
       const next = new Set(prev)
       next.delete(step)
+
       return next
     })
   }, [])
@@ -425,10 +469,12 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
   const markCompleted = React.useCallback(
     (step: number) => {
       setCompletedSteps((prev) => new Set([...prev, step]))
+
       // Check if all visible steps are completed
       const allCompleted = visibleSteps.every(
         (s) => completedSteps.has(s) || s === step || skippedSteps.has(s)
       )
+
       if (allCompleted) {
         onComplete?.()
       }
@@ -440,6 +486,7 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
     setCompletedSteps((prev) => {
       const next = new Set(prev)
       next.delete(step)
+
       return next
     })
   }, [])
@@ -477,9 +524,13 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
   const getStepState = React.useCallback(
     (step: number): "active" | "completed" | "error" | "pending" | "skipped" => {
       if (hasError(step)) return "error"
+
       if (isSkipped(step)) return "skipped"
+
       if (isActive(step)) return "active"
+
       if (isCompleted(step)) return "completed"
+
       return "pending"
     },
     [hasError, isSkipped, isActive, isCompleted]
@@ -523,13 +574,16 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
           case "Enter":
           case " ":
             e.preventDefault()
+
             if (isAccessible(step)) {
               goTo(step)
             }
+
             return
           case "Escape":
             e.preventDefault()
             ;(e.target as HTMLElement)?.blur()
+
             return
           default:
             return
@@ -565,6 +619,7 @@ export function useStepper(options: UseStepperOptions): UseStepperReturn {
 
   // Calculate progress based on visible steps
   const currentVisibleIndex = visibleSteps.indexOf(currentStep)
+
   const progressValue =
     effectiveTotalSteps > 1
       ? (currentVisibleIndex / (effectiveTotalSteps - 1)) * 100

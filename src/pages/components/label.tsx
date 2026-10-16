@@ -1053,6 +1053,7 @@ const kiraLabelCode = `import { KiraLabel } from "@/components/ui/label"
 function CounterLabelDemo() {
   const [value, setValue] = React.useState("");
   const maxCount = 60;
+
   return (
     <div className="space-y-2 max-w-md">
       <KiraLabel htmlFor="kira-bio" count={value.length} maxCount={maxCount}>
@@ -1084,6 +1085,7 @@ const [value, setValue] = useState("")
 function ValidationLabelDemo() {
   const [value, setValue] = React.useState("");
   const state = value.length === 0 ? undefined : value.includes("@") ? "valid" : "invalid";
+
   return (
     <div className="space-y-2 max-w-md">
       <KiraLabel

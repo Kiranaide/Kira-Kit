@@ -154,11 +154,12 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
     // A custom `icon` (including `null` to hide) always takes precedence
     // over the variant's default icon.
     const iconNode =
-      icon !== undefined
-        ? icon
-        : IconComponent
+      icon === undefined
+        ? IconComponent
           ? React.createElement(IconComponent, { className: "h-full w-full" })
-          : null;
+          : null
+        : icon;
+
     const hasIcon = showIcon && iconNode !== null && iconNode !== undefined;
 
     React.useImperativeHandle(ref, () => innerRef.current!);
@@ -167,8 +168,10 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
       if (!innerRef.current || reducedMotion) {
         setIsVisible(false);
         onClose?.();
+
         return;
       }
+
       gsap.to(innerRef.current, {
         opacity: 0,
         y: -10,
@@ -225,6 +228,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
     );
   }
 );
+
 Alert.displayName = "Alert";
 
 function AlertTitle({
@@ -295,12 +299,16 @@ function AlertActions({ actions, className, ...props }: AlertActionsProps) {
 function formatRelativeTime(date: Date): string {
   const diff = Date.now() - date.getTime();
   const s = Math.floor(diff / 1000);
+
   if (s < 60) return "just now";
   const m = Math.floor(s / 60);
+
   if (m < 60) return `${m}m ago`;
   const h = Math.floor(m / 60);
+
   if (h < 24) return `${h}h ago`;
   const d = Math.floor(h / 24);
+
   return `${d}d ago`;
 }
 
@@ -308,9 +316,11 @@ function useRelativeTime(date?: Date): string | null {
   const [, setTick] = React.useState(0);
   React.useEffect(() => {
     if (!date) return;
-    const interval = setInterval(() => setTick((t) => t + 1), 30000);
+    const interval = setInterval(() => setTick((t) => t + 1), 30_000);
+
     return () => clearInterval(interval);
   }, [date]);
+
   return date ? formatRelativeTime(date) : null;
 }
 
@@ -366,6 +376,7 @@ function KiraAlert({
         : typeof title === "string"
           ? title
           : "");
+
     if (!text) return;
     navigator.clipboard?.writeText(text).then(() => {
       setCopied(true);
@@ -447,6 +458,7 @@ export {
   alertVariants,
   formatRelativeTime,
 };
+
 export type {
   AlertProps,
   AlertActionsProps,

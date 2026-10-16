@@ -108,9 +108,11 @@ const DataTableContext =
 
 function useDataTable<TData>() {
   const context = React.useContext(DataTableContext);
+
   if (!context) {
     throw new Error("useDataTable must be used within a DataTableProvider");
   }
+
   return context as DataTableContextValue<TData>;
 }
 
@@ -172,16 +174,21 @@ function DataTableRoot<TData, TValue>({
   hasNextPage = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>(initialSorting);
+
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const [columnOrder, setColumnOrder] = React.useState<ColumnOrderState>([]);
+
   const [columnPinning, setColumnPinning] = React.useState<ColumnPinningState>(
     {}
   );
+
   const [expanded, setExpanded] = React.useState<ExpandedState>({});
   const [grouping, setGrouping] = React.useState<GroupingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
@@ -399,26 +406,32 @@ function DataTableContent<TData>({
                 const pinnedRight = isPinned === "right";
 
                 let leftOffset = 0;
+
                 if (pinnedLeft) {
                   const leftPinnedColumns = headerGroup.headers.filter(
                     (h) => h.column.getIsPinned() === "left"
                   );
+
                   const currentIndex = leftPinnedColumns.findIndex(
                     (h) => h.id === header.id
                   );
+
                   for (let i = 0; i < currentIndex; i++) {
                     leftOffset += leftPinnedColumns[i].getSize();
                   }
                 }
 
                 let rightOffset = 0;
+
                 if (pinnedRight) {
                   const rightPinnedColumns = headerGroup.headers.filter(
                     (h) => h.column.getIsPinned() === "right"
                   );
+
                   const currentIndex = rightPinnedColumns.findIndex(
                     (h) => h.id === header.id
                   );
+
                   for (
                     let i = currentIndex + 1;
                     i < rightPinnedColumns.length;
@@ -491,26 +504,32 @@ function DataTableContent<TData>({
                     const pinnedRight = isPinned === "right";
 
                     let leftOffset = 0;
+
                     if (pinnedLeft) {
                       const leftPinnedColumns = row
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "left");
+
                       const currentIndex = leftPinnedColumns.findIndex(
                         (c) => c.id === cell.id
                       );
+
                       for (let i = 0; i < currentIndex; i++) {
                         leftOffset += leftPinnedColumns[i].column.getSize();
                       }
                     }
 
                     let rightOffset = 0;
+
                     if (pinnedRight) {
                       const rightPinnedColumns = row
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "right");
+
                       const currentIndex = rightPinnedColumns.findIndex(
                         (c) => c.id === cell.id
                       );
+
                       for (
                         let i = currentIndex + 1;
                         i < rightPinnedColumns.length;
@@ -622,6 +641,7 @@ function DataTableVirtualizedContent<TData>({
   const virtualRows = virtualizer.getVirtualItems();
   const totalSize = virtualizer.getTotalSize();
   const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0;
+
   const paddingBottom =
     virtualRows.length > 0
       ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0)
@@ -629,16 +649,19 @@ function DataTableVirtualizedContent<TData>({
 
   React.useEffect(() => {
     const parent = parentRef.current;
+
     if (!parent || !onLoadMore || !hasNextPage || isLoading) return;
 
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = parent;
+
       if (scrollTop + clientHeight >= scrollHeight - 100) {
         onLoadMore();
       }
     };
 
     parent.addEventListener("scroll", handleScroll);
+
     return () => parent.removeEventListener("scroll", handleScroll);
   }, [onLoadMore, hasNextPage, isLoading]);
 
@@ -663,26 +686,32 @@ function DataTableVirtualizedContent<TData>({
                 const pinnedRight = isPinned === "right";
 
                 let leftOffset = 0;
+
                 if (pinnedLeft) {
                   const leftPinnedColumns = headerGroup.headers.filter(
                     (h) => h.column.getIsPinned() === "left"
                   );
+
                   const currentIndex = leftPinnedColumns.findIndex(
                     (h) => h.id === header.id
                   );
+
                   for (let i = 0; i < currentIndex; i++) {
                     leftOffset += leftPinnedColumns[i].getSize();
                   }
                 }
 
                 let rightOffset = 0;
+
                 if (pinnedRight) {
                   const rightPinnedColumns = headerGroup.headers.filter(
                     (h) => h.column.getIsPinned() === "right"
                   );
+
                   const currentIndex = rightPinnedColumns.findIndex(
                     (h) => h.id === header.id
                   );
+
                   for (
                     let i = currentIndex + 1;
                     i < rightPinnedColumns.length;
@@ -744,6 +773,7 @@ function DataTableVirtualizedContent<TData>({
           )}
           {virtualRows.map((virtualRow) => {
             const row = rows[virtualRow.index] as Row<TData>;
+
             return (
               <React.Fragment key={row.id}>
                 <TableRow
@@ -765,26 +795,32 @@ function DataTableVirtualizedContent<TData>({
                     const pinnedRight = isPinned === "right";
 
                     let leftOffset = 0;
+
                     if (pinnedLeft) {
                       const leftPinnedCells = row
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "left");
+
                       const currentIndex = leftPinnedCells.findIndex(
                         (c) => c.id === cell.id
                       );
+
                       for (let i = 0; i < currentIndex; i++) {
                         leftOffset += leftPinnedCells[i].column.getSize();
                       }
                     }
 
                     let rightOffset = 0;
+
                     if (pinnedRight) {
                       const rightPinnedCells = row
                         .getVisibleCells()
                         .filter((c) => c.column.getIsPinned() === "right");
+
                       const currentIndex = rightPinnedCells.findIndex(
                         (c) => c.id === cell.id
                       );
+
                       for (
                         let i = currentIndex + 1;
                         i < rightPinnedCells.length;
@@ -906,6 +942,7 @@ function DataTableReorderableContent<TData>({
         const newIndex = items.indexOf(over.id as string);
         const newItems = arrayMove(items, oldIndex, newIndex);
         onReorder?.(newItems);
+
         return newItems;
       });
     }
@@ -916,6 +953,7 @@ function DataTableReorderableContent<TData>({
     rows.forEach((row) => {
       map.set(row.id, row);
     });
+
     return map;
   }, [rows]);
 
@@ -952,26 +990,32 @@ function DataTableReorderableContent<TData>({
                   const pinnedRight = isPinned === "right";
 
                   let leftOffset = 0;
+
                   if (pinnedLeft) {
                     const leftPinnedColumns = headerGroup.headers.filter(
                       (h) => h.column.getIsPinned() === "left"
                     );
+
                     const currentIndex = leftPinnedColumns.findIndex(
                       (h) => h.id === header.id
                     );
+
                     for (let i = 0; i < currentIndex; i++) {
                       leftOffset += leftPinnedColumns[i].getSize();
                     }
                   }
 
                   let rightOffset = 0;
+
                   if (pinnedRight) {
                     const rightPinnedColumns = headerGroup.headers.filter(
                       (h) => h.column.getIsPinned() === "right"
                     );
+
                     const currentIndex = rightPinnedColumns.findIndex(
                       (h) => h.id === header.id
                     );
+
                     for (
                       let i = currentIndex + 1;
                       i < rightPinnedColumns.length;
@@ -1065,6 +1109,7 @@ function DataTableSortableRow<TData>({
   expandOnRowClick = false,
 }: DataTableSortableRowProps<TData>) {
   const { density } = useDataTable<TData>();
+
   const {
     attributes,
     listeners,
@@ -1104,26 +1149,32 @@ function DataTableSortableRow<TData>({
           const pinnedRight = isPinned === "right";
 
           let leftOffset = 0;
+
           if (pinnedLeft) {
             const leftPinnedColumns = row
               .getVisibleCells()
               .filter((c) => c.column.getIsPinned() === "left");
+
             const currentIndex = leftPinnedColumns.findIndex(
               (c) => c.id === cell.id
             );
+
             for (let i = 0; i < currentIndex; i++) {
               leftOffset += leftPinnedColumns[i].column.getSize();
             }
           }
 
           let rightOffset = 0;
+
           if (pinnedRight) {
             const rightPinnedColumns = row
               .getVisibleCells()
               .filter((c) => c.column.getIsPinned() === "right");
+
             const currentIndex = rightPinnedColumns.findIndex(
               (c) => c.id === cell.id
             );
+
             for (let i = currentIndex + 1; i < rightPinnedColumns.length; i++) {
               rightOffset += rightPinnedColumns[i].column.getSize();
             }
@@ -1341,6 +1392,7 @@ function DataTableColumnHeader<TData, TValue>({
 
   const handleSort = () => {
     const currentSort = column.getIsSorted();
+
     if (currentSort === false) {
       column.toggleSorting(false);
     } else if (currentSort === "asc") {
@@ -1383,6 +1435,7 @@ function DataTableColumnPinningMenu<TData, TValue>({
   column,
 }: DataTableColumnPinningMenuProps<TData, TValue>) {
   const isPinned = column.getIsPinned();
+
   const pinPosition =
     isPinned === "left" ? "left" : isPinned === "right" ? "right" : null;
 
@@ -1403,6 +1456,7 @@ function DataTableColumnPinningMenu<TData, TValue>({
         <DropdownMenuItem
           onClick={(e) => {
             e.stopPropagation();
+
             if (pinPosition === "left") {
               column.pin(false);
             } else {
@@ -1425,6 +1479,7 @@ function DataTableColumnPinningMenu<TData, TValue>({
         <DropdownMenuItem
           onClick={(e) => {
             e.stopPropagation();
+
             if (pinPosition === "right") {
               column.pin(false);
             } else {
@@ -1455,6 +1510,7 @@ function createSelectColumn<TData>(): ColumnDef<TData> {
     header: ({ table }) => {
       const isAllSelected = table.getIsAllPageRowsSelected();
       const isSomeSelected = table.getIsSomePageRowsSelected();
+
       return (
         <div className="flex items-center justify-center">
           <Checkbox
@@ -1587,6 +1643,7 @@ function DataTableEditableCell({
   React.useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
+
       if (type === "text" && inputRef.current instanceof HTMLInputElement) {
         inputRef.current.select();
       }
@@ -2135,6 +2192,7 @@ function DataTablePinningControls() {
   const pinnedLeftColumns = table
     .getAllLeafColumns()
     .filter((col) => col.getIsPinned() === "left");
+
   const pinnedRightColumns = table
     .getAllLeafColumns()
     .filter((col) => col.getIsPinned() === "right");
@@ -2180,12 +2238,14 @@ function DataTableDensityToggle({
 }: DataTableDensityToggleProps) {
   const [internalValue, setInternalValue] =
     React.useState<DataTableDensity>(defaultValue);
+
   const currentValue = value ?? internalValue;
 
   const handleChange = (newValue: DataTableDensity) => {
     if (!value) {
       setInternalValue(newValue);
     }
+
     onValueChange?.(newValue);
   };
 
@@ -2239,6 +2299,7 @@ function NumberRangeFilter({
     undefined,
     undefined,
   ];
+
   const [min, max] = filterValue;
 
   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2313,6 +2374,7 @@ function MultiSelectFilter({
     const newValue = filterValue.includes(value)
       ? filterValue.filter((v) => v !== value)
       : [...filterValue, value];
+
     column?.setFilterValue(newValue.length > 0 ? newValue : undefined);
   };
 
@@ -2402,6 +2464,7 @@ function DateRangeFilter({ columnId, className }: DateRangeFilterProps) {
     undefined,
     undefined,
   ];
+
   const [fromDate, toDate] = filterValue;
 
   const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
