@@ -168,105 +168,123 @@ export function CollapsibleAccordionDemo() {
   )
 }`;
 
+function IconsWithIconSection() {
+  return (
+    <div>
+      <p className="text-sm text-muted-foreground mb-3">With Icon</p>
+      <Accordion>
+        <AccordionItem value="item-1">
+          <AccordionTrigger icon={<IconFolder className="w-4 h-4" />}>
+            Project Files
+          </AccordionTrigger>
+          <AccordionContent>
+            Contains all your project source files and assets.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger icon={<IconFile className="w-4 h-4" />}>
+            Documentation
+          </AccordionTrigger>
+          <AccordionContent>
+            README, CHANGELOG, and other documentation files.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-3">
+          <AccordionTrigger icon={<IconSettings className="w-4 h-4" />}>
+            Configuration
+          </AccordionTrigger>
+          <AccordionContent>
+            Project configuration files like tsconfig, vite.config, etc.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+}
+
+function IconsHeaderColorsSection() {
+  return (
+    <div>
+      <p className="text-sm text-muted-foreground mb-3">
+        Header Background Colors
+      </p>
+      <Accordion multiple>
+        <AccordionItem value="info">
+          <AccordionTrigger
+            variant="info"
+            icon={<IconInfoCircle className="w-4 h-4" />}
+          >
+            Information
+          </AccordionTrigger>
+          <AccordionContent>
+            This is an informational message with a blue pastel background.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="success">
+          <AccordionTrigger
+            variant="success"
+            icon={<IconCheck className="w-4 h-4" />}
+          >
+            Success
+          </AccordionTrigger>
+          <AccordionContent>
+            This indicates a successful action with a green pastel background.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="warning">
+          <AccordionTrigger
+            variant="warning"
+            icon={<IconAlertTriangle className="w-4 h-4" />}
+          >
+            Warning
+          </AccordionTrigger>
+          <AccordionContent>
+            This warns about potential issues with a yellow pastel background.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+}
+
+function IconsCustomChevronSection() {
+  return (
+    <div>
+      <p className="text-sm text-muted-foreground mb-3">Custom Chevron</p>
+      <Accordion>
+        <AccordionItem value="item-1">
+          <AccordionTrigger
+            chevronIcon={<IconChevronRight className="w-4 h-4" />}
+            chevronPosition="end"
+          >
+            Custom Chevron (Right Arrow)
+          </AccordionTrigger>
+          <AccordionContent>
+            This accordion uses a custom right arrow icon.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger
+            chevronIcon={<IconPlus className="w-4 h-4" />}
+            showArrow={false}
+          >
+            Plus/Minus Toggle
+          </AccordionTrigger>
+          <AccordionContent>
+            This accordion uses a plus/minus style toggle indicator.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+}
+
 function IconsDemo() {
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm text-muted-foreground mb-3">With Icon</p>
-        <Accordion>
-          <AccordionItem value="item-1">
-            <AccordionTrigger icon={<IconFolder className="w-4 h-4" />}>
-              Project Files
-            </AccordionTrigger>
-            <AccordionContent>
-              Contains all your project source files and assets.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger icon={<IconFile className="w-4 h-4" />}>
-              Documentation
-            </AccordionTrigger>
-            <AccordionContent>
-              README, CHANGELOG, and other documentation files.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3">
-            <AccordionTrigger icon={<IconSettings className="w-4 h-4" />}>
-              Configuration
-            </AccordionTrigger>
-            <AccordionContent>
-              Project configuration files like tsconfig, vite.config, etc.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-3">
-          Header Background Colors
-        </p>
-        <Accordion multiple>
-          <AccordionItem value="info">
-            <AccordionTrigger
-              variant="info"
-              icon={<IconInfoCircle className="w-4 h-4" />}
-            >
-              Information
-            </AccordionTrigger>
-            <AccordionContent>
-              This is an informational message with a blue pastel background.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="success">
-            <AccordionTrigger
-              variant="success"
-              icon={<IconCheck className="w-4 h-4" />}
-            >
-              Success
-            </AccordionTrigger>
-            <AccordionContent>
-              This indicates a successful action with a green pastel background.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="warning">
-            <AccordionTrigger
-              variant="warning"
-              icon={<IconAlertTriangle className="w-4 h-4" />}
-            >
-              Warning
-            </AccordionTrigger>
-            <AccordionContent>
-              This warns about potential issues with a yellow pastel background.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-3">Custom Chevron</p>
-        <Accordion>
-          <AccordionItem value="item-1">
-            <AccordionTrigger
-              chevronIcon={<IconChevronRight className="w-4 h-4" />}
-              chevronPosition="end"
-            >
-              Custom Chevron (Right Arrow)
-            </AccordionTrigger>
-            <AccordionContent>
-              This accordion uses a custom right arrow icon.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger
-              chevronIcon={<IconPlus className="w-4 h-4" />}
-              showArrow={false}
-            >
-              Plus/Minus Toggle
-            </AccordionTrigger>
-            <AccordionContent>
-              This accordion uses a plus/minus style toggle indicator.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
+      <IconsWithIconSection />
+      <IconsHeaderColorsSection />
+      <IconsCustomChevronSection />
     </div>
   );
 }
@@ -692,7 +710,7 @@ export function KiraAccordionVariantsDemo() {
 }`;
 
 function DraggableDemo() {
-  const [items, setItems] = React.useState([
+  const [items, setItems] = React.useState<AccordionItemData[]>([
     {
       value: "item-1",
       title: "First Item",
@@ -716,12 +734,7 @@ function DraggableDemo() {
   ]);
 
   return (
-    <KiraAccordion
-      draggable
-      items={items}
-      onReorder={(newItems) => setItems(newItems as typeof items)}
-      showExpandAll
-    />
+    <KiraAccordion draggable items={items} onReorder={setItems} showExpandAll />
   );
 }
 
@@ -747,13 +760,27 @@ export function DraggableDemo() {
 function SearchDemo() {
   const items = [
     { value: "install", title: "Installation", content: "Run bun install." },
-    { value: "config", title: "Configuration", content: "Edit vite.config.ts." },
-    { value: "theming", title: "Theming", content: "Tokens live in index.css." },
-    { value: "a11y", title: "Accessibility", content: "WCAG 2.2 AA throughout." },
+    {
+      value: "config",
+      title: "Configuration",
+      content: "Edit vite.config.ts.",
+    },
+    {
+      value: "theming",
+      title: "Theming",
+      content: "Tokens live in index.css.",
+    },
+    {
+      value: "a11y",
+      title: "Accessibility",
+      content: "WCAG 2.2 AA throughout.",
+    },
     { value: "deploy", title: "Deployment", content: "Push to Vercel." },
   ];
 
-  return <KiraAccordion searchable searchPlaceholder="Search docs…" items={items} />;
+  return (
+    <KiraAccordion searchable searchPlaceholder="Search docs…" items={items} />
+  );
 }
 
 const searchCode = `import { KiraAccordion } from "@/components/ui/accordion"
@@ -766,9 +793,21 @@ const searchCode = `import { KiraAccordion } from "@/components/ui/accordion"
 
 function PersistedDemo() {
   const items = [
-    { value: "s1", title: "Section 1", content: "Open me, then reload the page." },
-    { value: "s2", title: "Section 2", content: "My open state is remembered." },
-    { value: "s3", title: "Section 3", content: "Stored under the persistKey." },
+    {
+      value: "s1",
+      title: "Section 1",
+      content: "Open me, then reload the page.",
+    },
+    {
+      value: "s2",
+      title: "Section 2",
+      content: "My open state is remembered.",
+    },
+    {
+      value: "s3",
+      title: "Section 3",
+      content: "Stored under the persistKey.",
+    },
   ];
 
   return <KiraAccordion persistKey="demo-docs" items={items} />;
@@ -780,7 +819,7 @@ const persistedCode = `import { KiraAccordion } from "@/components/ui/accordion"
 <KiraAccordion persistKey="demo-docs" items={items} />`;
 
 function EndHandleDemo() {
-  const [items, setItems] = React.useState([
+  const [items, setItems] = React.useState<AccordionItemData[]>([
     { value: "a", title: "Alpha", content: "Handle on the right." },
     { value: "b", title: "Bravo", content: "Handle on the right." },
     { value: "c", title: "Charlie", content: "Handle on the right." },
@@ -791,7 +830,7 @@ function EndHandleDemo() {
       draggable
       dragHandlePosition="end"
       items={items}
-      onReorder={(newItems) => setItems(newItems as typeof items)}
+      onReorder={setItems}
     />
   );
 }
@@ -834,13 +873,17 @@ function AsyncLoadingDemo() {
       asyncLoading
       items={items}
       onItemOpen={async (item) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const { promise, resolve } = Promise.withResolvers<void>();
+        setTimeout(resolve, 1000);
+        await promise;
         setItems((prev) =>
-          prev.map((i) =>
-            i.value === item.value
-              ? { ...i, loading: false, content: "Loaded content!" }
-              : i
-          )
+          prev.map((i) => {
+            if (i.value === item.value) {
+              return { ...i, loading: false, content: "Loaded content!" };
+            }
+
+            return i;
+          }),
         );
       }}
     />
@@ -896,6 +939,123 @@ export function ExpandCollapseDemo() {
     />
   )
 }`;
+
+function StressDemo() {
+  const items: AccordionItemData[] = [
+    {
+      value: "release-2-1-0",
+      title:
+        "Release 2.1.0 — Find in page, URL deep linking, and search highlighting for the accordion component",
+      content:
+        "This release adds three quality-of-life features to the accordion: browser find-in-page support via hiddenUntilFound, shareable #value links via deepLink, and <mark> highlighting for search matches. Long titles like this one truncate with an ellipsis instead of overflowing the card boundary, even inside a narrow 320px column.",
+    },
+    {
+      value: "empty-section",
+      title: "Release notes with no content",
+      content: "",
+    },
+    {
+      value: "rolled-back",
+      title: "Rolled back build (disabled)",
+      content:
+        "This entry is disabled and cannot be opened. It proves disabled items render correctly inside the stress container.",
+      disabled: true,
+    },
+  ];
+
+  return (
+    <div className="max-w-xs">
+      <KiraAccordion items={items} />
+    </div>
+  );
+}
+
+const stressCode = `import { KiraAccordion } from "@/components/ui/accordion"
+
+// Very long title + empty content + disabled item in a narrow container
+<KiraAccordion items={stressItems} />
+
+// Wrap in max-w-xs to prove titles truncate and nothing overflows horizontally.`;
+
+function FindInPageDemo() {
+  const items: AccordionItemData[] = [
+    {
+      value: "kudzu-history",
+      title: "What is kudzu?",
+      content:
+        'Kudzu is a fast-growing vine introduced to the southeastern United States in 1876. Press Ctrl/Cmd+F and search for "kudzu" — this panel expands automatically.',
+    },
+    {
+      value: "layout",
+      title: "Page layout notes",
+      content:
+        "The remaining panels stay collapsed until the browser's find bar matches text inside them.",
+    },
+    {
+      value: "credits",
+      title: "Credits",
+      content: "Demo content for the hiddenUntilFound feature.",
+    },
+  ];
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        Press <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>F</kbd> and search for{" "}
+        <strong>kudzu</strong> — the matching collapsed panel auto-expands and
+        scrolls into view.
+      </p>
+      <KiraAccordion hiddenUntilFound items={items} />
+    </div>
+  );
+}
+
+const findInPageCode = `import { KiraAccordion } from "@/components/ui/accordion"
+
+// hiddenUntilFound registers every panel with hidden="until-found":
+// browser find-in-page expands and scrolls to matches.
+// Note: item-level lazyMount is ignored while hiddenUntilFound is on.
+<KiraAccordion hiddenUntilFound items={items} />`;
+
+function DeepLinkDemo() {
+  const items: AccordionItemData[] = [
+    {
+      value: "install",
+      title: "How do I install Kira Kit?",
+      content:
+        "Copy the component files into your project. Open this item and notice the URL now ends in #install — share that link and the item opens on load.",
+    },
+    {
+      value: "theming",
+      title: "How do I customize the theme?",
+      content:
+        "Design tokens live in index.css. Loading the page with #theming opens and scrolls to this answer.",
+    },
+    {
+      value: "license",
+      title: "What license does Kira Kit use?",
+      content:
+        "MIT. Closing every item strips the hash from the URL; the Back button is not spammed by toggles.",
+    },
+  ];
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        Open an item — the URL hash becomes <code>#&lt;value&gt;</code>. Reload
+        with <code>#theming</code> in the address bar to see the item open and
+        scroll into view.
+      </p>
+      <KiraAccordion deepLink items={items} />
+    </div>
+  );
+}
+
+const deepLinkCode = `import { KiraAccordion } from "@/components/ui/accordion"
+
+// deepLink syncs the open item with the URL hash using replaceState
+// (Back button is not spammed). Hash wins over persistKey on load.
+<KiraAccordion deepLink items={items} />`;
 
 export function VerticalAccordionDemo() {
   return (
@@ -992,7 +1152,7 @@ export default function AccordionPage() {
       <PageHeader
         title="Accordion"
         description="Collapsible content panels for organizing information. Supports icons, colors, sizes, nested accordions, and lazy loading."
-        version="v2.0"
+        version="v2.1"
       />
 
       <FeatureGrid
@@ -1154,10 +1314,49 @@ export default function AccordionPage() {
             demo: (
               <DemoWrapper
                 title="Searchable Accordion"
-                description="Filter items by title as you type (recursive for nested items)."
+                description="Filter items by title as you type (recursive for nested items). Matched substrings are highlighted on string titles."
                 code={searchCode}
               >
                 <SearchDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "find-in-page",
+            label: "Find in Page",
+            demo: (
+              <DemoWrapper
+                title="Find in Page"
+                description="hiddenUntilFound registers collapsed panels with the browser find bar — Ctrl/⌘+F expands and scrolls to matches."
+                code={findInPageCode}
+              >
+                <FindInPageDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "deep-link",
+            label: "Deep Link",
+            demo: (
+              <DemoWrapper
+                title="Deep Link"
+                description="deepLink keeps the URL hash in sync with the open item — shareable #value links open and scroll on load."
+                code={deepLinkCode}
+              >
+                <DeepLinkDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
+            value: "stress",
+            label: "Stress Cases",
+            demo: (
+              <DemoWrapper
+                title="Stress Cases"
+                description="Long titles truncate, empty content renders nothing, and disabled items stay inert — all inside a max-w-xs column."
+                code={stressCode}
+              >
+                <StressDemo />
               </DemoWrapper>
             ),
           },
@@ -1205,21 +1404,35 @@ export default function AccordionPage() {
 
       <KeyboardShortcuts
         shortcuts={[
-          { keys: "Tab", description: "Move focus to next accordion" },
+          {
+            keys: "Tab",
+            description:
+              "inherited from Base UI: move focus to the next accordion trigger (triggers are normal tab stops)",
+          },
           {
             keys: "Shift + Tab",
-            description: "Move focus to previous accordion",
-          },
-          { keys: "Enter / Space", description: "Toggle current item" },
-          { keys: "Home", description: "Move to first item" },
-          { keys: "End", description: "Move to last item" },
-          {
-            keys: "Arrow Down / Arrow Right",
-            description: "Move to next item",
+            description:
+              "inherited from Base UI: move focus to the previous trigger",
           },
           {
-            keys: "Arrow Up / Arrow Left",
-            description: "Move to previous item",
+            keys: "Enter / Space",
+            description:
+              "inherited from Base UI: toggle the focused item's panel",
+          },
+          {
+            keys: "Space",
+            description:
+              "on a drag handle (draggable mode): pick up the item; press again to drop it",
+          },
+          {
+            keys: "Arrow keys",
+            description:
+              "while dragging: move the picked-up item up or down the list",
+          },
+          {
+            keys: "Escape",
+            description:
+              "while dragging: cancel and return the item to its original position",
           },
         ]}
       />
@@ -1265,6 +1478,13 @@ export default function AccordionPage() {
                 type: "boolean",
                 default: "false",
                 description: "Auto-scroll opened items into view.",
+              },
+              {
+                prop: "hiddenUntilFound",
+                type: "boolean",
+                default: "false",
+                description:
+                  "⌘F finds and expands collapsed panels (browser find-in-page).",
               },
               {
                 prop: "className",
@@ -1375,7 +1595,8 @@ export default function AccordionPage() {
                 prop: "lazyMount",
                 type: "boolean",
                 default: "false",
-                description: "Defer rendering until first open.",
+                description:
+                  "Defer rendering until first open. Ignored when hiddenUntilFound is set.",
               },
               {
                 prop: "showSkeleton",
@@ -1397,11 +1618,103 @@ export default function AccordionPage() {
               },
             ],
           },
+          {
+            title: "KiraAccordion",
+            props: [
+              {
+                prop: "items",
+                type: "AccordionItemData[]",
+                default: "-",
+                description: "Data-driven item list.",
+              },
+              {
+                prop: "hiddenUntilFound",
+                type: "boolean",
+                default: "false",
+                description:
+                  "⌘F finds and expands collapsed panels. Item-level lazyMount is ignored while this is on.",
+              },
+              {
+                prop: "deepLink",
+                type: "boolean",
+                default: "false",
+                description:
+                  "Open state syncs with the URL hash (replaceState; hash wins over persistKey on load).",
+              },
+              {
+                prop: "searchable",
+                type: "boolean",
+                default: "false",
+                description:
+                  "Render a filter input; matched substrings are highlighted on string titles.",
+              },
+              {
+                prop: "persistKey",
+                type: "string",
+                default: "-",
+                description: "Persist open state to storage under this key.",
+              },
+            ],
+          },
         ]}
       />
 
       <Changelog
         entries={[
+          {
+            version: "2.1.0",
+            date: "11 February 2026",
+            changes: [
+              {
+                type: "added",
+                title: "Find in Page",
+                description:
+                  "New hiddenUntilFound prop registers collapsed panels with the browser find bar — Ctrl/⌘+F auto-expands and scrolls to matches. Item-level lazyMount is ignored while enabled.",
+              },
+              {
+                type: "added",
+                title: "URL Hash Deep Linking",
+                description:
+                  "New deepLink prop syncs the open item with the URL hash via replaceState: shareable #value links open and scroll on load; closing every item strips the hash.",
+              },
+              {
+                type: "added",
+                title: "Search-Term Highlighting",
+                description:
+                  'Searchable accordions wrap the matched substring of string titles in a <mark data-slot="accordion-search-match"> element.',
+              },
+              {
+                type: "changed",
+                title: "Keyboard Documentation Corrected",
+                description:
+                  "Audited against @base-ui/react 1.9.0: roving focus was removed from Accordion — Tab now moves between triggers as normal tab stops; Arrow/Home/End do not move focus. Drag-handle keyboard interactions documented.",
+              },
+              {
+                type: "changed",
+                title: "Reduced Motion Gating",
+                description:
+                  "Loader spin, skeleton pulse, chevron rotation, and panel height transitions all stop under prefers-reduced-motion.",
+              },
+              {
+                type: "added",
+                title: "Focus Rings and Search Empty State",
+                description:
+                  "Expand/Collapse and Clear search buttons gained visible focus rings; the empty search state now offers a working Clear search button.",
+              },
+              {
+                type: "fixed",
+                title: "Search Filter Parent Preservation",
+                description:
+                  "Filtering with a matching parent title now keeps the parent's full children instead of an empty list.",
+              },
+              {
+                type: "fixed",
+                title: "Drag Handle Alignment",
+                description:
+                  "Drag handles no longer push titles out of alignment with regular accordions: the grip overlays the trigger's edge padding (start or end side) with no background, no overlap with the title or chevron, and the trigger reserves room on the handle side.",
+              },
+            ],
+          },
           {
             version: "2.0.0",
             date: "5 February 2026",
