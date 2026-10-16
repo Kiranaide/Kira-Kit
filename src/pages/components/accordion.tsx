@@ -1663,7 +1663,7 @@ export default function AccordionPage() {
         entries={[
           {
             version: "2.1.0",
-            date: "11 February 2026",
+            date: "16 October 2026",
             changes: [
               {
                 type: "added",
