@@ -873,9 +873,7 @@ function AsyncLoadingDemo() {
       asyncLoading
       items={items}
       onItemOpen={async (item) => {
-        const { promise, resolve } = Promise.withResolvers<void>();
-        setTimeout(resolve, 1000);
-        await promise;
+        await new Promise<void>((resolve) => setTimeout(resolve, 1000));
         setItems((prev) =>
           prev.map((i) => {
             if (i.value === item.value) {

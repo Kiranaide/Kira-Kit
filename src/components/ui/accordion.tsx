@@ -801,7 +801,7 @@ function SortableAccordionItem({
   nested,
   onItemOpen,
   onItemClose,
-  asyncLoading,
+  asyncLoading = false,
   highlightQuery,
   forceMounted,
 }: SortableAccordionItemProps) {
@@ -817,7 +817,7 @@ function SortableAccordionItem({
   const titleContent = resolveTitleContent(item, highlightQuery);
   const childLevel = level + 1;
 
-  const nestedChildren: React.ReactNode = [];
+  const nestedChildren: React.ReactNode[] = [];
 
   if (hasChildren) {
     nestedChildren.push(
@@ -1380,30 +1380,72 @@ interface KiraAccordionCoreProps {
   persistKey?: string;
   hiddenUntilFound?: boolean;
   deepLink?: boolean;
-  className?: string;
+  onValueChange?: AccordionPrimitive.Root.Props["onValueChange"];
+  className?: React.ComponentProps<typeof AccordionPrimitive.Root>["className"];
 }
+
+/** Shared expand/collapse button styling; motion transitions gated by reduced motion. */
+function useExpandedButtonClasses(reducedMotion: boolean): string {
+  return cn(
+    "inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-muted hover:bg-muted/80",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    !reducedMotion && "transition-colors",
+  );
+}
+
+/** Drag wiring bundle consumed by AccordionItemsRoot. */
+function useAccordionDragWiring(
+  setItems: (updater: React.SetStateAction<AccordionItemData[]>) => void,
+  onReorder?: (items: AccordionItemData[]) => void,
+): AccordionDragWiring {
+  const { activeId, sensors, handleDragStart, handleDragEnd } =
+    useAccordionDrag(setItems, onReorder);
+
+  return { activeId, sensors, handleDragStart, handleDragEnd };
+}
+
+// Core is internal; KiraAccordion applies the public defaults, but the shared
+// item renderers below require booleans, so normalize undefined once here.
+const CORE_DEFAULTS = {
+  variant: "default",
+  size: "default",
+  scrollIntoView: false,
+  draggable: false,
+  asyncLoading: false,
+  nested: false,
+  showExpandAll: false,
+  dragHandlePosition: "start",
+  searchable: false,
+  searchPlaceholder: "Search…",
+  hiddenUntilFound: false,
+  deepLink: false,
+} as const;
 
 function KiraAccordionCore({
   items: initialItems,
-  variant = "default",
-  size = "default",
-  scrollIntoView = false,
-  draggable,
   onReorder,
-  asyncLoading,
   onItemOpen,
   onItemClose,
-  nested,
-  showExpandAll,
-  dragHandlePosition = "start",
-  searchable,
-  searchPlaceholder = "Search…",
   persistKey,
-  hiddenUntilFound = false,
-  deepLink,
+  onValueChange,
   className,
   ...props
 }: Omit<KiraAccordionCoreProps, "reducedMotion">) {
+  const {
+    variant,
+    size,
+    scrollIntoView,
+    draggable,
+    asyncLoading,
+    nested,
+    showExpandAll,
+    dragHandlePosition,
+    searchable,
+    searchPlaceholder,
+    hiddenUntilFound,
+    deepLink,
+  } = { ...CORE_DEFAULTS, ...props };
+
   const reducedMotion = useReducedMotion();
   const { items, setItems } = useAccordionItems(initialItems, onReorder);
 
@@ -1412,7 +1454,7 @@ function KiraAccordionCore({
   const { openValues, setOpenValues, handleValueChange } = useOpenValues(
     persistKey,
     deepLink,
-    props.onValueChange,
+    onValueChange,
   );
 
   useHashDeepLink(deepLink, initialItems, reducedMotion, setOpenValues);
@@ -1427,26 +1469,14 @@ function KiraAccordionCore({
   // what the browser is looking for, so it is ignored while the feature is on.
   const forceMounted = hiddenUntilFound;
 
-  const { activeId, sensors, handleDragStart, handleDragEnd } =
-    useAccordionDrag(setItems, onReorder);
+  const drag = useAccordionDragWiring(setItems, onReorder);
 
   const { handleExpandAll, handleCollapseAll } = useExpandCollapseAll(
     items,
     setOpenValues,
   );
 
-  const expandedButtonClasses = cn(
-    "inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-muted hover:bg-muted/80",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-    !reducedMotion && "transition-colors",
-  );
-
-  const drag: AccordionDragWiring = {
-    activeId,
-    sensors,
-    handleDragStart,
-    handleDragEnd,
-  };
+  const expandedButtonClasses = useExpandedButtonClasses(reducedMotion);
 
   return (
     <div data-slot="kira-accordion" className="space-y-2">
