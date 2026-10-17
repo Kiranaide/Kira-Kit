@@ -21,10 +21,13 @@ import {
   IconClipboard,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   ButtonGroup,
   ToggleGroupItem,
   ButtonGroupToolbar,
+  ButtonGroupSeparator,
+  ButtonGroupText,
   KiraButtonGroup,
 } from "@/components/ui/button-group";
 import {
@@ -707,19 +710,19 @@ function KiraButtonGroupDemo() {
     },
   ];
 
-  const handleSingleChange = (value: string | string[]) => {
+  const handleSingleChange = (value: string | string[] | null) => {
     if (typeof value === "string") {
       setSingleValue(value);
     }
   };
 
-  const handleMultiChange = (value: string | string[]) => {
+  const handleMultiChange = (value: string | string[] | null) => {
     if (Array.isArray(value)) {
       setMultiValue(value);
     }
   };
 
-  const handleRequiredChange = (value: string | string[]) => {
+  const handleRequiredChange = (value: string | string[] | null) => {
     if (typeof value === "string") {
       setRequiredValue(value);
     }
@@ -743,7 +746,7 @@ function KiraButtonGroupDemo() {
             type="single"
           />
           <span className="text-sm text-muted-foreground">
-            Selected: {singleValue}
+            Selected: {singleValue ?? "null (deselected)"}
           </span>
         </div>
       </div>
@@ -1104,13 +1107,140 @@ const segmentedCode = `import { KiraButtonGroup } from "@/components/ui/button-g
 // Fully-rounded pill shape.
 <KiraButtonGroup segmented shape="pill" type="single" items={rangeItems} />`;
 
+function PartsDemo() {
+  const [search, setSearch] = useState("");
+  const [requiredValue, setRequiredValue] = useState<string | null>("left");
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Separator between icon buttons
+        </h3>
+        <ButtonGroup>
+          <Button variant="outline" size="icon" aria-label="Bold">
+            <IconBold className="w-4 h-4" />
+          </Button>
+          <Button variant="outline" size="icon" aria-label="Italic">
+            <IconItalic className="w-4 h-4" />
+          </Button>
+          <ButtonGroupSeparator />
+          <Button variant="outline" size="icon" aria-label="Link">
+            <IconCode className="w-4 h-4" />
+          </Button>
+          <Button variant="outline" size="icon" aria-label="List">
+            <IconList className="w-4 h-4" />
+          </Button>
+        </ButtonGroup>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Text chunk as a group label
+        </h3>
+        <ButtonGroup>
+          <ButtonGroupText>Filter</ButtonGroupText>
+          <Button variant="outline">Active</Button>
+          <Button variant="outline">Pending</Button>
+          <Button variant="outline">Archived</Button>
+        </ButtonGroup>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Mixed group with an input (input stretches, buttons stay compact)
+        </h3>
+        <ButtonGroup className="w-full max-w-md">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search the archive…"
+            aria-label="Search"
+          />
+          <Button variant="outline">Search</Button>
+        </ButtonGroup>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Segmented + required (deselect emits null; required blocks it)
+        </h3>
+        <div className="flex items-center gap-4">
+          <KiraButtonGroup
+            segmented
+            type="single"
+            required
+            value={requiredValue}
+            onChange={(v) => {
+              if (Array.isArray(v)) {
+                setRequiredValue(null);
+              } else {
+                setRequiredValue(v);
+              }
+            }}
+            items={[
+              { value: "left", label: "Left" },
+              { value: "center", label: "Center" },
+              { value: "right", label: "Right" },
+            ]}
+          />
+          <span className="text-sm text-muted-foreground">
+            Selected: {requiredValue ?? "null (deselected)"}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const partsCode = `import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+  ToggleGroupItem,
+  KiraButtonGroup,
+} from "@/components/ui/button-group"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
+// Separator between icon buttons
+<ButtonGroup>
+  <Button variant="outline" size="icon" aria-label="Bold"><BoldIcon /></Button>
+  <Button variant="outline" size="icon" aria-label="Italic"><ItalicIcon /></Button>
+  <ButtonGroupSeparator />
+  <Button variant="outline" size="icon" aria-label="Link"><CodeIcon /></Button>
+</ButtonGroup>
+
+// Text chunk as a group label
+<ButtonGroup>
+  <ButtonGroupText>Filter</ButtonGroupText>
+  <Button variant="outline">Active</Button>
+  <Button variant="outline">Pending</Button>
+</ButtonGroup>
+
+// Mixed group with an input — [&>input]:flex-1 stretches it
+<ButtonGroup className="w-full max-w-md">
+  <Input placeholder="Search the archive…" />
+  <Button variant="outline">Search</Button>
+</ButtonGroup>
+
+// Single-select deselect now emits null (was ""); required blocks it
+<KiraButtonGroup
+  segmented
+  type="single"
+  required
+  value={value}
+  onChange={(v) => setValue(v)} // v: string | string[] | null
+  items={alignItems}
+/>`;
+
 export default function ButtonGroupPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Button Group"
         description="Groups multiple buttons together with seamless styling, supporting connected/disconnected modes, radio/checkbox selection, and animated entrances."
-        version="2.2"
+        version="v2.3"
       />
 
       <FeatureGrid features={features} />
@@ -1223,6 +1353,19 @@ export default function ButtonGroupPage() {
                 </DemoWrapper>
               ),
             },
+            {
+              value: "parts",
+              label: "Parts",
+              demo: (
+                <DemoWrapper
+                  title="Group Parts"
+                  description="Separator, text chunks, an input inside a connected group, and required segmented selection."
+                  code={partsCode}
+                >
+                  <PartsDemo />
+                </DemoWrapper>
+              ),
+            },
           ]}
         />
       </Tabs>
@@ -1282,9 +1425,10 @@ export default function ButtonGroupPage() {
               },
               {
                 prop: "onChange",
-                type: "(value: string | string[]) => void",
+                type: "(value: string | string[] | null) => void",
                 default: "-",
-                description: "Callback when selection changes.",
+                description:
+                  "Selection callback. Single-select deselect now emits null (was \"\").",
               },
               {
                 prop: "selectionMode",
@@ -1406,9 +1550,10 @@ export default function ButtonGroupPage() {
               },
               {
                 prop: "onChange",
-                type: "(value: string | string[]) => void",
+                type: "(value: string | string[] | null) => void",
                 default: "-",
-                description: "Callback when selection changes.",
+                description:
+                  "Selection callback. Single-select deselect now emits null (was \"\").",
               },
               {
                 prop: "onValueChange",
@@ -1434,13 +1579,6 @@ export default function ButtonGroupPage() {
                 type: "boolean",
                 default: "false",
                 description: "Require at least one item to be selected.",
-              },
-              {
-                prop: "rovingFocus",
-                type: "boolean",
-                default: "true",
-                description:
-                  "Enable roving tabindex (API reserved for future use).",
               },
               {
                 prop: "dir",
@@ -1545,11 +1683,87 @@ export default function ButtonGroupPage() {
               },
             ],
           },
+          {
+            title: "ButtonGroupSeparator",
+            props: [
+              {
+                prop: "orientation",
+                type: "horizontal | vertical",
+                default: "vertical",
+                description: "Separator orientation inside the group.",
+              },
+              {
+                prop: "...props",
+                type: "SeparatorProps",
+                default: "-",
+                description: "All props from the Separator component.",
+              },
+            ],
+          },
+          {
+            title: "ButtonGroupText",
+            props: [
+              {
+                prop: "render",
+                type: "ReactElement | (props) => ReactElement",
+                default: "-",
+                description: "Replace the default div (Base UI useRender).",
+              },
+              {
+                prop: "...props",
+                type: "HTMLAttributes<HTMLDivElement>",
+                default: "-",
+                description: "Standard div props.",
+              },
+            ],
+          },
         ]}
       />
 
       <Changelog
         entries={[
+          {
+            version: "2.3.0",
+            date: "17 October 2026",
+            changes: [
+              {
+                type: "breaking",
+                title: "Selection Rebuilt on the Base UI ToggleGroup Primitive",
+                description:
+                  "ToggleGroupItem now renders through the Base UI Toggle inside a ToggleGroup: roving tabindex, Arrow/Home/End navigation, and a single aria-pressed state attribute are owned by the primitive. The old aria-pressed + role=radio + aria-checked conflict and ~70 lines of hand-rolled keyboard navigation are gone.",
+              },
+              {
+                type: "breaking",
+                title: "Single-Select Deselect Emits null",
+                description:
+                  "Deselecting the active item in single mode now calls onChange(null) — it was onChange(\"\"). Update `val as string` consumers to handle null. required and allowEmpty={false} block null.",
+              },
+              {
+                type: "breaking",
+                title: "rovingFocus Prop Removed",
+                description:
+                  "The rovingFocus prop was declared but never read; the primitive owns roving focus now.",
+              },
+              {
+                type: "added",
+                title: "ButtonGroupSeparator and ButtonGroupText",
+                description:
+                  "shadcn-parity parts: a Separator wrapper for visual seams between buttons, and a text chunk for group labels. Connected-group rounding is now CSS sibling selectors with logical properties (RTL-safe) instead of cloneElement position classes. Inputs inside a group stretch via [&>input]:flex-1.",
+              },
+              {
+                type: "changed",
+                title: "Deleted Per-Item Ripple and Selected Scale",
+                description:
+                  "Items now inherit Button's reduced-motion-gated ripple and press animation instead of running their own duplicate handlers.",
+              },
+              {
+                type: "added",
+                title: "focusableWhenDisabled Pass-Through",
+                description:
+                  "Button gained focusableWhenDisabled (Base UI primitive, WCAG 2.2); see the Button page changelog.",
+              },
+            ],
+          },
           {
             version: "2.2.0",
             date: "10 July 2026",

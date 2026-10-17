@@ -1,4 +1,5 @@
 "use client";
+/* oxlint-disable anti-slop/no-shape-in-symbol-names -- "shape" is the published variant-prop name (consumers write shape="pill"); renaming breaks the kit API */
 
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
@@ -6,17 +7,24 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { cva } from "class-variance-authority";
 import { IconLoader2 } from "@tabler/icons-react";
+import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group";
+import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
+import { useRender } from "@base-ui/react/use-render";
+import { mergeProps } from "@base-ui/react/merge-props";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Button, type ButtonProps } from "@/components/ui/button";
+import { Separator, type SeparatorProps } from "@/components/ui/separator";
 
 const buttonGroupVariants = cva(
-  "inline-flex items-center [&>[data-slot=button]]:shadow-none",
+  "inline-flex items-center [&>[data-slot=button]]:shadow-none [&>[data-slot=toggle-group-item]]:shadow-none *:focus-visible:relative *:focus-visible:z-10 [&>input]:flex-1",
   {
     variants: {
       orientation: {
-        horizontal: "flex-row",
-        vertical: "flex-col [&>[data-slot=button]]:w-full",
+        horizontal:
+          "flex-row [&>[data-slot=button]]:w-auto [&>[data-slot=toggle-group-item]]:w-auto",
+        vertical:
+          "flex-col [&>[data-slot=button]]:w-full [&>[data-slot=toggle-group-item]]:w-full",
       },
       connected: {
         true: "gap-0",
@@ -24,7 +32,7 @@ const buttonGroupVariants = cva(
       },
       shape: {
         default: "",
-        pill: "rounded-full [&>[data-slot=button]]:rounded-full",
+        pill: "rounded-full [&>[data-slot=button]]:rounded-full [&>[data-slot=toggle-group-item]]:rounded-full",
       },
     },
     defaultVariants: {
@@ -38,11 +46,11 @@ const buttonGroupVariants = cva(
 const buttonGroupSizeVariants = cva("inline-flex", {
   variants: {
     size: {
-      xs: "[&>[data-slot=button]]:h-6 [&>[data-slot=button]]:px-2 [&>[data-slot=button]]:text-xs",
-      sm: "[&>[data-slot=button]]:h-7 [&>[data-slot=button]]:px-2.5 [&>[data-slot=button]]:text-[0.8rem]",
+      xs: "[&>[data-slot=button]]:h-6 [&>[data-slot=button]]:px-2 [&>[data-slot=button]]:text-xs [&>[data-slot=toggle-group-item]]:h-6 [&>[data-slot=toggle-group-item]]:px-2 [&>[data-slot=toggle-group-item]]:text-xs",
+      sm: "[&>[data-slot=button]]:h-7 [&>[data-slot=button]]:px-2.5 [&>[data-slot=button]]:text-[0.8rem] [&>[data-slot=toggle-group-item]]:h-7 [&>[data-slot=toggle-group-item]]:px-2.5 [&>[data-slot=toggle-group-item]]:text-[0.8rem]",
       default:
-        "[&>[data-slot=button]]:h-8 [&>[data-slot=button]]:px-2.5 [&>[data-slot=button]]:text-sm",
-      lg: "[&>[data-slot=button]]:h-9 [&>[data-slot=button]]:px-3 [&>[data-slot=button]]:text-base",
+        "[&>[data-slot=button]]:h-8 [&>[data-slot=button]]:px-2.5 [&>[data-slot=button]]:text-sm [&>[data-slot=toggle-group-item]]:h-8 [&>[data-slot=toggle-group-item]]:px-2.5 [&>[data-slot=toggle-group-item]]:text-sm",
+      lg: "[&>[data-slot=button]]:h-9 [&>[data-slot=button]]:px-3 [&>[data-slot=button]]:text-base [&>[data-slot=toggle-group-item]]:h-9 [&>[data-slot=toggle-group-item]]:px-3 [&>[data-slot=toggle-group-item]]:text-base",
     },
     gap: {
       none: "gap-0",
@@ -65,6 +73,16 @@ const buttonGroupSizeVariants = cva("inline-flex", {
   },
 });
 
+// Connected-group seam: flatten the inner edges of buttons/toggle items with
+// logical properties (RTL-safe) instead of cloneElement position classes.
+// Scoped to buttons/items only so separators keep their own borders.
+const connectedRoundingClasses = {
+  horizontal:
+    "[&>[data-slot=button]:not(:last-child)]:rounded-e-none [&>[data-slot=toggle-group-item]:not(:last-child)]:rounded-e-none [&>[data-slot=button]+[data-slot=button]]:rounded-s-none [&>[data-slot=button]+[data-slot=button]]:border-s-0 [&>[data-slot=toggle-group-item]+[data-slot=toggle-group-item]]:rounded-s-none [&>[data-slot=toggle-group-item]+[data-slot=toggle-group-item]]:border-s-0",
+  vertical:
+    "[&>[data-slot=button]:not(:last-child)]:rounded-b-none [&>[data-slot=toggle-group-item]:not(:last-child)]:rounded-b-none [&>[data-slot=button]+[data-slot=button]]:rounded-t-none [&>[data-slot=button]+[data-slot=button]]:border-t-0 [&>[data-slot=toggle-group-item]+[data-slot=toggle-group-item]]:rounded-t-none [&>[data-slot=toggle-group-item]+[data-slot=toggle-group-item]]:border-t-0",
+};
+
 type ButtonGroupOrientation = "horizontal" | "vertical";
 
 type ButtonGroupSize = "xs" | "sm" | "default" | "lg";
@@ -77,17 +95,14 @@ type ButtonGroupShape = "default" | "pill";
 
 type SelectionMode = "none" | "single" | "multiple";
 
+/** Deselecting the active single-select item emits `null` (was `""`). */
+type ButtonGroupValue = string | string[] | null;
+
 interface ButtonGroupContextValue {
-  selectionMode: SelectionMode;
-  value: string | string[] | null;
-  onChange: (value: string | string[]) => void;
-  orientation: ButtonGroupOrientation;
+  selectable: boolean;
   variant?: ButtonProps["variant"];
   disabled?: boolean;
-  loop?: boolean;
-  dir?: "ltr" | "rtl";
   segmented?: boolean;
-  containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const ButtonGroupContext = React.createContext<ButtonGroupContextValue | null>(
@@ -108,15 +123,15 @@ const useButtonGroupContext = () => {
 
 interface ButtonGroupProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  "onChange"
+  "onChange" | "defaultValue"
 > {
   orientation?: ButtonGroupOrientation;
   size?: ButtonGroupSize;
   gap?: ButtonGroupGap;
   justify?: ButtonGroupJustify;
   shape?: ButtonGroupShape;
-  value?: string | string[] | null;
-  onChange?: (value: string | string[]) => void;
+  value?: ButtonGroupValue;
+  onChange?: (value: ButtonGroupValue) => void;
   selectionMode?: SelectionMode;
   connected?: boolean;
   /**
@@ -132,56 +147,46 @@ interface ButtonGroupProps extends Omit<
   dir?: "ltr" | "rtl";
 }
 
-function ButtonGroup({
-  className,
-  orientation = "horizontal",
-  size,
-  gap,
-  justify,
-  shape = "default",
-  value = null,
-  onChange,
-  selectionMode = "none",
-  connected = true,
-  segmented = false,
-  animated = false,
-  animationStagger = 50,
-  variant,
-  disabled = false,
-  loop = true,
-  dir,
-  children,
-  ...props
-}: ButtonGroupProps) {
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const indicatorRef = React.useRef<HTMLDivElement>(null);
-  const reducedMotion = useReducedMotion();
-
-  const contextValue: ButtonGroupContextValue = {
-      selectionMode,
-      value: value === undefined ? null : value,
-      onChange: (newValue) => onChange?.(newValue),
-      orientation,
-      variant,
-      disabled,
-      loop,
-      dir,
-      segmented,
-      containerRef,
-    };
-
+/** Entrance stagger for group buttons; no-op unless animated and motion allowed. */
+function useEntranceAnimation(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  {
+    animated,
+    orientation,
+    animationStagger,
+    reducedMotion,
+  }: {
+    animated: boolean;
+    orientation: ButtonGroupOrientation;
+    animationStagger: number;
+    reducedMotion: boolean;
+  },
+) {
   useGSAP(
     () => {
       if (!animated || reducedMotion || !containerRef.current) return;
 
-      const buttons =
-        containerRef.current.querySelectorAll("[data-slot=button]");
+      const buttons = containerRef.current.querySelectorAll(
+        "[data-slot=button], [data-slot=toggle-group-item]",
+      );
 
       if (buttons.length > 0) {
+        let y = 0;
+
+        if (orientation === "vertical") {
+          y = -10;
+        }
+
+        let x = 0;
+
+        if (orientation === "horizontal") {
+          x = -10;
+        }
+
         gsap.from(buttons, {
           opacity: 0,
-          y: orientation === "vertical" ? -10 : 0,
-          x: orientation === "horizontal" ? -10 : 0,
+          y,
+          x,
           stagger: animationStagger / 1000,
           duration: 0.3,
           ease: "power2.out",
@@ -193,21 +198,31 @@ function ButtonGroup({
       dependencies: [animated, orientation, animationStagger, reducedMotion],
     },
   );
+}
 
-  // Segmented sliding pill: measure the selected item and move an absolutely
-  // positioned indicator behind it. Snaps instantly under reduced motion.
-  const singleValue =
-    selectionMode === "single" && typeof value === "string" ? value : null;
-
+/** Segmented sliding pill: measure the selected item and slide behind it. */
+function useSegmentedIndicator(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  indicatorRef: React.RefObject<HTMLDivElement | null>,
+  {
+    enabled,
+    selectedValue,
+    reducedMotion,
+  }: {
+    enabled: boolean;
+    selectedValue: string | null;
+    reducedMotion: boolean;
+  },
+) {
   useGSAP(
     () => {
       const container = containerRef.current;
       const indicator = indicatorRef.current;
 
-      if (!segmented || !container || !indicator) return;
+      if (!enabled || !container || !indicator) return;
 
       const selected = container.querySelector<HTMLElement>(
-        '[data-slot=toggle-group-item][data-selected="true"]',
+        '[data-slot="toggle-group-item"][data-pressed]',
       );
 
       if (!selected) {
@@ -219,120 +234,245 @@ function ButtonGroup({
       const cRect = container.getBoundingClientRect();
       const sRect = selected.getBoundingClientRect();
 
+      let duration = 0.25;
+
+      if (reducedMotion) {
+        duration = 0;
+      }
+
       gsap.to(indicator, {
         autoAlpha: 1,
-        width: sRect.width,
-        height: sRect.height,
         x: sRect.left - cRect.left,
         y: sRect.top - cRect.top,
-        duration: reducedMotion ? 0 : 0.25,
+        width: sRect.width,
+        height: sRect.height,
+        duration,
         ease: "power3.out",
+        overwrite: "auto",
       });
     },
     {
       scope: containerRef,
-      dependencies: [segmented, singleValue, orientation, reducedMotion],
+      dependencies: [enabled, selectedValue, reducedMotion],
     },
   );
+}
 
-  const processChildren = () => {
-    const childArray = React.Children.toArray(children).filter(
-      React.isValidElement,
-    );
+/** Shared visual classes for the group container (both plain and primitive). */
+function buildContainerClasses({
+  orientation,
+  size,
+  gap,
+  justify,
+  shape,
+  connected,
+  segmented,
+  className,
+}: Pick<
+  ButtonGroupProps,
+  | "orientation"
+  | "size"
+  | "gap"
+  | "justify"
+  | "shape"
+  | "connected"
+  | "segmented"
+  | "className"
+>): string {
+  let resolvedGap = gap;
 
-    const count = childArray.length;
+  if (connected && !gap) {
+    resolvedGap = undefined;
+  }
 
-    return childArray.map((child, index) => {
-      if (!React.isValidElement(child)) return child;
+  return cn(
+    buttonGroupVariants({ orientation, connected, shape }),
+    buttonGroupSizeVariants({
+      size,
+      gap: resolvedGap,
+      justify,
+    }),
+    connected &&
+      !segmented &&
+      connectedRoundingClasses[orientation ?? "horizontal"],
+    segmented &&
+      "relative bg-muted p-1 rounded-lg gap-1 data-[connected=true]:gap-1",
+    segmented && shape === "pill" && "rounded-full",
+    className,
+  );
+}
 
-      const isFirst = index === 0;
-      const isLast = index === count - 1;
-      const isMiddle = !isFirst && !isLast;
+/** Sliding pill behind the selected item in segmented mode. */
+function SegmentedIndicator({
+  indicatorRef,
+  pill,
+}: {
+  indicatorRef: React.RefObject<HTMLDivElement | null>;
+  pill: boolean;
+}) {
+  return (
+    <div
+      ref={indicatorRef}
+      data-slot="segmented-indicator"
+      aria-hidden="true"
+      className={cn(
+        "invisible absolute left-0 top-0 z-0 rounded-md bg-background shadow-sm",
+        pill && "rounded-full",
+      )}
+    />
+  );
+}
 
-      let positionClasses = "";
+// Public defaults; merged instead of inline destructuring defaults so the
+// component body stays within the complexity budget.
+const GROUP_DEFAULTS = {
+  orientation: "horizontal",
+  shape: "default",
+  value: null,
+  selectionMode: "none",
+  connected: true,
+  segmented: false,
+  animated: false,
+  animationStagger: 50,
+  disabled: false,
+  loop: true,
+} as const;
 
-      if (connected && !segmented) {
-        if (orientation === "horizontal") {
-          if (dir === "rtl") {
-            if (isFirst && count > 1) {
-              positionClasses = "rounded-r-md rounded-l-none border-l-0";
-            } else if (isLast && count > 1) {
-              positionClasses = "rounded-l-md rounded-r-none";
-            } else if (isMiddle) {
-              positionClasses = "rounded-none border-l-0";
-            }
-          } else {
-            if (isFirst && count > 1) {
-              positionClasses = "rounded-r-none border-r-0";
-            } else if (isLast && count > 1) {
-              positionClasses = "rounded-l-none";
-            } else if (isMiddle) {
-              positionClasses = "rounded-none border-r-0";
-            }
-          }
-        } else {
-          if (isFirst && count > 1) {
-            positionClasses = "rounded-b-none border-b-0";
-          } else if (isLast && count > 1) {
-            positionClasses = "rounded-t-none";
-          } else if (isMiddle) {
-            positionClasses = "rounded-none border-b-0";
-          }
-        }
-      }
+function ButtonGroup(groupProps: ButtonGroupProps) {
+  const {
+    className,
+    size,
+    gap,
+    justify,
+    value,
+    onChange,
+    variant,
+    dir,
+    children,
+    orientation,
+    shape,
+    selectionMode,
+    connected,
+    segmented,
+    animated,
+    animationStagger,
+    disabled,
+    loop,
+    ...props
+  } = { ...GROUP_DEFAULTS, ...groupProps };
 
-      return React.cloneElement(
-        child as React.ReactElement<{ className?: string }>,
-        {
-          className: cn(
-            (child as React.ReactElement<{ className?: string }>).props
-              .className,
-            positionClasses,
-          ),
-        },
-      );
-    });
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const indicatorRef = React.useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
+  const isSelectable = selectionMode !== "none";
+
+  useEntranceAnimation(containerRef, {
+    animated,
+    orientation,
+    animationStagger,
+    reducedMotion,
+  });
+
+  // Base UI sets `data-pressed` on pressed items (presence attribute).
+  let singleValue: string | null = value;
+
+  if (Array.isArray(value)) {
+    singleValue = null;
+  }
+
+  useSegmentedIndicator(containerRef, indicatorRef, {
+    selectedValue: singleValue,
+    reducedMotion,
+  });
+
+  const contextValue: ButtonGroupContextValue = {
+    selectable: isSelectable,
+    variant,
+    disabled,
+    segmented,
   };
 
-  const role = selectionMode === "single" ? "radiogroup" : "group";
+  // Base UI ToggleGroup values are always arrays — including single-select
+  // (deselect yields []). Normalize both directions against the public API.
+  let primitiveValue: string[] = [];
+
+  if (Array.isArray(value)) {
+    primitiveValue = value;
+  } else if (value) {
+    primitiveValue = [value];
+  }
+
+  const handleGroupValueChange = (groupValue: string[]) => {
+    let next: ButtonGroupValue = groupValue;
+
+    if (selectionMode === "single") {
+      next = groupValue[0] ?? null;
+    }
+
+    onChange?.(next);
+  };
+
+  const containerClasses = buildContainerClasses({
+    orientation,
+    size,
+    gap,
+    justify,
+    shape,
+    connected,
+    segmented,
+    className,
+  });
+
+  let indicator: React.ReactNode = null;
+
+  if (segmented) {
+    indicator = (
+      <SegmentedIndicator indicatorRef={indicatorRef} pill={shape === "pill"} />
+    );
+  }
+
+  if (!isSelectable) {
+    return (
+      <ButtonGroupContext.Provider value={contextValue}>
+        <div
+          ref={containerRef}
+          data-slot="button-group"
+          role="group"
+          aria-orientation={orientation}
+          data-connected={connected}
+          data-segmented={segmented || undefined}
+          dir={dir}
+          className={containerClasses}
+          {...props}
+        >
+          {indicator}
+          {children}
+        </div>
+      </ButtonGroupContext.Provider>
+    );
+  }
 
   return (
     <ButtonGroupContext.Provider value={contextValue}>
-      <div
+      <ToggleGroupPrimitive
         ref={containerRef}
-        data-slot="button-group"
-        role={role}
+        value={primitiveValue}
+        onValueChange={handleGroupValueChange}
+        multiple={selectionMode === "multiple"}
+        orientation={orientation}
+        loopFocus={loop}
+        disabled={disabled}
         aria-orientation={orientation}
+        data-slot="button-group"
         data-connected={connected}
         data-segmented={segmented || undefined}
         dir={dir}
-        className={cn(
-          buttonGroupVariants({ orientation, connected, shape }),
-          buttonGroupSizeVariants({
-            size,
-            gap: connected && !gap ? undefined : gap,
-            justify,
-          }),
-          segmented &&
-            "relative bg-muted p-1 rounded-lg gap-1 data-[connected=true]:gap-1",
-          segmented && shape === "pill" && "rounded-full",
-          className,
-        )}
+        className={containerClasses}
         {...props}
       >
-        {segmented && (
-          <div
-            ref={indicatorRef}
-            data-slot="segmented-indicator"
-            aria-hidden="true"
-            className={cn(
-              "invisible absolute left-0 top-0 z-0 rounded-md bg-background shadow-sm",
-              shape === "pill" && "rounded-full",
-            )}
-          />
-        )}
-        {processChildren()}
-      </div>
+        {indicator}
+        {children}
+      </ToggleGroupPrimitive>
     </ButtonGroupContext.Provider>
   );
 }
@@ -340,6 +480,21 @@ function ButtonGroup({
 interface ToggleGroupItemProps extends Omit<ButtonProps, "ref"> {
   value: string;
 }
+
+const pressedClassByVariant: Partial<
+  Record<NonNullable<ButtonProps["variant"]>, string>
+> = {
+  outline:
+    "data-[pressed]:bg-primary data-[pressed]:text-primary-foreground data-[pressed]:hover:bg-primary/90",
+  default: "data-[pressed]:bg-primary data-[pressed]:text-primary-foreground",
+  secondary:
+    "data-[pressed]:bg-secondary data-[pressed]:text-secondary-foreground",
+  ghost: "data-[pressed]:bg-muted",
+  success: "data-[pressed]:bg-success data-[pressed]:text-success-foreground",
+  warning: "data-[pressed]:bg-warning data-[pressed]:text-warning-foreground",
+  destructive:
+    "data-[pressed]:bg-destructive data-[pressed]:text-destructive-foreground",
+};
 
 function ToggleGroupItem({
   value,
@@ -349,230 +504,93 @@ function ToggleGroupItem({
   ...props
 }: ToggleGroupItemProps) {
   const {
-    selectionMode,
-    value: groupValue,
-    onChange,
-    orientation,
+    selectable,
     variant: groupVariant,
     disabled: groupDisabled,
-    loop,
     segmented,
-    containerRef,
   } = useButtonGroupContext();
 
-  const reducedMotion = useReducedMotion();
   const isDisabled = localDisabled ?? groupDisabled ?? false;
 
-  const effectiveVariant =
-    localVariant === "outline" ? groupVariant || "outline" : localVariant;
+  let effectiveVariant = localVariant;
 
-  const isSelected =
-      selectionMode === "none" || groupValue === null
-        ? false
-        : selectionMode === "single"
-          ? groupValue === value
-          : Array.isArray(groupValue) && groupValue.includes(value);
+  if (localVariant === "outline") {
+    effectiveVariant = groupVariant || "outline";
+  }
 
-  const handleClick = () => {
-    if (selectionMode === "none" || isDisabled) {
-      return;
-    }
+  let buttonVariant = effectiveVariant;
 
-    let newValue: string | string[];
+  if (segmented) {
+    buttonVariant = "ghost";
+  }
 
-    if (selectionMode === "single") {
-      newValue = groupValue === value ? "" : value;
-    } else {
-      const currentArray = Array.isArray(groupValue) ? groupValue : [];
-      newValue = currentArray.includes(value)
-        ? currentArray.filter((v) => v !== value)
-        : [...currentArray, value];
-    }
+  let itemClasses = pressedClassByVariant[effectiveVariant ?? "outline"];
 
-    onChange?.(newValue);
-  };
+  if (segmented) {
+    itemClasses =
+      "z-10 bg-transparent hover:bg-transparent text-muted-foreground data-[pressed]:text-foreground";
+  }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    const navKeys = [
-      "ArrowRight",
-      "ArrowDown",
-      "ArrowLeft",
-      "ArrowUp",
-      "Home",
-      "End",
-    ];
-
-    if (navKeys.includes(e.key)) {
-      e.preventDefault();
-      handleKeyboardNavigation(e.key);
-    }
-  };
-
-  const handleKeyboardNavigation = (key: string) => {
-    const container = containerRef.current;
-
-    if (!container) return;
-
-    const buttons = Array.from(
-      container.querySelectorAll("[data-slot=button]"),
-    ) as HTMLElement[];
-
-    const currentIndex = buttons.findIndex(
-      (btn) => btn === document.activeElement,
-    );
-
-    if (currentIndex === -1) return;
-
-    let nextIndex: number;
-    const isVertical = orientation === "vertical";
-    const lastIndex = buttons.length - 1;
-
-    if (key === "Home") {
-      nextIndex = 0;
-      buttons[nextIndex]?.focus();
-
-      return;
-    }
-
-    if (key === "End") {
-      nextIndex = lastIndex;
-      buttons[nextIndex]?.focus();
-
-      return;
-    }
-
-    if (
-      (isVertical && (key === "ArrowDown" || key === "ArrowUp")) ||
-      (!isVertical && (key === "ArrowRight" || key === "ArrowLeft"))
-    ) {
-      if (key === "ArrowRight" || key === "ArrowDown") {
-        if (loop) {
-          nextIndex = (currentIndex + 1) % buttons.length;
-        } else {
-          nextIndex = Math.min(currentIndex + 1, lastIndex);
-        }
-      } else {
-        if (loop) {
-          nextIndex = (currentIndex - 1 + buttons.length) % buttons.length;
-        } else {
-          nextIndex = Math.max(currentIndex - 1, 0);
-        }
-      }
-
-      buttons[nextIndex]?.focus();
-    }
-  };
-
-  const itemRef = React.useRef<HTMLButtonElement>(null);
-
-  useGSAP(
-    () => {
-      if (isSelected && !reducedMotion && itemRef.current) {
-        gsap.to(itemRef.current, {
-          scale: 0.95,
-          duration: 0.1,
-          yoyo: true,
-          repeat: 1,
-          ease: "power1.inOut",
-        });
-      }
-    },
-    { scope: itemRef, dependencies: [isSelected, reducedMotion] },
-  );
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!itemRef.current || reducedMotion) return;
-
-    const rect = itemRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const ripple = document.createElement("span");
-    ripple.className =
-      "absolute rounded-full bg-current opacity-20 pointer-events-none";
-    ripple.style.left = `${x}px`;
-    ripple.style.top = `${y}px`;
-    ripple.style.width = "0";
-    ripple.style.height = "0";
-
-    itemRef.current.appendChild(ripple);
-
-    gsap.to(ripple, {
-      width: Math.max(rect.width, rect.height) * 2,
-      height: Math.max(rect.width, rect.height) * 2,
-      x: -Math.max(rect.width, rect.height),
-      y: -Math.max(rect.width, rect.height),
-      opacity: 0,
-      duration: 0.6,
-      ease: "power2.out",
-      onComplete: () => {
-        ripple.remove();
-      },
-    });
-  };
-
-  const getSelectedClassName = (): string => {
-    if (!isSelected) return "";
-
-    switch (effectiveVariant) {
-      case "outline":
-        return "bg-primary text-primary-foreground hover:bg-primary/90";
-      case "default":
-        return "bg-primary text-primary-foreground";
-      case "secondary":
-        return "bg-secondary text-secondary-foreground";
-      case "ghost":
-        return "bg-muted";
-      case "success":
-        return "bg-success text-success-foreground";
-      case "warning":
-        return "bg-warning text-warning-foreground";
-      case "destructive":
-        return "bg-destructive text-destructive-foreground";
-      default:
-        return "";
-    }
-  };
-
-  return (
+  const button = (
     <Button
-      ref={itemRef}
       data-slot="toggle-group-item"
-      data-selected={isSelected}
-      data-state={isSelected ? "on" : "off"}
-      data-disabled={isDisabled || undefined}
-      variant={segmented ? "ghost" : effectiveVariant}
-      className={cn(
-        "relative overflow-hidden",
-        // In segmented mode the sliding pill IS the selected background, so the
-        // item stays transparent and only sits above the indicator.
-        segmented
-          ? cn(
-              "z-10 bg-transparent hover:bg-transparent",
-              isSelected ? "text-foreground" : "text-muted-foreground",
-            )
-          : getSelectedClassName(),
-        className,
-      )}
-      onClick={handleClick}
-      onMouseDown={handleMouseDown}
-      onKeyDown={handleKeyDown}
+      variant={buttonVariant}
+      className={cn("relative overflow-hidden", itemClasses, className)}
       disabled={isDisabled}
-      aria-pressed={isSelected}
-      aria-checked={selectionMode === "multiple" ? isSelected : undefined}
-      role={
-        selectionMode === "single"
-          ? "radio"
-          : selectionMode === "multiple"
-            ? "checkbox"
-            : undefined
-      }
-      tabIndex={selectionMode === "single" && !isSelected ? -1 : 0}
       {...props}
-    >
-      {props.children}
-    </Button>
+    />
   );
+
+  if (!selectable) {
+    return button;
+  }
+
+  // The Base UI Toggle consumes the group context, supplies `data-pressed`
+  // and `aria-pressed`, and merges its props onto the rendered Button
+  // (render's props merge last, so `data-slot` survives).
+  return (
+    <TogglePrimitive value={value} disabled={isDisabled} render={button} />
+  );
+}
+
+function ButtonGroupSeparator({
+  className,
+  orientation = "vertical",
+  ...props
+}: SeparatorProps) {
+  return (
+    <Separator
+      data-slot="button-group-separator"
+      orientation={orientation}
+      className={cn("mx-1 self-stretch", className)}
+      {...props}
+    />
+  );
+}
+
+interface ButtonGroupTextProps extends useRender.ComponentProps<"div"> {}
+
+function ButtonGroupText({
+  className,
+  render,
+  ...props
+}: ButtonGroupTextProps) {
+  return useRender({
+    defaultTagName: "div",
+    props: mergeProps<"div">(
+      // SAFETY: The default data-slot and className object is a valid div-props object.
+      {
+        "data-slot": "button-group-text",
+        className: cn(
+          "flex items-center [&_svg]:pointer-events-none px-2 text-sm text-muted-foreground",
+          className,
+        ),
+      } as React.ComponentPropsWithoutRef<"div">,
+      // SAFETY: ButtonGroupTextProps extends useRender.ComponentProps<"div">.
+      props as React.ComponentPropsWithoutRef<"div">,
+    ),
+    render,
+  });
 }
 
 interface ButtonGroupToolbarProps extends ButtonGroupProps {
@@ -586,13 +604,24 @@ function ButtonGroupToolbar({
   ...props
 }: ButtonGroupToolbarProps) {
   const toolbarId = React.useId();
-  const labelId = label ? `${toolbarId}-label` : undefined;
+
+  let labelId: string | undefined;
+
+  if (label) {
+    labelId = `${toolbarId}-label`;
+  }
+
+  let ariaLabel: string | undefined = "Button group toolbar";
+
+  if (label) {
+    ariaLabel = undefined;
+  }
 
   return (
     <div
       role="toolbar"
       aria-labelledby={labelId}
-      aria-label={label ? undefined : "Button group toolbar"}
+      aria-label={ariaLabel}
       className={cn("flex flex-col gap-2", className)}
     >
       {label && (
@@ -626,20 +655,113 @@ interface KiraButtonGroupProps extends Omit<
 > {
   items?: KiraButtonGroupItem[];
   children?: React.ReactNode;
-  value?: string | string[] | null;
-  defaultValue?: string | string[] | null;
-  onChange?: (value: string | string[]) => void;
-  onValueChange?: (value: string | string[]) => void;
+  value?: ButtonGroupValue;
+  defaultValue?: ButtonGroupValue;
+  onChange?: (value: ButtonGroupValue) => void;
+  onValueChange?: (value: ButtonGroupValue) => void;
   selectionMode?: SelectionMode;
   type?: "single" | "multiple";
   required?: boolean;
-  rovingFocus?: boolean;
   dir?: "ltr" | "rtl";
   fullWidth?: boolean;
   toolbar?: boolean;
   toolbarLabel?: string;
   allowEmpty?: boolean;
   onItemClick?: (value: string) => void;
+}
+
+function resolveSelectionMode(
+  type: "single" | "multiple" | undefined,
+  selectionMode: SelectionMode,
+): SelectionMode {
+  if (!type) {
+    return selectionMode;
+  }
+
+  if (type === "single") {
+    return "single";
+  }
+
+  return "multiple";
+}
+
+function shouldRejectSelectionChange(
+  newValue: ButtonGroupValue,
+  selectionMode: SelectionMode,
+  required: boolean,
+  allowEmpty: boolean,
+): boolean {
+  if (required && selectionMode === "single" && newValue === null) {
+    return true;
+  }
+
+  if (
+    required &&
+    selectionMode === "multiple" &&
+    Array.isArray(newValue) &&
+    newValue.length === 0
+  ) {
+    return true;
+  }
+
+  return selectionMode === "single" && !allowEmpty && newValue === null;
+}
+
+function resolveCurrentValue(
+  value: ButtonGroupValue | undefined,
+  internalValue: ButtonGroupValue,
+): ButtonGroupValue {
+  let currentValue = internalValue;
+
+  if (value !== undefined) {
+    currentValue = value;
+  }
+
+  return currentValue;
+}
+
+function renderButtonGroupItems(
+  items: KiraButtonGroupItem[] | undefined,
+  onItemClick: ((value: string) => void) | undefined,
+) {
+  return items?.map((item) => {
+    let leftIcon = item.icon;
+
+    if (item.loading) {
+      leftIcon = (
+        <IconLoader2 className="size-4 animate-spin" aria-hidden="true" />
+      );
+    }
+
+    return (
+      <ToggleGroupItem
+        key={item.value}
+        value={item.value}
+        disabled={item.disabled || item.loading}
+        leftIcon={leftIcon}
+        rightIcon={item.rightIcon}
+        variant={item.variant}
+        className={item.className}
+        aria-label={item["aria-label"]}
+        aria-busy={item.loading || undefined}
+        onClick={() => onItemClick?.(item.value)}
+      >
+        {item.label}
+      </ToggleGroupItem>
+    );
+  });
+}
+
+function getButtonGroupContent(
+  items: KiraButtonGroupItem[] | undefined,
+  children: React.ReactNode,
+  onItemClick: ((value: string) => void) | undefined,
+) {
+  if (items && items.length > 0) {
+    return renderButtonGroupItems(items, onItemClick);
+  }
+
+  return children;
 }
 
 function KiraButtonGroup({
@@ -661,32 +783,24 @@ function KiraButtonGroup({
   className,
   ...props
 }: KiraButtonGroupProps) {
-  const [internalValue, setInternalValue] = React.useState<
-    string | string[] | null
-  >(defaultValue ?? null);
+  const [internalValue, setInternalValue] = React.useState<ButtonGroupValue>(
+    defaultValue ?? null,
+  );
 
   const isControlled = value !== undefined;
-  const currentValue = isControlled ? value : internalValue;
+  const currentValue = resolveCurrentValue(value, internalValue);
 
-  const resolvedSelectionMode = type
-    ? type === "single"
-      ? "single"
-      : "multiple"
-    : selectionMode;
+  const resolvedSelectionMode = resolveSelectionMode(type, selectionMode);
 
-  const handleChange = (newValue: string | string[]) => {
-    if (required) {
-      if (resolvedSelectionMode === "single" && newValue === "") return;
-
-      if (
-        resolvedSelectionMode === "multiple" &&
-        Array.isArray(newValue) &&
-        newValue.length === 0
+  const handleChange = (newValue: ButtonGroupValue) => {
+    if (
+      shouldRejectSelectionChange(
+        newValue,
+        resolvedSelectionMode,
+        required,
+        allowEmpty,
       )
-        return;
-    }
-
-    if (resolvedSelectionMode === "single" && !allowEmpty && newValue === "") {
+    ) {
       return;
     }
 
@@ -696,36 +810,7 @@ function KiraButtonGroup({
     onValueChange?.(newValue);
   };
 
-  const handleItemClick = (itemValue: string) => {
-    onItemClick?.(itemValue);
-  };
-
-  const renderItems = () =>
-    items?.map((item) => (
-      <ToggleGroupItem
-        key={item.value}
-        value={item.value}
-        disabled={item.disabled || item.loading}
-        leftIcon={
-          item.loading ? (
-            <IconLoader2 className="size-4 animate-spin" aria-hidden="true" />
-          ) : (
-            item.icon
-          )
-        }
-        rightIcon={item.rightIcon}
-        variant={item.variant}
-        className={item.className}
-        aria-label={item["aria-label"]}
-        aria-busy={item.loading || undefined}
-        onClick={() => handleItemClick(item.value)}
-      >
-        {item.label}
-      </ToggleGroupItem>
-    ));
-
-  const renderContent = () =>
-    items && items.length > 0 ? renderItems() : children;
+  const content = getButtonGroupContent(items, children, onItemClick);
 
   const group = (
     <ButtonGroup
@@ -736,7 +821,7 @@ function KiraButtonGroup({
       dir={dir}
       {...props}
     >
-      {renderContent()}
+      {content}
     </ButtonGroup>
   );
 
@@ -751,7 +836,7 @@ function KiraButtonGroup({
         dir={dir}
         {...props}
       >
-        {renderContent()}
+        {content}
       </ButtonGroupToolbar>
     );
   }
@@ -759,14 +844,21 @@ function KiraButtonGroup({
   return group;
 }
 
-export { buttonGroupVariants, buttonGroupSizeVariants };
-
-export { ButtonGroup, ToggleGroupItem, ButtonGroupToolbar, KiraButtonGroup };
+export {
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+  ButtonGroupToolbar,
+  ToggleGroupItem,
+  KiraButtonGroup,
+};
 
 export type {
   ButtonGroupProps,
-  ToggleGroupItemProps,
   ButtonGroupToolbarProps,
+  ToggleGroupItemProps,
+  ButtonGroupTextProps,
   KiraButtonGroupProps,
   KiraButtonGroupItem,
+  SelectionMode,
 };
