@@ -25,7 +25,6 @@ import {
   IconArrowLeft,
   IconRefresh,
   IconUpload,
-  IconCopy,
   IconAlertCircle,
 } from "@tabler/icons-react";
 import {
@@ -556,6 +555,14 @@ function IconButtonWithTooltipDemo() {
           size="icon"
           aria-label="More information"
         />
+        <IconButtonWithTooltip
+          icon={<IconSend className="w-4 h-4" />}
+          tooltip="Submit"
+          disabled
+          disabledReason="Complete all required fields before submitting."
+          size="icon"
+          aria-label="Submit"
+        />
       </div>
     </div>
   );
@@ -577,181 +584,100 @@ const iconButtonWithTooltipCode = `import { IconButtonWithTooltip } from "@/comp
   variant="destructive"
   size="icon"
   aria-label="Delete item"
+/>
+
+// Disabled with an explanation on hover (disabledReason overrides tooltip).
+<IconButtonWithTooltip
+  icon={<IconSend className="w-4 h-4" />}
+  tooltip="Submit"
+  disabled
+  disabledReason="Complete all required fields before submitting."
+  size="icon"
+  aria-label="Submit"
 />`;
 
 function DisabledDemo() {
   return (
-    <div className="flex flex-wrap gap-3">
-      <Button disabled>Disabled Default</Button>
-      <Button variant="secondary" disabled>
-        Disabled Secondary
-      </Button>
-      <Button variant="outline" disabled>
-        Disabled Outline
-      </Button>
-      <Button variant="destructive" disabled>
-        Disabled Destructive
-      </Button>
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-3">
+        <Button disabled>Disabled Default</Button>
+        <Button variant="secondary" disabled>
+          Disabled Secondary
+        </Button>
+        <Button variant="outline" disabled>
+          Disabled Outline
+        </Button>
+        <Button variant="destructive" disabled>
+          Disabled Destructive
+        </Button>
+      </div>
+      <div>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+          Focusable when disabled (keyboard users can reach and inspect it)
+        </h4>
+        <div className="flex flex-wrap gap-3">
+          <Button disabled focusableWhenDisabled>
+            Reachable by Tab
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
 
 function KiraButtonDemo() {
-  const [asyncLoading, setAsyncLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
-  const handleAsyncClick = async () => {
-    setAsyncLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setAsyncLoading(false);
+  const handleLoadingClick = async () => {
+    setLoading(true);
+    await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+    setLoading(false);
   };
 
   return (
     <div className="space-y-8">
-      {/* Section 1: Basic Features */}
+      {/* Section 1: Icons */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-base font-semibold mb-2">Basic Features</h3>
+          <h3 className="text-base font-semibold mb-2">Icons</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            KiraButton combines icons, loading states, tooltips, and expandable
-            layouts in one component.
+            Icons via leftIcon and rightIcon, consistent across Button and
+            KiraButton.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/30 rounded-lg border">
-          <KiraButton icon={<IconMail className="w-4 h-4" />}>
-            With Icon
+          <KiraButton leftIcon={<IconMail className="w-4 h-4" />}>
+            Send Email
           </KiraButton>
           <KiraButton
-            loading={asyncLoading}
-            onAsyncClick={handleAsyncClick}
-            icon={<IconRefresh className="w-4 h-4" />}
-          >
-            Async Action
-          </KiraButton>
-          <KiraButton
-            tooltip="Hover to see tooltip"
-            icon={<IconInfoCircle className="w-4 h-4" />}
-          >
-            With Tooltip
-          </KiraButton>
-          <KiraButton
-            expandable
-            expandLabel="Settings"
-            icon={<IconSettings className="w-4 h-4" />}
             variant="outline"
-          />
+            rightIcon={<IconArrowRight className="w-4 h-4" />}
+          >
+            Continue
+          </KiraButton>
         </div>
       </div>
 
-      {/* Section 2: Quick Actions */}
+      {/* Section 2: Loading */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-base font-semibold mb-2">Quick Action Layout</h3>
+          <h3 className="text-base font-semibold mb-2">Loading</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Perfect for toolbars and action menus with icon + label + optional
-            description.
+            KiraButton disables itself and shows a spinner while `loading` is
+            set.
           </p>
         </div>
-        <div className="flex flex-wrap items-start gap-4 p-4 bg-muted/30 rounded-lg border">
-          <KiraButton
-            quickAction
-            icon={<IconHeart className="w-5 h-5" />}
-            variant="secondary"
-          >
-            Like
+        <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/30 rounded-lg border">
+          <KiraButton loading={loading} onClick={handleLoadingClick}>
+            Run Action
           </KiraButton>
-          <KiraButton
-            quickAction
-            quickActionDescription="Save to your favorites"
-            icon={<IconHeart className="w-5 h-5" />}
-            variant="outline"
-          >
-            Favorite
-          </KiraButton>
-          <KiraButton
-            quickAction
-            quickActionDescription="Download as PDF"
-            icon={<IconDownload className="w-5 h-5" />}
-            variant="default"
-          >
-            Download
-          </KiraButton>
-          <KiraButton
-            quickAction
-            quickActionDescription="Upload files to cloud"
-            icon={<IconUpload className="w-5 h-5" />}
-            variant="info"
-          >
-            Upload
+          <KiraButton loading loadingText="Saving..." variant="secondary">
+            Save
           </KiraButton>
         </div>
       </div>
 
-      {/* Section 3: Form Integration */}
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-base font-semibold mb-2">Form Integration</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Built-in label, description, and error state support for form
-            contexts.
-          </p>
-        </div>
-        <div className="grid gap-4 p-4 bg-muted/30 rounded-lg border max-w-md">
-          <KiraButton
-            formLabel="Submit Form"
-            formDescription="Click to submit your changes"
-            icon={<IconSend className="w-4 h-4" />}
-          >
-            Submit
-          </KiraButton>
-          <KiraButton
-            formLabel="Delete Account"
-            formError="This action cannot be undone"
-            icon={<IconTrash className="w-4 h-4" />}
-            variant="destructive"
-          >
-            Delete
-          </KiraButton>
-        </div>
-      </div>
-
-      {/* Section 4: Utility Features */}
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-base font-semibold mb-2">Utility Features</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Copy to clipboard and compound layouts for complex use cases.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-start gap-4 p-4 bg-muted/30 rounded-lg border">
-          <KiraButton
-            copyText="Hello from KiraButton!"
-            copySuccessMessage="Copied to clipboard!"
-            icon={<IconCopy className="w-4 h-4" />}
-            variant="outline"
-          >
-            Copy Text
-          </KiraButton>
-          <KiraButton
-            compound
-            compoundDescription="Manage your account settings and preferences"
-            icon={<IconSettings className="w-4 h-4" />}
-            variant="secondary"
-          >
-            Settings
-          </KiraButton>
-          <KiraButton
-            compound
-            compoundDescription="View and manage your files"
-            compoundIconPosition="right"
-            icon={<IconArrowRight className="w-4 h-4" />}
-            variant="outline"
-          >
-            Files
-          </KiraButton>
-        </div>
-      </div>
-
-      {/* Section 5: Variants Showcase */}
+      {/* Section 3: Variants */}
       <div className="space-y-4">
         <div>
           <h3 className="text-base font-semibold mb-2">All Variants</h3>
@@ -760,53 +686,53 @@ function KiraButtonDemo() {
           </p>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-muted/30 rounded-lg border">
-          <KiraButton icon={<IconMail className="w-4 h-4" />} size="sm">
+          <KiraButton leftIcon={<IconMail className="w-4 h-4" />} size="sm">
             Default
           </KiraButton>
           <KiraButton
-            icon={<IconMail className="w-4 h-4" />}
+            leftIcon={<IconMail className="w-4 h-4" />}
             variant="secondary"
             size="sm"
           >
             Secondary
           </KiraButton>
           <KiraButton
-            icon={<IconMail className="w-4 h-4" />}
+            leftIcon={<IconMail className="w-4 h-4" />}
             variant="outline"
             size="sm"
           >
             Outline
           </KiraButton>
           <KiraButton
-            icon={<IconMail className="w-4 h-4" />}
+            leftIcon={<IconMail className="w-4 h-4" />}
             variant="ghost"
             size="sm"
           >
             Ghost
           </KiraButton>
           <KiraButton
-            icon={<IconTrash className="w-4 h-4" />}
+            leftIcon={<IconTrash className="w-4 h-4" />}
             variant="destructive"
             size="sm"
           >
             Destructive
           </KiraButton>
           <KiraButton
-            icon={<IconInfoCircle className="w-4 h-4" />}
+            leftIcon={<IconInfoCircle className="w-4 h-4" />}
             variant="info"
             size="sm"
           >
             Info
           </KiraButton>
           <KiraButton
-            icon={<IconCircleCheck className="w-4 h-4" />}
+            leftIcon={<IconCircleCheck className="w-4 h-4" />}
             variant="success"
             size="sm"
           >
             Success
           </KiraButton>
           <KiraButton
-            icon={<IconAlertCircle className="w-4 h-4" />}
+            leftIcon={<IconAlertCircle className="w-4 h-4" />}
             variant="warning"
             size="sm"
           >
@@ -820,72 +746,40 @@ function KiraButtonDemo() {
 
 const kiraButtonCode = `import { KiraButton } from "@/components/ui/button"
 
-// Basic usage with icon
-<KiraButton icon={<IconMail className="w-4 h-4" />}>
-  With Icon
+// Basic usage with icons
+<KiraButton leftIcon={<IconMail className="w-4 h-4" />}>
+  Send Email
 </KiraButton>
 
-// Async action with loading state
-<KiraButton
-  onAsyncClick={handleAsyncAction}
-  icon={<IconRefresh className="w-4 h-4" />}
->
-  Async Action
+// Loading state (disables + shows spinner)
+<KiraButton loading={isLoading} onClick={handleRun}>
+  Run Action
 </KiraButton>
 
-// With tooltip
+// Optimistic toggle: flips instantly, rolls back + toasts if onToggle rejects.
 <KiraButton
-  tooltip="This button has a tooltip"
-  icon={<IconInfoCircle className="w-4 h-4" />}
->
-  With Tooltip
-</KiraButton>
-
-// Expandable icon button
-<KiraButton
-  expandable
-  expandLabel="Settings"
-  icon={<IconSettings className="w-4 h-4" />}
+  toggle
   variant="outline"
-/>
-
-// Quick action layout
-<KiraButton
-  quickAction
-  quickActionDescription="Save to favorites"
-  icon={<IconHeart className="w-5 h-5" />}
-  variant="outline"
+  pressedIcon={<IconHeartFilled className="w-4 h-4 text-red-500" />}
+  unpressedIcon={<IconHeart className="w-4 h-4" />}
+  onToggle={async (pressed) => {
+    await likePost(pressed) // may throw → auto-revert
+  }}
 >
-  Favorite
-</KiraButton>
-
-// Copy to clipboard
-<KiraButton
-  copyText="Text to copy"
-  copySuccessMessage="Copied!"
-  icon={<IconCopy className="w-4 h-4" />}
-  variant="outline"
->
-  Copy
-</KiraButton>
-
-// Form integration
-<KiraButton
-  formLabel="Submit Form"
-  formDescription="Click to submit"
-  icon={<IconSend className="w-4 h-4" />}
->
-  Submit
+  Like
 </KiraButton>`;
 
 const disabledCode = `import { Button } from "@/components/ui/button"
 
 <Button disabled>Disabled Default</Button>
 <Button variant="secondary" disabled>Disabled Secondary</Button>
-<Button variant="outline" disabled>Disabled Outline</Button>`;
+<Button variant="outline" disabled>Disabled Outline</Button>
 
-const toggleCode = `import { KiraButton } from "@/components/ui/button"
-import { IconHeart, IconHeartFilled } from "@tabler/icons-react"
+// Stays keyboard-focusable while disabled (WCAG 2.2).
+<Button disabled focusableWhenDisabled>Reachable by Tab</Button>`;
+
+const toggleCode = `import { KiraButton, IconButtonWithTooltip } from "@/components/ui/button"
+import { IconHeart, IconHeartFilled, IconSend } from "@tabler/icons-react"
 
 // Optimistic toggle: flips instantly, rolls back + toasts if onToggle rejects.
 <KiraButton
@@ -902,9 +796,13 @@ import { IconHeart, IconHeartFilled } from "@tabler/icons-react"
 </KiraButton>
 
 // Disabled with an explanation on hover.
-<KiraButton disabled disabledReason="Complete the form first">
-  Submit
-</KiraButton>`;
+<IconButtonWithTooltip
+  icon={<IconSend />}
+  tooltip="Submit"
+  disabled
+  disabledReason="Complete the form first"
+  aria-label="Submit"
+/>`;
 
 function ToggleDemo() {
   const [liked, setLiked] = React.useState(false);
@@ -960,12 +858,13 @@ function ToggleDemo() {
         <h3 className="text-sm font-medium text-muted-foreground mb-3">
           Disabled with a reason (hover the button)
         </h3>
-        <KiraButton
+        <IconButtonWithTooltip
+          icon={<IconSend className="w-4 h-4" />}
+          tooltip="Submit"
           disabled
           disabledReason="Complete all required fields before submitting."
-        >
-          Submit
-        </KiraButton>
+          aria-label="Submit"
+        />
       </div>
     </div>
   );
@@ -1249,10 +1148,17 @@ export default function ButtonPage() {
           description: "Disable the button",
         },
         {
-          prop: "asChild",
+          prop: "focusableWhenDisabled",
           type: "boolean",
           default: "false",
-          description: "Render as child element (for custom components)",
+          description:
+            "Keep a disabled button keyboard-focusable (Base UI primitive, WCAG 2.2)",
+        },
+        {
+          prop: "leftIcon / rightIcon",
+          type: "ReactNode",
+          default: "-",
+          description: "Icons on the left / right side of the label",
         },
       ],
     },
@@ -1324,6 +1230,67 @@ export default function ButtonPage() {
           description: "Accessible label (falls back to tooltip text)",
         },
         {
+          prop: "disabledReason",
+          type: "string",
+          default: "-",
+          description:
+            "Shown in the tooltip while the button is disabled (overrides tooltip)",
+        },
+        {
+          prop: "...props",
+          type: "ButtonProps",
+          default: "-",
+          description: "All Button props are supported",
+        },
+      ],
+    },
+    {
+      title: "KiraButton",
+      props: [
+        {
+          prop: "loading",
+          type: "boolean",
+          default: "false",
+          description: "Show spinner, disable the button",
+        },
+        {
+          prop: "loadingText",
+          type: "string",
+          default: "-",
+          description: "Text to show while loading",
+        },
+        {
+          prop: "toggle",
+          type: "boolean",
+          default: "false",
+          description: "Enable optimistic toggle mode",
+        },
+        {
+          prop: "pressed / defaultPressed",
+          type: "boolean",
+          default: "-",
+          description: "Controlled / uncontrolled pressed state",
+        },
+        {
+          prop: "onToggle",
+          type: "(pressed: boolean) => void | Promise<void>",
+          default: "-",
+          description:
+            "Async toggle handler; flips instantly, reverts + toasts on reject",
+        },
+        {
+          prop: "pressedIcon / unpressedIcon",
+          type: "ReactNode",
+          default: "-",
+          description: "Icons for the pressed / unpressed states",
+        },
+        {
+          prop: "toggleErrorMessage",
+          type: "string",
+          default: '"Couldn\'t update"',
+          description: "Toast message when onToggle rejects",
+        },
+        {
           prop: "...props",
           type: "ButtonProps",
           default: "-",
@@ -1338,7 +1305,7 @@ export default function ButtonPage() {
       <PageHeader
         title="Button"
         description="A versatile button component with multiple variants, sizes, and interactive features like hold-to-confirm and loading states."
-        version="v2.2"
+        version="v2.3"
       />
 
       <FeatureGrid features={features} />
@@ -1353,6 +1320,60 @@ export default function ButtonPage() {
 
       <Changelog
         entries={[
+          {
+            version: "2.3.0",
+            date: "17 October 2026",
+            changes: [
+              {
+                type: "breaking",
+                title: "Removed Thin Wrapper Components",
+                description:
+                  "Deleted HoldButton, CopyButton, ButtonWithLabel, CompoundButton, AsyncButton, and QuickActionButton — plain <Button> covers all of them. Also removed the getButtonIconSize export.",
+              },
+              {
+                type: "breaking",
+                title: "KiraButton Slimmed to Toggle + Loading",
+                description:
+                  "Removed icon/iconPosition (use leftIcon/rightIcon), tooltip/disabledReason (use IconButtonWithTooltip), expandable, onAsyncClick + async props, copyText + copy props, formLabel + form props, quickAction, and compound code paths. Keep toggle, loading, and the optimistic onToggle behavior.",
+              },
+              {
+                type: "breaking",
+                title: "Removed rippleColor and progressColor Props",
+                description:
+                  "Ripple and hold-progress visuals now use currentColor (the button's text color), which always contrasts with the variant background. The per-variant rgba color maps are gone.",
+              },
+              {
+                type: "changed",
+                title: "forwardRef Removed",
+                description:
+                  "React 19 ref-as-prop: Button and ExpandableIconButton take ref as a regular prop now.",
+              },
+              {
+                type: "changed",
+                title: "LG Spinner Size",
+                description:
+                  "The loading spinner at size lg is now h-5 w-5 (was h-4.5 w-4.5), matching getButtonIconSize.",
+              },
+              {
+                type: "added",
+                title: "focusableWhenDisabled",
+                description:
+                  "Button passes focusableWhenDisabled through to the Base UI Button primitive (default false). Disabled buttons stay keyboard-reachable so users can inspect them — WCAG 2.2.",
+              },
+              {
+                type: "added",
+                title: "IconButtonWithTooltip disabledReason",
+                description:
+                  "IconButtonWithTooltip accepts disabledReason — shown in the tooltip while disabled (the disabled button is wrapped in a focus/hover target).",
+              },
+              {
+                type: "changed",
+                title: "Ripple Rebuilt Imperatively",
+                description:
+                  "Ripple spans are now created and removed imperatively (no React state churn) and scale to the button's diagonal instead of a fixed 100px.",
+              },
+            ],
+          },
           {
             version: "2.2.0",
             date: "10 July 2026",
