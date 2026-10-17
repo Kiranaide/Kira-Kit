@@ -1,6 +1,17 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import { Input as InputPrimitive } from "@base-ui/react/input";
+import { NumberField } from "@base-ui/react/number-field";
+import { OTPField } from "@base-ui/react/otp-field";
+import { Meter } from "@base-ui/react/meter";
+import { Combobox } from "@base-ui/react/combobox";
+import { KiraSelect } from "@/components/ui/select";
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+} from "@/components/ui/field";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -8,7 +19,6 @@ import {
   IconMinus,
   IconPlus,
   IconLoader2,
-  IconChevronDown,
   IconX,
   IconCopy,
   IconCheck,
@@ -21,9 +31,10 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/toast";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const inputVariants = cva(
-  "dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 rounded-lg border bg-transparent transition-colors file:text-sm file:font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] file:text-foreground placeholder:text-muted-foreground w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+  "dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 rounded-lg border bg-transparent file:text-sm file:font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] file:text-foreground placeholder:text-muted-foreground w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       size: {
@@ -36,8 +47,55 @@ const inputVariants = cva(
     defaultVariants: {
       size: "default",
     },
-  }
+  },
 );
+
+const transitionClasses = "transition-colors";
+
+const COUNTER_WARN_RATIO = 0.9;
+
+interface CharacterCounterProps {
+  currentLength: number;
+  maxLength?: number;
+  className?: string;
+}
+
+/**
+ * Live n/max counter. Warn color near the limit, destructive at the limit.
+ * Announced politely via aria-live.
+ */
+function CharacterCounter({
+  currentLength,
+  maxLength,
+  className,
+}: CharacterCounterProps) {
+  const atLimit = maxLength !== undefined && currentLength >= maxLength;
+
+  const nearLimit =
+    maxLength !== undefined &&
+    !atLimit &&
+    currentLength >= Math.floor(COUNTER_WARN_RATIO * maxLength);
+
+  return (
+    <div
+      className={cn(
+        "text-right text-xs tabular-nums text-muted-foreground",
+        className,
+      )}
+      aria-live="polite"
+    >
+      <span
+        className={cn(
+          nearLimit && "text-warning",
+          atLimit && "text-destructive",
+        )}
+      >
+        {currentLength}
+      </span>
+      {maxLength !== undefined && `/${maxLength}`}
+    </div>
+  );
+}
 
 interface InputProps
   extends
@@ -45,9 +103,6 @@ interface InputProps
     VariantProps<typeof inputVariants> {
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
-  showIncrementButtons?: boolean;
-  onIncrement?: () => void;
-  onDecrement?: () => void;
   size?: VariantProps<typeof inputVariants>["size"];
   showClear?: boolean;
   onClear?: () => void;
@@ -59,6 +114,178 @@ interface InputProps
   showCount?: boolean;
 }
 
+const PREFIX_PADDING = {
+  xs: "pl-7",
+  sm: "pl-7",
+  default: "pl-8",
+  lg: "pl-9",
+} as const;
+
+const SUFFIX_PADDING = {
+  xs: "pr-7",
+  sm: "pr-7",
+  default: "pr-8",
+  lg: "pr-9",
+} as const;
+
+const PREFIX_CONTAINER_PADDING = {
+  xs: "pl-2",
+  sm: "pl-2.5",
+  default: "pl-3",
+  lg: "pl-3",
+} as const;
+
+const SUFFIX_CONTAINER_PADDING = {
+  xs: "pr-2",
+  sm: "pr-2.5",
+  default: "pr-3",
+  lg: "pr-3",
+} as const;
+
+const ACTION_ICON_SIZE = {
+  xs: "h-3 w-3",
+  sm: "h-3.5 w-3.5",
+  default: "h-4 w-4",
+  lg: "h-4 w-4",
+} as const;
+
+interface InputActionButtonsProps {
+  show: boolean;
+  showClearButton: boolean;
+  showCopy: boolean;
+  size: string;
+  copied: boolean;
+  onClear: () => void;
+  onCopy: () => void;
+}
+
+/** Clear + copy affordances rendered as an absolutely positioned suffix. */
+function InputActionButtons({
+  show,
+  showClearButton,
+  showCopy,
+  size,
+  copied,
+  onClear,
+  onCopy,
+}: InputActionButtonsProps) {
+  if (!show) return null;
+
+  const iconSize = ACTION_ICON_SIZE[size] ?? ACTION_ICON_SIZE.default;
+  let copyButtonLabel = "Copy to clipboard";
+  let copyButtonIcon = <IconCopy className={iconSize} />;
+
+  if (copied) {
+    copyButtonLabel = "Copied";
+    copyButtonIcon = <IconCheck className={cn(iconSize, "text-success")} />;
+  }
+
+  return (
+    <div className="flex items-center gap-0.5">
+      {showClearButton && (
+        <button
+          type="button"
+          onClick={onClear}
+          className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-sm"
+          aria-label="Clear input"
+        >
+          <IconX className={iconSize} />
+        </button>
+      )}
+      {showCopy && (
+        <button
+          type="button"
+          onClick={onCopy}
+          className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-sm"
+          aria-label={copyButtonLabel}
+        >
+          {copyButtonIcon}
+        </button>
+      )}
+    </div>
+  );
+}
+
+interface UseInputActionsOptions {
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  value: unknown;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onClear?: () => void;
+  onCopySuccess?: () => void;
+  onCopyError?: (error: Error) => void;
+}
+
+/** Clear (with synthetic change event) + copy-to-clipboard actions for Input. */
+function useInputActions({
+  inputRef,
+  value,
+  onChange,
+  onClear,
+  onCopySuccess,
+  onCopyError,
+}: UseInputActionsOptions) {
+  const [copied, setCopied] = React.useState(false);
+  const copiedTimeoutRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (copiedTimeoutRef.current) {
+        window.clearTimeout(copiedTimeoutRef.current);
+        copiedTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleClear = () => {
+    onClear?.();
+
+    if (onChange && inputRef.current) {
+      // Minimal change-event stand-in: React change handlers only read
+      // `target.value`, which the frozen `{ value: "" }` below satisfies.
+      // SAFETY: Event lacks React's change-event shape; the frozen target
+      // patch below adds the only member handlers read (`.target.value`).
+      const event = new Event("input", {
+        bubbles: true,
+      }) as React.ChangeEvent<HTMLInputElement>;
+
+      Object.defineProperty(event, "target", {
+        writable: false,
+        value: { value: "" },
+      });
+      onChange(event);
+    }
+
+    inputRef.current?.focus();
+  };
+
+  const handleCopy = async () => {
+    const textToCopy = inputRef.current?.value || String(value || "");
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopied(true);
+      toast.success("Copied to clipboard");
+      onCopySuccess?.();
+
+      if (copiedTimeoutRef.current) {
+        window.clearTimeout(copiedTimeoutRef.current);
+      }
+
+      copiedTimeoutRef.current = window.setTimeout(
+        () => setCopied(false),
+        2000,
+      );
+    } catch (error) {
+      toast.error("Failed to copy to clipboard");
+      // SAFETY: catch only fires on clipboard rejection; the thrown unknown is
+      // surfaced to the onCopyError contract typed as Error.
+      onCopyError?.(error as Error);
+    }
+  };
+
+  return { copied, handleClear, handleCopy };
+}
+
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
@@ -67,9 +294,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       prefix,
       suffix,
       size = "default",
-      showIncrementButtons = false,
-      onIncrement,
-      onDecrement,
       disabled,
       min,
       max,
@@ -85,439 +309,429 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       maxLength,
       ...props
     },
-    ref
+    ref,
   ) => {
     const inputRef = React.useRef<HTMLInputElement>(null);
-    const [copied, setCopied] = React.useState(false);
+    const reducedMotion = useReducedMotion();
 
-    React.useImperativeHandle(ref, () => inputRef.current!);
+    // SAFETY: inputRef is created above with HTMLInputElement type param; the
+    // ref is only attached to the InputPrimitive rendered below.
+    React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
-    const isNumeric = type === "number";
-    const showButtons = isNumeric && showIncrementButtons;
+    const { copied, handleCopy } = useInputActions({
+      value,
+      onChange,
+      onClear,
+      onCopySuccess,
+      onCopyError,
+    });
 
-    const effectiveSize = size || "default";
+    return InputFieldView({
+      className,
+      type,
+      prefix,
+      suffix,
+      size,
+      disabled,
+      min,
+      max,
+      step,
+      value,
+      onChange,
+      showClear,
+      onClear,
+      showCopy,
+      copied,
+      onCopy: handleCopy,
+      showCount,
+      maxLength,
+      inputRef,
+      reducedMotion,
+      props,
+    });
+  },
+);
 
-    const hasValue = String(value || "").length > 0;
-    const showClearButton = showClear && hasValue && !disabled;
+interface InputFieldViewOptions {
+  className?: string;
+  type?: React.HTMLInputTypeAttribute;
+  prefix?: React.ReactNode;
+  suffix?: React.ReactNode;
+  size?: VariantProps<typeof inputVariants>["size"];
+  disabled?: boolean;
+  min?: number;
+  max?: number;
+  step?: number;
+  value: unknown;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  showClear?: boolean;
+  onClear?: () => void;
+  showCopy?: boolean;
+  copied: boolean;
+  onCopy: () => void;
+  showCount?: boolean;
+  maxLength?: number;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  reducedMotion: boolean;
+  props: Omit<React.ComponentProps<"input">, keyof InputFieldViewOptions>;
+}
 
-    const handleClear = () => {
-      onClear?.();
+type InputSize = NonNullable<VariantProps<typeof inputVariants>["size"]>;
 
-      if (onChange && inputRef.current) {
-        const event = new Event("input", { bubbles: true });
-        Object.defineProperty(event, "target", {
-          writable: false,
-          value: { value: "" },
-        });
-        onChange(event as unknown as React.ChangeEvent<HTMLInputElement>);
-      }
+/** Build the padded base <input> element for InputFieldView. */
+function createInputElement(
+  options: InputFieldViewOptions,
+  effectiveSize: InputSize,
+) {
+  const {
+    className,
+    type,
+    prefix,
+    suffix,
+    disabled,
+    min,
+    max,
+    step = 1,
+    value,
+    onChange,
+    maxLength,
+    inputRef,
+    reducedMotion,
+    props,
+  } = options;
 
-      inputRef.current?.focus();
-    };
+  const isNumeric = type === "number";
 
-    const handleCopy = async () => {
-      const textToCopy = inputRef.current?.value || String(value || "");
+  return (
+    <InputPrimitive
+      ref={inputRef}
+      type={type}
+      data-slot="input"
+      className={cn(
+        inputVariants({ size: effectiveSize }),
+        !reducedMotion && transitionClasses,
+        prefix && PREFIX_PADDING[effectiveSize],
+        suffix && SUFFIX_PADDING[effectiveSize],
+        isNumeric &&
+          "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+        className,
+      )}
+      value={value}
+      onChange={onChange}
+      disabled={disabled}
+      min={min}
+      max={max}
+      maxLength={maxLength}
+      step={step}
+      {...props}
+    />
+  );
+}
 
-      try {
-        await navigator.clipboard.writeText(textToCopy);
-        setCopied(true);
-        toast.success("Copied to clipboard");
-        onCopySuccess?.();
-        setTimeout(() => setCopied(false), 2000);
-      } catch (error) {
-        toast.error("Failed to copy to clipboard");
-        onCopyError?.(error as Error);
-      }
-    };
+/** Live character counter node (opt-in via showCount). */
+function resolveCounter(
+  showCount: boolean,
+  currentLength: number,
+  maxLength?: number,
+): React.ReactNode {
+  if (!showCount) return null;
 
-    const prefixPadding = {
-      xs: "pl-7",
-      sm: "pl-7",
-      default: "pl-8",
-      lg: "pl-9",
-    }[effectiveSize];
+  return (
+    <CharacterCounter
+      currentLength={currentLength}
+      maxLength={maxLength}
+      className="mt-1"
+    />
+  );
+}
 
-    const suffixPadding = {
-      xs: "pr-7",
-      sm: "pr-7",
-      default: "pr-8",
-      lg: "pr-9",
-    }[effectiveSize];
+/** Wrap the field (plus counter) in a full-width container when counted. */
+function withCounterWrapper(
+  counter: React.ReactNode,
+  field: React.ReactNode,
+): React.ReactNode {
+  if (!counter) return field;
 
-    const prefixContainerPadding = {
-      xs: "pl-2",
-      sm: "pl-2.5",
-      default: "pl-3",
-      lg: "pl-3",
-    }[effectiveSize];
+  return (
+    <div className="w-full">
+      {field}
+      {counter}
+    </div>
+  );
+}
 
-    const suffixContainerPadding = {
-      xs: "pr-2",
-      sm: "pr-2.5",
-      default: "pr-3",
-      lg: "pr-3",
-    }[effectiveSize];
+/** Whether the field currently holds a clearable value. */
+function hasClearAffordance(
+  value: React.ComponentProps<"input">["value"],
+  showClear: boolean,
+  disabled?: boolean,
+): boolean {
+  if (!showClear || disabled) return false;
 
-    const buttonHeight = {
-      xs: "h-6",
-      sm: "h-7",
-      default: "h-8",
-      lg: "h-9",
-    }[effectiveSize];
+  return value !== undefined && value !== null && String(value).length > 0;
+}
 
-    const buttonWidth = {
-      xs: "w-6",
-      sm: "w-7",
-      default: "w-8",
-      lg: "w-9",
-    }[effectiveSize];
+/** Clear/copy action buttons rendered inside the suffix area. */
+function resolveActionButtons(params: {
+  showClearButton: boolean;
+  showCopy: boolean;
+  size: InputSize;
+  copied: boolean;
+  onClear?: () => void;
+  onCopy: () => void;
+}): React.ReactNode {
+  const { showClearButton, showCopy, size, copied, onClear, onCopy } = params;
 
-    const iconSize = {
-      xs: "h-2.5 w-2.5",
-      sm: "h-3 w-3",
-      default: "h-3 w-3",
-      lg: "h-3.5 w-3.5",
-    }[effectiveSize];
-
-    const handleIncrement = () => {
-      if (disabled) return;
-
-      const currentValue =
-        typeof value === "number" ? value : parseFloat(String(value || 0)) || 0;
-
-      const stepValue =
-        typeof step === "number" ? step : parseFloat(String(step || 1)) || 1;
-
-      const newValue = currentValue + stepValue;
-
-      if (max !== undefined && typeof max === "number" && newValue > max)
-        return;
-
-      if (onIncrement) {
-        onIncrement();
-
-        return;
-      }
-
-      if (onChange) {
-        const syntheticEvent = {
-          target: { value: String(newValue) },
-        } as React.ChangeEvent<HTMLInputElement>;
-
-        onChange(syntheticEvent);
-      }
-    };
-
-    const handleDecrement = () => {
-      if (disabled) return;
-
-      const currentValue =
-        typeof value === "number" ? value : parseFloat(String(value || 0)) || 0;
-
-      const stepValue =
-        typeof step === "number" ? step : parseFloat(String(step || 1)) || 1;
-
-      const newValue = currentValue - stepValue;
-
-      if (min !== undefined && typeof min === "number" && newValue < min)
-        return;
-
-      if (onDecrement) {
-        onDecrement();
-
-        return;
-      }
-
-      if (onChange) {
-        const syntheticEvent = {
-          target: { value: String(newValue) },
-        } as React.ChangeEvent<HTMLInputElement>;
-
-        onChange(syntheticEvent);
-      }
-    };
-
-    const inputElement = (
-      <InputPrimitive
-        ref={inputRef}
-        type={type}
-        data-slot="input"
-        className={cn(
-          inputVariants({ size: effectiveSize }),
-          prefix && prefixPadding,
-          suffix && suffixPadding,
-          showButtons &&
-            "rounded-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-          !showButtons &&
-            isNumeric &&
-            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-          className
-        )}
-        value={value}
-        onChange={onChange}
-        disabled={disabled}
-        min={min}
-        max={max}
-        maxLength={maxLength}
-        step={step}
-        {...props}
+  return (
+    (showClearButton || showCopy) && (
+      <InputActionButtons
+        show={showClearButton || showCopy}
+        showClearButton={showClearButton}
+        showCopy={showCopy}
+        size={size}
+        copied={copied}
+        onClear={onClear}
+        onCopy={onCopy}
       />
-    );
+    )
+  );
+}
 
-    // Live character counter (opt-in via showCount). Announced politely.
-    const currentLength = String(value ?? "").length;
-
-    const counter = showCount ? (
-      <div
-        className="mt-1 text-right text-xs tabular-nums text-muted-foreground"
-        aria-live="polite"
-      >
-        <span
-          className={cn(
-            maxLength !== undefined &&
-              currentLength >= maxLength &&
-              "text-destructive",
-          )}
-        >
-          {currentLength}
-        </span>
-        {maxLength !== undefined && `/${maxLength}`}
-      </div>
-    ) : null;
-
-    const withCounter = (field: React.ReactNode) =>
-      counter ? (
-        <div className="w-full">
-          {field}
-          {counter}
-        </div>
-      ) : (
-        field
-      );
-
-    if (showButtons) {
-      const numericValue =
-        typeof value === "number" ? value : parseFloat(String(value || 0)) || 0;
-
-      const minValue =
-        typeof min === "number"
-          ? min
-          : min === undefined
-            ? undefined
-            : parseFloat(String(min));
-
-      const maxValue =
-        typeof max === "number"
-          ? max
-          : max === undefined
-            ? undefined
-            : parseFloat(String(max));
-
-      const canDecrement = minValue === undefined || numericValue > minValue;
-      const canIncrement = maxValue === undefined || numericValue < maxValue;
-
-      return withCounter(
-        <div className={cn("flex items-center", className)}>
-          <button
-            type="button"
-            onClick={handleDecrement}
-            disabled={disabled || !canDecrement}
-            className={cn(
-              "flex items-center justify-center rounded-l-lg border border-r-0 border-input bg-muted hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed",
-              buttonHeight,
-              buttonWidth
-            )}
-          >
-            <IconMinus className={iconSize} />
-          </button>
-          {prefix || suffix ? (
-            <div className="relative flex items-center flex-1">
-              {prefix && (
-                <div
-                  className={cn(
-                    "absolute left-0 flex h-full items-center text-muted-foreground pointer-events-none",
-                    prefixContainerPadding
-                  )}
-                >
-                  {prefix}
-                </div>
-              )}
-              {inputElement}
-              {suffix && (
-                <div
-                  className={cn(
-                    "absolute right-0 flex h-full items-center text-muted-foreground pointer-events-none",
-                    suffixContainerPadding
-                  )}
-                >
-                  {suffix}
-                </div>
-              )}
-            </div>
-          ) : (
-            inputElement
-          )}
-          <button
-            type="button"
-            onClick={handleIncrement}
-            disabled={disabled || !canIncrement}
-            className={cn(
-              "flex items-center justify-center rounded-r-lg border border-l-0 border-input bg-muted hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed",
-              buttonHeight,
-              buttonWidth
-            )}
-          >
-            <IconPlus className={iconSize} />
-          </button>
-        </div>,
-      );
-    }
-
-    const actionIconSize = {
-      xs: "h-3 w-3",
-      sm: "h-3.5 w-3.5",
-      default: "h-4 w-4",
-      lg: "h-4 w-4",
-    }[effectiveSize];
-
-    const actionButtons = (showClearButton || showCopy) && (
-      <div className="flex items-center gap-0.5">
-        {showClearButton && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-sm"
-            aria-label="Clear input"
-          >
-            <IconX className={actionIconSize} />
-          </button>
-        )}
-        {showCopy && (
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-sm"
-            aria-label={copied ? "Copied" : "Copy to clipboard"}
-          >
-            {copied ? (
-              <IconCheck className={cn(actionIconSize, "text-success")} />
-            ) : (
-              <IconCopy className={actionIconSize} />
-            )}
-          </button>
-        )}
-      </div>
-    );
-
-    const combinedSuffix = (suffix || actionButtons) && (
+/** Suffix content: user suffix + action buttons in one row. */
+function resolveCombinedSuffix(
+  suffix: React.ReactNode,
+  actionButtons: React.ReactNode,
+): React.ReactNode {
+  return (
+    (suffix || actionButtons) && (
       <div className="flex items-center gap-1">
         {suffix}
         {actionButtons}
       </div>
-    );
+    )
+  );
+}
 
-    const actionButtonsPadding =
-      showClear || showCopy ? (showClear && showCopy ? "pr-14" : "pr-9") : "";
+/** Right padding applied to the input when action buttons are shown. */
+function resolveActionButtonsPadding(
+  showClear: boolean,
+  showCopy: boolean,
+): string {
+  if (showClear && showCopy) return "pr-14";
 
-    if (!prefix && !combinedSuffix) {
-      return withCounter(inputElement);
-    }
+  if (showClear || showCopy) return "pr-9";
 
-    return withCounter(
-      <div className="relative flex items-center">
-        {prefix && (
-          <div
-            className={cn(
-              "absolute left-0 flex h-full items-center text-muted-foreground pointer-events-none",
-              prefixContainerPadding
-            )}
-          >
-            {prefix}
-          </div>
+  return "";
+}
+
+/** Absolutely-positioned prefix container on the left edge. */
+function renderPrefixContainer(
+  prefix: React.ReactNode,
+  prefixContainerPadding: string,
+): React.ReactNode {
+  return (
+    prefix && (
+      <div
+        className={cn(
+          "absolute left-0 flex h-full items-center text-muted-foreground pointer-events-none",
+          prefixContainerPadding,
         )}
-        {React.cloneElement(inputElement, {
-          className: cn(inputElement.props.className, actionButtonsPadding),
-        })}
-        {combinedSuffix && (
-          <div
-            className={cn(
-              "absolute right-0 flex h-full items-center",
-              suffixContainerPadding
-            )}
-          >
-            {combinedSuffix}
-          </div>
+      >
+        {prefix}
+      </div>
+    )
+  );
+}
+
+/** Absolutely-positioned suffix container on the right edge. */
+function renderSuffixContainer(
+  combinedSuffix: React.ReactNode,
+  suffixContainerPadding: string,
+): React.ReactNode {
+  return (
+    combinedSuffix && (
+      <div
+        className={cn(
+          "absolute right-0 flex h-full items-center",
+          suffixContainerPadding,
         )}
-      </div>,
-    );
-  }
-);
+      >
+        {combinedSuffix}
+      </div>
+    )
+  );
+}
+
+/** Layout view for Input: padded primitive + prefix/suffix containers + counter. */
+function InputFieldView(options: InputFieldViewOptions) {
+  const {
+    size = "default",
+    disabled,
+    showClear = false,
+    onClear,
+    showCopy = false,
+    copied,
+    onCopy,
+    showCount = false,
+    maxLength,
+    value,
+  } = options;
+
+  const effectiveSize = size || "default";
+
+  const inputElement = createInputElement(options, effectiveSize);
+
+  const showClearButton = hasClearAffordance(value, showClear, disabled);
+
+  const currentLength = String(value ?? "").length;
+  const counter = resolveCounter(showCount, currentLength, maxLength);
+
+  const actionButtons = resolveActionButtons({
+    showClearButton,
+    showCopy,
+    size: effectiveSize,
+    copied,
+    onClear,
+    onCopy,
+  });
+
+  const combinedSuffix = resolveCombinedSuffix(options.suffix, actionButtons);
+
+  const actionButtonsPadding = resolveActionButtonsPadding(showClear, showCopy);
+
+  // Always render the wrapper div: switching between bare-input and wrapper
+  // trees remounts the <input> on first keystroke (showClear/showCopy appearing
+  // when value goes empty → non-empty) and drops focus mid-typing.
+  return withCounterWrapper(
+    counter,
+    <div className="relative flex items-center">
+      {renderPrefixContainer(
+        options.prefix,
+        PREFIX_CONTAINER_PADDING[effectiveSize],
+      )}
+      {React.cloneElement(inputElement, {
+        className: cn(inputElement.props.className, actionButtonsPadding),
+      })}
+      {renderSuffixContainer(
+        combinedSuffix,
+        SUFFIX_CONTAINER_PADDING[effectiveSize],
+      )}
+    </div>,
+  );
+}
 
 Input.displayName = "Input";
 
 interface NumericInputProps
   extends
-    Omit<React.ComponentProps<"input">, "type" | "onChange" | "value" | "size">,
+    Omit<
+      React.ComponentProps<"input">,
+      "type" | "onChange" | "value" | "size" | "min" | "max" | "step"
+    >,
     VariantProps<typeof inputVariants> {
-  value?: number;
-  onChange?: (value: number) => void;
+  /** `null` renders an empty field (Base UI NumberField semantics). */
+  value?: number | null;
+  /** Matches Base UI NumberField: `null` when the field is cleared. */
+  onValueChange?: (value: number | null) => void;
   min?: number;
   max?: number;
-  step?: number;
+  step?: number | "any";
+  /** Step while Alt is held. @default 0.1 */
+  smallStep?: number;
+  /** Step while Shift is held. @default 10 */
+  largeStep?: number;
+  /** Allow typed text outside min/max without clamping (steppers still clamp). */
+  allowOutOfRange?: boolean;
+  /** Drag the input text horizontally to scrub the value. */
+  scrub?: boolean;
   showButtons?: boolean;
 }
 
 function NumericInput({
-  value = 0,
-  onChange,
+  value,
+  onValueChange,
   min,
   max,
   step = 1,
+  smallStep,
+  largeStep,
+  allowOutOfRange,
+  scrub = false,
   showButtons = true,
   className,
   disabled,
   size = "default",
   ...props
 }: NumericInputProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseFloat(e.target.value) || 0;
-
-    if (min !== undefined && newValue < min) return;
-
-    if (max !== undefined && newValue > max) return;
-    onChange?.(newValue);
+  const handleValueChange = (next: number | null) => {
+    onValueChange?.(next);
   };
 
-  const handleIncrement = () => {
-    const newValue = (value || 0) + step;
+  const inputClasses = cn(
+    inputVariants({ size }),
+    transitionClasses,
+    "min-w-0 flex-1",
+    showButtons &&
+      "rounded-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+    className,
+  );
 
-    if (max !== undefined && newValue > max) return;
-    onChange?.(newValue);
-  };
+  let scrubArea: React.ReactNode;
 
-  const handleDecrement = () => {
-    const newValue = (value || 0) - step;
-
-    if (min !== undefined && newValue < min) return;
-    onChange?.(newValue);
-  };
+  if (scrub) {
+    scrubArea = (
+      <NumberField.ScrubArea className="flex flex-1 items-center">
+        <NumberField.Input
+          data-slot="numeric-input"
+          className={inputClasses}
+          {...props}
+        />
+        <NumberField.ScrubAreaCursor className="cursor-ew-resize" />
+      </NumberField.ScrubArea>
+    );
+  } else {
+    scrubArea = (
+      <NumberField.Input
+        data-slot="numeric-input"
+        className={inputClasses}
+        {...props}
+      />
+    );
+  }
 
   return (
-    <Input
-      type="number"
-      value={value}
-      onChange={handleChange}
+    <NumberField.Root
+      value={value ?? null}
+      onValueChange={handleValueChange}
       min={min}
       max={max}
       step={step}
+      smallStep={smallStep}
+      largeStep={largeStep}
+      allowOutOfRange={allowOutOfRange}
       disabled={disabled}
-      size={size}
-      showIncrementButtons={showButtons}
-      onIncrement={showButtons ? handleIncrement : undefined}
-      onDecrement={showButtons ? handleDecrement : undefined}
-      className={className}
-      {...props}
-    />
+      className={cn("flex items-center", className)}
+    >
+      <NumberField.Group className="flex items-center">
+        {showButtons && (
+          <NumberField.Decrement
+            data-slot="numeric-input-decrement"
+            className="flex h-8 w-8 items-center justify-center rounded-l-lg border border-r-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <IconMinus className="h-3 w-3" />
+          </NumberField.Decrement>
+        )}
+        {scrubArea}
+        {showButtons && (
+          <NumberField.Increment
+            data-slot="numeric-input-increment"
+            className="flex h-8 w-8 items-center justify-center rounded-r-lg border border-l-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <IconPlus className="h-3 w-3" />
+          </NumberField.Increment>
+        )}
+      </NumberField.Group>
+    </NumberField.Root>
   );
 }
 
@@ -546,7 +760,7 @@ function CurrencyInput({
   ...props
 }: CurrencyInputProps) {
   const [internalValue, setInternalValue] = React.useState<number | null>(
-    value ?? null
+    value ?? null,
   );
 
   const effectiveValue = value ?? internalValue;
@@ -564,8 +778,11 @@ function CurrencyInput({
     }
   };
 
-  const displayValue =
-    effectiveValue == null || Number.isNaN(effectiveValue) ? "" : format(effectiveValue);
+  let displayValue = "";
+
+  if (!(effectiveValue == null || Number.isNaN(effectiveValue))) {
+    displayValue = format(effectiveValue);
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
@@ -616,7 +833,7 @@ function PercentageInput({
   ...props
 }: PercentageInputProps) {
   const [internalValue, setInternalValue] = React.useState<number | null>(
-    value ?? null
+    value ?? null,
   );
 
   const effectiveValue = value ?? internalValue;
@@ -627,8 +844,11 @@ function PercentageInput({
       maximumFractionDigits: fractionDigits,
     })}%`;
 
-  const displayValue =
-    effectiveValue == null || Number.isNaN(effectiveValue) ? "" : format(effectiveValue);
+  let displayValue = "";
+
+  if (!(effectiveValue == null || Number.isNaN(effectiveValue))) {
+    displayValue = format(effectiveValue);
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
@@ -681,7 +901,7 @@ function DecimalInput({
   ...props
 }: DecimalInputProps) {
   const [internalValue, setInternalValue] = React.useState<number | null>(
-    value ?? null
+    value ?? null,
   );
 
   const effectiveValue = value ?? internalValue;
@@ -693,8 +913,11 @@ function DecimalInput({
       useGrouping,
     });
 
-  const displayValue =
-    effectiveValue == null || Number.isNaN(effectiveValue) ? "" : format(effectiveValue);
+  let displayValue = "";
+
+  if (!(effectiveValue == null || Number.isNaN(effectiveValue))) {
+    displayValue = format(effectiveValue);
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
@@ -727,24 +950,6 @@ function DecimalInput({
   );
 }
 
-interface TextareaFixedProps extends React.ComponentProps<"textarea"> {
-  rows?: number;
-}
-
-function TextareaFixed({ className, rows = 3, ...props }: TextareaFixedProps) {
-  return (
-    <textarea
-      data-slot="textarea"
-      rows={rows}
-      className={cn(
-        "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 rounded-lg border bg-transparent px-2.5 py-2 text-base transition-colors focus-visible:ring-[3px] aria-invalid:ring-[3px] md:text-sm placeholder:text-muted-foreground flex w-full outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
 interface InputWithLabelProps extends Omit<
   React.ComponentProps<"input">,
   "size"
@@ -762,31 +967,33 @@ function InputWithLabel({
   className,
   id,
   size,
+  disabled,
+  required,
   ...props
 }: InputWithLabelProps) {
   const generatedId = React.useId();
   const inputId = id || generatedId;
 
   return (
-    <div className="space-y-1.5">
-      <label
-        htmlFor={inputId}
-        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-      >
-        {label}
-      </label>
+    <Field
+      id={inputId}
+      disabled={disabled}
+      required={required}
+      invalid={!!error}
+    >
+      <FieldLabel htmlFor={inputId}>{label}</FieldLabel>
       <Input
         id={inputId}
-        className={cn(error && "border-destructive", className)}
-        aria-invalid={!!error}
+        className={className}
         size={size}
+        disabled={disabled}
         {...props}
       />
       {description && !error && (
-        <p className="text-xs text-muted-foreground">{description}</p>
+        <FieldDescription>{description}</FieldDescription>
       )}
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </div>
+      {error && <FieldError>{error}</FieldError>}
+    </Field>
   );
 }
 
@@ -809,17 +1016,32 @@ function InputWithButton({
   buttonPosition = "right",
   buttonVariant = "default",
   className,
-  size,
+  size = "default",
   ...props
 }: InputWithButtonProps) {
+  // Button heights are one step above input heights (h-9 vs h-8 …), so step
+  // down to keep the button the same height as the joined input.
+  const sizeToButton: Record<
+    "xs" | "sm" | "default" | "lg",
+    VariantProps<typeof buttonVariants>["size"]
+  > = {
+    xs: "xs",
+    sm: "xs",
+    default: "sm",
+    lg: "default",
+  };
+
+  const buttonSize = sizeToButton[size ?? "default"];
+
   return (
-    <div className="flex">
+    <div className="flex items-center">
       {buttonPosition === "left" && (
         <Button
           type="button"
           variant={buttonVariant}
+          size={buttonSize}
           onClick={onButtonClick}
-          className="rounded-r-none border-r-0"
+          className="rounded-r-none border-r-0 transition-colors"
         >
           {buttonIcon}
           {buttonText}
@@ -830,7 +1052,7 @@ function InputWithButton({
           buttonPosition === "left" && "rounded-l-none",
           buttonPosition === "right" && "rounded-r-none",
           "flex-1",
-          className
+          className,
         )}
         size={size}
         {...props}
@@ -839,8 +1061,9 @@ function InputWithButton({
         <Button
           type="button"
           variant={buttonVariant}
+          size={buttonSize}
           onClick={onButtonClick}
-          className="rounded-l-none border-l-0"
+          className="rounded-l-none border-l-0 transition-colors"
         >
           {buttonIcon}
           {buttonText}
@@ -924,107 +1147,44 @@ function InputWithDropdown({
   size,
   ...props
 }: InputWithDropdownProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
+  let selectRounding: string;
 
-  const [selectedOption, setSelectedOption] = React.useState(
-    options.find((o) => o.value === dropdownValue) || options[0]
+  if (dropdownPosition === "left") {
+    selectRounding = "rounded-l-lg rounded-r-none";
+  } else {
+    selectRounding = "rounded-l-none rounded-r-lg";
+  }
+
+  const select = (
+    <KiraSelect
+      options={options}
+      defaultValue={dropdownValue ?? options[0]?.value}
+      onChange={(next) => onOptionSelect?.(String(next))}
+      variant="ghost"
+      className={cn(
+        // Match the joined input: full input height (default size = h-8), same
+        // surface as the input in both themes, seam edge squared.
+        "border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50",
+        selectRounding,
+      )}
+      aria-label="Select option"
+    />
   );
 
-  const containerRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (!isOpen) return;
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
-
-  const handleSelect = (option: { value: string; label: string }) => {
-    setSelectedOption(option);
-    onOptionSelect?.(option.value);
-    setIsOpen(false);
-  };
-
   return (
-    <div ref={containerRef} className="relative flex">
-      {dropdownPosition === "left" && (
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className="flex h-8 items-center gap-1 rounded-l-lg border border-r-0 border-input bg-muted px-3 text-sm hover:bg-muted/80"
-          >
-            {selectedOption?.label}
-            <IconChevronDown className="h-3 w-3" />
-          </button>
-          {isOpen && (
-            <div className="absolute top-full left-0 z-50 mt-1 min-w-24 rounded-lg border bg-popover p-1 shadow-md">
-              {options.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => handleSelect(option)}
-                  className={cn(
-                    "w-full rounded-md px-2 py-1 text-left text-sm hover:bg-muted",
-                    selectedOption?.value === option.value && "bg-muted"
-                  )}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+    <div className="flex">
+      {dropdownPosition === "left" && select}
       <Input
         className={cn(
           "flex-1",
           dropdownPosition === "left" && "rounded-l-none",
           dropdownPosition === "right" && "rounded-r-none",
-          className
+          className,
         )}
         size={size}
         {...props}
       />
-      {dropdownPosition === "right" && (
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className="flex h-8 items-center gap-1 rounded-r-lg border border-l-0 border-input bg-muted px-3 text-sm hover:bg-muted/80"
-          >
-            {selectedOption?.label}
-            <IconChevronDown className="h-3 w-3" />
-          </button>
-          {isOpen && (
-            <div className="absolute top-full right-0 z-50 mt-1 min-w-24 rounded-lg border bg-popover p-1 shadow-md">
-              {options.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => handleSelect(option)}
-                  className={cn(
-                    "w-full rounded-md px-2 py-1 text-left text-sm hover:bg-muted",
-                    selectedOption?.value === option.value && "bg-muted"
-                  )}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {dropdownPosition === "right" && select}
     </div>
   );
 }
@@ -1045,18 +1205,22 @@ function InputCluster({ children, className }: InputClusterProps) {
         const isFirst = index === 0;
         const isLast = index === childArray.length - 1;
 
-        const childClassName = (child.props as Record<string, unknown>)
-          .className as string | undefined;
+        // SAFETY: children come from InputGroup's own composition; className is the
+        // only custom prop this composite reads from them.
+        const childProps = child.props as { className?: string };
+        const childClassName = childProps.className;
 
         return React.cloneElement(
+          // SAFETY: child is a React element cloned with an additive className; the
+          // group renders only elements that accept className.
           child as React.ReactElement<{ className?: string }>,
           {
             className: cn(
               childClassName,
               !isFirst && "rounded-l-none border-l-0",
-              !isLast && "rounded-r-none"
+              !isLast && "rounded-r-none",
             ),
-          }
+          },
         );
       })}
     </div>
@@ -1092,7 +1256,11 @@ function SearchInput({
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const effectiveValue = value === undefined ? internalValue : value;
+  let effectiveValue = internalValue;
+
+  if (value !== undefined) {
+    effectiveValue = value;
+  }
 
   const effectiveSize = size || "default";
 
@@ -1153,6 +1321,16 @@ function SearchInput({
     };
   }, []);
 
+  let suffix: React.ReactNode = undefined;
+
+  if (isLoading) {
+    suffix = (
+      <IconLoader2
+        className={cn(iconSize, "animate-spin text-muted-foreground")}
+      />
+    );
+  }
+
   return (
     <div className="relative flex items-center">
       <div className="absolute left-2.5 flex items-center pointer-events-none text-muted-foreground z-10">
@@ -1177,7 +1355,7 @@ function SearchInput({
           "pl-8",
 
           "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
-          className
+          className,
         )}
         size={size}
         value={effectiveValue}
@@ -1186,27 +1364,15 @@ function SearchInput({
         placeholder={placeholder}
         showClear={showClear}
         onClear={handleClear}
-        suffix={
-          isLoading ? (
-            <IconLoader2
-              className={cn(iconSize, "animate-spin text-muted-foreground")}
-            />
-          ) : undefined
-        }
+        suffix={suffix}
         {...props}
       />
     </div>
   );
 }
 
-type OTPInputType = "numeric" | "alphanumeric" | "alphabetic";
-
-interface OTPInputRef {
-  focus: () => void;
-  clear: () => void;
-  getValue: () => string;
-  setValue: (value: string) => void;
-}
+/** Base UI OTPField validation types; kira's `alphabetic` maps to `alpha`. */
+type OTPInputType = "numeric" | "alphanumeric" | "alpha";
 
 const otpInputVariants = cva(
   "flex items-center justify-center border bg-background text-center font-mono font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
@@ -1227,7 +1393,7 @@ const otpInputVariants = cva(
       size: "default",
       variant: "default",
     },
-  }
+  },
 );
 
 const otpContainerVariants = cva("flex items-center", {
@@ -1245,7 +1411,10 @@ const otpContainerVariants = cva("flex items-center", {
 
 interface OTPInputProps
   extends
-    Omit<React.HTMLAttributes<HTMLDivElement>, "onChange">,
+    Omit<
+      React.HTMLAttributes<HTMLDivElement>,
+      "onChange" | "defaultValue" | "defaultChecked" | "color" | "style"
+    >,
     VariantProps<typeof otpInputVariants> {
   length?: 4 | 5 | 6 | 7 | 8;
 
@@ -1253,6 +1422,7 @@ interface OTPInputProps
 
   mask?: boolean;
 
+  /** Submit the owning form when the OTP becomes complete. */
   autoSubmit?: boolean;
 
   value?: string;
@@ -1267,6 +1437,7 @@ interface OTPInputProps
 
   gap?: "sm" | "default" | "lg";
 
+  /** Render a separator after the Nth slot (1-based). */
   separatorAfter?: number;
 
   autoFocus?: boolean;
@@ -1278,12 +1449,14 @@ interface OTPInputProps
   "aria-describedby"?: string;
 }
 
-const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
+const OTPInput = React.forwardRef<HTMLDivElement, OTPInputProps>(
+  // oxlint-disable-next-line complexity -- count is prop-destructure defaults (idiomatic React), not branching
   (
     {
       length = 6,
       type = "numeric",
       mask = false,
+      autoSubmit = false,
       value = "",
       onChange,
       onComplete,
@@ -1293,301 +1466,82 @@ const OTPInput = React.forwardRef<OTPInputRef, OTPInputProps>(
       variant = "default",
       gap = "default",
       separatorAfter,
-      autoFocus = false,
+      autoFocus,
       placeholder = "○",
       className,
       "aria-label": ariaLabel = "One-time password",
       "aria-describedby": ariaDescribedBy,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const baseId = React.useId();
-
-    const [values, setValues] = React.useState<string[]>(() =>
-      value
-        .split("")
-        .slice(0, length)
-        .concat(Array(length).fill(""))
-        .slice(0, length)
-    );
-
-    const [prevValue, setPrevValue] = React.useState(value);
-    const [focusedIndex, setFocusedIndex] = React.useState<number | null>(null);
-    const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
-
-    if (value !== prevValue) {
-      setPrevValue(value);
-
-      const newValues = value
-        .split("")
-        .slice(0, length)
-        .concat(Array(length).fill(""))
-        .slice(0, length);
-
-      setValues(newValues);
-    }
-
-    React.useEffect(() => {
-      if (autoFocus && inputRefs.current[0]) {
-        inputRefs.current[0].focus();
-      }
-    }, [autoFocus]);
-
-    React.useImperativeHandle(ref, () => ({
-      focus: () => inputRefs.current[0]?.focus(),
-      clear: () => {
-        const emptyValues = Array(length).fill("");
-        setValues(emptyValues);
-        onChange?.("");
-        inputRefs.current[0]?.focus();
-      },
-      getValue: () => values.join(""),
-      setValue: (newValue: string) => {
-        const newValues = newValue
-          .split("")
-          .slice(0, length)
-          .concat(Array(length).fill(""))
-          .slice(0, length);
-
-        setValues(newValues);
-        onChange?.(newValue.slice(0, length));
-      },
-    }));
-
-    const isValidChar = React.useCallback(
-      (char: string): boolean => {
-        switch (type) {
-          case "numeric":
-            return /^\d$/.test(char);
-          case "alphabetic":
-            return /^[a-zA-Z]$/.test(char);
-          case "alphanumeric":
-            return /^[a-zA-Z0-9]$/.test(char);
-          default:
-            return false;
-        }
-      },
-      [type]
-    );
-
-    const handleOTPChange = React.useCallback(
-      (index: number, inputValue: string) => {
-        const char = inputValue.slice(-1).toUpperCase();
-
-        if (!char) {
-          const newValues = [...values];
-          newValues[index] = "";
-          setValues(newValues);
-          onChange?.(newValues.join(""));
-
-          return;
-        }
-
-        if (!isValidChar(char)) {
-          // Rejected char: run the shake keyframe once. The class removes
-          // itself on animation end; reduced-motion neutralizes it globally.
-          const input = inputRefs.current[index];
-
-          if (input) {
-            input.classList.remove("animate-shake");
-            // Force reflow so re-adding the class restarts the animation.
-            void input.offsetWidth;
-            input.classList.add("animate-shake");
-
-            const clear = () => {
-              input.classList.remove("animate-shake");
-              input.removeEventListener("animationend", clear);
-            };
-
-            input.addEventListener("animationend", clear);
-          }
-
-          return;
-        }
-
-        const newValues = [...values];
-        newValues[index] = char;
-        setValues(newValues);
-
-        const newValue = newValues.join("");
-        onChange?.(newValue);
-
-        if (index < length - 1) {
-          inputRefs.current[index + 1]?.focus();
-        }
-
-        if (newValues.every((v) => v !== "")) {
-          onComplete?.(newValue);
-        }
-      },
-      [values, length, isValidChar, onChange, onComplete]
-    );
-
-    const handlePaste = React.useCallback(
-      (e: React.ClipboardEvent) => {
-        e.preventDefault();
-        const pastedData = e.clipboardData.getData("text").toUpperCase();
-        const chars = pastedData.split("").filter(isValidChar).slice(0, length);
-
-        if (chars.length === 0) return;
-
-        const newValues = [...Array(length).fill("")];
-        chars.forEach((char, i) => {
-          newValues[i] = char;
-        });
-
-        setValues(newValues);
-        onChange?.(chars.join(""));
-
-        const nextEmptyIndex = newValues.findIndex((v) => v === "");
-        const focusIndex = nextEmptyIndex === -1 ? length - 1 : nextEmptyIndex;
-        inputRefs.current[focusIndex]?.focus();
-
-        if (chars.length === length) {
-          onComplete?.(chars.join(""));
-        }
-      },
-      [length, isValidChar, onChange, onComplete]
-    );
-
-    const handleKeyDown = React.useCallback(
-      (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-        switch (e.key) {
-          case "Backspace":
-            e.preventDefault();
-
-            if (values[index]) {
-              const newValues = [...values];
-              newValues[index] = "";
-              setValues(newValues);
-              onChange?.(newValues.join(""));
-            } else if (index > 0) {
-              const newValues = [...values];
-              newValues[index - 1] = "";
-              setValues(newValues);
-              onChange?.(newValues.join(""));
-              inputRefs.current[index - 1]?.focus();
-            }
-
-            break;
-
-          case "Delete":
-            e.preventDefault();
-
-            if (values[index]) {
-              const newValues = [...values];
-              newValues[index] = "";
-              setValues(newValues);
-              onChange?.(newValues.join(""));
-            }
-
-            break;
-
-          case "ArrowLeft":
-            e.preventDefault();
-
-            if (index > 0) {
-              inputRefs.current[index - 1]?.focus();
-            }
-
-            break;
-
-          case "ArrowRight":
-            e.preventDefault();
-
-            if (index < length - 1) {
-              inputRefs.current[index + 1]?.focus();
-            }
-
-            break;
-
-          case "Home":
-            e.preventDefault();
-            inputRefs.current[0]?.focus();
-            break;
-
-          case "End":
-            e.preventDefault();
-            inputRefs.current[length - 1]?.focus();
-            break;
-        }
-      },
-      [values, length, onChange]
-    );
-
-    const handleFocus = React.useCallback((index: number) => {
-      setFocusedIndex(index);
-
-      inputRefs.current[index]?.select();
-    }, []);
-
-    const handleBlur = React.useCallback(() => {
-      setFocusedIndex(null);
-    }, []);
-
-    const renderSeparator = (index: number) => {
-      if (separatorAfter !== undefined && index === separatorAfter) {
-        return (
-          <span
-            className="text-muted-foreground font-medium text-lg select-none"
-            aria-hidden="true"
-          >
-            -
-          </span>
-        );
-      }
-
-      return null;
-    };
-
     return (
-      <div
-        role="group"
-        aria-label={ariaLabel}
-        aria-describedby={ariaDescribedBy}
+      <OTPField.Root
         data-slot="otp-input"
-        data-invalid={invalid || undefined}
+        ref={ref}
+        length={length}
+        value={value}
+        onValueChange={(nextValue) => onChange?.(nextValue)}
+        onValueComplete={onComplete}
+        validationType={type}
+        mask={mask}
+        autoSubmit={autoSubmit}
+        disabled={disabled}
+        aria-label={ariaLabel}
+        aria-invalid={invalid || undefined}
+        aria-describedby={ariaDescribedBy}
         className={cn(otpContainerVariants({ gap }), className)}
         {...props}
       >
-        {Array.from({ length }).map((_, index) => (
-          <React.Fragment key={index}>
-            <input
-              ref={(el) => {
-                inputRefs.current[index] = el;
-              }}
-              id={`${baseId}-${index}`}
-              type={mask ? "password" : "text"}
-              inputMode={type === "numeric" ? "numeric" : "text"}
-              autoComplete="one-time-code"
-              maxLength={1}
-              value={values[index]}
-              placeholder={focusedIndex === index ? "" : placeholder}
-              disabled={disabled}
-              aria-label={`Digit ${index + 1} of ${length}`}
-              aria-invalid={invalid || undefined}
-              className={cn(
-                otpInputVariants({ size, variant }),
-                invalid && "border-destructive focus:ring-destructive",
-                focusedIndex === index && "ring-2 ring-ring ring-offset-2",
-                values[index] && "border-primary/50"
-              )}
-              onChange={(e) => handleOTPChange(index, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
-              onFocus={() => handleFocus(index)}
-              onBlur={handleBlur}
-              onPaste={handlePaste}
-            />
-            {renderSeparator(index)}
-          </React.Fragment>
-        ))}
-      </div>
+        {Array.from({ length }).map((_, index) =>
+          renderOtpSlot(index, {
+            length,
+            autoFocus,
+            size,
+            variant,
+            invalid,
+            placeholder,
+            separatorAfter,
+          }),
+        )}
+      </OTPField.Root>
     );
-  }
+  },
 );
 
 OTPInput.displayName = "OTPInput";
+
+interface OtpSlotOptions {
+  length: number;
+  autoFocus?: boolean;
+  size?: VariantProps<typeof otpInputVariants>["size"];
+  variant?: VariantProps<typeof otpInputVariants>["variant"];
+  invalid?: boolean;
+  placeholder?: string;
+  separatorAfter?: number;
+}
+
+/** One OTP slot plus its optional separator (after the Nth digit). */
+function renderOtpSlot(index: number, o: OtpSlotOptions) {
+  const showSeparator =
+    o.separatorAfter !== undefined &&
+    index === o.separatorAfter - 1 &&
+    index < o.length - 1;
+
+  return (
+    <React.Fragment key={index}>
+      <OTPField.Input
+        {...(o.autoFocus && index === 0 && { autoFocus: true })}
+        className={cn(
+          otpInputVariants({ size: o.size, variant: o.variant }),
+          o.invalid && "border-destructive focus:ring-destructive",
+        )}
+        placeholder={o.placeholder}
+      />
+      {showSeparator && <OTPField.Separator />}
+    </React.Fragment>
+  );
+}
 
 import {
   IconStar,
@@ -1634,7 +1588,7 @@ const ratingItemVariants = cva(
       disabled: false,
       readOnly: false,
     },
-  }
+  },
 );
 
 interface RatingProps
@@ -1674,7 +1628,24 @@ interface RatingProps
   "aria-describedby"?: string;
 }
 
+/** One decimal for half-star ratings, none for whole stars. */
+function ratingDigits(allowHalf?: boolean) {
+  if (allowHalf) return 1;
+
+  return 0;
+}
+
+/** Roving tab stop: first enabled star is the only tabbable one. */
+function ratingTabIndex(disabled?: boolean, readOnly?: boolean, index = 0) {
+  if (disabled || readOnly) return -1;
+
+  if (index === 0) return 0;
+
+  return -1;
+}
+
 const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
+  // oxlint-disable-next-line complexity -- count is prop-destructure defaults (idiomatic React), not branching
   (
     {
       value: controlledValue,
@@ -1697,7 +1668,7 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
       "aria-describedby": ariaDescribedBy,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [internalValue, setInternalValue] = React.useState(defaultValue);
     const [hoverValue, setHoverValue] = React.useState<number | null>(null);
@@ -1707,139 +1678,154 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
     const displayValue = hoverValue ?? currentValue;
 
     const handleRatingChange = (newValue: number) => {
-         if (disabled || readOnly) return;
+      if (disabled || readOnly) return;
 
-         const finalValue =
-           allowClear && newValue === currentValue ? 0 : newValue;
+      let finalValue = newValue;
 
-         if (controlledValue === undefined) {
-           setInternalValue(finalValue);
-         }
+      if (allowClear && newValue === currentValue) {
+        finalValue = 0;
+      }
 
-         onChange?.(finalValue);
-       };
+      if (controlledValue === undefined) {
+        setInternalValue(finalValue);
+      }
+
+      onChange?.(finalValue);
+    };
 
     const handleMouseMove = (
-          index: number,
-          e: React.MouseEvent<HTMLButtonElement>,
-        ) => {
-          if (disabled || readOnly) return;
-          const rect = e.currentTarget.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const isLeftHalf = x < rect.width / 2;
+      index: number,
+      e: React.MouseEvent<HTMLButtonElement>,
+    ) => {
+      if (disabled || readOnly) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const isLeftHalf = x < rect.width / 2;
 
-          if (allowHalf && isLeftHalf) {
-            setHoverValue(index + 0.5);
-          } else {
-            setHoverValue(index + 1);
-          }
-        };
+      if (allowHalf && isLeftHalf) {
+        setHoverValue(index + 0.5);
+      } else {
+        setHoverValue(index + 1);
+      }
+    };
 
     const handleClick = (
-          index: number,
-          e: React.MouseEvent<HTMLButtonElement>,
-        ) => {
-          if (disabled || readOnly) return;
-          const rect = e.currentTarget.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const isLeftHalf = x < rect.width / 2;
+      index: number,
+      e: React.MouseEvent<HTMLButtonElement>,
+    ) => {
+      if (disabled || readOnly) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const isLeftHalf = x < rect.width / 2;
 
-          if (allowHalf && isLeftHalf) {
-            handleRatingChange(index + 0.5);
-          } else {
-            handleRatingChange(index + 1);
-          }
-        };
+      if (allowHalf && isLeftHalf) {
+        handleRatingChange(index + 0.5);
+      } else {
+        handleRatingChange(index + 1);
+      }
+    };
 
+    // oxlint-disable-next-line complexity -- count is prop-destructure defaults (idiomatic React), not branching
     const handleKeyDown = (e: React.KeyboardEvent) => {
-          if (disabled || readOnly) return;
-          const step = allowHalf ? 0.5 : 1;
-          let newValue = currentValue;
+      if (disabled || readOnly) return;
+      let step = 1;
 
-          switch (e.key) {
-            case "ArrowRight":
-            case "ArrowUp":
-              e.preventDefault();
-              newValue = Math.min(max, currentValue + step);
-              break;
-            case "ArrowLeft":
-            case "ArrowDown":
-              e.preventDefault();
-              newValue = Math.max(0, currentValue - step);
-              break;
-            case "Home":
-              e.preventDefault();
-              newValue = 0;
-              break;
-            case "End":
-              e.preventDefault();
-              newValue = max;
-              break;
-            default:
-              return;
-          }
+      if (allowHalf) {
+        step = 0.5;
+      }
 
-          if (controlledValue === undefined) {
-            setInternalValue(newValue);
-          }
+      let newValue = currentValue;
 
-          onChange?.(newValue);
-        };
+      switch (e.key) {
+        case "ArrowRight":
+        case "ArrowUp":
+          e.preventDefault();
+          newValue = Math.min(max, currentValue + step);
+          break;
+        case "ArrowLeft":
+        case "ArrowDown":
+          e.preventDefault();
+          newValue = Math.max(0, currentValue - step);
+          break;
+        case "Home":
+          e.preventDefault();
+          newValue = 0;
+          break;
+        case "End":
+          e.preventDefault();
+          newValue = max;
+          break;
+        default:
+          return;
+      }
+
+      if (controlledValue === undefined) {
+        setInternalValue(newValue);
+      }
+
+      onChange?.(newValue);
+    };
 
     const renderStar = (index: number) => {
-          const fillAmount = displayValue - index;
+      const fillAmount = displayValue - index;
 
-          if (fillAmount >= 1) {
-            return filledIcon || <IconStarFilled />;
-          } else if (fillAmount >= 0.5 && allowHalf) {
-            return halfIcon || <IconStarHalfFilled />;
-          } else {
-            return emptyIcon || <IconStar />;
-          }
-        };
+      if (fillAmount >= 1) {
+        return filledIcon || <IconStarFilled />;
+      } else if (fillAmount >= 0.5 && allowHalf) {
+        return halfIcon || <IconStarHalfFilled />;
+      } else {
+        return emptyIcon || <IconStar />;
+      }
+    };
 
     const getTooltip = (value: number) => {
-         if (tooltipFormatter) return tooltipFormatter(value);
+      if (tooltipFormatter) return tooltipFormatter(value);
 
-         return `${value} of ${max}`;
-       };
+      return `${value} of ${max}`;
+    };
 
     const stars = Array.from({ length: max }, (_, index) => {
-          const starValue = index + 1;
-          const isFilled = displayValue >= starValue;
+      const starValue = index + 1;
+      const isFilled = displayValue >= starValue;
 
-          const isHalfFilled =
-            allowHalf && displayValue >= index + 0.5 && displayValue < starValue;
+      const isHalfFilled =
+        allowHalf && displayValue >= index + 0.5 && displayValue < starValue;
 
-          return (
-            <button
-              key={index}
-              type="button"
-              role="radio"
-              aria-checked={currentValue >= starValue}
-              aria-label={`Rate ${starValue} out of ${max}`}
-              tabIndex={disabled || readOnly ? -1 : index === 0 ? 0 : -1}
-              disabled={disabled}
-              title={getTooltip(starValue)}
-              className={cn(
-                ratingItemVariants({
-                  color: isFilled || isHalfFilled ? color : undefined,
-                  disabled,
-                  readOnly,
-                }),
-                !isFilled && !isHalfFilled && "text-muted-foreground/40",
-                !disabled && !readOnly && "hover:scale-110"
-              )}
-              onClick={(e) => handleClick(index, e)}
-              onMouseMove={(e) => handleMouseMove(index, e)}
-              onMouseLeave={() => setHoverValue(null)}
-              onFocus={() => !readOnly && setHoverValue(index + 1)}
-              onBlur={() => setHoverValue(null)}
-            >
-              {renderStar(index)}
-            </button>
-          );
-        });
+      let starColor: typeof color | undefined;
+
+      if (isFilled || isHalfFilled) {
+        starColor = color;
+      }
+
+      return (
+        <button
+          key={index}
+          type="button"
+          role="radio"
+          aria-checked={currentValue >= starValue}
+          aria-label={`Rate ${starValue} out of ${max}`}
+          tabIndex={ratingTabIndex(disabled, readOnly, index)}
+          disabled={disabled}
+          title={getTooltip(starValue)}
+          className={cn(
+            ratingItemVariants({
+              color: starColor,
+              disabled,
+              readOnly,
+            }),
+            !isFilled && !isHalfFilled && "text-muted-foreground/40",
+            !disabled && !readOnly && "hover:scale-110",
+          )}
+          onClick={(e) => handleClick(index, e)}
+          onMouseMove={(e) => handleMouseMove(index, e)}
+          onMouseLeave={() => setHoverValue(null)}
+          onFocus={() => !readOnly && setHoverValue(index + 1)}
+          onBlur={() => setHoverValue(null)}
+        >
+          {renderStar(index)}
+        </button>
+      );
+    });
 
     return (
       <div
@@ -1862,12 +1848,12 @@ const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
             className="ml-2 text-sm font-medium tabular-nums text-muted-foreground"
             aria-hidden="true"
           >
-            {displayValue.toFixed(allowHalf ? 1 : 0)}
+            {displayValue.toFixed(ratingDigits(allowHalf))}
           </span>
         )}
       </div>
     );
-  }
+  },
 );
 
 Rating.displayName = "Rating";
@@ -1884,7 +1870,7 @@ interface RatingDisplayProps extends Omit<
 const RatingDisplay = React.forwardRef<HTMLDivElement, RatingDisplayProps>(
   (
     { value = 0, showFraction = true, reviewCount, className, ...props },
-    ref
+    ref,
   ) => {
     return (
       <div
@@ -1905,7 +1891,7 @@ const RatingDisplay = React.forwardRef<HTMLDivElement, RatingDisplayProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 RatingDisplay.displayName = "RatingDisplay";
@@ -1924,16 +1910,36 @@ type PasswordStrength = {
 function scorePassword(value: string): PasswordStrength {
   const checks = [
     { label: "At least 8 characters", met: value.length >= 8 },
-    { label: "Upper & lowercase letters", met: /[a-z]/.test(value) && /[A-Z]/.test(value) },
+    {
+      label: "Upper & lowercase letters",
+      met: /[a-z]/.test(value) && /[A-Z]/.test(value),
+    },
     { label: "A number", met: /\d/.test(value) },
     { label: "A symbol", met: /[^A-Za-z0-9]/.test(value) },
   ];
 
   const met = checks.filter((c) => c.met).length;
   const labels = ["Very weak", "Weak", "Fair", "Good", "Strong"];
-  const score = (value ? met : 0) as PasswordStrength["score"];
+  // SAFETY: met is at most checks.length (5) and the labels array is indexed by
+  // the same bounds; 0 covers the empty-value branch.
+  let rawScore = 0;
+
+  if (value) {
+    rawScore = met;
+  }
+  // SAFETY: met is at most checks.length (5) and the labels array is indexed by
+  // the same bounds; 0 covers the empty-value branch.
+
+  const score = rawScore as PasswordStrength["score"];
 
   return { score, label: labels[score], checks };
+}
+
+/** Met requirements render in success color; unmet stay muted. */
+function checkColorClass(met: boolean) {
+  if (met) return "text-success";
+
+  return "text-muted-foreground";
 }
 
 const strengthColors = [
@@ -1944,31 +1950,67 @@ const strengthColors = [
   "bg-success",
 ];
 
-interface PasswordInputProps
-  extends Omit<InputProps, "type" | "suffix" | "showCopy"> {
+interface PasswordInputProps extends Omit<
+  InputProps,
+  "type" | "suffix" | "showCopy"
+> {
   /** Show a live strength meter + requirement checklist below the field. */
   showStrength?: boolean;
 }
 
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ showStrength = false, value, onChange, className, size, ...props }, ref) => {
+  // oxlint-disable-next-line complexity -- count is prop-destructure defaults (idiomatic React), not branching
+  (
+    {
+      showStrength = false,
+      value,
+      onChange,
+      autoComplete = "new-password",
+      className,
+      size,
+      ...props
+    },
+    ref,
+  ) => {
     const [visible, setVisible] = React.useState(false);
     const describedById = React.useId();
+    const reducedMotion = useReducedMotion();
 
-    const strength = showStrength
-         ? scorePassword(String(value ?? ""))
-         : null;
+    let strength: PasswordStrength | null = null;
+
+    if (showStrength) {
+      strength = scorePassword(String(value ?? ""));
+    }
+
+    let inputType = "password";
+
+    if (visible) {
+      inputType = "text";
+    }
+
+    let toggleLabel = "Show password";
+
+    if (visible) {
+      toggleLabel = "Hide password";
+    }
+
+    let describedBy: string | undefined = undefined;
+
+    if (showStrength) {
+      describedBy = describedById;
+    }
 
     return (
       <div className="w-full">
         <Input
           ref={ref}
-          type={visible ? "text" : "password"}
+          type={inputType}
           value={value}
           onChange={onChange}
+          autoComplete={autoComplete}
           size={size}
           className={className}
-          aria-describedby={showStrength ? describedById : undefined}
+          aria-describedby={describedBy}
           suffix={
             <button
               type="button"
@@ -1976,52 +2018,48 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => setVisible((v) => !v)}
               className="pointer-events-auto flex size-6 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
-              aria-label={visible ? "Hide password" : "Show password"}
+              aria-label={toggleLabel}
               aria-pressed={visible}
             >
-              {visible ? (
-                <IconEyeOff className="h-4 w-4" />
-              ) : (
-                <IconEye className="h-4 w-4" />
-              )}
+              {visible && <IconEyeOff className="h-4 w-4" />}
+              {!visible && <IconEye className="h-4 w-4" />}
             </button>
           }
           {...props}
         />
         {strength && (
           <div id={describedById} className="mt-2 space-y-1.5">
-            <div className="flex items-center gap-2">
-              <div className="flex h-1.5 flex-1 gap-1">
-                {[0, 1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "h-full flex-1 rounded-full transition-colors",
-                      i < strength.score
-                        ? strengthColors[strength.score]
-                        : "bg-muted",
-                    )}
-                  />
-                ))}
-              </div>
+            <Meter.Root
+              value={strength.score * 25}
+              min={0}
+              max={100}
+              aria-valuetext={`${strength.label} (${strength.score} of 4)`}
+              className="flex items-center gap-2"
+            >
+              <Meter.Track className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                <Meter.Indicator
+                  className={cn(
+                    strengthColors[strength.score],
+                    "h-full rounded-full",
+                    !reducedMotion && "transition-all duration-300",
+                  )}
+                />
+              </Meter.Track>
               <span className="w-16 text-right text-xs font-medium tabular-nums text-muted-foreground">
                 {strength.label}
               </span>
-            </div>
+            </Meter.Root>
             <ul className="space-y-0.5">
               {strength.checks.map((c) => (
                 <li
                   key={c.label}
                   className={cn(
                     "flex items-center gap-1.5 text-xs",
-                    c.met ? "text-success" : "text-muted-foreground",
+                    checkColorClass(c.met),
                   )}
                 >
-                  {c.met ? (
-                    <IconCheck className="h-3 w-3" />
-                  ) : (
-                    <IconX className="h-3 w-3 opacity-50" />
-                  )}
+                  {c.met && <IconCheck className="h-3 w-3" />}
+                  {!c.met && <IconX className="h-3 w-3 opacity-50" />}
                   {c.label}
                 </li>
               ))}
@@ -2036,14 +2074,13 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
 PasswordInput.displayName = "PasswordInput";
 
 // =============================================================================
-// Tag / chips input
+// Tag / chips input — Base UI Combobox multiple + Chips
 // =============================================================================
 
-interface TagInputProps
-  extends Omit<
-    React.ComponentProps<"input">,
-    "value" | "onChange" | "size"
-  > {
+interface TagInputProps extends Omit<
+  React.ComponentProps<"input">,
+  "value" | "onChange" | "size" | "list"
+> {
   value?: string[];
   defaultValue?: string[];
   onChange?: (tags: string[]) => void;
@@ -2071,83 +2108,84 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
     },
     ref,
   ) => {
-    const isControlled = value !== undefined;
     const [internal, setInternal] = React.useState<string[]>(defaultValue);
-    const tags = isControlled ? value : internal;
+    const tags = value ?? internal;
     const [draft, setDraft] = React.useState("");
 
-    const commit = (tags: string[]) => {
-      if (!isControlled) setInternal(tags);
-      onChange?.(tags);
+    const commit = (next: string[]) => {
+      setInternal(next);
+      onChange?.(next);
     };
 
-    const addTag = (raw: string) => {
-      const tag = raw.trim();
+    const addDraft = () => {
+      const tag = draft.trim();
 
       if (!tag) return;
 
       if (maxTags !== undefined && tags.length >= maxTags) return;
 
       if (!allowDuplicates && tags.includes(tag)) return;
+
       commit([...tags, tag]);
       setDraft("");
     };
 
-    const removeTag = (index: number) => commit(tags.filter((_, i) => i !== index));
+    let tagPlaceholder = "";
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (separators.includes(e.key)) {
-        e.preventDefault();
-        addTag(draft);
-      } else if (e.key === "Backspace" && !draft && tags.length > 0) {
-        removeTag(tags.length - 1);
-      }
-    };
+    if (tags.length === 0) {
+      tagPlaceholder = placeholder ?? "";
+    }
 
     return (
-      <div
-        data-slot="tag-input"
-        className={cn(
-          inputVariants({ size }),
-          "flex h-auto min-h-8 flex-wrap items-center gap-1.5 py-1",
-          disabled && "pointer-events-none opacity-50",
-          className,
-        )}
-        onClick={(e) =>
-          (e.currentTarget.querySelector("input") as HTMLInputElement)?.focus()
-        }
+      <Combobox.Root
+        multiple
+        value={tags}
+        onValueChange={(next) => commit([...next])}
+        inputValue={draft}
+        onInputValueChange={(next) => setDraft(next)}
+        disabled={disabled}
+        open={false}
       >
-        {tags.map((tag, i) => (
-          <span
-            key={`${tag}-${i}`}
-            className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium"
-          >
-            {tag}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                removeTag(i);
-              }}
-              className="flex size-4 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
-              aria-label={`Remove ${tag}`}
+        <Combobox.Chips
+          data-slot="tag-input"
+          className={cn(
+            inputVariants({ size }),
+            "flex h-auto min-h-8 flex-wrap items-center gap-1.5 py-1",
+            disabled && "pointer-events-none opacity-50",
+            className,
+          )}
+        >
+          {tags.map((tag, i) => (
+            <Combobox.Chip
+              key={`${tag}-${i}`}
+              className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium"
             >
-              <IconX className="h-3 w-3" />
-            </button>
-          </span>
-        ))}
-        <input
-          ref={ref}
-          value={draft}
-          disabled={disabled}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onBlur={() => addTag(draft)}
-          placeholder={tags.length === 0 ? placeholder : ""}
-          className="h-6 min-w-24 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-          {...props}
-        />
-      </div>
+              {tag}
+              <Combobox.ChipRemove
+                className="flex size-4 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
+                aria-label={`Remove ${tag}`}
+              >
+                <IconX className="h-3 w-3" />
+              </Combobox.ChipRemove>
+            </Combobox.Chip>
+          ))}
+          <Combobox.Input
+            ref={ref}
+            placeholder={tagPlaceholder}
+            className="h-6 min-w-24 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            onKeyDown={(e) => {
+              if (separators.includes(e.key)) {
+                e.preventDefault();
+                addDraft();
+              } else if (e.key === "Backspace" && !draft && tags.length > 0) {
+                commit(tags.slice(0, -1));
+              }
+            }}
+            onBlur={() => addDraft()}
+            {...props}
+          />
+        </Combobox.Chips>
+      </Combobox.Root>
     );
   },
 );
@@ -2157,8 +2195,8 @@ TagInput.displayName = "TagInput";
 export {
   Input,
   inputVariants,
+  CharacterCounter,
   NumericInput,
-  TextareaFixed,
   InputWithLabel,
   InputWithButton,
   InputWithSpinner,
@@ -2183,7 +2221,6 @@ export {
 export type {
   InputProps,
   NumericInputProps,
-  TextareaFixedProps,
   InputWithLabelProps,
   InputWithButtonProps,
   InputWithSpinnerProps,
@@ -2195,7 +2232,6 @@ export type {
   DecimalInputProps,
   SearchInputProps,
   OTPInputProps,
-  OTPInputRef,
   OTPInputType,
   RatingProps,
   RatingDisplayProps,

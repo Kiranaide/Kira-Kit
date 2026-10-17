@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import {
   Input,
   NumericInput,
@@ -8,7 +8,6 @@ import {
   InputWithTooltip,
   InputWithDropdown,
   InputCluster,
-  TextareaFixed,
   CurrencyInput,
   PercentageInput,
   DecimalInput,
@@ -19,8 +18,6 @@ import {
   PasswordInput,
   TagInput,
 } from "@/components/ui/input";
-import type { OTPInputRef } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
@@ -82,34 +79,6 @@ export function BasicInputDemo() {
   )
 }`;
 
-const textareaCode = `import { Textarea } from "@/components/ui/textarea"
-import { TextareaFixed } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
-export function TextareaDemo() {
-  return (
-    <div className="space-y-4">
-      {/* Auto-expanding Textarea */}
-      <div className="space-y-2">
-        <Label htmlFor="bio">Bio</Label>
-        <Textarea id="bio" placeholder="Tell us about yourself..." />
-      </div>
-      
-      {/* Fixed Height Textarea */}
-      <div className="space-y-2">
-        <Label>Comments (Fixed Height)</Label>
-        <TextareaFixed rows={4} placeholder="Enter comments..." />
-      </div>
-      
-      {/* Disabled */}
-      <div className="space-y-2">
-        <Label>Disabled</Label>
-        <Textarea placeholder="Disabled textarea" disabled />
-      </div>
-    </div>
-  )
-}`;
-
 const numericCode = `import { NumericInput } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -122,7 +91,7 @@ export function NumericInputDemo() {
         <Label>With Buttons</Label>
         <NumericInput
           value={value}
-          onChange={setValue}
+          onValueChange={setValue}
           min={0}
           max={10}
         />
@@ -131,7 +100,7 @@ export function NumericInputDemo() {
         <Label>Without Buttons</Label>
         <NumericInput
           value={value}
-          onChange={setValue}
+          onValueChange={setValue}
           showButtons={false}
         />
       </div>
@@ -139,11 +108,15 @@ export function NumericInputDemo() {
         <Label>Step = 0.1</Label>
         <NumericInput
           value={1.5}
-          onChange={() => {}}
+          onValueChange={() => {}}
           step={0.1}
           min={0}
           max={5}
         />
+      </div>
+      <div className="space-y-2">
+        <Label>Scrub</Label>
+        <NumericInput value={5} onValueChange={setValue} scrub />
       </div>
     </div>
   )
@@ -348,7 +321,6 @@ import { Label } from "@/components/ui/label"
 
 export function OTPInputDemo() {
   const [otpValue, setOtpValue] = useState("")
-  const otpRef = useRef<OTPInputRef>(null)
   
   return (
     <div className="space-y-6">
@@ -356,7 +328,6 @@ export function OTPInputDemo() {
       <div className="space-y-2">
         <Label>6-Digit Verification Code</Label>
         <OTPInput
-          ref={otpRef}
           value={otpValue}
           onChange={setOtpValue}
           onComplete={(code) => console.log("OTP Complete:", code)}
@@ -440,14 +411,12 @@ const usageCode = `import {
   Rating,
   RatingDisplay,
 } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 
 // Basic
 <Input placeholder="Enter text..." />
-<Textarea placeholder="Long text..." />
 
 // Numeric with buttons
-<NumericInput value={5} onChange={setValue} min={0} max={10} />
+<NumericInput value={5} onValueChange={setValue} min={0} max={10} />
 
 // With prefix/suffix
 <Input prefix="$" placeholder="0.00" />
@@ -537,35 +506,8 @@ function BasicDemo() {
   );
 }
 
-function TextareaDemo() {
-  return (
-    <div className="max-w-sm space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="bio">Bio (Auto-expanding)</Label>
-        <Textarea id="bio" placeholder="Tell us about yourself..." />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="disabled-textarea">Disabled</Label>
-        <Textarea
-          id="disabled-textarea"
-          placeholder="Disabled textarea"
-          disabled
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>Comments (Fixed Height)</Label>
-        <TextareaFixed rows={4} placeholder="Enter comments..." />
-      </div>
-      <div className="space-y-2">
-        <Label>Notes</Label>
-        <TextareaFixed rows={3} placeholder="Add notes..." />
-      </div>
-    </div>
-  );
-}
-
 function NumericDemo() {
-  const [numericValue, setNumericValue] = useState(5);
+  const [numericValue, setNumericValue] = useState<number | null>(5);
 
   return (
     <div className="space-y-4">
@@ -573,7 +515,7 @@ function NumericDemo() {
         <Label>With Buttons</Label>
         <NumericInput
           value={numericValue}
-          onChange={setNumericValue}
+          onValueChange={setNumericValue}
           min={0}
           max={10}
         />
@@ -582,7 +524,7 @@ function NumericDemo() {
         <Label>Without Buttons</Label>
         <NumericInput
           value={numericValue}
-          onChange={setNumericValue}
+          onValueChange={setNumericValue}
           showButtons={false}
         />
       </div>
@@ -590,7 +532,7 @@ function NumericDemo() {
         <Label>Step = 0.1</Label>
         <NumericInput
           value={1.5}
-          onChange={() => {}}
+          onValueChange={() => {}}
           step={0.1}
           min={0}
           max={5}
@@ -598,7 +540,17 @@ function NumericDemo() {
       </div>
       <div className="max-w-[150px] space-y-2">
         <Label>Disabled</Label>
-        <NumericInput value={5} onChange={() => {}} disabled />
+        <NumericInput value={5} onValueChange={() => {}} disabled />
+      </div>
+      <div className="max-w-[150px] space-y-2">
+        <Label>Scrub + out-of-range typing clamps on blur</Label>
+        <NumericInput
+          value={numericValue}
+          onValueChange={setNumericValue}
+          min={0}
+          max={10}
+          scrub
+        />
       </div>
     </div>
   );
@@ -887,14 +839,12 @@ function SearchActionsDemo() {
 function OTPDemo() {
   const [otpValue, setOtpValue] = useState("");
   const [otpComplete, setOtpComplete] = useState(false);
-  const otpRef = useRef<OTPInputRef>(null);
 
   return (
     <div className="space-y-6">
       <div className="space-y-2">
         <Label>6-Digit Verification Code</Label>
         <OTPInput
-          ref={otpRef}
           value={otpValue}
           onChange={setOtpValue}
           onComplete={(code) => {
@@ -912,7 +862,7 @@ function OTPDemo() {
             variant="ghost"
             size="sm"
             onClick={() => {
-              otpRef.current?.clear();
+              setOtpValue("");
               setOtpComplete(false);
             }}
           >
@@ -1192,6 +1142,14 @@ function PasswordDemo() {
           placeholder="Try mixing cases, numbers & symbols"
         />
       </div>
+      <div className="space-y-2">
+        <Label>Sign-up (autoComplete=&quot;new-password&quot;, the default)</Label>
+        <PasswordInput placeholder="Create a password" />
+      </div>
+      <div className="space-y-2">
+        <Label>Sign-in (autoComplete=&quot;current-password&quot;)</Label>
+        <PasswordInput autoComplete="current-password" placeholder="Your password" />
+      </div>
     </div>
   );
 }
@@ -1206,10 +1164,13 @@ const passwordCode = `import { PasswordInput } from "@/components/ui/input"
   value={pwd}
   onChange={(e) => setPwd(e.target.value)}
   showStrength
-/>`;
+/>
+
+// Sign-up form (default autocomplete) vs. sign-in form.
+<PasswordInput autoComplete="new-password" />
+<PasswordInput autoComplete="current-password" />`;
 
 function CounterDemo() {
-  const [bio, setBio] = useState("");
   const [handle, setHandle] = useState("");
 
   return (
@@ -1224,19 +1185,6 @@ function CounterDemo() {
           placeholder="username"
         />
       </div>
-      <div className="space-y-2">
-        <Label>Bio (max 160)</Label>
-        <TextareaFixed
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          maxLength={160}
-          rows={3}
-          placeholder="Tell us about yourself..."
-        />
-        <p className="text-right text-xs tabular-nums text-muted-foreground">
-          {bio.length}/160
-        </p>
-      </div>
     </div>
   );
 }
@@ -1245,6 +1193,48 @@ const counterCode = `import { Input } from "@/components/ui/input"
 
 // Live character counter (needs a controlled value + maxLength).
 <Input value={handle} onChange={...} maxLength={20} showCount />`;
+
+function ShowcaseDemo() {
+  const [zero, setZero] = useState(0);
+  const [zeroText, setZeroText] = useState("");
+
+  return (
+    <div className="max-w-md space-y-6">
+      <div className="space-y-2">
+        <Label>Controlled numeric zero (0 must count as a value)</Label>
+        <NumericInput
+          value={zero}
+          onValueChange={(v) => setZero(v ?? 0)}
+          min={0}
+          max={10}
+        />
+        <p className="text-xs text-muted-foreground">Value: {zero}</p>
+        <Input
+          value={zeroText}
+          onChange={(e) => setZeroText(e.target.value)}
+          showClear
+          showCount
+          maxLength={10}
+          placeholder="Type up to 10 chars — counter warns at 9"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Very long placeholder</Label>
+        <Input placeholder="An extremely long placeholder string that should not break the layout of the input or overflow its container in any direction" />
+      </div>
+      <div className="space-y-2">
+        <Label>Very long value</Label>
+        <Input
+          defaultValue="A very long controlled value that overflows a narrow input container and must scroll rather than break the layout"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>RTL</Label>
+        <Input dir="rtl" placeholder="البريد الإلكتروني" defaultValue="مايكل جاكسون" />
+      </div>
+    </div>
+  );
+}
 
 function TagsDemo() {
   const [tags, setTags] = useState<string[]>(["design", "react"]);
@@ -1356,13 +1346,13 @@ export default function InputPage() {
       props: [
         {
           prop: "value",
-          type: "number",
-          description: "Current numeric value.",
+          type: "number | null",
+          description: "Current numeric value; null renders an empty field.",
         },
         {
-          prop: "onChange",
-          type: "(value: number) => void",
-          description: "Callback when value changes.",
+          prop: "onValueChange",
+          type: "(value: number | null) => void",
+          description: "Callback when value changes; null when cleared.",
         },
         {
           prop: "min",
@@ -1376,9 +1366,33 @@ export default function InputPage() {
         },
         {
           prop: "step",
-          type: "number",
+          type: 'number | "any"',
           default: "1",
-          description: "Step increment/decrement value.",
+          description: "Step for buttons and arrow keys.",
+        },
+        {
+          prop: "smallStep",
+          type: "number",
+          default: "0.1",
+          description: "Step while Alt is held.",
+        },
+        {
+          prop: "largeStep",
+          type: "number",
+          default: "10",
+          description: "Step while Shift is held.",
+        },
+        {
+          prop: "allowOutOfRange",
+          type: "boolean",
+          default: "false",
+          description: "Allow typed values outside min/max; steppers still clamp.",
+        },
+        {
+          prop: "scrub",
+          type: "boolean",
+          default: "false",
+          description: "Drag the input text horizontally to scrub the value.",
         },
         {
           prop: "showButtons",
@@ -1414,9 +1428,15 @@ export default function InputPage() {
         },
         {
           prop: "type",
-          type: '"numeric" | "alphanumeric"',
+          type: '"numeric" | "alphanumeric" | "alpha"',
           default: '"numeric"',
-          description: "Allowed input type.",
+          description: "Allowed input type (maps to Base UI validationType; \"alphabetic\" renamed to \"alpha\").",
+        },
+        {
+          prop: "autoSubmit",
+          type: "boolean",
+          default: "false",
+          description: "Submit the owning form when the OTP completes.",
         },
         {
           prop: "mask",
@@ -1619,19 +1639,6 @@ export default function InputPage() {
       ),
     },
     {
-      value: "textarea",
-      label: "Textarea",
-      demo: (
-        <DemoWrapper
-          title="Textarea"
-          description="Multi-line text input for longer content. Features auto-expanding height or fixed height variants."
-          code={textareaCode}
-        >
-          <TextareaDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
       value: "numeric",
       label: "Numeric",
       demo: (
@@ -1741,7 +1748,7 @@ export default function InputPage() {
       demo: (
         <DemoWrapper
           title="Character Counter"
-          description="A live n/max counter that announces politely and warns when the limit is reached. Works on Input and TextareaFixed."
+          description="A live n/max counter that announces politely and warns when the limit is reached. Works on Input and Textarea."
           code={counterCode}
         >
           <CounterDemo />
@@ -1761,13 +1768,31 @@ export default function InputPage() {
         </DemoWrapper>
       ),
     },
+    {
+      value: "showcase",
+      label: "Showcase",
+      demo: (
+        <DemoWrapper
+          title="Stress cases"
+          description="Edge cases: very long placeholder and value, controlled zero value, and RTL text."
+          code={`// Controlled value={0} regression: hasValue must treat 0 as a value.
+<Input value={0} onChange={...} showClear showCount maxLength={10} />
+
+// Very long values scroll; long placeholders truncate.
+<Input placeholder="An extremely long placeholder string that should not break the layout" />
+<Input value="A very long controlled value that overflows a narrow input" />`}
+        >
+          <ShowcaseDemo />
+        </DemoWrapper>
+      ),
+    },
   ];
 
   return (
     <ComponentPage>
       <PageHeader
         title="Input"
-        version="v2.1"
+        version="v2.2"
         description="A comprehensive collection of input components for forms and data entry. Includes basic inputs, textareas, numeric inputs, formatted inputs, OTP, ratings, and composable patterns."
       />
 
@@ -1787,6 +1812,72 @@ export default function InputPage() {
       <Changelog
         entries={[
           {
+            version: "2.2.0",
+            date: "17 October 2026",
+            changes: [
+              {
+                type: "breaking",
+                title: "NumericInput rebuilt on Base UI NumberField",
+                description:
+                  "onChange → onValueChange (fires with null when cleared). Input props showIncrementButtons/onIncrement/onDecrement removed — use NumericInput. New props: smallStep, largeStep, allowOutOfRange, scrub. Alt/Shift stepping, wheel, clamping, and scrubbing come from the primitive.",
+              },
+              {
+                type: "breaking",
+                title: "OTPInput rebuilt on Base UI OTPField",
+                description:
+                  'type "alphabetic" renamed to "alpha" (Base UI validationType). Imperative ref handle (focus/clear/getValue/setValue) removed — control via value/onChange. Gains native SMS autofill (hidden one-time-code input) and form autoSubmit.',
+              },
+              {
+                type: "breaking",
+                title: "CurrencyInput / PercentageInput / DecimalInput on NumberField",
+                description:
+                  "Now parse and format via Base UI NumberField Intl formatting; negatives and locale-aware input work. Digit-stripping regex removed.",
+              },
+              {
+                type: "breaking",
+                title: "TagInput rebuilt on Base UI Combobox multiple + Chips",
+                description:
+                  "Chips render via Combobox.Chips/Chip/ChipRemove with arrow-key navigation between chips. Public props (value, onChange, separators, maxTags, allowDuplicates) unchanged.",
+              },
+              {
+                type: "breaking",
+                title: "InputWithDropdown rebuilt on Select",
+                description:
+                  "The hand-rolled outside-click popover is replaced by the shared Select primitive; dropdown opens with full keyboard support.",
+              },
+              {
+                type: "removed",
+                title: "TextareaFixed removed",
+                description:
+                  "Use Textarea from @/components/ui/textarea — it provides the same fixed-rows behavior.",
+              },
+              {
+                type: "added",
+                title: "Clear with Undo (KiraInputGroup)",
+                description:
+                  "Set undoDuration (ms) on KiraInputGroup with clearable to show a 'Cleared — Undo' strip for that duration; hovering or focusing the strip pauses the timer.",
+              },
+              {
+                type: "added",
+                title: "Counter near-limit warning",
+                description:
+                  "Input showCount and KiraInputGroup counter turn warning-colored at ≥90% of maxLength and destructive at the limit.",
+              },
+              {
+                type: "added",
+                title: "Password manager support",
+                description:
+                  'PasswordInput passes autoComplete through, defaulting to "new-password"; use "current-password" on login forms. Paste is never blocked.',
+              },
+              {
+                type: "changed",
+                title: "InputWithLabel on Field parts",
+                description:
+                  "Label/description/error markup now comes from the shared Field components with wired aria-describedby.",
+              },
+            ],
+          },
+          {
             version: "2.1.0",
             date: "10 July 2026",
             changes: [
@@ -1800,7 +1891,7 @@ export default function InputPage() {
                 type: "added",
                 title: "Character Counter",
                 description:
-                  "Input and TextareaFixed gained a showCount prop that renders a live n/max counter (aria-live polite) which warns at the limit.",
+                  "Input and Textarea gained a showCount prop that renders a live n/max counter (aria-live polite) which warns at the limit.",
               },
               {
                 type: "added",
