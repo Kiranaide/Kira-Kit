@@ -76,6 +76,7 @@ function Tabs({
   variant = "default",
   color = "default",
   showIndicator = true,
+  className,
   ...props
 }: TabsProps) {
   return (
@@ -85,6 +86,12 @@ function Tabs({
       <TabsPrimitive.Root
         data-slot="tabs"
         orientation={orientation}
+        // Vertical = side-by-side layout: list left, panel right. Without a
+        // row layout on the root the panel stacks below the list.
+        className={cn(
+          orientation === "vertical" && "flex flex-row items-start gap-6",
+          className,
+        )}
         {...props}
       />
     </TabsContext.Provider>
@@ -93,7 +100,7 @@ function Tabs({
 
 const tabsListVariants = cva(
   [
-    "inline-flex items-center justify-start text-muted-foreground relative",
+    "group/list inline-flex items-center justify-start text-muted-foreground relative",
     "transition-colors duration-200",
     "motion-reduce:transition-none",
   ],
@@ -333,10 +340,12 @@ function TabsScrollButton({
   direction,
   orientation,
   onScrollStep,
+  disabled = false,
 }: {
   direction: "start" | "end";
   orientation: "horizontal" | "vertical";
   onScrollStep: (direction: 1 | -1) => void;
+  disabled?: boolean;
 }) {
   const vertical = orientation === "vertical";
   const backward = direction === "start";
@@ -374,10 +383,12 @@ function TabsScrollButton({
       data-slot={`tabs-scroll-${direction}`}
       aria-label={label}
       onClick={() => onScrollStep(step)}
+      disabled={disabled}
       className={cn(
         "absolute z-20 inline-flex size-6 items-center justify-center rounded-full",
         "border border-border bg-background/90 text-muted-foreground shadow-sm backdrop-blur",
         "hover:text-foreground hover:bg-background",
+        "disabled:pointer-events-none disabled:opacity-40 disabled:hover:text-muted-foreground",
         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-1 focus-visible:outline-ring",
         "transition-colors duration-150 motion-reduce:transition-none",
         position,
@@ -405,10 +416,12 @@ function TabsList({
   } = useTabsContext();
 
   const [listEl, setListEl] = React.useState<HTMLDivElement | null>(null);
+
   const { canStart, canEnd, hasOverflow } = useTabsOverflow(
     listEl,
     orientation,
   );
+
   const reducedMotion = useReducedMotion();
 
   const finalVariant = variant ?? contextVariant;
@@ -439,7 +452,7 @@ function TabsList({
     }
   };
 
-  return (
+  const scrollableList = (
     <TabsPrimitive.List
       data-slot="tabs-list"
       data-variant={finalVariant}
@@ -462,27 +475,48 @@ function TabsList({
     >
       {children}
       {shouldShowIndicator && <TabsIndicatorInternal />}
-      {scrollable && hasOverflow && canStart && (
+    </TabsPrimitive.List>
+  );
+
+  if (!scrollable) {
+    return scrollableList;
+  }
+
+  // Chevron shell: absolutely-positioned buttons must anchor to a
+  // non-scrolling wrapper. Inside the scroller they scroll away with content
+  // and overlap edge tabs.
+  return (
+    <div
+      data-slot="tabs-list-scroll-shell"
+      // w-fit: the shell must hug the list's box, otherwise the right chevron
+      // anchors past the list edge when the list has its own max-width.
+      className="relative w-fit min-w-0 max-w-full"
+    >
+      {scrollableList}
+      {hasOverflow && canStart && (
         <TabsScrollButton
           direction="start"
           orientation={orientation}
           onScrollStep={handleScrollStep}
         />
       )}
-      {scrollable && hasOverflow && canEnd && (
+      {hasOverflow && canEnd && (
         <TabsScrollButton
           direction="end"
           orientation={orientation}
           onScrollStep={handleScrollStep}
         />
       )}
-    </TabsPrimitive.List>
+    </div>
   );
 }
 
 const tabsTriggerVariants = cva(
   [
-    "group inline-flex items-center justify-center whitespace-nowrap gap-2",
+    "group inline-flex min-w-0 items-center justify-center whitespace-nowrap gap-2",
+    // Scrollable lists must scroll, not squeeze: flex shrink would absorb the
+    // overflow, so chevron detection never fires and labels truncate instead.
+    "group-data-[scrollable]/list:shrink-0",
     "rounded-md px-3 py-1.5 text-sm font-medium",
     "relative z-10",
     "transition-all duration-200",
@@ -891,7 +925,7 @@ function TabsTrigger({
           {icon}
         </span>
       )}
-      <span className="truncate">{children}</span>
+      <span className="min-w-0 truncate">{children}</span>
       {badge !== undefined && (
         <span
           data-slot="tabs-badge"
@@ -945,7 +979,7 @@ const tabsContentVariants = cva(
       },
       orientation: {
         horizontal: "mt-2",
-        vertical: "ms-4 mt-0",
+        vertical: "mt-0 flex-1 min-w-0",
       },
     },
     defaultVariants: {
@@ -1076,7 +1110,13 @@ function useSortableTab(item: TabItem) {
       {...listeners}
       data-slot="tabs-drag-handle"
       aria-hidden="true"
-      onPointerDown={(e) => e.stopPropagation()}
+      // Merge, don't replace: overriding listeners.onPointerDown would stop
+      // dnd-kit's PointerSensor from ever seeing pointerdown, killing drags.
+      // stopPropagation only keeps the parent Tab from treating it as a press.
+      onPointerDown={(event) => {
+        listeners?.onPointerDown?.(event);
+        event.stopPropagation();
+      }}
       className="-ms-1 inline-flex size-5 shrink-0 cursor-grab items-center justify-center rounded text-muted-foreground hover:bg-foreground/10 active:cursor-grabbing touch-none"
     >
       <IconGripVertical className="size-3.5" />
@@ -1124,7 +1164,11 @@ function SortableTab({
   }
 
   return (
-    <span ref={setNodeRef} style={style} className="inline-flex">
+    <span
+      ref={setNodeRef}
+      style={style}
+      className="inline-flex group-data-[scrollable]/list:shrink-0"
+    >
       <TabsTrigger
         value={item.value}
         icon={item.icon}
