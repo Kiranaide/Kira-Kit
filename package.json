@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "bun run registry:build && tsc -b && vite build",
-    "lint": "eslint .",
+    "build": "bun run registry:build && bun run check && vite build",
+    "lint": "oxlint",
     "preview": "vite preview",
     "registry:build": "bun run scripts/build-registry.ts",
     "lint:fix": "oxlint --fix",
@@ -57,7 +57,6 @@
   },
   "devDependencies": {
     "@babel/core": "^8.0.7",
-    "@eslint/js": "^9.39.5",
     "@oxlint/plugins": "1.88.0",
     "@rolldown/plugin-babel": "^0.2.4",
     "@tanstack/router-devtools": "^1.167.2",
@@ -68,15 +67,10 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "babel-plugin-react-compiler": "^1.0.0",
-    "eslint": "^9.39.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.4.26",
-    "globals": "^16.5.0",
     "oxlint": "1.88.0",
     "prettier": "^3.9.10",
     "rollup-plugin-visualizer": "^7.1.1",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.71.2",
     "vite": "^8.3.4"
   }
 }

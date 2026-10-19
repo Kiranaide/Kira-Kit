@@ -1,5 +1,11 @@
 import { join } from "path";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+} from "fs";
 
 const COMPONENTS_DIR = "./src/components/ui";
 
@@ -162,9 +168,6 @@ export function buildRegistry(): void {
 
     return;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { readdirSync } = require("fs");
 
   const files = readdirSync(COMPONENTS_DIR)
     .filter((f: string) => f.endsWith(".tsx"))

@@ -36,8 +36,18 @@ export default defineConfig({
     // CORRECTNESS
     // ============================================================
 
-    "eslint/no-unused-vars": "error",
-    "eslint/no-unreachable": "error",
+    "no-unused-vars": "error",
+    "no-unreachable": "error",
+
+    // React Hooks and Vite Fast Refresh checks.
+    "react/exhaustive-deps": "warn",
+    "react/only-export-components": [
+      "error",
+      {
+        allowConstantExport: true,
+      },
+    ],
+    "react/rules-of-hooks": "error",
 
     // ============================================================
     // TYPESCRIPT SAFETY
@@ -99,16 +109,16 @@ export default defineConfig({
     // TERNARY / CONTROL FLOW
     // ============================================================
 
-    "eslint/no-ternary": "error",
-    "eslint/no-nested-ternary": "error",
-    "eslint/no-unneeded-ternary": "error",
-    "eslint/no-negated-condition": "error",
+    "no-ternary": "error",
+    "no-nested-ternary": "error",
+    "no-unneeded-ternary": "error",
+    "no-negated-condition": "error",
 
     // ============================================================
     // PERFORMANCE
     // ============================================================
 
-    "eslint/no-useless-call": "error",
+    "no-useless-call": "error",
 
     "unicorn/prefer-array-find": "error",
     "unicorn/prefer-array-flat-map": "error",
@@ -119,21 +129,21 @@ export default defineConfig({
     // COMPLEXITY
     // ============================================================
 
-    "eslint/complexity": [
+    "complexity": [
       "error",
       {
         max: 10,
       },
     ],
 
-    "eslint/max-depth": [
+    "max-depth": [
       "error",
       {
         max: 3,
       },
     ],
 
-    "eslint/max-lines-per-function": [
+    "max-lines-per-function": [
       "warn",
       {
         max: 80,
