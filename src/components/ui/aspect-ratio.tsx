@@ -1,6 +1,6 @@
+/* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 
-/* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";

@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import { Input as InputPrimitive } from "@base-ui/react/input";
 import { NumberField } from "@base-ui/react/number-field";

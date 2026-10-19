@@ -1,7 +1,7 @@
+/* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 /* oxlint-disable anti-slop/no-shape-in-symbol-names -- "shape" is the published variant-prop name (consumers write shape="pill"); renaming breaks the kit API */
 
-/* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";

@@ -10,6 +10,7 @@ import {
   SelectValue,
   KiraSelect,
   type SelectOption,
+  type GroupedSelectOption,
 } from "@/components/ui/select";
 import {
   ComponentPage,
@@ -58,6 +59,81 @@ const searchUsers = async (query: string): Promise<SelectOption[]> => {
     u.label.toLowerCase().includes(query.toLowerCase()),
   );
 };
+
+const groupedFruits: GroupedSelectOption[] = [
+  {
+    label: "Citrus",
+    options: [
+      { value: "orange", label: "Orange" },
+      { value: "lemon", label: "Lemon" },
+      { value: "lime", label: "Lime" },
+    ],
+  },
+  {
+    label: "Berries",
+    options: [
+      { value: "strawberry", label: "Strawberry" },
+      { value: "blueberry", label: "Blueberry" },
+      { value: "raspberry", label: "Raspberry" },
+    ],
+  },
+  {
+    label: "Tropical",
+    options: [
+      { value: "mango", label: "Mango" },
+      { value: "pineapple", label: "Pineapple" },
+      { value: "papaya", label: "Papaya" },
+    ],
+  },
+];
+
+// Deterministic 5,000-option fixture for the virtualized demo (no Math.random).
+const CITIES = [
+  "Amsterdam",
+  "Bangkok",
+  "Cairo",
+  "Dublin",
+  "Edinburgh",
+  "Frankfurt",
+  "Geneva",
+  "Helsinki",
+  "Istanbul",
+  "Jakarta",
+  "Kyoto",
+  "Lisbon",
+  "Melbourne",
+  "Nairobi",
+  "Osaka",
+  "Prague",
+  "Quito",
+  "Reykjavik",
+  "Seoul",
+  "Toronto",
+  "Utrecht",
+  "Vienna",
+  "Warsaw",
+  "Zurich",
+] as const;
+
+const bigOptions: SelectOption[] = Array.from({ length: 5000 }, (_, i) => {
+  const city = CITIES[i % CITIES.length];
+  const cycle = Math.floor(i / CITIES.length) + 1;
+
+  return { value: `city-${i}`, label: `${city} ${cycle}` };
+});
+
+// Stress fixtures (illustrative, not real data).
+const LONG_LABEL_OPTIONS: SelectOption[] = [
+  {
+    value: "short",
+    label: "Short label",
+  },
+  {
+    value: "long",
+    label:
+      "A very long option label that keeps going well past eighty characters to prove truncation behaves inside the trigger and the popup list",
+  },
+];
 
 // =============================================================================
 // Demo Components
@@ -256,6 +332,172 @@ const autocompleteCode = `import { KiraSelect } from "@/components/ui/select"
   placeholder="Search fruits..."
 />`;
 
+function VirtualizedSelectDemo() {
+  const [value, setValue] = React.useState<string>("");
+
+  const selected = bigOptions.find((o) => o.value === value);
+
+  return (
+    <div className="space-y-4">
+      <div className="max-w-sm">
+        <KiraSelect
+          options={bigOptions}
+          searchable
+          virtualized
+          value={value}
+          onChange={(v) => setValue(String(v))}
+          placeholder="Search 5,000 cities..."
+        />
+      </div>
+      <p className="text-sm text-muted-foreground">
+        5,000 options, windowed rendering.{" "}
+        {selected && `Selected: ${selected.label}`}
+        {!selected && "Nothing selected yet."}
+      </p>
+    </div>
+  );
+}
+
+const virtualizedCode = `import { KiraSelect } from "@/components/ui/select"
+
+// virtualized renders a flat window for very long lists (grouping is ignored)
+<KiraSelect
+  options={bigOptions}
+  searchable
+  virtualized
+  value={value}
+  onChange={(v) => setValue(v as string)}
+/>`;
+
+function GroupedSearchableDemo() {
+  const [value, setValue] = React.useState<string>("");
+
+  return (
+    <div className="space-y-4">
+      <div className="max-w-sm">
+        <KiraSelect
+          options={groupedFruits}
+          searchable
+          value={value}
+          onChange={(v) => setValue(String(v))}
+          placeholder="Filter grouped options..."
+        />
+      </div>
+      {value && (
+        <p className="text-sm text-muted-foreground">
+          Selected: {value} — group labels stay visible while filtering.
+        </p>
+      )}
+    </div>
+  );
+}
+
+const groupedCode = `import { KiraSelect } from "@/components/ui/select"
+
+const grouped = [
+  { label: "Citrus", options: [{ value: "orange", label: "Orange" }] },
+  { label: "Berries", options: [{ value: "kiwi", label: "Kiwi" }] },
+]
+
+// groups survive filtering in the rich path
+<KiraSelect options={grouped} searchable />`;
+
+function ShowcaseDemo() {
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Very long label (truncation)
+        </p>
+        <div className="max-w-sm">
+          <KiraSelect options={LONG_LABEL_OPTIONS} searchable />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Narrow container (320px)
+        </p>
+        <div className="max-w-[320px]">
+          <KiraSelect options={fruits} searchable placeholder="Narrow..." />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          String shorthand — `options={["Data1", "Data2"]}` (searchable, rich
+          path)
+        </p>
+        <div className="max-w-sm">
+          <KiraSelect
+            options={["Data1", "Data2", "Data3"]}
+            searchable
+            placeholder="String options..."
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Popup escapes overflow-hidden (portaled)
+        </p>
+        <div className="overflow-hidden rounded-xl border p-4">
+          <div className="max-w-sm">
+            <KiraSelect
+              options={fruits}
+              searchable
+              placeholder="Open me — not clipped"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Disabled (reason: read-only dataset)
+          </p>
+          <KiraSelect
+            options={fruits}
+            disabled
+            placeholder="Disabled — archive view"
+          />
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Invalid</p>
+          <KiraSelect
+            options={fruits}
+            searchable
+            invalid
+            placeholder="Invalid"
+          />
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Empty options</p>
+          <KiraSelect options={[]} placeholder="No options" />
+        </div>
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">Size: sm + default</p>
+          <div className="space-y-2">
+            <KiraSelect options={fruits} size="sm" placeholder="Small" />
+            <KiraSelect options={fruits} placeholder="Default" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const showcaseCode = `import { KiraSelect } from "@/components/ui/select"
+
+// Portal keeps the popup out of overflow-hidden ancestors:
+<div className="overflow-hidden rounded-xl border p-4">
+  <KiraSelect options={options} searchable />
+</div>
+
+// Windowed rendering for thousands of options:
+<KiraSelect options={bigOptions} searchable virtualized />`;
+
 function CreatableSelectDemo() {
   const [creatableOptions, setCreatableOptions] =
     React.useState<SelectOption[]>(fruits);
@@ -269,7 +511,7 @@ function CreatableSelectDemo() {
           options={creatableOptions}
           creatable
           value={creatableValue}
-          onChange={(val) => setCreatableValue(val as string)}
+          onChange={(val) => setCreatableValue(String(val))}
           onCreateOption={(inputValue) => {
             const newOption = {
               value: inputValue.toLowerCase(),
@@ -424,6 +666,7 @@ const usageCode = `import { KiraSelect } from "@/components/ui/select"
 <KiraSelect options={[]} async onSearch={loadOptions} /> // async
 <KiraSelect options={options} creatable onCreateOption={create} /> // creatable
 <KiraSelect options={options} searchable />            // autocomplete
+<KiraSelect options={bigOptions} searchable virtualized /> // long lists
 
 // Low-level primitives are still available for full control:
 import {
@@ -438,17 +681,22 @@ const features = [
   {
     title: "One API",
     description:
-      "KiraSelect covers basic, multi, async, autocomplete, and creatable — behaviour is chosen by props, not by picking a different component.",
+      "KiraSelect covers basic, multi, async, autocomplete, creatable, and virtualized — behaviour is chosen by props, not by picking a different component.",
   },
   {
     title: "Accessible",
     description:
-      "Full WAI-ARIA combobox pattern with keyboard navigation, screen reader announcements, and focus management.",
+      "Full WAI-ARIA combobox pattern via Base UI: keyboard navigation, screen reader announcements, and focus management.",
   },
   {
     title: "Searchable & async",
     description:
-      "Built-in fuzzy search, debounced async loading, loading states, and reduced-motion-gated animations.",
+      "Subsequence search, debounced async loading with pulse skeletons + Status live region, portaled collision-aware popup.",
+  },
+  {
+    title: "Virtualized",
+    description:
+      "Windowed rendering for very long lists (5,000+ options) with scroll position, End/Home, and selection verified.",
   },
 ];
 
@@ -457,14 +705,33 @@ const features = [
 // =============================================================================
 
 const keyboardShortcuts = [
-  { keys: "↓ / ↑", description: "Navigate options" },
-  { keys: "Enter", description: "Select focused option" },
-  { keys: "Escape", description: "Close dropdown" },
-  { keys: "Home", description: "Jump to first option" },
-  { keys: "End", description: "Jump to last option" },
-  { keys: "Backspace", description: "Remove last tag (multi-select)" },
-  { keys: "Type", description: "Filter options (searchable)" },
-  { keys: "Tab", description: "Move focus out of select" },
+  { keys: "↓ / ↑", description: "Navigate options — inherited from Base UI" },
+  {
+    keys: "Home / End",
+    description: "Jump to first / last option — inherited from Base UI",
+  },
+  {
+    keys: "Enter",
+    description: "Select highlighted option — inherited from Base UI",
+  },
+  { keys: "Escape", description: "Close dropdown — inherited from Base UI" },
+  {
+    keys: "Type",
+    description: "Typeahead / filter options — inherited from Base UI",
+  },
+  {
+    keys: "Backspace",
+    description:
+      "Remove last chip (multi, empty input) — inherited from Base UI",
+  },
+  {
+    keys: "Tab",
+    description: "Move focus out of select — inherited from Base UI",
+  },
+  {
+    keys: "Enter",
+    description: "Kira: create item flow when 'Create \"…\"' is highlighted",
+  },
 ];
 
 // =============================================================================
@@ -507,6 +774,13 @@ const apiSections = [
         type: "boolean",
         default: "false",
         description: "Load options via onSearch with debouncing",
+      },
+      {
+        prop: "virtualized",
+        type: "boolean",
+        default: "false",
+        description:
+          "Windowed rendering for very long lists (renders a flat window; grouping is ignored)",
       },
       {
         prop: "onSearch",
@@ -676,6 +950,45 @@ const demoTabs = [
       </DemoWrapper>
     ),
   },
+  {
+    value: "virtualized",
+    label: "Virtualized",
+    demo: (
+      <DemoWrapper
+        title="Virtualized Long List"
+        description="5,000 options rendered as a flat window (grouping is ignored while virtualized)."
+        code={virtualizedCode}
+      >
+        <VirtualizedSelectDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "grouped",
+    label: "Grouped + search",
+    demo: (
+      <DemoWrapper
+        title="Grouped Options with Search"
+        description="Group labels survive filtering in the rich path."
+        code={groupedCode}
+      >
+        <GroupedSearchableDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "showcase",
+    label: "Showcase",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, narrow containers, overflow escape, disabled/invalid/empty states, sizes."
+        code={showcaseCode}
+      >
+        <ShowcaseDemo />
+      </DemoWrapper>
+    ),
+  },
 ];
 
 // =============================================================================
@@ -687,7 +1000,7 @@ export default function SelectPage() {
     <ComponentPage>
       <PageHeader
         title="Select"
-        version="v3.0"
+        version="v3.2"
         description="Dropdown selection with a single prop-driven API (KiraSelect) covering multi-select, async loading, autocomplete, and creatable options."
       />
 
@@ -708,18 +1021,79 @@ export default function SelectPage() {
       <Changelog
         entries={[
           {
-            version: "v3.0.0",
-            date: "2026-07-13",
+            version: "3.2.0",
+            date: "18 October 2026",
+            changes: [
+              {
+                type: "fixed",
+                title: "Duplicate Selection in Multi-Select",
+                description:
+                  "Picking the same option twice appended it twice instead of toggling: items now emit the derived string value so Base UI's selected-value comparison matches.",
+              },
+              {
+                type: "fixed",
+                title: "Empty Gap Above the List",
+                description:
+                  "Base UI keeps the Empty element mounted even when the list is non-empty, which painted a blank strip above every popup. It now collapses with empty:hidden.",
+              },
+              {
+                type: "added",
+                title: "String Array Options Shorthand",
+                description:
+                  "options now accepts a plain string array (options={[\"Data1\", \"Data2\"]}) in addition to option objects and groups; each string becomes { value, label }. Works on both the simple and the rich (searchable) path.",
+              },
+            ],
+          },
+          {
+            version: "3.1.0",
+            date: "18 October 2026",
+            changes: [
+              {
+                type: "changed",
+                title: "v2 rebuild on Base UI 1.9.0",
+                description:
+                  "Rich path (searchable/async/creatable/multiple) rebuilt on the Base UI Combobox primitive; popup is now portaled and collision-aware; grouped options render grouped in all modes; new virtualized prop for windowed long lists; async loading shows pulse rows + a polite Status live region. Audited against @base-ui/react 1.9.0.",
+              },
+              {
+                type: "breaking",
+                title: "SelectField export removed",
+                description:
+                  "Use <KiraSelect />. SelectFieldProps-only props (showSearchIcon, fuzzyMatching, filterFn, debounceMs, cacheOptions, onSearchChange, onClearAll, onOpenChange) were never exposed on KiraSelect and are gone with it. AutocompleteOption type removed (dead code).",
+              },
+              {
+                type: "fixed",
+                title: "Search crash on regex metacharacters",
+                description:
+                  "Typing (, [, or * in a searchable select used to throw Invalid regular expression during render and crash the page; matching is now a two-pointer subsequence match that cannot throw.",
+              },
+              {
+                type: "fixed",
+                title: "Sticky selected label in the input",
+                description:
+                  "After picking an option, reopening no longer keeps the selected label in the input and filter the list down to just that option.",
+              },
+              {
+                type: "fixed",
+                title: "List re-stagger on every keystroke",
+                description:
+                  "GSAP stagger now plays once per open, not while typing; still gated on prefers-reduced-motion.",
+              },
+            ],
+          },
+          {
+            version: "3.0.0",
+            date: "13 July 2026",
             changes: [
               {
                 type: "added",
                 title: "KiraSelect — single combobox API",
                 description:
-                  "One prop-driven component covering basic, multiple, searchable, async, and creatable. Routes to the Base UI Select (simple) or the SelectField engine (rich).",
+                  "One prop-driven component covering basic, multiple, searchable, async, and creatable. Routes to the Base UI Select (simple) or the Base UI Combobox (rich).",
               },
               {
                 type: "breaking",
-                title: "Removed MultiSelect / AsyncSelect / CreatableSelect / Autocomplete",
+                title:
+                  "Removed MultiSelect / AsyncSelect / CreatableSelect / Autocomplete",
                 description:
                   "Migrate to <KiraSelect multiple />, <KiraSelect async onSearch={…} />, <KiraSelect creatable />, and <KiraSelect searchable /> respectively.",
               },

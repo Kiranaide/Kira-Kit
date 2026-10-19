@@ -1,6 +1,5 @@
 "use client";
 
-/* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import gsap from "gsap";
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
@@ -83,7 +82,11 @@ const toggleVariants = cva(
 
 type ToggleSize = NonNullable<VariantProps<typeof toggleVariants>["size"]>;
 
-const ICON_ONLY_SIZES: ToggleSize[] = new Set(["icon", "icon-sm", "icon-lg"]);
+const ICON_ONLY_SIZES: Partial<Record<ToggleSize, true>> = {
+  icon: true,
+  "icon-sm": true,
+  "icon-lg": true,
+};
 
 /**
  * Dev-only nudge: an icon-only toggle with no accessible name is invisible to
@@ -106,7 +109,7 @@ function useAriaLabelWarning(
   const hasText = typeof children === "string" && children.trim().length > 0;
 
   const isIconOnly =
-    !!icon || (!!size && ICON_ONLY_SIZES.has(size)) || !children;
+    !!icon || (!!size && ICON_ONLY_SIZES[size]) || !children;
 
   React.useEffect(() => {
     if (!import.meta.env?.DEV) return;
@@ -451,7 +454,6 @@ function KiraToggle({
     window.addEventListener("keydown", handler);
 
     return () => window.removeEventListener("keydown", handler);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shortcut, disabled, committedPressed]);
 
   const isBusy = loading || status === "loading";

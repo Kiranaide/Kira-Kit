@@ -37,7 +37,7 @@ export default function OverviewPage() {
         </div>
 
         <div className="p-6 rounded-xl border border-border bg-card">
-          <h3 className="text-lg font-semibold mb-2">📦 13+ Components</h3>
+          <h3 className="text-lg font-semibold mb-2">📦 70+ Components</h3>
           <p className="text-muted-foreground text-sm">
             A growing collection of essential components: Button, Card, Input,
             Select, and more.

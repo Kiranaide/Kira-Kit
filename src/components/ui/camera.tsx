@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 
 import * as React from "react";
@@ -3557,8 +3558,6 @@ class CameraErrorBoundary extends Component<
     return children;
   }
 }
-
-/* eslint-disable react-refresh/only-export-components */
 
 const Camera = Object.assign(CameraRoot, {
   Preview: CameraPreview,

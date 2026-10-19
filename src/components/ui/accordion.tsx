@@ -1,3 +1,4 @@
+/* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 
 import * as React from "react";
@@ -11,6 +12,7 @@ import {
   IconChevronsDown,
   IconChevronsUp,
   IconSearch,
+  IconCheck,
 } from "@tabler/icons-react";
 
 import {
@@ -35,6 +37,11 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 interface AccordionItemData {
@@ -42,6 +49,8 @@ interface AccordionItemData {
   title: React.ReactNode;
   content: React.ReactNode;
   disabled?: boolean;
+  /** Shown as a tooltip on the disabled trigger (§9: never unexplained). */
+  disabledReason?: string;
   icon?: React.ReactNode;
   variant?: VariantProps<typeof accordionTriggerVariants>["variant"];
   size?: VariantProps<typeof accordionTriggerVariants>["size"];
@@ -118,19 +127,19 @@ function resolveTitleContent(
   return <HighlightMatch text={item.title} query={highlightQuery} />;
 }
 
-/** Shared open callback: asyncLoading routes through the async handler. */
-function useItemOpenHandler(
+/** Open-set callback for an item; kept hook-free so recursive renderers can use it. */
+function makeItemOpenHandler(
   item: AccordionItemData,
   asyncLoading: boolean,
   onItemOpen?: (item: AccordionItemData) => void | Promise<void>,
 ) {
-  return React.useCallback(async () => {
+  return () => {
     if (asyncLoading && onItemOpen) {
-      await onItemOpen(item);
+      void onItemOpen(item);
     } else {
       onItemOpen?.(item);
     }
-  }, [asyncLoading, onItemOpen, item]);
+  };
 }
 
 /** Text used to match an item during search. */
@@ -202,7 +211,7 @@ function HighlightMatch({ text, query }: { text: string; query: string }) {
 }
 
 const accordionTriggerVariants = cva(
-  "relative flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [[data-panel-open]_&]:rounded-b-none rounded-lg",
+  "relative flex w-full items-center justify-between px-4 py-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-panel-open:rounded-b-none rounded-lg",
   {
     variants: {
       variant: {
@@ -300,34 +309,75 @@ function Accordion({
   );
 }
 
+/**
+ * Base UI 1.9's AccordionItem never calls the consumer's onOpenChange (it wires
+ * its own internal handler), so open/close transitions are observed from the
+ * item's data-open attribute instead — the same technique usePanelOpened uses
+ * for panels. The initial state never fires; only transitions do.
+ */
 function AccordionItem({
   className,
   onOpen,
   onClose,
   disabled = false,
+  ref: userRef,
   ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Item> & {
   onOpen?: () => void;
   onClose?: () => void;
 }) {
-  const wasOpenRef = React.useRef(false);
+  const itemRef = React.useRef<HTMLDivElement>(null);
+  // Latest-callback refs so the observer never needs re-wiring per render.
+  const onOpenRef = React.useRef(onOpen);
+  const onCloseRef = React.useRef(onClose);
 
-  const handleOpenChange: AccordionPrimitive.Item.Props["onOpenChange"] = (
-    open,
-    ...args
-  ) => {
-    if (open && !wasOpenRef.current) {
-      onOpen?.();
-    } else if (!open && wasOpenRef.current) {
-      onClose?.();
-    }
+  onOpenRef.current = onOpen;
+  onCloseRef.current = onClose;
 
-    wasOpenRef.current = open;
-    props.onOpenChange?.(open, ...args);
-  };
+  React.useEffect(() => {
+    const item = itemRef.current;
+
+    if (!item) return;
+
+    let wasOpen = item.hasAttribute("data-open");
+
+    const observer = new MutationObserver(() => {
+      const isOpen = item.hasAttribute("data-open");
+
+      if (isOpen && !wasOpen) {
+        onOpenRef.current?.();
+      } else if (!isOpen && wasOpen) {
+        onCloseRef.current?.();
+      }
+
+      wasOpen = isOpen;
+    });
+
+    observer.observe(item, {
+      attributes: true,
+      attributeFilter: ["data-open"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <AccordionPrimitive.Item
+      ref={(node) => {
+        // SAFETY: AccordionPrimitive.Item renders a div, so the node is always
+        // an HTMLDivElement when mounted.
+        itemRef.current = node as HTMLDivElement | null;
+
+        // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
+        if (typeof userRef === "function") userRef(node);
+        // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
+        else if (userRef && typeof userRef === "object") {
+          // SAFETY: object-form refs are MutableRefObject; the node is the
+          // HTMLDivElement Item renders (see above).
+          (userRef as React.MutableRefObject<HTMLDivElement | null>).current =
+            node as HTMLDivElement | null;
+        }
+      }}
       data-slot="accordion-item"
       data-accordion-item-value={String(props.value)}
       className={cn(
@@ -335,7 +385,6 @@ function AccordionItem({
         disabled && "opacity-50 cursor-not-allowed",
         className,
       )}
-      onOpenChange={handleOpenChange}
       disabled={disabled}
       {...props}
     />
@@ -358,6 +407,9 @@ type AccordionTriggerProps = Omit<
   onRetry?: () => void;
   dragHandle?: React.ReactNode;
   dragHandlePosition?: "start" | "end";
+  disabled?: boolean;
+  /** Tooltip shown on a disabled trigger (§9: never leave a disabled control unexplained). */
+  disabledReason?: string;
 };
 
 function TriggerChevron({
@@ -379,10 +431,10 @@ function TriggerChevron({
 
   return (
     <span
-      data-accordion-chevron
+      data-slot="accordion-chevron"
       className={cn(
         "inline-block shrink-0 in-data-panel-open:rotate-180",
-        !reducedMotion && "transition-transform duration-300 ease-out",
+        !reducedMotion && "transition-transform duration-200 ease-out",
       )}
     >
       {chevronElement}
@@ -437,6 +489,19 @@ function TriggerLoading({
   );
 }
 
+/** Brief success checkmark after loading completes without error. */
+function TriggerSuccess({ active }: { active: boolean }): React.ReactNode {
+  if (!active) return null;
+
+  return (
+    <IconCheck
+      className="h-4 w-4 shrink-0 text-success"
+      aria-hidden="true"
+      data-slot="accordion-success"
+    />
+  );
+}
+
 function TriggerRetry({
   error,
   loading,
@@ -468,6 +533,86 @@ function TriggerIcon({ icon }: { icon?: React.ReactNode }): React.ReactNode {
   return <span className="shrink-0 flex items-center">{icon}</span>;
 }
 
+/** Success flash state: rising edge of `loading` (without error) shows a checkmark briefly. */
+function useLoadingSuccessFlash(
+  loading: boolean,
+  error: Error | null,
+): boolean {
+  const [prevLoading, setPrevLoading] = React.useState(loading);
+  const [showSuccess, setShowSuccess] = React.useState(false);
+
+  // Adjust during render (playbook §4) so no effect chases the prop.
+  if (loading !== prevLoading) {
+    setPrevLoading(loading);
+
+    if (loading) {
+      setShowSuccess(false);
+    } else if (!error) {
+      setShowSuccess(true);
+    }
+  }
+
+  React.useEffect(() => {
+    if (!showSuccess) return;
+
+    const timer = window.setTimeout(() => setShowSuccess(false), 1500);
+
+    return () => window.clearTimeout(timer);
+  }, [showSuccess]);
+
+  return showSuccess;
+}
+
+/** Focusable wrapper so a disabled trigger can host a tooltip (§9). */
+function DisabledReasonWrapper({
+  reason,
+  children,
+}: {
+  reason: string;
+  children: React.ReactNode;
+}) {
+  // Focus proxy for a native-disabled trigger (Base UI's documented pattern for
+  // tooltips on disabled controls): the span is hit-tested where the disabled
+  // button is not, and Tab reaches it so keyboard users can read the reason.
+  // role="button" is deliberately avoided — the accessible "disabled button" is
+  // already announced via aria-disabled; the label carries the reason.
+  const anchorProps = {
+    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus proxy required for disabled-control tooltip reachability (WCAG 2.2 §9)
+    tabIndex: 0,
+    "aria-disabled": true,
+    "aria-label": reason,
+  } as const;
+
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <span
+            data-slot="accordion-reason-anchor"
+            {...anchorProps}
+            className="block w-full cursor-not-allowed rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          />
+        }
+      >
+        {children}
+      </TooltipTrigger>
+      <TooltipContent side="top">{reason}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+/** Handle side padding so the grip never overlaps the label. */
+function dragHandlePadding(
+  hasHandle: boolean,
+  position: "start" | "end",
+): string {
+  if (!hasHandle) return "";
+
+  if (position === "start") return "pl-8";
+
+  return "pr-8";
+}
+
 function AccordionTrigger({
   className,
   children,
@@ -482,21 +627,15 @@ function AccordionTrigger({
   onRetry,
   dragHandle,
   dragHandlePosition = "start",
+  disabled = false,
+  disabledReason,
   ...props
 }: AccordionTriggerProps) {
   const reducedMotion = useReducedMotion();
+  const showSuccess = useLoadingSuccessFlash(loading, error);
+  const handlePadding = dragHandlePadding(!!dragHandle, dragHandlePosition);
 
-  let handlePadding = "";
-
-  if (dragHandle) {
-    if (dragHandlePosition === "start") {
-      handlePadding = "pl-8";
-    } else {
-      handlePadding = "pr-8";
-    }
-  }
-
-  return (
+  const trigger = (
     <AccordionPrimitive.Header data-slot="accordion-header">
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
@@ -522,6 +661,7 @@ function AccordionTrigger({
           <TriggerIcon icon={icon} />
           <span className="flex-1 min-w-0 truncate">{children}</span>
           <TriggerLoading loading={loading} reducedMotion={reducedMotion} />
+          <TriggerSuccess active={showSuccess} />
           <TriggerRetry error={error} loading={loading} onRetry={onRetry} />
           <TriggerChevron
             icon={chevronIcon}
@@ -539,6 +679,16 @@ function AccordionTrigger({
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   );
+
+  if (disabled && disabledReason) {
+    return (
+      <DisabledReasonWrapper reason={disabledReason}>
+        {trigger}
+      </DisabledReasonWrapper>
+    );
+  }
+
+  return trigger;
 }
 
 type AccordionContentProps = Omit<
@@ -700,7 +850,8 @@ function AccordionContent({
       keepMounted
       className={cn(
         "overflow-hidden h-(--accordion-panel-height) data-ending-style:h-0 data-starting-style:h-0",
-        !reducedMotion && "transition-[height] ease-out",
+        !reducedMotion &&
+          "transition-[height] duration-200 ease-out data-ending-style:duration-150 data-ending-style:ease-in",
         inset && "pl-8",
         className,
       )}
@@ -789,6 +940,8 @@ function triggerVariantProps(
     loading: item.loading,
     error: item.error,
     onRetry: item.onRetry,
+    disabled: item.disabled ?? false,
+    disabledReason: item.disabledReason,
   } as const;
 }
 
@@ -807,7 +960,7 @@ function SortableAccordionItem({
 }: SortableAccordionItemProps) {
   const { setNodeRef, style, dragHandle } = useSortableAccordionDrag(item);
 
-  const handleOpen = useItemOpenHandler(item, asyncLoading, onItemOpen);
+  const handleOpen = makeItemOpenHandler(item, asyncLoading, onItemOpen);
 
   const handleClose = React.useCallback(() => {
     onItemClose?.(item);
@@ -949,7 +1102,6 @@ function useHashDeepLink(
       ?.scrollIntoView({ behavior, block: "nearest" });
     // initialItems is only read on mount; re-running on identity change would
     // re-open a hash item the user deliberately closed.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deepLink, reducedMotion, setOpenValues]);
 }
 
@@ -1102,6 +1254,15 @@ function useAccordionItems(
 ) {
   const controlled = Boolean(onReorder);
   const [localItems, setLocalItems] = React.useState(initialItems);
+  const [adoptedItems, setAdoptedItems] = React.useState(initialItems);
+
+  // Uncontrolled mode still honors parent-driven item updates (loading flags,
+  // content, errors): when the items prop identity changes, adopt it —
+  // render-time adjust per playbook §4. Internal reorder keeps the local copy.
+  if (initialItems !== adoptedItems) {
+    setAdoptedItems(initialItems);
+    setLocalItems(initialItems);
+  }
 
   const setItems = React.useCallback(
     (updater: React.SetStateAction<AccordionItemData[]>) => {
@@ -1634,7 +1795,7 @@ function renderAccordionItem({
 }: RenderAccordionItemOptions): React.ReactElement {
   const hasChildren = nested && item.children && item.children.length > 0;
 
-  const handleOpen = useItemOpenHandler(item, asyncLoading, onItemOpen);
+  const handleOpen = makeItemOpenHandler(item, asyncLoading, onItemOpen);
 
   const handleClose = () => {
     onItemClose?.(item);
@@ -1695,8 +1856,6 @@ function renderAccordionItem({
     </AccordionItem>
   );
 }
-
-/* eslint-disable react-refresh/only-export-components */
 
 export {
   Accordion,

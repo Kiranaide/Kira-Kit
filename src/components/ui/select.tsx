@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
+import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -60,7 +62,7 @@ function SelectTrigger({
         "*:data-[slot=select-value]:flex *:data-[slot=select-value]:gap-1.5 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:items-center",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        className
+        className,
       )}
       {...props}
     >
@@ -108,7 +110,7 @@ function SelectContent({
             "bg-popover text-popover-foreground ring-foreground/10 min-w-36 rounded-lg shadow-md ring-1 duration-100 relative isolate z-50 max-h-(--available-height) w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto",
             !reducedMotion &&
               "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-            className
+            className,
           )}
           {...props}
         >
@@ -146,7 +148,7 @@ function SelectItem({
       data-slot="select-item"
       className={cn(
         "focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2 relative flex w-full cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        className
+        className,
       )}
       {...props}
     >
@@ -190,7 +192,7 @@ function SelectScrollUpButton({
       data-slot="select-scroll-up-button"
       className={cn(
         "bg-popover z-10 flex cursor-default items-center justify-center py-1 [&_svg:not([class*='size-'])]:size-4 top-0 w-full",
-        className
+        className,
       )}
       {...props}
     >
@@ -208,7 +210,7 @@ function SelectScrollDownButton({
       data-slot="select-scroll-down-button"
       className={cn(
         "bg-popover z-10 flex cursor-default items-center justify-center py-1 [&_svg:not([class*='size-'])]:size-4 bottom-0 w-full",
-        className
+        className,
       )}
       {...props}
     >
@@ -223,25 +225,27 @@ interface SelectOption {
   disabled?: boolean;
 }
 
-interface AutocompleteOption {
-  value: string;
-  label: string;
-  disabled?: boolean;
-}
-
 interface GroupedSelectOption<T extends SelectOption = SelectOption> {
   label: string;
   options: T[];
 }
 
 function isGroupedOptions<T extends SelectOption>(
-  options: T[] | GroupedSelectOption<T>[]
+  options: T[] | GroupedSelectOption<T>[],
 ): options is GroupedSelectOption<T>[] {
-  return options.length > 0 && "options" in options[0];
+  // SAFETY: entries can be the string[] shorthand; `in` throws on primitives.
+  // toString parsing establishes the object contract for the `in` check below.
+  const first = options[0] as unknown;
+
+  return (
+    options.length > 0 &&
+    Object.prototype.toString.call(first) === "[object Object]" &&
+    Object.hasOwn(first, "options")
+  );
 }
 
 function flattenOptions<T extends SelectOption>(
-  options: T[] | GroupedSelectOption<T>[]
+  options: T[] | GroupedSelectOption<T>[],
 ): T[] {
   if (isGroupedOptions(options)) {
     return options.flatMap((group) => group.options);
@@ -250,86 +254,109 @@ function flattenOptions<T extends SelectOption>(
   return options;
 }
 
-interface SelectFieldProps<T extends SelectOption = SelectOption> {
-  options?: T[] | GroupedSelectOption<T>[];
+/**
+ * Maps the `string[]` shorthand entry to a full option object.
+ */
+function stringToOption<T extends SelectOption>(label: string): T {
+  // SAFETY: T extends SelectOption, and { value: label, label } satisfies
+  // that shape for the string-shorthand path.
+  return { value: label, label } as T;
+}
 
+const isStringValue = (
+  v: string | ComboboxEmittedValue["value"],
+): v is string =>
+  // SAFETY: the emitted value contract is `string | {value: string}`; this
+  // predicate IS the parse for the string branch of that union.
+  Object.prototype.toString.call(v) === "[object String]";
+
+/**
+ * Accepts the `string[]` shorthand (`["Data1", "Data2"]`) alongside option
+ * objects and groups; strings become `{ value: label, label }`.
+ */
+function normalizeOptions<T extends SelectOption>(
+  options: (T | string)[] | GroupedSelectOption<T>[] | readonly string[],
+): T[] | GroupedSelectOption<T>[] {
+  // SAFETY: option objects and groups flow through unmodified; only the
+  // string[] shorthand is rewritten below.
+  if (options.length === 0 || isGroupedOptions(options as T[])) {
+    // SAFETY: groups and option objects pass through as-is.
+    return options as T[] | GroupedSelectOption<T>[];
+  }
+
+  const first: unknown = options[0];
+
+  if (isStringValue(first)) {
+    // SAFETY: the first entry is a string and the input is a flat array, so
+    // every entry is a string; each becomes { value: label, label }.
+    const labels = options as readonly string[];
+
+    return labels.map(stringToOption);
+  }
+
+  // SAFETY: option objects carry their own `value` and flow through unmodified.
+  return options as T[];
+}
+
+interface ComboboxFieldProps<T extends SelectOption = SelectOption> {
+  options: T[] | GroupedSelectOption<T>[];
   value?: string | string[];
-
+  defaultValue?: string | string[];
   onChange?: (
     value: string | string[],
-    selectedOptions: T | T[] | null
+    selectedOptions: T | T[] | null,
   ) => void;
-
   multiple?: boolean;
-
   searchable?: boolean;
-
   creatable?: boolean;
-
   async?: boolean;
-
   onSearch?: (query: string) => Promise<T[]>;
-
   debounceMs?: number;
-
   cacheOptions?: boolean;
-
   onCreateOption?: (inputValue: string) => void;
-
   createLabel?: string;
-
   placeholder?: string;
-
   disabled?: boolean;
-
   size?: "sm" | "default";
-
   className?: string;
-
   maxDisplayedTags?: number;
-
   showSearchIcon?: boolean;
-
   fuzzyMatching?: boolean;
-
   filterFn?: (option: T, query: string) => boolean;
-
+  virtualized?: boolean;
   required?: boolean;
-
   "aria-label"?: string;
-
   "aria-labelledby"?: string;
-
   "aria-describedby"?: string;
-
   "aria-invalid"?: boolean;
-
   name?: string;
-
   onOpenChange?: (open: boolean) => void;
-
   onSearchChange?: (query: string) => void;
-
   onClearAll?: () => void;
-
   variant?: "default" | "ghost" | "outline";
-
   leftIcon?: React.ReactNode;
-
   hideChevron?: boolean;
-
   emptyMessage?: string | React.ReactNode;
-
   loadingMessage?: string | React.ReactNode;
-
   searchingMessage?: string | React.ReactNode;
 }
 
-function fuzzyMatch(text: string, query: string): boolean {
-  const pattern = query.toLowerCase().split("").join(".*");
-  const regex = new RegExp(pattern);
+function subsequenceMatch(label: string, query: string): boolean {
+  let li = 0;
+  const l = label.toLowerCase();
+  const q = query.toLowerCase();
 
-  return regex.test(text.toLowerCase());
+  for (let qi = 0; qi < q.length; qi++) {
+    li = l.indexOf(q[qi], li);
+
+    if (li === -1) {
+      return false;
+    }
+
+    li++;
+  }
+
+  return true;
 }
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -343,10 +370,12 @@ function useDebounce<T>(value: T, delay: number): T {
 
   return debouncedValue;
 }
+/* oxlint-disable complexity -- megacomponent dispatching one API over five modes (basic/multi/async/creatable/searchable); branching is the feature, not accidental complexity */
 
-function SelectField<T extends SelectOption = SelectOption>({
-  options: initialOptions = [],
+function ComboboxField<T extends SelectOption = SelectOption>({
+  options,
   value,
+  defaultValue,
   onChange,
   multiple = false,
   searchable = true,
@@ -365,79 +394,101 @@ function SelectField<T extends SelectOption = SelectOption>({
   showSearchIcon = true,
   fuzzyMatching = true,
   filterFn,
-
+  virtualized = false,
   required,
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledby,
   "aria-describedby": ariaDescribedby,
   "aria-invalid": ariaInvalid,
   name,
-
   onOpenChange,
   onSearchChange,
-  onClearAll,
-
+  onClearAll: _onClearAll,
   variant = "default",
   leftIcon,
   hideChevron = false,
-
   emptyMessage,
   loadingMessage,
   searchingMessage,
-}: SelectFieldProps<T>) {
-  const [inputValue, setInputValue] = React.useState("");
+}: ComboboxFieldProps<T>) {
   const reducedMotion = useReducedMotion();
+  const filterUtils = ComboboxPrimitive.useFilter();
 
-  const [options, setOptions] = React.useState<T[]>(
-    flattenOptions(initialOptions) as T[]
-  );
-
+  const [inputValue, setInputValue] = React.useState("");
+  const [asyncOptions, setAsyncOptions] = React.useState<T[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
-  const [highlightedIndex, setHighlightedIndex] = React.useState(-1);
-  const listRef = React.useRef<HTMLDivElement>(null);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const triggerRef = React.useRef<HTMLDivElement>(null);
+
+  const [popupEl, setPopupEl] = React.useState<HTMLDivElement | null>(null);
   const cacheRef = React.useRef<Map<string, T[]>>(new Map());
-  const typeaheadRef = React.useRef("");
-
-  const typeaheadTimeoutRef = React.useRef<ReturnType<
-    typeof setTimeout
-  > | null>(null);
-
-  const debouncedQuery = useDebounce(inputValue, debounceMs);
-  const listId = React.useId();
-  const triggerId = React.useId();
-
-  const handleOpenChange = React.useCallback(
-    (open: boolean) => {
-      setIsOpen(open);
-      onOpenChange?.(open);
-
-      if (!open) {
-        setHighlightedIndex(-1);
-      }
-    },
-    [onOpenChange]
-  );
-
-  const selectedValues = React.useMemo(() => {
-    if (value === undefined || value === null) return [];
-
-    return Array.isArray(value) ? value : [value];
-  }, [value]);
 
   // Sync options from props during render (not an effect) so a changing
-  // `initialOptions`/`async` updates the list without a cascading render.
-  const [prevSync, setPrevSync] = React.useState({ initialOptions, async });
+  // `options` prop updates the list without a cascading render.
+  const [prevOptions, setPrevOptions] = React.useState(options);
 
-  if (prevSync.initialOptions !== initialOptions || prevSync.async !== async) {
-    setPrevSync({ initialOptions, async });
-
-    if (!async) {
-      setOptions(flattenOptions(initialOptions) as T[]);
-    }
+  if (!async && options !== prevOptions) {
+    setPrevOptions(options);
   }
+
+  const data = React.useMemo(() => {
+    if (async) {
+      // Async results replace the (initially empty) options prop.
+      return asyncOptions;
+    }
+
+    if (isGroupedOptions(options)) {
+      return options.map((g) => ({ label: g.label, items: g.options }));
+    }
+
+    return options;
+  }, [async, asyncOptions, options]);
+
+  const collection = React.useMemo(
+    () =>
+      ComboboxPrimitive.createItems(data, {
+        getValue: (o: T) => o.value,
+        getLabel: (o: T) => o.label,
+      }),
+    [data],
+  );
+
+  const flat = React.useMemo(() => flattenOptions(options), [options]);
+
+  const flatOptionsList = React.useMemo(() => {
+    if (async) {
+      return asyncOptions;
+    }
+
+    return flat;
+  }, [async, asyncOptions, flat]);
+
+  // oxlint-disable-next-line complexity -- normalize string | string[] contract to a list
+  const selectedOptions = React.useMemo(() => {
+    if (value === undefined || value === null) {
+      // SAFETY: T[] is the empty option list shape; nothing is cast.
+      return [] as T[];
+    }
+
+    const values: string[] = [];
+
+    if (Array.isArray(value)) {
+      values.push(...value);
+    } else {
+      values.push(value);
+    }
+
+    return values.flatMap((v) => {
+      const found = flatOptionsList.find((o) => o.value === v);
+
+      if (found) {
+        return [found];
+      }
+
+      return [];
+    });
+  }, [value, flatOptionsList]);
+
+  const debouncedQuery = useDebounce(inputValue, debounceMs);
 
   React.useEffect(() => {
     if (!async || !onSearch) return;
@@ -447,7 +498,8 @@ function SelectField<T extends SelectOption = SelectOption>({
     }
 
     if (cacheOptions && cacheRef.current.has(debouncedQuery)) {
-      setOptions(cacheRef.current.get(debouncedQuery) || []);
+      const cached = cacheRef.current.get(debouncedQuery);
+      setAsyncOptions(cached || []);
 
       return;
     }
@@ -458,9 +510,12 @@ function SelectField<T extends SelectOption = SelectOption>({
     onSearch(debouncedQuery)
       .then((results) => {
         if (!cancelled) {
-          setOptions(results as T[]);
+          // SAFETY: onSearch's Promise resolves to T[] per the KiraSelectProps
+          // contract; the generic parameter erases it inside the hook.
+          setAsyncOptions(results as T[]);
 
           if (cacheOptions) {
+            // SAFETY: results is T[] per the onSearch contract (same as above).
             cacheRef.current.set(debouncedQuery, results as T[]);
           }
 
@@ -469,7 +524,7 @@ function SelectField<T extends SelectOption = SelectOption>({
       })
       .catch(() => {
         if (!cancelled) {
-          setOptions([]);
+          setAsyncOptions([]);
           setIsLoading(false);
         }
       });
@@ -479,567 +534,551 @@ function SelectField<T extends SelectOption = SelectOption>({
     };
   }, [debouncedQuery, isOpen, async, onSearch, cacheOptions]);
 
-  const filteredOptions = React.useMemo(() => {
-    if (async) {
-      return options;
+  interface ComboboxEmittedValue {
+    value: string;
+    label?: string;
+  }
+
+  interface ComboboxFilteredGroup<T> {
+    label: string;
+    items: T[];
+  }
+
+  type ComboboxEmitted = string | ComboboxEmittedValue | null;
+
+  const isStringEmitted = (item: ComboboxEmitted): item is string =>
+    // SAFETY: discriminating the union by its string member; the object
+    // member always has `value: string`, so a bare string can only be the
+    // string branch.
+    isStringValue(item);
+
+  const toValueString = (item: ComboboxEmitted): string => {
+    if (isStringEmitted(item)) {
+      return item;
     }
 
-    if (!inputValue) {
-      return options;
+    if (item !== null && isStringValue(item.value)) {
+      return item.value;
     }
 
-    return options.filter((opt) => {
-      if (filterFn) {
-        return filterFn(opt, inputValue);
+    return String(item);
+  };
+
+  type RawComboboxEventValue = ComboboxEmitted | ComboboxEmitted[];
+
+  const handleValueChange = React.useCallback(
+    (next: RawComboboxEventValue, eventDetails: { cancel: () => void }) => {
+      // Base UI's onValueChange delivers: derived string(s) from the
+      // createItems() collection, or the create pseudo-item's { value, label }
+      // object, or null (clear). Normalize to a flat list of strings.
+      const rawList: ComboboxEmitted[] = (() => {
+        if (Array.isArray(next)) {
+          return next;
+        }
+
+        if (next !== null && next !== undefined) {
+          return [next];
+        }
+
+        return [];
+      })();
+
+      const nextList: string[] = rawList.map(toValueString);
+
+      const trimmed = inputValue.trim();
+
+      const isCreatePick =
+        creatable &&
+        nextList.length === 1 &&
+        nextList[0] === trimmed &&
+        trimmed !== "" &&
+        !flat.some((o) => o.value === nextList[0]);
+
+      if (isCreatePick) {
+        onCreateOption?.(nextList[0]);
+        setInputValue("");
+        setIsOpen(false);
+        onOpenChange?.(false);
+        eventDetails.cancel();
+
+        return;
       }
 
-      return fuzzyMatching
-        ? fuzzyMatch(opt.label, inputValue)
-        : opt.label.toLowerCase().includes(inputValue.toLowerCase());
-    });
-  }, [options, inputValue, fuzzyMatching, filterFn, async]);
-
-  const showCreateOption = React.useMemo(() => {
-    if (!creatable || !inputValue.trim()) return false;
-    const normalizedInput = inputValue.trim().toLowerCase();
-
-    return !filteredOptions.some(
-      (opt) => opt.label.toLowerCase() === normalizedInput
-    );
-  }, [creatable, inputValue, filteredOptions]);
-
-  useGSAP(() => {
-    if (isOpen && listRef.current && !isLoading) {
-      const items = listRef.current.querySelectorAll("[data-option]");
-
-      if (items.length > 0) {
-        const mm = gsap.matchMedia();
-        mm.add("(prefers-reduced-motion: no-preference)", () => {
-          gsap.fromTo(
-            items,
-            { opacity: 0, y: -10 },
-            {
-              opacity: 1,
-              y: 0,
-              stagger: 0.03,
-              duration: 0.2,
-              ease: "power2.out",
-            }
-          );
-        });
-
-        return () => mm.revert();
-      }
-    }
-  }, [isOpen, filteredOptions.length, isLoading]);
-
-  const handleSelect = (optionValue: string) => {
-    const option = options.find((o) => o.value === optionValue);
-
-    if (multiple) {
-      const newValues = selectedValues.includes(optionValue)
-        ? selectedValues.filter((v) => v !== optionValue)
-        : [...selectedValues, optionValue];
-
-      const newOptions = options.filter((o) => newValues.includes(o.value));
-      onChange?.(newValues, newOptions as T[]);
-      setInputValue("");
-    } else {
-      onChange?.(optionValue, option || null);
-      setIsOpen(false);
-
-      if (option) {
-        setInputValue(option.label);
-      }
-    }
-  };
-
-  const handleRemoveChip = (optionValue: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const newValues = selectedValues.filter((v) => v !== optionValue);
-    const newOptions = options.filter((o) => newValues.includes(o.value));
-    onChange?.(
-      multiple ? newValues : "",
-      multiple ? (newOptions as T[]) : null
-    );
-  };
-
-  const handleClear = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onChange?.(multiple ? [] : "", null);
-    setInputValue("");
-  };
-
-  const handleCreate = () => {
-    if (inputValue.trim() && onCreateOption) {
-      onCreateOption(inputValue.trim());
-      setInputValue("");
-      setIsOpen(false);
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setInputValue(newValue);
-    onSearchChange?.(newValue);
-
-    if (!isOpen) {
-      handleOpenChange(true);
-    }
-  };
-
-  const enabledOptions = React.useMemo(() => {
-    return filteredOptions.filter((opt) => !opt.disabled);
-  }, [filteredOptions]);
-
-  const handleTypeahead = React.useCallback(
-    (char: string) => {
-      if (typeaheadTimeoutRef.current) {
-        clearTimeout(typeaheadTimeoutRef.current);
-      }
-
-      typeaheadRef.current += char.toLowerCase();
-
-      const matchIndex = enabledOptions.findIndex((opt) =>
-        opt.label.toLowerCase().startsWith(typeaheadRef.current)
-      );
-
-      if (matchIndex !== -1) {
-        const actualIndex = filteredOptions.findIndex(
-          (opt) => opt.value === enabledOptions[matchIndex].value
+      if (multiple) {
+        onChange?.(
+          nextList,
+          flat.filter((o) => nextList.includes(o.value)),
         );
-
-        setHighlightedIndex(actualIndex);
+      } else {
+        const v = nextList[0] ?? "";
+        onChange?.(v, flat.find((o) => o.value === v) ?? null);
       }
-
-      typeaheadTimeoutRef.current = setTimeout(() => {
-        typeaheadRef.current = "";
-      }, 500);
     },
-    [enabledOptions, filteredOptions]
+    [
+      multiple,
+      flat,
+      creatable,
+      inputValue,
+      onCreateOption,
+      onChange,
+      onOpenChange,
+    ],
   );
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    const optionCount = filteredOptions.length + (showCreateOption ? 1 : 0);
+  const handleInputValueChange = React.useCallback(
+    (next: string) => {
+      setInputValue(next);
+      onSearchChange?.(next);
+    },
+    [onSearchChange],
+  );
 
-    switch (e.key) {
-      case "Escape":
-        e.preventDefault();
-        handleOpenChange(false);
-        break;
+  const handleOpenChange = React.useCallback(
+    (open: boolean) => {
+      setIsOpen(open);
+      onOpenChange?.(open);
+    },
+    [onOpenChange],
+  );
 
-      case "ArrowDown":
-        e.preventDefault();
+  // When closing, clear the query so reopening shows the full list and the
+  // selected label doesn't stick in the input (pre-rebuild bug fix).
+  const [prevIsOpen, setPrevIsOpen] = React.useState(false);
 
-        if (isOpen) {
-          setHighlightedIndex((prev) => {
-            const next = prev + 1;
+  if (prevIsOpen !== isOpen) {
+    setPrevIsOpen(isOpen);
 
-            return next >= optionCount ? 0 : next;
-          });
-        } else {
-          handleOpenChange(true);
-        }
-
-        break;
-
-      case "ArrowUp":
-        e.preventDefault();
-
-        if (isOpen) {
-          setHighlightedIndex((prev) => {
-            const next = prev - 1;
-
-            return next < 0 ? optionCount - 1 : next;
-          });
-        } else {
-          handleOpenChange(true);
-        }
-
-        break;
-
-      case "Home":
-        e.preventDefault();
-
-        if (isOpen) {
-          setHighlightedIndex(0);
-        }
-
-        break;
-
-      case "End":
-        e.preventDefault();
-
-        if (isOpen) {
-          setHighlightedIndex(optionCount - 1);
-        }
-
-        break;
-
-      case "PageUp":
-        e.preventDefault();
-
-        if (isOpen) {
-          setHighlightedIndex((prev) => Math.max(0, prev - 10));
-        }
-
-        break;
-
-      case "PageDown":
-        e.preventDefault();
-
-        if (isOpen) {
-          setHighlightedIndex((prev) => Math.min(optionCount - 1, prev + 10));
-        }
-
-        break;
-
-      case "Enter":
-        e.preventDefault();
-
-        if (isOpen && highlightedIndex >= 0) {
-          if (highlightedIndex < filteredOptions.length) {
-            const option = filteredOptions[highlightedIndex];
-
-            if (!option.disabled) {
-              handleSelect(option.value);
-            }
-          } else if (showCreateOption) {
-            handleCreate();
-          }
-        } else if (!isOpen) {
-          handleOpenChange(true);
-        }
-
-        break;
-
-      case " ": // Space
-        if (!searchable && !isOpen) {
-          e.preventDefault();
-          handleOpenChange(true);
-        }
-
-        break;
-
-      case "Tab":
-        handleOpenChange(false);
-        break;
-
-      case "Backspace":
-        if (!inputValue && multiple && selectedValues.length > 0) {
-          // Bound on both the trigger and the input; stop the bubble so an
-          // empty-input Backspace doesn't remove two tags.
-          e.stopPropagation();
-          const newValues = selectedValues.slice(0, -1);
-          const newOptions = options.filter((o) => newValues.includes(o.value));
-          onChange?.(newValues, newOptions as T[]);
-        }
-
-        break;
-
-      default:
-        if (!searchable && e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-          handleTypeahead(e.key);
-        }
-
-        break;
+    if (!isOpen && inputValue) {
+      setInputValue("");
     }
-  };
+  }
 
-  const handleClearAll = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onChange?.([], []);
-    setInputValue("");
-    onClearAll?.();
-  };
+  const trimmedQuery = inputValue.trim();
 
-  const selectedOptions = options.filter((o) =>
-    selectedValues.includes(o.value)
+  const showCreateOption =
+    creatable &&
+    trimmedQuery !== "" &&
+    !flatOptionsList.some(
+      (opt) => opt.label.toLowerCase() === trimmedQuery.toLowerCase(),
+    );
+
+  const subsequenceFilter = React.useMemo(
+    () => (item: T, query: string) => subsequenceMatch(item.label, query),
+    [],
   );
 
-  const displayedTags = selectedOptions.slice(0, maxDisplayedTags);
-  const remainingCount = selectedOptions.length - maxDisplayedTags;
+  const resolveFilter = () => {
+    if (async) {
+      // Base UI disables internal filtering with `null` (not `false`): async
+      // results arrive pre-filtered by the consumer's onSearch.
+      return null;
+    }
+
+    if (filterFn) {
+      return filterFn;
+    }
+
+    if (fuzzyMatching) {
+      return subsequenceFilter;
+    }
+
+    return filterUtils.contains;
+  };
+
+  const filterFn_ = resolveFilter();
+
+  // === GSAP stagger (open only, never while typing) ===
+  useGSAP(
+    () => {
+      if (!isOpen || !popupEl || isLoading) return;
+
+      if (reducedMotion) return;
+
+      // Base UI syncs item indices right after open; target the post-sync DOM.
+      let mm: gsap.MatchMedia | undefined;
+
+      const raf = requestAnimationFrame(() => {
+        mm = gsap.matchMedia();
+        mm.add("(prefers-reduced-motion: no-preference)", () => {
+          const items = popupEl.querySelectorAll(
+            "[data-slot=select-field-option], [data-slot=select-field-create]",
+          );
+
+          if (items.length === 0) {
+            return;
+          }
+
+          gsap.from(items, {
+            y: -10,
+            opacity: 0,
+            duration: 0.2,
+            ease: "power2.out",
+            stagger: 0.03,
+          });
+        });
+      });
+
+      return () => {
+        cancelAnimationFrame(raf);
+        mm?.revert();
+      };
+    },
+    { dependencies: [isOpen, popupEl], revertOnUpdate: true },
+  );
 
   const triggerClasses = cn(
     "flex flex-wrap items-center gap-1 min-h-8 px-2 py-1 rounded-lg border bg-transparent cursor-text w-full transition-colors",
-
     variant === "default" &&
       "border-input dark:bg-input/30 dark:hover:bg-input/50",
     variant === "ghost" && "border-transparent hover:bg-muted",
     variant === "outline" && "border-input bg-transparent hover:bg-muted/50",
-
     "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
     ariaInvalid &&
       "border-destructive ring-destructive/20 focus-within:border-destructive focus-within:ring-destructive/30",
-
     size === "sm" && "min-h-7 rounded-[min(var(--radius-md),10px)]",
-    disabled && "opacity-50 pointer-events-none cursor-not-allowed"
+    disabled && "opacity-50 pointer-events-none cursor-not-allowed",
+    className,
   );
 
   const popupClasses = cn(
-    "absolute z-50 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-border bg-popover p-1 shadow-md",
+    "z-50 max-h-60 overflow-auto rounded-lg border border-border bg-popover p-1 shadow-md min-w-36 w-(--anchor-width)",
     !reducedMotion &&
-      "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95"
+      "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95",
   );
 
-  const itemClasses = (
-    isHighlighted: boolean,
-    isSelected: boolean,
-    isDisabled?: boolean
-  ) =>
-    cn(
-      "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none cursor-pointer",
-      isHighlighted && "bg-accent text-accent-foreground",
-      isSelected && "font-medium",
-      isDisabled && "opacity-50 pointer-events-none cursor-not-allowed"
-    );
+  const itemClasses = cn(
+    "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none cursor-pointer",
+    "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+    "data-selected:font-medium",
+    "data-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
+  );
 
-  const activeDescendantId =
-    highlightedIndex >= 0 && highlightedIndex < filteredOptions.length
-      ? `${listId}-option-${highlightedIndex}`
-      : undefined;
+  const virtualItems = useVirtualizer({
+    count: flatOptionsList.length,
+    getScrollElement: () => popupEl,
+    estimateSize: () => 36,
+    overscan: 8,
+    getItemKey: (i) => flatOptionsList[i].value,
+    enabled: virtualized,
+  });
+
+  const displayedTags = selectedOptions.slice(0, maxDisplayedTags);
+  const remainingCount = selectedOptions.length - maxDisplayedTags;
+
+  const renderOption = (option: T) => (
+    <ComboboxPrimitive.Item
+      key={option.value}
+      data-slot="select-field-option"
+      value={option.value}
+      disabled={option.disabled}
+      className={itemClasses}
+    >
+      {multiple && (
+        <div
+          className={cn(
+            "h-4 w-4 border rounded flex items-center justify-center shrink-0",
+            option.value !== undefined && "border-input",
+          )}
+        >
+          <ComboboxPrimitive.ItemIndicator>
+            <IconCheck className="h-3 w-3 text-primary-foreground bg-primary" />
+          </ComboboxPrimitive.ItemIndicator>
+        </div>
+      )}
+      <span className="flex-1 text-left truncate">{option.label}</span>
+      {!multiple && (
+        <ComboboxPrimitive.ItemIndicator>
+          <IconCheck className="h-4 w-4 text-primary shrink-0" />
+        </ComboboxPrimitive.ItemIndicator>
+      )}
+    </ComboboxPrimitive.Item>
+  );
+
+  const useGroupedRendering =
+    isGroupedOptions(options) && !virtualized && !async;
+
+  // Renders the Base UI-derived (filtered) items inside the popup. Lives in a
+  // child component because useFilteredItems is a context hook.
+  function FilteredItemsList({ grouped }: { grouped: boolean }) {
+    // SAFETY: filteredItems holds source items (T) — with a createItems()
+    // collection the root filters source items via the collection's getLabel.
+    const filtered = ComboboxPrimitive.useFilteredItems<T>();
+
+    if (grouped) {
+      // Grouped data: Base UI returns filtered groups ({ label, items });
+      // render labels + items from it so filtering respects grouping.
+      // SAFETY: grouped input produces Group-shaped entries with our own
+      // { label, items } mapping, so every entry carries label + T items.
+      const groups = filtered as ComboboxFilteredGroup<T>[];
+
+      return (
+        <>
+          {groups.map((group) => (
+            <ComboboxPrimitive.Group key={group.label}>
+              <ComboboxPrimitive.GroupLabel
+                data-slot="select-field-group-label"
+                className="text-muted-foreground px-1.5 py-1 text-xs"
+              >
+                {group.label}
+              </ComboboxPrimitive.GroupLabel>
+              {group.items.map(renderOption)}
+            </ComboboxPrimitive.Group>
+          ))}
+        </>
+      );
+    }
+
+    return <>{filtered.map(renderOption)}</>;
+  }
+
+  const inputPlaceholder = (() => {
+    if (multiple && selectedOptions.length > 0) {
+      return "";
+    }
+
+    return placeholder;
+  })();
+
+  const statusText = (() => {
+    if (isLoading) {
+      return loadingMessage || "Loading...";
+    }
+
+    return "";
+  })();
+
+  const emptyText = (() => {
+    if (emptyMessage) {
+      return emptyMessage;
+    }
+
+    if (trimmedQuery) {
+      return "No results found";
+    }
+
+    if (async) {
+      return searchingMessage || "Type to search...";
+    }
+
+    return "No options";
+  })();
+
+  const createOptionValue = { value: trimmedQuery, label: trimmedQuery };
+
+  const renderVirtualizedItems = () => (
+    <div
+      style={{
+        height: virtualItems.getTotalSize(),
+        position: "relative",
+        width: "100%",
+      }}
+    >
+      {virtualItems.getVirtualItems().map((vItem) => (
+        <div
+          key={vItem.key}
+          data-index={vItem.index}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            transform: `translateY(${vItem.start}px)`,
+            width: "100%",
+          }}
+        >
+          {renderOption(flatOptionsList[vItem.index])}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
-    <div data-slot="select-field" className={cn("relative w-full", className)}>
-      {name && (
-        <input
-          type="hidden"
-          name={name}
-          value={multiple ? selectedValues.join(",") : selectedValues[0] || ""}
-        />
-      )}
-
-      <div
-        ref={triggerRef}
-        id={triggerId}
+    <ComboboxPrimitive.Root
+      multiple={multiple}
+      items={collection}
+      /* SAFETY: createItems() makes the primitive's Value the derived string, matching the KiraSelect contract. */
+      value={value as never}
+      /* SAFETY: same string contract as `value` above. */
+      defaultValue={defaultValue as never}
+      /* SAFETY: handler receives derived string values; runtime shape is guarded in the handler body. */
+      onValueChange={handleValueChange as never}
+      inputValue={inputValue}
+      onInputValueChange={handleInputValueChange}
+      /* SAFETY: filter receives source items (T) per the collection contract; `false` disables internal filtering for async. */
+      filter={filterFn_ as never}
+      virtualized={virtualized}
+      disabled={disabled}
+      required={required}
+      name={name}
+      onOpenChange={(open) => handleOpenChange(open)}
+    >
+      <ComboboxPrimitive.InputGroup
         data-slot="select-field-trigger"
         className={triggerClasses}
-        onClick={() => !disabled && handleOpenChange(!isOpen)}
-        onKeyDown={handleKeyDown}
-        tabIndex={disabled ? -1 : 0}
-        role="combobox"
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-        aria-controls={isOpen ? listId : undefined}
-        aria-activedescendant={activeDescendantId}
-        aria-disabled={disabled}
-        aria-required={required}
-        aria-invalid={ariaInvalid}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledby}
         aria-describedby={ariaDescribedby}
+        aria-invalid={ariaInvalid}
       >
         {leftIcon && (
           <span className="shrink-0 text-muted-foreground">{leftIcon}</span>
         )}
-
         {showSearchIcon && searchable && !leftIcon && (
-          <IconSearch className="h-4 w-4 text-muted-foreground shrink-0" />
+          <IconSearch
+            className="h-4 w-4 text-muted-foreground shrink-0"
+            data-slot="select-field-search-icon"
+          />
         )}
-
-        {multiple &&
-          displayedTags.map((opt) => (
-            <span
-              key={opt.value}
-              data-slot="select-field-tag"
-              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md bg-muted shrink-0"
-            >
-              {opt.label}
-              <button
-                type="button"
-                onClick={(e) => handleRemoveChip(opt.value, e)}
-                className="hover:text-destructive rounded-sm"
-                aria-label={`Remove ${opt.label}`}
+        {multiple && (
+          <ComboboxPrimitive.Chips
+            data-slot="select-field-chips"
+            className="contents"
+          >
+            {displayedTags.map((opt) => (
+              <ComboboxPrimitive.Chip
+                key={opt.value}
+                data-slot="select-field-tag"
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md bg-muted shrink-0"
               >
-                <IconX className="h-3 w-3" />
-              </button>
-            </span>
-          ))}
-
+                {opt.label}
+                <ComboboxPrimitive.ChipRemove
+                  render={
+                    <button
+                      type="button"
+                      aria-label={`Remove ${opt.label}`}
+                      className="hover:text-destructive rounded-sm"
+                    />
+                  }
+                >
+                  <IconX className="h-3 w-3" />
+                </ComboboxPrimitive.ChipRemove>
+              </ComboboxPrimitive.Chip>
+            ))}
+          </ComboboxPrimitive.Chips>
+        )}
         {remainingCount > 0 && (
           <span className="text-xs text-muted-foreground shrink-0">
             +{remainingCount} more
           </span>
         )}
-
-        {searchable ? (
-          <input
-            ref={inputRef}
-            type="text"
-            data-slot="select-field-input"
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            onBlur={() => setTimeout(() => handleOpenChange(false), 150)}
-            placeholder={
-              multiple && selectedValues.length > 0 ? "" : placeholder
-            }
-            disabled={disabled}
-            className="flex-1 min-w-20 bg-transparent text-sm placeholder:text-muted-foreground focus:outline-none"
-            aria-autocomplete="list"
-            aria-controls={isOpen ? listId : undefined}
-          />
-        ) : (
-          <span
-            className={cn(
-              "flex-1 text-sm text-left truncate",
-              !selectedOptions.length && "text-muted-foreground"
-            )}
-          >
-            {!multiple && selectedOptions.length > 0
-              ? selectedOptions[0].label
-              : placeholder}
-          </span>
-        )}
-
+        <ComboboxPrimitive.Input
+          data-slot="select-field-input"
+          placeholder={inputPlaceholder}
+          className="flex-1 min-w-20 bg-transparent text-sm placeholder:text-muted-foreground outline-none"
+        />
         {isLoading && (
-          <IconLoader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
-        )}
-
-        {!isLoading && !multiple && selectedValues.length > 0 && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="rounded-sm p-0.5 hover:bg-muted"
-            aria-label="Clear selection"
-          >
-            <IconX className="h-4 w-4" />
-          </button>
-        )}
-
-        {!isLoading && selectedValues.length > 0 && multiple && (
-          <button
-            type="button"
-            onClick={handleClearAll}
-            className="rounded-sm p-0.5 hover:bg-muted"
-            aria-label="Clear all selections"
-          >
-            <IconX className="h-4 w-4" />
-          </button>
-        )}
-
-        {!isLoading && !hideChevron && (
-          <IconChevronDown
-            className={cn(
-              "h-4 w-4 text-muted-foreground shrink-0 transition-transform",
-              isOpen && "rotate-180"
-            )}
+          <IconLoader2
+            className="h-4 w-4 animate-spin text-muted-foreground shrink-0"
+            data-slot="select-field-loading-icon"
           />
         )}
-      </div>
+        {!isLoading && !multiple && selectedOptions.length > 0 && (
+          <ComboboxPrimitive.Clear
+            render={
+              <button
+                type="button"
+                aria-label="Clear selection"
+                className="rounded-sm p-0.5 hover:bg-muted"
+                data-slot="select-field-clear"
+              />
+            }
+          >
+            <IconX className="h-4 w-4" />
+          </ComboboxPrimitive.Clear>
+        )}
+        {!isLoading && multiple && selectedOptions.length > 0 && (
+          <ComboboxPrimitive.Clear
+            render={
+              <button
+                type="button"
+                aria-label="Clear all selections"
+                className="rounded-sm p-0.5 hover:bg-muted"
+                data-slot="select-field-clear"
+              />
+            }
+          >
+            <IconX className="h-4 w-4" />
+          </ComboboxPrimitive.Clear>
+        )}
+        {!isLoading && !hideChevron && (
+          <ComboboxPrimitive.Icon
+            render={
+              <IconChevronDown
+                className={cn(
+                  "h-4 w-4 text-muted-foreground shrink-0 transition-transform",
+                  isOpen && "rotate-180",
+                )}
+                data-slot="select-field-chevron"
+              />
+            }
+          />
+        )}
+      </ComboboxPrimitive.InputGroup>
 
-      {isOpen && (
-        <div
-          ref={listRef}
-          id={listId}
-          data-slot="select-field-list"
-          className={popupClasses}
-          role="listbox"
-          aria-multiselectable={multiple}
-          aria-label={ariaLabel}
+      <ComboboxPrimitive.Portal>
+        <ComboboxPrimitive.Positioner
+          data-slot="select-field-positioner"
+          sideOffset={4}
+          className="z-50"
         >
-          {isLoading ? (
-            <div className="flex items-center justify-center py-4 gap-2 text-sm text-muted-foreground">
-              <IconLoader2 className="h-4 w-4 animate-spin" />
-              {loadingMessage || "Loading..."}
-            </div>
-          ) : filteredOptions.length === 0 && !showCreateOption ? (
-            <div className="py-4 text-center text-sm text-muted-foreground">
-              {emptyMessage ||
-                (inputValue
-                  ? "No results found"
-                  : async
-                    ? searchingMessage || "Type to search..."
-                    : "No options")}
-            </div>
-          ) : (
-            <>
-              {filteredOptions.map((option, index) => {
-                const isSelected = selectedValues.includes(option.value);
-                const isHighlighted = index === highlightedIndex;
-
-                return (
+          <ComboboxPrimitive.Popup
+            ref={setPopupEl}
+            data-slot="select-field-list"
+            className={popupClasses}
+          >
+            <ComboboxPrimitive.Status
+              data-slot="select-field-status"
+              className="sr-only"
+            >
+              {statusText}
+            </ComboboxPrimitive.Status>
+            {isLoading && (
+              <div data-slot="select-field-skeleton" className="space-y-1 p-1">
+                {Array.from({ length: 3 }).map((_, i) => (
                   <div
-                    key={option.value}
-                    id={`${listId}-option-${index}`}
-                    data-slot="select-field-option"
-                    data-option
-                    role="option"
-                    aria-selected={isSelected}
-                    aria-disabled={option.disabled}
-                    className={itemClasses(
-                      isHighlighted,
-                      isSelected,
-                      option.disabled
-                    )}
-                    onClick={() =>
-                      !option.disabled && handleSelect(option.value)
-                    }
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                    }}
-                    onMouseEnter={() => setHighlightedIndex(index)}
-                  >
-                    {multiple && (
-                      <div
-                        className={cn(
-                          "h-4 w-4 border rounded flex items-center justify-center shrink-0",
-                          isSelected
-                            ? "bg-primary border-primary"
-                            : "border-input"
-                        )}
-                      >
-                        {isSelected && (
-                          <IconCheck className="h-3 w-3 text-primary-foreground" />
-                        )}
-                      </div>
-                    )}
-                    <span className="flex-1 text-left truncate">
-                      {option.label}
-                    </span>
-                    {!multiple && isSelected && (
-                      <IconCheck className="h-4 w-4 text-primary shrink-0" />
-                    )}
-                  </div>
-                );
-              })}
-
-              {showCreateOption && (
-                <div
-                  id={`${listId}-option-${filteredOptions.length}`}
-                  data-slot="select-field-create"
-                  data-option
-                  role="option"
-                  aria-selected={false}
-                  className={cn(
-                    itemClasses(
-                      highlightedIndex === filteredOptions.length,
-                      false
-                    ),
-                    "text-primary"
-                  )}
-                  onClick={handleCreate}
-                  onMouseEnter={() =>
-                    setHighlightedIndex(filteredOptions.length)
-                  }
-                >
-                  <span className="flex-1 text-left">
-                    {createLabel} "{inputValue.trim()}"
-                  </span>
-                </div>
+                    key={i}
+                    className="h-8 rounded-md bg-muted animate-pulse"
+                  />
+                ))}
+              </div>
+            )}
+            <ComboboxPrimitive.Empty
+              data-slot="select-field-empty"
+              // Base UI keeps this root div mounted even when the list is
+              // non-empty (children null); `empty:hidden` collapses the
+              // otherwise-padding gap above the list.
+              className="py-4 text-center text-sm text-muted-foreground empty:hidden"
+            >
+              {!isLoading && emptyText}
+            </ComboboxPrimitive.Empty>
+            {showCreateOption && (
+              <ComboboxPrimitive.Item
+                data-slot="select-field-create"
+                value={createOptionValue}
+                className={cn(itemClasses, "text-primary")}
+              >
+                <span className="flex-1 text-left">
+                  {createLabel} "{trimmedQuery}"
+                </span>
+              </ComboboxPrimitive.Item>
+            )}
+            <ComboboxPrimitive.List data-slot="select-field-options">
+              {virtualized && renderVirtualizedItems()}
+              {!virtualized && (
+                <FilteredItemsList grouped={useGroupedRendering} />
               )}
-            </>
-          )}
-        </div>
-      )}
-    </div>
+            </ComboboxPrimitive.List>
+          </ComboboxPrimitive.Popup>
+        </ComboboxPrimitive.Positioner>
+      </ComboboxPrimitive.Portal>
+    </ComboboxPrimitive.Root>
   );
 }
 
 // === KiraSelect: one prop-driven combobox ===
 
 interface KiraSelectProps<T extends SelectOption = SelectOption> {
-  options: T[] | GroupedSelectOption<T>[];
+  /** Options to display. A `string[]` shorthand maps each entry to `{ value, label }`. */
+  options: T[] | GroupedSelectOption<T>[] | readonly string[];
   value?: string | string[];
   defaultValue?: string | string[];
   onChange?: (value: string | string[], option: T | T[] | null) => void;
@@ -1057,6 +1096,8 @@ interface KiraSelectProps<T extends SelectOption = SelectOption> {
   leftIcon?: React.ReactNode;
   hideChevron?: boolean;
   maxDisplayedTags?: number;
+  /** Windowed rendering for very long lists. Renders a flat window; grouping is ignored. */
+  virtualized?: boolean;
   emptyMessage?: string | React.ReactNode;
   loadingMessage?: string | React.ReactNode;
   searchingMessage?: string | React.ReactNode;
@@ -1068,6 +1109,7 @@ interface KiraSelectProps<T extends SelectOption = SelectOption> {
   "aria-label"?: string;
 }
 
+/* oxlint-disable complexity -- prop-driven mode router (simple vs rich path); branching mirrors the public API */
 function KiraSelect<T extends SelectOption = SelectOption>({
   options,
   value,
@@ -1087,6 +1129,7 @@ function KiraSelect<T extends SelectOption = SelectOption>({
   leftIcon,
   hideChevron = false,
   maxDisplayedTags = 3,
+  virtualized = false,
   emptyMessage,
   loadingMessage,
   searchingMessage,
@@ -1102,17 +1145,31 @@ function KiraSelect<T extends SelectOption = SelectOption>({
   >(defaultValue);
 
   const isControlled = value !== undefined;
-  const currentValue = isControlled ? value : internalValue;
+  let currentValue: string | string[] | undefined = internalValue;
+
+  if (isControlled) {
+    currentValue = value;
+  }
 
   const isRich = searchable || async || creatable || multiple;
-  const flat = React.useMemo(() => flattenOptions(options), [options]);
 
-  // --- Rich path: delegate to the SelectField state machine ---
+  const normalizedOptions = React.useMemo(
+    () => normalizeOptions(options),
+    [options],
+  );
+
+  const flat = React.useMemo(
+    () => flattenOptions(normalizedOptions),
+    [normalizedOptions],
+  );
+
+  // --- Rich path: delegate to the Combobox-backed field ---
   if (isRich) {
     return (
-      <SelectField<T>
-        options={options}
+      <ComboboxField<T>
+        options={normalizedOptions}
         value={currentValue}
+        defaultValue={defaultValue}
         onChange={(val, opt) => {
           if (!isControlled) setInternalValue(val);
           onChange?.(val, opt);
@@ -1131,6 +1188,7 @@ function KiraSelect<T extends SelectOption = SelectOption>({
         leftIcon={leftIcon}
         hideChevron={hideChevron}
         maxDisplayedTags={maxDisplayedTags}
+        virtualized={virtualized}
         emptyMessage={emptyMessage}
         loadingMessage={loadingMessage}
         searchingMessage={searchingMessage}
@@ -1151,14 +1209,43 @@ function KiraSelect<T extends SelectOption = SelectOption>({
       </SelectItem>
     ));
 
+  const renderContent = () => {
+    if (isGroupedOptions(normalizedOptions)) {
+      return normalizedOptions.map((group) => (
+        <SelectGroup key={group.label}>
+          <SelectLabel>{group.label}</SelectLabel>
+          {renderItems(group.options)}
+        </SelectGroup>
+      ));
+    }
+
+    return renderItems(normalizedOptions);
+  };
+
+  // SAFETY: the simple path is single-select only, so the value contract
+  // narrows to `string`; empty string is the primitive's no-selection value.
+  const selectValue = currentValue as string;
+
+  // SAFETY: values come from flat options' own `value: string` fields; React
+  // nodes are the labels the simple path renders.
+  const labelMap: Record<string, React.ReactNode> = Object.fromEntries(
+    flat.map((o) => [o.value, o.label]),
+  );
+
+  const handleSimpleChange = (val: string) => {
+    if (!isControlled) {
+      setInternalValue(val);
+    }
+
+    const opt = flat.find((o) => o.value === val) ?? null;
+    onChange?.(val, opt);
+  };
+
   return (
     <Select
-      value={(currentValue as string) ?? ""}
-      onValueChange={(val) => {
-        if (!isControlled) setInternalValue(val as string);
-        const opt = flat.find((o) => o.value === val) ?? null;
-        onChange?.(val as string, opt);
-      }}
+      value={selectValue || ""}
+      onValueChange={handleSimpleChange}
+      items={labelMap}
       disabled={disabled}
       name={name}
       required={required}
@@ -1174,19 +1261,11 @@ function KiraSelect<T extends SelectOption = SelectOption>({
         )}
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
-        {isGroupedOptions(options)
-          ? options.map((group) => (
-              <SelectGroup key={group.label}>
-                <SelectLabel>{group.label}</SelectLabel>
-                {renderItems(group.options)}
-              </SelectGroup>
-            ))
-          : renderItems(options)}
-      </SelectContent>
+      <SelectContent>{renderContent()}</SelectContent>
     </Select>
   );
 }
+/* oxlint-enable complexity -- end KiraSelect */
 
 export {
   Select,
@@ -1199,14 +1278,7 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-  SelectField,
   KiraSelect,
 };
 
-export type {
-  SelectOption,
-  AutocompleteOption,
-  GroupedSelectOption,
-  SelectFieldProps,
-  KiraSelectProps,
-};
+export type { SelectOption, GroupedSelectOption, KiraSelectProps };

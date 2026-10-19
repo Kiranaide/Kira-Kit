@@ -902,9 +902,9 @@ export function AsyncLoadingDemo() {
       onItemOpen={async (item) => {
         // Load data asynchronously
         const data = await fetchData(item.value)
-        setItems(prev => prev.map(i => 
-          i.value === item.value 
-            ? { ...i, loading: false, content: data } 
+        setItems(prev => prev.map(i =>
+          i.value === item.value
+            ? { ...i, loading: false, content: data }
             : i
         ))
       }}
@@ -958,6 +958,7 @@ function StressDemo() {
       content:
         "This entry is disabled and cannot be opened. It proves disabled items render correctly inside the stress container.",
       disabled: true,
+      disabledReason: "Build was rolled back — artifacts removed from storage.",
     },
   ];
 
@@ -967,6 +968,44 @@ function StressDemo() {
     </div>
   );
 }
+
+function DisabledReasonsDemo() {
+  const items: AccordionItemData[] = [
+    {
+      value: "billing",
+      title: "Billing history",
+      content: "Invoices, receipts, and payment methods for this workspace.",
+    },
+    {
+      value: "sso",
+      title: "SSO configuration",
+      content: "SAML and OIDC identity provider settings.",
+      disabled: true,
+      disabledReason: "Available on the Enterprise plan — upgrade to enable.",
+    },
+    {
+      value: "audit-log",
+      title: "Audit log",
+      content: "Every configuration change, with actor and timestamp.",
+      disabled: true,
+      disabledReason: "Log retention expired — contact support to restore.",
+    },
+  ];
+
+  return <KiraAccordion items={items} />;
+}
+
+const disabledReasonsCode = `import { KiraAccordion } from "@/components/ui/accordion"
+
+// Disabled items with a reason stay keyboard-reachable: Tab to the item and
+// the tooltip opens on focus (§9 — never leave a disabled control unexplained).
+<KiraAccordion
+  items={[
+    { value: "sso", title: "SSO configuration", content: "…",
+      disabled: true,
+      disabledReason: "Available on the Enterprise plan — upgrade to enable." },
+  ]}
+/>`;
 
 const stressCode = `import { KiraAccordion } from "@/components/ui/accordion"
 
@@ -1150,7 +1189,7 @@ export default function AccordionPage() {
       <PageHeader
         title="Accordion"
         description="Collapsible content panels for organizing information. Supports icons, colors, sizes, nested accordions, and lazy loading."
-        version="v2.1"
+        version="v2.1.2"
       />
 
       <FeatureGrid
@@ -1158,7 +1197,7 @@ export default function AccordionPage() {
           {
             title: "Accessible",
             description:
-              "WAI-ARIA compliant with proper roles, keyboard navigation (Tab, Enter, Space, Arrow keys), and screen reader announcements.",
+              "WAI-ARIA compliant with proper roles, keyboard navigation (Tab, Enter, Space; arrow keys reorder while dragging), and screen reader announcements.",
           },
           {
             title: "Customizable",
@@ -1385,6 +1424,19 @@ export default function AccordionPage() {
             ),
           },
           {
+            value: "disabled-reasons",
+            label: "Disabled Reasons",
+            demo: (
+              <DemoWrapper
+                title="Disabled Items with Reasons"
+                description="Disabled items with a reason stay keyboard-reachable — Tab to the item and the tooltip opens on focus."
+                code={disabledReasonsCode}
+              >
+                <DisabledReasonsDemo />
+              </DemoWrapper>
+            ),
+          },
+          {
             value: "expand-collapse",
             label: "Expand All",
             demo: (
@@ -1416,6 +1468,11 @@ export default function AccordionPage() {
             keys: "Enter / Space",
             description:
               "inherited from Base UI: toggle the focused item's panel",
+          },
+          {
+            keys: "Tab",
+            description:
+              "focus a disabled item that has a disabledReason — the reason tooltip opens on focus (Kira addition)",
           },
           {
             keys: "Space",
@@ -1626,6 +1683,13 @@ export default function AccordionPage() {
                 description: "Data-driven item list.",
               },
               {
+                prop: "items[].disabledReason",
+                type: "string",
+                default: "-",
+                description:
+                  "Tooltip on a disabled item; stays reachable by keyboard (focus) and touch.",
+              },
+              {
                 prop: "hiddenUntilFound",
                 type: "boolean",
                 default: "false",
@@ -1659,6 +1723,72 @@ export default function AccordionPage() {
 
       <Changelog
         entries={[
+          {
+            version: "2.1.2",
+            date: "18 October 2026",
+            changes: [
+              {
+                type: "fixed",
+                title: "onItemOpen / onItemClose Never Fired",
+                description:
+                  "Base UI 1.9's Accordion.Item does not call the consumer's onOpenChange, so Kira's onItemOpen, onItemClose and everything built on them (asyncLoading flows, per-item callbacks) never ran. Kira now observes the item's data-open attribute and fires the callbacks on transitions. Found during the full-pass QA — the asyncLoading demo worked before only by accident of its initial state.",
+              },
+              {
+                type: "fixed",
+                title: "Parent Item Updates Were Dropped",
+                description:
+                  "In uncontrolled mode (no onReorder), updates to the items prop — loading flags, content, errors set by the parent after mount — were silently ignored; the internal snapshot from first render was kept forever. The component now adopts a changed items prop (internal reorder state still wins between renders).",
+              },
+              {
+                type: "added",
+                title: "Disabled Item Reasons",
+                description:
+                  "New items[].disabledReason shows a tooltip on a disabled item. The reason is reachable by keyboard (Tab focuses the item, tooltip opens on focus) and touch — satisfying the WCAG 2.2 rule that a disabled control must never be unexplained.",
+              },
+              {
+                type: "added",
+                title: "Load-Success Checkmark",
+                description:
+                  "When async loading completes without error, the trigger briefly shows a success checkmark (spinner → check → hidden) before the panel content takes over.",
+              },
+              {
+                type: "changed",
+                title: "Motion Tokens",
+                description:
+                  "Panel expand now runs 200ms ease-out, collapse 150ms ease-in (exit = 65% of enter per the motion-token spec); chevron rotation matched at 200ms. All gated by prefers-reduced-motion.",
+              },
+              {
+                type: "changed",
+                title: "Chevron Slot Attribute Renamed",
+                description:
+                  'The chevron span now carries data-slot="accordion-chevron" instead of data-accordion-chevron, matching the kit data-slot convention. Update any custom CSS targeting the old attribute.',
+              },
+              {
+                type: "changed",
+                title: "Registry",
+                description:
+                  "Accordion now declares a tooltip registry dependency (disabledReason implementation).",
+              },
+            ],
+          },
+          {
+            version: "2.1.1",
+            date: "18 October 2026",
+            changes: [
+              {
+                type: "fixed",
+                title: "Open-Panel Trigger Corners",
+                description:
+                  "The trigger's rounded-b-none-when-open rule used an ancestor selector [[data-panel-open]_&], but Base UI sets data-panel-open on the trigger itself — the rule never matched, so bottom corners stayed rounded on open panels. Now uses the self-variant data-panel-open:rounded-b-none; verified in-browser (0px radius when open, 7.2px when closed).",
+              },
+              {
+                type: "fixed",
+                title: "Rules of Hooks Violation",
+                description:
+                  "renderAccordionItem (the non-draggable item renderer) called the useItemOpenHandler hook once per item, changing hook count as the search filter changed the item list. Replaced with a hook-free makeItemOpenHandler factory; react-hooks/rules-of-hooks now passes. React 19 + React Compiler masked the crash at runtime; uncompiled builds would have failed.",
+              },
+            ],
+          },
           {
             version: "2.1.0",
             date: "16 October 2026",

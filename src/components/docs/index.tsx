@@ -216,7 +216,7 @@ export function KeyboardShortcut({ keys, description }: KeyboardShortcutProps) {
 interface KeyboardShortcutsProps {
   shortcuts: KeyboardShortcutProps[];
   title?: string;
-  description?: string;
+  description?: React.ReactNode;
 }
 
 export function KeyboardShortcuts({
