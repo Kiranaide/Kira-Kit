@@ -1,4 +1,9 @@
 import { defineConfig } from "oxlint";
+import base from "./tools/oxlint/presets/base.ts";
+import react from "./tools/oxlint/presets/react.ts";
+import sonar from "./tools/oxlint/presets/sonar.ts";
+import antiSlop from "./tools/oxlint/presets/anti-slop.ts";
+import strict from "./tools/oxlint/presets/strict.ts";
 
 export default defineConfig({
   ignorePatterns: [
@@ -15,14 +20,9 @@ export default defineConfig({
     ".windsurf/**",
     "tools/oxlint/anti-slop/**",
   ],
+  extends: [base, react, sonar, antiSlop, strict],
 
-  plugins: [
-    "typescript",
-    "unicorn",
-    "oxc",
-    "react",
-    "jsx-a11y",
-  ],
+  plugins: ["typescript", "unicorn", "oxc", "react", "jsx-a11y"],
 
   jsPlugins: [
     {
@@ -129,7 +129,7 @@ export default defineConfig({
     // COMPLEXITY
     // ============================================================
 
-    "complexity": [
+    complexity: [
       "error",
       {
         max: 10,

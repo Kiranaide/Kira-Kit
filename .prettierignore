@@ -1,0 +1,8 @@
+# >>> install-lint.mjs (managed)
+tools/oxlint/
+oxlint-install-staging/
+.anti-slop-backup/
+dist/
+build/
+coverage/
+# <<< install-lint.mjs
