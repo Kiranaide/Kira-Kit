@@ -1,736 +1,633 @@
+import * as React from "react";
 import {
-  IconCheck,
-  IconX,
-  IconAlertCircle,
-  IconStar,
   IconLayout,
   IconColumns,
   IconSpacingVertical,
+  IconRefresh,
 } from "@tabler/icons-react";
-import { HStack, VStack } from "@/components/ui/stack";
+
+import { Stack, HStack, VStack, KiraStack } from "@/components/ui/stack";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
+  ComponentPage,
   PageHeader,
   FeatureGrid,
   DemoTabs,
   DemoWrapper,
+  KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
-function VStackDemo() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Default gap</p>
-        <VStack className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-3 bg-primary/20 rounded w-full text-center">
-            Item 1
-          </div>
-          <div className="p-3 bg-primary/20 rounded w-full text-center">
-            Item 2
-          </div>
-          <div className="p-3 bg-primary/20 rounded w-full text-center">
-            Item 3
-          </div>
-        </VStack>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">gap={8}</p>
-        <VStack gap={8} className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-3 bg-primary/20 rounded w-full text-center">
-            Item 1
-          </div>
-          <div className="p-3 bg-primary/20 rounded w-full text-center">
-            Item 2
-          </div>
-          <div className="p-3 bg-primary/20 rounded w-full text-center">
-            Item 3
-          </div>
-        </VStack>
-      </div>
-    </div>
-  );
-}
+function BasicDemo() {
+  const [saved, setSaved] = React.useState(false);
 
-const vstackCode = `import { VStack } from "@/components/ui/stack"
-
-export function VStackDemo() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <VStack className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-3 bg-primary/20 rounded w-full">Item 1</div>
-          <div className="p-3 bg-primary/20 rounded w-full">Item 2</div>
-          <div className="p-3 bg-primary/20 rounded w-full">Item 3</div>
-        </VStack>
-      </div>
-      <div>
-        <VStack gap={8} className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-3 bg-primary/20 rounded w-full">Item 1</div>
-          <div className="p-3 bg-primary/20 rounded w-full">Item 2</div>
-          <div className="p-3 bg-primary/20 rounded w-full">Item 3</div>
-        </VStack>
-      </div>
-    </div>
-  )
-}`;
-
-function HStackDemo() {
-  return (
-    <div className="space-y-4">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Default</p>
-        <HStack className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-3 bg-primary/20 rounded">Item 1</div>
-          <div className="p-3 bg-primary/20 rounded">Item 2</div>
-          <div className="p-3 bg-primary/20 rounded">Item 3</div>
-        </HStack>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">
-          With justify="between"
-        </p>
-        <HStack justify="between" className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-3 bg-primary/20 rounded">Left</div>
-          <div className="p-3 bg-primary/20 rounded">Center</div>
-          <div className="p-3 bg-primary/20 rounded">Right</div>
-        </HStack>
-      </div>
-    </div>
-  );
-}
-
-const hstackCode = `import { HStack } from "@/components/ui/stack"
-
-export function HStackDemo() {
-  return (
-    <div className="space-y-4">
-      <div>
-        <HStack className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-3 bg-primary/20 rounded">Item 1</div>
-          <div className="p-3 bg-primary/20 rounded">Item 2</div>
-          <div className="p-3 bg-primary/20 rounded">Item 3</div>
-        </HStack>
-      </div>
-      <div>
-        <HStack justify="between" className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-3 bg-primary/20 rounded">Left</div>
-          <div className="p-3 bg-primary/20 rounded">Center</div>
-          <div className="p-3 bg-primary/20 rounded">Right</div>
-        </HStack>
-      </div>
-    </div>
-  )
-}`;
-
-function AlignmentDemo() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {(["start", "center", "end"] as const).map((align) => (
-        <div key={align}>
-          <p className="text-sm text-muted-foreground mb-2">align="{align}"</p>
-          <HStack
-            align={align}
-            gap={4}
-            className="p-4 border rounded-lg bg-muted/30 h-24"
-          >
-            <div className="p-2 bg-primary/20 rounded">A</div>
-            <div className="p-4 bg-primary/20 rounded">B</div>
-            <div className="p-6 bg-primary/20 rounded">C</div>
-          </HStack>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const alignmentCode = `import { HStack } from "@/components/ui/stack"
-
-export function AlignmentDemo() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {(["start", "center", "end"] as const).map((align) => (
-        <div key={align}>
-          <HStack align={align} gap={4} className="p-4 border rounded-lg bg-muted/30">
-            <div className="p-2 bg-primary/20 rounded">A</div>
-            <div className="p-4 bg-primary/20 rounded">B</div>
-            <div className="p-6 bg-primary/20 rounded">C</div>
-          </HStack>
-        </div>
-      ))}
-    </div>
-  )
-}`;
-
-function DividersDemo() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">
-          VStack with dividers
-        </p>
-        <VStack dividers className="p-4 border rounded-lg bg-background">
-          <div className="py-2">Section 1</div>
-          <div className="py-2">Section 2</div>
-          <div className="py-2">Section 3</div>
-        </VStack>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">
-          HStack with dividers
-        </p>
-        <HStack
-          dividers
-          align="center"
-          className="p-4 border rounded-lg bg-background h-16"
-        >
-          <span className="px-2">Home</span>
-          <span className="px-2">Products</span>
-          <span className="px-2">About</span>
-          <span className="px-2">Contact</span>
-        </HStack>
-      </div>
-    </div>
-  );
-}
-
-const dividersCode = `import { HStack, VStack } from "@/components/ui/stack"
-
-export function DividersDemo() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <VStack dividers className="p-4 border rounded-lg bg-background">
-          <div className="py-2">Section 1</div>
-          <div className="py-2">Section 2</div>
-          <div className="py-2">Section 3</div>
-        </VStack>
-      </div>
-      <div>
-        <HStack dividers align="center" className="p-4 border rounded-lg bg-background">
-          <span className="px-2">Home</span>
-          <span className="px-2">Products</span>
-          <span className="px-2">About</span>
-          <span className="px-2">Contact</span>
-        </HStack>
-      </div>
-    </div>
-  )
-}`;
-
-function ResponsiveGapDemo() {
-  return (
-    <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Resize the window to see gap change: base=2, md=4, lg=8
-      </p>
-      <HStack
-        gap={{ base: 2, md: 4, lg: 8 }}
-        className="p-4 border rounded-lg bg-muted/30"
-      >
-        <div className="p-4 bg-primary/20 rounded">1</div>
-        <div className="p-4 bg-primary/20 rounded">2</div>
-        <div className="p-4 bg-primary/20 rounded">3</div>
-        <div className="p-4 bg-primary/20 rounded">4</div>
-      </HStack>
-    </div>
-  );
-}
-
-const responsiveGapCode = `import { HStack } from "@/components/ui/stack"
-
-export function ResponsiveGapDemo() {
-  return (
-    <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Resize the window to see gap change: base=2, md=4, lg=8
-      </p>
-      <HStack gap={{ base: 2, md: 4, lg: 8 }} className="p-4 border rounded-lg bg-muted/30">
-        <div className="p-4 bg-primary/20 rounded">1</div>
-        <div className="p-4 bg-primary/20 rounded">2</div>
-        <div className="p-4 bg-primary/20 rounded">3</div>
-        <div className="p-4 bg-primary/20 rounded">4</div>
-      </HStack>
-    </div>
-  )
-}`;
-
-function ActionButtonsDemo() {
-  return (
-    <HStack gap={2}>
-      <Button>Save</Button>
-      <Button variant="outline">Cancel</Button>
-      <Button variant="destructive">Delete</Button>
-    </HStack>
-  );
-}
-
-function StatusListDemo() {
   return (
     <VStack
-      gap={2}
-      align="start"
-      className="p-4 border rounded-lg bg-background"
+      as="form"
+      gap={3}
+      onSubmit={(event) => {
+        event.preventDefault();
+        setSaved(true);
+      }}
+      className="w-full max-w-md"
     >
+      <label htmlFor="stack-basic-name" className="text-sm font-medium">
+        Release name
+      </label>
+      <Input
+        id="stack-basic-name"
+        name="release"
+        defaultValue="Autumn access update"
+        onChange={() => setSaved(false)}
+      />
       <HStack gap={2} align="center">
-        <IconCheck className="size-4 text-green-500" />
-        <span>Build completed successfully</span>
-      </HStack>
-      <HStack gap={2} align="center">
-        <IconCheck className="size-4 text-green-500" />
-        <span>Tests passed (42/42)</span>
-      </HStack>
-      <HStack gap={2} align="center">
-        <IconAlertCircle className="size-4 text-yellow-500" />
-        <span>2 warnings found</span>
-      </HStack>
-      <HStack gap={2} align="center">
-        <IconX className="size-4 text-red-500" />
-        <span>Deployment failed</span>
+        <Button type="submit">Save draft</Button>
+        <span className="text-sm text-muted-foreground">
+          {saved ? "Local draft saved." : "Local example; no server request."}
+        </span>
       </HStack>
     </VStack>
   );
 }
 
-function TeamMembersDemo() {
-  const users = [
-    { name: "Alice Johnson", role: "Lead Developer", avatar: "AJ" },
-    { name: "Bob Smith", role: "Designer", avatar: "BS" },
-    { name: "Carol White", role: "Product Manager", avatar: "CW" },
+const BasicDemoCode =
+  'import * as React from "react";\nimport { HStack, VStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function BasicDemo() {\n  const [saved, setSaved] = React.useState(false);\n  return <VStack as="form" gap={3} onSubmit={(event) => { event.preventDefault(); setSaved(true); }} className="w-full max-w-md">\n    <label htmlFor="stack-basic-name" className="text-sm font-medium">Release name</label>\n    <Input id="stack-basic-name" name="release" defaultValue="Autumn access update" onChange={() => setSaved(false)} />\n    <HStack gap={2} align="center">\n      <Button type="submit">Save draft</Button>\n      <span className="text-sm text-muted-foreground">{saved ? "Local draft saved." : "Local example; no server request."}</span>\n    </HStack>\n  </VStack>;\n}';
+
+function ResponsiveDemo() {
+  return (
+    <Stack
+      direction={{ base: "vertical", md: "horizontal" }}
+      gap={{ base: 3, md: 6 }}
+      align={{ base: "stretch", md: "baseline" }}
+      className="w-full"
+    >
+      <section className="min-w-0 flex-1">
+        <h3 className="text-lg font-semibold">Release owner</h3>
+        <p className="text-sm text-muted-foreground">
+          Amara Okafor, platform engineering
+        </p>
+      </section>
+      <section className="min-w-0 flex-1">
+        <h3 className="text-sm font-semibold">Review window</h3>
+        <p className="text-sm text-muted-foreground">October 26–30, 2026</p>
+      </section>
+      <section className="min-w-0 flex-1">
+        <h3 className="text-sm font-semibold">Scope</h3>
+        <p className="text-sm text-muted-foreground">
+          Workspace invitations and external collaborators
+        </p>
+      </section>
+    </Stack>
+  );
+}
+
+const ResponsiveDemoCode =
+  'import { Stack } from "@/components/ui/stack";\n\nexport function ResponsiveDemo() {\n  return <Stack direction={{ base: "vertical", md: "horizontal" }} gap={{ base: 3, md: 6 }} align={{ base: "stretch", md: "baseline" }} className="w-full">\n    <section className="min-w-0 flex-1"><h3 className="text-lg font-semibold">Release owner</h3><p className="text-sm text-muted-foreground">Amara Okafor, platform engineering</p></section>\n    <section className="min-w-0 flex-1"><h3 className="text-sm font-semibold">Review window</h3><p className="text-sm text-muted-foreground">October 26–30, 2026</p></section>\n    <section className="min-w-0 flex-1"><h3 className="text-sm font-semibold">Scope</h3><p className="text-sm text-muted-foreground">Workspace invitations and external collaborators</p></section>\n  </Stack>;\n}';
+
+function WrapDemo() {
+  const [selected, setSelected] = React.useState<string[]>(["Needs review"]);
+
+  const filters = [
+    "Needs review",
+    "Assigned to me",
+    "External collaborators",
+    "Recently updated",
+    "Archived",
   ];
 
   return (
-    <VStack dividers className="border rounded-lg bg-background">
-      {users.map((user) => (
-        <HStack
-          key={user.name}
-          justify="between"
-          align="center"
-          className="p-4"
-        >
-          <HStack gap={3} align="center">
-            <Avatar size="sm">
-              <AvatarFallback>{user.avatar}</AvatarFallback>
-            </Avatar>
-            <VStack gap={0}>
-              <span className="font-medium">{user.name}</span>
-              <span className="text-sm text-muted-foreground">{user.role}</span>
-            </VStack>
-          </HStack>
-          <Button variant="ghost" size="sm">
-            View
+    <VStack gap={3}>
+      <HStack wrap gap={2} rowGap={3}>
+        {filters.map((filter) => (
+          <Button
+            key={filter}
+            variant="outline"
+            aria-pressed={selected.includes(filter)}
+            className="max-w-full whitespace-normal"
+            onClick={() =>
+              setSelected((current) =>
+                current.includes(filter)
+                  ? current.filter((value) => value !== filter)
+                  : [...current, filter],
+              )
+            }
+          >
+            {filter}
           </Button>
-        </HStack>
-      ))}
+        ))}
+      </HStack>
+      <output className="text-sm text-muted-foreground">
+        {selected.length} filters active.
+      </output>
     </VStack>
   );
 }
 
-function FeatureCardsDemo() {
-  const features = [
-    { icon: IconStar, title: "Premium", desc: "Access all features" },
-    { icon: IconCheck, title: "Verified", desc: "Trusted by millions" },
-    { icon: IconAlertCircle, title: "Support", desc: "24/7 assistance" },
+const WrapDemoCode =
+  'import * as React from "react";\nimport { HStack, VStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\n\nexport function WrapDemo() {\n  const [selected, setSelected] = React.useState<string[]>(["Needs review"]);\n  const filters = ["Needs review", "Assigned to me", "External collaborators", "Recently updated", "Archived"];\n  return <VStack gap={3}>\n    <HStack wrap gap={2} rowGap={3}>\n      {filters.map((filter) => <Button key={filter} variant="outline" aria-pressed={selected.includes(filter)}\n        className="max-w-full whitespace-normal" onClick={() => setSelected((current) => current.includes(filter) ? current.filter((value) => value !== filter) : [...current, filter])}>{filter}</Button>)}\n    </HStack>\n    <output className="text-sm text-muted-foreground">{selected.length} filters active.</output>\n  </VStack>;\n}';
+
+function DividersDemo() {
+  const [records, setRecords] = React.useState([
+    { id: "amara", name: "Amara Okafor" },
+    { id: "leo", name: "Leo Martín" },
+    { id: "mei", name: "Mei Tanaka" },
+  ]);
+
+  return (
+    <VStack gap={4} className="w-full max-w-lg">
+      <Button
+        variant="outline"
+        className="self-start"
+        onClick={() => setRecords((current) => [...current].reverse())}
+      >
+        Reverse reviewer order
+      </Button>
+      <VStack as="ul" dividers gap={2} aria-label="Reviewers">
+        {records.map((record) => (
+          <li key={record.id} data-reviewer={record.id} className="min-w-0">
+            <label
+              htmlFor={"stack-note-" + record.id}
+              className="mb-2 block text-sm font-medium"
+            >
+              {record.name}
+            </label>
+            <Input
+              id={"stack-note-" + record.id}
+              defaultValue=""
+              placeholder="Add a review note"
+            />
+          </li>
+        ))}
+      </VStack>
+      <HStack dividers align="center" gap={2}>
+        {0}
+        <span>pending revisions</span>
+      </HStack>
+      <p className="text-sm text-muted-foreground">
+        Type a note, then reverse the list. Each note follows its reviewer.
+      </p>
+    </VStack>
+  );
+}
+
+const DividersDemoCode =
+  'import * as React from "react";\nimport { HStack, VStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function DividersDemo() {\n  const [records, setRecords] = React.useState([{ id: "amara", name: "Amara Okafor" }, { id: "leo", name: "Leo Martín" }, { id: "mei", name: "Mei Tanaka" }]);\n  return <VStack gap={4} className="w-full max-w-lg">\n    <Button variant="outline" className="self-start" onClick={() => setRecords((current) => [...current].reverse())}>Reverse reviewer order</Button>\n    <VStack as="ul" dividers gap={2} aria-label="Reviewers">\n      {records.map((record) => <li key={record.id} data-reviewer={record.id} className="min-w-0">\n        <label htmlFor={"stack-note-" + record.id} className="mb-2 block text-sm font-medium">{record.name}</label>\n        <Input id={"stack-note-" + record.id} defaultValue="" placeholder="Add a review note" />\n      </li>)}\n    </VStack>\n    <HStack dividers align="center" gap={2}>{0}<span>pending revisions</span></HStack>\n    <p className="text-sm text-muted-foreground">Type a note, then reverse the list. Each note follows its reviewer.</p>\n  </VStack>;\n}';
+
+function SwitcherDemo() {
+  const [narrow, setNarrow] = React.useState(false);
+  const [extra, setExtra] = React.useState(false);
+  const [action, setAction] = React.useState("Choose a local action.");
+
+  const labels = [
+    "Review changes",
+    "Compare versions",
+    "Download brief",
+    "Share for review",
+    ...(extra ? ["Archive draft"] : []),
   ];
 
   return (
-    <HStack gap={4} className="overflow-x-auto pb-2">
-      {features.map((feature) => (
-        <Card key={feature.title} className="min-w-48 shrink-0">
-          <CardHeader className="pb-2">
-            <feature.icon className="size-8 text-primary mb-2" />
-            <CardTitle className="text-lg">{feature.title}</CardTitle>
-            <CardDescription>{feature.desc}</CardDescription>
-          </CardHeader>
-        </Card>
-      ))}
-    </HStack>
+    <VStack gap={4} className="w-full">
+      <HStack wrap gap={2}>
+        <Button variant="outline" onClick={() => setNarrow((value) => !value)}>
+          {narrow ? "Use full width" : "Use narrow panel"}
+        </Button>
+        <Button variant="outline" onClick={() => setExtra((value) => !value)}>
+          {extra ? "Remove fifth action" : "Add fifth action"}
+        </Button>
+      </HStack>
+      <div className="max-w-full" style={{ width: narrow ? "20rem" : "100%" }}>
+        <KiraStack threshold="32rem" limit={4} gap={2}>
+          {labels.map((label) => (
+            <Button
+              key={label}
+              variant="outline"
+              className="whitespace-normal"
+              onClick={() =>
+                setAction(label + " selected in this local example.")
+              }
+            >
+              {label}
+            </Button>
+          ))}
+        </KiraStack>
+      </div>
+      <output className="text-sm text-muted-foreground">{action}</output>
+    </VStack>
   );
 }
 
-const realWorldCode = `import { HStack, VStack } from "@/components/ui/stack"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { IconCheck, IconAlertCircle, IconX, IconStar } from "@tabler/icons-react"
+const SwitcherDemoCode =
+  'import * as React from "react";\nimport { HStack, VStack, KiraStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\n\nexport function SwitcherDemo() {\n  const [narrow, setNarrow] = React.useState(false);\n  const [extra, setExtra] = React.useState(false);\n  const [action, setAction] = React.useState("Choose a local action.");\n  const labels = ["Review changes", "Compare versions", "Download brief", "Share for review", ...(extra ? ["Archive draft"] : [])];\n  return <VStack gap={4} className="w-full">\n    <HStack wrap gap={2}><Button variant="outline" onClick={() => setNarrow((value) => !value)}>{narrow ? "Use full width" : "Use narrow panel"}</Button><Button variant="outline" onClick={() => setExtra((value) => !value)}>{extra ? "Remove fifth action" : "Add fifth action"}</Button></HStack>\n    <div className="max-w-full" style={{ width: narrow ? "20rem" : "100%" }}>\n      <KiraStack threshold="32rem" limit={4} gap={2}>\n        {labels.map((label) => <Button key={label} variant="outline" className="whitespace-normal" onClick={() => setAction(label + " selected in this local example.")}>{label}</Button>)}\n      </KiraStack>\n    </div>\n    <output className="text-sm text-muted-foreground">{action}</output>\n  </VStack>;\n}';
 
-// Action Buttons
-export function ActionButtonsDemo() {
+function RefreshingDemo() {
+  const [loading, setLoading] = React.useState(false);
+
   return (
-    <HStack gap={2}>
-      <Button>Save</Button>
-      <Button variant="outline">Cancel</Button>
-      <Button variant="destructive">Delete</Button>
-    </HStack>
-  )
+    <VStack gap={4} className="w-full max-w-lg">
+      <HStack wrap gap={2}>
+        <Button
+          variant="outline"
+          disabled={loading}
+          onClick={() => setLoading(true)}
+        >
+          Start refresh
+        </Button>
+        <Button
+          variant="outline"
+          disabled={!loading}
+          onClick={() => setLoading(false)}
+        >
+          Finish refresh
+        </Button>
+      </HStack>
+      <KiraStack
+        layout="vertical"
+        loading={loading}
+        loadingLabel="Refreshing reviewer details…"
+        gap={3}
+      >
+        <label
+          key="label"
+          htmlFor="stack-refresh-note"
+          className="text-sm font-medium"
+        >
+          Draft review note
+        </label>
+        <Input
+          key="note"
+          id="stack-refresh-note"
+          defaultValue="Keep external invite expiry at seven days."
+        />
+        <p key="hint" className="text-sm text-muted-foreground">
+          {loading
+            ? "Refreshing details. You can keep editing."
+            : "Reviewer details are current."}
+        </p>
+      </KiraStack>
+    </VStack>
+  );
 }
 
-// Status List
-export function StatusListDemo() {
+const RefreshingDemoCode =
+  'import * as React from "react";\nimport { HStack, VStack, KiraStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function RefreshingDemo() {\n  const [loading, setLoading] = React.useState(false);\n  return <VStack gap={4} className="w-full max-w-lg">\n    <HStack wrap gap={2}><Button variant="outline" disabled={loading} onClick={() => setLoading(true)}>Start refresh</Button><Button variant="outline" disabled={!loading} onClick={() => setLoading(false)}>Finish refresh</Button></HStack>\n    <KiraStack layout="vertical" loading={loading} loadingLabel="Refreshing reviewer details…" gap={3}>\n      <label key="label" htmlFor="stack-refresh-note" className="text-sm font-medium">Draft review note</label>\n      <Input key="note" id="stack-refresh-note" defaultValue="Keep external invite expiry at seven days." />\n      <p key="hint" className="text-sm text-muted-foreground">{loading ? "Refreshing details. You can keep editing." : "Reviewer details are current."}</p>\n    </KiraStack>\n  </VStack>;\n}';
+
+function NativeDemo() {
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const [message, setMessage] = React.useState("Native form adapter.");
+
   return (
-    <VStack gap={2} align="start" className="p-4 border rounded-lg bg-background">
-      <HStack gap={2} align="center">
-        <IconCheck className="size-4 text-green-500" />
-        <span>Build completed successfully</span>
-      </HStack>
-      <HStack gap={2} align="center">
-        <IconAlertCircle className="size-4 text-yellow-500" />
-        <span>2 warnings found</span>
-      </HStack>
-      <HStack gap={2} align="center">
-        <IconX className="size-4 text-red-500" />
-        <span>Deployment failed</span>
+    <VStack gap={3} className="w-full max-w-md">
+      <Stack
+        as="form"
+        ref={formRef}
+        render={<form aria-label="Release lookup" />}
+        gap={3}
+        onSubmit={(event) => {
+          event.preventDefault();
+          setMessage(
+            "Submitted " +
+              String(new FormData(event.currentTarget).get("release")),
+          );
+        }}
+      >
+        <label htmlFor="stack-native-release" className="text-sm font-medium">
+          Release identifier
+        </label>
+        <Input
+          id="stack-native-release"
+          name="release"
+          defaultValue="access-2026-10"
+          required
+        />
+        <Button type="submit">Look up release</Button>
+      </Stack>
+      <Button
+        variant="outline"
+        onClick={() => formRef.current?.requestSubmit()}
+      >
+        Submit through native ref
+      </Button>
+      <output className="text-sm text-muted-foreground">{message}</output>
+    </VStack>
+  );
+}
+
+const NativeDemoCode =
+  'import * as React from "react";\nimport { Stack, VStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function NativeDemo() {\n  const formRef = React.useRef<HTMLFormElement>(null);\n  const [message, setMessage] = React.useState("Native form adapter.");\n  return <VStack gap={3} className="w-full max-w-md">\n    <Stack as="form" ref={formRef} render={<form aria-label="Release lookup" />} gap={3}\n      onSubmit={(event) => { event.preventDefault(); setMessage("Submitted " + String(new FormData(event.currentTarget).get("release"))); }}>\n      <label htmlFor="stack-native-release" className="text-sm font-medium">Release identifier</label>\n      <Input id="stack-native-release" name="release" defaultValue="access-2026-10" required />\n      <Button type="submit">Look up release</Button>\n    </Stack>\n    <Button variant="outline" onClick={() => formRef.current?.requestSubmit()}>Submit through native ref</Button>\n    <output className="text-sm text-muted-foreground">{message}</output>\n  </VStack>;\n}';
+
+function StatesDemo() {
+  const [loading, setLoading] = React.useState(true);
+
+  return (
+    <VStack gap={4} className="w-full max-w-80">
+      <Stack as="fieldset" disabled gap={2}>
+        <legend className="text-sm font-medium">Approval settings</legend>
+        <Input
+          aria-label="Approval owner"
+          defaultValue="Owner permission required"
+        />
+        <p className="text-sm text-muted-foreground">
+          Only release owners can change these settings.
+        </p>
+      </Stack>
+      <VStack as="ul" aria-label="Empty review queue" gap={0} />
+      <Button variant="outline" onClick={() => setLoading((value) => !value)}>
+        {loading ? "Show empty state" : "Show initial loading"}
+      </Button>
+      <KiraStack
+        layout="vertical"
+        loading={loading}
+        loadingLabel="Loading review queue…"
+      >
+        {loading ? null : (
+          <p className="text-sm text-muted-foreground">
+            No reviews in this queue.
+          </p>
+        )}
+      </KiraStack>
+      <HStack gap={2} align="start">
+        <span className="min-w-0">
+          release-platform-external-collaborators-with-a-very-long-unbroken-identifier
+        </span>
+        <span className="shrink-0 text-sm">Ready</span>
       </HStack>
     </VStack>
-  )
+  );
 }
 
-// Team Members
-export function TeamMembersDemo() {
-  const users = [
-    { name: "Alice Johnson", role: "Lead Developer", avatar: "AJ" },
-    { name: "Bob Smith", role: "Designer", avatar: "BS" },
-  ]
-  return (
-    <VStack dividers className="border rounded-lg bg-background">
-      {users.map((user) => (
-        <HStack key={user.name} justify="between" align="center" className="p-4">
-          <HStack gap={3} align="center">
-            <Avatar size="sm">
-              <AvatarFallback>{user.avatar}</AvatarFallback>
-            </Avatar>
-            <VStack gap={0}>
-              <span className="font-medium">{user.name}</span>
-              <span className="text-sm text-muted-foreground">{user.role}</span>
-            </VStack>
-          </HStack>
-          <Button variant="ghost" size="sm">View</Button>
-        </HStack>
-      ))}
-    </VStack>
-  )
-}
+const StatesDemoCode =
+  'import * as React from "react";\nimport { Stack, HStack, VStack, KiraStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function StatesDemo() {\n  const [loading, setLoading] = React.useState(true);\n  return <VStack gap={4} className="w-full max-w-80">\n    <Stack as="fieldset" disabled gap={2}><legend className="text-sm font-medium">Approval settings</legend><Input aria-label="Approval owner" defaultValue="Owner permission required" /><p className="text-sm text-muted-foreground">Only release owners can change these settings.</p></Stack>\n    <VStack as="ul" aria-label="Empty review queue" gap={0} />\n    <Button variant="outline" onClick={() => setLoading((value) => !value)}>{loading ? "Show empty state" : "Show initial loading"}</Button>\n    <KiraStack layout="vertical" loading={loading} loadingLabel="Loading review queue…">{loading ? null : <p className="text-sm text-muted-foreground">No reviews in this queue.</p>}</KiraStack>\n    <HStack gap={2} align="start"><span className="min-w-0">release-platform-external-collaborators-with-a-very-long-unbroken-identifier</span><span className="shrink-0 text-sm">Ready</span></HStack>\n  </VStack>;\n}';
 
-// Feature Cards
-export function FeatureCardsDemo() {
-  const features = [
-    { icon: IconStar, title: "Premium", desc: "Access all features" },
-    { icon: IconCheck, title: "Verified", desc: "Trusted by millions" },
-  ]
-  return (
-    <HStack gap={4} className="overflow-x-auto pb-2">
-      {features.map((feature) => (
-        <Card key={feature.title} className="min-w-48 shrink-0">
-          <CardHeader className="pb-2">
-            <feature.icon className="size-8 text-primary mb-2" />
-            <CardTitle className="text-lg">{feature.title}</CardTitle>
-            <CardDescription>{feature.desc}</CardDescription>
-          </CardHeader>
-        </Card>
-      ))}
-    </HStack>
-  )
-}`;
+const demos = [
+  {
+    value: "basic",
+    label: "Basic",
+    description: "A native release form using vertical and horizontal stacks.",
+    Demo: BasicDemo,
+    code: BasicDemoCode,
+  },
+  {
+    value: "responsive",
+    label: "Responsive",
+    description:
+      "Viewport direction, gap and baseline alignment preserve reading order.",
+    Demo: ResponsiveDemo,
+    code: ResponsiveDemoCode,
+  },
+  {
+    value: "wrap",
+    label: "Wrap",
+    description: "Filter controls wrap before their labels need to shrink.",
+    Demo: WrapDemo,
+    code: WrapDemoCode,
+  },
+  {
+    value: "dividers",
+    label: "Dividers",
+    description: "Keyed editable reviewers and decorative list-safe rules.",
+    Demo: DividersDemo,
+    code: DividersDemoCode,
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    description:
+      "Actions switch between one row and one column at the local width.",
+    Demo: SwitcherDemo,
+    code: SwitcherDemoCode,
+  },
+  {
+    value: "refreshing",
+    label: "Refreshing",
+    description:
+      "Supplied content stays mounted and editable during a caller-owned refresh.",
+    Demo: RefreshingDemo,
+    code: RefreshingDemoCode,
+  },
+  {
+    value: "native",
+    label: "Native",
+    description: "Native form attributes, render adapter and a typed ref.",
+    Demo: NativeDemo,
+    code: NativeDemoCode,
+  },
+  {
+    value: "states",
+    label: "States",
+    description:
+      "Initial loading, empty queue, disabled reason and long identifiers.",
+    Demo: StatesDemo,
+    code: StatesDemoCode,
+  },
+];
 
-const usageCode = `import { Stack, HStack, VStack } from "@/components/ui/stack"
+const stackApi = [
+  {
+    prop: "as / render / ref",
+    type: "StackElement / useRender.RenderProp / native element ref",
+    default: '"div"',
+    description:
+      "Native tag-specific attributes and composed Base UI rendering; custom list adapters should also supply as.",
+  },
+  {
+    prop: "direction",
+    type: 'LayoutResponsiveValue<"vertical" | "horizontal">',
+    default: '"vertical"',
+    description: "Scalar or mobile-first base, sm, md, lg, xl and 2xl values.",
+  },
+  {
+    prop: "gap / rowGap / columnGap",
+    type: "LayoutResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24>",
+    default: "gap: 4",
+    description:
+      "Existing spacing tokens. Row/column gaps override the matching physical gap.",
+  },
+  {
+    prop: "align",
+    type: 'LayoutResponsiveValue<"start" | "end" | "center" | "baseline" | "stretch">',
+    description: "Cross-axis alignment.",
+  },
+  {
+    prop: "justify",
+    type: 'LayoutResponsiveValue<"start" | "end" | "center" | "between" | "around" | "evenly">',
+    description: "Main-axis distribution.",
+  },
+  {
+    prop: "wrap",
+    type: "LayoutResponsiveValue<boolean>",
+    default: "false",
+    description:
+      "Allow flex items to wrap. Wrapping and rules are independent; use wrap without dividers for multi-line controls.",
+  },
+  {
+    prop: "inline",
+    type: "boolean",
+    default: "false",
+    description: "Inline flex display.",
+  },
+  {
+    prop: "dividers / dividerElement",
+    type: "boolean / React.ReactNode",
+    default: "false / shared Separator",
+    description:
+      "Decorative rules between direct child groups. Key direct collection children; fragments remain groups. Lists receive hidden presentation li adapters.",
+  },
+];
 
-// Vertical stack
-<VStack gap={4}>
-  <Input placeholder="Email" />
-  <Input placeholder="Password" />
-  <Button>Sign In</Button>
-</VStack>
-
-// Horizontal stack
-<HStack gap={2} align="center">
-  <Avatar />
-  <span>Username</span>
-</HStack>
-
-// With dividers
-<VStack dividers>
-  <MenuItem>Profile</MenuItem>
-  <MenuItem>Settings</MenuItem>
-  <MenuItem>Logout</MenuItem>
-</VStack>
-
-// Responsive gap
-<HStack gap={{ base: 2, md: 4, lg: 8 }}>
-  <Card />
-  <Card />
-</HStack>`;
-
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function StackPage() {
   return (
-    <div className="p-8 max-w-6xl space-y-10">
+    <ComponentPage>
       <PageHeader
         title="Stack"
-        description="Simplified flex layout for vertical and horizontal stacking with optional dividers."
-        version="v1.0"
+        description="Semantic rows and columns for forms, reviewer lists, and actions that adapt to their available space."
+        version="2.0.0"
       />
-
       <FeatureGrid
         features={[
           {
-            title: "Simple API",
+            title: "Responsive layout",
             description:
-              "Streamlined flex layout with gap, align, and justify props. No complex flex configuration needed.",
+              "Direction, alignment and independent row/column gaps.",
             icon: <IconLayout className="size-5" />,
           },
           {
-            title: "Responsive",
-            description:
-              "Built-in responsive values for gap, align, and justify. Change layout across breakpoints with ease.",
+            title: "Local-width actions",
+            description: "KiraStack switches from one row to one column.",
             icon: <IconColumns className="size-5" />,
           },
           {
-            title: "Dividers",
+            title: "Stable divided lists",
             description:
-              "Optional automatic dividers between items. Perfect for menus, lists, and navigation patterns.",
+              "Editable keyed rows keep their identity when reordered.",
             icon: <IconSpacingVertical className="size-5" />,
           },
+          {
+            title: "Retained refresh",
+            description: "Caller-owned busy state preserves supplied content.",
+            icon: <IconRefresh className="size-5" />,
+          },
         ]}
       />
-
       <DemoTabs
-        defaultValue="vstack"
-        tabs={[
+        defaultValue="basic"
+        tabs={demos.map(({ value, label, description, Demo, code }) => ({
+          value,
+          label,
+          demo: (
+            <DemoWrapper title={label} description={description} code={code}>
+              <Demo />
+            </DemoWrapper>
+          ),
+        }))}
+      />
+      <KeyboardShortcuts
+        description="Layout wrappers add no keyboard handlers or tab stops."
+        shortcuts={[
           {
-            value: "vstack",
-            label: "VStack",
-            demo: (
-              <DemoWrapper
-                title="Vertical Stack"
-                description="Items stacked vertically with configurable gap."
-                code={vstackCode}
-              >
-                <VStackDemo />
-              </DemoWrapper>
-            ),
+            keys: "Tab / Shift + Tab",
+            description:
+              "Follow native child controls in DOM order, including after responsive layout changes.",
           },
           {
-            value: "hstack",
-            label: "HStack",
-            demo: (
-              <DemoWrapper
-                title="Horizontal Stack"
-                description="Items stacked horizontally with alignment options."
-                code={hstackCode}
-              >
-                <HStackDemo />
-              </DemoWrapper>
-            ),
+            keys: "Enter",
+            description:
+              "Submit the Basic and Native forms. The form behavior belongs to native HTML.",
           },
           {
-            value: "alignment",
-            label: "Alignment",
-            demo: (
-              <DemoWrapper
-                title="Cross-Axis Alignment"
-                description="Control how items align along the cross-axis."
-                code={alignmentCode}
-              >
-                <AlignmentDemo />
-              </DemoWrapper>
-            ),
+            keys: "Enter / Space",
+            description:
+              "Activate filter, width, reorder and refresh controls through the shared Base UI Button.",
           },
           {
-            value: "dividers",
-            label: "Dividers",
-            demo: (
-              <DemoWrapper
-                title="Stack with Dividers"
-                description="Automatic dividers between items using the Separator component."
-                code={dividersCode}
-              >
-                <DividersDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "responsive",
-            label: "Responsive",
-            demo: (
-              <DemoWrapper
-                title="Responsive Gap"
-                description="Gap changes based on viewport size."
-                code={responsiveGapCode}
-              >
-                <ResponsiveGapDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "realworld",
-            label: "Real-World",
-            demo: (
-              <div className="space-y-6">
-                <DemoWrapper
-                  title="Action Buttons"
-                  description="Button group with primary and secondary actions."
-                  code={realWorldCode}
-                >
-                  <ActionButtonsDemo />
-                </DemoWrapper>
-                <DemoWrapper
-                  title="Status List"
-                  description="Status indicators with icons and text."
-                  code={realWorldCode}
-                >
-                  <StatusListDemo />
-                </DemoWrapper>
-                <DemoWrapper
-                  title="Team Members"
-                  description="User list with avatars and action buttons."
-                  code={realWorldCode}
-                >
-                  <TeamMembersDemo />
-                </DemoWrapper>
-                <DemoWrapper
-                  title="Feature Cards"
-                  description="Horizontal scrollable feature cards."
-                  code={realWorldCode}
-                >
-                  <FeatureCardsDemo />
-                </DemoWrapper>
-              </div>
-            ),
+            keys: "Type, then reorder",
+            description:
+              "In Dividers, type a note and reverse the reviewers; the note follows its keyed row.",
           },
         ]}
       />
-
       <UsageBlock
-        title="Usage"
-        description="Basic implementation examples for common use cases"
-        code={usageCode}
+        code={
+          'import { Stack, HStack, VStack, KiraStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\nimport { stackVariants } from "@/components/ui/stack";\n\nexport function LayoutPatterns() {\n  return <VStack gap={6}>\n    <Stack as="section" direction={{ base: "vertical", md: "horizontal" }} gap={4}><p>Owner</p><p>Review window</p></Stack>\n    <HStack wrap gap={2}><Button variant="outline">Review</Button><Button variant="outline">Compare</Button></HStack>\n    <VStack as="ul" dividers><li>Amara Okafor</li><li>Mei Tanaka</li></VStack>\n    <KiraStack threshold="32rem"><Button>Review changes</Button><Button variant="outline">Compare versions</Button></KiraStack>\n    <div className={stackVariants({ direction: "horizontal" })}>Variant classes</div>\n  </VStack>;\n}'
+        }
       />
-
       <APIReference
         sections={[
-          {
-            title: "Stack",
-            props: [
-              {
-                prop: "as",
-                type: "StackElement",
-                default: '"div"',
-                description:
-                  "Semantic HTML element to render (div, section, nav, etc.)",
-              },
-              {
-                prop: "direction",
-                type: '"vertical" | "horizontal"',
-                default: '"vertical"',
-                description: "Stack direction",
-              },
-              {
-                prop: "gap",
-                type: "ResponsiveValue<StackGap>",
-                default: "4",
-                description: "Gap between items - supports responsive values",
-              },
-              {
-                prop: "align",
-                type: "ResponsiveValue<StackAlign>",
-                default: "-",
-                description:
-                  "Cross-axis alignment (start, center, end, baseline, stretch)",
-              },
-              {
-                prop: "justify",
-                type: "ResponsiveValue<StackJustify>",
-                default: "-",
-                description:
-                  "Main-axis justification (start, center, end, between, around, evenly)",
-              },
-              {
-                prop: "dividers",
-                type: "boolean",
-                default: "false",
-                description: "Insert dividers between children",
-              },
-              {
-                prop: "dividerElement",
-                type: "ReactNode",
-                default: "Separator",
-                description: "Custom divider element",
-              },
-              {
-                prop: "inline",
-                type: "boolean",
-                default: "false",
-                description: "Use inline-flex instead of flex",
-              },
-            ],
-          },
+          { title: "Stack", props: stackApi },
           {
             title: "HStack",
-            props: [
-              {
-                prop: "gap",
-                type: "ResponsiveValue<StackGap>",
-                default: "4",
-                description: "Gap between items",
-              },
-              {
-                prop: "align",
-                type: "ResponsiveValue<StackAlign>",
-                default: "-",
-                description: "Cross-axis alignment",
-              },
-              {
-                prop: "justify",
-                type: "ResponsiveValue<StackJustify>",
-                default: "-",
-                description: "Main-axis justification",
-              },
-              {
-                prop: "dividers",
-                type: "boolean",
-                default: "false",
-                description: "Insert vertical dividers between items",
-              },
-            ],
+            props: stackApi.filter((entry) => entry.prop !== "direction"),
           },
           {
             title: "VStack",
+            props: stackApi.filter((entry) => entry.prop !== "direction"),
+          },
+          {
+            title: "KiraStack",
             props: [
+              ...stackApi.filter(
+                (entry) =>
+                  !["direction", "wrap", "dividers / dividerElement"].includes(
+                    entry.prop,
+                  ),
+              ),
               {
-                prop: "gap",
-                type: "ResponsiveValue<StackGap>",
-                default: "4",
-                description: "Gap between items",
+                prop: "layout",
+                type: '"switcher" | "vertical"',
+                default: '"switcher"',
+                description:
+                  "Local-width switching or a fixed vertical content flow.",
               },
               {
-                prop: "align",
-                type: "ResponsiveValue<StackAlign>",
-                default: "-",
-                description: "Cross-axis alignment",
+                prop: "threshold / limit",
+                type: "string / number",
+                default: '"32rem" / 4',
+                description:
+                  "CSS length threshold and maximum horizontal child-group count. Nonfinite limits fall back to four; positive whole limits are enforced.",
               },
               {
-                prop: "justify",
-                type: "ResponsiveValue<StackJustify>",
-                default: "-",
-                description: "Main-axis justification",
-              },
-              {
-                prop: "dividers",
-                type: "boolean",
-                default: "false",
-                description: "Insert horizontal dividers between items",
+                prop: "loading / loadingLabel / loadingContent",
+                type: "boolean / string / React.ReactNode",
+                default: 'false / "Refreshing content…" / shared Skeleton',
+                description:
+                  "Busy status keeps supplied children mounted and interactive. Only an empty initial load uses the placeholder; the caller supplies and retains data.",
               },
             ],
           },
         ]}
       />
-    </div>
+      <Changelog
+        entries={[
+          {
+            version: "2.0.0",
+            date: "15 November 2026",
+            changes: [
+              {
+                type: "fixed",
+                title: "Keys, numeric zero and native composition",
+                description:
+                  "Stable divided-child identity, list-safe decorative rules, typed native attributes and refs. Audited against Base UI 1.9.0.",
+              },
+              {
+                type: "added",
+                title: "Adaptive Stack family",
+                description:
+                  "Responsive direction/wrap/gaps, KiraStack local-width switching and retained refresh content. Research cutoff October 31, 2026.",
+              },
+              {
+                type: "breaking",
+                title: "Explicit native and divider contracts",
+                description:
+                  "Props follow the selected native tag. Fixed HStack/VStack directions cannot be overridden. Generated list dividers now use hidden presentation li adapters, and default rules expose stack-divider slots. Responsive CSS is registry-portable.",
+              },
+            ],
+          },
+        ]}
+      />
+    </ComponentPage>
   );
 }
