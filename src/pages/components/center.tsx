@@ -1,497 +1,607 @@
+import * as React from "react";
 import {
-  IconLoader2,
-  IconSettings,
   IconCheck,
-  IconBell,
-  IconUser,
+  IconSettings,
+  IconLayoutAlignMiddle,
+  IconDeviceMobile,
+  IconArrowsMaximize,
+  IconCode,
 } from "@tabler/icons-react";
-import { Center } from "@/components/ui/center";
-import { VStack } from "@/components/ui/stack";
+
+import { Center, KiraCenter } from "@/components/ui/center";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import {
   ComponentPage,
   PageHeader,
   FeatureGrid,
   DemoTabs,
   DemoWrapper,
+  KeyboardShortcuts,
+  UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
-function CenterTypesDemo() {
+function BasicDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div className="space-y-2">
-        <p className="text-sm font-medium">type="flex" (default)</p>
-        <Center className="h-32 border rounded-lg bg-muted/30">
-          <div className="p-4 bg-primary/20 rounded">Centered</div>
-        </Center>
-      </div>
-      <div className="space-y-2">
-        <p className="text-sm font-medium">type="grid"</p>
-        <Center type="grid" className="h-32 border rounded-lg bg-muted/30">
-          <div className="p-4 bg-primary/20 rounded">Centered</div>
-        </Center>
-      </div>
-      <div className="space-y-2">
-        <p className="text-sm font-medium">type="absolute"</p>
-        <div className="h-32 border rounded-lg bg-muted/30 relative">
-          <Center type="absolute">
-            <div className="p-4 bg-primary/20 rounded">Centered</div>
-          </Center>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const centerTypesCode = `import { Center } from "@/components/ui/center"
-
-// Flex centering (default)
-<Center className="h-screen">
-  <Logo />
-</Center>
-
-// Grid centering
-<Center type="grid" className="min-h-64">
-  <EmptyState />
-</Center>
-
-// Absolute centering (for overlays)
-<div className="relative h-96">
-  <Center type="absolute">
-    <Spinner />
-  </Center>
-</div>`;
-
-function InlineCenterDemo() {
-  return (
-    <div className="flex items-center gap-4 flex-wrap">
-      <span>Icon button:</span>
-      <Center inline className="size-8 bg-primary/20 rounded">
-        <IconSettings className="size-4" />
+    <div className="grid w-full gap-4 sm:grid-cols-2">
+      <Center className="h-40 rounded-lg border">
+        <p className="text-sm font-medium">Centered review summary</p>
       </Center>
-      <span>with text around it.</span>
+      <Center type="grid" className="h-40 rounded-lg border">
+        <p className="text-sm font-medium">Grid alignment</p>
+      </Center>
     </div>
   );
 }
 
-const inlineCenterCode = `import { Center } from "@/components/ui/center"
-import { Icon } from "@tabler/icons-react"
+const BasicDemoCode =
+  'import { Center } from "@/components/ui/center";\n\nexport function BasicDemo() {\n  return <div className="grid w-full gap-4 sm:grid-cols-2">\n    <Center className="h-40 rounded-lg border"><p className="text-sm font-medium">Centered review summary</p></Center>\n    <Center type="grid" className="h-40 rounded-lg border"><p className="text-sm font-medium">Grid alignment</p></Center>\n  </div>;\n}';
 
-// Inline centering
-<span>Text</span>
-<Center inline className="size-8 bg-primary/20 rounded">
-  <Icon className="size-4" />
-</Center>
-<span>More text</span>
+function InlineDemo() {
+  const [count, setCount] = React.useState(0);
 
-// Multiple inline centers
-<Flex gap={4}>
-  <Center inline><IconA /></Center>
-  <Center inline><IconB /></Center>
-  <Center inline><IconC /></Center>
-</Flex>`;
-
-function LoadingOverlayDemo() {
   return (
-    <div className="h-48 border rounded-lg bg-muted/30 relative">
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm">
-        <Center className="h-full">
-          <VStack gap={2} align="center">
-            <IconLoader2 className="size-8 animate-spin text-primary" />
-            <span className="text-sm text-muted-foreground">Loading...</span>
-          </VStack>
+    <div className="space-y-4">
+      <p className="text-sm">
+        Reviewer status:{" "}
+        <Center
+          as="span"
+          inline
+          className="size-6 rounded-full bg-muted align-middle"
+        >
+          <IconCheck aria-hidden="true" className="size-4" />
+        </Center>{" "}
+        available
+      </p>
+      <Button variant="outline" onClick={() => setCount((value) => value + 1)}>
+        <Center as="span" inline>
+          <IconSettings aria-hidden="true" className="size-4" />
         </Center>
-      </div>
+        Adjust review settings
+      </Button>
+      <output className="block text-sm text-muted-foreground">
+        Settings opened {count} times in this local example.
+      </output>
     </div>
   );
 }
 
-const loadingOverlayCode = `import { Center } from "@/components/ui/center"
-import { VStack } from "@/components/ui/stack"
-import { IconLoader2 } from "@tabler/icons-react"
+const InlineDemoCode =
+  'import * as React from "react";\nimport { IconCheck, IconSettings } from "@tabler/icons-react";\nimport { Center } from "@/components/ui/center";\nimport { Button } from "@/components/ui/button";\n\nexport function InlineDemo() {\n  const [count, setCount] = React.useState(0);\n  return <div className="space-y-4">\n    <p className="text-sm">Reviewer status: <Center as="span" inline className="size-6 rounded-full bg-muted align-middle"><IconCheck aria-hidden="true" className="size-4" /></Center> available</p>\n    <Button variant="outline" onClick={() => setCount((value) => value + 1)}><Center as="span" inline><IconSettings aria-hidden="true" className="size-4" /></Center>Adjust review settings</Button>\n    <output className="block text-sm text-muted-foreground">Settings opened {count} times in this local example.</output>\n  </div>;\n}';
 
-// Loading overlay
-<div className="relative h-48">
-  <div className="absolute inset-0 bg-background/80 backdrop-blur-sm">
-    <Center className="h-full">
-      <VStack gap={2} align="center">
-        <IconLoader2 className="size-8 animate-spin text-primary" />
-        <span className="text-sm text-muted-foreground">Loading...</span>
-      </VStack>
-    </Center>
-  </div>
-</div>`;
-
-function EmptyStateDemo() {
+function AbsoluteDemo() {
   return (
-    <Center className="h-48 border rounded-lg border-dashed">
-      <VStack gap={4} align="center">
-        <div className="size-16 rounded-full bg-muted flex items-center justify-center">
-          <IconCheck className="size-8 text-muted-foreground" />
-        </div>
-        <div className="text-center space-y-2">
-          <h4 className="font-semibold">No items yet</h4>
-          <p className="text-sm text-muted-foreground">
-            Add your first item to get started
-          </p>
-          <Button>Add Item</Button>
-        </div>
-      </VStack>
-    </Center>
+    <div className="relative h-48 w-full rounded-lg border bg-muted/30">
+      <p className="p-3 text-sm text-muted-foreground">
+        Positioned preview frame
+      </p>
+      <Center
+        type="absolute"
+        className="rounded-md bg-background px-4 py-2 text-sm shadow-sm"
+      >
+        Preview unavailable
+      </Center>
+      <p className="absolute inset-x-3 bottom-3 text-xs text-muted-foreground">
+        Absolute centering needs a positioned parent and does not protect
+        oversized content.
+      </p>
+    </div>
   );
 }
 
-const emptyStateCode = `import { Center } from "@/components/ui/center"
-import { VStack } from "@/components/ui/stack"
-import { IconCheck } from "@tabler/icons-react"
-import { Button } from "@/components/ui/button"
+const AbsoluteDemoCode =
+  'import { Center } from "@/components/ui/center";\n\nexport function AbsoluteDemo() {\n  return <div className="relative h-48 w-full rounded-lg border bg-muted/30">\n    <p className="p-3 text-sm text-muted-foreground">Positioned preview frame</p>\n    <Center type="absolute" className="rounded-md bg-background px-4 py-2 text-sm shadow-sm">Preview unavailable</Center>\n    <p className="absolute inset-x-3 bottom-3 text-xs text-muted-foreground">Absolute centering needs a positioned parent and does not protect oversized content.</p>\n  </div>;\n}';
 
-// Empty state
-<Center className="h-48 border rounded-lg border-dashed">
-  <VStack gap={4} align="center">
-    <div className="size-16 rounded-full bg-muted flex items-center justify-center">
-      <IconCheck className="size-8 text-muted-foreground" />
-    </div>
-    <div className="text-center space-y-2">
-      <h4 className="font-semibold">No items yet</h4>
-      <p className="text-sm text-muted-foreground">Add your first item to get started</p>
-      <Button>Add Item</Button>
-    </div>
-  </VStack>
-</Center>`;
+function SafeDemo() {
+  const [safe, setSafe] = React.useState(true);
 
-function ModalOverlayDemo() {
   return (
-    <div className="h-64 border rounded-lg bg-muted/30 relative">
-      <div className="absolute inset-0 bg-background/90 backdrop-blur">
-        <Center type="absolute" className="p-8">
-          <div className="space-y-4 text-center max-w-sm">
-            <IconBell className="size-12 text-primary mx-auto" />
-            <h3 className="text-lg font-semibold">Confirm Action</h3>
-            <p className="text-sm text-muted-foreground">
-              This action cannot be undone. Are you sure you want to continue?
+    <div className="w-full max-w-md space-y-4">
+      <Button
+        variant="outline"
+        aria-pressed={safe}
+        onClick={() => setSafe((value) => !value)}
+      >
+        {safe ? "Show unsafe centering" : "Restore safe centering"}
+      </Button>
+      <Center
+        safe={safe}
+        className="h-48 overflow-auto rounded-lg border p-4"
+        data-demo="safe-center"
+      >
+        <section className="w-full min-w-0 shrink-0 space-y-4">
+          <h3 className="font-semibold">Access review checklist</h3>
+          {[
+            "Confirm the release owner",
+            "Review external collaborators",
+            "Check invitation expiry",
+            "Inspect inherited permissions",
+            "Record the approval rationale",
+            "Notify workspace administrators",
+          ].map((step) => (
+            <p key={step} className="text-sm">
+              {step}
             </p>
-            <div className="flex gap-2 justify-center">
-              <Button variant="outline">Cancel</Button>
-              <Button>Confirm</Button>
-            </div>
-          </div>
-        </Center>
-      </div>
+          ))}
+          <Button variant="outline">Checklist complete</Button>
+        </section>
+      </Center>
+      <p className="text-sm text-muted-foreground">
+        Safe alignment keeps the first checklist item reachable when content is
+        taller than the panel.
+      </p>
     </div>
   );
 }
 
-const modalOverlayCode = `import { Center } from "@/components/ui/center"
-import { IconBell } from "@tabler/icons-react"
-import { Button } from "@/components/ui/button"
+const SafeDemoCode =
+  'import * as React from "react";\nimport { Center } from "@/components/ui/center";\nimport { Button } from "@/components/ui/button";\n\nexport function SafeDemo() {\n  const [safe, setSafe] = React.useState(true);\n  return <div className="w-full max-w-md space-y-4">\n    <Button variant="outline" aria-pressed={safe} onClick={() => setSafe((value) => !value)}>{safe ? "Show unsafe centering" : "Restore safe centering"}</Button>\n    <Center safe={safe} className="h-48 overflow-auto rounded-lg border p-4" data-demo="safe-center">\n      <section className="w-full min-w-0 shrink-0 space-y-4">\n        <h3 className="font-semibold">Access review checklist</h3>\n        {["Confirm the release owner", "Review external collaborators", "Check invitation expiry", "Inspect inherited permissions", "Record the approval rationale", "Notify workspace administrators"].map((step) => <p key={step} className="text-sm">{step}</p>)}\n        <Button variant="outline">Checklist complete</Button>\n      </section>\n    </Center>\n    <p className="text-sm text-muted-foreground">Safe alignment keeps the first checklist item reachable when content is taller than the panel.</p>\n  </div>;\n}';
 
-// Modal overlay with absolute centering
-<div className="relative h-64">
-  <div className="absolute inset-0 bg-background/90 backdrop-blur">
-    <Center type="absolute" className="p-8">
-      <div className="space-y-4 text-center max-w-sm">
-        <IconBell className="size-12 text-primary mx-auto" />
-        <h3>Confirm Action</h3>
-        <p className="text-sm text-muted-foreground">
-          This action cannot be undone.
-        </p>
-        <div className="flex gap-2 justify-center">
-          <Button variant="outline">Cancel</Button>
-          <Button>Confirm</Button>
+function ViewportDemo() {
+  const [viewport, setViewport] = React.useState<"none" | "small" | "dynamic">(
+    "none",
+  );
+
+  return (
+    <div className="w-full space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {(["none", "small", "dynamic"] as const).map((value) => (
+          <Button
+            key={value}
+            variant="outline"
+            aria-pressed={viewport === value}
+            onClick={() => setViewport(value)}
+          >
+            {
+              {
+                none: "Panel height",
+                small: "Small viewport",
+                dynamic: "Dynamic viewport",
+              }[value]
+            }
+          </Button>
+        ))}
+      </div>
+      <KiraCenter
+        viewport={viewport}
+        offset="8rem"
+        safeArea
+        width="sm"
+        className={
+          viewport === "none"
+            ? "min-h-48 rounded-lg border"
+            : "rounded-lg border"
+        }
+      >
+        <div className="space-y-3">
+          <h3 className="font-semibold">Workspace invitation</h3>
+          <p className="text-sm text-muted-foreground">
+            Small and dynamic modes reserve the viewport height minus an
+            eight-rem app-chrome offset. This is a local layout fixture.
+          </p>
         </div>
-      </div>
-    </Center>
-  </div>
-</div>`;
-
-function UserProfileDemo() {
-  return (
-    <div className="flex items-center gap-6">
-      <Center className="size-20 rounded-full bg-primary text-primary-foreground">
-        <IconUser className="size-10" />
-      </Center>
-      <div className="space-y-1">
-        <h4 className="font-semibold">John Doe</h4>
-        <p className="text-sm text-muted-foreground">Software Engineer</p>
-        <p className="text-xs text-muted-foreground">New York, NY</p>
-      </div>
+      </KiraCenter>
     </div>
   );
 }
 
-const userProfileCode = `import { Center } from "@/components/ui/center"
-import { IconUser } from "@tabler/icons-react"
+const ViewportDemoCode =
+  'import * as React from "react";\nimport { KiraCenter } from "@/components/ui/center";\nimport { Button } from "@/components/ui/button";\n\nexport function ViewportDemo() {\n  const [viewport, setViewport] = React.useState<"none" | "small" | "dynamic">("none");\n  return <div className="w-full space-y-4">\n    <div className="flex flex-wrap gap-2">{(["none", "small", "dynamic"] as const).map((value) => <Button key={value} variant="outline" aria-pressed={viewport === value} onClick={() => setViewport(value)}>{{none: "Panel height", small: "Small viewport", dynamic: "Dynamic viewport"}[value]}</Button>)}</div>\n    <KiraCenter viewport={viewport} offset="8rem" safeArea width="sm" className={viewport === "none" ? "min-h-48 rounded-lg border" : "rounded-lg border"}>\n      <div className="space-y-3"><h3 className="font-semibold">Workspace invitation</h3><p className="text-sm text-muted-foreground">Small and dynamic modes reserve the viewport height minus an eight-rem app-chrome offset. This is a local layout fixture.</p></div>\n    </KiraCenter>\n  </div>;\n}';
 
-// Avatar with centered icon
-<Center className="size-20 rounded-full bg-primary text-primary-foreground">
-  <IconUser className="size-10" />
-</Center>
+function KiraDemo() {
+  const [saved, setSaved] = React.useState(false);
 
-// Profile card
-<div className="flex items-center gap-6">
-  <Center className="size-20 rounded-full bg-primary text-primary-foreground">
-    <IconUser className="size-10" />
-  </Center>
-  <div>
-    <h4>John Doe</h4>
-    <p className="text-sm text-muted-foreground">Software Engineer</p>
-  </div>
-</div>`;
-
-function SizeVariantsDemo() {
   return (
-    <div className="flex flex-wrap items-end gap-4">
-      <Center className="size-16 bg-primary/20 rounded border">
-        <span className="text-xs">size-16</span>
+    <KiraCenter
+      width="md"
+      padding="default"
+      className="min-h-80 w-full rounded-lg border"
+    >
+      <form
+        className="space-y-4"
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSaved(true);
+        }}
+      >
+        <div>
+          <h3 className="font-semibold">Join the release review</h3>
+          <p className="text-sm text-muted-foreground">
+            Centered content with a bounded reading width.
+          </p>
+        </div>
+        <label htmlFor="center-email" className="block text-sm font-medium">
+          Work email
+        </label>
+        <Input
+          id="center-email"
+          type="email"
+          autoComplete="email"
+          name="email"
+          required
+          defaultValue="amara@example.com"
+          onChange={() => setSaved(false)}
+        />
+        <Button type="submit">Save contact</Button>
+        <output className="block text-sm text-muted-foreground">
+          {saved
+            ? "Contact saved in this local example."
+            : "No invitation will be sent."}
+        </output>
+      </form>
+    </KiraCenter>
+  );
+}
+
+const KiraDemoCode =
+  'import * as React from "react";\nimport { KiraCenter } from "@/components/ui/center";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function KiraDemo() {\n  const [saved, setSaved] = React.useState(false);\n  return <KiraCenter width="md" padding="default" className="min-h-80 w-full rounded-lg border">\n    <form className="space-y-4" onSubmit={(event) => { event.preventDefault(); setSaved(true); }}>\n      <div><h3 className="font-semibold">Join the release review</h3><p className="text-sm text-muted-foreground">Centered content with a bounded reading width.</p></div>\n      <label htmlFor="center-email" className="block text-sm font-medium">Work email</label>\n      <Input id="center-email" type="email" autoComplete="email" name="email" required defaultValue="amara@example.com" onChange={() => setSaved(false)} />\n      <Button type="submit">Save contact</Button>\n      <output className="block text-sm text-muted-foreground">{saved ? "Contact saved in this local example." : "No invitation will be sent."}</output>\n    </form>\n  </KiraCenter>;\n}';
+
+function NativeDemo() {
+  const sectionRef = React.useRef<HTMLElement>(null);
+  const [tag, setTag] = React.useState("Read the rendered element.");
+
+  return (
+    <div className="w-full space-y-4">
+      <Center
+        as="section"
+        ref={sectionRef}
+        render={<section aria-label="Release readiness" />}
+        className="min-h-32 rounded-lg border"
+      >
+        <p className="text-sm">Ready for owner review.</p>
       </Center>
-      <Center className="size-24 bg-primary/20 rounded border">
-        <span className="text-xs">size-24</span>
-      </Center>
-      <Center className="size-32 bg-primary/20 rounded border">
-        <span className="text-xs">size-32</span>
-      </Center>
-      <Center className="w-48 h-24 bg-primary/20 rounded border">
-        <span className="text-xs">w-48 h-24</span>
-      </Center>
+      <Button
+        variant="outline"
+        onClick={() =>
+          setTag(sectionRef.current?.tagName.toLowerCase() ?? "No element")
+        }
+      >
+        Read native ref
+      </Button>
+      <output className="ml-3 text-sm text-muted-foreground">{tag}</output>
     </div>
   );
 }
 
-const sizeVariantsCode = `import { Center } from "@/components/ui/center"
+const NativeDemoCode =
+  'import * as React from "react";\nimport { Center } from "@/components/ui/center";\nimport { Button } from "@/components/ui/button";\n\nexport function NativeDemo() {\n  const sectionRef = React.useRef<HTMLElement>(null);\n  const [tag, setTag] = React.useState("Read the rendered element.");\n  return <div className="w-full space-y-4">\n    <Center as="section" ref={sectionRef} render={<section aria-label="Release readiness" />} className="min-h-32 rounded-lg border">\n      <p className="text-sm">Ready for owner review.</p>\n    </Center>\n    <Button variant="outline" onClick={() => setTag(sectionRef.current?.tagName.toLowerCase() ?? "No element")}>Read native ref</Button>\n    <output className="ml-3 text-sm text-muted-foreground">{tag}</output>\n  </div>;\n}';
 
-// Size variants
-<Center className="size-16 bg-primary/20 rounded">
-  <Icon className="size-8" />
-</Center>
+function StatesDemo() {
+  const [state, setState] = React.useState<
+    "empty" | "loading" | "error" | "ready"
+  >("empty");
 
-<Center className="size-24 bg-primary/20 rounded">
-  <Icon className="size-12" />
-</Center>
+  return (
+    <div className="w-full max-w-80 space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {(["empty", "loading", "error", "ready"] as const).map((value) => (
+          <Button
+            key={value}
+            variant="outline"
+            aria-pressed={state === value}
+            onClick={() => setState(value)}
+          >
+            {value}
+          </Button>
+        ))}
+      </div>
+      <KiraCenter
+        width="full"
+        padding="sm"
+        className="min-h-64 rounded-lg border"
+      >
+        {state === "empty" && (
+          <div className="space-y-3">
+            <h3 className="font-semibold">No reviewers yet</h3>
+            <p className="text-sm text-muted-foreground">
+              Add a reviewer to start this local queue.
+            </p>
+            <Button variant="outline" onClick={() => setState("ready")}>
+              Add reviewer
+            </Button>
+          </div>
+        )}
+        {state === "loading" && (
+          <div className="space-y-3">
+            <Spinner label="Loading reviewer details…" />
+            <p className="text-sm text-muted-foreground">
+              Loading reviewer details…
+            </p>
+          </div>
+        )}
+        {state === "error" && (
+          <div className="space-y-3">
+            <p role="alert" className="text-sm text-destructive">
+              Reviewer details could not be loaded. Try again.
+            </p>
+            <Button variant="outline" onClick={() => setState("ready")}>
+              Try again
+            </Button>
+          </div>
+        )}
+        {state === "ready" && (
+          <div className="space-y-3">
+            <output className="text-sm">Reviewer added.</output>
+            <p className="wrap-anywhere text-sm">
+              reviewer-with-a-very-long-workspace-address@example-platform-infrastructure.com
+            </p>
+            <Input
+              aria-label="Read-only reviewer role"
+              readOnly
+              defaultValue="Release owner"
+            />
+            <Button variant="outline" disabled>
+              Remove owner
+            </Button>
+            <p className="text-sm text-muted-foreground">
+              The release needs an owner before this reviewer can be removed.
+            </p>
+          </div>
+        )}
+      </KiraCenter>
+    </div>
+  );
+}
 
-<Center className="size-32 bg-primary/20 rounded">
-  <Icon className="size-16" />
-</Center>
+const StatesDemoCode =
+  'import * as React from "react";\nimport { KiraCenter } from "@/components/ui/center";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\nimport { Spinner } from "@/components/ui/spinner";\n\nexport function StatesDemo() {\n  const [state, setState] = React.useState<"empty" | "loading" | "error" | "ready">("empty");\n  return <div className="w-full max-w-80 space-y-4">\n    <div className="flex flex-wrap gap-2">{(["empty", "loading", "error", "ready"] as const).map((value) => <Button key={value} variant="outline" aria-pressed={state === value} onClick={() => setState(value)}>{value}</Button>)}</div>\n    <KiraCenter width="full" padding="sm" className="min-h-64 rounded-lg border">\n      {state === "empty" && <div className="space-y-3"><h3 className="font-semibold">No reviewers yet</h3><p className="text-sm text-muted-foreground">Add a reviewer to start this local queue.</p><Button variant="outline" onClick={() => setState("ready")}>Add reviewer</Button></div>}\n      {state === "loading" && <div className="space-y-3"><Spinner label="Loading reviewer details…" /><p className="text-sm text-muted-foreground">Loading reviewer details…</p></div>}\n      {state === "error" && <div className="space-y-3"><p role="alert" className="text-sm text-destructive">Reviewer details could not be loaded. Try again.</p><Button variant="outline" onClick={() => setState("ready")}>Try again</Button></div>}\n      {state === "ready" && <div className="space-y-3"><output className="text-sm">Reviewer added.</output><p className="wrap-anywhere text-sm">reviewer-with-a-very-long-workspace-address@example-platform-infrastructure.com</p><Input aria-label="Read-only reviewer role" readOnly defaultValue="Release owner" /><Button variant="outline" disabled>Remove owner</Button><p className="text-sm text-muted-foreground">The release needs an owner before this reviewer can be removed.</p></div>}\n    </KiraCenter>\n  </div>;\n}';
 
-// Custom width and height
-<Center className="w-48 h-24 bg-primary/20 rounded">
-  Content
-</Center>`;
+const demos = [
+  {
+    value: "basic",
+    label: "Basic",
+    description: "Flex and grid centering for bounded panels.",
+    Demo: BasicDemo,
+    code: BasicDemoCode,
+  },
+  {
+    value: "inline",
+    label: "Inline",
+    description:
+      "Inline content uses a semantic span; interactive actions use the shared Button.",
+    Demo: InlineDemo,
+    code: InlineDemoCode,
+  },
+  {
+    value: "absolute",
+    label: "Absolute",
+    description:
+      "An explicit absolute technique inside a positioned preview frame.",
+    Demo: AbsoluteDemo,
+    code: AbsoluteDemoCode,
+  },
+  {
+    value: "safe",
+    label: "Safe overflow",
+    description: "Compare safe and unsafe alignment in an overflowing panel.",
+    Demo: SafeDemo,
+    code: SafeDemoCode,
+  },
+  {
+    value: "viewport",
+    label: "Viewport",
+    description:
+      "Small/dynamic viewport height, app-chrome offset and safe-area gutters.",
+    Demo: ViewportDemo,
+    code: ViewportDemoCode,
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    description: "A local contact form with a bounded content width.",
+    Demo: KiraDemo,
+    code: KiraDemoCode,
+  },
+  {
+    value: "native",
+    label: "Native",
+    description: "Render composition and a native section ref.",
+    Demo: NativeDemo,
+    code: NativeDemoCode,
+  },
+  {
+    value: "states",
+    label: "States",
+    description:
+      "Actionable empty/error fixtures, shared Spinner, read-only state and long values.",
+    Demo: StatesDemo,
+    code: StatesDemoCode,
+  },
+];
 
+const nativeApi = [
+  {
+    prop: "as / render / ref",
+    type: "CenterElement / useRender.RenderProp / native element ref",
+    default: '"div"',
+    description:
+      "Native div, span, section, main or article attributes with Base UI prop/ref composition.",
+  },
+  {
+    prop: "safe",
+    type: "boolean",
+    default: "true",
+    description:
+      "Overflow-safe alignment in flex/grid modes. Absolute mode uses transform centering and ignores safe; bound its content yourself.",
+  },
+  {
+    prop: "className / style / children",
+    type: "string / React.CSSProperties / React.ReactNode",
+    description:
+      "Caller layout and native content; Center adds no widget roles or focus behavior.",
+  },
+];
+
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function CenterPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Center"
-        description="A flexible centering utility component with multiple strategies. Supports flex, grid, and absolute positioning for any layout scenario."
-        version="v1.0"
+        description="Reachable centering for review panels, inline content and forms in changing mobile viewports."
+        version="2.0.0"
       />
-
       <FeatureGrid
         features={[
           {
-            title: "Multiple Strategies",
+            title: "Safe centering",
             description:
-              "Choose between flex, grid, or absolute positioning based on your needs.",
+              "Oversized flex/grid content stays aligned to the start.",
+            icon: <IconLayoutAlignMiddle className="size-5" />,
           },
           {
-            title: "Inline Support",
-            description:
-              "Center icons and small elements inline with text for badges and labels.",
+            title: "Viewport-aware",
+            description: "Dynamic/small viewport height and safe-area gutters.",
+            icon: <IconDeviceMobile className="size-5" />,
           },
           {
-            title: "Semantic HTML",
-            description:
-              "Render as semantic elements with the 'as' prop for better accessibility.",
+            title: "Bounded content",
+            description: "KiraCenter provides a quiet, readable content frame.",
+            icon: <IconArrowsMaximize className="size-5" />,
+          },
+          {
+            title: "Native composition",
+            description: "Typed tags, refs and Base UI render adapters.",
+            icon: <IconCode className="size-5" />,
           },
         ]}
       />
-
       <DemoTabs
-        defaultValue="center-types"
-        tabs={[
+        defaultValue="basic"
+        tabs={demos.map(({ value, label, description, Demo, code }) => ({
+          value,
+          label,
+          demo: (
+            <DemoWrapper title={label} description={description} code={code}>
+              <Demo />
+            </DemoWrapper>
+          ),
+        }))}
+      />
+      <KeyboardShortcuts
+        description="Center controls placement; child controls retain their native keyboard behavior."
+        shortcuts={[
           {
-            value: "center-types",
-            label: "Center Types",
-            demo: (
-              <DemoWrapper
-                title="Centering Strategies"
-                description="Three centering methods: flex (default), grid, and absolute."
-                code={centerTypesCode}
-              >
-                <CenterTypesDemo />
-              </DemoWrapper>
-            ),
+            keys: "Tab / Shift + Tab",
+            description:
+              "Reach child controls in document order. Center itself adds no tab stop.",
           },
           {
-            value: "inline-center",
-            label: "Inline",
-            demo: (
-              <DemoWrapper
-                title="Inline Centering"
-                description="Center icons and small elements inline with text."
-                code={inlineCenterCode}
-              >
-                <InlineCenterDemo />
-              </DemoWrapper>
-            ),
+            keys: "Enter",
+            description:
+              "Submit the local contact form; native email validation still applies.",
           },
           {
-            value: "loading-overlay",
-            label: "Loading Overlay",
-            demo: (
-              <DemoWrapper
-                title="Loading State Overlay"
-                description="Center content in an absolute overlay for loading indicators."
-                code={loadingOverlayCode}
-              >
-                <LoadingOverlayDemo />
-              </DemoWrapper>
-            ),
+            keys: "Enter / Space",
+            description:
+              "Activate mode, recovery and ref buttons through the shared Base UI Button.",
           },
           {
-            value: "empty-state",
-            label: "Empty State",
-            demo: (
-              <DemoWrapper
-                title="Empty State Pattern"
-                description="Center content for empty states or no data scenarios."
-                code={emptyStateCode}
-              >
-                <EmptyStateDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "modal-overlay",
-            label: "Modal Overlay",
-            demo: (
-              <DemoWrapper
-                title="Modal/Dialog Overlay"
-                description="Absolute centering for modal and dialog overlays."
-                code={modalOverlayCode}
-              >
-                <ModalOverlayDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "user-profile",
-            label: "User Profile",
-            demo: (
-              <DemoWrapper
-                title="Avatar Centering"
-                description="Center icons within circular avatar containers."
-                code={userProfileCode}
-              >
-                <UserProfileDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "size-variants",
-            label: "Size Variants",
-            demo: (
-              <DemoWrapper
-                title="Size Examples"
-                description="Different sizes using size, width, and height classes."
-                code={sizeVariantsCode}
-              >
-                <SizeVariantsDemo />
-              </DemoWrapper>
-            ),
+            keys: "Tab through long content",
+            description:
+              "With Safe overflow enabled, the first and last checklist controls remain reachable by scrolling.",
           },
         ]}
       />
-
+      <UsageBlock
+        code={
+          'import { Center, KiraCenter, centerVariants, centerContentVariants, kiraCenterVariants } from "@/components/ui/center";\n\nexport function CenterPatterns() {\n  return <>\n    <Center className="min-h-48"><p>Review summary</p></Center>\n    <Center as="span" inline className="size-6"><span aria-hidden="true">•</span></Center>\n    <KiraCenter as="main" viewport="dynamic" offset="4rem" safeArea width="md"><h1>Workspace invitation</h1><p>Review the access request.</p></KiraCenter>\n    <div className={centerVariants({ type: "grid", safe: true })}><p>Safe grid</p></div>\n    <div className={kiraCenterVariants({ padding: "sm" })}><div className={centerContentVariants({ width: "prose" })}>Readable content</div></div>\n  </>;\n}'
+        }
+      />
       <APIReference
         sections={[
           {
-            title: "Center Props",
+            title: "Center",
             props: [
+              ...nativeApi,
               {
                 prop: "type",
                 type: '"flex" | "grid" | "absolute"',
-                default: "flex",
-                description: "Centering method strategy",
+                default: '"flex"',
+                description:
+                  "Absolute mode requires a positioned ancestor and does not reserve flow space.",
               },
               {
                 prop: "inline",
                 type: "boolean",
                 default: "false",
-                description: "Use inline-flex or inline-grid",
-              },
-              {
-                prop: "as",
-                type: "CenterElement",
-                default: "div",
-                description: "Semantic HTML element to render",
-              },
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional Tailwind classes",
+                description:
+                  "Inline-flex or inline-grid display. Has no effect in absolute mode.",
               },
             ],
           },
           {
-            title: "Center Types",
+            title: "KiraCenter",
             props: [
+              ...nativeApi,
               {
-                prop: "flex",
-                type: "string",
-                default: "-",
+                prop: "viewport",
+                type: '"none" | "small" | "dynamic"',
+                default: '"none"',
                 description:
-                  "Uses CSS flexbox. Best for most cases. Adds items-center justify-center.",
+                  "Minimum height from 100svh or 100dvh; content may grow beyond it.",
               },
               {
-                prop: "grid",
+                prop: "offset",
                 type: "string",
-                default: "-",
+                default: '"0px"',
                 description:
-                  "Uses CSS Grid. Adds place-items-center. Good for simple containers.",
+                  "CSS length of app chrome to subtract from viewport height; negative computed heights clamp to zero.",
               },
               {
-                prop: "absolute",
-                type: "string",
-                default: "-",
+                prop: "width",
+                type: '"sm" | "md" | "prose" | "full"',
+                default: '"md"',
+                description: "Content wrapper maximum width; prose uses 65ch.",
+              },
+              {
+                prop: "padding",
+                type: '"none" | "sm" | "default" | "lg"',
+                default: '"default"',
+                description: "Existing zero, 3, 6 and 8 spacing tokens.",
+              },
+              {
+                prop: "safeArea",
+                type: "boolean",
+                default: "false",
                 description:
-                  "Uses absolute positioning. Requires relative parent. Adds top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2.",
+                  "Each physical gutter is the larger of padding and its device safe-area inset. The host controls viewport-fit.",
+              },
+              {
+                prop: "contentClassName",
+                type: "string",
+                description: "Styles the bounded center-content wrapper.",
               },
             ],
           },
+        ]}
+      />
+      <Changelog
+        entries={[
           {
-            title: "Usage Tips",
-            props: [
+            version: "2.0.0",
+            date: "15 November 2026",
+            changes: [
               {
-                prop: "flex centering",
-                type: "string",
-                default: "-",
+                type: "fixed",
+                title: "Native composition and honest examples",
                 description:
-                  "Default. Works for any content size. Use for general purpose centering.",
+                  "Typed refs/render adapters, shared display classes, compiling snippets and accessible shared controls replace faux dialog/icon-button examples. Audited against Base UI 1.9.0.",
               },
               {
-                prop: "grid centering",
-                type: "string",
-                default: "-",
+                type: "added",
+                title: "Safe and viewport-aware Center",
                 description:
-                  "Use when centering single element. Slightly more performant than flex.",
+                  "Safe flex/grid overflow alignment and KiraCenter content widths, viewport heights, offsets and safe-area gutters. Research cutoff October 31, 2026.",
               },
               {
-                prop: "absolute centering",
-                type: "string",
-                default: "-",
+                type: "breaking",
+                title: "Overflow defaults to safe alignment",
                 description:
-                  "Use for overlays, modals, tooltips. Parent must have relative, fixed, or absolute positioning.",
-              },
-              {
-                prop: "inline centering",
-                type: "string",
-                default: "-",
-                description:
-                  "Set inline=true to use inline-flex or inline-grid. Useful for centering icons within badges.",
+                  "Oversized flex/grid content now aligns toward the start instead of extending behind the scroll origin. Use safe={false} for the previous alignment. Absolute behavior is retained.",
               },
             ],
           },
