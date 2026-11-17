@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -8,11 +8,11 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   ComponentPage,
   PageHeader,
@@ -22,7 +22,7 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
-} from "@/components/docs"
+} from "@/components/docs";
 
 function BasicDemo() {
   return (
@@ -47,7 +47,7 @@ function BasicDemo() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 
 const basicCode = `import {
@@ -83,7 +83,7 @@ export function BasicModalDemo() {
       </DialogContent>
     </Dialog>
   )
-}`
+}`;
 
 function SizesDemo() {
   return (
@@ -114,7 +114,7 @@ function SizesDemo() {
         </Dialog>
       ))}
     </div>
-  )
+  );
 }
 
 const sizesCode = `import {
@@ -156,13 +156,15 @@ export function ModalSizesDemo() {
       ))}
     </div>
   )
-}`
+}`;
 
 function CenteredDemo() {
   return (
     <div className="flex items-center justify-center min-h-[200px]">
       <Dialog>
-        <DialogTrigger render={<Button variant="outline">Open Centered Modal</Button>} />
+        <DialogTrigger
+          render={<Button variant="outline">Open Centered Modal</Button>}
+        />
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Centered Modal</DialogTitle>
@@ -171,8 +173,8 @@ function CenteredDemo() {
             </DialogDescription>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            The modal is automatically centered in the viewport using
-            CSS transforms.
+            The modal is automatically centered in the viewport using CSS
+            transforms.
           </p>
           <DialogFooter>
             <DialogClose render={<Button>Close</Button>} />
@@ -180,7 +182,7 @@ function CenteredDemo() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 
 const centeredCode = `import {
@@ -215,10 +217,10 @@ export function CenteredModalDemo() {
       </DialogContent>
     </Dialog>
   )
-}`
+}`;
 
 function ControlledDemo() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 min-h-[200px]">
@@ -243,14 +245,12 @@ function ControlledDemo() {
             <Button variant="outline" onClick={() => setOpen(false)}>
               Close
             </Button>
-            <Button onClick={() => setOpen(false)}>
-              Confirm
-            </Button>
+            <Button onClick={() => setOpen(false)}>Confirm</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 
 const controlledCode = `import { useState } from "react"
@@ -297,7 +297,7 @@ export function ControlledModalDemo() {
       </Dialog>
     </div>
   )
-}`
+}`;
 
 function ScrollableDemo() {
   return (
@@ -312,12 +312,17 @@ function ScrollableDemo() {
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[300px] overflow-y-auto space-y-4 pr-2">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="space-y-2">
-                <h4 className="font-medium text-sm">Section {i + 1}</h4>
+            {Array.from({ length: 8 }, (_, i) => ({
+              id: "section-" + (i + 1),
+              number: i + 1,
+            })).map((section) => (
+              <div key={section.id} className="space-y-2">
+                <h4 className="font-medium text-sm">
+                  Section {section.number}
+                </h4>
                 <p className="text-sm text-muted-foreground">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                  eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                 </p>
               </div>
             ))}
@@ -329,7 +334,7 @@ function ScrollableDemo() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 
 const scrollableCode = `import {
@@ -357,8 +362,8 @@ export function ScrollableModalDemo() {
         </DialogHeader>
         <div className="max-h-[300px] overflow-y-auto space-y-4 pr-2">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-              <h4 className="font-medium text-sm">Section {i + 1}</h4>
+            <div key={section.id} className="space-y-2">
+              <h4 className="font-medium text-sm">Section {section.number}</h4>
               <p className="text-sm text-muted-foreground">
                 Lorem ipsum dolor sit amet...
               </p>
@@ -372,7 +377,7 @@ export function ScrollableModalDemo() {
       </DialogContent>
     </Dialog>
   )
-}`
+}`;
 
 function DialogDemo() {
   return (
@@ -407,7 +412,7 @@ function DialogDemo() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 
 const dialogCode = `import {
@@ -457,7 +462,7 @@ export function DialogModalDemo() {
       </DialogContent>
     </Dialog>
   )
-}`
+}`;
 
 const usageCode = `import {
   Dialog,
@@ -484,7 +489,7 @@ import { Button } from "@/components/ui/button"
       <Button>Action</Button>
     </DialogFooter>
   </DialogContent>
-</Dialog>`
+</Dialog>`;
 
 const apiSections = [
   {
@@ -510,7 +515,8 @@ const apiSections = [
         prop: "modal",
         type: "boolean",
         default: "true",
-        description: "Whether the modal blocks interaction with the rest of the page.",
+        description:
+          "Whether the modal blocks interaction with the rest of the page.",
       },
     ],
   },
@@ -563,7 +569,8 @@ const apiSections = [
       {
         prop: "children",
         type: "ReactNode",
-        description: "Header content, typically DialogTitle and DialogDescription.",
+        description:
+          "Header content, typically DialogTitle and DialogDescription.",
       },
     ],
   },
@@ -628,8 +635,9 @@ const apiSections = [
       },
     ],
   },
-]
+];
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function ModalPage() {
   const features = [
     {
@@ -647,14 +655,14 @@ export default function ModalPage() {
       description:
         "Smooth backdrop blur and scale animations with respect for prefers-reduced-motion.",
     },
-  ]
+  ];
 
   const shortcuts = [
     { keys: "Esc", description: "Close the modal" },
     { keys: "Tab", description: "Navigate between focusable elements" },
     { keys: "Shift + Tab", description: "Navigate backwards" },
     { keys: "Enter / Space", description: "Activate focused button" },
-  ]
+  ];
 
   const demoTabs = [
     {
@@ -735,7 +743,7 @@ export default function ModalPage() {
         </DemoWrapper>
       ),
     },
-  ]
+  ];
 
   return (
     <ComponentPage>
@@ -763,5 +771,5 @@ export default function ModalPage() {
         description="Props and configuration options for all modal components."
       />
     </ComponentPage>
-  )
+  );
 }
