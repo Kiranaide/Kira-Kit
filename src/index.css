@@ -3,7 +3,35 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
+/* Flex */
+@source inline("{sm:,md:,lg:,xl:,2xl:,}flex-{row,row-reverse,col,col-reverse,nowrap,wrap,wrap-reverse}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}justify-{start,end,center,between,around,evenly}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}items-{start,end,center,baseline,stretch}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}gap-{0,1,2,3,4,5,6,8,10,12,16,20,24}");
+
+/* Box — sizing */
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{w,h,min-w,min-h,max-w,max-h}-{0,0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96,px,full,fit,min,max}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}w-{auto,screen,svw,lvw,dvw}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{h,min-h,max-h}-{screen,svh,lvh,dvh}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{h,min-w,min-h}-auto");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{max-w,max-h}-none");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}max-w-{prose,3xs,2xs,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl}");
+
+/* Box — spacing */
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{p,px,py,m,mx,my}-{0,1,2,3,4,5,6,8,10,12}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{m,mx,my}-auto");
+
+/* Box — color */
+@source inline("{sm:,md:,lg:,xl:,2xl:,}bg-{background,foreground,card,popover,border,input,ring}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{bg,text}-{primary,secondary,muted,accent,destructive,success,warning,info}{,-foreground}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}bg-{primary/10,primary/20,muted/50,destructive/10,success/10,warning/10,info/10}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}text-foreground");
+
+/* Box — border */
+@source inline("{sm:,md:,lg:,xl:,2xl:,}border{,-2,-4,-8,-none}");
+
 @custom-variant dark (&:is(.dark *));
+@custom-variant marked (&:is([data-checked], [data-indeterminate]));
 
 :root {
   --background: oklch(1 0 0);
@@ -100,6 +128,7 @@
   --animate-marquee: marquee 18s linear infinite;
   --animate-shake: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
   --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-toast-progress: toast-progress linear forwards;
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -160,6 +189,15 @@
   }
 }
 
+/* Hide scrollbars while keeping scrollability (carousel/stack rails) */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* Mac-like scrollbar styling with cross-browser support */
 @layer base {
   /* Standard scrollbar styling (Firefox) */
@@ -206,8 +244,17 @@
     background: transparent;
   }
 
-  /* Accessibility: Respect user preferences for reduced motion */
+  /* Accessibility: Respect user preferences for reduced motion.
+     Shared gate per playbook §5 — kills keyframe animations and transitions
+     kit-wide (skeleton-wave, badge-pulse, marquee, sticky-bar enter, ...). */
   @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
     ::-webkit-scrollbar-thumb {
       transition: none;
     }
@@ -267,15 +314,18 @@
   }
 }
 
-/* Badge shimmer - light sweep across a "new" badge. A single 0%->100%
-   linear pass (matching the plain `shimmer` keyframes above) so the sweep
-   travels smoothly all the way to the end, instead of reaching the edge
-   early and then sitting idle for the rest of the cycle (which reads as
-   the highlight getting "stuck" partway through). */
+/* Badge shimmer - light sweep across a badge. The keyframes own the whole
+   travel (no static translate alongside them — Tailwind v4's native
+   `translate` property composes with `transform` and would shift the range).
+   The element is inset-0, so ±100% moves it fully off the badge: it enters
+   from the left edge and exits past the right edge instead of parking in
+   the middle, with a beat of stillness between passes. */
 @keyframes badge-shimmer {
-  0% {
+  0%,
+  20% {
     transform: translateX(-100%);
   }
+  80%,
   100% {
     transform: translateX(100%);
   }
@@ -317,6 +367,22 @@
   }
   80% {
     transform: translateX(3px);
+  }
+}
+
+/* Toast auto-dismiss countdown — width is the semantically correct axis for a
+   progress bar (transform scaleX would work but is documented as a permitted
+   exception only if the width variant is rejected). */
+@theme {
+  --animate-toast-progress: toast-progress linear forwards;
+
+  @keyframes toast-progress {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0);
+    }
   }
 }
 
@@ -371,161 +437,149 @@
   }
 }
 
-/* Date Picker Calendar Styles - Matching Design System */
 @layer components {
-  /* Hide default navigation when using custom caption */
-  .rdp-nav,
-  .rdp-button_previous,
-  .rdp-button_next {
-    display: none !important;
+  .date-picker-popover {
+    /* reset UA [popover] styles */
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    max-height: calc(100dvh - 1rem);
+    overflow: auto;
+
+    opacity: 0;
+    translate: 0 -4px;
+    transition:
+      opacity 150ms ease-out,
+      translate 150ms ease-out,
+      overlay 150ms allow-discrete,
+      display 150ms allow-discrete;
   }
 
-  /* Remove top margin/padding from month caption */
-  .rdp-month_caption {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+  .date-picker-popover:popover-open {
+    opacity: 1;
+    translate: 0 0;
   }
 
-  /* Remove top margin/padding from months container */
-  .rdp-months {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-  }
-
-  /* Match picker grid width to calendar table width - only target pickers, not calendar */
-  [data-picker-grid] {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0;
-  }
-
-  /* Ensure picker containers match calendar width */
-  [data-picker-container] {
-    width: 100%;
-    min-width: 0;
-  }
-  /* Selected dates: Solid primary color background with primary-foreground text - no rings or circles */
-  .rdp-day_selected {
-    @apply bg-primary text-primary-foreground rounded-md;
-  }
-
-  .rdp-day_selected:hover {
-    @apply bg-primary/90;
-  }
-
-  /* Remove any focus rings, outlines, or circular elements from selected dates */
-  .rdp-day_selected .rdp-day_button:focus-visible,
-  .rdp-day_selected .rdp-day_button:focus,
-  .rdp-day_selected .rdp-day_button,
-  .rdp-day_selected.rdp-day_button {
-    @apply ring-0 outline-none;
-    box-shadow: none !important;
-    border: none !important;
-  }
-
-  /* Also remove rings from range start/end */
-  .rdp-day_range_start .rdp-day_button,
-  .rdp-day_range_end .rdp-day_button,
-  .rdp-day_range_start.rdp-day_button,
-  .rdp-day_range_end.rdp-day_button {
-    @apply ring-0 outline-none;
-    box-shadow: none !important;
-    border: none !important;
-  }
-
-  /* Today indicator: Light gray background + blue dot beneath */
-  .rdp-day_today:not(.rdp-day_selected) {
-    @apply bg-muted/30;
-  }
-
-  /* Blue dot indicator for today dates - only when NOT selected */
-  .rdp-day_today:not(.rdp-day_selected) .rdp-day_button::after {
-    content: "";
-    position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: var(--primary);
-  }
-
-  /* No dot when ANY date is selected - hide it completely */
-  .rdp-day_selected .rdp-day_button::after,
-  .rdp-day_today.rdp-day_selected .rdp-day_button::after,
-  .rdp-day_range_start .rdp-day_button::after,
-  .rdp-day_range_end .rdp-day_button::after {
-    display: none !important;
-    content: none !important;
-    visibility: hidden !important;
-  }
-
-  /* Ensure day buttons are square/rectangular, not circular */
-  .rdp-day_button {
-    @apply rounded-md;
-  }
-
-  /* Hover state: Subtle light gray background */
-  .rdp-day_button:hover:not(.rdp-day_selected):not(.rdp-day_disabled) {
-    @apply bg-muted/50;
-  }
-
-  /* Focus visibility for accessibility */
-  .rdp-day_button:focus-visible {
-    @apply ring-2 ring-ring ring-offset-2 ring-offset-background;
-  }
-
-  /* Range selection styling */
-  .rdp-day_range_start,
-  .rdp-day_range_end {
-    @apply bg-primary text-primary-foreground rounded-md;
-  }
-
-  .rdp-day_range_middle {
-    @apply bg-primary/10 rounded-none;
-  }
-
-  .rdp-day_range_middle:hover {
-    @apply bg-primary/15;
-  }
-
-  /* Ensure range middle dates are visible with proper contrast - force text color */
-  .rdp-day_range_middle .rdp-day_button,
-  .rdp-day_range_middle.rdp-day_button {
-    @apply text-foreground font-medium;
-    color: var(--foreground) !important;
-  }
-
-  /* Force text visibility in range middle - override any default styles for all nested elements */
-  .rdp-day_range_middle .rdp-day_button *,
-  .rdp-day_range_middle.rdp-day_button *,
-  .rdp-day_range_middle .rdp-day_button > *,
-  .rdp-day_range_middle .rdp-day_button span,
-  .rdp-day_range_middle.rdp-day_button span,
-  .rdp-day_range_middle .rdp-day_button::before,
-  .rdp-day_range_middle .rdp-day_button::after {
-    color: var(--foreground) !important;
-  }
-
-  /* Remove any rings or borders that might interfere with visibility */
-  .rdp-day_range_middle .rdp-day_button:focus-visible,
-  .rdp-day_range_middle.rdp-day_button:focus-visible {
-    @apply ring-2 ring-ring ring-offset-2 ring-offset-background;
-  }
-
-  /* Accessibility: High contrast mode support */
-  @media (forced-colors: active) {
-    .rdp-day_selected {
-      @apply bg-[Highlight] text-[HighlightText];
+  @starting-style {
+    .date-picker-popover:popover-open {
+      opacity: 0;
+      translate: 0 -4px;
     }
+  }
 
-    .rdp-day_today:not(.rdp-day_selected) {
-      @apply border-2 border-[Highlight];
+  /* Tether to the trigger (anchor-name / position-anchor are set inline per instance) */
+  @supports (position-area: bottom) {
+    .date-picker-popover {
+      position-area: bottom span-right;
+      margin-block: 0.5rem;
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
     }
+  }
 
-    .rdp-day_today .rdp-day_button::after {
-      background-color: Highlight;
+  /* Fallback: centered when anchor positioning is unavailable */
+  @supports not (position-area: bottom) {
+    .date-picker-popover {
+      inset: 0;
+      margin: auto;
+      width: fit-content;
+      height: fit-content;
+    }
+  }
+
+  /* Small screens: bottom sheet */
+  @media (max-width: 639px) {
+    .date-picker-popover {
+      position-area: none;
+      inset: auto 0 0 0;
+      margin: 0;
+      width: 100%;
+      max-height: 85dvh;
+    }
+    .date-picker-popover::backdrop {
+      background: rgb(0 0 0 / 0.4);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .date-picker-popover {
+      transition: none;
+    }
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /* TimePicker popover — same native-popover contract as .date-picker-popover */
+  /* ------------------------------------------------------------------------ */
+  .time-picker-popover {
+    /* reset UA [popover] styles */
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    max-height: calc(100dvh - 1rem);
+    overflow: auto;
+
+    opacity: 0;
+    translate: 0 -4px;
+    transition:
+      opacity 150ms ease-out,
+      translate 150ms ease-out,
+      overlay 150ms allow-discrete,
+      display 150ms allow-discrete;
+  }
+
+  .time-picker-popover:popover-open {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .time-picker-popover:popover-open {
+      opacity: 0;
+      translate: 0 -4px;
+    }
+  }
+
+  /* Tether to the trigger (anchor-name / position-anchor are set inline per instance) */
+  @supports (position-area: bottom) {
+    .time-picker-popover {
+      position-area: bottom span-right;
+      margin-block: 0.5rem;
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+  }
+
+  /* Fallback: centered when anchor positioning is unavailable */
+  @supports not (position-area: bottom) {
+    .time-picker-popover {
+      inset: 0;
+      margin: auto;
+      width: fit-content;
+      height: fit-content;
+    }
+  }
+
+  /* Small screens: bottom sheet */
+  @media (max-width: 639px) {
+    .time-picker-popover {
+      position-area: none;
+      inset: auto 0 0 0;
+      margin: 0;
+      width: 100%;
+      max-height: 85dvh;
+    }
+    .time-picker-popover::backdrop {
+      background: rgb(0 0 0 / 0.4);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .time-picker-popover {
+      transition: none;
     }
   }
 }
