@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "items": [
+    {
+      "name": "ui/button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "A trigger for actions with variant and size support.",
+      "categories": ["component"],
+      "dependencies": [],
+      "files": [{ "path": "ui/button.tsx" }]
+    },
+    {
+      "name": "ui/card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "A container surface that groups related content.",
+      "categories": ["component"],
+      "dependencies": [],
+      "files": [{ "path": "ui/card.tsx" }]
+    }
+  ]
+}

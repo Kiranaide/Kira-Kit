@@ -1,171 +1,134 @@
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
-import inquirer from "inquirer";
-import { join, dirname } from "path";
-import { welcome, info, success, warning, dim } from "../lib/logger";
-import { selectBaseColor } from "../prompts/base-color";
-import { selectPrimaryColor } from "../prompts/primary-color";
-import { detectProjectType, inputAlias } from "../prompts/project-type";
-import { writeConfig, readConfig } from "../lib/config";
-import { generateCss } from "../lib/theme-generator";
-import { execSync } from "child_process";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { runShadcnChecked } from "../lib/shadcn";
+import { readConfig, upsertKiraRegistry } from "../lib/config";
+import { info, success } from "../lib/logger";
+import { select, text, confirm } from "../lib/prompts";
+import { generateTheme, ThemeContrastError } from "../core/theme/theme";
+import type { BaseColorName } from "../core/theme/palette";
 import type { InitOptions } from "../types";
 
-const UTILS_TEMPLATE = `import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+function themeCssPath(cwd: string): string | null {
+  const config = readConfig(cwd);
+  const css = config?.tailwind?.css;
+  if (css) return join(cwd, css);
+  for (const candidate of ["src/index.css", "src/app/globals.css", "app/globals.css"]) {
+    const path = join(cwd, candidate);
+    if (existsSync(path)) return path;
+  }
+  return null;
 }
-`;
 
-const COLOR_MAPPING: Record<string, string> = {
-  blue: "#3b82f6",
-  green: "#22c55e",
-  orange: "#f97316",
-  pink: "#ec4899",
-  purple: "#a855f7",
-  red: "#ef4444",
-  violet: "#8b5cf6",
-  yellow: "#eab308",
-};
+function themeExists(cwd: string): boolean {
+  const cssPath = themeCssPath(cwd);
+  if (!cssPath || !existsSync(cssPath)) return false;
+  return readFileSync(cssPath, "utf-8").includes(":root");
+}
 
-export async function init(options: InitOptions): Promise<void> {
-  const cwd = options.cwd || process.cwd();
-
-  welcome("Kira Kit CLI");
-
-  const existingConfig = readConfig(cwd);
-
-  if (existingConfig) {
-    warning("Kira Kit is already initialized in this project.");
-
-    const { confirm } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "confirm",
-        message: "Reinitialize? This will overwrite your config.",
-        default: false,
-      },
-    ]);
-
-    if (!confirm) {
-      return;
-    }
-  }
-
-  const baseColor = options.baseColor || (await selectBaseColor());
-  const primaryColor = options.primaryColor || (await selectPrimaryColor());
-  const projectType = await detectProjectType(cwd);
-
-  info(`Project type: ${projectType}`);
-  info(`Base color: ${baseColor}`);
-  info(`Primary color: ${primaryColor}`);
-
-  const componentsAlias = await inputAlias("components", "@/components");
-  const utilsAlias = await inputAlias("utils", "@/lib/utils");
-
-  const utilsDir = join(cwd, utilsAlias.replace("@/", "src/"));
-
-  const componentsUiDir = join(
-    cwd,
-    componentsAlias.replace("@/", "src/"),
-    "ui",
-  );
-
-  if (!existsSync(utilsDir)) {
-    mkdirSync(utilsDir, { recursive: true });
-  }
-
-  if (!existsSync(componentsUiDir)) {
-    mkdirSync(componentsUiDir, { recursive: true });
-  }
-
-  const utilsFilePath = join(utilsDir, "cn.ts");
-  writeFileSync(utilsFilePath, UTILS_TEMPLATE, "utf-8");
-  success(`Created ${utilsAlias}/cn.ts`);
-
-  const cssFilePath = join(cwd, "src", "index.css");
-
-  // Resolve primary color to hex
-  const primaryHex = COLOR_MAPPING[primaryColor] || primaryColor;
-  // Fallback if user somehow passed a value not in mapping and not a valid hex,
-  // generateCss will throw or handle it (currently throws if invalid).
-  // basic check:
-  const isHex = /^#[0-9A-F]{6}$/i.test(primaryHex);
-  const colorToUse = isHex ? primaryHex : "#3b82f6"; // Default to blue if invalid
-
-  if (existsSync(cssFilePath)) {
-    const content = readFileSync(cssFilePath, "utf-8");
-    const hasVariables = content.includes(":root {");
-
-    if (!hasVariables) {
-      const cssContent = generateCss(colorToUse);
-      writeFileSync(cssFilePath, cssContent, "utf-8");
-      success("Generated src/index.css with dynamic palette");
-    }
-  } else {
-    // Create it if it doesn't exist
-    const cssContent = generateCss(colorToUse);
-    const cssDir = dirname(cssFilePath);
-
-    if (!existsSync(cssDir)) {
-      mkdirSync(cssDir, { recursive: true });
-    }
-
-    writeFileSync(cssFilePath, cssContent, "utf-8");
-    success("Created src/index.css with dynamic palette");
-  }
-
-  writeConfig(cwd, {
-    tailwind: {
-      config: "",
-      css: "src/index.css",
-      baseColor,
-      cssVariables: true,
-      prefix: "",
-    },
-    aliases: {
-      components: componentsAlias,
-      utils: utilsAlias,
-      ui: `${componentsAlias}/ui`,
-      lib: "@/lib",
-      hooks: "@/hooks",
-    },
-  });
-
-  success("Created components.json");
-
-  info("Installing base dependencies...");
-
-  const packageManager = process.env.BUN_INSTALL
-    ? "bun"
-    : process.env.PNPM_HOME
-      ? "pnpm"
-      : process.env.YARN_ENABLE_IMMUTABLE_CACHE === "false"
-        ? "yarn"
-        : "npm";
-
+async function applyCustomTheme(
+  cwd: string,
+  primary: string,
+  baseColor: string | undefined,
+  force: boolean,
+): Promise<number> {
+  let generated;
   try {
-    execSync(
-      `${packageManager} add clsx tailwind-merge class-variance-authority @tabler/icons-react`,
-      {
-        stdio: "inherit",
-        cwd,
-        env: { ...process.env, ADBLOCK: "1", DISABLE_OPENCOLLECTIVE: "1" },
-      },
+    // SAFETY: --base-color is an unvalidated CLI string, but generateTheme
+    // re-checks it against BASE_COLOR_NAMES and falls back to "neutral".
+    generated = generateTheme({
+      name: "custom",
+      title: "Custom Kira Kit theme",
+      description: `Custom OKLCH theme generated from primary ${primary}.`,
+      primary,
+      baseColor: (baseColor as BaseColorName) ?? "neutral",
+    });
+  } catch (error) {
+    if (error instanceof ThemeContrastError) {
+      console.error(`error: ${error.message}`);
+      return 1;
+    }
+    throw error;
+  }
+
+  const outPath = join(cwd, "kira-theme.json");
+  writeFileSync(outPath, JSON.stringify(generated.item, null, 2) + "\n", "utf-8");
+
+  const args = ["add", outPath, "--yes"];
+  if (force) args.push("--overwrite");
+  const code = await runShadcnChecked([...args, "--cwd", cwd], cwd);
+  if (code === 0) success("Custom theme applied.");
+  return code;
+}
+
+export async function init(options: InitOptions): Promise<number> {
+  const cwd = options.cwd || process.cwd();
+  const ctx = { yes: options.yes };
+
+  const config = readConfig(cwd);
+
+  if (!config) {
+    info("No components.json found — delegating base setup to shadcn (Base UI)…");
+    const args = ["init", "--base", "base"];
+    if (options.yes) args.push("--yes");
+    const code = await runShadcnChecked([...args, "--cwd", cwd], cwd);
+    if (code !== 0) return code;
+  }
+
+  const registered = upsertKiraRegistry(cwd);
+  if (registered) {
+    success("Registered the @kira-kit registry in components.json.");
+  } else {
+    info("The @kira-kit registry is already registered.");
+  }
+
+  if (options.preset) {
+    const args = ["add", `@kira-kit/theme-${options.preset}`, "--yes"];
+    if (options.force) args.push("--overwrite");
+    const code = await runShadcnChecked([...args, "--cwd", cwd], cwd);
+    if (code === 0) success(`Theme preset "${options.preset}" applied.`);
+    return code;
+  }
+
+  if (options.primary) {
+    return applyCustomTheme(cwd, options.primary, options.baseColor, options.force);
+  }
+
+  const hasTheme = themeExists(cwd);
+
+  if (!options.yes && process.stdin.isTTY) {
+    const choice = await select(
+      ctx,
+      "How should the theme be set up?",
+      [
+        { value: "keep", label: "Keep the current theme" },
+        { value: "custom", label: "Generate a custom theme from a primary color" },
+      ],
+      "keep",
     );
-    success("Dependencies installed");
-  } catch {
-    warning("Failed to install dependencies. Please run manually:");
-    console.log(
-      `  ${packageManager} add clsx tailwind-merge class-variance-authority @tabler/icons-react`,
+    if (choice === "custom") {
+      const primary = await text(
+        ctx,
+        "Primary color (hex, e.g. #e2694a)",
+        "#e2694a",
+        (value) =>
+          /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value.trim())
+            ? undefined
+            : "Enter a hex color like #e2694a",
+      );
+      const force = hasTheme
+        ? await confirm(ctx, "A theme already exists. Overwrite it?", true)
+        : true;
+      return applyCustomTheme(cwd, primary, options.baseColor, force);
+    }
+  }
+
+  if (hasTheme && !options.force) {
+    info("A theme is already configured — leaving it untouched.");
+    info(
+      "To replace it: kira-kit init --preset <name> --force, or kira-kit theme --primary <color> --apply",
     );
   }
 
-  console.log("\n");
-  success("Kira Kit initialized successfully!");
-  console.log("\nNext steps:");
-  console.log(`  ${dim("Add a component:")}  kira-kit add button`);
-  console.log(`  ${dim("List components:")}  kira-kit list`);
-  console.log("\n");
+  success("Kira Kit initialized. Try: kira-kit add button");
+  return 0;
 }

@@ -1,126 +1,139 @@
 import { Command } from "commander";
-import { spawn } from "child_process";
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
+import { getVersion } from "./version";
+import { printError } from "./lib/errors";
 import { init } from "./commands/init";
 import { addComponents } from "./commands/add";
-import { buildRegistry } from "./commands/build";
 import { listComponents } from "./commands/list";
-import type { InitOptions, AddOptions } from "./types";
-
-const __filename = fileURLToPath(import.meta.url);
-
-const __dirname = dirname(__filename);
+import { viewItems } from "./commands/view";
+import { searchItems } from "./commands/search";
+import { check } from "./commands/check";
+import { theme } from "./commands/theme";
+import { buildRegistry } from "./commands/build";
+import { createProject } from "./commands/create";
+import { migrateProject as migrate } from "./commands/migrate";
 
 const program = new Command();
 
 program
   .name("kira-kit")
-  .description("CLI tool for Kira Kit - Component library and project scaffolding")
-  .version("1.0.0");
-
-program
-  .command("create [name]")
-  .description("Create a new project with Kira Kit")
-  .option("-f, --framework <type>", "Framework: nextjs, vite-react, vite-router, remix")
-  .option("--router <type>", "Router type for vite-router: file, code")
-  .option("--install", "Install dependencies")
-  .option("--no-install", "Don't install dependencies")
-  .option("--git", "Initialize Git repository")
-  .option("--no-git", "Don't initialize Git")
-  .action((name: string | undefined, options: Record<string, unknown>) => {
-    const createPath = resolve(__dirname, "..", "..", "create", "node_modules", "tsx", "cli.js");
-    const createSrcPath = resolve(__dirname, "..", "..", "create", "src", "index.ts");
-
-    const args = [createSrcPath];
-
-    if (name) args.push(name);
-
-    if (options.framework) args.push("--framework", String(options.framework));
-
-    if (options.router) args.push("--router", String(options.router));
-
-    if (options.install === true) args.push("--install");
-
-    if (options.install === false) args.push("--no-install");
-
-    if (options.git === true) args.push("--git");
-
-    if (options.git === false) args.push("--no-git");
-
-    const child = spawn(
-      process.execPath,
-      [createPath, ...args],
-      {
-        stdio: "inherit",
-        cwd: process.cwd(),
-        env: process.env,
-      }
-    );
-
-    child.on("exit", (code) => {
-      process.exit(code ?? 0);
-    });
-  });
+  .description(
+    "Kira Kit — shadcn-compatible Base UI component registry, OKLCH themes, and quality checks",
+  )
+  .version(getVersion());
 
 program
   .command("init")
-  .description("Initialize Kira Kit in your project")
+  .description("Initialize Kira Kit in your project (delegates base setup to shadcn)")
   .option("-c, --cwd <directory>", "Working directory", process.cwd())
-  .option("--base-color <color>", "Base color (slate, gray, zinc, neutral, stone)")
-  .option("--primary-color <color>", "Primary color (blue, green, orange, pink, purple, red, violet, yellow)")
-  .option("-y, --yes", "Skip prompts and use defaults")
-  .action(async (options: InitOptions) => {
-    try {
-      await init(options);
-    } catch (error) {
-      console.error(error);
-      process.exit(1);
-    }
+  .option("--base <base>", "Component library base (base, radix, aria)")
+  .option("--preset <name>", "Install a theme preset (e.g. terracotta)")
+  .option("--primary <color>", "Generate a custom theme from this primary color")
+  .option("--base-color <name>", "Base color (neutral, stone, zinc, slate, gray)")
+  .option("--force", "Re-apply the theme even if one already exists")
+  .option("-y, --yes", "Skip prompts, use defaults")
+  .action(async (options) => {
+    process.exit(await run(() => init(options)));
   });
 
 program
-  .command("add")
-  .description("Add component(s) to your project")
-  .argument("[components...]", "Component names to add")
+  .command("add [items...]")
+  .description("Add component(s) via the pinned shadcn CLI")
   .option("-c, --cwd <directory>", "Working directory", process.cwd())
   .option("-o, --overwrite", "Overwrite existing files")
-  .option("-y, --yes", "Skip prompts")
-  .option("--all", "Add all components")
-  .action(async (components: string[], options: AddOptions) => {
-    try {
-      await addComponents({
-        ...options,
-        components,
-      });
-    } catch (error) {
-      console.error(error);
-      process.exit(1);
-    }
-  });
-
-program
-  .command("build")
-  .description("Build registry files for all components")
-  .action(() => {
-    try {
-      buildRegistry();
-    } catch (error) {
-      console.error(error);
-      process.exit(1);
-    }
+  .option("-y, --yes", "Skip confirmation prompts")
+  .option("-a, --all", "Add every item in the registry")
+  .option("-p, --path <path>", "Path to add the component to")
+  .option("--dry-run", "Preview changes without writing files")
+  .option("--diff", "Show diff for files that would change")
+  .option("--view", "Show file contents instead of writing")
+  .action(async (items: string[], options) => {
+    process.exit(await run(() => addComponents({ ...options, items })));
   });
 
 program
   .command("list")
-  .description("List all available components in the registry")
-  .action(async () => {
-    try {
-      await listComponents();
-    } catch (error) {
-      console.error(error);
-      process.exit(1);
-    }
+  .description("List available registry items")
+  .option("--json", "Print machine-readable JSON")
+  .action(async (options) => {
+    process.exit(await run(() => listComponents(options)));
   });
+
+program
+  .command("view [items...]")
+  .description("View registry item contents")
+  .action(async (items: string[], options) => {
+    process.exit(await run(() => viewItems({ ...options, items })));
+  });
+
+program
+  .command("search [query...]")
+  .description("Search the registry")
+  .option("--json", "Print machine-readable JSON")
+  .action(async (query: string[], options) => {
+    process.exit(await run(() => searchItems({ ...options, query })));
+  });
+
+program
+  .command("theme")
+  .description("Generate an OKLCH theme palette from a primary color")
+  .option("--primary <color>", "Primary color (hex or any CSS color)")
+  .option("--base-color <name>", "Base color (neutral, stone, zinc, slate, gray)")
+  .option("--out <file>", "Write the registry item to this file")
+  .option("--apply", "Install the generated theme via shadcn")
+  .option("-c, --cwd <directory>", "Working directory", process.cwd())
+  .action(async (options) => {
+    process.exit(await run(() => theme(options)));
+  });
+
+program
+  .command("check [paths...]")
+  .description("Run quality checks on component sources")
+  .option("--ci", "Fail on every finding unless suppressed (auto when CI is set)")
+  .option("--format <format>", "Output format: pretty, json, github")
+  .option("--json", "Shorthand for --format json")
+  .action(async (paths: string[], options) => {
+    process.exit(await run(() => check({ ...options, paths })));
+  });
+
+program
+  .command("build")
+  .description("Maintainer: validate, build, and emit the registry + docs")
+  .option("-c, --cwd <directory>", "Working directory", process.cwd())
+  .option("--skip-checks", "Skip quality checks")
+  .action(async (options) => {
+    process.exit(await run(() => buildRegistry(options)));
+  });
+
+program
+  .command("create [dir]")
+  .description("Scaffold a new project pre-wired for Kira Kit")
+  .option("-t, --template <template>", "Template: vite, next, tanstack-start, monorepo")
+  .option("--install", "Install dependencies after scaffolding")
+  .option("--no-install", "Skip dependency installation")
+  .option("--git", "Initialize a git repository")
+  .option("--no-git", "Skip git initialization")
+  .option("-y, --yes", "Skip prompts, use defaults")
+  .action(async (dir: string | undefined, options) => {
+    process.exit(await run(() => createProject({ dir, ...options })));
+  });
+
+program
+  .command("migrate")
+  .description("Migrate a v0.2.x project to the shadcn-native setup")
+  .option("-c, --cwd <directory>", "Working directory", process.cwd())
+  .option("--dry-run", "Print changes without writing files")
+  .option("-y, --yes", "Skip prompts, apply automatically")
+  .action(async (options) => {
+    process.exit(await run(() => migrate(options)));
+  });
+
+async function run(action: () => Promise<number | void>): Promise<number> {
+  try {
+    const code = await action();
+    return typeof code === "number" ? code : 0;
+  } catch (error) {
+    return printError(error);
+  }
+}
 
 program.parse();

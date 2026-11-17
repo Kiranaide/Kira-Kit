@@ -4,40 +4,61 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "CLI tool for adding Kira Kit components to your project",
+  "description": "CLI for Kira Kit — a shadcn-compatible registry of Base UI components, plus OKLCH theme generation and quality checks",
   "type": "module",
   "bin": {
-    "kira-kit": "bin/kira-kit.js"
+    "kira-kit": "dist/index.mjs"
   },
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --outfile=bin/kira-kit.js",
-    "dev": "bun run build --watch",
-    "start": "tsx src/index.ts",
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "start": "node dist/index.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "lint": "oxlint src --config ../../oxlint.config.ts"
+    "lint": "oxlint src test --config ../../oxlint.config.ts --ignore-pattern \"test/fixtures/**\"",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish"
   },
   "keywords": [
     "kira-kit",
+    "shadcn",
     "ui-components",
+    "base-ui",
+    "registry",
+    "oklch",
+    "theme",
     "cli",
     "react",
     "tailwind"
   ],
-  "author": "",
+  "author": "Kiranaide",
   "license": "MIT",
   "dependencies": {
-    "commander": "^12.0.0",
+    "@clack/prompts": "^1.9.0",
+    "apca-w3": "^0.1.9",
+    "commander": "^15.1.0",
     "culori": "^4.0.2",
-    "inquirer": "^10.0.0",
-    "picocolors": "^1.0.0",
-    "zod": "^3.22.0"
+    "package-manager-detector": "^1.9.0",
+    "picocolors": "^1.1.1",
+    "shadcn": "4.22.1",
+    "typescript": "^5.9.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.0",
-    "@types/inquirer": "^9.0.0",
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^3.0.3",
+    "@types/culori": "^4.0.1",
     "@types/node": "^22.0.0",
-    "esbuild": "^0.25.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.0"
+    "tsdown": "^0.23.7",
+    "vitest": "^5.1.0"
   }
 }

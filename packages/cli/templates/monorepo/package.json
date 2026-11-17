@@ -1,0 +1,11 @@
+{
+  "name": "kira-kit-monorepo",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "dev": "npm run dev --workspace @kira/app",
+    "build": "npm run build --workspace @kira/app",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}

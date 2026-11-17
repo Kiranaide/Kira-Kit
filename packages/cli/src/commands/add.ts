@@ -1,157 +1,80 @@
-import { fetchRegistryItem, fetchRegistryIndex } from "../lib/registry";
-import { fileExists, writeFile, ensureDir } from "../lib/file";
-import { installDependencies, parseDependencies } from "../lib/deps";
-import { getAliases, readConfig } from "../lib/config";
-import { info, success, error, warning, spinner } from "../lib/logger";
-import { existsSync } from "fs";
-import { join, dirname } from "path";
+import { runShadcnChecked } from "../lib/shadcn";
+import { toItemAddress } from "../lib/namespace";
+import { ValidationError, RegistryError } from "../lib/errors";
+import { getRegistryUrl } from "../lib/config";
 import type { AddOptions } from "../types";
 
-export async function addComponents(options: AddOptions): Promise<void> {
-  const cwd = options.cwd || process.cwd();
-
-  const config = readConfig(cwd);
-
-  if (!config) {
-    error("No components.json found. Run 'kira-kit init' first.");
-
-    return;
-  }
-
-  const aliases = getAliases(cwd);
-
-  const componentsDir = join(
-    cwd,
-    aliases.components.replace("@/", "src/"),
-    "ui",
-  );
-
-  const hooksDir = join(cwd, aliases.hooks.replace("@/", "src/"));
-
-  if (options.all) {
-    await addAllComponents(componentsDir, hooksDir, cwd, options);
-
-    return;
-  }
-
-  const components = options.components;
-
-  if (components.length === 0) {
-    error(
-      "No components specified. Use 'kira-kit add button' or 'kira-kit add --all'",
-    );
-
-    return;
-  }
-
-  const allDependencies: string[] = [];
-  const installedComponents: string[] = [];
-
-  for (const componentName of components) {
-    info(`Fetching ${componentName}...`);
-
-    const registryItem = await fetchRegistryItem(componentName);
-
-    if (!registryItem) {
-      error(`Component '${componentName}' not found in registry.`);
-      continue;
-    }
-
-    const spin = spinner(`Installing ${componentName}`);
-    spin.start();
-
-    let needsOverwrite = false;
-
-    for (const file of registryItem.files) {
-      const filePath = join(
-        file.path.startsWith("ui/") ? componentsDir : hooksDir,
-        file.path
-          .replace("ui/", "")
-          .replace("hooks/", "")
-          .replace("hooks/", ""),
-      );
-
-      if (fileExists(filePath) && !options.overwrite) {
-        needsOverwrite = true;
-        continue;
-      }
-
-      ensureDir(dirname(filePath));
-      await writeFile(filePath, file.content);
-    }
-
-    const deps = await parseDependencies(
-      registryItem.files.map((f) => f.content).join("\n"),
-    );
-
-    allDependencies.push(...deps);
-
-    spin.stop(`Installed ${componentName}`);
-    installedComponents.push(componentName);
-
-    if (needsOverwrite && !options.overwrite) {
-      warning(`Some files already exist. Use --overwrite to replace.`);
-    }
-  }
-
-  if (allDependencies.length > 0) {
-    const uniqueDeps = [...new Set(allDependencies)].sort();
-
-    const missingDeps = uniqueDeps.filter((dep) => {
-      return (
-        !existsSync(join(cwd, "node_modules", dep)) &&
-        !existsSync(join(cwd, "bun.lockb"))
-      );
-    });
-
-    if (missingDeps.length > 0) {
-      info(`Installing dependencies: ${missingDeps.join(", ")}`);
-      await installDependencies(missingDeps);
-    }
-  }
-
-  console.log("\n");
-
-  if (installedComponents.length > 0) {
-    success(`Successfully added: ${installedComponents.join(", ")}`);
-  }
-
-  if (options.components.length > installedComponents.length) {
-    const failed = options.components.filter(
-      (c) => !installedComponents.includes(c),
-    );
-
-    warning(`Failed to add: ${failed.join(", ")}`);
-  }
-
-  console.log("\n");
+/** Entry of the registry index (registry.json) — only the name is needed. */
+interface RegistryIndexEntry {
+  name: string;
 }
 
-async function addAllComponents(
-  componentsDir: string,
-  hooksDir: string,
-  cwd: string = process.cwd(),
-  options: AddOptions,
-): Promise<void> {
-  info("Fetching registry index...");
+/** Shape of the registry index payload fetched from the registry URL. */
+interface RegistryIndex {
+  items?: RegistryIndexEntry[];
+}
 
+async function fetchAllItemNames(cwd: string): Promise<string[]> {
+  const registryUrl = getRegistryUrl(cwd);
+  let response: Response;
   try {
-    const index = await fetchRegistryIndex(cwd);
-    const allComponents = index.components.map((c) => c.name);
-
-    info(`Found ${allComponents.length} components. Installing all...`);
-
-    // We can reuse the main logic by recursively calling addComponents
-    // but with a flag to avoid infinite recursion if we were calling the command action.
-    // Since we are inside the module, we can just call addComponents directly.
-    // However, we need to pass the list of components to it.
-
-    await addComponents({
-      ...options,
-      all: false, // Prevent infinite loop
-      components: allComponents,
-    });
-  } catch (error) {
-    console.error("Failed to fetch registry index:", error);
+    response = await fetch(`${registryUrl}/registry.json`);
+  } catch {
+    throw new RegistryError(
+      `Could not reach the Kira Kit registry at ${registryUrl}`,
+      "Check your internet connection and retry, or run 'kira-kit list' to see what's cached.",
+    );
   }
+  if (!response.ok) {
+    throw new RegistryError(
+      `Registry index request failed (HTTP ${response.status}) at ${registryUrl}/registry.json`,
+      "Verify your components.json '@kira-kit' registry URL, then retry.",
+    );
+  }
+  // SAFETY: registry.json is served by the Kira Kit registry, whose items
+  // always carry a kebab-case name; a missing items array yields an empty list.
+  const data = (await response.json()) as RegistryIndex;
+  return (data.items ?? []).map((item) => item.name);
+}
+
+export async function addComponents(options: AddOptions): Promise<number> {
+  const cwd = options.cwd || process.cwd();
+  const args: string[] = ["add"];
+
+  if (options.yes) args.push("--yes");
+  if (options.overwrite) args.push("--overwrite");
+  if (options.path) args.push("--path", options.path);
+  if (options.dryRun) args.push("--dry-run");
+  if (options.diff) args.push("--diff");
+  if (options.view) args.push("--view");
+
+  let items = options.items ?? [];
+
+  if (options.all) {
+    if (items.length > 0) {
+      throw new ValidationError(
+        "--all cannot be combined with explicit item names.",
+        "Pass either item names or --all, not both.",
+      );
+    }
+    const names = await fetchAllItemNames(cwd);
+    if (names.length === 0) {
+      throw new RegistryError(
+        "The registry index contains no items.",
+        "Check the '@kira-kit' registry URL in components.json.",
+      );
+    }
+    // One shadcn invocation for everything — no per-item prompts.
+    items = names.map(toItemAddress);
+  } else {
+    if (items.length === 0) {
+      throw new ValidationError(
+        "No items specified.",
+        "Use 'kira-kit add button' or 'kira-kit add --all'.",
+      );
+    }
+    items = items.map(toItemAddress);
+  }
+
+  return runShadcnChecked([...args, "--cwd", cwd, ...items], cwd);
 }

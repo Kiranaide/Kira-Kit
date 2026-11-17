@@ -1,110 +1,78 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import type { ComponentsConfig } from "../types";
+import { componentsConfigSchema, KIRA_NAMESPACE, DEFAULT_REGISTRY_URL } from "./schemas";
 
-export const DEFAULT_REGISTRY_URL = "https://kira-kit.vercel.app/r";
-
-const DEFAULT_CONFIG = {
-  $schema: "https://ui.shadcn.com/schema.json",
-  style: "base-nova",
-  rsc: false,
-  tsx: true,
-  registryUrl: DEFAULT_REGISTRY_URL,
-  tailwind: {
-    config: "",
-    css: "src/index.css",
-    baseColor: "neutral",
-    cssVariables: true,
-    prefix: "",
-  },
-  iconLibrary: "tabler",
-  aliases: {
-    components: "@/components",
-    utils: "@/lib/utils",
-    ui: "@/components/ui",
-    lib: "@/lib",
-    hooks: "@/hooks",
-  },
-  menuColor: "default",
-  menuAccent: "subtle",
-  registries: {},
-} as const;
+export { KIRA_NAMESPACE, DEFAULT_REGISTRY_URL };
 
 export function findConfigFile(cwd: string): string | null {
-  const paths = [join(cwd, "components.json"), join(cwd, "kira-kit.json")];
-
-  for (const path of paths) {
-    if (existsSync(path)) {
-      return path;
-    }
-  }
-
-  return null;
+  const path = join(cwd, "components.json");
+  return existsSync(path) ? path : null;
 }
 
 export function readConfig(cwd: string): ComponentsConfig | null {
   const configPath = findConfigFile(cwd);
-
-  if (!configPath) {
-    return null;
-  }
-
+  if (!configPath) return null;
   try {
     const content = readFileSync(configPath, "utf-8");
-
-    return JSON.parse(content) as ComponentsConfig;
+    return componentsConfigSchema.parse(JSON.parse(content));
   } catch {
     return null;
   }
 }
 
-export function writeConfig(
-  cwd: string,
-  config: Partial<ComponentsConfig>,
-): void {
-  const existingConfig = readConfig(cwd);
-  const newConfig = { ...DEFAULT_CONFIG, ...existingConfig, ...config };
-
-  const configPath = join(cwd, "components.json");
-  writeFileSync(configPath, JSON.stringify(newConfig, null, 2) + "\n");
+/**
+ * components.json read raw from disk. The file is user-owned and
+ * shape-unstable (shadcn owns its shape); unknown keys are preserved
+ * verbatim on write, so only the keys kira-kit reads are typed here.
+ */
+export interface RawComponentsConfig {
+  aliases?: Record<string, string>;
+  registries?: Record<string, string>;
+  /** Legacy pre-namespace registry URL (removed by `kira-kit migrate`). */
+  registryUrl?: string;
 }
 
-export function updateAliases(
-  cwd: string,
-  aliases: Partial<ComponentsConfig["aliases"]>,
-): void {
-  const config = readConfig(cwd);
-
-  if (!config) {
-    throw new Error("No components.json found. Run 'kira-kit init' first.");
+/** Read components.json without zod defaults; preserves unknown keys on write. */
+export function readRawConfig(cwd: string): RawComponentsConfig | null {
+  const configPath = findConfigFile(cwd);
+  if (!configPath) return null;
+  try {
+    return JSON.parse(readFileSync(configPath, "utf-8"));
+  } catch {
+    return null;
   }
-
-  config.aliases = { ...config.aliases, ...aliases };
-
-  const configPath = join(cwd, "components.json");
-  writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n");
 }
 
-export function getAliases(cwd: string): ComponentsConfig["aliases"] {
-  const config = readConfig(cwd);
-
-  if (!config) {
-    return DEFAULT_CONFIG.aliases;
-  }
-
-  return config.aliases;
+/**
+ * Idempotently register the @kira-kit namespace in components.json.
+ * Never clobbers other registries or unknown keys.
+ */
+export function upsertKiraRegistry(
+  cwd: string,
+  url: string = DEFAULT_REGISTRY_URL,
+): boolean {
+  const config = readRawConfig(cwd);
+  const next: RawComponentsConfig = config ?? {};
+  const registries = {
+    ...(next.registries ?? {}),
+  };
+  // Never clobber: an existing @kira-kit entry is the user's choice.
+  if (registries[KIRA_NAMESPACE]) return false;
+  registries[KIRA_NAMESPACE] = url;
+  next.registries = registries;
+  writeFileSync(
+    join(cwd, "components.json"),
+    JSON.stringify(next, null, 2) + "\n",
+    "utf-8",
+  );
+  return true;
 }
 
+/** Resolve the @kira-kit registry base URL (without {name}.json suffix). */
 export function getRegistryUrl(cwd: string): string {
   const config = readConfig(cwd);
-
-  if (!config) {
-    return "https://kira-kit.vercel.app/r";
-  }
-
-  if (config.registries && "@kira-kit" in config.registries) {
-    return config.registries["@kira-kit"];
-  }
-
-  return "https://kira-kit.vercel.app/r";
+  const url = config?.registries?.[KIRA_NAMESPACE];
+  if (!url) return DEFAULT_REGISTRY_URL.replace("/{name}.json", "");
+  return url.replace("/{name}.json", "");
 }
