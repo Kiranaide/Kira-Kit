@@ -1,5 +1,6 @@
 "use client";
 
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   IconCopy,
@@ -23,6 +24,8 @@ import {
 
 import {
   ContextMenu,
+  KiraContextMenu,
+  ContextMenuLinkItem,
   ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
@@ -45,13 +48,177 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
-function BasicDemo() {
-  const handleAction = (action: string) => {
-    console.log(`Action: ${action}`);
-  };
+function FeaturesDemo() {
+  const attempts = React.useRef(0);
+  const [result, setResult] = React.useState("No export yet.");
 
+  return (
+    <div className="w-full space-y-3">
+      <KiraContextMenu
+        trigger="Right click, long press, or focus and press Shift+F10 to export"
+        className="flex min-h-32 items-center justify-center rounded-lg border border-dashed border-border p-4 text-center text-sm"
+        items={[
+          {
+            type: "action",
+            id: "export",
+            label: "Export report",
+            icon: <IconDownload />,
+            errorMessage: "Export failed. Select Export report to retry.",
+            onSelect: async ({ signal }) => {
+              await new Promise((resolve) => setTimeout(resolve, 900));
+
+              if (signal.aborted) return;
+              attempts.current += 1;
+
+              if (attempts.current === 1) throw new Error("Demo failure");
+              setResult("Report exported.");
+            },
+          },
+        ]}
+      />
+      <p className="text-sm text-muted-foreground">
+        {result} First attempt fails; retry succeeds. Escape cancels pending UI
+        work.
+      </p>
+    </div>
+  );
+}
+
+const featuresCode = `import * as React from "react";
+import { KiraContextMenu } from "@/components/ui/context-menu"
+import { IconDownload } from "@tabler/icons-react"
+
+function FeaturesDemo() {
+  const attempts = React.useRef(0);
+  const [result, setResult] = React.useState("No export yet.");
+  return <div className="w-full space-y-3">
+    <KiraContextMenu trigger="Right click, long press, or focus and press Shift+F10 to export"
+      className="flex min-h-32 items-center justify-center rounded-lg border border-dashed border-border p-4 text-center text-sm"
+      items={[
+        { type: "action", id: "export", label: "Export report", icon: <IconDownload />, errorMessage: "Export failed. Select Export report to retry.", onSelect: async ({ signal }) => {
+          await new Promise((resolve) => setTimeout(resolve, 900));
+          if (signal.aborted) return;
+          attempts.current += 1;
+          if (attempts.current === 1) throw new Error("Demo failure");
+          setResult("Report exported.");
+        } },
+      ]} />
+    <p className="text-sm text-muted-foreground">{result} First attempt fails; retry succeeds. Escape cancels pending UI work.</p>
+  </div>;
+}`;
+
+function LinksDemo() {
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger className="rounded-lg border border-dashed p-4 text-sm">
+        Documentation links
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuLinkItem
+          href="https://base-ui.com/react/components/context-menu"
+          target="_blank"
+        >
+          Open Base UI docs
+        </ContextMenuLinkItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+}
+
+const linksCode = `import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuLinkItem } from "@/components/ui/context-menu"
+
+function LinksDemo() {
+  return <ContextMenu>
+    <ContextMenuTrigger className="rounded-lg border border-dashed p-4 text-sm">Documentation links</ContextMenuTrigger>
+    <ContextMenuContent>
+      <ContextMenuLinkItem href="https://base-ui.com/react/components/context-menu" target="_blank">Open Base UI docs</ContextMenuLinkItem>
+    </ContextMenuContent>
+  </ContextMenu>;
+}`;
+
+function DisabledReasonDemo() {
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger className="rounded-lg border border-dashed p-4 text-sm">
+        Restricted report actions
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem
+          disabled
+          disabledReason="Only the owner can delete this report."
+        >
+          Delete report
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+}
+
+const disabledReasonCode = `import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } from "@/components/ui/context-menu"
+
+function DisabledReasonDemo() {
+  return <ContextMenu>
+    <ContextMenuTrigger className="rounded-lg border border-dashed p-4 text-sm">Restricted report actions</ContextMenuTrigger>
+    <ContextMenuContent>
+      <ContextMenuItem disabled disabledReason="Only the owner can delete this report.">Delete report</ContextMenuItem>
+    </ContextMenuContent>
+  </ContextMenu>;
+}`;
+
+function ShowcaseDemo() {
+  return (
+    <div className="w-full max-w-64 space-y-4">
+      <ContextMenu>
+        <ContextMenuTrigger className="rounded-lg border border-dashed p-4 text-sm">
+          Long labels, links and disabled explanations
+        </ContextMenuTrigger>
+        <ContextMenuContent className="w-64">
+          <ContextMenuItem>
+            A very long action label for a report named 年次レポート-2026-🌍
+          </ContextMenuItem>
+          <ContextMenuItem
+            disabled
+            disabledReason="Request access from your workspace owner."
+          >
+            Restricted action
+          </ContextMenuItem>
+          <ContextMenuLinkItem
+            href="https://base-ui.com/react/components/context-menu"
+            target="_blank"
+          >
+            Open Base UI docs
+          </ContextMenuLinkItem>
+        </ContextMenuContent>
+      </ContextMenu>
+      <KiraContextMenu
+        trigger="Empty action list"
+        items={[]}
+        className="rounded-lg border border-dashed p-4 text-sm"
+      />
+    </div>
+  );
+}
+
+const showcaseCode = `import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, ContextMenuLinkItem, KiraContextMenu } from "@/components/ui/context-menu"
+
+function ShowcaseDemo() {
+  return <div className="w-full max-w-64 space-y-4">
+    <ContextMenu>
+      <ContextMenuTrigger className="rounded-lg border border-dashed p-4 text-sm">Long labels, links and disabled explanations</ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuItem>A very long action label for a report named 年次レポート-2026-🌍</ContextMenuItem>
+        <ContextMenuItem disabled disabledReason="Request access from your workspace owner.">Restricted action</ContextMenuItem>
+        <ContextMenuLinkItem href="https://base-ui.com/react/components/context-menu" target="_blank">Open Base UI docs</ContextMenuLinkItem>
+      </ContextMenuContent>
+    </ContextMenu>
+    <KiraContextMenu trigger="Empty action list" items={[]} className="rounded-lg border border-dashed p-4 text-sm" />
+  </div>;
+}`;
+
+function BasicDemo() {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-border text-sm hover:bg-muted/50 transition-colors cursor-pointer">
@@ -500,57 +667,97 @@ const features = [
   {
     title: "Flexible",
     description:
-      "Support for loading states, arrows, destructive actions, and a convenience wrapper component.",
+      "Async actions with pending feedback, failure messages, retry and cancellation through KiraContextMenu.",
     icon: <IconMenu2 className="h-4 w-4" />,
   },
 ];
 
 const keyboardShortcuts = [
-  { keys: "Enter / Space", description: "Activate selected item" },
-  { keys: "Arrow Down", description: "Move to next item" },
-  { keys: "Arrow Up", description: "Move to previous item" },
-  { keys: "Arrow Right", description: "Open submenu" },
-  { keys: "Arrow Left", description: "Close submenu" },
-  { keys: "Escape", description: "Close menu" },
-  { keys: "Home", description: "Move to first item" },
-  { keys: "End", description: "Move to last item" },
+  {
+    keys: "Shift+F10 / Context Menu",
+    description: "Kira addition: open from the focused trigger.",
+  },
+  {
+    keys: "Enter / Space",
+    description: "Inherited from Base UI: activate the selected item.",
+  },
+  {
+    keys: "Arrow Down",
+    description: "Inherited from Base UI: move to the next item.",
+  },
+  {
+    keys: "Arrow Up",
+    description: "Inherited from Base UI: move to the previous item.",
+  },
+  {
+    keys: "Arrow Right",
+    description: "Inherited from Base UI: open a submenu.",
+  },
+  {
+    keys: "Arrow Left",
+    description: "Inherited from Base UI: close a submenu.",
+  },
+  {
+    keys: "Escape",
+    description:
+      "Inherited from Base UI: close the menu. Kira addition: cancel a pending action.",
+  },
+  {
+    keys: "Home",
+    description: "Inherited from Base UI: move to the first item.",
+  },
+  {
+    keys: "End",
+    description: "Inherited from Base UI: move to the last item.",
+  },
 ];
 
-const usageCode = `import {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuCheckboxItem,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
-  ContextMenuGroup,
-  ContextMenuLabel,
-  ContextMenuSub,
-  ContextMenuSubTrigger,
-  ContextMenuSubContent,
-  ContextMenuWithContent,
-  ContextMenuArrow,
-} from "@/components/ui/context-menu"
+const usageCode = `import * as React from "react";
+import { IconDownload } from "@tabler/icons-react";
+import {
+  ContextMenu, ContextMenuTrigger, ContextMenuBackdrop, ContextMenuContent,
+  ContextMenuArrow, ContextMenuItem, ContextMenuLinkItem, ContextMenuShortcut,
+  ContextMenuSeparator, ContextMenuCheckboxItem, ContextMenuRadioGroup,
+  ContextMenuRadioItem, ContextMenuGroup, ContextMenuLabel, ContextMenuSub,
+  ContextMenuSubTrigger, ContextMenuSubContent, ContextMenuWithContent,
+  KiraContextMenu,
+} from "@/components/ui/context-menu";
 
-<ContextMenu>
-  <ContextMenuTrigger>Right click me</ContextMenuTrigger>
-  <ContextMenuContent>
-    <ContextMenuItem>Action</ContextMenuItem>
-    <ContextMenuItem icon={<Icon />} shortcut="⌘K">With Shortcut</ContextMenuItem>
-    <ContextMenuSeparator />
-    <ContextMenuCheckboxItem checked={checked} onCheckedChange={setChecked}>
-      Toggle
-    </ContextMenuCheckboxItem>
-    <ContextMenuSub>
-      <ContextMenuSubTrigger>Submenu</ContextMenuSubTrigger>
-      <ContextMenuSubContent>
-        <ContextMenuItem>Sub Action</ContextMenuItem>
-      </ContextMenuSubContent>
-    </ContextMenuSub>
-  </ContextMenuContent>
-</ContextMenu>`;
+export function ContextMenuUsage() {
+  const [checked, setChecked] = React.useState(false);
+  const [view, setView] = React.useState("list");
+  return (
+    <>
+      <ContextMenu>
+        <ContextMenuTrigger>Report actions</ContextMenuTrigger>
+        <ContextMenuBackdrop />
+        <ContextMenuContent>
+          <ContextMenuArrow />
+          <ContextMenuGroup>
+            <ContextMenuLabel>Report</ContextMenuLabel>
+            <ContextMenuItem icon={<IconDownload />} onClick={() => window.print()}>
+              Print report <ContextMenuShortcut>Ctrl+P</ContextMenuShortcut>
+            </ContextMenuItem>
+            <ContextMenuLinkItem href="https://base-ui.com">Documentation</ContextMenuLinkItem>
+          </ContextMenuGroup>
+          <ContextMenuSeparator />
+          <ContextMenuCheckboxItem checked={checked} onCheckedChange={setChecked}>Show details</ContextMenuCheckboxItem>
+          <ContextMenuRadioGroup value={view} onValueChange={setView}>
+            <ContextMenuRadioItem value="list">List</ContextMenuRadioItem>
+            <ContextMenuRadioItem value="grid">Grid</ContextMenuRadioItem>
+          </ContextMenuRadioGroup>
+          <ContextMenuSub>
+            <ContextMenuSubTrigger>More</ContextMenuSubTrigger>
+            <ContextMenuSubContent><ContextMenuItem onClick={() => window.print()}>Print</ContextMenuItem></ContextMenuSubContent>
+          </ContextMenuSub>
+        </ContextMenuContent>
+      </ContextMenu>
+      <KiraContextMenu trigger="Print actions" items={[{ type: "action", id: "print", label: "Print report", onSelect: () => window.print() }]} />
+      {/* Deprecated alias; prefer KiraContextMenu for new code. */}
+      <ContextMenuWithContent trigger="Legacy report"><ContextMenuItem onClick={() => window.print()}>Print</ContextMenuItem></ContextMenuWithContent>
+    </>
+  );
+}`;
 
 const apiSections = [
   {
@@ -573,10 +780,10 @@ const apiSections = [
         description: "Callback when the open state changes.",
       },
       {
-        prop: "modal",
+        prop: "disabled",
         type: "boolean",
-        default: "true",
-        description: "Whether the menu should trap focus when open.",
+        default: "false",
+        description: "Disables context-menu opening at the root.",
       },
     ],
   },
@@ -584,16 +791,15 @@ const apiSections = [
     title: "ContextMenuTrigger",
     props: [
       {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge props onto the child element.",
+        prop: "render",
+        type: "ReactElement | render function",
+        description: "Base UI polymorphism; no asChild prop.",
       },
       {
-        prop: "disabled",
-        type: "boolean",
-        default: "false",
-        description: "Prevent the context menu from opening.",
+        prop: "tabIndex",
+        type: "number",
+        default: "0",
+        description: "Focusable trigger for Shift+F10 / Context Menu opening.",
       },
     ],
   },
@@ -757,10 +963,9 @@ const apiSections = [
     title: "ContextMenuSeparator",
     props: [
       {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge props onto the child element.",
+        prop: "render",
+        type: "ReactElement | render function",
+        description: "Base UI polymorphism.",
       },
     ],
   },
@@ -813,20 +1018,21 @@ const apiSections = [
       {
         prop: "alignOffset",
         type: "number",
-        default: "-4",
-        description: "The offset from the trigger along the align axis.",
+        default: "0",
+        description:
+          "Offset along the align axis; viewport collision padding is 8px.",
       },
       {
-        prop: "avoidCollisions",
+        prop: "sideOffset",
+        type: "number",
+        default: "4",
+        description: "Distance from the parent row.",
+      },
+      {
+        prop: "keepMounted",
         type: "boolean",
-        default: "true",
-        description: "Whether to avoid collisions with viewport boundaries.",
-      },
-      {
-        prop: "collisionPadding",
-        type: "number | Partial<Record<Side, number>>",
-        default: "10",
-        description: "Padding between the popover and viewport edges.",
+        default: "false",
+        description: "Keep the submenu portal mounted when closed.",
       },
     ],
   },
@@ -834,10 +1040,9 @@ const apiSections = [
     title: "ContextMenuGroup",
     props: [
       {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge props onto the child element.",
+        prop: "render",
+        type: "ReactElement | render function",
+        description: "Base UI polymorphism.",
       },
     ],
   },
@@ -849,33 +1054,6 @@ const apiSections = [
         type: "boolean",
         default: "false",
         description: "Adds inset padding to the label.",
-      },
-    ],
-  },
-  {
-    title: "ContextMenuRadioItem",
-    props: [
-      {
-        prop: "value",
-        type: "string",
-        description: "Value of this radio item.",
-      },
-      {
-        prop: "icon",
-        type: "ReactNode",
-        description: "Icon to display before the item text.",
-      },
-      {
-        prop: "disabled",
-        type: "boolean",
-        default: "false",
-        description: "Disable the radio item.",
-      },
-      {
-        prop: "closeOnClick",
-        type: "boolean",
-        default: "true",
-        description: "Close the menu when clicked.",
       },
     ],
   },
@@ -947,6 +1125,58 @@ const demoTabs = [
       </DemoWrapper>
     ),
   },
+  {
+    value: "links",
+    label: "Links",
+    demo: (
+      <DemoWrapper
+        title="Native links"
+        description="Real anchors preserve modifier-click and browser navigation."
+        code={linksCode}
+      >
+        <LinksDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "reasons",
+    label: "Disabled Reasons",
+    demo: (
+      <DemoWrapper
+        title="Why an action is unavailable"
+        description="The explanation stays visible on keyboard and touch, not just hover."
+        code={disabledReasonCode}
+      >
+        <DisabledReasonDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "features",
+    label: "Kira Context Menu",
+    demo: (
+      <DemoWrapper
+        title="Async contextual actions"
+        description="Single-flight actions, visible failure, retry and Escape cancellation. Local illustrative export fixture."
+        code={featuresCode}
+      >
+        <FeaturesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "showcase",
+    label: "States",
+    demo: (
+      <DemoWrapper
+        title="Stress cases"
+        description="Narrow surface, long multilingual labels, native link and empty list."
+        code={showcaseCode}
+      >
+        <ShowcaseDemo />
+      </DemoWrapper>
+    ),
+  },
 ];
 
 export default function ContextMenuPage() {
@@ -955,7 +1185,7 @@ export default function ContextMenuPage() {
       <PageHeader
         title="Context Menu"
         description="A menu displayed on right-click with icon support, destructive actions, submenus, and animations. Built on Base UI primitives with full keyboard navigation and WAI-ARIA support."
-        version="v1.0"
+        version="v2.0.1"
       />
 
       <FeatureGrid features={features} />
@@ -969,7 +1199,91 @@ export default function ContextMenuPage() {
         description="Import and compose the context menu components to build your menu structure."
       />
 
-      <APIReference sections={apiSections} />
+      <APIReference sections={contextMenuPageAPIReferenceSections} />
+
+      <Changelog entries={contextMenuPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const contextMenuPageAPIReferenceSections = [
+  ...apiSections,
+  {
+    title: "KiraContextMenu",
+    props: [
+      {
+        prop: "trigger",
+        type: "ReactNode",
+        description:
+          "Focusable target; right click, long press or Shift+F10 opens it.",
+      },
+      {
+        prop: "items",
+        type: "readonly MenuActionItem[]",
+        description:
+          "Actions with stable unique IDs and onSelect({ signal }); omit to compose children.",
+      },
+      {
+        prop: "onActionError",
+        type: "(error, item) => void",
+        description:
+          "Optional error reporting. Failed actions remain open for retry.",
+      },
+    ],
+  },
+  {
+    title: "ContextMenuLinkItem",
+    props: [
+      {
+        prop: "href",
+        type: "string",
+        description: "Native anchor destination with modifier-click support.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const contextMenuPageChangelogEntries = [
+  {
+    version: "v2.0.1",
+    date: "11 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Demo page follows the accordion structure",
+        description:
+          "Basic comes first, feature and Kira examples have focused tabs, and Changelog follows API Reference. Audited against Base UI 1.9.0; no component API changes.",
+      },
+    ],
+  },
+  {
+    version: "v2.0.0",
+    date: "31 October 2026",
+    changes: [
+      {
+        type: "added",
+        title: "KiraContextMenu async actions and native link rows",
+      },
+      {
+        type: "fixed",
+        title:
+          "Keyboard opening, focus rings, constrained popups and reduced-motion exits",
+      },
+      {
+        type: "changed",
+        title:
+          "Rows reuse dropdown primitives and styles; ContextMenuWithContent remains an alias",
+      },
+      {
+        type: "breaking",
+        title:
+          "Use Base UI render instead of asChild; disabled belongs on ContextMenu root",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
+
+const handleAction = (action: string) => {
+  console.log(`Action: ${action}`);
+};
