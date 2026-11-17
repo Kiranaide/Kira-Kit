@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   IconTextResize,
@@ -237,7 +238,10 @@ export function KiraTextareaDemo() {
       showCount
       clearable
       submitOn="mod-enter"
-      onSubmit={(v) => setMessages((m) => [...m, v])}
+      onSubmit={(text) => {
+          const message = { id: crypto.randomUUID(), text };
+          setMessages((current) => [...current, message]);
+        }}
       placeholder="Share your thoughts..."
     />
   )
@@ -255,6 +259,23 @@ const clearCode = `import { KiraTextarea } from "@/components/ui/textarea"
 
 // Clear button appears when there's content; keeps focus on clear
 <KiraTextarea clearable label="Notes" placeholder="Type then clear..." />`;
+
+const validationCode = `import { KiraTextarea } from "@/components/ui/textarea"
+
+export function ValidationDemo() {
+  return (
+    <KiraTextarea
+      label="Username"
+      placeholder="3-20 characters, letters and numbers only"
+      validate={(value) => {
+        if (value.length < 3) return "Must be at least 3 characters."
+        if (value.length > 20) return "Must be at most 20 characters."
+        if (!/^[a-zA-Z0-9]+$/.test(value)) return "Letters and numbers only."
+        return null
+      }}
+    />
+  )
+}`;
 
 const usageCode = `import { Textarea, TextareaWithCounter, KiraTextarea } from "@/components/ui/textarea"
 
@@ -313,19 +334,48 @@ function BasicDemo() {
 }
 
 function SizesDemo() {
+  const textareaLabelsId = React.useId();
+
   return (
     <div className="flex flex-col gap-4 max-w-md">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Small</label>
-        <Textarea size="sm" placeholder="Small textarea..." />
+        <label
+          htmlFor={`${textareaLabelsId}-1`}
+          className="text-sm font-medium"
+        >
+          Small
+        </label>
+        <Textarea
+          id={`${textareaLabelsId}-1`}
+          size="sm"
+          placeholder="Small textarea..."
+        />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium">Default</label>
-        <Textarea size="default" placeholder="Default textarea..." />
+        <label
+          htmlFor={`${textareaLabelsId}-2`}
+          className="text-sm font-medium"
+        >
+          Default
+        </label>
+        <Textarea
+          id={`${textareaLabelsId}-2`}
+          size="default"
+          placeholder="Default textarea..."
+        />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium">Large</label>
-        <Textarea size="lg" placeholder="Large textarea..." />
+        <label
+          htmlFor={`${textareaLabelsId}-3`}
+          className="text-sm font-medium"
+        >
+          Large
+        </label>
+        <Textarea
+          id={`${textareaLabelsId}-3`}
+          size="lg"
+          placeholder="Large textarea..."
+        />
       </div>
     </div>
   );
@@ -400,13 +450,21 @@ function ResizeDemo() {
 }
 
 function CounterDemo() {
+  const textareaLabelsId = React.useId();
+
   const [counterValue, setCounterValue] = React.useState("");
 
   return (
     <div className="max-w-md space-y-6">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Show Current/Max</label>
+        <label
+          htmlFor={`${textareaLabelsId}-4`}
+          className="text-sm font-medium"
+        >
+          Show Current/Max
+        </label>
         <TextareaWithCounter
+          id={`${textareaLabelsId}-4`}
           value={counterValue}
           onChange={(e) => setCounterValue(e.target.value)}
           maxLength={200}
@@ -415,8 +473,14 @@ function CounterDemo() {
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium">Show Remaining</label>
+        <label
+          htmlFor={`${textareaLabelsId}-5`}
+          className="text-sm font-medium"
+        >
+          Show Remaining
+        </label>
         <TextareaWithCounter
+          id={`${textareaLabelsId}-5`}
           value={counterValue}
           onChange={(e) => setCounterValue(e.target.value)}
           maxLength={200}
@@ -430,28 +494,46 @@ function CounterDemo() {
 }
 
 function AutoSizeDemo() {
+  const textareaLabelsId = React.useId();
+
   return (
     <div className="space-y-4 max-w-md">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Auto-size (default)</label>
+        <label
+          htmlFor={`${textareaLabelsId}-6`}
+          className="text-sm font-medium"
+        >
+          Auto-size (default)
+        </label>
         <Textarea
+          id={`${textareaLabelsId}-6`}
           placeholder="This textarea auto-sizes based on content..."
           autoSize={true}
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium">
+        <label
+          htmlFor={`${textareaLabelsId}-7`}
+          className="text-sm font-medium"
+        >
           Fixed height (no auto-size)
         </label>
         <Textarea
+          id={`${textareaLabelsId}-7`}
           placeholder="This textarea has a fixed height..."
           autoSize={false}
           rows={4}
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium">With min/max rows</label>
+        <label
+          htmlFor={`${textareaLabelsId}-8`}
+          className="text-sm font-medium"
+        >
+          With min/max rows
+        </label>
         <Textarea
+          id={`${textareaLabelsId}-8`}
           placeholder="Min 2 rows, max 6 rows..."
           minRows={2}
           maxRows={6}
@@ -462,19 +544,33 @@ function AutoSizeDemo() {
 }
 
 function DisabledDemo() {
+  const textareaLabelsId = React.useId();
+
   return (
     <div className="space-y-4 max-w-md">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Disabled</label>
+        <label
+          htmlFor={`${textareaLabelsId}-9`}
+          className="text-sm font-medium"
+        >
+          Disabled
+        </label>
         <Textarea
+          id={`${textareaLabelsId}-9`}
           disabled
           placeholder="This textarea is disabled..."
           defaultValue="You cannot edit this content."
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium">Read-only</label>
+        <label
+          htmlFor={`${textareaLabelsId}-10`}
+          className="text-sm font-medium"
+        >
+          Read-only
+        </label>
         <Textarea
+          id={`${textareaLabelsId}-10`}
           readOnly
           defaultValue="This content is read-only but can be selected and copied."
         />
@@ -514,7 +610,9 @@ function AccessibilityDemo() {
 // =============================================================================
 
 function KiraDemo() {
-  const [messages, setMessages] = React.useState<string[]>([]);
+  const [messages, setMessages] = React.useState<
+    { id: string; text: string }[]
+  >([]);
 
   return (
     <div className="max-w-md space-y-4">
@@ -525,17 +623,22 @@ function KiraDemo() {
         showCount
         clearable
         submitOn="mod-enter"
-        onSubmit={(v) => setMessages((m) => [...m, v])}
+        onSubmit={(text) =>
+          setMessages((messages) => [
+            ...messages,
+            { id: crypto.randomUUID(), text },
+          ])
+        }
         placeholder="Share your thoughts..."
       />
       {messages.length > 0 && (
         <ul className="space-y-1.5 text-sm">
-          {messages.map((m, i) => (
+          {messages.map((message) => (
             <li
-              key={i}
+              key={message.id}
               className="rounded-md border border-border bg-muted/40 px-3 py-1.5"
             >
-              {m}
+              {message.text}
             </li>
           ))}
         </ul>
@@ -580,6 +683,26 @@ function ClearDemo() {
         label="Notes"
         defaultValue="Clear me — the button keeps focus on the field."
         placeholder="Type something, then clear it..."
+      />
+    </div>
+  );
+}
+
+function ValidationDemoLive() {
+  return (
+    <div className="max-w-md">
+      <KiraTextarea
+        label="Username"
+        placeholder="3-20 characters, letters and numbers only"
+        validate={(value) => {
+          if (value.length < 3) return "Must be at least 3 characters.";
+
+          if (value.length > 20) return "Must be at most 20 characters.";
+
+          if (!/^[a-zA-Z0-9]+$/.test(value)) return "Letters and numbers only.";
+
+          return null;
+        }}
       />
     </div>
   );
@@ -734,7 +857,8 @@ const apiSections = [
         prop: "hardLimit",
         type: "boolean",
         default: "false",
-        description: "Enforce native maxLength truncation instead of soft over-limit",
+        description:
+          "Enforce native maxLength truncation instead of soft over-limit",
       },
       {
         prop: "clearable",
@@ -752,6 +876,19 @@ const apiSections = [
         type: '"enter" | "mod-enter"',
         default: '"mod-enter"',
         description: "Which key combo triggers onSubmit",
+      },
+      {
+        prop: "validate",
+        type: "(value: string) => string | null",
+        description:
+          "Inline validation; the returned message renders as the error text, null clears it",
+      },
+      {
+        prop: "validationMode",
+        type: '"onBlur" | "onChange"',
+        default: '"onBlur"',
+        description:
+          "When validation runs; onChange revalidates after the first run",
       },
     ],
   },
@@ -798,6 +935,19 @@ const demoTabs = [
         code={clearCode}
       >
         <ClearDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "validation",
+    label: "Validation",
+    demo: (
+      <DemoWrapper
+        title="Inline validation"
+        description="Validates on blur by default (not per keystroke); revalidates on change once it has run."
+        code={validationCode}
+      >
+        <ValidationDemoLive />
       </DemoWrapper>
     ),
   },
@@ -903,7 +1053,7 @@ export default function TextareaPage() {
     <ComponentPage>
       <PageHeader
         title="Textarea"
-        version="v2.0"
+        version="v2.2"
         description="Multi-line text input with auto-resize, an accessible character counter, keyboard submit, a clear button, and the unified KiraTextarea API."
       />
 
@@ -925,46 +1075,65 @@ export default function TextareaPage() {
         description="Props for Textarea, TextareaWithCounter, and KiraTextarea"
       />
 
-      <Changelog
-        entries={[
-          {
-            version: "v2.0",
-            date: "2026-07-22",
-            changes: [
-              {
-                type: "added",
-                title: "KiraTextarea",
-                description:
-                  "One prop-driven API bundling label, description, error, accessible counter, clear button, and keyboard submit.",
-              },
-              {
-                type: "added",
-                title: "Keyboard submit",
-                description:
-                  'onSubmit with submitOn "enter" or "mod-enter"; guards IME composition and skips empty values.',
-              },
-              {
-                type: "added",
-                title: "Clear button",
-                description:
-                  "clearable prop shows an IconX button that empties the value and keeps focus on the field.",
-              },
-              {
-                type: "changed",
-                title: "Accessible character counter",
-                description:
-                  "TextareaWithCounter now uses the 3-element GOV.UK/USWDS pattern: static hint, aria-hidden visible counter, and a debounced sr-only live region — no more per-keystroke screen-reader flooding.",
-              },
-              {
-                type: "changed",
-                title: "Soft character limit",
-                description:
-                  "Over-limit input is allowed and flagged via aria-invalid instead of silent truncation. Opt back into truncation with hardLimit.",
-              },
-            ],
-          },
-        ]}
-      />
+      <Changelog entries={textareaPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const textareaPageChangelogEntries = [
+  {
+    version: "v2.2",
+    date: "22 October 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Inline validation (KiraTextarea)",
+        description:
+          "validate + validationMode (default onBlur) replace per-keystroke error spam; validated messages render with aria-invalid wired.",
+      },
+      {
+        type: "changed",
+        title: "Re-audited against Base UI 1.9.0",
+        description:
+          "shadcn Base UI textarea remains a bare styled textarea; parity reconfirmed, no primitive changes required.",
+      },
+    ],
+  },
+  {
+    version: "v2.0",
+    date: "22 July 2026",
+    changes: [
+      {
+        type: "added",
+        title: "KiraTextarea",
+        description:
+          "One prop-driven API bundling label, description, error, accessible counter, clear button, and keyboard submit.",
+      },
+      {
+        type: "added",
+        title: "Keyboard submit",
+        description:
+          'onSubmit with submitOn "enter" or "mod-enter"; guards IME composition and skips empty values.',
+      },
+      {
+        type: "added",
+        title: "Clear button",
+        description:
+          "clearable prop shows an IconX button that empties the value and keeps focus on the field.",
+      },
+      {
+        type: "changed",
+        title: "Accessible character counter",
+        description:
+          "TextareaWithCounter now uses the 3-element GOV.UK/USWDS pattern: static hint, aria-hidden visible counter, and a debounced sr-only live region — no more per-keystroke screen-reader flooding.",
+      },
+      {
+        type: "changed",
+        title: "Soft character limit",
+        description:
+          "Over-limit input is allowed and flagged via aria-invalid instead of silent truncation. Opt back into truncation with hardLimit.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
