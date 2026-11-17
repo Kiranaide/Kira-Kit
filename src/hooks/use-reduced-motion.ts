@@ -1,35 +1,60 @@
-// === USE REDUCED MOTION HOOK ===
-
 import * as React from "react";
 
 const QUERY = "(prefers-reduced-motion: reduce)";
 
-function subscribe(callback: () => void): () => void {
-  if (typeof window === "undefined" || !window.matchMedia) return () => {};
+// One shared MediaQueryList per page instead of a new one on every
+// getSnapshot call (React may call getSnapshot many times per render).
+let mql: MediaQueryList | null | undefined;
 
-  const mediaQuery = window.matchMedia(QUERY);
-  mediaQuery.addEventListener("change", callback);
+function getMediaQueryList(): MediaQueryList | null {
+  if (mql !== undefined) return mql;
+  mql =
+    // oxlint-disable-next-line anti-slop/no-runtime-typeof -- Older browsers may expose window without the matchMedia API.
+    typeof window !== "undefined" && typeof window.matchMedia === "function"
+      ? window.matchMedia(QUERY)
+      : null;
 
-  return () => mediaQuery.removeEventListener("change", callback);
+  return mql;
+}
+
+function subscribe(onChange: () => void): () => void {
+  const list = getMediaQueryList();
+
+  if (!list) return () => {};
+
+  list.addEventListener("change", onChange);
+
+  return () => list.removeEventListener("change", onChange);
 }
 
 function getSnapshot(): boolean {
-  if (typeof window === "undefined" || !window.matchMedia) return false;
+  return getMediaQueryList()?.matches ?? false;
+}
 
-  return window.matchMedia(QUERY).matches;
+function getServerSnapshot(): boolean {
+  return false;
 }
 
 /**
  * Tracks the user's `prefers-reduced-motion` setting.
  *
- * Returns `true` when the user has requested reduced motion, so callers can
- * skip or shorten non-essential animations. Updates live when the OS setting
- * changes. SSR-safe (returns `false` on the server).
+ * Prefer Tailwind's `motion-reduce:` / `motion-safe:` variants for CSS-only
+ * animation: they apply before hydration, so there's no flash of motion.
+ * Use this hook for motion driven from JS (WAAPI, scroll-into-view
+ * `behavior`, animation libraries, timers).
+ *
+ * SSR-safe: returns `false` on the server and during hydration, then
+ * updates live when the OS setting changes.
  *
  * @example
  * const reducedMotion = useReducedMotion();
- * <div className={cn(!reducedMotion && "transition-[height]")} />
+ * el.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
  */
 export function useReducedMotion(): boolean {
-  return React.useSyncExternalStore(subscribe, getSnapshot, () => false);
+  return React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
+/** Non-React read of the current preference (event handlers, utilities). */
+export function prefersReducedMotion(): boolean {
+  return getSnapshot();
 }
