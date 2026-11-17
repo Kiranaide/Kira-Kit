@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import { IconUser } from "@tabler/icons-react";
 
@@ -208,7 +209,7 @@ function KiraBasicDemo() {
       <KiraSelect
         options={fruits}
         value={value}
-        onChange={(val) => setValue(val as string)}
+        onChange={(val) => setValue(Array.isArray(val) ? "" : (val ?? ""))}
         placeholder="Select a fruit"
       />
       {value && (
@@ -223,7 +224,7 @@ const kiraBasicCode = `import { KiraSelect } from "@/components/ui/select"
 <KiraSelect
   options={fruits}
   value={value}
-  onChange={(val) => setValue(val as string)}
+  onChange={(val) => setValue(Array.isArray(val) ? "" : val ?? "")}
   placeholder="Select a fruit"
 />`;
 
@@ -237,7 +238,7 @@ function MultiSelectDemo() {
           options={fruits}
           multiple
           value={multiValue}
-          onChange={(val) => setMultiValue(val as string[])}
+          onChange={(val) => setMultiValue(Array.isArray(val) ? val : [])}
           placeholder="Select fruits..."
         />
       </div>
@@ -256,7 +257,7 @@ const multiSelectCode = `import { KiraSelect } from "@/components/ui/select"
   options={options}
   multiple
   value={selected}
-  onChange={(val) => setSelected(val as string[])}
+  onChange={(val) => setSelected(Array.isArray(val) ? val : [])}
   placeholder="Select fruits..."
 />`;
 
@@ -271,7 +272,9 @@ function AsyncSelectDemo() {
           async
           onSearch={searchUsers}
           value={asyncValue}
-          onChange={(val) => setAsyncValue(val as string)}
+          onChange={(val) =>
+            setAsyncValue(Array.isArray(val) ? "" : (val ?? ""))
+          }
           placeholder="Search users..."
         />
       </div>
@@ -296,7 +299,7 @@ const searchUsers = async (query: string) => {
   async
   onSearch={searchUsers}
   value={value}
-  onChange={(val) => setValue(val as string)}
+  onChange={(val) => setValue(Array.isArray(val) ? "" : val ?? "")}
   placeholder="Search users..."
 />`;
 
@@ -310,7 +313,7 @@ function AutocompleteDemo() {
           options={fruits}
           searchable
           value={value}
-          onChange={(v) => setValue(v as string)}
+          onChange={(v) => setValue(Array.isArray(v) ? "" : (v ?? ""))}
           placeholder="Search fruits..."
         />
       </div>
@@ -328,7 +331,7 @@ const autocompleteCode = `import { KiraSelect } from "@/components/ui/select"
   options={options}
   searchable
   value={value}
-  onChange={(v) => setValue(v as string)}
+  onChange={(v) => setValue(Array.isArray(v) ? "" : v ?? "")}
   placeholder="Search fruits..."
 />`;
 
@@ -366,7 +369,7 @@ const virtualizedCode = `import { KiraSelect } from "@/components/ui/select"
   searchable
   virtualized
   value={value}
-  onChange={(v) => setValue(v as string)}
+  onChange={(v) => setValue(Array.isArray(v) ? "" : v ?? "")}
 />`;
 
 function GroupedSearchableDemo() {
@@ -402,6 +405,7 @@ const grouped = [
 // groups survive filtering in the rich path
 <KiraSelect options={grouped} searchable />`;
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 function ShowcaseDemo() {
   return (
     <div className="flex flex-col gap-8">
@@ -539,7 +543,7 @@ const creatableSelectCode = `import { KiraSelect } from "@/components/ui/select"
   options={options}
   creatable
   value={value}
-  onChange={(val) => setValue(val as string)}
+  onChange={(val) => setValue(Array.isArray(val) ? "" : val ?? "")}
   onCreateOption={(input) => {
     const opt = { value: input.toLowerCase(), label: input }
     setOptions((prev) => [...prev, opt])
@@ -1018,107 +1022,108 @@ export default function SelectPage() {
 
       <APIReference sections={apiSections} />
 
-      <Changelog
-        entries={[
-          {
-            version: "3.2.0",
-            date: "18 October 2026",
-            changes: [
-              {
-                type: "fixed",
-                title: "Duplicate Selection in Multi-Select",
-                description:
-                  "Picking the same option twice appended it twice instead of toggling: items now emit the derived string value so Base UI's selected-value comparison matches.",
-              },
-              {
-                type: "fixed",
-                title: "Empty Gap Above the List",
-                description:
-                  "Base UI keeps the Empty element mounted even when the list is non-empty, which painted a blank strip above every popup. It now collapses with empty:hidden.",
-              },
-              {
-                type: "added",
-                title: "String Array Options Shorthand",
-                description:
-                  "options now accepts a plain string array (options={[\"Data1\", \"Data2\"]}) in addition to option objects and groups; each string becomes { value, label }. Works on both the simple and the rich (searchable) path.",
-              },
-            ],
-          },
-          {
-            version: "3.1.0",
-            date: "18 October 2026",
-            changes: [
-              {
-                type: "changed",
-                title: "v2 rebuild on Base UI 1.9.0",
-                description:
-                  "Rich path (searchable/async/creatable/multiple) rebuilt on the Base UI Combobox primitive; popup is now portaled and collision-aware; grouped options render grouped in all modes; new virtualized prop for windowed long lists; async loading shows pulse rows + a polite Status live region. Audited against @base-ui/react 1.9.0.",
-              },
-              {
-                type: "breaking",
-                title: "SelectField export removed",
-                description:
-                  "Use <KiraSelect />. SelectFieldProps-only props (showSearchIcon, fuzzyMatching, filterFn, debounceMs, cacheOptions, onSearchChange, onClearAll, onOpenChange) were never exposed on KiraSelect and are gone with it. AutocompleteOption type removed (dead code).",
-              },
-              {
-                type: "fixed",
-                title: "Search crash on regex metacharacters",
-                description:
-                  "Typing (, [, or * in a searchable select used to throw Invalid regular expression during render and crash the page; matching is now a two-pointer subsequence match that cannot throw.",
-              },
-              {
-                type: "fixed",
-                title: "Sticky selected label in the input",
-                description:
-                  "After picking an option, reopening no longer keeps the selected label in the input and filter the list down to just that option.",
-              },
-              {
-                type: "fixed",
-                title: "List re-stagger on every keystroke",
-                description:
-                  "GSAP stagger now plays once per open, not while typing; still gated on prefers-reduced-motion.",
-              },
-            ],
-          },
-          {
-            version: "3.0.0",
-            date: "13 July 2026",
-            changes: [
-              {
-                type: "added",
-                title: "KiraSelect — single combobox API",
-                description:
-                  "One prop-driven component covering basic, multiple, searchable, async, and creatable. Routes to the Base UI Select (simple) or the Base UI Combobox (rich).",
-              },
-              {
-                type: "breaking",
-                title:
-                  "Removed MultiSelect / AsyncSelect / CreatableSelect / Autocomplete",
-                description:
-                  "Migrate to <KiraSelect multiple />, <KiraSelect async onSearch={…} />, <KiraSelect creatable />, and <KiraSelect searchable /> respectively.",
-              },
-              {
-                type: "fixed",
-                title: "Chevron rotation & tag removal",
-                description:
-                  "The trigger chevron now rotates on open (correct Base UI data attribute); Backspace no longer removes two tags at once.",
-              },
-              {
-                type: "fixed",
-                title: "Reduced motion",
-                description:
-                  "Popup enter/exit animations on both the primitive and the field are gated on prefers-reduced-motion.",
-              },
-              {
-                type: "removed",
-                title: "Dead virtualization props",
-                description:
-                  "virtualize / virtualItemHeight / overscan were never implemented and have been removed.",
-              },
-            ],
-          },
-        ]}
-      />
+      <Changelog entries={selectPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const selectPageChangelogEntries = [
+  {
+    version: "3.2.0",
+    date: "18 October 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Duplicate Selection in Multi-Select",
+        description:
+          "Picking the same option twice appended it twice instead of toggling: items now emit the derived string value so Base UI's selected-value comparison matches.",
+      },
+      {
+        type: "fixed",
+        title: "Empty Gap Above the List",
+        description:
+          "Base UI keeps the Empty element mounted even when the list is non-empty, which painted a blank strip above every popup. It now collapses with empty:hidden.",
+      },
+      {
+        type: "added",
+        title: "String Array Options Shorthand",
+        description:
+          'options now accepts a plain string array (options={["Data1", "Data2"]}) in addition to option objects and groups; each string becomes { value, label }. Works on both the simple and the rich (searchable) path.',
+      },
+    ],
+  },
+  {
+    version: "3.1.0",
+    date: "18 October 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "v2 rebuild on Base UI 1.9.0",
+        description:
+          "Rich path (searchable/async/creatable/multiple) rebuilt on the Base UI Combobox primitive; popup is now portaled and collision-aware; grouped options render grouped in all modes; new virtualized prop for windowed long lists; async loading shows pulse rows + a polite Status live region. Audited against @base-ui/react 1.9.0.",
+      },
+      {
+        type: "breaking",
+        title: "SelectField export removed",
+        description:
+          "Use <KiraSelect />. SelectFieldProps-only props (showSearchIcon, fuzzyMatching, filterFn, debounceMs, cacheOptions, onSearchChange, onClearAll, onOpenChange) were never exposed on KiraSelect and are gone with it. AutocompleteOption type removed (dead code).",
+      },
+      {
+        type: "fixed",
+        title: "Search crash on regex metacharacters",
+        description:
+          "Typing (, [, or * in a searchable select used to throw Invalid regular expression during render and crash the page; matching is now a two-pointer subsequence match that cannot throw.",
+      },
+      {
+        type: "fixed",
+        title: "Sticky selected label in the input",
+        description:
+          "After picking an option, reopening no longer keeps the selected label in the input and filter the list down to just that option.",
+      },
+      {
+        type: "fixed",
+        title: "List re-stagger on every keystroke",
+        description:
+          "GSAP stagger now plays once per open, not while typing; still gated on prefers-reduced-motion.",
+      },
+    ],
+  },
+  {
+    version: "3.0.0",
+    date: "13 July 2026",
+    changes: [
+      {
+        type: "added",
+        title: "KiraSelect — single combobox API",
+        description:
+          "One prop-driven component covering basic, multiple, searchable, async, and creatable. Routes to the Base UI Select (simple) or the Base UI Combobox (rich).",
+      },
+      {
+        type: "breaking",
+        title:
+          "Removed MultiSelect / AsyncSelect / CreatableSelect / Autocomplete",
+        description:
+          "Migrate to <KiraSelect multiple />, <KiraSelect async onSearch={…} />, <KiraSelect creatable />, and <KiraSelect searchable /> respectively.",
+      },
+      {
+        type: "fixed",
+        title: "Chevron rotation & tag removal",
+        description:
+          "The trigger chevron now rotates on open (correct Base UI data attribute); Backspace no longer removes two tags at once.",
+      },
+      {
+        type: "fixed",
+        title: "Reduced motion",
+        description:
+          "Popup enter/exit animations on both the primitive and the field are gated on prefers-reduced-motion.",
+      },
+      {
+        type: "removed",
+        title: "Dead virtualization props",
+        description:
+          "virtualize / virtualItemHeight / overscan were never implemented and have been removed.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
