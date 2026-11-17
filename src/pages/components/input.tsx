@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import { useState } from "react";
 import {
   Input,
@@ -331,7 +332,6 @@ export function OTPInputDemo() {
           value={otpValue}
           onChange={setOtpValue}
           onComplete={(code) => console.log("OTP Complete:", code)}
-          autoFocus
         />
       </div>
       
@@ -644,56 +644,9 @@ function CompositesDemo() {
 
   return (
     <div className="max-w-sm space-y-6">
-      <InputWithLabel
-        label="Email Address"
-        description="We'll never share your email with anyone else."
-        placeholder="name@example.com"
-        type="email"
-      />
-      <InputWithLabel
-        label="Password"
-        description="Must be at least 8 characters"
-        type="password"
-        placeholder="Enter password"
-      />
-      <InputWithLabel
-        label="Username"
-        error="Username is already taken"
-        placeholder="username"
-      />
+      <CompositeLabelInputs />
 
-      <div className="space-y-2">
-        <Label>Subscribe</Label>
-        <InputWithButton
-          placeholder="Enter your email"
-          buttonText="Subscribe"
-          buttonIcon={<IconSend className="w-4 h-4" />}
-          buttonPosition="right"
-          onButtonClick={() => alert("Subscribed!")}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>Search</Label>
-        <InputWithButton
-          placeholder="Search..."
-          buttonText="Search"
-          buttonIcon={<IconSearch className="w-4 h-4" />}
-          buttonPosition="left"
-          buttonVariant="outline"
-          onButtonClick={() => alert("Searching...")}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>Verify</Label>
-        <InputWithButton
-          placeholder="Enter code"
-          buttonText="Verify"
-          buttonIcon={<IconCheck className="w-4 h-4" />}
-          buttonPosition="right"
-          buttonVariant="success"
-          onButtonClick={() => alert("Verified!")}
-        />
-      </div>
+      <CompositeActionInputs />
 
       <div className="space-y-2">
         <Label>Loading State</Label>
@@ -744,27 +697,7 @@ function CompositesDemo() {
         />
       </div>
 
-      <div className="space-y-2">
-        <Label>Date Range</Label>
-        <InputCluster>
-          <Input type="date" placeholder="Start date" />
-          <Input type="date" placeholder="End date" />
-        </InputCluster>
-      </div>
-      <div className="space-y-2">
-        <Label>Time Range</Label>
-        <InputCluster>
-          <Input type="time" placeholder="Start time" />
-          <Input type="time" placeholder="End time" />
-        </InputCluster>
-      </div>
-      <div className="space-y-2">
-        <Label>Price Range</Label>
-        <InputCluster>
-          <Input prefix="$" type="number" placeholder="Min" />
-          <Input prefix="$" type="number" placeholder="Max" />
-        </InputCluster>
-      </div>
+      <CompositeRangeInputs />
     </div>
   );
 }
@@ -842,34 +775,12 @@ function OTPDemo() {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <Label>6-Digit Verification Code</Label>
-        <OTPInput
-          value={otpValue}
-          onChange={setOtpValue}
-          onComplete={(code) => {
-            setOtpComplete(true);
-            console.log("OTP Complete:", code);
-          }}
-          autoFocus
-        />
-        <div className="flex items-center gap-4">
-          <p className="text-xs text-muted-foreground">
-            Value: "{otpValue}"{" "}
-            {otpComplete && <span className="text-success">Complete</span>}
-          </p>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setOtpValue("");
-              setOtpComplete(false);
-            }}
-          >
-            Clear
-          </Button>
-        </div>
-      </div>
+      <OTPValueSection
+        otpValue={otpValue}
+        setOtpValue={setOtpValue}
+        setOtpComplete={setOtpComplete}
+        otpComplete={otpComplete}
+      />
 
       <div className="space-y-3">
         <Label>Size Variants</Label>
@@ -964,87 +875,11 @@ function RatingDemo() {
         </p>
       </div>
 
-      <div className="space-y-3">
-        <Label>Size Variants</Label>
-        <div className="space-y-2">
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-16">Small</span>
-            <Rating defaultValue={4} size="sm" />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-16">Default</span>
-            <Rating defaultValue={4} />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-16">Large</span>
-            <Rating defaultValue={4} size="lg" />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-16">XL</span>
-            <Rating defaultValue={4} size="xl" />
-          </div>
-        </div>
-      </div>
+      <RatingControlsSection />
 
-      <div className="space-y-3">
-        <Label>Color Variants</Label>
-        <div className="space-y-2">
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-16">Yellow</span>
-            <Rating defaultValue={4} color="yellow" />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-16">Orange</span>
-            <Rating defaultValue={4} color="orange" />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-16">Red</span>
-            <Rating defaultValue={4} color="red" />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-16">Pink</span>
-            <Rating defaultValue={4} color="pink" />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-16">Primary</span>
-            <Rating defaultValue={4} color="default" />
-          </div>
-        </div>
-      </div>
+      <RatingControlsSection2 />
 
-      <div className="space-y-3">
-        <Label>Custom Icons</Label>
-        <div className="space-y-2">
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-20">Hearts</span>
-            <Rating
-              defaultValue={3}
-              color="pink"
-              filledIcon={<IconHeartFilled />}
-              emptyIcon={<IconHeart />}
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-20">Fire</span>
-            <Rating
-              defaultValue={4}
-              color="orange"
-              max={3}
-              filledIcon={<IconFlame />}
-              emptyIcon={<IconFlame className="opacity-30" />}
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground w-20">Mood</span>
-            <Rating
-              defaultValue={4}
-              color="yellow"
-              filledIcon={<IconMoodSmile />}
-              emptyIcon={<IconMoodSmile className="opacity-30" />}
-            />
-          </div>
-        </div>
-      </div>
+      <RatingControlsSection3 />
 
       <div className="space-y-2">
         <Label>Half Star Support</Label>
@@ -1085,32 +920,10 @@ function RatingDemo() {
         </p>
       </div>
 
-      <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
-        <Label>How was your experience?</Label>
-        <Rating value={feedbackRating} onChange={setFeedbackRating} size="lg" />
-        <div className="flex items-center gap-2 mt-2">
-          {feedbackRating > 0 && (
-            <>
-              <span className="text-sm">
-                {feedbackRating === 1 && "Poor"}
-                {feedbackRating === 2 && "Fair"}
-                {feedbackRating === 3 && "Good"}
-                {feedbackRating === 4 && "Great"}
-                {feedbackRating === 5 && "Excellent!"}
-              </span>
-              <Button
-                size="sm"
-                onClick={() => {
-                  alert(`Thank you for your ${feedbackRating}-star rating!`);
-                  setFeedbackRating(0);
-                }}
-              >
-                Submit
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
+      <RatingControlsSection4
+        feedbackRating={feedbackRating}
+        setFeedbackRating={setFeedbackRating}
+      />
 
       <div className="space-y-2">
         <Label>Disabled</Label>
@@ -1143,12 +956,17 @@ function PasswordDemo() {
         />
       </div>
       <div className="space-y-2">
-        <Label>Sign-up (autoComplete=&quot;new-password&quot;, the default)</Label>
+        <Label>
+          Sign-up (autoComplete=&quot;new-password&quot;, the default)
+        </Label>
         <PasswordInput placeholder="Create a password" />
       </div>
       <div className="space-y-2">
         <Label>Sign-in (autoComplete=&quot;current-password&quot;)</Label>
-        <PasswordInput autoComplete="current-password" placeholder="Your password" />
+        <PasswordInput
+          autoComplete="current-password"
+          placeholder="Your password"
+        />
       </div>
     </div>
   );
@@ -1224,13 +1042,15 @@ function ShowcaseDemo() {
       </div>
       <div className="space-y-2">
         <Label>Very long value</Label>
-        <Input
-          defaultValue="A very long controlled value that overflows a narrow input container and must scroll rather than break the layout"
-        />
+        <Input defaultValue="A very long controlled value that overflows a narrow input container and must scroll rather than break the layout" />
       </div>
       <div className="space-y-2">
         <Label>RTL</Label>
-        <Input dir="rtl" placeholder="البريد الإلكتروني" defaultValue="مايكل جاكسون" />
+        <Input
+          dir="rtl"
+          placeholder="البريد الإلكتروني"
+          defaultValue="مايكل جاكسون"
+        />
       </div>
     </div>
   );
@@ -1267,6 +1087,101 @@ const tagsCode = `import { TagInput } from "@/components/ui/input"
 // Main Page Component
 // =============================================================================
 
+function FileInputDemo() {
+  const [selectedNames, setSelectedNames] = useState<string[]>([]);
+  const [submittedNames, setSubmittedNames] = useState<string[]>([]);
+
+  const handleFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.currentTarget.files;
+
+    if (!files) return;
+
+    setSelectedNames(
+      Array.from(files).map(
+        (file) => `${file.name} (${(file.size / 1024).toFixed(1)} KB)`,
+      ),
+    );
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    // Real FileList entries land in FormData; the staging input is read here.
+    const names = Array.from(
+      new FormData(event.currentTarget).getAll("attachments"),
+    )
+      .filter((entry): entry is File => entry instanceof File)
+      .map((file) => file.name);
+
+    setSubmittedNames(names);
+  };
+
+  return (
+    <div className="space-y-6">
+      <FileInputFormDataFormGetAllQuotAttachmentsSection
+        handleSubmit={handleSubmit}
+        handleFiles={handleFiles}
+        selectedNames={selectedNames}
+        setSelectedNames={setSelectedNames}
+        setSubmittedNames={setSubmittedNames}
+        submittedNames={submittedNames}
+      />
+
+      <FileInputDesktopBrowsersIgnoreSection />
+
+      <p className="max-w-md text-xs text-muted-foreground">
+        <code>&lt;Input type=&quot;file&quot; /&gt;</code> is the compact native
+        file selector. For validation, drag-and-drop, paste, previews, and
+        upload transport use the separate <code>FileUpload</code> component —
+        the two modules stay independent.
+      </p>
+    </div>
+  );
+}
+
+const fileInputCode = `import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useState } from "react"
+
+export function FileInputDemo() {
+  const [selectedNames, setSelectedNames] = useState<string[]>([])
+
+  const handleFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.currentTarget.files
+    if (!files) return
+    setSelectedNames(
+      Array.from(files).map((file) => \`\${file.name} (\${(file.size / 1024).toFixed(1)} KB)\`),
+    )
+  }
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    // Real File entries land in FormData under the input's name.
+    const names = Array.from(
+      new FormData(event.currentTarget).getAll("attachments"),
+    ).filter((entry): entry is File => entry instanceof File)
+      .map((file) => file.name)
+    console.log(names)
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Label htmlFor="attachments">Attachments</Label>
+      <Input
+        id="attachments"
+        type="file"
+        name="attachments"
+        accept=".pdf,image/*"
+        multiple
+        onChange={handleFiles}
+      />
+      <button type="submit">Submit FormData</button>
+      <button type="reset">Reset</button>
+    </form>
+  )
+}`;
+
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function InputPage() {
   const features = [
     {
@@ -1386,7 +1301,8 @@ export default function InputPage() {
           prop: "allowOutOfRange",
           type: "boolean",
           default: "false",
-          description: "Allow typed values outside min/max; steppers still clamp.",
+          description:
+            "Allow typed values outside min/max; steppers still clamp.",
         },
         {
           prop: "scrub",
@@ -1430,7 +1346,8 @@ export default function InputPage() {
           prop: "type",
           type: '"numeric" | "alphanumeric" | "alpha"',
           default: '"numeric"',
-          description: "Allowed input type (maps to Base UI validationType; \"alphabetic\" renamed to \"alpha\").",
+          description:
+            'Allowed input type (maps to Base UI validationType; "alphabetic" renamed to "alpha").',
         },
         {
           prop: "autoSubmit",
@@ -1639,6 +1556,19 @@ export default function InputPage() {
       ),
     },
     {
+      value: "file",
+      label: "File",
+      demo: (
+        <DemoWrapper
+          title="Native File Input"
+          description="The compact native file selector: pick files, read the FileList, and submit real File entries through FormData. For validation, drag-and-drop, paste, previews, and upload transport see the separate FileUpload component."
+          code={fileInputCode}
+        >
+          <FileInputDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
       value: "numeric",
       label: "Numeric",
       demo: (
@@ -1792,7 +1722,7 @@ export default function InputPage() {
     <ComponentPage>
       <PageHeader
         title="Input"
-        version="v2.2"
+        version="v2.2.1"
         description="A comprehensive collection of input components for forms and data entry. Includes basic inputs, textareas, numeric inputs, formatted inputs, OTP, ratings, and composable patterns."
       />
 
@@ -1809,106 +1739,468 @@ export default function InputPage() {
 
       <APIReference sections={apiSections} />
 
-      <Changelog
-        entries={[
-          {
-            version: "2.2.0",
-            date: "17 October 2026",
-            changes: [
-              {
-                type: "breaking",
-                title: "NumericInput rebuilt on Base UI NumberField",
-                description:
-                  "onChange → onValueChange (fires with null when cleared). Input props showIncrementButtons/onIncrement/onDecrement removed — use NumericInput. New props: smallStep, largeStep, allowOutOfRange, scrub. Alt/Shift stepping, wheel, clamping, and scrubbing come from the primitive.",
-              },
-              {
-                type: "breaking",
-                title: "OTPInput rebuilt on Base UI OTPField",
-                description:
-                  'type "alphabetic" renamed to "alpha" (Base UI validationType). Imperative ref handle (focus/clear/getValue/setValue) removed — control via value/onChange. Gains native SMS autofill (hidden one-time-code input) and form autoSubmit.',
-              },
-              {
-                type: "breaking",
-                title: "CurrencyInput / PercentageInput / DecimalInput on NumberField",
-                description:
-                  "Now parse and format via Base UI NumberField Intl formatting; negatives and locale-aware input work. Digit-stripping regex removed.",
-              },
-              {
-                type: "breaking",
-                title: "TagInput rebuilt on Base UI Combobox multiple + Chips",
-                description:
-                  "Chips render via Combobox.Chips/Chip/ChipRemove with arrow-key navigation between chips. Public props (value, onChange, separators, maxTags, allowDuplicates) unchanged.",
-              },
-              {
-                type: "breaking",
-                title: "InputWithDropdown rebuilt on Select",
-                description:
-                  "The hand-rolled outside-click popover is replaced by the shared Select primitive; dropdown opens with full keyboard support.",
-              },
-              {
-                type: "removed",
-                title: "TextareaFixed removed",
-                description:
-                  "Use Textarea from @/components/ui/textarea — it provides the same fixed-rows behavior.",
-              },
-              {
-                type: "added",
-                title: "Clear with Undo (KiraInputGroup)",
-                description:
-                  "Set undoDuration (ms) on KiraInputGroup with clearable to show a 'Cleared — Undo' strip for that duration; hovering or focusing the strip pauses the timer.",
-              },
-              {
-                type: "added",
-                title: "Counter near-limit warning",
-                description:
-                  "Input showCount and KiraInputGroup counter turn warning-colored at ≥90% of maxLength and destructive at the limit.",
-              },
-              {
-                type: "added",
-                title: "Password manager support",
-                description:
-                  'PasswordInput passes autoComplete through, defaulting to "new-password"; use "current-password" on login forms. Paste is never blocked.',
-              },
-              {
-                type: "changed",
-                title: "InputWithLabel on Field parts",
-                description:
-                  "Label/description/error markup now comes from the shared Field components with wired aria-describedby.",
-              },
-            ],
-          },
-          {
-            version: "2.1.0",
-            date: "10 July 2026",
-            changes: [
-              {
-                type: "added",
-                title: "Password Input & Strength Meter",
-                description:
-                  "Added PasswordInput with a masked-by-default field, an accessible show/hide toggle that doesn't steal focus, and an optional live strength meter with a requirement checklist.",
-              },
-              {
-                type: "added",
-                title: "Character Counter",
-                description:
-                  "Input and Textarea gained a showCount prop that renders a live n/max counter (aria-live polite) which warns at the limit.",
-              },
-              {
-                type: "added",
-                title: "Tag Input",
-                description:
-                  "Added TagInput for chip-style entry: Enter/comma to add, Backspace to remove, with dedupe, maxTags, and controlled/uncontrolled modes.",
-              },
-              {
-                type: "fixed",
-                title: "OTP Shake & Icons",
-                description:
-                  "Replaced the OTP invalid-shake setTimeout chain with a single reduced-motion-safe CSS keyframe, and swapped the hand-drawn clear/copy SVGs for Tabler icons with larger tap targets.",
-              },
-            ],
-          },
-        ]}
-      />
+      <Changelog entries={inputPageChangelogEntries} />
     </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located and follows its source constants.
+const inputPageChangelogEntries = [
+  {
+    version: "2.2.1",
+    date: "6 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "File tab: native file input demo",
+        description:
+          'Added a File tab demonstrating <Input type="file" /> as the compact native selector: FileList reading, FormData(name).getAll submitting real File entries, accept/multiple/capture hints, and native form reset. The Input module stays independent of FileUpload.',
+      },
+    ],
+  },
+  {
+    version: "2.2.0",
+    date: "17 October 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "NumericInput rebuilt on Base UI NumberField",
+        description:
+          "onChange → onValueChange (fires with null when cleared). Input props showIncrementButtons/onIncrement/onDecrement removed — use NumericInput. New props: smallStep, largeStep, allowOutOfRange, scrub. Alt/Shift stepping, wheel, clamping, and scrubbing come from the primitive.",
+      },
+      {
+        type: "breaking",
+        title: "OTPInput rebuilt on Base UI OTPField",
+        description:
+          'type "alphabetic" renamed to "alpha" (Base UI validationType). Imperative ref handle (focus/clear/getValue/setValue) removed — control via value/onChange. Gains native SMS autofill (hidden one-time-code input) and form autoSubmit.',
+      },
+      {
+        type: "breaking",
+        title: "CurrencyInput / PercentageInput / DecimalInput on NumberField",
+        description:
+          "Now parse and format via Base UI NumberField Intl formatting; negatives and locale-aware input work. Digit-stripping regex removed.",
+      },
+      {
+        type: "breaking",
+        title: "TagInput rebuilt on Base UI Combobox multiple + Chips",
+        description:
+          "Chips render via Combobox.Chips/Chip/ChipRemove with arrow-key navigation between chips. Public props (value, onChange, separators, maxTags, allowDuplicates) unchanged.",
+      },
+      {
+        type: "breaking",
+        title: "InputWithDropdown rebuilt on Select",
+        description:
+          "The hand-rolled outside-click popover is replaced by the shared Select primitive; dropdown opens with full keyboard support.",
+      },
+      {
+        type: "removed",
+        title: "TextareaFixed removed",
+        description:
+          "Use Textarea from @/components/ui/textarea — it provides the same fixed-rows behavior.",
+      },
+      {
+        type: "added",
+        title: "Clear with Undo (KiraInputGroup)",
+        description:
+          "Set undoDuration (ms) on KiraInputGroup with clearable to show a 'Cleared — Undo' strip for that duration; hovering or focusing the strip pauses the timer.",
+      },
+      {
+        type: "added",
+        title: "Counter near-limit warning",
+        description:
+          "Input showCount and KiraInputGroup counter turn warning-colored at ≥90% of maxLength and destructive at the limit.",
+      },
+      {
+        type: "added",
+        title: "Password manager support",
+        description:
+          'PasswordInput passes autoComplete through, defaulting to "new-password"; use "current-password" on login forms. Paste is never blocked.',
+      },
+      {
+        type: "changed",
+        title: "InputWithLabel on Field parts",
+        description:
+          "Label/description/error markup now comes from the shared Field components with wired aria-describedby.",
+      },
+    ],
+  },
+  {
+    version: "2.1.0",
+    date: "10 July 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Password Input & Strength Meter",
+        description:
+          "Added PasswordInput with a masked-by-default field, an accessible show/hide toggle that doesn't steal focus, and an optional live strength meter with a requirement checklist.",
+      },
+      {
+        type: "added",
+        title: "Character Counter",
+        description:
+          "Input and Textarea gained a showCount prop that renders a live n/max counter (aria-live polite) which warns at the limit.",
+      },
+      {
+        type: "added",
+        title: "Tag Input",
+        description:
+          "Added TagInput for chip-style entry: Enter/comma to add, Backspace to remove, with dedupe, maxTags, and controlled/uncontrolled modes.",
+      },
+      {
+        type: "fixed",
+        title: "OTP Shake & Icons",
+        description:
+          "Replaced the OTP invalid-shake setTimeout chain with a single reduced-motion-safe CSS keyframe, and swapped the hand-drawn clear/copy SVGs for Tabler icons with larger tap targets.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
+
+function OTPValueSection({
+  otpValue,
+  setOtpValue,
+  setOtpComplete,
+  otpComplete,
+}: {
+  otpValue: string;
+  setOtpValue: React.Dispatch<React.SetStateAction<string>>;
+  setOtpComplete: React.Dispatch<React.SetStateAction<boolean>>;
+  otpComplete: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <Label>6-Digit Verification Code</Label>
+      <OTPInput
+        value={otpValue}
+        onChange={setOtpValue}
+        onComplete={(code) => {
+          setOtpComplete(true);
+          console.log("OTP Complete:", code);
+        }}
+      />
+      <div className="flex items-center gap-4">
+        <p className="text-xs text-muted-foreground">
+          Value: "{otpValue}"{" "}
+          {otpComplete && <span className="text-success">Complete</span>}
+        </p>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            setOtpValue("");
+            setOtpComplete(false);
+          }}
+        >
+          Clear
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function RatingControlsSection() {
+  return (
+    <div className="space-y-3">
+      <Label>Size Variants</Label>
+      <div className="space-y-2">
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-16">Small</span>
+          <Rating defaultValue={4} size="sm" />
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-16">Default</span>
+          <Rating defaultValue={4} />
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-16">Large</span>
+          <Rating defaultValue={4} size="lg" />
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-16">XL</span>
+          <Rating defaultValue={4} size="xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RatingControlsSection2() {
+  return (
+    <div className="space-y-3">
+      <Label>Color Variants</Label>
+      <div className="space-y-2">
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-16">Yellow</span>
+          <Rating defaultValue={4} color="yellow" />
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-16">Orange</span>
+          <Rating defaultValue={4} color="orange" />
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-16">Red</span>
+          <Rating defaultValue={4} color="red" />
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-16">Pink</span>
+          <Rating defaultValue={4} color="pink" />
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-16">Primary</span>
+          <Rating defaultValue={4} color="default" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RatingControlsSection3() {
+  return (
+    <div className="space-y-3">
+      <Label>Custom Icons</Label>
+      <div className="space-y-2">
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-20">Hearts</span>
+          <Rating
+            defaultValue={3}
+            color="pink"
+            filledIcon={<IconHeartFilled />}
+            emptyIcon={<IconHeart />}
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-20">Fire</span>
+          <Rating
+            defaultValue={4}
+            color="orange"
+            max={3}
+            filledIcon={<IconFlame />}
+            emptyIcon={<IconFlame className="opacity-30" />}
+          />
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs text-muted-foreground w-20">Mood</span>
+          <Rating
+            defaultValue={4}
+            color="yellow"
+            filledIcon={<IconMoodSmile />}
+            emptyIcon={<IconMoodSmile className="opacity-30" />}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RatingControlsSection4({
+  feedbackRating,
+  setFeedbackRating,
+}: {
+  feedbackRating: number;
+  setFeedbackRating: React.Dispatch<React.SetStateAction<number>>;
+}) {
+  return (
+    <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
+      <Label>How was your experience?</Label>
+      <Rating value={feedbackRating} onChange={setFeedbackRating} size="lg" />
+      <div className="flex items-center gap-2 mt-2">
+        {feedbackRating > 0 && (
+          <>
+            <span className="text-sm">
+              {feedbackRating === 1 && "Poor"}
+              {feedbackRating === 2 && "Fair"}
+              {feedbackRating === 3 && "Good"}
+              {feedbackRating === 4 && "Great"}
+              {feedbackRating === 5 && "Excellent!"}
+            </span>
+            <Button
+              size="sm"
+              onClick={() => {
+                alert(`Thank you for your ${feedbackRating}-star rating!`);
+                setFeedbackRating(0);
+              }}
+            >
+              Submit
+            </Button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FileInputFormDataFormGetAllQuotAttachmentsSection({
+  handleSubmit,
+  handleFiles,
+  selectedNames,
+  setSelectedNames,
+  setSubmittedNames,
+  submittedNames,
+}: {
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  handleFiles: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  selectedNames: string[];
+  setSelectedNames: React.Dispatch<React.SetStateAction<string[]>>;
+  setSubmittedNames: React.Dispatch<React.SetStateAction<string[]>>;
+  submittedNames: string[];
+}) {
+  return (
+    <form onSubmit={handleSubmit} className="max-w-sm space-y-3">
+      <div className="space-y-2">
+        <Label htmlFor="file-demo-picker">Attachments</Label>
+        <Input
+          id="file-demo-picker"
+          type="file"
+          name="attachments"
+          accept=".pdf,image/*"
+          multiple
+          onChange={handleFiles}
+        />
+        {selectedNames.length > 0 && (
+          <ul className="list-inside list-disc text-xs text-muted-foreground">
+            {selectedNames.map((name) => (
+              <li key={name}>{name}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div className="flex gap-2">
+        <Button type="submit" variant="outline" size="sm">
+          Submit FormData
+        </Button>
+        <Button
+          type="reset"
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            setSelectedNames([]);
+            setSubmittedNames([]);
+          }}
+        >
+          Reset
+        </Button>
+      </div>
+      {submittedNames.length > 0 && (
+        <p className="text-xs text-muted-foreground">
+          FormData(form).getAll(&quot;attachments&quot;):{" "}
+          {submittedNames.join(", ")}
+        </p>
+      )}
+    </form>
+  );
+}
+
+function FileInputDesktopBrowsersIgnoreSection() {
+  return (
+    <div className="max-w-sm space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="file-demo-camera">Camera capture (mobile)</Label>
+        <Input
+          id="file-demo-camera"
+          type="file"
+          accept="image/*"
+          capture="environment"
+        />
+        <p className="text-xs text-muted-foreground">
+          Desktop browsers ignore <code>capture</code> and open the ordinary
+          file picker.
+        </p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="file-demo-disabled">Disabled</Label>
+        <Input id="file-demo-disabled" type="file" disabled />
+      </div>
+    </div>
+  );
+}
+
+function CompositeLabelInputs() {
+  return (
+    <>
+      <InputWithLabel
+        label="Email Address"
+        description="We'll never share your email with anyone else."
+        placeholder="name@example.com"
+        type="email"
+      />
+      <InputWithLabel
+        label="Password"
+        description="Must be at least 8 characters"
+        type="password"
+        placeholder="Enter password"
+      />
+      <InputWithLabel
+        label="Username"
+        error="Username is already taken"
+        placeholder="username"
+      />
+    </>
+  );
+}
+
+function CompositeRangeInputs() {
+  return (
+    <>
+      <div className="space-y-2">
+        <Label>Date Range</Label>
+        <InputCluster>
+          <Input type="date" placeholder="Start date" />
+          <Input type="date" placeholder="End date" />
+        </InputCluster>
+      </div>
+      <div className="space-y-2">
+        <Label>Time Range</Label>
+        <InputCluster>
+          <Input type="time" placeholder="Start time" />
+          <Input type="time" placeholder="End time" />
+        </InputCluster>
+      </div>
+      <div className="space-y-2">
+        <Label>Price Range</Label>
+        <InputCluster>
+          <Input prefix="$" type="number" placeholder="Min" />
+          <Input prefix="$" type="number" placeholder="Max" />
+        </InputCluster>
+      </div>
+    </>
+  );
+}
+
+function CompositeActionInputs() {
+  return (
+    <>
+      <div className="space-y-2">
+        <Label>Subscribe</Label>
+        <InputWithButton
+          placeholder="Enter your email"
+          buttonText="Subscribe"
+          buttonIcon={<IconSend className="w-4 h-4" />}
+          buttonPosition="right"
+          onButtonClick={() => alert("Subscribed!")}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Search</Label>
+        <InputWithButton
+          placeholder="Search..."
+          buttonText="Search"
+          buttonIcon={<IconSearch className="w-4 h-4" />}
+          buttonPosition="left"
+          buttonVariant="outline"
+          onButtonClick={() => alert("Searching...")}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Verify</Label>
+        <InputWithButton
+          placeholder="Enter code"
+          buttonText="Verify"
+          buttonIcon={<IconCheck className="w-4 h-4" />}
+          buttonPosition="right"
+          buttonVariant="success"
+          onButtonClick={() => alert("Verified!")}
+        />
+      </div>
+    </>
   );
 }

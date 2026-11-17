@@ -12,7 +12,7 @@ import {
   FieldError,
 } from "@/components/ui/field";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
   IconMinus,
@@ -85,8 +85,8 @@ function CharacterCounter({
     >
       <span
         className={cn(
-          nearLimit && "text-warning",
-          atLimit && "text-destructive",
+          { "text-warning": nearLimit },
+          { "text-destructive": atLimit },
         )}
       >
         {currentLength}
@@ -98,8 +98,9 @@ function CharacterCounter({
 
 interface InputProps
   extends
-    Omit<React.ComponentProps<"input">, "prefix" | "size">,
+    Omit<InputPrimitive.Props, "prefix" | "size" | "className">,
     VariantProps<typeof inputVariants> {
+  className?: string;
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
   size?: VariantProps<typeof inputVariants>["size"];
@@ -152,7 +153,7 @@ interface InputActionButtonsProps {
   show: boolean;
   showClearButton: boolean;
   showCopy: boolean;
-  size: string;
+  size: InputSize;
   copied: boolean;
   onClear: () => void;
   onCopy: () => void;
@@ -180,45 +181,30 @@ function InputActionButtons({
   }
 
   return (
-    <div className="flex items-center gap-0.5">
-      {showClearButton && (
-        <button
-          type="button"
-          onClick={onClear}
-          className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-sm"
-          aria-label="Clear input"
-        >
-          <IconX className={iconSize} />
-        </button>
-      )}
-      {showCopy && (
-        <button
-          type="button"
-          onClick={onCopy}
-          className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-sm"
-          aria-label={copyButtonLabel}
-        >
-          {copyButtonIcon}
-        </button>
-      )}
-    </div>
+    <InputContentView
+      showClearButton={showClearButton}
+      onClear={onClear}
+      iconSize={iconSize}
+      showCopy={showCopy}
+      onCopy={onCopy}
+      copyButtonLabel={copyButtonLabel}
+      copyButtonIcon={copyButtonIcon}
+    />
   );
 }
 
 interface UseInputActionsOptions {
   inputRef: React.RefObject<HTMLInputElement | null>;
-  value: unknown;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  value: InputProps["value"];
   onClear?: () => void;
   onCopySuccess?: () => void;
   onCopyError?: (error: Error) => void;
 }
 
-/** Clear (with synthetic change event) + copy-to-clipboard actions for Input. */
+/** Clear through the native input event + copy-to-clipboard actions for Input. */
 function useInputActions({
   inputRef,
   value,
-  onChange,
   onClear,
   onCopySuccess,
   onCopyError,
@@ -235,52 +221,17 @@ function useInputActions({
     };
   }, []);
 
-  const handleClear = () => {
-    onClear?.();
+  const handleClear = () => inputHandleClear(inputRef, onClear);
 
-    if (onChange && inputRef.current) {
-      // Minimal change-event stand-in: React change handlers only read
-      // `target.value`, which the frozen `{ value: "" }` below satisfies.
-      // SAFETY: Event lacks React's change-event shape; the frozen target
-      // patch below adds the only member handlers read (`.target.value`).
-      const event = new Event("input", {
-        bubbles: true,
-      }) as React.ChangeEvent<HTMLInputElement>;
-
-      Object.defineProperty(event, "target", {
-        writable: false,
-        value: { value: "" },
-      });
-      onChange(event);
-    }
-
-    inputRef.current?.focus();
-  };
-
-  const handleCopy = async () => {
-    const textToCopy = inputRef.current?.value || String(value || "");
-
-    try {
-      await navigator.clipboard.writeText(textToCopy);
-      setCopied(true);
-      toast.success("Copied to clipboard");
-      onCopySuccess?.();
-
-      if (copiedTimeoutRef.current) {
-        window.clearTimeout(copiedTimeoutRef.current);
-      }
-
-      copiedTimeoutRef.current = window.setTimeout(
-        () => setCopied(false),
-        2000,
-      );
-    } catch (error) {
-      toast.error("Failed to copy to clipboard");
-      // SAFETY: catch only fires on clipboard rejection; the thrown unknown is
-      // surfaced to the onCopyError contract typed as Error.
-      onCopyError?.(error as Error);
-    }
-  };
+  const handleCopy = () =>
+    inputHandleCopy(
+      inputRef,
+      value,
+      setCopied,
+      onCopySuccess,
+      copiedTimeoutRef,
+      onCopyError,
+    );
 
   return { copied, handleClear, handleCopy };
 }
@@ -292,24 +243,32 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       type,
       prefix,
       suffix,
-      size = "default",
+      size: sizeInput,
       disabled,
       min,
       max,
-      step = 1,
+      step: stepInput,
       value,
       onChange,
-      showClear = false,
+      showClear: showClearInput,
       onClear,
-      showCopy = false,
+      showCopy: showCopyInput,
       onCopySuccess,
       onCopyError,
-      showCount = false,
+      showCount: showCountInput,
       maxLength,
       ...props
     },
     ref,
   ) => {
+    const { size, step, showClear, showCopy, showCount } = useInputOptions({
+      size: sizeInput,
+      step: stepInput,
+      showClear: showClearInput,
+      showCopy: showCopyInput,
+      showCount: showCountInput,
+    });
+
     const inputRef = React.useRef<HTMLInputElement>(null);
     const reducedMotion = useReducedMotion();
 
@@ -317,37 +276,39 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     // ref is only attached to the InputPrimitive rendered below.
     React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
-    const { copied, handleCopy } = useInputActions({
+    const { copied, handleClear, handleCopy } = useInputActions({
+      inputRef,
       value,
-      onChange,
       onClear,
       onCopySuccess,
       onCopyError,
     });
 
-    return InputFieldView({
-      className,
-      type,
-      prefix,
-      suffix,
-      size,
-      disabled,
-      min,
-      max,
-      step,
-      value,
-      onChange,
-      showClear,
-      onClear,
-      showCopy,
-      copied,
-      onCopy: handleCopy,
-      showCount,
-      maxLength,
-      inputRef,
-      reducedMotion,
-      props,
-    });
+    return (
+      <InputFieldView
+        className={className}
+        type={type}
+        prefix={prefix}
+        suffix={suffix}
+        size={size}
+        disabled={disabled}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={onChange}
+        showClear={showClear}
+        onClear={handleClear}
+        showCopy={showCopy}
+        copied={copied}
+        onCopy={handleCopy}
+        showCount={showCount}
+        maxLength={maxLength}
+        inputRef={inputRef}
+        reducedMotion={reducedMotion}
+        props={props}
+      />
+    );
   },
 );
 
@@ -358,13 +319,13 @@ interface InputFieldViewOptions {
   suffix?: React.ReactNode;
   size?: VariantProps<typeof inputVariants>["size"];
   disabled?: boolean;
-  min?: number;
-  max?: number;
-  step?: number;
-  value: unknown;
+  min?: InputProps["min"];
+  max?: InputProps["max"];
+  step?: InputProps["step"];
+  value: InputProps["value"];
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   showClear?: boolean;
-  onClear?: () => void;
+  onClear: () => void;
   showCopy?: boolean;
   copied: boolean;
   onCopy: () => void;
@@ -372,7 +333,7 @@ interface InputFieldViewOptions {
   maxLength?: number;
   inputRef: React.RefObject<HTMLInputElement | null>;
   reducedMotion: boolean;
-  props: Omit<React.ComponentProps<"input">, keyof InputFieldViewOptions>;
+  props: Omit<InputProps, keyof InputFieldViewOptions>;
 }
 
 type InputSize = NonNullable<VariantProps<typeof inputVariants>["size"]>;
@@ -411,8 +372,10 @@ function createInputElement(
         !reducedMotion && transitionClasses,
         prefix && PREFIX_PADDING[effectiveSize],
         suffix && SUFFIX_PADDING[effectiveSize],
-        isNumeric &&
-          "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+        {
+          "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none":
+            isNumeric,
+        },
         className,
       )}
       value={value}
@@ -476,7 +439,7 @@ function resolveActionButtons(params: {
   showCopy: boolean;
   size: InputSize;
   copied: boolean;
-  onClear?: () => void;
+  onClear: () => void;
   onCopy: () => void;
 }): React.ReactNode {
   const { showClearButton, showCopy, size, copied, onClear, onCopy } = params;
@@ -580,7 +543,11 @@ function InputFieldView(options: InputFieldViewOptions) {
 
   const inputElement = createInputElement(options, effectiveSize);
 
-  const showClearButton = hasClearAffordance(value, showClear, disabled);
+  const showClearButton = hasClearAffordance(
+    value,
+    showClear,
+    disabled || options.props.readOnly,
+  );
 
   const currentLength = String(value ?? "").length;
   const counter = resolveCounter(showCount, currentLength, maxLength);
@@ -651,17 +618,28 @@ function NumericInput({
   onValueChange,
   min,
   max,
-  step = 1,
+  step: stepInput,
   smallStep,
   largeStep,
   allowOutOfRange,
-  scrub = false,
-  showButtons = true,
+  scrub: scrubInput,
+  showButtons: showButtonsInput,
   className,
   disabled,
-  size = "default",
+  id,
+  name,
+  required,
+  readOnly,
+  size: sizeInput,
   ...props
 }: NumericInputProps) {
+  const { step, scrub, showButtons, size } = useNumericInputDefaults({
+    step: stepInput,
+    scrub: scrubInput,
+    showButtons: showButtonsInput,
+    size: sizeInput,
+  });
+
   const handleValueChange = (next: number | null) => {
     onValueChange?.(next);
   };
@@ -670,36 +648,28 @@ function NumericInput({
     inputVariants({ size }),
     transitionClasses,
     "min-w-0 flex-1",
-    showButtons &&
-      "rounded-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+    {
+      "rounded-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none":
+        showButtons,
+    },
     className,
   );
 
-  let scrubArea: React.ReactNode;
-
-  if (scrub) {
-    scrubArea = (
-      <NumberField.ScrubArea className="flex flex-1 items-center">
-        <NumberField.Input
-          data-slot="numeric-input"
-          className={inputClasses}
-          {...props}
-        />
-        <NumberField.ScrubAreaCursor className="cursor-ew-resize" />
-      </NumberField.ScrubArea>
-    );
-  } else {
-    scrubArea = (
-      <NumberField.Input
-        data-slot="numeric-input"
-        className={inputClasses}
-        {...props}
-      />
-    );
-  }
+  const scrubArea = (
+    <NumericInputField
+      scrub={scrub}
+      className={inputClasses}
+      inputProps={props}
+    />
+  );
 
   return (
     <NumberField.Root
+      data-slot="numeric-input-root"
+      id={id}
+      name={name}
+      required={required}
+      readOnly={readOnly}
       value={value ?? null}
       onValueChange={handleValueChange}
       min={min}
@@ -711,26 +681,72 @@ function NumericInput({
       disabled={disabled}
       className={cn("flex items-center", className)}
     >
-      <NumberField.Group className="flex items-center">
-        {showButtons && (
-          <NumberField.Decrement
-            data-slot="numeric-input-decrement"
-            className="flex h-8 w-8 items-center justify-center rounded-l-lg border border-r-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <IconMinus className="h-3 w-3" />
-          </NumberField.Decrement>
-        )}
+      <NumericInputControls showButtons={showButtons}>
         {scrubArea}
-        {showButtons && (
-          <NumberField.Increment
-            data-slot="numeric-input-increment"
-            className="flex h-8 w-8 items-center justify-center rounded-r-lg border border-l-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <IconPlus className="h-3 w-3" />
-          </NumberField.Increment>
-        )}
-      </NumberField.Group>
+      </NumericInputControls>
     </NumberField.Root>
+  );
+}
+
+function NumericInputControls({
+  showButtons,
+  children,
+}: {
+  showButtons: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <NumberField.Group
+      data-slot="numeric-input-controls"
+      className="flex items-center"
+    >
+      {showButtons && (
+        <NumberField.Decrement
+          aria-label="Decrease value"
+          data-slot="numeric-input-decrement"
+          className="flex h-8 w-8 items-center justify-center rounded-l-lg border border-r-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <IconMinus className="h-3 w-3" />
+        </NumberField.Decrement>
+      )}
+      {children}
+      {showButtons && (
+        <NumberField.Increment
+          aria-label="Increase value"
+          data-slot="numeric-input-increment"
+          className="flex h-8 w-8 items-center justify-center rounded-r-lg border border-l-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <IconPlus className="h-3 w-3" />
+        </NumberField.Increment>
+      )}
+    </NumberField.Group>
+  );
+}
+
+function NumericInputField({
+  scrub,
+  className,
+  inputProps,
+}: {
+  scrub: boolean;
+  className: string;
+  inputProps: React.ComponentProps<typeof NumberField.Input>;
+}) {
+  const input = (
+    <NumberField.Input
+      data-slot="numeric-input"
+      className={className}
+      {...inputProps}
+    />
+  );
+
+  if (!scrub) return input;
+
+  return (
+    <NumberField.ScrubArea className="flex flex-1 items-center">
+      {input}
+      <NumberField.ScrubAreaCursor className="cursor-ew-resize" />
+    </NumberField.ScrubArea>
   );
 }
 
@@ -764,18 +780,8 @@ function CurrencyInput({
 
   const effectiveValue = value ?? internalValue;
 
-  const format = (num: number) => {
-    try {
-      return new Intl.NumberFormat(locale, {
-        style: "currency",
-        currency,
-        minimumFractionDigits: fractionDigits,
-        maximumFractionDigits: fractionDigits,
-      }).format(num);
-    } catch {
-      return num.toFixed(fractionDigits);
-    }
-  };
+  const format = (num: number) =>
+    inputFormat(num, locale, currency, fractionDigits);
 
   let displayValue = "";
 
@@ -783,24 +789,11 @@ function CurrencyInput({
     displayValue = format(effectiveValue);
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    const digits = raw.replace(/[^\d]/g, "");
-
-    if (!digits) {
-      setInternalValue(null);
-      onChange?.(null);
-
-      return;
-    }
-
-    const int = parseInt(digits, 10);
-    const factor = Math.pow(10, fractionDigits);
-    const num = int / factor;
-
-    setInternalValue(num);
-    onChange?.(num);
-  };
+  const handleChange = useDecimalInputChange(
+    fractionDigits,
+    setInternalValue,
+    onChange,
+  );
 
   return (
     <Input
@@ -849,24 +842,11 @@ function PercentageInput({
     displayValue = format(effectiveValue);
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    const digits = raw.replace(/[^\d]/g, "");
-
-    if (!digits) {
-      setInternalValue(null);
-      onChange?.(null);
-
-      return;
-    }
-
-    const int = parseInt(digits, 10);
-    const factor = Math.pow(10, fractionDigits);
-    const num = int / factor;
-
-    setInternalValue(num);
-    onChange?.(num);
-  };
+  const handleChange = useDecimalInputChange(
+    fractionDigits,
+    setInternalValue,
+    onChange,
+  );
 
   return (
     <Input
@@ -918,24 +898,11 @@ function DecimalInput({
     displayValue = format(effectiveValue);
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    const digits = raw.replace(/[^\d]/g, "");
-
-    if (!digits) {
-      setInternalValue(null);
-      onChange?.(null);
-
-      return;
-    }
-
-    const int = parseInt(digits, 10);
-    const factor = Math.pow(10, fractionDigits);
-    const num = int / factor;
-
-    setInternalValue(num);
-    onChange?.(num);
-  };
+  const handleChange = useDecimalInputChange(
+    fractionDigits,
+    setInternalValue,
+    onChange,
+  );
 
   return (
     <Input
@@ -1048,8 +1015,8 @@ function InputWithButton({
       )}
       <Input
         className={cn(
-          buttonPosition === "left" && "rounded-l-none",
-          buttonPosition === "right" && "rounded-r-none",
+          { "rounded-l-none": buttonPosition === "left" },
+          { "rounded-r-none": buttonPosition === "right" },
           "flex-1",
           className,
         )}
@@ -1089,7 +1056,7 @@ function InputWithSpinner({
   return (
     <div className="relative">
       <Input
-        className={cn(isLoading && "pr-10", className)}
+        className={cn({ "pr-10": isLoading }, className)}
         size={size}
         {...props}
       />
@@ -1118,9 +1085,9 @@ function InputWithTooltip({
 }: InputWithTooltipProps) {
   return (
     <Tooltip>
-      <TooltipTrigger>
-        <Input className={className} size={size} {...props} />
-      </TooltipTrigger>
+      <TooltipTrigger
+        render={<Input className={className} size={size} {...props} />}
+      />
       <TooltipContent>{tooltip}</TooltipContent>
     </Tooltip>
   );
@@ -1176,8 +1143,8 @@ function InputWithDropdown({
       <Input
         className={cn(
           "flex-1",
-          dropdownPosition === "left" && "rounded-l-none",
-          dropdownPosition === "right" && "rounded-r-none",
+          { "rounded-l-none": dropdownPosition === "left" },
+          { "rounded-r-none": dropdownPosition === "right" },
           className,
         )}
         size={size}
@@ -1216,8 +1183,8 @@ function InputCluster({ children, className }: InputClusterProps) {
           {
             className: cn(
               childClassName,
-              !isFirst && "rounded-l-none border-l-0",
-              !isLast && "rounded-r-none",
+              { "rounded-l-none border-l-0": !isFirst },
+              { "rounded-r-none": !isLast },
             ),
           },
         );
@@ -1239,135 +1206,10 @@ interface SearchInputProps extends Omit<
   size?: VariantProps<typeof inputVariants>["size"];
 }
 
-function SearchInput({
-  value,
-  onChange,
-  onSearch,
-  debounceMs = 300,
-  isLoading = false,
-  showClear = true,
-  className,
-  size,
-  placeholder = "Search...",
-  ...props
-}: SearchInputProps) {
-  const [internalValue, setInternalValue] = React.useState(value || "");
-  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const inputRef = React.useRef<HTMLInputElement>(null);
+function SearchInput(arg0: SearchInputProps) {
+  const model = useSearchInputModel(arg0);
 
-  let effectiveValue = internalValue;
-
-  if (value !== undefined) {
-    effectiveValue = value;
-  }
-
-  const effectiveSize = size || "default";
-
-  const iconSize = {
-    xs: "h-3 w-3",
-    sm: "h-3.5 w-3.5",
-    default: "h-4 w-4",
-    lg: "h-4 w-4",
-  }[effectiveSize];
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-
-    if (value === undefined) {
-      setInternalValue(newValue);
-    }
-
-    onChange?.(newValue);
-
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    debounceRef.current = setTimeout(() => {
-      onSearch?.(newValue);
-    }, debounceMs);
-  };
-
-  const handleClear = () => {
-    if (value === undefined) {
-      setInternalValue("");
-    }
-
-    onChange?.("");
-    onSearch?.("");
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-
-      onSearch?.(effectiveValue);
-    }
-
-    if (e.key === "Escape") {
-      handleClear();
-      inputRef.current?.blur();
-    }
-  };
-
-  React.useEffect(() => {
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, []);
-
-  let suffix: React.ReactNode = undefined;
-
-  if (isLoading) {
-    suffix = (
-      <IconLoader2
-        className={cn(iconSize, "animate-spin text-muted-foreground")}
-      />
-    );
-  }
-
-  return (
-    <div className="relative flex items-center">
-      <div className="absolute left-2.5 flex items-center pointer-events-none text-muted-foreground z-10">
-        <svg
-          className={iconSize}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </div>
-      <Input
-        ref={inputRef}
-        type="search"
-        className={cn(
-          "pl-8",
-
-          "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
-          className,
-        )}
-        size={size}
-        value={effectiveValue}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        showClear={showClear}
-        onClear={handleClear}
-        suffix={suffix}
-        {...props}
-      />
-    </div>
-  );
+  return <SearchInputView {...model} />;
 }
 
 /** Base UI OTPField validation types; kira's `alphabetic` maps to `alpha`. */
@@ -1452,28 +1294,48 @@ const OTPInput = React.forwardRef<HTMLDivElement, OTPInputProps>(
   // oxlint-disable-next-line complexity -- count is prop-destructure defaults (idiomatic React), not branching
   (
     {
-      length = 6,
-      type = "numeric",
-      mask = false,
-      autoSubmit = false,
-      value = "",
+      length: lengthInput,
+      type: typeInput,
+      mask: maskInput,
+      autoSubmit: autoSubmitInput,
+      value: valueInput,
       onChange,
       onComplete,
-      disabled = false,
-      invalid = false,
-      size = "default",
-      variant = "default",
-      gap = "default",
+      disabled: disabledInput,
+      invalid: invalidInput,
+      size: sizeInput,
+      variant: variantInput,
+      gap: gapInput,
       separatorAfter,
       autoFocus,
-      placeholder = "○",
+      placeholder: placeholderInput,
       className,
-      "aria-label": ariaLabel = "One-time password",
+      "aria-label": ariaLabelInput,
       "aria-describedby": ariaDescribedBy,
       ...props
     },
     ref,
   ) => {
+    const { length, type, mask, autoSubmit, value, disabled } =
+      useInputOptions2({
+        length: lengthInput,
+        type: typeInput,
+        mask: maskInput,
+        autoSubmit: autoSubmitInput,
+        value: valueInput,
+        disabled: disabledInput,
+      });
+
+    const { invalid, size, variant, gap, placeholder, ariaLabel } =
+      useInputOptions3({
+        invalid: invalidInput,
+        size: sizeInput,
+        variant: variantInput,
+        gap: gapInput,
+        placeholder: placeholderInput,
+        ariaLabel: ariaLabelInput,
+      });
+
     return (
       <OTPField.Root
         data-slot="otp-input"
@@ -1531,10 +1393,9 @@ function renderOtpSlot(index: number, o: OtpSlotOptions) {
     <React.Fragment key={index}>
       <OTPField.Input
         {...(o.autoFocus && index === 0 && { autoFocus: true })}
-        className={cn(
-          otpInputVariants({ size: o.size, variant: o.variant }),
-          o.invalid && "border-destructive focus:ring-destructive",
-        )}
+        className={cn(otpInputVariants({ size: o.size, variant: o.variant }), {
+          "border-destructive focus:ring-destructive": o.invalid,
+        })}
         placeholder={o.placeholder}
       />
       {showSeparator && <OTPField.Separator />}
@@ -1645,213 +1506,10 @@ function ratingTabIndex(disabled?: boolean, readOnly?: boolean, index = 0) {
 
 const Rating = React.forwardRef<HTMLDivElement, RatingProps>(
   // oxlint-disable-next-line complexity -- count is prop-destructure defaults (idiomatic React), not branching
-  (
-    {
-      value: controlledValue,
-      defaultValue = 0,
-      onChange,
-      max = 5,
-      allowHalf = false,
-      allowClear = true,
-      disabled = false,
-      readOnly = false,
-      size = "default",
-      color = "yellow",
-      showValue = false,
-      filledIcon,
-      emptyIcon,
-      halfIcon,
-      tooltipFormatter,
-      className,
-      "aria-label": ariaLabel = "Rating",
-      "aria-describedby": ariaDescribedBy,
-      ...props
-    },
-    ref,
-  ) => {
-    const [internalValue, setInternalValue] = React.useState(defaultValue);
-    const [hoverValue, setHoverValue] = React.useState<number | null>(null);
+  (props, ref) => {
+    const model = useRatingModel(props, ref);
 
-    const currentValue = controlledValue ?? internalValue;
-
-    const displayValue = hoverValue ?? currentValue;
-
-    const handleRatingChange = (newValue: number) => {
-      if (disabled || readOnly) return;
-
-      let finalValue = newValue;
-
-      if (allowClear && newValue === currentValue) {
-        finalValue = 0;
-      }
-
-      if (controlledValue === undefined) {
-        setInternalValue(finalValue);
-      }
-
-      onChange?.(finalValue);
-    };
-
-    const handleMouseMove = (
-      index: number,
-      e: React.MouseEvent<HTMLButtonElement>,
-    ) => {
-      if (disabled || readOnly) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const isLeftHalf = x < rect.width / 2;
-
-      if (allowHalf && isLeftHalf) {
-        setHoverValue(index + 0.5);
-      } else {
-        setHoverValue(index + 1);
-      }
-    };
-
-    const handleClick = (
-      index: number,
-      e: React.MouseEvent<HTMLButtonElement>,
-    ) => {
-      if (disabled || readOnly) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const isLeftHalf = x < rect.width / 2;
-
-      if (allowHalf && isLeftHalf) {
-        handleRatingChange(index + 0.5);
-      } else {
-        handleRatingChange(index + 1);
-      }
-    };
-
-    // oxlint-disable-next-line complexity -- count is prop-destructure defaults (idiomatic React), not branching
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-      if (disabled || readOnly) return;
-      let step = 1;
-
-      if (allowHalf) {
-        step = 0.5;
-      }
-
-      let newValue = currentValue;
-
-      switch (e.key) {
-        case "ArrowRight":
-        case "ArrowUp":
-          e.preventDefault();
-          newValue = Math.min(max, currentValue + step);
-          break;
-        case "ArrowLeft":
-        case "ArrowDown":
-          e.preventDefault();
-          newValue = Math.max(0, currentValue - step);
-          break;
-        case "Home":
-          e.preventDefault();
-          newValue = 0;
-          break;
-        case "End":
-          e.preventDefault();
-          newValue = max;
-          break;
-        default:
-          return;
-      }
-
-      if (controlledValue === undefined) {
-        setInternalValue(newValue);
-      }
-
-      onChange?.(newValue);
-    };
-
-    const renderStar = (index: number) => {
-      const fillAmount = displayValue - index;
-
-      if (fillAmount >= 1) {
-        return filledIcon || <IconStarFilled />;
-      } else if (fillAmount >= 0.5 && allowHalf) {
-        return halfIcon || <IconStarHalfFilled />;
-      } else {
-        return emptyIcon || <IconStar />;
-      }
-    };
-
-    const getTooltip = (value: number) => {
-      if (tooltipFormatter) return tooltipFormatter(value);
-
-      return `${value} of ${max}`;
-    };
-
-    const stars = Array.from({ length: max }, (_, index) => {
-      const starValue = index + 1;
-      const isFilled = displayValue >= starValue;
-
-      const isHalfFilled =
-        allowHalf && displayValue >= index + 0.5 && displayValue < starValue;
-
-      let starColor: typeof color | undefined;
-
-      if (isFilled || isHalfFilled) {
-        starColor = color;
-      }
-
-      return (
-        <button
-          key={index}
-          type="button"
-          role="radio"
-          aria-checked={currentValue >= starValue}
-          aria-label={`Rate ${starValue} out of ${max}`}
-          tabIndex={ratingTabIndex(disabled, readOnly, index)}
-          disabled={disabled}
-          title={getTooltip(starValue)}
-          className={cn(
-            ratingItemVariants({
-              color: starColor,
-              disabled,
-              readOnly,
-            }),
-            !isFilled && !isHalfFilled && "text-muted-foreground/40",
-            !disabled && !readOnly && "hover:scale-110",
-          )}
-          onClick={(e) => handleClick(index, e)}
-          onMouseMove={(e) => handleMouseMove(index, e)}
-          onMouseLeave={() => setHoverValue(null)}
-          onFocus={() => !readOnly && setHoverValue(index + 1)}
-          onBlur={() => setHoverValue(null)}
-        >
-          {renderStar(index)}
-        </button>
-      );
-    });
-
-    return (
-      <div
-        ref={ref}
-        role="radiogroup"
-        aria-label={ariaLabel}
-        aria-describedby={ariaDescribedBy}
-        aria-disabled={disabled || undefined}
-        aria-readonly={readOnly || undefined}
-        data-slot="rating"
-        data-value={currentValue}
-        tabIndex={-1}
-        onKeyDown={handleKeyDown}
-        className={cn(ratingVariants({ size }), className)}
-        {...props}
-      >
-        {stars}
-        {showValue && (
-          <span
-            className="ml-2 text-sm font-medium tabular-nums text-muted-foreground"
-            aria-hidden="true"
-          >
-            {displayValue.toFixed(ratingDigits(allowHalf))}
-          </span>
-        )}
-      </div>
-    );
+    return <RatingView {...model} />;
   },
 );
 
@@ -2027,43 +1685,11 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           {...props}
         />
         {strength && (
-          <div id={describedById} className="mt-2 space-y-1.5">
-            <Meter.Root
-              value={strength.score * 25}
-              min={0}
-              max={100}
-              aria-valuetext={`${strength.label} (${strength.score} of 4)`}
-              className="flex items-center gap-2"
-            >
-              <Meter.Track className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-                <Meter.Indicator
-                  className={cn(
-                    strengthColors[strength.score],
-                    "h-full rounded-full",
-                    !reducedMotion && "transition-all duration-300",
-                  )}
-                />
-              </Meter.Track>
-              <span className="w-16 text-right text-xs font-medium tabular-nums text-muted-foreground">
-                {strength.label}
-              </span>
-            </Meter.Root>
-            <ul className="space-y-0.5">
-              {strength.checks.map((c) => (
-                <li
-                  key={c.label}
-                  className={cn(
-                    "flex items-center gap-1.5 text-xs",
-                    checkColorClass(c.met),
-                  )}
-                >
-                  {c.met && <IconCheck className="h-3 w-3" />}
-                  {!c.met && <IconX className="h-3 w-3 opacity-50" />}
-                  {c.label}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <InputContentView2
+            describedById={describedById}
+            strength={strength}
+            reducedMotion={reducedMotion}
+          />
         )}
       </div>
     );
@@ -2091,101 +1717,10 @@ interface TagInputProps extends Omit<
 }
 
 const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
-  (
-    {
-      value,
-      defaultValue = [],
-      onChange,
-      size = "default",
-      separators = ["Enter", ","],
-      maxTags,
-      allowDuplicates = false,
-      className,
-      disabled,
-      placeholder = "Add tag…",
-      ...props
-    },
-    ref,
-  ) => {
-    const [internal, setInternal] = React.useState<string[]>(defaultValue);
-    const tags = value ?? internal;
-    const [draft, setDraft] = React.useState("");
+  (props, ref) => {
+    const model = useTagInputModel(props, ref);
 
-    const commit = (next: string[]) => {
-      setInternal(next);
-      onChange?.(next);
-    };
-
-    const addDraft = () => {
-      const tag = draft.trim();
-
-      if (!tag) return;
-
-      if (maxTags !== undefined && tags.length >= maxTags) return;
-
-      if (!allowDuplicates && tags.includes(tag)) return;
-
-      commit([...tags, tag]);
-      setDraft("");
-    };
-
-    let tagPlaceholder = "";
-
-    if (tags.length === 0) {
-      tagPlaceholder = placeholder ?? "";
-    }
-
-    return (
-      <Combobox.Root
-        multiple
-        value={tags}
-        onValueChange={(next) => commit([...next])}
-        inputValue={draft}
-        onInputValueChange={(next) => setDraft(next)}
-        disabled={disabled}
-        open={false}
-      >
-        <Combobox.Chips
-          data-slot="tag-input"
-          className={cn(
-            inputVariants({ size }),
-            "flex h-auto min-h-8 flex-wrap items-center gap-1.5 py-1",
-            disabled && "pointer-events-none opacity-50",
-            className,
-          )}
-        >
-          {tags.map((tag, i) => (
-            <Combobox.Chip
-              key={`${tag}-${i}`}
-              className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium"
-            >
-              {tag}
-              <Combobox.ChipRemove
-                className="flex size-4 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
-                aria-label={`Remove ${tag}`}
-              >
-                <IconX className="h-3 w-3" />
-              </Combobox.ChipRemove>
-            </Combobox.Chip>
-          ))}
-          <Combobox.Input
-            ref={ref}
-            placeholder={tagPlaceholder}
-            className="h-6 min-w-24 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-            onKeyDown={(e) => {
-              if (separators.includes(e.key)) {
-                e.preventDefault();
-                addDraft();
-              } else if (e.key === "Backspace" && !draft && tags.length > 0) {
-                commit(tags.slice(0, -1));
-              }
-            }}
-            onBlur={() => addDraft()}
-            {...props}
-          />
-        </Combobox.Chips>
-      </Combobox.Root>
-    );
+    return <TagInputView {...model} />;
   },
 );
 
@@ -2237,3 +1772,1243 @@ export type {
   PasswordInputProps,
   TagInputProps,
 };
+
+function keyedTags(tags: readonly string[]) {
+  const occurrences = new Map<string, number>();
+
+  return tags.map((tag) => {
+    const occurrence = occurrences.get(tag) ?? 0;
+    occurrences.set(tag, occurrence + 1);
+
+    return { tag, key: JSON.stringify([tag, occurrence]) };
+  });
+}
+
+function useDecimalInputChange(
+  fractionDigits: number,
+  setInternalValue: React.Dispatch<React.SetStateAction<number | null>>,
+  onChange?: (value: number | null) => void,
+) {
+  return React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      inputUseCallback(e, setInternalValue, onChange, fractionDigits),
+    [fractionDigits, setInternalValue, onChange],
+  );
+}
+
+function resolveInputOptions({
+  size = "default",
+  step = 1,
+  showClear = false,
+  showCopy = false,
+  showCount = false,
+}: {
+  size?: "default" | "sm" | "lg" | "xs" | null;
+  step?: string | number;
+  showClear?: boolean;
+  showCopy?: boolean;
+  showCount?: boolean;
+}) {
+  return { size, step, showClear, showCopy, showCount };
+}
+
+function resolveSearchInputOptions({
+  debounceMs = 300,
+  isLoading = false,
+  showClear = true,
+  placeholder = "Search...",
+}: {
+  debounceMs?: SearchInputProps["debounceMs"];
+  isLoading?: SearchInputProps["isLoading"];
+  showClear?: SearchInputProps["showClear"];
+  placeholder?: SearchInputProps["placeholder"];
+}) {
+  return { debounceMs, isLoading, showClear, placeholder };
+}
+
+function resolveInputOptions2({
+  length = 6,
+  type = "numeric",
+  mask = false,
+  autoSubmit = false,
+  value = "",
+  disabled = false,
+}: {
+  length?: 4 | 5 | 6 | 7 | 8;
+  type?: OTPInputType;
+  mask?: boolean;
+  autoSubmit?: boolean;
+  value?: string;
+  disabled?: boolean;
+}) {
+  return { length, type, mask, autoSubmit, value, disabled };
+}
+
+function resolveInputOptions3({
+  invalid = false,
+  size = "default",
+  variant = "default",
+  gap = "default",
+  placeholder = "○",
+  ariaLabel = "One-time password",
+}: {
+  invalid?: boolean;
+  size?: "default" | "sm" | "lg" | null;
+  variant?: "default" | "outline" | "filled" | null;
+  gap?: "default" | "sm" | "lg";
+  placeholder?: string;
+  ariaLabel?: string;
+}) {
+  return { invalid, size, variant, gap, placeholder, ariaLabel };
+}
+
+function resolveInputOptions4({
+  defaultValue = 0,
+  max = 5,
+  allowHalf = false,
+  allowClear = true,
+  disabled = false,
+  readOnly = false,
+}: {
+  defaultValue?: RatingProps["defaultValue"];
+  max?: RatingProps["max"];
+  allowHalf?: RatingProps["allowHalf"];
+  allowClear?: RatingProps["allowClear"];
+  disabled?: RatingProps["disabled"];
+  readOnly?: RatingProps["readOnly"];
+}) {
+  return { defaultValue, max, allowHalf, allowClear, disabled, readOnly };
+}
+
+function resolveInputOptions5({
+  size = "default",
+  color = "yellow",
+  showValue = false,
+  ariaLabel = "Rating",
+}: {
+  size?: RatingProps["size"];
+  color?: RatingProps["color"];
+  showValue?: RatingProps["showValue"];
+  ariaLabel?: RatingProps["aria-label"];
+}) {
+  return { size, color, showValue, ariaLabel };
+}
+
+function resolveInputOptions6({
+  defaultValue = [],
+  size = "default",
+  separators = ["Enter", ","],
+  allowDuplicates = false,
+  placeholder = "Add tag…",
+}: {
+  defaultValue?: TagInputProps["defaultValue"];
+  size?: TagInputProps["size"];
+  separators?: TagInputProps["separators"];
+  allowDuplicates?: TagInputProps["allowDuplicates"];
+  placeholder?: TagInputProps["placeholder"];
+}) {
+  return { defaultValue, size, separators, allowDuplicates, placeholder };
+}
+
+function InputContentView({
+  showClearButton,
+  onClear,
+  iconSize,
+  showCopy,
+  onCopy,
+  copyButtonLabel,
+  copyButtonIcon,
+}: {
+  showClearButton: boolean;
+  onClear: () => void;
+  iconSize: "h-3 w-3" | "h-3.5 w-3.5" | "h-4 w-4";
+  showCopy: boolean;
+  onCopy: () => void;
+  copyButtonLabel: string;
+  copyButtonIcon: React.JSX.Element;
+}) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {showClearButton && (
+        <button
+          type="button"
+          onClick={onClear}
+          className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-sm"
+          aria-label="Clear input"
+        >
+          <IconX className={iconSize} />
+        </button>
+      )}
+      {showCopy && (
+        <button
+          type="button"
+          onClick={onCopy}
+          className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-sm"
+          aria-label={copyButtonLabel}
+        >
+          {copyButtonIcon}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function InputContentView2({
+  describedById,
+  strength,
+  reducedMotion,
+}: {
+  describedById: string;
+  strength: PasswordStrength;
+  reducedMotion: boolean;
+}) {
+  return (
+    <div id={describedById} className="mt-2 space-y-1.5">
+      <Meter.Root
+        value={strength.score * 25}
+        min={0}
+        max={100}
+        aria-valuetext={`${strength.label} (${strength.score} of 4)`}
+        className="flex items-center gap-2"
+      >
+        <Meter.Track className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+          <Meter.Indicator
+            className={cn(
+              strengthColors[strength.score],
+              "h-full rounded-full",
+              { "transition-all duration-300": !reducedMotion },
+            )}
+          />
+        </Meter.Track>
+        <span className="w-16 text-right text-xs font-medium tabular-nums text-muted-foreground">
+          {strength.label}
+        </span>
+      </Meter.Root>
+      <ul className="space-y-0.5">
+        {strength.checks.map((c) => (
+          <li
+            key={c.label}
+            className={cn(
+              "flex items-center gap-1.5 text-xs",
+              checkColorClass(c.met),
+            )}
+          >
+            {c.met && <IconCheck className="h-3 w-3" />}
+            {!c.met && <IconX className="h-3 w-3 opacity-50" />}
+            {c.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function useSearchInputModel({
+  value,
+  onChange,
+  onSearch,
+  debounceMs: debounceMsInput,
+  isLoading: isLoadingInput,
+  showClear: showClearInput,
+  className,
+  size,
+  placeholder: placeholderInput,
+  ...props
+}: SearchInputProps) {
+  const { debounceMs, isLoading, showClear, placeholder } =
+    useSearchInputOptions({
+      debounceMs: debounceMsInput,
+      isLoading: isLoadingInput,
+      showClear: showClearInput,
+      placeholder: placeholderInput,
+    });
+
+  const [internalValue, setInternalValue] = React.useState(value || "");
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const effectiveValue = value === undefined ? internalValue : value;
+
+  const effectiveSize = size || "default";
+
+  const iconSize = {
+    xs: "h-3 w-3",
+    sm: "h-3.5 w-3.5",
+    default: "h-4 w-4",
+    lg: "h-4 w-4",
+  }[effectiveSize];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    inputHandleChange(
+      e,
+      value,
+      setInternalValue,
+      onChange,
+      debounceRef,
+      onSearch,
+      debounceMs,
+    );
+
+  const handleClear = () => {
+    if (value === undefined) {
+      setInternalValue("");
+    }
+
+    onChange?.("");
+    onSearch?.("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) =>
+    inputHandleKeyDown(
+      e,
+      debounceRef,
+      onSearch,
+      effectiveValue,
+      handleClear,
+      inputRef,
+    );
+
+  React.useEffect(() => () => cancelSearchDebounce(debounceRef), []);
+
+  let suffix: React.ReactNode = undefined;
+
+  if (isLoading) {
+    suffix = (
+      <IconLoader2
+        className={cn(iconSize, "animate-spin text-muted-foreground")}
+      />
+    );
+  }
+
+  return {
+    iconSize,
+    inputRef,
+    className,
+    size,
+    effectiveValue,
+    handleChange,
+    handleKeyDown,
+    placeholder,
+    showClear,
+    handleClear,
+    suffix,
+    props,
+  };
+}
+
+function SearchInputView({
+  iconSize,
+  inputRef,
+  className,
+  size,
+  effectiveValue,
+  handleChange,
+  handleKeyDown,
+  placeholder,
+  showClear,
+  handleClear,
+  suffix,
+  props,
+}: ReturnType<typeof useSearchInputModel>) {
+  return (
+    <div className="relative flex items-center">
+      <div className="absolute left-2.5 flex items-center pointer-events-none text-muted-foreground z-10">
+        <svg
+          className={iconSize}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </div>
+      <Input
+        ref={inputRef}
+        type="search"
+        className={cn(
+          "pl-8",
+
+          "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
+          className,
+        )}
+        size={size}
+        value={effectiveValue}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        showClear={showClear}
+        onClear={handleClear}
+        suffix={suffix}
+        {...props}
+      />
+    </div>
+  );
+}
+
+function useRatingModel(
+  {
+    value: controlledValue,
+    defaultValue: defaultValueInput,
+    onChange,
+    max: maxInput,
+    allowHalf: allowHalfInput,
+    allowClear: allowClearInput,
+    disabled: disabledInput,
+    readOnly: readOnlyInput,
+    size: sizeInput,
+    color: colorInput,
+    showValue: showValueInput,
+    filledIcon,
+    emptyIcon,
+    halfIcon,
+    tooltipFormatter,
+    className,
+    "aria-label": ariaLabelInput,
+    "aria-describedby": ariaDescribedBy,
+    ...props
+  }: RatingProps,
+  ref: React.ForwardedRef<HTMLDivElement>,
+) {
+  const { defaultValue, max, allowHalf, allowClear, disabled, readOnly } =
+    useInputOptions4({
+      defaultValue: defaultValueInput,
+      max: maxInput,
+      allowHalf: allowHalfInput,
+      allowClear: allowClearInput,
+      disabled: disabledInput,
+      readOnly: readOnlyInput,
+    });
+
+  const { size, color, showValue, ariaLabel } = useInputOptions5({
+    size: sizeInput,
+    color: colorInput,
+    showValue: showValueInput,
+    ariaLabel: ariaLabelInput,
+  });
+
+  const { currentValue, displayValue, handleKeyDown, stars } =
+    useRatingInteraction({
+      controlledValue,
+      defaultValue,
+      onChange,
+      max,
+      allowHalf,
+      allowClear,
+      disabled,
+      readOnly,
+      color,
+      filledIcon,
+      emptyIcon,
+      halfIcon,
+      tooltipFormatter,
+    });
+
+  return {
+    ref,
+    ariaLabel,
+    ariaDescribedBy,
+    disabled,
+    readOnly,
+    currentValue,
+    handleKeyDown,
+    size,
+    className,
+    props,
+    stars,
+    showValue,
+    displayValue,
+    allowHalf,
+  };
+}
+
+function RatingView({
+  ref,
+  ariaLabel,
+  ariaDescribedBy,
+  disabled,
+  readOnly,
+  currentValue,
+  handleKeyDown,
+  size,
+  className,
+  props,
+  stars,
+  showValue,
+  displayValue,
+  allowHalf,
+}: ReturnType<typeof useRatingModel>) {
+  return (
+    <div
+      ref={ref}
+      role="radiogroup"
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
+      aria-disabled={disabled || undefined}
+      aria-readonly={readOnly || undefined}
+      data-slot="rating"
+      data-value={currentValue}
+      tabIndex={-1}
+      onKeyDown={handleKeyDown}
+      className={cn(ratingVariants({ size }), className)}
+      {...props}
+    >
+      {stars}
+      {showValue && (
+        <span
+          className="ml-2 text-sm font-medium tabular-nums text-muted-foreground"
+          aria-hidden="true"
+        >
+          {displayValue.toFixed(ratingDigits(allowHalf))}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function useTagInputModel(
+  {
+    value,
+    defaultValue: defaultValueInput,
+    onChange,
+    size: sizeInput,
+    separators: separatorsInput,
+    maxTags,
+    allowDuplicates: allowDuplicatesInput,
+    className,
+    disabled,
+    placeholder: placeholderInput,
+    ...props
+  }: TagInputProps,
+  ref: React.ForwardedRef<HTMLInputElement>,
+) {
+  const { defaultValue, size, separators, allowDuplicates, placeholder } =
+    useInputOptions6({
+      defaultValue: defaultValueInput,
+      size: sizeInput,
+      separators: separatorsInput,
+      allowDuplicates: allowDuplicatesInput,
+      placeholder: placeholderInput,
+    });
+
+  const [internal, setInternal] = React.useState<string[]>(defaultValue);
+  const tags = value ?? internal;
+  const [draft, setDraft] = React.useState("");
+
+  const commit = (next: string[]) => {
+    setInternal(next);
+    onChange?.(next);
+  };
+
+  const addDraft = () =>
+    inputAddDraft(draft, maxTags, tags, allowDuplicates, commit, setDraft);
+
+  let tagPlaceholder = "";
+
+  if (tags.length === 0) {
+    tagPlaceholder = placeholder ?? "";
+  }
+
+  return {
+    tags,
+    commit,
+    draft,
+    setDraft,
+    disabled,
+    size,
+    className,
+    ref,
+    tagPlaceholder,
+    separators,
+    addDraft,
+    props,
+  };
+}
+
+function TagInputView({
+  tags,
+  commit,
+  draft,
+  setDraft,
+  disabled,
+  size,
+  className,
+  ref,
+  tagPlaceholder,
+  separators,
+  addDraft,
+  props,
+}: ReturnType<typeof useTagInputModel>) {
+  return (
+    <Combobox.Root
+      multiple
+      value={tags}
+      onValueChange={(next) => commit([...next])}
+      inputValue={draft}
+      onInputValueChange={(next) => setDraft(next)}
+      disabled={disabled}
+      open={false}
+    >
+      <Combobox.Chips
+        data-slot="tag-input"
+        className={cn(
+          inputVariants({ size }),
+          "flex h-auto min-h-8 flex-wrap items-center gap-1.5 py-1",
+          { "pointer-events-none opacity-50": disabled },
+          className,
+        )}
+      >
+        {keyedTags(tags).map(({ tag, key }) => (
+          <Combobox.Chip
+            key={key}
+            className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium"
+          >
+            {tag}
+            <Combobox.ChipRemove
+              className="flex size-4 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
+              aria-label={`Remove ${tag}`}
+            >
+              <IconX className="h-3 w-3" />
+            </Combobox.ChipRemove>
+          </Combobox.Chip>
+        ))}
+        <Combobox.Input
+          ref={ref}
+          placeholder={tagPlaceholder}
+          className="h-6 min-w-24 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          onKeyDown={(e) => {
+            if (separators.includes(e.key)) {
+              e.preventDefault();
+              addDraft();
+            } else if (e.key === "Backspace" && !draft && tags.length > 0) {
+              commit(tags.slice(0, -1));
+            }
+          }}
+          onBlur={() => addDraft()}
+          {...props}
+        />
+      </Combobox.Chips>
+    </Combobox.Root>
+  );
+}
+
+function useInputOptions({
+  size: sizeInput,
+  step: stepInput,
+  showClear: showClearInput,
+  showCopy: showCopyInput,
+  showCount: showCountInput,
+}: Parameters<typeof resolveInputOptions>[0]) {
+  return React.useMemo(
+    () =>
+      resolveInputOptions({
+        size: sizeInput,
+        step: stepInput,
+        showClear: showClearInput,
+        showCopy: showCopyInput,
+        showCount: showCountInput,
+      }),
+    [sizeInput, stepInput, showClearInput, showCopyInput, showCountInput],
+  );
+}
+
+function useInputOptions2({
+  length: lengthInput,
+  type: typeInput,
+  mask: maskInput,
+  autoSubmit: autoSubmitInput,
+  value: valueInput,
+  disabled: disabledInput,
+}: Parameters<typeof resolveInputOptions2>[0]) {
+  return React.useMemo(
+    () =>
+      resolveInputOptions2({
+        length: lengthInput,
+        type: typeInput,
+        mask: maskInput,
+        autoSubmit: autoSubmitInput,
+        value: valueInput,
+        disabled: disabledInput,
+      }),
+    [
+      lengthInput,
+      typeInput,
+      maskInput,
+      autoSubmitInput,
+      valueInput,
+      disabledInput,
+    ],
+  );
+}
+
+function useInputOptions3({
+  invalid: invalidInput,
+  size: sizeInput,
+  variant: variantInput,
+  gap: gapInput,
+  placeholder: placeholderInput,
+  ariaLabel: ariaLabelInput,
+}: Parameters<typeof resolveInputOptions3>[0]) {
+  return React.useMemo(
+    () =>
+      resolveInputOptions3({
+        invalid: invalidInput,
+        size: sizeInput,
+        variant: variantInput,
+        gap: gapInput,
+        placeholder: placeholderInput,
+        ariaLabel: ariaLabelInput,
+      }),
+    [
+      invalidInput,
+      sizeInput,
+      variantInput,
+      gapInput,
+      placeholderInput,
+      ariaLabelInput,
+    ],
+  );
+}
+
+function useSearchInputOptions({
+  debounceMs: debounceMsInput,
+  isLoading: isLoadingInput,
+  showClear: showClearInput,
+  placeholder: placeholderInput,
+}: Parameters<typeof resolveSearchInputOptions>[0]) {
+  return React.useMemo(
+    () =>
+      resolveSearchInputOptions({
+        debounceMs: debounceMsInput,
+        isLoading: isLoadingInput,
+        showClear: showClearInput,
+        placeholder: placeholderInput,
+      }),
+    [debounceMsInput, isLoadingInput, showClearInput, placeholderInput],
+  );
+}
+
+function useInputOptions4({
+  defaultValue: defaultValueInput,
+  max: maxInput,
+  allowHalf: allowHalfInput,
+  allowClear: allowClearInput,
+  disabled: disabledInput,
+  readOnly: readOnlyInput,
+}: Parameters<typeof resolveInputOptions4>[0]) {
+  return React.useMemo(
+    () =>
+      resolveInputOptions4({
+        defaultValue: defaultValueInput,
+        max: maxInput,
+        allowHalf: allowHalfInput,
+        allowClear: allowClearInput,
+        disabled: disabledInput,
+        readOnly: readOnlyInput,
+      }),
+    [
+      defaultValueInput,
+      maxInput,
+      allowHalfInput,
+      allowClearInput,
+      disabledInput,
+      readOnlyInput,
+    ],
+  );
+}
+
+function useInputOptions5({
+  size: sizeInput,
+  color: colorInput,
+  showValue: showValueInput,
+  ariaLabel: ariaLabelInput,
+}: Parameters<typeof resolveInputOptions5>[0]) {
+  return React.useMemo(
+    () =>
+      resolveInputOptions5({
+        size: sizeInput,
+        color: colorInput,
+        showValue: showValueInput,
+        ariaLabel: ariaLabelInput,
+      }),
+    [sizeInput, colorInput, showValueInput, ariaLabelInput],
+  );
+}
+
+function useInputOptions6({
+  defaultValue: defaultValueInput,
+  size: sizeInput,
+  separators: separatorsInput,
+  allowDuplicates: allowDuplicatesInput,
+  placeholder: placeholderInput,
+}: Parameters<typeof resolveInputOptions6>[0]) {
+  return React.useMemo(
+    () =>
+      resolveInputOptions6({
+        defaultValue: defaultValueInput,
+        size: sizeInput,
+        separators: separatorsInput,
+        allowDuplicates: allowDuplicatesInput,
+        placeholder: placeholderInput,
+      }),
+    [
+      defaultValueInput,
+      sizeInput,
+      separatorsInput,
+      allowDuplicatesInput,
+      placeholderInput,
+    ],
+  );
+}
+
+function inputHandleClear(
+  inputRef: React.RefObject<HTMLInputElement | null>,
+  onClear: (() => void) | undefined,
+) {
+  const input = inputRef.current;
+
+  if (input) {
+    // Bypass React's value tracker so it creates a real change event.
+    Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value",
+    )?.set?.call(input, "");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
+  onClear?.();
+  input?.focus();
+}
+
+async function inputHandleCopy(
+  inputRef: React.RefObject<HTMLInputElement | null>,
+  value: string | number | readonly string[] | undefined,
+  setCopied: React.Dispatch<React.SetStateAction<boolean>>,
+  onCopySuccess: (() => void) | undefined,
+  copiedTimeoutRef: React.RefObject<number | null>,
+  onCopyError: ((error: Error) => void) | undefined,
+) {
+  const textToCopy = inputRef.current?.value ?? String(value ?? "");
+
+  try {
+    await navigator.clipboard.writeText(textToCopy);
+    setCopied(true);
+    toast.success("Copied to clipboard");
+    onCopySuccess?.();
+
+    if (copiedTimeoutRef.current) {
+      window.clearTimeout(copiedTimeoutRef.current);
+    }
+
+    copiedTimeoutRef.current = window.setTimeout(() => setCopied(false), 2000);
+  } catch (error) {
+    toast.error("Failed to copy to clipboard");
+    onCopyError?.(error instanceof Error ? error : new Error(String(error)));
+  }
+}
+
+function inputFormat(
+  num: number,
+  locale: string | undefined,
+  currency: string,
+  fractionDigits: number,
+) {
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    }).format(num);
+  } catch {
+    return num.toFixed(fractionDigits);
+  }
+}
+
+function inputUseCallback(
+  e: React.ChangeEvent<HTMLInputElement, Element>,
+  setInternalValue: React.Dispatch<React.SetStateAction<number | null>>,
+  onChange: ((value: number | null) => void) | undefined,
+  fractionDigits: number,
+) {
+  const raw = e.target.value;
+  const digits = raw.replace(/[^\d]/g, "");
+
+  if (!digits) {
+    setInternalValue(null);
+    onChange?.(null);
+
+    return;
+  }
+
+  const int = parseInt(digits, 10);
+  const factor = Math.pow(10, fractionDigits);
+  const num = int / factor;
+
+  setInternalValue(num);
+  onChange?.(num);
+}
+
+function cancelSearchDebounce(timer: React.RefObject<number | null>) {
+  if (timer.current !== null) clearTimeout(timer.current);
+  timer.current = null;
+}
+
+function inputHandleChange(
+  e: React.ChangeEvent<HTMLInputElement, Element>,
+  value: string | undefined,
+  setInternalValue: React.Dispatch<React.SetStateAction<string>>,
+  onChange: ((value: string) => void) | undefined,
+  debounceRef: React.RefObject<number | null>,
+  onSearch: ((value: string) => void) | undefined,
+  debounceMs: number,
+) {
+  const newValue = e.target.value;
+
+  if (value === undefined) {
+    setInternalValue(newValue);
+  }
+
+  onChange?.(newValue);
+
+  if (debounceRef.current) {
+    clearTimeout(debounceRef.current);
+  }
+
+  debounceRef.current = setTimeout(() => {
+    onSearch?.(newValue);
+  }, debounceMs);
+}
+
+function inputHandleKeyDown(
+  e: React.KeyboardEvent<HTMLInputElement>,
+  debounceRef: React.RefObject<number | null>,
+  onSearch: ((value: string) => void) | undefined,
+  effectiveValue: string,
+  handleClear: () => void,
+  inputRef: React.RefObject<HTMLInputElement | null>,
+) {
+  if (e.key === "Enter") {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    onSearch?.(effectiveValue);
+  }
+
+  if (e.key === "Escape") {
+    handleClear();
+    inputRef.current?.blur();
+  }
+}
+
+function inputHandleMouseMove(
+  index: number,
+  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  disabled: boolean,
+  readOnly: boolean,
+  allowHalf: boolean,
+  setHoverValue: React.Dispatch<React.SetStateAction<number | null>>,
+) {
+  if (disabled || readOnly) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const isLeftHalf = x < rect.width / 2;
+
+  if (allowHalf && isLeftHalf) {
+    setHoverValue(index + 0.5);
+  } else {
+    setHoverValue(index + 1);
+  }
+}
+
+function inputHandleClick(
+  index: number,
+  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  disabled: boolean,
+  readOnly: boolean,
+  allowHalf: boolean,
+  handleRatingChange: (newValue: number) => void,
+) {
+  if (disabled || readOnly) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const isLeftHalf = x < rect.width / 2;
+
+  if (allowHalf && isLeftHalf) {
+    handleRatingChange(index + 0.5);
+  } else {
+    handleRatingChange(index + 1);
+  }
+}
+
+function inputAddDraft(
+  draft: string,
+  maxTags: number | undefined,
+  tags: string[],
+  allowDuplicates: boolean,
+  commit: (next: string[]) => void,
+  setDraft: React.Dispatch<React.SetStateAction<string>>,
+) {
+  const tag = draft.trim();
+
+  if (!tag) return;
+
+  if (maxTags !== undefined && tags.length >= maxTags) return;
+
+  if (!allowDuplicates && tags.includes(tag)) return;
+
+  commit([...tags, tag]);
+  setDraft("");
+}
+
+function useNumericInputDefaults({
+  step: stepInput,
+  scrub: scrubInput,
+  showButtons: showButtonsInput,
+  size: sizeInput,
+}: {
+  step?: NumericInputProps["step"];
+  scrub?: NumericInputProps["scrub"];
+  showButtons?: NumericInputProps["showButtons"];
+  size?: NumericInputProps["size"];
+}) {
+  return React.useMemo(() => {
+    const {
+      step = 1,
+      scrub = false,
+      showButtons = true,
+      size = "default",
+    } = {
+      step: stepInput,
+      scrub: scrubInput,
+      showButtons: showButtonsInput,
+      size: sizeInput,
+    };
+
+    return { step, scrub, showButtons, size };
+  }, [stepInput, scrubInput, showButtonsInput, sizeInput]);
+}
+
+type RatingInteractionOptions = Pick<
+  RatingProps,
+  "onChange" | "filledIcon" | "emptyIcon" | "halfIcon" | "tooltipFormatter"
+> &
+  ReturnType<typeof useInputOptions4> & {
+    controlledValue: RatingProps["value"];
+    color: ReturnType<typeof useInputOptions5>["color"];
+  };
+
+function useRatingInteraction(options: RatingInteractionOptions) {
+  const {
+    controlledValue,
+    defaultValue,
+    onChange,
+    allowHalf,
+    allowClear,
+    disabled,
+    readOnly,
+  } = options;
+
+  const [internalValue, setInternalValue] = React.useState(defaultValue);
+  const [hoverValue, setHoverValue] = React.useState<number | null>(null);
+
+  const currentValue = controlledValue ?? internalValue;
+
+  const displayValue = hoverValue ?? currentValue;
+
+  const handleRatingChange = (newValue: number) => {
+    if (disabled || readOnly) return;
+
+    let finalValue = newValue;
+
+    if (allowClear && newValue === currentValue) {
+      finalValue = 0;
+    }
+
+    if (controlledValue === undefined) {
+      setInternalValue(finalValue);
+    }
+
+    onChange?.(finalValue);
+  };
+
+  const handleMouseMove = (
+    index: number,
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) =>
+    inputHandleMouseMove(
+      index,
+      e,
+      disabled,
+      readOnly,
+      allowHalf,
+      setHoverValue,
+    );
+
+  const handleClick = (index: number, e: React.MouseEvent<HTMLButtonElement>) =>
+    inputHandleClick(
+      index,
+      e,
+      disabled,
+      readOnly,
+      allowHalf,
+      handleRatingChange,
+    );
+
+  const handleKeyDown = (e: React.KeyboardEvent) =>
+    ratingKeyboardChange(e, options, currentValue, setInternalValue);
+
+  const stars = (
+    <RatingStars
+      options={options}
+      currentValue={currentValue}
+      displayValue={displayValue}
+      handleClick={handleClick}
+      handleMouseMove={handleMouseMove}
+      setHoverValue={setHoverValue}
+    />
+  );
+
+  return { currentValue, displayValue, handleKeyDown, stars };
+}
+
+function ratingKeyboardChange(
+  e: React.KeyboardEvent,
+  options: RatingInteractionOptions,
+  currentValue: number,
+  setInternalValue: React.Dispatch<React.SetStateAction<number>>,
+) {
+  const { disabled, readOnly, allowHalf, max, controlledValue, onChange } =
+    options;
+
+  if (disabled || readOnly) return;
+  const newValue = ratingKeyboardValue(e.key, currentValue, max, allowHalf);
+
+  if (newValue === undefined) return;
+  e.preventDefault();
+
+  if (controlledValue === undefined) {
+    setInternalValue(newValue);
+  }
+
+  onChange?.(newValue);
+}
+
+function RatingStars({
+  options,
+  currentValue,
+  displayValue,
+  handleClick,
+  handleMouseMove,
+  setHoverValue,
+}: {
+  options: RatingInteractionOptions;
+  currentValue: number;
+  displayValue: number;
+  handleClick: (index: number, e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleMouseMove: (
+    index: number,
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) => void;
+  setHoverValue: React.Dispatch<React.SetStateAction<number | null>>;
+}) {
+  const { max, allowHalf, disabled, readOnly, color, tooltipFormatter } =
+    options;
+
+  const renderStar = (index: number) =>
+    ratingStarIcon(index, displayValue, options);
+
+  const getTooltip = (value: number) =>
+    tooltipFormatter ? tooltipFormatter(value) : `${value} of ${max}`;
+
+  const stars = Array.from({ length: max }, (_, index) => {
+    const starValue = index + 1;
+    const isFilled = displayValue >= starValue;
+
+    const isHalfFilled =
+      allowHalf && displayValue >= index + 0.5 && displayValue < starValue;
+
+    let starColor: typeof color | undefined;
+
+    if (isFilled || isHalfFilled) {
+      starColor = color;
+    }
+
+    return (
+      <button
+        key={index}
+        type="button"
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Pointer-position half ratings use this button as an ARIA radio in the keyboard-managed rating group.
+        role="radio"
+        aria-checked={currentValue >= starValue}
+        aria-label={`Rate ${starValue} out of ${max}`}
+        tabIndex={ratingTabIndex(disabled, readOnly, index)}
+        disabled={disabled}
+        title={getTooltip(starValue)}
+        className={cn(
+          ratingItemVariants({
+            color: starColor,
+            disabled,
+            readOnly,
+          }),
+          { "text-muted-foreground/40": !isFilled && !isHalfFilled },
+          { "hover:scale-110": !disabled && !readOnly },
+        )}
+        onClick={(e) => handleClick(index, e)}
+        onMouseMove={(e) => handleMouseMove(index, e)}
+        onMouseLeave={() => setHoverValue(null)}
+        onFocus={() => !readOnly && setHoverValue(index + 1)}
+        onBlur={() => setHoverValue(null)}
+      >
+        {renderStar(index)}
+      </button>
+    );
+  });
+
+  return <>{stars}</>;
+}
+
+function ratingStarIcon(
+  index: number,
+  displayValue: number,
+  { allowHalf, filledIcon, halfIcon, emptyIcon }: RatingInteractionOptions,
+) {
+  const fillAmount = displayValue - index;
+
+  if (fillAmount >= 1) {
+    return filledIcon || <IconStarFilled />;
+  } else if (fillAmount >= 0.5 && allowHalf) {
+    return halfIcon || <IconStarHalfFilled />;
+  } else {
+    return emptyIcon || <IconStar />;
+  }
+}
+
+function ratingKeyboardValue(
+  key: string,
+  value: number,
+  max: number,
+  allowHalf: boolean,
+) {
+  const step = allowHalf ? 0.5 : 1;
+
+  switch (key) {
+    case "ArrowRight":
+    case "ArrowUp":
+      return Math.min(max, value + step);
+    case "ArrowLeft":
+    case "ArrowDown":
+      return Math.max(0, value - step);
+    case "Home":
+      return 0;
+    case "End":
+      return max;
+    default:
+      return undefined;
+  }
+}
