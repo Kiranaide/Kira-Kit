@@ -77,24 +77,113 @@ interface UseAsyncDataTableReturn<TData> {
   hasPreviousPage: boolean;
 }
 
+function useDebouncedFilter<Value>(value: Value, delay: number) {
+  const [debounced, setDebounced] = React.useState(value);
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}
+
+interface AsyncTableRows<TData> {
+  data: TData[];
+  isLoading: boolean;
+  isInitialLoading: boolean;
+  error: Error | null;
+  totalCount: number;
+}
+
+async function loadTableRows<TData>(
+  fetchFn: UseAsyncDataTableOptions<TData>["fetchFn"],
+  params: FetchParams,
+  controller: AbortController,
+  setRows: React.Dispatch<React.SetStateAction<AsyncTableRows<TData>>>,
+  hasFetched: React.RefObject<boolean>,
+) {
+  setRows((previous) => ({ ...previous, isLoading: true, error: null }));
+
+  try {
+    const result = await fetchFn(params);
+
+    if (!controller.signal.aborted)
+      setRows((previous) => ({
+        ...previous,
+        data: result.data,
+        totalCount: result.totalCount,
+      }));
+  } catch (cause) {
+    if (
+      controller.signal.aborted ||
+      (cause instanceof Error && cause.name === "AbortError")
+    )
+      return;
+    setRows((previous) => ({
+      ...previous,
+      error: cause instanceof Error ? cause : new Error("Failed to fetch data"),
+    }));
+  } finally {
+    if (!controller.signal.aborted) {
+      setRows((previous) => ({
+        ...previous,
+        isLoading: false,
+        isInitialLoading: false,
+      }));
+      hasFetched.current = true;
+    }
+  }
+}
+
+function useAsyncTableRows<TData>(
+  { fetchFn, fetchOnMount = true }: UseAsyncDataTableOptions<TData>,
+  params: FetchParams,
+) {
+  const [rows, setRows] = React.useState<AsyncTableRows<TData>>({
+    data: [],
+    isLoading: false,
+    isInitialLoading: true,
+    error: null,
+    totalCount: 0,
+  });
+
+  const controllerRef = React.useRef<AbortController | null>(null);
+  const hasFetched = React.useRef(false);
+  const { pagination, sorting, columnFilters, globalFilter } = params;
+
+  const refetch = React.useCallback(() => {
+    controllerRef.current?.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
+    return loadTableRows(
+      fetchFn,
+      { pagination, sorting, columnFilters, globalFilter },
+      controller,
+      setRows,
+      hasFetched,
+    );
+  }, [fetchFn, pagination, sorting, columnFilters, globalFilter]);
+
+  React.useEffect(() => {
+    if (fetchOnMount || hasFetched.current) void refetch();
+
+    return () => controllerRef.current?.abort();
+  }, [refetch, fetchOnMount]);
+
+  return { ...rows, refetch };
+}
+
 export function useAsyncDataTable<TData>(
-  options: UseAsyncDataTableOptions<TData>
+  options: UseAsyncDataTableOptions<TData>,
 ): UseAsyncDataTableReturn<TData> {
   const {
-    fetchFn,
     initialPageSize = 10,
     initialSorting = [],
     initialColumnFilters = [],
     filterDebounceMs = 300,
-    fetchOnMount = true,
   } = options;
-
-  // State
-  const [data, setData] = React.useState<TData[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isInitialLoading, setIsInitialLoading] = React.useState(true);
-  const [error, setError] = React.useState<Error | null>(null);
-  const [totalCount, setTotalCount] = React.useState(0);
 
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
@@ -107,98 +196,45 @@ export function useAsyncDataTable<TData>(
     React.useState<ColumnFiltersState>(initialColumnFilters);
 
   const [globalFilter, setGlobalFilter] = React.useState("");
+  const debouncedFilters = useDebouncedFilter(columnFilters, filterDebounceMs);
 
-  // Debounced filter values
-  const [debouncedFilters, setDebouncedFilters] =
-    React.useState<ColumnFiltersState>(initialColumnFilters);
+  const debouncedGlobalFilter = useDebouncedFilter(
+    globalFilter,
+    filterDebounceMs,
+  );
 
-  const [debouncedGlobalFilter, setDebouncedGlobalFilter] = React.useState("");
+  const [previousQuery, setPreviousQuery] = React.useState({
+    sorting,
+    filters: debouncedFilters,
+    global: debouncedGlobalFilter,
+  });
 
-  // Refs for tracking
-  const abortControllerRef = React.useRef<AbortController | null>(null);
-  const hasFetchedRef = React.useRef(false);
+  if (
+    previousQuery.sorting !== sorting ||
+    previousQuery.filters !== debouncedFilters ||
+    previousQuery.global !== debouncedGlobalFilter
+  ) {
+    setPreviousQuery({
+      sorting,
+      filters: debouncedFilters,
+      global: debouncedGlobalFilter,
+    });
 
-  // Debounce filters
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedFilters(columnFilters);
-    }, filterDebounceMs);
+    if (pagination.pageIndex !== 0)
+      setPagination({ ...pagination, pageIndex: 0 });
+  }
 
-    return () => clearTimeout(timer);
-  }, [columnFilters, filterDebounceMs]);
+  const rows = useAsyncTableRows(options, {
+    pagination,
+    sorting,
+    columnFilters: debouncedFilters,
+    globalFilter: debouncedGlobalFilter,
+  });
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedGlobalFilter(globalFilter);
-    }, filterDebounceMs);
-
-    return () => clearTimeout(timer);
-  }, [globalFilter, filterDebounceMs]);
-
-  // Reset to first page when filters change
-  React.useEffect(() => {
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-  }, [debouncedFilters, debouncedGlobalFilter, sorting]);
-
-  // Fetch function
-  const fetchData = React.useCallback(async () => {
-    // Abort previous request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    abortControllerRef.current = new AbortController();
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const result = await fetchFn({
-        pagination,
-        sorting,
-        columnFilters: debouncedFilters,
-        globalFilter: debouncedGlobalFilter,
-      });
-
-      setData(result.data);
-      setTotalCount(result.totalCount);
-    } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") {
-        return; // Ignore aborted requests
-      }
-
-      setError(err instanceof Error ? err : new Error("Failed to fetch data"));
-    } finally {
-      setIsLoading(false);
-      setIsInitialLoading(false);
-      hasFetchedRef.current = true;
-    }
-  }, [fetchFn, pagination, sorting, debouncedFilters, debouncedGlobalFilter]);
-
-  // Fetch on mount and when dependencies change
-  React.useEffect(() => {
-    if (fetchOnMount || hasFetchedRef.current) {
-      fetchData();
-    }
-
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, [fetchData, fetchOnMount]);
-
-  // Computed values
-  const pageCount = Math.ceil(totalCount / pagination.pageSize);
-  const hasNextPage = pagination.pageIndex < pageCount - 1;
-  const hasPreviousPage = pagination.pageIndex > 0;
+  const pageCount = Math.ceil(rows.totalCount / pagination.pageSize);
 
   return {
-    data,
-    isLoading,
-    isInitialLoading,
-    error,
-    totalCount,
+    ...rows,
     pageCount,
     pagination,
     setPagination,
@@ -208,9 +244,8 @@ export function useAsyncDataTable<TData>(
     setColumnFilters,
     globalFilter,
     setGlobalFilter,
-    refetch: fetchData,
-    hasNextPage,
-    hasPreviousPage,
+    hasNextPage: pagination.pageIndex < pageCount - 1,
+    hasPreviousPage: pagination.pageIndex > 0,
   };
 }
 
