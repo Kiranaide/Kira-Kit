@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import { useState } from "react";
 import {
   IconDownload,
@@ -898,26 +899,7 @@ export default function AlertPage() {
       <KeyboardShortcuts
         title="Keyboard Navigation"
         description="Alert is a static region with regular buttons — Kira additions only; there is no Base UI primitive underneath, so no inherited behavior. Reference: WAI-ARIA alert pattern."
-        shortcuts={[
-          {
-            keys: "Tab",
-            description:
-              "Move focus to the next control (close, copy, Show more, action buttons) — all normal tab stops in DOM order",
-          },
-          {
-            keys: "Shift + Tab",
-            description: "Move focus to the previous control",
-          },
-          {
-            keys: "Enter / Space",
-            description: "Activate the focused button (dismiss, copy, toggle)",
-          },
-          {
-            keys: "Esc",
-            description:
-              "No behavior — an alert is not a dialog; dismissing relies on the visible close button",
-          },
-        ]}
+        shortcuts={alertPageKeyboardShortcutsShortcuts}
       />
 
       <UsageBlock
@@ -932,76 +914,98 @@ export default function AlertPage() {
         description="Props and configuration options for Alert components"
       />
 
-      <Changelog
-        entries={[
-          {
-            version: "2.2.0",
-            date: "16 October 2026",
-            changes: [
-              {
-                type: "added",
-                title: "Undo-dismiss strip",
-                description:
-                  "undoDismiss/undoDuration on KiraAlert: dismissing shows a 'Dismissed — Undo' strip for 5s instead of dead-ending. Timer pauses on strip hover/focus (WCAG 2.2.2); onClose fires at dismiss time so parent state matches what the user last saw; undo is visual restoration. Instant swap, no animation.",
-              },
-              {
-                type: "fixed",
-                title: "Header alignment",
-                description:
-                  "Alert renders icon, body, and header actions (meta + close) on one baseline-aligned flex row. The close button is no longer absolutely positioned and the timestamp/copy cluster no longer stacks above the title — one coordinate system.",
-              },
-              {
-                type: "added",
-                title: "meta prop",
-                description:
-                  "Alert accepts a meta node rendered into the header row left of the close button; KiraAlert's timestamp/copy cluster is delivered through it (caller-provided meta wins).",
-              },
-            ],
-          },
-          {
-            version: "2.1.0",
-            date: "16 October 2026",
-            changes: [
-              {
-                type: "changed",
-                title: "WCAG AA Contrast for Tone Variants",
-                description:
-                  "Tone variant body text now uses foreground color in light and dark; the semantic tone is carried by icon, border, and left accent. Audited against @base-ui/react 1.9.0 (stock shadcn Base UI alert has no primitive — parity unchanged).",
-              },
-              {
-                type: "fixed",
-                title: "Copy Button",
-                description:
-                  "Clipboard promise rejection handled; copied state announced via a polite live region; hit area ≥ 24px with visible focus ring.",
-              },
-              {
-                type: "fixed",
-                title: "Dismissible + Copyable Collision",
-                description:
-                  "When both are on, the timestamp/copy cluster flows inline instead of overlapping the close button.",
-              },
-              {
-                type: "fixed",
-                title: "Dismiss Tween Interruption",
-                description:
-                  "Rapid re-clicks and unmount now kill the GSAP dismiss tween; reduced motion dismisses instantly.",
-              },
-              {
-                type: "fixed",
-                title: "Render Purity",
-                description:
-                  "Date.now() no longer runs during render for relative timestamps (react-compiler-safe lazy state initializer).",
-              },
-              {
-                type: "added",
-                title: "Focus Visibility",
-                description:
-                  "Close, copy, and Show more buttons show a focus-visible ring; icon-only controls keep stable accessible names.",
-              },
-            ],
-          },
-        ]}
-      />
+      <Changelog entries={alertPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const alertPageKeyboardShortcutsShortcuts = [
+  {
+    keys: "Tab",
+    description:
+      "Move focus to the next control (close, copy, Show more, action buttons) — all normal tab stops in DOM order",
+  },
+  {
+    keys: "Shift + Tab",
+    description: "Move focus to the previous control",
+  },
+  {
+    keys: "Enter / Space",
+    description: "Activate the focused button (dismiss, copy, toggle)",
+  },
+  {
+    keys: "Esc",
+    description:
+      "No behavior — an alert is not a dialog; dismissing relies on the visible close button",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const alertPageChangelogEntries = [
+  {
+    version: "2.2.0",
+    date: "16 October 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Undo-dismiss strip",
+        description:
+          "undoDismiss/undoDuration on KiraAlert: dismissing shows a 'Dismissed — Undo' strip for 5s instead of dead-ending. Timer pauses on strip hover/focus (WCAG 2.2.2); onClose fires at dismiss time so parent state matches what the user last saw; undo is visual restoration. Instant swap, no animation.",
+      },
+      {
+        type: "fixed",
+        title: "Header alignment",
+        description:
+          "Alert renders icon, body, and header actions (meta + close) on one baseline-aligned flex row. The close button is no longer absolutely positioned and the timestamp/copy cluster no longer stacks above the title — one coordinate system.",
+      },
+      {
+        type: "added",
+        title: "meta prop",
+        description:
+          "Alert accepts a meta node rendered into the header row left of the close button; KiraAlert's timestamp/copy cluster is delivered through it (caller-provided meta wins).",
+      },
+    ],
+  },
+  {
+    version: "2.1.0",
+    date: "16 October 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "WCAG AA Contrast for Tone Variants",
+        description:
+          "Tone variant body text now uses foreground color in light and dark; the semantic tone is carried by icon, border, and left accent. Audited against @base-ui/react 1.9.0 (stock shadcn Base UI alert has no primitive — parity unchanged).",
+      },
+      {
+        type: "fixed",
+        title: "Copy Button",
+        description:
+          "Clipboard promise rejection handled; copied state announced via a polite live region; hit area ≥ 24px with visible focus ring.",
+      },
+      {
+        type: "fixed",
+        title: "Dismissible + Copyable Collision",
+        description:
+          "When both are on, the timestamp/copy cluster flows inline instead of overlapping the close button.",
+      },
+      {
+        type: "fixed",
+        title: "Dismiss Tween Interruption",
+        description:
+          "Rapid re-clicks and unmount now kill the GSAP dismiss tween; reduced motion dismisses instantly.",
+      },
+      {
+        type: "fixed",
+        title: "Render Purity",
+        description:
+          "Date.now() no longer runs during render for relative timestamps (react-compiler-safe lazy state initializer).",
+      },
+      {
+        type: "added",
+        title: "Focus Visibility",
+        description:
+          "Close, copy, and Show more buttons show a focus-visible ring; icon-only controls keep stable accessible names.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

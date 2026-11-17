@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import { reactContentKey, withContentKeys } from "@/components/ui/content-keys";
 import gsap from "gsap";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
@@ -14,9 +15,10 @@ import {
   IconCopy,
   IconCheck,
 } from "@tabler/icons-react";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { isStringProp } from "@/components/ui/prop-guards";
 
 const alertVariants = cva("relative w-full rounded-lg p-4", {
   variants: {
@@ -156,12 +158,12 @@ function copySourceText(
   // SAFETY: ReactNode union narrows to string here by construction — props
   // are local author input, not I/O; this is the single domain-parse boundary.
   // oxlint-disable-next-line anti-slop/no-runtime-typeof
-  if (typeof description === "string" && description.length > 0) {
+  if (isStringProp(description) && description.length > 0) {
     return description;
   }
 
   // oxlint-disable-next-line anti-slop/no-runtime-typeof
-  if (typeof title === "string" && title.length > 0) {
+  if (isStringProp(title) && title.length > 0) {
     return title;
   }
 
@@ -321,20 +323,30 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
   (
     {
       className,
-      variant = "default",
-      size = "default",
-      banner = false,
-      showIcon = true,
+      variant: variantInput,
+      size: sizeInput,
+      banner: bannerInput,
+      showIcon: showIconInput,
       icon,
-      closable = false,
+      closable: closableInput,
       onClose,
-      leftAccent = false,
+      leftAccent: leftAccentInput,
       meta,
       children,
       ...props
     },
     ref,
   ) => {
+    const { variant, size, banner, showIcon, closable, leftAccent } =
+      useAlertOptions({
+        variant: variantInput,
+        size: sizeInput,
+        banner: bannerInput,
+        showIcon: showIconInput,
+        closable: closableInput,
+        leftAccent: leftAccentInput,
+      });
+
     const [isVisible, setIsVisible] = React.useState(true);
     const innerRef = React.useRef<HTMLDivElement>(null);
     const dismissTweenRef = React.useRef<gsap.core.Tween | null>(null);
@@ -387,6 +399,7 @@ Alert.displayName = "Alert";
 
 function AlertTitle({
   className,
+  children,
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
@@ -394,7 +407,9 @@ function AlertTitle({
       data-slot="alert-title"
       className={cn("mb-1 font-medium leading-none tracking-tight", className)}
       {...props}
-    />
+    >
+      {children}
+    </h5>
   );
 }
 
@@ -416,6 +431,8 @@ function AlertDescription({
 // =============================================================================
 
 interface AlertAction {
+  /** Stable identity for actions whose labels may change. */
+  id?: string;
   label: React.ReactNode;
   onClick?: () => void;
   variant?: React.ComponentProps<typeof Button>["variant"];
@@ -432,9 +449,12 @@ function AlertActions({ actions, className, ...props }: AlertActionsProps) {
       className={cn("mt-3 flex flex-wrap gap-2", className)}
       {...props}
     >
-      {actions.map((action, i) => (
+      {withContentKeys(
+        actions,
+        (action) => action.id ?? reactContentKey(action.label),
+      ).map(({ item: action, key }, i) => (
         <Button
-          key={i}
+          key={key}
           size="sm"
           variant={resolveActionVariant(action.variant, i)}
           onClick={action.onClick}
@@ -502,30 +522,7 @@ interface UndoStripProps {
 
 function UndoStrip({ onPause, onResume, onUndo }: UndoStripProps) {
   return (
-    <div
-      data-slot="alert-undo"
-      role="status"
-      className="flex items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground"
-      onMouseEnter={onPause}
-      onMouseLeave={onResume}
-      onFocusCapture={onPause}
-      onBlurCapture={(e) => {
-        // SAFETY: relatedTarget is null (focus left the window) or a Node
-        // in the same document; contains() only needs null vs Node.
-        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-          onResume();
-        }
-      }}
-    >
-      <span>Dismissed</span>
-      <button
-        type="button"
-        onClick={onUndo}
-        className="rounded-sm font-medium text-foreground underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-      >
-        Undo
-      </button>
-    </div>
+    <AlertUndoView onPause={onPause} onResume={onResume} onUndo={onUndo} />
   );
 }
 
@@ -545,27 +542,15 @@ function useUndoDismiss(duration: number) {
     }
   }, []);
 
-  const pause = React.useCallback(() => {
-    if (timerRef.current === null) {
-      return;
-    }
+  const pause = React.useCallback(
+    () => alertUseCallback(timerRef, remainingRef, startedAtRef),
+    [],
+  );
 
-    window.clearTimeout(timerRef.current);
-    timerRef.current = null;
-    remainingRef.current -= Date.now() - startedAtRef.current;
-  }, []);
-
-  const resume = React.useCallback(() => {
-    if (timerRef.current !== null) {
-      return;
-    }
-
-    startedAtRef.current = Date.now();
-    timerRef.current = window.setTimeout(() => {
-      timerRef.current = null;
-      setDismissed(false);
-    }, remainingRef.current);
-  }, []);
+  const resume = React.useCallback(
+    () => alertUseCallback2(timerRef, startedAtRef, setDismissed, remainingRef),
+    [],
+  );
 
   const dismiss = React.useCallback(() => {
     clearTimer();
@@ -649,34 +634,14 @@ function KiraExpandable({
   }
 
   return (
-    <>
-      <div
-        className={cn(
-          "grid",
-          !reducedMotion && "transition-[grid-template-rows] duration-200",
-          gridRows,
-        )}
-      >
-        <div className="overflow-hidden">
-          <div className="pt-2 text-sm">{expandedContent}</div>
-        </div>
-      </div>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="mt-1 inline-flex items-center gap-1 rounded-sm text-xs font-medium opacity-80 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        aria-expanded={expanded}
-      >
-        {toggleLabel}
-        <IconChevronDown
-          className={cn(
-            "h-3.5 w-3.5 transition-transform",
-            reducedMotion && "transition-none",
-            expanded && "rotate-180",
-          )}
-        />
-      </button>
-    </>
+    <AlertContentView
+      reducedMotion={reducedMotion}
+      gridRows={gridRows}
+      expandedContent={expandedContent}
+      onToggle={onToggle}
+      expanded={expanded}
+      toggleLabel={toggleLabel}
+    />
   );
 }
 
@@ -710,22 +675,10 @@ interface KiraAlertProps extends Omit<AlertProps, "title"> {
 function useCopyFlash(text: string) {
   const [copied, setCopied] = React.useState(false);
 
-  const onCopy = React.useCallback(() => {
-    if (!text) {
-      return;
-    }
-
-    navigator.clipboard
-      ?.writeText(text)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-      })
-      .catch(() => {
-        // Clipboard can be unavailable (permissions, non-secure context);
-        // failing silently is fine — the button is a convenience.
-      });
-  }, [text]);
+  const onCopy = React.useCallback(
+    () => alertUseCallback3(text, setCopied),
+    [text],
+  );
 
   return { copied, onCopy };
 }
@@ -825,47 +778,49 @@ function KiraAlert({
   description,
   icon,
   actions,
-  expandable = false,
+  expandable: expandableInput,
   expandedContent,
-  copyable = false,
+  copyable: copyableInput,
   copyText,
   timestamp,
-  dismissible = false,
-  undoDismiss = false,
-  undoDuration = 5000,
-  variant = "default",
-  showIcon = true,
+  dismissible: dismissibleInput,
+  undoDismiss: undoDismissInput,
+  undoDuration: undoDurationInput,
+  variant: variantInput,
+  showIcon: showIconInput,
   children,
   ...alertProps
 }: KiraAlertProps) {
-  const [expanded, setExpanded] = React.useState(false);
-  const reducedMotion = useReducedMotion();
-  const relative = useRelativeTime(timestamp);
-  const undo = useUndoDismiss(undoDuration);
-  const copyTextSource = copySourceText(copyText, title, description);
-  const copy = useCopyFlash(copyTextSource);
-
-  const metaNode = (
-    <KiraMeta relative={relative} copied={copy.copied} onCopy={copy.onCopy} />
-  );
-
-  const meta = resolveKiraMeta(alertProps.meta, copyable, relative, metaNode);
-
-  // Non-undo dismissals delegate to Alert's internal GSAP close; the undo
-  // path intercepts so the strip replaces the alert instead. The caller's
-  // onClose composes with the intercept and fires at dismiss time (not
-  // undo-expiry) — parent state matches what the user last saw; undo is
-  // purely visual restoration.
-  const closeHandler = composeOnClose(
-    alertProps.onClose,
+  const {
+    expandable,
+    copyable,
     dismissible,
     undoDismiss,
-    undo.dismiss,
-  );
+    undoDuration,
+    variant,
+  } = useKiraAlertOptions({
+    expandable: expandableInput,
+    copyable: copyableInput,
+    dismissible: dismissibleInput,
+    undoDismiss: undoDismissInput,
+    undoDuration: undoDurationInput,
+    variant: variantInput,
+  });
 
-  const toggleExpanded = React.useCallback(() => {
-    setExpanded((e) => !e);
-  }, []);
+  const { showIcon } = useKiraAlertOptions2({ showIcon: showIconInput });
+
+  const { undo, meta, closeHandler, expanded, toggleExpanded, reducedMotion } =
+    useKiraAlertActions({
+      timestamp,
+      undoDuration,
+      copyText,
+      title,
+      description,
+      alertProps,
+      copyable,
+      dismissible,
+      undoDismiss,
+    });
 
   if (undo.dismissed) {
     return (
@@ -919,4 +874,358 @@ export type {
   AlertAction,
   KiraAlertProps,
   AlertVariant,
+};
+
+function resolveAlertOptions({
+  variant = "default",
+  size = "default",
+  banner = false,
+  showIcon = true,
+  closable = false,
+  leftAccent = false,
+}: {
+  variant?:
+    | "default"
+    | "success"
+    | "warning"
+    | "destructive"
+    | "info"
+    | "destructive-soft"
+    | "success-soft"
+    | "warning-soft"
+    | "info-soft"
+    | "outline-default"
+    | "outline-info"
+    | "outline-success"
+    | "outline-warning"
+    | "outline-destructive"
+    | null;
+  size?: "default" | "sm" | "lg" | "xs";
+  banner?: boolean | null;
+  showIcon?: boolean;
+  closable?: boolean;
+  leftAccent?: boolean;
+}) {
+  return { variant, size, banner, showIcon, closable, leftAccent };
+}
+
+function resolveKiraAlertOptions({
+  expandable = false,
+  copyable = false,
+  dismissible = false,
+  undoDismiss = false,
+  undoDuration = 5000,
+  variant = "default",
+}: {
+  expandable?: KiraAlertProps["expandable"];
+  copyable?: KiraAlertProps["copyable"];
+  dismissible?: KiraAlertProps["dismissible"];
+  undoDismiss?: KiraAlertProps["undoDismiss"];
+  undoDuration?: KiraAlertProps["undoDuration"];
+  variant?: KiraAlertProps["variant"];
+}) {
+  return {
+    expandable,
+    copyable,
+    dismissible,
+    undoDismiss,
+    undoDuration,
+    variant,
+  };
+}
+
+function resolveKiraAlertOptions2({
+  showIcon = true,
+}: {
+  showIcon?: KiraAlertProps["showIcon"];
+}) {
+  return { showIcon };
+}
+
+function AlertUndoView({
+  onPause,
+  onResume,
+  onUndo,
+}: {
+  onPause: () => void;
+  onResume: () => void;
+  onUndo: () => void;
+}) {
+  return (
+    <div
+      data-slot="alert-undo"
+
+      className="block flex items-center justify-between gap-2 rounded-lg border border-border bg-muted/40 px-3 py-1.5 text-xs text-muted-foreground"
+      onMouseEnter={onPause}
+      onMouseLeave={onResume}
+      onFocusCapture={onPause}
+      onBlurCapture={(e) => {
+        // SAFETY: relatedTarget is null (focus left the window) or a Node
+        // in the same document; contains() only needs null vs Node.
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          onResume();
+        }
+      }}
+    >
+      <output>Dismissed</output>
+      <button
+        type="button"
+        onClick={onUndo}
+        className="rounded-sm font-medium text-foreground underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        Undo
+      </button>
+    </div>
+  );
+}
+
+function AlertContentView({
+  reducedMotion,
+  gridRows,
+  expandedContent,
+  onToggle,
+  expanded,
+  toggleLabel,
+}: {
+  reducedMotion: boolean;
+  gridRows: string;
+  expandedContent: React.ReactNode;
+  onToggle: () => void;
+  expanded: boolean;
+  toggleLabel: string;
+}) {
+  return (
+    <>
+      <div
+        className={cn(
+          "grid",
+          { "transition-[grid-template-rows] duration-200": !reducedMotion },
+          gridRows,
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="pt-2 text-sm">{expandedContent}</div>
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="mt-1 inline-flex items-center gap-1 rounded-sm text-xs font-medium opacity-80 hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        aria-expanded={expanded}
+      >
+        {toggleLabel}
+        <IconChevronDown
+          className={cn(
+            "h-3.5 w-3.5 transition-transform",
+            { "transition-none": reducedMotion },
+            { "rotate-180": expanded },
+          )}
+        />
+      </button>
+    </>
+  );
+}
+
+function useAlertOptions({
+  variant: variantInput,
+  size: sizeInput,
+  banner: bannerInput,
+  showIcon: showIconInput,
+  closable: closableInput,
+  leftAccent: leftAccentInput,
+}: Parameters<typeof resolveAlertOptions>[0]) {
+  return React.useMemo(
+    () =>
+      resolveAlertOptions({
+        variant: variantInput,
+        size: sizeInput,
+        banner: bannerInput,
+        showIcon: showIconInput,
+        closable: closableInput,
+        leftAccent: leftAccentInput,
+      }),
+    [
+      variantInput,
+      sizeInput,
+      bannerInput,
+      showIconInput,
+      closableInput,
+      leftAccentInput,
+    ],
+  );
+}
+
+function useKiraAlertOptions({
+  expandable: expandableInput,
+  copyable: copyableInput,
+  dismissible: dismissibleInput,
+  undoDismiss: undoDismissInput,
+  undoDuration: undoDurationInput,
+  variant: variantInput,
+}: Parameters<typeof resolveKiraAlertOptions>[0]) {
+  return React.useMemo(
+    () =>
+      resolveKiraAlertOptions({
+        expandable: expandableInput,
+        copyable: copyableInput,
+        dismissible: dismissibleInput,
+        undoDismiss: undoDismissInput,
+        undoDuration: undoDurationInput,
+        variant: variantInput,
+      }),
+    [
+      expandableInput,
+      copyableInput,
+      dismissibleInput,
+      undoDismissInput,
+      undoDurationInput,
+      variantInput,
+    ],
+  );
+}
+
+function useKiraAlertOptions2({
+  showIcon: showIconInput,
+}: Parameters<typeof resolveKiraAlertOptions2>[0]) {
+  return React.useMemo(
+    () => resolveKiraAlertOptions2({ showIcon: showIconInput }),
+    [showIconInput],
+  );
+}
+
+function alertUseCallback(
+  timerRef: React.RefObject<number | null>,
+  remainingRef: React.RefObject<number>,
+  startedAtRef: React.RefObject<number>,
+) {
+  if (timerRef.current === null) {
+    return;
+  }
+
+  window.clearTimeout(timerRef.current);
+  timerRef.current = null;
+  remainingRef.current -= Date.now() - startedAtRef.current;
+}
+
+function alertUseCallback2(
+  timerRef: React.RefObject<number | null>,
+  startedAtRef: React.RefObject<number>,
+  setDismissed: React.Dispatch<React.SetStateAction<boolean>>,
+  remainingRef: React.RefObject<number>,
+) {
+  if (timerRef.current !== null) {
+    return;
+  }
+
+  startedAtRef.current = Date.now();
+  timerRef.current = window.setTimeout(() => {
+    timerRef.current = null;
+    setDismissed(false);
+  }, remainingRef.current);
+}
+
+function alertUseCallback3(
+  text: string,
+  setCopied: React.Dispatch<React.SetStateAction<boolean>>,
+) {
+  if (!text) {
+    return;
+  }
+
+  navigator.clipboard
+    ?.writeText(text)
+    .then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    })
+    .catch(() => {
+      // Clipboard can be unavailable (permissions, non-secure context);
+      // failing silently is fine — the button is a convenience.
+    });
+}
+
+function useKiraAlertActions({
+  timestamp,
+  undoDuration,
+  copyText,
+  title,
+  description,
+  alertProps,
+  copyable,
+  dismissible,
+  undoDismiss,
+}: UseKiraAlertActionsParams) {
+  const [expanded, setExpanded] = React.useState(false);
+  const reducedMotion = useReducedMotion();
+  const relative = useRelativeTime(timestamp);
+  const undo = useUndoDismiss(undoDuration);
+  const copyTextSource = copySourceText(copyText, title, description);
+  const copy = useCopyFlash(copyTextSource);
+
+  const metaNode = (
+    <KiraMeta relative={relative} copied={copy.copied} onCopy={copy.onCopy} />
+  );
+
+  const meta = resolveKiraMeta(alertProps.meta, copyable, relative, metaNode);
+
+  // Non-undo dismissals delegate to Alert's internal GSAP close; the undo
+  // path intercepts so the strip replaces the alert instead. The caller's
+  // onClose composes with the intercept and fires at dismiss time (not
+  // undo-expiry) — parent state matches what the user last saw; undo is
+  // purely visual restoration.
+  const closeHandler = composeOnClose(
+    alertProps.onClose,
+    dismissible,
+    undoDismiss,
+    undo.dismiss,
+  );
+
+  const toggleExpanded = React.useCallback(() => {
+    setExpanded((e) => !e);
+  }, []);
+
+  return {
+    undo,
+    meta,
+    closeHandler,
+    expanded,
+    toggleExpanded,
+    reducedMotion,
+  } satisfies {
+    undo: typeof undo;
+    meta: typeof meta;
+    closeHandler: typeof closeHandler;
+    expanded: typeof expanded;
+    toggleExpanded: typeof toggleExpanded;
+    reducedMotion: typeof reducedMotion;
+  };
+}
+
+type UseKiraAlertActionsParams = {
+  timestamp: KiraAlertProps["timestamp"];
+  undoDuration: number;
+  copyText: KiraAlertProps["copyText"];
+  title: KiraAlertProps["title"];
+  description: KiraAlertProps["description"];
+  alertProps: Omit<
+    KiraAlertProps,
+    | "title"
+    | "description"
+    | "icon"
+    | "actions"
+    | "expandable"
+    | "expandedContent"
+    | "copyable"
+    | "copyText"
+    | "timestamp"
+    | "dismissible"
+    | "undoDismiss"
+    | "undoDuration"
+    | "variant"
+    | "showIcon"
+    | "children"
+  >;
+  copyable: boolean;
+  dismissible: boolean;
+  undoDismiss: boolean;
 };
