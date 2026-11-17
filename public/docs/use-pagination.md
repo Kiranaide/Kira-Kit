@@ -12,5 +12,4 @@ npx shadcn add @kira-kit/use-pagination
 
 ```tsx
 import { usePagination } from "@/hooks/use-pagination";
-
 ```

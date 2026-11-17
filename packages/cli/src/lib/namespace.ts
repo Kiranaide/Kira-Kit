@@ -9,6 +9,8 @@ export function toItemAddress(name: string): string {
     name.startsWith("/") ||
     name === "." ||
     name === "..";
+
   if (passthrough) return name;
+
   return `@kira-kit/${name}`;
 }

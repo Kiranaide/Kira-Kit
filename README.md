@@ -54,17 +54,17 @@ with per-item markdown under `/docs/`.
 Nine hand-curated palettes, generated through the same OKLCH engine as
 `kira-kit theme` and verified against WCAG 2.2 AA at build time:
 
-| Preset | Family | Primary |
-| --- | --- | --- |
-| `ember-press` | warm / editorial | `#A54932` |
-| `oxblood-atelier` | warm / editorial | `#7E3548` |
-| `olive-ledger` | warm / editorial | `#5F6738` |
-| `laurel-study` | warm / editorial | `#315C4E` |
-| `phase-line` | cool / technical | `#0B7F79` |
-| `cryostat` | cool / technical | `#007C91` |
-| `low-orbit` | cool / technical | `#3B5F82` |
-| `coral-circuit` | bold / expressive | `#F2555A` |
-| `magenta-riot` | bold / expressive | `#B91668` |
+| Preset            | Family            | Primary   |
+| ----------------- | ----------------- | --------- |
+| `ember-press`     | warm / editorial  | `#A54932` |
+| `oxblood-atelier` | warm / editorial  | `#7E3548` |
+| `olive-ledger`    | warm / editorial  | `#5F6738` |
+| `laurel-study`    | warm / editorial  | `#315C4E` |
+| `phase-line`      | cool / technical  | `#0B7F79` |
+| `cryostat`        | cool / technical  | `#007C91` |
+| `low-orbit`       | cool / technical  | `#3B5F82` |
+| `coral-circuit`   | bold / expressive | `#F2555A` |
+| `magenta-riot`    | bold / expressive | `#B91668` |
 
 Generate your own from any primary color with `kira-kit theme --primary "#0B7F79" --apply`.
 

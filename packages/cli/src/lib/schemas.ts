@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const KIRA_NAMESPACE = "@kira-kit";
-export const DEFAULT_REGISTRY_URL =
-  "https://kira-kit.vercel.app/r/{name}.json";
+
+export const DEFAULT_REGISTRY_URL = "https://kira-kit.vercel.app/r/{name}.json";
 
 /**
  * components.json as written by shadcn init. We are deliberately loose:
@@ -13,19 +13,23 @@ export const componentsConfigSchema = z.looseObject({
   style: z.string().optional(),
   rsc: z.boolean().optional(),
   tsx: z.boolean().optional(),
-  tailwind: z.looseObject({
-    css: z.string().optional(),
-    baseColor: z.string().optional(),
-    cssVariables: z.boolean().optional(),
-  }).optional(),
+  tailwind: z
+    .looseObject({
+      css: z.string().optional(),
+      baseColor: z.string().optional(),
+      cssVariables: z.boolean().optional(),
+    })
+    .optional(),
   iconLibrary: z.string().optional(),
-  aliases: z.looseObject({
-    components: z.string().optional(),
-    utils: z.string().optional(),
-    ui: z.string().optional(),
-    lib: z.string().optional(),
-    hooks: z.string().optional(),
-  }).optional(),
+  aliases: z
+    .looseObject({
+      components: z.string().optional(),
+      utils: z.string().optional(),
+      ui: z.string().optional(),
+      lib: z.string().optional(),
+      hooks: z.string().optional(),
+    })
+    .optional(),
   registries: z.record(z.string(), z.string()).optional(),
 });
 
@@ -78,4 +82,5 @@ export const sourceRegistrySchema = z.object({
 });
 
 export type SourceRegistry = z.infer<typeof sourceRegistrySchema>;
+
 export type SourceRegistryItem = z.infer<typeof sourceRegistryItemSchema>;

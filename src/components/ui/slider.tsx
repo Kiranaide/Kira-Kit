@@ -1,4 +1,5 @@
 /* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
+/* kira-kit-ignore-file layout-transitions: thumb and fill animate the value position (inset/width/height) by design — playbook §5 state-driven CSS motion */
 "use client";
 
 import * as React from "react";

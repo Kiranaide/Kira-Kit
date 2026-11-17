@@ -91,7 +91,7 @@ const carouselItemVariants = cva("min-w-0 shrink-0 grow-0", {
 });
 
 const carouselButtonVariants = cva(
-  "inline-flex h-10 w-10 items-center justify-center rounded-full border bg-background/80 p-0 text-foreground shadow-md backdrop-blur-sm transition-all hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex h-10 w-10 items-center justify-center rounded-full border bg-background/80 p-0 text-foreground shadow-md backdrop-blur-sm transition-[background-color,box-shadow,color] hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -112,10 +112,12 @@ const carouselButtonVariants = cva(
 );
 
 const carouselDotVariants = cva(
-  "relative inline-flex items-center justify-center rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+  // kira-kit-ignore layout-transitions: dot pill stretch (w-2 to w-4) is the intended indicator animation
+  "relative inline-flex items-center justify-center rounded-full transition-[width,background-color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
   {
     variants: {
       state: {
+        // kira-kit-ignore target-size: 8px visual dot inside the 44px CarouselDot button target
         inactive: "h-2 w-2 bg-muted-foreground/50 hover:bg-muted-foreground/70",
         active: "h-2 w-4 bg-primary",
       },
@@ -651,7 +653,7 @@ const CarouselAutoplayButton = React.forwardRef<
         data-slot="carousel-autoplay-button"
         type="button"
         className={cn(
-          "inline-flex h-10 w-10 items-center justify-center rounded-full bg-background/80 p-0 text-foreground shadow-md backdrop-blur-sm transition-all hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "inline-flex h-10 w-10 items-center justify-center rounded-full bg-background/80 p-0 text-foreground shadow-md backdrop-blur-sm transition-[background-color,box-shadow,color] hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           className,
         )}
         onClick={(e) => {
@@ -811,7 +813,7 @@ const CarouselThumbnails = React.forwardRef<
             aria-selected={index === selectedIndex}
             aria-label={`View ${image.alt}`}
             className={cn(
-              "relative h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              "relative h-16 w-16 shrink-0 overflow-hidden rounded-md border-2 transition-[border-color,box-shadow,opacity] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               index === selectedIndex
                 ? "border-primary ring-2 ring-primary/20"
                 : "border-transparent opacity-60 hover:opacity-100",
@@ -1307,7 +1309,7 @@ function renderCarouseltsxSectionPart4({
           type="button"
           tabIndex={index === currentIndex ? 0 : -1}
           className={cn(
-            "relative h-12 w-12 shrink-0 overflow-hidden rounded-md border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2",
+            "relative h-12 w-12 shrink-0 overflow-hidden rounded-md border-2 transition-[border-color,box-shadow,opacity] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2",
             index === currentIndex
               ? "border-white"
               : "border-transparent opacity-50 hover:opacity-100",

@@ -23,12 +23,20 @@ program
 
 program
   .command("init")
-  .description("Initialize Kira Kit in your project (delegates base setup to shadcn)")
+  .description(
+    "Initialize Kira Kit in your project (delegates base setup to shadcn)",
+  )
   .option("-c, --cwd <directory>", "Working directory", process.cwd())
   .option("--base <base>", "Component library base (base, radix, aria)")
   .option("--preset <name>", "Install a theme preset (e.g. terracotta)")
-  .option("--primary <color>", "Generate a custom theme from this primary color")
-  .option("--base-color <name>", "Base color (neutral, stone, zinc, slate, gray)")
+  .option(
+    "--primary <color>",
+    "Generate a custom theme from this primary color",
+  )
+  .option(
+    "--base-color <name>",
+    "Base color (neutral, stone, zinc, slate, gray)",
+  )
   .option("--force", "Re-apply the theme even if one already exists")
   .option("-y, --yes", "Skip prompts, use defaults")
   .action(async (options) => {
@@ -77,7 +85,10 @@ program
   .command("theme")
   .description("Generate an OKLCH theme palette from a primary color")
   .option("--primary <color>", "Primary color (hex or any CSS color)")
-  .option("--base-color <name>", "Base color (neutral, stone, zinc, slate, gray)")
+  .option(
+    "--base-color <name>",
+    "Base color (neutral, stone, zinc, slate, gray)",
+  )
   .option("--out <file>", "Write the registry item to this file")
   .option("--apply", "Install the generated theme via shadcn")
   .option("-c, --cwd <directory>", "Working directory", process.cwd())
@@ -88,7 +99,10 @@ program
 program
   .command("check [paths...]")
   .description("Run quality checks on component sources")
-  .option("--ci", "Fail on every finding unless suppressed (auto when CI is set)")
+  .option(
+    "--ci",
+    "Fail on every finding unless suppressed (auto when CI is set)",
+  )
   .option("--format <format>", "Output format: pretty, json, github")
   .option("--json", "Shorthand for --format json")
   .action(async (paths: string[], options) => {
@@ -107,7 +121,10 @@ program
 program
   .command("create [dir]")
   .description("Scaffold a new project pre-wired for Kira Kit")
-  .option("-t, --template <template>", "Template: vite, next, tanstack-start, monorepo")
+  .option(
+    "-t, --template <template>",
+    "Template: vite, next, tanstack-start, monorepo",
+  )
   .option("--install", "Install dependencies after scaffolding")
   .option("--no-install", "Skip dependency installation")
   .option("--git", "Initialize a git repository")
@@ -130,6 +147,8 @@ program
 async function run(action: () => Promise<number | void>): Promise<number> {
   try {
     const code = await action();
+
+    // oxlint-disable-next-line anti-slop/no-runtime-typeof -- actions return an exit code or nothing (void); typeof separates the two
     return typeof code === "number" ? code : 0;
   } catch (error) {
     return printError(error);

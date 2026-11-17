@@ -19,6 +19,8 @@ describe("toItemAddress", () => {
     expect(toItemAddress("https://example.com/r/button.json")).toBe(
       "https://example.com/r/button.json",
     );
-    expect(toItemAddress("./registry/button.json")).toBe("./registry/button.json");
+    expect(toItemAddress("./registry/button.json")).toBe(
+      "./registry/button.json",
+    );
   });
 });

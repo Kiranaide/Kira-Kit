@@ -156,7 +156,7 @@ function formatValue(value: number, options: FormatOptions = {}): string {
 }
 
 const statsCardVariants = cva(
-  "relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-200",
+  "relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm transition-[box-shadow,translate,border-color,background-color] duration-200",
   {
     variants: {
       variant: {
@@ -744,7 +744,8 @@ const StatsCardProgress = React.forwardRef<
         <MeterPrimitive.Track className="relative h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <MeterPrimitive.Indicator
             className={cn(
-              "h-full rounded-full transition-all duration-300",
+              // kira-kit-ignore layout-transitions: meter fill width is the value animation, driven by Base UI inline width
+              "h-full rounded-full transition-[width,background-color] duration-300",
               indicatorColor[variant || "default"],
             )}
           />

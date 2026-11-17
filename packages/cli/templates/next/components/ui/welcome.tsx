@@ -37,9 +37,12 @@ export function Welcome({ className, variant, ...props }: WelcomeProps) {
           className="size-10 shrink-0 rounded-lg bg-primary p-2 text-primary-foreground"
         />
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">Kira Kit is ready</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Kira Kit is ready
+          </h1>
           <p className="text-sm leading-6 text-muted-foreground">
-            Your project is configured for Base UI, Tailwind CSS, and the Kira Kit registry.
+            Your project is configured for Base UI, Tailwind CSS, and the Kira
+            Kit registry.
           </p>
         </div>
       </div>

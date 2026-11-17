@@ -328,7 +328,10 @@ function Badge(input: BadgeProps) {
             shimmer: shimmer && !reducedMotion,
           }),
           { "flex-row-reverse": iconPosition === "right" },
-          { "opacity-0 scale-95 transition-all duration-150": isClosing },
+          {
+            "opacity-0 scale-95 transition-[opacity,scale] duration-150":
+              isClosing,
+          },
           { hidden: !isVisible },
           className,
         ),

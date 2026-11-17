@@ -40,7 +40,10 @@ export class ThemeContrastError extends Error {
           `  ${f.scheme} ${f.fg} on ${f.bg}: ${f.ratio.toFixed(2)}:1 (needs ${f.threshold}:1) — try primary lightness around ${suggestLightness(f)}`,
       )
       .join("\n");
-    super(`Theme failed WCAG AA contrast for ${failures.length} pair(s):\n${details}`);
+
+    super(
+      `Theme failed WCAG AA contrast for ${failures.length} pair(s):\n${details}`,
+    );
     this.name = "ThemeContrastError";
     this.failures = failures;
   }
@@ -59,10 +62,16 @@ export function generateTheme(definition: ThemeDefinition): GeneratedTheme {
     : "neutral";
 
   const primary = parseToOklch(definition.primary);
-  const schemes = buildSchemes({ primary, baseColor, chartHues: definition.chartHues });
+
+  const schemes = buildSchemes({
+    primary,
+    baseColor,
+    chartHues: definition.chartHues,
+  });
 
   const adjustments: Adjustment[] = [];
   const failures: PairFailure[] = [];
+
   for (const schemeName of ["light", "dark"] as const) {
     const result = autoAdjust(schemeName, schemes[schemeName]);
     adjustments.push(...result.fixed);
@@ -100,9 +109,11 @@ interface CssVarsMap {
 
 function toCssVars(tokens: Record<string, OklchColor>): CssVarsMap {
   const vars: CssVarsMap = {};
+
   for (const [token, color] of Object.entries(tokens)) {
     vars[`--${token}`] = oklchCss(color);
   }
+
   return vars;
 }
 
@@ -110,6 +121,7 @@ function suggestLightness(failure: PairFailure): number {
   if (failure.scheme === "light") {
     return failure.kind === "text" ? 0.2 : 0.66;
   }
+
   return failure.kind === "text" ? 0.95 : 0.45;
 }
 

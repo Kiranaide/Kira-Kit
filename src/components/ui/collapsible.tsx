@@ -188,6 +188,7 @@ function CollapsibleContent(input: CollapsibleContentProps) {
           "min-w-0 overflow-hidden",
           motion &&
             !reduced &&
+            // kira-kit-ignore layout-transitions: Base UI collapsible panel height var is the standard expand/collapse animation
             "h-(--collapsible-panel-height) transition-[height,opacity] duration-200 ease-out data-starting-style:h-0 data-starting-style:opacity-0 data-ending-style:h-0 data-ending-style:opacity-0 data-ending-style:duration-150",
           isCallbackProp(className) ? className(state) : className,
         )

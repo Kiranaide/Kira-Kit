@@ -12,5 +12,4 @@ npx shadcn add @kira-kit/use-focus-manager
 
 ```tsx
 import { useFocusManager } from "@/hooks/use-focus-manager";
-
 ```

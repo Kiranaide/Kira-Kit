@@ -33,6 +33,7 @@ export function generatePresetItems(): PresetGenerationResult {
       baseColor: preset.baseColor,
       chartHues: preset.chartHues,
     });
+
     for (const adjustment of generated.adjustments) {
       adjustments.push({
         preset: preset.name,
@@ -41,6 +42,7 @@ export function generatePresetItems(): PresetGenerationResult {
         toL: adjustment.toL,
       });
     }
+
     items.push(generated.item);
   }
 

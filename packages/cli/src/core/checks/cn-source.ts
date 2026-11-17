@@ -22,9 +22,10 @@ export const cnSource: Check = (file) => {
   }
 
   const localMatch = LOCAL_CN.exec(file.content);
+
   if (localMatch) {
-    const line =
-      file.content.slice(0, localMatch.index).split("\n").length;
+    const line = file.content.slice(0, localMatch.index).split("\n").length;
+
     findings.push({
       checkId: "cn-source",
       severity: "error",

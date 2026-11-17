@@ -41,15 +41,20 @@ export class CheckFailureError extends CliError {
   }
 }
 
+// oxlint-disable-next-line anti-slop/no-unknown-parameters -- catch clauses deliver unknown; this function is the error boundary that parses it
 export function printError(error: unknown): number {
   if (error instanceof CliError) {
     console.error(`error: ${error.message}`);
+
     if (error.nextStep) {
       console.error(`next step: ${error.nextStep}`);
     }
+
     return error.exitCode;
   }
+
   const message = error instanceof Error ? error.message : String(error);
   console.error(`error: ${message}`);
+
   return EXIT_USER;
 }

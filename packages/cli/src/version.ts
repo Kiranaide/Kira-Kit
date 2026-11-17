@@ -15,8 +15,10 @@ export function getVersion(): string {
   if (typeof __KIRA_KIT_VERSION__ !== "undefined") {
     return __KIRA_KIT_VERSION__;
   }
+
   try {
     const require = createRequire(import.meta.url);
+
     // SAFETY: ../package.json is kira-kit's own manifest, which always ships a
     // semver "version" field required by npm publishing.
     return (require("../package.json") as PackageJsonWithVersion).version;

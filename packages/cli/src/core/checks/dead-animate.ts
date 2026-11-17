@@ -29,14 +29,18 @@ export const deadAnimate: Check = (file, ctx) => {
   for (const name of names) {
     if (ANIMATE_BUILTINS.has(name)) continue;
     const hasToken = ctx.indexCss.includes(`--animate-${name}`);
-    const hasKeyframes = new RegExp(`@keyframes\\s+${name}\\s*\\{`).test(ctx.indexCss);
+
+    const hasKeyframes = new RegExp(`@keyframes\\s+${name}\\s*\\{`).test(
+      ctx.indexCss,
+    );
+
     if (!hasToken || !hasKeyframes) {
       findings.push({
         checkId: "dead-animate",
         severity: "error",
         file: file.name,
         message: `uses \`animate-${name}\` but the global CSS is missing ${
-          !hasToken ? `--animate-${name}` : `@keyframes ${name}`
+          hasToken ? `@keyframes ${name}` : `--animate-${name}`
         } (dead animation).`,
       });
     }
@@ -48,8 +52,10 @@ export const deadAnimate: Check = (file, ctx) => {
 export function animateNames(content: string): Set<string> {
   const names = new Set<string>();
   let match: RegExpExecArray | null;
+
   while ((match = ANIMATE_REGEX.exec(content)) !== null) {
     names.add(match[1]);
   }
+
   return names;
 }

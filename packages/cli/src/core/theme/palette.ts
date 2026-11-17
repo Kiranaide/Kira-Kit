@@ -47,17 +47,12 @@ export interface ThemeSchemes {
 
 export const DEFAULT_CHART_HUES = [60, 120, 200, 280];
 
-/**
- * Build the initial light + dark token maps numerically from the primary
- * and base color. Foregrounds are derived from the primary (or base) hue;
- * contrast verification adjusts lightness afterwards.
- */
-export function buildSchemes(input: PaletteInput): ThemeSchemes {
-  const base = BASE_COLORS[input.baseColor];
-  const primary = { ...input.primary };
-  const hueOffsets = input.chartHues ?? DEFAULT_CHART_HUES;
-
-  const light: TokenMap = {
+function lightScheme(
+  base: OklchColor,
+  primary: OklchColor,
+  hueOffsets: number[],
+): TokenMap {
+  return {
     background: { l: 1, c: base.c * 0.1, h: base.h },
     foreground: { l: 0.16, c: base.c, h: base.h },
     card: { l: 1, c: base.c * 0.1, h: base.h },
@@ -78,10 +73,26 @@ export function buildSchemes(input: PaletteInput): ThemeSchemes {
     input: { l: 0.9, c: base.c * 2, h: base.h },
     ring: { ...primary },
     "chart-1": { l: 0.6, c: Math.min(primary.c, 0.16), h: primary.h },
-    "chart-2": { l: 0.62, c: Math.min(primary.c, 0.15), h: wrapHue(primary.h + hueOffsets[0]) },
-    "chart-3": { l: 0.62, c: Math.min(primary.c, 0.15), h: wrapHue(primary.h + hueOffsets[1]) },
-    "chart-4": { l: 0.62, c: Math.min(primary.c, 0.15), h: wrapHue(primary.h + hueOffsets[2]) },
-    "chart-5": { l: 0.62, c: Math.min(primary.c, 0.15), h: wrapHue(primary.h + hueOffsets[3]) },
+    "chart-2": {
+      l: 0.62,
+      c: Math.min(primary.c, 0.15),
+      h: wrapHue(primary.h + hueOffsets[0]),
+    },
+    "chart-3": {
+      l: 0.62,
+      c: Math.min(primary.c, 0.15),
+      h: wrapHue(primary.h + hueOffsets[1]),
+    },
+    "chart-4": {
+      l: 0.62,
+      c: Math.min(primary.c, 0.15),
+      h: wrapHue(primary.h + hueOffsets[2]),
+    },
+    "chart-5": {
+      l: 0.62,
+      c: Math.min(primary.c, 0.15),
+      h: wrapHue(primary.h + hueOffsets[3]),
+    },
     sidebar: { l: 0.99, c: base.c * 0.5, h: base.h },
     "sidebar-foreground": { l: 0.16, c: base.c, h: base.h },
     "sidebar-primary": { ...primary },
@@ -91,10 +102,16 @@ export function buildSchemes(input: PaletteInput): ThemeSchemes {
     "sidebar-border": { l: 0.9, c: base.c * 2, h: base.h },
     "sidebar-ring": { ...primary },
   };
+}
 
+function darkScheme(
+  base: OklchColor,
+  primary: OklchColor,
+  hueOffsets: number[],
+): TokenMap {
   const darkPrimary = { l: 0.72, c: primary.c, h: primary.h };
 
-  const dark: TokenMap = {
+  return {
     background: { l: 0.145, c: base.c * 1.2, h: base.h },
     foreground: { l: 0.97, c: base.c * 0.5, h: base.h },
     card: { l: 0.18, c: base.c * 1.2, h: base.h },
@@ -115,21 +132,55 @@ export function buildSchemes(input: PaletteInput): ThemeSchemes {
     input: { l: 0.3, c: base.c * 2, h: base.h },
     ring: { ...darkPrimary },
     "chart-1": { l: 0.72, c: Math.min(primary.c, 0.15), h: primary.h },
-    "chart-2": { l: 0.72, c: Math.min(primary.c, 0.14), h: wrapHue(primary.h + hueOffsets[0]) },
-    "chart-3": { l: 0.72, c: Math.min(primary.c, 0.14), h: wrapHue(primary.h + hueOffsets[1]) },
-    "chart-4": { l: 0.72, c: Math.min(primary.c, 0.14), h: wrapHue(primary.h + hueOffsets[2]) },
-    "chart-5": { l: 0.72, c: Math.min(primary.c, 0.14), h: wrapHue(primary.h + hueOffsets[3]) },
+    "chart-2": {
+      l: 0.72,
+      c: Math.min(primary.c, 0.14),
+      h: wrapHue(primary.h + hueOffsets[0]),
+    },
+    "chart-3": {
+      l: 0.72,
+      c: Math.min(primary.c, 0.14),
+      h: wrapHue(primary.h + hueOffsets[1]),
+    },
+    "chart-4": {
+      l: 0.72,
+      c: Math.min(primary.c, 0.14),
+      h: wrapHue(primary.h + hueOffsets[2]),
+    },
+    "chart-5": {
+      l: 0.72,
+      c: Math.min(primary.c, 0.14),
+      h: wrapHue(primary.h + hueOffsets[3]),
+    },
     sidebar: { l: 0.16, c: base.c, h: base.h },
     "sidebar-foreground": { l: 0.97, c: base.c * 0.5, h: base.h },
     "sidebar-primary": { ...darkPrimary },
-    "sidebar-primary-foreground": { l: 0.16, c: primary.c * 0.25, h: primary.h },
+    "sidebar-primary-foreground": {
+      l: 0.16,
+      c: primary.c * 0.25,
+      h: primary.h,
+    },
     "sidebar-accent": { l: 0.25, c: base.c * 2, h: base.h },
     "sidebar-accent-foreground": { l: 0.97, c: base.c * 0.5, h: base.h },
     "sidebar-border": { l: 0.3, c: base.c * 2, h: base.h },
     "sidebar-ring": { ...darkPrimary },
   };
+}
 
-  return { light, dark };
+/**
+ * Build the initial light + dark token maps numerically from the primary
+ * and base color. Foregrounds are derived from the primary (or base) hue;
+ * contrast verification adjusts lightness afterwards.
+ */
+export function buildSchemes(input: PaletteInput): ThemeSchemes {
+  const base = BASE_COLORS[input.baseColor];
+  const primary = { ...input.primary };
+  const hueOffsets = input.chartHues ?? DEFAULT_CHART_HUES;
+
+  return {
+    light: lightScheme(base, primary, hueOffsets),
+    dark: darkScheme(base, primary, hueOffsets),
+  };
 }
 
 function wrapHue(h: number): number {

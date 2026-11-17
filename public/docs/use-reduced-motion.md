@@ -12,5 +12,4 @@ npx shadcn add @kira-kit/use-reduced-motion
 
 ```tsx
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-
 ```

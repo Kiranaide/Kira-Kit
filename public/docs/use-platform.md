@@ -12,5 +12,4 @@ npx shadcn add @kira-kit/use-platform
 
 ```tsx
 import { usePlatform } from "@/hooks/use-platform";
-
 ```

@@ -439,6 +439,7 @@ function SharedTooltip({
             className: mergeClassName(
               cn(
                 "h-(--positioner-height) w-(--positioner-width)",
+                // kira-kit-ignore layout-transitions: positioner coords track Base UI flip/shift repositioning while open
                 "transition-[top,left,right,bottom] duration-200 ease-out",
                 "data-[instant]:transition-none motion-reduce:transition-none",
               ),

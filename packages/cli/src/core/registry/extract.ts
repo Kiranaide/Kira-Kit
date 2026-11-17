@@ -17,7 +17,10 @@ export interface ExtractedImports {
  * Handles `import "pkg"`, `import type`, dynamic `import()`, `export … from`,
  * and scoped/deep subpaths. `node:*` builtins are exempt. Reusable by check 1.
  */
-export function extractImports(source: string, fileName = "file.tsx"): ExtractedImports {
+export function extractImports(
+  source: string,
+  fileName = "file.tsx",
+): ExtractedImports {
   const sourceFile = ts.createSourceFile(
     fileName,
     source,
@@ -30,7 +33,8 @@ export function extractImports(source: string, fileName = "file.tsx"): Extracted
   const internal = new Map<string, LocatedImport>();
 
   const lineOf = (node: ts.Node): number =>
-    sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+    sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line +
+    1;
 
   const add = (
     target: Map<string, LocatedImport>,
@@ -40,13 +44,17 @@ export function extractImports(source: string, fileName = "file.tsx"): Extracted
   ): void => {
     const line = lineOf(node);
     const existing = target.get(key);
+
     if (!existing || line < existing.line) {
       target.set(key, { specifier, line });
     }
   };
 
   const visit = (node: ts.Node): void => {
-    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+    if (
+      ts.isImportDeclaration(node) &&
+      ts.isStringLiteral(node.moduleSpecifier)
+    ) {
       const key = classify(
         node.moduleSpecifier.text,
         external,
@@ -54,6 +62,7 @@ export function extractImports(source: string, fileName = "file.tsx"): Extracted
         node,
         add,
       );
+
       void key;
     } else if (
       ts.isExportDeclaration(node) &&
@@ -78,6 +87,7 @@ export function extractImports(source: string, fileName = "file.tsx"): Extracted
         add,
       );
     }
+
     ts.forEachChild(node, visit);
   };
 
@@ -102,27 +112,40 @@ function classify(
   ) => void,
 ): string {
   if (specifier.startsWith("node:")) return "";
+
   if (specifier.startsWith("@/components/ui/")) {
-    const name = specifier.replace("@/components/ui/", "").replace(/\.(tsx|ts)$/, "");
+    const name = specifier
+      .replace("@/components/ui/", "")
+      .replace(/\.(tsx|ts)$/, "");
+
     if (name && !name.includes("/")) add(internal, specifier, node, name);
+
     return "";
   }
+
   if (specifier.startsWith("@/hooks/")) {
     const name = specifier.replace("@/hooks/", "").replace(/\.(tsx|ts)$/, "");
+
     if (name && !name.includes("/")) add(internal, specifier, node, name);
+
     return "";
   }
+
   if (specifier.startsWith("@/")) return ""; // other internal aliases are not registry deps
+
   if (specifier.startsWith(".")) return ""; // relative imports are not registry deps
   add(external, specifier, node, packageNameOf(specifier));
+
   return "";
 }
 
 /** Trim deep subpaths and peer-style suffixes to the package name. */
 export function packageNameOf(specifier: string): string {
   const parts = specifier.split("/");
+
   if (specifier.startsWith("@")) {
     return parts.length >= 2 ? `${parts[0]}/${parts[1]}` : specifier;
   }
+
   return parts[0];
 }

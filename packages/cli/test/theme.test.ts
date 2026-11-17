@@ -19,6 +19,7 @@ const TEXT_PAIRS: Array<[fg: string, bg: string]> = [
   ["sidebar-primary-foreground", "sidebar-primary"],
   ["sidebar-accent-foreground", "sidebar-accent"],
 ];
+
 const UI_PAIRS: Array<[fg: string, bg: string]> = [
   ["ring", "background"],
   ["border", "background"],
@@ -34,9 +35,11 @@ interface ParsedTokens {
 /** Parse cssVars strings back into OKLCH colors. */
 function toTokens(vars: Record<string, string>): ParsedTokens {
   const out: ParsedTokens = {};
+
   for (const [key, value] of Object.entries(vars)) {
     out[key.replace(/^--/, "")] = parseToOklch(value);
   }
+
   return out;
 }
 
@@ -52,6 +55,7 @@ function expectSchemeToPassAA(
       `${scheme} text pair ${fg}/${bg} = ${ratio.toFixed(2)}:1`,
     ).toBeGreaterThanOrEqual(4.5);
   }
+
   for (const [fg, bg] of UI_PAIRS) {
     if (!tokens[fg] || !tokens[bg]) continue;
     const ratio = wcagRatio(tokens[fg], tokens[bg]);
@@ -63,21 +67,24 @@ function expectSchemeToPassAA(
 }
 
 describe("generateTheme", () => {
-  it.each(
-    Array.from({ length: 24 }, (_, i) => ({ hue: i * 15 })),
-  )("passes WCAG AA for primary hue $hue across light and dark", ({ hue }) => {
-    const primary = `oklch(0.65 0.19 ${hue})`;
-    const theme = generateTheme({
-      name: `hue-${hue}`,
-      title: "Hue test",
-      description: "Property test theme",
-      primary,
-      baseColor: "neutral",
-    });
-    expect(theme.failures).toHaveLength(0);
-    expectSchemeToPassAA(toTokens(theme.item.cssVars?.light ?? {}), "light");
-    expectSchemeToPassAA(toTokens(theme.item.cssVars?.dark ?? {}), "dark");
-  });
+  it.each(Array.from({ length: 24 }, (_, i) => ({ hue: i * 15 })))(
+    "passes WCAG AA for primary hue $hue across light and dark",
+    ({ hue }) => {
+      const primary = `oklch(0.65 0.19 ${hue})`;
+
+      const theme = generateTheme({
+        name: `hue-${hue}`,
+        title: "Hue test",
+        description: "Property test theme",
+        primary,
+        baseColor: "neutral",
+      });
+
+      expect(theme.failures).toHaveLength(0);
+      expectSchemeToPassAA(toTokens(theme.item.cssVars?.light ?? {}), "light");
+      expectSchemeToPassAA(toTokens(theme.item.cssVars?.dark ?? {}), "dark");
+    },
+  );
 
   it("also passes for very light and very dark primaries", () => {
     for (const primary of ["oklch(0.92 0.06 90)", "oklch(0.3 0.09 260)"]) {
@@ -88,6 +95,7 @@ describe("generateTheme", () => {
         primary,
         baseColor: "stone",
       });
+
       expect(theme.failures).toHaveLength(0);
       expectSchemeToPassAA(toTokens(theme.item.cssVars?.light ?? {}), "light");
       expectSchemeToPassAA(toTokens(theme.item.cssVars?.dark ?? {}), "dark");
@@ -102,8 +110,10 @@ describe("generateTheme", () => {
       primary: "#e2694a",
       baseColor: "stone",
     });
+
     expect(theme.item.name).toBe("theme-sample");
     expect(theme.item.type).toBe("registry:theme");
+
     for (const scheme of ["light", "dark"] as const) {
       const vars = theme.item.cssVars?.[scheme] ?? {};
       expect(vars["--background"]).toMatch(/^oklch\([\d.]+ [\d.]+ [\d.]+\)$/);
@@ -111,6 +121,7 @@ describe("generateTheme", () => {
       expect(Object.keys(vars)).toContain("--chart-1");
       expect(Object.keys(vars)).toContain("--sidebar");
     }
+
     expect(theme.item.cssVars?.theme?.["--radius"]).toBeDefined();
   });
 
@@ -122,10 +133,13 @@ describe("generateTheme", () => {
       primary: "#e2694a",
       baseColor: "neutral",
     });
+
     expect(theme.apca.length).toBeGreaterThan(0);
+
     for (const entry of theme.apca) {
       expect(entry.lc).toBeGreaterThanOrEqual(0);
     }
+
     // Vivid mid-lightness primaries always need a foreground adjustment.
     expect(theme.adjustments.length).toBeGreaterThan(0);
   });
@@ -155,6 +169,7 @@ describe("presets", () => {
   it("has 6-10 curated presets with real descriptions", () => {
     expect(PRESETS.length).toBeGreaterThanOrEqual(6);
     expect(PRESETS.length).toBeLessThanOrEqual(10);
+
     for (const preset of PRESETS) {
       expect(preset.name).toMatch(/^[a-z0-9-]+$/);
       expect(preset.description.length).toBeGreaterThan(20);
@@ -166,12 +181,19 @@ describe("presets", () => {
     const { items, adjustments } = generatePresetItems();
     expect(items).toHaveLength(PRESETS.length);
     expect(adjustments.length).toBeGreaterThan(0);
+
     for (const item of items) {
       expect(item.type).toBe("registry:theme");
       expect(item.cssVars?.light).toBeDefined();
       expect(item.cssVars?.dark).toBeDefined();
-      expectSchemeToPassAA(toTokens(item.cssVars?.light ?? {}), `${item.name} light`);
-      expectSchemeToPassAA(toTokens(item.cssVars?.dark ?? {}), `${item.name} dark`);
+      expectSchemeToPassAA(
+        toTokens(item.cssVars?.light ?? {}),
+        `${item.name} light`,
+      );
+      expectSchemeToPassAA(
+        toTokens(item.cssVars?.dark ?? {}),
+        `${item.name} dark`,
+      );
     }
   });
 });

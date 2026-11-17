@@ -23,6 +23,7 @@ export async function check(options: CheckOptions): Promise<number> {
     if (result.findings.length > 0) {
       console.log(`\n${formatFindings(result, "pretty")}\n`);
     }
+
     info(
       `${result.filesChecked} files checked — ${result.findings.length} finding(s)` +
         (ci ? " (CI mode: every unsuppressed finding fails)" : ""),
@@ -35,7 +36,9 @@ export async function check(options: CheckOptions): Promise<number> {
         ? `${result.failing} finding(s) must be fixed or suppressed with a reason (kira-kit check --ci).`
         : `${result.failing} error(s) found.`,
     );
+
     return EXIT_CHECKS;
   }
+
   return EXIT_OK;
 }

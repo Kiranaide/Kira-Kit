@@ -734,6 +734,8 @@ export {
   ButtonGroupToolbar,
   ToggleGroupItem,
   KiraButtonGroup,
+  buttonGroupVariants,
+  buttonGroupSizeVariants,
 };
 
 export type {

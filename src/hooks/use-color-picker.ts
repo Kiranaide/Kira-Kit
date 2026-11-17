@@ -1,3 +1,4 @@
+/* kira-kit-ignore-file raw-colors: default colour value and white/black contrast constants are colour data, not theme styling */
 import * as React from "react";
 import { hsvaToHex, hsvaToHexa, type HsvaColor } from "@uiw/color-convert";
 import {

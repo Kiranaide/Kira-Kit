@@ -13,8 +13,15 @@ import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { extractImports, packageNameOf } from "../src/core/registry/extract";
 
-const REPO_ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "../../..");
-const METADATA_PATH = resolve(fileURLToPath(new URL(".", import.meta.url)), "registry-metadata.json");
+const REPO_ROOT = resolve(
+  fileURLToPath(new URL(".", import.meta.url)),
+  "../../..",
+);
+
+const METADATA_PATH = resolve(
+  fileURLToPath(new URL(".", import.meta.url)),
+  "registry-metadata.json",
+);
 
 /** npm packages every UI item implicitly relies on but should NOT declare. */
 const IMPLICIT_DEPS = new Set(["react", "react-dom", "@types/react"]);
@@ -29,84 +36,121 @@ type Metadata = Record<
 
 function loadMetadata(): Metadata {
   if (!existsSync(METADATA_PATH)) return {};
+
+  // SAFETY: registry-metadata.json is a curated maintainer file whose entries are exactly title/description/categories triples.
   return JSON.parse(readFileSync(METADATA_PATH, "utf-8")) as Metadata;
 }
 
-const VERSION_RANGES: Record<string, string> = {
+const VERSION_RANGES = {
   // majors that matter for consumers get explicit ranges; bare elsewhere
   "react-day-picker": "^10.0.0",
   "embla-carousel": "8.6.0",
   "embla-carousel-react": "^8.6.0",
   "react-resizable-panels": "4.16.0",
   "modern-monaco": "^0.4.2",
-  "recharts": "^3.10.0",
+  recharts: "^3.10.0",
   "date-fns": "^4.4.0",
   "@date-fns/tz": "^1.5.0",
-};
+} satisfies Record<string, string>;
+
 void VERSION_RANGES;
+
+interface ScaffoldItem {
+  name: string;
+  type: "registry:ui" | "registry:hook";
+  title: string;
+  description: string;
+  categories: string[];
+  dependencies?: string[];
+  registryDependencies?: string[];
+  files: Array<{ path: string; type: "registry:ui" | "registry:hook" }>;
+}
+
+function buildItem(
+  entry: string,
+  dir: string,
+  type: "registry:ui" | "registry:hook",
+  filesGlob: (name: string, ext: string) => string,
+  metadata: Metadata,
+): ScaffoldItem {
+  const name = entry.replace(/\.(tsx|ts)$/, "");
+  const ext = entry.slice(name.length);
+  const source = readFileSync(join(dir, entry), "utf-8");
+  const { external, internal } = extractImports(source, entry);
+
+  const dependencies = [
+    ...new Set(
+      external
+        .map((imp) => packageNameOf(imp.specifier))
+        .filter((pkg) => !IMPLICIT_DEPS.has(pkg)),
+    ),
+  ].sort();
+
+  const registryDependencies = [
+    ...new Set(
+      internal
+        .map((imp) => imp.specifier.replace(/.*\//, ""))
+        .filter((dep) => !SUPPORT_FILES.has(dep))
+        .map((dep) => `@kira-kit/${dep}`),
+    ),
+  ].sort();
+
+  const supportFileNames = internal
+    .map((imp) => imp.specifier.replace(/.*\//, "").replace(/\.(tsx|ts)?$/, ""))
+    .filter((dep) => SUPPORT_FILES.has(dep));
+
+  // shadcn registry schema requires file entries as objects with a path
+  // (relative to the declaring registry.json) and a per-file item type.
+  const files: Array<{ path: string; type: "registry:ui" | "registry:hook" }> =
+    [{ path: filesGlob(name, ext), type }];
+
+  for (const dep of supportFileNames) {
+    files.push({ path: `${dep}.ts`, type });
+  }
+
+  const meta = metadata[name];
+
+  const item: Omit<ScaffoldItem, "files"> = {
+    name,
+    type,
+    title: meta?.title ?? name,
+    description:
+      meta?.description ?? `TODO: write a real description for ${name}.`,
+    categories: meta?.categories ?? [],
+  };
+
+  if (dependencies.length > 0) item.dependencies = dependencies;
+
+  if (registryDependencies.length > 0)
+    item.registryDependencies = registryDependencies;
+
+  return {
+    ...item,
+    files: [...new Map(files.map((f) => [f.path, f])).values()].sort((a, b) =>
+      a.path.localeCompare(b.path),
+    ),
+  };
+}
 
 async function buildItems(
   dir: string,
   type: "registry:ui" | "registry:hook",
   filesGlob: (name: string, ext: string) => string,
-): Promise<unknown[]> {
+): Promise<ScaffoldItem[]> {
   const metadata = loadMetadata();
   const entries = readdirSync(dir).filter((f) => /\.tsx?$/.test(f));
-  const items: unknown[] = [];
+  const items: ScaffoldItem[] = [];
 
   for (const entry of entries) {
     const name = entry.replace(/\.(tsx|ts)$/, "");
-    const ext = entry.slice(name.length);
+
     if (SUPPORT_FILES.has(name)) continue;
-    const source = readFileSync(join(dir, entry), "utf-8");
-    const { external, internal } = extractImports(source, entry);
 
-    const dependencies = [
-      ...new Set(
-        external
-          .map((entry) => packageNameOf(entry.specifier))
-          .filter((pkg) => !IMPLICIT_DEPS.has(pkg)),
-      ),
-    ].sort();
-
-    const registryDependencies = [
-      ...new Set(
-        internal
-          .map((entry) => entry.specifier.replace(/.*\//, ""))
-          .filter((dep) => !SUPPORT_FILES.has(dep))
-          .map((dep) => `@kira-kit/${dep}`),
-      ),
-    ].sort();
-
-    const supportFileNames = internal
-      .map((entry) => entry.specifier.replace(/.*\//, "").replace(/\.(tsx|ts)?$/, ""))
-      .filter((dep) => SUPPORT_FILES.has(dep));
-
-    // shadcn registry schema requires file entries as objects with a path
-    // (relative to the declaring registry.json) and a per-file item type.
-    const files: Array<{ path: string; type: "registry:ui" | "registry:hook" }> = [
-      { path: filesGlob(name, ext), type },
-    ];
-    for (const dep of supportFileNames) {
-      files.push({ path: `${dep}.ts`, type });
-    }
-
-    const meta = metadata[name];
-    items.push({
-      name,
-      type,
-      title: meta?.title ?? name,
-      description: meta?.description ?? `TODO: write a real description for ${name}.`,
-      categories: meta?.categories ?? [],
-      ...(dependencies.length > 0 ? { dependencies } : {}),
-      ...(registryDependencies.length > 0 ? { registryDependencies } : {}),
-      files: [...new Map(files.map((f) => [f.path, f])).values()].sort((a, b) =>
-        a.path.localeCompare(b.path),
-      ),
-    });
+    items.push(buildItem(entry, dir, type, filesGlob, metadata));
   }
 
-  items.sort((a, b) => (a as { name: string }).name.localeCompare((b as { name: string }).name));
+  items.sort((a, b) => a.name.localeCompare(b.name));
+
   return items;
 }
 
@@ -116,6 +160,7 @@ async function main() {
     "registry:ui",
     (name, ext) => `${name}${ext}`,
   );
+
   const hookItems = await buildItems(
     join(REPO_ROOT, "src/hooks"),
     "registry:hook",
@@ -125,6 +170,7 @@ async function main() {
   const uiRegistry = {
     items: uiItems,
   };
+
   const hooksRegistry = {
     items: hookItems,
   };
@@ -139,7 +185,9 @@ async function main() {
     JSON.stringify(hooksRegistry, null, 2) + "\n",
     "utf-8",
   );
-  console.log(`Wrote ${uiItems.length} ui items and ${hookItems.length} hook items.`);
+  console.log(
+    `Wrote ${uiItems.length} ui items and ${hookItems.length} hook items.`,
+  );
 }
 
 await main();

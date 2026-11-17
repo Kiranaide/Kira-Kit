@@ -13,11 +13,13 @@ export interface FileSuppressions {
 }
 
 const LINE_SUPPRESSION = /\/\/\s*kira-kit-ignore\s+([a-z0-9-]+)\s*:\s*(.+)$/i;
+
 const FILE_SUPPRESSION =
   /\/\*\s*kira-kit-ignore-file\s+([a-z0-9-]+)\s*:\s*([^*]+)\*\//i;
 
 /** Suppression comment without a reason is itself an error. */
 const LINE_SUPPRESSION_NO_REASON = /\/\/\s*kira-kit-ignore\s+([a-z0-9-]+)\s*$/i;
+
 const FILE_SUPPRESSION_NO_REASON =
   /\/\*\s*kira-kit-ignore-file\s+([a-z0-9-]+)\s*\*\//i;
 
@@ -37,26 +39,31 @@ export function parseSuppressions(
 
   lines.forEach((text, index) => {
     const match = LINE_SUPPRESSION.exec(text.trim());
+
     if (match) {
       suppressions.line.push({
         checkId: match[1],
         line: index + 1,
         reason: match[2].trim(),
       });
+
       return;
     }
+
     if (LINE_SUPPRESSION_NO_REASON.exec(text.trim())) {
       errors.push({
         checkId: "suppression",
         severity: "error",
         file,
         line: index + 1,
-        message: "kira-kit-ignore without a reason — add `: <why this is intentional>`.",
+        message:
+          "kira-kit-ignore without a reason — add `: <why this is intentional>`.",
       });
     }
   });
 
   const fileMatch = FILE_SUPPRESSION.exec(source);
+
   if (fileMatch) {
     suppressions.file.push({
       checkId: fileMatch[1],
@@ -68,7 +75,8 @@ export function parseSuppressions(
       checkId: "suppression",
       severity: "error",
       file,
-      message: "kira-kit-ignore-file without a reason — add `: <why this is intentional>`.",
+      message:
+        "kira-kit-ignore-file without a reason — add `: <why this is intentional>`.",
     });
   }
 
@@ -80,7 +88,9 @@ export function isSuppressed(
   suppressions: FileSuppressions,
 ): boolean {
   if (suppressions.file.some((s) => s.checkId === finding.checkId)) return true;
+
   if (finding.line === undefined) return false;
+
   return suppressions.line.some(
     (s) => s.checkId === finding.checkId && s.line + 1 === finding.line,
   );
@@ -92,12 +102,16 @@ export function unusedSuppressions(
   file: string,
 ): Finding[] {
   const used = new Set<string>();
+
   for (const suppression of suppressions.file) {
     const key = `file:${suppression.checkId}`;
+
     if (findings.some((f) => f.checkId === suppression.checkId)) used.add(key);
   }
+
   for (const suppression of suppressions.line) {
     const key = `line:${suppression.line}:${suppression.checkId}`;
+
     if (
       findings.some(
         (f) =>
@@ -107,7 +121,9 @@ export function unusedSuppressions(
       used.add(key);
     }
   }
+
   const unused: Finding[] = [];
+
   for (const suppression of suppressions.file) {
     if (!used.has(`file:${suppression.checkId}`)) {
       unused.push({
@@ -118,6 +134,7 @@ export function unusedSuppressions(
       });
     }
   }
+
   for (const suppression of suppressions.line) {
     if (!used.has(`line:${suppression.line}:${suppression.checkId}`)) {
       unused.push({
@@ -129,6 +146,7 @@ export function unusedSuppressions(
       });
     }
   }
+
   return unused;
 }
 

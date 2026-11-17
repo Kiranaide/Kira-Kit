@@ -1,4 +1,5 @@
 /* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
+/* kira-kit-ignore-file raw-colors: canvas overlay stroke/scan-line colours are user-configurable drawing data, not theme styling */
 "use client";
 
 import * as React from "react";

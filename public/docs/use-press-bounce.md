@@ -20,5 +20,4 @@ npx shadcn add @kira-kit/use-press-bounce
 
 ```tsx
 import { usePressBounce } from "@/hooks/use-press-bounce";
-
 ```

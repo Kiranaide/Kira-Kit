@@ -487,7 +487,7 @@ const tabsTriggerVariants = cva(
     "group-data-[scrollable]/list:shrink-0",
     "rounded-md px-3 py-1.5 text-sm font-medium",
     "relative z-10",
-    "transition-all duration-200",
+    "transition-[color,background-color,border-color,box-shadow] duration-200",
     "motion-reduce:transition-none",
     "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-1 focus-visible:outline-ring",
     "disabled:pointer-events-none disabled:opacity-50",
@@ -1049,7 +1049,7 @@ function useSortableTab(item: TabItem) {
         listeners?.onPointerDown?.(event);
         event.stopPropagation();
       }}
-      className="-ms-1 inline-flex size-5 shrink-0 cursor-grab items-center justify-center rounded text-muted-foreground hover:bg-foreground/10 active:cursor-grabbing touch-none"
+      className="-ms-1 inline-flex size-6 shrink-0 cursor-grab items-center justify-center rounded text-muted-foreground hover:bg-foreground/10 active:cursor-grabbing touch-none"
     >
       <IconGripVertical className="size-3.5" />
     </span>

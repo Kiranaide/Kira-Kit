@@ -1517,6 +1517,7 @@ function renderKanbanColumnBodyPart2({
         "overflow-hidden",
         !reduced &&
           disclosureMotion &&
+          // kira-kit-ignore layout-transitions: Base UI collapsible panel height var is the standard expand/collapse animation
           "h-(--collapsible-panel-height) transition-[height,opacity] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] data-starting-style:h-0 data-starting-style:opacity-0 data-ending-style:h-0 data-ending-style:opacity-0",
       )}
     >

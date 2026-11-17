@@ -52,20 +52,25 @@ export function verifyScheme(
   tokens: TokenMap,
 ): PairFailure[] {
   const failures: PairFailure[] = [];
+
   for (const [fg, bg] of TEXT_PAIRS) {
     if (!tokens[fg] || !tokens[bg]) continue;
     const ratio = wcagRatio(tokens[fg], tokens[bg]);
+
     if (ratio < 4.5) {
       failures.push({ scheme, fg, bg, ratio, threshold: 4.5, kind: "text" });
     }
   }
+
   for (const [fg, bg] of UI_PAIRS) {
     if (!tokens[fg] || !tokens[bg]) continue;
     const ratio = wcagRatio(tokens[fg], tokens[bg]);
+
     if (ratio < 3) {
       failures.push({ scheme, fg, bg, ratio, threshold: 3, kind: "ui" });
     }
   }
+
   return failures;
 }
 
@@ -84,6 +89,7 @@ function adjustToken(
 ): { toL: number } | null {
   const fgColor = tokens[fg];
   const bgColor = tokens[bg];
+
   if (!fgColor || !bgColor) return null;
 
   const startL = fgColor.l;
@@ -92,8 +98,10 @@ function adjustToken(
   for (let candidateL = SCAN_STEP; candidateL <= 1; candidateL += SCAN_STEP) {
     const rounded = Math.round(candidateL * 100) / 100;
     tokens[fg] = { ...fgColor, l: rounded };
+
     if (wcagRatio(tokens[fg], tokens[bg]) >= threshold) {
       const distance = Math.abs(rounded - startL);
+
       if (!best || distance < best.distance) {
         best = { toL: rounded, distance };
       }
@@ -101,8 +109,10 @@ function adjustToken(
   }
 
   tokens[fg] = fgColor;
+
   if (!best) return null;
   tokens[fg] = { ...fgColor, l: best.toL };
+
   return { toL: best.toL };
 }
 
@@ -124,16 +134,19 @@ export function autoAdjust(
 
   for (let pass = 0; pass < 3; pass++) {
     const failures = verifyScheme(scheme, tokens);
+
     if (failures.length === 0) break;
 
     for (const failure of failures) {
       const fgColor = tokens[failure.fg];
+
       const fixed = adjustToken(
         tokens,
         failure.fg,
         failure.bg,
         failure.threshold,
       );
+
       if (fixed) {
         adjustments.push({
           scheme,
@@ -153,6 +166,7 @@ export function buildApcaReport(
   tokens: TokenMap,
 ): ApcaReportEntry[] {
   const entries: ApcaReportEntry[] = [];
+
   for (const [fg, bg] of TEXT_PAIRS) {
     if (!tokens[fg] || !tokens[bg]) continue;
     entries.push({
@@ -161,6 +175,7 @@ export function buildApcaReport(
       lc: apcaLc(tokens[fg], tokens[bg]),
     });
   }
+
   return entries;
 }
 

@@ -832,6 +832,7 @@ function AccordionContent(input: AccordionContentProps) {
       className={cn(
         "overflow-hidden h-(--accordion-panel-height) data-ending-style:h-0 data-starting-style:h-0",
         !reducedMotion &&
+          // kira-kit-ignore layout-transitions: Base UI collapsible panel height var is the standard expand/collapse animation
           "transition-[height] duration-200 ease-out data-ending-style:duration-150 data-ending-style:ease-in",
         inset && "pl-8",
         className,

@@ -356,6 +356,7 @@ export {
   HoverCardLoading,
   HoverCardViewport,
   HoverCardImage,
+  hoverCardContentVariants,
 };
 
 export type {

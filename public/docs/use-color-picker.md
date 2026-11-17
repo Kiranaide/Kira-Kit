@@ -16,5 +16,4 @@ npx shadcn add @kira-kit/use-color-picker
 
 ```tsx
 import { useColorPicker } from "@/hooks/use-color-picker";
-
 ```

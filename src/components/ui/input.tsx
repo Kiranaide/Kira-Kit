@@ -1216,7 +1216,7 @@ function SearchInput(arg0: SearchInputProps) {
 type OTPInputType = "numeric" | "alphanumeric" | "alpha";
 
 const otpInputVariants = cva(
-  "flex items-center justify-center border bg-background text-center font-mono font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
+  "flex items-center justify-center border bg-background text-center font-mono font-medium transition-[color,background-color,border-color,box-shadow] duration-150 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       size: {
@@ -1424,7 +1424,7 @@ const ratingVariants = cva("inline-flex items-center gap-0.5", {
 });
 
 const ratingItemVariants = cva(
-  "transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm",
+  "transition-[color,box-shadow,opacity] duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm",
   {
     variants: {
       color: {
@@ -1976,7 +1976,11 @@ function InputContentView2({
             className={cn(
               strengthColors[strength.score],
               "h-full rounded-full",
-              { "transition-all duration-300": !reducedMotion },
+              {
+                // kira-kit-ignore layout-transitions: meter fill width is the value animation, driven by Base UI inline width
+                "transition-[width,background-color] duration-300":
+                  !reducedMotion,
+              },
             )}
           />
         </Meter.Track>

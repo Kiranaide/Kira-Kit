@@ -12,5 +12,4 @@ npx shadcn add @kira-kit/use-spotlight
 
 ```tsx
 import { useSpotlight } from "@/hooks/use-spotlight";
-
 ```

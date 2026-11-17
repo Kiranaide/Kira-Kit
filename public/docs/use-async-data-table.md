@@ -16,5 +16,4 @@ npx shadcn add @kira-kit/use-async-data-table
 
 ```tsx
 import { useAsyncDataTable } from "@/hooks/use-async-data-table";
-
 ```

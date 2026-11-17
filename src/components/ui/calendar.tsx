@@ -199,7 +199,7 @@ const calendarButtonVariants = cva(
 );
 
 const toggleButtonVariants = cva(
-  "flex h-7 min-w-16 items-center justify-center rounded px-2 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+  "flex h-7 min-w-16 items-center justify-center rounded px-2 text-xs font-medium transition-[color,background-color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
   {
     variants: {
       active: {
@@ -213,7 +213,7 @@ const toggleButtonVariants = cva(
 );
 
 const gridCellVariants = cva(
-  "h-10 rounded-lg text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-disabled:cursor-not-allowed aria-disabled:line-through aria-disabled:opacity-40 aria-disabled:hover:bg-transparent",
+  "h-10 rounded-lg text-xs font-medium transition-[color,background-color,box-shadow,opacity] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-disabled:cursor-not-allowed aria-disabled:line-through aria-disabled:opacity-40 aria-disabled:hover:bg-transparent",
   {
     variants: {
       state: {

@@ -8,7 +8,7 @@ const cardSurfaceVariants = cva("", {
     variant: {
       default: "ring-foreground/10 bg-card",
       interactive:
-        "ring-foreground/10 bg-card hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer",
+        "ring-foreground/10 bg-card hover:shadow-lg hover:-translate-y-1 transition-[box-shadow,translate] duration-200 cursor-pointer",
       gradient:
         "bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/5 ring-primary/20",
       glass:

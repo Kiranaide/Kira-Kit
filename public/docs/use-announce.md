@@ -12,5 +12,4 @@ npx shadcn add @kira-kit/use-announce
 
 ```tsx
 import { useAnnounce } from "@/hooks/use-announce";
-
 ```

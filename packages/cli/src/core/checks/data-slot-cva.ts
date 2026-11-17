@@ -9,19 +9,23 @@ export const dataSlotAndCva: Check = (file) => {
   const content = file.content;
 
   // Hooks render no DOM, so they can't carry data-slot attributes.
-  if (!file.name.startsWith("hooks/")) {
-    if (!content.includes("data-slot=")) {
-      findings.push({
-        checkId: "data-slot-cva",
-        severity: "warning",
-        file: file.name,
-        message: "no `data-slot=` found in component file.",
-      });
-    }
+  // Accept both JSX (`data-slot=`) and createElement (`"data-slot":`) forms.
+  if (
+    !file.name.startsWith("hooks/") &&
+    !content.includes("data-slot=") &&
+    !/["']data-slot["']\s*:/.test(content)
+  ) {
+    findings.push({
+      checkId: "data-slot-cva",
+      severity: "warning",
+      file: file.name,
+      message: "no `data-slot=` found in component file.",
+    });
   }
 
   const usesCva =
     content.includes("class-variance-authority") || /\bcva\s*\(/.test(content);
+
   const exportsVariants =
     /export\s+(?:const|function|var)\s+\w*Variants/.test(content) ||
     /export\s*\{[^}]*Variants/.test(content);

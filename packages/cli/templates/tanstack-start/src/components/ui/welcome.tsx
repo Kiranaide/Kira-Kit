@@ -9,8 +9,10 @@ const welcomeVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/90",
-        outline: "border-border bg-background hover:bg-accent hover:text-accent-foreground",
+        default:
+          "border-transparent bg-primary text-primary-foreground hover:bg-primary/90",
+        outline:
+          "border-border bg-background hover:bg-accent hover:text-accent-foreground",
       },
       size: {
         sm: "h-8 px-3 text-xs",

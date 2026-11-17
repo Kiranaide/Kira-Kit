@@ -82,7 +82,7 @@ export { variants };
 | `@tanstack/react-router`   | Routing        |
 | `@tabler/icons-react`      | Icons          |
 | `zod`                      | Validation     |
-| `cn`                       | Class merging |
-| `class-variance-authority` | Variants      |
+| `cn`                       | Class merging  |
+| `class-variance-authority` | Variants       |
 | `tailwind-animate`         | Animations     |
 | `gsap` or `@gsap/react`    | Animations     |

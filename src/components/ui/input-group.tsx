@@ -167,4 +167,6 @@ export {
   InputGroupText,
   InputGroupInput,
   InputGroupTextarea,
+  inputGroupAddonVariants,
+  inputGroupButtonVariants,
 };

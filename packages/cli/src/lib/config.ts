@@ -1,20 +1,28 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import type { ComponentsConfig } from "../types";
-import { componentsConfigSchema, KIRA_NAMESPACE, DEFAULT_REGISTRY_URL } from "./schemas";
+import {
+  componentsConfigSchema,
+  KIRA_NAMESPACE,
+  DEFAULT_REGISTRY_URL,
+} from "./schemas";
 
 export { KIRA_NAMESPACE, DEFAULT_REGISTRY_URL };
 
 export function findConfigFile(cwd: string): string | null {
   const path = join(cwd, "components.json");
+
   return existsSync(path) ? path : null;
 }
 
 export function readConfig(cwd: string): ComponentsConfig | null {
   const configPath = findConfigFile(cwd);
+
   if (!configPath) return null;
+
   try {
     const content = readFileSync(configPath, "utf-8");
+
     return componentsConfigSchema.parse(JSON.parse(content));
   } catch {
     return null;
@@ -36,7 +44,9 @@ export interface RawComponentsConfig {
 /** Read components.json without zod defaults; preserves unknown keys on write. */
 export function readRawConfig(cwd: string): RawComponentsConfig | null {
   const configPath = findConfigFile(cwd);
+
   if (!configPath) return null;
+
   try {
     return JSON.parse(readFileSync(configPath, "utf-8"));
   } catch {
@@ -54,9 +64,11 @@ export function upsertKiraRegistry(
 ): boolean {
   const config = readRawConfig(cwd);
   const next: RawComponentsConfig = config ?? {};
+
   const registries = {
-    ...(next.registries ?? {}),
+    ...next.registries,
   };
+
   // Never clobber: an existing @kira-kit entry is the user's choice.
   if (registries[KIRA_NAMESPACE]) return false;
   registries[KIRA_NAMESPACE] = url;
@@ -66,6 +78,7 @@ export function upsertKiraRegistry(
     JSON.stringify(next, null, 2) + "\n",
     "utf-8",
   );
+
   return true;
 }
 
@@ -73,6 +86,8 @@ export function upsertKiraRegistry(
 export function getRegistryUrl(cwd: string): string {
   const config = readConfig(cwd);
   const url = config?.registries?.[KIRA_NAMESPACE];
+
   if (!url) return DEFAULT_REGISTRY_URL.replace("/{name}.json", "");
+
   return url.replace("/{name}.json", "");
 }

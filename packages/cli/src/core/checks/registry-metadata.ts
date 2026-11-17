@@ -13,6 +13,7 @@ const BOILERPLATE_PATTERNS = [
  */
 export const registryMetadata: Check = (file, ctx) => {
   const meta = ctx.items.get(file.name);
+
   if (!meta) return [];
   const findings: Finding[] = [];
   const description = meta.description.trim();
@@ -24,7 +25,10 @@ export const registryMetadata: Check = (file, ctx) => {
       file: file.name,
       message: "registry item has an empty description.",
     });
-  } else if (description.length < 20 || BOILERPLATE_PATTERNS.some((p) => p.test(description))) {
+  } else if (
+    description.length < 20 ||
+    BOILERPLATE_PATTERNS.some((p) => p.test(description))
+  ) {
     findings.push({
       checkId: "registry-metadata",
       severity: "error",

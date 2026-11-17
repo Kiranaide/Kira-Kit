@@ -1,4 +1,5 @@
 /* oxlint-disable react/only-export-components -- public color utilities accompany the component */
+/* kira-kit-ignore-file raw-colors: swatch palette entries and default values are colour data, not theme styling */
 "use client";
 
 import * as React from "react";

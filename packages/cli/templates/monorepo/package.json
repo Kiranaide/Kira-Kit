@@ -2,7 +2,9 @@
   "name": "kira-kit-monorepo",
   "private": true,
   "type": "module",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev --workspace @kira/app",
     "build": "npm run build --workspace @kira/app",

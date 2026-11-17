@@ -149,12 +149,12 @@ kira-kit build --skip-checks
 
 ## Exit codes
 
-| Code | Meaning |
-| --- | --- |
-| 0 | Success |
-| 1 | User error (bad input, validation failure) |
-| 2 | Registry problem (invalid/malformed registry data) |
-| 3 | Quality checks failed |
+| Code | Meaning                                            |
+| ---- | -------------------------------------------------- |
+| 0    | Success                                            |
+| 1    | User error (bad input, validation failure)         |
+| 2    | Registry problem (invalid/malformed registry data) |
+| 3    | Quality checks failed                              |
 
 ## Development
 

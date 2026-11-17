@@ -53,7 +53,7 @@ interface DatePreset {
 
 const datePickerTriggerVariants = cva(
   [
-    "relative flex w-full items-center gap-2 rounded-lg border transition-all",
+    "relative flex w-full items-center gap-2 rounded-lg border transition-[background-color,border-color,box-shadow,opacity]",
     "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
     "has-[[aria-expanded=true]]:ring-2 has-[[aria-expanded=true]]:ring-ring/60",
     "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
@@ -1436,7 +1436,7 @@ function renderDatePicker({
   calendarShared,
 }: ReturnType<typeof useDatePickerActions>) {
   return (
-    <div className={cn("relative w-full", className)}>
+    <div data-slot="date-picker" className={cn("relative w-full", className)}>
       <div
         className={datePickerTriggerVariants({ variant, size })}
         style={anchorStyle}

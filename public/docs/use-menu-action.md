@@ -12,5 +12,4 @@ npx shadcn add @kira-kit/use-menu-action
 
 ```tsx
 import { useMenuAction } from "@/hooks/use-menu-action";
-
 ```

@@ -7,6 +7,7 @@ const FORBIDDEN = /^(radix-ui|@radix-ui\/|react-aria)/;
 export const baseUiOnly: Check = (file) => {
   const { external } = extractImports(file.content, file.path);
   const findings: Finding[] = [];
+
   for (const entry of external) {
     if (FORBIDDEN.test(entry.specifier)) {
       findings.push({
@@ -18,5 +19,6 @@ export const baseUiOnly: Check = (file) => {
       });
     }
   }
+
   return findings;
 };

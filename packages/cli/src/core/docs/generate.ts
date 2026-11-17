@@ -32,8 +32,13 @@ export function generateDocs(
   items: SourceRegistryItem[],
   _options: DocsOptions,
 ): GeneratedDocs {
-  const perItem = items.map((item) => ({ name: item.name, content: renderMarkdown(item) }));
+  const perItem = items.map((item) => ({
+    name: item.name,
+    content: renderMarkdown(item),
+  }));
+
   const llmsTxt = renderLlmsTxt(items);
+
   return { llmsTxt, perItem };
 }
 
@@ -57,15 +62,35 @@ function renderLlmsTxt(items: SourceRegistryItem[]): string {
     "",
     "Items:",
   ];
+
   for (const item of items) {
-    lines.push(`- [${item.title ?? item.name}](${HOMEPAGE}/docs/${item.name}.md): ${item.description}`);
+    lines.push(
+      `- [${item.title ?? item.name}](${HOMEPAGE}/docs/${item.name}.md): ${item.description}`,
+    );
   }
+
   return lines.join("\n") + "\n";
+}
+
+function usageLines(item: SourceRegistryItem): string[] {
+  if (item.type === "registry:hook") {
+    return [`import { ${camelCase(item.name)} } from "@/hooks/${item.name}";`];
+  }
+
+  const component = pascalCase(item.name);
+  const importLine = `import { ${component} } from "@/components/ui/${item.name}";`;
+
+  if (item.type === "registry:theme") {
+    return [importLine, "/* Applied as CSS variables by shadcn. */"];
+  }
+
+  return [importLine, `<${component}> text</${component}>`];
 }
 
 function renderMarkdown(item: SourceRegistryItem): string {
   const deps = item.dependencies ?? [];
   const registryDeps = item.registryDependencies ?? [];
+
   const lines: string[] = [
     `# ${item.title ?? item.name}`,
     "",
@@ -82,6 +107,7 @@ function renderMarkdown(item: SourceRegistryItem): string {
   if (deps.length > 0) {
     lines.push("## Dependencies", "", ...deps.map((d) => `- ${d}`), "");
   }
+
   if (registryDeps.length > 0) {
     lines.push(
       "## Registry dependencies",
@@ -91,24 +117,9 @@ function renderMarkdown(item: SourceRegistryItem): string {
     );
   }
 
-  const isHook = item.type === "registry:hook";
-  lines.push(
-    "## Usage",
-    "",
-    "```tsx",
-    isHook
-      ? `import { ${camelCase(item.name)} } from "@/hooks/${item.name}";`
-      : `import { ${pascalCase(item.name)} } from "@/components/ui/${item.name}";`,
-    isHook
-      ? ""
-      : item.type === "registry:theme"
-        ? "/* Applied as CSS variables by shadcn. */"
-        : `<${pascalCase(item.name)}>${` text`}</${pascalCase(item.name)}>`,
-    "```",
-    "",
-  );
+  lines.push("## Usage", "", "```tsx", ...usageLines(item), "```", "");
 
-  if (!isHook && item.type !== "registry:theme") {
+  if (item.type !== "registry:hook" && item.type !== "registry:theme") {
     lines.push(
       "## Accessibility",
       "",
@@ -130,6 +141,7 @@ function pascalCase(name: string): string {
 
 function camelCase(name: string): string {
   const pascal = pascalCase(name);
+
   return pascal.charAt(0).toLowerCase() + pascal.slice(1);
 }
 

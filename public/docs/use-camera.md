@@ -12,5 +12,4 @@ npx shadcn add @kira-kit/use-camera
 
 ```tsx
 import { useCamera } from "@/hooks/use-camera";
-
 ```

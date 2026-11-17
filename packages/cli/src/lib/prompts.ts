@@ -31,6 +31,7 @@ export async function select<T extends string>(
     // site, so its runtime value matches the prompt's value type T.
     return (ctx.flagValue as T | undefined) ?? fallback;
   }
+
   const answer = await p.select<string>({
     message,
     options: options.map((option) => ({
@@ -41,10 +42,12 @@ export async function select<T extends string>(
       hint: option.hint,
     })),
   });
+
   if (p.isCancel(answer)) {
     p.cancel("Cancelled.");
     process.exit(1);
   }
+
   // SAFETY: clack's select returns the chosen option's value verbatim, and
   // every option was built from a T-typed value above.
   return answer as T;
@@ -59,13 +62,17 @@ export async function confirm(
     // SAFETY: confirm() call sites pass the parsed boolean flag (e.g. --force),
     // so flagValue is boolean | undefined; undefined falls back to the default.
     const explicit = ctx.flagValue as boolean | undefined;
+
     return explicit ?? fallback;
   }
+
   const answer = await p.confirm({ message, initialValue: fallback });
+
   if (p.isCancel(answer)) {
     p.cancel("Cancelled.");
     process.exit(1);
   }
+
   return answer;
 }
 
@@ -80,15 +87,18 @@ export async function text(
     // string | undefined; undefined falls back to the default.
     return (ctx.flagValue as string | undefined) ?? fallback;
   }
+
   const answer = await p.text({
     message,
     initialValue: fallback,
     validate: validate ? (value) => validate(value ?? "") : undefined,
   });
+
   if (p.isCancel(answer)) {
     p.cancel("Cancelled.");
     process.exit(1);
   }
+
   return answer;
 }
 

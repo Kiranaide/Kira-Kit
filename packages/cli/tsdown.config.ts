@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { defineConfig } from "tsdown";
 
+// SAFETY: this is the CLI's own package.json manifest; only the version field is read, and the build fails loudly if it is missing.
 const pkg = JSON.parse(
   readFileSync(new URL("./package.json", import.meta.url), "utf-8"),
 ) as { version: string };

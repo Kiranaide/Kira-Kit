@@ -3652,7 +3652,9 @@ function renderDataTableRootView<TData extends RowData, TValue>({
 }: renderDataTableRootViewArgs<TData, TValue>) {
   return (
     <DataTableContext.Provider value={contextValue}>
-      <div className="space-y-4">{children}</div>
+      <div data-slot="data-table" className="space-y-4">
+        {children}
+      </div>
       {announceChanges && (
         <output aria-live="polite" className="block sr-only">
           {announcement}
