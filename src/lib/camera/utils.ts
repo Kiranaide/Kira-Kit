@@ -8,11 +8,11 @@ import { BROWSER_PERMISSION_HELP_LINKS } from "./constants";
 /**
  * Detect the user's browser for permission help links
  */
-export function detectBrowser(): string {
+export function detectBrowser(): keyof typeof BROWSER_PERMISSION_HELP_LINKS {
   if (typeof navigator === "undefined") return "default";
-  
+
   const ua = navigator.userAgent.toLowerCase();
-  
+
   if (ua.includes("edg/")) return "edge";
 
   if (ua.includes("opr/") || ua.includes("opera")) return "opera";
@@ -22,7 +22,7 @@ export function detectBrowser(): string {
   if (ua.includes("safari") && !ua.includes("chrome")) return "safari";
 
   if (ua.includes("firefox")) return "firefox";
-  
+
   return "default";
 }
 
@@ -32,7 +32,10 @@ export function detectBrowser(): string {
 export function getPermissionHelpLink(): string {
   const browser = detectBrowser();
 
-  return BROWSER_PERMISSION_HELP_LINKS[browser] || BROWSER_PERMISSION_HELP_LINKS.default;
+  return (
+    BROWSER_PERMISSION_HELP_LINKS[browser] ||
+    BROWSER_PERMISSION_HELP_LINKS.default
+  );
 }
 
 /**
@@ -49,17 +52,19 @@ export function isMediaDevicesSupported(): boolean {
 /**
  * Check if the browser supports the Permissions API for camera
  */
-export async function checkCameraPermissionStatus(): Promise<"granted" | "denied" | "prompt"> {
+export async function checkCameraPermissionStatus(): Promise<
+  "granted" | "denied" | "prompt"
+> {
   try {
     if (typeof navigator === "undefined" || !navigator.permissions) {
       return "prompt";
     }
 
     const permission = await navigator.permissions.query({
-      name: "camera" as PermissionName,
+      name: "camera",
     });
 
-    return permission.state as "granted" | "denied" | "prompt";
+    return permission.state;
   } catch {
     // Permissions API not supported
     return "prompt";
@@ -71,9 +76,9 @@ export async function checkCameraPermissionStatus(): Promise<"granted" | "denied
  */
 export function isTorchSupported(track: MediaStreamTrack): boolean {
   try {
-    const capabilities = track.getCapabilities() as MediaTrackCapabilities & { torch?: boolean };
+    const capabilities = track.getCapabilities();
 
-    return Boolean(capabilities.torch);
+    return "torch" in capabilities && capabilities.torch === true;
   } catch {
     return false;
   }
@@ -82,11 +87,20 @@ export function isTorchSupported(track: MediaStreamTrack): boolean {
 /**
  * Toggle torch on a video track
  */
-export async function toggleTorch(track: MediaStreamTrack, enabled: boolean): Promise<boolean> {
+export async function toggleTorch(
+  track: MediaStreamTrack,
+  enabled: boolean,
+): Promise<boolean> {
   try {
-    await track.applyConstraints({
-      advanced: [{ torch: enabled } as MediaTrackConstraintSet],
-    });
+    const torchConstraints = { torch: enabled };
+
+    const constraints: MediaTrackConstraints & {
+      advanced: { torch: boolean }[];
+    } = {
+      advanced: [torchConstraints],
+    };
+
+    await track.applyConstraints(constraints);
 
     return true;
   } catch {
@@ -143,11 +157,11 @@ export function dataUrlToBlob(dataUrl: string): Blob {
   const mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
   const ab = new ArrayBuffer(byteString.length);
   const ia = new Uint8Array(ab);
-  
+
   for (let i = 0; i < byteString.length; i++) {
     ia[i] = byteString.charCodeAt(i);
   }
-  
+
   return new Blob([ab], { type: mimeString });
 }
 
@@ -157,7 +171,9 @@ export function dataUrlToBlob(dataUrl: string): Blob {
 export function isMobileDevice(): boolean {
   if (typeof navigator === "undefined") return false;
 
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent,
+  );
 }
 
 /**
@@ -178,19 +194,22 @@ export async function hasMultipleCameras(): Promise<boolean> {
  * Get supported video codecs for recording
  */
 export function getSupportedVideoCodec(): string {
+  if (typeof MediaRecorder === "undefined") return "";
+
   const codecs = [
     "video/webm;codecs=vp9",
     "video/webm;codecs=vp8",
     "video/webm",
+    "video/mp4",
   ];
-  
+
   for (const codec of codecs) {
     if (MediaRecorder.isTypeSupported(codec)) {
       return codec;
     }
   }
-  
-  return "video/webm";
+
+  return "";
 }
 
 /**
@@ -205,7 +224,7 @@ export function clamp(value: number, min: number, max: number): number {
  */
 export function throttle<T extends (...args: unknown[]) => void>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let lastCall = 0;
 

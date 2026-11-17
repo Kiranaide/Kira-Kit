@@ -10,10 +10,6 @@ export type CameraErrorCode =
   | "DEVICE_NOT_FOUND"
   | "DEVICE_IN_USE"
   | "CONSTRAINT_NOT_SATISFIED"
-  | "MODEL_LOAD_FAILED"
-  | "OCR_FAILED"
-  | "FACE_NOT_DETECTED"
-  | "LIVENESS_FAILED"
   | "UNKNOWN_ERROR";
 
 export type CameraStatus =
@@ -22,7 +18,6 @@ export type CameraStatus =
   | "permission-denied"
   | "initializing"
   | "ready"
-  | "detecting"
   | "capturing"
   | "processing"
   | "success"
@@ -31,19 +26,10 @@ export type CameraStatus =
 
 export type CameraFacingMode = "user" | "environment";
 
-export type CameraMode =
-  | "selfie"
-  | "face-detection"
-  | "id-scanner"
-  | "photo"
-  | "video"
-  | "liveness";
+export type CameraMode = "selfie" | "photo" | "video";
 
 export type DocumentType =
-  | "national-id"
-  | "passport"
-  | "drivers-license"
-  | "custom";
+  "national-id" | "passport" | "drivers-license" | "custom";
 
 export interface CameraConstraints {
   width?: number;
@@ -62,78 +48,10 @@ export interface MediaDeviceInfo {
 export interface CaptureResult {
   blob: Blob;
   url: string;
-  type: "image/jpeg" | "image/png" | "video/webm";
+  type: "image/jpeg" | "image/png" | "image/webp" | "video/webm";
   timestamp: number;
   width: number;
   height: number;
-}
-
-export interface DetectedFace {
-  boundingBox: BoundingBox;
-  landmarks?: FaceLandmark[];
-  confidence: number;
-  descriptor?: Float32Array;
-}
-
-export interface BoundingBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-export interface FaceLandmark {
-  x: number;
-  y: number;
-  z?: number;
-  name?: string;
-}
-
-export interface IdScanResult {
-  documentType: DocumentType;
-  fields: Record<string, { value: string; confidence: number }>;
-  rawImage: Blob;
-  croppedImage: Blob;
-  confidence: number;
-}
-
-export interface LivenessResult {
-  passed: boolean;
-  score: number;
-  completedChallenges: string[];
-  failedChallenges: string[];
-  duration: number;
-}
-
-export interface LivenessChallenge {
-  id: string;
-  type:
-    | "blink"
-    | "smile"
-    | "turn-left"
-    | "turn-right"
-    | "turn-up"
-    | "turn-down";
-  description: string;
-  timeout: number;
-}
-
-export interface KYCStep {
-  id: string;
-  type: "document-front" | "document-back" | "selfie" | "liveness";
-  title: string;
-  description: string;
-  documentTypes?: DocumentType[];
-}
-
-export interface KYCResult {
-  documentFront?: Blob;
-  documentBack?: Blob;
-  extractedFields: Record<string, { value: string; confidence: number }>;
-  selfie?: Blob;
-  livenessScore: number;
-  faceMatch?: boolean;
-  completedAt: number;
 }
 
 export interface CameraProps {
@@ -142,101 +60,9 @@ export interface CameraProps {
   constraints?: CameraConstraints;
   onCapture?: (result: CaptureResult) => void;
   onError?: (error: CameraError) => void;
-  onFaceDetected?: (faces: DetectedFace[]) => void;
-  onIdScanned?: (result: IdScanResult) => void;
-  onLivenessComplete?: (result: LivenessResult) => void;
   className?: string;
   children?: React.ReactNode;
 }
-
-export interface FaceDetectionOptions {
-  minConfidence?: number;
-  maxFaces?: number;
-  detectLandmarks?: boolean;
-  detectDescriptors?: boolean;
-}
-
-export interface OCROptions {
-  language?: string;
-  region?: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  whitelist?: string;
-  blacklist?: string;
-}
-
-export interface DocumentTemplate {
-  type: DocumentType;
-  aspectRatio: number;
-  requiredFields: string[];
-  mrzEnabled?: boolean;
-  sampleImage?: string;
-}
-
-export const DOCUMENT_TEMPLATES: Record<DocumentType, DocumentTemplate> = {
-  "national-id": {
-    type: "national-id",
-    aspectRatio: 1.586, // ID-1 format (85.6mm x 53.98mm)
-    requiredFields: ["name", "id_number", "date_of_birth", "expiry_date"],
-    mrzEnabled: false,
-  },
-  passport: {
-    type: "passport",
-    aspectRatio: 1.42, // Passport format
-    requiredFields: [
-      "name",
-      "passport_number",
-      "nationality",
-      "date_of_birth",
-      "expiry_date",
-    ],
-    mrzEnabled: true,
-  },
-  "drivers-license": {
-    type: "drivers-license",
-    aspectRatio: 1.586,
-    requiredFields: [
-      "name",
-      "license_number",
-      "date_of_birth",
-      "expiry_date",
-      "class",
-    ],
-    mrzEnabled: false,
-  },
-  custom: {
-    type: "custom",
-    aspectRatio: 1.5,
-    requiredFields: [],
-    mrzEnabled: false,
-  },
-};
-
-export const DEFAULT_FACE_DETECTION_OPTIONS: FaceDetectionOptions = {
-  minConfidence: 0.7,
-  maxFaces: 1,
-  detectLandmarks: true,
-  detectDescriptors: false,
-};
-
-export const DEFAULT_LIVENESS_CHALLENGES: LivenessChallenge[] = [
-  { id: "blink", type: "blink", description: "Blink your eyes", timeout: 5000 },
-  {
-    id: "turn-left",
-    type: "turn-left",
-    description: "Turn your head left",
-    timeout: 5000,
-  },
-  {
-    id: "turn-right",
-    type: "turn-right",
-    description: "Turn your head right",
-    timeout: 5000,
-  },
-];
 
 export const CAMERA_CONSTRAINTS: Record<CameraMode, MediaStreamConstraints> = {
   selfie: {
@@ -244,22 +70,6 @@ export const CAMERA_CONSTRAINTS: Record<CameraMode, MediaStreamConstraints> = {
       facingMode: "user",
       width: { ideal: 1280 },
       height: { ideal: 720 },
-      frameRate: { ideal: 30 },
-    },
-  },
-  "face-detection": {
-    video: {
-      facingMode: "user",
-      width: { ideal: 1280 },
-      height: { ideal: 720 },
-      frameRate: { ideal: 30 },
-    },
-  },
-  "id-scanner": {
-    video: {
-      facingMode: "environment",
-      width: { ideal: 1920 },
-      height: { ideal: 1080 },
       frameRate: { ideal: 30 },
     },
   },
@@ -279,14 +89,6 @@ export const CAMERA_CONSTRAINTS: Record<CameraMode, MediaStreamConstraints> = {
     },
     audio: true,
   },
-  liveness: {
-    video: {
-      facingMode: "user",
-      width: { ideal: 1280 },
-      height: { ideal: 720 },
-      frameRate: { ideal: 30 },
-    },
-  },
 };
 
 // Enhanced Camera Types
@@ -303,47 +105,31 @@ export type CameraGridType =
 
 export type CameraAspectRatio = "4:3" | "16:9" | "1:1" | "9:16" | "3:2" | "2:3";
 
-export type CameraQuality = "standard" | "hd" | "ultra" | "raw";
+export type CameraQuality = "standard" | "hd" | "ultra" | "lossless";
 
 export type CameraCaptureFormat = "image/jpeg" | "image/png" | "image/webp";
 
+// oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Public camera geometry type names are part of the existing API.
 export type CameraGuideShape =
-  | "oval"
-  | "rectangle"
-  | "circle"
-  | "square"
-  | "polygon";
+  "oval" | "rectangle" | "circle" | "square" | "polygon";
 
 export type CameraGuideCornerStyle = "rounded" | "sharp" | "bracket" | "none";
 
 export type CameraGuideAnimation = "pulse" | "glow" | "breathe" | "none";
 
 export type CameraButtonVariant =
-  | "primary"
-  | "secondary"
-  | "recording"
-  | "ghost"
-  | "danger"
-  | "success";
+  "primary" | "secondary" | "recording" | "ghost" | "danger" | "success";
 
 export type CameraButtonSize = "xs" | "sm" | "md" | "lg" | "xl";
 
+// oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Public camera geometry type names are part of the existing API.
 export type CameraButtonShape = "circle" | "rounded" | "square" | "pill";
 
 export type CameraHapticPattern =
-  | "light"
-  | "medium"
-  | "heavy"
-  | "success"
-  | "error"
-  | "warning"
-  | "none";
+  "light" | "medium" | "heavy" | "success" | "error" | "warning" | "none";
 
 export type CameraFocusIndicatorStyle =
-  | "ring"
-  | "crosshair"
-  | "bracket"
-  | "box";
+  "ring" | "crosshair" | "bracket" | "box";
 
 export type CameraControlBarPosition = "top" | "bottom" | "left" | "right";
 
@@ -372,9 +158,7 @@ export interface CameraGridConfig {
 }
 
 export type CameraScanOverlayPreset =
-  | "none"
-  | "face-recognition"
-  | "id-card-scanner";
+  "none" | "face-recognition" | "id-card-scanner";
 
 export interface CameraScanOverlayConfig {
   frameColor?: string;
@@ -392,6 +176,7 @@ export interface CameraScanOverlayConfig {
 }
 
 export interface CameraGuideConfig {
+  // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Public camera geometry types preserve compatibility.
   shape: CameraGuideShape;
   aspectRatio?: number;
   width?: string | number;
@@ -407,7 +192,6 @@ export interface CameraGuideConfig {
   misalignedColor?: string;
   animation?: CameraGuideAnimation;
   animationDuration?: number;
-  respectsReducedMotion?: boolean;
 }
 
 export interface CameraZoomConfig {

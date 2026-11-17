@@ -20,13 +20,6 @@ export const TRACK_END_TIMEOUT_MS = 500;
 
 export const HARDWARE_RELEASE_DELAY_MS = 100;
 
-// Detection throttling
-export const FACE_DETECTION_INTERVAL_MS = 100; // 10fps
-
-export const DOCUMENT_ALIGNMENT_CHECK_INTERVAL_MS = 200;
-
-export const AUTO_CAPTURE_DEBOUNCE_MS = 1500;
-
 // Capture configuration
 export const DEFAULT_CAPTURE_QUALITY = 0.95;
 
@@ -39,14 +32,11 @@ export const VIDEO_CODECS = [
   "video/webm",
 ] as const;
 
-// Face centering tolerance (percentage of video dimensions)
-export const FACE_CENTER_TOLERANCE_PERCENT = 0.2;
-
 // Touch targets (WCAG 2.1)
 export const MIN_TOUCH_TARGET_SIZE_PX = 44;
 
 // Browser help links for camera permissions
-export const BROWSER_PERMISSION_HELP_LINKS: Record<string, string> = {
+export const BROWSER_PERMISSION_HELP_LINKS = {
   chrome: "https://support.google.com/chrome/answer/2693767",
   firefox:
     "https://support.mozilla.org/en-US/kb/how-manage-your-camera-and-microphone-permissions",
@@ -54,22 +44,21 @@ export const BROWSER_PERMISSION_HELP_LINKS: Record<string, string> = {
   edge: "https://support.microsoft.com/en-us/microsoft-edge/camera-and-microphone-permissions",
   opera: "https://help.opera.com/en/latest/web-preferences/#camera",
   default: "https://support.google.com/chrome/answer/2693767",
-};
+} satisfies Record<string, string>;
 
 // Status messages for screen readers
-export const STATUS_ANNOUNCEMENTS: Record<string, string> = {
+export const STATUS_ANNOUNCEMENTS = {
   idle: "Camera is idle",
   "requesting-permission": "Requesting camera permission",
   "permission-denied": "Camera permission denied",
   initializing: "Initializing camera",
   ready: "Camera is ready",
-  detecting: "Detecting",
   capturing: "Capturing photo",
   processing: "Processing",
   success: "Success",
   error: "Camera error occurred",
   paused: "Camera is paused",
-};
+} satisfies Record<string, string>;
 
 // Keyboard shortcuts
 export const KEYBOARD_SHORTCUTS = {
@@ -120,12 +109,12 @@ export const ENHANCED_KEYBOARD_SHORTCUTS = {
   showHelp: ["?", "/"],
 } as const;
 
-export const KEYBOARD_DESCRIPTIONS: Record<string, string> = {
+export const KEYBOARD_DESCRIPTIONS = {
   capture: "Take a photo",
   record: "Start/stop recording",
   switchCamera: "Switch camera",
   toggleFlash: "Toggle flash",
-  cancel: "Cancel",
+  cancel: "Cancel capture timer",
   zoomIn: "Zoom in",
   zoomOut: "Zoom out",
   zoomReset: "Reset zoom to 1x",
@@ -133,17 +122,7 @@ export const KEYBOARD_DESCRIPTIONS: Record<string, string> = {
   toggleTimer: "Toggle capture timer",
   openSettings: "Open camera settings",
   showHelp: "Show keyboard shortcuts",
-};
-
-// Liveness challenge icons (using icon component names instead of emojis)
-export const CHALLENGE_ICONS = {
-  blink: "IconEye",
-  smile: "IconMoodSmile",
-  "turn-left": "IconArrowLeft",
-  "turn-right": "IconArrowRight",
-  "turn-up": "IconArrowUp",
-  "turn-down": "IconArrowDown",
-} as const;
+} satisfies Record<string, string>;
 
 // Animation durations
 export const ANIMATION_DURATION_MS = {
@@ -213,10 +192,7 @@ export const CAMERA_DEFAULT_GRID = {
 };
 
 // Scan overlay defaults (face recognition & ID card scanner)
-export const SCAN_OVERLAY_DEFAULTS: Record<
-  CameraScanOverlayPreset,
-  CameraScanOverlayConfig
-> = {
+export const SCAN_OVERLAY_DEFAULTS = {
   none: {
     frameColor: "#ffffff",
     frameAlignedColor: "#22c55e",
@@ -259,17 +235,17 @@ export const SCAN_OVERLAY_DEFAULTS: Record<
     showAlignmentIndicator: true,
     animationsEnabled: true,
   },
-};
+} satisfies Record<CameraScanOverlayPreset, CameraScanOverlayConfig>;
 
 // Haptic feedback patterns
-export const HAPTIC_PATTERNS: Record<string, number | number[]> = {
+export const HAPTIC_PATTERNS = {
   light: 10,
   medium: 20,
   heavy: 30,
   success: [10, 50, 10],
   error: [20, 50, 20],
   warning: [10, 30, 10],
-};
+} satisfies Record<string, number | number[]>;
 
 // Voice command phrases
 export const VOICE_COMMANDS = {
@@ -301,7 +277,7 @@ export const QUALITY_OPTIONS = [
   { name: "Standard", value: "standard" },
   { name: "HD", value: "hd" },
   { name: "Ultra HD", value: "ultra" },
-  { name: "RAW", value: "raw" },
+  { name: "Lossless PNG", value: "lossless" },
 ] as const;
 
 // Grid type options

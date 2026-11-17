@@ -1,5 +1,6 @@
 import { cva } from "class-variance-authority";
 
+/* oxlint-disable anti-slop/no-shape-in-symbol-names -- CVA shape variants are public geometric styling props. */
 export const cameraVariants = cva(
   "relative overflow-hidden rounded-xl bg-black",
   {
@@ -21,9 +22,10 @@ export const cameraVariants = cva(
       size: "default",
       shape: "rectangle",
     },
-  }
+  },
 );
 
+/* oxlint-enable anti-slop/no-shape-in-symbol-names */
 export const cameraControlsVariants = cva(
   "absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 p-3 rounded-full bg-black/50 backdrop-blur-sm",
   {
@@ -36,7 +38,7 @@ export const cameraControlsVariants = cva(
     defaultVariants: {
       position: "bottom",
     },
-  }
+  },
 );
 
 export const cameraPermissionsVariants = cva(
@@ -52,7 +54,7 @@ export const cameraPermissionsVariants = cva(
     defaultVariants: {
       variant: "requesting",
     },
-  }
+  },
 );
 
 export const cameraGuideVariants = cva(
@@ -68,72 +70,5 @@ export const cameraGuideVariants = cva(
     defaultVariants: {
       variant: "face",
     },
-  }
-);
-
-export const faceDetectionVariants = cva(
-  "absolute inset-0 pointer-events-none",
-  {
-    variants: {
-      showGuide: {
-        true: "",
-        false: "",
-      },
-    },
-    defaultVariants: {
-      showGuide: true,
-    },
-  }
-);
-
-export const idCardScannerVariants = cva(
-  "absolute inset-0 flex flex-col items-center justify-center",
-  {
-    variants: {
-      state: {
-        idle: "",
-        scanning: "",
-        processing: "",
-        success: "",
-        error: "",
-      },
-    },
-    defaultVariants: {
-      state: "idle",
-    },
-  }
-);
-
-export const livenessCheckVariants = cva(
-  "absolute inset-0 flex flex-col items-center justify-center",
-  {
-    variants: {
-      state: {
-        idle: "",
-        active: "",
-        completed: "",
-        failed: "",
-      },
-    },
-    defaultVariants: {
-      state: "idle",
-    },
-  }
-);
-
-export const kycFlowVariants = cva(
-  "relative w-full max-w-2xl mx-auto bg-black rounded-xl overflow-hidden",
-  {
-    variants: {
-      size: {
-        sm: "h-96",
-        default: "h-[500px]",
-        lg: "h-[600px]",
-        fullscreen: "fixed inset-0 z-50",
-      },
-    },
-    defaultVariants: {
-      size: "default",
-    },
-  }
+  },
 );

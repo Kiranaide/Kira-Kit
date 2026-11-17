@@ -1,18 +1,22 @@
 /**
  * Camera Guide Presets
  * Pre-configured guide configurations for common use cases
- * 
+ *
  * @2025-2026 Best Practices
- * - KYC/Identity verification
- * - Document scanning
+ * - Portrait and document framing
  * - Photography composition
- * - Barcode/QR scanning
+ * - Barcode/QR positioning
  */
 
-import type { CameraGuideConfig, CameraGuideShape, CameraGuideCornerStyle } from "@/lib/camera/types"
+import type {
+  CameraGuideConfig,
+  // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- This imported public type describes camera geometry.
+  CameraGuideShape,
+  CameraGuideCornerStyle,
+} from "@/lib/camera/types";
 
 export type GuidePreset =
-  // KYC/Identity
+  // Portraits and documents
   | "face-oval"
   | "face-circle"
   | "passport-photo"
@@ -38,23 +42,25 @@ export type GuidePreset =
   | "landscape-4x3"
   | "wide-16x9"
   // Custom
-  | "custom"
+  | "custom";
 
 interface GuidePresetConfig {
-  shape: CameraGuideShape
-  aspectRatio?: number
-  width?: string | number
-  height?: string | number
-  strokeWidth?: number
-  cornerStyle?: CameraGuideCornerStyle
-  cornerSize?: number
-  defaultInstruction: string
-  minWidth?: number
-  minHeight?: number
+  // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Public camera geometry types preserve compatibility.
+  shape: CameraGuideShape;
+  aspectRatio?: number;
+  width?: string | number;
+  height?: string | number;
+  strokeWidth?: number;
+  cornerStyle?: CameraGuideCornerStyle;
+  cornerSize?: number;
+  defaultInstruction: string;
+  minWidth?: number;
+  minHeight?: number;
 }
 
+/* oxlint-disable anti-slop/no-shape-in-symbol-names -- Preset keys preserve the public geometric shape contract. */
 // Face/Identity guides
-const FACE_GUIDES: Record<string, GuidePresetConfig> = {
+const FACE_GUIDES = {
   "face-oval": {
     shape: "oval",
     aspectRatio: 0.78,
@@ -79,10 +85,10 @@ const FACE_GUIDES: Record<string, GuidePresetConfig> = {
     cornerStyle: "none",
     defaultInstruction: "Align your face with the passport frame",
   },
-}
+} satisfies Record<string, GuidePresetConfig>;
 
 // ID/Document guides
-const ID_GUIDES: Record<string, GuidePresetConfig> = {
+const ID_GUIDES = {
   "id-front": {
     shape: "rectangle",
     aspectRatio: 1.586, // ID-1: 85.6mm x 53.98mm
@@ -119,10 +125,10 @@ const ID_GUIDES: Record<string, GuidePresetConfig> = {
     cornerSize: 24,
     defaultInstruction: "Align your driver's license",
   },
-}
+} satisfies Record<string, GuidePresetConfig>;
 
 // Paper document guides
-const PAPER_GUIDES: Record<string, GuidePresetConfig> = {
+const PAPER_GUIDES = {
   "a4-portrait": {
     shape: "rectangle",
     aspectRatio: 1 / 1.414, // A4 ratio
@@ -186,10 +192,10 @@ const PAPER_GUIDES: Record<string, GuidePresetConfig> = {
     cornerSize: 20,
     defaultInstruction: "Align the check within the frame",
   },
-}
+} satisfies Record<string, GuidePresetConfig>;
 
 // Barcode/QR guides
-const CODE_GUIDES: Record<string, GuidePresetConfig> = {
+const CODE_GUIDES = {
   barcode: {
     shape: "rectangle",
     aspectRatio: 3,
@@ -218,10 +224,10 @@ const CODE_GUIDES: Record<string, GuidePresetConfig> = {
     cornerSize: 28,
     defaultInstruction: "Fit the QR code inside the square",
   },
-}
+} satisfies Record<string, GuidePresetConfig>;
 
 // Photography guides
-const PHOTO_GUIDES: Record<string, GuidePresetConfig> = {
+const PHOTO_GUIDES = {
   square: {
     shape: "square",
     aspectRatio: 1,
@@ -254,10 +260,10 @@ const PHOTO_GUIDES: Record<string, GuidePresetConfig> = {
     cornerStyle: "none",
     defaultInstruction: "Compose your wide shot",
   },
-}
+} satisfies Record<string, GuidePresetConfig>;
 
 // Combine all presets
-export const GUIDE_PRESETS: Record<GuidePreset, GuidePresetConfig> = {
+export const GUIDE_PRESETS = {
   "face-oval": FACE_GUIDES["face-oval"],
   "face-circle": FACE_GUIDES["face-circle"],
   "passport-photo": FACE_GUIDES["passport-photo"],
@@ -283,19 +289,19 @@ export const GUIDE_PRESETS: Record<GuidePreset, GuidePresetConfig> = {
     shape: "rectangle",
     defaultInstruction: "Align your subject",
   },
-}
+} satisfies Record<GuidePreset, GuidePresetConfig>;
 
 // Helper function to get preset config
 export function getGuidePreset(preset: GuidePreset): GuidePresetConfig {
-  return GUIDE_PRESETS[preset] || GUIDE_PRESETS.custom
+  return GUIDE_PRESETS[preset] || GUIDE_PRESETS.custom;
 }
 
 // Helper function to merge preset with custom config
 export function mergeGuideConfig(
   preset: GuidePreset,
-  customConfig?: Partial<CameraGuideConfig>
+  customConfig?: Partial<CameraGuideConfig>,
 ): CameraGuideConfig {
-  const presetConfig = getGuidePreset(preset)
+  const presetConfig = getGuidePreset(preset);
 
   return {
     shape: presetConfig.shape,
@@ -311,29 +317,50 @@ export function mergeGuideConfig(
     fillColor: "rgba(0, 0, 0, 0.3)",
     animation: "pulse",
     animationDuration: 2000,
-    respectsReducedMotion: true,
     ...customConfig,
-  }
+  };
 }
 
+/* oxlint-enable anti-slop/no-shape-in-symbol-names */
 // Preset categories for UI organization
 export const GUIDE_PRESET_CATEGORIES = {
   identity: {
     label: "Identity",
-    presets: ["face-oval", "face-circle", "passport-photo", "id-front", "id-back", "passport", "drivers-license"] as GuidePreset[],
+    presets: [
+      "face-oval",
+      "face-circle",
+      "passport-photo",
+      "id-front",
+      "id-back",
+      "passport",
+      "drivers-license",
+    ] satisfies GuidePreset[],
   },
   documents: {
     label: "Documents",
-    presets: ["a4-portrait", "a4-landscape", "letter-portrait", "letter-landscape", "receipt", "business-card", "check"] as GuidePreset[],
+    presets: [
+      "a4-portrait",
+      "a4-landscape",
+      "letter-portrait",
+      "letter-landscape",
+      "receipt",
+      "business-card",
+      "check",
+    ] satisfies GuidePreset[],
   },
   codes: {
     label: "Codes",
-    presets: ["barcode", "qr-code", "qr-square"] as GuidePreset[],
+    presets: ["barcode", "qr-code", "qr-square"] satisfies GuidePreset[],
   },
   photography: {
     label: "Photography",
-    presets: ["square", "portrait-3x4", "landscape-4x3", "wide-16x9"] as GuidePreset[],
+    presets: [
+      "square",
+      "portrait-3x4",
+      "landscape-4x3",
+      "wide-16x9",
+    ] satisfies GuidePreset[],
   },
-} as const
+} as const;
 
-export type GuidePresetCategory = keyof typeof GUIDE_PRESET_CATEGORIES
+export type GuidePresetCategory = keyof typeof GUIDE_PRESET_CATEGORIES;
