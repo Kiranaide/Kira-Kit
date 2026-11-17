@@ -4,12 +4,12 @@
 import * as React from "react";
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useAnnounce } from "@/hooks/use-announce";
 import {
   DropdownMenuItem,
-  DropdownMenuWithContent,
+  KiraDropdownMenu,
 } from "@/components/ui/dropdown-menu";
 import {
   DndContext,
@@ -39,6 +39,8 @@ import {
   IconPlus,
   IconX,
 } from "@tabler/icons-react";
+import { resolveComponentDefaults } from "@/lib/component-defaults";
+import { isStringProp } from "@/lib/component-prop-guards";
 
 interface TabsContextValue {
   orientation: "horizontal" | "vertical";
@@ -71,14 +73,10 @@ interface TabsProps extends TabsPrimitive.Root.Props {
   showIndicator?: boolean;
 }
 
-function Tabs({
-  orientation = "horizontal",
-  variant = "default",
-  color = "default",
-  showIndicator = true,
-  className,
-  ...props
-}: TabsProps) {
+function Tabs(input: TabsProps) {
+  const { orientation, variant, color, showIndicator, className, ...props } =
+    resolveComponentDefaults(input, TABS_DEFAULTS_1);
+
   return (
     <TabsContext.Provider
       value={{ orientation, variant, color, showIndicator }}
@@ -452,31 +450,17 @@ function TabsList({
     }
   };
 
-  const scrollableList = (
-    <TabsPrimitive.List
-      data-slot="tabs-list"
-      data-variant={finalVariant}
-      data-scrollable={scrollable || undefined}
-      // orientation data-attr is emitted natively by Base UI — don't duplicate.
-      className={cn(
-        tabsListVariants({
-          variant: finalVariant,
-          color,
-          orientation,
-        }),
-        scrollable && "flex-nowrap overflow-x-auto",
-        scrollable && orientation === "vertical" && "overflow-y-auto",
-        scrollable && SCROLLBAR_NONE,
-        scrollable && "motion-safe:scroll-smooth",
-        className,
-      )}
-      {...props}
-      ref={setListEl}
-    >
-      {children}
-      {shouldShowIndicator && <TabsIndicatorInternal />}
-    </TabsPrimitive.List>
-  );
+  const scrollableList = renderTabsListPart1({
+    finalVariant,
+    scrollable,
+    color,
+    orientation,
+    className,
+    props,
+    setListEl,
+    children,
+    shouldShowIndicator,
+  });
 
   if (!scrollable) {
     return scrollableList;
@@ -485,30 +469,14 @@ function TabsList({
   // Chevron shell: absolutely-positioned buttons must anchor to a
   // non-scrolling wrapper. Inside the scroller they scroll away with content
   // and overlap edge tabs.
-  return (
-    <div
-      data-slot="tabs-list-scroll-shell"
-      // w-fit: the shell must hug the list's box, otherwise the right chevron
-      // anchors past the list edge when the list has its own max-width.
-      className="relative w-fit min-w-0 max-w-full"
-    >
-      {scrollableList}
-      {hasOverflow && canStart && (
-        <TabsScrollButton
-          direction="start"
-          orientation={orientation}
-          onScrollStep={handleScrollStep}
-        />
-      )}
-      {hasOverflow && canEnd && (
-        <TabsScrollButton
-          direction="end"
-          orientation={orientation}
-          onScrollStep={handleScrollStep}
-        />
-      )}
-    </div>
-  );
+  return renderTabsListScrollShellPart2({
+    scrollableList,
+    hasOverflow,
+    canStart,
+    orientation,
+    handleScrollStep,
+    canEnd,
+  });
 }
 
 const tabsTriggerVariants = cva(
@@ -816,7 +784,7 @@ function TabCloseAffordance({
           "h-3 w-3 transition-opacity duration-150 motion-reduce:transition-none",
           dirty &&
             !closePending &&
-            "opacity-0 group-hover:opacity-100 group-data-[active]:opacity-100",
+            "opacity-0 group-hover:opacity-100 group-data-active:opacity-100",
           closePending && "motion-safe:animate-pulse",
         )}
       />
@@ -824,7 +792,7 @@ function TabCloseAffordance({
         <span
           data-slot="tabs-dirty-dot"
           aria-hidden="true"
-          className="absolute left-1/2 top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-warning group-hover:opacity-0 group-data-[active]:opacity-0"
+          className="absolute left-1/2 top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-warning group-hover:opacity-0 group-data-active:opacity-0"
         />
       )}
     </button>
@@ -837,7 +805,7 @@ function resolveCloseLabel(children: React.ReactNode): string {
   // SAFETY: label is app-authored ReactNode (local prop, not I/O); string vs
   // node is the domain distinction for the aria label. Single parse boundary.
   // oxlint-disable-next-line anti-slop/no-runtime-typeof
-  if (typeof children === "string") {
+  if (isStringProp(children)) {
     return `Close ${children}`;
   }
 
@@ -845,22 +813,24 @@ function resolveCloseLabel(children: React.ReactNode): string {
 }
 
 // oxlint-disable-next-line complexity -- linear prop fallbacks and feature slots, not nested branching.
-function TabsTrigger({
-  className,
-  variant,
-  color,
-  icon,
-  badge,
-  badgeColor = "default",
-  closable = false,
-  onClose,
-  dirty = false,
-  closePending = false,
-  dragHandle,
-  value,
-  children,
-  ...props
-}: TabsTriggerProps) {
+function TabsTrigger(input: TabsTriggerProps) {
+  const {
+    className,
+    variant,
+    color,
+    icon,
+    badge,
+    badgeColor,
+    closable,
+    onClose,
+    dirty,
+    closePending,
+    dragHandle,
+    value,
+    children,
+    ...props
+  } = resolveComponentDefaults(input, TABS_TRIGGER_DEFAULTS_2);
+
   const {
     orientation,
     variant: contextVariant,
@@ -897,63 +867,25 @@ function TabsTrigger({
   // nodes) degrade to the generic "Close tab".
   const closeLabel = resolveCloseLabel(children);
 
-  return (
-    <TabsPrimitive.Tab
-      data-slot="tabs-trigger"
-      data-close-pending={closePending || undefined}
-      aria-disabled={closePending || undefined}
-      value={value}
-      onKeyDown={handleKeyDown}
-      className={cn(
-        tabsTriggerVariants({
-          variant: finalVariant,
-          color: finalColor,
-          orientation,
-        }),
-        closable && "pe-2",
-        className,
-      )}
-      {...props}
-    >
-      {dragHandle}
-      {icon && (
-        <span
-          data-slot="tabs-icon"
-          className="shrink-0 [&_svg]:h-4 [&_svg]:w-4"
-          aria-hidden="true"
-        >
-          {icon}
-        </span>
-      )}
-      <span className="min-w-0 truncate">{children}</span>
-      {badge !== undefined && (
-        <span
-          data-slot="tabs-badge"
-          className={cn(
-            "inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-medium min-w-5",
-            badgeColorClasses[badgeColor],
-          )}
-        >
-          {badge}
-        </span>
-      )}
-      {dirty && !closable && (
-        <span
-          data-slot="tabs-dirty-dot"
-          aria-hidden="true"
-          className="absolute top-1.5 end-1.5 size-1.5 rounded-full bg-warning group-data-[active]:hidden"
-        />
-      )}
-      {closable && (
-        <TabCloseAffordance
-          closeLabel={closeLabel}
-          dirty={dirty}
-          closePending={closePending}
-          onClose={handleClose}
-        />
-      )}
-    </TabsPrimitive.Tab>
-  );
+  return renderTabsTriggerPart3({
+    closePending,
+    value,
+    handleKeyDown,
+    finalVariant,
+    finalColor,
+    orientation,
+    closable,
+    className,
+    props,
+    dragHandle,
+    icon,
+    children,
+    badge,
+    badgeColor,
+    dirty,
+    closeLabel,
+    handleClose,
+  });
 }
 
 const tabsContentVariants = cva(
@@ -1167,7 +1099,7 @@ function SortableTab({
     <span
       ref={setNodeRef}
       style={style}
-      className="inline-flex group-data-[scrollable]/list:shrink-0"
+      className="inline-flex group-data-scrollable/list:shrink-0"
     >
       <TabsTrigger
         value={item.value}
@@ -1198,8 +1130,7 @@ function TabsOverflowMenu({
   onSelect: (value: string) => void;
 }) {
   return (
-    <DropdownMenuWithContent
-      contentProps={{ className: "max-h-72 overflow-y-auto" }}
+    <KiraDropdownMenu
       trigger={
         <button
           type="button"
@@ -1215,28 +1146,24 @@ function TabsOverflowMenu({
           <IconDots className="h-4 w-4" aria-hidden="true" />
         </button>
       }
+      contentProps={{ className: "max-h-72 overflow-y-auto" }}
     >
       {items.map((item) => {
         const isActive = item.value === activeValue;
-        let icon: React.ReactNode;
-
-        if (isActive) {
-          icon = <IconCheck />;
-        }
 
         return (
           <DropdownMenuItem
             key={item.value}
             closeOnClick
             disabled={item.disabled}
-            icon={icon}
+            icon={isActive ? <IconCheck /> : undefined}
             onClick={() => onSelect(item.value)}
           >
             {item.label}
           </DropdownMenuItem>
         );
       })}
-    </DropdownMenuWithContent>
+    </KiraDropdownMenu>
   );
 }
 
@@ -1356,33 +1283,446 @@ function useTabsDeepLinkEffects(
 }
 
 // oxlint-disable-next-line complexity -- one prop per optional feature (guard/menu/dnd/link); each is a single flag check.
-function KiraTabs({
-  items: itemsProp,
-  value,
-  defaultValue,
-  onValueChange,
-  variant = "default",
-  color = "default",
-  orientation = "horizontal",
-  showIndicator = true,
-  animation = "fade",
-  lazy = false,
-  addable = false,
-  onAdd,
-  onClose,
-  onBeforeClose,
-  deepLink = false,
-  overflowMenu = false,
-  reorderable = false,
-  onReorder,
+function KiraTabs(input0: KiraTabsProps) {
+  const state0 = useTabsSetup(input0);
+  const state1 = useTabsState2(state0);
+  const state2 = useTabsActions(state1);
+
+  return renderTabs(state2);
+}
+
+export {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  KiraTabs,
+  tabsListVariants,
+  tabsTriggerVariants,
+  tabsContentVariants,
+  useTabsContext,
+};
+
+export type {
+  TabsProps,
+  TabsListProps,
+  TabsTriggerProps,
+  TabsContentProps,
+  TabItem,
+  KiraTabsProps,
+};
+
+type renderTabsListPart1Args = {
+  finalVariant: TabsListVariant;
+  scrollable: Exclude<TabsListProps["scrollable"], undefined>;
+  color: ReturnType<typeof useTabsContext>["color"];
+  orientation: ReturnType<typeof useTabsContext>["orientation"];
+  className: TabsListProps["className"];
+  props: Omit<
+    TabsListProps,
+    "className" | "variant" | "showIndicator" | "scrollable" | "children"
+  >;
+  setListEl: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>;
+  children: TabsListProps["children"];
+  shouldShowIndicator: boolean;
+};
+
+function renderTabsListPart1({
+  finalVariant,
+  scrollable,
+  color,
+  orientation,
   className,
+  props,
+  setListEl,
+  children,
+  shouldShowIndicator,
+}: renderTabsListPart1Args) {
+  return (
+    <TabsPrimitive.List
+      data-slot="tabs-list"
+      data-variant={finalVariant}
+      data-scrollable={scrollable || undefined}
+      // orientation data-attr is emitted natively by Base UI — don't duplicate.
+      className={cn(
+        tabsListVariants({
+          variant: finalVariant,
+          color,
+          orientation,
+        }),
+        scrollable && "flex-nowrap overflow-x-auto",
+        scrollable && orientation === "vertical" && "overflow-y-auto",
+        scrollable && SCROLLBAR_NONE,
+        scrollable && "motion-safe:scroll-smooth",
+        className,
+      )}
+      {...props}
+      ref={setListEl}
+    >
+      {children}
+      {shouldShowIndicator && <TabsIndicatorInternal />}
+    </TabsPrimitive.List>
+  );
+}
+
+type renderTabsListScrollShellPart2Args = {
+  scrollableList: ReturnType<typeof renderTabsListPart1>;
+  hasOverflow: ReturnType<typeof useTabsOverflow>["hasOverflow"];
+  canStart: ReturnType<typeof useTabsOverflow>["canStart"];
+  orientation: ReturnType<typeof useTabsContext>["orientation"];
+  handleScrollStep: (direction: 1 | -1) => void;
+  canEnd: ReturnType<typeof useTabsOverflow>["canEnd"];
+};
+
+function renderTabsListScrollShellPart2({
+  scrollableList,
+  hasOverflow,
+  canStart,
+  orientation,
+  handleScrollStep,
+  canEnd,
+}: renderTabsListScrollShellPart2Args) {
+  return (
+    <div
+      data-slot="tabs-list-scroll-shell"
+      // w-fit: the shell must hug the list's box, otherwise the right chevron
+      // anchors past the list edge when the list has its own max-width.
+      className="relative w-fit min-w-0 max-w-full"
+    >
+      {scrollableList}
+      {hasOverflow && canStart && (
+        <TabsScrollButton
+          direction="start"
+          orientation={orientation}
+          onScrollStep={handleScrollStep}
+        />
+      )}
+      {hasOverflow && canEnd && (
+        <TabsScrollButton
+          direction="end"
+          orientation={orientation}
+          onScrollStep={handleScrollStep}
+        />
+      )}
+    </div>
+  );
+}
+
+type renderTabsTriggerPart3Args = {
+  closePending: boolean;
+  value: TabsTriggerProps["value"];
+  handleKeyDown: (e: React.KeyboardEvent) => void;
+  finalVariant: TabsListVariant;
+  finalColor: TabsTriggerColor;
+  orientation: ReturnType<typeof useTabsContext>["orientation"];
+  closable: boolean;
+  className: TabsTriggerProps["className"];
+  props: Omit<
+    TabsTriggerProps,
+    | "className"
+    | "variant"
+    | "color"
+    | "icon"
+    | "badge"
+    | "badgeColor"
+    | "closable"
+    | "onClose"
+    | "dirty"
+    | "closePending"
+    | "dragHandle"
+    | "value"
+    | "children"
+  >;
+  dragHandle: TabsTriggerProps["dragHandle"];
+  icon: TabsTriggerProps["icon"];
+  children: TabsTriggerProps["children"];
+  badge: TabsTriggerProps["badge"];
+  badgeColor: "default" | "success" | "destructive" | "warning" | "primary";
+  dirty: boolean;
+  closeLabel: ReturnType<typeof resolveCloseLabel>;
+  handleClose: (e: React.MouseEvent) => void;
+};
+
+function renderTabsTriggerPart3({
+  closePending,
+  value,
+  handleKeyDown,
+  finalVariant,
+  finalColor,
+  orientation,
+  closable,
+  className,
+  props,
+  dragHandle,
+  icon,
+  children,
+  badge,
+  badgeColor,
+  dirty,
+  closeLabel,
+  handleClose,
+}: renderTabsTriggerPart3Args) {
+  return (
+    <TabsPrimitive.Tab
+      data-slot="tabs-trigger"
+      data-close-pending={closePending || undefined}
+      aria-disabled={closePending || undefined}
+      value={value}
+      onKeyDown={handleKeyDown}
+      className={cn(
+        tabsTriggerVariants({
+          variant: finalVariant,
+          color: finalColor,
+          orientation,
+        }),
+        closable && "pe-2",
+        className,
+      )}
+      {...props}
+    >
+      {dragHandle}
+      {icon && (
+        <span
+          data-slot="tabs-icon"
+          className="shrink-0 [&_svg]:h-4 [&_svg]:w-4"
+          aria-hidden="true"
+        >
+          {icon}
+        </span>
+      )}
+      <span className="min-w-0 truncate">{children}</span>
+      {badge !== undefined && (
+        <span
+          data-slot="tabs-badge"
+          className={cn(
+            "inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-xs font-medium min-w-5",
+            badgeColorClasses[badgeColor],
+          )}
+        >
+          {badge}
+        </span>
+      )}
+      {dirty && !closable && (
+        <span
+          data-slot="tabs-dirty-dot"
+          aria-hidden="true"
+          className="absolute top-1.5 inset-e-1.5 size-1.5 rounded-full bg-warning group-data-active:hidden"
+        />
+      )}
+      {closable && (
+        <TabCloseAffordance
+          closeLabel={closeLabel}
+          dirty={dirty}
+          closePending={closePending}
+          onClose={handleClose}
+        />
+      )}
+    </TabsPrimitive.Tab>
+  );
+}
+
+type renderKiraTabsSectionPart4Args = {
+  listClassName: KiraTabsProps["listClassName"];
+  items: TabItem[];
+  reorderable: boolean;
+  handleClose: ReturnType<typeof useCloseGuard>["handleClose"];
+  pendingCloses: ReturnType<typeof useCloseGuard>["pendingCloses"];
+  addable: boolean;
+  handleAdd: () => void;
+  overflowMenu: boolean;
+  activeValue: string | undefined;
+  selectValue: (next: string) => void;
+};
+
+function renderKiraTabsSectionPart4({
   listClassName,
+  items,
+  reorderable,
+  handleClose,
+  pendingCloses,
+  addable,
+  handleAdd,
+  overflowMenu,
+  activeValue,
+  selectValue,
+}: renderKiraTabsSectionPart4Args) {
+  return (
+    <TabsList className={listClassName}>
+      {items.map((item) => (
+        <SortableTab
+          key={item.value}
+          item={item}
+          reorderable={reorderable}
+          onClose={handleClose}
+          closePending={Boolean(pendingCloses[item.value])}
+        />
+      ))}
+      {addable && (
+        <button
+          data-slot="tabs-add"
+          type="button"
+          onClick={handleAdd}
+          aria-label="Add tab"
+          className={cn(
+            "inline-flex items-center justify-center rounded-md size-6 shrink-0",
+            "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+            "transition-colors duration-150 motion-reduce:transition-none",
+          )}
+        >
+          <IconPlus className="h-4 w-4" aria-hidden="true" />
+        </button>
+      )}
+      {overflowMenu && items.length > 0 && (
+        <TabsOverflowMenu
+          items={items}
+          activeValue={activeValue}
+          onSelect={selectValue}
+        />
+      )}
+    </TabsList>
+  );
+}
+
+type renderKiraTabsSectionPart5Args = {
+  activeValue: string | undefined;
+  selectValue: (next: string) => void;
+  variant: TabsListVariant;
+  color: TabsTriggerColor;
+  orientation: "horizontal" | "vertical";
+  showIndicator: boolean;
+  className: KiraTabsProps["className"];
+  listNode: React.JSX.Element;
+  items: TabItem[];
+  animation: "auto" | "none" | "fade" | "slide" | "slideUp" | "zoom" | null;
+  lazy: boolean;
+  contentClassName: KiraTabsProps["contentClassName"];
+};
+
+function renderKiraTabsSectionPart5({
+  activeValue,
+  selectValue,
+  variant,
+  color,
+  orientation,
+  showIndicator,
+  className,
+  listNode,
+  items,
+  animation,
+  lazy,
   contentClassName,
-}: KiraTabsProps) {
+}: renderKiraTabsSectionPart5Args) {
+  return (
+    <Tabs
+      value={activeValue}
+      onValueChange={selectValue}
+      variant={variant}
+      color={color}
+      orientation={orientation}
+      showIndicator={showIndicator}
+      className={className}
+    >
+      {listNode}
+      {items.map((item) => (
+        <TabsContent
+          key={item.value}
+          value={item.value}
+          animation={animation}
+          lazy={lazy}
+          className={contentClassName}
+        >
+          {item.content}
+        </TabsContent>
+      ))}
+    </Tabs>
+  );
+}
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const TABS_DEFAULTS_1 = {
+  orientation: "horizontal",
+  variant: "default",
+  color: "default",
+  showIndicator: true,
+} as const;
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const TABS_TRIGGER_DEFAULTS_2 = {
+  badgeColor: "default",
+  closable: false,
+  dirty: false,
+  closePending: false,
+} as const;
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const KIRA_TABS_DEFAULTS_3 = {
+  variant: "default",
+  color: "default",
+  orientation: "horizontal",
+  showIndicator: true,
+  animation: "fade",
+  lazy: false,
+  addable: false,
+  deepLink: false,
+  overflowMenu: false,
+  reorderable: false,
+} as const;
+
+type renderKiraTabsViewArgs = {
+  activeValue: string | undefined;
+  selectValue: (next: string) => void;
+  variant: Exclude<KiraTabsProps["variant"], undefined>;
+  color: Exclude<KiraTabsProps["color"], undefined>;
+  orientation: Exclude<KiraTabsProps["orientation"], undefined>;
+  showIndicator: Exclude<KiraTabsProps["showIndicator"], undefined>;
+  className: KiraTabsProps["className"];
+  listNode: React.JSX.Element;
+  items: TabItem[];
+  animation: Exclude<KiraTabsProps["animation"], undefined>;
+  lazy: Exclude<KiraTabsProps["lazy"], undefined>;
+  contentClassName: KiraTabsProps["contentClassName"];
+};
+
+function renderKiraTabsView({
+  activeValue,
+  selectValue,
+  variant,
+  color,
+  orientation,
+  showIndicator,
+  className,
+  listNode,
+  items,
+  animation,
+  lazy,
+  contentClassName,
+}: renderKiraTabsViewArgs) {
+  return renderKiraTabsSectionPart5({
+    activeValue,
+    selectValue,
+    variant,
+    color,
+    orientation,
+    showIndicator,
+    className,
+    listNode,
+    items,
+    animation,
+    lazy,
+    contentClassName,
+  });
+}
+
+function useTabsSetup(input: KiraTabsProps) {
+  const resolvedProps = resolveComponentDefaults(input, KIRA_TABS_DEFAULTS_3);
+  const { items: itemsProp, value, defaultValue } = resolvedProps;
+
   // Own the item list so closable/addable/reorder can mutate it. When the
   // parent passes a fresh `itemsProp`, adopt it (adjust-on-prop-change via a
   // render-time state prev-value, not an effect — react-compiler safe).
   const [items, setItems] = React.useState(itemsProp);
+
   const [prevItemsProp, setPrevItemsProp] = React.useState(itemsProp);
 
   if (itemsProp !== prevItemsProp) {
@@ -1403,6 +1743,31 @@ function KiraTabs({
   } else {
     activeValue = internalValue;
   }
+
+  return {
+    ...resolvedProps,
+    items,
+    setItems,
+    isControlled,
+    setInternalValue,
+    activeValue,
+  };
+}
+
+function useTabsState2(state: ReturnType<typeof useTabsSetup>) {
+  const {
+    onValueChange,
+    onAdd,
+    onClose,
+    onBeforeClose,
+    deepLink,
+    onReorder,
+    items,
+    setItems,
+    isControlled,
+    setInternalValue,
+    activeValue,
+  } = state;
 
   const selectValue = (next: string) => {
     if (!isControlled) setInternalValue(next);
@@ -1457,45 +1822,48 @@ function KiraTabs({
     announce.announcePolite(`Moved to position ${newIndex + 1}`);
   };
 
+  return {
+    ...state,
+    selectValue,
+    pendingCloses,
+    handleClose,
+    handleAdd,
+    dragSensors,
+    handleDragEnd,
+  };
+}
+
+function useTabsActions(state: ReturnType<typeof useTabsState2>) {
+  const {
+    addable,
+    overflowMenu,
+    reorderable,
+    listClassName,
+    items,
+    activeValue,
+    selectValue,
+    pendingCloses,
+    handleClose,
+    handleAdd,
+    dragSensors,
+    handleDragEnd,
+  } = state;
+
   // --- Sortable wiring ---
   const sortableIds = items.map((i) => i.value);
 
-  const baseListNode = (
-    <TabsList className={listClassName}>
-      {items.map((item) => (
-        <SortableTab
-          key={item.value}
-          item={item}
-          reorderable={reorderable}
-          onClose={handleClose}
-          closePending={Boolean(pendingCloses[item.value])}
-        />
-      ))}
-      {addable && (
-        <button
-          data-slot="tabs-add"
-          type="button"
-          onClick={handleAdd}
-          aria-label="Add tab"
-          className={cn(
-            "inline-flex items-center justify-center rounded-md size-6 shrink-0",
-            "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-            "transition-colors duration-150 motion-reduce:transition-none",
-          )}
-        >
-          <IconPlus className="h-4 w-4" aria-hidden="true" />
-        </button>
-      )}
-      {overflowMenu && items.length > 0 && (
-        <TabsOverflowMenu
-          items={items}
-          activeValue={activeValue}
-          onSelect={selectValue}
-        />
-      )}
-    </TabsList>
-  );
+  const baseListNode = renderKiraTabsSectionPart4({
+    listClassName,
+    items,
+    reorderable,
+    handleClose,
+    pendingCloses,
+    addable,
+    handleAdd,
+    overflowMenu,
+    activeValue,
+    selectValue,
+  });
 
   let listNode = baseListNode;
 
@@ -1513,49 +1881,35 @@ function KiraTabs({
     );
   }
 
-  return (
-    <Tabs
-      value={activeValue}
-      onValueChange={selectValue}
-      variant={variant}
-      color={color}
-      orientation={orientation}
-      showIndicator={showIndicator}
-      className={className}
-    >
-      {listNode}
-      {items.map((item) => (
-        <TabsContent
-          key={item.value}
-          value={item.value}
-          animation={animation}
-          lazy={lazy}
-          className={contentClassName}
-        >
-          {item.content}
-        </TabsContent>
-      ))}
-    </Tabs>
-  );
+  return { ...state, listNode };
 }
 
-export {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  KiraTabs,
-  tabsListVariants,
-  tabsTriggerVariants,
-  tabsContentVariants,
-  useTabsContext,
-};
-
-export type {
-  TabsProps,
-  TabsListProps,
-  TabsTriggerProps,
-  TabsContentProps,
-  TabItem,
-  KiraTabsProps,
-};
+function renderTabs({
+  variant,
+  color,
+  orientation,
+  showIndicator,
+  animation,
+  lazy,
+  className,
+  contentClassName,
+  items,
+  activeValue,
+  selectValue,
+  listNode,
+}: ReturnType<typeof useTabsActions>) {
+  return renderKiraTabsView({
+    activeValue,
+    selectValue,
+    variant,
+    color,
+    orientation,
+    showIndicator,
+    className,
+    listNode,
+    items,
+    animation,
+    lazy,
+    contentClassName,
+  });
+}

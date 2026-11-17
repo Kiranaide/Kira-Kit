@@ -489,6 +489,7 @@ function IconsBadgesDemo() {
 
 /* --------------------------- stress cases ---------------------------- */
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 function StressDemo() {
   return (
     <div className="space-y-10">
@@ -562,7 +563,7 @@ function StressDemo() {
           8 tabs at 375px — scrollable, no page overflow
         </p>
         <Tabs defaultValue="t1">
-          <TabsList scrollable className="max-w-[375px]">
+          <TabsList scrollable className="max-w-93.75">
             {["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"].map((t) => (
               <TabsTrigger key={t} value={t}>
                 Tab {t}
@@ -752,7 +753,7 @@ const reports = ["overview", "traffic", "revenue", "retention", "regions", "devi
 export function ScrollableReportTabs() {
   return (
     <Tabs defaultValue="overview">
-      <TabsList scrollable className="max-w-[375px]">
+      <TabsList scrollable className="max-w-93.75">
         {reports.map((report) => <TabsTrigger key={report} value={report}>{report}</TabsTrigger>)}
       </TabsList>
       {reports.map((report) => <TabsContent key={report} value={report}>{report} report</TabsContent>)}
@@ -881,7 +882,7 @@ export function TabsStressCases() {
         <TabsContent value="b">Bell panel.</TabsContent>
       </Tabs>
       <Tabs defaultValue="t1">
-        <TabsList scrollable className="max-w-[375px]">
+        <TabsList scrollable className="max-w-93.75">
           {["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"].map((tab) => <TabsTrigger key={tab} value={tab}>Tab {tab}</TabsTrigger>)}
         </TabsList>
         {["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"].map((tab) => <TabsContent key={tab} value={tab}>{tab} panel.</TabsContent>)}
@@ -1055,26 +1056,100 @@ const apiSections = [
   {
     title: "Tabs",
     props: [
-      { prop: "value", type: "TabsRoot.Props[\"value\"]", description: "Base UI controlled active value; any trigger value type or null." },
-      { prop: "defaultValue", type: "TabsRoot.Props[\"defaultValue\"]", default: "first enabled tab", description: "Base UI selects the first enabled trigger when omitted." },
-      { prop: "onValueChange", type: "TabsRoot.Props[\"onValueChange\"]", description: "Base UI callback with the selected value and ChangeEventDetails." },
-      { prop: "orientation", type: '"horizontal" | "vertical"', default: '"horizontal"', description: "Tab layout and keyboard direction." },
-      { prop: "variant", type: '"default" | "outline" | "pills" | "underline" | "soft" | "card" | "segment"', default: '"default"', description: "List and trigger visual style." },
-      { prop: "color", type: '"default" | "primary" | "success" | "warning" | "destructive"', default: '"default"', description: "Semantic color theme." },
-      { prop: "showIndicator", type: "boolean", default: "true", description: "Render the indicator; affects underline and segment variants." },
-      { prop: "className", type: "string", description: "Additional root classes; Base UI root props are forwarded." },
+      {
+        prop: "value",
+        type: 'TabsRoot.Props["value"]',
+        description:
+          "Base UI controlled active value; any trigger value type or null.",
+      },
+      {
+        prop: "defaultValue",
+        type: 'TabsRoot.Props["defaultValue"]',
+        default: "first enabled tab",
+        description: "Base UI selects the first enabled trigger when omitted.",
+      },
+      {
+        prop: "onValueChange",
+        type: 'TabsRoot.Props["onValueChange"]',
+        description:
+          "Base UI callback with the selected value and ChangeEventDetails.",
+      },
+      {
+        prop: "orientation",
+        type: '"horizontal" | "vertical"',
+        default: '"horizontal"',
+        description: "Tab layout and keyboard direction.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "outline" | "pills" | "underline" | "soft" | "card" | "segment"',
+        default: '"default"',
+        description: "List and trigger visual style.",
+      },
+      {
+        prop: "color",
+        type: '"default" | "primary" | "success" | "warning" | "destructive"',
+        default: '"default"',
+        description: "Semantic color theme.",
+      },
+      {
+        prop: "showIndicator",
+        type: "boolean",
+        default: "true",
+        description:
+          "Render the indicator; affects underline and segment variants.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        description:
+          "Additional root classes; Base UI root props are forwarded.",
+      },
     ],
   },
   {
     title: "TabsList",
     props: [
-      { prop: "variant", type: '"default" | "outline" | "pills" | "underline" | "soft" | "card" | "segment"', description: "Override the variant inherited from Tabs." },
-      { prop: "showIndicator", type: "boolean", description: "Override the indicator setting inherited from Tabs." },
-      { prop: "scrollable", type: "boolean", default: "false", description: "Enable overflow detection and edge chevrons; constrain the list width to reveal overflow." },
-      { prop: "activateOnFocus", type: "boolean", default: "false (Base UI)", description: "Select a tab as focus moves onto it." },
-      { prop: "loopFocus", type: "boolean", default: "true (Base UI)", description: "Wrap arrow-key focus at either end." },
-      { prop: "children", type: "ReactNode", description: "TabsTrigger children; required." },
-      { prop: "className", type: "string", description: "Additional list classes; other Base UI list props are forwarded." },
+      {
+        prop: "variant",
+        type: '"default" | "outline" | "pills" | "underline" | "soft" | "card" | "segment"',
+        description: "Override the variant inherited from Tabs.",
+      },
+      {
+        prop: "showIndicator",
+        type: "boolean",
+        description: "Override the indicator setting inherited from Tabs.",
+      },
+      {
+        prop: "scrollable",
+        type: "boolean",
+        default: "false",
+        description:
+          "Enable overflow detection and edge chevrons; constrain the list width to reveal overflow.",
+      },
+      {
+        prop: "activateOnFocus",
+        type: "boolean",
+        default: "false (Base UI)",
+        description: "Select a tab as focus moves onto it.",
+      },
+      {
+        prop: "loopFocus",
+        type: "boolean",
+        default: "true (Base UI)",
+        description: "Wrap arrow-key focus at either end.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        description: "TabsTrigger children; required.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        description:
+          "Additional list classes; other Base UI list props are forwarded.",
+      },
     ],
   },
   {
@@ -1545,7 +1620,9 @@ const demoTabs = [
     demo: (
       <DemoWrapper
         title="Segment control (sliding pill)"
-        description={'variant="segment" — switch repeatedly between date ranges; the indicator tracks the latest selection.'}
+        description={
+          'variant="segment" — switch repeatedly between date ranges; the indicator tracks the latest selection.'
+        }
         code={segmentCode}
       >
         <SegmentDemo />
@@ -1558,7 +1635,9 @@ const demoTabs = [
     demo: (
       <DemoWrapper
         title="Direction-aware panels"
-        description={'animation="auto" — arrow navigation shows panels entering from the direction of travel.'}
+        description={
+          'animation="auto" — arrow navigation shows panels entering from the direction of travel.'
+        }
         code={directionCode}
       >
         <DirectionAwareDemo />
