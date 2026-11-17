@@ -40,8 +40,10 @@ function ColorSwatch({
 
   return (
     <div className="group relative">
-      <div
-        className="h-20 rounded-lg border border-border transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:shadow-md flex items-center justify-center text-xs font-mono"
+      <button
+        type="button"
+        aria-label={`Copy ${name} color value`}
+        className="w-full h-20 rounded-lg border border-border transition-all duration-200 cursor-pointer hover:scale-[1.02] hover:shadow-md flex items-center justify-center text-xs font-mono"
         style={{
           backgroundColor: displayValue,
           color: isDark && darkValue ? "white" : "black",
@@ -51,7 +53,7 @@ function ColorSwatch({
         <span className="opacity-0 group-hover:opacity-100 transition-opacity">
           {copied ? "Copied!" : "Copy"}
         </span>
-      </div>
+      </button>
       <div className="mt-2 space-y-1">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">{name}</span>
@@ -489,311 +491,306 @@ export default function ColorUsagePage() {
         version="v1.0"
       />
 
-      <FeatureGrid
-        features={[
-          {
-            title: "Semantic Tokens",
-            description:
-              "Colors are organized by purpose: surface, content, brand, feedback, and UI.",
-          },
-          {
-            title: "OKLCH Color Space",
-            description:
-              "Modern color space with better perceptual uniformity and WCAG contrast compliance.",
-          },
-          {
-            title: "Light & Dark Modes",
-            description:
-              "All colors have light and dark variants that automatically respond to system theme.",
-          },
-        ]}
-      />
+      <FeatureGrid features={colorUsagePageFeatureGridFeatures} />
 
-      <DemoTabs
-        defaultValue="surface"
-        tabs={[
-          {
-            value: "surface",
-            label: "Surface",
-            demo: (
-              <DemoWrapper
-                title="Surface Colors"
-                description="Background and container colors for layouts, cards, panels, and sidebars."
-                code={surfaceColorsCode}
-              >
-                <SurfaceColorsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "content",
-            label: "Content",
-            demo: (
-              <DemoWrapper
-                title="Content Colors"
-                description="Text colors for headings, body content, captions, and accents."
-                code={contentColorsCode}
-              >
-                <ContentColorsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "brand",
-            label: "Brand",
-            demo: (
-              <DemoWrapper
-                title="Brand Colors"
-                description="Primary, secondary, and accent colors for branding and actions."
-                code={brandColorsCode}
-              >
-                <BrandColorsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "feedback",
-            label: "Feedback",
-            demo: (
-              <DemoWrapper
-                title="Feedback Colors"
-                description="Destructive, info, success, and warning colors for status messages."
-                code={feedbackColorsCode}
-              >
-                <FeedbackColorsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "ui",
-            label: "UI",
-            demo: (
-              <DemoWrapper
-                title="UI Colors"
-                description="Border, input, and focus ring colors for UI elements."
-                code={uiColorsCode}
-              >
-                <UIColorsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "chart",
-            label: "Chart",
-            demo: (
-              <DemoWrapper
-                title="Chart Colors"
-                description="Data visualization colors for charts and graphs."
-                code={chartColorsCode}
-              >
-                <ChartColorsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "components",
-            label: "Components",
-            demo: (
-              <DemoWrapper
-                title="Component Showcase"
-                description="Live examples of components using color system tokens."
-                code={componentShowcaseCode}
-              >
-                <ComponentShowcase />
-              </DemoWrapper>
-            ),
-          },
-        ]}
-      />
+      <DemoTabs defaultValue="surface" tabs={colorUsagePageDemoTabsTabs} />
 
-      <APIReference
-        sections={[
-          {
-            title: "Surface Colors",
-            props: [
-              {
-                prop: "--background",
-                type: "oklch()",
-                default: "oklch(1 0 0)",
-                description: "Main page container background",
-              },
-              {
-                prop: "--card",
-                type: "oklch()",
-                default: "oklch(1 0 0)",
-                description: "Card, panel, and content area backgrounds",
-              },
-              {
-                prop: "--popover",
-                type: "oklch()",
-                default: "oklch(1 0 0)",
-                description: "Dropdowns, tooltips, and modal backgrounds",
-              },
-              {
-                prop: "--sidebar",
-                type: "oklch()",
-                default: "oklch(0.985 0 0)",
-                description: "Sidebar and navigation panel background",
-              },
-              {
-                prop: "--muted",
-                type: "oklch()",
-                default: "oklch(0.985 0 0)",
-                description: "Subtle backgrounds and disabled states",
-              },
-            ],
-          },
-          {
-            title: "Content Colors",
-            props: [
-              {
-                prop: "--foreground",
-                type: "oklch()",
-                default: "oklch(0.145 0 0)",
-                description: "Primary text, headings, body copy",
-              },
-              {
-                prop: "--muted-foreground",
-                type: "oklch()",
-                default: "oklch(0.50 0.03 25)",
-                description: "Helper text, captions, timestamps, metadata",
-              },
-              {
-                prop: "--secondary-foreground",
-                type: "oklch()",
-                default: "oklch(0.20 0.03 15)",
-                description: "Subheadings, labels, decorative text",
-              },
-              {
-                prop: "--accent-foreground",
-                type: "oklch()",
-                default: "oklch(0.30 0.04 20)",
-                description: "Accented text, highlighted content",
-              },
-            ],
-          },
-          {
-            title: "Brand Colors",
-            props: [
-              {
-                prop: "--primary",
-                type: "oklch()",
-                default: "oklch(0.59 0.22 1)",
-                description:
-                  "Primary buttons, active states, links, brand elements",
-              },
-              {
-                prop: "--primary-foreground",
-                type: "oklch()",
-                default: "oklch(0.97 0.01 343)",
-                description: "Text on primary buttons and backgrounds",
-              },
-              {
-                prop: "--secondary",
-                type: "oklch()",
-                default: "oklch(0.75 0.10 10)",
-                description:
-                  "Secondary actions, toggle states, alternative buttons",
-              },
-              {
-                prop: "--accent",
-                type: "oklch()",
-                default: "oklch(0.92 0.04 15)",
-                description: "Highlights, decorative elements, selections",
-              },
-            ],
-          },
-          {
-            title: "Feedback Colors",
-            props: [
-              {
-                prop: "--destructive",
-                type: "oklch()",
-                default: "oklch(0.60 0.22 20)",
-                description:
-                  "Error messages, delete actions, validation errors",
-              },
-              {
-                prop: "--success",
-                type: "oklch()",
-                default: "oklch(0.75 0.18 150)",
-                description:
-                  "Success messages, confirmation, completion states",
-              },
-              {
-                prop: "--warning",
-                type: "oklch()",
-                default: "oklch(0.80 0.16 80)",
-                description: "Warnings, cautions, non-critical issues",
-              },
-              {
-                prop: "--info",
-                type: "oklch()",
-                default: "oklch(0.75 0.16 225)",
-                description: "Informational messages, tips, notifications",
-              },
-            ],
-          },
-          {
-            title: "UI Colors",
-            props: [
-              {
-                prop: "--border",
-                type: "oklch()",
-                default: "oklch(0.90 0.01 20)",
-                description: "Borders, dividers, separator lines",
-              },
-              {
-                prop: "--input",
-                type: "oklch()",
-                default: "oklch(0.90 0.01 20)",
-                description: "Form input backgrounds, form fields",
-              },
-              {
-                prop: "--ring",
-                type: "oklch()",
-                default: "oklch(0.70 0.12 350)",
-                description: "Focus indicators, keyboard navigation rings",
-              },
-            ],
-          },
-          {
-            title: "Chart Colors",
-            props: [
-              {
-                prop: "--chart-1",
-                type: "oklch()",
-                default: "oklch(0.75 0.14 185)",
-                description: "Teal - data series 1, primary data",
-              },
-              {
-                prop: "--chart-2",
-                type: "oklch()",
-                default: "oklch(0.75 0.18 35)",
-                description: "Coral - data series 2, complementary",
-              },
-              {
-                prop: "--chart-3",
-                type: "oklch()",
-                default: "oklch(0.78 0.14 95)",
-                description: "Golden - data series 3, accent",
-              },
-              {
-                prop: "--chart-4",
-                type: "oklch()",
-                default: "oklch(0.70 0.12 280)",
-                description: "Soft Purple - data series 4, secondary",
-              },
-              {
-                prop: "--chart-5",
-                type: "oklch()",
-                default: "oklch(0.65 0.10 160)",
-                description: "Sage - data series 5, tertiary",
-              },
-            ],
-          },
-        ]}
-      />
+      <APIReference sections={colorUsagePageAPIReferenceSections} />
     </ComponentPage>
   );
 }
+
+const colorUsagePageFeatureGridFeatures = [
+  {
+    title: "Semantic Tokens",
+    description:
+      "Colors are organized by purpose: surface, content, brand, feedback, and UI.",
+  },
+  {
+    title: "OKLCH Color Space",
+    description:
+      "Modern color space with better perceptual uniformity and WCAG contrast compliance.",
+  },
+  {
+    title: "Light & Dark Modes",
+    description:
+      "All colors have light and dark variants that automatically respond to system theme.",
+  },
+] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
+
+const colorUsagePageDemoTabsTabs = [
+  {
+    value: "surface",
+    label: "Surface",
+    demo: (
+      <DemoWrapper
+        title="Surface Colors"
+        description="Background and container colors for layouts, cards, panels, and sidebars."
+        code={surfaceColorsCode}
+      >
+        <SurfaceColorsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "content",
+    label: "Content",
+    demo: (
+      <DemoWrapper
+        title="Content Colors"
+        description="Text colors for headings, body content, captions, and accents."
+        code={contentColorsCode}
+      >
+        <ContentColorsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "brand",
+    label: "Brand",
+    demo: (
+      <DemoWrapper
+        title="Brand Colors"
+        description="Primary, secondary, and accent colors for branding and actions."
+        code={brandColorsCode}
+      >
+        <BrandColorsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "feedback",
+    label: "Feedback",
+    demo: (
+      <DemoWrapper
+        title="Feedback Colors"
+        description="Destructive, info, success, and warning colors for status messages."
+        code={feedbackColorsCode}
+      >
+        <FeedbackColorsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "ui",
+    label: "UI",
+    demo: (
+      <DemoWrapper
+        title="UI Colors"
+        description="Border, input, and focus ring colors for UI elements."
+        code={uiColorsCode}
+      >
+        <UIColorsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "chart",
+    label: "Chart",
+    demo: (
+      <DemoWrapper
+        title="Chart Colors"
+        description="Data visualization colors for charts and graphs."
+        code={chartColorsCode}
+      >
+        <ChartColorsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "components",
+    label: "Components",
+    demo: (
+      <DemoWrapper
+        title="Component Showcase"
+        description="Live examples of components using color system tokens."
+        code={componentShowcaseCode}
+      >
+        <ComponentShowcase />
+      </DemoWrapper>
+    ),
+  },
+] satisfies React.ComponentProps<typeof DemoTabs>["tabs"];
+
+const colorUsagePageAPIReferenceSections = [
+  {
+    title: "Surface Colors",
+    props: [
+      {
+        prop: "--background",
+        type: "oklch()",
+        default: "oklch(1 0 0)",
+        description: "Main page container background",
+      },
+      {
+        prop: "--card",
+        type: "oklch()",
+        default: "oklch(1 0 0)",
+        description: "Card, panel, and content area backgrounds",
+      },
+      {
+        prop: "--popover",
+        type: "oklch()",
+        default: "oklch(1 0 0)",
+        description: "Dropdowns, tooltips, and modal backgrounds",
+      },
+      {
+        prop: "--sidebar",
+        type: "oklch()",
+        default: "oklch(0.985 0 0)",
+        description: "Sidebar and navigation panel background",
+      },
+      {
+        prop: "--muted",
+        type: "oklch()",
+        default: "oklch(0.985 0 0)",
+        description: "Subtle backgrounds and disabled states",
+      },
+    ],
+  },
+  {
+    title: "Content Colors",
+    props: [
+      {
+        prop: "--foreground",
+        type: "oklch()",
+        default: "oklch(0.145 0 0)",
+        description: "Primary text, headings, body copy",
+      },
+      {
+        prop: "--muted-foreground",
+        type: "oklch()",
+        default: "oklch(0.50 0.03 25)",
+        description: "Helper text, captions, timestamps, metadata",
+      },
+      {
+        prop: "--secondary-foreground",
+        type: "oklch()",
+        default: "oklch(0.20 0.03 15)",
+        description: "Subheadings, labels, decorative text",
+      },
+      {
+        prop: "--accent-foreground",
+        type: "oklch()",
+        default: "oklch(0.30 0.04 20)",
+        description: "Accented text, highlighted content",
+      },
+    ],
+  },
+  {
+    title: "Brand Colors",
+    props: [
+      {
+        prop: "--primary",
+        type: "oklch()",
+        default: "oklch(0.59 0.22 1)",
+        description: "Primary buttons, active states, links, brand elements",
+      },
+      {
+        prop: "--primary-foreground",
+        type: "oklch()",
+        default: "oklch(0.97 0.01 343)",
+        description: "Text on primary buttons and backgrounds",
+      },
+      {
+        prop: "--secondary",
+        type: "oklch()",
+        default: "oklch(0.75 0.10 10)",
+        description: "Secondary actions, toggle states, alternative buttons",
+      },
+      {
+        prop: "--accent",
+        type: "oklch()",
+        default: "oklch(0.92 0.04 15)",
+        description: "Highlights, decorative elements, selections",
+      },
+    ],
+  },
+  {
+    title: "Feedback Colors",
+    props: [
+      {
+        prop: "--destructive",
+        type: "oklch()",
+        default: "oklch(0.60 0.22 20)",
+        description: "Error messages, delete actions, validation errors",
+      },
+      {
+        prop: "--success",
+        type: "oklch()",
+        default: "oklch(0.75 0.18 150)",
+        description: "Success messages, confirmation, completion states",
+      },
+      {
+        prop: "--warning",
+        type: "oklch()",
+        default: "oklch(0.80 0.16 80)",
+        description: "Warnings, cautions, non-critical issues",
+      },
+      {
+        prop: "--info",
+        type: "oklch()",
+        default: "oklch(0.75 0.16 225)",
+        description: "Informational messages, tips, notifications",
+      },
+    ],
+  },
+  {
+    title: "UI Colors",
+    props: [
+      {
+        prop: "--border",
+        type: "oklch()",
+        default: "oklch(0.90 0.01 20)",
+        description: "Borders, dividers, separator lines",
+      },
+      {
+        prop: "--input",
+        type: "oklch()",
+        default: "oklch(0.90 0.01 20)",
+        description: "Form input backgrounds, form fields",
+      },
+      {
+        prop: "--ring",
+        type: "oklch()",
+        default: "oklch(0.70 0.12 350)",
+        description: "Focus indicators, keyboard navigation rings",
+      },
+    ],
+  },
+  {
+    title: "Chart Colors",
+    props: [
+      {
+        prop: "--chart-1",
+        type: "oklch()",
+        default: "oklch(0.75 0.14 185)",
+        description: "Teal - data series 1, primary data",
+      },
+      {
+        prop: "--chart-2",
+        type: "oklch()",
+        default: "oklch(0.75 0.18 35)",
+        description: "Coral - data series 2, complementary",
+      },
+      {
+        prop: "--chart-3",
+        type: "oklch()",
+        default: "oklch(0.78 0.14 95)",
+        description: "Golden - data series 3, accent",
+      },
+      {
+        prop: "--chart-4",
+        type: "oklch()",
+        default: "oklch(0.70 0.12 280)",
+        description: "Soft Purple - data series 4, secondary",
+      },
+      {
+        prop: "--chart-5",
+        type: "oklch()",
+        default: "oklch(0.65 0.10 160)",
+        description: "Sage - data series 5, tertiary",
+      },
+    ],
+  },
+] satisfies React.ComponentProps<typeof APIReference>["sections"];
