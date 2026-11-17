@@ -1,10 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { withOccurrenceKeys } from "@/lib/component-item-keys";
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
 import {
   IconX,
   IconAlertTriangle,
@@ -14,10 +13,21 @@ import {
   IconLoader,
 } from "@tabler/icons-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { dialogContentVariants } from "@/components/ui/dialog";
+import { resolveComponentDefaults } from "@/lib/component-defaults";
+import { isCallbackProp } from "@/lib/component-prop-guards";
+
+function mergeClassName<State>(
+  base: string,
+  className: string | ((state: State) => string | undefined) | undefined,
+) {
+  return isCallbackProp(className)
+    ? (state: State) => cn(base, className(state))
+    : cn(base, className);
+}
 
 function AlertDialog({ ...props }: AlertDialogPrimitive.Root.Props) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
@@ -37,7 +47,7 @@ function AlertDialogPortal({ ...props }: AlertDialogPrimitive.Portal.Props) {
 
 // Static class maps — Tailwind JIT only sees complete class strings, so
 // interpolated `bg-black/${opacity}` would be purged. These are safelisted.
-const overlayColorMap: Record<"black" | "white", Record<number, string>> = {
+const overlayColorMap = {
   black: {
     20: "bg-black/20",
     30: "bg-black/30",
@@ -58,7 +68,7 @@ const overlayColorMap: Record<"black" | "white", Record<number, string>> = {
   },
 };
 
-const overlayBlurMap: Record<string, string> = {
+const overlayBlurMap = {
   none: "",
   xs: "supports-backdrop-filter:backdrop-blur-xs",
   sm: "supports-backdrop-filter:backdrop-blur-sm",
@@ -74,28 +84,9 @@ interface AlertDialogOverlayProps extends AlertDialogPrimitive.Backdrop.Props {
   blurless?: boolean;
 }
 
-function AlertDialogOverlay({
-  className,
-  opacity = 50,
-  blur = "xs",
-  color = "black",
-  blurless = false,
-  ...props
-}: AlertDialogOverlayProps) {
-  const overlayRef = React.useRef<HTMLDivElement>(null);
-  const reducedMotion = useReducedMotion();
-
-  useGSAP(
-    () => {
-      if (!overlayRef.current || reducedMotion) return;
-      gsap.fromTo(
-        overlayRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.3, ease: "power2.out" },
-      );
-    },
-    { scope: overlayRef, dependencies: [reducedMotion] },
-  );
+function AlertDialogOverlay(input: AlertDialogOverlayProps) {
+  const { className, opacity, blur, color, blurless, ...props } =
+    resolveComponentDefaults(input, ALERT_DIALOG_OVERLAY_DEFAULTS_1);
 
   const blurClass = blurless ? "" : overlayBlurMap[blur];
 
@@ -104,12 +95,13 @@ function AlertDialogOverlay({
 
   return (
     <AlertDialogPrimitive.Backdrop
-      ref={overlayRef}
       data-slot="alert-dialog-overlay"
-      className={cn(
-        "fixed inset-0 isolate z-50",
-        colorClass,
-        blurClass,
+      className={mergeClassName<AlertDialogPrimitive.Backdrop.State>(
+        cn(
+          "fixed inset-0 isolate z-50 transition-opacity duration-200 motion-reduce:transition-none data-starting-style:opacity-0 data-ending-style:opacity-0",
+          colorClass,
+          blurClass,
+        ),
         className,
       )}
       {...props}
@@ -121,85 +113,72 @@ interface AlertDialogContentProps extends AlertDialogPrimitive.Popup.Props {
   size?: "sm" | "default" | "lg" | "xl" | "full";
   duration?: number;
   showCloseButton?: boolean;
+  portalProps?: Omit<AlertDialogPrimitive.Portal.Props, "children">;
+  overlayProps?: AlertDialogOverlayProps;
 }
+
+const alertDialogContentVariants = cva("group/alert-dialog-content gap-4 p-4", {
+  variants: {
+    size: {
+      sm: "max-w-xs",
+      default: "max-w-sm",
+      lg: "max-w-md",
+      xl: "max-w-lg",
+      full: "h-full max-w-none overflow-hidden",
+    },
+  },
+  defaultVariants: { size: "default" },
+});
 
 function AlertDialogContent({
   className,
   size = "default",
   duration,
+  style,
+  portalProps,
+  overlayProps,
   showCloseButton = false,
   children,
   ...props
 }: AlertDialogContentProps) {
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const reducedMotion = useReducedMotion();
-
-  const sizeClasses = {
-    sm: "max-w-xs",
-    default: "max-w-xs sm:max-w-sm",
-    lg: "max-w-sm sm:max-w-md",
-    xl: "max-w-md sm:max-w-lg",
-    full: "max-w-[calc(100vw-2rem)] h-[calc(100vh-2rem)]",
-  };
-
-  // Per-size default entrance duration (seconds); `duration` prop overrides.
-  const durationMap = {
-    sm: 0.3,
-    default: 0.35,
-    lg: 0.4,
-    xl: 0.45,
-    full: 0.45,
-  };
-
-  const entranceDuration =
-    duration === undefined ? durationMap[size] : duration / 1000;
-
-  useGSAP(
-    () => {
-      if (!contentRef.current || reducedMotion) return;
-      // A playful pop with a gentle overshoot, instead of a barely-
-      // noticeable fade. (Note: we deliberately only animate `scale` here,
-      // not `x`/`y` — the dialog is centered via a `-translate-1/2` CSS
-      // class, and GSAP fully owns the translate component of `transform`
-      // once it animates x/y, which would clobber that centering.)
-      gsap.fromTo(
-        contentRef.current,
-        { opacity: 0, scale: 0.85 },
-        {
-          opacity: 1,
-          scale: 1,
-          duration: entranceDuration,
-          ease: "back.out(1.7)",
-        },
-      );
-    },
-    { scope: contentRef, dependencies: [reducedMotion, entranceDuration] },
-  );
+  const transitionStyle =
+    duration === undefined
+      ? undefined
+      : { transitionDuration: `${Math.max(0, duration)}ms` };
 
   return (
-    <AlertDialogPortal>
-      <AlertDialogOverlay />
-      <AlertDialogPrimitive.Popup
-        ref={contentRef}
-        data-slot="alert-dialog-content"
-        data-size={size}
-        className={cn(
-          "bg-background ring-foreground/10 gap-4 rounded-xl p-4 ring-1",
-          size === "full"
-            ? "group/alert-dialog-content fixed top-1/2 left-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2 outline-none flex flex-col overflow-hidden"
-            : "group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 outline-none",
-          sizeClasses[size],
-          className,
-        )}
-        {...props}
+    <AlertDialogPortal {...portalProps}>
+      <AlertDialogOverlay {...overlayProps} />
+      <AlertDialogPrimitive.Viewport
+        data-slot="alert-dialog-viewport"
+        className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4"
       >
-        {size === "full" ? (
-          <FullScreenBody>{children}</FullScreenBody>
-        ) : (
-          children
-        )}
-        {showCloseButton && <AlertDialogClose />}
-      </AlertDialogPrimitive.Popup>
+        <AlertDialogPrimitive.Popup
+          data-slot="alert-dialog-content"
+          data-size={size}
+          className={mergeClassName<AlertDialogPrimitive.Popup.State>(
+            cn(
+              dialogContentVariants(),
+              alertDialogContentVariants({ size }),
+              "outline-none",
+            ),
+            className,
+          )}
+          style={
+            isCallbackProp(style)
+              ? (state) => ({ ...transitionStyle, ...style(state) })
+              : { ...transitionStyle, ...style }
+          }
+          {...props}
+        >
+          {size === "full" ? (
+            <FullScreenBody>{children}</FullScreenBody>
+          ) : (
+            children
+          )}
+          {showCloseButton && <AlertDialogClose />}
+        </AlertDialogPrimitive.Popup>
+      </AlertDialogPrimitive.Viewport>
     </AlertDialogPortal>
   );
 }
@@ -217,10 +196,13 @@ function FullScreenBody({ children }: { children: React.ReactNode }) {
   let footer: React.ReactNode = null;
   const body: React.ReactNode[] = [];
 
-  React.Children.forEach(children, (child) => {
+  React.Children.toArray(children).forEach((child) => {
     if (React.isValidElement(child) && child.type === AlertDialogHeader) {
       header = child;
-    } else if (React.isValidElement(child) && child.type === AlertDialogFooter) {
+    } else if (
+      React.isValidElement(child) &&
+      child.type === AlertDialogFooter
+    ) {
       footer = child;
     } else {
       body.push(child);
@@ -230,7 +212,10 @@ function FullScreenBody({ children }: { children: React.ReactNode }) {
   return (
     <>
       {header}
-      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+      <div
+        data-slot="alert-dialog-body"
+        className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto"
+      >
         {body}
       </div>
       {footer}
@@ -251,7 +236,7 @@ function AlertDialogHeader({
     <div
       data-slot="alert-dialog-header"
       className={cn(
-        "grid grid-rows-[auto_1fr] place-items-center gap-1.5 text-center has-data-[slot=alert-dialog-media]:grid-rows-[auto_auto_1fr] has-data-[slot=alert-dialog-media]:gap-x-4 sm:group-data-[size=default]/alert-dialog-content:place-items-start sm:group-data-[size=default]/alert-dialog-content:text-left sm:group-data-[size=default]/alert-dialog-content:has-data-[slot=alert-dialog-media]:grid-rows-[auto_1fr] shrink-0",
+        "group-has-data-[slot=alert-dialog-close]/alert-dialog-content:pr-8 min-w-0 wrap-break-word grid grid-rows-[auto_1fr] place-items-center gap-1.5 text-center has-data-[slot=alert-dialog-media]:grid-rows-[auto_auto_1fr] has-data-[slot=alert-dialog-media]:gap-x-4 sm:group-data-[size=default]/alert-dialog-content:place-items-start sm:group-data-[size=default]/alert-dialog-content:text-left sm:group-data-[size=default]/alert-dialog-content:has-data-[slot=alert-dialog-media]:grid-rows-[auto_1fr] shrink-0",
         centered &&
           "place-items-center text-center sm:group-data-[size=default]/alert-dialog-content:place-items-center sm:group-data-[size=default]/alert-dialog-content:text-center",
         className,
@@ -280,7 +265,8 @@ function AlertDialogFooter({
         layout === "horizontal" && "sm:flex-row sm:justify-end",
         layout === "stacked" && "flex-col",
         centered && "sm:justify-center",
-        "group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2",
+        layout === "horizontal" &&
+          "group-data-[size=sm]/alert-dialog-content:grid group-data-[size=sm]/alert-dialog-content:grid-cols-2",
         className,
       )}
       {...props}
@@ -329,43 +315,70 @@ interface AlertDialogActionProps extends React.ComponentProps<typeof Button> {
   loading?: boolean;
   confirm?: boolean;
   shortcut?: string;
+  /** Set false when the caller owns async completion and dismissal. */
+  closeOnClick?: boolean;
 }
 
-function AlertDialogAction({
-  className,
-  variant = "default",
-  size = "default",
-  loading = false,
-  confirm = false,
-  shortcut,
-  disabled,
-  children,
-  ...props
-}: AlertDialogActionProps) {
-  return (
+function AlertDialogAction(input: AlertDialogActionProps) {
+  const {
+    className,
+    variant,
+    size,
+    loading,
+    confirm,
+    shortcut,
+    closeOnClick,
+    disabled,
+    children,
+    ...props
+  } = resolveComponentDefaults(input, ALERT_DIALOG_ACTION_DEFAULTS_2);
+
+  const button = (
     <Button
       data-slot="alert-dialog-action"
       data-confirm={confirm}
       data-loading={loading}
+      aria-busy={loading || undefined}
       variant={confirm ? "default" : variant}
       size={size}
       disabled={disabled || loading}
-      className={cn(loading && "cursor-wait", className)}
+      className={cn(
+        "h-auto min-h-9 max-w-full whitespace-normal py-2 aria-disabled:opacity-50",
+        loading && "cursor-wait",
+        className,
+      )}
       {...props}
     >
       {loading && (
         <IconLoader
-          className="mr-2 h-4 w-4 animate-spin"
+          data-slot="alert-dialog-loading"
+          aria-hidden="true"
+          className="mr-2 h-4 w-4"
           data-icon="inline-start"
         />
       )}
       {children}
       {shortcut && (
-        <kbd className="pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-          <span className="text-xs">{shortcut}</span>
+        <kbd
+          data-slot="alert-dialog-shortcut"
+          aria-hidden="true"
+          className="pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100"
+        >
+          <span data-slot="alert-dialog-shortcut-label" className="text-xs">
+            {shortcut}
+          </span>
         </kbd>
       )}
     </Button>
+  );
+
+  return closeOnClick ? (
+    <AlertDialogPrimitive.Close
+      disabled={disabled || loading}
+      render={button}
+    />
+  ) : (
+    button
   );
 }
 
@@ -386,13 +399,22 @@ function AlertDialogCancel({
   return (
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-cancel"
-      className={cn(className)}
+      className={mergeClassName<AlertDialogPrimitive.Close.State>(
+        "h-auto min-h-9 max-w-full whitespace-normal py-2",
+        className,
+      )}
       render={
         <Button variant={variant} size={size}>
           {children}
           {shortcut && (
-            <kbd className="pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-              <span className="text-xs">{shortcut}</span>
+            <kbd
+              data-slot="alert-dialog-shortcut"
+              aria-hidden="true"
+              className="pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100"
+            >
+              <span data-slot="alert-dialog-shortcut-label" className="text-xs">
+                {shortcut}
+              </span>
             </kbd>
           )}
         </Button>
@@ -409,7 +431,7 @@ function AlertDialogTitle({
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
-      className={cn(
+      className={mergeClassName<AlertDialogPrimitive.Title.State>(
         "text-sm font-medium sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2",
         className,
       )}
@@ -425,7 +447,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={cn(
+      className={mergeClassName<AlertDialogPrimitive.Description.State>(
         "text-muted-foreground *:[a]:hover:text-foreground text-sm text-balance md:text-pretty *:[a]:underline *:[a]:underline-offset-3",
         className,
       )}
@@ -470,8 +492,12 @@ function AlertDialogWarning({
       )}
       {...props}
     >
-      <IconComponent className="mt-0.5 h-4 w-4 shrink-0" />
-      <div>{children}</div>
+      <IconComponent
+        data-slot="alert-dialog-warning-icon"
+        aria-hidden="true"
+        className="mt-0.5 h-4 w-4 shrink-0"
+      />
+      <div data-slot="alert-dialog-warning-content">{children}</div>
     </div>
   );
 }
@@ -499,15 +525,20 @@ function AlertDialogList({
       className={cn("space-y-1 text-sm", listStyles[variant], className)}
       {...props}
     >
-      {items.map((item, index) => (
+      {withOccurrenceKeys(items, (item) => item).map(({ item, key }) => (
         <li
-          key={index}
+          data-slot="alert-dialog-list-item"
+          key={key}
           className={
             variant === "checkbox" ? "flex items-center gap-2" : undefined
           }
         >
           {variant === "checkbox" && (
-            <span className="inline-block h-4 w-4 rounded border border-muted-foreground/30" />
+            <span
+              data-slot="alert-dialog-list-marker"
+              aria-hidden="true"
+              className="inline-block h-4 w-4 rounded border border-muted-foreground/30"
+            />
           )}
           {item}
         </li>
@@ -532,7 +563,7 @@ function AlertDialogClose({
   return (
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-close"
-      className={cn(
+      className={mergeClassName<AlertDialogPrimitive.Close.State>(
         // `Button` always appends its own `relative` class, which (by
         // Tailwind's utility ordering) beats a plain `absolute` here
         // regardless of source order — use `!absolute` so this reliably
@@ -543,15 +574,23 @@ function AlertDialogClose({
       render={<Button variant={variant} size={size} />}
       {...props}
     >
-      <IconX className="h-4 w-4" />
-      <span className="sr-only">Close</span>
+      <IconX
+        data-slot="alert-dialog-close-icon"
+        aria-hidden="true"
+        className="h-4 w-4"
+      />
+      <span data-slot="alert-dialog-close-label" className="sr-only">
+        Close
+      </span>
     </AlertDialogPrimitive.Close>
   );
 }
 
 interface KiraAlertDialogProps {
   open?: boolean;
+  defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  trigger?: React.ReactElement;
   variant?: "info" | "success" | "warning" | "destructive";
   title: string;
   description?: string;
@@ -560,201 +599,34 @@ interface KiraAlertDialogProps {
   loading?: boolean;
   onConfirm?: () => void | Promise<void>;
   onCancel?: () => void;
+  /** Custom actions own their confirmation gates and dismissal. */
   action?: React.ReactNode;
   children?: React.ReactNode;
   size?: "sm" | "default" | "lg" | "xl";
-  /** Keyboard shortcut hint on the confirm button (also wired to a handler). */
+  /** Display hint; Cmd/Ctrl+Enter confirms while focus is inside this popup. */
   shortcut?: string;
-  /** Require typing this exact string to enable the confirm button. */
   confirmText?: string;
-  /** Disable the confirm button for N seconds (cooldown for dangerous actions). */
+  /** Seconds of visible time before confirmation becomes available. */
   confirmDelay?: number;
-  /** Async confirm handler; shows a success checkmark before closing. */
   onConfirmAsync?: () => Promise<void>;
+  errorMessage?: string;
+  showCloseButton?: boolean;
 }
 
 const kiraDialogIcons = {
-  info: { icon: IconInfoCircle, className: "bg-info/20 text-info" },
-  success: { icon: IconCircleCheck, className: "bg-success/20 text-success" },
-  warning: { icon: IconAlertTriangle, className: "bg-warning/20 text-warning" },
-  destructive: {
-    icon: IconCircleX,
-    className: "bg-destructive/20 text-destructive",
-  },
+  info: IconInfoCircle,
+  success: IconCircleCheck,
+  warning: IconAlertTriangle,
+  destructive: IconCircleX,
 };
 
-function KiraAlertDialog({
-  open,
-  onOpenChange,
-  variant = "info",
-  title,
-  description,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
-  loading = false,
-  onConfirm,
-  onCancel,
-  action,
-  children,
-  size = "default",
-  shortcut,
-  confirmText,
-  confirmDelay,
-  onConfirmAsync,
-}: KiraAlertDialogProps) {
-  const { icon: IconComponent, className: iconClassName } =
-    kiraDialogIcons[variant];
+function KiraAlertDialog(input0: KiraAlertDialogProps) {
+  const state0 = useKiraAlertDialogSetup(input0);
+  const state1 = useKiraAlertDialogState2(state0);
+  const state2 = useKiraAlertDialogState3(state1);
+  const state3 = useKiraAlertDialogActions(state2);
 
-  const [typed, setTyped] = React.useState("");
-  const [remaining, setRemaining] = React.useState(confirmDelay ?? 0);
-
-  const [asyncState, setAsyncState] = React.useState<
-    "idle" | "loading" | "success"
-  >("idle");
-
-  // Reset transient state on the closed→open transition (during render, per
-  // the React "adjust state when a prop changes" guidance — no effect needed).
-  const [prevOpen, setPrevOpen] = React.useState(open);
-
-  if (open !== prevOpen) {
-    setPrevOpen(open);
-
-    if (open) {
-      setTyped("");
-      setAsyncState("idle");
-      setRemaining(confirmDelay ?? 0);
-    }
-  }
-
-  // Countdown cooldown while the dialog is open (effect only manages the timer).
-  React.useEffect(() => {
-    if (!open || !confirmDelay) return;
-
-    const interval = setInterval(() => {
-      setRemaining((r) => {
-        if (r <= 1) {
-          clearInterval(interval);
-
-          return 0;
-        }
-
-        return r - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [open, confirmDelay]);
-
-  const typeGateUnmet = confirmText != null && typed !== confirmText;
-  const delayUnmet = remaining > 0;
-
-  const confirmDisabled =
-    loading || asyncState === "loading" || typeGateUnmet || delayUnmet;
-
-  const handleConfirm = React.useCallback(async () => {
-    if (confirmDisabled) return;
-
-    if (onConfirmAsync) {
-      setAsyncState("loading");
-
-      try {
-        await onConfirmAsync();
-        setAsyncState("success");
-        setTimeout(() => onOpenChange?.(false), 700);
-      } catch {
-        setAsyncState("idle");
-      }
-
-      return;
-    }
-
-    await onConfirm?.();
-  }, [confirmDisabled, onConfirmAsync, onConfirm, onOpenChange]);
-
-  // Wire the shortcut (e.g. "⌘↵" / "Enter") to actually confirm.
-  React.useEffect(() => {
-    if (!open || !shortcut) return;
-
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        handleConfirm();
-      }
-    };
-
-    window.addEventListener("keydown", handler);
-
-    return () => window.removeEventListener("keydown", handler);
-  }, [open, shortcut, handleConfirm]);
-
-  const confirmContent =
-    asyncState === "success" ? (
-      <>
-        <IconCircleCheck className="mr-1 h-4 w-4" />
-        Done
-      </>
-    ) : delayUnmet ? (
-      `${confirmLabel} (${remaining})`
-    ) : (
-      confirmLabel
-    );
-
-  return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent size={size}>
-        <AlertDialogHeader>
-          <div
-            className={cn(
-              "mb-2 inline-flex size-10 items-center justify-center rounded-md",
-              iconClassName,
-            )}
-          >
-            <IconComponent className="h-5 w-5" />
-          </div>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          {description && (
-            <AlertDialogDescription>{description}</AlertDialogDescription>
-          )}
-        </AlertDialogHeader>
-        {children}
-        {confirmText != null && (
-          <div className="space-y-1.5">
-            <label
-              htmlFor="kira-confirm-input"
-              className="text-xs text-muted-foreground"
-            >
-              Type <span className="font-mono font-medium">{confirmText}</span>{" "}
-              to confirm
-            </label>
-            <Input
-              id="kira-confirm-input"
-              value={typed}
-              onChange={(e) => setTyped(e.target.value)}
-              autoComplete="off"
-              aria-label={`Type ${confirmText} to confirm`}
-            />
-          </div>
-        )}
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>
-            {cancelLabel}
-          </AlertDialogCancel>
-          {action || (
-            <AlertDialogAction
-              variant={variant === "destructive" ? "destructive" : "default"}
-              loading={loading || asyncState === "loading"}
-              disabled={confirmDisabled}
-              onClick={handleConfirm}
-              shortcut={shortcut}
-            >
-              {confirmContent}
-            </AlertDialogAction>
-          )}
-        </AlertDialogFooter>
-        <AlertDialogClose />
-      </AlertDialogContent>
-    </AlertDialog>
-  );
+  return renderKiraAlertDialog(state3);
 }
 
 export {
@@ -774,11 +646,14 @@ export {
   AlertDialogTrigger,
   AlertDialogWarning,
   KiraAlertDialog,
+  alertDialogContentVariants,
+  alertDialogMediaVariants,
 };
 
 export type {
   AlertDialogActionProps,
   AlertDialogCloseProps,
+  AlertDialogCancelProps,
   AlertDialogContentProps,
   AlertDialogFooterProps,
   AlertDialogHeaderProps,
@@ -788,3 +663,652 @@ export type {
   AlertDialogWarningProps,
   KiraAlertDialogProps,
 };
+
+type renderBuildBodySectionPart1Args = {
+  children: KiraAlertDialogProps["children"];
+  confirmText: KiraAlertDialogProps["confirmText"];
+  inputId: string;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  typed: string;
+  busy: boolean;
+  committed: boolean;
+  statusId: string;
+  setTyped: React.Dispatch<React.SetStateAction<string>>;
+  state: "error" | "idle" | "pending" | "success";
+  statusText: string;
+};
+
+function renderBuildBodySectionPart1({
+  children,
+  confirmText,
+  inputId,
+  inputRef,
+  typed,
+  busy,
+  committed,
+  statusId,
+  setTyped,
+  state,
+  statusText,
+}: renderBuildBodySectionPart1Args) {
+  return (
+    <>
+      {children}
+      {confirmText != null && (
+        <div data-slot="alert-dialog-confirm-field" className="space-y-1.5">
+          <label
+            data-slot="alert-dialog-confirm-label"
+            htmlFor={inputId}
+            className="text-sm text-muted-foreground"
+          >
+            Type{" "}
+            <span
+              data-slot="alert-dialog-confirm-value"
+              className="font-mono font-medium"
+            >
+              {confirmText}
+            </span>{" "}
+            to confirm
+          </label>
+          <Input
+            ref={inputRef}
+            id={inputId}
+            value={typed}
+            disabled={busy || committed}
+            autoComplete="off"
+            aria-describedby={statusId}
+            onChange={(event) => setTyped(event.target.value)}
+          />
+        </div>
+      )}
+      <output
+        data-slot="alert-dialog-status"
+        id={statusId}
+
+        aria-atomic="true"
+        className={`block ${cn(
+          "min-h-5 text-sm tabular-nums",
+          state === "error" ? "text-destructive" : "text-muted-foreground",
+        )}`}
+      >
+        {statusText}
+      </output>
+    </>
+  );
+}
+
+type renderBuildFooterSectionPart2Args = {
+  cancelRef: React.RefObject<HTMLButtonElement | null>;
+  busy: boolean;
+  committed: boolean;
+  onCancel: KiraAlertDialogProps["onCancel"];
+  cancelLabel: string;
+  action: KiraAlertDialogProps["action"];
+  variant: "success" | "destructive" | "warning" | "info";
+  confirmRef: React.RefObject<HTMLButtonElement | null>;
+  confirmDisabled: boolean;
+  handleConfirm: () => Promise<void>;
+  shortcut: KiraAlertDialogProps["shortcut"];
+  statusId: string;
+  resolveValue1: () => string | React.JSX.Element;
+};
+
+function renderBuildFooterSectionPart2({
+  cancelRef,
+  busy,
+  committed,
+  onCancel,
+  cancelLabel,
+  action,
+  variant,
+  confirmRef,
+  confirmDisabled,
+  handleConfirm,
+  shortcut,
+  statusId,
+  resolveValue1,
+}: renderBuildFooterSectionPart2Args) {
+  return (
+    <AlertDialogFooter>
+      <AlertDialogCancel
+        ref={cancelRef}
+        disabled={busy || committed}
+        onClick={onCancel}
+      >
+        {cancelLabel}
+      </AlertDialogCancel>
+      {action ?? (
+        <AlertDialogAction
+          variant={variant === "destructive" ? "destructive" : "default"}
+          ref={confirmRef}
+          focusableWhenDisabled
+          closeOnClick={false}
+          loading={busy}
+          disabled={confirmDisabled}
+          onClick={handleConfirm}
+          shortcut={shortcut}
+          aria-keyshortcuts={shortcut ? "Control+Enter Meta+Enter" : undefined}
+          aria-describedby={statusId}
+        >
+          {resolveValue1()}
+        </AlertDialogAction>
+      )}
+    </AlertDialogFooter>
+  );
+}
+
+type renderKiraAlertDialogSectionPart3Args = {
+  isOpen: boolean;
+  busy: boolean;
+  committed: boolean;
+  operation: React.RefObject<{ generation: number; locked: boolean }>;
+  changeOpen: (next: boolean) => void;
+  trigger: KiraAlertDialogProps["trigger"];
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  size: "default" | "sm" | "lg" | "xl";
+  confirmText: KiraAlertDialogProps["confirmText"];
+  cancelRef: React.RefObject<HTMLButtonElement | null>;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  shortcut: KiraAlertDialogProps["shortcut"];
+  handleConfirm: () => Promise<void>;
+  buildHeader: () => React.JSX.Element;
+  buildBody: () => React.JSX.Element;
+  buildFooter: () => React.JSX.Element;
+  showCloseButton: boolean;
+};
+
+function RenderKiraAlertDialogSectionPart3({
+  isOpen,
+  busy,
+  committed,
+  operation,
+  changeOpen,
+  trigger,
+  triggerRef,
+  size,
+  confirmText,
+  cancelRef,
+  inputRef,
+  shortcut,
+  handleConfirm,
+  buildHeader,
+  buildBody,
+  buildFooter,
+  showCloseButton,
+}: renderKiraAlertDialogSectionPart3Args) {
+  return (
+    <AlertDialog
+      open={isOpen}
+      onOpenChange={(next, details) => {
+        if (
+          !next &&
+          isOpen &&
+          (busy || committed || operation.current.locked)
+        ) {
+          details.cancel();
+
+          return;
+        }
+
+        changeOpen(next);
+      }}
+    >
+      {trigger && <AlertDialogTrigger ref={triggerRef} render={trigger} />}
+      <AlertDialogContent
+        size={size}
+        aria-busy={busy || undefined}
+        initialFocus={() =>
+          confirmText == null ? cancelRef.current : inputRef.current
+        }
+        finalFocus={trigger ? triggerRef : undefined}
+        onKeyDown={(event) => {
+          if (
+            shortcut &&
+            event.key === "Enter" &&
+            (event.metaKey || event.ctrlKey) &&
+            !event.repeat &&
+            !event.nativeEvent.isComposing
+          ) {
+            event.preventDefault();
+            void handleConfirm();
+          }
+        }}
+      >
+        {buildHeader()}
+        {buildBody()}
+        {buildFooter()}
+        {showCloseButton && <AlertDialogClose disabled={busy || committed} />}
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const ALERT_DIALOG_OVERLAY_DEFAULTS_1 = {
+  opacity: 50,
+  blur: "xs",
+  color: "black",
+  blurless: false,
+} as const;
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const ALERT_DIALOG_ACTION_DEFAULTS_2 = {
+  variant: "default",
+  size: "default",
+  loading: false,
+  confirm: false,
+  closeOnClick: true,
+} as const;
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const KIRA_ALERT_DIALOG_DEFAULTS_3 = {
+  defaultOpen: false,
+  variant: "info",
+  confirmLabel: "Confirm",
+  cancelLabel: "Cancel",
+  loading: false,
+  size: "default",
+  confirmDelay: 0,
+  errorMessage: "Could not complete the action. Try again.",
+  showCloseButton: false,
+} as const;
+
+function useKiraAlertDialogSetup(input: KiraAlertDialogProps) {
+  const resolvedProps = resolveComponentDefaults(
+    input,
+    KIRA_ALERT_DIALOG_DEFAULTS_3,
+  );
+
+  const { open, defaultOpen, confirmDelay } = resolvedProps;
+
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
+
+  const isOpen = open ?? uncontrolledOpen;
+
+  const inputId = React.useId();
+
+  const statusId = React.useId();
+
+  const cancelRef = React.useRef<HTMLButtonElement>(null);
+
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  const confirmRef = React.useRef<HTMLButtonElement>(null);
+
+  const operation = React.useRef({ generation: 0, locked: false });
+
+  const [typed, setTyped] = React.useState("");
+
+  const [remaining, setRemaining] = React.useState(
+    Math.max(0, Math.ceil(confirmDelay)),
+  );
+
+  const [state, setState] = React.useState<
+    "idle" | "pending" | "success" | "error"
+  >("idle");
+
+  const [previous, setPrevious] = React.useState({
+    open: isOpen,
+    delay: confirmDelay,
+  });
+
+  return {
+    ...resolvedProps,
+    setUncontrolledOpen,
+    isOpen,
+    inputId,
+    statusId,
+    cancelRef,
+    triggerRef,
+    inputRef,
+    confirmRef,
+    operation,
+    typed,
+    setTyped,
+    remaining,
+    setRemaining,
+    state,
+    setState,
+    previous,
+    setPrevious,
+  };
+}
+
+function useKiraAlertDialogState2(
+  model: ReturnType<typeof useKiraAlertDialogSetup>,
+) {
+  const {
+    open,
+    onOpenChange,
+    confirmDelay,
+    setUncontrolledOpen,
+    isOpen,
+    operation,
+    setTyped,
+    setRemaining,
+    state,
+    setState,
+    previous,
+    setPrevious,
+  } = model;
+
+  if (previous.open !== isOpen || previous.delay !== confirmDelay) {
+    setPrevious({ open: isOpen, delay: confirmDelay });
+
+    if (previous.open !== isOpen && isOpen) {
+      setTyped("");
+      setState("idle");
+    }
+
+    setRemaining(Math.max(0, Math.ceil(confirmDelay)));
+  }
+
+  const changeOpen = React.useCallback(
+    (next: boolean) => {
+      if (open === undefined) setUncontrolledOpen(next);
+      onOpenChange?.(next);
+    },
+    [open, onOpenChange, setUncontrolledOpen],
+  );
+
+  // A completion from an earlier opening must never update or close a later one.
+  React.useEffect(() => {
+    const request = operation.current;
+
+    return () => {
+      request.generation += 1;
+      request.locked = false;
+    };
+  }, [isOpen, setUncontrolledOpen, operation]);
+
+  React.useEffect(() => {
+    if (!isOpen || confirmDelay <= 0) return;
+
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible")
+        setRemaining((value) => Math.max(0, value - 1));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [isOpen, confirmDelay, operation, setRemaining]);
+
+  const closeAfterSuccess = React.useEffectEvent(() => changeOpen(false));
+
+  React.useEffect(() => {
+    if (!isOpen || state !== "success") return;
+    const timer = window.setTimeout(() => closeAfterSuccess(), 500);
+
+    return () => window.clearTimeout(timer);
+  }, [isOpen, state, setRemaining]);
+
+  return { ...model, changeOpen };
+}
+
+function useKiraAlertDialogState3(
+  model: ReturnType<typeof useKiraAlertDialogState2>,
+) {
+  const {
+    title,
+    description,
+    action,
+    confirmText,
+    variant,
+    loading,
+    errorMessage,
+    isOpen,
+    operation,
+    typed,
+    remaining,
+    state,
+  } = model;
+
+  const busy = loading || state === "pending";
+
+  const committed = state === "success";
+
+  const typeGateUnmet = confirmText != null && typed !== confirmText;
+
+  const confirmDisabled = busy || committed || typeGateUnmet || remaining > 0;
+
+  const handleConfirm = async () => {
+    if (
+      !canStartAlertDialogConfirmation({
+        isOpen,
+        confirmDisabled,
+        locked: operation.current.locked,
+        hasAction: action != null,
+      })
+    )
+      return;
+    await runAlertDialogConfirmation(model);
+  };
+
+  const statusText = getAlertDialogStatusText({
+    state,
+    errorMessage,
+    busy,
+    committed,
+    remaining,
+    typeGateUnmet,
+    confirmText,
+  });
+
+  const MediaIcon = kiraDialogIcons[variant];
+
+  const buildHeader = () => (
+    <AlertDialogHeader>
+      <AlertDialogMedia variant={variant}>
+        <MediaIcon data-slot="alert-dialog-media-icon" aria-hidden />
+      </AlertDialogMedia>
+      <AlertDialogTitle>{title}</AlertDialogTitle>
+      {description && (
+        <AlertDialogDescription>{description}</AlertDialogDescription>
+      )}
+    </AlertDialogHeader>
+  );
+
+  return {
+    ...model,
+    busy,
+    committed,
+    confirmDisabled,
+    handleConfirm,
+    statusText,
+    buildHeader,
+  };
+}
+
+async function runAlertDialogConfirmation(
+  model: ReturnType<typeof useKiraAlertDialogState2>,
+) {
+  const { operation, confirmRef, setState, onConfirmAsync, onConfirm } = model;
+  const request = operation.current;
+  const generation = ++request.generation;
+  request.locked = true;
+  confirmRef.current?.focus();
+  setState("pending");
+
+  try {
+    await (onConfirmAsync ?? onConfirm)?.();
+
+    if (request.generation === generation) setState("success");
+  } catch {
+    if (request.generation === generation) {
+      request.locked = false;
+      setState("error");
+    }
+  }
+}
+
+function getAlertDialogStatusText({
+  state,
+  errorMessage,
+  busy,
+  committed,
+  remaining,
+  typeGateUnmet,
+  confirmText,
+}: {
+  state: string;
+  errorMessage: string;
+  busy: boolean;
+  committed: boolean;
+  remaining: number;
+  typeGateUnmet: boolean;
+  confirmText?: string;
+}) {
+  if (state === "error") return errorMessage;
+
+  if (busy) return "Completing the action. Please wait.";
+
+  if (committed) return "Action completed.";
+
+  if (remaining > 0) return `You can confirm in ${remaining} seconds.`;
+
+  if (typeGateUnmet) return `Enter ${confirmText} to enable confirmation.`;
+
+  return "";
+}
+
+function canStartAlertDialogConfirmation({
+  isOpen,
+  confirmDisabled,
+  locked,
+  hasAction,
+}: {
+  isOpen: boolean;
+  confirmDisabled: boolean;
+  locked: boolean;
+  hasAction: boolean;
+}) {
+  return isOpen && !confirmDisabled && !locked && !hasAction;
+}
+
+function useKiraAlertDialogActions(
+  model: ReturnType<typeof useKiraAlertDialogState3>,
+) {
+  const {
+    onCancel,
+    action,
+    children,
+    shortcut,
+    confirmText,
+    variant,
+    confirmLabel,
+    cancelLabel,
+    inputId,
+    statusId,
+    cancelRef,
+    inputRef,
+    confirmRef,
+    typed,
+    setTyped,
+    state,
+    busy,
+    committed,
+    confirmDisabled,
+    handleConfirm,
+    statusText,
+  } = model;
+
+  const buildBody = () =>
+    renderBuildBodySectionPart1({
+      children,
+      confirmText,
+      inputId,
+      inputRef,
+      typed,
+      busy,
+      committed,
+      statusId,
+      setTyped,
+      state,
+      statusText,
+    });
+
+  const buildFooter = () => {
+    const resolveValue1 = () => {
+      if (committed) {
+        return (
+          <>
+            <IconCircleCheck
+              data-slot="alert-dialog-success-icon"
+              aria-hidden="true"
+            />
+            Done
+          </>
+        );
+      }
+
+      if (busy) {
+        return "Working..." as const;
+      }
+
+      return confirmLabel;
+    };
+
+    return renderBuildFooterSectionPart2({
+      cancelRef,
+      busy,
+      committed,
+      onCancel,
+      cancelLabel,
+      action,
+      variant,
+      confirmRef,
+      confirmDisabled,
+      handleConfirm,
+      shortcut,
+      statusId,
+      resolveValue1,
+    });
+  };
+
+  return { ...model, buildBody, buildFooter };
+}
+
+function renderKiraAlertDialog({
+  trigger,
+  shortcut,
+  confirmText,
+  size,
+  showCloseButton,
+  isOpen,
+  cancelRef,
+  triggerRef,
+  inputRef,
+  operation,
+  changeOpen,
+  busy,
+  committed,
+  handleConfirm,
+  buildHeader,
+  buildBody,
+  buildFooter,
+}: ReturnType<typeof useKiraAlertDialogActions>) {
+  return (
+    <RenderKiraAlertDialogSectionPart3
+      {...{
+        isOpen,
+        busy,
+        committed,
+        operation,
+        changeOpen,
+        trigger,
+        triggerRef,
+        size,
+        confirmText,
+        cancelRef,
+        inputRef,
+        shortcut,
+        handleConfirm,
+        buildHeader,
+        buildBody,
+        buildFooter,
+        showCloseButton,
+      }}
+    />
+  );
+}
