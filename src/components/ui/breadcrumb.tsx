@@ -4,8 +4,7 @@
 import * as React from "react";
 import { useRender } from "@base-ui/react/use-render";
 import { mergeProps } from "@base-ui/react/merge-props";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
+import { Menu } from "@base-ui/react/menu";
 import {
   IconChevronRight,
   IconSlash,
@@ -15,8 +14,10 @@ import {
   IconCheck,
 } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { resolveComponentDefaults } from "@/lib/component-defaults";
+import { isStringProp } from "@/lib/component-prop-guards";
 
 const breadcrumbListVariants = cva(
   "flex flex-wrap items-center gap-1.5 break-words text-sm",
@@ -119,7 +120,12 @@ interface BreadcrumbJsonLdProps {
 }
 
 interface BreadcrumbCollapsibleProps {
-  items: { href: string; label: string; current?: boolean }[];
+  items: {
+    href: string;
+    label: string;
+    current?: boolean;
+    icon?: React.ReactNode;
+  }[];
   maxItems?: number;
   itemsBeforeCollapse?: number;
   itemsAfterCollapse?: number;
@@ -154,16 +160,25 @@ const BreadcrumbContext = React.createContext<BreadcrumbContextValue>({});
 
 const useBreadcrumbContext = () => React.useContext(BreadcrumbContext);
 
+/**
+ * Fixed-width middle truncation for long crumb labels: `start…end`, keeping
+ * ~10 chars per side. Labels ≤ max pass through untouched.
+ */
+function truncateMiddle(label: string, max = 24): string {
+  if (label.length <= max) return label;
+  const keep = Math.floor((max - 1) / 2);
+
+  return `${label.slice(0, keep)}…${label.slice(-keep)}`;
+}
+
 function useBreadcrumbs(
   pathname: string,
   options: UseBreadcrumbsOptions = {},
 ): BreadcrumbItem[] {
-  const {
-    labels = {},
-    includeHome = true,
-    homeLabel = "Home",
-    basePath = "",
-  } = options;
+  const { labels, includeHome, homeLabel, basePath } = resolveComponentDefaults(
+    options,
+    { labels: {}, includeHome: true, homeLabel: "Home", basePath: "" },
+  );
 
   return React.useMemo(() => {
     let path = pathname;
@@ -278,12 +293,13 @@ const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
     return useRender({
       defaultTagName: "a",
       render,
+      ref,
       props: mergeProps<"a">(
+        // SAFETY: The default data-slot object is a valid anchor-props object.
         {
           "data-slot": "breadcrumb-link",
         } as React.AnchorHTMLAttributes<HTMLAnchorElement>,
         {
-          ref,
           itemProp: "item",
           className: cn(
             breadcrumbLinkVariants({ variant, className }),
@@ -294,7 +310,7 @@ const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>(
               {children}
               <meta
                 itemProp="name"
-                content={typeof children === "string" ? children : ""}
+                content={isStringProp(children) ? children : ""}
               />
             </>
           ),
@@ -318,10 +334,7 @@ const BreadcrumbPage = React.forwardRef<HTMLSpanElement, BreadcrumbPageProps>(
       {...props}
     >
       {children}
-      <meta
-        itemProp="name"
-        content={typeof children === "string" ? children : ""}
-      />
+      <meta itemProp="name" content={isStringProp(children) ? children : ""} />
     </span>
   ),
 );
@@ -331,88 +344,42 @@ BreadcrumbPage.displayName = "BreadcrumbPage";
 const BreadcrumbEllipsis = React.forwardRef<
   HTMLSpanElement,
   BreadcrumbEllipsisProps
->(({ className, items, onExpand, ...props }, ref) => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const dropdownRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (!isOpen) return;
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
-
-  // Fade + slide the menu in on open; reduced-motion users get an instant show.
-  useGSAP(() => {
-    if (!isOpen || !dropdownRef.current) return;
-    const mm = gsap.matchMedia();
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.fromTo(
-        dropdownRef.current,
-        { opacity: 0, y: -4 },
-        { opacity: 1, y: 0, duration: 0.15, ease: "power2.out" },
-      );
-    });
-
-    return () => mm.revert();
-  }, [isOpen]);
-
+>(({ className, items, onExpand: _onExpand, ...props }, ref) => {
   if (items && items.length > 0) {
     return (
-      <span
-        ref={ref}
-        data-slot="breadcrumb-ellipsis"
-        className={cn("relative", className)}
-        {...props}
-      >
-        <button
-          type="button"
-          className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          onClick={() => {
-            if (onExpand) {
-              onExpand();
-            } else {
-              setIsOpen((prev) => !prev);
-            }
-          }}
-          aria-expanded={isOpen}
-          aria-haspopup="menu"
-          aria-label="Show hidden breadcrumbs"
+      <Menu.Root>
+        <span
+          ref={ref}
+          data-slot="breadcrumb-ellipsis"
+          className={cn("relative", className)}
+          {...props}
         >
-          <IconDots className="h-4 w-4" aria-hidden="true" />
-        </button>
-        {isOpen && (
-          <div
-            ref={dropdownRef}
-            data-slot="breadcrumb-ellipsis-menu"
-            className="absolute left-0 top-full z-50 mt-1 min-w-37.5 rounded-md border bg-popover p-1 shadow-md"
-            role="menu"
+          <Menu.Trigger
+            aria-label="Show hidden breadcrumbs"
+            className="flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            {items.map((item, index) => (
-              <a
-                key={index}
-                href={item.href}
-                data-slot="breadcrumb-ellipsis-item"
-                className="block rounded-sm px-3 py-2 text-sm hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                role="menuitem"
-                onClick={() => setIsOpen(false)}
+            <IconDots className="h-4 w-4" aria-hidden="true" />
+          </Menu.Trigger>
+          <Menu.Portal>
+            <Menu.Positioner align="start" sideOffset={4}>
+              <Menu.Popup
+                data-slot="breadcrumb-ellipsis-menu"
+                className="z-50 min-w-32 overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg max-h-(--available-height) overflow-y-auto origin-(--transform-original) outline-none data-open:animate-in data-closed:animate-out data-open:fade-in-0 data-closed:fade-out-0 data-open:zoom-in-95 data-closed:zoom-out-95"
               >
-                {item.label}
-              </a>
-            ))}
-          </div>
-        )}
-      </span>
+                {items.map((item) => (
+                  <Menu.Item
+                    key={item.href}
+                    data-slot="breadcrumb-ellipsis-item"
+                    className="block rounded-sm px-3 py-2 text-sm text-popover-foreground outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground cursor-default"
+                  >
+                    <a href={item.href}>{item.label}</a>
+                  </Menu.Item>
+                ))}
+              </Menu.Popup>
+            </Menu.Positioner>
+          </Menu.Portal>
+        </span>
+      </Menu.Root>
     );
   }
 
@@ -480,12 +447,13 @@ const BreadcrumbHome = React.forwardRef<HTMLAnchorElement, BreadcrumbHomeProps>(
     return useRender({
       defaultTagName: "a",
       render,
+      ref,
       props: mergeProps<"a">(
+        // SAFETY: The default data-slot object is a valid anchor-props object.
         {
           "data-slot": "breadcrumb-home",
         } as React.AnchorHTMLAttributes<HTMLAnchorElement>,
         {
-          ref,
           itemProp: "item",
           className: cn(
             "inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
@@ -518,16 +486,26 @@ function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
     () => ({
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
-      itemListElement: items.map((item, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        name: item.name,
-        item: item.href.startsWith("http")
-          ? item.href
-          : typeof window === "undefined"
-            ? item.href
-            : `${window.location.origin}${item.href}`,
-      })),
+      itemListElement: items.map((item, index) => {
+        const resolveItem1 = () => {
+          if (item.href.startsWith("http")) {
+            return item.href;
+          }
+
+          if (typeof window === "undefined") {
+            return item.href;
+          }
+
+          return `${window.location.origin}${item.href}`;
+        };
+
+        return {
+          "@type": "ListItem",
+          position: index + 1,
+          name: item.name,
+          item: resolveItem1(),
+        };
+      }),
     }),
     [items],
   );
@@ -540,16 +518,16 @@ function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
   );
 }
 
-function BreadcrumbCollapsible({
-  items,
-  maxItems = 4,
-  itemsBeforeCollapse = 1,
-  itemsAfterCollapse = 2,
-  separator,
-  size,
-  linkVariant,
-  homeIcon = false,
-}: BreadcrumbCollapsibleProps) {
+function BreadcrumbCollapsible(input: BreadcrumbCollapsibleProps) {
+  const {
+    items,
+    itemsBeforeCollapse = BREADCRUMB_COLLAPSIBLE_DEFAULTS_1.itemsBeforeCollapse,
+    itemsAfterCollapse = BREADCRUMB_COLLAPSIBLE_DEFAULTS_1.itemsAfterCollapse,
+  } = input;
+
+  const { maxItems, separator, size, linkVariant, homeIcon } =
+    resolveComponentDefaults(input, BREADCRUMB_COLLAPSIBLE_DEFAULTS_1);
+
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const shouldCollapse = items.length > maxItems && !isExpanded;
@@ -565,32 +543,19 @@ function BreadcrumbCollapsible({
   }, [items, shouldCollapse, itemsBeforeCollapse, itemsAfterCollapse]);
 
   const renderItem = (
-    item: { href: string; label: string; current?: boolean },
+    item: (typeof items)[number],
     index: number,
     position: number,
-  ) => (
-    <React.Fragment key={index}>
-      {index > 0 && (
-        <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
-      )}
-      <BreadcrumbItem>
-        <meta itemProp="position" content={String(position)} />
-        {item.current ? (
-          <BreadcrumbPage>{item.label}</BreadcrumbPage>
-        ) : homeIcon && index === 0 ? (
-          <BreadcrumbHome
-            href={item.href}
-            showLabel={false}
-            label={item.label}
-          />
-        ) : (
-          <BreadcrumbLink href={item.href} variant={linkVariant}>
-            {item.label}
-          </BreadcrumbLink>
-        )}
-      </BreadcrumbItem>
-    </React.Fragment>
-  );
+  ) =>
+    renderBreadcrumbItem({
+      item,
+      index,
+      position,
+      size,
+      separator,
+      linkVariant,
+      homeIcon,
+    });
 
   if (!shouldCollapse) {
     return (
@@ -605,60 +570,92 @@ function BreadcrumbCollapsible({
     );
   }
 
+  // SAFETY: when shouldCollapse the useMemo above returned an object, not an array.
   const { beforeItems, afterItems, hiddenItems } = visibleItems as {
     beforeItems: typeof items;
     afterItems: typeof items;
     hiddenItems: typeof items;
   };
 
-  let position = 0;
+  return renderBreadcrumbCollapsibleView({
+    separator,
+    items,
+    size,
+    beforeItems,
+    renderItem,
+    hiddenItems,
+    setIsExpanded,
+    afterItems,
+    itemsAfterCollapse,
+    linkVariant,
+  });
+}
+
+function renderBreadcrumbItem({
+  item,
+  index,
+  position,
+  size,
+  separator,
+  linkVariant,
+  homeIcon,
+}: {
+  item: BreadcrumbCollapsibleProps["items"][number];
+  index: number;
+  position: number;
+  size: BreadcrumbCollapsibleProps["size"];
+  separator: BreadcrumbCollapsibleProps["separator"];
+  linkVariant: BreadcrumbCollapsibleProps["linkVariant"];
+  homeIcon: BreadcrumbCollapsibleProps["homeIcon"];
+}) {
+  let content: React.ReactNode;
+
+  if (item.current) {
+    content = (
+      <BreadcrumbPage>
+        {item.icon}
+        {item.label}
+      </BreadcrumbPage>
+    );
+  } else if (homeIcon && index === 0) {
+    content = (
+      <BreadcrumbHome href={item.href} showLabel={false} label={item.label} />
+    );
+  } else {
+    content = (
+      <BreadcrumbLink
+        href={item.href}
+        variant={linkVariant}
+        title={
+          truncateMiddle(item.label) === item.label ? undefined : item.label
+        }
+      >
+        {item.icon}
+        {truncateMiddle(item.label)}
+      </BreadcrumbLink>
+    );
+  }
 
   return (
-    <Breadcrumb separator={separator}>
-      <BreadcrumbJsonLd
-        items={items.map((i) => ({ name: i.label, href: i.href }))}
-      />
-      <BreadcrumbList size={size}>
-        {beforeItems.map((item, index) => {
-          position++;
-
-          return renderItem(item, index, position);
-        })}
-
+    <React.Fragment key={item.href}>
+      {index > 0 && (
         <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
-        <BreadcrumbItem>
-          <BreadcrumbEllipsis
-            items={hiddenItems}
-            onExpand={() => setIsExpanded(true)}
-          />
-        </BreadcrumbItem>
-
-        {afterItems.map((item, index) => {
-          position = items.length - itemsAfterCollapse + index + 1;
-
-          return (
-            <React.Fragment key={`after-${index}`}>
-              <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
-              <BreadcrumbItem>
-                <meta itemProp="position" content={String(position)} />
-                {item.current ? (
-                  <BreadcrumbPage>{item.label}</BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink href={item.href} variant={linkVariant}>
-                    {item.label}
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-            </React.Fragment>
-          );
-        })}
-      </BreadcrumbList>
-    </Breadcrumb>
+      )}
+      <BreadcrumbItem>
+        <meta itemProp="position" content={String(position)} />
+        {content}
+      </BreadcrumbItem>
+    </React.Fragment>
   );
 }
 
 interface BreadcrumbResponsiveProps {
-  items: { href: string; label: string; current?: boolean }[];
+  items: {
+    href: string;
+    label: string;
+    current?: boolean;
+    icon?: React.ReactNode;
+  }[];
 
   mobileItems?: number;
   separator?: React.ReactNode;
@@ -694,42 +691,121 @@ function BreadcrumbResponsive({
           </>
         )}
 
-        {items.map((item, index) => (
-          <React.Fragment key={index}>
-            {index > 0 && (
-              <BreadcrumbSeparator
-                size={size}
-                className={
-                  index < items.length - mobileItems
-                    ? "hidden md:flex"
-                    : undefined
+        {items.map((item, index) => {
+          const resolveValue3 = () => {
+            if (item.current) {
+              return (
+                <BreadcrumbPage>
+                  {item.icon}
+                  {item.label}
+                </BreadcrumbPage>
+              );
+            }
+
+            if (homeIcon && index === 0) {
+              return (
+                <BreadcrumbHome href={item.href} showLabel label={item.label} />
+              );
+            }
+
+            return (
+              <BreadcrumbLink
+                href={item.href}
+                variant={linkVariant}
+                title={
+                  truncateMiddle(item.label) === item.label
+                    ? undefined
+                    : item.label
                 }
               >
-                {separator}
-              </BreadcrumbSeparator>
-            )}
-            <BreadcrumbItem
-              className={
-                index < items.length - mobileItems
-                  ? "hidden md:inline-flex"
-                  : undefined
-              }
-            >
-              <meta itemProp="position" content={String(index + 1)} />
-              {item.current ? (
-                <BreadcrumbPage>{item.label}</BreadcrumbPage>
-              ) : homeIcon && index === 0 ? (
-                <BreadcrumbHome href={item.href} showLabel label={item.label} />
-              ) : (
-                <BreadcrumbLink href={item.href} variant={linkVariant}>
-                  {item.label}
-                </BreadcrumbLink>
-              )}
-            </BreadcrumbItem>
-          </React.Fragment>
-        ))}
+                {item.icon}
+                {truncateMiddle(item.label)}
+              </BreadcrumbLink>
+            );
+          };
+
+          return renderBreadcrumbtsxSectionPart2({
+            item,
+            index,
+            size,
+            items,
+            mobileItems,
+            separator,
+            resolveValue3,
+          });
+        })}
       </BreadcrumbList>
     </Breadcrumb>
+  );
+}
+
+// =============================================================================
+// BreadcrumbMobileMenu — mobile-first ancestor picker: current page as the
+// trigger, all ancestors listed in a Base UI Menu on <md viewports.
+// =============================================================================
+
+interface BreadcrumbMobileMenuProps {
+  items: {
+    href: string;
+    label: string;
+    current?: boolean;
+    icon?: React.ReactNode;
+  }[];
+  className?: string;
+}
+
+function BreadcrumbMobileMenu({ items, className }: BreadcrumbMobileMenuProps) {
+  const current = items[items.length - 1];
+  const ancestors = items.slice(0, -1);
+
+  if (!current) return null;
+
+  return (
+    <Menu.Root>
+      <div className={cn("md:hidden", className)}>
+        <Menu.Trigger
+          aria-label={`Navigate to ancestors of ${current.label}`}
+          className="inline-flex items-center gap-1.5 rounded-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          {current.icon}
+          {truncateMiddle(current.label)}
+          <IconChevronRight
+            className="h-4 w-4 rotate-90 text-muted-foreground"
+            aria-hidden="true"
+          />
+        </Menu.Trigger>
+        <Menu.Portal>
+          <Menu.Positioner align="start" sideOffset={4}>
+            <Menu.Popup
+              data-slot="breadcrumb-mobile-menu"
+              className="z-50 min-w-32 overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg max-h-(--available-height) overflow-y-auto origin-(--transform-original) outline-none data-open:animate-in data-closed:animate-out data-open:fade-in-0 data-closed:fade-out-0 data-open:zoom-in-95 data-closed:zoom-out-95"
+            >
+              {ancestors.length === 0 ? (
+                <Menu.Item
+                  disabled
+                  className="block rounded-sm px-3 py-2 text-sm text-muted-foreground"
+                >
+                  No ancestors
+                </Menu.Item>
+              ) : (
+                ancestors.map((item) => (
+                  <Menu.Item
+                    key={item.href}
+                    data-slot="breadcrumb-mobile-menu-item"
+                    className="block rounded-sm px-3 py-2 text-sm text-popover-foreground outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground cursor-default"
+                  >
+                    <a href={item.href}>
+                      {item.icon}
+                      {item.label}
+                    </a>
+                  </Menu.Item>
+                ))
+              )}
+            </Menu.Popup>
+          </Menu.Positioner>
+        </Menu.Portal>
+      </div>
+    </Menu.Root>
   );
 }
 
@@ -759,8 +835,10 @@ function BreadcrumbActions({
 // BreadcrumbCopy — copy-the-current-path affordance with a copied-check flash
 // =============================================================================
 
-interface BreadcrumbCopyProps
-  extends Omit<React.ComponentPropsWithoutRef<"button">, "value"> {
+interface BreadcrumbCopyProps extends Omit<
+  React.ComponentPropsWithoutRef<"button">,
+  "value"
+> {
   /** Full path/URL to copy. Defaults to `window.location.href`. */
   value?: string;
   label?: string;
@@ -772,20 +850,54 @@ function BreadcrumbCopy({
   className,
   ...props
 }: BreadcrumbCopyProps) {
+  const resolveValue4 = () => {
+    if (copied) {
+      return "Path copied" as const;
+    }
+
+    if (copyError) {
+      return "Copy failed — press Ctrl+C to copy the path from the address bar" as const;
+    }
+
+    return label;
+  };
+
   const [copied, setCopied] = React.useState(false);
+  const [copyError, setCopyError] = React.useState(false);
+  const resetTimer = React.useRef<number | undefined>(undefined);
   const reduced = useReducedMotion();
+
+  React.useEffect(
+    () => () => {
+      window.clearTimeout(resetTimer.current);
+    },
+    [],
+  );
 
   const handleCopy = () => {
     const text =
-      value ??
-      (typeof window === "undefined" ? "" : window.location.href);
+      value ?? (typeof window === "undefined" ? "" : window.location.href);
 
     if (!text || typeof navigator === "undefined" || !navigator.clipboard)
       return;
-    void navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), reduced ? 0 : 1500);
-    });
+    navigator.clipboard.writeText(text).then(
+      () => {
+        setCopied(true);
+        setCopyError(false);
+        window.clearTimeout(resetTimer.current);
+        resetTimer.current = window.setTimeout(
+          () => setCopied(false),
+          reduced ? 0 : 1500,
+        );
+      },
+      () => {
+        // Clipboard write rejected (permissions/focus): surface an sr-only hint instead of failing silently.
+        setCopied(false);
+        setCopyError(true);
+        window.clearTimeout(resetTimer.current);
+        resetTimer.current = window.setTimeout(() => setCopyError(false), 3000);
+      },
+    );
   };
 
   return (
@@ -806,9 +918,7 @@ function BreadcrumbCopy({
       ) : (
         <IconLink className="h-4 w-4" aria-hidden="true" />
       )}
-      <span className="sr-only" role="status">
-        {copied ? "Path copied" : label}
-      </span>
+      <output className="sr-only">{resolveValue4()}</output>
     </button>
   );
 }
@@ -845,26 +955,35 @@ interface KiraBreadcrumbProps {
   actions?: React.ReactNode;
   /** Show a copy-current-path affordance in the actions region. */
   copyPath?: boolean;
+  /**
+   * Mobile-first ancestor menu: on <md, collapse the trail to the current
+   * page with a chevron trigger listing all ancestors (Base UI Menu).
+   */
+  mobileMenu?: boolean;
   className?: string;
 }
 
-function KiraBreadcrumb({
-  items,
-  separator,
-  size,
-  linkVariant,
-  homeIcon = false,
-  collapse = false,
-  maxItems,
-  itemsBeforeCollapse,
-  itemsAfterCollapse,
-  responsive = false,
-  jsonLd = true,
-  overflow = "collapse",
-  actions,
-  copyPath = false,
-  className,
-}: KiraBreadcrumbProps) {
+// oxlint-disable-next-line eslint/max-lines-per-function -- Pure compound JSX view: keeping related labels, controls, and conditional styling together makes the markup easier to review than further fragment extraction.
+function KiraBreadcrumb(input: KiraBreadcrumbProps) {
+  const {
+    items,
+    separator,
+    size,
+    linkVariant,
+    homeIcon,
+    collapse,
+    maxItems,
+    itemsBeforeCollapse,
+    itemsAfterCollapse,
+    responsive,
+    jsonLd,
+    overflow,
+    actions,
+    copyPath,
+    mobileMenu,
+    className,
+  } = resolveComponentDefaults(input, KIRA_BREADCRUMB_DEFAULTS_2);
+
   const trailing =
     actions || copyPath ? (
       <BreadcrumbActions>
@@ -890,65 +1009,55 @@ function KiraBreadcrumb({
   }
 
   if (collapse) {
-    return (
-      <div className={cn("flex items-center", className)}>
-        <BreadcrumbCollapsible
-          items={items}
-          separator={separator}
-          size={size}
-          linkVariant={linkVariant}
-          homeIcon={homeIcon}
-          maxItems={maxItems}
-          itemsBeforeCollapse={itemsBeforeCollapse}
-          itemsAfterCollapse={itemsAfterCollapse}
-        />
-        {trailing}
-      </div>
-    );
+    return renderKiraBreadcrumbSectionPart3({
+      className,
+      items,
+      separator,
+      size,
+      linkVariant,
+      homeIcon,
+      maxItems,
+      itemsBeforeCollapse,
+      itemsAfterCollapse,
+      trailing,
+    });
   }
 
   // Flat trail. In "scroll" mode the list is a horizontally scrollable row
   // with edge fade masks instead of collapsing.
   const scroll = overflow === "scroll";
 
+  if (mobileMenu) {
+    return renderKiraBreadcrumbSectionPart4({
+      separator,
+      className,
+      jsonLd,
+      items,
+      size,
+      homeIcon,
+      linkVariant,
+      trailing,
+    });
+  }
+
   return (
-    <Breadcrumb separator={separator} className={cn("flex items-center", className)}>
+    <Breadcrumb
+      separator={separator}
+      className={cn("flex items-center", className)}
+    >
       {jsonLd && (
         <BreadcrumbJsonLd
           items={items.map((i) => ({ name: i.label, href: i.href }))}
         />
       )}
-      <BreadcrumbList
-        size={size}
-        className={cn(
-          scroll &&
-            "flex-nowrap overflow-x-auto overscroll-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)]",
-        )}
-      >
-        {items.map((item, index) => (
-          <React.Fragment key={index}>
-            {index > 0 && (
-              <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
-            )}
-            <BreadcrumbItem className={cn(scroll && "shrink-0")}>
-              <meta itemProp="position" content={String(index + 1)} />
-              {item.current ? (
-                <BreadcrumbPage data-current="">
-                  {item.icon}
-                  {item.label}
-                </BreadcrumbPage>
-              ) : homeIcon && index === 0 ? (
-                <BreadcrumbHome href={item.href} showLabel label={item.label} />
-              ) : (
-                <BreadcrumbLink href={item.href} variant={linkVariant}>
-                  {item.icon}
-                  {item.label}
-                </BreadcrumbLink>
-              )}
-            </BreadcrumbItem>
-          </React.Fragment>
-        ))}
-      </BreadcrumbList>
+      {renderKiraBreadcrumbSectionPart5({
+        size,
+        scroll,
+        items,
+        homeIcon,
+        linkVariant,
+        separator,
+      })}
       {trailing}
     </Breadcrumb>
   );
@@ -968,6 +1077,7 @@ export {
   BreadcrumbResponsive,
   BreadcrumbActions,
   BreadcrumbCopy,
+  BreadcrumbMobileMenu,
   KiraBreadcrumb,
   useBreadcrumbs,
   useBreadcrumbsFromMatches,
@@ -975,6 +1085,7 @@ export {
   breadcrumbListVariants,
   breadcrumbLinkVariants,
   breadcrumbSeparatorVariants,
+  truncateMiddle,
 };
 
 export type {
@@ -991,8 +1102,439 @@ export type {
   BreadcrumbResponsiveProps,
   BreadcrumbActionsProps,
   BreadcrumbCopyProps,
+  BreadcrumbMobileMenuProps,
   KiraBreadcrumbProps,
   KiraBreadcrumbItem,
   UseBreadcrumbsOptions,
   BreadcrumbItem as BreadcrumbItemType,
 };
+
+type renderBreadcrumbCollapsibleSectionPart1Args = {
+  separator: BreadcrumbCollapsibleProps["separator"];
+  items: BreadcrumbCollapsibleProps["items"];
+  size: BreadcrumbCollapsibleProps["size"];
+  beforeItems: {
+    href: string;
+    label: string;
+    current?: boolean;
+    icon?: React.ReactNode;
+  }[];
+  renderItem: (
+    item: {
+      href: string;
+      label: string;
+      current?: boolean;
+      icon?: React.ReactNode;
+    },
+    index: number,
+    position: number,
+  ) => React.JSX.Element;
+  hiddenItems: {
+    href: string;
+    label: string;
+    current?: boolean;
+    icon?: React.ReactNode;
+  }[];
+  setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+  afterItems: {
+    href: string;
+    label: string;
+    current?: boolean;
+    icon?: React.ReactNode;
+  }[];
+  itemsAfterCollapse: number;
+  linkVariant: BreadcrumbCollapsibleProps["linkVariant"];
+};
+
+function renderBreadcrumbCollapsibleSectionPart1({
+  separator,
+  items,
+  size,
+  beforeItems,
+  renderItem,
+  hiddenItems,
+  setIsExpanded,
+  afterItems,
+  itemsAfterCollapse,
+  linkVariant,
+}: renderBreadcrumbCollapsibleSectionPart1Args) {
+  return (
+    <Breadcrumb separator={separator}>
+      <BreadcrumbJsonLd
+        items={items.map((i) => ({ name: i.label, href: i.href }))}
+      />
+      <BreadcrumbList size={size}>
+        {beforeItems.map((item, index) => renderItem(item, index, index + 1))}
+
+        <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
+        <BreadcrumbItem>
+          <BreadcrumbEllipsis
+            items={hiddenItems}
+            onExpand={() => setIsExpanded(true)}
+          />
+        </BreadcrumbItem>
+
+        {afterItems.map((item, index) => {
+          const position = items.length - itemsAfterCollapse + index + 1;
+
+          return (
+            <React.Fragment key={item.href}>
+              <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
+              <BreadcrumbItem>
+                <meta itemProp="position" content={String(position)} />
+                {item.current ? (
+                  <BreadcrumbPage>
+                    {item.icon}
+                    {item.label}
+                  </BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink
+                    href={item.href}
+                    variant={linkVariant}
+                    title={
+                      truncateMiddle(item.label) === item.label
+                        ? undefined
+                        : item.label
+                    }
+                  >
+                    {item.icon}
+                    {truncateMiddle(item.label)}
+                  </BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </React.Fragment>
+          );
+        })}
+      </BreadcrumbList>
+    </Breadcrumb>
+  );
+}
+
+type renderBreadcrumbtsxSectionPart2Args = {
+  item: {
+    href: string;
+    label: string;
+    current?: boolean;
+    icon?: React.ReactNode;
+  };
+  index: number;
+  size: BreadcrumbResponsiveProps["size"];
+  items: BreadcrumbResponsiveProps["items"];
+  mobileItems: Exclude<BreadcrumbResponsiveProps["mobileItems"], undefined>;
+  separator: BreadcrumbResponsiveProps["separator"];
+  resolveValue3: () => React.JSX.Element;
+};
+
+function renderBreadcrumbtsxSectionPart2({
+  item,
+  index,
+  size,
+  items,
+  mobileItems,
+  separator,
+  resolveValue3,
+}: renderBreadcrumbtsxSectionPart2Args) {
+  return (
+    <React.Fragment key={item.href}>
+      {index > 0 && (
+        <BreadcrumbSeparator
+          size={size}
+          className={
+            index < items.length - mobileItems ? "hidden md:flex" : undefined
+          }
+        >
+          {separator}
+        </BreadcrumbSeparator>
+      )}
+      <BreadcrumbItem
+        className={
+          index < items.length - mobileItems
+            ? "hidden md:inline-flex"
+            : undefined
+        }
+      >
+        <meta itemProp="position" content={String(index + 1)} />
+        {resolveValue3()}
+      </BreadcrumbItem>
+    </React.Fragment>
+  );
+}
+
+type renderKiraBreadcrumbSectionPart3Args = {
+  className: KiraBreadcrumbProps["className"];
+  items: KiraBreadcrumbProps["items"];
+  separator: KiraBreadcrumbProps["separator"];
+  size: KiraBreadcrumbProps["size"];
+  linkVariant: KiraBreadcrumbProps["linkVariant"];
+  homeIcon: boolean;
+  maxItems: KiraBreadcrumbProps["maxItems"];
+  itemsBeforeCollapse: KiraBreadcrumbProps["itemsBeforeCollapse"];
+  itemsAfterCollapse: KiraBreadcrumbProps["itemsAfterCollapse"];
+  trailing: React.JSX.Element | null;
+};
+
+function renderKiraBreadcrumbSectionPart3({
+  className,
+  items,
+  separator,
+  size,
+  linkVariant,
+  homeIcon,
+  maxItems,
+  itemsBeforeCollapse,
+  itemsAfterCollapse,
+  trailing,
+}: renderKiraBreadcrumbSectionPart3Args) {
+  return (
+    <div className={cn("flex items-center", className)}>
+      <BreadcrumbCollapsible
+        items={items}
+        separator={separator}
+        size={size}
+        linkVariant={linkVariant}
+        homeIcon={homeIcon}
+        maxItems={maxItems}
+        itemsBeforeCollapse={itemsBeforeCollapse}
+        itemsAfterCollapse={itemsAfterCollapse}
+      />
+      {trailing}
+    </div>
+  );
+}
+
+type renderKiraBreadcrumbSectionPart4Args = {
+  separator: KiraBreadcrumbProps["separator"];
+  className: KiraBreadcrumbProps["className"];
+  jsonLd: boolean;
+  items: KiraBreadcrumbProps["items"];
+  size: KiraBreadcrumbProps["size"];
+  homeIcon: boolean;
+  linkVariant: KiraBreadcrumbProps["linkVariant"];
+  trailing: React.JSX.Element | null;
+};
+
+function renderKiraBreadcrumbSectionPart4({
+  separator,
+  className,
+  jsonLd,
+  items,
+  size,
+  homeIcon,
+  linkVariant,
+  trailing,
+}: renderKiraBreadcrumbSectionPart4Args) {
+  return (
+    <Breadcrumb
+      separator={separator}
+      className={cn("flex items-center", className)}
+    >
+      {jsonLd && (
+        <BreadcrumbJsonLd
+          items={items.map((i) => ({ name: i.label, href: i.href }))}
+        />
+      )}
+      <BreadcrumbMobileMenu items={items} />
+      <BreadcrumbList
+        size={size}
+        className="hidden md:flex flex-wrap items-center gap-1.5 wrap-break-word text-sm"
+      >
+        {items.map((item, index) => {
+          const resolveValue5 = () => {
+            if (item.current) {
+              return (
+                <BreadcrumbPage data-current="">
+                  {item.icon}
+                  {item.label}
+                </BreadcrumbPage>
+              );
+            }
+
+            if (homeIcon && index === 0) {
+              return (
+                <BreadcrumbHome href={item.href} showLabel label={item.label} />
+              );
+            }
+
+            return (
+              <BreadcrumbLink href={item.href} variant={linkVariant}>
+                {item.icon}
+                {item.label}
+              </BreadcrumbLink>
+            );
+          };
+
+          return (
+            <React.Fragment key={item.href}>
+              {index > 0 && (
+                <BreadcrumbSeparator size={size}>
+                  {separator}
+                </BreadcrumbSeparator>
+              )}
+              <BreadcrumbItem>
+                <meta itemProp="position" content={String(index + 1)} />
+                {resolveValue5()}
+              </BreadcrumbItem>
+            </React.Fragment>
+          );
+        })}
+      </BreadcrumbList>
+      {trailing}
+    </Breadcrumb>
+  );
+}
+
+type renderKiraBreadcrumbSectionPart5Args = {
+  size: KiraBreadcrumbProps["size"];
+  scroll: boolean;
+  items: KiraBreadcrumbProps["items"];
+  homeIcon: boolean;
+  linkVariant: KiraBreadcrumbProps["linkVariant"];
+  separator: KiraBreadcrumbProps["separator"];
+};
+
+function renderKiraBreadcrumbSectionPart5({
+  size,
+  scroll,
+  items,
+  homeIcon,
+  linkVariant,
+  separator,
+}: renderKiraBreadcrumbSectionPart5Args) {
+  return (
+    <BreadcrumbList
+      size={size}
+      className={cn(
+        scroll &&
+          "flex-nowrap overflow-x-auto overscroll-contain scrollbar-none [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden mask-[linear-gradient(to_right,transparent,black_1.5rem,black_calc(100%-1.5rem),transparent)]",
+      )}
+    >
+      {items.map((item, index) => {
+        const resolveValue6 = () => {
+          if (item.current) {
+            return (
+              <BreadcrumbPage data-current="">
+                {item.icon}
+                {item.label}
+              </BreadcrumbPage>
+            );
+          }
+
+          if (homeIcon && index === 0) {
+            return (
+              <BreadcrumbHome href={item.href} showLabel label={item.label} />
+            );
+          }
+
+          return (
+            <BreadcrumbLink
+              href={item.href}
+              variant={linkVariant}
+              title={
+                truncateMiddle(item.label) === item.label
+                  ? undefined
+                  : item.label
+              }
+            >
+              {item.icon}
+              {truncateMiddle(item.label)}
+            </BreadcrumbLink>
+          );
+        };
+
+        return (
+          <React.Fragment key={item.href}>
+            {index > 0 && (
+              <BreadcrumbSeparator size={size}>{separator}</BreadcrumbSeparator>
+            )}
+            <BreadcrumbItem className={cn(scroll && "shrink-0")}>
+              <meta itemProp="position" content={String(index + 1)} />
+              {resolveValue6()}
+            </BreadcrumbItem>
+          </React.Fragment>
+        );
+      })}
+    </BreadcrumbList>
+  );
+}
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const BREADCRUMB_COLLAPSIBLE_DEFAULTS_1 = {
+  maxItems: 4,
+  itemsBeforeCollapse: 1,
+  itemsAfterCollapse: 2,
+  homeIcon: false,
+} as const;
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const KIRA_BREADCRUMB_DEFAULTS_2 = {
+  homeIcon: false,
+  collapse: false,
+  responsive: false,
+  jsonLd: true,
+  overflow: "collapse",
+  copyPath: false,
+  mobileMenu: false,
+} as const;
+
+type renderBreadcrumbCollapsibleViewArgs = {
+  separator: BreadcrumbCollapsibleProps["separator"];
+  items: BreadcrumbCollapsibleProps["items"];
+  size: BreadcrumbCollapsibleProps["size"];
+  beforeItems: {
+    href: string;
+    label: string;
+    current?: boolean;
+    icon?: React.ReactNode;
+  }[];
+  renderItem: (
+    item: {
+      href: string;
+      label: string;
+      current?: boolean;
+      icon?: React.ReactNode;
+    },
+    index: number,
+    position: number,
+  ) => React.JSX.Element;
+  hiddenItems: {
+    href: string;
+    label: string;
+    current?: boolean;
+    icon?: React.ReactNode;
+  }[];
+  setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+  afterItems: {
+    href: string;
+    label: string;
+    current?: boolean;
+    icon?: React.ReactNode;
+  }[];
+  itemsAfterCollapse: number;
+  linkVariant: BreadcrumbCollapsibleProps["linkVariant"];
+};
+
+function renderBreadcrumbCollapsibleView({
+  separator,
+  items,
+  size,
+  beforeItems,
+  renderItem,
+  hiddenItems,
+  setIsExpanded,
+  afterItems,
+  itemsAfterCollapse,
+  linkVariant,
+}: renderBreadcrumbCollapsibleViewArgs) {
+  return renderBreadcrumbCollapsibleSectionPart1({
+    separator,
+    items,
+    size,
+    beforeItems,
+    renderItem,
+    hiddenItems,
+    setIsExpanded,
+    afterItems,
+    itemsAfterCollapse,
+    linkVariant,
+  });
+}
