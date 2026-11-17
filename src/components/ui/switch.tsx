@@ -1,49 +1,57 @@
+/* oxlint-disable react/only-export-components -- public compound component and variant exports */
 "use client";
 
 import * as React from "react";
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
 import { cva } from "class-variance-authority";
-import { cn } from "@/lib/utils";
 import { IconLoader } from "@tabler/icons-react";
+import { cn } from "cn";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { toast } from "@/components/ui/toast";
 
 const switchTrackVariants = cva(
   [
     "relative inline-flex shrink-0 items-center rounded-full cursor-pointer",
+    // Invisible hit-area extension (WCAG 2.5.8) — the track no longer inflates.
+    "after:absolute after:-inset-x-2 after:-inset-y-2 after:rounded-full after:content-['']",
     "transition-[background-color,box-shadow] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
     "motion-reduce:transition-none",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    // Button-exemplar focus ring (no offset — the hit area already pads).
+    "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
     "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
+    // Single error path: `error` prop and Field both set aria-invalid.
+    "aria-invalid:bg-destructive",
     "touch-action-manipulation",
   ],
   {
     variants: {
       size: {
-        sm: "h-5 w-9 px-0.5",
+        // sm grows to a 40x24 track (24px minimum height, WCAG 2.5.8).
+        sm: "h-6 w-10 px-1",
         default: "h-6 w-11 px-0.5",
         lg: "h-7 w-[52px] px-0.5",
-      },
-
-      touchTarget: {
-        true: "min-h-[44px] min-w-[44px] p-2",
-        false: "",
       },
     },
     defaultVariants: {
       size: "default",
-      touchTarget: false,
     },
-  }
+  },
 );
 
 const switchThumbVariants = cva(
   [
     "pointer-events-none block rounded-full bg-white shadow-sm",
-
-    "transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+    // Tailwind v4 translate-x-*/scale-* set the CSS `translate`/`scale`
+    // properties (NOT `transform`) — both must be listed or the thumb jumps.
+    "transition-[translate,scale,box-shadow] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
     "motion-reduce:transition-none",
     "flex items-center justify-center",
     "translate-x-0 data-[unchecked]:translate-x-0",
-
     "active:scale-95 data-[pressed]:scale-95",
   ],
   {
@@ -51,19 +59,20 @@ const switchThumbVariants = cva(
       size: {
         sm: "h-4 w-4 data-[checked]:translate-x-4",
         default: "h-5 w-5 data-[checked]:translate-x-5",
-        lg: "h-6 w-6 data-[checked]:translate-x-[22px]",
+        lg: "h-6 w-6 data-[checked]:translate-x-6",
       },
     },
     defaultVariants: {
       size: "default",
     },
-  }
+  },
 );
 
 interface SwitchProps extends Omit<
   SwitchPrimitive.Root.Props,
-  "checked" | "onCheckedChange" | "defaultChecked"
+  "checked" | "onCheckedChange" | "defaultChecked" | "className"
 > {
+  className?: string;
   checked?: boolean;
   defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
@@ -76,190 +85,338 @@ interface SwitchProps extends Omit<
   errorMessage?: string;
   thumbIcon?: React.ReactNode;
   thumbIconChecked?: React.ReactNode;
-  inputRef?: React.Ref<HTMLInputElement>;
-  name?: string;
-  value?: string;
-  required?: boolean;
   labelPosition?: "start" | "end";
-  touchTarget?: boolean;
   checkedLabel?: string;
   uncheckedLabel?: string;
+  /** Flip immediately; notify onCheckedChange after the commit succeeds. */
+  optimistic?: boolean;
+  onCommit?: (checked: boolean) => Promise<void>;
+  commitErrorTitle?: React.ReactNode;
+  disabledReason?: React.ReactNode;
 }
 
-function Switch({
-  className,
-  checked,
-  defaultChecked = false,
-  onCheckedChange,
-  size = "default",
-  color = "default",
-  label,
-  description,
-  loading = false,
-  error = false,
-  errorMessage,
-  thumbIcon,
-  thumbIconChecked,
-  disabled,
-  readOnly,
-  required,
-  name,
-  id,
-  inputRef,
-  labelPosition = "end",
-  touchTarget = false,
-  checkedLabel,
-  uncheckedLabel,
-  ...props
-}: SwitchProps) {
+function useSwitchCommit(props: SwitchProps) {
+  const [pending, setPending] = React.useState<boolean | null>(null);
+  const inFlight = React.useRef(false);
+
+  const commit = async (checked: boolean) => {
+    const { optimistic, onCommit, onCheckedChange } = props;
+
+    if (inFlight.current) return;
+
+    if (!optimistic || !onCommit || props.checked === undefined) {
+      onCheckedChange?.(checked);
+
+      return;
+    }
+
+    inFlight.current = true;
+    setPending(checked);
+
+    try {
+      await onCommit(checked);
+      onCheckedChange?.(checked);
+    } catch {
+      toast.error(props.commitErrorTitle ?? "Couldn't save that", {
+        description: "The change was reverted.",
+      });
+    } finally {
+      inFlight.current = false;
+      setPending(null);
+    }
+  };
+
+  return {
+    checked: pending ?? props.checked,
+    pending: pending !== null,
+    commit,
+  };
+}
+
+const SwitchGroupDisabledContext = React.createContext(false);
+
+function useSwitchDisabled(disabled: boolean | undefined) {
+  const groupDisabled = React.useContext(SwitchGroupDisabledContext);
+
+  return Boolean(disabled || groupDisabled);
+}
+
+function useSwitchModel(props: SwitchProps) {
+  const disabled = useSwitchDisabled(props.disabled);
   const generatedId = React.useId();
-  const switchId = id || generatedId;
-  const descriptionId = `${switchId}-description`;
-  const errorId = `${switchId}-error`;
+  const id = props.id ?? generatedId;
+  const commit = useSwitchCommit(props);
+  const reasonId = `${id}-reason`;
+  const descriptionId = `${id}-description`;
+  const errorId = `${id}-error`;
+  const showReason = Boolean(disabled && props.disabledReason);
 
-  const isControlled = checked !== undefined;
-  const [internalChecked, setInternalChecked] = React.useState(defaultChecked);
-
-  const effectiveChecked = isControlled ? !!checked : internalChecked;
-
-  const handleCheckedChange = (newChecked: boolean) => {
-    if (!isControlled) {
-      setInternalChecked(newChecked);
-    }
-
-    onCheckedChange?.(newChecked);
-  };
-
-  const getColorClass = (isChecked: boolean) => {
-    if (!isChecked) return "bg-muted-foreground/30";
-
-    if (error || errorMessage) return "bg-destructive";
-
-    switch (color) {
-      case "success":
-        return "bg-success";
-      case "destructive":
-        return "bg-destructive";
-      case "warning":
-        return "bg-warning";
-      default:
-        return "bg-primary";
-    }
-  };
-
-  const iconSizeClass =
-    size === "sm"
-      ? "h-2.5 w-2.5"
-      : size === "default"
-        ? "h-3 w-3"
-        : "h-3.5 w-3.5";
-
-  const ariaDescribedBy =
-    [description ? descriptionId : null, errorMessage ? errorId : null]
+  const describedBy =
+    [
+      props["aria-describedby"],
+      props.description && descriptionId,
+      props.errorMessage && errorId,
+      showReason && reasonId,
+    ]
       .filter(Boolean)
       .join(" ") || undefined;
 
-  const stateLabel = effectiveChecked
-    ? checkedLabel || "On"
-    : uncheckedLabel || "Off";
+  return {
+    ...commit,
+    id,
+    reasonId,
+    descriptionId,
+    errorId,
+    showReason,
+    describedBy,
+    busy: Boolean(props.loading || commit.pending),
+    disabled: Boolean(disabled || props.loading),
+    readOnly: Boolean(props.readOnly || commit.pending),
+  };
+}
 
-  const switchElement = (
-    <SwitchPrimitive.Root
-      data-slot="switch"
-      id={switchId}
-      checked={checked}
-      defaultChecked={defaultChecked}
-      onCheckedChange={handleCheckedChange}
-      disabled={disabled || loading}
-      readOnly={readOnly}
-      required={required}
-      name={name}
-      inputRef={inputRef}
-      aria-describedby={ariaDescribedBy}
-      aria-invalid={error || !!errorMessage || undefined}
-      aria-errormessage={errorMessage ? errorId : undefined}
-      className={({ checked: isChecked }) =>
-        cn(switchTrackVariants({ size, touchTarget }), getColorClass(isChecked))
-      }
-      {...props}
-    >
-      <SwitchPrimitive.Thumb className={cn(switchThumbVariants({ size }))}>
-        {loading ? (
+type SwitchModel = ReturnType<typeof useSwitchModel>;
+
+const switchIconSizes = {
+  sm: "h-2.5 w-2.5",
+  default: "h-3 w-3",
+  lg: "h-3.5 w-3.5",
+};
+
+const switchColors = {
+  default: "bg-primary",
+  success: "bg-success",
+  destructive: "bg-destructive",
+  warning: "bg-warning",
+};
+
+function SwitchThumbContent({
+  props,
+  checked,
+  busy,
+}: {
+  props: SwitchProps;
+  checked: boolean;
+  busy: boolean;
+}) {
+  const reduced = useReducedMotion();
+  const iconSizeClass = switchIconSizes[props.size ?? "default"];
+  const label = checked ? props.checkedLabel : props.uncheckedLabel;
+
+  return (
+    <>
+      <span aria-hidden="true">
+        {busy ? (
           <IconLoader
-            className={cn("animate-spin text-muted-foreground", iconSizeClass)}
+            className={cn(
+              "text-muted-foreground",
+              iconSizeClass,
+              !reduced && "animate-spin",
+            )}
           />
         ) : (
           <ThumbIcon
-            checked={effectiveChecked}
-            thumbIcon={thumbIcon}
-            thumbIconChecked={thumbIconChecked}
+            checked={checked}
+            thumbIcon={props.thumbIcon}
+            thumbIconChecked={props.thumbIconChecked}
             iconSizeClass={iconSizeClass}
           />
         )}
-      </SwitchPrimitive.Thumb>
-    </SwitchPrimitive.Root>
+      </span>
+      {(props.checkedLabel || props.uncheckedLabel) && (
+        <span className="sr-only" aria-live="polite" aria-atomic="true">
+          {label ?? (checked ? "On" : "Off")}
+        </span>
+      )}
+    </>
   );
+}
 
-  const liveRegion = (checkedLabel || uncheckedLabel) && (
-    <span className="sr-only" aria-live="polite" aria-atomic="true">
-      {stateLabel}
-    </span>
-  );
+function SwitchTrack({
+  props,
+  model,
+}: {
+  props: SwitchProps;
+  model: SwitchModel;
+}) {
+  const {
+    className: _className,
+    checked: _checked,
+    defaultChecked,
+    onCheckedChange: _onCheckedChange,
+    size = "default",
+    color = "default",
+    label,
+    description: _description,
+    loading: _loading,
+    error: _error,
+    errorMessage: _errorMessage,
+    thumbIcon: _thumbIcon,
+    thumbIconChecked: _thumbIconChecked,
+    labelPosition: _labelPosition,
+    checkedLabel: _checkedLabel,
+    uncheckedLabel: _uncheckedLabel,
+    optimistic: _optimistic,
+    onCommit: _onCommit,
+    commitErrorTitle: _commitErrorTitle,
+    disabledReason: _disabledReason,
+    ...rootProps
+  } = props;
 
-  if (!label && !description && !errorMessage) {
-    return (
-      <div className={cn("inline-flex items-center", className)}>
-        {switchElement}
-        {liveRegion}
-      </div>
-    );
-  }
+  const invalid =
+    props.error || props.errorMessage ? true : props["aria-invalid"];
 
   return (
+    <SwitchPrimitive.Root
+      {...rootProps}
+      data-slot="switch"
+      id={model.id}
+      aria-label={props["aria-label"] ?? label}
+      checked={model.checked}
+      defaultChecked={defaultChecked}
+      onCheckedChange={model.commit}
+      disabled={model.disabled}
+      readOnly={model.readOnly}
+      aria-busy={model.busy || undefined}
+      aria-describedby={model.describedBy}
+      aria-invalid={invalid}
+      aria-errormessage={
+        props.errorMessage ? model.errorId : props["aria-errormessage"]
+      }
+      className={({ checked }) =>
+        cn(
+          switchTrackVariants({ size }),
+          checked ? switchColors[color] : "bg-muted-foreground/30",
+        )
+      }
+    >
+      <SwitchPrimitive.Thumb
+        data-slot="switch-thumb"
+        className={switchThumbVariants({ size })}
+        render={(thumbProps, state) => (
+          <span {...thumbProps}>
+            <SwitchThumbContent
+              props={props}
+              checked={state.checked}
+              busy={model.busy}
+            />
+          </span>
+        )}
+      />
+    </SwitchPrimitive.Root>
+  );
+}
+
+function SwitchLabel({
+  props,
+  model,
+}: {
+  props: SwitchProps;
+  model: SwitchModel;
+}) {
+  return (
     <div
+      data-slot="switch-content"
+      className="flex min-w-0 flex-col gap-0.5 pt-0.5"
+    >
+      {props.label && (
+        <label
+          htmlFor={model.id}
+          className={cn(
+            "text-sm font-medium leading-5 cursor-pointer select-none",
+            model.disabled && "cursor-not-allowed opacity-70",
+          )}
+        >
+          {props.label}
+          {props.required && (
+            <span className="text-destructive ms-0.5" aria-hidden="true">
+              *
+            </span>
+          )}
+        </label>
+      )}
+      {props.description && (
+        <p id={model.descriptionId} className="text-sm text-muted-foreground">
+          {props.description}
+        </p>
+      )}
+      {props.errorMessage && (
+        <p id={model.errorId} className="text-sm text-destructive" role="alert">
+          {props.errorMessage}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function DisabledReasonAnchor({
+  reason,
+  describedBy,
+  label,
+  children,
+}: {
+  reason: React.ReactNode;
+  describedBy: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div data-slot="switch-reason-anchor" className="relative inline-flex">
+      {children}
+      <Tooltip delay={0}>
+        <TooltipTrigger
+          render={
+            <button
+              type="button"
+              aria-label={label}
+              aria-describedby={describedBy}
+              className="absolute inset-0 cursor-not-allowed rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            />
+          }
+        />
+        <TooltipContent side="top">{reason}</TooltipContent>
+      </Tooltip>
+    </div>
+  );
+}
+
+function Switch(props: SwitchProps) {
+  const model = useSwitchModel(props);
+
+  const withContent = Boolean(
+    props.label || props.description || props.errorMessage,
+  );
+
+  const element = (
+    <div
+      data-slot="switch-field"
       className={cn(
-        "inline-flex items-start gap-3",
-        labelPosition === "start" && "flex-row-reverse",
-        className
+        "inline-flex min-w-0 gap-3",
+        withContent ? "items-start" : "items-center",
+        props.labelPosition === "start" && "flex-row-reverse",
+        props.className,
       )}
     >
-      {switchElement}
-      <div className="flex flex-col gap-0.5 pt-0.5">
-        {label && (
-          <label
-            htmlFor={switchId}
-            className={cn(
-              "text-sm font-medium leading-none cursor-pointer select-none",
-              (disabled || loading || readOnly) &&
-                "cursor-not-allowed opacity-70"
-            )}
-          >
-            {label}
-            {required && (
-              <span className="text-destructive ml-0.5" aria-hidden="true">
-                *
-              </span>
-            )}
-          </label>
-        )}
-        {description && (
-          <p id={descriptionId} className="text-sm text-muted-foreground">
-            {description}
-          </p>
-        )}
-        {errorMessage && (
-          <p
-            id={errorId}
-            className="text-sm text-destructive"
-            role="alert"
-            aria-live="assertive"
-          >
-            {errorMessage}
-          </p>
-        )}
-      </div>
-      {liveRegion}
+      <SwitchTrack props={props} model={model} />
+      {withContent && <SwitchLabel props={props} model={model} />}
+      {model.showReason && (
+        <span id={model.reasonId} className="sr-only">
+          {props.disabledReason}
+        </span>
+      )}
     </div>
+  );
+
+  if (!model.showReason) return element;
+
+  return (
+    <DisabledReasonAnchor
+      reason={props.disabledReason}
+      describedBy={model.reasonId}
+      label={props.label ?? props["aria-label"] ?? "Unavailable setting"}
+    >
+      {element}
+    </DisabledReasonAnchor>
   );
 }
 
@@ -275,79 +432,52 @@ function ThumbIcon({
   iconSizeClass: string;
 }) {
   const wrapperClass =
-    "flex items-center justify-center [&_svg]:w-full [&_svg]:h-full";
+    "relative flex items-center justify-center [&_svg]:w-full [&_svg]:h-full";
 
-  if (checked) {
-    if (thumbIconChecked) {
-      return (
-        <span className={cn(wrapperClass, "text-primary", iconSizeClass)}>
-          {thumbIconChecked}
-        </span>
-      );
-    }
-
-    if (thumbIcon) {
-      return (
-        <span className={cn(wrapperClass, "text-primary", iconSizeClass)}>
-          {thumbIcon}
-        </span>
-      );
-    }
-  } else if (thumbIcon) {
+  if (thumbIcon && thumbIconChecked)
     return (
-      <span
-        className={cn(wrapperClass, "text-muted-foreground", iconSizeClass)}
-      >
-        {thumbIcon}
-      </span>
-    );
-  }
-
-  return null;
-}
-
-interface SwitchWithLabelProps extends SwitchProps {
-  label: string;
-
-  description?: string;
-}
-
-function SwitchWithLabel({
-  label,
-  description,
-  className,
-  id,
-  ...props
-}: SwitchWithLabelProps) {
-  const generatedId = React.useId();
-  const switchId = id || generatedId;
-
-  return (
-    <div className={cn("flex items-start gap-3", className)}>
-      <Switch id={switchId} {...props} />
-      <div className="flex flex-col gap-0.5 pt-0.5">
-        <label
-          htmlFor={switchId}
+      <span className={cn(wrapperClass, iconSizeClass)}>
+        <span
           className={cn(
-            "text-sm font-medium leading-none cursor-pointer select-none",
-            (props.disabled || props.loading) && "cursor-not-allowed opacity-70"
+            "absolute inset-0 flex items-center justify-center transition-[opacity,rotate,scale] duration-200 ease-out motion-reduce:transition-none",
+            checked
+              ? "opacity-0 rotate-90 scale-50"
+              : "opacity-100 rotate-0 scale-100 text-muted-foreground",
           )}
         >
-          {label}
-        </label>
-        {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
-        )}
-      </div>
-    </div>
-  );
+          {thumbIcon}
+        </span>
+        <span
+          className={cn(
+            "absolute inset-0 flex items-center justify-center transition-[opacity,rotate,scale] duration-200 ease-out motion-reduce:transition-none",
+            checked
+              ? "opacity-100 rotate-0 scale-100 text-primary"
+              : "opacity-0 -rotate-90 scale-50",
+          )}
+        >
+          {thumbIconChecked}
+        </span>
+      </span>
+    );
+
+  const icon = checked ? (thumbIconChecked ?? thumbIcon) : thumbIcon;
+
+  return icon ? (
+    <span
+      className={cn(
+        wrapperClass,
+        checked ? "text-primary" : "text-muted-foreground",
+        iconSizeClass,
+      )}
+    >
+      {icon}
+    </span>
+  ) : null;
 }
 
-interface SwitchGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+interface SwitchGroupProps extends React.ComponentProps<"fieldset"> {
   label?: string;
-
   orientation?: "horizontal" | "vertical";
-  children: React.ReactNode;
 }
 
 function SwitchGroup({
@@ -355,37 +485,40 @@ function SwitchGroup({
   orientation = "vertical",
   className,
   children,
+  disabled = false,
   ...props
 }: SwitchGroupProps) {
+  const parentDisabled = React.useContext(SwitchGroupDisabledContext);
+  const groupDisabled = parentDisabled || disabled;
+
   return (
-    <div
-      role="group"
-      aria-label={label}
-      data-slot="switch-group"
-      className={cn(
-        orientation === "vertical"
-          ? "flex flex-col gap-3"
-          : "flex flex-row gap-4 flex-wrap",
-        className
-      )}
-      {...props}
-    >
-      {label && (
-        <span className="text-sm font-medium text-foreground mb-1">
-          {label}
-        </span>
-      )}
-      {children}
-    </div>
+    <SwitchGroupDisabledContext.Provider value={groupDisabled}>
+      <fieldset
+        disabled={groupDisabled}
+        data-slot="switch-group"
+        className={cn(
+          "min-w-0",
+          orientation === "vertical"
+            ? "flex flex-col gap-3"
+            : "flex flex-row gap-4 flex-wrap",
+          className,
+        )}
+        {...props}
+      >
+        {label && (
+          <legend
+            data-slot="switch-group-label"
+            className="mb-3 text-sm font-medium text-foreground"
+          >
+            {label}
+          </legend>
+        )}
+        {children}
+      </fieldset>
+    </SwitchGroupDisabledContext.Provider>
   );
 }
 
-export {
-  Switch,
-  SwitchWithLabel,
-  SwitchGroup,
-  switchTrackVariants,
-  switchThumbVariants,
-};
+export { Switch, SwitchGroup, switchTrackVariants, switchThumbVariants };
 
-export type { SwitchProps, SwitchWithLabelProps, SwitchGroupProps };
+export type { SwitchProps, SwitchGroupProps };
