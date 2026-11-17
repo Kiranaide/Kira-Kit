@@ -1,6 +1,8 @@
+/* oxlint-disable react/only-export-components -- public compound component and variant exports */
 "use client";
 
 import * as React from "react";
+import { Progress as ProgressPrimitive } from "@base-ui/react/progress";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
   IconCheck,
@@ -10,171 +12,92 @@ import {
   IconArrowLeft,
   IconPlayerSkipForward,
 } from "@tabler/icons-react";
-import gsap from "gsap";
-import { cn } from "@/lib/utils";
+import { z } from "zod";
+import { cn } from "cn";
 import { useAnnounce } from "@/hooks/use-announce";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Button } from "@/components/ui/button";
 
-const stepperVariants = cva("flex", {
+const stepperVariants = cva("w-full min-w-0 space-y-6", {
   variants: {
-    orientation: {
-      horizontal: "flex-row items-center",
-      vertical: "flex-col",
-    },
+    orientation: { horizontal: "", vertical: "" },
     size: {
-      sm: "gap-2",
-      default: "gap-4",
-      lg: "gap-6",
+      sm: "[--step-size:1.75rem] [--step-gap:0.5rem]",
+      default: "[--step-size:2.25rem] [--step-gap:0.75rem]",
+      lg: "[--step-size:2.75rem] [--step-gap:1rem]",
     },
   },
-  defaultVariants: {
-    orientation: "horizontal",
-    size: "default",
-  },
+  defaultVariants: { orientation: "horizontal", size: "default" },
 });
 
-const stepperItemVariants = cva("group flex", {
+const stepperItemVariants = cva("group/step relative min-w-0", {
   variants: {
     orientation: {
-      horizontal: "flex-row items-center",
-      vertical: "flex-row items-start gap-3 w-full",
+      horizontal: "flex-1",
+      vertical: "w-full pb-6 last:pb-0",
     },
-    clickable: {
-      true: "cursor-pointer",
-      false: "",
-    },
+    clickable: { true: "", false: "" },
   },
-  defaultVariants: {
-    orientation: "horizontal",
-    clickable: false,
-  },
+  defaultVariants: { orientation: "horizontal", clickable: false },
 });
 
 const stepperIndicatorVariants = cva(
-  "relative z-10 flex shrink-0 items-center justify-center rounded-full border-2 font-medium transition-all duration-200",
+  "relative z-10 flex size-[var(--step-size)] shrink-0 items-center justify-center rounded-full border font-medium tabular-nums motion-safe:transition-[color,background-color,border-color,box-shadow] motion-safe:duration-200",
   {
     variants: {
-      size: {
-        sm: "h-7 w-7 text-xs",
-        default: "h-9 w-9 text-sm",
-        lg: "h-11 w-11 text-base",
-      },
+      size: { sm: "text-xs", default: "text-sm", lg: "text-base" },
       state: {
-        pending:
-          "border-muted-foreground/30 bg-background text-muted-foreground",
+        pending: "border-border bg-background text-muted-foreground",
         active:
-          "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/25",
-        completed: "border-primary bg-primary text-primary-foreground",
-        error: "border-destructive bg-destructive text-destructive-foreground",
-        loading: "border-primary bg-primary/10 text-primary",
+          "border-primary bg-primary text-background ring-4 ring-primary/15",
+        completed: "border-primary/20 bg-primary/10 text-primary",
+        error: "border-destructive/30 bg-destructive/10 text-destructive",
+        loading: "border-primary/30 bg-background text-primary",
         skipped:
-          "border-muted-foreground/50 bg-muted text-muted-foreground line-through",
+          "border-dashed border-border bg-background text-muted-foreground",
       },
     },
-    defaultVariants: {
-      size: "default",
-      state: "pending",
-    },
-  }
+    defaultVariants: { size: "default", state: "pending" },
+  },
 );
 
 const stepperSeparatorVariants = cva(
-  "transition-all duration-300 rounded-full",
+  "pointer-events-none absolute motion-safe:transition-colors motion-safe:duration-200",
   {
     variants: {
       orientation: {
-        horizontal: "h-0.5 flex-1 min-w-12",
-        vertical: "ml-4 mt-2 w-0.5 min-h-10",
+        horizontal:
+          "start-[calc(50%+var(--step-size)/2+var(--step-gap))] end-[calc(-50%+var(--step-size)/2+var(--step-gap))] top-[calc(var(--step-size)/2+0.25rem)] h-px",
+        vertical:
+          "start-[calc(var(--step-size)/2+0.25rem)] top-[calc(var(--step-size)+0.75rem)] bottom-2 w-px",
       },
       state: {
-        pending: "bg-transparent",
-        active: "bg-transparent",
-        completed: "bg-transparent",
+        pending: "bg-border",
+        active: "bg-border",
+        completed: "bg-primary/50",
       },
     },
-    defaultVariants: {
-      orientation: "horizontal",
-      state: "pending",
-    },
-  }
+    defaultVariants: { orientation: "horizontal", state: "pending" },
+  },
 );
 
-const stepperContentVariants = cva("", {
+const stepperContentVariants = cva("min-w-0 space-y-1", {
   variants: {
     orientation: {
-      horizontal: "mt-2 text-center",
-      vertical: "mt-0 pt-0 pb-6 flex-1 min-w-0",
+      horizontal: "w-full text-center",
+      vertical: "flex-1 pt-1 text-start",
     },
   },
-  defaultVariants: {
-    orientation: "horizontal",
-  },
+  defaultVariants: { orientation: "horizontal" },
 });
 
 type StepState =
-  | "pending"
-  | "active"
-  | "completed"
-  | "error"
-  | "loading"
-  | "skipped";
+  "pending" | "active" | "completed" | "error" | "loading" | "skipped";
 
-interface StepperContextValue {
-  value: number;
-  onValueChange: (value: number) => void;
-  orientation: "horizontal" | "vertical";
-  size: "sm" | "default" | "lg";
-  linear: boolean;
-  editable: boolean;
-  completedSteps: Set<number>;
-  errorSteps: Set<number>;
-  loadingSteps: Set<number>;
-  skippedSteps: Set<number>;
-  skippableSteps: Set<number>;
-  totalSteps: number;
-  visibleStepsCount: number;
-  currentVisibleIndex: number;
-  registerStep: (index: number, condition?: boolean) => void;
-  unregisterStep: (index: number) => void;
-  getStepState: (index: number) => StepState;
-  canNavigateTo: (index: number) => boolean;
-  skipStep: (index: number) => void;
-  unskipStep: (index: number) => void;
-  isStepVisible: (index: number) => boolean;
-  focusStep: (index: number) => void;
-  stepRefs: React.MutableRefObject<Map<number, HTMLElement>>;
-  announceStep: (step: number, title?: string) => void;
-}
-
-const StepperContext = React.createContext<StepperContextValue | null>(null);
-
-function useStepperContext() {
-  const context = React.useContext(StepperContext);
-
-  if (!context) {
-    throw new Error("Stepper components must be used within Stepper");
-  }
-
-  return context;
-}
-
-function useReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
-
-  React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  return prefersReducedMotion;
+interface StepRegistration {
+  condition: boolean;
+  disabled: boolean;
+  optional: boolean;
 }
 
 interface StepperProps
@@ -194,448 +117,381 @@ interface StepperProps
   onSkip?: (step: number) => void;
   onComplete?: () => void;
   persistKey?: string;
+  /** Stack horizontal steps below sm; disable to keep a compact horizontal rail. */
+  mobileStacked?: boolean;
   children: React.ReactNode;
 }
 
-const Stepper = React.forwardRef<HTMLElement, StepperProps>(
-  (
-    {
-      value: controlledValue,
-      defaultValue = 0,
-      onValueChange,
-      orientation = "horizontal",
-      size = "default",
-      linear = false,
-      editable = true,
-      completedSteps: completedStepsProp = [],
-      errorSteps: errorStepsProp = [],
-      loadingSteps: loadingStepsProp = [],
-      skippedSteps: skippedStepsProp = [],
-      skippableSteps: skippableStepsProp = [],
-      onSkip,
-      onComplete,
-      persistKey,
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    const [uncontrolledValue, setUncontrolledValue] =
-      React.useState(defaultValue);
+const savedStepperSchema = z.object({
+  currentStep: z.number().int().nonnegative(),
+  skippedSteps: z.array(z.number().int().nonnegative()).default([]),
+});
 
-    const [registeredSteps, setRegisteredSteps] = React.useState<Set<number>>(
-      new Set()
+function readStepperStorage(
+  persistKey: string | undefined,
+  defaultValue: number,
+) {
+  const skippedSteps: number[] = [];
+  const fallback = { currentStep: defaultValue, skippedSteps };
+
+  if (!persistKey) return fallback;
+
+  try {
+    const saved = savedStepperSchema.safeParse(
+      JSON.parse(localStorage.getItem(`stepper-${persistKey}`) ?? "null"),
     );
 
-    const [stepConditions, setStepConditions] = React.useState<
-      Map<number, boolean>
-    >(new Map());
+    return saved.success ? saved.data : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
-    const [internalSkippedSteps, setInternalSkippedSteps] = React.useState<
-      Set<number>
-    >(new Set(skippedStepsProp));
+function useStepperValue(props: StepperProps) {
+  const {
+    persistKey,
+    defaultValue = 0,
+    value: controlledValue,
+    onValueChange,
+  } = props;
 
-    const stepperRef = React.useRef<HTMLElement>(null);
-    const stepRefs = React.useRef<Map<number, HTMLElement>>(new Map());
-    const reducedMotion = useReducedMotion();
-    const { announce } = useAnnounce();
+  const [stored, setStored] = React.useState(() => ({
+    key: persistKey,
+    ...readStepperStorage(persistKey, defaultValue),
+  }));
 
-    const isControlled = controlledValue !== undefined;
-    const value = isControlled ? controlledValue : uncontrolledValue;
+  if (stored.key !== persistKey) {
+    setStored({
+      key: persistKey,
+      ...readStepperStorage(persistKey, defaultValue),
+    });
+  }
 
-    const completedSteps = React.useMemo(
-      () => new Set(completedStepsProp),
-      [completedStepsProp]
-    );
+  const value = controlledValue ?? stored.currentStep;
 
-    const errorSteps = React.useMemo(
-      () => new Set(errorStepsProp),
-      [errorStepsProp]
-    );
+  const skippedSteps = React.useMemo(
+    () => new Set([...stored.skippedSteps, ...(props.skippedSteps ?? [])]),
+    [stored.skippedSteps, props.skippedSteps],
+  );
 
-    const loadingSteps = React.useMemo(
-      () => new Set(loadingStepsProp),
-      [loadingStepsProp]
-    );
+  React.useEffect(() => {
+    if (!persistKey) return;
 
-    const skippableSteps = React.useMemo(
-      () => new Set(skippableStepsProp),
-      [skippableStepsProp]
-    );
-
-    const skippedSteps = React.useMemo(
-      () => new Set([...skippedStepsProp, ...internalSkippedSteps]),
-      [skippedStepsProp, internalSkippedSteps]
-    );
-
-    const visibleSteps = React.useMemo(() => {
-      const visible = new Set<number>();
-      registeredSteps.forEach((step) => {
-        const condition = stepConditions.get(step);
-
-        if (condition === undefined || condition === true) {
-          visible.add(step);
-        }
-      });
-
-      return visible;
-    }, [registeredSteps, stepConditions]);
-
-    const totalSteps = visibleSteps.size;
-
-    const visibleStepsArray = React.useMemo(
-      () => Array.from(visibleSteps).sort((a, b) => a - b),
-      [visibleSteps]
-    );
-
-    const currentVisibleIndex = React.useMemo(
-      () => Math.max(visibleStepsArray.indexOf(value), 0),
-      [visibleStepsArray, value]
-    );
-
-    React.useEffect(() => {
-      if (!persistKey) return;
-
-      try {
-        const saved = localStorage.getItem(`stepper-${persistKey}`);
-
-        if (saved) {
-          const data = JSON.parse(saved);
-
-          if (!isControlled && typeof data.currentStep === "number") {
-            setUncontrolledValue(data.currentStep);
-          }
-
-          if (Array.isArray(data.skippedSteps)) {
-            setInternalSkippedSteps(new Set(data.skippedSteps));
-          }
-        }
-      } catch {}
-    }, [persistKey, isControlled]);
-
-    React.useEffect(() => {
-      if (!persistKey) return;
-
-      try {
-        localStorage.setItem(
-          `stepper-${persistKey}`,
-          JSON.stringify({
-            currentStep: value,
-            skippedSteps: Array.from(internalSkippedSteps),
-            completedSteps: Array.from(completedSteps),
-          })
-        );
-      } catch {}
-    }, [persistKey, value, internalSkippedSteps, completedSteps]);
-
-    const isStepVisible = React.useCallback(
-      (index: number): boolean => visibleSteps.has(index),
-      [visibleSteps]
-    );
-
-    const announceStep = React.useCallback(
-      (step: number, title?: string) => {
-        const visibleIndex =
-          Array.from(visibleSteps)
-            .sort((a, b) => a - b)
-            .indexOf(step) + 1;
-
-        const message = title
-          ? `Step ${visibleIndex} of ${totalSteps}: ${title}`
-          : `Step ${visibleIndex} of ${totalSteps}`;
-
-        announce(message);
-      },
-      [visibleSteps, totalSteps, announce]
-    );
-
-    const handleValueChange = React.useCallback(
-      (newValue: number) => {
-        if (!isControlled) {
-          setUncontrolledValue(newValue);
-        }
-
-        onValueChange?.(newValue);
-
-        if (newValue >= totalSteps - 1 && completedSteps.has(newValue)) {
-          onComplete?.();
-        }
-      },
-      [isControlled, onValueChange, totalSteps, completedSteps, onComplete]
-    );
-
-    const registerStep = React.useCallback(
-      (index: number, condition?: boolean) => {
-        setRegisteredSteps((prev) => new Set([...prev, index]));
-
-        if (condition !== undefined) {
-          setStepConditions((prev) => new Map(prev).set(index, condition));
-        }
-      },
-      []
-    );
-
-    const unregisterStep = React.useCallback((index: number) => {
-      setRegisteredSteps((prev) => {
-        const next = new Set(prev);
-        next.delete(index);
-
-        return next;
-      });
-      setStepConditions((prev) => {
-        const next = new Map(prev);
-        next.delete(index);
-
-        return next;
-      });
-    }, []);
-
-    const skipStep = React.useCallback(
-      (index: number) => {
-        if (skippableSteps.has(index)) {
-          setInternalSkippedSteps((prev) => new Set([...prev, index]));
-          onSkip?.(index);
-        }
-      },
-      [skippableSteps, onSkip]
-    );
-
-    const unskipStep = React.useCallback((index: number) => {
-      setInternalSkippedSteps((prev) => {
-        const next = new Set(prev);
-        next.delete(index);
-
-        return next;
-      });
-    }, []);
-
-    const focusStep = React.useCallback((index: number) => {
-      const stepElement = stepRefs.current.get(index);
-
-      if (stepElement) {
-        stepElement.focus();
-      }
-    }, []);
-
-    const getStepState = React.useCallback(
-      (index: number): StepState => {
-        if (loadingSteps.has(index)) return "loading";
-
-        if (errorSteps.has(index)) return "error";
-
-        if (skippedSteps.has(index)) return "skipped";
-
-        if (index === value) return "active";
-
-        if (completedSteps.has(index) || index < value) return "completed";
-
-        return "pending";
-      },
-      [value, completedSteps, errorSteps, loadingSteps, skippedSteps]
-    );
-
-    const canNavigateTo = React.useCallback(
-      (index: number): boolean => {
-        if (!isStepVisible(index)) return false;
-
-        if (!linear) return editable || index >= value;
-
-        if (index < value) return editable;
-
-        if (index === value + 1 && completedSteps.has(value)) return true;
-
-        if (index === value) return true;
-
-        return false;
-      },
-      [linear, value, completedSteps, editable, isStepVisible]
-    );
-
-    React.useEffect(() => {
-      if (!stepperRef.current || reducedMotion) return;
-
-      const activeIndicator = stepperRef.current.querySelector(
-        '[data-state="active"] [data-slot="stepper-indicator"]'
+    try {
+      localStorage.setItem(
+        `stepper-${persistKey}`,
+        JSON.stringify({ currentStep: value, skippedSteps: [...skippedSteps] }),
       );
+    } catch {
+      // Storage can be unavailable or full; navigation remains usable.
+    }
+  }, [persistKey, value, skippedSteps]);
 
-      if (activeIndicator) {
-        gsap.fromTo(
-          activeIndicator,
-          { scale: 0.8, opacity: 0.5 },
-          { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" }
-        );
-      }
-    }, [value, reducedMotion]);
+  const changeValue = (next: number) => {
+    if (controlledValue === undefined)
+      setStored((previous) => ({ ...previous, currentStep: next }));
 
-    const handleKeyDown = React.useCallback(
-      (e: React.KeyboardEvent) => {
-        const isHorizontal = orientation === "horizontal";
+    onValueChange?.(next);
+  };
 
-        const visibleStepsArray = Array.from(visibleSteps).sort(
-          (a, b) => a - b
-        );
+  const skipStep = (step: number) => {
+    setStored((previous) => ({
+      ...previous,
+      skippedSteps: [...new Set([...previous.skippedSteps, step])],
+    }));
+    props.onSkip?.(step);
+  };
 
-        const currentIndex = visibleStepsArray.indexOf(value);
-        let targetIndex = currentIndex;
+  const unskipStep = (step: number) => {
+    setStored((previous) => ({
+      ...previous,
+      skippedSteps: previous.skippedSteps.filter((item) => item !== step),
+    }));
+  };
 
-        switch (e.key) {
-          case isHorizontal ? "ArrowRight" : "ArrowDown":
-            e.preventDefault();
-            targetIndex = Math.min(
-              currentIndex + 1,
-              visibleStepsArray.length - 1
-            );
-            break;
-          case isHorizontal ? "ArrowLeft" : "ArrowUp":
-            e.preventDefault();
-            targetIndex = Math.max(currentIndex - 1, 0);
-            break;
-          case "Home":
-            e.preventDefault();
-            targetIndex = 0;
-            break;
-          case "End":
-            e.preventDefault();
-            targetIndex = visibleStepsArray.length - 1;
-            break;
-          case "Enter":
-          case " ": {
-            e.preventDefault();
+  return {
+    value,
+    onValueChange: changeValue,
+    skippedSteps,
+    skipStep,
+    unskipStep,
+  };
+}
 
-            const focusedElement: HTMLElement | null =
-              document.activeElement instanceof HTMLElement
-                ? document.activeElement
-                : null;
+function useStepRegistry() {
+  const [entries, setEntries] = React.useState(
+    new Map<number, StepRegistration>(),
+  );
 
-            if (focusedElement?.hasAttribute("data-value")) {
-              const stepValue = parseInt(
-                focusedElement.getAttribute("data-value") || "0",
-                10
-              );
+  const registerStep = React.useCallback(
+    (index: number, condition = true, disabled = false, optional = false) => {
+      setEntries((previous) =>
+        new Map(previous).set(index, { condition, disabled, optional }),
+      );
+    },
+    [],
+  );
 
-              if (canNavigateTo(stepValue)) {
-                handleValueChange(stepValue);
-                announceStep(stepValue);
-              }
-            }
+  const unregisterStep = React.useCallback((index: number) => {
+    setEntries((previous) => {
+      const next = new Map(previous);
+      next.delete(index);
 
-            return;
-          }
+      return next;
+    });
+  }, []);
 
-          case "Escape":
-            e.preventDefault();
-            (e.target as HTMLElement)?.blur();
+  const visibleSteps = [...entries]
+    .flatMap(([index, item]) => (item.condition ? [index] : []))
+    .sort((a, b) => a - b);
 
-            return;
-          default:
-            return;
-        }
+  const enabledSteps = visibleSteps.filter(
+    (index) => !entries.get(index)?.disabled,
+  );
 
-        const targetStep = visibleStepsArray[targetIndex];
+  const optionalSteps = visibleSteps.filter(
+    (index) => entries.get(index)?.optional,
+  );
 
-        if (targetStep !== undefined) {
-          focusStep(targetStep);
-        }
-      },
-      [
-        orientation,
-        visibleSteps,
-        value,
-        canNavigateTo,
-        handleValueChange,
-        focusStep,
-        announceStep,
-      ]
-    );
+  return {
+    registerStep,
+    unregisterStep,
+    visibleSteps,
+    enabledSteps,
+    optionalSteps,
+  };
+}
 
-    const contextValue = React.useMemo(
-      () => ({
-        value,
-        onValueChange: handleValueChange,
-        orientation: orientation ?? "horizontal",
-        size: size ?? "default",
-        linear,
-        editable,
-        completedSteps,
-        errorSteps,
-        loadingSteps,
-        skippedSteps,
-        skippableSteps,
-        totalSteps,
-        visibleStepsCount: totalSteps,
-        currentVisibleIndex,
-        registerStep,
-        unregisterStep,
-        getStepState,
-        canNavigateTo,
-        skipStep,
-        unskipStep,
-        isStepVisible,
-        focusStep,
-        stepRefs,
-        announceStep,
-      }),
-      [
-        value,
-        handleValueChange,
-        orientation,
-        size,
-        linear,
-        editable,
-        completedSteps,
-        errorSteps,
-        loadingSteps,
-        skippedSteps,
-        skippableSteps,
-        totalSteps,
-        currentVisibleIndex,
-        registerStep,
-        unregisterStep,
-        getStepState,
-        canNavigateTo,
-        skipStep,
-        unskipStep,
-        isStepVisible,
-        focusStep,
-        announceStep,
-      ]
-    );
+function stepState(
+  index: number,
+  value: number,
+  sets: {
+    loadingSteps: Set<number>;
+    errorSteps: Set<number>;
+    skippedSteps: Set<number>;
+    completedSteps: Set<number>;
+  },
+): StepState {
+  if (sets.loadingSteps.has(index)) return "loading";
+
+  if (sets.errorSteps.has(index)) return "error";
+
+  if (sets.skippedSteps.has(index)) return "skipped";
+
+  if (sets.completedSteps.has(index)) return "completed";
+
+  if (index === value) return "active";
+
+  if (sets.completedSteps.has(index) || index < value) return "completed";
+
+  return "pending";
+}
+
+function useStepAccess(
+  props: StepperProps,
+  state: ReturnType<typeof useStepperValue>,
+  registry: ReturnType<typeof useStepRegistry>,
+) {
+  const { value } = state;
+  const { linear = false, editable = true } = props;
+  const completedSteps = new Set(props.completedSteps);
+  const errorSteps = new Set(props.errorSteps);
+  const loadingSteps = new Set(props.loadingSteps);
+
+  const skippableSteps = new Set([
+    ...(props.skippableSteps ?? []),
+    ...registry.optionalSteps,
+  ]);
+
+  const sets = {
+    completedSteps,
+    errorSteps,
+    loadingSteps,
+    skippedSteps: state.skippedSteps,
+  };
+
+  const currentVisibleIndex = registry.visibleSteps.indexOf(value);
+
+  const canNavigateTo = (index: number) => {
+    if (!registry.enabledSteps.includes(index) || loadingSteps.has(value))
+      return false;
+
+    if (index === value) return true;
+
+    if (index < value) return editable;
+
+    if (!linear) return true;
 
     return (
-      <StepperContext.Provider value={contextValue}>
+      index === registry.enabledSteps.find((step) => step > value) &&
+      completedSteps.has(value)
+    );
+  };
+
+  return {
+    ...sets,
+    skippableSteps,
+    linear,
+    editable,
+    currentVisibleIndex,
+    totalSteps: registry.visibleSteps.length,
+    visibleStepsCount: registry.visibleSteps.length,
+    getStepState: (index: number) => stepState(index, value, sets),
+    isStepVisible: (index: number) => registry.visibleSteps.includes(index),
+    canNavigateTo,
+  };
+}
+
+function useStepperModel(props: StepperProps) {
+  const id = React.useId();
+  const state = useStepperValue(props);
+  const registry = useStepRegistry();
+  const access = useStepAccess(props, state, registry);
+  const { announce } = useAnnounce();
+
+  const announceStep = (step: number, title?: string) => {
+    const position = registry.visibleSteps.indexOf(step) + 1;
+    const suffix = title ? ": " + title : "";
+    announce(`Step ${position} of ${access.totalSteps}${suffix}`);
+  };
+
+  const focusStep = (index: number) =>
+    document
+      .getElementById(`${id}-step-${index}`)
+      ?.querySelector<HTMLButtonElement>("button")
+      ?.focus();
+
+  const onValueChange = (next: number) => {
+    state.onValueChange(next);
+
+    if (
+      next === registry.visibleSteps.at(-1) &&
+      access.completedSteps.has(next)
+    )
+      props.onComplete?.();
+  };
+
+  const skipStep = (index: number) => {
+    if (access.skippableSteps.has(index)) state.skipStep(index);
+  };
+
+  return {
+    ...state,
+    ...registry,
+    ...access,
+    id,
+    announceStep,
+    focusStep,
+    onValueChange,
+    skipStep,
+    orientation: props.orientation ?? "horizontal",
+    size: props.size ?? "default",
+  };
+}
+
+type StepperContextValue = ReturnType<typeof useStepperModel>;
+
+const StepperContext = React.createContext<StepperContextValue | null>(null);
+
+function useStepperContext() {
+  const context = React.useContext(StepperContext);
+
+  if (!context)
+    throw new Error("Stepper components must be used within Stepper");
+
+  return context;
+}
+
+function flattenSteps(children: React.ReactNode): React.ReactNode[] {
+  return React.Children.toArray(children).flatMap((child) => {
+    if (
+      React.isValidElement<{ children?: React.ReactNode }>(child) &&
+      child.type === React.Fragment
+    )
+      return flattenSteps(child.props.children);
+
+    return [child];
+  });
+}
+
+function isStepperPart(child: React.ReactNode, name: string) {
+  if (!React.isValidElement(child)) return false;
+
+  // Display names survive React Fast Refresh replacing a forwardRef object.
+  // SAFETY: React component types can have displayName; tag-name strings safely yield undefined.
+  return (child.type as React.NamedExoticComponent).displayName === name;
+}
+
+function isItem(child: React.ReactNode) {
+  return isStepperPart(child, "StepperItem");
+}
+
+const Stepper = React.forwardRef<HTMLElement, StepperProps>(
+  function StepperRoot(props, ref) {
+    const model = useStepperModel(props);
+
+    const {
+      children,
+      className,
+      orientation: _orientation,
+      size: _size,
+      value: _value,
+      defaultValue: _defaultValue,
+      onValueChange: _onValueChange,
+      linear: _linear,
+      editable: _editable,
+      completedSteps: _completedSteps,
+      errorSteps: _errorSteps,
+      loadingSteps: _loadingSteps,
+      skippedSteps: _skippedSteps,
+      skippableSteps: _skippableSteps,
+      onSkip: _onSkip,
+      onComplete: _onComplete,
+      persistKey: _persistKey,
+      mobileStacked = true,
+      ...rootProps
+    } = props;
+
+    const allChildren = flattenSteps(children);
+    const rail = allChildren.filter(isItem);
+    const body = allChildren.filter((child) => !isItem(child));
+
+    return (
+      <StepperContext.Provider value={model}>
         <nav
-          ref={(node) => {
-            if (typeof ref === "function") ref(node);
-            else if (ref) ref.current = node;
-            (stepperRef as React.MutableRefObject<HTMLElement | null>).current =
-              node;
-          }}
-          role="navigation"
+          ref={ref}
           aria-label="Progress steps"
           data-slot="stepper"
-          data-orientation={orientation ?? "horizontal"}
-          className={cn(stepperVariants({ orientation, size }), className)}
-          onKeyDown={handleKeyDown}
-          {...props}
+          data-orientation={model.orientation}
+          className={cn(
+            stepperVariants({
+              orientation: model.orientation,
+              size: model.size,
+            }),
+            mobileStacked &&
+              model.orientation === "horizontal" &&
+              mobileStackClasses,
+            className,
+          )}
+          {...rootProps}
         >
-          <ol
-            
-            className={cn(
-              "flex",
-              orientation === "vertical" ? "flex-col" : "flex-row items-center",
-              orientation === "vertical" ? "" : "w-full"
-            )}
-          >
-            {children}
-          </ol>
+          {rail.length > 0 && (
+            <ol
+              data-slot="stepper-list"
+              className={cn(
+                "isolate flex w-full min-w-0",
+                model.orientation === "vertical" ? "flex-col" : "items-start",
+              )}
+            >
+              {rail}
+            </ol>
+          )}
+          {body}
         </nav>
       </StepperContext.Provider>
     );
-  }
+  },
 );
-
-Stepper.displayName = "Stepper";
 
 interface StepperItemProps extends React.HTMLAttributes<HTMLLIElement> {
   value: number;
@@ -645,124 +501,6 @@ interface StepperItemProps extends React.HTMLAttributes<HTMLLIElement> {
   title?: string;
   children: React.ReactNode;
 }
-
-const StepperItem = React.forwardRef<HTMLLIElement, StepperItemProps>(
-  (
-    {
-      value: stepValue,
-      optional = false,
-      disabled = false,
-      condition,
-      title,
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    const {
-      value,
-      onValueChange,
-      orientation,
-      totalSteps,
-      registerStep,
-      unregisterStep,
-      getStepState,
-      canNavigateTo,
-      skippableSteps,
-      isStepVisible,
-      stepRefs,
-      announceStep,
-    } = useStepperContext();
-
-    const state = getStepState(stepValue);
-    const isActive = stepValue === value;
-    const isClickable = !disabled && canNavigateTo(stepValue);
-    const isLast = stepValue === totalSteps - 1;
-    const isSkippable = skippableSteps.has(stepValue) || optional;
-    const isVisible = isStepVisible(stepValue);
-
-    React.useEffect(() => {
-      registerStep(stepValue, condition);
-
-      return () => unregisterStep(stepValue);
-    }, [stepValue, condition, registerStep, unregisterStep]);
-
-    const itemRef = React.useRef<HTMLLIElement>(null);
-    React.useEffect(() => {
-      if (itemRef.current) {
-        stepRefs.current.set(stepValue, itemRef.current);
-      }
-
-      return () => {
-        stepRefs.current.delete(stepValue);
-      };
-    }, [stepValue, stepRefs]);
-
-    const handleClick = () => {
-      if (isClickable && stepValue !== value) {
-        onValueChange(stepValue);
-        announceStep(stepValue, title);
-      }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        handleClick();
-      }
-    };
-
-    if (!isVisible) return null;
-
-    return (
-      <li
-        ref={(node) => {
-          if (typeof ref === "function") ref(node);
-          else if (ref) ref.current = node;
-          (itemRef as React.MutableRefObject<HTMLLIElement | null>).current =
-            node;
-        }}
-        
-        id={`stepper-step-${stepValue}`}
-        aria-current={isActive ? "step" : undefined}
-        aria-disabled={disabled || !isClickable}
-        tabIndex={isClickable ? 0 : -1}
-        data-slot="stepper-item"
-        data-state={state}
-        data-value={stepValue}
-        data-optional={isSkippable || undefined}
-        data-skippable={isSkippable || undefined}
-        className={cn(
-          stepperItemVariants({ orientation, clickable: isClickable }),
-          disabled && "opacity-50 cursor-not-allowed",
-          isClickable &&
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
-          className
-        )}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        {...props}
-      >
-        <StepperItemContext.Provider
-          value={{
-            stepValue,
-            state,
-            isActive,
-            optional: isSkippable,
-            disabled,
-            isLast,
-            title,
-          }}
-        >
-          {children}
-        </StepperItemContext.Provider>
-      </li>
-    );
-  }
-);
-
-StepperItem.displayName = "StepperItem";
 
 interface StepperItemContextValue {
   stepValue: number;
@@ -775,83 +513,237 @@ interface StepperItemContextValue {
 }
 
 const StepperItemContext = React.createContext<StepperItemContextValue | null>(
-  null
+  null,
 );
 
 function useStepperItemContext() {
   const context = React.useContext(StepperItemContext);
 
-  if (!context) {
+  if (!context)
     throw new Error(
-      "StepperIndicator/StepperContent must be used within StepperItem"
+      "StepperIndicator/StepperContent must be used within StepperItem",
     );
-  }
 
   return context;
 }
+
+function handleStepKey(
+  event: React.KeyboardEvent<HTMLButtonElement>,
+  model: StepperContextValue,
+  step: number,
+) {
+  const candidates = model.visibleSteps.filter(model.canNavigateTo);
+  const current = candidates.indexOf(step);
+
+  const horizontal =
+    model.orientation === "horizontal" &&
+    getComputedStyle(event.currentTarget).flexDirection === "column";
+
+  const rtl = getComputedStyle(event.currentTarget).direction === "rtl";
+  const right = rtl ? "ArrowLeft" : "ArrowRight";
+  const forward = horizontal ? right : "ArrowDown";
+  const left = rtl ? "ArrowRight" : "ArrowLeft";
+  const backward = horizontal ? left : "ArrowUp";
+
+  const targets = new Map([
+    [forward, Math.min(current + 1, candidates.length - 1)],
+    [backward, Math.max(current - 1, 0)],
+    ["Home", 0],
+    ["End", candidates.length - 1],
+  ]);
+
+  const target = targets.get(event.key);
+
+  if (target === undefined) return;
+
+  event.preventDefault();
+  const next = candidates[target];
+
+  if (next !== undefined) model.focusStep(next);
+}
+
+function StepTarget({ children }: { children: React.ReactNode }) {
+  const model = useStepperContext();
+  const item = useStepperItemContext();
+  const navigable = model.canNavigateTo(item.stepValue) && !item.disabled;
+
+  const activate = () => {
+    if (!navigable || item.isActive) return;
+
+    model.onValueChange(item.stepValue);
+    model.announceStep(item.stepValue, item.title);
+  };
+
+  return (
+    <button
+      type="button"
+      data-slot="stepper-item-button"
+      aria-current={item.isActive ? "step" : undefined}
+      aria-disabled={!navigable || undefined}
+      aria-busy={item.state === "loading" || undefined}
+      tabIndex={navigable ? 0 : -1}
+      onClick={activate}
+      onKeyDown={(event) => handleStepKey(event, model, item.stepValue)}
+      className={cn(
+        "relative flex min-h-11 w-full min-w-0 rounded-lg p-1 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-safe:transition-colors motion-safe:duration-150",
+        model.orientation === "horizontal"
+          ? "flex-col items-center gap-3"
+          : "items-start gap-3",
+        navigable
+          ? "cursor-pointer hover:bg-muted/50 active:bg-muted"
+          : "cursor-default",
+        item.disabled && "cursor-not-allowed opacity-50",
+      )}
+    >
+      {children}
+      <span className="sr-only">{item.state}</span>
+    </button>
+  );
+}
+
+const StepperItem = React.forwardRef<HTMLLIElement, StepperItemProps>(
+  function StepperItemRoot(
+    {
+      value: stepValue,
+      optional = false,
+      disabled = false,
+      condition = true,
+      title,
+      className,
+      children,
+      ...props
+    },
+    ref,
+  ) {
+    const model = useStepperContext();
+    const { registerStep, unregisterStep } = model;
+
+    React.useEffect(() => {
+      registerStep(stepValue, condition, disabled, optional);
+
+      return () => unregisterStep(stepValue);
+    }, [
+      stepValue,
+      condition,
+      disabled,
+      optional,
+      registerStep,
+      unregisterStep,
+    ]);
+
+    const item = {
+      stepValue,
+      state: model.getStepState(stepValue),
+      isActive: stepValue === model.value,
+      optional: optional || model.skippableSteps.has(stepValue),
+      disabled,
+      isLast: stepValue === model.visibleSteps.at(-1),
+      title,
+    };
+
+    const childArray = React.Children.toArray(children);
+
+    const separators = childArray.filter((child) =>
+      isStepperPart(child, "StepperSeparator"),
+    );
+
+    const content = childArray.filter((child) => !separators.includes(child));
+
+    if (!condition) return null;
+
+    return (
+      <StepperItemContext.Provider value={item}>
+        <li
+          ref={ref}
+          id={`${model.id}-step-${stepValue}`}
+          data-slot="stepper-item"
+          data-state={item.state}
+          data-value={stepValue}
+          data-optional={item.optional || undefined}
+          data-skippable={item.optional || undefined}
+          data-disabled={disabled || undefined}
+          className={cn(
+            stepperItemVariants({
+              orientation: model.orientation,
+              clickable: model.canNavigateTo(stepValue),
+            }),
+            className,
+          )}
+          {...props}
+        >
+          <StepTarget>{content}</StepTarget>
+          {separators}
+        </li>
+      </StepperItemContext.Provider>
+    );
+  },
+);
+
+StepperItem.displayName = "StepperItem";
 
 interface StepperIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
   completedIcon?: React.ReactNode;
   errorIcon?: React.ReactNode;
   loadingIcon?: React.ReactNode;
-  children?: React.ReactNode;
 }
 
 const StepperIndicator = React.forwardRef<
   HTMLDivElement,
   StepperIndicatorProps
->(
-  (
-    {
-      completedIcon = <IconCheck className="h-4 w-4" />,
-      errorIcon = <IconX className="h-4 w-4" />,
-      loadingIcon = <IconLoader2 className="h-4 w-4 animate-spin" />,
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    const { size } = useStepperContext();
-    const { stepValue, state } = useStepperItemContext();
+>(function StepperIndicatorRoot(
+  {
+    completedIcon = <IconCheck className="size-4" />,
+    errorIcon = <IconX className="size-4" />,
+    loadingIcon,
+    className,
+    children,
+    ...props
+  },
+  ref,
+) {
+  const model = useStepperContext();
+  const item = useStepperItemContext();
+  const reduced = useReducedMotion();
 
-    const renderContent = () => {
-      if (children) return children;
+  const icons = {
+    completed: completedIcon,
+    error: errorIcon,
+    loading: loadingIcon ?? (
+      <IconLoader2 className={cn("size-4", !reduced && "animate-spin")} />
+    ),
+    skipped: <IconPlayerSkipForward className="size-4" />,
+  };
 
-      switch (state) {
-        case "completed":
-          return completedIcon;
-        case "error":
-          return errorIcon;
-        case "loading":
-          return loadingIcon;
-        default:
-          return stepValue + 1;
-      }
-    };
+  const number = Math.max(model.visibleSteps.indexOf(item.stepValue), 0) + 1;
 
-    return (
-      <div
-        ref={ref}
-        data-slot="stepper-indicator"
-        className={cn(stepperIndicatorVariants({ size, state }), className)}
-        aria-hidden="true"
-        {...props}
-      >
-        {renderContent()}
-      </div>
-    );
-  }
-);
+  const stateIcon = Object.entries(icons).find(
+    ([state]) => state === item.state,
+  )?.[1];
 
-StepperIndicator.displayName = "StepperIndicator";
+  const content = stateIcon ?? children ?? number;
+
+  return (
+    <div
+      ref={ref}
+      data-slot="stepper-indicator"
+      aria-hidden="true"
+      className={cn(
+        stepperIndicatorVariants({ size: model.size, state: item.state }),
+        className,
+      )}
+      {...props}
+    >
+      {content}
+    </div>
+  );
+});
 
 interface StepperTitleProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
 const StepperTitle = React.forwardRef<HTMLDivElement, StepperTitleProps>(
-  ({ className, children, ...props }, ref) => {
+  function StepperTitleRoot({ className, children, ...props }, ref) {
     const { state, optional } = useStepperItemContext();
 
     return (
@@ -859,25 +751,26 @@ const StepperTitle = React.forwardRef<HTMLDivElement, StepperTitleProps>(
         ref={ref}
         data-slot="stepper-title"
         className={cn(
-          "text-sm font-medium transition-colors",
-          state === "active" && "text-foreground",
-          state === "completed" && "text-foreground",
+          "text-sm font-medium leading-5 wrap-anywhere text-foreground",
           state === "pending" && "text-muted-foreground",
           state === "error" && "text-destructive",
-          className
+          className,
         )}
         {...props}
       >
         {children}
         {optional && (
-          <span className="ml-1 text-xs text-muted-foreground">(Optional)</span>
+          <span
+            data-slot="stepper-optional"
+            className="block text-xs font-normal text-muted-foreground"
+          >
+            Optional
+          </span>
         )}
       </div>
     );
-  }
+  },
 );
-
-StepperTitle.displayName = "StepperTitle";
 
 interface StepperDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
   children: React.ReactNode;
@@ -886,7 +779,7 @@ interface StepperDescriptionProps extends React.HTMLAttributes<HTMLParagraphElem
 const StepperDescription = React.forwardRef<
   HTMLParagraphElement,
   StepperDescriptionProps
->(({ className, children, ...props }, ref) => {
+>(function StepperDescriptionRoot({ className, children, ...props }, ref) {
   const { state } = useStepperItemContext();
 
   return (
@@ -894,9 +787,9 @@ const StepperDescription = React.forwardRef<
       ref={ref}
       data-slot="stepper-description"
       className={cn(
-        "text-xs text-muted-foreground transition-colors",
-        state === "error" && "text-destructive/80",
-        className
+        "text-xs leading-5 text-muted-foreground wrap-anywhere",
+        state === "error" && "text-destructive",
+        className,
       )}
       {...props}
     >
@@ -905,35 +798,28 @@ const StepperDescription = React.forwardRef<
   );
 });
 
-StepperDescription.displayName = "StepperDescription";
-
 type StepperSeparatorProps = React.HTMLAttributes<HTMLDivElement>;
 
 const StepperSeparator = React.forwardRef<
   HTMLDivElement,
   StepperSeparatorProps
->(({ className, ...props }, ref) => {
-  const { orientation, value } = useStepperContext();
-  const { stepValue, isLast } = useStepperItemContext();
+>(function StepperSeparatorRoot({ className, ...props }, ref) {
+  const { orientation } = useStepperContext();
+  const { state, isLast } = useStepperItemContext();
 
   if (isLast) return null;
-
-  const separatorState =
-    stepValue < value
-      ? "completed"
-      : stepValue === value
-        ? "active"
-        : "pending";
 
   return (
     <div
       ref={ref}
       data-slot="stepper-separator"
-      role="presentation"
       aria-hidden="true"
       className={cn(
-        stepperSeparatorVariants({ orientation, state: separatorState }),
-        className
+        stepperSeparatorVariants({
+          orientation,
+          state: state === "completed" ? "completed" : "pending",
+        }),
+        className,
       )}
       {...props}
     />
@@ -947,7 +833,7 @@ interface StepperContentProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const StepperContent = React.forwardRef<HTMLDivElement, StepperContentProps>(
-  ({ className, children, ...props }, ref) => {
+  function StepperContentRoot({ className, children, ...props }, ref) {
     const { orientation } = useStepperContext();
 
     return (
@@ -960,92 +846,62 @@ const StepperContent = React.forwardRef<HTMLDivElement, StepperContentProps>(
         {children}
       </div>
     );
-  }
+  },
 );
 
-StepperContent.displayName = "StepperContent";
-
-interface StepperPanelProps extends React.HTMLAttributes<HTMLDivElement> {
+interface StepperPanelProps extends React.HTMLAttributes<HTMLElement> {
   value: number;
-
   forceMount?: boolean;
   children: React.ReactNode;
 }
 
-const StepperPanel = React.forwardRef<HTMLDivElement, StepperPanelProps>(
-  (
-    { value: panelValue, forceMount = false, className, children, ...props },
-    ref
-  ) => {
-    const { value } = useStepperContext();
-    const panelRef = React.useRef<HTMLDivElement>(null);
-    const reducedMotion = useReducedMotion();
-    const isActive = panelValue === value;
+const StepperPanel = React.forwardRef<HTMLElement, StepperPanelProps>(
+  function StepperPanelRoot(
+    { value, forceMount = false, className, children, ...props },
+    ref,
+  ) {
+    const model = useStepperContext();
+    const active = value === model.value;
 
-    React.useEffect(() => {
-      if (!panelRef.current || reducedMotion) return;
-
-      if (isActive) {
-        gsap.fromTo(
-          panelRef.current,
-          { opacity: 0, y: 10 },
-          { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
-        );
-      }
-    }, [isActive, reducedMotion]);
-
-    if (!isActive && !forceMount) return null;
+    if (!active && !forceMount) return null;
 
     return (
-      <div
-        ref={(node) => {
-          if (typeof ref === "function") ref(node);
-          else if (ref) ref.current = node;
-          (panelRef as React.MutableRefObject<HTMLDivElement | null>).current =
-            node;
-        }}
-        role="tabpanel"
-        id={`stepper-panel-${panelValue}`}
-        aria-labelledby={`stepper-tab-${panelValue}`}
-        hidden={!isActive}
+      <section
+        ref={ref}
+        id={`${model.id}-panel-${value}`}
+        aria-labelledby={`${model.id}-step-${value}`}
+        hidden={!active}
         data-slot="stepper-panel"
-        data-state={isActive ? "active" : "inactive"}
+        data-state={active ? "active" : "inactive"}
         className={cn(
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          !isActive && forceMount && "hidden",
-          className
+          "min-w-0 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+          !active && "hidden",
+          className,
         )}
-        tabIndex={0}
         {...props}
       >
         {children}
-      </div>
+      </section>
     );
-  }
+  },
 );
-
-StepperPanel.displayName = "StepperPanel";
 
 interface StepperActionsProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
 }
 
 const StepperActions = React.forwardRef<HTMLDivElement, StepperActionsProps>(
-  ({ className, children, ...props }, ref) => {
+  function StepperActionsRoot({ className, ...props }, ref) {
     return (
       <div
         ref={ref}
         data-slot="stepper-actions"
-        className={cn("flex items-center gap-2 pt-4", className)}
+        className={cn("flex flex-wrap items-center gap-3 pt-4", className)}
         {...props}
-      >
-        {children}
-      </div>
+      />
     );
-  }
+  },
 );
-
-StepperActions.displayName = "StepperActions";
 
 interface StepperProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   showLabels?: boolean;
@@ -1054,97 +910,67 @@ interface StepperProgressProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const StepperProgress = React.forwardRef<HTMLDivElement, StepperProgressProps>(
-  ({ showLabels = false, labels = [], steps, className, ...props }, ref) => {
-    const {
-      value,
-      totalSteps: contextTotalSteps,
-      visibleStepsCount,
-      currentVisibleIndex,
-    } = useStepperContext();
+  function StepperProgressRoot(
+    { showLabels = false, labels = [], steps, className, ...props },
+    ref,
+  ) {
+    const model = useStepperContext();
+    const total = Math.max(0, steps ?? (labels.length || model.totalSteps));
 
-    const reducedMotion = useReducedMotion();
-    const progressRef = React.useRef<HTMLDivElement>(null);
-    const previousProgress = React.useRef<number>(0);
+    const index =
+      model.totalSteps > 0 ? model.currentVisibleIndex : model.value;
 
-    const effectiveTotalSteps =
-      steps ??
-      (labels.length > 0 ? labels.length : null) ??
-      visibleStepsCount ??
-      contextTotalSteps ??
-      0;
-
-    const hasRegisteredSteps = contextTotalSteps > 0;
-
-    const effectiveCurrentIndex = hasRegisteredSteps
-      ? currentVisibleIndex
-      : value;
+    const position = Math.max(0, Math.min(total, index + 1));
 
     const progress =
-      effectiveTotalSteps > 1
-        ? (effectiveCurrentIndex / (effectiveTotalSteps - 1)) * 100
-        : effectiveCurrentIndex > 0
-          ? 100
-          : 0;
+      total > 1 ? Math.max(0, Math.min(100, (index / (total - 1)) * 100)) : 0;
 
-    const clampedProgress = Math.max(0, Math.min(100, progress));
-
-    React.useEffect(() => {
-      previousProgress.current = clampedProgress;
-    }, []);
-
-    React.useEffect(() => {
-      if (!progressRef.current) return;
-
-      if (previousProgress.current === clampedProgress) return;
-
-      if (reducedMotion) {
-        gsap.set(progressRef.current, { width: `${clampedProgress}%` });
-        previousProgress.current = clampedProgress;
-
-        return;
-      }
-
-      gsap.to(progressRef.current, {
-        width: `${clampedProgress}%`,
-        duration: 0.35,
-        ease: "power2.out",
-        overwrite: "auto",
-        onComplete: () => {
-          previousProgress.current = clampedProgress;
-        },
-      });
-    }, [clampedProgress, reducedMotion]);
+    const reduced = useReducedMotion();
 
     return (
       <div
         ref={ref}
         data-slot="stepper-progress"
-        className={cn("w-full", className)}
+        className={cn("w-full min-w-0 space-y-2", className)}
         {...props}
       >
-        <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
-          <div
-            ref={progressRef}
-            className="absolute left-0 top-0 h-full bg-primary"
-            style={{ width: `${clampedProgress}%` }}
-            role="progressbar"
-            aria-valuenow={effectiveCurrentIndex + 1}
-            aria-valuemin={1}
-            aria-valuemax={effectiveTotalSteps}
-            aria-label={`Step ${effectiveCurrentIndex + 1} of ${effectiveTotalSteps}`}
-          />
+        <div
+          data-slot="stepper-progress-caption"
+          className="flex items-center justify-between gap-3 text-xs text-muted-foreground"
+        >
+          <span>
+            Step {position} of {total}
+          </span>
+          <span className="tabular-nums">{Math.round(progress)}%</span>
         </div>
+        <ProgressPrimitive.Root
+          value={progress}
+          aria-label="Step progress"
+          aria-valuetext={`Step ${position} of ${total}`}
+          data-slot="stepper-progress-track"
+          className="h-1 w-full overflow-hidden rounded-full bg-muted"
+        >
+          <div
+            data-slot="stepper-progress-fill"
+            className={cn(
+              "h-full w-full origin-left rounded-full bg-primary rtl:origin-right",
+              !reduced && "transition-transform duration-200 ease-out",
+            )}
+            style={{ transform: `scaleX(${progress / 100})` }}
+          />
+        </ProgressPrimitive.Root>
         {showLabels && labels.length > 0 && (
-          <div className="mt-2 flex justify-between">
-            {labels.map((label: string, index: number) => (
+          <div
+            data-slot="stepper-progress-labels"
+            className="grid gap-2"
+            style={{
+              gridTemplateColumns: `repeat(${labels.length}, minmax(0, 1fr))`,
+            }}
+          >
+            {labels.map((label) => (
               <span
-                key={index}
-                className={cn(
-                  "text-xs transition-colors duration-200",
-                  index <= effectiveCurrentIndex
-                    ? "text-primary font-medium"
-                    : "text-muted-foreground"
-                )}
+                key={label}
+                className="text-xs leading-5 text-muted-foreground wrap-anywhere"
               >
                 {label}
               </span>
@@ -1153,10 +979,8 @@ const StepperProgress = React.forwardRef<HTMLDivElement, StepperProgressProps>(
         )}
       </div>
     );
-  }
+  },
 );
-
-StepperProgress.displayName = "StepperProgress";
 
 interface StepperNavigationProps extends React.HTMLAttributes<HTMLDivElement> {
   showBack?: boolean;
@@ -1175,142 +999,282 @@ interface StepperNavigationProps extends React.HTMLAttributes<HTMLDivElement> {
   loading?: boolean;
 }
 
+function useStepNavigation(props: StepperNavigationProps) {
+  const model = useStepperContext();
+  const [pending, setPending] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const inFlight = React.useRef(false);
+  const revision = React.useRef(0);
+  React.useEffect(
+    () => () => {
+      revision.current += 1;
+    },
+    [model.value],
+  );
+  const latestModel = React.useRef(model);
+  React.useEffect(() => {
+    latestModel.current = model;
+  }, [model]);
+  const candidates = model.enabledSteps;
+  const previous = [...candidates].reverse().find((step) => step < model.value);
+  const next = candidates.find((step) => step > model.value);
+  const isLast = next === undefined;
+  const busy = pending || props.loading || model.loadingSteps.has(model.value);
+
+  const go = (step: number | undefined) => {
+    if (step === undefined) return;
+
+    latestModel.current.onValueChange(step);
+    latestModel.current.announceStep(step);
+  };
+
+  const back = () => {
+    if (props.onBack) props.onBack();
+    else go(previous);
+  };
+
+  const skip = () => {
+    if (props.onSkip) props.onSkip();
+    else {
+      model.skipStep(model.value);
+      go(next);
+    }
+  };
+
+  const advance = async () => {
+    if (inFlight.current || busy) return;
+
+    const requestRevision = revision.current;
+    inFlight.current = true;
+    setPending(true);
+    setError("");
+
+    try {
+      if (props.onNext && !(await props.onNext())) return;
+
+      if (requestRevision !== revision.current) return;
+
+      const destination = latestModel.current.enabledSteps.find(
+        (step) => step > latestModel.current.value,
+      );
+
+      if (destination === undefined) props.onFinish?.();
+      else go(destination);
+    } catch {
+      setError("Couldn't continue. Try again.");
+    } finally {
+      inFlight.current = false;
+      setPending(false);
+    }
+  };
+
+  return {
+    model,
+    busy,
+    error,
+    back,
+    skip,
+    advance,
+    isFirst: previous === undefined,
+    isLast,
+  };
+}
+
+function StepLoadingIcon() {
+  const reduced = useReducedMotion();
+
+  return (
+    <IconLoader2
+      aria-hidden="true"
+      className={cn("size-4", !reduced && "animate-spin")}
+    />
+  );
+}
+
+function StepNextButton({
+  props,
+  navigation,
+}: {
+  props: StepperNavigationProps;
+  navigation: ReturnType<typeof useStepNavigation>;
+}) {
+  if (props.showNext === false) return null;
+
+  const nextLabel = props.nextLabel ?? "Continue";
+  const finishLabel = props.finishLabel ?? "Finish";
+  const label = navigation.isLast ? finishLabel : nextLabel;
+
+  const disabled = Boolean(
+    props.nextDisabled || navigation.busy || navigation.model.totalSteps === 0,
+  );
+
+  const showArrow = !navigation.isLast && !navigation.busy;
+
+  return (
+    <Button
+      type="button"
+      onClick={navigation.advance}
+      className="text-background hover:bg-primary hover:brightness-95"
+      disabled={disabled}
+      aria-busy={navigation.busy}
+    >
+      {navigation.busy && <StepLoadingIcon />}
+      {label}
+      {showArrow && (
+        <IconArrowRight aria-hidden="true" className="size-4 rtl:rotate-180" />
+      )}
+    </Button>
+  );
+}
+
+function StepBackButton({
+  show,
+  label,
+  disabled,
+  navigation,
+}: {
+  show: boolean;
+  label: string;
+  disabled?: boolean;
+  navigation: ReturnType<typeof useStepNavigation>;
+}) {
+  if (!show) return null;
+
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={navigation.back}
+      disabled={disabled || navigation.isFirst || navigation.busy}
+    >
+      <IconArrowLeft aria-hidden="true" className="size-4 rtl:rotate-180" />
+      {label}
+    </Button>
+  );
+}
+
 const StepperNavigation = React.forwardRef<
   HTMLDivElement,
   StepperNavigationProps
->(
-  (
-    {
-      showBack = true,
-      showNext = true,
-      showSkip = true,
-      backLabel = "Back",
-      nextLabel = "Next",
-      skipLabel = "Skip",
-      finishLabel = "Finish",
-      onBack,
-      onNext,
-      onSkip,
-      onFinish,
-      nextDisabled = false,
-      backDisabled = false,
-      loading = false,
-      className,
-      ...props
-    },
-    ref
-  ) => {
-    const {
-      value,
-      onValueChange,
-      totalSteps,
-      skippableSteps,
-      skipStep,
-      announceStep,
-    } = useStepperContext();
+>(function StepperNavigationRoot(props, ref) {
+  const navigation = useStepNavigation(props);
 
-    const isFirstStep = value === 0;
-    const isLastStep = value === totalSteps - 1;
-    const isSkippable = skippableSteps.has(value);
+  const {
+    className,
+    showBack = true,
+    showSkip = true,
+    backLabel = "Back",
+    skipLabel = "Skip for now",
+    backDisabled,
+    showNext: _showNext,
+    nextLabel: _nextLabel,
+    finishLabel: _finishLabel,
+    onBack: _onBack,
+    onNext: _onNext,
+    onSkip: _onSkip,
+    onFinish: _onFinish,
+    nextDisabled: _nextDisabled,
+    loading: _loading,
+    ...rootProps
+  } = props;
 
-    const handleBack = () => {
-      if (onBack) {
-        onBack();
-      } else if (value > 0) {
-        onValueChange(value - 1);
-        announceStep(value - 1);
-      }
-    };
+  const errorId = React.useId();
 
-    const handleNext = async () => {
-      if (isLastStep) {
-        onFinish?.();
+  const showSkipButton =
+    showSkip &&
+    navigation.model.skippableSteps.has(navigation.model.value) &&
+    !navigation.isLast;
 
-        return;
-      }
-
-      if (onNext) {
-        const canProceed = await onNext();
-
-        if (!canProceed) return;
-      }
-
-      if (value < totalSteps - 1) {
-        onValueChange(value + 1);
-        announceStep(value + 1);
-      }
-    };
-
-    const handleSkip = () => {
-      if (onSkip) {
-        onSkip();
-      } else {
-        skipStep(value);
-
-        if (value < totalSteps - 1) {
-          onValueChange(value + 1);
-          announceStep(value + 1);
-        }
-      }
-    };
-
-    return (
-      <div
-        ref={ref}
-        data-slot="stepper-navigation"
-        className={cn(
-          "flex items-center justify-between gap-2 pt-4",
-          className
-        )}
-        {...props}
-      >
-        <div>
-          {showBack && !isFirstStep && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleBack}
-              disabled={backDisabled || loading}
-            >
-              <IconArrowLeft className="mr-2 h-4 w-4" />
-              {backLabel}
-            </Button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          {showSkip && isSkippable && !isLastStep && (
+  return (
+    <div
+      ref={ref}
+      data-slot="stepper-navigation"
+      className={cn("space-y-3 border-t border-border pt-5", className)}
+      {...rootProps}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <StepBackButton
+          show={showBack}
+          label={backLabel}
+          disabled={backDisabled}
+          navigation={navigation}
+        />
+        <div className="ms-auto flex flex-wrap items-center gap-2">
+          {showSkipButton && (
             <Button
               type="button"
               variant="ghost"
-              onClick={handleSkip}
-              disabled={loading}
+              onClick={navigation.skip}
+              disabled={navigation.busy}
             >
               {skipLabel}
-              <IconPlayerSkipForward className="ml-2 h-4 w-4" />
             </Button>
           )}
-
-          {showNext && (
-            <Button
-              type="button"
-              onClick={handleNext}
-              disabled={nextDisabled || loading}
-            >
-              {loading && <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isLastStep ? finishLabel : nextLabel}
-              {!isLastStep && !loading && (
-                <IconArrowRight className="ml-2 h-4 w-4" />
-              )}
-            </Button>
-          )}
+          <StepNextButton props={props} navigation={navigation} />
         </div>
       </div>
-    );
-  }
-);
+      {navigation.error && (
+        <p id={errorId} role="alert" className="text-sm text-destructive">
+          {navigation.error}
+        </p>
+      )}
+    </div>
+  );
+});
 
-StepperNavigation.displayName = "StepperNavigation";
+interface KiraStepperStep {
+  id: string;
+  title: string;
+  description?: string;
+  optional?: boolean;
+  icon?: React.ReactNode;
+}
+
+interface KiraStepperProps extends Omit<StepperProps, "children"> {
+  steps: KiraStepperStep[];
+  mobileStacked?: boolean;
+  children?: React.ReactNode;
+}
+
+const mobileStackClasses =
+  "[&>[data-slot=stepper-list]]:max-sm:flex-col [&_[data-slot=stepper-item]]:max-sm:w-full [&_[data-slot=stepper-item]]:max-sm:flex-none [&_[data-slot=stepper-item]]:max-sm:pb-6 [&_[data-slot=stepper-item]:last-child]:max-sm:pb-0 [&_[data-slot=stepper-item-button]]:max-sm:flex-row [&_[data-slot=stepper-item-button]]:max-sm:items-start [&_[data-slot=stepper-content]]:max-sm:w-auto [&_[data-slot=stepper-content]]:max-sm:flex-1 [&_[data-slot=stepper-content]]:max-sm:pt-1 [&_[data-slot=stepper-content]]:max-sm:text-start [&_[data-slot=stepper-separator]]:max-sm:start-[calc(var(--step-size)/2+0.25rem)] [&_[data-slot=stepper-separator]]:max-sm:end-auto [&_[data-slot=stepper-separator]]:max-sm:top-[calc(var(--step-size)+0.75rem)] [&_[data-slot=stepper-separator]]:max-sm:bottom-2 [&_[data-slot=stepper-separator]]:max-sm:h-auto [&_[data-slot=stepper-separator]]:max-sm:w-px";
+
+function KiraStepper({
+  steps,
+  mobileStacked = true,
+  orientation = "horizontal",
+  className,
+  children,
+  ...props
+}: KiraStepperProps) {
+  return (
+    <Stepper
+      orientation={orientation}
+      mobileStacked={mobileStacked}
+      className={className}
+      {...props}
+    >
+      {steps.map((step, index) => (
+        <StepperItem
+          key={step.id}
+          value={index}
+          optional={step.optional}
+          title={step.title}
+        >
+          <StepperIndicator>{step.icon}</StepperIndicator>
+          <StepperContent>
+            <StepperTitle>{step.title}</StepperTitle>
+            {step.description && (
+              <StepperDescription>{step.description}</StepperDescription>
+            )}
+          </StepperContent>
+          <StepperSeparator />
+        </StepperItem>
+      ))}
+      {children}
+    </Stepper>
+  );
+}
 
 export {
   Stepper,
@@ -1324,6 +1288,7 @@ export {
   StepperActions,
   StepperProgress,
   StepperNavigation,
+  KiraStepper,
   stepperVariants,
   stepperItemVariants,
   stepperIndicatorVariants,
@@ -1346,4 +1311,6 @@ export type {
   StepperProgressProps,
   StepperNavigationProps,
   StepState,
+  KiraStepperProps,
+  KiraStepperStep,
 };
