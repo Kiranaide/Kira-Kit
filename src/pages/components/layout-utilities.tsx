@@ -507,328 +507,330 @@ export default function LayoutUtilitiesPage() {
         version="v1.0"
       />
 
-      <FeatureGrid
-        features={[
-          {
-            title: "Flexible Centering",
-            description:
-              "Three centering strategies: flex, grid, and absolute positioning for any layout scenario.",
-          },
-          {
-            title: "Smart Spacing",
-            description:
-              "Auto spacer pushes elements apart, fixed spacer adds consistent gaps.",
-          },
-          {
-            title: "Polymorphic Box",
-            description:
-              "Semantic HTML with utility props for quick styling without className bloat.",
-          },
-        ]}
-      />
+      <FeatureGrid features={layoutUtilitiesPageFeatureGridFeatures} />
 
       <DemoTabs
         defaultValue="center-types"
-        tabs={[
-          {
-            value: "center-types",
-            label: "Center Types",
-            demo: (
-              <DemoWrapper
-                title="Centering Strategies"
-                description="Choose between flex, grid, or absolute positioning for centering content."
-                code={centerTypesCode}
-              >
-                <CenterTypesDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "inline-center",
-            label: "Inline Center",
-            demo: (
-              <DemoWrapper
-                title="Inline Centering"
-                description="Center icons or small elements inline with text."
-                code={inlineCenterCode}
-              >
-                <InlineCenterDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "loading-overlay",
-            label: "Loading Overlay",
-            demo: (
-              <DemoWrapper
-                title="Loading State Overlay"
-                description="Center content in an absolute overlay for loading states."
-                code={loadingOverlayCode}
-              >
-                <LoadingOverlayDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "empty-state",
-            label: "Empty State",
-            demo: (
-              <DemoWrapper
-                title="Empty State Pattern"
-                description="Center content for empty states or no data scenarios."
-                code={emptyStateCode}
-              >
-                <EmptyStateDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "auto-spacer",
-            label: "Auto Spacer",
-            demo: (
-              <DemoWrapper
-                title="Auto Spacer"
-                description="Push elements apart using flex: 1 behavior."
-                code={autoSpacerCode}
-              >
-                <AutoSpacerDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "fixed-spacer",
-            label: "Fixed Spacer",
-            demo: (
-              <DemoWrapper
-                title="Fixed Size Spacer"
-                description="Add consistent spacing with fixed pixel values."
-                code={fixedSpacerCode}
-              >
-                <FixedSpacerDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "nav-header",
-            label: "Nav Header",
-            demo: (
-              <DemoWrapper
-                title="Navigation Header"
-                description="Common pattern for navigation headers with spacer."
-                code={navigationHeaderCode}
-              >
-                <NavigationHeaderDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "box-basic",
-            label: "Box Basic",
-            demo: (
-              <DemoWrapper
-                title="Basic Box Usage"
-                description="Common utility props for quick styling."
-                code={boxBasicCode}
-              >
-                <BoxBasicDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "box-rounded",
-            label: "Box Rounded",
-            demo: (
-              <DemoWrapper
-                title="Border Radius"
-                description="All available rounded variants from none to full."
-                code={boxRoundedCode}
-              >
-                <BoxRoundedDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "box-shadow",
-            label: "Box Shadow",
-            demo: (
-              <DemoWrapper
-                title="Box Shadow"
-                description="All available shadow variants from none to 2xl."
-                code={boxShadowCode}
-              >
-                <BoxShadowDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "semantic-box",
-            label: "Semantic Box",
-            demo: (
-              <DemoWrapper
-                title="Semantic HTML"
-                description="Use the 'as' prop to render semantic elements."
-                code={semanticBoxCode}
-              >
-                <SemanticBoxDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "quick-card",
-            label: "Quick Card",
-            demo: (
-              <DemoWrapper
-                title="Quick Card Pattern"
-                description="Build cards quickly with Box utility props."
-                code={quickCardCode}
-              >
-                <QuickCardDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "notification-box",
-            label: "Notification",
-            demo: (
-              <DemoWrapper
-                title="Notification Box"
-                description="Success notification styled with Box."
-                code={notificationBoxCode}
-              >
-                <NotificationBoxDemo />
-              </DemoWrapper>
-            ),
-          },
-        ]}
+        tabs={layoutUtilitiesPageDemoTabsTabs}
       />
 
-      <APIReference
-        sections={[
-          {
-            title: "Center Props",
-            props: [
-              {
-                prop: "type",
-                type: '"flex" | "grid" | "absolute"',
-                default: "flex",
-                description: "Centering method strategy",
-              },
-              {
-                prop: "inline",
-                type: "boolean",
-                default: "false",
-                description: "Use inline-flex or inline-grid",
-              },
-              {
-                prop: "as",
-                type: "CenterElement",
-                default: "div",
-                description: "Semantic HTML element to render",
-              },
-            ],
-          },
-          {
-            title: "Spacer Props",
-            props: [
-              {
-                prop: "size",
-                type: 'number | "auto"',
-                default: "auto",
-                description: "Fixed size or auto (flex: 1)",
-              },
-              {
-                prop: "axis",
-                type: '"horizontal" | "vertical"',
-                default: "horizontal",
-                description: "Direction of spacing",
-              },
-            ],
-          },
-          {
-            title: "Box Props",
-            props: [
-              {
-                prop: "as",
-                type: "BoxElement",
-                default: "div",
-                description: "Semantic HTML element to render",
-              },
-              {
-                prop: "p",
-                type: "0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12",
-                default: "-",
-                description: "Padding on all sides",
-              },
-              {
-                prop: "px",
-                type: "0-8",
-                default: "-",
-                description: "Horizontal padding",
-              },
-              {
-                prop: "py",
-                type: "0-8",
-                default: "-",
-                description: "Vertical padding",
-              },
-              {
-                prop: "rounded",
-                type: "RoundedVariant",
-                default: "-",
-                description: "Border radius value",
-              },
-              {
-                prop: "shadow",
-                type: "ShadowVariant",
-                default: "-",
-                description: "Box shadow value",
-              },
-              {
-                prop: "bg",
-                type: "string",
-                default: "-",
-                description: "Background color (Tailwind without bg-)",
-              },
-              {
-                prop: "color",
-                type: "string",
-                default: "-",
-                description: "Text color (Tailwind without text-)",
-              },
-              {
-                prop: "border",
-                type: "boolean | string",
-                default: "-",
-                description: "Border (true or custom)",
-              },
-              {
-                prop: "w",
-                type: "string",
-                default: "-",
-                description: "Width (Tailwind without w-)",
-              },
-              {
-                prop: "h",
-                type: "string",
-                default: "-",
-                description: "Height (Tailwind without h-)",
-              },
-              {
-                prop: "display",
-                type: "DisplayVariant",
-                default: "-",
-                description: "CSS display property",
-              },
-              {
-                prop: "position",
-                type: "PositionVariant",
-                default: "-",
-                description: "CSS position property",
-              },
-            ],
-          },
-        ]}
-      />
+      <APIReference sections={layoutUtilitiesPageAPIReferenceSections} />
     </ComponentPage>
   );
 }
+
+const layoutUtilitiesPageFeatureGridFeatures = [
+  {
+    title: "Flexible Centering",
+    description:
+      "Three centering strategies: flex, grid, and absolute positioning for any layout scenario.",
+  },
+  {
+    title: "Smart Spacing",
+    description:
+      "Auto spacer pushes elements apart, fixed spacer adds consistent gaps.",
+  },
+  {
+    title: "Polymorphic Box",
+    description:
+      "Semantic HTML with utility props for quick styling without className bloat.",
+  },
+] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
+
+const layoutUtilitiesPageDemoTabsTabs = [
+  {
+    value: "center-types",
+    label: "Center Types",
+    demo: (
+      <DemoWrapper
+        title="Centering Strategies"
+        description="Choose between flex, grid, or absolute positioning for centering content."
+        code={centerTypesCode}
+      >
+        <CenterTypesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "inline-center",
+    label: "Inline Center",
+    demo: (
+      <DemoWrapper
+        title="Inline Centering"
+        description="Center icons or small elements inline with text."
+        code={inlineCenterCode}
+      >
+        <InlineCenterDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "loading-overlay",
+    label: "Loading Overlay",
+    demo: (
+      <DemoWrapper
+        title="Loading State Overlay"
+        description="Center content in an absolute overlay for loading states."
+        code={loadingOverlayCode}
+      >
+        <LoadingOverlayDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "empty-state",
+    label: "Empty State",
+    demo: (
+      <DemoWrapper
+        title="Empty State Pattern"
+        description="Center content for empty states or no data scenarios."
+        code={emptyStateCode}
+      >
+        <EmptyStateDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "auto-spacer",
+    label: "Auto Spacer",
+    demo: (
+      <DemoWrapper
+        title="Auto Spacer"
+        description="Push elements apart using flex: 1 behavior."
+        code={autoSpacerCode}
+      >
+        <AutoSpacerDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "fixed-spacer",
+    label: "Fixed Spacer",
+    demo: (
+      <DemoWrapper
+        title="Fixed Size Spacer"
+        description="Add consistent spacing with fixed pixel values."
+        code={fixedSpacerCode}
+      >
+        <FixedSpacerDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "nav-header",
+    label: "Nav Header",
+    demo: (
+      <DemoWrapper
+        title="Navigation Header"
+        description="Common pattern for navigation headers with spacer."
+        code={navigationHeaderCode}
+      >
+        <NavigationHeaderDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "box-basic",
+    label: "Box Basic",
+    demo: (
+      <DemoWrapper
+        title="Basic Box Usage"
+        description="Common utility props for quick styling."
+        code={boxBasicCode}
+      >
+        <BoxBasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "box-rounded",
+    label: "Box Rounded",
+    demo: (
+      <DemoWrapper
+        title="Border Radius"
+        description="All available rounded variants from none to full."
+        code={boxRoundedCode}
+      >
+        <BoxRoundedDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "box-shadow",
+    label: "Box Shadow",
+    demo: (
+      <DemoWrapper
+        title="Box Shadow"
+        description="All available shadow variants from none to 2xl."
+        code={boxShadowCode}
+      >
+        <BoxShadowDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "semantic-box",
+    label: "Semantic Box",
+    demo: (
+      <DemoWrapper
+        title="Semantic HTML"
+        description="Use the 'as' prop to render semantic elements."
+        code={semanticBoxCode}
+      >
+        <SemanticBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "quick-card",
+    label: "Quick Card",
+    demo: (
+      <DemoWrapper
+        title="Quick Card Pattern"
+        description="Build cards quickly with Box utility props."
+        code={quickCardCode}
+      >
+        <QuickCardDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "notification-box",
+    label: "Notification",
+    demo: (
+      <DemoWrapper
+        title="Notification Box"
+        description="Success notification styled with Box."
+        code={notificationBoxCode}
+      >
+        <NotificationBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies React.ComponentProps<typeof DemoTabs>["tabs"];
+
+const layoutUtilitiesPageAPIReferenceSections = [
+  {
+    title: "Center Props",
+    props: [
+      {
+        prop: "type",
+        type: '"flex" | "grid" | "absolute"',
+        default: "flex",
+        description: "Centering method strategy",
+      },
+      {
+        prop: "inline",
+        type: "boolean",
+        default: "false",
+        description: "Use inline-flex or inline-grid",
+      },
+      {
+        prop: "as",
+        type: "CenterElement",
+        default: "div",
+        description: "Semantic HTML element to render",
+      },
+    ],
+  },
+  {
+    title: "Spacer Props",
+    props: [
+      {
+        prop: "size",
+        type: 'number | "auto"',
+        default: "auto",
+        description: "Fixed size or auto (flex: 1)",
+      },
+      {
+        prop: "axis",
+        type: '"horizontal" | "vertical"',
+        default: "horizontal",
+        description: "Direction of spacing",
+      },
+    ],
+  },
+  {
+    title: "Box Props",
+    props: [
+      {
+        prop: "as",
+        type: "BoxElement",
+        default: "div",
+        description: "Semantic HTML element to render",
+      },
+      {
+        prop: "p",
+        type: "0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12",
+        default: "-",
+        description: "Padding on all sides",
+      },
+      {
+        prop: "px",
+        type: "0-8",
+        default: "-",
+        description: "Horizontal padding",
+      },
+      {
+        prop: "py",
+        type: "0-8",
+        default: "-",
+        description: "Vertical padding",
+      },
+      {
+        prop: "rounded",
+        type: "RoundedVariant",
+        default: "-",
+        description: "Border radius value",
+      },
+      {
+        prop: "shadow",
+        type: "ShadowVariant",
+        default: "-",
+        description: "Box shadow value",
+      },
+      {
+        prop: "bg",
+        type: "string",
+        default: "-",
+        description: "Background color (Tailwind without bg-)",
+      },
+      {
+        prop: "color",
+        type: "string",
+        default: "-",
+        description: "Text color (Tailwind without text-)",
+      },
+      {
+        prop: "border",
+        type: "boolean | string",
+        default: "-",
+        description: "Border (true or custom)",
+      },
+      {
+        prop: "w",
+        type: "string",
+        default: "-",
+        description: "Width (Tailwind without w-)",
+      },
+      {
+        prop: "h",
+        type: "string",
+        default: "-",
+        description: "Height (Tailwind without h-)",
+      },
+      {
+        prop: "display",
+        type: "DisplayVariant",
+        default: "-",
+        description: "CSS display property",
+      },
+      {
+        prop: "position",
+        type: "PositionVariant",
+        default: "-",
+        description: "CSS position property",
+      },
+    ],
+  },
+] satisfies React.ComponentProps<typeof APIReference>["sections"];
