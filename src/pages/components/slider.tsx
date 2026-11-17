@@ -1,5 +1,5 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
-import { Slider, RangeSlider } from "@/components/ui/slider";
 import {
   IconVolume,
   IconVolume2,
@@ -13,6 +13,12 @@ import {
 } from "@tabler/icons-react";
 
 import {
+  Slider,
+  RangeSlider,
+  KiraSlider,
+  KiraRangeSlider,
+} from "@/components/ui/slider";
+import {
   ComponentPage,
   PageHeader,
   FeatureGrid,
@@ -21,12 +27,164 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
+
+function FeaturesDemo() {
+  return (
+    <div className="w-full max-w-md">
+      <Slider
+        label="Sparse stops"
+        defaultValue={10}
+        stepOptions={[0, 10, 40, 90, 100]}
+        showValue
+      />
+    </div>
+  );
+}
+
+function NumericRangeDemo() {
+  const [committed, setCommitted] = React.useState<[number, number]>([10, 90]);
+
+  return (
+    <div className="w-full max-w-md space-y-3">
+      <KiraRangeSlider
+        label="Budget"
+        defaultValue={[10, 90]}
+        stepOptions={[0, 10, 40, 90, 100]}
+        onValueCommitted={setCommitted}
+      />
+      <p className="text-sm text-muted-foreground">
+        Committed: {committed.join(" – ")}. Number edits commit immediately.
+      </p>
+    </div>
+  );
+}
+
+const numericRangeCode = `import * as React from "react";
+import { KiraRangeSlider } from "@/components/ui/slider"
+
+function NumericRangeDemo() {
+  const [committed, setCommitted] = React.useState<[number, number]>([10, 90]);
+  return <div className="w-full max-w-md space-y-3">
+    <KiraRangeSlider label="Budget" defaultValue={[10, 90]} stepOptions={[0, 10, 40, 90, 100]} onValueCommitted={setCommitted} />
+    <p className="text-sm text-muted-foreground">Committed: {committed.join(" – ")}. Number edits commit immediately.</p>
+  </div>;
+}`;
+
+function KiraSliderDemo() {
+  return (
+    <div className="w-full max-w-md space-y-6">
+      <KiraSlider label="Playback volume" defaultValue={40} showValue />
+      <KiraSlider
+        label="Locked track volume"
+        defaultValue={60}
+        disabled
+        disabledReason="Unlock the track to adjust its volume."
+        showValue
+      />
+    </div>
+  );
+}
+
+const kiraSliderCode = `import { KiraSlider } from "@/components/ui/slider"
+
+export function KiraSliderDemo() {
+  return (
+    <div className="w-full max-w-md space-y-6">
+      <KiraSlider label="Playback volume" defaultValue={40} showValue />
+      <KiraSlider label="Locked track volume" defaultValue={60} disabled disabledReason="Unlock the track to adjust its volume." showValue />
+    </div>
+  );
+}`;
+
+function InvertedDemo() {
+  return (
+    <div className="w-full max-w-md">
+      <RangeSlider
+        label="Inverted budget"
+        inverted
+        defaultValue={[20, 80]}
+        tooltipMode="always"
+        showValue
+        variant="gradient"
+      />
+    </div>
+  );
+}
+
+const invertedCode = `import { RangeSlider } from "@/components/ui/slider"
+
+function InvertedDemo() {
+  return <div className="w-full max-w-md"><RangeSlider label="Inverted budget" inverted defaultValue={[20, 80]} tooltipMode="always" showValue variant="gradient" /></div>;
+}`;
+
+function VerticalDemo() {
+  return (
+    <Slider
+      label="Vertical volume"
+      orientation="vertical"
+      defaultValue={40}
+      showValue
+    />
+  );
+}
+
+const verticalCode = `import { Slider } from "@/components/ui/slider"
+
+function VerticalDemo() {
+  return <Slider label="Vertical volume" orientation="vertical" defaultValue={40} showValue />;
+}`;
+
+const featuresCode = `import { Slider } from "@/components/ui/slider"
+
+function FeaturesDemo() {
+  return <div className="w-full max-w-md"><Slider label="Sparse stops" defaultValue={10} stepOptions={[0, 10, 40, 90, 100]} showValue /></div>;
+}`;
+
+function ShowcaseDemo() {
+  return (
+    <div className="w-full max-w-64 space-y-6">
+      <Slider
+        label="A very long multilingual setting label 音量調整 🌍 with an unbreakable_identifier_abcdefghijklmnopqrstuvwxyz"
+        defaultValue={0}
+        showValue
+      />
+      <KiraRangeSlider
+        label="Read-only budget"
+        defaultValue={[20, 80]}
+        readOnly
+      />
+      <KiraRangeSlider
+        label="Empty stops fallback"
+        stepOptions={[]}
+        defaultValue={[0, 100]}
+      />
+      <KiraSlider
+        label="Restricted setting"
+        defaultValue={50}
+        disabled
+        disabledReason="Ask the workspace owner to unlock this setting."
+      />
+    </div>
+  );
+}
+
+const showcaseCode = `import { Slider, KiraSlider, KiraRangeSlider } from "@/components/ui/slider"
+
+function ShowcaseDemo() {
+  return <div className="w-full max-w-64 space-y-6">
+    <Slider label="A very long multilingual setting label 音量調整 🌍 with an unbreakable_identifier_abcdefghijklmnopqrstuvwxyz" defaultValue={0} showValue />
+    <KiraRangeSlider label="Read-only budget" defaultValue={[20, 80]} readOnly />
+    <KiraRangeSlider label="Empty stops fallback" stepOptions={[]} defaultValue={[0, 100]} />
+    <KiraSlider label="Restricted setting" defaultValue={50} disabled disabledReason="Ask the workspace owner to unlock this setting." />
+  </div>;
+}`;
 
 function BasicDemo() {
   return (
-    <div className="max-w-md">
-      <Slider defaultValue={50} max={100} step={1} />
+    <div className="w-full max-w-md">
+      <Slider label="Volume" defaultValue={50} max={100} step={1} />
     </div>
   );
 }
@@ -34,7 +192,7 @@ function BasicDemo() {
 const basicCode = `import { Slider } from "@/components/ui/slider"
 
 export function BasicSliderDemo() {
-  return <Slider defaultValue={50} max={100} step={1} />
+  return <div className="w-full max-w-md"><Slider label="Volume" defaultValue={50} max={100} step={1} /></div>
 }`;
 
 function SizesDemo() {
@@ -136,7 +294,9 @@ export function MarkersSliderDemo() {
 }`;
 
 function RangeDemo() {
-  const [rangeValue, setRangeValue] = React.useState<[number, number]>([20, 80]);
+  const [rangeValue, setRangeValue] = React.useState<[number, number]>([
+    20, 80,
+  ]);
 
   return (
     <div className="max-w-md space-y-6">
@@ -171,7 +331,10 @@ function RangeDemo() {
           min={0}
           max={100}
           showValue
-          thumbIcons={[<IconVolume size={12} />, <IconVolume3 size={12} />]}
+          thumbIcons={[
+            <IconVolume key="lo" size={12} />,
+            <IconVolume3 key="hi" size={12} />,
+          ]}
           label="Volume Levels"
         />
       </div>
@@ -238,21 +401,11 @@ function DisabledDemo() {
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-3">Disabled</p>
-        <Slider
-          defaultValue={50}
-          max={100}
-          disabled
-          label="Disabled Slider"
-        />
+        <Slider defaultValue={50} max={100} disabled label="Disabled Slider" />
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-3">Read-only</p>
-        <Slider
-          defaultValue={50}
-          max={100}
-          readOnly
-          label="Read-only Value"
-        />
+        <Slider defaultValue={50} max={100} readOnly label="Read-only Value" />
       </div>
     </div>
   );
@@ -455,6 +608,7 @@ export function AdvancedSliderDemo() {
   )
 }`;
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function SliderPage() {
   const features = [
     {
@@ -531,19 +685,6 @@ export default function SliderPage() {
       ),
     },
     {
-      value: "disabled",
-      label: "Disabled",
-      demo: (
-        <DemoWrapper
-          title="Validation States"
-          description="Error, required, disabled, and read-only states."
-          code={disabledCode}
-        >
-          <DisabledDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
       value: "steps",
       label: "Steps",
       demo: (
@@ -553,6 +694,71 @@ export default function SliderPage() {
           code={stepsCode}
         >
           <StepsDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "features",
+      label: "Sparse Stops",
+      demo: (
+        <DemoWrapper
+          title="Sparse stops"
+          description="Arrows advance to the adjacent allowed value without changing raw-value spacing."
+          code={featuresCode}
+        >
+          <FeaturesDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "kira",
+      label: "Kira Slider",
+      demo: (
+        <DemoWrapper
+          title="Kira Slider"
+          description="A labelled slider with a keyboard-reachable explanation when disabled."
+          code={kiraSliderCode}
+        >
+          <KiraSliderDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "numeric",
+      label: "Kira Range",
+      demo: (
+        <DemoWrapper
+          title="From / To alternatives"
+          description="Edit the range without dragging. Sparse-stop arrows, non-crossing values and immediate commits."
+          code={numericRangeCode}
+        >
+          <NumericRangeDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "inverted",
+      label: "Inverted",
+      demo: (
+        <DemoWrapper
+          title="Inverted range"
+          description="The high value starts on the left; bubble text still matches each thumb."
+          code={invertedCode}
+        >
+          <InvertedDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "vertical",
+      label: "Vertical",
+      demo: (
+        <DemoWrapper
+          title="Vertical slider"
+          description="Native orientation semantics and keyboard operation."
+          code={verticalCode}
+        >
+          <VerticalDemo />
         </DemoWrapper>
       ),
     },
@@ -569,57 +775,69 @@ export default function SliderPage() {
         </DemoWrapper>
       ),
     },
+    {
+      value: "disabled",
+      label: "Validation",
+      demo: (
+        <DemoWrapper
+          title="Validation States"
+          description="Error, required, disabled, and read-only states."
+          code={disabledCode}
+        >
+          <DisabledDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "showcase",
+      label: "States",
+      demo: (
+        <DemoWrapper
+          title="Boundary states"
+          description="Long labels, zero, full range, read-only inputs, disabled reasons and empty stops."
+          code={showcaseCode}
+        >
+          <ShowcaseDemo />
+        </DemoWrapper>
+      ),
+    },
   ];
 
   const keyboardShortcuts = [
-    { keys: "Arrow Left/Down", description: "Decrease by step" },
-    { keys: "Arrow Right/Up", description: "Increase by step" },
-    { keys: "Page Up", description: "Increase by large step (10x)" },
-    { keys: "Page Down", description: "Decrease by large step (10x)" },
-    { keys: "Home", description: "Jump to minimum" },
-    { keys: "End", description: "Jump to maximum" },
+    {
+      keys: "Arrow keys",
+      description:
+        "Inherited from Base UI: move by step (orientation/direction aware). Kira sparse stops advance to adjacent allowed values; inversion reverses the visual scale.",
+    },
+    {
+      keys: "Page Up / Page Down",
+      description:
+        "Inherited from Base UI: move by largeStep. Sparse stops advance to adjacent allowed values.",
+    },
+    {
+      keys: "Home / End",
+      description:
+        "Inherited from Base UI: jump to track bounds, constrained to allowed stops and the sibling thumb.",
+    },
+    {
+      keys: "Arrow Up / Arrow Down (number fields)",
+      description:
+        "Kira sparse numeric alternative: advance between stops without crossing; edits commit immediately.",
+    },
   ];
 
-  const usageCode = `import { Slider, RangeSlider } from "@/components/ui/slider"
+  const usageCode = `import { Slider, RangeSlider, KiraSlider, KiraRangeSlider } from "@/components/ui/slider";
 
-// Basic slider
-<Slider defaultValue={50} max={100} />
-
-// With size
-<Slider defaultValue={50} size="lg" />
-
-// With markers
-<Slider
-  defaultValue={50}
-  max={100}
-  step={10}
-  showStepMarkers
-  showValue
-/>
-
-// Range slider
-<RangeSlider
-  defaultValue={[20, 80]}
-  min={0}
-  max={100}
-  showValue
-/>
-
-// With validation
-<Slider
-  defaultValue={80}
-  max={100}
-  error="Value too high"
-  label="Usage"
-/>
-
-// With steps
-<Slider
-  defaultValue={25}
-  max={100}
-  step={25}
-  showValue
-/>`;
+export function SliderUsage() {
+  return (
+    <div className="space-y-6">
+      <Slider label="Volume" defaultValue={40} showValue />
+      <RangeSlider label="Window" defaultValue={[20, 80]} showValue />
+      <KiraSlider label="Locked volume" disabled disabledReason="Unlock the track to edit volume." />
+      <KiraRangeSlider label="Budget" defaultValue={[10, 90]} stepOptions={[0, 10, 40, 90, 100]} onValueCommitted={(values) => console.log(values)} />
+    </div>
+  );
+}`;
 
   const apiSections = [
     {
@@ -644,7 +862,8 @@ export default function SliderPage() {
         {
           prop: "onValueCommitted",
           type: "(value: number) => void",
-          description: "Callback fired only when pointer is released.",
+          description:
+            "Callback for committed pointer or keyboard changes; KiraRangeSlider number edits commit immediately.",
         },
         {
           prop: "min",
@@ -672,7 +891,7 @@ export default function SliderPage() {
         },
         {
           prop: "variant",
-          type: '"default" | "info" | "success" | "warning" | "destructive"',
+          type: '"default" | "info" | "success" | "warning" | "destructive" | "gradient"',
           default: '"default"',
           description: "Color variant of the slider track.",
         },
@@ -728,7 +947,7 @@ export default function SliderPage() {
         {
           prop: "tooltipMode",
           type: '"always" | "hover" | "on-drag" | "never"',
-          default: '"never"',
+          default: '"on-drag"',
           description: "When to show the tooltip.",
         },
         {
@@ -777,7 +996,7 @@ export default function SliderPage() {
         {
           prop: "defaultValue",
           type: "[number, number]",
-          default: "[0, 100]",
+          default: "[25, 75]",
           description: "Initial value for uncontrolled mode.",
         },
         {
@@ -803,7 +1022,7 @@ export default function SliderPage() {
     <ComponentPage>
       <PageHeader
         title="Slider"
-        version="v1.0"
+        version="v2.0.1"
         description="An enhanced input component for selecting values within a range, featuring accessibility, animations, and customization options."
       />
 
@@ -818,7 +1037,104 @@ export default function SliderPage() {
         description="Common usage patterns for Slider and RangeSlider components."
       />
 
-      <APIReference sections={apiSections} />
+      <APIReference
+        sections={[
+          ...apiSections,
+          {
+            title: "Enhanced slider props",
+            props: [
+              {
+                prop: "orientation",
+                type: '"horizontal" | "vertical"',
+                default: '"horizontal"',
+                description: "Track orientation.",
+              },
+              {
+                prop: "inverted",
+                type: "boolean",
+                default: "false",
+                description: "Reverses the visual value scale.",
+              },
+              {
+                prop: "stepOptions",
+                type: "number[]",
+                description:
+                  "Allowed stops; arrow navigation advances between adjacent stops.",
+              },
+            ],
+          },
+          {
+            title: "KiraSlider",
+            props: [
+              {
+                prop: "disabledReason",
+                type: "string",
+                description: "Keyboard-reachable explanation when disabled.",
+              },
+            ],
+          },
+          {
+            title: "KiraRangeSlider",
+            props: [
+              {
+                prop: "disabledReason",
+                type: "string",
+                description: "Keyboard-reachable explanation when disabled.",
+              },
+              {
+                prop: "showInputs",
+                type: "boolean",
+                default: "true",
+                description:
+                  "KiraRangeSlider numeric alternative; honors bounds, stops and readOnly.",
+              },
+            ],
+          },
+        ]}
+      />
+
+      <Changelog entries={sliderPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const sliderPageChangelogEntries = [
+  {
+    version: "v2.0.1",
+    date: "11 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Demo page follows the accordion structure",
+        description:
+          "Basic comes first, feature and Kira examples have focused tabs, and Changelog follows API Reference. Audited against Base UI 1.9.0; no component API changes.",
+      },
+    ],
+  },
+  {
+    version: "v2.0.0",
+    date: "31 October 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Kira range numeric inputs and reachable disabled reasons",
+      },
+      {
+        type: "fixed",
+        title:
+          "Sparse-stop keyboard navigation, read-only input enforcement and reduced motion",
+      },
+      {
+        type: "breaking",
+        title:
+          "Commit no longer sends a duplicate onValueChange; range thumbs default to non-crossing",
+      },
+      {
+        type: "changed",
+        title:
+          "Continuous dragging keeps direct pointer tracking; no GSAP commit animation",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
