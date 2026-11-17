@@ -1,820 +1,1037 @@
-import { Grid, GridItem } from "@/components/ui/grid";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { IconPhoto, IconMusic, IconVideo, IconFile, IconLayoutGrid, IconGridDots, IconDeviceMobile } from "@tabler/icons-react";
+import * as React from "react";
 import {
+  IconLayoutGrid,
+  IconArrowsHorizontal,
+  IconListDetails,
+} from "@tabler/icons-react";
+import { Grid, GridItem, KiraGrid } from "@/components/ui/grid";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  ComponentPage,
   PageHeader,
   FeatureGrid,
-  DemoWrapper,
   DemoTabs,
+  DemoWrapper,
+  KeyboardShortcuts,
   UsageBlock,
   APIReference,
-  ComponentPage,
+  Changelog,
 } from "@/components/docs";
 
-function ColumnCountDemo() {
+const projects = [
+  { id: "access", name: "Access rules", owner: "Maya Chen" },
+  { id: "history", name: "Audit history", owner: "Jon Bell" },
+  { id: "exports", name: "Export workflow", owner: "Amira Patel" },
+];
+
+function ProjectCard({ project }: { project: (typeof projects)[number] }) {
   return (
-    <div className="space-y-6">
-      {([2, 3, 4, 6] as const).map((cols) => (
-        <div key={cols}>
-          <p className="text-sm text-muted-foreground mb-2">cols={cols}</p>
-          <Grid cols={cols} gap={4}>
-            {Array.from({ length: cols * 2 }).map((_, i) => (
-              <div key={i} className="p-4 bg-primary/20 rounded text-center">
-                {i + 1}
-              </div>
-            ))}
-          </Grid>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const columnCountCode = `import { Grid } from "@/components/ui/grid"
-
-export function ColumnCountDemo() {
-  return (
-    <div className="space-y-6">
-      {[2, 3, 4, 6].map((cols) => (
-        <div key={cols}>
-          <p className="text-sm text-muted-foreground mb-2">cols={cols}</p>
-          <Grid cols={cols} gap={4}>
-            {Array.from({ length: cols * 2 }).map((_, i) => (
-              <div key={i} className="p-4 bg-primary/20 rounded">
-                {i + 1}
-              </div>
-            ))}
-          </Grid>
-        </div>
-      ))}
-    </div>
-  )
-}`;
-
-function GapSpacingDemo() {
-  return (
-    <div className="space-y-6">
-      {([2, 4, 6, 8] as const).map((gap) => (
-        <div key={gap}>
-          <p className="text-sm text-muted-foreground mb-2">gap={gap}</p>
-          <Grid cols={4} gap={gap}>
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="p-3 bg-primary/20 rounded text-center">
-                {i + 1}
-              </div>
-            ))}
-          </Grid>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const gapSpacingCode = `import { Grid } from "@/components/ui/grid"
-
-export function GapSpacingDemo() {
-  return (
-    <div className="space-y-6">
-      {[2, 4, 6, 8].map((gap) => (
-        <div key={gap}>
-          <p className="text-sm text-muted-foreground mb-2">gap={gap}</p>
-          <Grid cols={4} gap={gap}>
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="p-3 bg-primary/20 rounded">
-                {i + 1}
-              </div>
-            ))}
-          </Grid>
-        </div>
-      ))}
-    </div>
-  )
-}`;
-
-function ResponsiveColumnsDemo() {
-  return (
-    <div>
-      <p className="text-sm text-muted-foreground mb-4">
-        Resize the window: 1 column on mobile, 2 on tablet, 4 on desktop
+    <article className="flex h-48 min-w-0 flex-col gap-3 rounded-lg border p-4">
+      <h3 className="font-medium">{project.name}</h3>
+      <p className="text-sm text-muted-foreground">Release-planning fixture</p>
+      <p className="mt-auto text-sm">
+        <span className="text-muted-foreground">Owner: </span>
+        {project.owner}
       </p>
-      <Grid cols={{ base: 1, sm: 2, lg: 4 }} gap={4}>
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="p-6 bg-primary/20 rounded text-center">
-            Item {i + 1}
-          </div>
-        ))}
-      </Grid>
-    </div>
+    </article>
   );
 }
 
-const responsiveColumnsCode = `import { Grid } from "@/components/ui/grid"
-
-export function ResponsiveColumnsDemo() {
+function BasicDemo() {
   return (
-    <Grid cols={{ base: 1, sm: 2, lg: 4 }} gap={4}>
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="p-6 bg-primary/20 rounded">
-          Item {i + 1}
-        </div>
-      ))}
-    </Grid>
-  )
-}`;
-
-function SeparateGapDemo() {
-  return (
-    <div>
-      <p className="text-sm text-muted-foreground mb-4">gapX=8, gapY=2</p>
-      <Grid cols={4} gapX={8} gapY={2}>
-        {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i} className="p-3 bg-primary/20 rounded text-center">
-            {i + 1}
-          </div>
-        ))}
-      </Grid>
-    </div>
-  );
-}
-
-const separateGapCode = `import { Grid } from "@/components/ui/grid"
-
-export function SeparateGapDemo() {
-  return (
-    <Grid cols={4} gapX={8} gapY={2}>
-      {Array.from({ length: 12 }).map((_, i) => (
-        <div key={i} className="p-3 bg-primary/20 rounded">
-          {i + 1}
-        </div>
-      ))}
-    </Grid>
-  )
-}`;
-
-function GridFlowDemo() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">flow="row" (default)</p>
-        <Grid cols={3} rows={2} gap={2} flow="row" className="h-40">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="p-2 bg-primary/20 rounded text-center text-sm">
-              {i + 1}
-            </div>
-          ))}
-        </Grid>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">flow="column"</p>
-        <Grid cols={3} rows={2} gap={2} flow="column" className="h-40">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="p-2 bg-primary/20 rounded text-center text-sm">
-              {i + 1}
-            </div>
-          ))}
-        </Grid>
-      </div>
-    </div>
-  );
-}
-
-const gridFlowCode = `import { Grid } from "@/components/ui/grid"
-
-export function GridFlowDemo() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">flow="row"</p>
-        <Grid cols={3} rows={2} gap={2} flow="row" className="h-40">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="p-2 bg-primary/20 rounded">
-              {i + 1}
-            </div>
-          ))}
-        </Grid>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">flow="column"</p>
-        <Grid cols={3} rows={2} gap={2} flow="column" className="h-40">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="p-2 bg-primary/20 rounded">
-              {i + 1}
-            </div>
-          ))}
-        </Grid>
-      </div>
-    </div>
-  )
-}`;
-
-function ColumnSpanDemo() {
-  return (
-    <Grid cols={4} gap={4}>
-      <GridItem colSpan={2} className="p-4 bg-blue-500/20 rounded text-center">
-        Span 2
-      </GridItem>
-      <div className="p-4 bg-primary/20 rounded text-center">1</div>
-      <div className="p-4 bg-primary/20 rounded text-center">1</div>
-      <div className="p-4 bg-primary/20 rounded text-center">1</div>
-      <GridItem colSpan={3} className="p-4 bg-green-500/20 rounded text-center">
-        Span 3
-      </GridItem>
-      <GridItem colSpan="full" className="p-4 bg-purple-500/20 rounded text-center">
-        Full Width
-      </GridItem>
-    </Grid>
-  );
-}
-
-const columnSpanCode = `import { Grid, GridItem } from "@/components/ui/grid"
-
-export function ColumnSpanDemo() {
-  return (
-    <Grid cols={4} gap={4}>
-      <GridItem colSpan={2} className="p-4 bg-blue-500/20 rounded">
-        Span 2
-      </GridItem>
-      <div className="p-4 bg-primary/20 rounded">1</div>
-      <div className="p-4 bg-primary/20 rounded">1</div>
-      <div className="p-4 bg-primary/20 rounded">1</div>
-      <GridItem colSpan={3} className="p-4 bg-green-500/20 rounded">
-        Span 3
-      </GridItem>
-      <GridItem colSpan="full" className="p-4 bg-purple-500/20 rounded">
-        Full Width
-      </GridItem>
-    </Grid>
-  )
-}`;
-
-function RowSpanDemo() {
-  return (
-    <Grid cols={3} gap={4}>
-      <GridItem rowSpan={2} className="p-4 bg-blue-500/20 rounded flex items-center justify-center">
-        Row Span 2
-      </GridItem>
-      <div className="p-4 bg-primary/20 rounded text-center">1</div>
-      <div className="p-4 bg-primary/20 rounded text-center">2</div>
-      <div className="p-4 bg-primary/20 rounded text-center">3</div>
-      <GridItem rowSpan={2} className="p-4 bg-green-500/20 rounded flex items-center justify-center">
-        Row Span 2
-      </GridItem>
-      <div className="p-4 bg-primary/20 rounded text-center">4</div>
-      <div className="p-4 bg-primary/20 rounded text-center">5</div>
-    </Grid>
-  );
-}
-
-const rowSpanCode = `import { Grid, GridItem } from "@/components/ui/grid"
-
-export function RowSpanDemo() {
-  return (
-    <Grid cols={3} gap={4}>
-      <GridItem rowSpan={2} className="p-4 bg-blue-500/20 rounded flex items-center justify-center">
-        Row Span 2
-      </GridItem>
-      <div className="p-4 bg-primary/20 rounded">1</div>
-      <div className="p-4 bg-primary/20 rounded">2</div>
-      <div className="p-4 bg-primary/20 rounded">3</div>
-      <GridItem rowSpan={2} className="p-4 bg-green-500/20 rounded flex items-center justify-center">
-        Row Span 2
-      </GridItem>
-      <div className="p-4 bg-primary/20 rounded">4</div>
-      <div className="p-4 bg-primary/20 rounded">5</div>
-    </Grid>
-  )
-}`;
-
-function ResponsiveSpanDemo() {
-  return (
-    <div>
-      <p className="text-sm text-muted-foreground mb-4">
-        Featured card spans full width on mobile, 2 columns on desktop
-      </p>
-      <Grid cols={{ base: 1, md: 3 }} gap={4}>
-        <GridItem colSpan={{ base: 1, md: 2 }} className="p-6 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded">
-          <h3 className="font-semibold mb-2">Featured Item</h3>
-          <p className="text-sm text-muted-foreground">This spans 2 columns on desktop</p>
+    <Grid as="ul" cols={{ base: 1, sm: 2, lg: 3 }} gap={4}>
+      {projects.map((project) => (
+        <GridItem as="li" key={project.id}>
+          <ProjectCard project={project} />
         </GridItem>
-        <div className="p-6 bg-primary/20 rounded">
-          <h3 className="font-semibold mb-2">Regular Item</h3>
-          <p className="text-sm text-muted-foreground">Standard width</p>
-        </div>
-        <div className="p-6 bg-primary/20 rounded">Item 3</div>
-        <div className="p-6 bg-primary/20 rounded">Item 4</div>
-        <div className="p-6 bg-primary/20 rounded">Item 5</div>
-      </Grid>
+      ))}
+    </Grid>
+  );
+}
+
+const basicDemoCode = `import { Grid, GridItem } from "@/components/ui/grid";
+
+const projects = [
+  { id: "access", name: "Access rules", owner: "Maya Chen" },
+  { id: "history", name: "Audit history", owner: "Jon Bell" },
+  { id: "exports", name: "Export workflow", owner: "Amira Patel" },
+];
+
+function ProjectCard({ project }: { project: typeof projects[number] }) {
+  return <article className="flex h-48 min-w-0 flex-col gap-3 rounded-lg border p-4">
+    <h3 className="font-medium">{project.name}</h3>
+    <p className="text-sm text-muted-foreground">Release-planning fixture</p>
+    <p className="mt-auto text-sm"><span className="text-muted-foreground">Owner: </span>{project.owner}</p>
+  </article>;
+}
+
+export function BasicDemo() {
+  return <Grid as="ul" cols={{ base: 1, sm: 2, lg: 3 }} gap={4}>
+    {projects.map((project) => <GridItem as="li" key={project.id}><ProjectCard project={project} /></GridItem>)}
+  </Grid>;
+}`;
+
+function ResponsiveDemo() {
+  return (
+    <Grid
+      cols={{ base: 1, sm: 2, lg: 3 }}
+      rows={{ base: "none", lg: 2 }}
+      gapX={{ base: 2, md: 8 }}
+      gapY={{ base: 4, md: 2 }}
+      align={{ base: "stretch", md: "start" }}
+    >
+      {[
+        "Access review",
+        "Audit summary",
+        "Export settings",
+        "Rollout plan",
+        "Owner notes",
+        "Documentation",
+      ].map((name) => (
+        <GridItem
+          key={name}
+          className="rounded-lg border bg-muted/30 p-4 text-sm"
+        >
+          {name}
+        </GridItem>
+      ))}
+    </Grid>
+  );
+}
+
+const responsiveDemoCode = `import { Grid, GridItem } from "@/components/ui/grid";
+
+export function ResponsiveDemo() {
+  return <Grid cols={{ base: 1, sm: 2, lg: 3 }} rows={{ base: "none", lg: 2 }}
+    gapX={{ base: 2, md: 8 }} gapY={{ base: 4, md: 2 }} align={{ base: "stretch", md: "start" }}>
+    {["Access review", "Audit summary", "Export settings", "Rollout plan", "Owner notes", "Documentation"].map((name) =>
+      <GridItem key={name} className="rounded-lg border bg-muted/30 p-4 text-sm">{name}</GridItem>)}
+  </Grid>;
+}`;
+
+function IntrinsicDemo() {
+  const [wide, setWide] = React.useState(false);
+  const [fill, setFill] = React.useState(false);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          aria-pressed={!wide}
+          onClick={() => setWide(false)}
+        >
+          Compact panel
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          aria-pressed={wide}
+          onClick={() => setWide(true)}
+        >
+          Wide panel
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          aria-pressed={fill}
+          onClick={() => setFill((value) => !value)}
+        >
+          Keep empty tracks
+        </Button>
+      </div>
+      <div className="max-w-full" style={{ width: wide ? 760 : 320 }}>
+        <Grid
+          cols={fill ? "auto-fill" : "auto-fit"}
+          minItemWidth="14rem"
+          gap={4}
+        >
+          {projects.slice(0, 2).map((project) => (
+            <GridItem key={project.id}>
+              <ProjectCard project={project} />
+            </GridItem>
+          ))}
+        </Grid>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        {fill
+          ? "Auto-fill keeps room for an empty track when it fits."
+          : "Auto-fit expands the occupied tracks."}{" "}
+        The minimum is clamped to the panel width.
+      </p>
     </div>
   );
 }
 
-const responsiveSpanCode = `import { Grid, GridItem } from "@/components/ui/grid"
+const intrinsicDemoCode = `import * as React from "react";
+import { Grid, GridItem } from "@/components/ui/grid";
+import { Button } from "@/components/ui/button";
 
-export function ResponsiveSpanDemo() {
+const projects = [
+  { id: "access", name: "Access rules", owner: "Maya Chen" },
+  { id: "history", name: "Audit history", owner: "Jon Bell" },
+  { id: "exports", name: "Export workflow", owner: "Amira Patel" },
+];
+
+function ProjectCard({ project }: { project: typeof projects[number] }) {
+  return <article className="flex h-48 min-w-0 flex-col gap-3 rounded-lg border p-4">
+    <h3 className="font-medium">{project.name}</h3>
+    <p className="text-sm text-muted-foreground">Release-planning fixture</p>
+    <p className="mt-auto text-sm"><span className="text-muted-foreground">Owner: </span>{project.owner}</p>
+  </article>;
+}
+
+export function IntrinsicDemo() {
+  const [wide, setWide] = React.useState(false);
+  const [fill, setFill] = React.useState(false);
+  return <div className="space-y-4">
+    <div className="flex flex-wrap gap-2">
+      <Button variant="outline" size="sm" aria-pressed={!wide} onClick={() => setWide(false)}>Compact panel</Button>
+      <Button variant="outline" size="sm" aria-pressed={wide} onClick={() => setWide(true)}>Wide panel</Button>
+      <Button variant="outline" size="sm" aria-pressed={fill} onClick={() => setFill((value) => !value)}>Keep empty tracks</Button>
+    </div>
+    <div className="max-w-full" style={{ width: wide ? 760 : 320 }}>
+      <Grid cols={fill ? "auto-fill" : "auto-fit"} minItemWidth="14rem" gap={4}>
+        {projects.slice(0, 2).map((project) => <GridItem key={project.id}><ProjectCard project={project} /></GridItem>)}
+      </Grid>
+    </div>
+    <p className="text-sm text-muted-foreground">{fill ? "Auto-fill keeps room for an empty track when it fits." : "Auto-fit expands the occupied tracks."} The minimum is clamped to the panel width.</p>
+  </div>;
+}`;
+
+function PlacementDemo() {
+  const [selected, setSelected] = React.useState("None");
+
   return (
-    <Grid cols={{ base: 1, md: 3 }} gap={4}>
-      <GridItem colSpan={{ base: 1, md: 2 }} className="p-6 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded">
-        <h3 className="font-semibold mb-2">Featured Item</h3>
-        <p className="text-sm text-muted-foreground">This spans 2 columns on desktop</p>
+    <div className="space-y-4">
+      <Grid cols={{ base: 1, md: 6 }} gap={4}>
+        <GridItem
+          colSpan={{ base: 1, md: 3 }}
+          colStart={{ base: "auto", md: 2 }}
+          rowSpan={2}
+          className="rounded-lg border bg-muted/30 p-4"
+        >
+          <h3 className="mb-3 font-medium">Release overview</h3>
+          <Button variant="outline" onClick={() => setSelected("Overview")}>
+            Review overview
+          </Button>
+        </GridItem>
+        <GridItem
+          colSpan={{ base: 1, md: 2 }}
+          justifySelf={{ base: "stretch", md: "start" }}
+          className="rounded-lg border p-4"
+        >
+          <Button variant="outline" onClick={() => setSelected("Owners")}>
+            Review owners
+          </Button>
+        </GridItem>
+        <GridItem
+          colSpan={{ base: 1, md: 2 }}
+          className="rounded-lg border p-4"
+        >
+          <Button variant="outline" onClick={() => setSelected("Notes")}>
+            Review notes
+          </Button>
+        </GridItem>
+        <GridItem
+          colSpan="full"
+          className="rounded-lg border p-4 text-sm text-muted-foreground"
+        >
+          DOM order stays overview, owners, notes, then this summary.
+        </GridItem>
+      </Grid>
+      <output className="block text-sm text-muted-foreground">
+        Last action: {selected}
+      </output>
+    </div>
+  );
+}
+
+const placementDemoCode = `import * as React from "react";
+import { Grid, GridItem } from "@/components/ui/grid";
+import { Button } from "@/components/ui/button";
+
+export function PlacementDemo() {
+  const [selected, setSelected] = React.useState("None");
+  return <div className="space-y-4">
+    <Grid cols={{ base: 1, md: 6 }} gap={4}>
+      <GridItem colSpan={{ base: 1, md: 3 }} colStart={{ base: "auto", md: 2 }} rowSpan={2}
+        className="rounded-lg border bg-muted/30 p-4">
+        <h3 className="mb-3 font-medium">Release overview</h3>
+        <Button variant="outline" onClick={() => setSelected("Overview")}>Review overview</Button>
       </GridItem>
-      <div className="p-6 bg-primary/20 rounded">
-        <h3 className="font-semibold mb-2">Regular Item</h3>
-        <p className="text-sm text-muted-foreground">Standard width</p>
+      <GridItem colSpan={{ base: 1, md: 2 }} justifySelf={{ base: "stretch", md: "start" }} className="rounded-lg border p-4">
+        <Button variant="outline" onClick={() => setSelected("Owners")}>Review owners</Button>
+      </GridItem>
+      <GridItem colSpan={{ base: 1, md: 2 }} className="rounded-lg border p-4">
+        <Button variant="outline" onClick={() => setSelected("Notes")}>Review notes</Button>
+      </GridItem>
+      <GridItem colSpan="full" className="rounded-lg border p-4 text-sm text-muted-foreground">DOM order stays overview, owners, notes, then this summary.</GridItem>
+    </Grid>
+    <p role="status" className="text-sm text-muted-foreground">Last action: {selected}</p>
+  </div>;
+}`;
+
+function SubgridDemo() {
+  const [selected, setSelected] = React.useState("");
+
+  const plans = [
+    { name: "Starter", description: "For a small team.", price: "$12" },
+    {
+      name: "Team",
+      description:
+        "Shared access rules, activity history, and release workflows for teams working across projects.",
+      price: "$29",
+    },
+    {
+      name: "Enterprise",
+      description: "Managed access and organization controls.",
+      price: "Contact us",
+    },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>
+        {plans.map((plan) => (
+          <GridItem
+            key={plan.name}
+            rowSpan={4}
+            className="grid grid-rows-subgrid gap-4 rounded-lg border p-4"
+          >
+            <h3 className="font-semibold">{plan.name}</h3>
+            <p className="text-sm text-muted-foreground">{plan.description}</p>
+            <p className="font-semibold tabular-nums">{plan.price}</p>
+            <Button
+              variant="outline"
+              aria-pressed={selected === plan.name}
+              onClick={() => setSelected(plan.name)}
+            >
+              {selected === plan.name ? "Selected" : "Select"} {plan.name}
+            </Button>
+          </GridItem>
+        ))}
+      </Grid>
+      <p className="text-sm text-muted-foreground">
+        Illustrative plans.{" "}
+        {selected ? `Local selection: ${selected}.` : "No plan selected."}
+      </p>
+    </div>
+  );
+}
+
+const subgridDemoCode = `import * as React from "react";
+import { Grid, GridItem } from "@/components/ui/grid";
+import { Button } from "@/components/ui/button";
+
+export function SubgridDemo() {
+  const [selected, setSelected] = React.useState("");
+  const plans = [
+    { name: "Starter", description: "For a small team.", price: "$12" },
+    { name: "Team", description: "Shared access rules, activity history, and release workflows for teams working across projects.", price: "$29" },
+    { name: "Enterprise", description: "Managed access and organization controls.", price: "Contact us" },
+  ];
+  return <div className="space-y-4">
+    <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>
+      {plans.map((plan) => <GridItem key={plan.name} rowSpan={4} className="grid grid-rows-subgrid gap-4 rounded-lg border p-4">
+        <h3 className="font-semibold">{plan.name}</h3>
+        <p className="text-sm text-muted-foreground">{plan.description}</p>
+        <p className="font-semibold tabular-nums">{plan.price}</p>
+        <Button variant="outline" aria-pressed={selected === plan.name} onClick={() => setSelected(plan.name)}>{selected === plan.name ? "Selected" : "Select"} {plan.name}</Button>
+      </GridItem>)}
+    </Grid>
+    <p className="text-sm text-muted-foreground">Illustrative plans. {selected ? \`Local selection: \${selected}.\` : "No plan selected."}</p>
+  </div>;
+}`;
+
+function SemanticsDemo() {
+  const id = React.useId();
+  const ref = React.useRef<HTMLFormElement>(null);
+  const [saved, setSaved] = React.useState("");
+
+  return (
+    <div className="space-y-4">
+      <Grid
+        as="form"
+        ref={ref}
+        cols={{ base: 1, md: 2 }}
+        gap={4}
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSaved(
+            String(new FormData(event.currentTarget).get("project") ?? ""),
+          );
+        }}
+      >
+        <GridItem className="space-y-2">
+          <label htmlFor={id} className="text-sm font-medium">
+            Project
+          </label>
+          <Input id={id} name="project" defaultValue="Access rules" required />
+        </GridItem>
+        <GridItem className="space-y-2">
+          <label htmlFor={`${id}-owner`} className="text-sm font-medium">
+            Owner
+          </label>
+          <Input id={`${id}-owner`} name="owner" defaultValue="Maya Chen" />
+        </GridItem>
+        <GridItem colSpan="full">
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => ref.current?.requestSubmit()}
+          >
+            Save local assignment
+          </Button>
+        </GridItem>
+      </Grid>
+      <output className="block text-sm text-muted-foreground">
+        {saved ? `Saved assignment: ${saved}.` : "No local assignment saved."}
+      </output>
+    </div>
+  );
+}
+
+const semanticsDemoCode = `import * as React from "react";
+import { Grid, GridItem } from "@/components/ui/grid";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+export function SemanticsDemo() {
+  const id = React.useId();
+  const ref = React.useRef<HTMLFormElement>(null);
+  const [saved, setSaved] = React.useState("");
+  return <div className="space-y-4">
+    <Grid as="form" ref={ref} cols={{ base: 1, md: 2 }} gap={4} onSubmit={(event) => {
+      event.preventDefault();
+      setSaved(String(new FormData(event.currentTarget).get("project") ?? ""));
+    }}>
+      <GridItem className="space-y-2"><label htmlFor={id} className="text-sm font-medium">Project</label><Input id={id} name="project" defaultValue="Access rules" required /></GridItem>
+      <GridItem className="space-y-2"><label htmlFor={\`\${id}-owner\`} className="text-sm font-medium">Owner</label><Input id={\`\${id}-owner\`} name="owner" defaultValue="Maya Chen" /></GridItem>
+      <GridItem colSpan="full"><Button variant="outline" type="button" onClick={() => ref.current?.requestSubmit()}>Save local assignment</Button></GridItem>
+    </Grid>
+    <p role="status" className="text-sm text-muted-foreground">{saved ? \`Saved assignment: \${saved}.\` : "No local assignment saved."}</p>
+  </div>;
+}`;
+
+function KiraDemo() {
+  const id = React.useId();
+  const [query, setQuery] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [selected, setSelected] = React.useState("");
+
+  const visible = projects.filter((project) =>
+    project.name.toLowerCase().includes(query.toLowerCase()),
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="min-w-0 flex-1 space-y-2">
+          <label htmlFor={id} className="text-sm font-medium">
+            Find a project
+          </label>
+          <Input
+            id={id}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </div>
+        <Button variant="outline" onClick={() => setLoading((value) => !value)}>
+          {loading ? "Finish local refresh" : "Refresh fixture"}
+        </Button>
       </div>
-      <div className="p-6 bg-primary/20 rounded">Item 3</div>
-      <div className="p-6 bg-primary/20 rounded">Item 4</div>
-      <div className="p-6 bg-primary/20 rounded">Item 5</div>
-    </Grid>
-  )
-}`;
-
-function DashboardDemo() {
-  return (
-    <Grid cols={{ base: 1, md: 2, lg: 4 }} gap={4}>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Total Users</CardDescription>
-          <CardTitle className="text-2xl">12,345</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Badge variant="secondary">+12%</Badge>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Revenue</CardDescription>
-          <CardTitle className="text-2xl">$54,321</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Badge variant="secondary">+8%</Badge>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Orders</CardDescription>
-          <CardTitle className="text-2xl">1,234</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Badge variant="secondary">+23%</Badge>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Conversion</CardDescription>
-          <CardTitle className="text-2xl">3.2%</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Badge variant="destructive">-2%</Badge>
-        </CardContent>
-      </Card>
-    </Grid>
+      <KiraGrid
+        as="ul"
+        items={visible}
+        getKey={(project) => project.id}
+        loading={loading}
+        loadingLabel="Refreshing the local project fixture…"
+        minItemWidth="14rem"
+        emptyContent={
+          <div className="space-y-3">
+            <p>No projects match this search.</p>
+            <Button variant="outline" size="sm" onClick={() => setQuery("")}>
+              Clear search
+            </Button>
+          </div>
+        }
+        renderItem={(project) => (
+          <article className="flex h-48 flex-col gap-3 rounded-lg border p-4">
+            <h3 className="font-medium">{project.name}</h3>
+            <p className="text-sm text-muted-foreground">
+              Owner: {project.owner}
+            </p>
+            <Button
+              variant="outline"
+              className="mt-auto"
+              aria-pressed={selected === project.id}
+              onClick={() => setSelected(project.id)}
+            >
+              Inspect {project.name}
+            </Button>
+          </article>
+        )}
+      />
+      <p className="text-sm text-muted-foreground">
+        Selected project:{" "}
+        {projects.find((project) => project.id === selected)?.name ?? "None"}.
+      </p>
+    </div>
   );
 }
 
-const dashboardCode = `import { Grid, GridItem } from "@/components/ui/grid"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+const kiraDemoCode = `import * as React from "react";
+import { KiraGrid } from "@/components/ui/grid";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-export function DashboardDemo() {
-  return (
-    <Grid cols={{ base: 1, md: 2, lg: 4 }} gap={4}>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Total Users</CardDescription>
-          <CardTitle className="text-2xl">12,345</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Badge variant="secondary">+12%</Badge>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Revenue</CardDescription>
-          <CardTitle className="text-2xl">$54,321</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Badge variant="secondary">+8%</Badge>
-        </CardContent>
-      </Card>
-    </Grid>
-  )
+const projects = [
+  { id: "access", name: "Access rules", owner: "Maya Chen" },
+  { id: "history", name: "Audit history", owner: "Jon Bell" },
+  { id: "exports", name: "Export workflow", owner: "Amira Patel" },
+];
+
+export function KiraDemo() {
+  const id = React.useId();
+  const [query, setQuery] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [selected, setSelected] = React.useState("");
+  const visible = projects.filter((project) => project.name.toLowerCase().includes(query.toLowerCase()));
+  return <div className="space-y-4">
+    <div className="flex flex-wrap items-end gap-3">
+      <div className="min-w-0 flex-1 space-y-2"><label htmlFor={id} className="text-sm font-medium">Find a project</label><Input id={id} value={query} onChange={(event) => setQuery(event.target.value)} /></div>
+      <Button variant="outline" onClick={() => setLoading((value) => !value)}>{loading ? "Finish local refresh" : "Refresh fixture"}</Button>
+    </div>
+    <KiraGrid as="ul" items={visible} getKey={(project) => project.id} loading={loading}
+      loadingLabel="Refreshing the local project fixture…" minItemWidth="14rem"
+      emptyContent={<div className="space-y-3"><p>No projects match this search.</p><Button variant="outline" size="sm" onClick={() => setQuery("")}>Clear search</Button></div>}
+      renderItem={(project) => <article className="flex h-48 flex-col gap-3 rounded-lg border p-4">
+        <h3 className="font-medium">{project.name}</h3><p className="text-sm text-muted-foreground">Owner: {project.owner}</p>
+        <Button variant="outline" className="mt-auto" aria-pressed={selected === project.id} onClick={() => setSelected(project.id)}>Inspect {project.name}</Button>
+      </article>} />
+    <p className="text-sm text-muted-foreground">Selected project: {projects.find((project) => project.id === selected)?.name ?? "None"}.</p>
+  </div>;
 }`;
 
-function ImageGalleryDemo() {
+function StatesDemo() {
+  const [state, setState] = React.useState<
+    "ready" | "loading" | "empty" | "error"
+  >("ready");
+
+  const items =
+    state === "ready"
+      ? [
+          {
+            id: "long",
+            name: "release-permissions-audit-history-and-migration-notes",
+            owner: "owner-with-a-very-long-address@example.test",
+          },
+        ]
+      : [];
+
   return (
-    <Grid cols={{ base: 2, md: 4 }} gap={2}>
-      <GridItem colSpan={{ base: 2, md: 2 }} rowSpan={2}>
-        <div className="w-full h-full min-h-48 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-lg flex items-center justify-center">
-          <IconPhoto className="size-12 text-muted-foreground" />
-        </div>
-      </GridItem>
-      {[IconMusic, IconVideo, IconFile, IconPhoto].map((Icon, i) => (
-        <div key={i} className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-          <Icon className="size-8 text-muted-foreground" />
-        </div>
-      ))}
-    </Grid>
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {(["ready", "loading", "empty", "error"] as const).map((value) => (
+          <Button
+            key={value}
+            variant="outline"
+            size="sm"
+            aria-pressed={state === value}
+            onClick={() => setState(value)}
+          >
+            {value}
+          </Button>
+        ))}
+      </div>
+      <KiraGrid
+        items={items}
+        getKey={(item) => item.id}
+        minItemWidth="14rem"
+        loading={state === "loading"}
+        loadingCount={3}
+        error={
+          state === "error"
+            ? "Projects could not be loaded. Try the local fixture again."
+            : undefined
+        }
+        onRetry={() => setState("ready")}
+        emptyContent={
+          <div className="space-y-3">
+            <p>No projects yet.</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setState("ready")}
+            >
+              Create local project
+            </Button>
+          </div>
+        }
+        renderItem={(item) => (
+          <article className="h-48 space-y-3 rounded-lg border p-4">
+            <h3 className="font-medium">{item.name}</h3>
+            <p className="text-sm text-muted-foreground">{item.owner}</p>
+            <p className="text-sm text-muted-foreground">
+              Read-only snapshot. Editing requires owner access.
+            </p>
+          </article>
+        )}
+      />
+    </div>
   );
 }
 
-const imageGalleryCode = `import { Grid, GridItem } from "@/components/ui/grid"
-import { IconPhoto, IconMusic, IconVideo, IconFile } from "@tabler/icons-react"
+const statesDemoCode = `import * as React from "react";
+import { KiraGrid } from "@/components/ui/grid";
+import { Button } from "@/components/ui/button";
 
-export function ImageGalleryDemo() {
-  return (
-    <Grid cols={{ base: 2, md: 4 }} gap={2}>
-      <GridItem colSpan={{ base: 2, md: 2 }} rowSpan={2}>
-        <div className="w-full h-full min-h-48 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-lg flex items-center justify-center">
-          <IconPhoto className="size-12 text-muted-foreground" />
-        </div>
-      </GridItem>
-      {[IconMusic, IconVideo, IconFile, IconPhoto].map((Icon, i) => (
-        <div key={i} className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-          <Icon className="size-8 text-muted-foreground" />
-        </div>
-      ))}
-    </Grid>
-  )
+export function StatesDemo() {
+  const [state, setState] = React.useState<"ready" | "loading" | "empty" | "error">("ready");
+  const items = state === "ready" ? [{ id: "long", name: "release-permissions-audit-history-and-migration-notes", owner: "owner-with-a-very-long-address@example.test" }] : [];
+  return <div className="space-y-4">
+    <div className="flex flex-wrap gap-2">{(["ready", "loading", "empty", "error"] as const).map((value) =>
+      <Button key={value} variant="outline" size="sm" aria-pressed={state === value} onClick={() => setState(value)}>{value}</Button>)}</div>
+    <KiraGrid items={items} getKey={(item) => item.id} minItemWidth="14rem"
+      loading={state === "loading"} loadingCount={3}
+      error={state === "error" ? "Projects could not be loaded. Try the local fixture again." : undefined}
+      onRetry={() => setState("ready")}
+      emptyContent={<div className="space-y-3"><p>No projects yet.</p><Button variant="outline" size="sm" onClick={() => setState("ready")}>Create local project</Button></div>}
+      renderItem={(item) => <article className="h-48 space-y-3 rounded-lg border p-4">
+        <h3 className="font-medium">{item.name}</h3><p className="text-sm text-muted-foreground">{item.owner}</p>
+        <p className="text-sm text-muted-foreground">Read-only snapshot. Editing requires owner access.</p>
+      </article>} />
+  </div>;
 }`;
 
-function TeamGridDemo() {
-  return (
-    <Grid cols={{ base: 2, sm: 3, md: 6 }} gap={4}>
-      {["AJ", "BS", "CW", "DK", "EM", "FP"].map((initials, i) => (
-        <div key={i} className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-          <Avatar>
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
-          <span className="text-sm font-medium">Member {i + 1}</span>
-          <span className="text-xs text-muted-foreground">Role</span>
-        </div>
-      ))}
-    </Grid>
-  );
-}
+const gridDemos = [
+  {
+    value: "basic",
+    label: "Basic",
+    title: "A semantic project list",
+    description: "Responsive columns, stable keys, and native list items.",
+    Demo: BasicDemo,
+    code: basicDemoCode,
+  },
+  {
+    value: "responsive",
+    label: "Responsive",
+    title: "Columns, rows, and separate gaps",
+    description: "All breakpoint candidates ship in the component source.",
+    Demo: ResponsiveDemo,
+    code: responsiveDemoCode,
+  },
+  {
+    value: "intrinsic",
+    label: "Intrinsic",
+    title: "Fit the panel, not the page",
+    description:
+      "Switch panel width and compare auto-fit with auto-fill. Both fit narrow containers.",
+    Demo: IntrinsicDemo,
+    code: intrinsicDemoCode,
+  },
+  {
+    value: "placement",
+    label: "Placement",
+    title: "Responsive item placement",
+    description:
+      "Spans, starting lines, and self alignment are responsive. Keyboard order follows the DOM.",
+    Demo: PlacementDemo,
+    code: placementDemoCode,
+  },
+  {
+    value: "subgrid",
+    label: "Subgrid",
+    title: "Align unequal plan content",
+    description:
+      "Four shared row tracks align descriptions, prices, and actions without fixed text heights.",
+    Demo: SubgridDemo,
+    code: subgridDemoCode,
+  },
+  {
+    value: "semantics",
+    label: "Semantics",
+    title: "A native form and ref",
+    description:
+      "The as prop provides form-specific props, event types, and an HTMLFormElement ref.",
+    Demo: SemanticsDemo,
+    code: semanticsDemoCode,
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    title: "A deferred project collection",
+    description:
+      "Filtering, empty feedback, and a manual refresh fixture. Existing items remain mounted during refresh.",
+    Demo: KiraDemo,
+    code: kiraDemoCode,
+  },
+  {
+    value: "states",
+    label: "States",
+    title: "Loading, empty, recovery, and long values",
+    description:
+      "Buttons drive local states. Every placeholder occupies the same 12rem card height.",
+    Demo: StatesDemo,
+    code: statesDemoCode,
+  },
+];
 
-const teamGridCode = `import { Grid, GridItem } from "@/components/ui/grid"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+const gridApi = [
+  {
+    title: "Grid",
+    props: [
+      {
+        prop: "as",
+        type: '"div" | "section" | "main" | "article" | "aside" | "ul" | "ol" | "form"',
+        default: '"div"',
+        description: "Native tag; its props and ref type follow as.",
+      },
+      {
+        prop: "render",
+        type: "React.ReactElement | ((props, state) => React.ReactElement)",
+        default: "-",
+        description:
+          "Base UI render composition. The rendered element receives the resolved props.",
+      },
+      {
+        prop: "cols",
+        type: 'ResponsiveValue<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | "none" | "subgrid" | "auto-fit" | "auto-fill">',
+        default: "-",
+        description: "Fixed, inherited, or intrinsic column tracks.",
+      },
+      {
+        prop: "minItemWidth",
+        type: "string | number",
+        default: "16rem",
+        description:
+          "CSS length or positive pixel count for intrinsic columns. The minimum is clamped to 100%.",
+      },
+      {
+        prop: "rows",
+        type: 'ResponsiveValue<1 | 2 | 3 | 4 | 5 | 6 | "none" | "subgrid">',
+        default: "-",
+        description: "Explicit or inherited row tracks.",
+      },
+      {
+        prop: "gap",
+        type: "ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24>",
+        default: "-",
+        description: "Existing spacing scale.",
+      },
+      {
+        prop: "gapX / gapY",
+        type: "ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12>",
+        default: "-",
+        description: "Separate responsive horizontal and vertical gaps.",
+      },
+      {
+        prop: "flow",
+        type: '"row" | "column" | "dense" | "row-dense" | "column-dense"',
+        default: "-",
+        description:
+          "CSS auto placement. Dense packing can change visual order; DOM focus order stays unchanged.",
+      },
+      {
+        prop: "align",
+        type: 'ResponsiveValue<"start" | "end" | "center" | "stretch" | "baseline">',
+        default: "-",
+        description: "Align items on the block axis.",
+      },
+      {
+        prop: "justify / place",
+        type: 'ResponsiveValue<"start" | "end" | "center" | "stretch">',
+        default: "-",
+        description: "Inline-axis or combined item alignment.",
+      },
+      {
+        prop: "inline",
+        type: "boolean",
+        default: "false",
+        description: "Use inline-grid.",
+      },
+      {
+        prop: "ref / native props",
+        type: "React.ComponentPropsWithRef<T>",
+        default: "-",
+        description:
+          "Native selected-tag props, form events, ARIA attributes and style. Responsive values accept base, sm, md, lg, xl and 2xl.",
+      },
+    ],
+  },
+  {
+    title: "GridItem",
+    props: [
+      {
+        prop: "as",
+        type: "GridElement | 'li'",
+        default: '"div"',
+        description: "Native item tag. Use li directly inside ul/ol.",
+      },
+      {
+        prop: "render / ref",
+        type: "useRender.RenderProp / React.ComponentPropsWithRef<T>['ref']",
+        default: "-",
+        description: "Native Base UI composition and selected-tag ref.",
+      },
+      {
+        prop: "colSpan",
+        type: 'ResponsiveValue<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | "full">',
+        default: "-",
+        description: "Responsive column span.",
+      },
+      {
+        prop: "rowSpan",
+        type: 'ResponsiveValue<1 | 2 | 3 | 4 | 5 | 6 | "full">',
+        default: "-",
+        description:
+          "Responsive row span. Combine with subgrid for shared rows.",
+      },
+      {
+        prop: "colStart / colEnd",
+        type: 'ResponsiveValue<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | "auto">',
+        default: "-",
+        description: "Responsive column lines.",
+      },
+      {
+        prop: "rowStart / rowEnd",
+        type: 'ResponsiveValue<1 | 2 | 3 | 4 | 5 | 6 | 7 | "auto">',
+        default: "-",
+        description: "Responsive row lines.",
+      },
+      {
+        prop: "alignSelf / justifySelf",
+        type: 'ResponsiveValue<"start" | "end" | "center" | "stretch" | "auto">',
+        default: "-",
+        description: "Responsive item alignment.",
+      },
+      {
+        prop: "className / native props",
+        type: "string / React.ComponentPropsWithRef<T>",
+        default: "-",
+        description: "Shrinkable item sizing and native props.",
+      },
+    ],
+  },
+  {
+    title: "KiraGrid",
+    props: [
+      {
+        prop: "items",
+        type: "readonly Item[]",
+        default: "-",
+        description:
+          "Caller-owned collection. Existing items stay mounted during a refresh.",
+      },
+      {
+        prop: "getKey",
+        type: "(item: Item) => React.Key",
+        default: "-",
+        description: "Stable, unique key for each item.",
+      },
+      {
+        prop: "renderItem",
+        type: "(item: Item, index: number) => React.ReactNode",
+        default: "-",
+        description:
+          "Cell content. Native ul/ol roots receive li wrappers. For render callbacks or custom components that return a list, set matching as.",
+      },
+      {
+        prop: "loading / loadingLabel",
+        type: "boolean / string",
+        default: 'false / "Loading items…"',
+        description: "Caller-controlled busy state and one contextual status.",
+      },
+      {
+        prop: "loadingCount",
+        type: "number",
+        default: "6",
+        description:
+          "Initial placeholder count, truncated and clamped to 1–100. Non-finite values use 6.",
+      },
+      {
+        prop: "loadingContent",
+        type: "React.ReactNode",
+        default: "-",
+        description:
+          "Custom cell skeleton. Match its dimensions to loaded cells.",
+      },
+      {
+        prop: "emptyContent",
+        type: "React.ReactNode",
+        default: '"No items yet."',
+        description: "Empty feedback and optional caller-owned action.",
+      },
+      {
+        prop: "error / onRetry",
+        type: "React.ReactNode / (() => void)",
+        default: "-",
+        description:
+          "Recovery feedback. Existing items can remain below an error.",
+      },
+      {
+        prop: "Grid props",
+        type: "Omit<GridProps<T>, 'children'>",
+        default: 'cols="auto-fit", gap=4',
+        description: "Native grid configuration.",
+      },
+    ],
+  },
+  {
+    title: "gridVariants",
+    props: [
+      {
+        prop: "inline",
+        type: "boolean",
+        default: "false",
+        description:
+          "Grid or inline-grid display plus shrinkable direct children.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional classes.",
+      },
+    ],
+  },
+  {
+    title: "gridItemVariants",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Shared min-width and word-wrapping item classes.",
+      },
+    ],
+  },
+] satisfies React.ComponentProps<typeof APIReference>["sections"];
 
-export function TeamGridDemo() {
-  return (
-    <Grid cols={{ base: 2, sm: 3, md: 6 }} gap={4}>
-      {["AJ", "BS", "CW", "DK", "EM", "FP"].map((initials, i) => (
-        <div key={i} className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-          <Avatar>
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
-          <span className="text-sm font-medium">Member {i + 1}</span>
-          <span className="text-xs text-muted-foreground">Role</span>
-        </div>
-      ))}
-    </Grid>
-  )
-}`;
-
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function GridPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Grid"
-        description="CSS Grid layout primitive for complex two-dimensional layouts. Supports responsive columns, rows, gaps, and item spanning."
-        version="v1.0"
+        description="Native CSS Grid layouts that fit pages and embedded panels. Typed composition, intrinsic tracks, subgrid, and deferred collections."
+        version="2.0.1"
       />
-
-      <FeatureGrid
-        features={[
-          {
-            title: "Responsive Design",
-            description: "Full responsive support for columns, rows, and gaps using breakpoint objects.",
-            icon: <IconDeviceMobile className="h-5 w-5" />,
-          },
-          {
-            title: "Flexible Spacing",
-            description: "Control gap on both axes independently with responsive gapX and gapY props.",
-            icon: <IconLayoutGrid className="h-5 w-5" />,
-          },
-          {
-            title: "Item Placement",
-            description: "GridItem supports column and row spanning for complex layouts with responsive spans.",
-            icon: <IconGridDots className="h-5 w-5" />,
-          },
-        ]}
-      />
-
+      <FeatureGrid features={gridPageFeatureGridFeatures} />
       <DemoTabs
-        defaultValue="column-count"
-        tabs={[
-          {
-            value: "column-count",
-            label: "Column Count",
+        defaultValue="basic"
+        tabs={gridDemos.map(
+          ({ value, label, title, description, Demo, code }) => ({
+            value,
+            label,
             demo: (
-              <DemoWrapper
-                title="Column Count"
-                description="Define the number of columns in your grid layout."
-                code={columnCountCode}
-              >
-                <ColumnCountDemo />
+              <DemoWrapper title={title} description={description} code={code}>
+                <Demo />
               </DemoWrapper>
             ),
+          }),
+        )}
+      />
+      <KeyboardShortcuts
+        shortcuts={[
+          {
+            keys: "Tab / Shift + Tab",
+            description:
+              "Follow the DOM order through native child controls. CSS placement does not reorder keyboard focus.",
           },
           {
-            value: "gap-spacing",
-            label: "Gap Spacing",
-            demo: (
-              <DemoWrapper
-                title="Gap Spacing"
-                description="Control spacing between grid items with the gap prop."
-                code={gapSpacingCode}
-              >
-                <GapSpacingDemo />
-              </DemoWrapper>
-            ),
+            keys: "Enter / Space",
+            description:
+              "Activate child buttons with native semantics. Grid adds no roving focus or arrow-key interception.",
           },
           {
-            value: "responsive-columns",
-            label: "Responsive Columns",
-            demo: (
-              <DemoWrapper
-                title="Responsive Columns"
-                description="Define different column counts for each breakpoint."
-                code={responsiveColumnsCode}
-              >
-                <ResponsiveColumnsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "separate-gap",
-            label: "Separate X/Y Gap",
-            demo: (
-              <DemoWrapper
-                title="Separate X/Y Gap"
-                description="Control horizontal and vertical gaps independently."
-                code={separateGapCode}
-              >
-                <SeparateGapDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "grid-flow",
-            label: "Grid Flow",
-            demo: (
-              <DemoWrapper
-                title="Grid Flow"
-                description="Control how auto-placed items are positioned."
-                code={gridFlowCode}
-              >
-                <GridFlowDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "column-span",
-            label: "Column Span",
-            demo: (
-              <DemoWrapper
-                title="GridItem Column Span"
-                description="Make items span multiple columns using GridItem and colSpan."
-                code={columnSpanCode}
-              >
-                <ColumnSpanDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "row-span",
-            label: "Row Span",
-            demo: (
-              <DemoWrapper
-                title="GridItem Row Span"
-                description="Make items span multiple rows using GridItem and rowSpan."
-                code={rowSpanCode}
-              >
-                <RowSpanDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "responsive-span",
-            label: "Responsive Span",
-            demo: (
-              <DemoWrapper
-                title="Responsive Span"
-                description="Responsive column spanning with breakpoint objects."
-                code={responsiveSpanCode}
-              >
-                <ResponsiveSpanDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "dashboard",
-            label: "Dashboard",
-            demo: (
-              <DemoWrapper
-                title="Dashboard Layout"
-                description="Real-world analytics dashboard with responsive cards."
-                code={dashboardCode}
-              >
-                <DashboardDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "image-gallery",
-            label: "Image Gallery",
-            demo: (
-              <DemoWrapper
-                title="Image Gallery"
-                description="Masonry-style gallery with featured item spanning multiple rows and columns."
-                code={imageGalleryCode}
-              >
-                <ImageGalleryDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "team-grid",
-            label: "Team Grid",
-            demo: (
-              <DemoWrapper
-                title="Team Members"
-                description="Team grid with responsive columns from 2 to 6."
-                code={teamGridCode}
-              >
-                <TeamGridDemo />
-              </DemoWrapper>
-            ),
+            keys: "Enter in the form",
+            description:
+              "Submit the native form. The form-ref example uses requestSubmit() and browser validation.",
           },
         ]}
       />
-
       <UsageBlock
-        code={`import { Grid, GridItem } from "@/components/ui/grid"
+        code={`import * as React from "react";
+import { Grid, GridItem, KiraGrid, gridVariants, gridItemVariants } from "@/components/ui/grid";
 
-// Basic grid
-<Grid cols={3} gap={4}>
-  <Card>1</Card>
-  <Card>2</Card>
-  <Card>3</Card>
-</Grid>
+const projects = [{ id: "access", name: "Access rules" }, { id: "history", name: "Audit history" }];
 
-// Responsive grid
-<Grid cols={{ base: 1, md: 2, lg: 4 }} gap={4}>
-  <Card />
-</Grid>
+export function ResponsiveList() {
+  return <Grid as="ul" cols={{ base: 1, md: 3 }} gap={4}>
+    <GridItem as="li" colSpan={{ base: 1, md: 2 }}>Featured release</GridItem>
+    <GridItem as="li">Owner notes</GridItem>
+  </Grid>;
+}
 
-// With spanning
-<Grid cols={4} gap={4}>
-  <GridItem colSpan={2}>Wide item</GridItem>
-  <GridItem>Normal</GridItem>
-  <GridItem rowSpan={2}>Tall item</GridItem>
-</Grid>
+export function IntrinsicList() {
+  return <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>
+    {projects.map((project) => <GridItem key={project.id}>{project.name}</GridItem>)}
+  </Grid>;
+}
 
-// Responsive spanning
-<Grid cols={{ base: 1, md: 3 }} gap={4}>
-  <GridItem colSpan={{ base: 1, md: 2 }}>
-    Featured
-  </GridItem>
-</Grid>
+export function DeferredList() {
+  return <KiraGrid as="ul" items={projects} getKey={(project) => project.id}
+    renderItem={(project) => <article>{project.name}</article>}
+    emptyContent="No projects yet." />;
+}
 
-// Separate gaps
-<Grid cols={4} gapX={8} gapY={2}>
-  <Card />
-</Grid>
+export function RenderAdapter() {
+  const ref = React.useRef<HTMLElement>(null);
+  return <Grid as="section" ref={ref} render={<section aria-label="Release summary" />} cols={2}>
+    <GridItem>Access rules</GridItem><GridItem>Audit history</GridItem>
+  </Grid>;
+}
 
-// Grid flow
-<Grid cols={3} rows={2} flow="column">
-  <Card />
-</Grid>`}
+export function VariantClasses() {
+  return <div className={gridVariants({ inline: true })}><div className={gridItemVariants()}>Inline grid content</div></div>;
+}`}
       />
-
-      <APIReference
-        sections={[
+      <APIReference sections={gridApi} />
+      <Changelog
+        entries={[
           {
-            title: "Grid",
-            props: [
+            version: "2.0.1",
+            date: "14 November 2026",
+            changes: [
               {
-                prop: "as",
-                type: "GridElement",
-                default: "div",
-                description: "Semantic HTML element to render (div, section, main, article, aside, ul, ol, form).",
-              },
-              {
-                prop: "cols",
-                type: "ResponsiveValue<GridCols>",
-                default: "-",
-                description: "Number of columns (1-12, none, subgrid). Supports responsive values.",
-              },
-              {
-                prop: "rows",
-                type: "ResponsiveValue<GridRows>",
-                default: "-",
-                description: "Number of rows (1-6, none, subgrid). Supports responsive values.",
-              },
-              {
-                prop: "gap",
-                type: "ResponsiveValue<GridGap>",
-                default: "-",
-                description: "Gap between items (0, 1-6, 8, 10, 12, 16, 20, 24). Supports responsive values.",
-              },
-              {
-                prop: "gapX",
-                type: "ResponsiveValue<number>",
-                default: "-",
-                description: "Horizontal gap between items. Supports responsive values.",
-              },
-              {
-                prop: "gapY",
-                type: "ResponsiveValue<number>",
-                default: "-",
-                description: "Vertical gap between items. Supports responsive values.",
-              },
-              {
-                prop: "flow",
-                type: "GridFlow",
-                default: "-",
-                description: "Grid flow direction (row, column, dense, row-dense, column-dense).",
-              },
-              {
-                prop: "align",
-                type: "ResponsiveValue<GridAlign>",
-                default: "-",
-                description: "Align items (start, end, center, stretch, baseline). Supports responsive values.",
-              },
-              {
-                prop: "justify",
-                type: "ResponsiveValue<GridJustify>",
-                default: "-",
-                description: "Justify items (start, end, center, stretch). Supports responsive values.",
-              },
-              {
-                prop: "place",
-                type: "ResponsiveValue<GridPlace>",
-                default: "-",
-                description: "Place items shorthand (start, end, center, stretch). Supports responsive values.",
-              },
-              {
-                prop: "inline",
-                type: "boolean",
-                default: "false",
-                description: "Whether to use inline-grid instead of grid display.",
+                type: "fixed",
+                title: "Native list render adapters",
+                description:
+                  "KiraGrid now uses li wrappers when render supplies a native ul or ol, including loading, empty and error states. Render callbacks and custom components that return lists require matching as. Compatibility audited on Base UI 1.9.0.",
               },
             ],
           },
           {
-            title: "GridItem",
-            props: [
+            version: "2.0.0",
+            date: "13 November 2026",
+            changes: [
               {
-                prop: "colSpan",
-                type: "ResponsiveValue<ColSpan>",
-                default: "-",
-                description: "Column span (1-12, full). Supports responsive values.",
+                type: "fixed",
+                title: "Responsive classes and honest types",
+                description:
+                  "Repaired 17 dictionary errors. Literal breakpoint candidates travel with the registry source; positions and alignment are responsive. Compatibility audited on Base UI 1.9.0; Grid has no native Base UI layout primitive.",
               },
               {
-                prop: "rowSpan",
-                type: "ResponsiveValue<RowSpan>",
-                default: "-",
-                description: "Row span (1-6, full). Supports responsive values.",
+                type: "added",
+                title: "Intrinsic columns and KiraGrid",
+                description:
+                  "Auto-fit/auto-fill with a clamped minimum, typed native tags and refs, semantic items, retained refreshes and collection recovery. Research cutoff October 31, 2026.",
               },
               {
-                prop: "colStart",
-                type: "ColPosition",
-                default: "-",
-                description: "Column start position (1-13, auto).",
+                type: "breaking",
+                title: "Responsive layouts now take effect",
+                description:
+                  "Consumers that relied on missing responsive CSS will see corrected layouts. Native props and ref types follow as; invalid tag-specific attributes are rejected. Items now shrink and wrap long values.",
               },
               {
-                prop: "colEnd",
-                type: "ColPosition",
-                default: "-",
-                description: "Column end position (1-13, auto).",
-              },
-              {
-                prop: "rowStart",
-                type: "RowPosition",
-                default: "-",
-                description: "Row start position (1-7, auto).",
-              },
-              {
-                prop: "rowEnd",
-                type: "RowPosition",
-                default: "-",
-                description: "Row end position (1-7, auto).",
-              },
-              {
-                prop: "alignSelf",
-                type: "SelfAlign",
-                default: "-",
-                description: "Align self (start, end, center, stretch, auto).",
-              },
-              {
-                prop: "justifySelf",
-                type: "SelfAlign",
-                default: "-",
-                description: "Justify self (start, end, center, stretch, auto).",
+                type: "fixed",
+                title: "Focused demos and API",
+                description:
+                  "Added Basic, Kira, States, keyboard, subgrid and native-form examples. Removed the inaccurate masonry claim and undefined snippet references.",
               },
             ],
           },
@@ -823,3 +1040,23 @@ export default function GridPage() {
     </ComponentPage>
   );
 }
+
+const gridPageFeatureGridFeatures = [
+  {
+    title: "Local width",
+    description: "Auto-fit and auto-fill adapt to their available panel width.",
+    icon: <IconArrowsHorizontal className="size-4" />,
+  },
+  {
+    title: "Shared tracks",
+    description:
+      "Subgrid aligns unequal copy and actions without fixed text heights.",
+    icon: <IconLayoutGrid className="size-4" />,
+  },
+  {
+    title: "Deferred collections",
+    description:
+      "Stable keyed items, retained refreshes, skeleton cells, empty states and recovery.",
+    icon: <IconListDetails className="size-4" />,
+  },
+] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
