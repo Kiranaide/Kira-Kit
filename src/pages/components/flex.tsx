@@ -226,16 +226,16 @@ export function WrapDemo() {
       <div>
         <p className="text-sm text-muted-foreground mb-2">wrap</p>
         <Flex wrap="wrap" gap={4} className="p-4 border rounded-lg bg-muted/30 max-w-md">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="p-4 bg-primary/20 rounded w-24 text-center">{i + 1}</div>
+          {Array.from({ length: 8 }, (_, i) => ({ id: "item-" + (i + 1), number: i + 1 })).map((item) => (
+            <div key={item.id} className="p-4 bg-primary/20 rounded w-24 text-center">{item.number}</div>
           ))}
         </Flex>
       </div>
       <div>
         <p className="text-sm text-muted-foreground mb-2">nowrap (default)</p>
         <Flex wrap="nowrap" gap={4} className="p-4 border rounded-lg bg-muted/30 max-w-md overflow-x-auto">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="p-4 bg-primary/20 rounded w-24 text-center shrink-0">{i + 1}</div>
+          {Array.from({ length: 8 }, (_, i) => ({ id: "item-" + (i + 1), number: i + 1 })).map((item) => (
+            <div key={item.id} className="p-4 bg-primary/20 rounded w-24 text-center shrink-0">{item.number}</div>
           ))}
         </Flex>
       </div>
@@ -253,9 +253,15 @@ function WrapDemo() {
           gap={4}
           className="p-4 border rounded-lg bg-muted/30 max-w-md"
         >
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="p-4 bg-primary/20 rounded w-24 text-center">
-              {i + 1}
+          {Array.from({ length: 8 }, (_, i) => ({
+            id: "item-" + (i + 1),
+            number: i + 1,
+          })).map((item) => (
+            <div
+              key={item.id}
+              className="p-4 bg-primary/20 rounded w-24 text-center"
+            >
+              {item.number}
             </div>
           ))}
         </Flex>
@@ -267,12 +273,15 @@ function WrapDemo() {
           gap={4}
           className="p-4 border rounded-lg bg-muted/30 max-w-md overflow-x-auto"
         >
-          {Array.from({ length: 8 }).map((_, i) => (
+          {Array.from({ length: 8 }, (_, i) => ({
+            id: "item-" + (i + 1),
+            number: i + 1,
+          })).map((item) => (
             <div
-              key={i}
+              key={item.id}
               className="p-4 bg-primary/20 rounded w-24 text-center shrink-0"
             >
-              {i + 1}
+              {item.number}
             </div>
           ))}
         </Flex>
@@ -337,9 +346,9 @@ export function SemanticDemo() {
   return (
     <Flex as="nav" justify="between" align="center" className="p-4 border rounded-lg bg-muted/30">
       <Flex as="ul" gap={4} className="list-none">
-        <li><a href="#" className="hover:text-primary">Home</a></li>
-        <li><a href="#" className="hover:text-primary">About</a></li>
-        <li><a href="#" className="hover:text-primary">Contact</a></li>
+        <li><a href="/" className="hover:text-primary">Home</a></li>
+        <li><a href="/components/flex" className="hover:text-primary">About</a></li>
+        <li><a href="/components/flex" className="hover:text-primary">Contact</a></li>
       </Flex>
       <Button size="sm">Sign In</Button>
     </Flex>
@@ -356,17 +365,17 @@ function SemanticDemo() {
     >
       <Flex as="ul" gap={4} className="list-none">
         <li>
-          <a href="#" className="hover:text-primary">
+          <a href="/components/flex" className="hover:text-primary">
             Home
           </a>
         </li>
         <li>
-          <a href="#" className="hover:text-primary">
+          <a href="/components/flex" className="hover:text-primary">
             About
           </a>
         </li>
         <li>
-          <a href="#" className="hover:text-primary">
+          <a href="/components/flex" className="hover:text-primary">
             Contact
           </a>
         </li>
@@ -449,6 +458,7 @@ export function RealWorldDemos() {
   )
 }`;
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 function RealWorldDemos() {
   return (
     <div className="space-y-6">
@@ -546,138 +556,9 @@ export default function FlexPage() {
         version="1.0"
       />
 
-      <FeatureGrid
-        features={[
-          {
-            title: "Responsive Values",
-            description:
-              "All layout props support breakpoint-aware responsive values using Tailwind conventions.",
-            icon: <IconDeviceLaptop className="h-5 w-5 text-primary" />,
-          },
-          {
-            title: "Semantic HTML",
-            description:
-              "Render as any semantic element like nav, header, main, or form using the as prop.",
-            icon: <IconLayoutGrid className="h-5 w-5 text-primary" />,
-          },
-          {
-            title: "Type Safe",
-            description:
-              "Full TypeScript support with strict type inference for direction, justify, align, and more.",
-            icon: <IconArrowsLeftRight className="h-5 w-5 text-primary" />,
-          },
-        ]}
-      />
+      <FeatureGrid features={flexPageFeatureGridFeatures} />
 
-      <DemoTabs
-        defaultValue="direction"
-        tabs={[
-          {
-            value: "direction",
-            label: "Direction",
-            demo: (
-              <DemoWrapper
-                title="Flex Direction"
-                description="Control the direction in which flex items are laid out."
-                code={directionCode}
-              >
-                <DirectionDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "justify",
-            label: "Justify Content",
-            demo: (
-              <DemoWrapper
-                title="Justify Content"
-                description="Align flex items along the main axis (row direction)."
-                code={justifyCode}
-              >
-                <JustifyDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "align",
-            label: "Align Items",
-            demo: (
-              <DemoWrapper
-                title="Align Items"
-                description="Align flex items along the cross axis."
-                code={alignCode}
-              >
-                <AlignDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "gap",
-            label: "Gap Spacing",
-            demo: (
-              <DemoWrapper
-                title="Gap Spacing"
-                description="Control the spacing between flex items."
-                code={gapCode}
-              >
-                <GapDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "wrap",
-            label: "Flex Wrap",
-            demo: (
-              <DemoWrapper
-                title="Flex Wrap"
-                description="Control whether flex items wrap onto multiple lines."
-                code={wrapCode}
-              >
-                <WrapDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "responsive",
-            label: "Responsive",
-            demo: (
-              <DemoWrapper
-                title="Responsive Values"
-                description="Use breakpoint-aware values for adaptive layouts."
-                code={responsiveCode}
-              >
-                <ResponsiveDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "semantic",
-            label: "Semantic HTML",
-            demo: (
-              <DemoWrapper
-                title="Semantic HTML (as prop)"
-                description="Render Flex as semantic HTML elements like nav, header, form."
-                code={semanticCode}
-              >
-                <SemanticDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "realworld",
-            label: "Real-World Examples",
-            demo: (
-              <DemoWrapper
-                title="Real-World Examples"
-                description="Common UI patterns using the Flex component."
-                code={realWorldCode}
-              >
-                <RealWorldDemos />
-              </DemoWrapper>
-            ),
-          },
-        ]}
-      />
+      <DemoTabs defaultValue="direction" tabs={flexPageDemoTabsTabs} />
 
       <UsageBlock
         code={`import { Flex } from "@/components/ui/flex"
@@ -713,63 +594,193 @@ export default function FlexPage() {
       />
 
       <APIReference
-        sections={[
-          {
-            title: "Flex",
-            props: [
-              {
-                prop: "as",
-                type: "FlexElement",
-                default: '"div"',
-                description:
-                  "Semantic HTML element to render (div, nav, header, main, article, aside, footer, ul, ol, form, fieldset, span)",
-              },
-              {
-                prop: "direction",
-                type: "ResponsiveValue<FlexDirection>",
-                default: '"row"',
-                description:
-                  "Flex direction - row, row-reverse, column, column-reverse",
-              },
-              {
-                prop: "wrap",
-                type: "ResponsiveValue<FlexWrap>",
-                default: "-",
-                description: "Flex wrap behavior - nowrap, wrap, wrap-reverse",
-              },
-              {
-                prop: "justify",
-                type: "ResponsiveValue<FlexJustify>",
-                default: "-",
-                description:
-                  "Justify content alignment - start, end, center, between, around, evenly",
-              },
-              {
-                prop: "align",
-                type: "ResponsiveValue<FlexAlign>",
-                default: "-",
-                description:
-                  "Align items alignment - start, end, center, baseline, stretch",
-              },
-              {
-                prop: "gap",
-                type: "ResponsiveValue<FlexGap>",
-                default: "-",
-                description:
-                  "Gap between items - 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24",
-              },
-              {
-                prop: "inline",
-                type: "boolean",
-                default: "false",
-                description: "Render as inline-flex instead of flex",
-              },
-            ],
-          },
-        ]}
+        sections={flexPageAPIReferenceSections}
         title="API Reference"
         description="Key props and configuration options"
       />
     </ComponentPage>
   );
 }
+
+const flexPageFeatureGridFeatures = [
+  {
+    title: "Responsive Values",
+    description:
+      "All layout props support breakpoint-aware responsive values using Tailwind conventions.",
+    icon: <IconDeviceLaptop className="h-5 w-5 text-primary" />,
+  },
+  {
+    title: "Semantic HTML",
+    description:
+      "Render as any semantic element like nav, header, main, or form using the as prop.",
+    icon: <IconLayoutGrid className="h-5 w-5 text-primary" />,
+  },
+  {
+    title: "Type Safe",
+    description:
+      "Full TypeScript support with strict type inference for direction, justify, align, and more.",
+    icon: <IconArrowsLeftRight className="h-5 w-5 text-primary" />,
+  },
+] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
+
+const flexPageDemoTabsTabs = [
+  {
+    value: "direction",
+    label: "Direction",
+    demo: (
+      <DemoWrapper
+        title="Flex Direction"
+        description="Control the direction in which flex items are laid out."
+        code={directionCode}
+      >
+        <DirectionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "justify",
+    label: "Justify Content",
+    demo: (
+      <DemoWrapper
+        title="Justify Content"
+        description="Align flex items along the main axis (row direction)."
+        code={justifyCode}
+      >
+        <JustifyDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "align",
+    label: "Align Items",
+    demo: (
+      <DemoWrapper
+        title="Align Items"
+        description="Align flex items along the cross axis."
+        code={alignCode}
+      >
+        <AlignDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "gap",
+    label: "Gap Spacing",
+    demo: (
+      <DemoWrapper
+        title="Gap Spacing"
+        description="Control the spacing between flex items."
+        code={gapCode}
+      >
+        <GapDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "wrap",
+    label: "Flex Wrap",
+    demo: (
+      <DemoWrapper
+        title="Flex Wrap"
+        description="Control whether flex items wrap onto multiple lines."
+        code={wrapCode}
+      >
+        <WrapDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "responsive",
+    label: "Responsive",
+    demo: (
+      <DemoWrapper
+        title="Responsive Values"
+        description="Use breakpoint-aware values for adaptive layouts."
+        code={responsiveCode}
+      >
+        <ResponsiveDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "semantic",
+    label: "Semantic HTML",
+    demo: (
+      <DemoWrapper
+        title="Semantic HTML (as prop)"
+        description="Render Flex as semantic HTML elements like nav, header, form."
+        code={semanticCode}
+      >
+        <SemanticDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "realworld",
+    label: "Real-World Examples",
+    demo: (
+      <DemoWrapper
+        title="Real-World Examples"
+        description="Common UI patterns using the Flex component."
+        code={realWorldCode}
+      >
+        <RealWorldDemos />
+      </DemoWrapper>
+    ),
+  },
+] satisfies React.ComponentProps<typeof DemoTabs>["tabs"];
+
+const flexPageAPIReferenceSections = [
+  {
+    title: "Flex",
+    props: [
+      {
+        prop: "as",
+        type: "FlexElement",
+        default: '"div"',
+        description:
+          "Semantic HTML element to render (div, nav, header, main, article, aside, footer, ul, ol, form, fieldset, span)",
+      },
+      {
+        prop: "direction",
+        type: "ResponsiveValue<FlexDirection>",
+        default: '"row"',
+        description:
+          "Flex direction - row, row-reverse, column, column-reverse",
+      },
+      {
+        prop: "wrap",
+        type: "ResponsiveValue<FlexWrap>",
+        default: "-",
+        description: "Flex wrap behavior - nowrap, wrap, wrap-reverse",
+      },
+      {
+        prop: "justify",
+        type: "ResponsiveValue<FlexJustify>",
+        default: "-",
+        description:
+          "Justify content alignment - start, end, center, between, around, evenly",
+      },
+      {
+        prop: "align",
+        type: "ResponsiveValue<FlexAlign>",
+        default: "-",
+        description:
+          "Align items alignment - start, end, center, baseline, stretch",
+      },
+      {
+        prop: "gap",
+        type: "ResponsiveValue<FlexGap>",
+        default: "-",
+        description:
+          "Gap between items - 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24",
+      },
+      {
+        prop: "inline",
+        type: "boolean",
+        default: "false",
+        description: "Render as inline-flex instead of flex",
+      },
+    ],
+  },
+] satisfies React.ComponentProps<typeof APIReference>["sections"];
