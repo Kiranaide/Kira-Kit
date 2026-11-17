@@ -2,504 +2,524 @@
 
 import * as React from "react";
 
-// ============================================
-// TYPES
-// ============================================
-
 export interface PaginationState {
-  /** Current page (1-indexed) */
+  /** Pages are 1-indexed. */
   page: number;
-  /** Items per page */
   pageSize: number;
-  /** Total number of items */
   total: number;
 }
 
 export interface UsePaginationOptions {
-  /** Total number of items */
   total?: number;
-  /** Items per page (default: 10) */
+  defaultTotal?: number;
   pageSize?: number;
-  /** Initial page for uncontrolled mode (1-indexed, default: 1) */
+  defaultPageSize?: number;
   defaultPage?: number;
-  /** Controlled page value (1-indexed) */
   page?: number;
-  /** Callback when page changes */
   onPageChange?: (page: number) => void;
-  /** Callback when page size changes */
   onPageSizeChange?: (pageSize: number) => void;
-  /** Maximum number of visible page buttons (default: 5) */
+  onTotalChange?: (total: number) => void;
+  /** One atomic notification for page and size, including size resets. */
+  onPaginationChange?: (
+    state: Pick<PaginationState, "page" | "pageSize">,
+  ) => void;
+  /** Maximum numbered buttons, excluding ellipses. Minimum 3, maximum 25. */
   maxPages?: number;
-  /** Keep page in bounds when total changes (default: true) */
   keepInBounds?: boolean;
 }
 
-export interface UsePaginationReturn {
-  /** Current page (1-indexed) */
-  page: number;
-  /** Items per page */
-  pageSize: number;
-  /** Total items */
-  total: number;
-  /** Total number of pages */
+export interface UsePaginationReturn extends PaginationState {
   pageCount: number;
-  /** Index of first item on current page (0-indexed) */
   startIndex: number;
-  /** Index of last item on current page (0-indexed) */
+  /** Inclusive, or -1 when there are no items on the page. */
   endIndex: number;
-  /** First item number on current page (1-indexed, for display) */
   startItem: number;
-  /** Last item number on current page (1-indexed, for display) */
   endItem: number;
-  /** Whether there's a previous page */
   hasPrev: boolean;
-  /** Whether there's a next page */
   hasNext: boolean;
-  /** Whether currently on first page */
   isFirst: boolean;
-  /** Whether currently on last page */
   isLast: boolean;
-  /** Set specific page */
   setPage: (page: number) => void;
-  /** Go to next page */
+  /** Commit a page and size together, including URL-backed controlled state. */
+  setPagination: (state: Pick<PaginationState, "page" | "pageSize">) => void;
   nextPage: () => void;
-  /** Go to previous page */
   prevPage: () => void;
-  /** Go to first page */
   firstPage: () => void;
-  /** Go to last page */
   lastPage: () => void;
-  /** Set page size (resets to page 1) */
   setPageSize: (size: number) => void;
-  /** Set total items */
   setTotal: (total: number) => void;
-  /** Reset to page 1 */
   reset: () => void;
-  /** Get page range array for rendering */
   getPageRange: () => PageRangeItem[];
-  /** Check if a specific page is the current page */
-  isCurrentPage: (pageNum: number) => boolean;
-  /** Get slice of data for current page */
-  getPageData: <T>(data: T[]) => T[];
+  isCurrentPage: (page: number) => boolean;
+  getPageData: <T>(data: readonly T[]) => T[];
 }
 
 export type PageRangeItem =
   | { type: "page"; page: number; isActive: boolean }
   | { type: "ellipsis"; key: string };
 
-// ============================================
-// UTILITIES
-// ============================================
+function integer(value: number | undefined, fallback: number, minimum = 1) {
+  return value !== undefined && Number.isFinite(value)
+    ? Math.max(minimum, Math.min(Number.MAX_SAFE_INTEGER, Math.floor(value)))
+    : fallback;
+}
 
-/**
- * Calculate the range of page numbers to display with smart ellipsis.
- * Returns an array of page numbers and ellipsis indicators.
- */
+function clampPage(page: number, count: number) {
+  return Math.max(1, Math.min(integer(page, 1), Math.max(1, count)));
+}
+
 export function calculatePageRange(
   currentPage: number,
   pageCount: number,
-  maxPages: number = 5
+  maxPages = 5,
 ): PageRangeItem[] {
-  if (pageCount <= 0) return [];
+  const count = integer(pageCount, 0, 0);
 
-  if (pageCount === 1) return [{ type: "page", page: 1, isActive: true }];
-
+  if (count === 0) return [];
+  const activePage = integer(currentPage, 1);
+  const page = clampPage(activePage, count);
+  const budget = Math.min(25, Math.max(3, integer(maxPages, 5)));
   const result: PageRangeItem[] = [];
 
-  // For small page counts, show all pages
-  if (pageCount <= maxPages + 2) {
-    for (let i = 1; i <= pageCount; i++) {
-      result.push({ type: "page", page: i, isActive: i === currentPage });
-    }
+  const addPage = (number: number) =>
+    result.push({
+      type: "page",
+      page: number,
+      isActive: number === activePage,
+    });
+
+  if (count <= budget) {
+    for (let number = 1; number <= count; number++) addPage(number);
 
     return result;
   }
 
-  // Calculate the range around the current page
-  const sidePages = Math.floor((maxPages - 1) / 2);
+  const middleCount = budget - 2;
 
-  // Determine start and end of the middle range
-  let rangeStart = Math.max(2, currentPage - sidePages);
-  let rangeEnd = Math.min(pageCount - 1, currentPage + sidePages);
+  const start = Math.max(
+    2,
+    Math.min(count - middleCount, page - Math.floor((middleCount - 1) / 2)),
+  );
 
-  // Adjust range if at the beginning or end
-  if (currentPage <= sidePages + 1) {
-    rangeStart = 2;
-    rangeEnd = maxPages;
-  } else if (currentPage >= pageCount - sidePages) {
-    rangeStart = pageCount - maxPages + 1;
-    rangeEnd = pageCount - 1;
-  }
+  const end = start + middleCount - 1;
+  addPage(1);
 
-  // Always show first page
-  result.push({ type: "page", page: 1, isActive: currentPage === 1 });
+  if (start > 2) result.push({ type: "ellipsis", key: "ellipsis-start" });
 
-  // Show ellipsis before range if needed
-  if (rangeStart > 2) {
-    result.push({ type: "ellipsis", key: "ellipsis-start" });
-  }
+  for (let number = start; number <= end; number++) addPage(number);
 
-  // Show middle range
-  for (let i = rangeStart; i <= rangeEnd; i++) {
-    result.push({ type: "page", page: i, isActive: i === currentPage });
-  }
-
-  // Show ellipsis after range if needed
-  if (rangeEnd < pageCount - 1) {
-    result.push({ type: "ellipsis", key: "ellipsis-end" });
-  }
-
-  // Always show last page
-  result.push({
-    type: "page",
-    page: pageCount,
-    isActive: currentPage === pageCount,
-  });
+  if (end < count - 1) result.push({ type: "ellipsis", key: "ellipsis-end" });
+  addPage(count);
 
   return result;
 }
 
-/**
- * Clamp a page number to valid bounds
- */
-function clampPage(page: number, pageCount: number): number {
-  if (pageCount <= 0) return 1;
+type PaginationSelection = Pick<PaginationState, "page" | "pageSize">;
 
-  return Math.max(1, Math.min(page, pageCount));
+interface InternalPagination extends PaginationState {
+  boundsCorrection: PaginationSelection | null;
 }
 
-/**
- * Calculate the total number of pages
- */
-function calculatePageCount(total: number, pageSize: number): number {
-  if (total <= 0 || pageSize <= 0) return 0;
-
-  return Math.ceil(total / pageSize);
+function initialPagination(options: UsePaginationOptions): InternalPagination {
+  return {
+    page: integer(options.defaultPage, 1),
+    pageSize: integer(options.defaultPageSize, 10),
+    total: integer(options.defaultTotal, 0, 0),
+    boundsCorrection: null,
+  };
 }
 
-// ============================================
-// HOOK
-// ============================================
+function paginationView(
+  options: UsePaginationOptions,
+  internal: InternalPagination,
+) {
+  const total = integer(options.total ?? internal.total, 0, 0);
+  const pageSize = integer(options.pageSize ?? internal.pageSize, 10);
+  const pageCount = total > 0 ? Math.ceil(total / pageSize) : 0;
+  const requested = integer(options.page ?? internal.page, 1);
 
-export function usePagination(
-  options: UsePaginationOptions = {}
-): UsePaginationReturn {
-  const {
-    total: initialTotal = 0,
-    pageSize: initialPageSize = 10,
-    defaultPage = 1,
-    page: controlledPage,
-    onPageChange,
-    onPageSizeChange,
-    maxPages = 5,
-    keepInBounds = true,
-  } = options;
+  const page =
+    options.keepInBounds === false
+      ? requested
+      : clampPage(requested, pageCount);
 
-  // Internal state
-  const [internalPage, setInternalPage] = React.useState(defaultPage);
-  const [pageSize, setPageSizeState] = React.useState(initialPageSize);
-  const [total, setTotalState] = React.useState(initialTotal);
-
-  // Determine if controlled
-  const isControlled = controlledPage !== undefined;
-  const page = isControlled ? controlledPage : internalPage;
-
-  // Derived values
-  const pageCount = calculatePageCount(total, pageSize);
-  const validPage = clampPage(page, pageCount);
-
-  // Calculate indices
-  const startIndex = total > 0 ? (validPage - 1) * pageSize : 0;
-  const endIndex = total > 0 ? Math.min(startIndex + pageSize - 1, total - 1) : 0;
-  const startItem = total > 0 ? startIndex + 1 : 0;
-  const endItem = total > 0 ? endIndex + 1 : 0;
-
-  // Navigation flags
-  const hasPrev = validPage > 1;
-  const hasNext = validPage < pageCount;
-  const isFirst = validPage === 1;
-  const isLast = validPage === pageCount || pageCount === 0;
-
-  // Keep page in bounds when total or pageSize changes
-  React.useEffect(() => {
-    if (keepInBounds && !isControlled && pageCount > 0 && page > pageCount) {
-      setInternalPage(pageCount);
-      onPageChange?.(pageCount);
-    }
-  }, [keepInBounds, isControlled, pageCount, page, onPageChange]);
-
-  // Update internal state when controlled value changes
-  React.useEffect(() => {
-    if (isControlled && controlledPage !== internalPage) {
-      setInternalPage(controlledPage);
-    }
-  }, [isControlled, controlledPage, internalPage]);
-
-  // Page navigation methods
-  const setPage = React.useCallback(
-    (newPage: number) => {
-      const clampedPage = clampPage(newPage, pageCount);
-
-      if (!isControlled) {
-        setInternalPage(clampedPage);
-      }
-
-      onPageChange?.(clampedPage);
-    },
-    [isControlled, pageCount, onPageChange]
-  );
-
-  const nextPage = React.useCallback(() => {
-    if (hasNext) {
-      setPage(validPage + 1);
-    }
-  }, [hasNext, validPage, setPage]);
-
-  const prevPage = React.useCallback(() => {
-    if (hasPrev) {
-      setPage(validPage - 1);
-    }
-  }, [hasPrev, validPage, setPage]);
-
-  const firstPage = React.useCallback(() => {
-    setPage(1);
-  }, [setPage]);
-
-  const lastPage = React.useCallback(() => {
-    if (pageCount > 0) {
-      setPage(pageCount);
-    }
-  }, [pageCount, setPage]);
-
-  const setPageSize = React.useCallback(
-    (newSize: number) => {
-      if (newSize <= 0) return;
-      setPageSizeState(newSize);
-      onPageSizeChange?.(newSize);
-
-      // Reset to page 1 when page size changes
-      if (!isControlled) {
-        setInternalPage(1);
-      }
-
-      onPageChange?.(1);
-    },
-    [isControlled, onPageChange, onPageSizeChange]
-  );
-
-  const setTotal = React.useCallback((newTotal: number) => {
-    setTotalState(Math.max(0, newTotal));
-  }, []);
-
-  const reset = React.useCallback(() => {
-    if (!isControlled) {
-      setInternalPage(1);
-    }
-
-    onPageChange?.(1);
-  }, [isControlled, onPageChange]);
-
-  const getPageRange = React.useCallback((): PageRangeItem[] => {
-    return calculatePageRange(validPage, pageCount, maxPages);
-  }, [validPage, pageCount, maxPages]);
-
-  const isCurrentPage = React.useCallback(
-    (pageNum: number): boolean => {
-      return pageNum === validPage;
-    },
-    [validPage]
-  );
-
-  const getPageData = React.useCallback(
-    <T>(data: T[]): T[] => {
-      if (!data || data.length === 0) return [];
-
-      return data.slice(startIndex, endIndex + 1);
-    },
-    [startIndex, endIndex]
-  );
+  const startIndex = Math.min(Number.MAX_SAFE_INTEGER, (page - 1) * pageSize);
 
   return {
-    page: validPage,
+    page,
     pageSize,
     total,
     pageCount,
     startIndex,
-    endIndex,
-    startItem,
-    endItem,
-    hasPrev,
-    hasNext,
-    isFirst,
-    isLast,
-    setPage,
-    nextPage,
-    prevPage,
-    firstPage,
-    lastPage,
-    setPageSize,
-    setTotal,
-    reset,
-    getPageRange,
-    isCurrentPage,
-    getPageData,
+    ...paginationItems(total, startIndex, pageSize),
   };
 }
 
-// ============================================
-// URL SYNC HOOK (Server-Side Pagination)
-// ============================================
+function paginationItems(total: number, startIndex: number, pageSize: number) {
+  const hasItems = total > 0 && startIndex < total;
+  const endIndex = hasItems ? Math.min(startIndex + pageSize, total) - 1 : -1;
+
+  return {
+    hasItems,
+    endIndex,
+    startItem: hasItems ? startIndex + 1 : 0,
+    endItem: hasItems ? endIndex + 1 : 0,
+  };
+}
+
+function useBoundsNotification(
+  correction: PaginationSelection | null,
+  options: UsePaginationOptions,
+) {
+  const notified = React.useRef(correction);
+  const { onPageChange, onPaginationChange } = options;
+  React.useEffect(() => {
+    if (!correction || notified.current === correction) return;
+    notified.current = correction;
+    onPageChange?.(correction.page);
+    onPaginationChange?.(correction);
+  }, [correction, onPageChange, onPaginationChange]);
+}
+
+function nextPagination(
+  selection: PaginationSelection,
+  total: number,
+  keepInBounds: boolean,
+): PaginationSelection | null {
+  if (
+    !Number.isFinite(selection.page) ||
+    !Number.isSafeInteger(selection.pageSize) ||
+    selection.pageSize < 1
+  )
+    return null;
+  const count = total > 0 ? Math.ceil(total / selection.pageSize) : 0;
+
+  const page = keepInBounds
+    ? clampPage(selection.page, count)
+    : integer(selection.page, 1);
+
+  return { page, pageSize: selection.pageSize };
+}
+
+function commitPagination(
+  previous: InternalPagination,
+  selection: PaginationSelection,
+  options: UsePaginationOptions,
+): InternalPagination {
+  const next = { ...previous, boundsCorrection: null };
+
+  if (options.pageSize === undefined) next.pageSize = selection.pageSize;
+
+  if (options.page === undefined) next.page = selection.page;
+
+  return next;
+}
+
+function notifyPagination(
+  previous: PaginationSelection,
+  next: PaginationSelection,
+  options: UsePaginationOptions,
+) {
+  if (next.pageSize !== previous.pageSize)
+    options.onPageSizeChange?.(next.pageSize);
+
+  if (next.page !== previous.page) options.onPageChange?.(next.page);
+  options.onPaginationChange?.(next);
+}
+
+function paginationActions(
+  options: UsePaginationOptions,
+  view: ReturnType<typeof paginationView>,
+  setInternal: React.Dispatch<React.SetStateAction<InternalPagination>>,
+) {
+  const setPagination = (selection: PaginationSelection) => {
+    const next = nextPagination(
+      selection,
+      view.total,
+      options.keepInBounds !== false,
+    );
+
+    if (!next || (next.page === view.page && next.pageSize === view.pageSize))
+      return;
+    setInternal((previous) => commitPagination(previous, next, options));
+    notifyPagination(view, next, options);
+  };
+
+  const setPage = (page: number) =>
+    setPagination({ page, pageSize: view.pageSize });
+
+  const setPageSize = (pageSize: number) => {
+    if (pageSize !== view.pageSize) setPagination({ page: 1, pageSize });
+  };
+
+  const setTotal = (value: number) => {
+    if (!Number.isFinite(value)) return;
+    const total = integer(value, 0, 0);
+
+    if (total === view.total) return;
+
+    if (options.total === undefined)
+      setInternal((previous) => ({ ...previous, total }));
+    options.onTotalChange?.(total);
+  };
+
+  return { setPagination, setPage, setPageSize, setTotal };
+}
+
+export function usePagination(
+  options: UsePaginationOptions = {},
+): UsePaginationReturn {
+  const [internal, setInternal] = React.useState(() =>
+    initialPagination(options),
+  );
+
+  const view = paginationView(options, internal);
+
+  // Persist bounded uncontrolled pages so later results cannot restore an old page.
+  if (
+    options.page === undefined &&
+    options.keepInBounds !== false &&
+    internal.page !== view.page
+  ) {
+    setInternal({
+      ...internal,
+      page: view.page,
+      boundsCorrection: { page: view.page, pageSize: view.pageSize },
+    });
+  }
+
+  useBoundsNotification(internal.boundsCorrection, options);
+  const actions = paginationActions(options, view, setInternal);
+  const { hasItems, ...publicView } = view;
+  const { page, pageCount, startIndex, endIndex } = publicView;
+  const hasPrev = page > 1 && pageCount > 0;
+  const hasNext = page < pageCount;
+
+  return {
+    ...publicView,
+    ...actions,
+    hasPrev,
+    hasNext,
+    isFirst: page === 1,
+    isLast: !hasNext,
+    nextPage: () => {
+      if (hasNext) actions.setPage(page + 1);
+    },
+    prevPage: () => {
+      if (hasPrev) actions.setPage(page - 1);
+    },
+    firstPage: () => actions.setPage(1),
+    lastPage: () => {
+      if (pageCount > 0) actions.setPage(pageCount);
+    },
+    reset: () => actions.setPage(1),
+    getPageRange: () =>
+      calculatePageRange(page, pageCount, options.maxPages ?? 5),
+    isCurrentPage: (number) => number === page,
+    getPageData: <T>(data: readonly T[]) =>
+      hasItems ? data.slice(startIndex, endIndex + 1) : [],
+  };
+}
 
 export interface UseUrlPaginationOptions extends UsePaginationOptions {
-  /** URL parameter name for page (default: "page") */
   pageParam?: string;
-  /** URL parameter name for page size (default: "pageSize") */
   pageSizeParam?: string;
-  /** Whether to use shallow routing (no full page refresh, default: true) */
+  /** true replaces the history entry; false pushes. Neither reloads the page. */
   shallow?: boolean;
-  /** Custom function to get URL search params */
   getSearchParams?: () => URLSearchParams;
-  /** Custom function to set URL search params */
   setSearchParams?: (params: URLSearchParams) => void;
+  /** A router adapter must subscribe to its own URL/search state changes. */
+  subscribe?: (onStoreChange: () => void) => () => void;
 }
 
 export interface UseUrlPaginationReturn extends UsePaginationReturn {
-  /** Current URL search params string */
   searchParamsString: string;
-  /** Build URL with pagination params */
   buildUrl: (basePath?: string) => string;
 }
 
-/**
- * Pagination hook that syncs state with URL query parameters.
- * Useful for server-side pagination and shareable/bookmarkable URLs.
- */
-export function useUrlPagination(
-  options: UseUrlPaginationOptions = {}
-): UseUrlPaginationReturn {
-  const {
-    pageParam = "page",
-    pageSizeParam = "pageSize",
-    shallow = true,
-    getSearchParams,
-    setSearchParams,
-    defaultPage = 1,
-    pageSize: defaultPageSize = 10,
-    ...paginationOptions
-  } = options;
+const paginationUrlEvent = "kira-pagination-url-change";
 
-  // Get initial values from URL
-  const getParamsFromUrl = React.useCallback(() => {
-    if (typeof window === "undefined") {
-      return { page: defaultPage, pageSize: defaultPageSize };
-    }
+function subscribeToUrl(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  window.addEventListener(paginationUrlEvent, onChange);
 
-    const params = getSearchParams?.() ?? new URLSearchParams(window.location.search);
-    const pageFromUrl = parseInt(params.get(pageParam) || "", 10);
-    const pageSizeFromUrl = parseInt(params.get(pageSizeParam) || "", 10);
+  return () => {
+    window.removeEventListener("popstate", onChange);
+    window.removeEventListener(paginationUrlEvent, onChange);
+  };
+}
 
-    return {
-      page: isNaN(pageFromUrl) || pageFromUrl < 1 ? defaultPage : pageFromUrl,
-      pageSize: isNaN(pageSizeFromUrl) || pageSizeFromUrl < 1 ? defaultPageSize : pageSizeFromUrl,
-    };
-  }, [getSearchParams, pageParam, pageSizeParam, defaultPage, defaultPageSize]);
+function readUrlNumber(params: URLSearchParams, key: string, fallback: number) {
+  const raw = params.get(key);
 
-  const [urlState, setUrlState] = React.useState(getParamsFromUrl);
+  if (!raw || !/^[1-9]\d*$/.test(raw)) return fallback;
+  const value = Number(raw);
 
-  // Update URL when state changes
-  const updateUrl = React.useCallback(
-    (page: number, pageSize: number) => {
-      if (typeof window === "undefined") return;
+  return Number.isSafeInteger(value) ? value : fallback;
+}
 
-      const params = getSearchParams?.() ?? new URLSearchParams(window.location.search);
-      
-      if (page === 1) {
-        params.delete(pageParam);
-      } else {
-        params.set(pageParam, String(page));
-      }
+function applyUrlState(
+  params: URLSearchParams,
+  page: number,
+  pageSize: number,
+  pageParam: string,
+  sizeParam: string,
+  defaultSize: number,
+  defaultPage: number,
+) {
+  if (page === defaultPage) params.delete(pageParam);
+  else params.set(pageParam, String(page));
 
-      if (pageSize === defaultPageSize) {
-        params.delete(pageSizeParam);
-      } else {
-        params.set(pageSizeParam, String(pageSize));
-      }
+  if (pageSize === defaultSize) params.delete(sizeParam);
+  else params.set(sizeParam, String(pageSize));
 
-      if (setSearchParams) {
-        setSearchParams(params);
-      } else {
-        const newUrl = params.toString()
-          ? `${window.location.pathname}?${params.toString()}`
-          : window.location.pathname;
+  return params;
+}
 
-        if (shallow) {
-          window.history.replaceState(null, "", newUrl);
-        } else {
-          window.history.pushState(null, "", newUrl);
-        }
-      }
-    },
-    [getSearchParams, setSearchParams, pageParam, pageSizeParam, defaultPageSize, shallow]
+interface PaginationUrlConfig {
+  pageParam: string;
+  pageSizeParam: string;
+  shallow: boolean;
+  initialPage: number;
+  defaultSize: number;
+}
+
+function paginationUrlConfig(
+  options: UseUrlPaginationOptions,
+): PaginationUrlConfig {
+  return {
+    pageParam: options.pageParam ?? "page",
+    pageSizeParam: options.pageSizeParam ?? "pageSize",
+    shallow: options.shallow ?? true,
+    initialPage: integer(options.defaultPage, 1),
+    defaultSize: integer(options.defaultPageSize ?? options.pageSize, 10),
+  };
+}
+
+function usePaginationSearch(options: UseUrlPaginationOptions) {
+  const { subscribe, getSearchParams } = options;
+
+  const getSnapshot = () =>
+    typeof window === "undefined"
+      ? ""
+      : (getSearchParams?.().toString() ?? window.location.search);
+
+  return React.useSyncExternalStore(
+    subscribe ?? subscribeToUrl,
+    getSnapshot,
+    () => "",
+  );
+}
+
+function querySuffix(query: string) {
+  return query ? "?" + query : "";
+}
+
+function writePaginationHistory(params: URLSearchParams, shallow: boolean) {
+  const target =
+    window.location.pathname +
+    querySuffix(params.toString()) +
+    window.location.hash;
+
+  const current =
+    window.location.pathname + window.location.search + window.location.hash;
+
+  if (target === current) return;
+
+  if (shallow) window.history.replaceState(window.history.state, "", target);
+  else window.history.pushState(window.history.state, "", target);
+  window.dispatchEvent(new Event(paginationUrlEvent));
+}
+
+function paginationQuery(
+  params: URLSearchParams,
+  selection: PaginationSelection,
+  config: PaginationUrlConfig,
+) {
+  return applyUrlState(
+    params,
+    selection.page,
+    selection.pageSize,
+    config.pageParam,
+    config.pageSizeParam,
+    config.defaultSize,
+    config.initialPage,
+  );
+}
+
+function updatePaginationUrl(
+  selection: PaginationSelection,
+  options: UseUrlPaginationOptions,
+  config: PaginationUrlConfig,
+) {
+  if (typeof window === "undefined") return;
+
+  const updated = paginationQuery(
+    new URLSearchParams(options.getSearchParams?.() ?? window.location.search),
+    selection,
+    config,
   );
 
-  // Use base pagination hook
+  if (options.setSearchParams) options.setSearchParams(updated);
+  else writePaginationHistory(updated, config.shallow);
+  options.onPaginationChange?.(selection);
+}
+
+function buildPaginationUrl(
+  search: string,
+  selection: PaginationSelection,
+  config: PaginationUrlConfig,
+  basePath?: string,
+) {
+  const fallback =
+    typeof window === "undefined"
+      ? "/"
+      : window.location.pathname +
+        window.location.search +
+        window.location.hash;
+
+  const address = new URL(
+    basePath ?? fallback,
+    typeof window === "undefined"
+      ? "https://kira.invalid"
+      : window.location.href,
+  );
+
+  // Preserve filters while allowing an explicit base URL to override them.
+  const query = new URLSearchParams(search);
+  address.searchParams.forEach((_, key) => query.delete(key));
+  address.searchParams.forEach((value, key) => query.append(key, value));
+  paginationQuery(query, selection, config);
+
+  return address.pathname + querySuffix(query.toString()) + address.hash;
+}
+
+export function useUrlPagination(
+  options: UseUrlPaginationOptions = {},
+): UseUrlPaginationReturn {
+  const config = paginationUrlConfig(options);
+  const search = usePaginationSearch(options);
+  const params = new URLSearchParams(search);
+
   const pagination = usePagination({
-    ...paginationOptions,
-    page: urlState.page,
-    pageSize: urlState.pageSize,
-    onPageChange: (page) => {
-      setUrlState((prev) => ({ ...prev, page }));
-      updateUrl(page, urlState.pageSize);
-      paginationOptions.onPageChange?.(page);
-    },
-    onPageSizeChange: (pageSize) => {
-      setUrlState((prev) => ({ ...prev, pageSize }));
-      updateUrl(1, pageSize); // Reset to page 1 on size change
-      paginationOptions.onPageSizeChange?.(pageSize);
-    },
+    ...options,
+    page: readUrlNumber(params, config.pageParam, config.initialPage),
+    pageSize: readUrlNumber(params, config.pageSizeParam, config.defaultSize),
+    onPaginationChange: (selection) =>
+      updatePaginationUrl(selection, options, config),
   });
 
-  // Listen for browser back/forward
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const handlePopState = () => {
-      const newState = getParamsFromUrl();
-      setUrlState(newState);
-    };
-
-    window.addEventListener("popstate", handlePopState);
-
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [getParamsFromUrl]);
-
-  const searchParamsString = React.useMemo(() => {
-    const params = new URLSearchParams();
-
-    if (pagination.page !== 1) {
-      params.set(pageParam, String(pagination.page));
-    }
-
-    if (pagination.pageSize !== defaultPageSize) {
-      params.set(pageSizeParam, String(pagination.pageSize));
-    }
-
-    return params.toString();
-  }, [pagination.page, pagination.pageSize, pageParam, pageSizeParam, defaultPageSize]);
-
-  const buildUrl = React.useCallback(
-    (basePath?: string) => {
-      const path = basePath ?? (typeof window === "undefined" ? "/" : window.location.pathname);
-
-      return searchParamsString ? `${path}?${searchParamsString}` : path;
-    },
-    [searchParamsString]
-  );
+  const searchParamsString = paginationQuery(
+    new URLSearchParams(search),
+    pagination,
+    config,
+  ).toString();
 
   return {
     ...pagination,
     searchParamsString,
-    buildUrl,
+    buildUrl: (basePath) =>
+      buildPaginationUrl(search, pagination, config, basePath),
   };
 }
 

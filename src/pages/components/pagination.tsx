@@ -1,145 +1,108 @@
-import * as React from "react";
+"use client";
+
+import type { ComponentProps as ReactComponentProps } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+
 import {
-  IconNumbers,
-  IconArrowsLeftRight,
-  IconAdjustments,
-} from "@tabler/icons-react";
-import {
+  KiraPagination,
   Pagination,
   PaginationContent,
   PaginationItem,
   PaginationLink,
   PaginationPrevious,
   PaginationNext,
-  PaginationFirst,
-  PaginationLast,
+  PaginationEllipsis,
   PaginationPages,
   PaginationInfo,
-  PaginationSizeSelector,
-  PaginationJump,
   PaginationStatus,
+  usePagination,
+  useUrlPagination,
+  type PaginationProps,
 } from "@/components/ui/pagination";
+import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CodeBlock } from "@/components/ui/code-block";
+  ComponentPage,
+  PageHeader,
+  FeatureGrid,
+  DemoTabs,
+  DemoWrapper,
+  KeyboardShortcuts,
+  UsageBlock,
+  APIReference,
+  Changelog,
+} from "@/components/docs";
 
-function DemoWrapper({
-  title,
-  description,
-  children,
-  code,
+const activity = [
+  { name: "Design studio", owner: "Mira Chen", status: "In review" },
+  { name: "Customer research", owner: "Sam Patel", status: "Approved" },
+  { name: "Mobile experience", owner: "Nok Suriya", status: "In review" },
+  { name: "Accessibility review", owner: "Alex Morgan", status: "Approved" },
+  { name: "Release operations", owner: "Rin Takahashi", status: "Approved" },
+  { name: "Localization", owner: "Lina Hassan", status: "In review" },
+  { name: "Platform services", owner: "Kai Santos", status: "Approved" },
+  { name: "Identity and access", owner: "Robin Lee", status: "In review" },
+  { name: "Design systems", owner: "Tara Singh", status: "Approved" },
+  { name: "Documentation", owner: "Noah Kim", status: "Approved" },
+  { name: "Partner integrations", owner: "Emi Tanaka", status: "In review" },
+  { name: "Product analytics", owner: "Luis Garcia", status: "Approved" },
+  { name: "Community programs", owner: "Aya Mori", status: "Approved" },
+  { name: "API experience", owner: "Jules Martin", status: "In review" },
+  { name: "Billing operations", owner: "Taylor Smith", status: "Approved" },
+  { name: "Growth experiments", owner: "Sasha Ivanova", status: "In review" },
+  { name: "Content publishing", owner: "Bea Costa", status: "Approved" },
+  { name: "Enterprise onboarding", owner: "Dara Sok", status: "In review" },
+];
+
+function ResultsList({
+  rows,
+  busy = false,
+  id,
 }: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-  code: string;
+  rows: readonly (typeof activity)[number][];
+  busy?: boolean;
+  id?: string;
 }) {
-  const [view, setView] = React.useState<"preview" | "code">("preview");
-
   return (
-    <Card>
-      <CardHeader className="border-b">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>{title}</CardTitle>
-            {description && <CardDescription>{description}</CardDescription>}
-          </div>
-          <Tabs
-            value={view}
-            onValueChange={(v) => setView(v as "preview" | "code")}
+    <div id={id} aria-busy={busy || undefined} className="min-w-0 min-h-56">
+      <ul aria-label="Workspace reviews" className="divide-y divide-border">
+        {rows.map((row) => (
+          <li
+            key={row.name}
+            className="flex min-w-0 items-start justify-between gap-4 py-3"
           >
-            <TabsList>
-              <TabsTrigger value="preview" className="gap-1.5">
-                Preview
-              </TabsTrigger>
-              <TabsTrigger value="code" className="gap-1.5">
-                Code
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-4">
-        {view === "preview" ? (
-          <div className="min-h-[200px]">{children}</div>
-        ) : (
-          <CodeBlock code={code} language="tsx" />
-        )}
-      </CardContent>
-    </Card>
+            <div className="min-w-0">
+              <p className="text-sm font-medium wrap-anywhere">{row.name}</p>
+              <p className="mt-1 text-xs text-muted-foreground wrap-anywhere">
+                {row.owner}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-md border border-border px-2 py-1 text-xs">
+              {row.status}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {rows.length === 0 && (
+        <p className="py-6 text-sm text-muted-foreground">
+          No matching reviews. Clear the filter to see all workspaces.
+        </p>
+      )}
+    </div>
   );
 }
 
 function BasicDemo() {
   return (
-    <Pagination>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink>1</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink isActive>2</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink>3</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationNext />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
-  );
-}
-
-const basicCode = `import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationPrevious,
-  PaginationNext,
-} from "@/components/ui/pagination"
-
-export function BasicPagination() {
-  return (
-    <Pagination>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious />
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink>1</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink isActive>2</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink>3</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationNext />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
-  )
-}`;
-
-function VariantsDemo() {
-  return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Default</p>
-        <Pagination variant="default" total={50} pageSize={5} defaultPage={3}>
+      <KiraPagination
+        total={180}
+        defaultPage={3}
+        defaultPageSize={10}
+        aria-label="Workspace pagination"
+      />
+      <div className="space-y-2">
+        <p className="text-sm font-medium">Compose the parts</p>
+        <Pagination total={90} defaultPage={2} aria-label="Composed pagination">
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious />
@@ -149,937 +112,1713 @@ function VariantsDemo() {
               <PaginationNext />
             </PaginationItem>
           </PaginationContent>
-        </Pagination>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Outline</p>
-        <Pagination variant="outline" total={50} pageSize={5} defaultPage={3}>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious />
-            </PaginationItem>
-            <PaginationPages />
-            <PaginationItem>
-              <PaginationNext />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Ghost</p>
-        <Pagination variant="ghost" total={50} pageSize={5} defaultPage={3}>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious />
-            </PaginationItem>
-            <PaginationPages />
-            <PaginationItem>
-              <PaginationNext />
-            </PaginationItem>
-          </PaginationContent>
+          <PaginationInfo />
+          <PaginationStatus />
         </Pagination>
       </div>
     </div>
   );
 }
 
-const variantsCode = `import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-  PaginationPages,
-} from "@/components/ui/pagination"
+const basicCode = `import { KiraPagination, Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationPages, PaginationNext, PaginationStatus } from "@/components/ui/pagination"
 
-export function PaginationVariants() {
-  const variants = ["default", "outline", "ghost"] as const
+<KiraPagination total={180} defaultPage={3} defaultPageSize={10} />
 
-  return (
-    <div className="space-y-6">
-      {variants.map((variant) => (
-        <Pagination key={variant} variant={variant} total={50} pageSize={5} defaultPage={3}>
-          <PaginationContent>
-            <PaginationItem><PaginationPrevious /></PaginationItem>
-            <PaginationPages />
-            <PaginationItem><PaginationNext /></PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      ))}
-    </div>
-  )
-}`;
-
-function SizesDemo() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Small</p>
-        <Pagination size="sm" total={50} pageSize={5} defaultPage={3}>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationFirst />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationPrevious />
-            </PaginationItem>
-            <PaginationPages />
-            <PaginationItem>
-              <PaginationNext />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLast />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Default</p>
-        <Pagination total={50} pageSize={5} defaultPage={3}>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationFirst />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationPrevious />
-            </PaginationItem>
-            <PaginationPages />
-            <PaginationItem>
-              <PaginationNext />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLast />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Large</p>
-        <Pagination size="lg" total={50} pageSize={5} defaultPage={3}>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationFirst />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationPrevious />
-            </PaginationItem>
-            <PaginationPages />
-            <PaginationItem>
-              <PaginationNext />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLast />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-    </div>
-  );
-}
-
-const sizesCode = `import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationFirst,
-  PaginationPrevious,
-  PaginationNext,
-  PaginationLast,
-  PaginationPages,
-} from "@/components/ui/pagination"
-
-export function PaginationSizes() {
-  return (
-    <div className="space-y-6">
-      {(["sm", "default", "lg"] as const).map((size) => (
-        <Pagination key={size} size={size} total={50} pageSize={5} defaultPage={3}>
-          <PaginationContent>
-            <PaginationItem><PaginationFirst /></PaginationItem>
-            <PaginationItem><PaginationPrevious /></PaginationItem>
-            <PaginationPages />
-            <PaginationItem><PaginationNext /></PaginationItem>
-            <PaginationItem><PaginationLast /></PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      ))}
-    </div>
-  )
-}`;
-
-function ControlledDemo() {
-  const [controlledPage, setControlledPage] = React.useState(1);
-
-  return (
-    <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Current page: <strong>{controlledPage}</strong>
-      </p>
-      <Pagination
-        total={50}
-        pageSize={5}
-        page={controlledPage}
-        onPageChange={setControlledPage}
-      >
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious />
-          </PaginationItem>
-          <PaginationPages />
-          <PaginationItem>
-            <PaginationNext />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-      <div className="flex gap-2 mt-4">
-        <button
-          onClick={() => setControlledPage(1)}
-          className="px-3 py-1 text-sm border rounded-md hover:bg-muted"
-        >
-          Go to page 1
-        </button>
-        <button
-          onClick={() => setControlledPage(5)}
-          className="px-3 py-1 text-sm border rounded-md hover:bg-muted"
-        >
-          Go to page 5
-        </button>
-        <button
-          onClick={() => setControlledPage(10)}
-          className="px-3 py-1 text-sm border rounded-md hover:bg-muted"
-        >
-          Go to page 10
-        </button>
-      </div>
-    </div>
-  );
-}
-
-const controlledCode = `import { useState } from "react"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-  PaginationPages,
-} from "@/components/ui/pagination"
-
-export function ControlledPagination() {
-  const [page, setPage] = useState(1)
-
-  return (
-    <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Current page: <strong>{page}</strong>
-      </p>
-      <Pagination
-        total={50}
-        pageSize={5}
-        page={page}
-        onPageChange={setPage}
-      >
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious />
-          </PaginationItem>
-          <PaginationPages />
-          <PaginationItem>
-            <PaginationNext />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
-      <div className="flex gap-2">
-        <button onClick={() => setPage(1)}>Go to page 1</button>
-        <button onClick={() => setPage(5)}>Go to page 5</button>
-        <button onClick={() => setPage(10)}>Go to page 10</button>
-      </div>
-    </div>
-  )
-}`;
-
-function WithSelectDemo() {
-  return (
-    <Pagination total={235} pageSize={10} defaultPage={1}>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
-        <PaginationInfo />
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationFirst />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationPrevious />
-          </PaginationItem>
-          <PaginationPages />
-          <PaginationItem>
-            <PaginationNext />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLast />
-          </PaginationItem>
-        </PaginationContent>
-      </div>
-      <div className="flex items-center gap-4 mt-4">
-        <PaginationSizeSelector options={[5, 10, 20, 50]} />
-        <PaginationJump />
-      </div>
-      <PaginationStatus />
-    </Pagination>
-  );
-}
-
-const withSelectCode = `import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-  PaginationFirst,
-  PaginationLast,
-  PaginationPages,
-  PaginationInfo,
-  PaginationSizeSelector,
-  PaginationJump,
-  PaginationStatus,
-} from "@/components/ui/pagination"
-
-export function PaginationWithSelect() {
-  return (
-    <Pagination total={235} pageSize={10} defaultPage={1}>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
-        <PaginationInfo />
-        <PaginationContent>
-          <PaginationItem><PaginationFirst /></PaginationItem>
-          <PaginationItem><PaginationPrevious /></PaginationItem>
-          <PaginationPages />
-          <PaginationItem><PaginationNext /></PaginationItem>
-          <PaginationItem><PaginationLast /></PaginationItem>
-        </PaginationContent>
-      </div>
-      <div className="flex items-center gap-4 mt-4">
-        <PaginationSizeSelector options={[5, 10, 20, 50]} />
-        <PaginationJump />
-      </div>
-      <PaginationStatus />
-    </Pagination>
-  )
-}`;
-
-export default function PaginationPage() {
-  return (
-    <div className="container mx-auto max-w-4xl space-y-12 py-10">
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <h1 className="text-3xl font-bold">Pagination</h1>
-          <Badge>v1.0</Badge>
-        </div>
-        <p className="text-lg text-muted-foreground">
-          Navigation for paginated content with smart page range calculation,
-          accessibility features, and mobile-responsive layout.
-        </p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <IconNumbers className="h-4 w-4" />
-              Smart Ellipsis
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Automatic page range calculation with intelligent ellipsis placement
-            that adapts as you navigate.
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <IconArrowsLeftRight className="h-4 w-4" />
-              Responsive
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Mobile-friendly layout with touch targets and flexible composition
-            for any screen size.
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <IconAdjustments className="h-4 w-4" />
-              Customizable
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
-            Multiple variants, sizes, colors, and composable sub-components for
-            complete control.
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="basic" className="space-y-6">
-        <TabsList className="flex-wrap">
-          <TabsTrigger value="basic">Basic</TabsTrigger>
-          <TabsTrigger value="variants">Variants</TabsTrigger>
-          <TabsTrigger value="sizes">Sizes</TabsTrigger>
-          <TabsTrigger value="controlled">Controlled</TabsTrigger>
-          <TabsTrigger value="with-select">With Select</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="basic">
-          <DemoWrapper
-            title="Basic Pagination"
-            description="Manual composition for simple use cases."
-            code={basicCode}
-          >
-            <BasicDemo />
-          </DemoWrapper>
-        </TabsContent>
-
-        <TabsContent value="variants">
-          <DemoWrapper
-            title="Style Variants"
-            description="Different visual styles: default, outline, and ghost."
-            code={variantsCode}
-          >
-            <VariantsDemo />
-          </DemoWrapper>
-        </TabsContent>
-
-        <TabsContent value="sizes">
-          <DemoWrapper
-            title="Size Variants"
-            description="Small, default, and large sizes for different contexts."
-            code={sizesCode}
-          >
-            <SizesDemo />
-          </DemoWrapper>
-        </TabsContent>
-
-        <TabsContent value="controlled">
-          <DemoWrapper
-            title="Controlled Mode"
-            description="Page state controlled externally via props."
-            code={controlledCode}
-          >
-            <ControlledDemo />
-          </DemoWrapper>
-        </TabsContent>
-
-        <TabsContent value="with-select">
-          <DemoWrapper
-            title="Full Featured with Select"
-            description="Complete pagination with all controls: First/Last buttons, info display, page size selector, and jump-to-page."
-            code={withSelectCode}
-          >
-            <WithSelectDemo />
-          </DemoWrapper>
-        </TabsContent>
-      </Tabs>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Keyboard Navigation</CardTitle>
-          <CardDescription>
-            Full keyboard support for accessibility
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {[
-              {
-                keys: "Tab",
-                description: "Navigate between pagination controls",
-              },
-              {
-                keys: "Enter / Space",
-                description: "Activate focused page or button",
-              },
-              { keys: "Home", description: "Go to first page (when focused)" },
-              { keys: "End", description: "Go to last page (when focused)" },
-            ].map((shortcut, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <kbd className="rounded border bg-muted px-2 py-1 text-xs font-mono">
-                  {shortcut.keys}
-                </kbd>
-                <span className="text-sm text-muted-foreground">
-                  {shortcut.description}
-                </span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Usage</CardTitle>
-          <CardDescription>
-            Import and use the pagination components with your data.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CodeBlock
-            code={`import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationPrevious,
-  PaginationNext,
-  PaginationFirst,
-  PaginationLast,
-  PaginationPages,
-  PaginationInfo,
-  PaginationSizeSelector,
-  PaginationJump,
-  usePagination,
-} from "@/components/ui/pagination"
-
-// Simple auto pagination
-<Pagination total={100} pageSize={10} defaultPage={1}>
+<Pagination total={90}>
   <PaginationContent>
     <PaginationItem><PaginationPrevious /></PaginationItem>
     <PaginationPages />
     <PaginationItem><PaginationNext /></PaginationItem>
   </PaginationContent>
-</Pagination>
+  <PaginationStatus />
+</Pagination>`;
 
-// Full featured with all controls
-<Pagination total={235} pageSize={10}>
-  <div className="flex items-center justify-between">
-    <PaginationInfo />
-    <PaginationContent>
-      <PaginationItem><PaginationFirst /></PaginationItem>
-      <PaginationItem><PaginationPrevious /></PaginationItem>
-      <PaginationPages />
-      <PaginationItem><PaginationNext /></PaginationItem>
-      <PaginationItem><PaginationLast /></PaginationItem>
-    </PaginationContent>
-  </div>
-  <div className="flex gap-4 mt-4">
-    <PaginationSizeSelector options={[10, 20, 50]} />
-    <PaginationJump />
-  </div>
-</Pagination>
+function ResultsDemo() {
+  const [openOnly, setOpenOnly] = useState(false);
 
-// Using the hook directly
-const pagination = usePagination({
-  total: 500,
-  pageSize: 20,
-  onPageChange: (page) => fetchData(page),
-})
+  const rows = openOnly
+    ? activity.filter((row) => row.status === "In review")
+    : activity;
 
-const currentPageData = pagination.getPageData(allData)`}
-            language="tsx"
-          />
-        </CardContent>
-      </Card>
+  const pagination = usePagination({ total: rows.length, defaultPageSize: 5 });
 
-      <Card>
-        <CardHeader>
-          <CardTitle>API Reference</CardTitle>
-          <CardDescription>Key props and configuration options</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-8">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Pagination</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">
-                      Prop
-                    </th>
-                    <th className="py-2 text-left font-medium w-[200px]">
-                      Type
-                    </th>
-                    <th className="py-2 text-left font-medium w-[100px]">
-                      Default
-                    </th>
-                    <th className="py-2 text-left font-medium">Description</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {[
-                    {
-                      prop: "total",
-                      type: "number",
-                      description: "Total number of items",
-                    },
-                    {
-                      prop: "pageSize",
-                      type: "number",
-                      default: "10",
-                      description: "Items per page",
-                    },
-                    {
-                      prop: "page",
-                      type: "number",
-                      description: "Controlled page value (1-indexed)",
-                    },
-                    {
-                      prop: "defaultPage",
-                      type: "number",
-                      default: "1",
-                      description: "Initial page for uncontrolled mode",
-                    },
-                    {
-                      prop: "onPageChange",
-                      type: "(page: number) => void",
-                      description: "Called when page changes",
-                    },
-                    {
-                      prop: "onPageSizeChange",
-                      type: "(size: number) => void",
-                      description: "Called when page size changes",
-                    },
-                    {
-                      prop: "variant",
-                      type: '"default" | "outline" | "pills" | "ghost" | "rounded"',
-                      default: '"default"',
-                      description: "Visual style variant",
-                    },
-                    {
-                      prop: "color",
-                      type: '"default" | "success" | "warning" | "destructive"',
-                      default: '"default"',
-                      description: "Color variant for active state",
-                    },
-                    {
-                      prop: "size",
-                      type: '"sm" | "default" | "lg"',
-                      default: '"default"',
-                      description: "Size variant",
-                    },
-                    {
-                      prop: "disabled",
-                      type: "boolean",
-                      default: "false",
-                      description: "Disable all controls",
-                    },
-                    {
-                      prop: "maxPages",
-                      type: "number",
-                      default: "5",
-                      description: "Max visible page numbers",
-                    },
-                  ].map((item, index) => (
-                    <tr key={index}>
-                      <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        {item.type}
-                      </td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        {item.default || "-"}
-                      </td>
-                      <td className="py-2 text-muted-foreground">
-                        {item.description}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">PaginationContent</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">
-                      Prop
-                    </th>
-                    <th className="py-2 text-left font-medium w-[200px]">
-                      Type
-                    </th>
-                    <th className="py-2 text-left font-medium w-[100px]">
-                      Default
-                    </th>
-                    <th className="py-2 text-left font-medium">Description</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {[
-                    {
-                      prop: "className",
-                      type: "string",
-                      description: "Additional CSS classes",
-                    },
-                    {
-                      prop: "children",
-                      type: "ReactNode",
-                      description: "Pagination items",
-                    },
-                  ].map((item, index) => (
-                    <tr key={index}>
-                      <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        {item.type}
-                      </td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        -
-                      </td>
-                      <td className="py-2 text-muted-foreground">
-                        {item.description}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">PaginationItem</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">
-                      Prop
-                    </th>
-                    <th className="py-2 text-left font-medium w-[200px]">
-                      Type
-                    </th>
-                    <th className="py-2 text-left font-medium w-[100px]">
-                      Default
-                    </th>
-                    <th className="py-2 text-left font-medium">Description</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {[
-                    {
-                      prop: "className",
-                      type: "string",
-                      description: "Additional CSS classes",
-                    },
-                    {
-                      prop: "children",
-                      type: "ReactNode",
-                      description: "Item content (buttons, links)",
-                    },
-                  ].map((item, index) => (
-                    <tr key={index}>
-                      <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        {item.type}
-                      </td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        -
-                      </td>
-                      <td className="py-2 text-muted-foreground">
-                        {item.description}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">
-              PaginationNext / PaginationPrevious
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">
-                      Prop
-                    </th>
-                    <th className="py-2 text-left font-medium w-[200px]">
-                      Type
-                    </th>
-                    <th className="py-2 text-left font-medium w-[100px]">
-                      Default
-                    </th>
-                    <th className="py-2 text-left font-medium">Description</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {[
-                    {
-                      prop: "className",
-                      type: "string",
-                      description: "Additional CSS classes",
-                    },
-                    {
-                      prop: "showLabel",
-                      type: "boolean",
-                      default: "false",
-                      description: "Show text label instead of icon",
-                    },
-                  ].map((item, index) => (
-                    <tr key={index}>
-                      <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        {item.type}
-                      </td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        {item.default || "-"}
-                      </td>
-                      <td className="py-2 text-muted-foreground">
-                        {item.description}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">PaginationLink</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">
-                      Prop
-                    </th>
-                    <th className="py-2 text-left font-medium w-[200px]">
-                      Type
-                    </th>
-                    <th className="py-2 text-left font-medium w-[100px]">
-                      Default
-                    </th>
-                    <th className="py-2 text-left font-medium">Description</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {[
-                    {
-                      prop: "isActive",
-                      type: "boolean",
-                      default: "false",
-                      description: "Whether this is the active page",
-                    },
-                    {
-                      prop: "page",
-                      type: "number",
-                      description: "Page number (for manual links)",
-                    },
-                    {
-                      prop: "onClick",
-                      type: "() => void",
-                      description: "Click handler",
-                    },
-                  ].map((item, index) => (
-                    <tr key={index}>
-                      <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        {item.type}
-                      </td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        {item.default || "-"}
-                      </td>
-                      <td className="py-2 text-muted-foreground">
-                        {item.description}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">
-              usePagination Hook Returns
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium w-[140px]">
-                      Prop
-                    </th>
-                    <th className="py-2 text-left font-medium w-[200px]">
-                      Type
-                    </th>
-                    <th className="py-2 text-left font-medium w-[100px]">
-                      Default
-                    </th>
-                    <th className="py-2 text-left font-medium">Description</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {[
-                    {
-                      prop: "page",
-                      type: "number",
-                      description: "Current page (1-indexed)",
-                    },
-                    {
-                      prop: "pageCount",
-                      type: "number",
-                      description: "Total number of pages",
-                    },
-                    {
-                      prop: "startItem / endItem",
-                      type: "number",
-                      description: "Item range for current page (1-indexed)",
-                    },
-                    {
-                      prop: "hasPrev / hasNext",
-                      type: "boolean",
-                      description: "Navigation availability",
-                    },
-                    {
-                      prop: "isFirst / isLast",
-                      type: "boolean",
-                      description: "Whether on first or last page",
-                    },
-                    {
-                      prop: "setPage(n)",
-                      type: "function",
-                      description: "Go to specific page",
-                    },
-                    {
-                      prop: "nextPage() / prevPage()",
-                      type: "function",
-                      description: "Navigate forward/backward",
-                    },
-                    {
-                      prop: "firstPage() / lastPage()",
-                      type: "function",
-                      description: "Navigate to first/last page",
-                    },
-                    {
-                      prop: "getPageRange()",
-                      type: "PageRangeItem[]",
-                      description: "Get page numbers with ellipsis",
-                    },
-                    {
-                      prop: "getPageData(data)",
-                      type: "function",
-                      description: "Slice array for current page",
-                    },
-                  ].map((item, index) => (
-                    <tr key={index}>
-                      <td className="py-2 font-mono text-xs">{item.prop}</td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        {item.type}
-                      </td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        -
-                      </td>
-                      <td className="py-2 text-muted-foreground">
-                        {item.description}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm font-medium">Workspace reviews</p>
+        <Button
+          size="sm"
+          variant={openOnly ? "default" : "outline"}
+          aria-pressed={openOnly}
+          onClick={() => setOpenOnly((value) => !value)}
+        >
+          In review only
+        </Button>
+      </div>
+      <ResultsList
+        rows={pagination.getPageData(rows)}
+        id="pagination-review-results"
+      />
+      <KiraPagination
+        total={rows.length}
+        page={pagination.page}
+        pageSize={pagination.pageSize}
+        onPaginationChange={pagination.setPagination}
+        showSizeSelector
+        pageSizeOptions={[5, 10, 20]}
+        controlsId="pagination-review-results"
+      />
+      <p className="text-xs text-muted-foreground">
+        Filtering updates the total. The current page stays in bounds; changing
+        page size resets it to page 1.
+      </p>
     </div>
+  );
+}
+
+const resultsCode = `import { usePagination, KiraPagination } from "@/components/ui/pagination"
+
+const pagination = usePagination({ total: results.length, defaultPageSize: 5 })
+const visibleRows = pagination.getPageData(results)
+
+<KiraPagination
+  total={results.length}
+  page={pagination.page}
+  pageSize={pagination.pageSize}
+  onPaginationChange={pagination.setPagination}
+  showSizeSelector
+  pageSizeOptions={[5, 10, 20]}
+  controlsId="review-results"
+/>
+// Render visibleRows in the element with id="review-results".`;
+
+function VariantsDemo() {
+  const variants: NonNullable<PaginationProps["variant"]>[] = [
+    "default",
+    "outline",
+    "pills",
+    "ghost",
+    "rounded",
+  ];
+
+  const colors: NonNullable<PaginationProps["color"]>[] = [
+    "primary",
+    "success",
+    "warning",
+    "destructive",
+  ];
+
+  return (
+    <div className="space-y-6">
+      {variants.map((variant) => (
+        <div key={variant} className="space-y-2">
+          <p className="text-sm font-medium capitalize">{variant}</p>
+          <KiraPagination
+            total={80}
+            defaultPage={3}
+            variant={variant}
+            showInfo={false}
+            aria-label={`${variant} pagination`}
+          />
+        </div>
+      ))}
+      <div className="space-y-3">
+        <p className="text-sm font-medium">Semantic color</p>
+        {colors.map((color) => (
+          <KiraPagination
+            key={color}
+            total={40}
+            defaultPage={2}
+            color={color}
+            variant="outline"
+            showInfo={false}
+            aria-label={`${color} pagination`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const variantsCode = `import { KiraPagination } from "@/components/ui/pagination"
+
+<KiraPagination total={80} variant="outline" defaultPage={3} />
+<KiraPagination total={80} variant="pills" defaultPage={3} />
+<KiraPagination total={80} variant="ghost" defaultPage={3} />
+<KiraPagination total={80} variant="rounded" defaultPage={3} />
+<KiraPagination total={40} variant="outline" color="success" defaultPage={2} />`;
+
+function SizesDemo() {
+  return (
+    <div className="space-y-6">
+      {(["sm", "default", "lg"] as const).map((size) => {
+        const resolveValue1 = () => {
+          if (size === "sm") {
+            return "Compact" as const;
+          }
+
+          if (size === "lg") {
+            return "Large" as const;
+          }
+
+          return "Standard" as const;
+        };
+
+        return (
+          <div className="space-y-2" key={size}>
+            <p className="text-sm font-medium">{resolveValue1()}</p>
+            <KiraPagination
+              total={70}
+              size={size}
+              defaultPage={3}
+              showInfo={false}
+              aria-label={`${size} pagination`}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const sizesCode = `import { KiraPagination } from "@/components/ui/pagination"
+
+<KiraPagination total={70} size="sm" />
+<KiraPagination total={70} size="default" />
+<KiraPagination total={70} size="lg" />
+// Pointer-coarse controls receive at least 44px hit areas.`;
+
+function EllipsisDemo() {
+  const [page, setPage] = useState(50);
+  const [loading, setLoading] = useState(false);
+  const [loadAfterJump, setLoadAfterJump] = useState(false);
+  const [disableCurrentAfterJump, setDisableCurrentAfterJump] = useState(false);
+  const [hasNavigated, setHasNavigated] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+
+  return (
+    <div className="max-w-lg space-y-4">
+      <EllipsisControlsSection
+        page={page}
+        setPage={setPage}
+        setHasNavigated={setHasNavigated}
+        loadAfterJump={loadAfterJump}
+        setLoading={setLoading}
+        loading={loading}
+        disabled={disabled}
+        disableCurrentAfterJump={disableCurrentAfterJump}
+        hasNavigated={hasNavigated}
+      />
+      <p className="text-sm text-muted-foreground">
+        Open either dots button, enter a page from 1 to 200, then press Enter or
+        Go. Try page 1: the earlier dots disappear, and focus moves to the
+        current page. Escape or clicking outside closes the popup without
+        navigating. Enable Loading after jump to test busy controls; focus stays
+        on the navigation region until the Loading state is cleared. Disabled
+        current after jump tests the same fallback while sibling page controls
+        remain enabled.
+      </p>
+      <EllipsisControlsSection2
+        loading={loading}
+        setLoading={setLoading}
+        disabled={disabled}
+        setDisabled={setDisabled}
+        loadAfterJump={loadAfterJump}
+        setLoadAfterJump={setLoadAfterJump}
+        disableCurrentAfterJump={disableCurrentAfterJump}
+        setDisableCurrentAfterJump={setDisableCurrentAfterJump}
+        setPage={setPage}
+        setHasNavigated={setHasNavigated}
+      />
+    </div>
+  );
+}
+
+const ellipsisCode = `import { useState } from "react"
+import { Pagination, PaginationContent, PaginationPages, PaginationInfo, PaginationStatus } from "@/components/ui/pagination"
+
+const [page, setPage] = useState(50)
+<Pagination total={2000} pageSize={10} page={page} onPageChange={setPage} maxPages={3}>
+  <PaginationContent><PaginationPages mobileMaxPages={3} /></PaginationContent>
+  <PaginationInfo />
+  <PaginationStatus />
+</Pagination>
+// Ellipses open a shared Base UI Popover with PaginationJump.
+// Valid local jumps focus the current page, or the nav if it is unavailable.
+// The compact popup contains only a page input and Go action.
+// Escape or clicking outside dismisses without changing the page.
+// For native page URLs, pass getPageHref to Pages or KiraPagination.`;
+
+function JumpDemo() {
+  return (
+    <div className="space-y-4">
+      <KiraPagination
+        total={1240}
+        defaultPage={4}
+        defaultPageSize={20}
+        showJump
+        showSizeSelector
+        pageSizeOptions={[10, 20, 50]}
+      />
+      <p className="text-sm text-muted-foreground">
+        Enter a page and press Enter or Go. An out-of-range value explains the
+        valid range instead of silently navigating.
+      </p>
+      <form
+        onSubmit={(event) => event.preventDefault()}
+        className="border-t border-border pt-4"
+      >
+        <p className="mb-3 text-sm font-medium">Safe inside another form</p>
+        <KiraPagination
+          total={60}
+          showJump
+          showInfo={false}
+          aria-label="Pagination inside a form"
+        />
+      </form>
+    </div>
+  );
+}
+
+const jumpCode = `import { KiraPagination } from "@/components/ui/pagination"
+
+<KiraPagination
+  total={1240}
+  defaultPage={4}
+  defaultPageSize={20}
+  showJump
+  showSizeSelector
+  pageSizeOptions={[10, 20, 50]}
+/>
+// PaginationJump does not create a nested form.
+// Empty results disable the jump control.`;
+
+function UrlDemo() {
+  const pagination = useUrlPagination({
+    total: 180,
+    defaultPage: 5,
+    defaultPageSize: 10,
+    pageParam: "resultsPage",
+    pageSizeParam: "resultsSize",
+    shallow: false,
+  });
+
+  return (
+    <div className="space-y-4">
+      <KiraPagination
+        total={pagination.total}
+        page={pagination.page}
+        pageSize={pagination.pageSize}
+        onPaginationChange={pagination.setPagination}
+        showSizeSelector
+        pageSizeOptions={[10, 20, 50]}
+        aria-label="URL pagination"
+      />
+      <div className="space-y-1 text-sm">
+        <p className="font-medium">Shareable query</p>
+        <code className="block rounded-md bg-muted p-3 text-xs wrap-anywhere">
+          {pagination.searchParamsString ||
+            "Default page and size — no pagination parameters"}
+        </code>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Without a page parameter, this view starts on saved page 5. Change page
+        and size, then use browser Back or Forward. Other query parameters,
+        repeated filters, and the hash are retained.
+      </p>
+      <a
+        className="inline-block min-h-6 text-sm underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring"
+        href={pagination.buildUrl()}
+      >
+        Open this result view
+      </a>
+    </div>
+  );
+}
+
+const urlCode = `import { useUrlPagination, KiraPagination } from "@/components/ui/pagination"
+
+const pagination = useUrlPagination({
+  total: 180,
+  defaultPage: 5, // A saved preference; page 1 still gets an explicit URL.
+  defaultPageSize: 10,
+  pageParam: "resultsPage",
+  pageSizeParam: "resultsSize",
+  shallow: false, // Push entries for browser Back/Forward.
+})
+<KiraPagination
+  total={pagination.total}
+  page={pagination.page}
+  pageSize={pagination.pageSize}
+  onPaginationChange={pagination.setPagination}
+  showSizeSelector
+/>
+const shareableUrl = pagination.buildUrl()`;
+
+function LinksDemo() {
+  const pagination = useUrlPagination({
+    total: 100,
+    defaultPageSize: 10,
+    pageParam: "linkedPage",
+    pageSizeParam: "linkedSize",
+  });
+
+  const href = (page: number) => {
+    const target = new URL(pagination.buildUrl(), window.location.href);
+
+    if (page === 1) target.searchParams.delete("linkedPage");
+    else target.searchParams.set("linkedPage", String(page));
+
+    return `${target.pathname}${target.search}${target.hash}`;
+  };
+
+  const navigate = (event: MouseEvent<HTMLButtonElement>, page: number) => {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    event.preventDefault();
+    pagination.setPage(page);
+  };
+
+  return (
+    <div className="space-y-4">
+      <Pagination
+        total={100}
+        page={pagination.page}
+        pageSize={10}
+        aria-label="Linked pagination"
+      >
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href={pagination.hasPrev ? href(pagination.page - 1) : undefined}
+              onClick={(event) => navigate(event, pagination.page - 1)}
+            />
+          </PaginationItem>
+          <PaginationPages
+            getPageHref={href}
+            renderPage={(item) =>
+              item.type === "ellipsis" ? (
+                <PaginationEllipsis getPageHref={href} />
+              ) : (
+                <PaginationLink
+                  page={item.page}
+                  href={href(item.page)}
+                  onClick={(event) => navigate(event, item.page)}
+                />
+              )
+            }
+          />
+          <PaginationItem>
+            <PaginationNext
+              href={pagination.hasNext ? href(pagination.page + 1) : undefined}
+              onClick={(event) => navigate(event, pagination.page + 1)}
+            />
+          </PaginationItem>
+        </PaginationContent>
+        <PaginationInfo />
+        <PaginationStatus />
+      </Pagination>
+      <p className="text-sm text-muted-foreground">
+        These controls are real links. Ordinary clicks update this view;
+        modified clicks and copying the link retain native browser behavior.
+      </p>
+    </div>
+  );
+}
+
+const linksCode = `import { PaginationLink } from "@/components/ui/pagination"
+
+<PaginationLink
+  page={3}
+  href="/components/pagination?linkedPage=3"
+  onClick={(event) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    event.preventDefault()
+    pagination.setPage(3)
+  }}
+/>
+// Alternatively provide getPageHref to KiraPagination for native navigation.
+// Router Link components can use the render prop.`;
+
+function CursorDemo() {
+  const [batch, setBatch] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [failNext, setFailNext] = useState(false);
+  const [retryBatch, setRetryBatch] = useState(0);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  const request = (next: number) => {
+    setRetryBatch(next);
+    setLoading(true);
+    setError("");
+    const fail = failNext;
+    setFailNext(false);
+    timer.current = setTimeout(() => {
+      if (fail) setError("Could not load this activity batch. Try again.");
+      else setBatch(next);
+      setLoading(false);
+    }, 500);
+  };
+
+  const rows = activity.slice(batch * 6, batch * 6 + 6);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm font-medium">Recent workspace activity</p>
+        <Button
+          variant="outline"
+          size="sm"
+          aria-pressed={failNext}
+          onClick={() => setFailNext((value) => !value)}
+          disabled={loading}
+        >
+          {failNext ? "Next request will fail" : "Fail next request"}
+        </Button>
+      </div>
+      <ResultsList rows={rows} busy={loading} id="pagination-cursor-results" />
+      <KiraPagination
+        mode="cursor"
+        page={batch + 1}
+        itemCount={rows.length}
+        hasPreviousPage={batch > 0}
+        hasNextPage={batch < 2}
+        onPreviousPage={() => request(batch - 1)}
+        onNextPage={() => request(batch + 1)}
+        loading={loading}
+        error={error || undefined}
+        onRetry={() => request(retryBatch)}
+        controlsId="pagination-cursor-results"
+      />
+      <p className="text-xs text-muted-foreground">
+        A simulated cursor API exposes previous/next batches. The controls do
+        not invent a result total or last-page jump.
+      </p>
+    </div>
+  );
+}
+
+const cursorCode = `import { KiraPagination } from "@/components/ui/pagination"
+
+<KiraPagination
+  mode="cursor"
+  itemCount={connection.nodes.length}
+  hasPreviousPage={connection.pageInfo.hasPreviousPage}
+  hasNextPage={connection.pageInfo.hasNextPage}
+  onPreviousPage={() => loadBefore(connection.pageInfo.startCursor)}
+  onNextPage={() => loadAfter(connection.pageInfo.endCursor)}
+  loading={pending}
+  error={requestError}
+  onRetry={retryLastRequest}
+/>
+// Omit page when the server does not supply a batch ordinal.`;
+
+function RecoveryDemo() {
+  const [page, setPage] = useState(2);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+  const [targetPage, setTargetPage] = useState(2);
+  const [failNext, setFailNext] = useState(true);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  const load = (next: number) => {
+    setTargetPage(next);
+    setPending(true);
+    setError("");
+    const fail = failNext;
+    setFailNext(false);
+    timer.current = setTimeout(() => {
+      if (fail)
+        setError(
+          "The result request failed. Your current page is still available.",
+        );
+      else setPage(next);
+      setPending(false);
+    }, 500);
+  };
+
+  return (
+    <div className="space-y-5">
+      <p className="text-sm text-muted-foreground">
+        The first request fails. Navigate once, then choose Try again. The
+        selected page changes only when the request succeeds.
+      </p>
+      <KiraPagination
+        total={90}
+        page={page}
+        onPageChange={load}
+        loading={pending}
+        loadingText="Loading the requested page…"
+        error={error || undefined}
+        onRetry={() => load(targetPage)}
+      />
+      <KiraPagination
+        total={40}
+        disabled
+        disabledReason="Reviews are being exported. Navigation is available after the export finishes."
+        aria-label="Disabled export pagination"
+      />
+    </div>
+  );
+}
+
+const recoveryCode = `import { KiraPagination } from "@/components/ui/pagination"
+
+<KiraPagination
+  total={90}
+  page={committedPage}
+  onPageChange={loadPage}
+  loading={pending}
+  error={requestError}
+  onRetry={retryLastRequest}
+/>
+// Commit the new page after loading succeeds; retain the previous result on failure.
+<KiraPagination total={40} disabled disabledReason="Reviews are being exported." />`;
+
+function ShowcaseDemo() {
+  const [worst, setWorst] = useState(false);
+
+  return (
+    <div className="space-y-6">
+      <fieldset aria-label="Demo data" className="flex flex-wrap gap-2">
+        <Button
+          size="sm"
+          variant={worst ? "outline" : "default"}
+          aria-pressed={!worst}
+          onClick={() => setWorst(false)}
+        >
+          Demo data
+        </Button>
+        <Button
+          size="sm"
+          variant={worst ? "default" : "outline"}
+          aria-pressed={worst}
+          onClick={() => setWorst(true)}
+        >
+          Worst case
+        </Button>
+      </fieldset>
+      <div className="space-y-6" key={String(worst)}>
+        <KiraPagination
+          total={worst ? 9_876_543_210 : 260}
+          defaultPage={worst ? 999_999 : 4}
+          defaultPageSize={10}
+          showJump
+          showSizeSelector
+          aria-label="Stress pagination"
+        />
+        <div className="max-w-sm space-y-3 rounded-lg border border-border p-4">
+          <p className="text-sm font-medium">Narrow result container</p>
+          <KiraPagination
+            total={80}
+            defaultPage={4}
+            showLabels
+            aria-label="Narrow pagination"
+          />
+        </div>
+        <KiraPagination
+          total={0}
+          showJump
+          showSizeSelector
+          aria-label="Empty results pagination"
+        />
+        <KiraPagination
+          mode="cursor"
+          hasPreviousPage={false}
+          hasNextPage={false}
+          itemCount={0}
+          disabled
+          disabledReason={
+            worst
+              ? "The international workspace review export is being prepared. Ask an administrator with the appropriate access permissions to resume navigation."
+              : "No activity is available for this workspace."
+          }
+          aria-label="Empty cursor pagination"
+        />
+        <div dir="rtl">
+          <KiraPagination
+            total={100}
+            defaultPage={4}
+            aria-label="Right-to-left pagination"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const showcaseCode = `import { KiraPagination } from "@/components/ui/pagination"
+
+<KiraPagination total={9876543210} defaultPage={999999} showJump />
+<KiraPagination total={0} showJump showSizeSelector />
+<div dir="rtl"><KiraPagination total={100} defaultPage={4} /></div>
+<KiraPagination mode="cursor" hasNextPage={false} itemCount={0} />`;
+
+function KeyboardDemo() {
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Tab to a page button and use Enter or Space. The selector uses Base UI
+        Select keys; the jump input accepts Enter without submitting an ancestor
+        form. Enter or Space on the dots opens Go to page; Escape cancels it.
+      </p>
+      <KiraPagination
+        total={170}
+        defaultPage={3}
+        maxPages={3}
+        mobileMaxPages={3}
+        showEdges
+        showJump
+        showSizeSelector
+        pageSizeOptions={[10, 20, 50]}
+        aria-label="Keyboard pagination"
+      />
+    </div>
+  );
+}
+
+const keyboardCode = `import { KiraPagination } from "@/components/ui/pagination"
+
+<KiraPagination
+  total={170}
+  defaultPage={3}
+  maxPages={3}
+  mobileMaxPages={3}
+  showEdges
+  showJump
+  showSizeSelector
+  pageSizeOptions={[10, 20, 50]}
+/>`;
+
+export default function PaginationPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Pagination"
+        description="Keep results in sync, preserve useful URLs, and move through pages or cursor batches with clear recovery states."
+        version="v3.1.2"
+      />
+      <FeatureGrid features={paginationPageFeatureGridFeatures} />
+      <DemoTabs
+        defaultValue="basic"
+        lazyMount
+        tabs={paginationPageDemoTabsTabs}
+      />
+      <KeyboardShortcuts
+        shortcuts={paginationPageKeyboardShortcutsShortcuts}
+        description="Use the Keyboard, Links, and URL state demos. Pagination adds no global arrow-key shortcuts."
+      />
+      <UsageBlock
+        code={`import { usePagination, KiraPagination } from "@/components/ui/pagination"
+
+export function Results({ rows }: { rows: { id: string; title: string }[] }) {
+  const pagination = usePagination({ total: rows.length, defaultPageSize: 10 })
+  return (
+    <>
+      <ul id="results">
+        {pagination.getPageData(rows).map((row) => <li key={row.id}>{row.title}</li>)}
+      </ul>
+      <KiraPagination
+        total={rows.length}
+        page={pagination.page}
+        pageSize={pagination.pageSize}
+        onPaginationChange={pagination.setPagination}
+        showSizeSelector
+        controlsId="results"
+      />
+    </>
+  )
+}`}
+      />
+      <APIReference sections={paginationPageAPIReferenceSections} />
+      <Changelog entries={paginationPageChangelogEntries} />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located and follows its source constants.
+const paginationPageFeatureGridFeatures = [
+  {
+    title: "Jump from the dots",
+    description:
+      "Ellipsis buttons open a labeled page input, with strict bounds and deliberate focus return.",
+  },
+  {
+    title: "Changing results",
+    description:
+      "Filtering and page-size changes keep item ranges and page controls in sync.",
+  },
+  {
+    title: "URLs and links",
+    description:
+      "Share result views and retain normal link and browser history behavior.",
+  },
+  {
+    title: "Cursor recovery",
+    description:
+      "Navigate API batches without guessing a total, with pending and retry feedback.",
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const paginationPageDemoTabsTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    demo: (
+      <DemoWrapper
+        title="Navigate a result set"
+        description="Use KiraPagination or compose nav, page controls, and one status region."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "results",
+    label: "Result sets",
+    demo: (
+      <DemoWrapper
+        title="Review workspace activity"
+        description="Filter the rows and change page size. The total and visible slice update together."
+        code={resultsCode}
+      >
+        <ResultsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "variants",
+    label: "Variants",
+    demo: (
+      <DemoWrapper
+        title="Current-page emphasis"
+        description="Five styles and semantic colors retain a visible selected state."
+        code={variantsCode}
+      >
+        <VariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    demo: (
+      <DemoWrapper
+        title="Fit the control to the task"
+        description="Compact, standard, and large controls preserve usable focus and hit areas."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "ellipsis",
+    label: "Ellipsis jump",
+    demo: (
+      <DemoWrapper
+        title="Reach pages hidden by the dots"
+        description="A keyboard- and touch-operable disclosure reuses the page-jump control. The shared popup survives page-range changes."
+        code={ellipsisCode}
+      >
+        <EllipsisDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "jump",
+    label: "Jump and size",
+    demo: (
+      <DemoWrapper
+        title="Find a particular page"
+        description="Use a strict page input and a labeled size selector; nested forms are avoided."
+        code={jumpCode}
+      >
+        <JumpDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "url",
+    label: "URL state",
+    demo: (
+      <DemoWrapper
+        title="Keep a shareable view"
+        description="Update page and size atomically, then navigate with browser Back and Forward."
+        code={urlCode}
+      >
+        <UrlDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "links",
+    label: "Links",
+    demo: (
+      <DemoWrapper
+        title="Retain native link behavior"
+        description="Real anchors support copy, modified clicks, and a router-style click handler."
+        code={linksCode}
+      >
+        <LinksDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "cursor",
+    label: "Cursor API",
+    demo: (
+      <DemoWrapper
+        title="Browse recent activity"
+        description="Previous and next batches come from the API's pageInfo flags, without a made-up total."
+        code={cursorCode}
+      >
+        <CursorDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "recovery",
+    label: "Loading and retry",
+    demo: (
+      <DemoWrapper
+        title="Recover from a failed request"
+        description="A shared Spinner signals loading while the selected page stays committed. Reduced motion keeps the indicator still; failures expose Try again."
+        code={recoveryCode}
+      >
+        <RecoveryDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "showcase",
+    label: "Showcase",
+    demo: (
+      <DemoWrapper
+        title="Empty, large, narrow, and RTL"
+        description="Switch the data, zoom the page, and check the result container in both themes."
+        code={showcaseCode}
+      >
+        <ShowcaseDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "keyboard",
+    label: "Keyboard",
+    demo: (
+      <DemoWrapper
+        title="Operate every control"
+        description="Try page buttons, first/last actions, the selector, and the jump input."
+        code={keyboardCode}
+      >
+        <KeyboardDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const paginationPageKeyboardShortcutsShortcuts = [
+  {
+    keys: "Tab / Shift + Tab",
+    description:
+      "Move through visible page buttons, selector, and jump input in document order (Base UI/native controls).",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Activate a page button. Enter follows an anchor; Space is not redefined for links.",
+  },
+  {
+    keys: "Enter / Arrow Down",
+    description:
+      "Open the focused page-size selector (inherited from Base UI Select).",
+  },
+  {
+    keys: "Arrow Up / Down, Home / End",
+    description:
+      "Navigate options inside the open selector (inherited from Base UI Select).",
+  },
+  {
+    keys: "Escape",
+    description:
+      "Close the selector or ellipsis popup and restore focus (inherited from Base UI Select/Popover).",
+  },
+  {
+    keys: "Enter / Space on dots",
+    description:
+      "Open Go to page. An accepted local jump closes the popup and focuses the visible current-page control.",
+  },
+  {
+    keys: "Enter in Go to page",
+    description:
+      "Validate and navigate without submitting an ancestor form. Invalid input gives a linked error.",
+  },
+  {
+    keys: "Ctrl/Cmd + click",
+    description:
+      "Open a linked page in a new tab using native anchor behavior.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const paginationPageAPIReferenceSections = [
+  {
+    title: "Pagination / KiraPagination (pages mode)",
+    props: [
+      {
+        prop: "total / defaultTotal",
+        type: "number",
+        default: "0",
+        description:
+          "Controlled or initial uncontrolled result count. Controlled totals update immediately when filtering changes them.",
+      },
+      {
+        prop: "page / defaultPage",
+        type: "number",
+        default: "1",
+        description: "Controlled or initial uncontrolled 1-indexed page.",
+      },
+      {
+        prop: "pageSize / defaultPageSize",
+        type: "number",
+        default: "10",
+        description:
+          "Controlled or initial uncontrolled size. Use defaultPageSize for an independently editable selector.",
+      },
+      {
+        prop: "onPageChange / onPageSizeChange / onTotalChange",
+        type: "(number) => void",
+        description:
+          "Notifications for requested changes. Controlled values remain owned by the caller.",
+      },
+      {
+        prop: "onPaginationChange",
+        type: "({ page, pageSize }) => void",
+        description:
+          "One atomic page/size notification, including page 1 after a size change.",
+      },
+      {
+        prop: "maxPages / keepInBounds",
+        type: "number / boolean",
+        default: "5 / true",
+        description:
+          "Numbered-button budget (3–25) and derived page clamping. Clamping alone does not invoke a user navigation callback.",
+      },
+      {
+        prop: "size / variant / color",
+        type: '"sm" | "default" | "lg" / "default" | "outline" | "pills" | "ghost" | "rounded" / "default" | "primary" | "success" | "warning" | "destructive"',
+        default: '"default"',
+        description:
+          "Control size, selected-state appearance, and semantic tone. Default and primary are aliases.",
+      },
+      {
+        prop: "loading / loadingText / error / onRetry",
+        type: "boolean / string / ReactNode / () => void",
+        description:
+          "Pending controls are disabled and show the shared Spinner beside loadingText. The indicator stops rotating with reduced motion. Errors retain the previous view and can expose Try again.",
+      },
+      {
+        prop: "disabled / disabledReason",
+        type: "boolean / ReactNode",
+        description:
+          "Global disability plus a visible explanation included in control descriptions.",
+      },
+      {
+        prop: "controlsId / locale",
+        type: "string",
+        default: 'locale="en-US"',
+        description:
+          "Associate navigation with its result element and format numbers with Intl.NumberFormat.",
+      },
+      {
+        prop: "aria-label / id / DOM props",
+        type: "nav attributes",
+        default: 'aria-label="Pagination"',
+        description:
+          "Named native navigation landmark. Pagination requires composed children; KiraPagination composes them.",
+      },
+    ],
+  },
+  {
+    title: "KiraPagination pages convenience props",
+    props: [
+      {
+        prop: "mode",
+        type: '"pages"',
+        default: '"pages"',
+        description: "Known-total numbered navigation.",
+      },
+      {
+        prop: "showInfo / showSizeSelector / showJump",
+        type: "boolean",
+        default: "true / false / false",
+        description:
+          "Item range, page-size control, and explicit jump control.",
+      },
+      {
+        prop: "pageSizeOptions",
+        type: "readonly number[]",
+        default: "[10, 20, 50, 100]",
+        description:
+          "Available sizes; the current size is retained when it is not in the list.",
+      },
+      {
+        prop: "showEdges / showLabels",
+        type: "boolean",
+        default: "false",
+        description:
+          "Optional first/last controls and text labels; compact containers keep the essential controls.",
+      },
+      {
+        prop: "mobileMaxPages (Kira only)",
+        type: "number",
+        default: "1",
+        description:
+          "Current-page-only mobile layout by default. Set 3–25 to show a bounded mobile range and its interactive ellipses.",
+      },
+      {
+        prop: "tabIndex",
+        type: "number",
+        default: "-1",
+        description:
+          "Pagination root is programmatically focusable after a jump if the current-page control is disabled or absent. It does not add a normal tab stop.",
+      },
+      {
+        prop: "getPageHref",
+        type: "(page) => string",
+        description:
+          "Native URLs for page, direction, ellipsis Go, and standalone Go controls. Native links do not also invoke local setters.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        description: "Supplemental content before the single status region.",
+      },
+    ],
+  },
+  {
+    title: "KiraPagination cursor mode",
+    props: [
+      {
+        prop: "mode",
+        type: '"cursor"',
+        description:
+          "Use with cursor APIs and unknown totals. No numbered buttons, last-page control, or jump is inferred.",
+      },
+      {
+        prop: "hasPreviousPage / hasNextPage",
+        type: "boolean",
+        default: "hasPreviousPage=false",
+        description:
+          "Server-authoritative navigation flags; hasNextPage is required.",
+      },
+      {
+        prop: "onPreviousPage / onNextPage",
+        type: "() => void",
+        description: "Caller requests the previous or next server cursor.",
+      },
+      {
+        prop: "previousHref / nextHref",
+        type: "string",
+        description:
+          "Optional native navigation URLs. Omit callbacks when using server navigation.",
+      },
+      {
+        prop: "page / itemCount",
+        type: "number",
+        description:
+          "Optional known batch ordinal and count in this batch. Neither implies a total.",
+      },
+      {
+        prop: "size / variant / color / locale",
+        type: "Pagination style/locale props",
+        default: "default / outline / default / en-US",
+        description:
+          "Same control styling and number formatting as pages mode.",
+      },
+      {
+        prop: "loading / loadingText / error / onRetry",
+        type: "Pagination recovery props",
+        description:
+          "Request state and retry for the last failed cursor. Loading uses the shared Spinner and respects reduced motion.",
+      },
+      {
+        prop: "disabled / disabledReason / controlsId / nav props",
+        type: "Pagination state and DOM props",
+        description:
+          "Named landmark, visible reason, result relationship, and native attributes.",
+      },
+    ],
+  },
+  {
+    title: "PaginationLink",
+    props: [
+      {
+        prop: "page / isActive",
+        type: "number / boolean",
+        description:
+          "Target page and explicit selected state. The context can infer aria-current=page.",
+      },
+      {
+        prop: "href / target / rel / download",
+        type: "anchor attributes",
+        description:
+          "Render an anchor and retain native navigation and modified clicks.",
+      },
+      {
+        prop: "render / nativeButton",
+        type: "Base UI render / boolean",
+        description:
+          "Router/custom element adapter. The default is a native button without href or render.",
+      },
+      {
+        prop: "size / variant / color / disabled",
+        type: "Pagination control props",
+        description:
+          "Override appearance; context disability and pending state cannot be bypassed.",
+      },
+      {
+        prop: "onClick / ref / DOM props",
+        type: "Base UI Button props",
+        description:
+          "Caller handlers compose and may prevent context navigation. Icon-only controls need aria-label.",
+      },
+    ],
+  },
+  {
+    title: "PaginationFirst / Previous / Next / Last",
+    props: [
+      {
+        prop: "showLabel / text",
+        type: "boolean / string",
+        default: "false / direction label",
+        description:
+          "Optional visible text. Automatic direction names remain accessible in compact containers.",
+      },
+      {
+        prop: "href / onClick / disabled / remaining Link props",
+        type: "PaginationLink props",
+        description:
+          "Inherit Link appearance and events; boundaries remain disabled. Icons mirror in RTL.",
+      },
+    ],
+  },
+  {
+    title: "PaginationEllipsis",
+    props: [
+      {
+        prop: "aria-label",
+        type: "string",
+        default: '"Go to page"',
+        description:
+          "A real button that opens the shared Base UI Popover. Pages names earlier/later disclosures automatically. Requires a Pagination root with a known total.",
+      },
+      {
+        prop: "getPageHref",
+        type: "(page) => string",
+        description:
+          "Optional native URL for Go. Pages passes its URL builder into default ellipses; custom renderers pass it explicitly.",
+      },
+      {
+        prop: "disabled / ref / onClick / className",
+        type: "Base UI Trigger props",
+        description:
+          "Native button attributes and composed trigger events. Root loading, empty pages, and disability take precedence; Escape or clicking outside dismisses without navigating.",
+      },
+    ],
+  },
+  {
+    title: "PaginationContent / Item / Pages",
+    props: [
+      {
+        prop: "Content / Item DOM props",
+        type: "ul / li attributes",
+        description:
+          "Semantic list composition. Ellipsis is documented separately as an interactive disclosure.",
+      },
+      {
+        prop: "PaginationItem.mobileHide",
+        type: "boolean",
+        default: "false",
+        description:
+          "Hide the optional item in containers narrower than the sm container breakpoint.",
+      },
+      {
+        prop: "PaginationPages.renderPage / renderEllipsis",
+        type: "(item, index) => ReactNode / (key) => ReactNode",
+        description:
+          "Custom page/ellipsis contents; Pages creates the surrounding li.",
+      },
+      {
+        prop: "PaginationPages.mobileMaxPages",
+        type: "number",
+        default: "1",
+        description:
+          "Compact count: 1–2 retain the current page; 3–25 render a bounded range.",
+      },
+      {
+        prop: "PaginationPages.getPageHref",
+        type: "(page) => string",
+        description:
+          "Use anchors for default page buttons and ellipsis Go controls. Custom renderers own their native URL wiring.",
+      },
+    ],
+  },
+  {
+    title: "PaginationInfo / PaginationStatus",
+    props: [
+      {
+        prop: "Info.format",
+        type: "string",
+        default: '"Showing {start}–{end} of {total}"',
+        description:
+          "Replace all start/end/total/page/pageCount placeholders with formatted values.",
+      },
+      {
+        prop: "Info.mobileCompact",
+        type: "boolean",
+        default: "false",
+        description:
+          "Use a short page phrase in narrow containers. Info is ordinary text, not a second live region.",
+      },
+      {
+        prop: "Status.children / loadingText",
+        type: "ReactNode / string",
+        default: 'loadingText="Loading results…"',
+        description:
+          "The single polite, atomic announcement for this navigation context.",
+      },
+      {
+        prop: "className / div props",
+        type: "native attributes",
+        description:
+          "Forward DOM attributes; Status is visually hidden by default.",
+      },
+    ],
+  },
+  {
+    title: "PaginationSizeSelector",
+    props: [
+      {
+        prop: "options / onSizeChange",
+        type: "readonly number[] / (size) => void",
+        default: "[10, 20, 50, 100]",
+        description:
+          "KiraSelect options and shared styling, plus additional caller notification; context resets the page to 1.",
+      },
+      {
+        prop: "label / showLabel",
+        type: "string / boolean",
+        default: '"Rows per page" / true',
+        description:
+          "Persistent label and accessible name even when the visible label is hidden.",
+      },
+      {
+        prop: "disabled / id / name / aria-label / aria-describedby / className",
+        type: "supported selector attributes",
+        description:
+          "Control identity, form name, accessible descriptions, and wrapper styling. Global disability wins.",
+      },
+    ],
+  },
+  {
+    title: "PaginationJump",
+    props: [
+      {
+        prop: "label / showLabel / onJump",
+        type: "string / boolean / (page) => void",
+        default: '"Go to page" / true',
+        description:
+          "Strict positive integer input with Enter or Go. Invalid/out-of-range values do not navigate.",
+      },
+      {
+        prop: "getPageHref",
+        type: "(page) => string",
+        description:
+          "Go becomes a native link for a valid page URL; Enter activates that link and modified clicks retain browser behavior. onJump applies to accepted local jumps only.",
+      },
+      {
+        prop: "disabled / id / input props / className",
+        type: "Base UI Input attributes",
+        description:
+          "Forward supported input attributes; value and change are managed internally. Empty results disable input and Go.",
+      },
+    ],
+  },
+  {
+    title: "usePagination / calculatePageRange",
+    props: [
+      {
+        prop: "options",
+        type: "UsePaginationOptions",
+        description:
+          "Controlled/default page, page size, total, callbacks, maxPages, and keepInBounds.",
+      },
+      {
+        prop: "return values",
+        type: "UsePaginationReturn",
+        description:
+          "page, pageSize, total, pageCount, startIndex, endIndex, startItem, endItem, hasPrev/hasNext/isFirst/isLast.",
+      },
+      {
+        prop: "navigation",
+        type: "setPage / nextPage / prevPage / firstPage / lastPage / reset",
+        description:
+          "Clamped by default; setPage honors keepInBounds=false. Selecting the current page does not notify.",
+      },
+      {
+        prop: "setPagination",
+        type: "({ page: number; pageSize: number }) => void",
+        description:
+          "Commit both values once. Wire onPaginationChange={pagination.setPagination} when composing a hook and a controlled Pagination, especially with URL state.",
+      },
+      {
+        prop: "setPageSize / setTotal",
+        type: "(number) => void",
+        description:
+          "Mutate uncontrolled state, or notify controlled owners. Page-size changes request page 1 atomically.",
+      },
+      {
+        prop: "getPageRange / isCurrentPage / getPageData",
+        type: "range / predicate / readonly-array slice",
+        description:
+          "Bounded numbered buttons and safe data slices. Empty pages have start/end items 0 and endIndex=-1.",
+      },
+      {
+        prop: "calculatePageRange(page, pageCount, maxPages)",
+        type: "PageRangeItem[]",
+        description:
+          "Finite normalized input, unique first/current/last pages, and at most maxPages numbered controls.",
+      },
+    ],
+  },
+  {
+    title: "useUrlPagination / context / variants",
+    props: [
+      {
+        prop: "pageParam / pageSizeParam",
+        type: "string",
+        default: '"page" / "pageSize"',
+        description: "Query keys; invalid URL values fall back to defaults.",
+      },
+      {
+        prop: "shallow",
+        type: "boolean",
+        default: "true",
+        description:
+          "true replaces, false pushes browser history without reloading. Back/Forward subscription keeps state current.",
+      },
+      {
+        prop: "getSearchParams / setSearchParams / subscribe",
+        type: "router adapter functions",
+        description:
+          "For a router-owned URL, provide its read/write functions and store-change subscription.",
+      },
+      {
+        prop: "searchParamsString / buildUrl",
+        type: "string / (basePath?) => string",
+        description:
+          "Preserve unrelated parameters and hash while adding current pagination state.",
+      },
+      {
+        prop: "usePaginationContext()",
+        type: "PaginationContextValue | null",
+        description:
+          "Access page state, style, loading/disability, IDs, and formatting within Pagination.",
+      },
+      {
+        prop: "paginationVariants / paginationLinkVariants",
+        type: "CVA functions",
+        description:
+          "Exported root and control styles. All public component, hook, and range types are exported.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const paginationPageChangelogEntries = [
+  {
+    version: "3.1.2",
+    date: "November 13, 2026",
+    changes: [
+      {
+        type: "fixed" as const,
+        title: "Visible page links",
+        description:
+          "Numbered links retain their default page labels when href is supplied. Disabled generated anchors remove their URLs; ordinary and modified clicks keep their existing behavior.",
+      },
+      {
+        type: "changed" as const,
+        title: "KiraSelect page size",
+        description:
+          "The page-size control uses KiraSelect with Select's standard height, typography, and focus ring, while preserving its label, page reset, form value, and touch target.",
+      },
+      {
+        type: "added" as const,
+        title: "Loading indicator",
+        description:
+          "Numbered and cursor pagination reuse the shared Spinner beside loading text. Reduced motion stops rotation; the existing status region owns announcements.",
+      },
+    ],
+  },
+  {
+    version: "3.1.1",
+    date: "November 13, 2026",
+    changes: [
+      {
+        type: "changed" as const,
+        title: "Compact ellipsis page jump",
+        description:
+          "Clicking the dots opens a compact page input and Go action. Enter submits, Escape or clicking outside dismisses, and page validation and focus restoration are preserved.",
+      },
+    ],
+  },
+  {
+    version: "3.1.0",
+    date: "November 12, 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Go to page from ellipses",
+        description:
+          "Dots are named Base UI Popover triggers. They reuse strict PaginationJump validation, disable with loading/empty/restricted states, and focus the new current page when a local jump removes the trigger; busy or absent controls fall back to the navigation region.",
+      },
+      {
+        type: "added",
+        title: "Native URL jumps and mobile ranges",
+        description:
+          "getPageHref also applies to Go controls. Valid native links preserve browser navigation without local page changes. KiraPagination.mobileMaxPages exposes an optional mobile range; the default stays compact.",
+      },
+      {
+        type: "changed",
+        title: "Ellipsis semantics",
+        description:
+          "PaginationEllipsis now renders a button rather than an aria-hidden span and requires Pagination context. Consumers wanting decorative gaps can provide a noninteractive custom renderEllipsis. Audited against Base UI 1.9.0.",
+      },
+    ],
+  },
+  {
+    version: "3.0.1",
+    date: "November 12, 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Saved URL defaults and repeated filters",
+        description:
+          "Page 1 remains reachable when defaultPage is not 1. Shareable URLs preserve repeated query values. setPagination commits page and size together; the URL tab forwards onPaginationChange once instead of chaining stale setters.",
+      },
+      {
+        type: "fixed",
+        title: "Native link composition",
+        description:
+          "Custom render elements retain href, target, rel, and download. Real links keep native Space/Enter behavior and do not also invoke local page changes; disabled controls do not call consumer actions.",
+      },
+      {
+        type: "fixed",
+        title: "Jump control contrast and touch target",
+        description:
+          "The page-number hint uses muted-foreground instead of a half-opacity default. Go matches the 44px touch-primary controls without changing shared token scales.",
+      },
+      {
+        type: "fixed",
+        title: "Bounds and loading feedback",
+        description:
+          "keepInBounds=false is honored by setters without marking an unrelated page active. Uncontrolled bounds corrections notify change handlers once; offsets stay safe. The status region announces custom loading text, request failures, and retry availability.",
+      },
+    ],
+  },
+  {
+    version: "3.0.0",
+    date: "November 11, 2026",
+    changes: [
+      {
+        type: "added",
+        title: "KiraPagination and cursor results",
+        description:
+          "Composed numbered/cursor navigation, optional jump and size controls, loading/error recovery, native links, and container-aware compact layouts.",
+      },
+      {
+        type: "fixed",
+        title: "State and URL synchronization",
+        description:
+          "Changing controlled totals and sizes takes effect immediately. URL updates commit page and size together, preserve filters/hash/history state, and subscribe to Back/Forward.",
+      },
+      {
+        type: "changed",
+        title: "Primitive-backed controls",
+        description:
+          "Audited against Base UI 1.9.0. Button, Input, and the existing Base UI Select provide interaction; Base UI has no Pagination primitive. Semantic colors replace fixed palettes.",
+      },
+      {
+        type: "breaking",
+        title: "Controlled page size and totals",
+        description:
+          "pageSize and total are controlled when supplied. Use defaultPageSize/defaultTotal for local setters. Empty endIndex is -1; maxPages now bounds the number of numeric buttons.",
+      },
+      {
+        type: "breaking",
+        title: "Names, selectors, and jump behavior",
+        description:
+          "State attributes are presence-based. Navigation parts have distinct slots. SizeSelector exposes documented Base UI selector attributes; Jump uses strict text input and a Go button instead of a nested form or silent clamping.",
+      },
+      {
+        type: "changed",
+        title: "Single announcement and quiet navigation",
+        description:
+          "Info is no longer a live region; Status announces complete phrases once. Removed transition-all and page-button scaling. PaginationStatus belongs once per composed nav and is included by KiraPagination.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
+
+function EllipsisControlsSection({
+  page,
+  setPage,
+  setHasNavigated,
+  loadAfterJump,
+  setLoading,
+  loading,
+  disabled,
+  disableCurrentAfterJump,
+  hasNavigated,
+}: {
+  page: number;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  setHasNavigated: React.Dispatch<React.SetStateAction<boolean>>;
+  loadAfterJump: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  loading: boolean;
+  disabled: boolean;
+  disableCurrentAfterJump: boolean;
+  hasNavigated: boolean;
+}) {
+  return (
+    <Pagination
+      total={2000}
+      pageSize={10}
+      page={page}
+      onPageChange={(nextPage) => {
+        setPage(nextPage);
+        setHasNavigated(true);
+
+        if (loadAfterJump) setLoading(true);
+      }}
+      maxPages={3}
+      loading={loading}
+      disabled={disabled}
+      disabledReason="Page navigation is paused for this demonstration."
+      aria-label="Ellipsis page jump"
+    >
+      <PaginationContent>
+        <PaginationPages
+          mobileMaxPages={3}
+          renderPage={(item) =>
+            item.type === "page" ? (
+              <PaginationLink
+                page={item.page}
+                isActive={item.isActive}
+                disabled={
+                  disableCurrentAfterJump && hasNavigated && item.isActive
+                }
+              />
+            ) : undefined
+          }
+        />
+      </PaginationContent>
+      <PaginationInfo />
+      <PaginationStatus />
+    </Pagination>
+  );
+}
+
+function EllipsisControlsSection2({
+  loading,
+  setLoading,
+  disabled,
+  setDisabled,
+  loadAfterJump,
+  setLoadAfterJump,
+  disableCurrentAfterJump,
+  setDisableCurrentAfterJump,
+  setPage,
+  setHasNavigated,
+}: {
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  disabled: boolean;
+  setDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+  loadAfterJump: boolean;
+  setLoadAfterJump: React.Dispatch<React.SetStateAction<boolean>>;
+  disableCurrentAfterJump: boolean;
+  setDisableCurrentAfterJump: React.Dispatch<React.SetStateAction<boolean>>;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  setHasNavigated: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  return (
+    <fieldset aria-label="Ellipsis demo state" className="flex flex-wrap gap-2">
+      <Button
+        size="sm"
+        variant="outline"
+        aria-pressed={loading}
+        onClick={() => setLoading(!loading)}
+      >
+        Loading state
+      </Button>
+      <Button
+        size="sm"
+        variant="outline"
+        aria-pressed={disabled}
+        onClick={() => setDisabled(!disabled)}
+      >
+        Disabled state
+      </Button>
+      <Button
+        size="sm"
+        variant="outline"
+        aria-pressed={loadAfterJump}
+        onClick={() => setLoadAfterJump(!loadAfterJump)}
+      >
+        Loading after jump
+      </Button>
+      <Button
+        size="sm"
+        variant="outline"
+        aria-pressed={disableCurrentAfterJump}
+        onClick={() => setDisableCurrentAfterJump(!disableCurrentAfterJump)}
+      >
+        Disabled current after jump
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => {
+          setPage(50);
+          setLoading(false);
+          setHasNavigated(false);
+        }}
+      >
+        Reset to page 50
+      </Button>
+    </fieldset>
   );
 }
