@@ -1,8 +1,8 @@
 /* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
-/* oxlint-disable anti-slop/no-shape-in-symbol-names -- "shape" is the published variant-prop name (consumers write shape="pill"); renaming breaks the kit API */
 
 import * as React from "react";
+import { omitComponentProps } from "@/lib/component-native-props";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { cva } from "class-variance-authority";
@@ -11,10 +11,11 @@ import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
 import { useRender } from "@base-ui/react/use-render";
 import { mergeProps } from "@base-ui/react/merge-props";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { Separator, type SeparatorProps } from "@/components/ui/separator";
+import { resolveComponentDefaults } from "@/lib/component-defaults";
 
 const buttonGroupVariants = cva(
   "inline-flex items-center [&>[data-slot=button]]:shadow-none [&>[data-slot=toggle-group-item]]:shadow-none *:focus-visible:relative *:focus-visible:z-10 [&>input]:flex-1",
@@ -30,6 +31,8 @@ const buttonGroupVariants = cva(
         true: "gap-0",
         false: "gap-1",
       },
+
+      // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Shape names denote the intentional public geometric corner API and CVA variant keys; renaming them would break consumers.
       shape: {
         default: "",
         pill: "rounded-full [&>[data-slot=button]]:rounded-full [&>[data-slot=toggle-group-item]]:rounded-full",
@@ -38,6 +41,8 @@ const buttonGroupVariants = cva(
     defaultVariants: {
       orientation: "horizontal",
       connected: true,
+
+      // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Shape names denote the intentional public geometric corner API and CVA variant keys; renaming them would break consumers.
       shape: "default",
     },
   },
@@ -91,6 +96,7 @@ type ButtonGroupGap = "none" | "sm" | "default" | "lg";
 
 type ButtonGroupJustify = "start" | "center" | "end" | "between" | "around";
 
+// oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Shape names denote the intentional public geometric corner API and CVA variant keys; renaming them would break consumers.
 type ButtonGroupShape = "default" | "pill";
 
 type SelectionMode = "none" | "single" | "multiple";
@@ -129,6 +135,8 @@ interface ButtonGroupProps extends Omit<
   size?: ButtonGroupSize;
   gap?: ButtonGroupGap;
   justify?: ButtonGroupJustify;
+
+  // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Shape names denote the intentional public geometric corner API and CVA variant keys; renaming them would break consumers.
   shape?: ButtonGroupShape;
   value?: ButtonGroupValue;
   onChange?: (value: ButtonGroupValue) => void;
@@ -264,7 +272,9 @@ function buildContainerClasses({
   size,
   gap,
   justify,
-  shape,
+
+  // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Shape names denote the intentional public geometric corner API and CVA variant keys; renaming them would break consumers.
+  shape: cornerStyle,
   connected,
   segmented,
   className,
@@ -286,7 +296,8 @@ function buildContainerClasses({
   }
 
   return cn(
-    buttonGroupVariants({ orientation, connected, shape }),
+    // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Shape names denote the intentional public geometric corner API and CVA variant keys; renaming them would break consumers.
+    buttonGroupVariants({ orientation, connected, shape: cornerStyle }),
     buttonGroupSizeVariants({
       size,
       gap: resolvedGap,
@@ -297,7 +308,7 @@ function buildContainerClasses({
       connectedRoundingClasses[orientation ?? "horizontal"],
     segmented &&
       "relative bg-muted p-1 rounded-lg gap-1 data-[connected=true]:gap-1",
-    segmented && shape === "pill" && "rounded-full",
+    segmented && cornerStyle === "pill" && "rounded-full",
     className,
   );
 }
@@ -327,6 +338,8 @@ function SegmentedIndicator({
 // component body stays within the complexity budget.
 const GROUP_DEFAULTS = {
   orientation: "horizontal",
+
+  // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Shape names denote the intentional public geometric corner API and CVA variant keys; renaming them would break consumers.
   shape: "default",
   value: null,
   selectionMode: "none",
@@ -338,143 +351,11 @@ const GROUP_DEFAULTS = {
   loop: true,
 } as const;
 
-function ButtonGroup(groupProps: ButtonGroupProps) {
-  const {
-    className,
-    size,
-    gap,
-    justify,
-    value,
-    onChange,
-    variant,
-    dir,
-    children,
-    orientation,
-    shape,
-    selectionMode,
-    connected,
-    segmented,
-    animated,
-    animationStagger,
-    disabled,
-    loop,
-    ...props
-  } = { ...GROUP_DEFAULTS, ...groupProps };
+function ButtonGroup(input0: ButtonGroupProps) {
+  const state0 = useButtonGroupSetup(input0);
+  const state1 = useButtonGroupActions(state0);
 
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const indicatorRef = React.useRef<HTMLDivElement>(null);
-  const reducedMotion = useReducedMotion();
-  const isSelectable = selectionMode !== "none";
-
-  useEntranceAnimation(containerRef, {
-    animated,
-    orientation,
-    animationStagger,
-    reducedMotion,
-  });
-
-  // Base UI sets `data-pressed` on pressed items (presence attribute).
-  let singleValue: string | null = value;
-
-  if (Array.isArray(value)) {
-    singleValue = null;
-  }
-
-  useSegmentedIndicator(containerRef, indicatorRef, {
-    selectedValue: singleValue,
-    reducedMotion,
-  });
-
-  const contextValue: ButtonGroupContextValue = {
-    selectable: isSelectable,
-    variant,
-    disabled,
-    segmented,
-  };
-
-  // Base UI ToggleGroup values are always arrays — including single-select
-  // (deselect yields []). Normalize both directions against the public API.
-  let primitiveValue: string[] = [];
-
-  if (Array.isArray(value)) {
-    primitiveValue = value;
-  } else if (value) {
-    primitiveValue = [value];
-  }
-
-  const handleGroupValueChange = (groupValue: string[]) => {
-    let next: ButtonGroupValue = groupValue;
-
-    if (selectionMode === "single") {
-      next = groupValue[0] ?? null;
-    }
-
-    onChange?.(next);
-  };
-
-  const containerClasses = buildContainerClasses({
-    orientation,
-    size,
-    gap,
-    justify,
-    shape,
-    connected,
-    segmented,
-    className,
-  });
-
-  let indicator: React.ReactNode = null;
-
-  if (segmented) {
-    indicator = (
-      <SegmentedIndicator indicatorRef={indicatorRef} pill={shape === "pill"} />
-    );
-  }
-
-  if (!isSelectable) {
-    return (
-      <ButtonGroupContext.Provider value={contextValue}>
-        <div
-          ref={containerRef}
-          data-slot="button-group"
-          role="group"
-          aria-orientation={orientation}
-          data-connected={connected}
-          data-segmented={segmented || undefined}
-          dir={dir}
-          className={containerClasses}
-          {...props}
-        >
-          {indicator}
-          {children}
-        </div>
-      </ButtonGroupContext.Provider>
-    );
-  }
-
-  return (
-    <ButtonGroupContext.Provider value={contextValue}>
-      <ToggleGroupPrimitive
-        ref={containerRef}
-        value={primitiveValue}
-        onValueChange={handleGroupValueChange}
-        multiple={selectionMode === "multiple"}
-        orientation={orientation}
-        loopFocus={loop}
-        disabled={disabled}
-        aria-orientation={orientation}
-        data-slot="button-group"
-        data-connected={connected}
-        data-segmented={segmented || undefined}
-        dir={dir}
-        className={containerClasses}
-        {...props}
-      >
-        {indicator}
-        {children}
-      </ToggleGroupPrimitive>
-    </ButtonGroupContext.Provider>
-  );
+  return renderButtonGroup(state1);
 }
 
 interface ToggleGroupItemProps extends Omit<ButtonProps, "ref"> {
@@ -764,25 +645,27 @@ function getButtonGroupContent(
   return children;
 }
 
-function KiraButtonGroup({
-  items,
-  children,
-  value,
-  defaultValue,
-  onChange,
-  onValueChange,
-  selectionMode = "none",
-  type,
-  required = false,
-  dir,
-  fullWidth = false,
-  allowEmpty = true,
-  toolbar = false,
-  toolbarLabel,
-  onItemClick,
-  className,
-  ...props
-}: KiraButtonGroupProps) {
+function KiraButtonGroup(input: KiraButtonGroupProps) {
+  const {
+    items,
+    children,
+    value,
+    defaultValue,
+    onChange,
+    onValueChange,
+    selectionMode,
+    type,
+    required,
+    dir,
+    fullWidth,
+    allowEmpty,
+    toolbar,
+    toolbarLabel,
+    onItemClick,
+    className,
+    ...props
+  } = resolveComponentDefaults(input, KIRA_BUTTON_GROUP_DEFAULTS_1);
+
   const [internalValue, setInternalValue] = React.useState<ButtonGroupValue>(
     defaultValue ?? null,
   );
@@ -862,3 +745,334 @@ export type {
   KiraButtonGroupItem,
   SelectionMode,
 };
+
+type renderButtonGroupSectionPart1Args = {
+  contextValue: ButtonGroupContextValue;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  primitiveValue: string[];
+  handleGroupValueChange: (groupValue: string[]) => void;
+  selectionMode: SelectionMode;
+  orientation: ButtonGroupOrientation;
+  loop: boolean;
+  disabled: boolean;
+  connected: boolean;
+  segmented: boolean;
+  dir: "ltr" | "rtl" | undefined;
+  containerClasses: ReturnType<typeof buildContainerClasses>;
+  props: Omit<
+    React.ComponentPropsWithoutRef<"div">,
+    "defaultValue" | "onChange"
+  >;
+  indicator: React.ReactNode;
+  children: React.ReactNode;
+};
+
+function RenderButtonGroupSectionPart1({
+  contextValue,
+  containerRef,
+  primitiveValue,
+  handleGroupValueChange,
+  selectionMode,
+  orientation,
+  loop,
+  disabled,
+  connected,
+  segmented,
+  dir,
+  containerClasses,
+  props,
+  indicator,
+  children,
+}: renderButtonGroupSectionPart1Args) {
+  return (
+    <ButtonGroupContext.Provider value={contextValue}>
+      <ToggleGroupPrimitive
+        ref={containerRef}
+        value={primitiveValue}
+        onValueChange={handleGroupValueChange}
+        multiple={selectionMode === "multiple"}
+        orientation={orientation}
+        loopFocus={loop}
+        disabled={disabled}
+        aria-orientation={orientation}
+        data-slot="button-group"
+        data-connected={connected}
+        data-segmented={segmented || undefined}
+        dir={dir}
+        className={containerClasses}
+        {...props}
+      >
+        {indicator}
+        {children}
+      </ToggleGroupPrimitive>
+    </ButtonGroupContext.Provider>
+  );
+}
+
+type renderButtonGroupSectionPart2Args = {
+  contextValue: ButtonGroupContextValue;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  orientation: ButtonGroupOrientation;
+  connected: boolean;
+  segmented: boolean;
+  dir: "ltr" | "rtl" | undefined;
+  containerClasses: ReturnType<typeof buildContainerClasses>;
+  props: Omit<
+    React.ComponentPropsWithoutRef<"div">,
+    "defaultValue" | "onChange"
+  >;
+  indicator: React.ReactNode;
+  children: React.ReactNode;
+};
+
+function RenderButtonGroupSectionPart2({
+  contextValue,
+  containerRef,
+  orientation,
+  connected,
+  segmented,
+  dir,
+  containerClasses,
+  props,
+  indicator,
+  children,
+}: renderButtonGroupSectionPart2Args) {
+  return (
+    <ButtonGroupContext.Provider value={contextValue}>
+      <div
+        ref={containerRef}
+        data-slot="button-group"
+
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This composite div groups controls or content without introducing fieldset form behavior, default styling, or a different public ref element.
+        role="group"
+        data-orientation={orientation}
+        data-connected={connected}
+        data-segmented={segmented || undefined}
+        dir={dir}
+        className={containerClasses}
+        {...props}
+      >
+        {indicator}
+        {children}
+      </div>
+    </ButtonGroupContext.Provider>
+  );
+}
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const KIRA_BUTTON_GROUP_DEFAULTS_1 = {
+  selectionMode: "none",
+  required: false,
+  fullWidth: false,
+  allowEmpty: true,
+  toolbar: false,
+} as const;
+
+function useButtonGroupSetup(groupProps: ButtonGroupProps) {
+  const resolvedProps = resolveComponentDefaults(groupProps, GROUP_DEFAULTS);
+
+  const {
+    value,
+    variant,
+    orientation,
+    // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- `shape` is a published corner-style prop retained for API compatibility.
+    shape: cornerStyle,
+    selectionMode,
+    segmented,
+    animated,
+    animationStagger,
+    disabled,
+  } = resolvedProps;
+  // SAFETY: The excluded keys are exactly those removed by the original native-prop rest binding.
+
+  const props = omitComponentProps(resolvedProps, [
+    "className",
+    "size",
+    "gap",
+    "justify",
+    "value",
+    "onChange",
+    "variant",
+    "dir",
+    "children",
+    "orientation",
+    "shape",
+    "selectionMode",
+    "connected",
+    "segmented",
+    "animated",
+    "animationStagger",
+    "disabled",
+    "loop",
+  ] as const);
+
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  const indicatorRef = React.useRef<HTMLDivElement>(null);
+
+  const reducedMotion = useReducedMotion();
+
+  const isSelectable = selectionMode !== "none";
+
+  useEntranceAnimation(containerRef, {
+    animated,
+    orientation,
+    animationStagger,
+    reducedMotion,
+  });
+
+  // Base UI sets `data-pressed` on pressed items (presence attribute).
+  const singleValue = Array.isArray(value) ? null : value;
+
+  useSegmentedIndicator(containerRef, indicatorRef, {
+    enabled: segmented,
+    selectedValue: singleValue,
+    reducedMotion,
+  });
+
+  const contextValue: ButtonGroupContextValue = {
+    selectable: isSelectable,
+    variant,
+    disabled,
+    segmented,
+  };
+
+  return {
+    ...resolvedProps,
+    cornerStyle,
+    props,
+    containerRef,
+    indicatorRef,
+    isSelectable,
+    contextValue,
+  };
+}
+
+function useButtonGroupActions(state: ReturnType<typeof useButtonGroupSetup>) {
+  const {
+    className,
+    size,
+    gap,
+    justify,
+    value,
+    onChange,
+    orientation,
+    cornerStyle,
+    selectionMode,
+    connected,
+    segmented,
+    indicatorRef,
+  } = state;
+
+  // Base UI ToggleGroup values are always arrays — including single-select
+  // (deselect yields []). Normalize both directions against the public API.
+  let primitiveValue: string[] = [];
+
+  if (Array.isArray(value)) {
+    primitiveValue = value;
+  } else if (value) {
+    primitiveValue = [value];
+  }
+
+  const handleGroupValueChange = (groupValue: string[]) => {
+    let next: ButtonGroupValue = groupValue;
+
+    if (selectionMode === "single") {
+      next = groupValue[0] ?? null;
+    }
+
+    onChange?.(next);
+  };
+
+  const containerClasses = buildContainerClasses({
+    orientation,
+    size,
+    gap,
+    justify,
+
+    // oxlint-disable-next-line anti-slop/no-shape-in-symbol-names -- Shape names denote the intentional public geometric corner API and CVA variant keys; renaming them would break consumers.
+    shape: cornerStyle,
+    connected,
+    segmented,
+    className,
+  });
+
+  let indicator: React.ReactNode = null;
+
+  if (segmented) {
+    indicator = (
+      <SegmentedIndicator
+        indicatorRef={indicatorRef}
+        pill={cornerStyle === "pill"}
+      />
+    );
+  }
+
+  return {
+    ...state,
+    primitiveValue,
+    handleGroupValueChange,
+    containerClasses,
+    indicator,
+  };
+}
+
+function renderButtonGroup({
+  dir,
+  children,
+  orientation,
+  selectionMode,
+  connected,
+  segmented,
+  disabled,
+  loop,
+  props,
+  containerRef,
+  isSelectable,
+  contextValue,
+  primitiveValue,
+  handleGroupValueChange,
+  containerClasses,
+  indicator,
+}: ReturnType<typeof useButtonGroupActions>) {
+  if (!isSelectable) {
+    return (
+      <RenderButtonGroupSectionPart2
+        {...{
+          contextValue,
+          containerRef,
+          orientation,
+          connected,
+          segmented,
+          dir,
+          containerClasses,
+          props,
+          indicator,
+          children,
+        }}
+      />
+    );
+  }
+
+  return (
+    <RenderButtonGroupSectionPart1
+      {...{
+        contextValue,
+        containerRef,
+        primitiveValue,
+        handleGroupValueChange,
+        selectionMode,
+        orientation,
+        loop,
+        disabled,
+        connected,
+        segmented,
+        dir,
+        containerClasses,
+        props,
+        indicator,
+        children,
+      }}
+    />
+  );
+}
