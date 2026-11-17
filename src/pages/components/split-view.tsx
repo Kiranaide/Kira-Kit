@@ -1,76 +1,54 @@
-"use client";
+import * as React from "react";
 
-import { useState, useRef } from "react";
-import { IconFile, IconFolder, IconSettings, IconDashboard, IconCode } from "@tabler/icons-react";
-import { SplitView, type SplitViewRef } from "@/components/ui/split-view";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import {
   ComponentPage,
   PageHeader,
   FeatureGrid,
-  DemoWrapper,
   DemoTabs,
+  DemoWrapper,
+  KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
+import {
+  SplitView,
+  KiraSplitView,
+  type SplitViewRef,
+} from "@/components/ui/split-view";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 function BasicDemo() {
+  const controlId1 = React.useId();
+
   return (
-    <div className="h-[400px] rounded-lg border">
+    <div className="h-96">
       <SplitView
+        variant="bordered"
+        sidebarLabel="Release queue"
         sidebarContent={
-          <div className="p-4 space-y-4">
-            <h3 className="font-semibold text-sm">Navigation</h3>
-            <nav className="space-y-2">
-              <Button variant="ghost" className="w-full justify-start" size="sm">
-                <IconDashboard className="mr-2 h-4 w-4" />
-                Dashboard
-              </Button>
-              <Button variant="ghost" className="w-full justify-start" size="sm">
-                <IconFile className="mr-2 h-4 w-4" />
-                Files
-              </Button>
-              <Button variant="ghost" className="w-full justify-start" size="sm">
-                <IconFolder className="mr-2 h-4 w-4" />
-                Folders
-              </Button>
-              <Button variant="ghost" className="w-full justify-start" size="sm">
-                <IconSettings className="mr-2 h-4 w-4" />
-                Settings
-              </Button>
-            </nav>
+          <div className="space-y-3 p-4">
+            <h3 className="font-medium">Ready for review</h3>
+            <p className="text-sm text-muted-foreground">
+              Workspace permissions
+            </p>
+            <p className="text-sm text-muted-foreground">Migration rollback</p>
           </div>
         }
         mainContent={
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Main Content</h2>
-            <p className="text-muted-foreground mb-4">
-              This is the main content area. Resize or collapse the sidebar to see the split view in action.
+          <div className="space-y-3 p-4">
+            <h3 className="font-medium">Workspace permissions</h3>
+            <p className="text-sm text-muted-foreground">
+              Verify the guest-to-member handoff before release.
             </p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <Card className="p-4">
-                <IconDashboard className="h-8 w-8 mb-2 text-primary" />
-                <h4 className="font-semibold mb-1">Dashboard</h4>
-                <p className="text-sm text-muted-foreground">View your stats</p>
-              </Card>
-              <Card className="p-4">
-                <IconFile className="h-8 w-8 mb-2 text-primary" />
-                <h4 className="font-semibold mb-1">Files</h4>
-                <p className="text-sm text-muted-foreground">Manage documents</p>
-              </Card>
-              <Card className="p-4">
-                <IconFolder className="h-8 w-8 mb-2 text-primary" />
-                <h4 className="font-semibold mb-1">Folders</h4>
-                <p className="text-sm text-muted-foreground">Organize content</p>
-              </Card>
-            </div>
+            <label htmlFor={controlId1} className="block space-y-2 text-sm">
+              Review note
+              <Textarea
+                id={controlId1}
+                defaultValue="Check that inherited permissions stay visible."
+              />
+            </label>
           </div>
         }
       />
@@ -78,94 +56,33 @@ function BasicDemo() {
   );
 }
 
-const basicCode = `import { SplitView } from "@/components/ui/split-view"
-import { Button } from "@/components/ui/button"
-import { IconDashboard, IconFile, IconFolder, IconSettings } from "@tabler/icons-react"
-
-export function BasicSplitView() {
-  return (
-    <div className="h-[400px]">
-      <SplitView
-        sidebarContent={
-          <div className="p-4 space-y-4">
-            <h3 className="font-semibold text-sm">Navigation</h3>
-            <nav className="space-y-2">
-              <Button variant="ghost" className="w-full justify-start" size="sm">
-                <IconDashboard className="mr-2 h-4 w-4" />
-                Dashboard
-              </Button>
-              <Button variant="ghost" className="w-full justify-start" size="sm">
-                <IconFile className="mr-2 h-4 w-4" />
-                Files
-              </Button>
-              <Button variant="ghost" className="w-full justify-start" size="sm">
-                <IconFolder className="mr-2 h-4 w-4" />
-                Folders
-              </Button>
-              <Button variant="ghost" className="w-full justify-start" size="sm">
-                <IconSettings className="mr-2 h-4 w-4" />
-                Settings
-              </Button>
-            </nav>
-          </div>
-        }
-        mainContent={
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Main Content</h2>
-            <p className="text-muted-foreground">
-              This is the main content area.
-            </p>
-          </div>
-        }
-      />
-    </div>
-  )
-}`;
+const basicCode = `import { SplitView } from "@/components/ui/split-view";\nimport { Textarea } from "@/components/ui/textarea";\n\nexport function BasicDemo() {\n  return <div className="h-96"><SplitView variant="bordered" sidebarLabel="Release queue" sidebarContent={<div className="space-y-3 p-4"><h3>Ready for review</h3><p>Workspace permissions</p><p>Migration rollback</p></div>} mainContent={<div className="space-y-3 p-4"><h3>Workspace permissions</h3><p>Verify the guest-to-member handoff before release.</p><label>Review note<Textarea defaultValue="Check that inherited permissions stay visible." /></label></div>} /></div>;\n}`;
 
 function VerticalDemo() {
   return (
-    <div className="h-[400px] rounded-lg border">
+    <div className="h-96">
       <SplitView
         orientation="vertical"
+        variant="bordered"
+        defaultSize={40}
+        sidebarLabel="Change summary"
+        mainLabel="Validation log"
         sidebarContent={
-          <div className="p-4 space-y-4">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">Header Panel</Badge>
-            </div>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p>This panel acts as a header for the content below.</p>
-              <p>Drag the divider to resize vertically.</p>
-            </div>
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline">Refresh</Button>
-              <Button size="sm" variant="outline">Export</Button>
-            </div>
+          <div className="p-4">
+            <h3 className="font-medium">Migration rollback</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              The summary sits above the validation output.
+            </p>
           </div>
         }
         mainContent={
-          <div className="p-6 space-y-4">
-            <h3 className="text-xl font-semibold">Main Panel</h3>
-            <p className="text-muted-foreground">
-              This is the main content area in vertical orientation.
-            </p>
-            <div className="grid gap-2 sm:grid-cols-2">
-              <Card className="p-4">
-                <IconFile className="h-5 w-5 mb-2" />
-                <h4 className="font-medium text-sm">Document 1</h4>
-              </Card>
-              <Card className="p-4">
-                <IconFile className="h-5 w-5 mb-2" />
-                <h4 className="font-medium text-sm">Document 2</h4>
-              </Card>
-              <Card className="p-4">
-                <IconFile className="h-5 w-5 mb-2" />
-                <h4 className="font-medium text-sm">Document 3</h4>
-              </Card>
-              <Card className="p-4">
-                <IconFile className="h-5 w-5 mb-2" />
-                <h4 className="font-medium text-sm">Document 4</h4>
-              </Card>
-            </div>
+          <div className="space-y-3 p-4">
+            <h3 className="font-medium">Validation output</h3>
+            <pre className="overflow-auto text-xs">
+              {
+                "Schema check: passed\nRollback rehearsal: passed\nStaging restore: waiting"
+              }
+            </pre>
           </div>
         }
       />
@@ -173,237 +90,214 @@ function VerticalDemo() {
   );
 }
 
-const verticalCode = `import { SplitView } from "@/components/ui/split-view"
-import { Card, Badge, Button } from "@/components/ui/button"
-import { IconFile } from "@tabler/icons-react"
+const verticalCode = `import { SplitView } from "@/components/ui/split-view";\n\nexport function VerticalDemo() {\n  return <div className="h-96"><SplitView orientation="vertical" variant="bordered" defaultSize={40} sidebarLabel="Change summary" mainLabel="Validation log" sidebarContent={<div className="p-4"><h3>Migration rollback</h3><p>The summary sits above the validation output.</p></div>} mainContent={<div className="p-4"><h3>Validation output</h3><pre className="overflow-auto">{"Schema check: passed\\nRollback rehearsal: passed\\nStaging restore: waiting"}</pre></div>} /></div>;\n}`;
 
-export function VerticalSplitView() {
+function SizesDemo() {
+  const [size, setSize] = React.useState(30);
+
   return (
-    <div className="h-[400px]">
-      <SplitView
-        orientation="vertical"
-        sidebarContent={
-          <div className="p-4 space-y-4">
-            <Badge variant="outline">Header Panel</Badge>
-            <p className="text-sm text-muted-foreground">
-              This panel acts as a header.
+    <div className="space-y-2">
+      <p className="text-sm tabular-nums text-muted-foreground">
+        Sidebar: {size.toFixed(1)}%. Bounds: 20–60%. Main minimum: 30%.
+      </p>
+      <div className="h-96">
+        <SplitView
+          variant="bordered"
+          defaultSize={30}
+          minSize={20}
+          maxSize={60}
+          mainMinSize={30}
+          onSidebarSizeChange={setSize}
+          sidebarContent={
+            <p className="p-4 text-sm">Use Narrower, Wider or the divider.</p>
+          }
+          mainContent={
+            <p className="p-4 text-sm">
+              Both pointer and keyboard resizing obey the same bounds.
             </p>
-          </div>
-        }
-        mainContent={
-          <div className="p-6">
-            <h3 className="text-xl font-semibold">Main Panel</h3>
-            <p className="text-muted-foreground">
-              Main content in vertical orientation.
-            </p>
-          </div>
-        }
-      />
+          }
+        />
+      </div>
     </div>
-  )
-}`;
+  );
+}
 
-function CustomSizesDemo() {
+const sizesCode = `import * as React from "react";\nimport { SplitView } from "@/components/ui/split-view";\n\nexport function SizesDemo() {\n  const [size, setSize] = React.useState(30);\n  return <><p>Sidebar: {size.toFixed(1)}%. Bounds: 20–60%.</p><div className="h-96"><SplitView variant="bordered" defaultSize={30} minSize={20} maxSize={60} mainMinSize={30} onSidebarSizeChange={setSize} sidebarContent={<p className="p-4">Use Narrower, Wider or the divider.</p>} mainContent={<p className="p-4">Both pointer and keyboard resizing obey the same bounds.</p>} /></div></>;\n}`;
+
+function PresetsDemo() {
   return (
-    <div className="h-[400px] rounded-lg border">
-      <SplitView
-        defaultSize={30}
-        minSize={15}
+    <div className="h-96 rounded-lg border">
+      <KiraSplitView
+        responsive={false}
+        presets={[
+          { label: "Focus details", size: 20 },
+          { label: "Equal panes", size: 50 },
+          { label: "Focus queue", size: 65 },
+        ]}
+        showResizeControls={false}
         sidebarContent={
-          <div className="p-4 space-y-4">
-            <div className="space-y-2">
-              <h3 className="font-semibold text-sm">Custom Sizes</h3>
-              <div className="text-xs text-muted-foreground space-y-1">
-                <p>• Default size: 30%</p>
-                <p>• Minimum size: 15%</p>
-                <p>• Collapsible: Yes</p>
-              </div>
-            </div>
-            <Separator />
-            <div className="space-y-2">
-              <Label htmlFor="demo-input">Demo Input</Label>
-              <Input id="demo-input" placeholder="Type something..." />
-            </div>
-          </div>
+          <p className="p-4 text-sm">
+            Queue width follows the selected preset.
+          </p>
         }
         mainContent={
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Custom Configuration</h2>
-            <p className="text-muted-foreground mb-4">
-              This SplitView has a default sidebar size of 30% and a minimum of 15%.
-              Resize the divider to see the constraints in action.
-            </p>
-            <Card className="p-4">
-              <h4 className="font-semibold mb-2">Try it out:</h4>
-              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                <li>Drag the divider to resize</li>
-                <li>Try to make the sidebar smaller than 15%</li>
-                <li>Click the toggle button to collapse</li>
-              </ul>
-            </Card>
-          </div>
+          <p className="p-4 text-sm">
+            Named layouts provide a click/tap alternative to the divider.
+          </p>
         }
       />
     </div>
   );
 }
 
-const customSizesCode = `import { SplitView } from "@/components/ui/split-view"
-import { Input, Label } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
+const presetsCode = `import { KiraSplitView } from "@/components/ui/split-view";\n\nexport function PresetsDemo() {\n  return <div className="h-96 rounded-lg border"><KiraSplitView responsive={false} presets={[{ label: "Focus details", size: 20 }, { label: "Equal panes", size: 50 }, { label: "Focus queue", size: 65 }]} showResizeControls={false} sidebarContent={<p className="p-4">Queue width follows the selected preset.</p>} mainContent={<p className="p-4">Named layouts provide a click/tap alternative to the divider.</p>} /></div>;\n}`;
 
-export function CustomSizesSplitView() {
-  return (
-    <div className="h-[400px]">
-      <SplitView
-        defaultSize={30}
-        minSize={15}
-        sidebarContent={
-          <div className="p-4 space-y-4">
-            <h3 className="font-semibold text-sm">Custom Sizes</h3>
-            <Label htmlFor="demo-input">Demo Input</Label>
-            <Input id="demo-input" placeholder="Type something..." />
-          </div>
-        }
-        mainContent={
-          <div className="p-6">
-            <h2 className="text-2xl font-bold">Custom Configuration</h2>
-            <p className="text-muted-foreground">
-              Default size: 30%, Minimum: 15%
-            </p>
-          </div>
-        }
-      />
-    </div>
-  )
-}`;
+function ControlDemo() {
+  const controlId1 = React.useId();
 
-function WithScrollDemo() {
-  return (
-    <div className="h-[400px] rounded-lg border">
-      <SplitView
-        sidebarContent={
-          <ScrollArea className="h-full">
-            <div className="p-4 space-y-4">
-              <h3 className="font-semibold text-sm">Scrollable Sidebar</h3>
-              <Separator />
-              {Array.from({ length: 20 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-2 p-2 hover:bg-muted rounded cursor-pointer">
-                  <IconFile className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">File {i + 1}</span>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-        }
-        mainContent={
-          <ScrollArea className="h-full">
-            <div className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold">Scrollable Content</h2>
-              <p className="text-muted-foreground">
-                Both panels have scrollable content areas.
-              </p>
-              <Separator />
-              {Array.from({ length: 15 }).map((_, i) => (
-                <Card key={i} className="p-4">
-                  <div className="flex items-center gap-4">
-                    <IconCode className="h-8 w-8 text-primary" />
-                    <div>
-                      <h4 className="font-semibold">Content Item {i + 1}</h4>
-                      <p className="text-sm text-muted-foreground">Sample content description goes here.</p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </ScrollArea>
-        }
-      />
-    </div>
-  );
-}
-
-const withScrollCode = `import { SplitView } from "@/components/ui/split-view"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Card, Separator } from "@/components/ui/card"
-import { IconFile, IconCode } from "@tabler/icons-react"
-
-export function ScrollableSplitView() {
-  return (
-    <div className="h-[400px]">
-      <SplitView
-        sidebarContent={
-          <ScrollArea className="h-full">
-            <div className="p-4 space-y-4">
-              <h3 className="font-semibold text-sm">Scrollable Sidebar</h3>
-              {Array.from({ length: 20 }).map((_, i) => (
-                <div key={i} className="p-2 hover:bg-muted rounded">
-                  <IconFile className="h-4 w-4" />
-                  <span className="text-sm">File {i + 1}</span>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-        }
-        mainContent={
-          <ScrollArea className="h-full">
-            <div className="p-6 space-y-4">
-              <h2 className="text-2xl font-bold">Scrollable Content</h2>
-              {Array.from({ length: 15 }).map((_, i) => (
-                <Card key={i} className="p-4">Content {i + 1}</Card>
-              ))}
-            </div>
-          </ScrollArea>
-        }
-      />
-    </div>
-  )
-}`;
-
-function ProgrammaticControlDemo() {
-  const splitViewRef = useRef<SplitViewRef>(null);
+  const ref = React.useRef<SplitViewRef>(null);
 
   return (
-    <div className="space-y-4">
-      <div className="flex gap-2 rounded-lg border p-4">
-        <Button onClick={() => splitViewRef.current?.toggleSidebar()}>
-          Toggle Sidebar
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => ref.current?.toggleSidebar()}
+        >
+          Toggle
         </Button>
-        <Button variant="outline" onClick={() => splitViewRef.current?.expandSidebar()}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => ref.current?.expandSidebar()}
+        >
           Expand
         </Button>
-        <Button variant="outline" onClick={() => splitViewRef.current?.collapseSidebar()}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => ref.current?.collapseSidebar()}
+        >
           Collapse
         </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => ref.current?.resizeSidebar(40)}
+        >
+          Set to 40%
+        </Button>
       </div>
-      <div className="h-[400px] rounded-lg border">
+      <div className="h-96">
         <SplitView
-          ref={splitViewRef}
+          ref={ref}
+          variant="bordered"
+          defaultCollapsed
+          defaultSize={35}
           sidebarContent={
-            <div className="p-4 space-y-4">
-              <h3 className="font-semibold text-sm">Programmatic Control</h3>
-              <p className="text-sm text-muted-foreground">
-                Use the buttons above to control this sidebar.
-              </p>
-              <Separator />
-              <div className="space-y-2">
-                <Label>Actions available:</Label>
-                <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2">
-                  <li>toggleSidebar()</li>
-                  <li>expandSidebar()</li>
-                  <li>collapseSidebar()</li>
-                </ul>
-              </div>
+            <label htmlFor={controlId1} className="block p-4 text-sm">
+              Retained sidebar draft
+              <Textarea
+                id={controlId1}
+                defaultValue="This stays mounted while collapsed."
+              />
+            </label>
+          }
+          mainContent={
+            <p className="p-4 text-sm">
+              First expansion restores the configured 35%. Later expansions
+              restore the last expanded size.
+            </p>
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+const controlCode = `import * as React from "react";\nimport { SplitView, type SplitViewRef } from "@/components/ui/split-view";\nimport { Button } from "@/components/ui/button";\nimport { Textarea } from "@/components/ui/textarea";\n\nexport function ControlDemo() {\n  const ref = React.useRef<SplitViewRef>(null);\n  return <><Button onClick={() => ref.current?.toggleSidebar()}>Toggle</Button><Button onClick={() => ref.current?.expandSidebar()}>Expand</Button><Button onClick={() => ref.current?.collapseSidebar()}>Collapse</Button><Button onClick={() => ref.current?.resizeSidebar(40)}>Set to 40%</Button><div className="h-96"><SplitView ref={ref} variant="bordered" defaultCollapsed defaultSize={35} sidebarContent={<label>Retained sidebar draft<Textarea defaultValue="This stays mounted while collapsed." /></label>} mainContent={<p>First expansion restores 35%; later expansions restore the last size.</p>} /></div></>;\n}`;
+
+function PersistenceDemo() {
+  const [mount, setMount] = React.useState(0);
+
+  return (
+    <div className="space-y-3">
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => setMount(mount + 1)}
+      >
+        Remount saved layout
+      </Button>
+      <div className="h-96">
+        <SplitView
+          key={mount}
+          autoSaveId="split-view-release-demo"
+          variant="bordered"
+          sidebarContent={
+            <p className="p-4 text-sm">Resize or collapse, then remount.</p>
+          }
+          mainContent={
+            <p className="p-4 text-sm">
+              Only layout is saved in browser storage. Application data stays
+              caller-owned.
+            </p>
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+const persistenceCode = `import * as React from "react";\nimport { SplitView } from "@/components/ui/split-view";\nimport { Button } from "@/components/ui/button";\n\nexport function PersistenceDemo() {\n  const [mount, setMount] = React.useState(0);\n  return <><Button onClick={() => setMount(mount + 1)}>Remount saved layout</Button><div className="h-96"><SplitView key={mount} autoSaveId="split-view-release-demo" variant="bordered" sidebarContent={<p className="p-4">Resize or collapse, then remount.</p>} mainContent={<p className="p-4">Only layout is saved. Application data stays caller-owned.</p>} /></div></>;\n}`;
+
+function CompactDemo() {
+  const controlId1 = React.useId();
+
+  const [narrow, setNarrow] = React.useState(true);
+  const [pane, setPane] = React.useState<"sidebar" | "main">("sidebar");
+
+  return (
+    <div className="space-y-3">
+      <Button
+        type="button"
+        variant="outline"
+        aria-pressed={narrow}
+        onClick={() => setNarrow(!narrow)}
+      >
+        Narrow container: {narrow ? "on" : "off"}
+      </Button>
+      <div
+        className={
+          narrow
+            ? "h-96 w-full max-w-80 rounded-lg border"
+            : "h-96 w-full rounded-lg border"
+        }
+      >
+        <KiraSplitView
+          activePane={pane}
+          onActivePaneChange={setPane}
+          sidebarContent={
+            <div className="p-4">
+              <Button
+                type="button"
+                variant="ghost"
+                className="h-auto whitespace-normal text-start"
+                onClick={() => setPane("main")}
+              >
+                Review workspace permissions
+              </Button>
             </div>
           }
           mainContent={
-            <div className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Imperative Control</h2>
-              <p className="text-muted-foreground">
-                The SplitView component exposes a ref with methods to programmatically
-                control the sidebar state.
-              </p>
-            </div>
+            <label htmlFor={controlId1} className="block space-y-2 p-4 text-sm">
+              Review draft
+              <Textarea
+                id={controlId1}
+                defaultValue="Keep this draft when returning to the queue or widening the container."
+              />
+            </label>
           }
         />
       </div>
@@ -411,79 +305,197 @@ function ProgrammaticControlDemo() {
   );
 }
 
-const programmaticControlCode = `"use client"
+const compactCode = `import * as React from "react";\nimport { KiraSplitView } from "@/components/ui/split-view";\nimport { Button } from "@/components/ui/button";\nimport { Textarea } from "@/components/ui/textarea";\n\nexport function CompactDemo() {\n  const [narrow, setNarrow] = React.useState(true);\n  const [pane, setPane] = React.useState<"sidebar" | "main">("sidebar");\n  return <><Button aria-pressed={narrow} onClick={() => setNarrow(!narrow)}>Narrow container: {narrow ? "on" : "off"}</Button><div className={narrow ? "h-96 w-full max-w-80 rounded-lg border" : "h-96 w-full rounded-lg border"}><KiraSplitView activePane={pane} onActivePaneChange={setPane} sidebarContent={<Button onClick={() => setPane("main")}>Review workspace permissions</Button>} mainContent={<label>Review draft<Textarea defaultValue="Keep this draft when returning to the queue or widening the container." /></label>} /></div></>;\n}`;
 
-import { useRef } from "react"
-import { SplitView, type SplitViewRef } from "@/components/ui/split-view"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+function RefreshDemo() {
+  const controlId1 = React.useId();
 
-export function ProgrammaticControlSplitView() {
-  const splitViewRef = useRef<SplitViewRef>(null)
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string>();
 
   return (
-    <div className="space-y-4">
-      <div className="flex gap-2">
-        <Button onClick={() => splitViewRef.current?.toggleSidebar()}>
-          Toggle Sidebar
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          aria-pressed={loading}
+          onClick={() => setLoading(!loading)}
+        >
+          Refresh fixture
         </Button>
-        <Button variant="outline" onClick={() => splitViewRef.current?.expandSidebar()}>
-          Expand
-        </Button>
-        <Button variant="outline" onClick={() => splitViewRef.current?.collapseSidebar()}>
-          Collapse
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            setLoading(false);
+            setError(
+              "Details could not be refreshed. Retry to load the latest review.",
+            );
+          }}
+        >
+          Fail refresh
         </Button>
       </div>
-      <div className="h-[400px]">
-        <SplitView
-          ref={splitViewRef}
-          sidebarContent={<div>Sidebar</div>}
-          mainContent={<div>Main</div>}
+      <div className="h-96 rounded-lg border">
+        <KiraSplitView
+          defaultActivePane="main"
+          loading={loading}
+          error={error}
+          onRetry={() => {
+            setError(undefined);
+            setLoading(false);
+          }}
+          sidebarContent={<p className="p-4 text-sm">Workspace permissions</p>}
+          mainContent={
+            <label htmlFor={controlId1} className="block space-y-2 p-4 text-sm">
+              Unsaved review note
+              <Textarea
+                id={controlId1}
+                defaultValue="Type here, then refresh or fail the fixture."
+              />
+            </label>
+          }
         />
       </div>
+      <p className="text-xs text-muted-foreground">
+        Local fixture. The editor stays mounted; retry is caller-owned.
+      </p>
     </div>
-  )
-}`;
+  );
+}
 
-function NoToggleDemo() {
-  const [showToggle, setShowToggle] = useState(true);
+const refreshCode = `import * as React from "react";\nimport { KiraSplitView } from "@/components/ui/split-view";\nimport { Button } from "@/components/ui/button";\nimport { Textarea } from "@/components/ui/textarea";\n\nexport function RefreshDemo() {\n  const [loading, setLoading] = React.useState(false);\n  const [error, setError] = React.useState<string>();\n  return <><Button aria-pressed={loading} onClick={() => setLoading(!loading)}>Refresh fixture</Button><Button onClick={() => { setLoading(false); setError("Details could not be refreshed. Retry to load the latest review."); }}>Fail refresh</Button><div className="h-96"><KiraSplitView defaultActivePane="main" loading={loading} error={error} onRetry={() => { setError(undefined); setLoading(false); }} sidebarContent={<p>Workspace permissions</p>} mainContent={<label>Unsaved review note<Textarea defaultValue="Type here, then refresh or fail the fixture." /></label>} /></div></>;\n}`;
+
+type ReviewId = "permissions" | "migration";
+
+function KiraDemo() {
+  const controlId1 = React.useId();
+
+  const [selected, setSelected] = React.useState<ReviewId>("permissions");
+  const [pane, setPane] = React.useState<"sidebar" | "main">("sidebar");
+
+  const [notes, setNotes] = React.useState<Record<ReviewId, string>>({
+    permissions: "Check inherited guest permissions.",
+    migration: "Waiting for staging restore.",
+  });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4 rounded-lg border p-4">
-        <Switch
-          id="show-toggle"
-          checked={showToggle}
-          onCheckedChange={setShowToggle}
-        />
-        <Label htmlFor="show-toggle" className="cursor-pointer">
-          Show toggle button
-          <span className="block text-sm text-muted-foreground">
-            {showToggle ? "Toggle button is visible" : "Toggle button is hidden"}
-          </span>
-        </Label>
+    <div className="h-96 rounded-lg border">
+      <KiraSplitView
+        activePane={pane}
+        onActivePaneChange={setPane}
+        autoSaveId="split-view-kira-review"
+        sidebarContent={
+          <div className="space-y-2 p-3">
+            {(["permissions", "migration"] as const).map((id) => (
+              <Button
+                key={id}
+                type="button"
+                variant={selected === id ? "secondary" : "ghost"}
+                aria-pressed={selected === id}
+                className="h-auto w-full justify-start whitespace-normal text-start"
+                onClick={() => {
+                  setSelected(id);
+                  setPane("main");
+                }}
+              >
+                {id === "permissions"
+                  ? "Workspace permissions"
+                  : "Migration rollback"}
+              </Button>
+            ))}
+          </div>
+        }
+        mainContent={
+          <div className="space-y-3 p-4">
+            <h3 className="font-medium">
+              {selected === "permissions"
+                ? "Workspace permissions"
+                : "Migration rollback"}
+            </h3>
+            <label htmlFor={controlId1} className="block space-y-2 text-sm">
+              Review note
+              <Textarea
+                id={controlId1}
+                value={notes[selected]}
+                onChange={(event) =>
+                  setNotes({ ...notes, [selected]: event.target.value })
+                }
+              />
+            </label>
+            <p className="text-xs text-muted-foreground">
+              Each record's draft lives in caller state; switching records
+              restores its note.
+            </p>
+          </div>
+        }
+      />
+    </div>
+  );
+}
+
+const kiraCode = `import * as React from "react";\nimport { KiraSplitView } from "@/components/ui/split-view";\nimport { Button } from "@/components/ui/button";\nimport { Textarea } from "@/components/ui/textarea";\ntype ReviewId = "permissions" | "migration";\n\nexport function KiraDemo() {\n  const [selected, setSelected] = React.useState<ReviewId>("permissions");\n  const [pane, setPane] = React.useState<"sidebar" | "main">("sidebar");\n  const [notes, setNotes] = React.useState<Record<ReviewId, string>>({ permissions: "Check inherited guest permissions.", migration: "Waiting for staging restore." });\n  return <div className="h-96"><KiraSplitView activePane={pane} onActivePaneChange={setPane} autoSaveId="split-view-kira-review" sidebarContent={<div>{(["permissions", "migration"] as const).map((id) => <Button key={id} aria-pressed={selected === id} onClick={() => { setSelected(id); setPane("main"); }}>{id === "permissions" ? "Workspace permissions" : "Migration rollback"}</Button>)}</div>} mainContent={<label>Review note<Textarea value={notes[selected]} onChange={(event) => setNotes({ ...notes, [selected]: event.target.value })} /></label>} /></div>;\n}`;
+
+function StatesDemo() {
+  const controlId1 = React.useId();
+
+  const [state, setState] = React.useState<
+    "disabled" | "empty" | "loading" | "stress"
+  >("stress");
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {(["disabled", "empty", "loading", "stress"] as const).map((value) => (
+          <Button
+            key={value}
+            type="button"
+            variant="outline"
+            size="sm"
+            aria-pressed={state === value}
+            onClick={() => setState(value)}
+          >
+            {value}
+          </Button>
+        ))}
       </div>
-      <div className="h-[400px] rounded-lg border">
-        <SplitView
-          showToggle={showToggle}
+      <div className="h-96 max-w-80 rounded-lg border">
+        <KiraSplitView
+          defaultActivePane="main"
+          disabled={state === "disabled"}
+          disabledReason={
+            state === "disabled"
+              ? "Layout is locked for this read-only review session."
+              : undefined
+          }
+          empty={state === "empty" || state === "loading"}
+          loading={state === "loading"}
+          sidebarLabel="ReviewAcrossEngineeringCustomerSuccessAndLocalization"
           sidebarContent={
-            <div className="p-4 space-y-4">
-              <h3 className="font-semibold text-sm">No Toggle Option</h3>
-              <p className="text-sm text-muted-foreground">
-                {showToggle
-                  ? "Toggle button is visible in the header."
-                  : "Toggle button is hidden. Use the divider to resize instead."}
-              </p>
-            </div>
+            <p className="p-4 text-sm">No items match the current queue.</p>
           }
           mainContent={
-            <div className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Toggle Control</h2>
-              <p className="text-muted-foreground">
-                Use the showToggle prop to control the visibility of the collapse/expand button.
-              </p>
-            </div>
+            state === "empty" || state === "loading" ? null : (
+              <div className="space-y-2 p-4">
+                <h3 className="break-words font-medium">
+                  ReviewAcrossInternationalEnterpriseWorkspacesWithoutWhitespace
+                </h3>
+                <label htmlFor={controlId1} className="block text-sm">
+                  Note
+                  <Textarea
+                    id={controlId1}
+                    defaultValue="ณัฐชา 山田 — keep text and controls reachable."
+                  />
+                </label>
+                {Array.from({ length: 8 }, (_, index) => (
+                  <p key={index} className="text-sm text-muted-foreground">
+                    Review item {index + 1}: independent pane scrolling keeps
+                    the toolbar reachable.
+                  </p>
+                ))}
+              </div>
+            )
           }
         />
       </div>
@@ -491,264 +503,341 @@ function NoToggleDemo() {
   );
 }
 
-const noToggleCode = `"use client"
+const statesCode =
+  'import * as React from "react";\nimport { KiraSplitView } from "@/components/ui/split-view";\nimport { Button } from "@/components/ui/button";\nimport { Textarea } from "@/components/ui/textarea";\n\nexport function StatesDemo() {\n  const [state, setState] = React.useState<\n    "disabled" | "empty" | "loading" | "stress"\n  >("stress");\n  return (\n    <div className="space-y-3">\n      <div className="flex flex-wrap gap-2">\n        {(["disabled", "empty", "loading", "stress"] as const).map((value) => (\n          <Button\n            key={value}\n            type="button"\n            variant="outline"\n            size="sm"\n            aria-pressed={state === value}\n            onClick={() => setState(value)}\n          >\n            {value}\n          </Button>\n        ))}\n      </div>\n      <div className="h-96 max-w-80 rounded-lg border">\n        <KiraSplitView\n          defaultActivePane="main"\n          disabled={state === "disabled"}\n          disabledReason={\n            state === "disabled"\n              ? "Layout is locked for this read-only review session."\n              : undefined\n          }\n          empty={state === "empty" || state === "loading"}\n          loading={state === "loading"}\n          sidebarLabel="ReviewAcrossEngineeringCustomerSuccessAndLocalization"\n          sidebarContent={\n            <p className="p-4 text-sm">No items match the current queue.</p>\n          }\n          mainContent={\n            state === "empty" || state === "loading" ? null : (\n              <div className="space-y-2 p-4">\n                <h3 className="break-words font-medium">\n                  ReviewAcrossInternationalEnterpriseWorkspacesWithoutWhitespace\n                </h3>\n                <label className="block text-sm">\n                  Note\n                  <Textarea defaultValue="ณัฐชา 山田 — keep text and controls reachable." />\n                </label>\n                {Array.from({ length: 8 }, (_, index) => (\n                  <p key={index} className="text-sm text-muted-foreground">\n                    Review item {index + 1}: independent pane scrolling keeps\n                    the toolbar reachable.\n                  </p>\n                ))}\n              </div>\n            )\n          }\n        />\n      </div>\n    </div>\n  );\n}';
 
-import { useState } from "react"
-import { SplitView } from "@/components/ui/split-view"
-import { Switch, Label } from "@/components/ui/switch"
+const tabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    title: "Release queue and review",
+    code: basicCode,
+    component: <BasicDemo />,
+  },
+  {
+    value: "vertical",
+    label: "Vertical",
+    title: "Summary above validation output",
+    code: verticalCode,
+    component: <VerticalDemo />,
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    title: "Bounded percentage sizing",
+    code: sizesCode,
+    component: <SizesDemo />,
+  },
+  {
+    value: "presets",
+    label: "Presets",
+    title: "Named widths without dragging",
+    code: presetsCode,
+    component: <PresetsDemo />,
+  },
+  {
+    value: "control",
+    label: "Control",
+    title: "Collapse and imperative control",
+    code: controlCode,
+    component: <ControlDemo />,
+  },
+  {
+    value: "persistence",
+    label: "Saved layout",
+    title: "Saved resize and collapse",
+    code: persistenceCode,
+    component: <PersistenceDemo />,
+  },
+  {
+    value: "compact",
+    label: "Compact",
+    title: "Queue/detail in a narrow container",
+    code: compactCode,
+    component: <CompactDemo />,
+  },
+  {
+    value: "refresh",
+    label: "Refresh",
+    title: "Retain an unsaved review",
+    code: refreshCode,
+    component: <RefreshDemo />,
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    title: "Record-specific review drafts",
+    code: kiraCode,
+    component: <KiraDemo />,
+  },
+  {
+    value: "states",
+    label: "States",
+    title: "Empty, loading, locked and long content",
+    code: statesCode,
+    component: <StatesDemo />,
+  },
+];
 
-export function NoToggleSplitView() {
-  const [showToggle, setShowToggle] = useState(true)
+const api: React.ComponentProps<typeof APIReference>["sections"] = [
+  {
+    title: "SplitView",
+    props: [
+      {
+        prop: "sidebarContent / mainContent",
+        type: "React.ReactNode",
+        description:
+          "Required slots; both content trees stay mounted when hidden or collapsed.",
+      },
+      {
+        prop: "orientation / variant",
+        type: '"horizontal" | "vertical" / "default" | "bordered"',
+        default: "horizontal / default",
+        description:
+          "Shared Resizable direction and exported splitViewVariants appearance.",
+      },
+      {
+        prop: "defaultSize / minSize / maxSize / mainMinSize",
+        type: "number",
+        default: "25 / 10 / 75 / 10",
+        description:
+          "Percentages, not upstream numeric pixels; finite values clamp to valid bounds, sidebar minimum at least 1%.",
+      },
+      {
+        prop: "collapsible / collapsedSize / defaultCollapsed",
+        type: "boolean / number / boolean",
+        default: "true / 0 / false",
+        description:
+          "Collapse policy, percentage strictly below minimum, and initial collapse.",
+      },
+      {
+        prop: "showToggle / showResizeControls",
+        type: "boolean / boolean",
+        default: "true / true",
+        description:
+          "Persistent collapse action and click/tap ±5% resizing controls.",
+      },
+      {
+        prop: "sidebarLabel / mainLabel",
+        type: "string / string",
+        default: "Sidebar / Main content",
+        description: "Visible toolbar and accessible region/resize names.",
+      },
+      {
+        prop: "onCollapsedChange / onSidebarSizeChange",
+        type: "(collapsed: boolean) => void / (percentage: number) => void",
+        description:
+          "Native resize state notifications; compact presentation does not publish split measurements.",
+      },
+      {
+        prop: "disabled / disabledReason",
+        type: "boolean / string",
+        default: "false",
+        description:
+          "Disable layout actions with a visible reason. Content remains caller-owned.",
+      },
+      {
+        prop: "autoSaveId",
+        type: "string",
+        description:
+          "Opt-in safe browser storage. Use one unique key per instance. Layout keys include orientation; no content is persisted.",
+      },
+      {
+        prop: "pane",
+        type: '"split" | "sidebar" | "main"',
+        default: "split",
+        description:
+          "Presentation mode retaining both DOM trees; disables splitter in a single pane.",
+      },
+      {
+        prop: "group props / className / ref",
+        type: "Omit<React.ComponentProps<typeof ResizablePanelGroup>, 'orientation' | 'children' | 'className'> / string / React.Ref<SplitViewRef>",
+        description:
+          "Group attributes, layout/callback/ref options; className styles outer shell and ref exposes the SplitView handle. defaultLayout panel keys follow autoSaveId + :sidebar/:main, otherwise generated IDs.",
+      },
+    ],
+  },
+  {
+    title: "KiraSplitView",
+    props: [
+      {
+        prop: "inherited",
+        type: 'Omit<SplitViewProps, "pane">',
+        description:
+          "All SplitView configuration; Kira owns adaptive pane presentation.",
+      },
+      {
+        prop: "responsive",
+        type: "boolean",
+        default: "true",
+        description:
+          "Observe local container: below 640px show queue/detail navigation; at desktop retain split layout. Both content trees stay mounted.",
+      },
+      {
+        prop: "activePane / defaultActivePane / onActivePaneChange",
+        type: '"sidebar" | "main" / "sidebar" | "main" / (pane: "sidebar" | "main") => void',
+        default: "sidebar",
+        description:
+          "Controlled/current or local initial compact navigation. Caller can open details when selecting a record.",
+      },
+      {
+        prop: "presets",
+        type: "SplitViewPreset[]",
+        default: "25%, 50%, 65%",
+        description:
+          "Named width buttons in split mode; [] hides presets. Values obey SplitView bounds.",
+      },
+      {
+        prop: "loading / empty / error / onRetry",
+        type: "boolean / boolean / string / () => void",
+        default: "false / false",
+        description:
+          "Detail status and caller recovery; existing editor stays mounted. empty with loading reserves a static skeleton.",
+      },
+      {
+        prop: "sidebarLabel / mainLabel",
+        type: "string / string",
+        default: "Work queue / Review details",
+        description: "Accessible queue and detail names.",
+      },
+    ],
+  },
+  {
+    title: "SplitViewRef",
+    props: [
+      {
+        prop: "toggleSidebar / expandSidebar / collapseSidebar",
+        type: "() => void",
+        description:
+          "Respect disabled/collapsible and split presentation; first expansion restores defaultSize, later expansions restore last size.",
+      },
+      {
+        prop: "resizeSidebar",
+        type: "(percentage: number) => void",
+        description:
+          "Bounded percentage resize, including expansion; ignored while disabled or in a single pane.",
+      },
+      {
+        prop: "getSidebarSize",
+        type: "() => number | undefined",
+        description:
+          "Current engine percentage; undefined before engine registration.",
+      },
+    ],
+  },
+  {
+    title: "SplitViewPreset",
+    props: [
+      {
+        prop: "label / size",
+        type: "string / number",
+        description: "Visible preset name and sidebar percentage.",
+      },
+    ],
+  },
+];
 
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Switch
-          id="show-toggle"
-          checked={showToggle}
-          onCheckedChange={setShowToggle}
-        />
-        <Label htmlFor="show-toggle" className="cursor-pointer">
-          Show toggle button
-        </Label>
-      </div>
-      <div className="h-[400px]">
-        <SplitView
-          showToggle={showToggle}
-          sidebarContent={<div>Sidebar</div>}
-          mainContent={<div>Main</div>}
-        />
-      </div>
-    </div>
-  )
-}`;
-
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function SplitViewPage() {
   return (
     <ComponentPage>
       <PageHeader
-        title="SplitView"
-        description="A resizable split-pane layout with collapsible sidebar, built on top of resizable-panels. Perfect for master-detail views, IDE layouts, and dashboard interfaces."
-        version="v1.0"
+        title="Split View"
+        description="A resizable review workspace with compact queue/detail navigation, saved widths and retained drafts."
+        version="v2.0.0"
       />
-
       <FeatureGrid
         features={[
           {
-            title: "Resizable Panels",
-            description: "Drag the divider to resize panels proportionally. Supports both horizontal and vertical orientations.",
+            title: "Resize without dragging",
+            description:
+              "Native separator, width steps, presets and collapse controls.",
           },
           {
-            title: "Collapsible Sidebar",
-            description: "Built-in collapse/expand functionality with optional toggle button for maximum screen real estate.",
+            title: "Compact review",
+            description:
+              "Local-container queue/detail navigation keeps both panes mounted.",
           },
           {
-            title: "Imperative Control",
-            description: "Expose a ref with toggleSidebar, expandSidebar, and collapseSidebar methods for programmatic control.",
+            title: "Retained context",
+            description:
+              "Saved layout, record-owned drafts and recoverable refresh.",
           },
         ]}
       />
-
       <DemoTabs
         defaultValue="basic"
-        tabs={[
+        tabs={tabs.map((tab) => ({
+          value: tab.value,
+          label: tab.label,
+          demo: (
+            <DemoWrapper title={tab.title} code={tab.code}>
+              {tab.component}
+            </DemoWrapper>
+          ),
+        }))}
+      />
+      <KeyboardShortcuts
+        description="Shared panel-engine keys and native action buttons."
+        shortcuts={[
           {
-            value: "basic",
-            label: "Basic",
-            demo: (
-              <DemoWrapper
-                title="Basic Horizontal SplitView"
-                description="Simple horizontal layout with navigation sidebar and main content area."
-                code={basicCode}
-              >
-                <BasicDemo />
-              </DemoWrapper>
-            ),
+            keys: "Tab / Shift+Tab",
+            description:
+              "Move through persistent controls, resize separator and active pane content.",
           },
           {
-            value: "vertical",
-            label: "Vertical",
-            demo: (
-              <DemoWrapper
-                title="Vertical Orientation"
-                description="Split panels arranged vertically with a header panel and main content area."
-                code={verticalCode}
-              >
-                <VerticalDemo />
-              </DemoWrapper>
-            ),
+            keys: "ArrowLeft / ArrowRight",
+            description:
+              "Resize a horizontal split (inherited from react-resizable-panels).",
           },
           {
-            value: "sizes",
-            label: "Custom Sizes",
-            demo: (
-              <DemoWrapper
-                title="Custom Panel Sizes"
-                description="Configure default size and minimum size constraints for the sidebar panel."
-                code={customSizesCode}
-              >
-                <CustomSizesDemo />
-              </DemoWrapper>
-            ),
+            keys: "ArrowUp / ArrowDown",
+            description:
+              "Resize a vertical split (inherited from react-resizable-panels).",
           },
           {
-            value: "scroll",
-            label: "Scrollable",
-            demo: (
-              <DemoWrapper
-                title="Scrollable Panels"
-                description="Both panels support scrolling independently for large content areas."
-                code={withScrollCode}
-              >
-                <WithScrollDemo />
-              </DemoWrapper>
-            ),
+            keys: "Home / End / Enter on separator",
+            description:
+              "Engine minimum/maximum and collapse/restore behavior; verify against current panel constraints.",
           },
           {
-            value: "control",
-            label: "Programmatic",
-            demo: (
-              <DemoWrapper
-                title="Imperative Control"
-                description="Use the exposed ref to programmatically toggle, expand, or collapse the sidebar."
-                code={programmaticControlCode}
-              >
-                <ProgrammaticControlDemo />
-              </DemoWrapper>
-            ),
+            keys: "Enter / Space on width controls",
+            description:
+              "Kira click/keyboard alternative: ±5% or a named preset.",
           },
           {
-            value: "toggle",
-            label: "No Toggle",
-            demo: (
-              <DemoWrapper
-                title="Toggle Visibility"
-                description="Control the visibility of the collapse/expand button with the showToggle prop."
-                code={noToggleCode}
-              >
-                <NoToggleDemo />
-              </DemoWrapper>
-            ),
+            keys: "Enter / Space on queue/detail controls",
+            description:
+              "Change compact pane without remounting its editor; selection is caller-owned.",
           },
         ]}
       />
-
-      <UsageBlock
-        title="Usage"
-        description="Import and use the SplitView component with sidebar and main content slots."
-        code={`import { SplitView } from "@/components/ui/split-view"
-
-function App() {
-  return (
-    <div className="h-screen">
-      <SplitView
-        sidebarContent={<div>Sidebar content</div>}
-        mainContent={<div>Main content</div>}
-      />
-    </div>
-  )
-}`}
-      />
-
-      <APIReference
-        sections={[
+      <UsageBlock code={kiraCode} />
+      <UsageBlock title="Primitive and imperative handle" code={controlCode} />
+      <APIReference sections={api} />
+      <Changelog
+        entries={[
           {
-            title: "SplitView",
-            props: [
+            version: "2.0.0",
+            date: "15 November 2026",
+            changes: [
               {
-                prop: "children",
-                type: "ReactNode",
-                default: "-",
-                description: "Optional children (not used, content goes in sidebarContent/mainContent)",
+                type: "changed",
+                title: "Breaking: explicit content and stable controls",
+                description:
+                  "Removed inherited children (never rendered). Default sidebar is 25%, with maximum/main minimum and finite percentage constraints. Toolbar stays mounted outside panes; new slot names and generated panel IDs replace fixed sidebar/main IDs. autoSaveId uses a new validated split-view storage namespace; old saved widths are not migrated. Audited against Base UI 1.9.0 and react-resizable-panels 4.16.0; use-case research cutoff October 31.",
               },
               {
-                prop: "orientation",
-                type: "'horizontal' | 'vertical'",
-                default: "horizontal",
-                description: "Direction of the split layout.",
+                type: "added",
+                title: "Kira review workspace",
+                description:
+                  "Compact container navigation, named presets, retained loading/error/empty states, caller retry and record-owned draft examples. ResizeSidebar/getSidebarSize extend the handle.",
               },
               {
-                prop: "defaultSize",
-                type: "number",
-                default: "20",
-                description: "Default size of the sidebar panel as a percentage.",
-              },
-              {
-                prop: "minSize",
-                type: "number",
-                default: "10",
-                description: "Minimum size of the sidebar panel as a percentage.",
-              },
-              {
-                prop: "collapsible",
-                type: "boolean",
-                default: "true",
-                description: "Whether the sidebar can be collapsed.",
-              },
-              {
-                prop: "collapsedSize",
-                type: "number",
-                default: "0",
-                description: "Size of the sidebar when collapsed as a percentage.",
-              },
-              {
-                prop: "sidebarContent",
-                type: "ReactNode",
-                default: "required",
-                description: "Content to render in the sidebar panel.",
-              },
-              {
-                prop: "mainContent",
-                type: "ReactNode",
-                default: "required",
-                description: "Content to render in the main panel.",
-              },
-              {
-                prop: "showToggle",
-                type: "boolean",
-                default: "true",
-                description: "Whether to show the collapse/expand toggle button.",
-              },
-              {
-                prop: "sidebarLabel",
-                type: "string",
-                default: "Sidebar",
-                description: "Label text displayed in the sidebar header.",
-              },
-              {
-                prop: "autoSaveId",
-                type: "string",
-                default: "-",
-                description: "Key for auto-saving layout to localStorage.",
-              },
-              {
-                prop: "onLayoutChange",
-                type: "(layout) => void",
-                default: "-",
-                description: "Callback when layout changes.",
-              },
-            ],
-          },
-          {
-            title: "SplitViewRef",
-            props: [
-              {
-                prop: "toggleSidebar",
-                type: "() => void",
-                default: "-",
-                description: "Toggle between collapsed and expanded states.",
-              },
-              {
-                prop: "expandSidebar",
-                type: "() => void",
-                default: "-",
-                description: "Expand the sidebar panel.",
-              },
-              {
-                prop: "collapseSidebar",
-                type: "() => void",
-                default: "-",
-                description: "Collapse the sidebar panel.",
+                type: "fixed",
+                title: "Accessible resizing and disclosure",
+                description:
+                  "Named persistent toggle, click/tap resize controls, unique region IDs, inert collapsed content, first-expansion size retention and focus transfer when compact navigation hides the focused pane.",
               },
             ],
           },
