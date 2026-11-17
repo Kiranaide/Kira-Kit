@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   Checkbox,
@@ -220,11 +221,7 @@ function ColorsDemo() {
         <p className="text-sm font-medium">Destructive</p>
         <div className="flex items-center gap-4">
           <Checkbox color="destructive" id="col-destructive-unchecked" />
-          <Checkbox
-            color="destructive"
-            id="col-destructive-checked"
-            checked
-          />
+          <Checkbox color="destructive" id="col-destructive-checked" checked />
           <Checkbox
             color="destructive"
             id="col-destructive-indeterminate"
@@ -367,7 +364,11 @@ function StatesDemo() {
         <div className="flex items-center gap-6">
           <Checkbox id="loading-unchecked" loading />
           <Checkbox id="loading-checked" checked loading />
-          <Checkbox id="loading-indeterminate" checked="indeterminate" loading />
+          <Checkbox
+            id="loading-indeterminate"
+            checked="indeterminate"
+            loading
+          />
         </div>
       </div>
 
@@ -385,7 +386,10 @@ function StatesDemo() {
         <div className="flex items-center gap-6">
           <div className="flex items-center space-x-2">
             <Checkbox id="disabled-unchecked" disabled />
-            <Label htmlFor="disabled-unchecked" className="text-muted-foreground">
+            <Label
+              htmlFor="disabled-unchecked"
+              className="text-muted-foreground"
+            >
               Disabled unchecked
             </Label>
           </div>
@@ -397,7 +401,10 @@ function StatesDemo() {
           </div>
           <div className="flex items-center space-x-2">
             <Checkbox id="disabled-readonly" readOnly checked />
-            <Label htmlFor="disabled-readonly" className="text-muted-foreground">
+            <Label
+              htmlFor="disabled-readonly"
+              className="text-muted-foreground"
+            >
               Readonly checked
             </Label>
           </div>
@@ -687,7 +694,12 @@ function KiraDemo() {
 
   return (
     <div className="flex flex-col gap-6 max-w-md">
-      <KiraCheckbox mode="checkbox" variant="soft" color="success" defaultChecked />
+      <KiraCheckbox
+        mode="checkbox"
+        variant="soft"
+        color="success"
+        defaultChecked
+      />
       <KiraCheckbox
         mode="label"
         label="Enable notifications"
@@ -729,7 +741,11 @@ const kiraCode = `import { KiraCheckbox } from "@/components/ui/checkbox"
 function LoadingDemo() {
   return (
     <div className="flex flex-col gap-4">
-      <CheckboxWithLabel label="Saving preference…" description="Spinner blocks toggling until resolved." loading />
+      <CheckboxWithLabel
+        label="Saving preference…"
+        description="Spinner blocks toggling until resolved."
+        loading
+      />
       <div className="flex items-center gap-3">
         <Checkbox loading />
         <Checkbox loading variant="outline" size="lg" />
@@ -780,6 +796,69 @@ const disabledReasonCode = `import { CheckboxWithLabel } from "@/components/ui/c
   disabled
   disabledReason="Requires an admin role"
 />`;
+
+// =============================================================================
+// Optimistic toggle demo (v2.2 — §3.5 like/bookmark pattern)
+// =============================================================================
+
+function OptimisticDemo() {
+  const [bookmarked, setBookmarked] = React.useState(false);
+  const [liked, setLiked] = React.useState(false);
+
+  return (
+    <div className="flex flex-col gap-4 max-w-md">
+      {/* Optimistic contract: `checked` only changes when onCommit resolves.
+          Flip it on — the server rejects, the card reverts + toasts. */}
+      <CheckboxCard
+        label="Save to bookmarks"
+        description="Flip it on — the server rejects it and the card rolls back with a toast."
+        icon={<IconBookmark className="h-5 w-5" />}
+        variant="outline"
+        checked={bookmarked}
+        onCheckedChange={(c) => setBookmarked(c === true)}
+        optimistic
+        onCommit={commitBookmark}
+        commitErrorTitle="Couldn't save bookmark"
+      />
+      <CheckboxCard
+        label="Like this post"
+        description="This one commits cleanly — instant flip, no rollback."
+        icon={<IconHeart className="h-5 w-5" />}
+        variant="outline"
+        checked={liked}
+        onCheckedChange={(c) => setLiked(c === true)}
+        optimistic
+        onCommit={async (next) => {
+          await new Promise<void>((resolve) => setTimeout(resolve, 900));
+
+          return next;
+        }}
+      />
+    </div>
+  );
+}
+
+const optimisticCode = `import { useState } from "react"
+import { CheckboxCard } from "@/components/ui/checkbox"
+
+export function OptimisticCardDemo() {
+  const [bookmarked, setBookmarked] = useState(false)
+
+  return (
+    <CheckboxCard
+      label="Save to bookmarks"
+      checked={bookmarked}
+      onCheckedChange={(c) => setBookmarked(c === true)}
+      optimistic
+      onCommit={async (next) => {
+        await api.bookmarks.set(next)
+        // resolve → onCheckedChange commits the new state
+        // reject → card reverts + toast
+      }}
+      commitErrorTitle="Couldn't save bookmark"
+    />
+  )
+}`;
 
 // =============================================================================
 // Usage Code
@@ -839,6 +918,7 @@ const usageCode = `import {
 // Main Page Component
 // =============================================================================
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function CheckboxPage() {
   const features = [
     {
@@ -898,6 +978,19 @@ export default function CheckboxPage() {
           code={disabledReasonCode}
         >
           <DisabledReasonDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "optimistic",
+      label: "Optimistic",
+      demo: (
+        <DemoWrapper
+          title="Optimistic toggle"
+          description="Like/bookmark flips instantly; a rejected commit rolls the card back and toasts."
+          code={optimisticCode}
+        >
+          <OptimisticDemo />
         </DemoWrapper>
       ),
     },
@@ -1022,9 +1115,15 @@ export default function CheckboxPage() {
 
   const keyboardShortcuts = [
     { keys: "Space", description: "Toggle checkbox state" },
-    { keys: "Enter", description: "Toggle checkbox state" },
+    {
+      keys: "Enter",
+      description: "Submit the surrounding form (native checkbox behavior)",
+    },
     { keys: "Tab", description: "Move focus to next focusable element" },
-    { keys: "Shift + Tab", description: "Move focus to previous focusable element" },
+    {
+      keys: "Shift + Tab",
+      description: "Move focus to previous focusable element",
+    },
   ];
 
   const apiSections = [
@@ -1102,12 +1201,7 @@ export default function CheckboxPage() {
         {
           prop: "description",
           type: "string",
-          description: "Optional description text below the label.",
-        },
-        {
-          prop: "...CheckboxProps",
-          type: "-",
-          description: "Inherits all Checkbox props.",
+          description: "The description text for the checkbox.",
         },
       ],
     },
@@ -1117,7 +1211,8 @@ export default function CheckboxPage() {
         {
           prop: "options",
           type: "CheckboxOption[]",
-          description: "Array of checkbox options with value, label, description, and disabled.",
+          description:
+            "Array of checkbox options with value, label, description, and disabled.",
         },
         {
           prop: "value",
@@ -1189,10 +1284,28 @@ export default function CheckboxPage() {
           description: "Icon to display in the card.",
         },
         {
-          prop: "variant",
-          type: "'default' | 'outline'",
-          default: "'default'",
-          description: "Visual style variant of the card.",
+          prop: "showIndicator",
+          type: "boolean",
+          default: "true",
+          description: "Render the checkbox box inside the card.",
+        },
+        {
+          prop: "optimistic",
+          type: "boolean",
+          default: "false",
+          description:
+            "Flip instantly on click; requires checked + onCheckedChange + onCommit.",
+        },
+        {
+          prop: "onCommit",
+          type: "(checked: boolean) => Promise<unknown>",
+          description:
+            "Async commit for optimistic mode; rejection rolls the card back and toasts.",
+        },
+        {
+          prop: "commitErrorTitle",
+          type: "React.ReactNode",
+          description: "Title of the rollback toast.",
         },
         {
           prop: "...CheckboxProps",
@@ -1219,7 +1332,7 @@ export default function CheckboxPage() {
     <ComponentPage>
       <PageHeader
         title="Checkbox"
-        version="v2.0"
+        version="v2.2"
         description="A control that allows the user to toggle between checked and unchecked states with support for variants, colors, indeterminate state, and more."
       />
 
@@ -1237,46 +1350,82 @@ export default function CheckboxPage() {
 
       <APIReference sections={apiSections} />
 
-      <Changelog
-        entries={[
-          {
-            version: "v2.0",
-            date: "2026-07-22",
-            changes: [
-              {
-                type: "added",
-                title: "KiraCheckbox mega-component",
-                description:
-                  "One prop-driven API covering checkbox, label, card, and group modes.",
-              },
-              {
-                type: "added",
-                title: "Loading state",
-                description:
-                  "`loading` shows a spinner in the indicator and blocks toggling.",
-              },
-              {
-                type: "added",
-                title: "Disabled reason tooltip",
-                description:
-                  "`disabledReason` wraps a disabled control in an accessible tooltip.",
-              },
-              {
-                type: "added",
-                title: "Group progress indicator",
-                description:
-                  "CheckboxGroup `showProgress` renders a live n/total selected count.",
-              },
-              {
-                type: "changed",
-                title: "Reduced-motion gating",
-                description:
-                  "Indicator animation is gated behind useReducedMotion().",
-              },
-            ],
-          },
-        ]}
-      />
+      <Changelog entries={checkboxPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const checkboxPageChangelogEntries = [
+  {
+    version: "v2.2",
+    date: "22 October 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Optimistic toggle (CheckboxCard)",
+        description:
+          "`optimistic` + `onCommit` flip the card instantly via React 19 useOptimistic; a rejected commit rolls back and toasts.",
+      },
+      {
+        type: "changed",
+        title: "WCAG 2.5.8 hit area",
+        description:
+          "The 16/20px boxes now get a 24px+ pointer target via an expanded ::after hit area (shadcn base-nova pattern).",
+      },
+      {
+        type: "changed",
+        title: "Focus ring + error styling consolidated",
+        description:
+          "Focus ring matches the button exemplar (ring-[3px] ring-ring/50); invalid styling keys off aria-invalid (Base UI emits both data-invalid and aria-invalid).",
+      },
+    ],
+  },
+  {
+    version: "v2.0",
+    date: "22 July 2026",
+    changes: [
+      {
+        type: "added",
+        title: "KiraCheckbox mega-component",
+        description:
+          "One prop-driven API covering checkbox, label, card, and group modes.",
+      },
+      {
+        type: "added",
+        title: "Loading state",
+        description:
+          "`loading` shows a spinner in the indicator and blocks toggling.",
+      },
+      {
+        type: "added",
+        title: "Disabled reason tooltip",
+        description:
+          "`disabledReason` wraps a disabled control in an accessible tooltip.",
+      },
+      {
+        type: "added",
+        title: "Group progress indicator",
+        description:
+          "CheckboxGroup `showProgress` renders a live n/total selected count.",
+      },
+      {
+        type: "changed",
+        title: "Reduced-motion gating",
+        description: "Indicator animation is gated behind useReducedMotion().",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
+
+const commitBookmark = async (next: boolean) => {
+  // Simulated server round-trip: resolves or rejects.
+  await new Promise<void>((resolve, reject) => {
+    setTimeout(() => {
+      if (next) reject(new Error("server says no"));
+      else resolve();
+    }, 900);
+  });
+
+  return next;
+};
