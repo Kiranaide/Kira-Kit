@@ -1,849 +1,723 @@
-import { useState } from "react";
+import * as React from "react";
+import { IconPhoto, IconFocus2, IconDeviceMobile } from "@tabler/icons-react";
 import {
   AspectRatio,
   ResponsiveAspectRatio,
   AspectRatioImage,
   KiraAspectRatio,
+  type AspectRatioPreset,
 } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   ComponentPage,
   PageHeader,
   FeatureGrid,
   DemoTabs,
   DemoWrapper,
+  KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
-const presetRatiosCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
+const artwork = "/kira-alpine-landscape.svg";
+const portrait = "/kira-alpine-portrait.svg";
 
-<div className="grid gap-6 md:grid-cols-4">
-  <div>
-    <p className="text-sm text-muted-foreground mb-2">16:9 (Video)</p>
-    <AspectRatio ratio="16:9" className="bg-muted rounded-lg overflow-hidden">
-      <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-        16:9
-      </div>
-    </AspectRatio>
-  </div>
-  <div>
-    <p className="text-sm text-muted-foreground mb-2">4:3 (Photo)</p>
-    <AspectRatio ratio="4:3" className="bg-muted rounded-lg overflow-hidden">
-      <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-        4:3
-      </div>
-    </AspectRatio>
-  </div>
-  <div>
-    <p className="text-sm text-muted-foreground mb-2">1:1 (Square)</p>
-    <AspectRatio ratio="1:1" className="bg-muted rounded-lg overflow-hidden">
-      <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-        1:1
-      </div>
-    </AspectRatio>
-  </div>
-  <div>
-    <p className="text-sm text-muted-foreground mb-2">9:16 (Story)</p>
-    <AspectRatio ratio="9:16" className="bg-muted rounded-lg overflow-hidden">
-      <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-        9:16
-      </div>
-    </AspectRatio>
-  </div>
-  <div>
-    <p className="text-sm text-muted-foreground mb-2">21:9 (Ultrawide)</p>
-    <AspectRatio ratio="21:9" className="bg-muted rounded-lg overflow-hidden">
-      <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-        21:9
-      </div>
-    </AspectRatio>
-  </div>
-  <div>
-    <p className="text-sm text-muted-foreground mb-2">3:2 (Classic)</p>
-    <AspectRatio ratio="3:2" className="bg-muted rounded-lg overflow-hidden">
-      <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-        3:2
-      </div>
-    </AspectRatio>
-  </div>
-  <div>
-    <p className="text-sm text-muted-foreground mb-2">3:4 (Portrait)</p>
-    <AspectRatio ratio="3:4" className="bg-muted rounded-lg overflow-hidden">
-      <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-        3:4
-      </div>
-    </AspectRatio>
-  </div>
-  <div>
-    <p className="text-sm text-muted-foreground mb-2">2:3 (Portrait)</p>
-    <AspectRatio ratio="2:3" className="bg-muted rounded-lg overflow-hidden">
-      <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-        2:3
-      </div>
-    </AspectRatio>
-  </div>
-</div>`;
+const preview =
+  '<!doctype html><html lang="en"><body style="margin:0;font-family:system-ui;display:grid;place-items:center;min-height:100vh;color-scheme:light dark"><main><h1>Field guide preview</h1><p>This document loaded after your choice.</p><a href="#notes">Read field notes</a><p id="notes">Pack water and check the weather before the hike.</p></main></body></html>';
 
-function PresetRatiosDemo() {
+function BasicDemo() {
   return (
-    <div className="grid gap-6 md:grid-cols-4">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">16:9 (Video)</p>
-        <AspectRatio
-          ratio="16:9"
-          className="bg-muted rounded-lg overflow-hidden"
-        >
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-            16:9
-          </div>
-        </AspectRatio>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">4:3 (Photo)</p>
-        <AspectRatio
-          ratio="4:3"
-          className="bg-muted rounded-lg overflow-hidden"
-        >
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-            4:3
-          </div>
-        </AspectRatio>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">1:1 (Square)</p>
-        <AspectRatio
-          ratio="1:1"
-          className="bg-muted rounded-lg overflow-hidden"
-        >
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-            1:1
-          </div>
-        </AspectRatio>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">9:16 (Story)</p>
-        <AspectRatio
-          ratio="9:16"
-          className="bg-muted rounded-lg overflow-hidden"
-        >
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-            9:16
-          </div>
-        </AspectRatio>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">21:9 (Ultrawide)</p>
-        <AspectRatio
-          ratio="21:9"
-          className="bg-muted rounded-lg overflow-hidden"
-        >
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-            21:9
-          </div>
-        </AspectRatio>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">3:2 (Classic)</p>
-        <AspectRatio
-          ratio="3:2"
-          className="bg-muted rounded-lg overflow-hidden"
-        >
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-            3:2
-          </div>
-        </AspectRatio>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">3:4 (Portrait)</p>
-        <AspectRatio
-          ratio="3:4"
-          className="bg-muted rounded-lg overflow-hidden"
-        >
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-            3:4
-          </div>
-        </AspectRatio>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">2:3 (Portrait)</p>
-        <AspectRatio
-          ratio="2:3"
-          className="bg-muted rounded-lg overflow-hidden"
-        >
-          <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
-            2:3
-          </div>
-        </AspectRatio>
-      </div>
-    </div>
-  );
-}
-
-const withImageCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
-
-<div className="grid gap-4 md:grid-cols-2">
-  <div>
-    <p className="text-sm text-muted-foreground mb-2">Cover (default)</p>
-    <AspectRatio ratio="16:9">
-      <img
-        src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
-        alt="Sunset landscape"
-        className="w-full h-full object-cover rounded-lg"
+    <div className="max-w-xl space-y-3">
+      <KiraAspectRatio
+        src={artwork}
+        alt="Illustrated alpine peaks and a field guide title"
+        ratio="16:9"
+        className="rounded-lg"
+        imageProps={{ width: 1200, height: 680 }}
       />
-    </AspectRatio>
-  </div>
-  <div>
-    <p className="text-sm text-muted-foreground mb-2">Contain</p>
-    <AspectRatio ratio="16:9" fit="contain" className="bg-muted rounded-lg">
-      <img
-        src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
-        alt="Sunset landscape"
-        className="w-full h-full object-contain rounded-lg"
-      />
-    </AspectRatio>
-  </div>
-</div>`;
-
-function WithImageDemo() {
-  return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Cover (default)</p>
-        <AspectRatio ratio="16:9">
-          <img
-            src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
-            alt="Sunset landscape"
-            className="w-full h-full object-cover rounded-lg"
-          />
-        </AspectRatio>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Contain</p>
-        <AspectRatio ratio="16:9" fit="contain" className="bg-muted rounded-lg">
-          <img
-            src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
-            alt="Sunset landscape"
-            className="w-full h-full object-contain rounded-lg"
-          />
-        </AspectRatio>
-      </div>
-    </div>
-  );
-}
-
-const loadingStateCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
-
-<div className="grid gap-4 md:grid-cols-3">
-  <AspectRatio ratio="16:9" loading>
-    <img
-      src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
-      alt="Loading example"
-      className="w-full h-full object-cover rounded-lg"
-    />
-  </AspectRatio>
-  <AspectRatio ratio="1:1" loading>
-    <img
-      src="https://github.com/shadcn.png"
-      alt="Loading example"
-      className="w-full h-full object-cover rounded-lg"
-    />
-  </AspectRatio>
-  <AspectRatio ratio="9:16" loading>
-    <img
-      src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=400&h=700&dpr=2&q=80"
-      alt="Loading example"
-      className="w-full h-full object-cover rounded-lg"
-    />
-  </AspectRatio>
-</div>`;
-
-function LoadingStateDemo() {
-  return (
-    <div className="grid gap-4 md:grid-cols-3">
-      <AspectRatio ratio="16:9" loading>
-        <img
-          src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
-          alt="Loading example"
-          className="w-full h-full object-cover rounded-lg"
-        />
-      </AspectRatio>
-      <AspectRatio ratio="1:1" loading>
-        <img
-          src="https://github.com/shadcn.png"
-          alt="Loading example"
-          className="w-full h-full object-cover rounded-lg"
-        />
-      </AspectRatio>
-      <AspectRatio ratio="9:16" loading>
-        <img
-          src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=400&h=700&dpr=2&q=80"
-          alt="Loading example"
-          className="w-full h-full object-cover rounded-lg"
-        />
-      </AspectRatio>
-    </div>
-  );
-}
-
-const contentPositionCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
-
-<div className="grid gap-4 md:grid-cols-4">
-  <AspectRatio ratio="4:3" position="center" className="bg-muted rounded-lg overflow-hidden">
-    <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
-      Center
-    </div>
-  </AspectRatio>
-  <AspectRatio ratio="4:3" position="top" className="bg-muted rounded-lg overflow-hidden">
-    <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
-      Top
-    </div>
-  </AspectRatio>
-  <AspectRatio ratio="4:3" position="bottom-left" className="bg-muted rounded-lg overflow-hidden">
-    <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
-      Bottom Left
-    </div>
-  </AspectRatio>
-  <AspectRatio ratio="4:3" position="bottom-right" className="bg-muted rounded-lg overflow-hidden">
-    <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
-      Bottom Right
-    </div>
-  </AspectRatio>
-</div>`;
-
-function ContentPositionDemo() {
-  return (
-    <div className="grid gap-4 md:grid-cols-4">
-      <AspectRatio
-        ratio="4:3"
-        position="center"
-        className="bg-muted rounded-lg overflow-hidden"
-      >
-        <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
-          Center
-        </div>
-      </AspectRatio>
-      <AspectRatio
-        ratio="4:3"
-        position="top"
-        className="bg-muted rounded-lg overflow-hidden"
-      >
-        <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
-          Top
-        </div>
-      </AspectRatio>
-      <AspectRatio
-        ratio="4:3"
-        position="bottom-left"
-        className="bg-muted rounded-lg overflow-hidden"
-      >
-        <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
-          Bottom Left
-        </div>
-      </AspectRatio>
-      <AspectRatio
-        ratio="4:3"
-        position="bottom-right"
-        className="bg-muted rounded-lg overflow-hidden"
-      >
-        <div className="bg-primary text-primary-foreground p-2 rounded text-xs w-16 h-16">
-          Bottom Right
-        </div>
-      </AspectRatio>
-    </div>
-  );
-}
-
-const withVideoCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
-
-<div className="max-w-xl">
-  <AspectRatio ratio="16:9">
-    <iframe
-      src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-      title="YouTube video"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-      className="w-full h-full rounded-lg"
-    />
-  </AspectRatio>
-</div>`;
-
-function WithVideoDemo() {
-  return (
-    <div className="max-w-xl">
-      <AspectRatio ratio="16:9">
-        <iframe
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-          title="YouTube video"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="w-full h-full rounded-lg"
-        />
-      </AspectRatio>
-    </div>
-  );
-}
-
-// =============================================================================
-// Blur-up image loading
-// =============================================================================
-const blurUpCode = `import { AspectRatio, AspectRatioImage } from "@/components/ui/aspect-ratio"
-
-<AspectRatio ratio="16:9" className="rounded-lg">
-  <AspectRatioImage
-    src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=1200&q=80"
-    alt="Sunset landscape"
-  />
-</AspectRatio>`;
-
-function BlurUpDemo() {
-  const [key, setKey] = useState(0);
-
-  return (
-    <div className="space-y-3 max-w-md">
-      <AspectRatio ratio="16:9" className="rounded-lg bg-muted">
-        <AspectRatioImage
-          key={key}
-          src={`https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=1200&q=80&sig=${key}`}
-          alt="Sunset landscape"
-        />
-      </AspectRatio>
-      <button
-        onClick={() => setKey((k) => k + 1)}
-        className="text-sm text-primary underline underline-offset-4"
-      >
-        Reload image
-      </button>
-      <p className="text-xs text-muted-foreground">
-        The image fades and un-blurs once decoded. Snaps instantly under reduced motion.
+      <p className="text-sm text-muted-foreground">
+        Local illustration: a stable frame while the image loads.
       </p>
     </div>
   );
 }
 
-// =============================================================================
-// Zoom on hover
-// =============================================================================
-const zoomCode = `import { AspectRatio } from "@/components/ui/aspect-ratio"
+const basicCode =
+  'import { KiraAspectRatio } from "@/components/ui/aspect-ratio";\nconst source = "/kira-alpine-landscape.svg";\nexport function GuideCover() {\n  return <KiraAspectRatio src={source} alt="Illustrated alpine peaks and a field guide title"\n    ratio="16:9" className="rounded-lg" imageProps={{ width: 1200, height: 680 }} />;\n}';
 
-<AspectRatio ratio="4:3" zoomOnHover className="rounded-lg">
-  <img src="..." alt="Product" />
-</AspectRatio>`;
+const presets: AspectRatioPreset[] = [
+  "1:1",
+  "4:3",
+  "3:2",
+  "16:9",
+  "9:16",
+  "21:9",
+  "3:4",
+  "2:3",
+];
 
-function ZoomDemo() {
+function RatiosDemo() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 max-w-2xl">
-      <AspectRatio ratio="4:3" zoomOnHover className="rounded-lg">
-        <img
-          src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&q=80"
-          alt="Product"
-        />
-      </AspectRatio>
-      <AspectRatio ratio="4:3" zoomOnHover className="rounded-lg">
-        <img
-          src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
-          alt="Product"
-        />
-      </AspectRatio>
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {presets.map((ratio) => (
+        <div key={ratio} className="space-y-2">
+          <AspectRatio ratio={ratio} className="rounded-lg">
+            <AspectRatioImage src={artwork} alt={`Guide crop at ${ratio}`} />
+          </AspectRatio>
+          <p className="text-sm tabular-nums">{ratio}</p>
+        </div>
+      ))}
     </div>
   );
 }
 
-// =============================================================================
-// Responsive (breakpoint) ratios
-// =============================================================================
-const responsiveCode = `import { ResponsiveAspectRatio } from "@/components/ui/aspect-ratio"
+const ratiosCode =
+  'import { AspectRatio, AspectRatioImage, type AspectRatioPreset } from "@/components/ui/aspect-ratio";\nconst source = "/kira-alpine-landscape.svg";\nconst ratios: AspectRatioPreset[] = ["1:1", "4:3", "3:2", "16:9", "9:16", "21:9", "3:4", "2:3"];\nexport function GuideCrops() {\n  return <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">\n    {ratios.map((ratio) => <AspectRatio key={ratio} ratio={ratio} className="rounded-lg"><AspectRatioImage src={source} alt={`Guide crop at ${ratio}`} /></AspectRatio>)}\n  </div>;\n}';
 
-// Portrait on mobile, widescreen on desktop
-<ResponsiveAspectRatio base="1:1" md="4:3" lg="16:9" className="rounded-lg">
-  <img src="..." alt="Responsive" />
-</ResponsiveAspectRatio>`;
+function LoadingDemo() {
+  const controlId1 = React.useId();
+
+  const [loading, setLoading] = React.useState(false);
+
+  return (
+    <div className="space-y-4">
+      <AspectRatio
+        ratio="16:9"
+        loading={loading}
+        className="max-w-xl rounded-lg border border-border"
+      >
+        <div className="flex h-full w-full flex-col justify-center gap-3 bg-background p-4">
+          <label htmlFor={controlId1} className="space-y-2 text-sm">
+            <span className="block">Guide title</span>
+            <Input
+              id={controlId1}
+              aria-label="Retained guide title"
+              defaultValue="Weekend alpine guide"
+            />
+          </label>
+          <p className="text-xs text-muted-foreground">
+            The input stays mounted during reload.
+          </p>
+        </div>
+      </AspectRatio>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setLoading((value) => !value)}
+      >
+        {loading ? "Finish reload" : "Start reload"}
+      </Button>
+    </div>
+  );
+}
+
+const loadingCode =
+  'import * as React from "react";\nimport { AspectRatio } from "@/components/ui/aspect-ratio";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\nexport function RetainedDraft() {\n  const [loading, setLoading] = React.useState(false);\n  return <div>\n    <AspectRatio ratio="16:9" loading={loading}><label>Guide title <Input aria-label="Guide title" defaultValue="Weekend alpine guide" /></label></AspectRatio>\n    <Button onClick={() => setLoading((value) => !value)}>{loading ? "Finish reload" : "Start reload"}</Button>\n  </div>;\n}';
+
+function RecoveryDemo() {
+  const [broken, setBroken] = React.useState(true);
+
+  return (
+    <div className="space-y-4">
+      <KiraAspectRatio
+        src={broken ? "data:image/png;base64,broken" : artwork}
+        alt="Alpine field guide"
+        ratio="16:9"
+        className="max-w-xl rounded-lg"
+        errorMessage="The field guide image is unavailable."
+        onRetry={async () => {
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          setBroken(false);
+        }}
+      />
+      <Button variant="outline" size="sm" onClick={() => setBroken(true)}>
+        Reset broken source
+      </Button>
+    </div>
+  );
+}
+
+const recoveryCode =
+  'import * as React from "react";\nimport { KiraAspectRatio } from "@/components/ui/aspect-ratio";\nconst source = "/kira-alpine-landscape.svg";\nexport function RecoverImage() {\n  const [broken, setBroken] = React.useState(true);\n  return <KiraAspectRatio src={broken ? "data:image/png;base64,broken" : source} alt="Alpine field guide"\n    ratio="16:9" errorMessage="The field guide image is unavailable."\n    onRetry={async () => { await new Promise((resolve) => setTimeout(resolve, 300)); setBroken(false); }} />;\n}';
 
 function ResponsiveDemo() {
   return (
-    <div className="space-y-3 max-w-2xl">
+    <div className="space-y-3">
       <ResponsiveAspectRatio
-        base="1:1"
-        md="4:3"
-        lg="16:9"
-        className="rounded-lg bg-muted"
+        base={2 / 3}
+        md={1.7}
+        lg={2.5}
+        xl={3}
+        className="rounded-lg"
       >
-        <img
-          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80"
-          alt="Responsive landscape"
-        />
+        <AspectRatioImage src={artwork} alt="A numeric responsive crop" />
       </ResponsiveAspectRatio>
-      <p className="text-xs text-muted-foreground">
-        Resize the window: 1:1 on mobile → 4:3 at md → 16:9 at lg. Static
-        Tailwind breakpoint classes (no broken CSS attr()).
+      <p className="text-sm text-muted-foreground">
+        Numeric ratios: 2/3 at base, 1.7 at md, 2.5 at lg, and 3 at xl.
       </p>
     </div>
   );
 }
 
-// =============================================================================
-// KiraAspectRatio (prop-driven)
-// =============================================================================
-const kiraCode = `import { KiraAspectRatio } from "@/components/ui/aspect-ratio"
+const responsiveCode =
+  'import { ResponsiveAspectRatio, AspectRatioImage } from "@/components/ui/aspect-ratio";\nconst source = "/kira-alpine-landscape.svg";\nexport function ResponsiveCover() {\n  return <ResponsiveAspectRatio base={2 / 3} md={1.7} lg={2.5} xl={3}><AspectRatioImage src={source} alt="A numeric responsive crop" /></ResponsiveAspectRatio>;\n}';
 
-// Image with blur-up
-<KiraAspectRatio type="image" ratio="16:9" src="..." alt="Photo" className="rounded-lg" />
+function ContainerDemo() {
+  const [wide, setWide] = React.useState(false);
 
-// Video embed
-<KiraAspectRatio type="embed" ratio="16:9" src="https://www.youtube.com/embed/…" alt="Video" />`;
-
-function KiraDemo() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 max-w-3xl">
-      <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">type=&quot;image&quot;</p>
-        <KiraAspectRatio
-          type="image"
-          ratio="16:9"
-          src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=80"
-          alt="Forest"
-          zoomOnHover
-          className="rounded-lg bg-muted"
-        />
-      </div>
-      <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">type=&quot;embed&quot;</p>
-        <KiraAspectRatio
-          type="embed"
-          ratio="16:9"
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-          alt="YouTube video"
+    <div className="space-y-4">
+      <Button
+        variant="outline"
+        size="sm"
+        aria-pressed={wide}
+        onClick={() => setWide((value) => !value)}
+      >
+        {wide ? "Use compact card" : "Use wide article"}
+      </Button>
+      <div className={wide ? "w-full" : "w-64 max-w-full"}>
+        <ResponsiveAspectRatio
+          query="container"
+          base="1:1"
+          md="16:9"
           className="rounded-lg"
-          embedProps={{
-            allow:
-              "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
-            allowFullScreen: true,
-          }}
-        />
+        >
+          <AspectRatioImage src={artwork} alt="Cover adapting to card width" />
+        </ResponsiveAspectRatio>
       </div>
+      <p className="text-sm text-muted-foreground">
+        The crop follows the card width while the page viewport stays unchanged.
+      </p>
     </div>
   );
 }
 
+const containerCode =
+  'import * as React from "react";\nimport { ResponsiveAspectRatio, AspectRatioImage } from "@/components/ui/aspect-ratio";\nimport { Button } from "@/components/ui/button";\nconst source = "/kira-alpine-landscape.svg";\nexport function LocalCover() {\n  const [wide, setWide] = React.useState(false);\n  return <div>\n    <Button aria-pressed={wide} onClick={() => setWide((value) => !value)}>{wide ? "Use compact card" : "Use wide article"}</Button>\n    <div className={wide ? "w-full" : "w-64 max-w-full"}><ResponsiveAspectRatio query="container" base="1:1" md="16:9"><AspectRatioImage src={source} alt="Cover adapting to card width" /></ResponsiveAspectRatio></div>\n  </div>;\n}';
+
+function FocalDemo() {
+  const [x, setX] = React.useState(50);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        {[0, 50, 100].map((value) => (
+          <Button
+            key={value}
+            size="sm"
+            variant="outline"
+            aria-pressed={x === value}
+            onClick={() => setX(value)}
+          >
+            {{ 0: "Left peak", 50: "Center", 100: "Right peak" }[value]}
+          </Button>
+        ))}
+      </div>
+      <KiraAspectRatio
+        src={artwork}
+        alt="A focal crop of the alpine guide"
+        ratio="1:1"
+        focalPoint={{ x, y: 50 }}
+        className="max-w-sm rounded-lg"
+      />
+    </div>
+  );
+}
+
+const focalCode =
+  'import * as React from "react";\nimport { KiraAspectRatio } from "@/components/ui/aspect-ratio";\nimport { Button } from "@/components/ui/button";\nconst source = "/kira-alpine-landscape.svg";\nexport function FocalCrop() {\n  const [x, setX] = React.useState(50);\n  return <div>\n    {[0, 50, 100].map((value) => <Button key={value} aria-pressed={x === value} onClick={() => setX(value)}>{value}%</Button>)}\n    <KiraAspectRatio src={source} alt="A focal crop of the alpine guide" ratio="1:1" focalPoint={{ x, y: 50 }} />\n  </div>;\n}';
+
+function ArtDirectionDemo() {
+  return (
+    <div className="space-y-3">
+      <KiraAspectRatio
+        src={artwork}
+        sources={[{ media: "(max-width: 639px)", srcSet: portrait }]}
+        alt="Alpine guide with a separate mobile illustration"
+        responsive={{ base: "2:3", sm: "16:9" }}
+        className="rounded-lg"
+      />
+      <p className="text-sm text-muted-foreground">
+        A portrait resource below 640px and landscape above it. Both are local
+        illustrations.
+      </p>
+    </div>
+  );
+}
+
+const artDirectionCode =
+  'import { KiraAspectRatio } from "@/components/ui/aspect-ratio";\nconst source = "/kira-alpine-landscape.svg";\nexport function CampaignCover() {\n  return <KiraAspectRatio src={source} alt="Alpine guide with a separate mobile illustration"\n    sources={[{ media: "(max-width: 639px)", srcSet: "/kira-alpine-portrait.svg" }]}\n    responsive={{ base: "2:3", sm: "16:9" }} />;\n}';
+
+function EmbedDemo() {
+  const [version, setVersion] = React.useState(0);
+
+  return (
+    <div className="space-y-4">
+      <KiraAspectRatio
+        key={version}
+        type="embed"
+        alt="Field guide preview"
+        ratio="16:9"
+        posterSrc={artwork}
+        className="max-w-xl rounded-lg"
+        activateLabel="Open guide preview"
+        embedProps={{
+          srcDoc: preview,
+          title: "Field guide preview",
+          sandbox: "allow-scripts",
+        }}
+      />
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setVersion((value) => value + 1)}
+      >
+        Reset preview
+      </Button>
+    </div>
+  );
+}
+
+const embedCode =
+  'import { KiraAspectRatio } from "@/components/ui/aspect-ratio";\nconst source = "/kira-alpine-landscape.svg";\nconst previewDocument = "<!doctype html><html lang=\\"en\\"><body style=\\"margin:0;font-family:system-ui;display:grid;place-items:center;min-height:100vh;color-scheme:light dark\\"><main><h1>Field guide preview</h1><p>This document loaded after your choice.</p><a href=\\"#notes\\">Read field notes</a><p id=\\"notes\\">Pack water and check the weather before the hike.</p></main></body></html>";\nexport function DeferredPreview() {\n  return <KiraAspectRatio type="embed" alt="Field guide preview" ratio="16:9" posterSrc={source}\n    activateLabel="Open guide preview" embedProps={{ srcDoc: previewDocument, title: "Field guide preview", sandbox: "allow-scripts" }} />;\n}';
+
+function KiraDemo() {
+  const [selected, setSelected] = React.useState(false);
+
+  return (
+    <div className="space-y-4">
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => setSelected((value) => !value)}
+      >
+        {selected ? "Remove cover" : "Select cover"}
+      </Button>
+      <KiraAspectRatio
+        src={selected ? artwork : undefined}
+        alt="Selected field guide cover"
+        ratio="16:9"
+        emptyMessage="Select a cover for your guide."
+        className="max-w-xl rounded-lg"
+      />
+    </div>
+  );
+}
+
+const kiraCode =
+  'import * as React from "react";\nimport { KiraAspectRatio } from "@/components/ui/aspect-ratio";\nimport { Button } from "@/components/ui/button";\nconst source = "/kira-alpine-landscape.svg";\nexport function GuideMedia() {\n  const [selected, setSelected] = React.useState(false);\n  return <div>\n    <Button onClick={() => setSelected((value) => !value)}>{selected ? "Remove cover" : "Select cover"}</Button>\n    <KiraAspectRatio src={selected ? source : undefined} alt="Selected field guide cover" ratio="16:9" emptyMessage="Select a cover for your guide." />\n  </div>;\n}';
+
+function StatesDemo() {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <KiraAspectRatio
+        ratio={Number.NaN}
+        emptyMessage="An invalid ratio safely uses a square."
+        className="rounded-lg"
+      />
+      <KiraAspectRatio
+        src="data:image/png;base64,broken"
+        alt="International alpine expedition-日本語-ภาษาไทย-العربية"
+        ratio="16:9"
+        className="rounded-lg"
+      />
+      <AspectRatio ratio="16:9" fit="contain" className="rounded-lg bg-muted">
+        <AspectRatioImage src={portrait} alt="A contained portrait image" />
+      </AspectRatio>
+      <AspectRatio
+        ratio="16:9"
+        position="bottom-right"
+        className="rounded-lg bg-muted"
+      >
+        <span className="p-3 text-sm">Bottom-right content</span>
+      </AspectRatio>
+    </div>
+  );
+}
+
+const statesCode =
+  'import { AspectRatio, AspectRatioImage, KiraAspectRatio } from "@/components/ui/aspect-ratio";\nexport function MediaStates() {\n  return <div className="grid gap-4 sm:grid-cols-2">\n    <KiraAspectRatio ratio={Number.NaN} emptyMessage="An invalid ratio safely uses a square." />\n    <AspectRatio ratio="16:9" fit="contain"><AspectRatioImage src="/kira-alpine-portrait.svg" alt="A contained portrait image" /></AspectRatio>\n    <AspectRatio ratio="16:9" position="bottom-right"><span>Bottom-right content</span></AspectRatio>\n  </div>;\n}';
+
+const tabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    demo: (
+      <DemoWrapper title="Stable media frame" code={basicCode}>
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "ratios",
+    label: "Ratios",
+    demo: (
+      <DemoWrapper title="Eight presets" code={ratiosCode}>
+        <RatiosDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "loading",
+    label: "Loading",
+    demo: (
+      <DemoWrapper title="Retain a draft" code={loadingCode}>
+        <LoadingDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "recovery",
+    label: "Recovery",
+    demo: (
+      <DemoWrapper title="Recover a broken image" code={recoveryCode}>
+        <RecoveryDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "responsive",
+    label: "Responsive",
+    demo: (
+      <DemoWrapper title="Numeric breakpoint ratios" code={responsiveCode}>
+        <ResponsiveDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "container",
+    label: "Container",
+    demo: (
+      <DemoWrapper title="Local container ratios" code={containerCode}>
+        <ContainerDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "focal",
+    label: "Focal point",
+    demo: (
+      <DemoWrapper title="Keep the subject visible" code={focalCode}>
+        <FocalDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sources",
+    label: "Art direction",
+    demo: (
+      <DemoWrapper title="Separate source crops" code={artDirectionCode}>
+        <ArtDirectionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "embed",
+    label: "Embeds",
+    demo: (
+      <DemoWrapper title="Load after a choice" code={embedCode}>
+        <EmbedDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    demo: (
+      <DemoWrapper title="Guide cover workflow" code={kiraCode}>
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    demo: (
+      <DemoWrapper title="Missing and contained media" code={statesCode}>
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies React.ComponentProps<typeof DemoTabs>["tabs"];
+
+type APIRow = [string, string, string, string?];
+
+function section(title: string, rows: APIRow[]) {
+  return {
+    title,
+    props: rows.map(([prop, type, description, defaultValue]) => ({
+      prop,
+      type,
+      description,
+      default: defaultValue,
+    })),
+  };
+}
+
+const ratioType =
+  "number | '1:1' | '4:3' | '3:2' | '16:9' | '9:16' | '21:9' | '3:4' | '2:3'";
+
+const api = [
+  section("AspectRatio", [
+    [
+      "ratio",
+      ratioType,
+      "Finite positive ratio; invalid values use 1.",
+      "'1:1'",
+    ],
+    [
+      "fit",
+      "'cover' | 'contain' | 'fill' | 'none' | 'scaleDown'",
+      "Native image/video object-fit.",
+      "'cover'",
+    ],
+    [
+      "position",
+      "'center' | 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'",
+      "Media crop and child alignment.",
+      "'center'",
+    ],
+    [
+      "focalPoint",
+      "{ x: number; y: number }",
+      "Coordinates clamped 0–100; invalid values use 50.",
+    ],
+    [
+      "loading / skeleton",
+      "boolean / boolean",
+      "Retain content under a reserved loading frame.",
+      "false / loading",
+    ],
+    [
+      "zoomOnHover",
+      "boolean",
+      "Reduced-motion-gated optional media scale.",
+      "false",
+    ],
+    [
+      "native props / ref / render",
+      "useRender.ComponentProps<'div'>",
+      "Root props and Base UI composition.",
+    ],
+  ]),
+  section("ResponsiveAspectRatio", [
+    [
+      "base / sm / md / lg / xl",
+      ratioType,
+      "Numeric/preset breakpoint values; missing values inherit the previous one.",
+    ],
+    [
+      "query",
+      "'viewport' | 'container'",
+      "Container mode creates a named local query wrapper.",
+      "'viewport'",
+    ],
+    [
+      "frame props",
+      "Omit<AspectRatioProps, 'ratio'>",
+      "Shared frame options and DOM props reach the ratio box.",
+    ],
+  ]),
+  section("AspectRatioImage", [
+    [
+      "placeholderSrc / fallback",
+      "string / ReactNode",
+      "Visible placeholder; null suppresses the default error view.",
+    ],
+    [
+      "sources",
+      "{ srcSet: string; media?: string; type?: string; sizes?: string }[]",
+      "Native picture art direction.",
+    ],
+    [
+      "onStatusChange",
+      "(status: 'loading' | 'loaded' | 'error') => void",
+      "Source-scoped and cached image lifecycle.",
+    ],
+    [
+      "native props / ref",
+      "React.ComponentProps<'img'>",
+      "srcSet, sizes, dimensions, alt and events reach the actual image.",
+      "loading='lazy'; decoding='async'",
+    ],
+  ]),
+  section("AspectRatioVideo", [
+    [
+      "native props / ref",
+      "React.ComponentProps<'video'>",
+      "Native controls, sources, captions, poster and events.",
+    ],
+  ]),
+  section("AspectRatioEmbed", [
+    [
+      "title / loading",
+      "string / 'eager' | 'lazy'",
+      "Non-empty title and native deferred loading.",
+      "'Embedded content' / 'lazy'",
+    ],
+    [
+      "native props / ref",
+      "React.ComponentProps<'iframe'>",
+      "srcDoc, sandbox, permissions and events reach the iframe.",
+    ],
+  ]),
+  section("KiraAspectRatio", [
+    [
+      "src / type / alt",
+      "string / 'image' | 'video' | 'embed' / string",
+      "Select native media.",
+      "undefined / 'image' / ''",
+    ],
+    [
+      "placeholderSrc / imageProps / videoProps / embedProps",
+      "string / React.ComponentProps<'img'> / React.ComponentProps<'video'> / React.ComponentProps<'iframe'>",
+      "Media-specific attributes with composed lifecycle events.",
+    ],
+    [
+      "sources / responsive",
+      "AspectRatioSource[] / { base: number | AspectRatioPreset; sm?: number | AspectRatioPreset; md?: number | AspectRatioPreset; lg?: number | AspectRatioPreset; xl?: number | AspectRatioPreset; query?: 'viewport' | 'container' }",
+      "Art direction and shared breakpoint ratios.",
+    ],
+    [
+      "deferEmbed / posterSrc / activateLabel",
+      "boolean / string / string",
+      "Create the iframe only after activation.",
+      "true / undefined / 'Load embedded content'",
+    ],
+    [
+      "errorMessage / emptyMessage",
+      "string / string",
+      "Readable error and missing-source states.",
+      "'Media could not be loaded.' / 'No media selected'",
+    ],
+    [
+      "onRetry / onMediaStatusChange",
+      "() => void | Promise<void> / (status: 'loading' | 'loaded' | 'error') => void",
+      "Manual recovery and status notifications; stale retries cannot replace a new source.",
+    ],
+    [
+      "children / frame props",
+      "ReactNode / Omit<AspectRatioProps, 'children'>",
+      "Custom content takes over the media builder.",
+    ],
+  ]),
+  section("Variants and presets", [
+    ["aspectRatioVariants", "cva", "Shared fit and position styling."],
+    [
+      "presetRatios",
+      "Record<AspectRatioPreset, number>",
+      "Numeric values for all eight presets.",
+    ],
+  ]),
+] satisfies React.ComponentProps<typeof APIReference>["sections"];
+
+const usageCode =
+  'import {\n  AspectRatio, ResponsiveAspectRatio, AspectRatioImage, AspectRatioVideo,\n  AspectRatioEmbed, KiraAspectRatio, aspectRatioVariants, presetRatios,\n} from "@/components/ui/aspect-ratio";\nconst source = "/kira-alpine-landscape.svg";\nexport function MediaParts() {\n  return <div className="space-y-6">\n    <AspectRatio ratio="16:9"><AspectRatioImage src={source} alt="Alpine guide" /></AspectRatio>\n    <ResponsiveAspectRatio base="1:1" md={16 / 9}><AspectRatioImage src={source} alt="Responsive guide" /></ResponsiveAspectRatio>\n    <AspectRatio ratio="16:9"><AspectRatioVideo controls poster={source} preload="none" /></AspectRatio>\n    <AspectRatio ratio="16:9"><AspectRatioEmbed title="Guide preview" srcDoc="<p>Guide preview</p>" /></AspectRatio>\n    <KiraAspectRatio src={source} alt="Guide cover" ratio="16:9" focalPoint={{ x: 70, y: 40 }} />\n  </div>;\n}\n// Attach a video source and caption track for playback.\n// aspectRatioVariants({ fit: "contain" }) and presetRatios["16:9"] are exported.';
+
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function AspectRatioPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Aspect Ratio"
-        description="Maintains a consistent width-to-height ratio for responsive media."
-        version="2.0"
+        description="Stable media frames with responsive art direction and recoverable loading."
+        version="3.0.1"
       />
-
       <FeatureGrid
         features={[
           {
-            title: "Preset Ratios",
-            description:
-              "Built-in support for common aspect ratios like 16:9, 4:3, 1:1, 9:16, and more using string values.",
+            title: "Reliable media",
+            description: "Placeholders, cached images and manual recovery.",
+            icon: <IconPhoto className="size-5" />,
           },
           {
-            title: "Loading State",
-            description:
-              "Built-in skeleton loading support with animated pulse effect while content loads.",
+            title: "Responsive crops",
+            description: "Numeric viewport or local container ratios.",
+            icon: <IconDeviceMobile className="size-5" />,
           },
           {
-            title: "Content Positioning",
-            description:
-              "Control how content is positioned within the container with center, top, bottom, left, right options.",
-          },
-        ]}
-      />
-
-      <DemoTabs
-        defaultValue="preset-ratios"
-        tabs={[
-          {
-            value: "preset-ratios",
-            label: "Preset Ratios",
-            demo: (
-              <DemoWrapper
-                title="Preset Ratios"
-                description="Use string values for common aspect ratios."
-                code={presetRatiosCode}
-              >
-                <PresetRatiosDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "with-image",
-            label: "With Image",
-            demo: (
-              <DemoWrapper
-                title="With Image"
-                description="Control how images fit within the aspect ratio container."
-                code={withImageCode}
-              >
-                <WithImageDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "loading-state",
-            label: "Loading State",
-            demo: (
-              <DemoWrapper
-                title="Loading State"
-                description="Show a skeleton placeholder while content loads."
-                code={loadingStateCode}
-              >
-                <LoadingStateDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "content-position",
-            label: "Content Position",
-            demo: (
-              <DemoWrapper
-                title="Content Position"
-                description="Control the position of content within the aspect ratio container."
-                code={contentPositionCode}
-              >
-                <ContentPositionDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "with-video",
-            label: "With Video",
-            demo: (
-              <DemoWrapper
-                title="With Video"
-                description="Perfect for responsive video embeds."
-                code={withVideoCode}
-              >
-                <WithVideoDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "blur-up",
-            label: "Blur-up Image",
-            demo: (
-              <DemoWrapper
-                title="Blur-up Image"
-                description="AspectRatioImage fades and un-blurs once the image decodes."
-                code={blurUpCode}
-              >
-                <BlurUpDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "zoom",
-            label: "Zoom on Hover",
-            demo: (
-              <DemoWrapper
-                title="Zoom on Hover"
-                description="Subtle scale on hover, disabled under reduced motion."
-                code={zoomCode}
-              >
-                <ZoomDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "responsive",
-            label: "Responsive",
-            demo: (
-              <DemoWrapper
-                title="Responsive Ratios"
-                description="Different ratios per breakpoint via ResponsiveAspectRatio."
-                code={responsiveCode}
-              >
-                <ResponsiveDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "kira",
-            label: "KiraAspectRatio",
-            demo: (
-              <DemoWrapper
-                title="KiraAspectRatio"
-                description="One prop-driven component for image, video, and embeds."
-                code={kiraCode}
-              >
-                <KiraDemo />
-              </DemoWrapper>
-            ),
+            title: "Art direction",
+            description: "Native picture sources and bounded focal points.",
+            icon: <IconFocus2 className="size-5" />,
           },
         ]}
       />
-
-      <UsageBlock
-        title="Usage"
-        description="Basic implementation examples"
-        code={`import { AspectRatio } from "@/components/ui/aspect-ratio"
-
-// Preset ratios
-<AspectRatio ratio="16:9">...</AspectRatio>
-<AspectRatio ratio="4:3">...</AspectRatio>
-<AspectRatio ratio="1:1">...</AspectRatio>
-<AspectRatio ratio="9:16">...</AspectRatio>
-
-// Custom ratio (still supported)
-<AspectRatio ratio={21 / 9}>...</AspectRatio>
-
-// Object-fit control
-<AspectRatio ratio="16:9" fit="contain">...</AspectRatio>
-
-// Loading skeleton
-<AspectRatio ratio="16:9" loading>
-  <img src="..." />
-</AspectRatio>
-
-// Content position
-<AspectRatio ratio="16:9" position="top-left">...</AspectRatio>`}
+      <DemoTabs defaultValue="basic" tabs={tabs} />
+      <KeyboardShortcuts
+        shortcuts={[
+          {
+            keys: "Tab / Shift+Tab",
+            description:
+              "Reach media retry, preview activation and native media controls.",
+          },
+          {
+            keys: "Enter / Space",
+            description:
+              "Activate preview/retry buttons; native controls inherited from Base UI.",
+          },
+          {
+            keys: "Tab",
+            description:
+              "Activation transfers focus to the loaded iframe; Tab reaches its document controls.",
+          },
+          {
+            keys: "Enter",
+            description:
+              "Toggle reload and confirm the input draft remains afterward.",
+          },
+        ]}
       />
-
-      <APIReference
-        sections={[
+      <UsageBlock code={usageCode} />
+      <APIReference sections={api} />
+      <Changelog
+        entries={[
           {
-            title: "AspectRatio",
-            props: [
+            version: "3.0.1",
+            date: "November 15, 2026",
+            changes: [
               {
-                prop: "ratio",
-                type: "number | AspectRatioPreset",
-                default: '"1:1"',
+                type: "fixed",
+                title: "Deferred preview focus",
                 description:
-                  "The aspect ratio to maintain. Can be a number or a preset string like '16:9', '4:3', '1:1', '9:16', '21:9', '3:4', '2:3', '3:2'.",
-              },
-              {
-                prop: "fit",
-                type: "'cover' | 'contain' | 'fill' | 'none' | 'scaleDown'",
-                default: '"cover"',
-                description:
-                  "Controls how content fits within the container. Uses CSS object-fit.",
-              },
-              {
-                prop: "position",
-                type: "'center' | 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'",
-                default: '"center"',
-                description:
-                  "Controls the alignment of content within the container.",
-              },
-              {
-                prop: "loading",
-                type: "boolean",
-                default: "false",
-                description:
-                  "Shows a skeleton loading state while content loads.",
-              },
-              {
-                prop: "skeleton",
-                type: "boolean",
-                default: "loading",
-                description: "Explicitly control the skeleton display state.",
-              },
-              {
-                prop: "zoomOnHover",
-                type: "boolean",
-                default: "false",
-                description:
-                  "Scale the media up slightly on hover (respects reduced motion).",
+                  "After activation, focus enters the loaded iframe once loading clears. Moving to another control while waiting preserves that focus. Audited on Base UI 1.9.0.",
               },
             ],
           },
           {
-            title: "ResponsiveAspectRatio",
-            props: [
+            version: "3.0.0",
+            date: "November 14, 2026",
+            changes: [
               {
-                prop: "base",
-                type: "number | AspectRatioPreset",
-                default: "-",
-                description: "The base aspect ratio for all screen sizes.",
-              },
-              {
-                prop: "md",
-                type: "number | AspectRatioPreset",
-                default: "base",
-                description: "Aspect ratio for medium screens (768px and up).",
-              },
-              {
-                prop: "lg",
-                type: "number | AspectRatioPreset",
-                default: "md",
-                description: "Aspect ratio for large screens (1024px and up).",
-              },
-              {
-                prop: "xl",
-                type: "number | AspectRatioPreset",
-                default: "lg",
+                type: "added",
+                title: "Responsive art direction",
                 description:
-                  "Aspect ratio for extra large screens (1280px and up).",
+                  "Numeric ratios, named local queries, picture sources and focal points. Audited on Base UI 1.9.0.",
               },
               {
-                prop: "fit",
-                type: "'cover' | 'contain' | 'fill' | 'none' | 'scaleDown'",
-                default: "-",
-                description: "Controls how content fits within the container.",
-              },
-              {
-                prop: "loading",
-                type: "boolean",
-                default: "false",
+                type: "added",
+                title: "Recoverable media and deferred embeds",
                 description:
-                  "Shows a skeleton loading state while content loads.",
-              },
-            ],
-          },
-          {
-            title: "AspectRatioImage",
-            props: [
-              {
-                prop: "src",
-                type: "string",
-                default: "-",
-                description: "Image source. Fades and un-blurs on load.",
+                  "Empty/error/retry and source changes; explicit iframe activation by default.",
               },
               {
-                prop: "placeholderSrc",
-                type: "string",
-                default: "-",
+                type: "fixed",
+                title: "Loading and native composition",
                 description:
-                  "Optional low-res image shown blurred until the full image loads.",
+                  "Retained content, visible placeholders, cached completion, native props/refs and internal slots.",
               },
               {
-                prop: "...props",
-                type: "img attributes",
-                default: "-",
-                description: "All standard <img> attributes (alt, srcSet, …).",
-              },
-            ],
-          },
-          {
-            title: "KiraAspectRatio",
-            props: [
-              {
-                prop: "type",
-                type: "'image' | 'video' | 'embed'",
-                default: "'image'",
-                description: "Which media element to render for `src`.",
-              },
-              {
-                prop: "src",
-                type: "string",
-                default: "-",
-                description: "Media source URL.",
-              },
-              {
-                prop: "ratio / fit / zoomOnHover",
-                type: "AspectRatio props",
-                default: "-",
-                description: "All AspectRatio props are forwarded.",
-              },
-              {
-                prop: "videoProps / embedProps",
-                type: "element attributes",
-                default: "-",
+                type: "breaking",
+                title: "Image load-state wrapper",
                 description:
-                  "Props forwarded to the underlying <video> or <iframe>.",
+                  "AspectRatioImage adds a span; refs still reach the image. Update direct-child selectors.",
+              },
+              {
+                type: "breaking",
+                title: "Kira lifecycle defaults",
+                description:
+                  "Kira tracks media loading. Embeds require activation unless deferEmbed=false. Invalid ratios use a square.",
               },
             ],
           },
