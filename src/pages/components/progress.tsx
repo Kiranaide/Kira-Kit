@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import { IconChartBar, IconLoader, IconPalette } from "@tabler/icons-react";
 
@@ -7,7 +8,10 @@ import {
   ProgressValue,
   SegmentedProgress,
   CircularProgress,
+  KiraProgress,
+  type ProgressStatus,
 } from "@/components/ui/progress";
+import { KiraPopover } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
@@ -17,11 +21,443 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
+  KeyboardShortcuts,
+  Changelog,
 } from "@/components/docs";
 
 // =============================================================================
 // DEMO COMPONENTS
 // =============================================================================
+
+function useDemoClock(tick: () => void, active: boolean) {
+  React.useEffect(() => {
+    if (!active) return;
+
+    const timer = setInterval(() => {
+      if (!document.hidden) tick();
+    }, 800);
+
+    return () => clearInterval(timer);
+  }, [active, tick]);
+}
+
+function BufferDemo() {
+  const [processed, setProcessed] = React.useState(35);
+  const [received, setReceived] = React.useState(70);
+
+  return (
+    <div className="w-full space-y-3">
+      <Progress
+        value={processed}
+        bufferValue={received}
+        aria-label="Processed rows"
+        showLabel
+      />
+      <p className="text-sm tabular-nums">
+        Received {received} MB of 100 MB; processed {processed} of 100 rows.
+      </p>
+      <p className="text-sm text-muted-foreground">
+        Illustrative one-row-per-MB import. The faint layer is received data,
+        the solid layer is processed data.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant="outline"
+          onClick={() => setReceived((amount) => Math.min(100, amount + 10))}
+        >
+          Receive 10 MB
+        </Button>
+        <Button
+          onClick={() =>
+            setProcessed((amount) => Math.min(received, amount + 10))
+          }
+        >
+          Process 10 rows
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            setReceived(70);
+            setProcessed(35);
+          }}
+        >
+          Reset buffer
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+const bufferCode =
+  'import * as React from "react";\nimport { Progress } from "@/components/ui/progress";\nimport { Button } from "@/components/ui/button";\n\nexport function BufferDemo() {\n  const [processed, setProcessed] = React.useState(35);\n  const [received, setReceived] = React.useState(70);\n\n  return (\n    <div className="w-full space-y-3">\n      <Progress\n        value={processed}\n        bufferValue={received}\n        aria-label="Processed rows"\n        showLabel\n      />\n      <p className="text-sm tabular-nums">\n        Received {received} MB of 100 MB; processed {processed} of 100 rows.\n      </p>\n      <p className="text-sm text-muted-foreground">\n        Illustrative one-row-per-MB import. The faint layer is received data,\n        the solid layer is processed data.\n      </p>\n      <div className="flex flex-wrap gap-2">\n        <Button\n          variant="outline"\n          onClick={() => setReceived((amount) => Math.min(100, amount + 10))}\n        >\n          Receive 10 MB\n        </Button>\n        <Button\n          onClick={() =>\n            setProcessed((amount) => Math.min(received, amount + 10))\n          }\n        >\n          Process 10 rows\n        </Button>\n        <Button\n          variant="outline"\n          onClick={() => {\n            setReceived(70);\n            setProcessed(35);\n          }}\n        >\n          Reset buffer\n        </Button>\n      </div>\n    </div>\n  );\n}';
+
+interface LifecycleDemoControlsProps {
+  status: ProgressStatus;
+  value: number | null;
+  setStatus: React.Dispatch<React.SetStateAction<ProgressStatus>>;
+  setValue: React.Dispatch<React.SetStateAction<number | null>>;
+}
+
+function LifecycleDemoControls({
+  status,
+  value,
+  setStatus,
+  setValue,
+}: LifecycleDemoControlsProps) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {status === "idle" && (
+        <Button onClick={() => setStatus("running")}>
+          Start unknown amount
+        </Button>
+      )}
+      {status === "running" && value === null && (
+        <Button onClick={() => setValue(20)}>Measure amount</Button>
+      )}
+      {status === "running" && (
+        <Button variant="outline" onClick={() => setStatus("error")}>
+          Simulate error
+        </Button>
+      )}
+      {status === "running" && value !== null && (
+        <Button variant="outline" onClick={() => setValue(100)}>
+          Measure 100%
+        </Button>
+      )}
+      {status === "running" && value === 100 && (
+        <Button onClick={() => setStatus("complete")}>
+          Confirm completion
+        </Button>
+      )}
+      {status === "complete" && (
+        <Button
+          variant="outline"
+          onClick={() => {
+            setStatus("idle");
+            setValue(null);
+          }}
+        >
+          Restart illustration
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function LifecycleDemo({ active = true }: { active?: boolean }) {
+  const [status, setStatus] = React.useState<ProgressStatus>("idle");
+  const [value, setValue] = React.useState<number | null>(null);
+
+  const tick = React.useCallback(
+    () =>
+      setValue((amount) =>
+        amount === null ? null : Math.min(100, amount + 5),
+      ),
+    [],
+  );
+
+  useDemoClock(
+    tick,
+    active && status === "running" && value !== null && value < 100,
+  );
+
+  return (
+    <div className="w-full space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Illustrative import. Reaching 100% remains Running until the caller
+        confirms completion.
+      </p>
+      <KiraProgress
+        label="Import customer records"
+        status={status}
+        value={value}
+        description="Paused, failed and canceled work keeps the measured amount."
+        onPause={() => setStatus("paused")}
+        onResume={() => setStatus("running")}
+        onCancel={() => setStatus("canceled")}
+        onRetry={() => {
+          if (status === "canceled") setValue(null);
+          setStatus("running");
+        }}
+      />
+      <LifecycleDemoControls
+        status={status}
+        value={value}
+        setStatus={setStatus}
+        setValue={setValue}
+      />
+    </div>
+  );
+}
+
+const lifecycleCode =
+  'import * as React from "react";\nimport { KiraProgress, type ProgressStatus } from "@/components/ui/progress";\nimport { Button } from "@/components/ui/button";\n\nfunction useDemoClock(tick: () => void, active: boolean) {\n  React.useEffect(() => {\n    if (!active) return;\n\n    const timer = setInterval(() => {\n      if (!document.hidden) tick();\n    }, 800);\n\n    return () => clearInterval(timer);\n  }, [active, tick]);\n}\n\ninterface LifecycleDemoControlsProps {\n  status: ProgressStatus;\n  value: number | null;\n  setStatus: React.Dispatch<React.SetStateAction<ProgressStatus>>;\n  setValue: React.Dispatch<React.SetStateAction<number | null>>;\n}\n\nexport function LifecycleDemoControls({\n  status,\n  value,\n  setStatus,\n  setValue,\n}: LifecycleDemoControlsProps) {\n  return (\n    <div className="flex flex-wrap gap-2">\n      {status === "idle" && (\n        <Button onClick={() => setStatus("running")}>\n          Start unknown amount\n        </Button>\n      )}\n      {status === "running" && value === null && (\n        <Button onClick={() => setValue(20)}>Measure amount</Button>\n      )}\n      {status === "running" && (\n        <Button variant="outline" onClick={() => setStatus("error")}>\n          Simulate error\n        </Button>\n      )}\n      {status === "running" && value !== null && (\n        <Button variant="outline" onClick={() => setValue(100)}>\n          Measure 100%\n        </Button>\n      )}\n      {status === "running" && value === 100 && (\n        <Button onClick={() => setStatus("complete")}>\n          Confirm completion\n        </Button>\n      )}\n      {status === "complete" && (\n        <Button\n          variant="outline"\n          onClick={() => {\n            setStatus("idle");\n            setValue(null);\n          }}\n        >\n          Restart illustration\n        </Button>\n      )}\n    </div>\n  );\n}\n\nfunction LifecycleDemo({ active = true }: { active?: boolean }) {\n  const [status, setStatus] = React.useState<ProgressStatus>("idle");\n  const [value, setValue] = React.useState<number | null>(null);\n\n  const tick = React.useCallback(\n    () =>\n      setValue((amount) =>\n        amount === null ? null : Math.min(100, amount + 5),\n      ),\n    [],\n  );\n\n  useDemoClock(\n    tick,\n    active && status === "running" && value !== null && value < 100,\n  );\n\n  return (\n    <div className="w-full space-y-4">\n      <p className="text-sm text-muted-foreground">\n        Illustrative import. Reaching 100% remains Running until the caller\n        confirms completion.\n      </p>\n      <KiraProgress\n        label="Import customer records"\n        status={status}\n        value={value}\n        description="Paused, failed and canceled work keeps the measured amount."\n        onPause={() => setStatus("paused")}\n        onResume={() => setStatus("running")}\n        onCancel={() => setStatus("canceled")}\n        onRetry={() => {\n          if (status === "canceled") setValue(null);\n          setStatus("running");\n        }}\n      />\n      <LifecycleDemoControls\n        status={status}\n        value={value}\n        setStatus={setStatus}\n        setValue={setValue}\n      />\n    </div>\n  );\n}';
+
+function PhasesDemo() {
+  const [unknown, setUnknown] = React.useState(false);
+  const [transform, setTransform] = React.useState(50);
+
+  return (
+    <div className="w-full space-y-4">
+      <KiraProgress
+        label="Prepare quarterly report"
+        status="running"
+        currentPhaseId="transform"
+        phases={[
+          {
+            id: "receive",
+            label: "Receive source data",
+            weight: 1,
+            value: 100,
+          },
+          {
+            id: "transform",
+            label: "Transform rows",
+            weight: 3,
+            value: unknown ? null : transform,
+          },
+          { id: "write", label: "Write report", weight: 1, value: 0 },
+        ]}
+        description="Weights 1:3:1. At 50% transform, overall progress is 50%. Phase execution and order belong to the caller."
+      />
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant="outline"
+          onClick={() => setUnknown((previous) => !previous)}
+        >
+          {unknown ? "Restore phase measurement" : "Make phase unknown"}
+        </Button>
+        <Button
+          onClick={() =>
+            setTransform((amount) => (amount >= 100 ? 0 : amount + 25))
+          }
+        >
+          Advance transform
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+const phasesCode =
+  'import * as React from "react";\nimport { KiraProgress } from "@/components/ui/progress";\nimport { Button } from "@/components/ui/button";\n\nexport function PhasesDemo() {\n  const [unknown, setUnknown] = React.useState(false);\n  const [transform, setTransform] = React.useState(50);\n\n  return (\n    <div className="w-full space-y-4">\n      <KiraProgress\n        label="Prepare quarterly report"\n        status="running"\n        currentPhaseId="transform"\n        phases={[\n          {\n            id: "receive",\n            label: "Receive source data",\n            weight: 1,\n            value: 100,\n          },\n          {\n            id: "transform",\n            label: "Transform rows",\n            weight: 3,\n            value: unknown ? null : transform,\n          },\n          { id: "write", label: "Write report", weight: 1, value: 0 },\n        ]}\n        description="Weights 1:3:1. At 50% transform, overall progress is 50%. Phase execution and order belong to the caller."\n      />\n      <div className="flex flex-wrap gap-2">\n        <Button\n          variant="outline"\n          onClick={() => setUnknown((previous) => !previous)}\n        >\n          {unknown ? "Restore phase measurement" : "Make phase unknown"}\n        </Button>\n        <Button\n          onClick={() =>\n            setTransform((amount) => (amount >= 100 ? 0 : amount + 25))\n          }\n        >\n          Advance transform\n        </Button>\n      </div>\n    </div>\n  );\n}';
+
+interface DemoTask {
+  id: string;
+  label: string;
+  value: number;
+  status: ProgressStatus;
+}
+
+interface BackgroundTaskListProps {
+  tasks: DemoTask[];
+  change: (id: string, status: ProgressStatus) => void;
+}
+
+function BackgroundTaskList({ tasks, change }: BackgroundTaskListProps) {
+  return (
+    <ul className="space-y-5">
+      {tasks.map((task) => (
+        <li key={task.id} className="space-y-2">
+          <KiraProgress
+            label={task.label}
+            status={task.status}
+            value={task.value}
+            onCancel={() => change(task.id, "canceled")}
+            onRetry={() => change(task.id, "running")}
+          />
+          {task.status === "running" && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => change(task.id, "error")}
+            >
+              Simulate {task.id} failure
+            </Button>
+          )}
+          {task.status === "complete" && (
+            <a
+              className="text-sm text-primary underline"
+              href={`#result-${task.id}`}
+            >
+              View {task.label.toLowerCase()} result
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function BackgroundTasksDemo({ active = true }: { active?: boolean }) {
+  const [tasks, setTasks] = React.useState<DemoTask[]>([
+    {
+      id: "export",
+      label: "Export customer report",
+      value: 20,
+      status: "running",
+    },
+    { id: "index", label: "Index project files", value: 40, status: "running" },
+    {
+      id: "archive",
+      label: "Archive previous release",
+      value: 100,
+      status: "complete",
+    },
+  ]);
+
+  const change = (id: string, status: ProgressStatus) =>
+    setTasks((previous) =>
+      previous.map((task) => (task.id === id ? { ...task, status } : task)),
+    );
+
+  const tick = React.useCallback(
+    () =>
+      setTasks((previous) =>
+        previous.map((task) => {
+          if (task.status !== "running") return task;
+          const next = Math.min(100, task.value + 5);
+
+          // Illustrative work result, not a rule inside KiraProgress.
+          return {
+            ...task,
+            value: next,
+            status: next === 100 ? "complete" : "running",
+          };
+        }),
+      ),
+    [],
+  );
+
+  useDemoClock(tick, active && tasks.some((task) => task.status === "running"));
+  const running = tasks.filter((task) => task.status === "running").length;
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        Illustrative background tasks continue while the popup is closed.
+        Simulation pauses in an inactive demo tab or hidden document.
+      </p>
+      <KiraPopover
+        title="Background tasks"
+        trigger={<Button variant="outline">{running} tasks running</Button>}
+        contentProps={{ size: "lg" }}
+      >
+        <BackgroundTaskList tasks={tasks} change={change} />
+      </KiraPopover>
+      <output className="text-sm">{running} background tasks running.</output>
+      {tasks
+        .filter((task) => task.status === "complete")
+        .map((task) => (
+          <p
+            tabIndex={-1}
+            id={`result-${task.id}`}
+            key={task.id}
+            className="text-sm"
+          >
+            {task.label}: illustrative result ready.
+          </p>
+        ))}
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() =>
+          setTasks((previous) =>
+            previous.map((task) => ({ ...task, status: "running", value: 0 })),
+          )
+        }
+      >
+        Restart tasks
+      </Button>
+    </div>
+  );
+}
+
+const backgroundCode =
+  'import * as React from "react";\nimport { KiraProgress, type ProgressStatus } from "@/components/ui/progress";\nimport { KiraPopover } from "@/components/ui/popover";\nimport { Button } from "@/components/ui/button";\n\nfunction useDemoClock(tick: () => void, active: boolean) {\n  React.useEffect(() => {\n    if (!active) return;\n\n    const timer = setInterval(() => {\n      if (!document.hidden) tick();\n    }, 800);\n\n    return () => clearInterval(timer);\n  }, [active, tick]);\n}\n\ninterface DemoTask {\n  id: string;\n  label: string;\n  value: number;\n  status: ProgressStatus;\n}\n\ninterface BackgroundTaskListProps {\n  tasks: DemoTask[];\n  change: (id: string, status: ProgressStatus) => void;\n}\n\nfunction BackgroundTaskList({ tasks, change }: BackgroundTaskListProps) {\n  return (\n    <ul className="space-y-5">\n      {tasks.map((task) => (\n        <li key={task.id} className="space-y-2">\n          <KiraProgress\n            label={task.label}\n            status={task.status}\n            value={task.value}\n            onCancel={() => change(task.id, "canceled")}\n            onRetry={() => change(task.id, "running")}\n          />\n          {task.status === "running" && (\n            <Button\n              size="sm"\n              variant="outline"\n              onClick={() => change(task.id, "error")}\n            >\n              Simulate {task.id} failure\n            </Button>\n          )}\n          {task.status === "complete" && (\n            <a\n              className="text-sm text-primary underline"\n              href={`#result-${task.id}`}\n            >\n              View {task.label.toLowerCase()} result\n            </a>\n          )}\n        </li>\n      ))}\n    </ul>\n  );\n}\n\nexport function BackgroundTasksDemo({ active = true }: { active?: boolean }) {\n  const [tasks, setTasks] = React.useState<DemoTask[]>([\n    {\n      id: "export",\n      label: "Export customer report",\n      value: 20,\n      status: "running",\n    },\n    { id: "index", label: "Index project files", value: 40, status: "running" },\n    {\n      id: "archive",\n      label: "Archive previous release",\n      value: 100,\n      status: "complete",\n    },\n  ]);\n\n  const change = (id: string, status: ProgressStatus) =>\n    setTasks((previous) =>\n      previous.map((task) => (task.id === id ? { ...task, status } : task)),\n    );\n\n  const tick = React.useCallback(\n    () =>\n      setTasks((previous) =>\n        previous.map((task) => {\n          if (task.status !== "running") return task;\n          const next = Math.min(100, task.value + 5);\n\n          // Illustrative work result, not a rule inside KiraProgress.\n          return {\n            ...task,\n            value: next,\n            status: next === 100 ? "complete" : "running",\n          };\n        }),\n      ),\n    [],\n  );\n\n  useDemoClock(tick, active && tasks.some((task) => task.status === "running"));\n  const running = tasks.filter((task) => task.status === "running").length;\n\n  return (\n    <div className="space-y-3">\n      <p className="text-sm text-muted-foreground">\n        Illustrative background tasks continue while the popup is closed.\n        Simulation pauses in an inactive demo tab or hidden document.\n      </p>\n      <KiraPopover\n        title="Background tasks"\n        trigger={<Button variant="outline">{running} tasks running</Button>}\n        contentProps={{ size: "lg" }}\n      >\n        <BackgroundTaskList tasks={tasks} change={change} />\n      </KiraPopover>\n      <output className="text-sm">{running} background tasks running.</output>\n      {tasks\n        .filter((task) => task.status === "complete")\n        .map((task) => (\n          <p\n            tabIndex={-1}\n            id={`result-${task.id}`}\n            key={task.id}\n            className="text-sm"\n          >\n            {task.label}: illustrative result ready.\n          </p>\n        ))}\n      <Button\n        size="sm"\n        variant="outline"\n        onClick={() =>\n          setTasks((previous) =>\n            previous.map((task) => ({ ...task, status: "running", value: 0 })),\n          )\n        }\n      >\n        Restart tasks\n      </Button>\n    </div>\n  );\n}';
+
+function StatesDemo() {
+  const [value, setValue] = React.useState(150);
+  const [crossings, setCrossings] = React.useState(0);
+  const label = React.useId();
+
+  return (
+    <div className="w-80 max-w-full space-y-4" dir="rtl">
+      <ProgressLabel id={label}>
+        A very long release name that should wrap without obscuring the measured
+        progress value
+      </ProgressLabel>
+      <Progress
+        aria-labelledby={label}
+        min={50}
+        max={150}
+        value={value}
+        showLabel
+        locale="ar"
+      />
+      <CircularProgress
+        aria-label="Same custom range"
+        min={50}
+        max={150}
+        value={value}
+        showLabel
+        locale="ar"
+      />
+      <React.StrictMode>
+        <Progress
+          aria-label="Completion reentry"
+          value={value}
+          min={50}
+          max={150}
+          onComplete={() => setCrossings((count) => count + 1)}
+        />
+      </React.StrictMode>
+      <p className="text-sm">Completion crossings: {crossings}</p>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => setValue(75)}>Below complete</Button>
+        <Button onClick={() => setValue(200)}>Above max</Button>
+        <Button onClick={() => setValue(0)}>Below min</Button>
+      </div>
+      <Progress
+        aria-label="Invalid bounds fall back to zero through one hundred"
+        min={200}
+        max={50}
+        value={50}
+        showLabel
+      />
+      <Progress
+        aria-label="Nonfinite amount is unknown"
+        value={Number.NaN}
+        showLabel
+      />
+      <Progress aria-label="Empty process" value={0} showLabel />
+      <SegmentedProgress
+        aria-label="Capped process segments"
+        segments={[
+          { value: 80, label: "Processed" },
+          { value: 90, label: "Verified" },
+          { value: -10, label: "Invalid" },
+        ]}
+        total={100}
+        showLabels
+      />
+      <SegmentedProgress
+        aria-label="Empty process segments"
+        segments={[]}
+        total={100}
+        showLabels
+      />
+      <KiraProgress
+        label="Empty task — choose a file to begin"
+        status="idle"
+        value={null}
+      />
+    </div>
+  );
+}
+
+const statesCode =
+  'import * as React from "react";\nimport { Progress, ProgressLabel, SegmentedProgress, CircularProgress, KiraProgress } from "@/components/ui/progress";\nimport { Button } from "@/components/ui/button";\n\nexport function StatesDemo() {\n  const [value, setValue] = React.useState(150);\n  const [crossings, setCrossings] = React.useState(0);\n  const label = React.useId();\n\n  return (\n    <div className="w-80 max-w-full space-y-4" dir="rtl">\n      <ProgressLabel id={label}>\n        A very long release name that should wrap without obscuring the measured\n        progress value\n      </ProgressLabel>\n      <Progress\n        aria-labelledby={label}\n        min={50}\n        max={150}\n        value={value}\n        showLabel\n        locale="ar"\n      />\n      <CircularProgress\n        aria-label="Same custom range"\n        min={50}\n        max={150}\n        value={value}\n        showLabel\n        locale="ar"\n      />\n      <React.StrictMode>\n        <Progress\n          aria-label="Completion reentry"\n          value={value}\n          min={50}\n          max={150}\n          onComplete={() => setCrossings((count) => count + 1)}\n        />\n      </React.StrictMode>\n      <p className="text-sm">Completion crossings: {crossings}</p>\n      <div className="flex flex-wrap gap-2">\n        <Button onClick={() => setValue(75)}>Below complete</Button>\n        <Button onClick={() => setValue(200)}>Above max</Button>\n        <Button onClick={() => setValue(0)}>Below min</Button>\n      </div>\n      <Progress\n        aria-label="Invalid bounds fall back to zero through one hundred"\n        min={200}\n        max={50}\n        value={50}\n        showLabel\n      />\n      <Progress\n        aria-label="Nonfinite amount is unknown"\n        value={Number.NaN}\n        showLabel\n      />\n      <Progress aria-label="Empty process" value={0} showLabel />\n      <SegmentedProgress\n        aria-label="Capped process segments"\n        segments={[\n          { value: 80, label: "Processed" },\n          { value: 90, label: "Verified" },\n          { value: -10, label: "Invalid" },\n        ]}\n        total={100}\n        showLabels\n      />\n      <SegmentedProgress\n        aria-label="Empty process segments"\n        segments={[]}\n        total={100}\n        showLabels\n      />\n      <KiraProgress\n        label="Empty task — choose a file to begin"\n        status="idle"\n        value={null}\n      />\n    </div>\n  );\n}';
 
 function BasicDemo() {
   return (
@@ -33,17 +469,8 @@ function BasicDemo() {
   );
 }
 
-const basicCode = `import { Progress } from "@/components/ui/progress"
-
-export function BasicDemo() {
-  return (
-    <div className="space-y-4">
-      <Progress value={33} />
-      <Progress value={66} />
-      <Progress value={100} />
-    </div>
-  )
-}`;
+const basicCode =
+  'import { Progress } from "@/components/ui/progress";\n\nexport function BasicDemo() {\n  return (\n    <div className="space-y-6">\n      <Progress value={33} />\n      <Progress value={66} />\n      <Progress value={100} />\n    </div>\n  );\n}';
 
 function SizesDemo() {
   return (
@@ -68,18 +495,8 @@ function SizesDemo() {
   );
 }
 
-const sizesCode = `import { Progress } from "@/components/ui/progress"
-
-export function SizesDemo() {
-  return (
-    <div className="space-y-4">
-      <Progress value={60} size="sm" />
-      <Progress value={60} size="default" />
-      <Progress value={60} size="lg" />
-      <Progress value={60} size="xl" />
-    </div>
-  )
-}`;
+const sizesCode =
+  'import { Progress } from "@/components/ui/progress";\n\nexport function SizesDemo() {\n  return (\n    <div className="space-y-6">\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Small (sm)</p>\n        <Progress value={60} size="sm" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Default</p>\n        <Progress value={60} size="default" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Large (lg)</p>\n        <Progress value={60} size="lg" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Extra Large (xl)</p>\n        <Progress value={60} size="xl" />\n      </div>\n    </div>\n  );\n}';
 
 function ColorsDemo() {
   return (
@@ -108,58 +525,44 @@ function ColorsDemo() {
   );
 }
 
-const colorsCode = `import { Progress } from "@/components/ui/progress"
+const colorsCode =
+  'import { Progress } from "@/components/ui/progress";\n\nexport function ColorsDemo() {\n  return (\n    <div className="space-y-4">\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Default</p>\n        <Progress value={80} variant="default" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Info</p>\n        <Progress value={80} variant="info" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Success</p>\n        <Progress value={80} variant="success" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Warning</p>\n        <Progress value={80} variant="warning" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Destructive</p>\n        <Progress value={80} variant="destructive" />\n      </div>\n    </div>\n  );\n}';
 
-export function ColorsDemo() {
-  return (
-    <div className="space-y-3">
-      <Progress value={80} variant="default" />
-      <Progress value={80} variant="info" />
-      <Progress value={80} variant="success" />
-      <Progress value={80} variant="warning" />
-      <Progress value={80} variant="destructive" />
-    </div>
-  )
-}`;
-
-function AnimatedDemo() {
+function AnimatedDemo({ active = true }: { active?: boolean }) {
   const [progress, setProgress] = React.useState(45);
+  const [playing, setPlaying] = React.useState(false);
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prev) => (prev >= 100 ? 0 : prev + 5));
-    }, 500);
+  const tick = React.useCallback(
+    () => setProgress((amount) => Math.min(100, amount + 5)),
+    [],
+  );
 
-    return () => clearInterval(timer);
-  }, []);
+  useDemoClock(tick, active && playing && progress < 100);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">
-          Auto-incrementing progress: {progress}%
-        </p>
-        <Progress value={progress} />
+    <div className="w-full space-y-4">
+      <Progress
+        value={progress}
+        aria-label="Illustrative animated progress"
+        showLabel
+      />
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => setPlaying((previous) => !previous)}>
+          {playing ? "Pause illustration" : "Play illustration"}
+        </Button>
+        <Button variant="outline" onClick={() => setProgress(0)}>
+          Reset illustration
+        </Button>
+        <Button variant="outline" onClick={tick}>
+          Advance 5%
+        </Button>
       </div>
     </div>
   );
 }
 
-const animatedCode = `import { useState, useEffect } from "react"
-import { Progress } from "@/components/ui/progress"
-
-export function AnimatedDemo() {
-  const [progress, setProgress] = useState(45)
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prev) => (prev >= 100 ? 0 : prev + 5))
-    }, 500)
-    return () => clearInterval(timer)
-  }, [])
-
-  return <Progress value={progress} />
-}`;
+const animatedCode =
+  'import * as React from "react";\nimport { Progress } from "@/components/ui/progress";\nimport { Button } from "@/components/ui/button";\n\nfunction useDemoClock(tick: () => void, active: boolean) {\n  React.useEffect(() => {\n    if (!active) return;\n\n    const timer = setInterval(() => {\n      if (!document.hidden) tick();\n    }, 800);\n\n    return () => clearInterval(timer);\n  }, [active, tick]);\n}\n\nexport function AnimatedDemo({ active = true }: { active?: boolean }) {\n  const [progress, setProgress] = React.useState(45);\n  const [playing, setPlaying] = React.useState(false);\n\n  const tick = React.useCallback(\n    () => setProgress((amount) => Math.min(100, amount + 5)),\n    [],\n  );\n\n  useDemoClock(tick, active && playing && progress < 100);\n\n  return (\n    <div className="w-full space-y-4">\n      <Progress\n        value={progress}\n        aria-label="Illustrative animated progress"\n        showLabel\n      />\n      <div className="flex flex-wrap gap-2">\n        <Button onClick={() => setPlaying((previous) => !previous)}>\n          {playing ? "Pause illustration" : "Play illustration"}\n        </Button>\n        <Button variant="outline" onClick={() => setProgress(0)}>\n          Reset illustration\n        </Button>\n        <Button variant="outline" onClick={tick}>\n          Advance 5%\n        </Button>\n      </div>\n    </div>\n  );\n}';
 
 function IndeterminateDemo() {
   return (
@@ -180,18 +583,8 @@ function IndeterminateDemo() {
   );
 }
 
-const indeterminateCode = `import { Progress } from "@/components/ui/progress"
-
-export function IndeterminateDemo() {
-  return (
-    <div className="space-y-3">
-      {/* Use value={null} for indeterminate state */}
-      <Progress value={null} variant="default" />
-      <Progress value={null} variant="info" />
-      <Progress value={null} variant="success" />
-    </div>
-  )
-}`;
+const indeterminateCode =
+  'import { Progress } from "@/components/ui/progress";\n\nexport function IndeterminateDemo() {\n  return (\n    <div className="space-y-4">\n      <p className="text-sm text-muted-foreground">\n        Use{" "}\n        <code className="text-xs bg-muted px-1 py-0.5 rounded">\n          value=&#123;null&#125;\n        </code>{" "}\n        for indeterminate state.\n      </p>\n      <div className="space-y-3">\n        <Progress value={null} variant="default" />\n        <Progress value={null} variant="info" />\n        <Progress value={null} variant="success" />\n      </div>\n    </div>\n  );\n}';
 
 function StripedDemo() {
   return (
@@ -214,22 +607,8 @@ function StripedDemo() {
   );
 }
 
-const stripedCode = `import { Progress } from "@/components/ui/progress"
-
-export function StripedDemo() {
-  return (
-    <div className="space-y-4">
-      {/* Striped pattern */}
-      <Progress value={70} striped size="lg" />
-      
-      {/* Striped with animation */}
-      <Progress value={70} striped animated size="lg" />
-      
-      {/* Striped + Animated with color variant */}
-      <Progress value={70} striped animated size="lg" variant="success" />
-    </div>
-  )
-}`;
+const stripedCode =
+  'import { Progress } from "@/components/ui/progress";\n\nexport function StripedDemo() {\n  return (\n    <div className="space-y-6">\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Striped</p>\n        <Progress value={70} striped size="lg" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Striped + Animated</p>\n        <Progress value={70} striped animated size="lg" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">\n          Striped + Animated (Success)\n        </p>\n        <Progress value={70} striped animated size="lg" variant="success" />\n      </div>\n    </div>\n  );\n}';
 
 function WithLabelDemo() {
   return (
@@ -244,39 +623,20 @@ function WithLabelDemo() {
         </p>
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <ProgressLabel>Upload Progress</ProgressLabel>
+            <ProgressLabel id="upload-progress-label">
+              Upload Progress
+            </ProgressLabel>
             <ProgressValue value={65} max={100} />
           </div>
-          <Progress value={65} />
+          <Progress value={65} aria-labelledby="upload-progress-label" />
         </div>
       </div>
     </div>
   );
 }
 
-const withLabelCode = `import { 
-  Progress, 
-  ProgressLabel, 
-  ProgressValue 
-} from "@/components/ui/progress"
-
-export function WithLabelDemo() {
-  return (
-    <div className="space-y-6">
-      {/* Built-in label */}
-      <Progress value={75} showLabel />
-      
-      {/* With sub-components */}
-      <div className="space-y-2">
-        <div className="flex justify-between items-center">
-          <ProgressLabel>Upload Progress</ProgressLabel>
-          <ProgressValue value={65} max={100} />
-        </div>
-        <Progress value={65} />
-      </div>
-    </div>
-  )
-}`;
+const withLabelCode =
+  'import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress";\n\nexport function WithLabelDemo() {\n  return (\n    <div className="space-y-6">\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Built-in label</p>\n        <Progress value={75} showLabel />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">\n          With sub-components\n        </p>\n        <div className="space-y-2">\n          <div className="flex justify-between items-center">\n            <ProgressLabel id="upload-progress-label">\n              Upload Progress\n            </ProgressLabel>\n            <ProgressValue value={65} max={100} />\n          </div>\n          <Progress value={65} aria-labelledby="upload-progress-label" />\n        </div>\n      </div>\n    </div>\n  );\n}';
 
 function LocaleDemo() {
   return (
@@ -297,17 +657,8 @@ function LocaleDemo() {
   );
 }
 
-const localeCode = `import { Progress } from "@/components/ui/progress"
-
-export function LocaleDemo() {
-  return (
-    <div className="space-y-4">
-      <Progress value={75} showLabel locale="en-US" />
-      <Progress value={75} showLabel locale="de-DE" />
-      <Progress value={75} showLabel locale="fr-FR" />
-    </div>
-  )
-}`;
+const localeCode =
+  'import { Progress } from "@/components/ui/progress";\n\nexport function LocaleDemo() {\n  return (\n    <div className="space-y-4">\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">English (US)</p>\n        <Progress value={75} showLabel locale="en-US" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">German</p>\n        <Progress value={75} showLabel locale="de-DE" />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">French</p>\n        <Progress value={75} showLabel locale="fr-FR" />\n      </div>\n    </div>\n  );\n}';
 
 function AccessibilityDemo() {
   return (
@@ -326,106 +677,42 @@ function AccessibilityDemo() {
   );
 }
 
-const accessibilityCode = `import { Progress } from "@/components/ui/progress"
-
-export function AccessibilityDemo() {
-  return (
-    <div className="space-y-4">
-      {/* Custom aria-valuetext for screen readers */}
-      <Progress 
-        value={60} 
-        showLabel 
-        getAriaValueText={() => "Step 3 of 5"} 
-      />
-      
-      {/* Custom aria-label */}
-      <Progress 
-        value={45} 
-        showLabel 
-        aria-label="File upload progress" 
-      />
-    </div>
-  )
-}`;
+const accessibilityCode =
+  'import { Progress } from "@/components/ui/progress";\n\nexport function AccessibilityDemo() {\n  return (\n    <div className="space-y-6">\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">\n          Custom aria-valuetext (Screen readers announce "Step 3 of 5")\n        </p>\n        <Progress value={60} showLabel getAriaValueText={() => "Step 3 of 5"} />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-2">Custom aria-label</p>\n        <Progress value={45} showLabel aria-label="File upload progress" />\n      </div>\n    </div>\n  );\n}';
 
 function OnCompleteDemo() {
   const [progress, setProgress] = React.useState(0);
-  const [completed, setCompleted] = React.useState(false);
-
-  const handleStart = () => {
-    setCompleted(false);
-    setProgress(0);
-
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-
-          return 100;
-        }
-
-        return prev + 10;
-      });
-    }, 200);
-  };
+  const [completed, setCompleted] = React.useState(0);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Button onClick={handleStart} disabled={progress > 0 && progress < 100}>
-          Start Progress
+    <div className="w-full space-y-4">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          onClick={() => setProgress((amount) => Math.min(100, amount + 25))}
+        >
+          Advance 25%
         </Button>
-        {completed && (
-          <span className="text-sm text-success">onComplete fired!</span>
-        )}
+        <Button variant="outline" onClick={() => setProgress(0)}>
+          Reset below complete
+        </Button>
       </div>
-      <Progress
-        value={progress}
-        onComplete={() => setCompleted(true)}
-        showLabel
-      />
+      <React.StrictMode>
+        <Progress
+          aria-label="Measured completion"
+          value={progress}
+          onComplete={() => setCompleted((count) => count + 1)}
+          showLabel
+        />
+      </React.StrictMode>
+      <output className="text-sm">
+        onComplete fired {completed} times. This reports measurement only.
+      </output>
     </div>
   );
 }
 
-const onCompleteCode = `import { useState } from "react"
-import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
-
-export function OnCompleteDemo() {
-  const [progress, setProgress] = useState(0)
-  const [completed, setCompleted] = useState(false)
-
-  const handleStart = () => {
-    setCompleted(false)
-    setProgress(0)
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          return 100
-        }
-        return prev + 10
-      })
-    }, 200)
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Button onClick={handleStart} disabled={progress > 0 && progress < 100}>
-          Start Progress
-        </Button>
-        {completed && <span className="text-success">onComplete fired!</span>}
-      </div>
-      <Progress
-        value={progress}
-        onComplete={() => setCompleted(true)}
-        showLabel
-      />
-    </div>
-  )
-}`;
+const onCompleteCode =
+  'import * as React from "react";\nimport { Progress } from "@/components/ui/progress";\nimport { Button } from "@/components/ui/button";\n\nexport function OnCompleteDemo() {\n  const [progress, setProgress] = React.useState(0);\n  const [completed, setCompleted] = React.useState(0);\n\n  return (\n    <div className="w-full space-y-4">\n      <div className="flex flex-wrap gap-2">\n        <Button\n          onClick={() => setProgress((amount) => Math.min(100, amount + 25))}\n        >\n          Advance 25%\n        </Button>\n        <Button variant="outline" onClick={() => setProgress(0)}>\n          Reset below complete\n        </Button>\n      </div>\n      <React.StrictMode>\n        <Progress\n          aria-label="Measured completion"\n          value={progress}\n          onComplete={() => setCompleted((count) => count + 1)}\n          showLabel\n        />\n      </React.StrictMode>\n      <output className="text-sm">\n        onComplete fired {completed} times. This reports measurement only.\n      </output>\n    </div>\n  );\n}';
 
 function SegmentedDemo() {
   return (
@@ -446,6 +733,8 @@ function SegmentedDemo() {
       <div>
         <p className="text-sm text-muted-foreground mb-3">Storage Usage</p>
         <SegmentedProgress
+          kind="meter"
+          aria-label="Storage usage"
           segments={[
             { value: 30, variant: "info", label: "Documents" },
             { value: 25, variant: "success", label: "Photos" },
@@ -460,37 +749,8 @@ function SegmentedDemo() {
   );
 }
 
-const segmentedCode = `import { SegmentedProgress } from "@/components/ui/progress"
-
-export function SegmentedDemo() {
-  return (
-    <div className="space-y-8">
-      {/* Task Status */}
-      <SegmentedProgress
-        segments={[
-          { value: 45, variant: "success", label: "Completed" },
-          { value: 25, variant: "info", label: "In Progress" },
-          { value: 15, variant: "warning", label: "Pending" },
-        ]}
-        total={100}
-        showLabels
-        size="lg"
-      />
-      
-      {/* Storage Usage */}
-      <SegmentedProgress
-        segments={[
-          { value: 30, variant: "info", label: "Documents" },
-          { value: 25, variant: "success", label: "Photos" },
-          { value: 15, variant: "warning", label: "Videos" },
-          { value: 10, variant: "destructive", label: "Others" },
-        ]}
-        total={100}
-        showLabels
-      />
-    </div>
-  )
-}`;
+const segmentedCode =
+  'import { Progress, SegmentedProgress } from "@/components/ui/progress";\n\nexport function SegmentedDemo() {\n  return (\n    <div className="space-y-8">\n      <div>\n        <p className="text-sm text-muted-foreground mb-3">Task Status</p>\n        <SegmentedProgress\n          segments={[\n            { value: 45, variant: "success", label: "Completed" },\n            { value: 25, variant: "info", label: "In Progress" },\n            { value: 15, variant: "warning", label: "Pending" },\n          ]}\n          total={100}\n          showLabels\n          size="lg"\n        />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-3">Storage Usage</p>\n        <SegmentedProgress\n          kind="meter"\n          aria-label="Storage usage"\n          segments={[\n            { value: 30, variant: "info", label: "Documents" },\n            { value: 25, variant: "success", label: "Photos" },\n            { value: 15, variant: "warning", label: "Videos" },\n            { value: 10, variant: "destructive", label: "Others" },\n          ]}\n          total={100}\n          showLabels\n        />\n      </div>\n    </div>\n  );\n}';
 
 function CircularDemo() {
   return (
@@ -538,245 +798,125 @@ function CircularDemo() {
   );
 }
 
-const circularCode = `import { CircularProgress } from "@/components/ui/progress"
+const circularCode =
+  'import { CircularProgress } from "@/components/ui/progress";\n\nexport function CircularDemo() {\n  return (\n    <div className="space-y-8">\n      <div>\n        <p className="text-sm text-muted-foreground mb-4">Sizes</p>\n        <div className="flex items-center gap-6">\n          <div className="text-center">\n            <CircularProgress value={60} size="sm" />\n            <p className="text-xs text-muted-foreground mt-2">Small</p>\n          </div>\n          <div className="text-center">\n            <CircularProgress value={60} size="default" />\n            <p className="text-xs text-muted-foreground mt-2">Default</p>\n          </div>\n          <div className="text-center">\n            <CircularProgress value={60} size="lg" />\n            <p className="text-xs text-muted-foreground mt-2">Large</p>\n          </div>\n          <div className="text-center">\n            <CircularProgress value={60} size="xl" />\n            <p className="text-xs text-muted-foreground mt-2">XL</p>\n          </div>\n        </div>\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-4">With Label</p>\n        <div className="flex items-center gap-6">\n          <CircularProgress value={75} showLabel />\n          <CircularProgress value={45} showLabel variant="success" />\n          <CircularProgress value={90} showLabel variant="warning" />\n        </div>\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-4">\n          Indeterminate (value=null)\n        </p>\n        <div className="flex items-center gap-6">\n          <CircularProgress value={null} />\n          <CircularProgress value={null} variant="success" />\n          <CircularProgress value={null} variant="info" />\n        </div>\n      </div>\n    </div>\n  );\n}';
 
-export function CircularDemo() {
-  return (
-    <div className="space-y-8">
-      {/* Sizes */}
-      <div className="flex items-center gap-6">
-        <CircularProgress value={60} size="sm" />
-        <CircularProgress value={60} size="default" />
-        <CircularProgress value={60} size="lg" />
-        <CircularProgress value={60} size="xl" />
-      </div>
-      
-      {/* With Label */}
-      <div className="flex items-center gap-6">
-        <CircularProgress value={75} showLabel />
-        <CircularProgress value={45} showLabel variant="success" />
-        <CircularProgress value={90} showLabel variant="warning" />
-      </div>
-      
-      {/* Indeterminate */}
-      <div className="flex items-center gap-6">
-        <CircularProgress value={null} />
-        <CircularProgress value={null} variant="success" />
-        <CircularProgress value={null} variant="info" />
-      </div>
-    </div>
-  )
-}`;
+function LoadingExampleDemo({ active = true }: { active?: boolean }) {
+  const [running, setRunning] = React.useState(false);
+  const [amount, setAmount] = React.useState(0);
 
-function LoadingExampleDemo() {
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [loadProgress, setLoadProgress] = React.useState(0);
+  const tick = React.useCallback(
+    () => setAmount((previous) => Math.min(100, previous + 10)),
+    [],
+  );
 
-  const handleLoad = () => {
-    setIsLoading(true);
-    setLoadProgress(0);
-
-    const interval = setInterval(() => {
-      setLoadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 500);
-
-          return 100;
-        }
-
-        return prev + 2;
-      });
-    }, 50);
-  };
+  useDemoClock(tick, active && running && amount < 100);
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Button onClick={handleLoad} disabled={isLoading}>
-          {isLoading ? "Loading..." : "Start Loading"}
+      <p className="text-sm text-muted-foreground">
+        Illustrative loading, with cleanup on unmount and inactive-tab pause.
+      </p>
+      <CircularProgress
+        aria-label="Illustrative loading"
+        value={amount}
+        showLabel
+      />
+      <div className="flex flex-wrap gap-2">
+        <Button
+          onClick={() => {
+            setAmount(0);
+            setRunning(true);
+          }}
+        >
+          Start loading
         </Button>
-        {isLoading && (
-          <div className="flex items-center gap-3">
-            <CircularProgress value={loadProgress} showLabel size="sm" />
-            <span className="text-sm text-muted-foreground">
-              Loading data... {loadProgress}%
-            </span>
-          </div>
-        )}
+        <Button
+          variant="outline"
+          onClick={() => setRunning((previous) => !previous)}
+        >
+          {running ? "Pause loading" : "Resume loading"}
+        </Button>
+        <Button variant="outline" onClick={tick}>
+          Advance 10%
+        </Button>
       </div>
-      {!isLoading && loadProgress === 100 && (
-        <div className="p-4 bg-success/10 border border-success/30 rounded-lg">
-          <p className="text-sm text-success-foreground">
-            Data loaded successfully!
-          </p>
-        </div>
-      )}
+      {amount === 100 && <output>Illustrative data ready.</output>}
     </div>
   );
 }
 
-const loadingExampleCode = `import { useState } from "react"
-import { CircularProgress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
+const loadingExampleCode =
+  'import * as React from "react";\nimport { CircularProgress } from "@/components/ui/progress";\nimport { Button } from "@/components/ui/button";\n\nfunction useDemoClock(tick: () => void, active: boolean) {\n  React.useEffect(() => {\n    if (!active) return;\n\n    const timer = setInterval(() => {\n      if (!document.hidden) tick();\n    }, 800);\n\n    return () => clearInterval(timer);\n  }, [active, tick]);\n}\n\nexport function LoadingExampleDemo({ active = true }: { active?: boolean }) {\n  const [running, setRunning] = React.useState(false);\n  const [amount, setAmount] = React.useState(0);\n\n  const tick = React.useCallback(\n    () => setAmount((previous) => Math.min(100, previous + 10)),\n    [],\n  );\n\n  useDemoClock(tick, active && running && amount < 100);\n\n  return (\n    <div className="space-y-4">\n      <p className="text-sm text-muted-foreground">\n        Illustrative loading, with cleanup on unmount and inactive-tab pause.\n      </p>\n      <CircularProgress\n        aria-label="Illustrative loading"\n        value={amount}\n        showLabel\n      />\n      <div className="flex flex-wrap gap-2">\n        <Button\n          onClick={() => {\n            setAmount(0);\n            setRunning(true);\n          }}\n        >\n          Start loading\n        </Button>\n        <Button\n          variant="outline"\n          onClick={() => setRunning((previous) => !previous)}\n        >\n          {running ? "Pause loading" : "Resume loading"}\n        </Button>\n        <Button variant="outline" onClick={tick}>\n          Advance 10%\n        </Button>\n      </div>\n      {amount === 100 && <output>Illustrative data ready.</output>}\n    </div>\n  );\n}';
 
-export function LoadingExampleDemo() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [loadProgress, setLoadProgress] = useState(0)
-
-  const handleLoad = () => {
-    setIsLoading(true)
-    setLoadProgress(0)
-
-    const interval = setInterval(() => {
-      setLoadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setTimeout(() => setIsLoading(false), 500)
-          return 100
-        }
-        return prev + 2
-      })
-    }, 50)
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Button onClick={handleLoad} disabled={isLoading}>
-          {isLoading ? "Loading..." : "Start Loading"}
-        </Button>
-        {isLoading && (
-          <div className="flex items-center gap-3">
-            <CircularProgress value={loadProgress} showLabel size="sm" />
-            <span className="text-sm text-muted-foreground">
-              Loading data... {loadProgress}%
-            </span>
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}`;
-
-// =============================================================================
-// USAGE CODE
-// =============================================================================
-
-const usageCode = `import { 
-  Progress, 
-  CircularProgress, 
-  SegmentedProgress,
-  ProgressLabel,
-  ProgressValue,
-} from "@/components/ui/progress"
-
-// Basic progress
-<Progress value={33} />
-
-// With label
-<Progress value={75} showLabel />
-
-// Indeterminate state
-<Progress value={null} />
-
-// Striped and animated
-<Progress value={80} striped animated />
-
-// Segmented progress
-<SegmentedProgress
-  segments={[
-    { value: 45, variant: "success", label: "Done" },
-    { value: 25, variant: "info", label: "In Progress" },
-  ]}
-  total={100}
-  showLabels
-/>
-
-// Circular progress
-<CircularProgress value={75} showLabel />
-
-// With onComplete callback
-<Progress value={progress} onComplete={() => console.log("Done!")} />
-
-// Custom aria-valuetext for accessibility
-<Progress 
-  value={60} 
-  getAriaValueText={() => "Step 3 of 5"} 
-/>`;
-
-// =============================================================================
-// API REFERENCE
-// =============================================================================
+const usageCode =
+  'import { Progress, ProgressLabel, ProgressValue, CircularProgress, SegmentedProgress, KiraProgress } from "@/components/ui/progress";\n\nexport function Usage() {\n  return <div className="space-y-4">\n    <ProgressLabel id="import-label">Process imported rows</ProgressLabel>\n    <Progress value={75} min={50} max={150} bufferValue={120} aria-labelledby="import-label" showLabel />\n    <ProgressValue value={75} min={50} max={150} />\n    <CircularProgress value={75} min={50} max={150} aria-label="Process imported rows" showLabel />\n    <SegmentedProgress segments={[{ id: "documents", label: "Documents", value: 40 }]} total={100} kind="meter" aria-label="Storage used" showLabels />\n    <KiraProgress label="Prepare report" status="running" currentPhaseId="write" phases={[\n      { id: "receive", label: "Receive", weight: 1, value: 100 },\n      { id: "write", label: "Write report", weight: 3, value: 25 },\n    ]} />\n  </div>;\n}';
 
 const apiSections = [
   {
     title: "Progress",
     props: [
       {
-        prop: "value",
-        type: "number | null",
-        default: "-",
+        prop: "Native props",
+        type: "Base UI part Props (including render, ref, className and style)",
         description:
-          "Current progress value. Use null for indeterminate state.",
+          "Native props and event behavior are forwarded. See the linked Base UI API; render replaces the element without asChild.",
       },
       {
-        prop: "max",
-        type: "number",
-        default: "100",
-        description: "Maximum value for the progress.",
-      },
-      {
-        prop: "size",
-        type: '"sm" | "default" | "lg" | "xl"',
-        default: '"default"',
-        description: "Size of the progress bar.",
-      },
-      {
-        prop: "variant",
-        type: '"default" | "info" | "success" | "warning" | "destructive"',
-        default: '"default"',
-        description: "Color variant.",
-      },
-      {
-        prop: "showLabel",
-        type: "boolean",
-        default: "false",
-        description: "Show percentage label below the progress bar.",
-      },
-      {
-        prop: "striped",
-        type: "boolean",
-        default: "false",
-        description: "Display striped pattern on the indicator.",
-      },
-      {
-        prop: "animated",
-        type: "boolean",
-        default: "false",
+        prop: "value / min / max",
+        type: "number | null / number / number",
         description:
-          "Animate the striped pattern. Only works when striped is true.",
+          "Finite values clamp. Missing/nonfinite amount is unknown. Invalid bounds fall back together to 0 to 100.",
+        default: "min 0, max 100",
       },
       {
-        prop: "locale",
-        type: "Intl.LocalesArgument",
-        default: "-",
-        description: "Locale for number formatting.",
+        prop: "locale / format",
+        type: "Intl.LocalesArgument / Intl.NumberFormatOptions",
+        description:
+          "Default percent uses the normalized fraction. Explicit non-percent styles format the clamped raw value.",
       },
       {
         prop: "getAriaValueText",
-        type: "(formatted, value) => string",
-        default: "-",
+        type: "(formatted: string | null, value: number | null) => string",
         description:
-          "Function to generate human-readable text for screen readers.",
+          "Receives the normalized formatted/clamped amount; unknown uses null.",
       },
       {
         prop: "onComplete",
         type: "() => void",
-        default: "-",
-        description: "Callback when progress reaches max value.",
+        description:
+          "Once per incomplete-to-complete crossing, including a complete initial mount. StrictMode replay does not duplicate it; return below complete resets. Measurement only, not task success.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg" | "xl"',
+        description: "Supported size presets.",
+        default: '"default"',
+      },
+      {
+        prop: "variant",
+        type: '"default" | "info" | "success" | "warning" | "destructive"',
+        description: "Semantic fill/stroke colors.",
+        default: '"default"',
+      },
+      {
+        prop: "showLabel / striped / animated / paused",
+        type: "boolean",
+        description:
+          "Visible amount, stripe pattern, moving stripes and animation pause. Reduced motion stops all motion; offscreen/hidden loops pause.",
+        default: "false",
+      },
+      {
+        prop: "bufferValue",
+        type: "number | null",
+        description:
+          "Decorative secondary measurement; clamps between current and max, hidden when primary is unknown.",
+      },
+      {
+        prop: "aria-label / aria-labelledby / aria-describedby",
+        type: "string",
+        description:
+          "Explicit accessible name and descriptive text. Pair standalone labels with aria-labelledby.",
       },
     ],
   },
@@ -784,42 +924,59 @@ const apiSections = [
     title: "CircularProgress",
     props: [
       {
-        prop: "value",
-        type: "number | null",
-        default: "-",
+        prop: "value / min / max",
+        type: "number | null / number / number",
         description:
-          "Current progress value. Use null for indeterminate state.",
+          "Finite values clamp. Missing/nonfinite amount is unknown. Invalid bounds fall back together to 0 to 100.",
+        default: "min 0, max 100",
       },
       {
-        prop: "max",
-        type: "number",
-        default: "100",
-        description: "Maximum value for the progress.",
+        prop: "locale / format",
+        type: "Intl.LocalesArgument / Intl.NumberFormatOptions",
+        description:
+          "Default percent uses the normalized fraction. Explicit non-percent styles format the clamped raw value.",
+      },
+      {
+        prop: "getAriaValueText",
+        type: "(formatted: string | null, value: number | null) => string",
+        description:
+          "Receives the normalized formatted/clamped amount; unknown uses null.",
+      },
+      {
+        prop: "onComplete",
+        type: "() => void",
+        description:
+          "Once per incomplete-to-complete crossing, including a complete initial mount. StrictMode replay does not duplicate it; return below complete resets. Measurement only, not task success.",
       },
       {
         prop: "size",
         type: '"sm" | "default" | "lg" | "xl"',
+        description: "Supported size presets.",
         default: '"default"',
-        description: "Size of the circular progress.",
       },
       {
         prop: "variant",
         type: '"default" | "info" | "success" | "warning" | "destructive"',
+        description: "Semantic fill/stroke colors.",
         default: '"default"',
-        description: "Color variant.",
       },
       {
-        prop: "showLabel",
+        prop: "showLabel / indeterminate",
         type: "boolean",
+        description: "Visible amount or force unknown state.",
         default: "false",
-        description: "Show percentage label in the center.",
       },
       {
-        prop: "getAriaValueText",
-        type: "(formatted, value) => string",
-        default: "-",
+        prop: "SVG props / ref / className",
+        type: "React.SVGProps<SVGSVGElement> / Ref<SVGSVGElement> / string",
         description:
-          "Function to generate human-readable text for screen readers.",
+          "Forwarded to inner SVG. Accessible name/description props apply to the native Base UI semantic Root.",
+      },
+      {
+        prop: "aria-label / aria-labelledby / aria-describedby",
+        type: "string",
+        description:
+          "Names and descriptions belong to the progressbar, outside decorative SVG.",
       },
     ],
   },
@@ -829,27 +986,43 @@ const apiSections = [
       {
         prop: "segments",
         type: "Segment[]",
-        default: "-",
         description:
-          "Array of segments with value, variant, and optional label.",
+          "id?, value, variant?, label?. Nonfinite/negative values become zero; each segment caps at remaining total. Visual and accessible values match.",
       },
       {
         prop: "total",
         type: "number",
-        default: "-",
-        description: "Total value for calculating segment widths.",
+        description: "Positive finite total; invalid totals fall back to 100.",
       },
       {
         prop: "size",
         type: '"sm" | "default" | "lg" | "xl"',
+        description: "Supported size presets.",
         default: '"default"',
-        description: "Size of the progress bar.",
       },
       {
-        prop: "showLabels",
-        type: "boolean",
-        default: "false",
-        description: "Show legend labels below the progress bar.",
+        prop: "variant",
+        type: '"default" | "info" | "success" | "warning" | "destructive"',
+        description: "Semantic fill/stroke colors.",
+        default: '"default"',
+      },
+      {
+        prop: "showLabels / kind",
+        type: 'boolean / "progress" | "meter"',
+        description:
+          "Visible breakdown and process/measurement semantics. Quotas use meter; onComplete only applies to process progress.",
+        default: 'false / "progress"',
+      },
+      {
+        prop: "locale / onComplete",
+        type: "Intl.LocalesArgument / (() => void)",
+        description: "Locale formatting and completion crossing callback.",
+      },
+      {
+        prop: "HTML / ARIA props",
+        type: "React.HTMLAttributes<HTMLDivElement>",
+        description:
+          "Forwarded to semantic root. Textual breakdown is always available.",
       },
     ],
   },
@@ -857,16 +1030,10 @@ const apiSections = [
     title: "ProgressLabel",
     props: [
       {
-        prop: "htmlFor",
-        type: "string",
-        default: "-",
-        description: "ID of the associated progress element.",
-      },
-      {
-        prop: "children",
-        type: "ReactNode",
-        default: "-",
-        description: "Label text content.",
+        prop: "HTML props / htmlFor / id",
+        type: "React.LabelHTMLAttributes<HTMLLabelElement>",
+        description:
+          "Standalone visible label; set id and point the progressbar aria-labelledby to it. htmlFor remains supported.",
       },
     ],
   },
@@ -874,28 +1041,120 @@ const apiSections = [
     title: "ProgressValue",
     props: [
       {
-        prop: "value",
-        type: "number | null",
-        default: "-",
-        description: "Current progress value.",
+        prop: "value / min / max",
+        type: "number | null / number / number",
+        description:
+          "Finite values clamp. Missing/nonfinite amount is unknown. Invalid bounds fall back together to 0 to 100.",
+        default: "min 0, max 100",
       },
       {
-        prop: "max",
-        type: "number",
-        default: "100",
-        description: "Maximum value.",
-      },
-      {
-        prop: "locale",
-        type: "Intl.LocalesArgument",
-        default: "-",
-        description: "Locale for number formatting.",
+        prop: "locale / format",
+        type: "Intl.LocalesArgument / Intl.NumberFormatOptions",
+        description:
+          "Default percent uses the normalized fraction. Explicit non-percent styles format the clamped raw value.",
       },
       {
         prop: "children",
-        type: "(formatted, value) => ReactNode",
-        default: "-",
-        description: "Optional render function for custom display.",
+        type: "((formatted: string | null, value: number | null) => ReactNode) | null",
+        description: "Standalone renderer; no primitive context required.",
+      },
+      {
+        prop: "HTML props",
+        type: "React.HTMLAttributes<HTMLSpanElement>",
+        description: "Span props including className.",
+      },
+    ],
+  },
+  {
+    title: "KiraProgress",
+    props: [
+      {
+        prop: "value / min / max",
+        type: "number | null / number / number",
+        description:
+          "Finite values clamp. Missing/nonfinite amount is unknown. Invalid bounds fall back together to 0 to 100.",
+        default: "min 0, max 100",
+      },
+      {
+        prop: "locale / format",
+        type: "Intl.LocalesArgument / Intl.NumberFormatOptions",
+        description:
+          "Default percent uses the normalized fraction. Explicit non-percent styles format the clamped raw value.",
+      },
+      {
+        prop: "getAriaValueText",
+        type: "(formatted: string | null, value: number | null) => string",
+        description:
+          "Receives the normalized formatted/clamped amount; unknown uses null.",
+      },
+      {
+        prop: "onComplete",
+        type: "() => void",
+        description:
+          "Once per incomplete-to-complete crossing, including a complete initial mount. StrictMode replay does not duplicate it; return below complete resets. Measurement only, not task success.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg" | "xl"',
+        description: "Supported size presets.",
+        default: '"default"',
+      },
+      {
+        prop: "variant",
+        type: '"default" | "info" | "success" | "warning" | "destructive"',
+        description: "Semantic fill/stroke colors.",
+        default: '"default"',
+      },
+      {
+        prop: "label / status",
+        type: 'string / "idle" | "running" | "paused" | "error" | "complete" | "canceled"',
+        description:
+          "Required visible label and caller-owned lifecycle. A measured 100% never changes status.",
+      },
+      {
+        prop: "description",
+        type: "ReactNode",
+        description: "Visible descriptive text linked to progressbar.",
+      },
+      {
+        prop: "bufferValue / striped / animated / paused",
+        type: "ProgressProps",
+        description:
+          "Linear options are inherited; lifecycle pauses unknown/stripe loops outside running.",
+      },
+      {
+        prop: "onPause / onResume / onCancel / onRetry",
+        type: "() => void",
+        description:
+          "Only supplied applicable controls appear. Running: Pause/Cancel; paused: Resume/Cancel; error/canceled: Retry. Focus moves safely if a control disappears.",
+      },
+      {
+        prop: "phases",
+        type: "readonly ProgressPhase[]",
+        description:
+          "Stable unique id, label, positive finite weight, measured value and optional min/max per phase. Weighted overall uses 0 to 100; any unknown/invalid phase makes overall unknown; empty list is unknown. Phase mode ignores overall value/min/max/buffer.",
+      },
+      {
+        prop: "currentPhaseId",
+        type: "string",
+        description:
+          "Explicit current phase display; ordering/execution stay caller-owned.",
+      },
+    ],
+  },
+  {
+    title: "Variants and types",
+    props: [
+      {
+        prop: "progressVariants / indicatorVariants",
+        type: "CVA functions",
+        description:
+          "Exported track size/tone and indicator stripe composition.",
+      },
+      {
+        prop: "Exported types",
+        type: "ProgressProps, ProgressLabelProps, ProgressValueProps, ProgressRange, CircularProgressProps, SegmentedProgressProps, Segment, KiraProgressProps, ProgressStatus, ProgressPhase",
+        description: "Shared ranges and lifecycle/phase contracts.",
       },
     ],
   },
@@ -905,211 +1164,305 @@ const apiSections = [
 // MAIN PAGE COMPONENT
 // =============================================================================
 
+const features = [
+  {
+    title: "Measured variants",
+    description:
+      "Linear, circular, and segmented progress indicators with size and color variants.",
+    icon: <IconChartBar className="h-4 w-4" />,
+  },
+  {
+    title: "Lifecycle and phases",
+    description:
+      "Caller-owned actions and weighted phases distinguish measurement from success; see Kira and Weighted Phases.",
+    icon: <IconLoader className="h-4 w-4" />,
+  },
+  {
+    title: "Buffered background work",
+    description:
+      "Received and processed layers plus a local background-task popup; see Buffer and Background Tasks.",
+    icon: <IconPalette className="h-4 w-4" />,
+  },
+];
+
+const demoTabs = [
+  {
+    value: "buffer",
+    label: "Buffer",
+    demo: (
+      <DemoWrapper
+        title="Received and processed"
+        description="A decorative buffer layer shares the primary range."
+        code={bufferCode}
+      >
+        <BufferDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "Kira / Lifecycle",
+    demo: (active: boolean) => (
+      <DemoWrapper
+        title="Caller-owned lifecycle"
+        description="Unknown, measured, pause/resume, error/retry, cancel/restart and explicit completion."
+        code={lifecycleCode}
+      >
+        <LifecycleDemo active={active} />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "phases",
+    label: "Weighted Phases",
+    demo: (
+      <DemoWrapper
+        title="Weighted measurements"
+        description="Stable phase IDs and measured amounts; unknown phases keep overall amount unknown."
+        code={phasesCode}
+      >
+        <PhasesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "background",
+    label: "Background Tasks",
+    demo: (active: boolean) => (
+      <DemoWrapper
+        title="Progress inside a Popover"
+        description="Local demo composition; closing the popup does not stop work."
+        code={backgroundCode}
+      >
+        <BackgroundTasksDemo active={active} />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States / Stress",
+    demo: (
+      <DemoWrapper
+        title="Ranges and edge cases"
+        description="RTL, long names, empty/nonfinite values, invalid ranges, clamps and StrictMode completion reentry."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "basic",
+    label: "Basic",
+    demo: (
+      <DemoWrapper
+        title="Basic Progress"
+        description="Simple linear progress bar with different values."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="Progress bars in different sizes."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "colors",
+    label: "Colors",
+    demo: (
+      <DemoWrapper
+        title="Color Variants"
+        description="Progress bars with different color variants for various states."
+        code={colorsCode}
+      >
+        <ColorsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "animated",
+    label: "Animated",
+    demo: (active: boolean) => (
+      <DemoWrapper
+        title="Animated Progress"
+        description="Progress bar with smooth value transitions."
+        code={animatedCode}
+      >
+        <AnimatedDemo active={active} />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "indeterminate",
+    label: "Indeterminate",
+    demo: (
+      <DemoWrapper
+        title="Indeterminate State"
+        description="Progress bars showing loading without a specific value."
+        code={indeterminateCode}
+      >
+        <IndeterminateDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "striped",
+    label: "Striped",
+    demo: (
+      <DemoWrapper
+        title="Striped Variants"
+        description="Progress bars with striped patterns and animations."
+        code={stripedCode}
+      >
+        <StripedDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "labels",
+    label: "Labels",
+    demo: (
+      <DemoWrapper
+        title="With Labels"
+        description="Progress bars with built-in and custom labels."
+        code={withLabelCode}
+      >
+        <WithLabelDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "locale",
+    label: "Locale",
+    demo: (
+      <DemoWrapper
+        title="Locale Formatting"
+        description="Progress labels formatted according to different locales."
+        code={localeCode}
+      >
+        <LocaleDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "accessibility",
+    label: "Accessibility",
+    demo: (
+      <DemoWrapper
+        title="Accessibility Features"
+        description="Custom ARIA attributes for better screen reader support."
+        code={accessibilityCode}
+      >
+        <AccessibilityDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "oncomplete",
+    label: "onComplete",
+    demo: (
+      <DemoWrapper
+        title="onComplete Callback"
+        description="Callback fires when progress reaches 100%."
+        code={onCompleteCode}
+      >
+        <OnCompleteDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "segmented",
+    label: "Segmented",
+    demo: (
+      <DemoWrapper
+        title="Segmented Progress"
+        description="Multi-segment progress bars for showing multiple values."
+        code={segmentedCode}
+      >
+        <SegmentedDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "circular",
+    label: "Circular",
+    demo: (
+      <DemoWrapper
+        title="Circular Progress"
+        description="Circular progress indicators with sizes, labels, and indeterminate states."
+        code={circularCode}
+      >
+        <CircularDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "loading",
+    label: "Loading Example",
+    demo: (active: boolean) => (
+      <DemoWrapper
+        title="Loading Example"
+        description="Circular progress used in a realistic loading state scenario."
+        code={loadingExampleCode}
+      >
+        <LoadingExampleDemo active={active} />
+      </DemoWrapper>
+    ),
+  },
+];
+
+const changelogEntries = [
+  {
+    version: "2.0.0",
+    date: "9 November 2026",
+    changes: [
+      {
+        type: "added",
+        title:
+          "Buffer layer, KiraProgress lifecycle, weighted phases and background-task composition",
+        description:
+          "Audited against Base UI 1.9.0; caller owns execution and explicit success.",
+      },
+      {
+        type: "fixed",
+        title:
+          "Shared normalization, native circular semantics, standalone value formatting, paused/offscreen/reduced motion",
+      },
+      {
+        type: "breaking",
+        title: "Corrected range and unknown-value behavior",
+        description:
+          "min participates in every percentage; invalid bounds fall back to 0–100; missing/nonfinite circular values are unknown; segments clamp cumulatively and quota examples use meter semantics. Circular SVG props/ref stay on the inner SVG. onComplete signals a measured crossing, including initial complete, once in StrictMode; it never means backend success.",
+      },
+    ],
+  },
+] satisfies React.ComponentProps<typeof Changelog>["entries"];
+
 export default function ProgressPage() {
-  const features = [
-    {
-      title: "Multiple Variants",
-      description:
-        "Linear, circular, and segmented progress indicators with size and color variants.",
-      icon: <IconChartBar className="h-4 w-4" />,
-    },
-    {
-      title: "Indeterminate State",
-      description:
-        "Support for indeterminate loading states with animated indicators.",
-      icon: <IconLoader className="h-4 w-4" />,
-    },
-    {
-      title: "Customizable",
-      description:
-        "Striped patterns, animated effects, locale formatting, and accessible labels.",
-      icon: <IconPalette className="h-4 w-4" />,
-    },
-  ];
-
-  const demoTabs = [
-    {
-      value: "basic",
-      label: "Basic",
-      demo: (
-        <DemoWrapper
-          title="Basic Progress"
-          description="Simple linear progress bar with different values."
-          code={basicCode}
-        >
-          <BasicDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "sizes",
-      label: "Sizes",
-      demo: (
-        <DemoWrapper
-          title="Size Variants"
-          description="Progress bars in different sizes."
-          code={sizesCode}
-        >
-          <SizesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "colors",
-      label: "Colors",
-      demo: (
-        <DemoWrapper
-          title="Color Variants"
-          description="Progress bars with different color variants for various states."
-          code={colorsCode}
-        >
-          <ColorsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "animated",
-      label: "Animated",
-      demo: (
-        <DemoWrapper
-          title="Animated Progress"
-          description="Progress bar with smooth value transitions."
-          code={animatedCode}
-        >
-          <AnimatedDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "indeterminate",
-      label: "Indeterminate",
-      demo: (
-        <DemoWrapper
-          title="Indeterminate State"
-          description="Progress bars showing loading without a specific value."
-          code={indeterminateCode}
-        >
-          <IndeterminateDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "striped",
-      label: "Striped",
-      demo: (
-        <DemoWrapper
-          title="Striped Variants"
-          description="Progress bars with striped patterns and animations."
-          code={stripedCode}
-        >
-          <StripedDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "labels",
-      label: "Labels",
-      demo: (
-        <DemoWrapper
-          title="With Labels"
-          description="Progress bars with built-in and custom labels."
-          code={withLabelCode}
-        >
-          <WithLabelDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "locale",
-      label: "Locale",
-      demo: (
-        <DemoWrapper
-          title="Locale Formatting"
-          description="Progress labels formatted according to different locales."
-          code={localeCode}
-        >
-          <LocaleDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "accessibility",
-      label: "Accessibility",
-      demo: (
-        <DemoWrapper
-          title="Accessibility Features"
-          description="Custom ARIA attributes for better screen reader support."
-          code={accessibilityCode}
-        >
-          <AccessibilityDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "oncomplete",
-      label: "onComplete",
-      demo: (
-        <DemoWrapper
-          title="onComplete Callback"
-          description="Callback fires when progress reaches 100%."
-          code={onCompleteCode}
-        >
-          <OnCompleteDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "segmented",
-      label: "Segmented",
-      demo: (
-        <DemoWrapper
-          title="Segmented Progress"
-          description="Multi-segment progress bars for showing multiple values."
-          code={segmentedCode}
-        >
-          <SegmentedDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "circular",
-      label: "Circular",
-      demo: (
-        <DemoWrapper
-          title="Circular Progress"
-          description="Circular progress indicators with sizes, labels, and indeterminate states."
-          code={circularCode}
-        >
-          <CircularDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "loading",
-      label: "Loading Example",
-      demo: (
-        <DemoWrapper
-          title="Loading Example"
-          description="Circular progress used in a realistic loading state scenario."
-          code={loadingExampleCode}
-        >
-          <LoadingExampleDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
-
   return (
     <ComponentPage>
       <PageHeader
         title="Progress"
         description="Displays an indicator showing completion progress with linear, circular, and segmented variants."
-        version="v1.0"
+        version="v2.0.0"
       />
 
       <FeatureGrid features={features} />
 
       <DemoTabs tabs={demoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts shortcuts={progressPageKeyboardShortcutsShortcuts} />
 
       <UsageBlock
         code={usageCode}
@@ -1122,6 +1475,26 @@ export default function ProgressPage() {
         title="API Reference"
         description="Props and configuration options for all progress components."
       />
+      <Changelog entries={changelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const progressPageKeyboardShortcutsShortcuts = [
+  {
+    keys: "Tab / Shift + Tab",
+    description:
+      "Move among lifecycle controls. Progress indicators themselves are read-only and have no keyboard commands.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Activate Pause, Resume, Cancel or Retry. The caller owns work and status; 100% does not confirm success.",
+  },
+  {
+    keys: "Escape",
+    description:
+      "In Background Tasks: inherited from Base UI Popover, closes the popup and returns focus to its trigger. Tasks continue.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
