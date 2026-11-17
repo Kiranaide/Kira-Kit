@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import { useState } from "react";
 import { Box } from "@/components/ui/box";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,10 @@ import {
   FeatureGrid,
   DemoTabs,
   DemoWrapper,
+  UsageBlock,
   APIReference,
+  KeyboardShortcuts,
+  Changelog,
 } from "@/components/docs";
 
 function BasicBoxDemo() {
@@ -308,22 +312,22 @@ function SizingBoxDemo() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Box p={4} bg="muted" rounded="lg" w="full" h="24">
-          w="full" h="24"
+        <Box p={4} bg="muted" rounded="lg" w="full" h={24}>
+          w="full" h={24}
         </Box>
-        <Box p={4} bg="muted" rounded="lg" w="64" h="24">
-          w="64" h="24"
+        <Box p={4} bg="muted" rounded="lg" w={64} h={24}>
+          w={64} h={24}
         </Box>
-        <Box p={4} bg="muted" rounded="lg" minW="32" minH="24">
-          minW="32" minH="24"
+        <Box p={4} bg="muted" rounded="lg" minW={32} minH={24}>
+          minW={32} minH={24}
         </Box>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Box p={4} bg="muted" rounded="lg" maxW="md" h="24">
+        <Box p={4} bg="muted" rounded="lg" maxW="md" h={24}>
           maxW="md"
         </Box>
-        <Box p={4} bg="muted" rounded="lg" maxH="24">
-          maxH="24" (overflow hidden)
+        <Box p={4} bg="muted" rounded="lg" maxH={24}>
+          maxH={24} (overflow hidden)
         </Box>
       </div>
     </div>
@@ -333,17 +337,17 @@ function SizingBoxDemo() {
 const sizingBoxCode = `import { Box } from "@/components/ui/box"
 
 // Full width and fixed height
-<Box w="full" h="24" p={4} bg="muted" rounded="lg">
+<Box w="full" h={24} p={4} bg="muted" rounded="lg">
   Full width, fixed height
 </Box>
 
 // Fixed width and height
-<Box w="64" h="24" p={4} bg="muted" rounded="lg">
+<Box w={64} h={24} p={4} bg="muted" rounded="lg">
   Fixed width and height
 </Box>
 
 // Minimum dimensions
-<Box minW="32" minH="24" p={4} bg="muted" rounded="lg">
+<Box minW={32} minH={24} p={4} bg="muted" rounded="lg">
   Minimum width and height
 </Box>
 
@@ -353,7 +357,7 @@ const sizingBoxCode = `import { Box } from "@/components/ui/box"
 </Box>
 
 // Max height (with overflow)
-<Box maxH="24" p={4} bg="muted" rounded="lg" className="overflow-auto">
+<Box maxH={24} p={4} bg="muted" rounded="lg" className="overflow-auto">
   Max height with scroll
 </Box>`;
 
@@ -398,363 +402,606 @@ const displayBoxCode = `import { Box } from "@/components/ui/box"
 <Box display="grid" p={4}>Grid container</Box>
 <Box display="hidden" p={4}>Hidden</Box>`;
 
+// =============================================================================
+// Demo: Responsive
+// =============================================================================
+function ResponsiveBoxDemo() {
+  return (
+    <div className="space-y-6">
+      <Box
+        p={{ base: 2, sm: 4, md: 8 }}
+        bg={{ base: "muted", md: "primary/10" }}
+        rounded="lg"
+      >
+        <span className="text-sm font-medium">
+          Padding & background respond to viewport
+        </span>
+        <p className="text-xs text-muted-foreground mt-1">
+          p: 2 → 4 (sm) → 8 (md) · bg: muted → primary/10 (md). Resize the
+          window to see each breakpoint apply.
+        </p>
+      </Box>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Box
+          p={4}
+          bg="muted"
+          rounded="lg"
+          w={{ base: "full", md: "auto" }}
+          h={24}
+        >
+          w: full → auto (md)
+        </Box>
+        <Box p={4} bg="muted" rounded="lg" maxW={{ base: "sm", lg: "full" }}>
+          maxW: sm → full (lg)
+        </Box>
+        <Box p={4} bg="muted" rounded="lg" border={{ base: true, md: 4 }}>
+          border: true → 4 (md)
+        </Box>
+        <Box
+          p={{ base: 4, lg: 6 }}
+          bg="muted"
+          rounded="lg"
+          color={{ base: "foreground", lg: "primary" }}
+        >
+          color: foreground → primary (lg)
+        </Box>
+      </div>
+    </div>
+  );
+}
+
+const responsiveBoxCode = `import { Box } from "@/components/ui/box"
+
+// Any layout prop accepts a breakpoint object: { base, sm, md, lg, xl, 2xl }
+<Box
+  p={{ base: 2, sm: 4, md: 8 }}
+  bg={{ base: "muted", md: "primary/10" }}
+  rounded="lg"
+>
+  Padding and background respond to viewport
+</Box>
+
+<Box w={{ base: "full", md: "auto" }} h={24} p={4} bg="muted" rounded="lg">
+  Width full → auto at md
+</Box>
+
+<Box border={{ base: true, md: 4 }} p={4} rounded="lg">
+  Border width 1px → 4px at md
+</Box>
+
+// Single values remain shorthand for all breakpoints
+<Box p={4} bg="muted" rounded="lg">Static spacing</Box>`;
+
+// =============================================================================
+// Demo: Stress
+// =============================================================================
+function StressBoxDemo() {
+  return (
+    <div className="space-y-6">
+      <div className="max-w-[320px]">
+        <Box p={4} bg="background" border rounded="lg" maxW="full">
+          <span className="font-medium">
+            Narrow container (320px) with long content that must wrap instead of
+            overflowing the box boundary
+          </span>
+          <p className="text-sm text-muted-foreground mt-2 break-words">
+            Supercalifragilisticexpialidocious
+            Pneumonoultramicroscopicsilicovolcanoconiosis
+            Antidisestablishmentarianism — long words break with break-words.
+          </p>
+        </Box>
+      </div>
+      <div className="space-y-2">
+        <p className="text-xs text-muted-foreground">
+          Full token row — every bg key renders a static class (JIT-purge
+          proof):
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              "background",
+              "foreground",
+              "card",
+              "popover",
+              "primary",
+              "secondary",
+              "muted",
+              "accent",
+              "destructive",
+              "success",
+              "warning",
+              "info",
+              "primary/10",
+              "muted/50",
+              "destructive/10",
+              "success/10",
+              "warning/10",
+              "info/10",
+            ] as const
+          ).map((token) => (
+            <Box
+              key={token}
+              bg={token}
+              w={24}
+              h={12}
+              rounded="md"
+              border
+              className="flex items-center justify-center text-[10px]"
+            >
+              {token}
+            </Box>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const stressBoxCode = `import { Box } from "@/components/ui/box"
+
+// Narrow containers: maxW="full" + break-words keeps long content inside
+<Box p={4} border rounded="lg" maxW="full" className="break-words">
+  Long content wraps instead of overflowing
+</Box>
+
+// Background tokens are a closed union — unknown values fail tsc
+<Box bg="primary/10" p={4} rounded="lg">Primary tint</Box>
+<Box bg="muted/50" p={4} rounded="lg">Muted tint</Box>
+<Box bg="success/10" p={4} rounded="lg">Success tint</Box>`;
+
 export default function BoxPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Box"
         description="A polymorphic wrapper with utility props for quick styling. Provides semantic HTML support and common styling shortcuts without className bloat."
-        version="v1.0"
+        version="v2.0.0"
       />
 
-      <FeatureGrid
-        features={[
+      <FeatureGrid features={boxPageFeatureGridFeatures} />
+
+      <DemoTabs defaultValue="basic" tabs={boxPageDemoTabsTabs} />
+
+      <APIReference sections={boxPageAPIReferenceSections} />
+
+      <UsageBlock
+        code={`import { Box, boxVariants } from "@/components/ui/box"
+
+// Basic styling shorthand
+<Box p={4} bg="muted" rounded="lg" border>Styled box</Box>
+
+// Semantic element + max width
+<Box as="article" p={6} rounded="lg" border shadow="sm" maxW="md">
+  Article content
+</Box>
+
+// Responsive layout props
+<Box p={{ base: 2, md: 8 }} w={{ base: "full", md: "auto" }} bg="primary/10">
+  Responsive padding and width
+</Box>
+
+// Prebuilt variant classes (without the Box wrapper)
+const classes = boxVariants({ rounded: "lg", shadow: "md" })`}
+        title="Usage"
+        description="Box exports the Box component and its boxVariants class builder."
+      />
+
+      <KeyboardShortcuts
+        title="Keyboard Navigation"
+        description="Box is a static, passive element with no interactive behavior of its own — there is no keyboard interaction to document. Content inside a Box (buttons, links, inputs) is focusable as usual."
+        shortcuts={[
           {
-            title: "Polymorphic",
+            keys: "Tab",
             description:
-              "Render as any HTML element (div, article, section, etc.) with the 'as' prop for semantic markup.",
-          },
-          {
-            title: "Utility Props",
-            description:
-              "Quick styling with shorthand props like p, rounded, shadow, bg, w, h, and more.",
-          },
-          {
-            title: "Flexible",
-            description:
-              "Combine with Tailwind classes for unlimited styling options while keeping code clean.",
+              "Focus passes through the Box itself in DOM order to its interactive children",
           },
         ]}
       />
 
-      <DemoTabs
-        defaultValue="basic"
-        tabs={[
-          {
-            value: "basic",
-            label: "Basic",
-            demo: (
-              <DemoWrapper
-                title="Basic Usage"
-                description="Common utility props for quick styling."
-                code={basicBoxCode}
-              >
-                <BasicBoxDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "rounded",
-            label: "Rounded",
-            demo: (
-              <DemoWrapper
-                title="Border Radius"
-                description="All available rounded variants from none to full. Click to select."
-                code={roundedBoxCode}
-              >
-                <RoundedBoxDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "shadow",
-            label: "Shadow",
-            demo: (
-              <DemoWrapper
-                title="Box Shadow"
-                description="All available shadow variants from none to 2xl."
-                code={shadowBoxCode}
-              >
-                <ShadowBoxDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "semantic",
-            label: "Semantic",
-            demo: (
-              <DemoWrapper
-                title="Semantic HTML"
-                description="Use the 'as' prop to render semantic elements for better accessibility and SEO."
-                code={semanticBoxCode}
-              >
-                <SemanticBoxDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "card-like",
-            label: "Card Like",
-            demo: (
-              <DemoWrapper
-                title="Quick Card Pattern"
-                description="Build cards quickly with Box utility props."
-                code={cardLikeBoxCode}
-              >
-                <CardLikeBoxDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "notification",
-            label: "Notification",
-            demo: (
-              <DemoWrapper
-                title="Notification Box"
-                description="Success and error notifications styled with Box."
-                code={notificationBoxCode}
-              >
-                <NotificationBoxDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "sizing",
-            label: "Sizing",
-            demo: (
-              <DemoWrapper
-                title="Width and Height"
-                description="Control dimensions with w, h, minW, minH, maxW, maxH props."
-                code={sizingBoxCode}
-              >
-                <SizingBoxDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "display",
-            label: "Display",
-            demo: (
-              <DemoWrapper
-                title="Display Property"
-                description="Control CSS display property with variants."
-                code={displayBoxCode}
-              >
-                <DisplayBoxDemo />
-              </DemoWrapper>
-            ),
-          },
-        ]}
-      />
-
-      <APIReference
-        sections={[
-          {
-            title: "Box Props",
-            props: [
-              {
-                prop: "as",
-                type: "BoxElement",
-                default: "div",
-                description: "Semantic HTML element to render",
-              },
-              {
-                prop: "p",
-                type: "0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12",
-                default: "-",
-                description: "Padding on all sides",
-              },
-              {
-                prop: "px",
-                type: "0 | 1 | 2 | 3 | 4 | 5 | 6 | 8",
-                default: "-",
-                description: "Horizontal padding",
-              },
-              {
-                prop: "py",
-                type: "0 | 1 | 2 | 3 | 4 | 5 | 6 | 8",
-                default: "-",
-                description: "Vertical padding",
-              },
-              {
-                prop: "m",
-                type: "0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | auto",
-                default: "-",
-                description: "Margin on all sides",
-              },
-              {
-                prop: "rounded",
-                type: "RoundedVariant",
-                default: "-",
-                description: "Border radius value",
-              },
-              {
-                prop: "shadow",
-                type: "ShadowVariant",
-                default: "-",
-                description: "Box shadow value",
-              },
-              {
-                prop: "bg",
-                type: "string",
-                default: "-",
-                description: "Background color (Tailwind without bg-)",
-              },
-              {
-                prop: "color",
-                type: "string",
-                default: "-",
-                description: "Text color (Tailwind without text-)",
-              },
-              {
-                prop: "border",
-                type: "boolean | string",
-                default: "-",
-                description: "Border (true or custom)",
-              },
-              {
-                prop: "w",
-                type: "string",
-                default: "-",
-                description: "Width (Tailwind without w-)",
-              },
-              {
-                prop: "h",
-                type: "string",
-                default: "-",
-                description: "Height (Tailwind without h-)",
-              },
-              {
-                prop: "minW",
-                type: "string",
-                default: "-",
-                description: "Min width (Tailwind without min-w-)",
-              },
-              {
-                prop: "minH",
-                type: "string",
-                default: "-",
-                description: "Min height (Tailwind without min-h-)",
-              },
-              {
-                prop: "maxW",
-                type: "string",
-                default: "-",
-                description: "Max width (Tailwind without max-w-)",
-              },
-              {
-                prop: "maxH",
-                type: "string",
-                default: "-",
-                description: "Max height (Tailwind without max-h-)",
-              },
-              {
-                prop: "display",
-                type: "DisplayVariant",
-                default: "-",
-                description: "CSS display property",
-              },
-              {
-                prop: "position",
-                type: "PositionVariant",
-                default: "-",
-                description: "CSS position property",
-              },
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional Tailwind classes",
-              },
-            ],
-          },
-          {
-            title: "Available Elements",
-            props: [
-              {
-                prop: "div",
-                type: "string",
-                default: "-",
-                description: "Generic container",
-              },
-              {
-                prop: "span",
-                type: "string",
-                default: "-",
-                description: "Inline text container",
-              },
-              {
-                prop: "section",
-                type: "string",
-                default: "-",
-                description: "Thematic grouping",
-              },
-              {
-                prop: "article",
-                type: "string",
-                default: "-",
-                description: "Self-contained content",
-              },
-              {
-                prop: "aside",
-                type: "string",
-                default: "-",
-                description: "Tangential content",
-              },
-              {
-                prop: "main",
-                type: "string",
-                default: "-",
-                description: "Main content area",
-              },
-              {
-                prop: "header",
-                type: "string",
-                default: "-",
-                description: "Page or section header",
-              },
-              {
-                prop: "footer",
-                type: "string",
-                default: "-",
-                description: "Page or section footer",
-              },
-              {
-                prop: "nav",
-                type: "string",
-                default: "-",
-                description: "Navigation links",
-              },
-              {
-                prop: "form",
-                type: "string",
-                default: "-",
-                description: "Form container",
-              },
-              {
-                prop: "fieldset",
-                type: "string",
-                default: "-",
-                description: "Form field grouping",
-              },
-              {
-                prop: "ul/ol/li",
-                type: "string",
-                default: "-",
-                description: "List elements",
-              },
-              {
-                prop: "figure",
-                type: "string",
-                default: "-",
-                description: "Self-contained media",
-              },
-              {
-                prop: "figcaption",
-                type: "string",
-                default: "-",
-                description: "Caption for figure",
-              },
-              {
-                prop: "address",
-                type: "string",
-                default: "-",
-                description: "Contact information",
-              },
-            ],
-          },
-        ]}
-      />
+      <Changelog entries={boxPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const boxPageFeatureGridFeatures = [
+  {
+    title: "Polymorphic",
+    description:
+      "Render as any HTML element (div, article, section, etc.) with the 'as' prop for semantic markup.",
+  },
+  {
+    title: "Utility Props",
+    description:
+      "Quick styling with shorthand props like p, rounded, shadow, bg, w, h, and more — all resolved through static lookup maps, safe from Tailwind's JIT purge.",
+  },
+  {
+    title: "Responsive",
+    description:
+      "Layout props (p, px, py, m, bg, color, w, h, minW, minH, maxW, maxH, border) accept breakpoint objects { base, sm, md, lg, xl, 2xl }.",
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const boxPageDemoTabsTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    demo: (
+      <DemoWrapper
+        title="Basic Usage"
+        description="Common utility props for quick styling."
+        code={basicBoxCode}
+      >
+        <BasicBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "rounded",
+    label: "Rounded",
+    demo: (
+      <DemoWrapper
+        title="Border Radius"
+        description="All available rounded variants from none to full. Click to select."
+        code={roundedBoxCode}
+      >
+        <RoundedBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "shadow",
+    label: "Shadow",
+    demo: (
+      <DemoWrapper
+        title="Box Shadow"
+        description="All available shadow variants from none to 2xl."
+        code={shadowBoxCode}
+      >
+        <ShadowBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "semantic",
+    label: "Semantic",
+    demo: (
+      <DemoWrapper
+        title="Semantic HTML"
+        description="Use the 'as' prop to render semantic elements for better accessibility and SEO."
+        code={semanticBoxCode}
+      >
+        <SemanticBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "card-like",
+    label: "Card Like",
+    demo: (
+      <DemoWrapper
+        title="Quick Card Pattern"
+        description="Build cards quickly with Box utility props."
+        code={cardLikeBoxCode}
+      >
+        <CardLikeBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "notification",
+    label: "Notification",
+    demo: (
+      <DemoWrapper
+        title="Notification Box"
+        description="Success and error notifications styled with Box."
+        code={notificationBoxCode}
+      >
+        <NotificationBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizing",
+    label: "Sizing",
+    demo: (
+      <DemoWrapper
+        title="Width and Height"
+        description="Control dimensions with w, h, minW, minH, maxW, maxH props."
+        code={sizingBoxCode}
+      >
+        <SizingBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "display",
+    label: "Display",
+    demo: (
+      <DemoWrapper
+        title="Display Property"
+        description="Control CSS display property with variants."
+        code={displayBoxCode}
+      >
+        <DisplayBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "responsive",
+    label: "Responsive",
+    demo: (
+      <DemoWrapper
+        title="Responsive Values"
+        description="Layout props accept breakpoint objects — resize the viewport to see each step apply."
+        code={responsiveBoxCode}
+      >
+        <ResponsiveBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress",
+    demo: (
+      <DemoWrapper
+        title="Narrow Containers & Token Row"
+        description="320px container with long content, plus every background token rendering its static class."
+        code={stressBoxCode}
+      >
+        <StressBoxDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const boxPageAPIReferenceSections = [
+  {
+    title: "Box Props",
+    props: [
+      {
+        prop: "as",
+        type: "BoxElement",
+        default: "div",
+        description: "Semantic HTML element to render",
+      },
+      {
+        prop: "p",
+        type: "ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12>",
+        default: "-",
+        description: "Padding on all sides (responsive)",
+      },
+      {
+        prop: "px",
+        type: "ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8>",
+        default: "-",
+        description: "Horizontal padding (responsive)",
+      },
+      {
+        prop: "py",
+        type: "ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8>",
+        default: "-",
+        description: "Vertical padding (responsive)",
+      },
+      {
+        prop: "m",
+        type: "ResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | auto>",
+        default: "-",
+        description: "Margin on all sides (responsive)",
+      },
+      {
+        prop: "rounded",
+        type: "RoundedVariant",
+        default: "-",
+        description: "Border radius value",
+      },
+      {
+        prop: "shadow",
+        type: "ShadowVariant",
+        default: "-",
+        description: "Box shadow value",
+      },
+      {
+        prop: "bg",
+        type: "ResponsiveValue<BoxBg> — background | foreground | card | popover | primary | primary-foreground | secondary | secondary-foreground | muted | muted-foreground | accent | accent-foreground | destructive | destructive-foreground | success | success-foreground | warning | warning-foreground | info | info-foreground | border | input | ring | primary/10 | primary/20 | muted/50 | destructive/10 | success/10 | warning/10 | info/10",
+        default: "-",
+        description:
+          "Background token. Unknown values fail tsc — no dynamic interpolation, no JIT-purge risk",
+      },
+      {
+        prop: "color",
+        type: "ResponsiveValue<BoxTextColor> — foreground | primary | primary-foreground | secondary | secondary-foreground | muted | muted-foreground | accent | accent-foreground | destructive | destructive-foreground | success | success-foreground | warning | warning-foreground | info | info-foreground",
+        default: "-",
+        description: "Text color token",
+      },
+      {
+        prop: "border",
+        type: 'ResponsiveValue<boolean | "none" | 2 | 4 | 8>',
+        default: "-",
+        description: 'Border: true = 1px, false/"none" = none, or width step',
+      },
+      {
+        prop: "w",
+        type: "ResponsiveValue<BoxScale> — auto | full | svw | lvw | dvw | px | 0–3.5 (halves) | 4–12 | 14–16 | 20–96 (see BoxScale)",
+        default: "-",
+        description: "Width scale",
+      },
+      {
+        prop: "h",
+        type: "ResponsiveValue<BoxScale>",
+        default: "-",
+        description: "Height scale (same keys as w)",
+      },
+      {
+        prop: "minW",
+        type: "ResponsiveValue<BoxScale>",
+        default: "-",
+        description: "Min width scale",
+      },
+      {
+        prop: "minH",
+        type: "ResponsiveValue<BoxScale>",
+        default: "-",
+        description: "Min height scale",
+      },
+      {
+        prop: "maxW",
+        type: "ResponsiveValue<BoxMaxWidth> — BoxScale keys + prose | xs | sm | md | lg | xl | 2xl–7xl",
+        default: "-",
+        description: "Max width scale plus container steps",
+      },
+      {
+        prop: "maxH",
+        type: "ResponsiveValue<BoxScale>",
+        default: "-",
+        description: "Max height scale",
+      },
+      {
+        prop: "display",
+        type: "DisplayVariant",
+        default: "-",
+        description: "CSS display property",
+      },
+      {
+        prop: "position",
+        type: "PositionVariant",
+        default: "-",
+        description: "CSS position property",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional Tailwind classes",
+      },
+    ],
+  },
+  {
+    title: "Available Elements",
+    props: [
+      {
+        prop: "div",
+        type: "string",
+        default: "-",
+        description: "Generic container",
+      },
+      {
+        prop: "span",
+        type: "string",
+        default: "-",
+        description: "Inline text container",
+      },
+      {
+        prop: "section",
+        type: "string",
+        default: "-",
+        description: "Thematic grouping",
+      },
+      {
+        prop: "article",
+        type: "string",
+        default: "-",
+        description: "Self-contained content",
+      },
+      {
+        prop: "aside",
+        type: "string",
+        default: "-",
+        description: "Tangential content",
+      },
+      {
+        prop: "main",
+        type: "string",
+        default: "-",
+        description: "Main content area",
+      },
+      {
+        prop: "header",
+        type: "string",
+        default: "-",
+        description: "Page or section header",
+      },
+      {
+        prop: "footer",
+        type: "string",
+        default: "-",
+        description: "Page or section footer",
+      },
+      {
+        prop: "nav",
+        type: "string",
+        default: "-",
+        description: "Navigation links",
+      },
+      {
+        prop: "form",
+        type: "string",
+        default: "-",
+        description: "Form container",
+      },
+      {
+        prop: "fieldset",
+        type: "string",
+        default: "-",
+        description: "Form field grouping",
+      },
+      {
+        prop: "ul/ol/li",
+        type: "string",
+        default: "-",
+        description: "List elements",
+      },
+      {
+        prop: "figure",
+        type: "string",
+        default: "-",
+        description: "Self-contained media",
+      },
+      {
+        prop: "figcaption",
+        type: "string",
+        default: "-",
+        description: "Caption for figure",
+      },
+      {
+        prop: "address",
+        type: "string",
+        default: "-",
+        description: "Contact information",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const boxPageChangelogEntries = [
+  {
+    version: "2.0.0",
+    date: "22 October 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "Prop types narrowed to token/scale unions",
+        description:
+          'bg, color, w, h, minW, minH, maxW, maxH, border, p, px, py, m no longer accept free-form strings — values must be map keys (e.g. bg="muted/50", maxW="md", w="64"). Unknown values now fail tsc instead of silently purging at build time. Responsive objects { base, sm, md, lg, xl, 2xl } are accepted on all layout props.',
+      },
+      {
+        type: "fixed",
+        title: "Dynamic Tailwind classes removed",
+        description:
+          "bg-${bg}, text-${color}, w-${w}, border-${border}-style interpolation replaced with static lookup maps. Previously classes only rendered when the same literal existed elsewhere in source (Tailwind JIT purge) — every demo usage was a latent purge risk.",
+      },
+      {
+        type: "added",
+        title: "Responsive breakpoint support",
+        description:
+          "Layout props accept { base, sm, md, lg, xl, 2xl } objects via the same ResponsiveValue machinery as Flex/Stack. rounded, shadow, display, position remain non-responsive cva variants.",
+      },
+      {
+        type: "added",
+        title: "mx/my margins and registry dependency on flex",
+        description:
+          'Box gains mx and my margin props alongside m; imports resolveResponsive from flex.tsx so the registry entry gains box: ["flex"]. Runtime-assembled size classes are safelisted with @source inline() in index.css.',
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

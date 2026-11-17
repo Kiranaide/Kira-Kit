@@ -1,12 +1,211 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { cn } from "@/lib/utils";
+import { resolveResponsive, type ResponsiveValue } from "@/components/ui/flex";
+import { cn } from "cn";
+
+/* -------------------------------------------------------------------------- */
+/*                                 Scales                                     */
+/* -------------------------------------------------------------------------- */
+// Every class produced below is assembled at runtime (`w-${key}`), which
+// Tailwind cannot detect by scanning. ALL of them (base + breakpoint variants)
+// are safelisted with `@source inline()` in globals.css.
+// If you add a key here, add it there too.
+
+type ClassMap = Readonly<Record<string, string>>;
+
+function toMap(prefix: string, keys: readonly (string | number)[]): ClassMap {
+  return Object.fromEntries(keys.map((k) => [String(k), `${prefix}-${k}`]));
+}
+
+const BG_TOKENS = [
+  "background",
+  "foreground",
+  "card",
+  "popover",
+  "primary",
+  "primary-foreground",
+  "secondary",
+  "secondary-foreground",
+  "muted",
+  "muted-foreground",
+  "accent",
+  "accent-foreground",
+  "destructive",
+  "destructive-foreground",
+  "success",
+  "success-foreground",
+  "warning",
+  "warning-foreground",
+  "info",
+  "info-foreground",
+  "border",
+  "input",
+  "ring",
+  "primary/10",
+  "primary/20",
+  "muted/50",
+  "destructive/10",
+  "success/10",
+  "warning/10",
+  "info/10",
+] as const;
+
+const TEXT_TOKENS = [
+  "foreground",
+  "primary",
+  "primary-foreground",
+  "secondary",
+  "secondary-foreground",
+  "muted",
+  "muted-foreground",
+  "accent",
+  "accent-foreground",
+  "destructive",
+  "destructive-foreground",
+  "success",
+  "success-foreground",
+  "warning",
+  "warning-foreground",
+  "info",
+  "info-foreground",
+] as const;
+
+const SPACE = [0, 1, 2, 3, 4, 5, 6, 8, 10, 12] as const;
+const MARGIN = [...SPACE, "auto"] as const;
+
+const SIZE = [
+  0,
+  "0.5",
+  1,
+  "1.5",
+  2,
+  "2.5",
+  3,
+  "3.5",
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  14,
+  16,
+  20,
+  24,
+  28,
+  32,
+  36,
+  40,
+  44,
+  48,
+  52,
+  56,
+  60,
+  64,
+  72,
+  80,
+  96,
+  "px",
+  "full",
+  "fit",
+  "min",
+  "max",
+] as const;
+
+// Width units for width, height units for height, and only keywords that
+// are real Tailwind utilities (e.g. there is no `max-w-auto`).
+const W_KEYS = [...SIZE, "auto", "screen", "svw", "lvw", "dvw"] as const;
+const H_KEYS = [...SIZE, "auto", "screen", "svh", "lvh", "dvh"] as const;
+const MIN_W_KEYS = [...SIZE, "auto"] as const;
+const MIN_H_KEYS = [...SIZE, "auto", "screen", "svh", "lvh", "dvh"] as const;
+
+const MAX_W_KEYS = [
+  ...SIZE,
+  "none",
+  "prose",
+  "3xs",
+  "2xs",
+  "xs",
+  "sm",
+  "md",
+  "lg",
+  "xl",
+  "2xl",
+  "3xl",
+  "4xl",
+  "5xl",
+  "6xl",
+  "7xl",
+] as const;
+
+const MAX_H_KEYS = [...SIZE, "none", "screen", "svh", "lvh", "dvh"] as const;
+
+const bgMap = toMap("bg", BG_TOKENS);
+const textColorMap = toMap("text", TEXT_TOKENS);
+const wMap = toMap("w", W_KEYS);
+const hMap = toMap("h", H_KEYS);
+const minWMap = toMap("min-w", MIN_W_KEYS);
+const minHMap = toMap("min-h", MIN_H_KEYS);
+const maxWMap = toMap("max-w", MAX_W_KEYS);
+const maxHMap = toMap("max-h", MAX_H_KEYS);
+
+const spacingMaps = {
+  p: toMap("p", SPACE),
+  px: toMap("px", SPACE),
+  py: toMap("py", SPACE),
+  m: toMap("m", MARGIN),
+  mx: toMap("mx", MARGIN),
+  my: toMap("my", MARGIN),
+} as const;
+
+// `String(true)` === "true", so booleans resolve through the same path.
+const borderMap = {
+  true: "border",
+  false: "",
+  none: "border-none",
+  2: "border-2",
+  4: "border-4",
+  8: "border-8",
+} satisfies ClassMap;
+
+type BoxBg = (typeof BG_TOKENS)[number];
+
+type BoxTextColor = (typeof TEXT_TOKENS)[number];
+
+type BoxSpace = (typeof SPACE)[number];
+
+type BoxMargin = (typeof MARGIN)[number];
+
+type BoxWidth = (typeof W_KEYS)[number];
+
+type BoxHeight = (typeof H_KEYS)[number];
+
+type BoxMinWidth = (typeof MIN_W_KEYS)[number];
+
+type BoxMinHeight = (typeof MIN_H_KEYS)[number];
+
+type BoxMaxWidth = (typeof MAX_W_KEYS)[number];
+
+type BoxMaxHeight = (typeof MAX_H_KEYS)[number];
+
+type BoxBorder = boolean | "none" | 2 | 4 | 8;
+
+/* -------------------------------------------------------------------------- */
+/*                                 Variants                                   */
+/* -------------------------------------------------------------------------- */
+// These classes are literal in source, so no safelist is needed.
+// Tailwind v4 shifted the radius/shadow scales down one step; `xs`/`2xs`
+// are the v4 names for the smallest sizes.
 
 const boxVariants = cva("", {
   variants: {
     rounded: {
       none: "rounded-none",
+      xs: "rounded-xs",
       sm: "rounded-sm",
       default: "rounded",
       md: "rounded-md",
@@ -18,55 +217,14 @@ const boxVariants = cva("", {
     },
     shadow: {
       none: "shadow-none",
+      "2xs": "shadow-2xs",
+      xs: "shadow-xs",
       sm: "shadow-sm",
       default: "shadow",
       md: "shadow-md",
       lg: "shadow-lg",
       xl: "shadow-xl",
       "2xl": "shadow-2xl",
-    },
-    p: {
-      0: "p-0",
-      1: "p-1",
-      2: "p-2",
-      3: "p-3",
-      4: "p-4",
-      5: "p-5",
-      6: "p-6",
-      8: "p-8",
-      10: "p-10",
-      12: "p-12",
-    },
-    px: {
-      0: "px-0",
-      1: "px-1",
-      2: "px-2",
-      3: "px-3",
-      4: "px-4",
-      5: "px-5",
-      6: "px-6",
-      8: "px-8",
-    },
-    py: {
-      0: "py-0",
-      1: "py-1",
-      2: "py-2",
-      3: "py-3",
-      4: "py-4",
-      5: "py-5",
-      6: "py-6",
-      8: "py-8",
-    },
-    m: {
-      0: "m-0",
-      1: "m-1",
-      2: "m-2",
-      3: "m-3",
-      4: "m-4",
-      5: "m-5",
-      6: "m-6",
-      8: "m-8",
-      auto: "m-auto",
     },
     display: {
       block: "block",
@@ -86,8 +244,11 @@ const boxVariants = cva("", {
       sticky: "sticky",
     },
   },
-  defaultVariants: {},
 });
+
+/* -------------------------------------------------------------------------- */
+/*                                 Component                                  */
+/* -------------------------------------------------------------------------- */
 
 type BoxElement =
   | "div"
@@ -108,31 +269,33 @@ type BoxElement =
   | "figcaption"
   | "address";
 
-interface BoxProps
-  extends
-    Omit<React.HTMLAttributes<HTMLElement>, "display">,
-    VariantProps<typeof boxVariants> {
-  as?: BoxElement;
-  bg?: string;
-  color?: string;
-  w?: string;
-  h?: string;
-  minW?: string;
-  minH?: string;
-  maxW?: string;
-  maxH?: string;
-  border?: boolean | string;
+interface BoxOwnProps extends VariantProps<typeof boxVariants> {
+  bg?: ResponsiveValue<BoxBg>;
+  color?: ResponsiveValue<BoxTextColor>;
+  w?: ResponsiveValue<BoxWidth>;
+  h?: ResponsiveValue<BoxHeight>;
+  minW?: ResponsiveValue<BoxMinWidth>;
+  minH?: ResponsiveValue<BoxMinHeight>;
+  maxW?: ResponsiveValue<BoxMaxWidth>;
+  maxH?: ResponsiveValue<BoxMaxHeight>;
+  border?: ResponsiveValue<BoxBorder>;
+  p?: ResponsiveValue<BoxSpace>;
+  px?: ResponsiveValue<BoxSpace>;
+  py?: ResponsiveValue<BoxSpace>;
+  m?: ResponsiveValue<BoxMargin>;
+  mx?: ResponsiveValue<BoxMargin>;
+  my?: ResponsiveValue<BoxMargin>;
 }
 
-function Box({
-  as: Component = "div",
+type BoxProps<T extends BoxElement = "div"> = BoxOwnProps & {
+  as?: T;
+} & Omit<React.ComponentPropsWithRef<T>, keyof BoxOwnProps | "as">;
+
+function Box<T extends BoxElement = "div">({
+  as,
   className,
   rounded,
   shadow,
-  p,
-  px,
-  py,
-  m,
   display,
   position,
   bg,
@@ -144,34 +307,55 @@ function Box({
   maxW,
   maxH,
   border,
+  p,
+  px,
+  py,
+  m,
+  mx,
+  my,
   ...props
-}: BoxProps) {
-  const utilityClasses = cn(
-    bg && `bg-${bg}`,
-    color && `text-${color}`,
-    w && `w-${w}`,
-    h && `h-${h}`,
-    minW && `min-w-${minW}`,
-    minH && `min-h-${minH}`,
-    maxW && `max-w-${maxW}`,
-    maxH && `max-h-${maxH}`,
-    border === true && "border",
-    typeof border === "string" && `border-${border}`
-  );
+}: BoxProps<T>) {
+  const Component = as ?? "div";
 
-  return (
-    <Component
-      data-slot="box"
-      className={cn(
-        boxVariants({ rounded, shadow, p, px, py, m, display, position }),
-        utilityClasses,
-        className
-      )}
-      {...props}
-    />
-  );
+  return React.createElement(Component, {
+    "data-slot": "box",
+    className: cn(
+      boxVariants({ rounded, shadow, display, position }),
+      resolveResponsive(p, spacingMaps.p),
+      resolveResponsive(px, spacingMaps.px),
+      resolveResponsive(py, spacingMaps.py),
+      resolveResponsive(m, spacingMaps.m),
+      resolveResponsive(mx, spacingMaps.mx),
+      resolveResponsive(my, spacingMaps.my),
+      resolveResponsive(bg, bgMap),
+      resolveResponsive(color, textColorMap),
+      resolveResponsive(w, wMap),
+      resolveResponsive(h, hMap),
+      resolveResponsive(minW, minWMap),
+      resolveResponsive(minH, minHMap),
+      resolveResponsive(maxW, maxWMap),
+      resolveResponsive(maxH, maxHMap),
+      resolveResponsive(border, borderMap),
+      className,
+    ),
+    ...props,
+  });
 }
 
 export { Box, boxVariants };
 
-export type { BoxProps, BoxElement };
+export type {
+  BoxProps,
+  BoxElement,
+  BoxBg,
+  BoxTextColor,
+  BoxSpace,
+  BoxMargin,
+  BoxWidth,
+  BoxHeight,
+  BoxMinWidth,
+  BoxMinHeight,
+  BoxMaxWidth,
+  BoxMaxHeight,
+  BoxBorder,
+};
