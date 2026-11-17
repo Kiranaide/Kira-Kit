@@ -1,16 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import type { ComponentProps as ReactComponentProps } from "react";
+import { useMemo, useState } from "react";
+import { z } from "zod";
 import {
   IconEye,
   IconPhoto,
   IconLink,
   IconCalendar,
+  IconStack2,
   IconMapPin,
   IconUsers,
 } from "@tabler/icons-react";
 
 import {
+  createHoverCardHandle,
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
@@ -22,7 +26,9 @@ import {
   HoverCardDescription,
   HoverCardLoading,
   HoverCardImage,
+  HoverCardPayloadTrigger,
 } from "@/components/ui/hover-card";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +39,8 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
+  KeyboardShortcuts,
+  Changelog,
 } from "@/components/docs";
 
 function BasicDemo() {
@@ -358,30 +366,73 @@ export function BlurDemo() {
   )
 }`;
 
+const githubProfileSchema = z.object({
+  login: z.string(),
+  name: z.string().nullable(),
+  bio: z.string().nullable(),
+  followers: z.number().int().nonnegative(),
+});
+
+type GitHubProfile = z.infer<typeof githubProfileSchema>;
+
+const profileCache = new Map<string, GitHubProfile>();
+
+function fetchProfile(login: string) {
+  if (profileCache.has(login)) return Promise.resolve(profileCache.get(login)!);
+
+  return fetch(`https://api.github.com/users/${login}`)
+    .then((res) => {
+      if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+
+      return res.json();
+    })
+    .then((payload) => {
+      const result = githubProfileSchema.safeParse(payload);
+
+      if (!result.success) throw new Error("Invalid GitHub profile response");
+      const profile = result.data;
+
+      profileCache.set(login, profile);
+
+      return profile;
+    });
+}
+
 function LoadingDemo() {
+  const [profile, setProfile] = useState<GitHubProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const simulateLoad = () => {
+  const load = (login: string) => {
+    setProfile(profileCache.get(login) ?? null);
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1500);
+    fetchProfile(login)
+      .then(setProfile)
+      .catch(() => setProfile(null))
+      .finally(() => setIsLoading(false));
   };
 
   return (
     <div className="flex items-center justify-center min-h-[200px]">
-      <HoverCard onOpenChange={(open) => open && simulateLoad()}>
+      <HoverCard onOpenChange={(open) => open && load("shadcn")}>
         <HoverCardTrigger
-          render={<Button variant="outline">Async Content</Button>}
+          render={<Button variant="outline">Fetch Profile on Open</Button>}
         />
         <HoverCardContent size="md">
           <HoverCardArrow />
-          {isLoading ? (
+          {isLoading || !profile ? (
             <HoverCardLoading message="Fetching profile..." />
           ) : (
             <>
-              <HoverCardTitle>Content Loaded!</HoverCardTitle>
+              <HoverCardTitle>{profile.name ?? profile.login}</HoverCardTitle>
               <HoverCardDescription>
-                This content was loaded asynchronously.
+                {profile.bio ?? "No bio available."}
               </HoverCardDescription>
+              <HoverCardFooter>
+                <span className="flex items-center gap-1">
+                  <IconUsers className="h-3 w-3" />
+                  {profile.followers.toLocaleString()} followers
+                </span>
+              </HoverCardFooter>
             </>
           )}
         </HoverCardContent>
@@ -398,33 +449,35 @@ import {
   HoverCardArrow,
   HoverCardTitle,
   HoverCardDescription,
+  HoverCardFooter,
   HoverCardLoading,
 } from "@/components/ui/hover-card"
 import { Button } from "@/components/ui/button"
 
 export function LoadingDemo() {
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const simulateLoad = () => {
+  const load = (login: string) => {
     setIsLoading(true)
-    setTimeout(() => setIsLoading(false), 1500)
+    fetch(\`https://api.github.com/users/\${login}\`)
+      .then((res) => res.json())
+      .then(setProfile)
+      .finally(() => setIsLoading(false))
   }
 
   return (
-    <HoverCard onOpenChange={(open) => open && simulateLoad()}>
-      <HoverCardTrigger
-        render={<Button variant="outline">Async Content</Button>}
-      />
+    <HoverCard onOpenChange={(open) => open && load("shadcn")}>
+      <HoverCardTrigger render={<Button variant="outline">Fetch Profile on Open</Button>} />
       <HoverCardContent size="md">
         <HoverCardArrow />
-        {isLoading ? (
+        {isLoading || !profile ? (
           <HoverCardLoading message="Fetching profile..." />
         ) : (
           <>
-            <HoverCardTitle>Content Loaded!</HoverCardTitle>
-            <HoverCardDescription>
-              This content was loaded asynchronously.
-            </HoverCardDescription>
+            <HoverCardTitle>{profile.name ?? profile.login}</HoverCardTitle>
+            <HoverCardDescription>{profile.bio}</HoverCardDescription>
+            <HoverCardFooter>{profile.followers} followers</HoverCardFooter>
           </>
         )}
       </HoverCardContent>
@@ -656,6 +709,141 @@ export function PositioningDemo() {
   )
 }`;
 
+interface MemberPayload {
+  handle: string;
+  role: string;
+  posts: number;
+}
+
+function DetachedDemo() {
+  const handle = useMemo(() => createHoverCardHandle<MemberPayload>(), []);
+
+  const members: MemberPayload[] = [
+    { handle: "@ada", role: "Maintainer", posts: 412 },
+    { handle: "@linus", role: "Contributor", posts: 87 },
+  ];
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-4 min-h-[200px]">
+      <HoverCard<MemberPayload> handle={handle}>
+        {({ payload }) => (
+          <HoverCardContent size="md">
+            <HoverCardArrow />
+            {payload && (
+              <>
+                <HoverCardTitle>{payload.handle}</HoverCardTitle>
+                <HoverCardDescription>
+                  {payload.role} · {payload.posts} posts. One shared popup,
+                  per-trigger payload.
+                </HoverCardDescription>
+              </>
+            )}
+          </HoverCardContent>
+        )}
+      </HoverCard>
+      {members.map((member) => (
+        <HoverCardPayloadTrigger
+          key={member.handle}
+          handle={handle}
+          payload={member}
+          delay={200}
+          closeDelay={150}
+          render={<Button variant="outline">{member.handle}</Button>}
+        />
+      ))}
+    </div>
+  );
+}
+
+const detachedCode = `import {
+  createHoverCardHandle,
+  HoverCard,
+  HoverCardContent,
+  HoverCardTitle,
+  HoverCardDescription,
+  HoverCardPayloadTrigger,
+} from "@/components/ui/hover-card"
+import { Button } from "@/components/ui/button"
+
+const handle = createHoverCardHandle<{ name: string; role: string }>()
+
+// One Root + Content, many triggers — each trigger carries its own payload
+<HoverCard handle={handle}>
+  {({ payload }) => (
+    <HoverCardContent>
+      {payload ? <p>{payload.name} — {payload.role}</p> : null}
+    </HoverCardContent>
+  )}
+</HoverCard>
+<HoverCardPayloadTrigger handle={handle} payload={{ name: "Ada", role: "Maintainer" }} render={<Button>@ada</Button>} />
+<HoverCardPayloadTrigger handle={handle} payload={{ name: "Linus", role: "Contributor" }} render={<Button>@linus</Button>} />`;
+
+function ContentTransitionsDemo() {
+  const [variant, setVariant] = useState<"a" | "b">("a");
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 min-h-[220px]">
+      <div className="flex gap-2">
+        <Button
+          size="sm"
+          variant={variant === "a" ? "default" : "outline"}
+          onClick={() => setVariant("a")}
+        >
+          Show A
+        </Button>
+        <Button
+          size="sm"
+          variant={variant === "b" ? "default" : "outline"}
+          onClick={() => setVariant("b")}
+        >
+          Show B
+        </Button>
+      </div>
+      <HoverCard>
+        <HoverCardTrigger
+          render={
+            <Button variant="link">Hover — content swaps cross-fade</Button>
+          }
+        />
+        <HoverCardContent size="md" viewport>
+          <div data-current className="text-sm">
+            {variant === "a" ? (
+              <>
+                <HoverCardTitle>Content A</HoverCardTitle>
+                <HoverCardDescription>
+                  PreviewCard.Viewport animates content swaps between triggers;
+                  the previous pane fades out in place.
+                </HoverCardDescription>
+              </>
+            ) : (
+              <>
+                <HoverCardTitle>Content B</HoverCardTitle>
+                <HoverCardDescription>
+                  Motion respects prefers-reduced-motion: transitions are
+                  disabled instantly for reduced-motion users.
+                </HoverCardDescription>
+              </>
+            )}
+          </div>
+        </HoverCardContent>
+      </HoverCard>
+    </div>
+  );
+}
+
+const transitionsCode = `import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@/components/ui/hover-card"
+import { Button } from "@/components/ui/button"
+
+// viewport renders PreviewCard.Viewport inside the popup so content
+// swaps between triggers cross-fade instead of popping
+<HoverCardContent viewport>
+  <div data-current>...</div>
+</HoverCardContent>`;
+
 const usageCode = `import {
   HoverCard,
   HoverCardTrigger,
@@ -724,16 +912,11 @@ const apiSections = [
         description: "Callback when open state changes.",
       },
       {
-        prop: "openDelay",
-        type: "number",
-        default: "200",
-        description: "Delay in ms before the hover card opens.",
-      },
-      {
-        prop: "closeDelay",
-        type: "number",
-        default: "300",
-        description: "Delay in ms before the hover card closes.",
+        prop: "handle",
+        type: "HoverCardHandle<Payload>",
+        default: "-",
+        description:
+          "Handle associating this Root with detached HoverCardPayloadTrigger elements (createHoverCardHandle).",
       },
     ],
   },
@@ -745,6 +928,13 @@ const apiSections = [
         type: '"sm" | "md" | "lg" | "xl"',
         default: '"md"',
         description: "Width of the hover card content.",
+      },
+      {
+        prop: "viewport",
+        type: "boolean",
+        default: "false",
+        description:
+          "Render Base UI PreviewCard.Viewport inside the popup so content swaps between triggers cross-fade.",
       },
       {
         prop: "variant",
@@ -776,15 +966,46 @@ const apiSections = [
     title: "HoverCardTrigger",
     props: [
       {
+        prop: "delay",
+        type: "number",
+        default: "600",
+        description:
+          "Delay in ms before the hover card opens (Trigger-only prop).",
+      },
+      {
+        prop: "closeDelay",
+        type: "number",
+        default: "300",
+        description:
+          "Delay in ms before the hover card closes (Trigger-only prop).",
+      },
+      {
         prop: "render",
         type: "ReactElement",
         description: "The element to render as the hover trigger.",
       },
+    ],
+  },
+  {
+    title: "HoverCardPayloadTrigger",
+    props: [
       {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge props onto child element instead of wrapping.",
+        prop: "handle",
+        type: "HoverCardHandle<Payload>",
+        description:
+          "Handle of the detached HoverCard Root this trigger opens (required).",
+      },
+      {
+        prop: "payload",
+        type: "Payload",
+        description:
+          "Value passed to the Root's function-as-child content when this trigger opens.",
+      },
+      {
+        prop: "delay / closeDelay",
+        type: "number",
+        default: "600 / 300",
+        description: "Open/close delays in ms.",
       },
     ],
   },
@@ -856,6 +1077,18 @@ const features = [
       "HoverCardAnchor provides seamless inline link integration with hover previews for enhanced UX.",
     icon: <IconLink className="h-4 w-4" />,
   },
+  {
+    title: "Detached Triggers",
+    description:
+      "One shared popup driven by many triggers via createHoverCardHandle, each carrying its own typed payload (see Detached tab).",
+    icon: <IconUsers className="h-4 w-4" />,
+  },
+  {
+    title: "Content Transitions",
+    description:
+      "HoverCardViewport cross-fades content swaps between triggers, reduced-motion aware (see Transitions tab).",
+    icon: <IconStack2 className="h-4 w-4" />,
+  },
 ];
 
 const demoTabs = [
@@ -926,14 +1159,40 @@ const demoTabs = [
   },
   {
     value: "loading-state",
-    label: "Loading State",
+    label: "Async",
     demo: (
       <DemoWrapper
-        title="Loading State"
-        description="Use HoverCardLoading for async content fetching."
+        title="Async Content"
+        description="HoverCardLoading drives a real fetch; results are cached after the first open."
         code={loadingCode}
       >
         <LoadingDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "detached",
+    label: "Detached Triggers",
+    demo: (
+      <DemoWrapper
+        title="Detached Payload Triggers"
+        description="Two triggers share one popup via createHoverCardHandle; each passes a typed payload and its own delays."
+        code={detachedCode}
+      >
+        <DetachedDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "transitions",
+    label: "Content Transitions",
+    demo: (
+      <DemoWrapper
+        title="Content Transitions (Viewport)"
+        description="viewport content swaps cross-fade through PreviewCard.Viewport; flip A/B while hovering."
+        code={transitionsCode}
+      >
+        <ContentTransitionsDemo />
       </DemoWrapper>
     ),
   },
@@ -970,13 +1229,24 @@ export default function HoverCardPage() {
     <ComponentPage>
       <PageHeader
         title="Hover Card"
-        description="A card that appears on hover, for previewing content. Built on Base UI's PreviewCard primitive with pre-styled sections and loading states."
-        version="v1.0"
+        description="A card that appears on hover, for previewing content. Built on Base UI's PreviewCard primitive with pre-styled sections, loading states, detached payload triggers, and viewport content transitions."
+        version="v2.0"
       />
 
       <FeatureGrid features={features} />
 
       <DemoTabs tabs={demoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        shortcuts={[
+          {
+            keys: "Esc",
+            description:
+              "Dismiss open preview (inherited from Base UI popup behavior)",
+          },
+        ]}
+        description="HoverCard content is pointer-only progressive enhancement per Base UI docs: triggers are not keyboard-activatable, so equivalent information must be reachable by navigation. Focus styles remain on triggers."
+      />
 
       <UsageBlock
         code={usageCode}
@@ -989,6 +1259,48 @@ export default function HoverCardPage() {
         title="API Reference"
         description="Props and configuration options for HoverCard components"
       />
+
+      <Changelog entries={hoverCardPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const hoverCardPageChangelogEntries = [
+  {
+    version: "2.0.0",
+    date: "3 November 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "delay / closeDelay Removed from Content",
+        description:
+          "These props were declared on HoverCardContent but never used. They live on the Trigger (Base UI convention, defaults 600ms/300ms). Move them to HoverCardTrigger or HoverCardPayloadTrigger.",
+      },
+      {
+        type: "breaking",
+        title: "Motion Convention Replaced",
+        description:
+          "The tw-animate data-open/data-closed zoom/slide stack is replaced by Base UI data-starting-style/data-ending-style transitions matching tooltip/popover. z-index drops from z-[100] to the shared z-50 popup layer.",
+      },
+      {
+        type: "breaking",
+        title: "forwardRef Removed",
+        description:
+          "HoverCardContent and HoverCardArrow are plain function components; refs flow through props like every other Base UI wrapper in this kit.",
+      },
+      {
+        type: "added",
+        title: "Detached Triggers + Typed Payloads",
+        description:
+          "createHoverCardHandle and HoverCardPayloadTrigger let many triggers share one popup, each carrying its own payload consumed via function-as-child content.",
+      },
+      {
+        type: "added",
+        title: "HoverCardViewport + viewport Prop",
+        description:
+          "HoverCardContent viewport renders Base UI's PreviewCard.Viewport so content swaps between triggers cross-fade (reduced-motion aware).",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
