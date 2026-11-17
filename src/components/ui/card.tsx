@@ -1,22 +1,37 @@
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "cn";
 
-const cardVariants = {
-  default: "ring-foreground/10 bg-card",
-  interactive:
-    "ring-foreground/10 bg-card hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer",
-  gradient:
-    "bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/5 ring-primary/20",
-  glass:
-    "bg-background/60 dark:bg-background/40 backdrop-blur-xl backdrop-saturate-150 border border-border/50 shadow-lg ring-0",
-  outline: "bg-transparent border-2 border-border ring-0",
-  elevated: "ring-foreground/10 bg-card shadow-lg",
-  bordered: "bg-card border-2 border-border ring-0",
-  flat: "bg-muted/30 border-0 ring-0",
-  elevated2: "ring-foreground/10 bg-card shadow-2xl",
-  soft: "bg-muted/50 border border-border/50 ring-0",
-};
+const cardSurfaceVariants = cva("", {
+  variants: {
+    variant: {
+      default: "ring-foreground/10 bg-card",
+      interactive:
+        "ring-foreground/10 bg-card hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer",
+      gradient:
+        "bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/5 ring-primary/20",
+      glass:
+        "bg-background/60 dark:bg-background/40 backdrop-blur-xl backdrop-saturate-150 border border-border/50 shadow-lg ring-0",
+      outline: "bg-transparent border-2 border-border ring-0",
+      elevated: "ring-foreground/10 bg-card shadow-lg",
+      bordered: "bg-card border-2 border-border ring-0",
+      flat: "bg-muted/30 border-0 ring-0",
+      elevated2: "ring-foreground/10 bg-card shadow-2xl",
+      soft: "bg-muted/50 border border-border/50 ring-0",
+    },
+    size: {
+      default: "",
+      sm: "",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+    size: "default",
+  },
+});
+
+export type CardVariant = VariantProps<typeof cardSurfaceVariants>["variant"];
 
 function Card({
   className,
@@ -25,17 +40,7 @@ function Card({
   ...props
 }: React.ComponentProps<"div"> & {
   size?: "default" | "sm";
-  variant?:
-    | "default"
-    | "interactive"
-    | "gradient"
-    | "glass"
-    | "outline"
-    | "elevated"
-    | "bordered"
-    | "flat"
-    | "elevated2"
-    | "soft";
+  variant?: CardVariant;
 }) {
   return (
     <div
@@ -44,8 +49,8 @@ function Card({
       data-variant={variant}
       className={cn(
         "text-card-foreground gap-4 overflow-hidden rounded-xl py-4 text-sm ring-1 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl group/card flex flex-col",
-        cardVariants[variant],
-        className
+        cardSurfaceVariants({ variant, size }),
+        className,
       )}
       {...props}
     />
@@ -58,7 +63,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="card-header"
       className={cn(
         "gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3 group/card-header @container/card-header grid auto-rows-min items-start has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto]",
-        className
+        className,
       )}
       {...props}
     />
@@ -71,7 +76,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="card-title"
       className={cn(
         "text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
-        className
+        className,
       )}
       {...props}
     />
@@ -94,7 +99,7 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="card-action"
       className={cn(
         "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-        className
+        className,
       )}
       {...props}
     />
@@ -117,10 +122,61 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="card-footer"
       className={cn(
         "bg-muted/50 rounded-b-xl border-t p-4 group-data-[size=sm]/card:p-3 flex items-center",
-        className
+        className,
       )}
       {...props}
     />
+  );
+}
+
+function CardSkeleton({
+  className,
+  size = "default",
+  ...props
+}: React.ComponentProps<"div"> & {
+  size?: "default" | "sm";
+}) {
+  return (
+    <div
+      data-slot="card-skeleton"
+      data-size={size}
+      aria-busy="true"
+      className={cn(
+        "rounded-xl border bg-card animate-pulse ring-1 ring-foreground/10",
+        size === "sm" ? "py-3" : "py-4",
+        className,
+      )}
+      {...props}
+    >
+      <div className={cn("space-y-2", size === "sm" ? "px-3" : "px-4")}>
+        <div
+          className={cn(
+            "rounded bg-muted",
+            size === "sm" ? "h-3 w-20" : "h-4 w-28",
+          )}
+        />
+        <div
+          className={cn(
+            "rounded bg-muted",
+            size === "sm" ? "h-2.5 w-32" : "h-3 w-44",
+          )}
+        />
+      </div>
+      <div className={cn("mt-3 space-y-2", size === "sm" ? "px-3" : "px-4")}>
+        <div
+          className={cn(
+            "rounded bg-muted",
+            size === "sm" ? "h-2.5 w-full" : "h-3 w-full",
+          )}
+        />
+        <div
+          className={cn(
+            "rounded bg-muted",
+            size === "sm" ? "h-2.5 w-4/5" : "h-3 w-4/5",
+          )}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -132,4 +188,6 @@ export {
   CardAction,
   CardDescription,
   CardContent,
+  CardSkeleton,
+  cardSurfaceVariants,
 };

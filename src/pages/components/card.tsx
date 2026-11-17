@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import {
   Card,
   CardContent,
@@ -7,7 +8,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { IconAccessible, IconPalette, IconStack2 } from "@tabler/icons-react";
+import { CardSkeleton } from "@/components/ui/card";
+import {
+  IconAccessible,
+  IconKeyboard,
+  IconLoader,
+  IconPalette,
+  IconStack2,
+} from "@tabler/icons-react";
+import { useState } from "react";
 import {
   ComponentPage,
   PageHeader,
@@ -16,6 +25,8 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
+  KeyboardShortcuts,
+  Changelog,
 } from "@/components/docs";
 
 // =============================================================================
@@ -231,10 +242,93 @@ const moreVariantsCode = `// Elevated 2 - stronger shadow
 // Flat - no borders or shadows
 <Card variant="flat">...</Card>`;
 
+function InteractiveCardDemo() {
+  const [activated, setActivated] = useState(0);
+
+  return (
+    <div className="flex items-center justify-center min-h-[200px]">
+      <Card variant="interactive" className="relative max-w-md">
+        <button
+          type="button"
+          aria-label="Open project details"
+          onClick={() => setActivated((n) => n + 1)}
+          className="absolute inset-0 z-10 rounded-xl focus-visible:outline-2 focus-visible:outline-ring"
+        />
+        <CardHeader>
+          <CardTitle>Interactive Card</CardTitle>
+          <CardDescription>
+            A click-target card with full keyboard operability.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Tab to focus, then press Enter or Space. Activations:{" "}
+            <span className="font-medium text-foreground tabular-nums">
+              {activated}
+            </span>
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+const interactiveCode = `import { useState } from "react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
+export function InteractiveCardDemo() {
+  const [activated, setActivated] = useState(0)
+
+  return (
+    <Card
+      variant="interactive"
+      role="button"
+      tabIndex={0}
+      aria-label="Open project details"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          setActivated((n) => n + 1)
+        }
+      }}
+      onClick={() => setActivated((n) => n + 1)}
+    >
+      <CardHeader>
+        <CardTitle>Interactive Card</CardTitle>
+        <CardDescription>Keyboard operable click target.</CardDescription>
+      </CardHeader>
+      <CardContent>Activations: {activated}</CardContent>
+    </Card>
+  )
+}`;
+
+function SkeletonDemo() {
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      <CardSkeleton />
+      <CardSkeleton size="sm" />
+    </div>
+  );
+}
+
+const skeletonCode = `import { CardSkeleton } from "@/components/ui/card"
+
+<div className="grid gap-4 md:grid-cols-2">
+  <CardSkeleton />
+  <CardSkeleton size="sm" />
+</div>`;
+
 // =============================================================================
 // Main Page Component
 // =============================================================================
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function CardPage() {
   const features = [
     {
@@ -246,6 +340,17 @@ export default function CardPage() {
       title: "Multiple Variants",
       description: "10 variants including glass, gradient, elevated, and more.",
       icon: <IconPalette className="w-4 h-4 text-primary" />,
+    },
+    {
+      title: "Keyboard Operable",
+      description:
+        "Click-target cards activate with Enter and Space when wired as buttons (see Interactive tab).",
+      icon: <IconKeyboard className="w-4 h-4 text-primary" />,
+    },
+    {
+      title: "Skeleton Fallback",
+      description: "CardSkeleton reserves layout space while content loads.",
+      icon: <IconLoader className="w-4 h-4 text-primary" />,
     },
     {
       title: "Composable",
@@ -308,6 +413,38 @@ export default function CardPage() {
         </DemoWrapper>
       ),
     },
+    {
+      value: "interactive",
+      label: "Interactive",
+      demo: (
+        <DemoWrapper
+          title="Interactive Card"
+          description="Click-target card with keyboard operability"
+          code={interactiveCode}
+        >
+          <InteractiveCardDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
+      value: "skeleton",
+      label: "Skeleton",
+      demo: (
+        <DemoWrapper
+          title="Card Skeleton"
+          description="Loading placeholder in default and small sizes"
+          code={skeletonCode}
+        >
+          <SkeletonDemo />
+        </DemoWrapper>
+      ),
+    },
+  ];
+
+  const keyboardShortcuts = [
+    { keys: "Tab", description: "Focus the interactive card" },
+    { keys: "Enter", description: "Activate interactive card" },
+    { keys: "Space", description: "Activate interactive card" },
   ];
 
   const usageCode = `import {
@@ -344,6 +481,12 @@ export default function CardPage() {
           type: '"default" | "interactive" | "gradient" | "glass" | "outline" | "elevated" | "elevated2" | "bordered" | "soft" | "flat"',
           default: '"default"',
           description: "Visual style of the card",
+        },
+        {
+          prop: "size",
+          type: '"default" | "sm"',
+          default: '"default"',
+          description: "Density of the card; sm tightens gaps and padding",
         },
         {
           prop: "className",
@@ -444,23 +587,73 @@ export default function CardPage() {
         },
       ],
     },
+    {
+      title: "CardSkeleton",
+      props: [
+        {
+          prop: "size",
+          type: '"default" | "sm"',
+          default: '"default"',
+          description:
+            "Matches Card sizing; scales padding and placeholder blocks",
+        },
+        {
+          prop: "className",
+          type: "string",
+          default: "-",
+          description: "Additional CSS classes",
+        },
+      ],
+    },
   ];
 
   return (
     <ComponentPage>
       <PageHeader
         title="Card"
-        description="Versatile container component with multiple visual variants for organizing content with headers, bodies, and footers."
-        version="v2.0"
+        description="A flexible card component with multiple variants, composable sections, and keyboard-operable interactive cards."
+        version="v2.1"
       />
 
       <FeatureGrid features={features} />
 
       <DemoTabs tabs={demoTabs} />
 
+      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
+
       <UsageBlock code={usageCode} />
 
       <APIReference sections={apiReference} />
+
+      <Changelog entries={cardPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const cardPageChangelogEntries = [
+  {
+    version: "2.1.0",
+    date: "3 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "cardSurfaceVariants Export",
+        description:
+          "The card surface styles are now a class-variance-authority variant function, exported for consumers and stats-card surface alignment. All 10 variants are unchanged.",
+      },
+      {
+        type: "added",
+        title: "CardSkeleton",
+        description:
+          'New loading placeholder that mirrors Card sizing (size="sm" scales padding and placeholder blocks).',
+      },
+      {
+        type: "added",
+        title: "Interactive Card a11y Guidance",
+        description:
+          'Card stays presentational; click-target cards should opt in with role="button", tabIndex={0}, and Enter/Space handling (see the Interactive tab).',
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
