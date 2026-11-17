@@ -1,726 +1,583 @@
-import { Flex } from "@/components/ui/flex";
-import { HStack, VStack } from "@/components/ui/stack";
-import { Spacer } from "@/components/ui/spacer";
+import * as React from "react";
+import {
+  IconSpacingHorizontal,
+  IconArrowsHorizontal,
+  IconDeviceMobile,
+  IconHourglass,
+} from "@tabler/icons-react";
+
+import { Stack, HStack, VStack } from "@/components/ui/stack";
+import { Spacer, KiraSpacer } from "@/components/ui/spacer";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { IconSettings, IconBell, IconUser } from "@tabler/icons-react";
+import { Input } from "@/components/ui/input";
 import {
   ComponentPage,
   PageHeader,
   FeatureGrid,
   DemoTabs,
   DemoWrapper,
+  KeyboardShortcuts,
+  UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
-function AutoSpacerDemo() {
+function BasicDemo() {
+  const [filter, setFilter] = React.useState(false);
+
+  return (
+    <div className="w-full space-y-3">
+      <HStack gap={0} align="center" className="w-full">
+        <span className="min-w-0 text-sm font-medium">Release reviews</span>
+        <Spacer />
+        <Button
+          variant="outline"
+          aria-pressed={filter}
+          onClick={() => setFilter((value) => !value)}
+        >
+          {filter ? "All reviews" : "Assigned to me"}
+        </Button>
+      </HStack>
+      <output className="text-sm text-muted-foreground">
+        {filter
+          ? "Showing reviews assigned to you."
+          : "Showing all local review fixtures."}
+      </output>
+    </div>
+  );
+}
+
+const BasicDemoCode =
+  'import * as React from "react";\nimport { HStack } from "@/components/ui/stack";\nimport { Spacer } from "@/components/ui/spacer";\nimport { Button } from "@/components/ui/button";\n\nexport function BasicDemo() {\n  const [filter, setFilter] = React.useState(false);\n  return <div className="w-full space-y-3">\n    <HStack gap={0} align="center" className="w-full">\n      <span className="min-w-0 text-sm font-medium">Release reviews</span>\n      <Spacer />\n      <Button variant="outline" aria-pressed={filter} onClick={() => setFilter((value) => !value)}>{filter ? "All reviews" : "Assigned to me"}</Button>\n    </HStack>\n    <output className="text-sm text-muted-foreground">{filter ? "Showing reviews assigned to you." : "Showing all local review fixtures."}</output>\n  </div>;\n}';
+
+function FixedDemo() {
   return (
     <div className="space-y-4">
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">
-          Push elements apart
+      <HStack gap={0} align="center">
+        <span className="text-sm">Owner</span>
+        <Spacer size={4} />
+        <span className="text-sm">Amara Okafor</span>
+      </HStack>
+      <VStack gap={0}>
+        <p className="text-sm font-medium">Review notes</p>
+        <Spacer size={6} axis="vertical" />
+        <p className="text-sm text-muted-foreground">
+          The fixed vertical gap uses the existing six-unit spacing token.
         </p>
-        <Flex align="center" className="p-4 border rounded-lg bg-muted/30">
-          <span className="font-semibold">Brand</span>
-          <Spacer />
-          <Button variant="ghost" size="sm">
-            Sign In
-          </Button>
-        </Flex>
-      </div>
-      <div>
-        <p className="text-sm text-muted-foreground mb-2">Multiple spacers</p>
-        <Flex align="center" className="p-4 border rounded-lg bg-muted/30">
-          <IconUser className="size-5" />
-          <Spacer />
-          <span>Center Content</span>
-          <Spacer />
-          <IconSettings className="size-5" />
-        </Flex>
-      </div>
+      </VStack>
+      <p className="text-sm text-muted-foreground">
+        Parent gaps are zero, so the visible space comes from Spacer alone.
+      </p>
     </div>
   );
 }
 
-const autoSpacerCode = `import { Flex } from "@/components/ui/flex"
-import { Spacer } from "@/components/ui/spacer"
+const FixedDemoCode =
+  'import { HStack, VStack } from "@/components/ui/stack";\nimport { Spacer } from "@/components/ui/spacer";\n\nexport function FixedDemo() {\n  return <div className="space-y-4">\n    <HStack gap={0} align="center"><span className="text-sm">Owner</span><Spacer size={4} /><span className="text-sm">Amara Okafor</span></HStack>\n    <VStack gap={0}><p className="text-sm font-medium">Review notes</p><Spacer size={6} axis="vertical" /><p className="text-sm text-muted-foreground">The fixed vertical gap uses the existing six-unit spacing token.</p></VStack>\n    <p className="text-sm text-muted-foreground">Parent gaps are zero, so the visible space comes from Spacer alone.</p>\n  </div>;\n}';
 
-// Push elements apart
-<Flex align="center">
-  <Logo />
-  <Spacer />
-  <Button>Sign In</Button>
-</Flex>
+function ScaleDemo() {
+  const sizes = [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24] as const;
 
-// Multiple spacers
-<Flex align="center">
-  <IconUser className="size-5" />
-  <Spacer />
-  <span>Center Content</span>
-  <Spacer />
-  <IconSettings className="size-5" />
-</Flex>`;
-
-function FixedSpacerDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">Horizontal (size=8)</p>
-        <HStack className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-2 bg-primary/20 rounded">A</div>
-          <Spacer size={8} axis="horizontal" />
-          <div className="p-2 bg-primary/20 rounded">B</div>
+    <div className="grid w-full gap-3 sm:grid-cols-2">
+      {sizes.map((size) => (
+        <HStack key={size} gap={0} align="center">
+          <span className="w-8 shrink-0 text-xs tabular-nums">{size}</span>
+          <Spacer size={size} className="h-3 rounded-sm bg-muted" />
+          <span className="ml-2 text-xs text-muted-foreground">
+            {size === 0 ? "Explicit zero" : "Spacing token"}
+          </span>
         </HStack>
-      </div>
-      <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">Vertical (size=8)</p>
-        <VStack className="p-4 border rounded-lg bg-muted/30">
-          <div className="p-2 bg-primary/20 rounded w-full text-center">A</div>
-          <Spacer size={8} axis="vertical" />
-          <div className="p-2 bg-primary/20 rounded w-full text-center">B</div>
-        </VStack>
-      </div>
-    </div>
-  );
-}
-
-const fixedSpacerCode = `import { HStack, VStack } from "@/components/ui/stack"
-import { Spacer } from "@/components/ui/spacer"
-
-// Fixed horizontal spacing
-<HStack>
-  <div>A</div>
-  <Spacer size={8} axis="horizontal" />
-  <div>B</div>
-</HStack>
-
-// Fixed vertical spacing
-<VStack>
-  <div>A</div>
-  <Spacer size={8} axis="vertical" />
-  <div>B</div>
-</VStack>`;
-
-function SizeVariantsDemo() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm font-medium mb-2">Horizontal sizes</p>
-        <div className="flex items-center gap-4 flex-wrap">
-          {[1, 2, 4, 8, 12, 16].map((size) => (
-            <HStack key={size} className="border border-dashed rounded p-2">
-              <span className="text-sm">Start</span>
-              <Spacer size={size} axis="horizontal" />
-              <Badge>{size}</Badge>
-              <span className="text-sm">End</span>
-            </HStack>
-          ))}
-        </div>
-      </div>
-      <div>
-        <p className="text-sm font-medium mb-2">Vertical sizes</p>
-        <div className="flex gap-4 items-start">
-          {[2, 4, 6, 8, 12, 16].map((size) => (
-            <VStack
-              key={size}
-              className="border border-dashed rounded p-2 w-20"
-            >
-              <span className="text-sm">Top</span>
-              <Spacer size={size} axis="vertical" />
-              <Badge>{size}</Badge>
-              <span className="text-sm">Bottom</span>
-            </VStack>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const sizeVariantsCode = `import { HStack, VStack } from "@/components/ui/stack"
-import { Spacer } from "@/components/ui/spacer"
-import { Badge } from "@/components/ui/badge"
-
-// Horizontal size variants
-<HStack>
-  <span>Start</span>
-  <Spacer size={1} axis="horizontal" />
-  <span>End</span>
-</HStack>
-
-<HStack>
-  <span>Start</span>
-  <Spacer size={8} axis="horizontal" />
-  <span>End</span>
-</HStack>
-
-<HStack>
-  <span>Start</span>
-  <Spacer size={16} axis="horizontal" />
-  <span>End</span>
-</HStack>
-
-// Vertical size variants
-<VStack>
-  <span>Top</span>
-  <Spacer size={2} axis="vertical" />
-  <span>Bottom</span>
-</VStack>
-
-<VStack>
-  <span>Top</span>
-  <Spacer size={8} axis="vertical" />
-  <span>Bottom</span>
-</VStack>
-
-<VStack>
-  <span>Top</span>
-  <Spacer size={16} axis="vertical" />
-  <span>Bottom</span>
-</VStack>`;
-
-function NavigationHeaderDemo() {
-  return (
-    <Flex
-      as="nav"
-      align="center"
-      className="p-4 border rounded-lg bg-background"
-    >
-      <HStack gap={2} align="center">
-        <div className="size-8 bg-primary rounded" />
-        <span className="font-semibold">App Name</span>
-      </HStack>
-      <Spacer />
-      <HStack gap={1}>
-        <Button variant="ghost" size="icon-sm">
-          <IconBell className="size-4" />
-        </Button>
-        <Button variant="ghost" size="icon-sm">
-          <IconSettings className="size-4" />
-        </Button>
-      </HStack>
-      <Spacer size={4} axis="horizontal" />
-      <Avatar size="sm">
-        <AvatarFallback>JD</AvatarFallback>
-      </Avatar>
-    </Flex>
-  );
-}
-
-const navigationHeaderCode = `import { Flex } from "@/components/ui/flex"
-import { HStack } from "@/components/ui/stack"
-import { Spacer } from "@/components/ui/spacer"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { IconBell, IconSettings } from "@tabler/icons-react"
-import { Button } from "@/components/ui/button"
-
-// Navigation header
-<Flex as="nav" align="center" className="p-4">
-  <HStack gap={2} align="center">
-    <div className="size-8 bg-primary rounded" />
-    <span className="font-semibold">App Name</span>
-  </HStack>
-  <Spacer />
-  <HStack gap={1}>
-    <Button variant="ghost" size="icon-sm">
-      <IconBell className="size-4" />
-    </Button>
-    <Button variant="ghost" size="icon-sm">
-      <IconSettings className="size-4" />
-    </Button>
-  </HStack>
-  <Spacer size={4} axis="horizontal" />
-  <Avatar size="sm">
-    <AvatarFallback>JD</AvatarFallback>
-  </Avatar>
-</Flex>`;
-
-function CardActionDemo() {
-  return (
-    <div className="max-w-sm">
-      <div className="space-y-4 border rounded-lg p-4 bg-background">
-        <div className="flex items-start gap-3">
-          <div className="size-10 rounded bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">
-            J
-          </div>
-          <div className="flex-1 space-y-1">
-            <h4 className="font-semibold">John Doe</h4>
-            <p className="text-sm text-muted-foreground">Software Engineer</p>
-          </div>
-        </div>
-        <div className="space-y-3 pt-3 border-t">
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Status</span>
-            <Badge>Active</Badge>
-          </div>
-          <Flex align="center" className="gap-2">
-            <Button variant="outline" size="sm">
-              View Profile
-            </Button>
-            <Spacer />
-            <Button size="sm">Message</Button>
-          </Flex>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const cardActionCode = `import { Flex } from "@/components/ui/flex"
-import { Spacer } from "@/components/ui/spacer"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-
-// Card with spacer pushing actions apart
-<div className="space-y-4 border rounded-lg p-4">
-  <div className="flex items-start gap-3">
-    <div className="size-10 rounded bg-primary text-primary-foreground flex items-center justify-center">
-      JD
-    </div>
-    <div className="flex-1 space-y-1">
-      <h4>John Doe</h4>
-      <p className="text-sm text-muted-foreground">Software Engineer</p>
-    </div>
-  </div>
-  <div className="space-y-3 pt-3 border-t">
-    <div className="flex justify-between text-sm">
-      <span>Status</span>
-      <Badge>Active</Badge>
-    </div>
-    <Flex align="center">
-      <Button variant="outline" size="sm">View Profile</Button>
-      <Spacer />
-      <Button size="sm">Message</Button>
-    </Flex>
-  </div>
-</div>`;
-
-function FormDemo() {
-  return (
-    <div className="max-w-sm space-y-4">
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Email</label>
-        <div className="relative">
-          <div className="flex items-center">
-            <input
-              type="email"
-              placeholder="john@example.com"
-              className="w-full px-3 py-2 border rounded-md pr-24"
-            />
-            <Spacer size={4} axis="horizontal" />
-            <Button type="submit" size="sm">
-              Send
-            </Button>
-          </div>
-        </div>
-      </div>
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Password</label>
-        <div className="flex items-center">
-          <input
-            type="password"
-            placeholder="•••••••••"
-            className="flex-1 px-3 py-2 border rounded-md"
-          />
-          <Spacer size={4} axis="horizontal" />
-          <Button variant="outline" size="sm">
-            Forgot?
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const formCode = `import { Flex } from "@/components/ui/flex"
-import { Spacer } from "@/components/ui/spacer"
-import { Button } from "@/components/ui/button"
-
-// Form with inline button
-<div className="space-y-2">
-  <label>Email</label>
-  <div className="flex items-center">
-    <input
-      type="email"
-      placeholder="john@example.com"
-      className="w-full px-3 py-2 border rounded-md"
-    />
-    <Spacer size={4} axis="horizontal" />
-    <Button type="submit" size="sm">Send</Button>
-  </div>
-</div>
-
-// Form with button aligned
-<div className="space-y-2">
-  <label>Password</label>
-  <div className="flex items-center">
-    <input
-      type="password"
-      placeholder="•••••••••"
-      className="flex-1 px-3 py-2 border rounded-md"
-    />
-    <Spacer />
-    <Button variant="outline" size="sm">Forgot?</Button>
-  </div>
-</div>`;
-
-function BreadcrumbDemo() {
-  return (
-    <Flex align="center" className="text-sm">
-      <span className="text-muted-foreground">Home</span>
-      <span className="text-muted-foreground">/</span>
-      <Spacer size={2} axis="horizontal" />
-      <span className="text-muted-foreground">Products</span>
-      <span className="text-muted-foreground">/</span>
-      <Spacer size={2} axis="horizontal" />
-      <span className="font-semibold">Details</span>
-    </Flex>
-  );
-}
-
-const breadcrumbCode = `import { Flex } from "@/components/ui/flex"
-import { Spacer } from "@/components/ui/spacer"
-
-// Breadcrumb with spacers
-<Flex align="center" className="text-sm">
-  <span className="text-muted-foreground">Home</span>
-  <span className="text-muted-foreground">/</span>
-  <Spacer size={2} axis="horizontal" />
-  <span className="text-muted-foreground">Products</span>
-  <span className="text-muted-foreground">/</span>
-  <Spacer size={2} axis="horizontal" />
-  <span className="font-semibold">Details</span>
-</Flex>`;
-
-function ListDemo() {
-  const items = [
-    { title: "First item", time: "2 min ago" },
-    { title: "Second item", time: "5 min ago" },
-    { title: "Third item", time: "10 min ago" },
-  ];
-
-  return (
-    <div className="max-w-sm border rounded-lg bg-background">
-      {items.map((item, index) => (
-        <Flex
-          key={index}
-          align="center"
-          className="p-3 border-b last:border-b-0"
-        >
-          <div className="flex-1">
-            <span className="font-medium">{item.title}</span>
-          </div>
-          <Spacer size={4} axis="horizontal" />
-          <span className="text-xs text-muted-foreground">{item.time}</span>
-        </Flex>
       ))}
     </div>
   );
 }
 
-const listCode = `import { Flex } from "@/components/ui/flex"
-import { Spacer } from "@/components/ui/spacer"
+const ScaleDemoCode =
+  'import { HStack } from "@/components/ui/stack";\nimport { Spacer } from "@/components/ui/spacer";\n\nexport function ScaleDemo() {\n  const sizes = [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24] as const;\n  return <div className="grid w-full gap-3 sm:grid-cols-2">\n    {sizes.map((size) => <HStack key={size} gap={0} align="center"><span className="w-8 shrink-0 text-xs tabular-nums">{size}</span><Spacer size={size} className="h-3 rounded-sm bg-muted" /><span className="ml-2 text-xs text-muted-foreground">{size === 0 ? "Explicit zero" : "Spacing token"}</span></HStack>)}\n  </div>;\n}';
 
-// List item with spacer
-const items = [
-  { title: "First item", time: "2 min ago" },
-  { title: "Second item", time: "5 min ago" },
-  { title: "Third item", time: "10 min ago" },
-]
+function ResponsiveDemo() {
+  return (
+    <Stack
+      direction={{ base: "vertical", md: "horizontal" }}
+      gap={0}
+      align="start"
+      className="w-full rounded-lg border p-4"
+    >
+      <section className="min-w-0">
+        <h3 className="text-sm font-semibold">Workspace owner</h3>
+        <p className="text-sm text-muted-foreground">Amara Okafor</p>
+      </section>
+      <Spacer
+        size={{ base: 4, md: 8 }}
+        axis={{ base: "vertical", md: "horizontal" }}
+      />
+      <section className="min-w-0">
+        <h3 className="text-sm font-semibold">Review team</h3>
+        <p className="text-sm text-muted-foreground">
+          Platform and access engineering
+        </p>
+      </section>
+    </Stack>
+  );
+}
 
-<Flex align="center" className="p-3 border-b">
-  <div className="flex-1">
-    <span className="font-medium">{item.title}</span>
-  </div>
-  <Spacer size={4} axis="horizontal" />
-  <span className="text-xs text-muted-foreground">{item.time}</span>
-</Flex>`;
+const ResponsiveDemoCode =
+  'import { Stack } from "@/components/ui/stack";\nimport { Spacer } from "@/components/ui/spacer";\n\nexport function ResponsiveDemo() {\n  return <Stack direction={{ base: "vertical", md: "horizontal" }} gap={0} align="start" className="w-full rounded-lg border p-4">\n    <section className="min-w-0"><h3 className="text-sm font-semibold">Workspace owner</h3><p className="text-sm text-muted-foreground">Amara Okafor</p></section>\n    <Spacer size={{ base: 4, md: 8 }} axis={{ base: "vertical", md: "horizontal" }} />\n    <section className="min-w-0"><h3 className="text-sm font-semibold">Review team</h3><p className="text-sm text-muted-foreground">Platform and access engineering</p></section>\n  </Stack>;\n}';
 
+function FluidDemo() {
+  const [narrow, setNarrow] = React.useState(false);
+
+  return (
+    <div className="w-full space-y-4">
+      <Button variant="outline" onClick={() => setNarrow((value) => !value)}>
+        {narrow ? "Use full width" : "Use narrow panel"}
+      </Button>
+      <div
+        className="max-w-full rounded-lg border p-4"
+        style={{
+          width: narrow ? "20rem" : "100%",
+          containerType: "inline-size",
+        }}
+      >
+        <HStack gap={0} align="center">
+          <span className="min-w-0 text-sm">Release owner</span>
+          <KiraSpacer min={2} max={12} preferred="10cqw" />
+          <span className="min-w-0 text-sm">Review window</span>
+        </HStack>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        The gap uses ten percent of the query container width, bounded by
+        spacing tokens 2 and 12.
+      </p>
+    </div>
+  );
+}
+
+const FluidDemoCode =
+  'import * as React from "react";\nimport { HStack } from "@/components/ui/stack";\nimport { KiraSpacer } from "@/components/ui/spacer";\nimport { Button } from "@/components/ui/button";\n\nexport function FluidDemo() {\n  const [narrow, setNarrow] = React.useState(false);\n  return <div className="w-full space-y-4">\n    <Button variant="outline" onClick={() => setNarrow((value) => !value)}>{narrow ? "Use full width" : "Use narrow panel"}</Button>\n    <div className="max-w-full rounded-lg border p-4" style={{ width: narrow ? "20rem" : "100%", containerType: "inline-size" }}>\n      <HStack gap={0} align="center"><span className="min-w-0 text-sm">Release owner</span><KiraSpacer min={2} max={12} preferred="10cqw" /><span className="min-w-0 text-sm">Review window</span></HStack>\n    </div>\n    <p className="text-sm text-muted-foreground">The gap uses ten percent of the query container width, bounded by spacing tokens 2 and 12.</p>\n  </div>;\n}';
+
+function SafeAreaDemo() {
+  return (
+    <VStack gap={0} className="w-full max-w-md rounded-lg border p-4">
+      <p className="text-sm font-medium">Invitation review footer</p>
+      <p className="text-sm text-muted-foreground">
+        Place a vertical inset below footer content when the host uses
+        viewport-fit=cover.
+      </p>
+      <KiraSpacer
+        axis="vertical"
+        min={4}
+        max={8}
+        preferred="4vw"
+        safeArea="bottom"
+      />
+      <p className="text-xs text-muted-foreground">
+        Device safe-area insets are usually zero on desktop. This example does
+        not simulate a physical device inset.
+      </p>
+    </VStack>
+  );
+}
+
+const SafeAreaDemoCode =
+  'import { VStack } from "@/components/ui/stack";\nimport { KiraSpacer } from "@/components/ui/spacer";\n\nexport function SafeAreaDemo() {\n  return <VStack gap={0} className="w-full max-w-md rounded-lg border p-4">\n    <p className="text-sm font-medium">Invitation review footer</p>\n    <p className="text-sm text-muted-foreground">Place a vertical inset below footer content when the host uses viewport-fit=cover.</p>\n    <KiraSpacer axis="vertical" min={4} max={8} preferred="4vw" safeArea="bottom" />\n    <p className="text-xs text-muted-foreground">Device safe-area insets are usually zero on desktop. This example does not simulate a physical device inset.</p>\n  </VStack>;\n}';
+
+function ReserveDemo() {
+  const [loading, setLoading] = React.useState(false);
+
+  return (
+    <VStack gap={4} className="w-full max-w-lg">
+      <HStack wrap gap={2}>
+        <Button
+          variant="outline"
+          disabled={loading}
+          onClick={() => setLoading(true)}
+        >
+          Start reload
+        </Button>
+        <Button
+          variant="outline"
+          disabled={!loading}
+          onClick={() => setLoading(false)}
+        >
+          Finish reload
+        </Button>
+      </HStack>
+      <KiraSpacer
+        mode="reserve"
+        minHeight="12rem"
+        loading={loading}
+        loadingLabel="Reloading release brief…"
+        className="rounded-lg border p-4"
+      >
+        <div className="space-y-4">
+          <h3 className="font-semibold">Release brief</h3>
+          <p className="text-sm text-muted-foreground">
+            A minimum footprint reserves space; supplied content stays mounted
+            under the loading mask.
+          </p>
+          <label
+            htmlFor="spacer-reserve-note"
+            className="block text-sm font-medium"
+          >
+            Draft note
+          </label>
+          <Input
+            id="spacer-reserve-note"
+            defaultValue="Confirm the external collaborator policy."
+          />
+        </div>
+      </KiraSpacer>
+      <p className="text-sm text-muted-foreground">
+        Type a note, start reload, then finish. The draft returns without a
+        remount.
+      </p>
+    </VStack>
+  );
+}
+
+const ReserveDemoCode =
+  'import * as React from "react";\nimport { HStack, VStack } from "@/components/ui/stack";\nimport { KiraSpacer } from "@/components/ui/spacer";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function ReserveDemo() {\n  const [loading, setLoading] = React.useState(false);\n  return <VStack gap={4} className="w-full max-w-lg">\n    <HStack wrap gap={2}><Button variant="outline" disabled={loading} onClick={() => setLoading(true)}>Start reload</Button><Button variant="outline" disabled={!loading} onClick={() => setLoading(false)}>Finish reload</Button></HStack>\n    <KiraSpacer mode="reserve" minHeight="12rem" loading={loading} loadingLabel="Reloading release brief…" className="rounded-lg border p-4">\n      <div className="space-y-4"><h3 className="font-semibold">Release brief</h3><p className="text-sm text-muted-foreground">A minimum footprint reserves space; supplied content stays mounted under the loading mask.</p><label htmlFor="spacer-reserve-note" className="block text-sm font-medium">Draft note</label><Input id="spacer-reserve-note" defaultValue="Confirm the external collaborator policy." /></div>\n    </KiraSpacer>\n    <p className="text-sm text-muted-foreground">Type a note, start reload, then finish. The draft returns without a remount.</p>\n  </VStack>;\n}';
+
+function NativeDemo() {
+  const spacerRef = React.useRef<HTMLSpanElement>(null);
+  const [tag, setTag] = React.useState("Read the decorative element.");
+
+  return (
+    <div className="space-y-3">
+      <HStack gap={0} align="center">
+        <span>Owner</span>
+        <Spacer as="span" ref={spacerRef} render={<span />} size={4} />
+        <span>Reviewer</span>
+      </HStack>
+      <Button
+        variant="outline"
+        onClick={() =>
+          setTag(spacerRef.current?.tagName.toLowerCase() ?? "No element")
+        }
+      >
+        Read native ref
+      </Button>
+      <output className="ml-3 text-sm text-muted-foreground">{tag}</output>
+    </div>
+  );
+}
+
+const NativeDemoCode =
+  'import * as React from "react";\nimport { HStack } from "@/components/ui/stack";\nimport { Spacer } from "@/components/ui/spacer";\nimport { Button } from "@/components/ui/button";\n\nexport function NativeDemo() {\n  const spacerRef = React.useRef<HTMLSpanElement>(null);\n  const [tag, setTag] = React.useState("Read the decorative element.");\n  return <div className="space-y-3">\n    <HStack gap={0} align="center"><span>Owner</span><Spacer as="span" ref={spacerRef} render={<span />} size={4} /><span>Reviewer</span></HStack>\n    <Button variant="outline" onClick={() => setTag(spacerRef.current?.tagName.toLowerCase() ?? "No element")}>Read native ref</Button>\n    <output className="ml-3 text-sm text-muted-foreground">{tag}</output>\n  </div>;\n}';
+
+function StatesDemo() {
+  return (
+    <VStack gap={4} className="w-full max-w-80">
+      <HStack gap={0} align="center">
+        <span className="text-sm">Zero</span>
+        <Spacer size={0} />
+        <span className="text-sm">gap</span>
+      </HStack>
+      <HStack gap={0} align="center" className="max-w-full">
+        <span className="min-w-0 text-sm">
+          A-long-release-label-that-must-wrap-in-a-narrow-footer
+        </span>
+        <Spacer size={6} />
+        <span className="shrink-0 text-sm">Ready</span>
+      </HStack>
+      <VStack gap={0} className="h-40 rounded-lg border p-3">
+        <p className="text-sm">Review summary</p>
+        <Spacer axis="vertical" />
+        <p className="text-sm">Footer follows free space</p>
+      </VStack>
+      <KiraSpacer
+        mode="reserve"
+        minHeight="6rem"
+        loading
+        loadingLabel="Loading preview…"
+      />
+    </VStack>
+  );
+}
+
+const StatesDemoCode =
+  'import { HStack, VStack } from "@/components/ui/stack";\nimport { Spacer, KiraSpacer } from "@/components/ui/spacer";\n\nexport function StatesDemo() {\n  return <VStack gap={4} className="w-full max-w-80">\n    <HStack gap={0} align="center"><span className="text-sm">Zero</span><Spacer size={0} /><span className="text-sm">gap</span></HStack>\n    <HStack gap={0} align="center" className="max-w-full"><span className="min-w-0 text-sm">A-long-release-label-that-must-wrap-in-a-narrow-footer</span><Spacer size={6} /><span className="shrink-0 text-sm">Ready</span></HStack>\n    <VStack gap={0} className="h-40 rounded-lg border p-3"><p className="text-sm">Review summary</p><Spacer axis="vertical" /><p className="text-sm">Footer follows free space</p></VStack>\n    <KiraSpacer mode="reserve" minHeight="6rem" loading loadingLabel="Loading preview…" />\n  </VStack>;\n}';
+
+const demos = [
+  {
+    value: "basic",
+    label: "Basic",
+    description:
+      "Automatic flex space separates a toolbar title from its action.",
+    Demo: BasicDemo,
+    code: BasicDemoCode,
+  },
+  {
+    value: "fixed",
+    label: "Fixed",
+    description: "Fixed horizontal and vertical gaps with zero parent gap.",
+    Demo: FixedDemo,
+    code: FixedDemoCode,
+  },
+  {
+    value: "scale",
+    label: "Scale",
+    description: "Every supported size, including explicit zero.",
+    Demo: ScaleDemo,
+    code: ScaleDemoCode,
+  },
+  {
+    value: "responsive",
+    label: "Responsive",
+    description: "Size and axis follow the same responsive layout change.",
+    Demo: ResponsiveDemo,
+    code: ResponsiveDemoCode,
+  },
+  {
+    value: "fluid",
+    label: "Fluid",
+    description: "A parent-relative gap bounded by existing spacing tokens.",
+    Demo: FluidDemo,
+    code: FluidDemoCode,
+  },
+  {
+    value: "safe-area",
+    label: "Safe area",
+    description: "Optional physical-device safe-area addition.",
+    Demo: SafeAreaDemo,
+    code: SafeAreaDemoCode,
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    description:
+      "Reserve a footprint and retain a draft beneath a loading mask.",
+    Demo: ReserveDemo,
+    code: ReserveDemoCode,
+  },
+  {
+    value: "native",
+    label: "Native",
+    description: "A decorative span render adapter and its native ref.",
+    Demo: NativeDemo,
+    code: NativeDemoCode,
+  },
+  {
+    value: "states",
+    label: "States",
+    description:
+      "Zero gap, fixed-space shrinking, long labels, vertical auto and initial loading.",
+    Demo: StatesDemo,
+    code: StatesDemoCode,
+  },
+];
+
+const nativeApi = [
+  {
+    prop: "as / render / ref",
+    type: '"div" | "span" / useRender.RenderProp / native element ref',
+    default: '"div"',
+    description: "Base UI composition for the selected native tag.",
+  },
+  {
+    prop: "className / style",
+    type: "string / React.CSSProperties",
+    description:
+      "Caller classes and styles; CSS custom lengths can override the footprint.",
+  },
+];
+
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function SpacerPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Spacer"
-        description="A flexible spacing utility component. Use auto mode to push elements apart with flex: 1, or fixed sizes for consistent gaps."
-        version="v1.0"
+        description="Explicit, responsive and fluid space, plus stable footprints for deferred content."
+        version="2.0.0"
       />
-
       <FeatureGrid
         features={[
           {
-            title: "Auto Spacer",
-            description:
-              "Push siblings apart using flex: 1 behavior. Perfect for navigation headers and lists.",
+            title: "Explicit spacing",
+            description: "Zero and fixed sizes use the existing spacing scale.",
+            icon: <IconSpacingHorizontal className="size-5" />,
           },
           {
-            title: "Fixed Spacing",
-            description:
-              "Add consistent horizontal or vertical gaps with Tailwind spacing units (0-24).",
+            title: "Bounded fluid gaps",
+            description: "KiraSpacer clamps a preferred CSS length.",
+            icon: <IconArrowsHorizontal className="size-5" />,
           },
           {
-            title: "Two Axes",
-            description:
-              "Control spacing direction with axis prop: horizontal or vertical.",
+            title: "Responsive axes",
+            description: "Size, axis and optional device insets.",
+            icon: <IconDeviceMobile className="size-5" />,
+          },
+          {
+            title: "Reserved content",
+            description: "A loading footprint retains supplied draft content.",
+            icon: <IconHourglass className="size-5" />,
           },
         ]}
       />
-
       <DemoTabs
-        defaultValue="auto"
-        tabs={[
+        defaultValue="basic"
+        tabs={demos.map(({ value, label, description, Demo, code }) => ({
+          value,
+          label,
+          demo: (
+            <DemoWrapper title={label} description={description} code={code}>
+              <Demo />
+            </DemoWrapper>
+          ),
+        }))}
+      />
+      <KeyboardShortcuts
+        description="Decorative spacing has no keyboard interaction; reserved content retains its own controls."
+        shortcuts={[
           {
-            value: "auto",
-            label: "Auto",
-            demo: (
-              <DemoWrapper
-                title="Auto Spacer"
-                description="Push elements apart using flex: 1 behavior."
-                code={autoSpacerCode}
-              >
-                <AutoSpacerDemo />
-              </DemoWrapper>
-            ),
+            keys: "Tab / Shift + Tab",
+            description:
+              "Skip Spacer and fluid KiraSpacer; they are decorative and inert.",
           },
           {
-            value: "fixed",
-            label: "Fixed",
-            demo: (
-              <DemoWrapper
-                title="Fixed Size Spacer"
-                description="Add consistent spacing with fixed pixel values."
-                code={fixedSpacerCode}
-              >
-                <FixedSpacerDemo />
-              </DemoWrapper>
-            ),
+            keys: "Enter / Space",
+            description:
+              "Use the local filter, width and reload controls through shared Base UI Button behavior.",
           },
           {
-            value: "size-variants",
-            label: "Sizes",
-            demo: (
-              <DemoWrapper
-                title="Size Variants"
-                description="All available spacer sizes from 1 to 24."
-                code={sizeVariantsCode}
-              >
-                <SizeVariantsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "nav-header",
-            label: "Nav Header",
-            demo: (
-              <DemoWrapper
-                title="Navigation Header"
-                description="Common pattern for navigation headers with spacer."
-                code={navigationHeaderCode}
-              >
-                <NavigationHeaderDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "card-actions",
-            label: "Card Actions",
-            demo: (
-              <DemoWrapper
-                title="Card with Actions"
-                description="Push buttons apart in card action bars."
-                code={cardActionCode}
-              >
-                <CardActionDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "form",
-            label: "Form",
-            demo: (
-              <DemoWrapper
-                title="Form Input"
-                description="Inline action buttons with input fields."
-                code={formCode}
-              >
-                <FormDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "breadcrumb",
-            label: "Breadcrumb",
-            demo: (
-              <DemoWrapper
-                title="Breadcrumb"
-                description="Separate breadcrumb items with spacers."
-                code={breadcrumbCode}
-              >
-                <BreadcrumbDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "list",
-            label: "List Item",
-            demo: (
-              <DemoWrapper
-                title="List Items"
-                description="Push metadata to the right in list items."
-                code={listCode}
-              >
-                <ListDemo />
-              </DemoWrapper>
-            ),
+            keys: "Type, reload, finish",
+            description:
+              "In Kira, the draft stays mounted. Loading hides and makes the content inert until finish; reload controls stay available.",
           },
         ]}
       />
-
+      <UsageBlock
+        code={
+          'import { HStack, VStack } from "@/components/ui/stack";\nimport { Spacer, KiraSpacer, spacerVariants, spacerReserveVariants } from "@/components/ui/spacer";\n\nexport function SpacingPatterns() {\n  return <VStack gap={6}>\n    <HStack gap={0}><span>Owner</span><Spacer /><span>Reviewer</span></HStack>\n    <Spacer size={{ base: 4, md: 8 }} axis="vertical" />\n    <KiraSpacer axis="vertical" min={4} max={24} preferred="5vw" safeArea="bottom" />\n    <KiraSpacer mode="reserve" minHeight="12rem" loading={false}><p>Deferred release brief</p></KiraSpacer>\n    <div aria-hidden="true" className={spacerVariants({ axis: "horizontal", flexible: true })} />\n    <div className={spacerReserveVariants()} style={{ minHeight: "12rem" }}>Reserved frame</div>\n  </VStack>;\n}'
+        }
+      />
       <APIReference
         sections={[
           {
-            title: "Spacer Props",
+            title: "Spacer",
             props: [
+              ...nativeApi,
               {
                 prop: "size",
-                type: 'number | "auto"',
-                default: "auto",
-                description: "Fixed size (0-24) or 'auto' for flex: 1",
+                type: 'LayoutResponsiveValue<0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24 | "auto">',
+                default: '"auto"',
+                description:
+                  "Fixed sizes do not shrink; auto consumes free space along the parent flex direction. Breakpoint-only objects inherit the default below their first breakpoint.",
               },
               {
                 prop: "axis",
-                type: '"horizontal" | "vertical"',
-                default: "horizontal",
-                description: "Direction of spacing",
+                type: 'LayoutResponsiveValue<"horizontal" | "vertical">',
+                default: '"horizontal"',
+                description:
+                  "The dimension used for fixed sizes; auto follows the parent flex direction.",
               },
               {
-                prop: "className",
+                prop: "children / tabIndex",
+                type: "never",
+                description:
+                  "Decorative Spacer has no content or tab stop; aria-hidden and inert are enforced.",
+              },
+            ],
+          },
+          {
+            title: "KiraSpacer — fluid",
+            props: [
+              ...nativeApi,
+              {
+                prop: "mode",
+                type: '"fluid"',
+                default: '"fluid"',
+                description: "Decorative bounded CSS spacing.",
+              },
+              {
+                prop: "min / max",
+                type: "0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16 | 20 | 24",
+                default: "4 / 24",
+                description:
+                  "Existing spacing tokens; max below min is normalized to min.",
+              },
+              {
+                prop: "preferred",
                 type: "string",
-                default: "-",
-                description: "Additional CSS classes",
+                default: '"5vw"',
+                description:
+                  "Preferred CSS length in clamp(). cqw needs a query container supplied by the caller.",
+              },
+              {
+                prop: "safeArea",
+                type: '"none" | "top" | "right" | "bottom" | "left"',
+                default: '"none"',
+                description:
+                  "Add the selected physical safe-area inset to the clamped gap.",
+              },
+              {
+                prop: "axis",
+                type: 'LayoutResponsiveValue<"horizontal" | "vertical">',
+                default: '"horizontal"',
+                description: "The dimension occupied by the fluid gap.",
               },
             ],
           },
           {
-            title: "Size Values",
+            title: "KiraSpacer — reserve",
             props: [
+              ...nativeApi,
               {
-                prop: "0",
-                type: "number",
-                default: "-",
-                description: "No space (0px)",
+                prop: "mode",
+                type: '"reserve"',
+                description:
+                  "Required for accessible deferred content; the root is not decorative or inert.",
               },
               {
-                prop: "1",
-                type: "number",
-                default: "-",
-                description: "0.25rem (4px)",
+                prop: "minHeight",
+                type: "string",
+                default: '"6rem"',
+                description:
+                  "Minimum block footprint. Reserve enough for final content; taller content can still grow.",
               },
               {
-                prop: "2",
-                type: "number",
-                default: "-",
-                description: "0.5rem (8px)",
+                prop: "loading / loadingLabel / loadingContent",
+                type: "boolean / string / React.ReactNode",
+                default: 'false / "Loading content…" / shared Skeleton',
+                description:
+                  "Retained content is hidden and inert while a decorative loading mask fills the footprint.",
               },
               {
-                prop: "3",
-                type: "number",
-                default: "-",
-                description: "0.75rem (12px)",
-              },
-              {
-                prop: "4",
-                type: "number",
-                default: "-",
-                description: "1rem (16px)",
-              },
-              {
-                prop: "5",
-                type: "number",
-                default: "-",
-                description: "1.25rem (20px)",
-              },
-              {
-                prop: "6",
-                type: "number",
-                default: "-",
-                description: "1.5rem (24px)",
-              },
-              {
-                prop: "8",
-                type: "number",
-                default: "-",
-                description: "2rem (32px)",
-              },
-              {
-                prop: "10",
-                type: "number",
-                default: "-",
-                description: "2.5rem (40px)",
-              },
-              {
-                prop: "12",
-                type: "number",
-                default: "-",
-                description: "3rem (48px)",
-              },
-              {
-                prop: "16",
-                type: "number",
-                default: "-",
-                description: "4rem (64px)",
-              },
-              {
-                prop: "20",
-                type: "number",
-                default: "-",
-                description: "5rem (80px)",
-              },
-              {
-                prop: "24",
-                type: "number",
-                default: "-",
-                description: "6rem (96px)",
+                prop: "children / contentClassName",
+                type: "React.ReactNode / string",
+                description:
+                  "Supplied content stays mounted beneath the mask; style the spacer-reserve-content wrapper.",
               },
             ],
           },
+        ]}
+      />
+      <Changelog
+        entries={[
           {
-            title: "Usage Patterns",
-            props: [
+            version: "2.0.0",
+            date: "15 November 2026",
+            changes: [
               {
-                prop: "Auto spacer",
-                type: "Flex container",
-                default: "-",
+                type: "fixed",
+                title: "Explicit sizes and decorative contract",
                 description:
-                  "Use in flex containers. Spacer gets flex: 1, pushing siblings apart.",
+                  "Zero dimensions, fixed-size shrink protection, typed native refs/render adapters and exported variants. Audited against Base UI 1.9.0.",
               },
               {
-                prop: "Fixed horizontal",
-                type: "HStack",
-                default: "-",
+                type: "added",
+                title: "Responsive and reserved spacing",
                 description:
-                  "Use with HStack for consistent horizontal gaps between items.",
+                  "Responsive size/axis, KiraSpacer fluid clamp/device insets and a retained reserved-content mode with shared Skeleton. Research cutoff October 31, 2026.",
               },
               {
-                prop: "Fixed vertical",
-                type: "VStack",
-                default: "-",
+                type: "breaking",
+                title: "Finite sizes and empty decoration",
                 description:
-                  "Use with VStack for consistent vertical gaps between items.",
-              },
-              {
-                prop: "Multiple spacers",
-                type: "Flex container",
-                default: "-",
-                description:
-                  "Multiple spacers share remaining space equally in auto mode.",
-              },
-              {
-                prop: "Mixed mode",
-                type: "Flex container",
-                default: "-",
-                description:
-                  "Combine auto and fixed spacers in same container for complex layouts.",
+                  "Arbitrary numeric sizes are replaced by the supported spacing union. Decorative Spacer rejects children/tabIndex and enforces hidden/inert semantics; use KiraSpacer mode=reserve for content. Fixed sizes no longer shrink.",
               },
             ],
           },
