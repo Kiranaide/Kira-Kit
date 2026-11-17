@@ -1,27 +1,17 @@
 import { useState } from "react";
-import {
-  IconFile,
-  IconFolder,
-  IconSearch,
-  IconSettings,
-  IconUser,
-  IconHome,
-  IconBell,
-  IconMail,
-  IconCalendar,
-  IconCode,
-  IconTerminal,
-  IconBrandGithub,
-} from "@tabler/icons-react";
-
+import { IconFile, IconFolder, IconUser } from "@tabler/icons-react";
 import {
   Spotlight,
+  KiraSpotlight,
+  SpotlightTrigger,
+  SpotlightGroup,
+  SpotlightItem,
+  SpotlightSearch,
+  SpotlightRecent,
+  SpotlightSuggestions,
+  SpotlightResults,
   type SpotlightItemType,
-  type SpotlightGroupType,
 } from "@/components/ui/spotlight";
-import { SpotlightProvider } from "@/hooks/use-spotlight";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   ComponentPage,
   PageHeader,
@@ -31,626 +21,768 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
-// ============================================================================
-// DEMO DATA
-// ============================================================================
-
-const commandGroups: SpotlightGroupType[] = [
+const resources: SpotlightItemType[] = [
   {
-    id: "navigation",
-    label: "Navigation",
-    items: [
-      {
-        id: "home",
-        label: "Go to Home",
-        description: "Navigate to the home page",
-        icon: <IconHome className="h-4 w-4" />,
-        shortcut: ["⌘", "H"],
-        keywords: ["home", "start", "main"],
-      },
-      {
-        id: "settings",
-        label: "Open Settings",
-        description: "Manage your preferences",
-        icon: <IconSettings className="h-4 w-4" />,
-        shortcut: ["⌘", ","],
-        keywords: ["settings", "preferences", "config"],
-      },
-      {
-        id: "profile",
-        label: "View Profile",
-        description: "See your profile details",
-        icon: <IconUser className="h-4 w-4" />,
-        keywords: ["profile", "account", "user"],
-      },
-    ],
+    id: "roadmap",
+    label: "Q4 product roadmap",
+    description: "Projects · Product team",
+    icon: <IconFolder />,
+    scope: "projects",
+    keywords: ["planning", "launch"],
   },
   {
-    id: "actions",
-    label: "Actions",
-    items: [
-      {
-        id: "new-file",
-        label: "New File",
-        description: "Create a new file",
-        icon: <IconFile className="h-4 w-4" />,
-        shortcut: ["⌘", "N"],
-        keywords: ["new", "create", "file"],
-      },
-      {
-        id: "new-folder",
-        label: "New Folder",
-        description: "Create a new folder",
-        icon: <IconFolder className="h-4 w-4" />,
-        shortcut: ["⌘", "⇧", "N"],
-        keywords: ["new", "create", "folder", "directory"],
-      },
-      {
-        id: "search",
-        label: "Search Files",
-        description: "Search through all files",
-        icon: <IconSearch className="h-4 w-4" />,
-        shortcut: ["⌘", "P"],
-        keywords: ["search", "find", "files"],
-      },
-    ],
+    id: "guide",
+    label: "Customer onboarding guide",
+    description: "Documents · Updated today",
+    icon: <IconFile />,
+    scope: "documents",
+    keywords: ["help", "support"],
   },
   {
-    id: "tools",
-    label: "Developer Tools",
-    items: [
-      {
-        id: "terminal",
-        label: "Open Terminal",
-        description: "Launch integrated terminal",
-        icon: <IconTerminal className="h-4 w-4" />,
-        shortcut: ["⌘", "`"],
-        keywords: ["terminal", "console", "shell"],
-      },
-      {
-        id: "code",
-        label: "View Source Code",
-        description: "Open source code viewer",
-        icon: <IconCode className="h-4 w-4" />,
-        keywords: ["code", "source", "view"],
-      },
-      {
-        id: "github",
-        label: "Open GitHub",
-        description: "Go to GitHub repository",
-        icon: <IconBrandGithub className="h-4 w-4" />,
-        keywords: ["github", "git", "repository"],
-      },
-    ],
+    id: "maya",
+    label: "Maya Chen",
+    description: "People · Workspace owner",
+    icon: <IconUser />,
+    scope: "people",
+    keywords: ["admin", "owner"],
+  },
+  {
+    id: "archive",
+    label: "Archived financial report",
+    description: "Documents · Restricted",
+    icon: <IconFile />,
+    scope: "documents",
+    disabled: true,
+    disabledReason: "Ask Finance for access.",
   },
 ];
 
-const recentItems: SpotlightItemType[] = [
-  {
-    id: "recent-1",
-    label: "dashboard.tsx",
-    description: "Last edited 2 hours ago",
-    icon: <IconFile className="h-4 w-4" />,
-  },
-  {
-    id: "recent-2",
-    label: "Notifications",
-    description: "5 unread notifications",
-    icon: <IconBell className="h-4 w-4" />,
-  },
-  {
-    id: "recent-3",
-    label: "Messages",
-    description: "3 new messages",
-    icon: <IconMail className="h-4 w-4" />,
-  },
+const scopes = [
+  { id: "projects", label: "Projects" },
+  { id: "documents", label: "Documents" },
+  { id: "people", label: "People" },
 ];
-
-// ============================================================================
-// DEMO COMPONENTS
-// ============================================================================
 
 function BasicDemo() {
-  const [open, setOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [destination, setDestination] = useState("Nothing opened yet.");
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Button onClick={() => setOpen(true)}>Open Spotlight</Button>
-        <span className="text-sm text-muted-foreground">
-          or press{" "}
-          <kbd className="rounded border bg-muted px-1.5 py-0.5 text-xs">
-            ⌘K
-          </kbd>
-        </span>
-      </div>
-
-      {selectedItem && (
-        <p className="text-sm">
-          Selected: <Badge variant="secondary">{selectedItem}</Badge>
-        </p>
-      )}
-
       <Spotlight
-        open={open}
-        onOpenChange={setOpen}
-        groups={commandGroups}
-        recentItems={recentItems}
-        placeholder="Type a command or search..."
-        onSelect={(item) => setSelectedItem(item.label)}
+        items={resources}
+        trigger={<SpotlightTrigger />}
+        onSelect={(item) => setDestination("Opened " + item.label)}
+      />
+      <output className="block text-sm text-muted-foreground">
+        {destination}
+      </output>
+    </div>
+  );
+}
+
+const basicCode =
+  'import { useState } from "react";\nimport { Spotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\n\nexport function BasicDemo() {\n  const [destination, setDestination] = useState("Nothing opened yet.");\n  return <div className="space-y-4">\n    <Spotlight items={resources} trigger={<SpotlightTrigger />} onSelect={item => setDestination("Opened " + item.label)} />\n    <p role="status" className="text-sm text-muted-foreground">{destination}</p>\n  </div>;\n}';
+
+function GroupsDemo() {
+  return (
+    <Spotlight
+      groups={[
+        {
+          id: "projects",
+          label: "Projects",
+          items: resources.filter((item) => item.scope === "projects"),
+        },
+      ]}
+      items={resources.filter((item) => item.scope !== "projects")}
+      trigger={<SpotlightTrigger>Search grouped resources</SpotlightTrigger>}
+    />
+  );
+}
+
+const groupsCode =
+  'import { Spotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\n\nexport function GroupsDemo() {\n  return <Spotlight groups={[{ id: "projects", label: "Projects", items: resources.filter(item => item.scope === "projects") }]} items={resources.filter(item => item.scope !== "projects")} trigger={<SpotlightTrigger>Search grouped resources</SpotlightTrigger>} />;\n}';
+
+function FilterDemo() {
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        Try roadmap, guide, or maya.
+      </p>
+      <Spotlight
+        items={resources}
+        filter={(item, query) => item.id.startsWith(query.trim().toLowerCase())}
+        trigger={<SpotlightTrigger>Search by resource ID</SpotlightTrigger>}
       />
     </div>
   );
 }
 
-const basicCode = `import { useState } from "react"
-import { Spotlight } from "@/components/ui/spotlight"
+const filterCode =
+  'import { Spotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\n\nexport function FilterDemo() {\n  return <div className="space-y-3"><p className="text-sm text-muted-foreground">Try roadmap, guide, or maya.</p><Spotlight items={resources} filter={(item, query) => item.id.startsWith(query.trim().toLowerCase())} trigger={<SpotlightTrigger>Search by resource ID</SpotlightTrigger>} /></div>;\n}';
 
-export function BasicSpotlightDemo() {
-  const [open, setOpen] = useState(false)
-
+function ScopesDemo() {
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>Open Spotlight</Button>
+    <KiraSpotlight
+      items={resources}
+      scopes={scopes}
+      trigger={<SpotlightTrigger>Search by team or resource</SpotlightTrigger>}
+    />
+  );
+}
 
-      <Spotlight
-        open={open}
-        onOpenChange={setOpen}
-        placeholder="Type a command or search..."
-      />
-    </>
-  )
-}`;
+const scopesCode =
+  'import { KiraSpotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\nconst scopes = [\n  { id: "projects", label: "Projects" },\n  { id: "documents", label: "Documents" },\n  { id: "people", label: "People" },\n];\n\nexport function ScopesDemo() {\n  return <KiraSpotlight items={resources} scopes={scopes} trigger={<SpotlightTrigger>Search by team or resource</SpotlightTrigger>} />;\n}';
 
-function AsyncSearchDemo() {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState<SpotlightItemType[]>([]);
+function RemoteDemo() {
+  return (
+    <KiraSpotlight
+      scopes={scopes}
+      debounceMs={200}
+      minQueryLength={2}
+      search={(query, { signal, scope }) =>
+        new Promise<SpotlightItemType[]>((resolve, reject) => {
+          const abort = () => {
+            window.clearTimeout(timer);
+            reject(new DOMException("Search cancelled", "AbortError"));
+          };
 
-  const handleSearch = async (query: string) => {
-    if (!query) {
-      setItems([]);
+          const timer = window.setTimeout(() => {
+            signal.removeEventListener("abort", abort);
 
-      return;
-    }
+            if (query.toLowerCase() === "error") {
+              reject(
+                new Error(
+                  "Search service is unavailable. Try again or change your query.",
+                ),
+              );
 
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 500));
+              return;
+            }
 
-    const results: SpotlightItemType[] = [
-      {
-        id: `result-1-${query}`,
-        label: `Result for "${query}"`,
-        description: "Found in documents",
-        icon: <IconFile className="h-4 w-4" />,
-      },
-      {
-        id: `result-2-${query}`,
-        label: `Another result for "${query}"`,
-        description: "Found in calendar",
-        icon: <IconCalendar className="h-4 w-4" />,
-      },
-    ];
+            resolve(
+              resources.filter(
+                (item) =>
+                  (scope === "all" || item.scope === scope) &&
+                  [item.label, ...(item.keywords ?? [])].some((value) =>
+                    value.toLowerCase().includes(query.toLowerCase()),
+                  ),
+              ),
+            );
+          }, 600);
 
-    setItems(results);
-    setLoading(false);
-  };
+          signal.addEventListener("abort", abort, { once: true });
+        })
+      }
+      trigger={<SpotlightTrigger>Search remote resources</SpotlightTrigger>}
+    />
+  );
+}
+
+const remoteCode =
+  'import { KiraSpotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\nconst scopes = [\n  { id: "projects", label: "Projects" },\n  { id: "documents", label: "Documents" },\n  { id: "people", label: "People" },\n];\n\nexport function RemoteDemo() {\n  return <KiraSpotlight scopes={scopes} debounceMs={200} minQueryLength={2} search={(query, { signal, scope }) => new Promise<SpotlightItemType[]>((resolve, reject) => {\n    const abort = () => { window.clearTimeout(timer); reject(new DOMException("Search cancelled", "AbortError")); };\n    const timer = window.setTimeout(() => {\n      signal.removeEventListener("abort", abort);\n      if (query.toLowerCase() === "error") { reject(new Error("Search service is unavailable. Try again or change your query.")); return; }\n      resolve(resources.filter(item => (scope === "all" || item.scope === scope) && [item.label, ...(item.keywords ?? [])].some(value => value.toLowerCase().includes(query.toLowerCase()))));\n    }, 600);\n    signal.addEventListener("abort", abort, { once: true });\n  })} trigger={<SpotlightTrigger>Search remote resources</SpotlightTrigger>} />;\n}';
+
+function RecentsDemo() {
+  return (
+    <KiraSpotlight
+      items={resources}
+      rememberRecent
+      maxRecent={3}
+      trigger={<SpotlightTrigger>Search with recents</SpotlightTrigger>}
+    />
+  );
+}
+
+const recentsCode =
+  'import { KiraSpotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\n\nexport function RecentsDemo() {\n  return <KiraSpotlight items={resources} rememberRecent maxRecent={3} trigger={<SpotlightTrigger>Search with recents</SpotlightTrigger>} />;\n}';
+
+function PreviewDemo() {
+  return (
+    <KiraSpotlight
+      items={resources}
+      renderPreview={(item) => (
+        <div className="space-y-1">
+          <p className="font-medium">{item.label}</p>
+          <p className="text-muted-foreground">{item.description}</p>
+          <p className="text-xs text-muted-foreground">
+            Resource ID: {item.id}. Press Enter to open.
+          </p>
+        </div>
+      )}
+      trigger={<SpotlightTrigger>Search with a preview</SpotlightTrigger>}
+    />
+  );
+}
+
+const previewCode =
+  'import { KiraSpotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\n\nexport function PreviewDemo() {\n  return <KiraSpotlight items={resources} renderPreview={item => <div className="space-y-1"><p className="font-medium">{item.label}</p><p className="text-muted-foreground">{item.description}</p><p className="text-xs text-muted-foreground">Resource ID: {item.id}. Press Enter to open.</p></div>} trigger={<SpotlightTrigger>Search with a preview</SpotlightTrigger>} />;\n}';
+
+function CompositionDemo() {
+  const [query, setQuery] = useState("");
+  const [selection, setSelection] = useState("Nothing selected.");
 
   return (
     <div className="space-y-4">
-      <Button onClick={() => setOpen(true)}>Open Async Search</Button>
-
       <Spotlight
-        open={open}
-        onOpenChange={setOpen}
-        items={items}
-        loading={loading}
-        onSearch={handleSearch}
-        placeholder="Search with async loading..."
-        disableFilter
-        emptyContent={
-          <div className="flex flex-col items-center gap-2 py-4">
-            <IconSearch className="h-8 w-8 text-muted-foreground" />
-            <p>Start typing to search...</p>
-          </div>
+        trigger={<SpotlightTrigger>Open composed search</SpotlightTrigger>}
+      >
+        <SpotlightGroup label="Actions">
+          <SpotlightItem
+            item={{ id: "create", label: "Create a project" }}
+            onSelect={() => setSelection("Created a project.")}
+          />
+        </SpotlightGroup>
+      </Spotlight>
+      <SpotlightSearch onSearch={setQuery}>
+        <SpotlightItem
+          item={{ id: "inline-guide", label: "Onboarding guide" }}
+          onSelect={() => setSelection("Opened the guide.")}
+        />
+      </SpotlightSearch>
+      <SpotlightResults>
+        <p className="text-sm">Typed: {query || "Nothing yet."}</p>
+      </SpotlightResults>
+      <SpotlightRecent
+        items={["Product roadmap"]}
+        onItemClick={(item) => setSelection("Opened " + item)}
+      />
+      <SpotlightSuggestions
+        items={["Create a project", "Import work"]}
+        onItemClick={setSelection}
+      />
+      <output className="block text-sm text-muted-foreground">
+        {selection}
+      </output>
+    </div>
+  );
+}
+
+const compositionCode =
+  'import { useState } from "react";\nimport { Spotlight, SpotlightGroup, SpotlightItem, SpotlightTrigger, SpotlightSearch, SpotlightResults, SpotlightRecent, SpotlightSuggestions } from "@/components/ui/spotlight";\n\nexport function CompositionDemo() {\n  const [query, setQuery] = useState("");\n  const [selection, setSelection] = useState("Nothing selected.");\n  return <div className="space-y-4">\n    <Spotlight trigger={<SpotlightTrigger>Open composed search</SpotlightTrigger>}>\n      <SpotlightGroup label="Actions"><SpotlightItem item={{ id: "create", label: "Create a project" }} onSelect={() => setSelection("Created a project.")} /></SpotlightGroup>\n    </Spotlight>\n    <SpotlightSearch onSearch={setQuery}><SpotlightItem item={{ id: "inline-guide", label: "Onboarding guide" }} onSelect={() => setSelection("Opened the guide.")} /></SpotlightSearch>\n    <SpotlightResults><p className="text-sm">Typed: {query || "Nothing yet."}</p></SpotlightResults>\n    <SpotlightRecent items={["Product roadmap"]} onItemClick={item => setSelection("Opened " + item)} />\n    <SpotlightSuggestions items={["Create a project", "Import work"]} onItemClick={setSelection} />\n    <p role="status" className="text-sm text-muted-foreground">{selection}</p>\n  </div>;\n}';
+
+function KiraDemo() {
+  const [destination, setDestination] = useState(
+    "Choose a workspace resource.",
+  );
+
+  return (
+    <div className="space-y-4">
+      <KiraSpotlight
+        items={resources}
+        scopes={scopes}
+        enableShortcut
+        rememberRecent
+        renderPreview={(item) => <p>{item.description}</p>}
+        trigger={<SpotlightTrigger showShortcut />}
+        onSelect={(item) => setDestination("Opened " + item.label)}
+      />
+      <output className="block text-sm text-muted-foreground">
+        {destination}
+      </output>
+    </div>
+  );
+}
+
+const kiraCode =
+  'import { useState } from "react";\nimport { KiraSpotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\nconst scopes = [\n  { id: "projects", label: "Projects" },\n  { id: "documents", label: "Documents" },\n  { id: "people", label: "People" },\n];\n\nexport function KiraDemo() {\n  const [destination, setDestination] = useState("Choose a workspace resource.");\n  return <div className="space-y-4">\n    <KiraSpotlight items={resources} scopes={scopes} enableShortcut rememberRecent renderPreview={item => <p>{item.description}</p>} trigger={<SpotlightTrigger showShortcut />} onSelect={item => setDestination("Opened " + item.label)} />\n    <p role="status" className="text-sm text-muted-foreground">{destination}</p>\n  </div>;\n}';
+
+function StatesDemo() {
+  return (
+    <div className="flex flex-wrap gap-3">
+      <Spotlight
+        loading
+        trigger={<SpotlightTrigger>Loading search</SpotlightTrigger>}
+      />
+      <Spotlight
+        items={[]}
+        trigger={<SpotlightTrigger>Empty catalog</SpotlightTrigger>}
+      />
+      <Spotlight
+        items={[
+          {
+            id: "restricted",
+            label: "Financial report",
+            disabled: true,
+            disabledReason: "Ask Finance for access.",
+          },
+          {
+            id: "long",
+            label:
+              "Release readiness and international customer onboarding — 日本語 العربية ไทย",
+            description:
+              "A_very_long_unbroken_resource_identifier_012345678901234567890123456789",
+          },
+        ]}
+        trigger={
+          <SpotlightTrigger>Stress and disabled results</SpotlightTrigger>
         }
       />
     </div>
   );
 }
 
-const asyncSearchCode = `import { useState } from "react"
-import { Spotlight } from "@/components/ui/spotlight"
-import { IconFile } from "@tabler/icons-react"
+const statesCode =
+  'import { Spotlight, SpotlightTrigger } from "@/components/ui/spotlight";\n\nexport function StatesDemo() {\n  return <div className="flex flex-wrap gap-3">\n    <Spotlight loading trigger={<SpotlightTrigger>Loading search</SpotlightTrigger>} />\n    <Spotlight items={[]} trigger={<SpotlightTrigger>Empty catalog</SpotlightTrigger>} />\n    <Spotlight items={[{ id: "restricted", label: "Financial report", disabled: true, disabledReason: "Ask Finance for access." }, { id: "long", label: "Release readiness and international customer onboarding — 日本語 العربية ไทย", description: "A_very_long_unbroken_resource_identifier_012345678901234567890123456789" }]} trigger={<SpotlightTrigger>Stress and disabled results</SpotlightTrigger>} />\n  </div>;\n}';
 
-export function AsyncSearchDemo() {
-  const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [items, setItems] = useState([])
+const usageCode =
+  'import { useState } from "react";\nimport { Spotlight, SpotlightRoot, KiraSpotlight, SpotlightTrigger, SpotlightGroup, SpotlightItem, SpotlightSearch, SpotlightRecent, SpotlightSuggestions, SpotlightResults } from "@/components/ui/spotlight";\n\nexport function SpotlightUsage() {\n  const [selection, setSelection] = useState("Choose a resource.");\n  const items = [{ id: "guide", label: "Customer onboarding guide" }];\n  return <div>\n    <Spotlight items={items} trigger={<SpotlightTrigger>Search resources</SpotlightTrigger>} onSelect={item => setSelection(item.label)} />\n    <SpotlightRoot trigger={<SpotlightTrigger>Composed search</SpotlightTrigger>}><SpotlightGroup label="Resources"><SpotlightItem item={items[0]} /></SpotlightGroup></SpotlightRoot>\n    <KiraSpotlight items={items} rememberRecent trigger={<SpotlightTrigger>Search with recents</SpotlightTrigger>} />\n    <SpotlightSearch><SpotlightItem item={items[0]} onSelect={() => setSelection(items[0].label)} /></SpotlightSearch>\n    <SpotlightRecent items={["Product roadmap"]} onItemClick={setSelection} />\n    <SpotlightSuggestions items={["Create project"]} onItemClick={setSelection} />\n    <SpotlightResults><p role="status">{selection}</p></SpotlightResults>\n  </div>;\n}';
 
-  const handleSearch = async (query: string) => {
-    setLoading(true)
-    const results = await searchAPI(query)
-    setLoading(false)
-    setItems(results)
-  }
-
-  return (
-    <Spotlight
-      open={open}
-      onOpenChange={setOpen}
-      items={items}
-      loading={loading}
-      onSearch={handleSearch}
-      placeholder="Search..."
-      disableFilter
-    />
-  )
-}`;
-
-function GlobalShortcutDemo() {
-  return (
-    <SpotlightProvider>
-      <div className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Press{" "}
-          <kbd className="rounded border bg-muted px-1.5 py-0.5 text-xs">
-            ⌘K
-          </kbd>{" "}
-          anywhere to open the spotlight. The shortcut is handled globally by
-          SpotlightProvider.
-        </p>
-
-        <div className="flex gap-2">
-          <Button onClick={() => {}}>Open Programmatically</Button>
-          <Button variant="outline">Close Programmatically</Button>
-        </div>
-      </div>
-    </SpotlightProvider>
-  );
-}
-
-const globalShortcutCode = `import { SpotlightProvider, useSpotlight } from "@/hooks/use-spotlight"
-
-export function GlobalShortcutDemo() {
-  const { open, openSpotlight, closeSpotlight, query } = useSpotlight()
-
-  return (
-    <SpotlightProvider>
-      <Button onClick={openSpotlight}>Open Spotlight</Button>
-      <Spotlight
-        open={open}
-        onOpenChange={closeSpotlight}
-        groups={commandGroups}
-        placeholder="Global spotlight with keyboard shortcut..."
-      />
-    </SpotlightProvider>
-  )
-}`;
-
-function SizesDemo() {
-  const [size, setSize] = useState<"sm" | "default" | "lg" | "full">("default");
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="space-y-4">
-      <div className="flex gap-2">
-        {(["sm", "default", "lg", "full"] as const).map((s) => (
-          <Button
-            key={s}
-            variant={size === s ? "default" : "outline"}
-            onClick={() => {
-              setSize(s);
-              setOpen(true);
-            }}
-          >
-            {s.toUpperCase()}
-          </Button>
-        ))}
-      </div>
-
-      <Spotlight
-        open={open}
-        onOpenChange={setOpen}
-        size={size}
-        groups={commandGroups}
-        placeholder={`Size: ${size}`}
-      />
-    </div>
-  );
-}
-
-const sizesCode = `import { useState } from "react"
-import { Spotlight } from "@/components/ui/spotlight"
-
-export function SizesDemo() {
-  const [size, setSize] = useState("default")
-
-  return (
-    <Spotlight
-      size={size}
-      open={open}
-      onOpenChange={setOpen}
-      groups={commandGroups}
-      placeholder="Select size..."
-    />
-  )
-}`;
-
-// ============================================================================
-// MAIN PAGE
-// ============================================================================
-
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function SpotlightPage() {
-  const features = [
-    {
-      title: "Accessible",
-      description:
-        "Full ARIA combobox pattern with keyboard navigation, focus management, and screen reader support.",
-      icon: <IconSearch className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Animated",
-      description:
-        "Smooth GSAP animations with prefers-reduced-motion support for accessibility.",
-      icon: <IconBell className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Flexible",
-      description:
-        "Supports grouped commands, async search, custom rendering, and global shortcuts.",
-      icon: <IconCode className="w-4 h-4 text-primary" />,
-    },
-  ];
-
-  const demoTabs = [
-    {
-      value: "basic",
-      label: "Basic",
-      demo: (
-        <DemoWrapper
-          title="Basic Usage"
-          description="Command palette with grouped items, recent searches, and keyboard navigation."
-          code={basicCode}
-        >
-          <BasicDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "async",
-      label: "Async Search",
-      demo: (
-        <DemoWrapper
-          title="Async Search"
-          description="Spotlight with async search, loading state, and custom empty state."
-          code={asyncSearchCode}
-        >
-          <AsyncSearchDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "global",
-      label: "Global Shortcut",
-      demo: (
-        <DemoWrapper
-          title="Global Keyboard Shortcut"
-          description="Use SpotlightProvider for global ⌘K shortcut handling."
-          code={globalShortcutCode}
-        >
-          <GlobalShortcutDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "sizes",
-      label: "Sizes",
-      demo: (
-        <DemoWrapper
-          title="Size Variants"
-          description="Different size options: sm, default, lg, and full."
-          code={sizesCode}
-        >
-          <SizesDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
-
-  const keyboardShortcuts = [
-    { keys: "↑ / ↓", description: "Navigate through items" },
-    { keys: "Enter", description: "Select focused item" },
-    { keys: "Escape", description: "Close spotlight" },
-    { keys: "Home", description: "Jump to first item" },
-    { keys: "End", description: "Jump to last item" },
-    { keys: "⌘K / Ctrl+K", description: "Open spotlight (global)" },
-  ];
-
-  const usageCode = `import { Spotlight } from "@/components/ui/spotlight"
-import { SpotlightProvider, useSpotlight } from "@/hooks/use-spotlight"
-
-// Basic usage
-<Spotlight
-  open={open}
-  onOpenChange={setOpen}
-  groups={commandGroups}
-  recentItems={recentItems}
-  placeholder="Type a command or search..."
-/>
-
-// With async search
-<Spotlight
-  items={items}
-  loading={loading}
-  onSearch={handleSearch}
-  placeholder="Search..."
-  disableFilter
-/>
-
-// Global shortcut provider
-<SpotlightProvider>
-  <Spotlight open={open} onOpenChange={setOpen} groups={commandGroups} />
-</SpotlightProvider>`;
-
-  const apiReference = [
-    {
-      title: "Spotlight",
-      props: [
-        {
-          prop: "open",
-          type: "boolean",
-          default: "-",
-          description: "Controlled open state",
-        },
-        {
-          prop: "groups",
-          type: "SpotlightGroup[]",
-          default: "-",
-          description: "Grouped command items",
-        },
-        {
-          prop: "items",
-          type: "SpotlightItem[]",
-          default: "-",
-          description: "Flat list of items",
-        },
-        {
-          prop: "recentItems",
-          type: "SpotlightItem[]",
-          default: "-",
-          description: "Recent items shown when query is empty",
-        },
-        {
-          prop: "onSearch",
-          type: "(query: string) => void",
-          default: "-",
-          description: "Async search callback",
-        },
-        {
-          prop: "size",
-          type: '"sm" | "default" | "lg" | "full"',
-          default: '"default"',
-          description: "Spotlight size variant",
-        },
-        {
-          prop: "loading",
-          type: "boolean",
-          default: "false",
-          description: "Show loading spinner",
-        },
-        {
-          prop: "disableFilter",
-          type: "boolean",
-          default: "false",
-          description: "Disable client-side filtering",
-        },
-        {
-          prop: "placeholder",
-          type: "string",
-          default: '"Search..."',
-          description: "Search placeholder text",
-        },
-        {
-          prop: "emptyContent",
-          type: "ReactNode",
-          default: "-",
-          description: "Custom empty state content",
-        },
-        {
-          prop: "onSelect",
-          type: "(item: SpotlightItem) => void",
-          default: "-",
-          description: "Item selection callback",
-        },
-        {
-          prop: "onSearch",
-          type: "(query: string, results: SpotlightItem[]) => void",
-          default: "-",
-          description: "Search results callback",
-        },
-      ],
-    },
-    {
-      title: "SpotlightProvider",
-      props: [
-        {
-          prop: "shortcut",
-          type: "string[]",
-          default: '["Meta", "K"]',
-          description: "Keyboard shortcut to open spotlight",
-        },
-        {
-          prop: "defaultOpen",
-          type: "boolean",
-          default: "false",
-          description: "Default open state",
-        },
-        {
-          prop: "children",
-          type: "ReactNode",
-          default: "-",
-          description: "Provider children",
-        },
-      ],
-    },
-    {
-      title: "useSpotlight Hook Returns",
-      props: [
-        {
-          prop: "open",
-          type: "boolean",
-          default: "-",
-          description: "Current open state",
-        },
-        {
-          prop: "openSpotlight",
-          type: "() => void",
-          default: "-",
-          description: "Function to open spotlight",
-        },
-        {
-          prop: "closeSpotlight",
-          type: "() => void",
-          default: "-",
-          description: "Function to close spotlight",
-        },
-        {
-          prop: "query",
-          type: "string",
-          default: "-",
-          description: "Current search query",
-        },
-        {
-          prop: "focusedIndex",
-          type: "number",
-          default: "-",
-          description: "Index of focused item",
-        },
-      ],
-    },
-  ];
-
   return (
     <ComponentPage>
       <PageHeader
         title="Spotlight"
-        description="A command palette / spotlight search component with full keyboard navigation, ARIA accessibility, GSAP animations, and flexible configuration."
-        version="v1.0"
+        description="Find workspace resources, narrow your search, and recover from delayed or unavailable results."
+        version="v2.0.0"
       />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} />
-
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
-
-      <UsageBlock code={usageCode} />
-
-      <APIReference sections={apiReference} />
+      <FeatureGrid features={spotlightPageFeatureGridFeatures} />
+      <DemoTabs
+        defaultValue="basic"
+        lazyMount
+        tabs={spotlightPageDemoTabsTabs}
+      />
+      <KeyboardShortcuts
+        shortcuts={[
+          {
+            keys: "↑ / ↓",
+            description:
+              "Choose an enabled result; wrapping is inherited from cmdk through Kira Command.",
+          },
+          {
+            keys: "Home / End",
+            description:
+              "First/last result when the search input is focused; inherited from cmdk.",
+          },
+          {
+            keys: "Enter",
+            description:
+              "Open the highlighted resource; inherited from cmdk. Composing text does not select.",
+          },
+          {
+            keys: "Tab / Shift+Tab",
+            description:
+              "Move through dialog controls; focus trapping and restoration are inherited from Base UI Dialog.",
+          },
+          {
+            keys: "Esc",
+            description:
+              "Close and return focus to the trigger; inherited from Base UI Dialog.",
+          },
+          {
+            keys: "Ctrl / K",
+            description:
+              "Kira addition: optional global shortcut (⌘K on Mac), inactive in editable fields by default.",
+          },
+        ]}
+      />
+      <UsageBlock
+        code={usageCode}
+        description="All exported Spotlight controls and inline parts. See each feature's focused example for remote search."
+      />
+      <APIReference sections={spotlightPageAPIReferenceSections} />
+      <Changelog
+        entries={[
+          {
+            version: "v2.0.0",
+            date: "2026-11-13",
+            changes: [
+              {
+                type: "added",
+                title: "KiraSpotlight",
+                description:
+                  "Scoped local/remote search, AbortSignal cancellation, retry, previews, deduplicated recents and an opt-in shortcut. Audited against Base UI 1.9.0.",
+              },
+              {
+                type: "fixed",
+                title: "Shared keyboard and dialog behavior",
+                description:
+                  "Reuses Kira Command and CommandDialog; removes fixed IDs, modulo navigation, stale selectable results, callback render loops and overlapping GSAP effects.",
+              },
+              {
+                type: "breaking",
+                title: "Trigger and presentation contracts",
+                description:
+                  "Use trigger={<SpotlightTrigger />} with a React element; asChild is removed in favor of Button.render. spotlightOverlayVariants is removed because the shared dialog owns the overlay. Root onSearch receives query events; remote search returns items through KiraSpotlight.search.",
+              },
+              {
+                type: "changed",
+                title: "Recents and previews",
+                description:
+                  "Recents precede the full catalog. Disabled reasons remain visible. Preview content is descriptive and should contain no interactive controls. Shortcut badges are hints; only enableShortcut registers Ctrl+K or ⌘K.",
+              },
+            ],
+          },
+        ]}
+      />
     </ComponentPage>
   );
 }
+
+const spotlightPageFeatureGridFeatures = [
+  {
+    title: "Scoped search",
+    description: "Projects, documents, and people with caller-owned filtering.",
+  },
+  {
+    title: "Remote recovery",
+    description: "Debounced search, cancellation, and a clear retry action.",
+  },
+  {
+    title: "Recent resources",
+    description:
+      "Return to prior destinations with optional in-memory recents.",
+  },
+  {
+    title: "Result previews",
+    description: "Review a resource before opening it.",
+  },
+] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
+
+const spotlightPageDemoTabsTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    demo: (
+      <DemoWrapper
+        title="Workspace search"
+        description="Choose a real resource; the selected destination appears below."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "groups",
+    label: "Groups",
+    demo: (
+      <DemoWrapper
+        title="Groups and other results"
+        description="Grouped items and flat items remain visible and searchable together."
+        code={groupsCode}
+      >
+        <GroupsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "filter",
+    label: "Filtering",
+    demo: (
+      <DemoWrapper
+        title="Caller filtering"
+        description="Search an exact resource ID. Labels do not affect this custom filter."
+        code={filterCode}
+      >
+        <FilterDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "scopes",
+    label: "Scopes",
+    demo: (
+      <DemoWrapper
+        title="Scoped search"
+        description="Change the scope without losing your query. Scope buttons expose their pressed state."
+        code={scopesCode}
+      >
+        <ScopesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "remote",
+    label: "Remote",
+    demo: (
+      <DemoWrapper
+        title="Remote search and retry"
+        description="Illustrative 600ms search: type error to fail, then Retry search or change the query."
+        code={remoteCode}
+      >
+        <RemoteDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "recents",
+    label: "Recents",
+    demo: (
+      <DemoWrapper
+        title="Recent resources"
+        description="Open a resource, reopen search, and clear the in-memory recents. The full catalog stays available."
+        code={recentsCode}
+      >
+        <RecentsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "preview",
+    label: "Preview",
+    demo: (
+      <DemoWrapper
+        title="Result previews"
+        description="Arrow through results to see contextual information before opening a destination."
+        code={previewCode}
+      >
+        <PreviewDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "composition",
+    label: "Composition",
+    demo: (
+      <DemoWrapper
+        title="Composable and inline controls"
+        description="Shared Command owns selection; legacy recent/suggestion parts use native buttons."
+        code={compositionCode}
+      >
+        <CompositionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    demo: (
+      <DemoWrapper
+        title="Kira workspace search"
+        description="Ctrl+K or ⌘K opens this search while this tab is mounted. Editable fields keep their shortcuts."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    demo: (
+      <DemoWrapper
+        title="Loading, disabled, empty, and long results"
+        description="Open each fixture. Loading is separate from no results; disabled resources explain how to get access."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies React.ComponentProps<typeof DemoTabs>["tabs"];
+
+const spotlightPageAPIReferenceSections = [
+  {
+    title: "Spotlight / SpotlightRoot",
+    props: [
+      {
+        prop: "open / defaultOpen",
+        type: "boolean",
+        default: "false",
+        description: "Controlled or initial modal state.",
+      },
+      {
+        prop: "onOpenChange",
+        type: "(open: boolean) => void",
+        default: "—",
+        description: "Receives native dismissal and selection changes.",
+      },
+      {
+        prop: "query / defaultQuery / onQueryChange",
+        type: "string / string / (query: string) => void",
+        default: '""',
+        description: "Controlled or local query. Closing clears it.",
+      },
+      {
+        prop: "items / groups / recentItems",
+        type: "SpotlightItemType[] / SpotlightGroupType[] / SpotlightItemType[]",
+        default: "[]",
+        description:
+          "Unique resource IDs across groups; recents precede the complete catalog.",
+      },
+      {
+        prop: "onSelect / closeOnSelect",
+        type: "(item: SpotlightItemType) => void / boolean",
+        default: "— / true",
+        description: "Select a resource; optionally keep the popup open.",
+      },
+      {
+        prop: "onSearch",
+        type: "(query: string) => void",
+        default: "—",
+        description:
+          "Called on query events, never callback-identity renders. Remote results belong to KiraSpotlight.search.",
+      },
+      {
+        prop: "filter / disableFilter",
+        type: "(item: SpotlightItemType, query: string) => boolean / boolean",
+        default: "Text match / false",
+        description: "Caller filtering or externally filtered results.",
+      },
+      {
+        prop: "loading / emptyContent",
+        type: "boolean / ReactNode",
+        default: "false / contextual EmptySearch",
+        description: "Loading hides selectable stale results.",
+      },
+      {
+        prop: "trigger / children / header / renderPreview",
+        type: '"sm" | "default" | "lg" | "full" / string',
+        default: "—",
+        description:
+          "Trigger element, composed result content, header, and noninteractive selected-result preview.",
+      },
+      {
+        prop: "size / className",
+        type: '"sm" | "default" | "lg" | "full" / string",',
+        default: '"default"',
+        description: "Popup width and classes.",
+      },
+      {
+        prop: "placeholder / title / showShortcutHint",
+        type: "string / string / boolean",
+        default: "Search your workspace / Search workspace / true",
+        description: "Search prompt, dialog name, and navigation hints.",
+      },
+      {
+        prop: "onClearRecent",
+        type: "() => void",
+        default: "—",
+        description: "Shows the Clear recents action.",
+      },
+    ],
+  },
+  {
+    title: "KiraSpotlight",
+    props: [
+      {
+        prop: "Spotlight props",
+        type: "SpotlightProps (except onSearch and header)",
+        default: "—",
+        description: "All other root options are forwarded.",
+      },
+      {
+        prop: "search",
+        type: "(query: string, context: { signal: AbortSignal; scope: string }) => Promise<SpotlightItemType[]>",
+        default: "—",
+        description:
+          "Caller-owned remote search with debounce, cancellation, stale-result guards and retry.",
+      },
+      {
+        prop: "debounceMs / minQueryLength",
+        type: "number / number",
+        default: "200 / 1",
+        description:
+          "Delay and nonempty-query threshold. Queries below the threshold use local resources.",
+      },
+      {
+        prop: "scopes / scope / defaultScope / onScopeChange",
+        type: "SpotlightScope[] / string / string / (scope: string) => void",
+        default: '[] / — / "all" / —',
+        description: "Scope buttons. Local resource scope IDs must match.",
+      },
+      {
+        prop: "rememberRecent / maxRecent / onRecentItemsChange",
+        type: "boolean / number / (items: SpotlightItemType[]) => void",
+        default: "false / 5 / —",
+        description:
+          "In-memory recents or caller-controlled recentItems; no storage.",
+      },
+      {
+        prop: "enableShortcut / shortcutInEditable",
+        type: "boolean / boolean",
+        default: "false / false",
+        description:
+          "Opt-in Ctrl+K or ⌘K; repeated/composing keys and unrelated dialogs are ignored. Mount a single shortcut owner.",
+      },
+    ],
+  },
+  {
+    title: "SpotlightItem",
+    props: [
+      {
+        prop: "item",
+        type: "SpotlightItemType",
+        default: "Required",
+        description:
+          "id, label, description, icon, shortcut hints, keywords, onSelect, data, scope, disabled and visible disabledReason.",
+      },
+      {
+        prop: "onSelect / index / className",
+        type: "() => void / number / string",
+        default: "—",
+        description:
+          "Selection override and styling; index is retained but cmdk owns indexing.",
+      },
+    ],
+  },
+  {
+    title: "SpotlightGroup",
+    props: [
+      {
+        prop: "label / children",
+        type: "string / ReactNode",
+        default: "Required",
+        description: "Command group heading and result rows.",
+      },
+      {
+        prop: "Native props / ref / className",
+        type: "CommandGroup props",
+        default: "—",
+        description:
+          "Forwarded to the shared group; className styles the wrapper.",
+      },
+    ],
+  },
+  {
+    title: "SpotlightTrigger",
+    props: [
+      {
+        prop: "Button props / showShortcut",
+        type: "ButtonProps / boolean",
+        default: "outline / false",
+        description:
+          "Pass through the root trigger prop. Shortcut hints do not register a global listener.",
+      },
+    ],
+  },
+  {
+    title: "SpotlightSearch",
+    props: [
+      {
+        prop: "onSearch / children / native props / ref",
+        type: "(query: string) => void / ReactNode / div props / Ref<HTMLDivElement>",
+        default: "—",
+        description:
+          "Inline shared Command input and list. Use SpotlightItem children for selectable rows.",
+      },
+    ],
+  },
+  {
+    title: "SpotlightRecent / SpotlightSuggestions",
+    props: [
+      {
+        prop: "items / onItemClick / native props / ref",
+        type: "string[] / (item: string) => void / div props / Ref<HTMLDivElement>",
+        default: "Required / —",
+        description:
+          "Native recent/suggestion buttons; disabled without a handler.",
+      },
+    ],
+  },
+  {
+    title: "SpotlightResults",
+    props: [
+      {
+        prop: "children / native props / ref",
+        type: "ReactNode / div props / Ref<HTMLDivElement>",
+        default: "—",
+        description:
+          "Presentation wrapper; selectable results use SpotlightItem inside Command.",
+      },
+    ],
+  },
+] satisfies React.ComponentProps<typeof APIReference>["sections"];

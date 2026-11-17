@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 
 // ============================================
 // USE SPOTLIGHT HOOK
@@ -8,27 +8,52 @@ import * as React from "react"
 
 interface SpotlightContextValue {
   /** Whether the spotlight is open */
-  open: boolean
+  open: boolean;
   /** Open the spotlight */
-  openSpotlight: () => void
+  openSpotlight: () => void;
   /** Close the spotlight */
-  closeSpotlight: () => void
+  closeSpotlight: () => void;
   /** Toggle the spotlight */
-  toggleSpotlight: () => void
+  toggleSpotlight: () => void;
   /** Set the search query programmatically */
-  setQuery: (query: string) => void
+  setQuery: (query: string) => void;
   /** Current search query */
-  query: string
+  query: string;
 }
 
-const SpotlightContext = React.createContext<SpotlightContextValue | null>(null)
+const SpotlightContext = React.createContext<SpotlightContextValue | null>(
+  null,
+);
 
 interface SpotlightProviderProps {
-  children: React.ReactNode
+  children: React.ReactNode;
   /** Custom keyboard shortcut (default: ['meta', 'k'] or ['ctrl', 'k']) */
-  shortcut?: string[]
+  shortcut?: string[];
   /** Disable the global keyboard shortcut */
-  disableShortcut?: boolean
+  disableShortcut?: boolean;
+}
+
+function matchesShortcut(event: KeyboardEvent, shortcut: string[]) {
+  const key = shortcut[shortcut.length - 1]?.toLowerCase();
+
+  if (event.key.toLowerCase() !== key) return false;
+  const requiresMeta = shortcut.includes("meta") || shortcut.includes("cmd");
+
+  const modifiers = [
+    [requiresMeta, event.metaKey],
+    [shortcut.includes("ctrl"), event.ctrlKey],
+    [shortcut.includes("shift"), event.shiftKey],
+    [shortcut.includes("alt"), event.altKey],
+  ];
+
+  if (!modifiers.every(([required, pressed]) => !required || pressed))
+    return false;
+
+  if (requiresMeta || shortcut.includes("ctrl")) return true;
+
+  return navigator.platform.toUpperCase().includes("MAC")
+    ? event.metaKey
+    : event.ctrlKey;
 }
 
 export function SpotlightProvider({
@@ -36,61 +61,43 @@ export function SpotlightProvider({
   shortcut = ["k"],
   disableShortcut = false,
 }: SpotlightProviderProps) {
-  const [open, setOpen] = React.useState(false)
-  const [query, setQuery] = React.useState("")
+  const [open, setOpen] = React.useState(false);
+  const [query, setQuery] = React.useState("");
 
   const openSpotlight = React.useCallback(() => {
-    setOpen(true)
-  }, [])
+    setOpen(true);
+  }, []);
 
   const closeSpotlight = React.useCallback(() => {
-    setOpen(false)
-    setQuery("")
-  }, [])
+    setOpen(false);
+    setQuery("");
+  }, []);
 
   const toggleSpotlight = React.useCallback(() => {
     setOpen((prev) => {
       if (prev) {
-        setQuery("")
+        setQuery("");
       }
 
-      return !prev
-    })
-  }, [])
+      return !prev;
+    });
+  }, []);
 
   // Global keyboard shortcut handler
   React.useEffect(() => {
-    if (disableShortcut) return
+    if (disableShortcut) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const key = shortcut[shortcut.length - 1]?.toLowerCase()
-      const requiresMeta = shortcut.includes("meta") || shortcut.includes("cmd")
-      const requiresCtrl = shortcut.includes("ctrl")
-      const requiresShift = shortcut.includes("shift")
-      const requiresAlt = shortcut.includes("alt")
-
-      // Default: Cmd+K on Mac, Ctrl+K on Windows/Linux
-      const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0
-      const metaOrCtrl = isMac ? event.metaKey : event.ctrlKey
-
-      const isMatch =
-        event.key.toLowerCase() === key &&
-        (requiresMeta ? event.metaKey : true) &&
-        (requiresCtrl ? event.ctrlKey : true) &&
-        (requiresShift ? event.shiftKey : true) &&
-        (requiresAlt ? event.altKey : true) &&
-        (!requiresMeta && !requiresCtrl ? metaOrCtrl : true)
-
-      if (isMatch) {
-        event.preventDefault()
-        toggleSpotlight()
+      if (matchesShortcut(event, shortcut)) {
+        event.preventDefault();
+        toggleSpotlight();
       }
-    }
+    };
 
-    document.addEventListener("keydown", handleKeyDown)
+    document.addEventListener("keydown", handleKeyDown);
 
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [shortcut, disableShortcut, toggleSpotlight])
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [shortcut, disableShortcut, toggleSpotlight]);
 
   const contextValue = React.useMemo(
     () => ({
@@ -101,24 +108,24 @@ export function SpotlightProvider({
       query,
       setQuery,
     }),
-    [open, openSpotlight, closeSpotlight, toggleSpotlight, query]
-  )
+    [open, openSpotlight, closeSpotlight, toggleSpotlight, query],
+  );
 
   return (
     <SpotlightContext.Provider value={contextValue}>
       {children}
     </SpotlightContext.Provider>
-  )
+  );
 }
 
 export function useSpotlight() {
-  const context = React.useContext(SpotlightContext)
+  const context = React.useContext(SpotlightContext);
 
   if (!context) {
-    throw new Error("useSpotlight must be used within a SpotlightProvider")
+    throw new Error("useSpotlight must be used within a SpotlightProvider");
   }
 
-  return context
+  return context;
 }
 
 // ============================================
@@ -128,15 +135,15 @@ export function useSpotlight() {
 
 interface UseSpotlightStateOptions {
   /** Initial open state */
-  defaultOpen?: boolean
+  defaultOpen?: boolean;
   /** Controlled open state */
-  open?: boolean
+  open?: boolean;
   /** Callback when open state changes */
-  onOpenChange?: (open: boolean) => void
+  onOpenChange?: (open: boolean) => void;
   /** Enable global keyboard shortcut */
-  enableShortcut?: boolean
+  enableShortcut?: boolean;
   /** Custom keyboard shortcut */
-  shortcut?: string[]
+  shortcut?: string[];
 }
 
 export function useSpotlightState(options: UseSpotlightStateOptions = {}) {
@@ -146,65 +153,67 @@ export function useSpotlightState(options: UseSpotlightStateOptions = {}) {
     onOpenChange,
     enableShortcut = true,
     shortcut = ["k"],
-  } = options
+  } = options;
 
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen)
-  const [query, setQuery] = React.useState("")
-  const [selectedIndex, setSelectedIndex] = React.useState(-1)
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
+  const [query, setQuery] = React.useState("");
+  const [selectedIndex, setSelectedIndex] = React.useState(-1);
+  const [previousQuery, setPreviousQuery] = React.useState(query);
 
-  const isControlled = controlledOpen !== undefined
-  const open = isControlled ? controlledOpen : uncontrolledOpen
+  if (previousQuery !== query) {
+    setPreviousQuery(query);
+    setSelectedIndex(-1);
+  }
+
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : uncontrolledOpen;
 
   const setOpen = React.useCallback(
     (value: boolean | ((prev: boolean) => boolean)) => {
-      const newValue = typeof value === "function" ? value(open) : value
+      // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React state actions intentionally accept a boolean or updater function.
+      const newValue = typeof value === "function" ? value(open) : value;
 
       if (!isControlled) {
-        setUncontrolledOpen(newValue)
+        setUncontrolledOpen(newValue);
       }
 
-      onOpenChange?.(newValue)
+      onOpenChange?.(newValue);
 
       if (!newValue) {
-        setQuery("")
-        setSelectedIndex(-1)
+        setQuery("");
+        setSelectedIndex(-1);
       }
     },
-    [isControlled, open, onOpenChange]
-  )
+    [isControlled, open, onOpenChange],
+  );
 
-  const openSpotlight = React.useCallback(() => setOpen(true), [setOpen])
-  const closeSpotlight = React.useCallback(() => setOpen(false), [setOpen])
+  const openSpotlight = React.useCallback(() => setOpen(true), [setOpen]);
+  const closeSpotlight = React.useCallback(() => setOpen(false), [setOpen]);
 
   const toggleSpotlight = React.useCallback(
     () => setOpen((prev) => !prev),
-    [setOpen]
-  )
+    [setOpen],
+  );
 
   // Keyboard shortcut
   React.useEffect(() => {
-    if (!enableShortcut) return
+    if (!enableShortcut) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      const key = shortcut[shortcut.length - 1]?.toLowerCase()
-      const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0
-      const metaOrCtrl = isMac ? event.metaKey : event.ctrlKey
+      const key = shortcut[shortcut.length - 1]?.toLowerCase();
+      const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+      const metaOrCtrl = isMac ? event.metaKey : event.ctrlKey;
 
       if (event.key.toLowerCase() === key && metaOrCtrl) {
-        event.preventDefault()
-        toggleSpotlight()
+        event.preventDefault();
+        toggleSpotlight();
       }
-    }
+    };
 
-    document.addEventListener("keydown", handleKeyDown)
+    document.addEventListener("keydown", handleKeyDown);
 
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [enableShortcut, shortcut, toggleSpotlight])
-
-  // Reset selected index when query changes
-  React.useEffect(() => {
-    setSelectedIndex(-1)
-  }, [query])
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [enableShortcut, shortcut, toggleSpotlight]);
 
   return {
     open,
@@ -216,9 +225,13 @@ export function useSpotlightState(options: UseSpotlightStateOptions = {}) {
     setQuery,
     selectedIndex,
     setSelectedIndex,
-  }
+  };
 }
 
-export { SpotlightContext }
+export { SpotlightContext };
 
-export type { SpotlightContextValue, SpotlightProviderProps, UseSpotlightStateOptions }
+export type {
+  SpotlightContextValue,
+  SpotlightProviderProps,
+  UseSpotlightStateOptions,
+};
