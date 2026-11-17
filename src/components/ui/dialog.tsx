@@ -1,10 +1,61 @@
 import * as React from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { IconX } from "@tabler/icons-react";
-import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "cn";
+import { isFunctionProp } from "@/components/ui/prop-guards";
 
-function Dialog({ ...props }: DialogPrimitive.Root.Props) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
+function mergeClassName<S>(
+  base: string,
+  className: string | ((state: S) => string | undefined) | undefined,
+) {
+  return isFunctionProp(className)
+    ? (state: S) => cn(base, className(state))
+    : cn(base, className);
+}
+
+const dialogContentVariants = cva(
+  "pointer-events-auto relative flex min-h-0 max-h-full min-w-0 w-full flex-col overflow-y-auto break-words rounded-xl border border-border bg-background p-6 transition-[opacity,scale,box-shadow] duration-200 motion-reduce:transition-none data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 shadow-xl data-non-modal:shadow-md data-non-modal:data-starting-style:scale-[0.98] data-non-modal:data-ending-style:scale-[0.98]",
+  {
+    variants: {
+      size: {
+        sm: "max-w-sm",
+        default: "max-w-lg",
+        lg: "max-w-2xl",
+        xl: "max-w-4xl",
+        full: "h-full max-w-none",
+      },
+    },
+    defaultVariants: { size: "default" },
+  },
+);
+
+const DialogModalContext = React.createContext(true);
+
+function Dialog<Payload = unknown>({
+  modal = true,
+  ...props
+}: DialogPrimitive.Root.Props<Payload>) {
+  const nonModal = modal === false;
+
+  return (
+    <DialogModalContext.Provider value={modal === true}>
+      <DialogPrimitive.Root
+        data-slot="dialog"
+        modal={modal}
+        // Non-modal recipe (Base UI 1.9): modal={false} alone still closes on
+        // outside presses and focus moving out. bake disablePointerDismissal so
+        // non-modal dialogs actually stay open while the page is used; Esc,
+        // Dialog.Close and forms still close it. An explicit consumer prop wins.
+        disablePointerDismissal={
+          nonModal && props.disablePointerDismissal === undefined
+            ? true
+            : props.disablePointerDismissal
+        }
+        {...props}
+      />
+    </DialogModalContext.Provider>
+  );
 }
 
 function DialogTrigger({ ...props }: DialogPrimitive.Trigger.Props) {
@@ -26,20 +77,23 @@ function DialogOverlay({
   return (
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
-      className={cn(
-        "fixed inset-0 z-50 bg-black/50 backdrop-blur-sm",
-        "data-starting-style:opacity-0 data-ending-style:opacity-0",
-        "transition-opacity duration-200",
-        className
+      className={mergeClassName<DialogPrimitive.Backdrop.State>(
+        "fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity duration-200 motion-reduce:transition-none data-starting-style:opacity-0 data-ending-style:opacity-0",
+        className,
       )}
       {...props}
     />
   );
 }
 
-interface DialogContentProps extends DialogPrimitive.Popup.Props {
+interface DialogContentProps
+  extends
+    DialogPrimitive.Popup.Props,
+    VariantProps<typeof dialogContentVariants> {
   showCloseButton?: boolean;
-  size?: "sm" | "default" | "lg" | "xl" | "full";
+  portalProps?: Omit<DialogPrimitive.Portal.Props, "children">;
+  /** Keep the header and footer visible while DialogBody scrolls. */
+  scrollable?: boolean;
 }
 
 function DialogContent({
@@ -47,39 +101,44 @@ function DialogContent({
   children,
   showCloseButton = true,
   size = "default",
+  portalProps,
+  scrollable = false,
   ...props
 }: DialogContentProps) {
+  const modal = React.useContext(DialogModalContext);
+
   return (
-    <DialogPortal>
-      <DialogOverlay />
-      <DialogPrimitive.Popup
-        data-slot="dialog-content"
+    <DialogPortal {...portalProps}>
+      {modal && <DialogOverlay />}
+      <div
+        data-slot="dialog-viewport"
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2",
-          "bg-background border border-border rounded-xl p-6 shadow-xl",
-          "data-starting-style:opacity-0 data-starting-style:scale-95",
-          "data-ending-style:opacity-0 data-ending-style:scale-95",
-          "transition-all duration-200",
-          "flex flex-col",
-          size === "sm" && "max-w-sm",
-          size === "default" && "max-w-lg",
-          size === "lg" && "max-w-2xl",
-          size === "xl" && "max-w-4xl",
-          size === "full" && "max-w-[calc(100vw-2rem)] h-[calc(100vh-2rem)]",
-          className
+          "pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4",
+          { "justify-end items-start": !modal },
         )}
-        {...props}
       >
-        {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close
-            className="absolute right-4 top-4 p-1 rounded-md opacity-70 hover:opacity-100 transition-opacity"
-            aria-label="Close"
-          >
-            <IconX className="h-4 w-4" />
-          </DialogPrimitive.Close>
-        )}
-      </DialogPrimitive.Popup>
+        <DialogPrimitive.Popup
+          data-slot="dialog-content"
+          data-non-modal={modal ? undefined : ""}
+          className={mergeClassName<DialogPrimitive.Popup.State>(
+            cn(dialogContentVariants({ size }), {
+              "overflow-hidden": scrollable,
+            }),
+            className,
+          )}
+          {...props}
+        >
+          {children}
+          {showCloseButton && (
+            <DialogClose
+              className="absolute right-4 top-4 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-reduce:transition-none"
+              aria-label="Close"
+            >
+              <IconX aria-hidden="true" className="h-4 w-4" />
+            </DialogClose>
+          )}
+        </DialogPrimitive.Popup>
+      </div>
     </DialogPortal>
   );
 }
@@ -91,7 +150,23 @@ function DialogHeader({
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-1.5 mb-4", className)}
+      className={cn(
+        "flex min-w-0 shrink-0 flex-col gap-1.5 mb-4 pr-8",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function DialogBody({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="dialog-body"
+      className={cn(
+        "min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain",
+        className,
+      )}
       {...props}
     />
   );
@@ -105,8 +180,8 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 mt-auto pt-6",
-        className
+        "flex shrink-0 flex-col-reverse gap-2 sm:flex-row sm:justify-end mt-auto pt-6",
+        className,
       )}
       {...props}
     />
@@ -117,7 +192,10 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-lg font-semibold", className)}
+      className={mergeClassName<DialogPrimitive.Title.State>(
+        "text-lg font-semibold",
+        className,
+      )}
       {...props}
     />
   );
@@ -130,9 +208,59 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={mergeClassName<DialogPrimitive.Description.State>(
+        "text-sm text-muted-foreground",
+        className,
+      )}
       {...props}
     />
+  );
+}
+
+interface KiraDialogProps {
+  trigger: React.ReactElement;
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  children?: React.ReactNode;
+  footer?: React.ReactNode;
+  rootProps?: Omit<DialogPrimitive.Root.Props, "children">;
+  contentProps?: Omit<DialogContentProps, "children">;
+}
+
+function KiraDialog({
+  trigger,
+  title,
+  description,
+  children,
+  footer,
+  rootProps,
+  contentProps,
+}: KiraDialogProps) {
+  const buildHeader = () => (
+    <DialogHeader>
+      <DialogTitle>{title}</DialogTitle>
+      {description != null && (
+        <DialogDescription>{description}</DialogDescription>
+      )}
+    </DialogHeader>
+  );
+
+  const buildFooter = () =>
+    footer != null && <DialogFooter>{footer}</DialogFooter>;
+
+  const wrapContent = () => (
+    <DialogContent {...contentProps}>
+      {buildHeader()}
+      <DialogBody>{children}</DialogBody>
+      {buildFooter()}
+    </DialogContent>
+  );
+
+  return (
+    <Dialog {...rootProps}>
+      <DialogTrigger render={trigger} />
+      {wrapContent()}
+    </Dialog>
   );
 }
 
@@ -144,7 +272,12 @@ export {
   DialogTrigger,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogFooter,
   DialogTitle,
+  KiraDialog,
+  dialogContentVariants,
   DialogDescription,
 };
+
+export type { DialogContentProps, KiraDialogProps };
