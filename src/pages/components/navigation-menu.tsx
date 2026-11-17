@@ -1,40 +1,35 @@
-"use client";
+import type { ComponentProps as ReactComponentProps } from "react";
+import * as React from "react";
+import {
+  IconLayoutGrid,
+  IconBook,
+  IconDeviceMobile,
+  IconFileText,
+  IconUsers,
+  IconChartBar,
+  IconCode,
+  IconArrowUpRight,
+  IconFolder,
+  IconPhoto,
+  IconSettings,
+} from "@tabler/icons-react";
 
 import {
+  KiraNavigationMenu,
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
-  NavigationMenuDropdown,
   NavigationMenuTrigger,
   NavigationMenuContent,
   NavigationMenuLink,
-  ListItem,
+  NavigationMenuPortal,
+  NavigationMenuPositioner,
+  NavigationMenuPopup,
+  NavigationMenuSection,
   NavigationMenuHeader,
   NavigationMenuFooter,
-  NavigationMenuSection,
-  NavigationMenuViewAll,
-  NavigationMenuSub,
-  NavigationMenuSubTrigger,
-  NavigationMenuSubContent,
-  NavigationMenuSubItem,
+  type NavigationItemData,
 } from "@/components/ui/navigation-menu";
-import {
-  IconPackage,
-  IconCode,
-  IconBook,
-  IconSettings,
-  IconUsers,
-  IconChartBar,
-  IconCalendar,
-  IconMessage,
-  IconShield,
-  IconRocket,
-  IconFolder,
-  IconFile,
-  IconPhoto,
-  IconMusic,
-  IconVideo,
-} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -44,1186 +39,1227 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
-function IconApple({ className }: { className?: string }) {
+/* -------------------------------------------------------------------------- */
+/*                              Demo components                               */
+/* -------------------------------------------------------------------------- */
+
+/** Shared link-card row: icon + title + description. */
+function PanelLink({
+  href,
+  title,
+  children,
+  icon,
+}: {
+  href: string;
+  title: string;
+  children: string;
+  icon: React.ReactNode;
+}) {
   return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.09997 22C7.78997 22.05 6.79997 20.68 5.95997 19.47C4.24997 17 2.93997 12.45 4.69997 9.39C5.56997 7.87 7.12997 6.91 8.81997 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.69C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z" />
-    </svg>
+    <li>
+      <NavigationMenuLink
+        href={href}
+        className="flex w-full items-start justify-start gap-3 rounded-md p-2.5 text-start"
+      >
+        <span
+          aria-hidden="true"
+          className="mt-0.5 size-5 shrink-0 text-muted-foreground [&_svg]:size-5"
+        >
+          {icon}
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-medium leading-5">{title}</span>
+          <span className="mt-1 block text-xs leading-5 text-muted-foreground">
+            {children}
+          </span>
+        </span>
+      </NavigationMenuLink>
+    </li>
   );
 }
 
 function BasicDemo() {
   return (
-    <NavigationMenu>
+    <NavigationMenu aria-label="Site">
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="getting-started">
-            <NavigationMenuTrigger>Getting Started</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[400px] md:w-[500px]">
-              <ul className="grid gap-3 p-4 md:grid-cols-2">
-                <ListItem
-                  href="#"
-                  title="Introduction"
-                  icon={<IconBook className="h-5 w-5" />}
-                >
-                  Re-usable components built with Base UI.
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Installation"
-                  icon={<IconPackage className="h-5 w-5" />}
-                >
-                  How to install and configure the library.
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Typography"
-                  icon={<IconCode className="h-5 w-5" />}
-                >
-                  Styles for headings, paragraphs, and more.
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Theming"
-                  icon={<IconSettings className="h-5 w-5" />}
-                >
-                  Customize colors and appearance.
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
+        <NavigationMenuItem value="learn">
+          <NavigationMenuTrigger>Learn</NavigationMenuTrigger>
+          <NavigationMenuContent className="w-64">
+            <ul className="space-y-1">
+              <PanelLink
+                href="#handbook"
+                title="The workspace handbook"
+                icon={<IconBook />}
+              >
+                Clear guidance for everyday work.
+              </PanelLink>
+              <PanelLink
+                href="#api"
+                title="API documentation"
+                icon={<IconCode />}
+              >
+                Build the connections your team needs.
+              </PanelLink>
+            </ul>
+          </NavigationMenuContent>
         </NavigationMenuItem>
-
         <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="components">
-            <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[400px] md:w-[600px]">
-              <ul className="grid gap-3 p-4 md:grid-cols-3">
-                <ListItem
-                  href="#"
-                  title="Button"
-                  icon={<IconPackage className="h-5 w-5" />}
-                >
-                  Trigger actions with buttons.
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Dialog"
-                  icon={<IconMessage className="h-5 w-5" />}
-                >
-                  Modal dialogs for user interaction.
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Dropdown"
-                  icon={<IconCode className="h-5 w-5" />}
-                >
-                  Contextual menus and actions.
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Input"
-                  icon={<IconBook className="h-5 w-5" />}
-                >
-                  Text inputs and form fields.
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Select"
-                  icon={<IconSettings className="h-5 w-5" />}
-                >
-                  Selection from a list of options.
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Calendar"
-                  icon={<IconCalendar className="h-5 w-5" />}
-                >
-                  Date selection components.
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
-        </NavigationMenuItem>
-
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Documentation</NavigationMenuLink>
+          <NavigationMenuLink href="#changelog">Changelog</NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
+      <NavigationMenuPortal>
+        <NavigationMenuPositioner>
+          <NavigationMenuPopup />
+        </NavigationMenuPositioner>
+      </NavigationMenuPortal>
     </NavigationMenu>
   );
 }
+
+function ActiveDemo() {
+  const [href, setHref] = React.useState("#handbook");
+
+  return (
+    <div className="space-y-4">
+      <NavigationMenu aria-label="Site with active link">
+        <NavigationMenuList>
+          <NavigationMenuItem value="learn">
+            <NavigationMenuTrigger>Learn</NavigationMenuTrigger>
+            <NavigationMenuContent className="w-64">
+              <ul className="space-y-1">
+                <li>
+                  <NavigationMenuLink
+                    href="#handbook"
+                    active={href === "#handbook"}
+                    onClick={() => setHref("#handbook")}
+                  >
+                    Handbook
+                  </NavigationMenuLink>
+                </li>
+                <li>
+                  <NavigationMenuLink
+                    href="#api"
+                    active={href === "#api"}
+                    onClick={() => setHref("#api")}
+                  >
+                    API documentation
+                  </NavigationMenuLink>
+                </li>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+        <NavigationMenuPortal>
+          <NavigationMenuPositioner>
+            <NavigationMenuPopup />
+          </NavigationMenuPositioner>
+        </NavigationMenuPortal>
+      </NavigationMenu>
+      <p className="text-sm text-muted-foreground">
+        Current destination: {href}
+      </p>
+    </div>
+  );
+}
+
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
+function MegaDemo() {
+  return (
+    <NavigationMenu aria-label="Product resources">
+      <NavigationMenuList>
+        <NavigationMenuItem value="resources">
+          <NavigationMenuTrigger>Explore resources</NavigationMenuTrigger>
+          <NavigationMenuContent megaMenu className="w-[640px]">
+            <NavigationMenuHeader>
+              <p className="text-sm font-semibold">
+                Resources for your next step
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Learn the essentials, then make the workspace your own.
+              </p>
+            </NavigationMenuHeader>
+            <div className="grid sm:grid-cols-2">
+              <div className="p-4">
+                <NavigationMenuSection title="Learn and build">
+                  <PanelLink
+                    href="#handbook"
+                    title="The workspace handbook"
+                    icon={<IconBook />}
+                  >
+                    Clear guidance for everyday work.
+                  </PanelLink>
+                  <PanelLink
+                    href="#api"
+                    title="API documentation"
+                    icon={<IconCode />}
+                  >
+                    Build the connections your team needs.
+                  </PanelLink>
+                  <PanelLink
+                    href="#team"
+                    title="For your team"
+                    icon={<IconUsers />}
+                  >
+                    Set up a space everyone can use.
+                  </PanelLink>
+                </NavigationMenuSection>
+              </div>
+              <div className="flex flex-col justify-between gap-6 border-t border-border bg-muted/30 p-5 sm:border-s sm:border-t-0">
+                <div>
+                  <IconFileText
+                    aria-hidden="true"
+                    className="mb-4 size-6 text-muted-foreground"
+                  />
+                  <h4 className="text-base font-semibold leading-6">
+                    Make the next launch feel easier.
+                  </h4>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    A practical checklist for bringing a release together, from
+                    the first draft to the final review.
+                  </p>
+                </div>
+                <NavigationMenuLink
+                  href="#launch-guide"
+                  className="justify-start px-0 text-sm font-medium underline underline-offset-4"
+                >
+                  Read the launch guide
+                  <IconArrowUpRight aria-hidden="true" className="size-4" />
+                </NavigationMenuLink>
+              </div>
+            </div>
+            <NavigationMenuFooter>
+              <span>Made for thoughtful teams.</span>
+              <NavigationMenuLink href="#all-resources" className="p-0 text-xs">
+                All resources
+                <IconArrowUpRight aria-hidden="true" className="size-3.5" />
+              </NavigationMenuLink>
+            </NavigationMenuFooter>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+      <NavigationMenuPortal>
+        <NavigationMenuPositioner>
+          <NavigationMenuPopup />
+        </NavigationMenuPositioner>
+      </NavigationMenuPortal>
+    </NavigationMenu>
+  );
+}
+
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
+function NestedDemo() {
+  return (
+    <NavigationMenu aria-label="Workspace files">
+      <NavigationMenuList>
+        <NavigationMenuItem value="files">
+          <NavigationMenuTrigger>
+            <IconFolder aria-hidden="true" className="size-4" />
+            Workspace files
+          </NavigationMenuTrigger>
+          <NavigationMenuContent className="w-64">
+            <ul className="space-y-1">
+              <PanelLink
+                href="#documents"
+                title="Documents"
+                icon={<IconFileText />}
+              >
+                Briefs, notes and decisions.
+              </PanelLink>
+            </ul>
+            <NavigationMenu orientation="vertical" aria-label="Media folders">
+              <NavigationMenuList className="w-full flex-col items-stretch">
+                <NavigationMenuItem value="media">
+                  <NavigationMenuTrigger className="w-full justify-between">
+                    <span className="flex items-center gap-3">
+                      <IconPhoto
+                        aria-hidden="true"
+                        className="size-4 text-muted-foreground"
+                      />
+                      Media library
+                    </span>
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent className="w-56">
+                    <ul className="space-y-1">
+                      <li>
+                        <NavigationMenuLink
+                          href="#images"
+                          className="w-full justify-start"
+                        >
+                          Images
+                        </NavigationMenuLink>
+                      </li>
+                      <li>
+                        <NavigationMenuLink
+                          href="#videos"
+                          className="w-full justify-start"
+                        >
+                          Videos
+                        </NavigationMenuLink>
+                      </li>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+              <NavigationMenuPortal>
+                <NavigationMenuPositioner side="inline-end" align="start">
+                  <NavigationMenuPopup />
+                </NavigationMenuPositioner>
+              </NavigationMenuPortal>
+            </NavigationMenu>
+            <ul>
+              <li>
+                <NavigationMenuLink
+                  href="#settings"
+                  className="w-full justify-start gap-3"
+                >
+                  <IconSettings
+                    aria-hidden="true"
+                    className="size-4 text-muted-foreground"
+                  />
+                  File settings
+                </NavigationMenuLink>
+              </li>
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+      <NavigationMenuPortal>
+        <NavigationMenuPositioner>
+          <NavigationMenuPopup />
+        </NavigationMenuPositioner>
+      </NavigationMenuPortal>
+    </NavigationMenu>
+  );
+}
+
+const kiraItems: readonly NavigationItemData[] = [
+  {
+    type: "group",
+    id: "product",
+    label: "Product",
+    description: "A shared place for your team's work.",
+    items: [
+      {
+        type: "group",
+        id: "work",
+        label: "Work together",
+        items: [
+          {
+            type: "link",
+            id: "projects",
+            label: "Projects",
+            href: "#projects",
+            description: "Turn the plan into a clear next step.",
+            icon: <IconLayoutGrid />,
+          },
+          {
+            type: "link",
+            id: "documents",
+            label: "Documents",
+            href: "#documents",
+            description: "Give ideas and decisions a home.",
+            icon: <IconFileText />,
+          },
+        ],
+      },
+      {
+        type: "group",
+        id: "manage",
+        label: "Keep things moving",
+        items: [
+          {
+            type: "link",
+            id: "people",
+            label: "People",
+            href: "#people",
+            description: "Bring everyone into the conversation.",
+            icon: <IconUsers />,
+          },
+          {
+            type: "link",
+            id: "insights",
+            label: "Insights",
+            href: "#insights",
+            description: "See where the work is heading.",
+            icon: <IconChartBar />,
+          },
+        ],
+      },
+    ],
+  },
+  { type: "link", id: "changelog", label: "Changelog", href: "#changelog" },
+];
+
+function KiraDemo() {
+  const [href, setHref] = React.useState("#changelog");
+
+  return (
+    <div className="space-y-4">
+      <KiraNavigationMenu
+        label="Explore"
+        items={kiraItems}
+        activeHref={href}
+        renderLink={(item) => (
+          <a href={item.href} onClick={() => setHref(item.href)}>
+            {item.label}
+          </a>
+        )}
+      />
+      <p className="text-sm text-muted-foreground">
+        Current destination: {href}
+      </p>
+    </div>
+  );
+}
+
+function MobileDemo() {
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-muted-foreground">
+        Below 768px the trigger opens a named drawer with collapsible groups.
+      </p>
+      <KiraNavigationMenu
+        label="Explore"
+        mobileLabel="Open site navigation"
+        items={kiraItems}
+        activeHref="#projects"
+      />
+    </div>
+  );
+}
+
+function StatesDemo() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-3">
+        <p className="text-sm font-medium">Long names and empty sections</p>
+        <KiraNavigationMenu
+          label="Workspace library"
+          mobileMode="inline"
+          items={statesDemoKiraNavigationMenuItems}
+        />
+      </div>
+      <div className="space-y-3">
+        <p className="text-sm font-medium">No navigation items</p>
+        <KiraNavigationMenu
+          label="Empty workspace"
+          mobileMode="inline"
+          items={[]}
+        />
+      </div>
+      <div className="space-y-3">
+        <p className="text-sm font-medium">Unavailable destination</p>
+        <NavigationMenu aria-label="Unavailable navigation">
+          <NavigationMenuList>
+            <NavigationMenuItem value="restricted">
+              <NavigationMenuTrigger disabled>
+                Administration
+              </NavigationMenuTrigger>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+        <p className="text-xs text-muted-foreground">
+          Administration is only available to workspace owners.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Demo code snippets                            */
+/* -------------------------------------------------------------------------- */
 
 const basicCode = `import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
-  NavigationMenuDropdown,
   NavigationMenuTrigger,
   NavigationMenuContent,
   NavigationMenuLink,
-  ListItem,
-} from "@/components/ui/navigation-menu"
+  NavigationMenuPortal,
+  NavigationMenuPositioner,
+  NavigationMenuPopup,
+} from "@/components/ui/navigation-menu";
 
-export function BasicDemo() {
+export function SiteNavigation() {
   return (
-    <NavigationMenu>
+    <NavigationMenu aria-label="Site">
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="getting-started">
-            <NavigationMenuTrigger>Getting Started</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[400px] md:w-[500px]">
-              <ul className="grid gap-3 p-4 md:grid-cols-2">
-                <ListItem
-                  href="#"
-                  title="Introduction"
-                  icon={<IconBook className="h-5 w-5" />}
-                >
-                  Re-usable components built with Base UI.
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
+        <NavigationMenuItem value="learn">
+          <NavigationMenuTrigger>Learn</NavigationMenuTrigger>
+          <NavigationMenuContent className="w-64">
+            <ul className="space-y-1">
+              <li>
+                <NavigationMenuLink href="#handbook" className="w-full justify-start">
+                  Handbook
+                </NavigationMenuLink>
+              </li>
+              <li>
+                <NavigationMenuLink href="#api" className="w-full justify-start">
+                  API documentation
+                </NavigationMenuLink>
+              </li>
+            </ul>
+          </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuLink href="#">Documentation</NavigationMenuLink>
+          {/* A link item renders a direct destination; no popup. */}
+          <NavigationMenuLink href="#changelog">Changelog</NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
-    </NavigationMenu>
-  )
-}`;
-
-function MegaMenuDemo() {
-  return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="products">
-            <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-            <NavigationMenuContent megaMenu className="w-[800px] max-w-full">
-              <div className="grid grid-cols-4 gap-4 p-4">
-                <NavigationMenuSection title="Web Apps">
-                  <ListItem
-                    href="#"
-                    title="Dashboard"
-                    icon={<IconChartBar className="h-4 w-4" />}
-                  >
-                    Analytics and metrics
-                  </ListItem>
-                  <ListItem
-                    href="#"
-                    title="CMS"
-                    icon={<IconBook className="h-4 w-4" />}
-                  >
-                    Content management
-                  </ListItem>
-                  <ListItem
-                    href="#"
-                    title="E-commerce"
-                    icon={<IconRocket className="h-4 w-4" />}
-                  >
-                    Online store platform
-                  </ListItem>
-                </NavigationMenuSection>
-
-                <NavigationMenuSection title="Mobile">
-                  <ListItem
-                    href="#"
-                    title="React Native"
-                    icon={<IconPackage className="h-4 w-4" />}
-                  >
-                    Cross-platform apps
-                  </ListItem>
-                  <ListItem
-                    href="#"
-                    title="Flutter"
-                    icon={<IconCode className="h-4 w-4" />}
-                  >
-                    Fast mobile development
-                  </ListItem>
-                  <ListItem
-                    href="#"
-                    title="iOS"
-                    icon={<IconApple className="h-4 w-4" />}
-                  >
-                    Native Apple apps
-                  </ListItem>
-                </NavigationMenuSection>
-
-                <NavigationMenuSection title="Backend">
-                  <ListItem
-                    href="#"
-                    title="API"
-                    icon={<IconCode className="h-4 w-4" />}
-                  >
-                    RESTful APIs
-                  </ListItem>
-                  <ListItem
-                    href="#"
-                    title="Database"
-                    icon={<IconSettings className="h-4 w-4" />}
-                  >
-                    Data storage
-                  </ListItem>
-                  <ListItem
-                    href="#"
-                    title="Auth"
-                    icon={<IconShield className="h-4 w-4" />}
-                  >
-                    User authentication
-                  </ListItem>
-                </NavigationMenuSection>
-
-                <div className="space-y-3">
-                  <NavigationMenuHeader>
-                    <h4 className="font-medium text-sm">Featured</h4>
-                  </NavigationMenuHeader>
-                  <ListItem
-                    href="#"
-                    title="New Release 2.0"
-                    description="Check out what's new"
-                  >
-                    Major update with new features
-                  </ListItem>
-                  <NavigationMenuViewAll
-                    href="#"
-                    title="View All Products"
-                    description="Browse our complete catalog"
-                  />
-                </div>
-              </div>
-              <NavigationMenuFooter>
-                <span>© 2024 Your Company</span>
-                <a href="#" className="hover:underline">
-                  Privacy Policy
-                </a>
-              </NavigationMenuFooter>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
-        </NavigationMenuItem>
-
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Pricing</NavigationMenuLink>
-        </NavigationMenuItem>
-
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="resources">
-            <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[400px]">
-              <ul className="grid gap-3 p-4 md:grid-cols-2">
-                <ListItem
-                  href="#"
-                  title="Documentation"
-                  icon={<IconBook className="h-5 w-5" />}
-                >
-                  Complete API reference
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Guides"
-                  icon={<IconCode className="h-5 w-5" />}
-                >
-                  Step-by-step tutorials
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Blog"
-                  icon={<IconMessage className="h-5 w-5" />}
-                >
-                  Latest updates and news
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Support"
-                  icon={<IconUsers className="h-5 w-5" />}
-                >
-                  Get help from our team
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
-        </NavigationMenuItem>
-      </NavigationMenuList>
+      {/* The portal renders the shared popup once, outside the header. */}
+      <NavigationMenuPortal>
+        <NavigationMenuPositioner>
+          <NavigationMenuPopup />
+        </NavigationMenuPositioner>
+      </NavigationMenuPortal>
     </NavigationMenu>
   );
-}
+}`;
 
-const megaMenuCode = `import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuDropdown,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuSection,
-  NavigationMenuHeader,
-  NavigationMenuFooter,
-  NavigationMenuViewAll,
-  ListItem,
-} from "@/components/ui/navigation-menu"
+const activeCode = `import { useState } from "react";
+import { NavigationMenuLink } from "@/components/ui/navigation-menu";
 
-export function MegaMenuDemo() {
+export function ActiveLink() {
+  const [href, setHref] = useState("#handbook");
   return (
-    <NavigationMenu>
+    <NavigationMenuLink
+      href="#handbook"
+      active={href === "#handbook"}
+      onClick={() => setHref("#handbook")}
+    >
+      Handbook
+    </NavigationMenuLink>
+  );
+}`;
+
+const megaCode = `import {
+  NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger,
+  NavigationMenuContent, NavigationMenuHeader, NavigationMenuSection, NavigationMenuFooter,
+  NavigationMenuLink, NavigationMenuPortal, NavigationMenuPositioner, NavigationMenuPopup,
+} from "@/components/ui/navigation-menu";
+
+export function MegaPanel() {
+  return (
+    <NavigationMenu aria-label="Product resources">
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="products">
-            <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-            <NavigationMenuContent megaMenu className="w-[800px] max-w-full">
-              <div className="grid grid-cols-4 gap-4 p-4">
-                <NavigationMenuSection title="Web Apps">
-                  <ListItem href="#" title="Dashboard" icon={<IconChartBar className="h-4 w-4" />}>
-                    Analytics and metrics
-                  </ListItem>
-                </NavigationMenuSection>
-                <NavigationMenuSection title="Mobile">
-                  <ListItem href="#" title="React Native" icon={<IconPackage className="h-4 w-4" />}>
-                    Cross-platform apps
-                  </ListItem>
-                </NavigationMenuSection>
-                <NavigationMenuSection title="Backend">
-                  <ListItem href="#" title="API" icon={<IconCode className="h-4 w-4" />}>
-                    RESTful APIs
-                  </ListItem>
+        <NavigationMenuItem value="resources">
+          <NavigationMenuTrigger>Explore resources</NavigationMenuTrigger>
+          {/* megaMenu removes default padding so Header/Footer own theirs. */}
+          <NavigationMenuContent megaMenu className="w-[640px]">
+            <NavigationMenuHeader>
+              <p className="text-sm font-semibold">Resources for your next step</p>
+              <p className="text-sm text-muted-foreground">
+                Learn the essentials, then make the workspace your own.
+              </p>
+            </NavigationMenuHeader>
+            <div className="grid sm:grid-cols-2">
+              <div className="p-4">
+                <NavigationMenuSection title="Learn and build">
+                  {/* labelled li-wrapped link cards */}
                 </NavigationMenuSection>
               </div>
-              <NavigationMenuFooter>
-                <span>© 2024 Your Company</span>
-              </NavigationMenuFooter>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
+              <div className="flex flex-col justify-between gap-6 border-t border-border bg-muted/30 p-5 sm:border-s sm:border-t-0">
+                {/* featured guide + NavigationMenuLink to it */}
+              </div>
+            </div>
+            <NavigationMenuFooter>
+              <span>Made for thoughtful teams.</span>
+            </NavigationMenuFooter>
+          </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
-    </NavigationMenu>
-  )
-}`;
-
-function SimpleLinksDemo() {
-  return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Home</NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">About</NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Products</NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#" active>
-            Contact
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
+      <NavigationMenuPortal>
+        <NavigationMenuPositioner>
+          <NavigationMenuPopup />
+        </NavigationMenuPositioner>
+      </NavigationMenuPortal>
     </NavigationMenu>
   );
-}
-
-const simpleLinksCode = `import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuLink,
-} from "@/components/ui/navigation-menu"
-
-export function SimpleLinksDemo() {
-  return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Home</NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">About</NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#" active>
-            Contact
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-  )
 }`;
 
-function MixedDemo() {
+const nestedCode = `import {
+  NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger,
+  NavigationMenuContent, NavigationMenuLink, NavigationMenuPortal,
+  NavigationMenuPositioner, NavigationMenuPopup,
+} from "@/components/ui/navigation-menu";
+
+export function NestedFiles() {
   return (
-    <NavigationMenu>
+    <NavigationMenu aria-label="Workspace files">
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Home</NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="products">
-            <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[300px]">
-              <ul className="grid gap-3 p-4">
-                <ListItem
-                  href="#"
-                  title="Web App"
-                  icon={<IconRocket className="h-5 w-5" />}
-                >
-                  Build modern web applications
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Mobile App"
-                  icon={<IconPackage className="h-5 w-5" />}
-                >
-                  Native mobile experiences
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="API"
-                  icon={<IconCode className="h-5 w-5" />}
-                >
-                  Integrate with our API
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Pricing</NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="resources">
-            <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[400px]">
-              <ul className="grid gap-3 p-4 md:grid-cols-2">
-                <ListItem
-                  href="#"
-                  title="Documentation"
-                  icon={<IconBook className="h-5 w-5" />}
-                >
-                  Complete API reference
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Guides"
-                  icon={<IconCode className="h-5 w-5" />}
-                >
-                  Step-by-step tutorials
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Blog"
-                  icon={<IconMessage className="h-5 w-5" />}
-                >
-                  Latest updates and news
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Support"
-                  icon={<IconUsers className="h-5 w-5" />}
-                >
-                  Get help from our team
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
+        <NavigationMenuItem value="files">
+          <NavigationMenuTrigger>Workspace files</NavigationMenuTrigger>
+          <NavigationMenuContent className="w-64">
+            <ul className="space-y-1">
+              <li>
+                <NavigationMenuLink href="#documents" className="w-full justify-start">
+                  Documents
+                </NavigationMenuLink>
+              </li>
+            </ul>
+            {/* A vertical NavigationMenu composes inside the panel; the
+                inner portal positions against the inner trigger. */}
+            <NavigationMenu orientation="vertical" aria-label="Media folders">
+              <NavigationMenuList className="w-full flex-col items-stretch">
+                <NavigationMenuItem value="media">
+                  <NavigationMenuTrigger className="w-full justify-between">
+                    Media library
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent className="w-56">
+                    <ul className="space-y-1">
+                      <li>
+                        <NavigationMenuLink href="#images" className="w-full justify-start">
+                          Images
+                        </NavigationMenuLink>
+                      </li>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+              <NavigationMenuPortal>
+                <NavigationMenuPositioner side="inline-end" align="start">
+                  <NavigationMenuPopup />
+                </NavigationMenuPositioner>
+              </NavigationMenuPortal>
+            </NavigationMenu>
+          </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
+      <NavigationMenuPortal>
+        <NavigationMenuPositioner>
+          <NavigationMenuPopup />
+        </NavigationMenuPositioner>
+      </NavigationMenuPortal>
     </NavigationMenu>
   );
-}
-
-const mixedCode = `import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuDropdown,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
-  ListItem,
-} from "@/components/ui/navigation-menu"
-
-export function MixedDemo() {
-  return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Home</NavigationMenuLink>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="products">
-            <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[300px]">
-              <ul className="grid gap-3 p-4">
-                <ListItem href="#" title="Web App" icon={<IconRocket className="h-5 w-5" />}>
-                  Build modern web applications
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Pricing</NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-  )
 }`;
 
-function HoverDemo() {
+const kiraCode = `import { useState } from "react";
+import { KiraNavigationMenu, type NavigationItemData } from "@/components/ui/navigation-menu";
+
+const items: NavigationItemData[] = [
+  {
+    type: "group", id: "product", label: "Product",
+    description: "A shared place for your team's work.",
+    items: [
+      { type: "group", id: "work", label: "Work together", items: [
+        { type: "link", id: "projects", label: "Projects", href: "/projects",
+          description: "Turn the plan into a clear next step.", icon: <IconLayoutGrid /> },
+        { type: "link", id: "documents", label: "Documents", href: "/documents",
+          description: "Give ideas and decisions a home.", icon: <IconFileText /> },
+      ]},
+    ],
+  },
+  { type: "link", id: "changelog", label: "Changelog", href: "/changelog" },
+];
+
+export function SiteNavigation() {
+  const [href, setHref] = useState("/changelog");
   return (
-    <NavigationMenu openOnHover hoverDelay={150}>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="hover-products">
-            <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[300px]">
-              <ul className="grid gap-3 p-4">
-                <ListItem
-                  href="#"
-                  title="Dashboard"
-                  icon={<IconChartBar className="h-5 w-5" />}
-                >
-                  Analytics and metrics
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="API Platform"
-                  icon={<IconCode className="h-5 w-5" />}
-                >
-                  Build integrations
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="hover-solutions">
-            <NavigationMenuTrigger>Solutions</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[300px]">
-              <ul className="grid gap-3 p-4">
-                <ListItem
-                  href="#"
-                  title="Enterprise"
-                  icon={<IconShield className="h-5 w-5" />}
-                >
-                  Large-scale solutions
-                </ListItem>
-                <ListItem
-                  href="#"
-                  title="Startups"
-                  icon={<IconRocket className="h-5 w-5" />}
-                >
-                  Fast growth tools
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Pricing</NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+    <KiraNavigationMenu
+      label="Explore"
+      items={items}
+      activeHref={href}
+      renderLink={(item) => (
+        <a href={item.href} onClick={() => setHref(item.href)}>{item.label}</a>
+      )}
+    />
   );
-}
-
-const hoverCode = `import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuDropdown,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
-  ListItem,
-} from "@/components/ui/navigation-menu"
-
-export function HoverDemo() {
-  return (
-    <NavigationMenu openOnHover hoverDelay={150}>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="products">
-            <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[300px]">
-              <ul className="grid gap-3 p-4">
-                <ListItem href="#" title="Dashboard" icon={<IconChartBar className="h-5 w-5" />}>
-                  Analytics and metrics
-                </ListItem>
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-  )
 }`;
 
-function SubmenusDemo() {
+const mobileCode = `import { KiraNavigationMenu, type NavigationItemData } from "@/components/ui/navigation-menu";
+
+// Below 768px the same tree renders in a labelled right-side Drawer;
+// groups become collapsible disclosures, links stay native anchors.
+// mobileMode="inline" keeps the desktop panels at every width.
+<KiraNavigationMenu
+  label="Explore"
+  mobileLabel="Open site navigation"
+  items={items}
+  activeHref="/projects"
+/>`;
+
+const statesCode = `import { KiraNavigationMenu, NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
+
+export function NavigationStates() {
   return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="submenu-files">
-            <NavigationMenuTrigger>Files</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[250px] p-1">
-              <NavigationMenuSubItem icon={<IconFile className="h-4 w-4" />}>
-                New File
-              </NavigationMenuSubItem>
-              <NavigationMenuSubItem icon={<IconFolder className="h-4 w-4" />}>
-                New Folder
-              </NavigationMenuSubItem>
-              <div className="mx-2 my-1 h-px bg-border" />
-              <NavigationMenuSub>
-                <NavigationMenuSubTrigger
-                  icon={<IconPhoto className="h-4 w-4" />}
-                >
-                  Media
-                </NavigationMenuSubTrigger>
-                <NavigationMenuSubContent>
-                  <NavigationMenuSubItem
-                    icon={<IconPhoto className="h-4 w-4" />}
-                  >
-                    Images
-                  </NavigationMenuSubItem>
-                  <NavigationMenuSubItem
-                    icon={<IconVideo className="h-4 w-4" />}
-                  >
-                    Videos
-                  </NavigationMenuSubItem>
-                  <NavigationMenuSubItem
-                    icon={<IconMusic className="h-4 w-4" />}
-                  >
-                    Audio
-                  </NavigationMenuSubItem>
-                </NavigationMenuSubContent>
-              </NavigationMenuSub>
-              <NavigationMenuSub>
-                <NavigationMenuSubTrigger
-                  icon={<IconSettings className="h-4 w-4" />}
-                >
-                  Settings
-                </NavigationMenuSubTrigger>
-                <NavigationMenuSubContent>
-                  <NavigationMenuSubItem>Preferences</NavigationMenuSubItem>
-                  <NavigationMenuSubItem>Account</NavigationMenuSubItem>
-                  <NavigationMenuSub>
-                    <NavigationMenuSubTrigger>
-                      Advanced
-                    </NavigationMenuSubTrigger>
-                    <NavigationMenuSubContent>
-                      <NavigationMenuSubItem>
-                        Developer Mode
-                      </NavigationMenuSubItem>
-                      <NavigationMenuSubItem>
-                        Experimental
-                      </NavigationMenuSubItem>
-                    </NavigationMenuSubContent>
-                  </NavigationMenuSub>
-                </NavigationMenuSubContent>
-              </NavigationMenuSub>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink href="#">Home</NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+    <div className="space-y-6">
+      {/* Long names wrap; an empty group renders its own empty message. */}
+      <KiraNavigationMenu
+        label="Workspace library"
+        mobileMode="inline"
+        items={[
+          {
+            type: "group", id: "library", label: "Library",
+            description: "Content stays readable when names and descriptions grow.",
+            items: [
+              {
+                type: "link", id: "guide",
+                label: "Deployment and workspace administration for distributed product teams",
+                href: "#administration",
+                description: "A complete guide to permissions and release reviews.",
+              },
+              { type: "group", id: "archived", label: "Archived collections", items: [] },
+            ],
+          },
+        ]}
+      />
+      {/* An empty tree names itself for assistive technology. */}
+      <KiraNavigationMenu label="Empty workspace" mobileMode="inline" items={[]} />
+      {/* Permission-gated destinations stay visible but disabled. */}
+      <NavigationMenu aria-label="Unavailable navigation">
+        <NavigationMenuList>
+          <NavigationMenuItem value="restricted">
+            <NavigationMenuTrigger disabled>Administration</NavigationMenuTrigger>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div>
   );
-}
-
-const submenusCode = `import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuDropdown,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
-  NavigationMenuSub,
-  NavigationMenuSubTrigger,
-  NavigationMenuSubContent,
-  NavigationMenuSubItem,
-} from "@/components/ui/navigation-menu"
-
-export function SubmenusDemo() {
-  return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuDropdown menuId="files">
-            <NavigationMenuTrigger>Files</NavigationMenuTrigger>
-            <NavigationMenuContent className="w-[250px] p-1">
-              <NavigationMenuSubItem icon={<IconFile className="h-4 w-4" />}>
-                New File
-              </NavigationMenuSubItem>
-              <NavigationMenuSub>
-                <NavigationMenuSubTrigger icon={<IconPhoto className="h-4 w-4" />}>
-                  Media
-                </NavigationMenuSubTrigger>
-                <NavigationMenuSubContent>
-                  <NavigationMenuSubItem>Images</NavigationMenuSubItem>
-                  <NavigationMenuSubItem>Videos</NavigationMenuSubItem>
-                </NavigationMenuSubContent>
-              </NavigationMenuSub>
-            </NavigationMenuContent>
-          </NavigationMenuDropdown>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
-  )
 }`;
+
+const usageCode = `import { KiraNavigationMenu, type NavigationItemData } from "@/components/ui/navigation-menu";
+
+const items: NavigationItemData[] = [
+  {type: "group", id: "product", label: "Product", description: "A shared place for your team's work.", items: [
+    {type: "group", id: "work", label: "Work together", items: [
+      {type: "link", id: "projects", label: "Projects", href: "/projects", description: "Turn plans into a clear next step."},
+      {type: "link", id: "documents", label: "Documents", href: "/documents", description: "Give ideas a home."},
+    ]},
+  ]},
+  {type: "link", id: "updates", label: "Changelog", href: "/changelog"},
+];
+
+export function SiteNavigation() {
+  return <KiraNavigationMenu items={items} label="Explore" activeHref="/changelog" />;
+}`;
+
+/* -------------------------------------------------------------------------- */
+/*                                   Page                                     */
+/* -------------------------------------------------------------------------- */
+
+const primitiveApi = [
+  {
+    title: "NavigationMenuList",
+    props: [
+      {
+        prop: "children / className",
+        type: "NavigationMenuListProps",
+        description:
+          "The list of top-level items; wraps when the available width is narrow.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuItem",
+    props: [
+      {
+        prop: "value",
+        type: "NavigationMenuItemProps['value']",
+        description: "Stable identity for a trigger and its content.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuTrigger",
+    props: [
+      {
+        prop: "disabled / render / className",
+        type: "NavigationMenuTriggerProps",
+        description:
+          "A disclosure button with a rotating icon and native keyboard behavior.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuIcon",
+    props: [
+      {
+        prop: "children / className",
+        type: "NavigationMenuIconProps",
+        description:
+          "Override the decorative trigger icon without replacing the button.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuContent",
+    props: [
+      {
+        prop: "megaMenu / keepMounted",
+        type: "boolean / boolean",
+        default: "false / false",
+        description:
+          "megaMenu removes default padding. keepMounted retains inactive content. Put surface styling on Popup.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuLink",
+    props: [
+      {
+        prop: "href / render / target / rel",
+        type: "NavigationMenuLinkProps",
+        description: "Compose a native anchor or router link.",
+      },
+      {
+        prop: "active / closeOnClick",
+        type: "boolean / boolean",
+        default: "false / true",
+        description:
+          "Mark the current page with aria-current and an underline; close its panel when activated.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuPortal",
+    props: [
+      {
+        prop: "keepMounted / container",
+        type: "NavigationMenuPortalProps",
+        description:
+          "Mount the panel outside the header, optionally keeping it mounted when closed.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuPositioner",
+    props: [
+      {
+        prop: "side / align / sideOffset / alignOffset",
+        type: "NavigationMenuPositionerProps",
+        default: "bottom / start / 4 / 0",
+        description:
+          "Position a popup with collision handling. Nested examples use the logical end side.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuPopup",
+    props: [
+      {
+        prop: "children / className",
+        type: "NavigationMenuPopupProps",
+        description:
+          "The bordered panel shell; measured width and height belong here. Creates a Viewport when children are omitted.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuViewport",
+    props: [
+      {
+        prop: "children / className",
+        type: "NavigationMenuViewportProps",
+        description:
+          "The clipping viewport inside the Popup. Fill the popup rather than applying its measured outer dimensions again.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuArrow",
+    props: [
+      {
+        prop: "className / style",
+        type: "NavigationMenuArrowProps",
+        description:
+          "An optional decorative arrow connected to its positioner.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuBackdrop",
+    props: [
+      {
+        prop: "className / style",
+        type: "NavigationMenuBackdropProps",
+        description: "An optional dismissible background layer.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuHeader",
+    props: [
+      {
+        prop: "children / className",
+        type: "React.HTMLAttributes<HTMLDivElement>",
+        description:
+          "A title and description region with a lower divider and consistent panel padding.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuFooter",
+    props: [
+      {
+        prop: "children / className",
+        type: "React.HTMLAttributes<HTMLDivElement>",
+        description:
+          "A quiet footer for supporting information and links; wraps at narrow widths.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuSection",
+    props: [
+      {
+        prop: "title / children",
+        type: "string / React.ReactNode",
+        description:
+          "A labelled section that creates its own ul; supply li children.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenuViewAll",
+    props: [
+      {
+        prop: "title / description / href / render",
+        type: "NavigationMenuViewAllProps",
+        description:
+          "A native all-items link with a title, optional supporting copy and a trailing arrow.",
+      },
+    ],
+  },
+];
+
+const features = [
+  {
+    title: "A coherent site header",
+    description:
+      "Direct links and grouped destinations share one restrained navigation surface.",
+    icon: <IconLayoutGrid className="size-4" />,
+  },
+  {
+    title: "Panels with hierarchy",
+    description:
+      "Sections, descriptions, mega panels and nested menus when a simple list is not enough.",
+    icon: <IconBook className="size-4" />,
+  },
+  {
+    title: "The same tree on mobile",
+    description:
+      "A named drawer turns groups into disclosures and keeps every destination reachable.",
+    icon: <IconDeviceMobile className="size-4" />,
+  },
+];
+
+const demoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    demo: (
+      <DemoWrapper
+        title="Basic Navigation"
+        description="A trigger with a panel of links beside a direct link item."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "active",
+    label: "Active Link",
+    demo: (
+      <DemoWrapper
+        title="Active Destination"
+        description="aria-current and a visible underline on the current page; never colour alone."
+        code={activeCode}
+      >
+        <ActiveDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "mega",
+    label: "Mega Panel",
+    demo: (
+      <DemoWrapper
+        title="Mega Panel"
+        description="Header, labelled sections, a featured guide and footer in one panel."
+        code={megaCode}
+      >
+        <MegaDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "nested",
+    label: "Nested",
+    demo: (
+      <DemoWrapper
+        title="Nested Menus"
+        description="A vertical NavigationMenu inside a panel; Escape closes the inner menu first."
+        code={nestedCode}
+      >
+        <NestedDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    demo: (
+      <DemoWrapper
+        title="KiraNavigationMenu"
+        description="One data tree drives top-level links, group panels and router composition."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "mobile",
+    label: "Mobile",
+    demo: (
+      <DemoWrapper
+        title="Responsive Drawer"
+        description="Below 768px the trigger opens a named drawer; groups expand in place."
+        code={mobileCode}
+      >
+        <MobileDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long names, an empty collection, an empty tree and an unavailable destination."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+];
 
 export default function NavigationMenuPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Navigation Menu"
-        description="A navigation component for site-wide navigation with dropdowns. Now with mega menu support, icons, and enhanced layout components."
-        version="v1.0"
+        description="Clear destinations, readable sections, and room for useful context. A website navigation system that moves naturally from desktop panels to a mobile drawer."
+        version="v2.1.1"
       />
 
-      <FeatureGrid
-        features={[
-          {
-            title: "Mega Menu",
-            description:
-              "Use megaMenu prop for larger dropdowns with organized sections and footers.",
-            icon: <IconRocket className="h-5 w-5" />,
-          },
-          {
-            title: "Nested Submenus",
-            description:
-              "Full support for nested submenus with keyboard navigation for complex hierarchies.",
-            icon: <IconFolder className="h-5 w-5" />,
-          },
-          {
-            title: "Accessible",
-            description:
-              "Full keyboard support with arrow keys, Escape, and proper ARIA navigation patterns.",
-            icon: <IconShield className="h-5 w-5" />,
-          },
-        ]}
-      />
+      <FeatureGrid features={features} />
 
-      <DemoTabs
-        tabs={[
-          {
-            value: "basic",
-            label: "Basic",
-            demo: (
-              <DemoWrapper
-                title="Basic Navigation with Dropdowns"
-                description="Simple navigation menu with dropdowns containing list items with icons."
-                code={basicCode}
-              >
-                <BasicDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "mega",
-            label: "Mega Menu",
-            demo: (
-              <DemoWrapper
-                title="Mega Menu"
-                description="Use megaMenu prop for larger, more complex dropdown layouts with sections and footers."
-                code={megaMenuCode}
-              >
-                <MegaMenuDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "simple",
-            label: "Simple Links",
-            demo: (
-              <DemoWrapper
-                title="Simple Links (Without Dropdowns)"
-                description="Navigation menu with direct links, no dropdowns."
-                code={simpleLinksCode}
-              >
-                <SimpleLinksDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "mixed",
-            label: "Mixed",
-            demo: (
-              <DemoWrapper
-                title="Mixed Navigation"
-                description="Combine dropdowns and direct links in the same navigation menu."
-                code={mixedCode}
-              >
-                <MixedDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "hover",
-            label: "Open on Hover",
-            demo: (
-              <DemoWrapper
-                title="Open on Hover"
-                description="Use openOnHover prop to open dropdowns on mouse hover instead of click."
-                code={hoverCode}
-              >
-                <HoverDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "submenus",
-            label: "Submenus",
-            demo: (
-              <DemoWrapper
-                title="Nested Submenus"
-                description="Use NavigationMenuSub, NavigationMenuSubTrigger, and NavigationMenuSubContent for nested navigation."
-                code={submenusCode}
-              >
-                <SubmenusDemo />
-              </DemoWrapper>
-            ),
-          },
-        ]}
-      />
+      <DemoTabs tabs={demoTabs} defaultValue="basic" />
 
       <KeyboardShortcuts
-        shortcuts={[
-          { keys: "← / →", description: "Navigate between menu items" },
-          { keys: "↑ / ↓", description: "Navigate within dropdowns" },
-          { keys: "Home", description: "Go to first menu item" },
-          { keys: "End", description: "Go to last menu item" },
-          {
-            keys: "Enter / Space",
-            description: "Open dropdown or activate link",
-          },
-          { keys: "Escape", description: "Close dropdown" },
-        ]}
-        title="Keyboard Navigation"
-        description="Full keyboard support for accessibility"
+        shortcuts={navigationMenuPageKeyboardShortcutsShortcuts}
       />
 
-      <UsageBlock
-        code={`import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuDropdown,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
-  ListItem,
-  NavigationMenuHeader,
-  NavigationMenuFooter,
-  NavigationMenuSection,
-  NavigationMenuViewAll,
-} from "@/components/ui/navigation-menu"
+      <UsageBlock code={usageCode} />
 
-// Basic dropdown
-<NavigationMenu>
-  <NavigationMenuList>
-    <NavigationMenuItem>
-      <NavigationMenuDropdown menuId="products">
-        <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-        <NavigationMenuContent>
-          <ul className="grid gap-3 p-4">
-            <ListItem href="#" title="Item" icon={<IconPackage className="h-5 w-5" />}>
-              Description here
-            </ListItem>
-          </ul>
-        </NavigationMenuContent>
-      </NavigationMenuDropdown>
-    </NavigationMenuItem>
-  </NavigationMenuList>
-</NavigationMenu>
+      <APIReference sections={navigationMenuPageAPIReferenceSections} />
 
-// Mega menu
-<NavigationMenuContent megaMenu className="w-[800px]">
-  <div className="grid grid-cols-4 gap-4 p-4">
-    <NavigationMenuSection title="Section">
-      <ListItem href="#" title="Item">Description</ListItem>
-    </NavigationMenuSection>
-  </div>
-  <NavigationMenuFooter>© 2024</NavigationMenuFooter>
-</NavigationMenuContent>`}
-      />
-
-      <APIReference
-        sections={[
-          {
-            title: "NavigationMenu",
-            props: [
-              {
-                prop: "openOnHover",
-                type: "boolean",
-                default: "false",
-                description: "Opens dropdowns on mouse hover instead of click.",
-              },
-              {
-                prop: "hoverDelay",
-                type: "number",
-                default: "200",
-                description: "Delay in milliseconds before opening on hover.",
-              },
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes for the root element.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuList",
-            props: [
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes for the list container.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuItem",
-            props: [
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes for the menu item.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuDropdown",
-            props: [
-              {
-                prop: "menuId",
-                type: "string",
-                default: "-",
-                description: "Unique identifier for the dropdown menu.",
-              },
-              {
-                prop: "children",
-                type: "ReactNode",
-                default: "-",
-                description: "NavigationMenuTrigger and NavigationMenuContent.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuTrigger",
-            props: [
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes for the trigger button.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuContent",
-            props: [
-              {
-                prop: "megaMenu",
-                type: "boolean",
-                default: "false",
-                description: "Enables mega menu mode for larger dropdowns.",
-              },
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes for the content.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuLink",
-            props: [
-              {
-                prop: "active",
-                type: "boolean",
-                default: "false",
-                description: "Marks the link as currently active.",
-              },
-              {
-                prop: "href",
-                type: "string",
-                default: "-",
-                description: "URL for the link.",
-              },
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes.",
-              },
-            ],
-          },
-          {
-            title: "ListItem",
-            props: [
-              {
-                prop: "href",
-                type: "string",
-                default: "-",
-                description: "URL for the list item link.",
-              },
-              {
-                prop: "title",
-                type: "ReactNode",
-                default: "-",
-                description: "Title text for the item.",
-              },
-              {
-                prop: "description",
-                type: "ReactNode",
-                default: "-",
-                description: "Optional description text.",
-              },
-              {
-                prop: "icon",
-                type: "ReactNode",
-                default: "-",
-                description: "Optional icon element.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuHeader",
-            props: [
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes for the header.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuFooter",
-            props: [
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes for the footer.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuSection",
-            props: [
-              {
-                prop: "title",
-                type: "string",
-                default: "-",
-                description: "Section title for grouping items.",
-              },
-              {
-                prop: "children",
-                type: "ReactNode",
-                default: "-",
-                description: "List items within the section.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuViewAll",
-            props: [
-              {
-                prop: "href",
-                type: "string",
-                default: "-",
-                description: "URL for the view all link.",
-              },
-              {
-                prop: "title",
-                type: "string",
-                default: "-",
-                description: "Title for the view all link.",
-              },
-              {
-                prop: "description",
-                type: "string",
-                default: "-",
-                description: "Optional description.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuSub",
-            props: [
-              {
-                prop: "children",
-                type: "ReactNode",
-                default: "-",
-                description:
-                  "NavigationMenuSubTrigger and NavigationMenuSubContent.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuSubTrigger",
-            props: [
-              {
-                prop: "icon",
-                type: "ReactNode",
-                default: "-",
-                description: "Optional icon for the sub trigger.",
-              },
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuSubContent",
-            props: [
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes.",
-              },
-            ],
-          },
-          {
-            title: "NavigationMenuSubItem",
-            props: [
-              {
-                prop: "icon",
-                type: "ReactNode",
-                default: "-",
-                description: "Optional icon for the sub item.",
-              },
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes.",
-              },
-            ],
-          },
-        ]}
-        title="API Reference"
-        description="Key props and configuration options"
-      />
+      <Changelog entries={navigationMenuPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const statesDemoKiraNavigationMenuItems = [
+  {
+    type: "group",
+    id: "library",
+    label: "Library",
+    description: "Content stays readable when names and descriptions grow.",
+    items: [
+      {
+        type: "link",
+        id: "guide",
+        label:
+          "Deployment and workspace administration for distributed product teams",
+        href: "#administration",
+        description:
+          "A complete guide to permissions, release reviews, and keeping the workspace organized.",
+        icon: <IconBook />,
+      },
+      {
+        type: "group",
+        id: "archived",
+        label: "Archived collections",
+        items: [],
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof KiraNavigationMenu>["items"];
+
+const navigationMenuPageKeyboardShortcutsShortcuts = [
+  {
+    keys: "Tab / Shift+Tab",
+    description:
+      "Move between links and controls; inherited from Base UI. The mobile drawer retains focus while open.",
+  },
+  {
+    keys: "Left / Right",
+    description: "Move through horizontal triggers; inherited from Base UI.",
+  },
+  {
+    keys: "Up / Down",
+    description: "Enter and move through a panel; inherited from Base UI.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Toggle a trigger; Enter follows a link. Inherited from Base UI.",
+  },
+  {
+    keys: "Escape",
+    description:
+      "Close the innermost panel or mobile drawer and restore focus; inherited from Base UI.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const navigationMenuPageAPIReferenceSections = [
+  {
+    title: "KiraNavigationMenu",
+    props: [
+      {
+        prop: "items",
+        type: "readonly NavigationItemData[]",
+        description:
+          "Native links and recursively labelled groups. Groups can include a description and nested sections.",
+      },
+      {
+        prop: "label / mobileLabel",
+        type: "string",
+        default: "mobileLabel: 'Open navigation'",
+        description:
+          "Navigation landmark name and accessible mobile trigger name.",
+      },
+      {
+        prop: "activeHref",
+        type: "string",
+        description:
+          "Current destination. Exact matching sets aria-current and a visible underline.",
+      },
+      {
+        prop: "mobileMode",
+        type: "'drawer' | 'inline'",
+        default: "'drawer'",
+        description:
+          "Use a drawer below 768px or retain inline panels at every width.",
+      },
+      {
+        prop: "renderLink",
+        type: "(item: NavigationLinkData) => React.ReactElement",
+        description:
+          "Compose a router link in both desktop and mobile presentations.",
+      },
+      {
+        prop: "rootProps / className",
+        type: "KiraNavigationMenuProps['rootProps'] / string",
+        description: "Primitive options and desktop root styling.",
+      },
+    ],
+  },
+  {
+    title: "NavigationMenu",
+    props: [
+      {
+        prop: "value / defaultValue",
+        type: "NavigationMenuProps<Value>['value']",
+        description: "Current open item value or initial value.",
+      },
+      {
+        prop: "onValueChange",
+        type: "NavigationMenuProps<Value>['onValueChange']",
+        description: "Cancellable state changes from the primitive.",
+      },
+      {
+        prop: "delay / closeDelay",
+        type: "number",
+        default: "50 / 50",
+        description: "Pointer open and close delays in milliseconds.",
+      },
+      {
+        prop: "orientation",
+        type: "'horizontal' | 'vertical'",
+        default: "'horizontal'",
+        description: "Trigger navigation axis; use vertical for a nested menu.",
+      },
+    ],
+  },
+  ...primitiveApi,
+  {
+    title: "Styling recipes",
+    props: [
+      {
+        prop: "navigationMenuTriggerVariants / navigationMenuContentVariants",
+        type: "cva",
+        description:
+          "Exported trigger and popup surface recipes using the kit's semantic tokens.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const navigationMenuPageChangelogEntries = [
+  {
+    version: "v2.1.1",
+    date: "8 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "One demo per feature",
+        description:
+          "Replaced the workspace-scene demos with focused per-feature tabs (basic, active link, mega panel, nested, Kira, mobile, states) matching the dropdown-menu demo structure. Demo components and their snippets live in the page file; page padding no longer overrides ComponentPage. No API changes.",
+      },
+    ],
+  },
+  {
+    version: "v2.1.0",
+    date: "7 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "A coherent navigation system",
+        description:
+          "Rebuilt the demos as a working site header, a resource mega panel, focused nested navigation, responsive drawer and content states. Improved section layout, type rhythm and link alignment. Audited on Base UI 1.9.0; no removed APIs.",
+      },
+      {
+        type: "changed",
+        title: "Readable grouped panels",
+        description:
+          "Data-driven groups use clear panel headers and responsive columns. Icons share one alignment, descriptions have room to breathe, and active destinations retain their underline.",
+      },
+    ],
+  },
+  {
+    version: "v2.0.1",
+    date: "7 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Primitive composition and responsive links",
+        description:
+          "Corrected popup sizing, active and router links, recursive groups, mobile anchors and drawer breakpoint reset.",
+      },
+    ],
+  },
+  {
+    version: "v2.0.0",
+    date: "6 November 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "Base UI NavigationMenu foundation",
+        description:
+          "Replaced the custom popup system with native Base UI parts; removed legacy Dropdown/Sub/ListItem wrappers and the router-specific to prop.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
