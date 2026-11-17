@@ -6,7 +6,7 @@ import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IconCheck, IconLoader2 } from "@tabler/icons-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   Tooltip,
@@ -15,18 +15,24 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/toast";
 
+// oxlint-disable anti-slop/no-runtime-typeof -- ReactNode → string is the I/O boundary (React guarantees string children/labels; anything else has no text label); mergeRefs dispatches on the documented React ref forms.
+function asText(node: React.ReactNode): string | undefined {
+  return typeof node === "string" ? node.trim() : undefined;
+}
+
 /** Fans one DOM node out to every ref passed in. */
 function mergeRefs<T>(
   ...refs: (React.Ref<T> | undefined)[]
 ): React.RefCallback<T> {
-  return (value: T) => {
+  return (value: T | null) => {
     for (const ref of refs) {
       if (!ref) continue;
 
+      // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
       if (typeof ref === "function") {
         ref(value);
       } else {
-        (ref as React.MutableRefObject<T | null>).current = value;
+        ref.current = value;
       }
     }
   };
@@ -35,7 +41,7 @@ function mergeRefs<T>(
 const toggleVariants = cva(
   [
     "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    "focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
     "disabled:pointer-events-none disabled:opacity-50",
     "hover:bg-muted hover:text-muted-foreground",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -66,7 +72,7 @@ const toggleVariants = cva(
         "icon-sm": "h-8 w-8 [&_svg]:h-3.5 [&_svg]:w-3.5",
         "icon-lg": "h-10 w-10 [&_svg]:h-5 [&_svg]:w-5",
       },
-      shape: {
+      radius: {
         default: "rounded-md",
         pill: "rounded-full",
         square: "rounded-none",
@@ -75,9 +81,9 @@ const toggleVariants = cva(
     defaultVariants: {
       variant: "default",
       size: "default",
-      shape: "default",
+      radius: "default",
     },
-  }
+  },
 );
 
 type ToggleSize = NonNullable<VariantProps<typeof toggleVariants>["size"]>;
@@ -104,19 +110,18 @@ function useAriaLabelWarning(
     size?: ToggleSize | null;
     icon?: React.ReactNode;
     children?: React.ReactNode;
-  }
+  },
 ) {
-  const hasText = typeof children === "string" && children.trim().length > 0;
+  const hasText = !!asText(children);
 
-  const isIconOnly =
-    !!icon || (!!size && ICON_ONLY_SIZES[size]) || !children;
+  const isIconOnly = !!icon || (!!size && ICON_ONLY_SIZES[size]) || !children;
 
   React.useEffect(() => {
     if (!import.meta.env?.DEV) return;
 
     if (ariaLabel || hasText || !isIconOnly) return;
     console.warn(
-      `[kira-kit] <${componentName}> renders without a text label. Pass an \`aria-label\` so assistive technology can announce it.`
+      `[kira-kit] <${componentName}> renders without a text label. Pass an \`aria-label\` so assistive technology can announce it.`,
     );
   }, [componentName, ariaLabel, hasText, isIconOnly]);
 }
@@ -143,8 +148,7 @@ function useLabelStabilityWarning({
   ariaLabel?: string;
   children?: React.ReactNode;
 }) {
-  const label =
-    ariaLabel ?? (typeof children === "string" ? children.trim() : undefined);
+  const label = ariaLabel ?? asText(children);
 
   // Last label seen at each pressed state; written from an effect so render
   // stays pure (playbook §4).
@@ -166,7 +170,7 @@ function useLabelStabilityWarning({
           "The APG requires a toggle button's label to stay fixed — `aria-pressed` " +
           "already announces the state, so a swapped label double-announces it and " +
           "breaks voice control. Keep one stable label, or drop `aria-pressed` and " +
-          "let the text carry the state."
+          "let the text carry the state.",
       );
       // One warning per offending pair, not one per toggle.
       seen.current = {};
@@ -194,11 +198,134 @@ interface ToggleProps
   ref?: React.Ref<HTMLButtonElement>;
 }
 
+function ToggleIndicator({
+  loading,
+  pressed,
+  showIndicator,
+  reducedMotion,
+}: {
+  loading: boolean;
+  pressed: boolean;
+  showIndicator: boolean;
+  reducedMotion: boolean;
+}) {
+  if (loading) {
+    return (
+      <IconLoader2
+        data-slot="toggle-spinner"
+        className={cn(!reducedMotion && "animate-spin")}
+        aria-hidden="true"
+      />
+    );
+  }
+
+  if (showIndicator && pressed) {
+    return <IconCheck data-slot="toggle-indicator" aria-hidden="true" />;
+  }
+
+  return null;
+}
+
+/**
+ * M3 Expressive selection pop: the wrapped node springs 1.25 → 1 when `active`
+ * flips false → true. Render stays pure — the flip is detected with the
+ * render-time previous-value pattern (playbook §4), the tween runs from the
+ * effect and is interruptible (`overwrite: "auto"`).
+ */
+function useSelectionPop(
+  ref: React.RefObject<HTMLElement | null>,
+  active: boolean,
+  enabled: boolean,
+) {
+  const [prevActive, setPrevActive] = React.useState(active);
+  const justPressed = active && !prevActive;
+
+  if (active !== prevActive) {
+    setPrevActive(active);
+  }
+
+  const reducedMotion = useReducedMotion();
+
+  React.useEffect(() => {
+    if (!justPressed || !enabled || reducedMotion || !ref.current) return;
+
+    gsap.fromTo(
+      ref.current,
+      { scale: 1.25 },
+      { scale: 1, duration: 0.3, ease: "back.out(2.5)", overwrite: "auto" },
+    );
+  }, [justPressed, enabled, reducedMotion, ref]);
+}
+
+type ToggleRenderProps = Omit<
+  ToggleProps,
+  | "className"
+  | "variant"
+  | "size"
+  | "radius"
+  | "loading"
+  | "showIndicator"
+  | "indicatorPosition"
+  | "icon"
+  | "children"
+  | "disabled"
+  | "pressed"
+  | "defaultPressed"
+  | "onPressedChange"
+  | "name"
+  | "value"
+  | "ref"
+>;
+
+/** Press micro-interaction: <150ms, transform only, reduced-motion gated,
+ * interruptible (§5 — `overwrite: "auto"` cancels any in-flight tween). */
+function pressTween(
+  node: HTMLElement | null,
+  loading: boolean,
+  reducedMotion: boolean,
+) {
+  if (!node || loading || reducedMotion) return;
+
+  gsap.to(node, {
+    scale: 0.95,
+    duration: 0.075,
+    ease: "power2.out",
+    yoyo: true,
+    repeat: 1,
+    overwrite: "auto",
+  });
+}
+
+/** Dev-only nudges for the plain `Toggle`: aria-label, label stability, icon pop. */
+function useToggleDiagnostics({
+  ariaLabel,
+  size,
+  icon,
+  children,
+  isPressed,
+}: {
+  ariaLabel: string | undefined;
+  size: ToggleProps["size"];
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  isPressed: boolean;
+}) {
+  const iconRef = React.useRef<HTMLSpanElement>(null);
+
+  useSelectionPop(iconRef, isPressed && !!icon, true);
+
+  useAriaLabelWarning("Toggle", { ariaLabel, size, icon, children });
+
+  useLabelStabilityWarning({ pressed: isPressed, ariaLabel, children });
+
+  return iconRef;
+}
+
 function Toggle({
   className,
   variant,
   size,
-  shape,
+  radius,
   loading = false,
   showIndicator = false,
   indicatorPosition = "left",
@@ -217,68 +344,112 @@ function Toggle({
   const reducedMotion = useReducedMotion();
 
   const [internalPressed, setInternalPressed] = React.useState(
-    defaultPressed ?? false
+    defaultPressed ?? false,
   );
 
   const isPressed = pressed ?? internalPressed;
 
-  useAriaLabelWarning("Toggle", {
+  const popRef = useToggleDiagnostics({
     ariaLabel: props["aria-label"],
     size,
     icon,
     children,
+    isPressed,
   });
 
-  useLabelStabilityWarning({
-    pressed: isPressed,
-    ariaLabel: props["aria-label"],
-    children,
-  });
-
-  const handlePressedChange: NonNullable<TogglePrimitive.Props["onPressedChange"]> =
-    (newPressed, eventDetails) => {
-      if (pressed === undefined) {
-        setInternalPressed(newPressed);
-      }
-
-      onPressedChange?.(newPressed, eventDetails);
-
-      // Press micro-interaction: <150ms, transform only, reduced-motion gated.
-      if (innerRef.current && !loading && !reducedMotion) {
-        gsap.to(innerRef.current, {
-          scale: 0.95,
-          duration: 0.075,
-          ease: "power2.out",
-          yoyo: true,
-          repeat: 1,
-        });
-      }
-    };
-
-  const renderIndicator = () => {
-    if (loading) {
-      return (
-        <IconLoader2
-          data-slot="toggle-spinner"
-          className={cn(!reducedMotion && "animate-spin")}
-          aria-hidden="true"
-        />
-      );
+  const handlePressedChange: NonNullable<
+    TogglePrimitive.Props["onPressedChange"]
+  > = (newPressed, eventDetails) => {
+    if (pressed === undefined) {
+      setInternalPressed(newPressed);
     }
 
-    if (showIndicator && isPressed) {
-      return <IconCheck data-slot="toggle-indicator" aria-hidden="true" />;
-    }
+    onPressedChange?.(newPressed, eventDetails);
 
-    return null;
+    pressTween(innerRef.current, loading, reducedMotion);
   };
 
+  return (
+    <ToggleBody
+      ref={ref}
+      innerRef={innerRef}
+      className={className}
+      variant={variant}
+      size={size}
+      radius={radius}
+      loading={loading}
+      disabled={disabled}
+      isPressed={isPressed}
+      defaultPressed={defaultPressed}
+      handlePressedChange={handlePressedChange}
+      icon={icon}
+      popRef={popRef}
+      indicatorPosition={indicatorPosition}
+      showIndicator={showIndicator}
+      reducedMotion={reducedMotion}
+      props={props}
+      name={name}
+      value={value}
+    >
+      {children}
+    </ToggleBody>
+  );
+}
+
+function ToggleBody({
+  ref,
+  innerRef,
+  className,
+  variant,
+  size,
+  radius,
+  loading,
+  disabled,
+  isPressed,
+  defaultPressed,
+  handlePressedChange,
+  icon,
+  popRef,
+  indicatorPosition,
+  showIndicator,
+  reducedMotion,
+  props,
+  name,
+  value,
+  children,
+}: {
+  ref: ToggleProps["ref"];
+  innerRef: React.RefObject<HTMLButtonElement | null>;
+  className: ToggleProps["className"];
+  variant: VariantProps<typeof toggleVariants>["variant"];
+  size: ToggleProps["size"];
+  radius: VariantProps<typeof toggleVariants>["radius"];
+  loading: boolean;
+  disabled: boolean | undefined;
+  isPressed: boolean;
+  defaultPressed: boolean | undefined;
+  handlePressedChange: NonNullable<TogglePrimitive.Props["onPressedChange"]>;
+  icon: React.ReactNode;
+  popRef: React.RefObject<HTMLSpanElement | null>;
+  indicatorPosition: "left" | "right";
+  showIndicator: boolean;
+  reducedMotion: boolean;
+  props: ToggleRenderProps;
+  name: string | undefined;
+  value: string | undefined;
+  children: React.ReactNode;
+}) {
   const toggle = (
     <TogglePrimitive
       ref={mergeRefs(ref, innerRef)}
       data-slot="toggle"
       data-loading={loading || undefined}
-      className={cn(toggleVariants({ variant, size, shape }), className)}
+      className={(state) =>
+        cn(
+          toggleVariants({ variant, size, radius }),
+          typeof className === "function" ? className(state) : className,
+        )
+      }
       disabled={disabled || loading}
       pressed={isPressed}
       defaultPressed={defaultPressed}
@@ -286,19 +457,87 @@ function Toggle({
       aria-busy={loading || undefined}
       {...props}
     >
-      {indicatorPosition === "left" && renderIndicator()}
-      {icon}
-      {children}
-      {indicatorPosition === "right" && renderIndicator()}
+      <ToggleIndicators
+        indicatorPosition={indicatorPosition}
+        loading={loading}
+        isPressed={isPressed}
+        showIndicator={showIndicator}
+        reducedMotion={reducedMotion}
+        popRef={popRef}
+        icon={icon}
+      >
+        {children}
+      </ToggleIndicators>
     </TogglePrimitive>
   );
 
+  return withFormInput({ toggle, isPressed, name, value });
+}
+
+function ToggleIndicators({
+  indicatorPosition,
+  loading,
+  isPressed,
+  showIndicator,
+  reducedMotion,
+  popRef,
+  icon,
+  children,
+}: {
+  indicatorPosition: "left" | "right";
+  loading: boolean;
+  isPressed: boolean;
+  showIndicator: boolean;
+  reducedMotion: boolean;
+  popRef: React.RefObject<HTMLSpanElement | null>;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      {indicatorPosition === "left" && (
+        <ToggleIndicator
+          loading={loading}
+          pressed={isPressed}
+          showIndicator={showIndicator}
+          reducedMotion={reducedMotion}
+        />
+      )}
+      {icon && (
+        <span ref={popRef} data-slot="toggle-icon" className="inline-flex">
+          {icon}
+        </span>
+      )}
+      {children}
+      {indicatorPosition === "right" && (
+        <ToggleIndicator
+          loading={loading}
+          pressed={isPressed}
+          showIndicator={showIndicator}
+          reducedMotion={reducedMotion}
+        />
+      )}
+    </>
+  );
+}
+
+/** Native checkbox semantics: an unpressed toggle submits nothing at all, rather
+ * than an empty string. A hidden input can't live inside a `<button>`, so it
+ * rides alongside as a sibling — it generates no box, so layout in a flex/grid
+ * parent is unchanged. */
+function withFormInput({
+  toggle,
+  isPressed,
+  name,
+  value,
+}: {
+  toggle: React.ReactElement;
+  isPressed: boolean;
+  name: string | undefined;
+  value: string | undefined;
+}) {
   if (!name) return toggle;
 
-  // Native checkbox semantics: an unpressed toggle submits nothing at all,
-  // rather than an empty string. A hidden input can't live inside a <button>,
-  // so it rides alongside as a sibling — it generates no box, so layout in a
-  // flex/grid parent is unchanged.
   return (
     <>
       {toggle}
@@ -318,8 +557,10 @@ function Toggle({
 // KiraToggle — one prop-driven entry point over every toggle mode
 // =============================================================================
 
-interface KiraToggleProps
-  extends Omit<ToggleProps, "onPressedChange" | "children"> {
+interface KiraToggleProps extends Omit<
+  ToggleProps,
+  "onPressedChange" | "children"
+> {
   children?: React.ReactNode;
   /** Tooltip on the toggle. Icon-only toggles should always have one. */
   tooltip?: React.ReactNode;
@@ -352,44 +593,123 @@ interface KiraToggleProps
   value?: string;
 }
 
-function KiraToggle({
-  tooltip,
-  tooltipSide = "top",
-  disabledReason,
-  pressedIcon,
-  shortcut,
-  onPressedChange,
-  onToggleAsync,
-  showSuccess = false,
-  successDuration = 1200,
-  errorMessage = "Couldn't update",
-  label,
-  description,
-  icon,
+/** Focusable wrapper so a disabled toggle can host a tooltip (§9). */
+function DisabledReasonWrapper({
+  reason,
   children,
-  pressed,
-  defaultPressed = false,
-  disabled,
-  loading,
-  className,
-  size,
-  ...props
-}: KiraToggleProps) {
-  const generatedId = React.useId();
-  const labelId = `${generatedId}-label`;
-  const descriptionId = `${generatedId}-description`;
+}: {
+  reason: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  // Focus proxy for a native-disabled trigger (Base UI's documented pattern for
+  // tooltips on disabled controls): the span is hit-tested where the disabled
+  // button is not, and Tab reaches it so keyboard users can read the reason.
+  // role="button" is deliberately avoided — the accessible "disabled button" is
+  // already announced via aria-disabled; the label carries the reason.
+  const anchorProps = {
+    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus proxy required for disabled-control tooltip reachability (WCAG 2.2 §9)
+    tabIndex: 0,
+    "aria-disabled": true,
+    "aria-label": asText(reason),
+  } as const;
 
-  const [status, setStatus] = React.useState<"idle" | "loading" | "success">(
-    "idle"
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <span
+            data-slot="toggle-reason-anchor"
+            {...anchorProps}
+            className="inline-flex cursor-not-allowed rounded-md outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+          />
+        }
+      >
+        {children}
+      </TooltipTrigger>
+      <TooltipContent side="top">{reason}</TooltipContent>
+    </Tooltip>
   );
+}
 
-  const isControlled = pressed !== undefined;
-  const [pressedState, setPressedState] = React.useState(defaultPressed);
-  const committedPressed = (isControlled ? pressed : pressedState) ?? false;
+/** Resolves which icon renders: success check > pressed icon > base icon. */
+function resolveIcon(
+  status: "idle" | "loading" | "success",
+  optimisticPressed: boolean,
+  pressedIcon: React.ReactNode,
+  icon: React.ReactNode,
+): React.ReactNode {
+  if (status === "success") {
+    return <IconCheck data-slot="toggle-success" aria-hidden="true" />;
+  }
+
+  if (optimisticPressed && pressedIcon) {
+    return pressedIcon;
+  }
+
+  return icon;
+}
+
+interface UseToggleShortcutOptions {
+  shortcut: string | undefined;
+  disabled: boolean | undefined;
+  isPressed: boolean;
+  onToggle: () => void;
+}
+
+/** Wires the KiraToggle shortcut hint to an actual global key handler. */
+function useToggleShortcut({
+  shortcut,
+  disabled,
+  isPressed,
+  onToggle,
+}: UseToggleShortcutOptions) {
+  React.useEffect(() => {
+    if (!shortcut || disabled) return;
+    const key = shortcut.slice(-1).toLowerCase();
+    const needsMod = /[⌘^]|ctrl|cmd/i.test(shortcut);
+
+    const handler = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() !== key) return;
+
+      if (needsMod && !(e.metaKey || e.ctrlKey)) return;
+      e.preventDefault();
+      onToggle();
+    };
+
+    window.addEventListener("keydown", handler);
+
+    return () => window.removeEventListener("keydown", handler);
+  }, [shortcut, disabled, isPressed, onToggle]);
+}
+
+/**
+ * Optimistic async toggle state for KiraToggle: flips instantly via
+ * `useOptimistic`, commits on resolve, reverts with a toast on reject.
+ */
+function useOptimisticToggle({
+  committedPressed,
+  isControlled,
+  setPressedState,
+  onToggleAsync,
+  showSuccess,
+  successDuration,
+  errorMessage,
+}: {
+  committedPressed: boolean;
+  isControlled: boolean;
+  setPressedState: (pressed: boolean) => void;
+  onToggleAsync: ((pressed: boolean) => Promise<void>) | undefined;
+  showSuccess: boolean;
+  successDuration: number;
+  errorMessage: string;
+}) {
+  const [status, setStatus] = React.useState<"idle" | "loading" | "success">(
+    "idle",
+  );
 
   const [optimisticPressed, setOptimisticPressed] = React.useOptimistic(
     committedPressed,
-    (_prev: boolean, next: boolean) => next
+    (_prev: boolean, next: boolean) => next,
   );
 
   React.useEffect(() => {
@@ -419,136 +739,240 @@ function KiraToggle({
     [
       onToggleAsync,
       isControlled,
+      setPressedState,
       showSuccess,
       errorMessage,
       setOptimisticPressed,
-    ]
+    ],
   );
 
-  const handlePressedChange = (next: boolean) => {
-    if (onToggleAsync) {
-      React.startTransition(() => {
-        runToggle(next);
-      });
-    } else if (!isControlled) {
-      setPressedState(next);
-    }
+  return { status, optimisticPressed, runToggle };
+}
 
-    onPressedChange?.(next);
-  };
+/** State + async/shortcut wiring for KiraToggle (composes the two hooks below). */
+function useKiraToggleState({
+  pressed,
+  defaultPressed,
+  disabled,
+  shortcut,
+  onToggleAsync,
+  onPressedChange,
+  showSuccess,
+  successDuration,
+  errorMessage,
+}: {
+  pressed: boolean | undefined;
+  defaultPressed: boolean;
+  disabled: boolean | undefined;
+  shortcut: string | undefined;
+  onToggleAsync: ((pressed: boolean) => Promise<void>) | undefined;
+  onPressedChange: ((pressed: boolean) => void) | undefined;
+  showSuccess: boolean;
+  successDuration: number;
+  errorMessage: string;
+}) {
+  const isControlled = pressed !== undefined;
+  const [pressedState, setPressedState] = React.useState(defaultPressed);
+  const committedPressed = (isControlled ? pressed : pressedState) ?? false;
 
-  // Wire the shortcut hint to an actual global handler.
-  React.useEffect(() => {
-    if (!shortcut || disabled) return;
-    const key = shortcut.slice(-1).toLowerCase();
-    const needsMod = /[⌘^]|ctrl|cmd/i.test(shortcut);
+  const { status, optimisticPressed, runToggle } = useOptimisticToggle({
+    committedPressed,
+    isControlled,
+    setPressedState,
+    onToggleAsync,
+    showSuccess,
+    successDuration,
+    errorMessage,
+  });
 
-    const handler = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() !== key) return;
+  const handlePressedChange = React.useCallback(
+    (next: boolean) => {
+      if (onToggleAsync) {
+        React.startTransition(() => {
+          runToggle(next);
+        });
+      } else if (!isControlled) {
+        setPressedState(next);
+      }
 
-      if (needsMod && !(e.metaKey || e.ctrlKey)) return;
-      e.preventDefault();
-      handlePressedChange(!committedPressed);
-    };
+      onPressedChange?.(next);
+    },
+    [onToggleAsync, runToggle, isControlled, setPressedState, onPressedChange],
+  );
 
-    window.addEventListener("keydown", handler);
+  useToggleShortcut({
+    shortcut,
+    disabled,
+    isPressed: committedPressed,
+    onToggle: React.useCallback(
+      () => handlePressedChange(!committedPressed),
+      [handlePressedChange, committedPressed],
+    ),
+  });
 
-    return () => window.removeEventListener("keydown", handler);
-  }, [shortcut, disabled, committedPressed]);
+  return { status, optimisticPressed, handlePressedChange };
+}
+
+/** Shortcut hint chip rendered inside KiraToggle. */
+function ToggleShortcut({ kbd }: { kbd: string }) {
+  return (
+    <kbd
+      data-slot="toggle-shortcut"
+      className="pointer-events-none ml-1 inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground"
+    >
+      {kbd}
+    </kbd>
+  );
+}
+
+function KiraToggle({
+  tooltip,
+  tooltipSide = "top",
+  disabledReason,
+  pressedIcon,
+  shortcut,
+  onPressedChange,
+  onToggleAsync,
+  showSuccess = false,
+  successDuration = 1200,
+  errorMessage = "Couldn't update",
+  label,
+  description,
+  icon,
+  children,
+  pressed,
+  defaultPressed = false,
+  disabled,
+  loading,
+  className,
+  size,
+  ...props
+}: KiraToggleProps) {
+  const generatedId = React.useId();
+  const labelId = `${generatedId}-label`;
+  const descriptionId = `${generatedId}-description`;
+
+  const { status, optimisticPressed, handlePressedChange } = useKiraToggleState(
+    {
+      pressed,
+      defaultPressed,
+      disabled,
+      shortcut,
+      onToggleAsync,
+      onPressedChange,
+      showSuccess,
+      successDuration,
+      errorMessage,
+    },
+  );
 
   const isBusy = loading || status === "loading";
 
-  const buildToggle = () => {
-    const effectiveIcon =
-      status === "success" ? (
-        <IconCheck data-slot="toggle-success" aria-hidden="true" />
-      ) : optimisticPressed && pressedIcon ? (
-        pressedIcon
-      ) : (
-        icon
-      );
+  const effectiveIcon = resolveIcon(
+    status,
+    optimisticPressed,
+    pressedIcon,
+    icon,
+  );
 
-    return (
-      <Toggle
-        className={className}
-        size={size}
-        icon={effectiveIcon}
-        loading={isBusy}
-        disabled={disabled}
-        pressed={optimisticPressed}
-        onPressedChange={handlePressedChange}
-        aria-labelledby={label ? labelId : undefined}
-        aria-describedby={description ? descriptionId : undefined}
-        {...props}
-      >
-        {children}
-        {shortcut && (
-          <kbd
-            data-slot="toggle-shortcut"
-            className="pointer-events-none ml-1 inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground"
-          >
-            {shortcut}
-          </kbd>
+  return (
+    <KiraToggleField
+      element={
+        <Toggle
+          className={className}
+          size={size}
+          icon={effectiveIcon}
+          loading={isBusy}
+          disabled={disabled}
+          pressed={optimisticPressed}
+          onPressedChange={handlePressedChange}
+          aria-labelledby={label ? labelId : undefined}
+          aria-describedby={description ? descriptionId : undefined}
+          {...props}
+        >
+          {children}
+          {shortcut && <ToggleShortcut kbd={shortcut} />}
+        </Toggle>
+      }
+      label={label}
+      labelId={labelId}
+      description={description}
+      descriptionId={descriptionId}
+      tooltip={tooltip}
+      tooltipSide={tooltipSide}
+      disabled={disabled}
+      disabledReason={disabledReason}
+    />
+  );
+}
+
+/** Tooltip + label chrome for KiraToggle; owns the disabled-reason focus proxy. */
+function KiraToggleField({
+  element,
+  label,
+  labelId,
+  description,
+  descriptionId,
+  tooltip,
+  tooltipSide,
+  disabled,
+  disabledReason,
+}: {
+  element: React.ReactElement;
+  label: React.ReactNode;
+  labelId: string;
+  description: React.ReactNode;
+  descriptionId: string;
+  tooltip: React.ReactNode;
+  tooltipSide: "top" | "right" | "bottom" | "left";
+  disabled: boolean | undefined;
+  disabledReason: React.ReactNode;
+}) {
+  const content = disabled && disabledReason ? disabledReason : tooltip;
+
+  const withTooltip = content ? (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          disabled && disabledReason ? (
+            <DisabledReasonWrapper reason={disabledReason}>
+              {element}
+            </DisabledReasonWrapper>
+          ) : (
+            element
+          )
+        }
+      />
+      <TooltipContent side={tooltipSide}>{content}</TooltipContent>
+    </Tooltip>
+  ) : (
+    element
+  );
+
+  if (!label && !description) return withTooltip;
+
+  return (
+    <div data-slot="toggle-field" className="flex items-start gap-3">
+      {withTooltip}
+      <div className="space-y-0.5">
+        {label && (
+          <span id={labelId} className="block text-sm font-medium leading-none">
+            {label}
+          </span>
         )}
-      </Toggle>
-    );
-  };
-
-  const wrapWithTooltip = (element: React.ReactNode) => {
-    const content = disabled && disabledReason ? disabledReason : tooltip;
-
-    if (!content) return element;
-
-    // A disabled button emits no pointer events, so the disabled-reason
-    // tooltip needs a wrapper span to carry the hover target.
-    const trigger =
-      disabled && disabledReason ? (
-        <span className="inline-flex">{element}</span>
-      ) : (
-        element
-      );
-
-    return (
-      <Tooltip>
-        <TooltipTrigger>{trigger}</TooltipTrigger>
-        <TooltipContent side={tooltipSide}>{content}</TooltipContent>
-      </Tooltip>
-    );
-  };
-
-  const wrapWithLabel = (element: React.ReactNode) => {
-    if (!label && !description) return element;
-
-    return (
-      <div data-slot="toggle-field" className="flex items-start gap-3">
-        {element}
-        <div className="space-y-0.5">
-          {label && (
-            <span
-              id={labelId}
-              className="block text-sm font-medium leading-none"
-            >
-              {label}
-            </span>
-          )}
-          {description && (
-            <span
-              id={descriptionId}
-              className="block text-xs text-muted-foreground"
-            >
-              {description}
-            </span>
-          )}
-        </div>
+        {description && (
+          <span
+            id={descriptionId}
+            className="block text-xs text-muted-foreground"
+          >
+            {description}
+          </span>
+        )}
       </div>
-    );
-  };
-
-  return wrapWithLabel(wrapWithTooltip(buildToggle()));
+    </div>
+  );
 }
 
 export { Toggle, KiraToggle, toggleVariants };
 
 export type { ToggleProps, ToggleSize, KiraToggleProps };
-
-
