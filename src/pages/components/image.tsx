@@ -1,4 +1,4 @@
-import { IconPhoto } from "@tabler/icons-react"
+import { IconPhoto } from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -8,12 +8,12 @@ import {
   UsageBlock,
   APIReference,
   KeyboardShortcuts,
-} from "@/components/docs"
-import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Spinner } from "@/components/ui/spinner"
+} from "@/components/docs";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 
 const imageStyles = {
   aspectRatio: "aspect-video",
@@ -21,13 +21,18 @@ const imageStyles = {
   cover: "object-cover",
   contain: "object-contain",
   fill: "object-fill",
-}
+};
 
 function BasicImageDemo() {
   return (
     <div className="flex flex-wrap items-center gap-4">
       <div className="w-48 space-y-2">
-        <div className={cn("overflow-hidden rounded-lg border", imageStyles.aspectRatio)}>
+        <div
+          className={cn(
+            "overflow-hidden rounded-lg border",
+            imageStyles.aspectRatio,
+          )}
+        >
           <img
             src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop"
             alt="Mountain landscape"
@@ -38,7 +43,12 @@ function BasicImageDemo() {
       </div>
 
       <div className="w-48 space-y-2">
-        <div className={cn("overflow-hidden rounded-lg border bg-muted", imageStyles.aspectRatio)}>
+        <div
+          className={cn(
+            "overflow-hidden rounded-lg border bg-muted",
+            imageStyles.aspectRatio,
+          )}
+        >
           <img
             src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop"
             alt="Mountain landscape"
@@ -49,7 +59,12 @@ function BasicImageDemo() {
       </div>
 
       <div className="w-48 space-y-2">
-        <div className={cn("overflow-hidden rounded-lg border", imageStyles.aspectRatio)}>
+        <div
+          className={cn(
+            "overflow-hidden rounded-lg border",
+            imageStyles.aspectRatio,
+          )}
+        >
           <img
             src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop"
             alt="Mountain landscape"
@@ -59,7 +74,7 @@ function BasicImageDemo() {
         <p className="text-xs text-muted-foreground">Fill fit</p>
       </div>
     </div>
-  )
+  );
 }
 
 const basicImageCode = `import { cn } from "@/lib/utils"
@@ -90,7 +105,7 @@ export function BasicImageDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function RoundedImageDemo() {
   return (
@@ -150,7 +165,7 @@ function RoundedImageDemo() {
         <p className="text-xs text-muted-foreground">Rounded-full</p>
       </div>
     </div>
-  )
+  );
 }
 
 const roundedImageCode = `export function RoundedImageDemo() {
@@ -179,7 +194,7 @@ const roundedImageCode = `export function RoundedImageDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function WithCaptionDemo() {
   return (
@@ -198,7 +213,7 @@ function WithCaptionDemo() {
         </p>
       </div>
     </Card>
-  )
+  );
 }
 
 const withCaptionCode = `import { Card } from "@/components/ui/card"
@@ -221,7 +236,7 @@ export function WithCaptionDemo() {
       </div>
     </Card>
   )
-}`
+}`;
 
 function LoadingImageDemo() {
   return (
@@ -243,13 +258,13 @@ function LoadingImageDemo() {
       </div>
 
       <div className="space-y-2">
-          <div className="w-64 aspect-video overflow-hidden rounded-lg border bg-muted flex items-center justify-center">
-            <IconPhoto className="h-8 w-8 text-muted-foreground" />
-          </div>
+        <div className="w-64 aspect-video overflow-hidden rounded-lg border bg-muted flex items-center justify-center">
+          <IconPhoto className="h-8 w-8 text-muted-foreground" />
+        </div>
         <p className="text-xs text-muted-foreground">Error state</p>
       </div>
     </div>
-  )
+  );
 }
 
 const loadingImageCode = `import { Spinner } from "@/components/ui/spinner"
@@ -276,7 +291,7 @@ export function LoadingImageDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function ResponsiveImageDemo() {
   return (
@@ -285,19 +300,21 @@ function ResponsiveImageDemo() {
         <div className="aspect-video w-full overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=600&fit=crop"
-            alt="Responsive image"
+            alt="Alpine peaks beneath a cloudy sky"
             className="h-full w-full object-cover"
           />
         </div>
       </Card>
-      <p className="text-xs text-muted-foreground">Full width responsive image</p>
+      <p className="text-xs text-muted-foreground">
+        Full width responsive image
+      </p>
 
       <div className="grid grid-cols-2 gap-4">
         <Card className="overflow-hidden">
           <div className="aspect-square w-full overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=600&fit=crop"
-              alt="Responsive image"
+              alt="Alpine peaks beneath a cloudy sky"
               className="h-full w-full object-cover"
             />
           </div>
@@ -306,14 +323,14 @@ function ResponsiveImageDemo() {
           <div className="aspect-square w-full overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&h=600&fit=crop"
-              alt="Responsive image"
+              alt="Alpine peaks beneath a cloudy sky"
               className="h-full w-full object-cover"
             />
           </div>
         </Card>
       </div>
     </div>
-  )
+  );
 }
 
 const responsiveImageCode = `import { Card } from "@/components/ui/card"
@@ -325,14 +342,14 @@ export function ResponsiveImageDemo() {
         <div className="aspect-video w-full overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=600&fit=crop"
-            alt="Responsive image"
+            alt="Alpine peaks beneath a cloudy sky"
             className="h-full w-full object-cover"
           />
         </div>
       </Card>
     </div>
   )
-}`
+}`;
 
 function AvatarImageDemo() {
   return (
@@ -381,7 +398,7 @@ function AvatarImageDemo() {
         <p className="text-xs text-muted-foreground">lg</p>
       </div>
     </div>
-  )
+  );
 }
 
 const avatarImageCode = `export function AvatarImageDemo() {
@@ -410,7 +427,7 @@ const avatarImageCode = `export function AvatarImageDemo() {
       </div>
     </div>
   )
-}`
+}`;
 
 function OverlayImageDemo() {
   return (
@@ -418,7 +435,7 @@ function OverlayImageDemo() {
       <div className="relative h-64 w-full overflow-hidden rounded-lg">
         <img
           src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop"
-          alt="Image with overlay"
+          alt="Alpine peaks beneath a cloudy sky"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -433,7 +450,7 @@ function OverlayImageDemo() {
         </div>
       </div>
     </Card>
-  )
+  );
 }
 
 const overlayImageCode = `import { Card } from "@/components/ui/card"
@@ -456,12 +473,13 @@ export function OverlayImageDemo() {
       </div>
     </Card>
   )
-}`
+}`;
 
 const features = [
   {
     title: "Responsive",
-    description: "Images scale gracefully with aspect ratio utilities and flexible widths.",
+    description:
+      "Images scale gracefully with aspect ratio utilities and flexible widths.",
   },
   {
     title: "Loading States",
@@ -471,13 +489,13 @@ const features = [
     title: "Accessible",
     description: "Proper alt text and ARIA attributes for screen readers.",
   },
-]
+];
 
 const keyboardShortcuts = [
   { keys: "Tab", description: "Navigate through interactive elements" },
   { keys: "Shift + Tab", description: "Navigate backwards" },
   { keys: "Enter", description: "Activate focused links" },
-]
+];
 
 const apiSections = [
   {
@@ -568,7 +586,7 @@ const apiSections = [
       },
     ],
   },
-]
+];
 
 export default function ImagePage() {
   return (
@@ -581,102 +599,7 @@ export default function ImagePage() {
 
       <FeatureGrid features={features} />
 
-      <DemoTabs
-        defaultValue="basic"
-        tabs={[
-          {
-            value: "basic",
-            label: "Basic",
-            demo: (
-              <DemoWrapper
-                title="Basic Images"
-                description="Images with different object-fit values."
-                code={basicImageCode}
-              >
-                <BasicImageDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "rounded",
-            label: "Rounded",
-            demo: (
-              <DemoWrapper
-                title="Rounded Images"
-                description="Images with different border radius values."
-                code={roundedImageCode}
-              >
-                <RoundedImageDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "caption",
-            label: "With Caption",
-            demo: (
-              <DemoWrapper
-                title="Image with Caption"
-                description="Image displayed with caption in a card."
-                code={withCaptionCode}
-              >
-                <WithCaptionDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "loading",
-            label: "Loading States",
-            demo: (
-              <DemoWrapper
-                title="Loading States"
-                description="Images with loading and error states."
-                code={loadingImageCode}
-              >
-                <LoadingImageDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "responsive",
-            label: "Responsive",
-            demo: (
-              <DemoWrapper
-                title="Responsive Images"
-                description="Images that adapt to container width."
-                code={responsiveImageCode}
-              >
-                <ResponsiveImageDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "avatar",
-            label: "Avatar",
-            demo: (
-              <DemoWrapper
-                title="Avatar Images"
-                description="Circular avatar images in different sizes."
-                code={avatarImageCode}
-              >
-                <AvatarImageDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "overlay",
-            label: "Overlay",
-            demo: (
-              <DemoWrapper
-                title="Image with Overlay"
-                description="Image with gradient overlay and text."
-                code={overlayImageCode}
-              >
-                <OverlayImageDemo />
-              </DemoWrapper>
-            ),
-          },
-        ]}
-      />
+      <DemoTabs defaultValue="basic" tabs={imagePageDemoTabsTabs} />
 
       <UsageBlock
         code={basicImageCode}
@@ -696,5 +619,99 @@ export default function ImagePage() {
         description="HTML attributes and Tailwind utilities for images"
       />
     </ComponentPage>
-  )
+  );
 }
+
+const imagePageDemoTabsTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    demo: (
+      <DemoWrapper
+        title="Basic Images"
+        description="Images with different object-fit values."
+        code={basicImageCode}
+      >
+        <BasicImageDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "rounded",
+    label: "Rounded",
+    demo: (
+      <DemoWrapper
+        title="Rounded Images"
+        description="Images with different border radius values."
+        code={roundedImageCode}
+      >
+        <RoundedImageDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "caption",
+    label: "With Caption",
+    demo: (
+      <DemoWrapper
+        title="Image with Caption"
+        description="Image displayed with caption in a card."
+        code={withCaptionCode}
+      >
+        <WithCaptionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "loading",
+    label: "Loading States",
+    demo: (
+      <DemoWrapper
+        title="Loading States"
+        description="Images with loading and error states."
+        code={loadingImageCode}
+      >
+        <LoadingImageDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "responsive",
+    label: "Responsive",
+    demo: (
+      <DemoWrapper
+        title="Responsive Images"
+        description="Images that adapt to container width."
+        code={responsiveImageCode}
+      >
+        <ResponsiveImageDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "avatar",
+    label: "Avatar",
+    demo: (
+      <DemoWrapper
+        title="Avatar Images"
+        description="Circular avatar images in different sizes."
+        code={avatarImageCode}
+      >
+        <AvatarImageDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "overlay",
+    label: "Overlay",
+    demo: (
+      <DemoWrapper
+        title="Image with Overlay"
+        description="Image with gradient overlay and text."
+        code={overlayImageCode}
+      >
+        <OverlayImageDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies React.ComponentProps<typeof DemoTabs>["tabs"];
