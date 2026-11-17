@@ -3,17 +3,19 @@
 
 import * as React from "react";
 import { mergeProps } from "@base-ui/react/merge-props";
+import { Combobox } from "@base-ui/react/combobox";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IconX, IconTrendingUp, IconTrendingDown } from "@tabler/icons-react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
+import { Spinner } from "@/components/ui/spinner";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const badgeVariants = cva(
-  "gap-1.5 rounded-full border border-transparent font-medium transition-all inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-colors overflow-hidden group/badge",
+  "gap-1.5 rounded-full border border-transparent font-medium transition-[color,background-color,border-color,box-shadow,opacity,scale] duration-150 inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden group/badge",
   {
     variants: {
       variant: {
@@ -59,7 +61,7 @@ const badgeVariants = cva(
       },
 
       shimmer: {
-        true: "relative before:absolute before:inset-0 before:-translate-x-full before:animate-badge-shimmer before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent",
+        true: "relative overflow-hidden before:absolute before:inset-0 before:animate-badge-shimmer before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent before:content-['']",
         false: "",
       },
     },
@@ -70,7 +72,24 @@ const badgeVariants = cva(
       disabled: false,
       shimmer: false,
     },
-  }
+    compoundVariants: [
+      {
+        variant: [
+          "ghost",
+          "outline",
+          "link",
+          "primary-soft",
+          "secondary-soft",
+          "destructive-soft",
+          "success-soft",
+          "warning-soft",
+          "info-soft",
+        ],
+        shimmer: true,
+        class: "before:via-foreground/15",
+      },
+    ],
+  },
 );
 
 const badgeDotVariants = cva("rounded-full shrink-0", {
@@ -105,8 +124,11 @@ const badgeDotVariants = cva("rounded-full shrink-0", {
   },
 });
 
+// §9 target size (WCAG 2.5.8): the visual glyph stays small per badge size,
+// but the hit box is padded to ≥ 24×24 and pulled back with negative margin
+// so the visible footprint doesn't grow.
 const badgeCloseVariants = cva(
-  "rounded-full p-0.5 opacity-70 hover:opacity-100 transition-opacity focus:outline-none focus-visible:ring-2",
+  "relative rounded-full p-0.5 opacity-70 hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-ring/50 focus-visible:ring-[2px] after:absolute after:-inset-y-1.5 after:-inset-x-1.5 after:content-['']",
   {
     variants: {
       size: {
@@ -120,7 +142,7 @@ const badgeCloseVariants = cva(
     defaultVariants: {
       size: "default",
     },
-  }
+  },
 );
 
 interface BadgeProps
@@ -160,182 +182,170 @@ interface BadgeProps
 
   /** Preset shorthand that sets sensible variant + label styling. */
   preset?: "beta" | "new" | "version";
+
+  /**
+   * Toggle/chip state for interactive badges. Renders `aria-pressed` and
+   * emits `data-pressed` for styling; only meaningful together with
+   * `onClick` (or a `render` prop that renders a real button).
+   */
+  pressed?: boolean;
 }
 
-function Badge({
+function useBadgeModel({
   className,
-  variant = "default",
-  size = "default",
+  variant: variantInput,
+  size: sizeInput,
   icon,
-  iconPosition = "left",
-  dot = false,
-  dotPulse = "none",
-  dismissible = false,
+  iconPosition: iconPositionInput,
+  dot: dotInput,
+  dotPulse: dotPulseInput,
+  dismissible: dismissibleInput,
   onClose,
-  loading = false,
-  disabled = false,
-  closeLabel = "Remove",
-  shimmer = false,
+  loading: loadingInput,
+  disabled: disabledInput,
+  closeLabel: closeLabelInput,
+  shimmer: shimmerInput,
   trend,
   preset,
+  pressed,
   render,
   children,
   ...props
 }: BadgeProps) {
+  const { variant, size, iconPosition, dot, dotPulse, dismissible } =
+    useBadgeOptions({
+      variant: variantInput,
+      size: sizeInput,
+      iconPosition: iconPositionInput,
+      dot: dotInput,
+      dotPulse: dotPulseInput,
+      dismissible: dismissibleInput,
+    });
+
+  const { loading, disabled, closeLabel, shimmer } = useBadgeOptions2({
+    loading: loadingInput,
+    disabled: disabledInput,
+    closeLabel: closeLabelInput,
+    shimmer: shimmerInput,
+  });
+
   const [isVisible, setIsVisible] = React.useState(true);
   const [isClosing, setIsClosing] = React.useState(false);
   const reducedMotion = useReducedMotion();
 
   // Preset shorthands: resolve variant + default content when not overridden.
   const presetVariant: NonNullable<BadgeProps["variant"]> | undefined =
-    preset === "beta"
-      ? "warning-soft"
-      : preset === "new"
-        ? "success-soft"
-        : preset === "version"
-          ? "secondary"
-          : undefined;
+    badgeResolvePresetVariant1(preset);
 
   const resolvedVariant = presetVariant ?? variant;
 
-  const resolvedChildren =
-    children ??
-    (preset === "beta"
-      ? "Beta"
-      : preset === "new"
-        ? "New"
-        : undefined);
+  const resolvedChildren = children ?? badgeResolveResolvedChildren2(preset);
 
-  const handleClose = React.useCallback(() => {
-    if (loading || disabled) return;
-    setIsClosing(true);
-    setTimeout(
-      () => {
-        setIsVisible(false);
-        onClose?.();
-      },
-      reducedMotion ? 0 : 150
-    );
-  }, [loading, disabled, onClose, reducedMotion]);
-
-  const handleKeyDown = React.useCallback(
-    (e: React.KeyboardEvent) => {
-      if ((e.key === "Enter" || e.key === " ") && dismissible) {
-        e.preventDefault();
-        handleClose();
-      }
-    },
-    [dismissible, handleClose]
+  const handleClose = React.useCallback(
+    () =>
+      badgeUseCallback(
+        loading,
+        disabled,
+        setIsClosing,
+        setIsVisible,
+        onClose,
+        reducedMotion,
+      ),
+    [loading, disabled, onClose, reducedMotion],
   );
+
+  return {
+    className,
+    size,
+    iconPosition,
+    dot,
+    dotPulse,
+    dismissible,
+    loading,
+    disabled,
+    closeLabel,
+    shimmer,
+    trend,
+    pressed,
+    render,
+    props,
+    isVisible,
+    isClosing,
+    reducedMotion,
+    resolvedVariant,
+    resolvedChildren,
+    handleClose,
+    icon,
+  };
+}
+
+function Badge(input: BadgeProps) {
+  const model = useBadgeModel(input);
+
+  const {
+    className,
+    size,
+    iconPosition,
+    dot,
+    loading,
+    disabled,
+    shimmer,
+    pressed,
+    render,
+    props,
+    isVisible,
+    isClosing,
+    reducedMotion,
+    resolvedVariant,
+  } = model;
 
   const dotColor = dot === true || dot === false ? "default" : dot;
   const hasDot = dot !== false;
 
   const badgeContent = (
-    <>
-      {hasDot && (
-        <span
-          className={cn(
-            badgeDotVariants({
-              color: dotColor,
-              size,
-              pulse:
-                !reducedMotion &&
-                (dotPulse === "continuous" || dotPulse === "once")
-                  ? dotPulse
-                  : "none",
-            })
-          )}
-        />
-      )}
-      {trend && (
-        <span className="shrink-0 flex items-center [&>svg]:w-[1em] [&>svg]:h-[1em]">
-          {trend === "up" ? <IconTrendingUp /> : <IconTrendingDown />}
-        </span>
-      )}
-      {icon && (
-        <span className="shrink-0 flex items-center [&>svg]:w-[1em] [&>svg]:h-[1em]">
-          {loading ? (
-            <svg className="animate-spin h-[1em] w-[1em]" viewBox="0 0 24 24">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-                fill="none"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-              />
-            </svg>
-          ) : (
-            icon
-          )}
-        </span>
-      )}
-      <span className={cn(dismissible && !loading && "pr-1")}>
-        {resolvedChildren}
-      </span>
-      {dismissible && !loading && (
-        <button
-          type="button"
-          onClick={handleClose}
-          onKeyDown={handleKeyDown}
-          disabled={disabled}
-          className={cn(
-            badgeCloseVariants({ size }),
-            "focus-visible:ring-offset-1"
-          )}
-          aria-label={closeLabel}
-        >
-          <IconX />
-        </button>
-      )}
-    </>
+    <BadgeMainContentView {...model} hasDot={hasDot} dotColor={dotColor} />
   );
 
+  const { defaultTagName, ariaPressed, isInteractive, isNativeRendered } =
+    badgeInteraction({
+      visible: isVisible,
+      disabled,
+      onClick: props.onClick,
+      render,
+      pressed,
+    });
+
   return useRender({
-    defaultTagName: isVisible ? "span" : "div",
+    defaultTagName,
     props: mergeProps<"span">(
-      { "data-slot": "badge" } as React.HTMLAttributes<HTMLSpanElement>,
       {
         className: cn(
           badgeVariants({
             variant: resolvedVariant,
             size,
-            clickable: props.onClick ? true : false,
+            clickable: Boolean(props.onClick),
             disabled,
             shimmer: shimmer && !reducedMotion,
           }),
-          iconPosition === "right" && "flex-row-reverse",
-          isClosing && "opacity-0 scale-95 transition-all duration-150",
-          !isVisible && "hidden",
-          className
+          { "flex-row-reverse": iconPosition === "right" },
+          { "opacity-0 scale-95 transition-all duration-150": isClosing },
+          { hidden: !isVisible },
+          className,
         ),
         "aria-disabled": disabled || undefined,
-        tabIndex: props.onClick && !disabled ? 0 : undefined,
-        onKeyDown:
-          props.onClick && !disabled
-            ? (e: React.KeyboardEvent) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  (e.currentTarget as HTMLElement).click();
-                }
-              }
-            : undefined,
+        "aria-busy": loading || undefined,
+        ...(isInteractive && isNativeRendered && { type: "button" as const }),
+        "aria-pressed": ariaPressed,
         children: badgeContent,
       },
-      props
+      props,
     ),
     render,
     state: {
       slot: "badge",
       variant: resolvedVariant,
       size,
+      pressed: isInteractive && pressed === true,
     },
   });
 }
@@ -386,11 +396,10 @@ function StatusBadge({
       dot={STATUS_TO_DOT[status]}
       dotPulse={pulse}
       className={className}
-      {...({ "data-slot": "status-badge", role: "status" } as object)}
+      data-slot="status-badge"
       {...props}
     >
-      {displayLabel}
-      {children}
+      {children ?? displayLabel}
     </Badge>
   );
 }
@@ -434,17 +443,31 @@ interface CountBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 function CountBadge({
   count,
-  max = 99,
-  format = "default",
-  size = "default",
-  variant = "default",
+  max: maxInput,
+  format: formatInput,
+  size: sizeInput,
+  variant: variantInput,
   icon,
-  iconPosition = "left",
-  pulse = false,
-  animateCount = false,
+  iconPosition: iconPositionInput,
+  pulse: pulseInput,
+  animateCount: animateCountInput,
   className,
   ...props
 }: CountBadgeProps) {
+  const { max, format, size, variant, iconPosition, pulse } =
+    useCountBadgeOptions({
+      max: maxInput,
+      format: formatInput,
+      size: sizeInput,
+      variant: variantInput,
+      iconPosition: iconPositionInput,
+      pulse: pulseInput,
+    });
+
+  const { animateCount } = useCountBadgeOptions2({
+    animateCount: animateCountInput,
+  });
+
   const reducedMotion = useReducedMotion();
   const showPulse = pulse && count > 0 && !reducedMotion;
   const displayCount = formatCount(count, format, max);
@@ -455,9 +478,13 @@ function CountBadge({
   useGSAP(() => {
     const el = numberRef.current;
 
-    if (!el || !animateCount || format !== "default") return;
+    // Always advance the tween origin — even when this run early-returns
+    // (non-default format / unmounted) — so switching back to "default"
+    // animates from the current value instead of a stale one.
     const from = prevCount.current;
     prevCount.current = count;
+
+    if (!el || !animateCount || format !== "default") return;
 
     if (reducedMotion || from === count) {
       el.textContent = displayCount;
@@ -468,7 +495,8 @@ function CountBadge({
     const obj = { val: from };
     gsap.to(obj, {
       val: count,
-      duration: 0.6,
+      // §3.5: spring motion < 400ms.
+      duration: 0.35,
       ease: "power2.out",
       onUpdate: () => {
         const v = Math.round(obj.val);
@@ -483,12 +511,12 @@ function CountBadge({
       className={cn(
         badgeVariants({ variant, size }),
         "justify-center tabular-nums px-2",
-        size === "xs" && "min-w-4",
-        size === "sm" && "min-w-5",
-        size === "default" && "min-w-6",
-        iconPosition === "right" && "flex-row-reverse",
-        showPulse && "animate-badge-pulse",
-        className
+        { "min-w-4": size === "xs" },
+        { "min-w-5": size === "sm" },
+        { "min-w-6": size === "default" },
+        { "flex-row-reverse": iconPosition === "right" },
+        { "animate-badge-pulse": showPulse },
+        className,
       )}
       {...props}
     >
@@ -523,16 +551,23 @@ interface TagBadgeProps extends Omit<BadgeProps, "variant"> {
 }
 
 function TagBadge({
-  variant = "default",
-  size = "sm",
+  variant: variantInput,
+  size: sizeInput,
   icon,
-  iconPosition = "left",
-  removable = false,
+  iconPosition: iconPositionInput,
+  removable: removableInput,
   onRemove,
   children,
   className,
   ...props
 }: TagBadgeProps) {
+  const { variant, size, iconPosition, removable } = useTagBadgeOptions({
+    variant: variantInput,
+    size: sizeInput,
+    iconPosition: iconPositionInput,
+    removable: removableInput,
+  });
+
   const [isRemoved, setIsRemoved] = React.useState(false);
 
   const handleRemove = () => {
@@ -587,7 +622,7 @@ function BadgeGroup({
       className={cn(
         orientationClasses[orientation],
         gapClasses[gap],
-        className
+        className,
       )}
       {...props}
     >
@@ -597,101 +632,34 @@ function BadgeGroup({
 }
 
 // =============================================================================
-// TagInput — keyboard-removable tag collection
+// TagInput — tag collection built on Base UI Combobox.Chips
 // =============================================================================
 
-interface TagInputProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+interface TagInputProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onChange" | "value"
+> {
   /** Current tags (controlled). */
-  value: string[];
+  value?: string[];
+  /** Initial tags (uncontrolled). */
+  defaultValue?: string[];
   /** Fired whenever the tag list changes (add or remove). */
-  onChange: (tags: string[]) => void;
-  variant?: TagBadgeProps["variant"];
-  size?: BadgeProps["size"];
+  onValueChange?: (tags: string[]) => void;
+  /** Suggested tags shown in the popup; the typed text is appended dynamically. */
+  suggestions?: string[];
   placeholder?: string;
-  /** Disable adding via the inline input (removal-only). */
-  readOnlyInput?: boolean;
-  "aria-label"?: string;
+  /** Maximum number of tags; further input is ignored. */
+  maxTags?: number;
+  disabled?: boolean;
+  size?: BadgeProps["size"];
+  className?: string;
+  ariaLabel?: string;
 }
 
-function TagInput({
-  value,
-  onChange,
-  variant = "secondary",
-  size = "sm",
-  placeholder = "Add tag…",
-  readOnlyInput = false,
-  className,
-  "aria-label": ariaLabel = "Tags",
-  ...props
-}: TagInputProps) {
-  const [draft, setDraft] = React.useState("");
-  const inputRef = React.useRef<HTMLInputElement>(null);
+function TagInput(arg0: TagInputProps) {
+  const model = useTagInputModel(arg0);
 
-  const removeAt = (index: number) => {
-    onChange(value.filter((_, i) => i !== index));
-  };
-
-  const addDraft = () => {
-    const next = draft.trim();
-
-    if (!next || value.includes(next)) {
-      setDraft("");
-
-      return;
-    }
-
-    onChange([...value, next]);
-    setDraft("");
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      addDraft();
-    } else if (e.key === "Backspace" && draft === "" && value.length > 0) {
-      e.preventDefault();
-      removeAt(value.length - 1);
-    }
-  };
-
-  return (
-    <div
-      data-slot="tag-input"
-      role="group"
-      aria-label={ariaLabel}
-      onClick={() => inputRef.current?.focus()}
-      className={cn(
-        "flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-background p-2 text-sm focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px] transition-colors",
-        className
-      )}
-      {...props}
-    >
-      {value.map((tag, i) => (
-        <TagBadge
-          key={`${tag}-${i}`}
-          variant={variant}
-          size={size}
-          removable
-          onRemove={() => removeAt(i)}
-          closeLabel={`Remove ${tag}`}
-        >
-          {tag}
-        </TagBadge>
-      ))}
-      {!readOnlyInput && (
-        <input
-          ref={inputRef}
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onBlur={addDraft}
-          placeholder={value.length === 0 ? placeholder : ""}
-          className="flex-1 min-w-24 bg-transparent outline-none placeholder:text-muted-foreground"
-        />
-      )}
-    </div>
-  );
+  return <TagInputView {...model} />;
 }
 
 // =============================================================================
@@ -727,34 +695,38 @@ interface KiraBadgeProps {
   dotPulse?: BadgeProps["dotPulse"];
 }
 
-function KiraBadge({
-  mode = "badge",
-  variant,
-  size,
-  className,
-  children,
-  icon,
-  iconPosition,
-  trend,
-  shimmer,
-  preset,
-  dismissible,
-  onClose,
-  status = "default",
-  label,
-  pulse = "none",
-  count = 0,
-  max,
-  format,
-  animateCount,
-  dot,
-  dotPulse,
-}: KiraBadgeProps) {
+function KiraBadge(input: KiraBadgeProps) {
+  const {
+    mode: modeInput,
+    variant,
+    size,
+    className,
+    children,
+    icon,
+    iconPosition,
+    dismissible,
+    onClose,
+    status: statusInput,
+    label,
+    pulse: pulseInput,
+    count: countInput,
+    max,
+    format,
+    animateCount,
+  } = input;
+
+  const { mode, status, pulse, count } = useKiraBadgeOptions({
+    mode: modeInput,
+    status: statusInput,
+    pulse: pulseInput,
+    count: countInput,
+  });
+
   if (mode === "status") {
     return (
-      <StatusBadge
+      <KiraStatusBadge
         status={status}
-        size={size === "sm" || size === "lg" ? size : "default"}
+        size={size}
         pulse={pulse}
         label={label}
         className={className}
@@ -764,19 +736,15 @@ function KiraBadge({
 
   if (mode === "count") {
     return (
-      <CountBadge
+      <KiraBadgeCountMode
         count={count}
         max={max}
         format={format}
-        size={size === "xs" || size === "sm" ? size : "default"}
-        variant={
-          variant === "destructive" || variant === "secondary"
-            ? variant
-            : "default"
-        }
+        size={size}
+        variant={variant}
         icon={icon}
         iconPosition={iconPosition}
-        pulse={pulse !== "none"}
+        pulse={pulse}
         animateCount={animateCount}
         className={className}
       />
@@ -786,6 +754,8 @@ function KiraBadge({
   if (mode === "tag") {
     return (
       <TagBadge
+        // SAFETY: TagBadge's variant union is a subset of BadgeProps' union;
+        // out-of-subset values were already gated by the mode switch above.
         variant={variant as TagBadgeProps["variant"]}
         size={size}
         icon={icon}
@@ -799,24 +769,37 @@ function KiraBadge({
     );
   }
 
-  // "badge" and "dot" both render the base Badge; "dot" just forces a dot.
+  return <KiraBadgeBaseMode {...input} mode={mode} />;
+}
+
+function KiraStatusBadge({
+  size,
+  ...props
+}: Omit<StatusBadgeProps, "size"> & { size: BadgeProps["size"] }) {
   return (
-    <Badge
-      variant={variant}
-      size={size}
-      icon={icon}
-      iconPosition={iconPosition}
-      trend={trend}
-      shimmer={shimmer}
-      preset={preset}
-      dismissible={dismissible}
-      onClose={onClose}
-      dot={mode === "dot" ? (dot ?? true) : dot}
-      dotPulse={dotPulse}
-      className={className}
-    >
-      {children}
-    </Badge>
+    <StatusBadge
+      {...props}
+      size={size === "sm" || size === "lg" ? size : "default"}
+    />
+  );
+}
+
+function KiraCountBadge({
+  size,
+  variant,
+  ...props
+}: Omit<CountBadgeProps, "size" | "variant"> &
+  Pick<BadgeProps, "size" | "variant">) {
+  return (
+    <CountBadge
+      {...props}
+      size={size === "xs" || size === "sm" ? size : "default"}
+      variant={
+        variant === "destructive" || variant === "secondary"
+          ? variant
+          : "default"
+      }
+    />
   );
 }
 
@@ -841,3 +824,687 @@ export type {
   TagInputProps,
   KiraBadgeProps,
 };
+
+function keyedTags(tags: readonly string[]) {
+  const occurrences = new Map<string, number>();
+
+  return tags.map((tag) => {
+    const occurrence = occurrences.get(tag) ?? 0;
+    occurrences.set(tag, occurrence + 1);
+
+    return { tag, key: JSON.stringify([tag, occurrence]) };
+  });
+}
+
+function resolveBadgeOptions({
+  variant = "default",
+  size = "default",
+  iconPosition = "left",
+  dot = false,
+  dotPulse = "none",
+  dismissible = false,
+}: {
+  variant?: BadgeProps["variant"];
+  size?: BadgeProps["size"];
+  iconPosition?: BadgeProps["iconPosition"];
+  dot?: BadgeProps["dot"];
+  dotPulse?: BadgeProps["dotPulse"];
+  dismissible?: BadgeProps["dismissible"];
+}) {
+  return { variant, size, iconPosition, dot, dotPulse, dismissible };
+}
+
+function resolveBadgeOptions2({
+  loading = false,
+  disabled = false,
+  closeLabel = "Remove",
+  shimmer = false,
+}: {
+  loading?: BadgeProps["loading"];
+  disabled?: BadgeProps["disabled"];
+  closeLabel?: BadgeProps["closeLabel"];
+  shimmer?: BadgeProps["shimmer"];
+}) {
+  return { loading, disabled, closeLabel, shimmer };
+}
+
+function resolveCountBadgeOptions({
+  max = 99,
+  format = "default",
+  size = "default",
+  variant = "default",
+  iconPosition = "left",
+  pulse = false,
+}: {
+  max?: CountBadgeProps["max"];
+  format?: CountBadgeProps["format"];
+  size?: CountBadgeProps["size"];
+  variant?: CountBadgeProps["variant"];
+  iconPosition?: CountBadgeProps["iconPosition"];
+  pulse?: CountBadgeProps["pulse"];
+}) {
+  return { max, format, size, variant, iconPosition, pulse };
+}
+
+function resolveCountBadgeOptions2({
+  animateCount = false,
+}: {
+  animateCount?: CountBadgeProps["animateCount"];
+}) {
+  return { animateCount };
+}
+
+function resolveTagBadgeOptions({
+  variant = "default",
+  size = "sm",
+  iconPosition = "left",
+  removable = false,
+}: {
+  variant?: TagBadgeProps["variant"];
+  size?: TagBadgeProps["size"];
+  iconPosition?: TagBadgeProps["iconPosition"];
+  removable?: TagBadgeProps["removable"];
+}) {
+  return { variant, size, iconPosition, removable };
+}
+
+function resolveTagInputOptions({
+  suggestions = [],
+  placeholder = "Add tag…",
+  disabled = false,
+  size = "sm",
+  ariaLabel = "Tags",
+}: {
+  suggestions?: TagInputProps["suggestions"];
+  placeholder?: TagInputProps["placeholder"];
+  disabled?: TagInputProps["disabled"];
+  size?: TagInputProps["size"];
+  ariaLabel?: TagInputProps["ariaLabel"];
+}) {
+  return { suggestions, placeholder, disabled, size, ariaLabel };
+}
+
+function resolveKiraBadgeOptions({
+  mode = "badge",
+  status = "default",
+  pulse = "none",
+  count = 0,
+}: {
+  mode?: KiraBadgeProps["mode"];
+  status?: KiraBadgeProps["status"];
+  pulse?: KiraBadgeProps["pulse"];
+  count?: KiraBadgeProps["count"];
+}) {
+  return { mode, status, pulse, count };
+}
+
+function BadgeContentView({
+  value,
+  size,
+  placeholder,
+}: {
+  value: string[];
+  size: "default" | "sm" | "lg" | "xs" | "xl" | null;
+  placeholder: string;
+}) {
+  return (
+    <Combobox.Chips className="contents">
+      {keyedTags(value).map(({ tag, key }) => (
+        <Combobox.Chip
+          key={key}
+          className={cn(
+            badgeVariants({ variant: "secondary", size }),
+            "rounded-md normal-case",
+          )}
+        >
+          {tag}
+          <Combobox.ChipRemove
+            className="flex items-center justify-center rounded-sm text-current opacity-70 hover:opacity-100"
+            aria-label={`Remove ${tag}`}
+          >
+            <IconX className="h-3 w-3" />
+          </Combobox.ChipRemove>
+        </Combobox.Chip>
+      ))}
+      <Combobox.Input
+        placeholder={value.length === 0 ? placeholder : ""}
+        className="h-6 min-w-24 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
+      />
+    </Combobox.Chips>
+  );
+}
+
+function useTagInputModel({
+  value: valueProp,
+  defaultValue,
+  onValueChange,
+  suggestions: suggestionsInput,
+  placeholder: placeholderInput,
+  maxTags,
+  disabled: disabledInput,
+  size: sizeInput,
+  className,
+  ariaLabel: ariaLabelInput,
+  ...props
+}: TagInputProps) {
+  const { suggestions, placeholder, disabled, size, ariaLabel } =
+    useTagInputOptions({
+      suggestions: suggestionsInput,
+      placeholder: placeholderInput,
+      disabled: disabledInput,
+      size: sizeInput,
+      ariaLabel: ariaLabelInput,
+    });
+
+  const [internal, setInternal] = React.useState<string[]>(defaultValue ?? []);
+  const value = valueProp ?? internal;
+  const [inputValue, setInputValue] = React.useState("");
+
+  const commit = (next: string[]) =>
+    badgeCommit(next, maxTags, setInternal, onValueChange);
+
+  // Filter suggestions against the typed query and append the raw typed
+  // text as a creatable item so Enter can commit arbitrary tags.
+  const items = React.useMemo(
+    () => badgeUseMemo(inputValue, suggestions),
+    [inputValue, suggestions],
+  );
+
+  return {
+    items,
+    value,
+    commit,
+    inputValue,
+    setInputValue,
+    disabled,
+    ariaLabel,
+    className,
+    props,
+    size,
+    placeholder,
+  };
+}
+
+function TagInputView({
+  items,
+  value,
+  commit,
+  inputValue,
+  setInputValue,
+  disabled,
+  ariaLabel,
+  className,
+  props,
+  size,
+  placeholder,
+}: ReturnType<typeof useTagInputModel>) {
+  return (
+    <Combobox.Root
+      multiple
+      items={items}
+      value={value}
+      onValueChange={(next) => commit([...next])}
+      inputValue={inputValue}
+      onInputValueChange={setInputValue}
+      disabled={disabled}
+      autoHighlight
+    >
+      <div
+        data-slot="tag-input"
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This generic ARIA group preserves the custom composite layout without fieldset defaults or form semantics.
+        role="group"
+        aria-label={ariaLabel}
+        className={cn(
+          "flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-background p-2 text-sm focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px] transition-colors",
+          { "pointer-events-none opacity-50": disabled },
+          className,
+        )}
+        {...props}
+      >
+        <BadgeContentView value={value} size={size} placeholder={placeholder} />
+      </div>
+      <Combobox.Portal>
+        <Combobox.Positioner>
+          <Combobox.Popup className="z-50 min-w-(--anchor-width) rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md">
+            <Combobox.List>
+              <Combobox.Empty className="px-2 py-1.5 text-sm text-muted-foreground">
+                No matching tags
+              </Combobox.Empty>
+              {items.map((tag) => (
+                <Combobox.Item
+                  key={tag}
+                  value={tag}
+                  className="flex cursor-pointer items-center rounded-md px-2 py-1.5 text-sm outline-none data-highlighted:bg-muted data-highlighted:text-foreground"
+                >
+                  {tag}
+                </Combobox.Item>
+              ))}
+            </Combobox.List>
+          </Combobox.Popup>
+        </Combobox.Positioner>
+      </Combobox.Portal>
+      <Combobox.Status className="sr-only" />
+    </Combobox.Root>
+  );
+}
+
+function useBadgeOptions({
+  variant: variantInput,
+  size: sizeInput,
+  iconPosition: iconPositionInput,
+  dot: dotInput,
+  dotPulse: dotPulseInput,
+  dismissible: dismissibleInput,
+}: Parameters<typeof resolveBadgeOptions>[0]) {
+  return React.useMemo(
+    () =>
+      resolveBadgeOptions({
+        variant: variantInput,
+        size: sizeInput,
+        iconPosition: iconPositionInput,
+        dot: dotInput,
+        dotPulse: dotPulseInput,
+        dismissible: dismissibleInput,
+      }),
+    [
+      variantInput,
+      sizeInput,
+      iconPositionInput,
+      dotInput,
+      dotPulseInput,
+      dismissibleInput,
+    ],
+  );
+}
+
+function useBadgeOptions2({
+  loading: loadingInput,
+  disabled: disabledInput,
+  closeLabel: closeLabelInput,
+  shimmer: shimmerInput,
+}: Parameters<typeof resolveBadgeOptions2>[0]) {
+  return React.useMemo(
+    () =>
+      resolveBadgeOptions2({
+        loading: loadingInput,
+        disabled: disabledInput,
+        closeLabel: closeLabelInput,
+        shimmer: shimmerInput,
+      }),
+    [loadingInput, disabledInput, closeLabelInput, shimmerInput],
+  );
+}
+
+function useCountBadgeOptions({
+  max: maxInput,
+  format: formatInput,
+  size: sizeInput,
+  variant: variantInput,
+  iconPosition: iconPositionInput,
+  pulse: pulseInput,
+}: Parameters<typeof resolveCountBadgeOptions>[0]) {
+  return React.useMemo(
+    () =>
+      resolveCountBadgeOptions({
+        max: maxInput,
+        format: formatInput,
+        size: sizeInput,
+        variant: variantInput,
+        iconPosition: iconPositionInput,
+        pulse: pulseInput,
+      }),
+    [
+      maxInput,
+      formatInput,
+      sizeInput,
+      variantInput,
+      iconPositionInput,
+      pulseInput,
+    ],
+  );
+}
+
+function useCountBadgeOptions2({
+  animateCount: animateCountInput,
+}: Parameters<typeof resolveCountBadgeOptions2>[0]) {
+  return React.useMemo(
+    () => resolveCountBadgeOptions2({ animateCount: animateCountInput }),
+    [animateCountInput],
+  );
+}
+
+function useTagBadgeOptions({
+  variant: variantInput,
+  size: sizeInput,
+  iconPosition: iconPositionInput,
+  removable: removableInput,
+}: Parameters<typeof resolveTagBadgeOptions>[0]) {
+  return React.useMemo(
+    () =>
+      resolveTagBadgeOptions({
+        variant: variantInput,
+        size: sizeInput,
+        iconPosition: iconPositionInput,
+        removable: removableInput,
+      }),
+    [variantInput, sizeInput, iconPositionInput, removableInput],
+  );
+}
+
+function useKiraBadgeOptions({
+  mode: modeInput,
+  status: statusInput,
+  pulse: pulseInput,
+  count: countInput,
+}: Parameters<typeof resolveKiraBadgeOptions>[0]) {
+  return React.useMemo(
+    () =>
+      resolveKiraBadgeOptions({
+        mode: modeInput,
+        status: statusInput,
+        pulse: pulseInput,
+        count: countInput,
+      }),
+    [modeInput, statusInput, pulseInput, countInput],
+  );
+}
+
+function useTagInputOptions({
+  suggestions: suggestionsInput,
+  placeholder: placeholderInput,
+  disabled: disabledInput,
+  size: sizeInput,
+  ariaLabel: ariaLabelInput,
+}: Parameters<typeof resolveTagInputOptions>[0]) {
+  return React.useMemo(
+    () =>
+      resolveTagInputOptions({
+        suggestions: suggestionsInput,
+        placeholder: placeholderInput,
+        disabled: disabledInput,
+        size: sizeInput,
+        ariaLabel: ariaLabelInput,
+      }),
+    [
+      suggestionsInput,
+      placeholderInput,
+      disabledInput,
+      sizeInput,
+      ariaLabelInput,
+    ],
+  );
+}
+
+function badgeResolvePresetVariant1(
+  preset: "beta" | "new" | "version" | undefined,
+) {
+  if (preset === "beta") {
+    return "warning-soft" as const;
+  }
+
+  if (preset === "new") {
+    return "success-soft" as const;
+  }
+
+  if (preset === "version") {
+    return "secondary" as const;
+  }
+
+  return undefined;
+}
+
+function badgeResolveResolvedChildren2(
+  preset: "beta" | "new" | "version" | undefined,
+) {
+  if (preset === "beta") {
+    return "Beta" as const;
+  }
+
+  if (preset === "new") {
+    return "New" as const;
+  }
+
+  return undefined;
+}
+
+function badgeUseCallback(
+  loading: boolean,
+  disabled: boolean,
+  setIsClosing: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsVisible: React.Dispatch<React.SetStateAction<boolean>>,
+  onClose: (() => void) | undefined,
+  reducedMotion: boolean,
+) {
+  if (loading || disabled) return;
+  setIsClosing(true);
+  setTimeout(
+    () => {
+      setIsVisible(false);
+      onClose?.();
+    },
+    reducedMotion ? 0 : 150,
+  );
+}
+
+function badgeCommit(
+  next: string[],
+  maxTags: number | undefined,
+  setInternal: React.Dispatch<React.SetStateAction<string[]>>,
+  onValueChange: ((tags: string[]) => void) | undefined,
+) {
+  // Split any comma-separated input that slipped into a committed value,
+  // then dedupe case-insensitively on trimmed text.
+  const split = next.flatMap((t) => t.split(",").map((s) => s.trim()));
+  const seen = new Set<string>();
+
+  const deduped = split.filter((t) => {
+    if (!t) return false;
+    const key = t.toLowerCase();
+
+    if (seen.has(key)) return false;
+    seen.add(key);
+
+    return true;
+  });
+
+  const capped = maxTags === undefined ? deduped : deduped.slice(0, maxTags);
+  setInternal(capped);
+  onValueChange?.(capped);
+}
+
+function badgeUseMemo(inputValue: string, suggestions: string[]) {
+  const query = inputValue.trim().toLowerCase();
+  const typed = inputValue.trim();
+
+  const matching = query
+    ? suggestions.filter((s) => s.toLowerCase().includes(query))
+    : suggestions;
+
+  const all = [
+    ...matching,
+    ...(typed && !matching.some((s) => s.toLowerCase() === typed)
+      ? [typed]
+      : []),
+  ];
+
+  const seen = new Set<string>();
+
+  return all.filter((t) => {
+    const key = t.toLowerCase();
+
+    if (seen.has(key)) return false;
+    seen.add(key);
+
+    return true;
+  });
+}
+
+type BadgeMainContentViewProps = {
+  hasDot: boolean;
+  dotColor:
+    | "default"
+    | "secondary"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | "outline"
+    | "muted";
+  size: "default" | "xs" | "sm" | "lg" | "xl" | null;
+  reducedMotion: boolean;
+  dotPulse: "none" | "continuous" | "once";
+  trend: BadgeProps["trend"];
+  loading: boolean;
+  icon: BadgeProps["icon"];
+  dismissible: boolean;
+  resolvedChildren: React.ReactNode;
+  handleClose: () => void;
+  disabled: boolean;
+  closeLabel: string;
+};
+
+// oxlint-disable-next-line eslint/complexity -- The pure badge content renderer keeps its optional dot, trend, loading icon and dismiss affordance in one inline sequence.
+function BadgeMainContentView({
+  hasDot,
+  dotColor,
+  size,
+  reducedMotion,
+  dotPulse,
+  trend,
+  loading,
+  icon,
+  dismissible,
+  resolvedChildren,
+  handleClose,
+  disabled,
+  closeLabel,
+}: BadgeMainContentViewProps) {
+  return (
+    <>
+      {hasDot && (
+        <span
+          className={cn(
+            badgeDotVariants({
+              color: dotColor,
+              size,
+              pulse:
+                !reducedMotion &&
+                (dotPulse === "continuous" || dotPulse === "once")
+                  ? dotPulse
+                  : "none",
+            }),
+          )}
+        />
+      )}
+      {trend && (
+        <span className="shrink-0 flex items-center [&>svg]:w-[1em] [&>svg]:h-[1em]">
+          {trend === "up" ? <IconTrendingUp /> : <IconTrendingDown />}
+        </span>
+      )}
+      {(loading || icon) && (
+        <span className="shrink-0 flex items-center [&>svg]:w-[1em] [&>svg]:h-[1em]">
+          {loading ? (
+            <Spinner className="h-[1em] w-[1em] text-current" />
+          ) : (
+            icon
+          )}
+        </span>
+      )}
+      <span className={cn({ "pr-1": dismissible && !loading })}>
+        {resolvedChildren}
+      </span>
+      {dismissible && !loading && (
+        <button
+          type="button"
+          onClick={handleClose}
+          disabled={disabled}
+          className={cn(
+            badgeCloseVariants({ size }),
+            "focus-visible:ring-offset-1",
+          )}
+          aria-label={closeLabel}
+        >
+          <IconX />
+        </button>
+      )}
+    </>
+  );
+}
+
+function badgeInteraction({
+  visible,
+  disabled,
+  onClick,
+  render,
+  pressed,
+}: Pick<BadgeProps, "disabled" | "onClick" | "render" | "pressed"> & {
+  visible: boolean;
+}) {
+  const isInteractive = Boolean(onClick) && !disabled;
+  const isNativeRendered = render == null;
+  let defaultTagName: "button" | "span" | "div" = "span";
+
+  if (!visible) defaultTagName = "div";
+  else if (isInteractive && isNativeRendered) defaultTagName = "button";
+
+  return {
+    defaultTagName,
+    isInteractive,
+    isNativeRendered,
+    ariaPressed: isInteractive ? pressed : undefined,
+  };
+}
+
+function KiraBadgeCountMode({
+  count,
+  pulse,
+  ...props
+}: Pick<
+  KiraBadgeProps,
+  | "max"
+  | "format"
+  | "size"
+  | "variant"
+  | "icon"
+  | "iconPosition"
+  | "animateCount"
+  | "className"
+> & { count: number; pulse: NonNullable<KiraBadgeProps["pulse"]> }) {
+  return <KiraCountBadge {...props} count={count} pulse={pulse !== "none"} />;
+}
+
+function KiraBadgeBaseMode({
+  mode,
+  variant,
+  size,
+  icon,
+  iconPosition,
+  trend,
+  shimmer,
+  preset,
+  dismissible,
+  onClose,
+  dot,
+  dotPulse,
+  className,
+  children,
+}: KiraBadgeProps & { mode: NonNullable<KiraBadgeProps["mode"]> }) {
+  return (
+    <Badge
+      variant={variant}
+      size={size}
+      icon={icon}
+      iconPosition={iconPosition}
+      trend={trend}
+      shimmer={shimmer}
+      preset={preset}
+      dismissible={dismissible}
+      onClose={onClose}
+      dot={mode === "dot" ? (dot ?? true) : dot}
+      dotPulse={dotPulse}
+      className={className}
+    >
+      {children}
+    </Badge>
+  );
+}

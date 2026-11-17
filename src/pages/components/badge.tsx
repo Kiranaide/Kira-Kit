@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import { useState } from "react";
 import {
   Badge,
@@ -28,6 +29,8 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
+  KeyboardShortcuts,
+  Changelog,
 } from "@/components/docs";
 
 // =============================================================================
@@ -195,51 +198,24 @@ const dotIndicatorCode = `import { Badge } from "@/components/ui/badge"
 <Badge dot="success" dotPulse="once">New</Badge>`;
 
 function InteractiveDemo() {
+  const [activeFilters, setActiveFilters] = useState<string[]>(["react"]);
+
+  const toggleFilter = (filter: string) => {
+    setActiveFilters((prev) =>
+      prev.includes(filter)
+        ? prev.filter((f) => f !== filter)
+        : [...prev, filter],
+    );
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">
-          Clickable
-        </h4>
-        <div className="flex flex-wrap gap-3">
-          <Badge
-            variant="primary-soft"
-            icon={<IconStar />}
-            onClick={() => alert("Premium clicked!")}
-          >
-            Premium
-          </Badge>
-          <Badge
-            variant="success-soft"
-            icon={<IconCheck />}
-            onClick={() => alert("Verified clicked!")}
-          >
-            Verified
-          </Badge>
-        </div>
-      </div>
-      <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">
-          Dismissible
-        </h4>
-        <div className="flex flex-wrap gap-3">
-          <Badge
-            variant="secondary-soft"
-            dismissible
-            onClose={() => alert("Dismissed!")}
-          >
-            Removable
-          </Badge>
-          <Badge
-            variant="warning-soft"
-            icon={<IconAlertCircle />}
-            dismissible
-            onClose={() => alert("Dismissed!")}
-          >
-            Can be closed
-          </Badge>
-        </div>
-      </div>
+      <InteractiveClickableRealButtonsTabEnterSection />
+      <InteractiveToggleChipsSection
+        activeFilters={activeFilters}
+        toggleFilter={toggleFilter}
+      />
+      <InteractiveDismissibleCloseHitArea24pxSection />
       <div>
         <h4 className="text-sm font-medium text-muted-foreground mb-3">
           Loading
@@ -260,10 +236,20 @@ function InteractiveDemo() {
 
 const interactiveCode = `import { Badge } from "@/components/ui/badge"
 
-// Clickable badge
+// Clickable badge — renders a real <button> when no render prop is given
 <Badge onClick={() => handleClick()}>Click me</Badge>
 
-// Dismissible badge
+// Toggle chip — aria-pressed + data-pressed for styling
+const [active, setActive] = useState(true)
+<Badge
+  pressed={active}
+  onClick={() => setActive(!active)}
+  variant={active ? "primary-soft" : "outline"}
+>
+  react
+</Badge>
+
+// Dismissible badge — close target is ≥ 24×24 despite the small ×
 <Badge dismissible onClose={() => handleClose()}>
   Removable
 </Badge>
@@ -479,24 +465,42 @@ function NumberTickerDemo() {
         <div className="relative">
           <IconBell className="w-6 h-6 text-muted-foreground" />
           <span className="absolute -top-2 -right-2">
-            <CountBadge count={count} animateCount size="sm" variant="destructive" />
+            <CountBadge
+              count={count}
+              animateCount
+              size="sm"
+              variant="destructive"
+            />
           </span>
         </div>
         <CountBadge count={count} animateCount />
       </div>
       <div className="flex gap-2">
-        <Button size="sm" variant="outline" onClick={() => setCount((c) => Math.max(0, c - 3))}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setCount((c) => Math.max(0, c - 3))}
+        >
           −3
         </Button>
-        <Button size="sm" variant="outline" onClick={() => setCount((c) => c + 3)}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setCount((c) => c + 3)}
+        >
           +3
         </Button>
-        <Button size="sm" variant="outline" onClick={() => setCount((c) => c + 25)}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setCount((c) => c + 25)}
+        >
           +25
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">
-        The number rolls to its new value. Disabled automatically under reduced-motion.
+        The number rolls to its new value. Disabled automatically under
+        reduced-motion.
       </p>
     </div>
   );
@@ -515,7 +519,9 @@ function TrendsShimmerDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Trend arrows</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Trend arrows
+        </h3>
         <div className="flex flex-wrap gap-3">
           <Badge variant="success-soft" trend="up">
             12.5%
@@ -529,7 +535,9 @@ function TrendsShimmerDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Shimmer</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+          Shimmer
+        </h3>
         <div className="flex flex-wrap gap-3">
           <Badge variant="primary-soft" shimmer>
             Featured
@@ -576,27 +584,146 @@ const presetsCode = `import { Badge } from "@/components/ui/badge"
 <Badge preset="version">v2.0.0</Badge>`;
 
 // =============================================================================
-// Demo: Tag input (keyboard-removable)
+// Demo: Badge states
 // =============================================================================
-function TagInputDemo() {
-  const [tags, setTags] = useState<string[]>(["design", "frontend", "a11y"]);
+function StatesDemo() {
+  const [tickerCount, setTickerCount] = useState(980);
+
+  const [tickerFormat, setTickerFormat] = useState<
+    "default" | "short" | "commas"
+  >("default");
 
   return (
-    <div className="max-w-md space-y-2">
-      <TagInput value={tags} onChange={setTags} aria-label="Project tags" />
-      <p className="text-xs text-muted-foreground">
-        Type + Enter to add. Backspace on an empty field removes the last tag.
-      </p>
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-center gap-3">
+        <Badge loading>Loading</Badge>
+        <Badge loading variant="outline">
+          Loading
+        </Badge>
+        <Badge loading variant="ghost">
+          Loading
+        </Badge>
+        <Badge disabled>Disabled</Badge>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <Badge onClick={() => {}} variant="primary-soft">
+          Clickable (scales on press)
+        </Badge>
+        <Badge dismissible onClose={() => {}} variant="secondary">
+          Dismissible
+        </Badge>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <StatusBadge status="success" />
+        <StatusBadge status="error" />
+        <StatusBadge status="warning" />
+        <StatusBadge status="info">Children replace label</StatusBadge>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <Badge variant="default" shimmer>
+          Shimmer on solid
+        </Badge>
+        <Badge variant="primary-soft" shimmer>
+          Shimmer on soft
+        </Badge>
+        <Badge variant="outline" shimmer>
+          Shimmer on outline
+        </Badge>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <Badge size="xs">XS</Badge>
+        <Badge size="xl">
+          Very long badge label that must stay on one line without wrapping or
+          breaking the pill
+        </Badge>
+      </div>
+
+      <StatesControlsSection
+        tickerCount={tickerCount}
+        setTickerCount={setTickerCount}
+        tickerFormat={tickerFormat}
+        setTickerFormat={setTickerFormat}
+      />
+    </div>
+  );
+}
+
+const statesCode = `import { Badge, StatusBadge, CountBadge } from "@/components/ui/badge"
+
+// Loading (shared Spinner, inherits foreground)
+<Badge loading>Loading</Badge>
+
+// Disabled / clickable / dismissible
+<Badge disabled>Disabled</Badge>
+<Badge onClick={() => {}} variant="primary-soft">Clickable</Badge>
+<Badge dismissible onClose={() => {}}>Dismissible</Badge>
+
+// StatusBadge: children replace the label (no role="status")
+<StatusBadge status="success">Children replace label</StatusBadge>
+
+// Shimmer on solid vs soft/outline (foreground-tinted sweep)
+<Badge variant="default" shimmer>Solid</Badge>
+<Badge variant="primary-soft" shimmer>Soft</Badge>
+
+// CountBadge ticker + format switch (no stale tween origin)
+<CountBadge count={count} animateCount format={format} />`;
+
+// =============================================================================
+// Demo: Tag input (Combobox.Chips)
+// =============================================================================
+function TagInputDemo() {
+  const [tags, setTags] = useState<string[]>(["design", "frontend"]);
+  const [capped, setCapped] = useState<string[]>([]);
+
+  return (
+    <div className="max-w-md space-y-6">
+      <div className="space-y-2">
+        <TagInput
+          value={tags}
+          onValueChange={setTags}
+          suggestions={["design", "frontend", "a11y", "react", "motion"]}
+          ariaLabel="Project tags"
+        />
+        <p className="text-xs text-muted-foreground">
+          Type to filter or create · Enter commits · Backspace removes the last
+          chip · Arrow keys navigate suggestions · Esc closes the popup.
+        </p>
+      </div>
+      <div className="space-y-2">
+        <TagInput
+          value={capped}
+          onValueChange={setCapped}
+          suggestions={["one", "two", "three"]}
+          maxTags={3}
+          size="sm"
+          placeholder="Max 3 tags…"
+          ariaLabel="Capped tags"
+        />
+        <p className="text-xs text-muted-foreground">
+          <code>maxTags=3</code> enforced — extra tags are ignored.
+        </p>
+      </div>
     </div>
   );
 }
 
 const tagInputCode = `import { TagInput } from "@/components/ui/badge"
 
-const [tags, setTags] = useState(["design", "frontend", "a11y"])
+const [tags, setTags] = useState(["design", "frontend"])
 
-<TagInput value={tags} onChange={setTags} aria-label="Project tags" />
-// Enter / comma adds · Backspace on empty input removes last`;
+<TagInput
+  value={tags}
+  onValueChange={setTags}
+  suggestions={["design", "frontend", "a11y", "react"]}
+  maxTags={5}
+  ariaLabel="Project tags"
+/>
+// Combobox.Chips chips · Enter commits · Backspace removes last
+// comma input splits into multiple tags · dedupe case-insensitive`;
 
 // =============================================================================
 // Demo: KiraBadge (prop-driven)
@@ -636,6 +763,7 @@ const kiraBadgeCode = `import { KiraBadge } from "@/components/ui/badge"
 // Main Page Component
 // =============================================================================
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function BadgePage() {
   const features = [
     {
@@ -814,12 +942,25 @@ export default function BadgePage() {
       ),
     },
     {
+      value: "states",
+      label: "States",
+      demo: (
+        <DemoWrapper
+          title="Badge States"
+          description="Loading, disabled, interactive, dismissible, shimmer, long/empty labels, format switching"
+          code={statesCode}
+        >
+          <StatesDemo />
+        </DemoWrapper>
+      ),
+    },
+    {
       value: "tag-input",
       label: "Tag Input",
       demo: (
         <DemoWrapper
           title="Tag Input"
-          description="Keyboard-removable tag collection (Enter to add, Backspace to remove)"
+          description="Combobox-powered tag collection: suggestions, maxTags, Enter commits, Backspace removes the last chip"
           code={tagInputCode}
         >
           <TagInputDemo />
@@ -965,7 +1106,15 @@ export default function BadgePage() {
           prop: "onClick",
           type: "() => void",
           default: "-",
-          description: "Click handler",
+          description:
+            "Click handler; without a render prop the badge renders a real <button>",
+        },
+        {
+          prop: "pressed",
+          type: "boolean",
+          default: "-",
+          description:
+            "Toggle state: sets aria-pressed + data-pressed (interactive badges)",
         },
       ],
     },
@@ -983,6 +1132,13 @@ export default function BadgePage() {
           type: '"once" | "continuous"',
           default: "-",
           description: "Pulse animation",
+        },
+        {
+          prop: "label",
+          type: "string",
+          default: "status default",
+          description:
+            "Override the default label; children replace the label instead",
         },
         {
           prop: "size",
@@ -1029,7 +1185,8 @@ export default function BadgePage() {
           prop: "animateCount",
           type: "boolean",
           default: "false",
-          description: "Roll the number to its new value (respects reduced motion)",
+          description:
+            "Roll the number to its new value (respects reduced motion)",
         },
       ],
     },
@@ -1083,10 +1240,42 @@ export default function BadgePage() {
           description: "Current tags (controlled)",
         },
         {
-          prop: "onChange",
+          prop: "defaultValue",
+          type: "string[]",
+          default: "[]",
+          description: "Initial tags (uncontrolled)",
+        },
+        {
+          prop: "onValueChange",
           type: "(tags: string[]) => void",
           default: "-",
-          description: "Fired on add / remove",
+          description:
+            "Fired on add / remove (deduped, comma-split, maxTags-capped)",
+        },
+        {
+          prop: "suggestions",
+          type: "string[]",
+          default: "[]",
+          description:
+            "Suggested tags in the popup; typed text is appended dynamically",
+        },
+        {
+          prop: "maxTags",
+          type: "number",
+          default: "-",
+          description: "Maximum number of tags",
+        },
+        {
+          prop: "disabled",
+          type: "boolean",
+          default: "false",
+          description: "Disable the input and chips",
+        },
+        {
+          prop: "size",
+          type: 'Badge size ("sm" default)',
+          default: '"sm"',
+          description: "Chip size",
         },
         {
           prop: "placeholder",
@@ -1095,10 +1284,10 @@ export default function BadgePage() {
           description: "Empty-state input placeholder",
         },
         {
-          prop: "readOnlyInput",
-          type: "boolean",
-          default: "false",
-          description: "Removal-only (hide the input)",
+          prop: "ariaLabel",
+          type: "string",
+          default: '"Tags"',
+          description: "Accessible name for the group",
         },
       ],
     },
@@ -1126,16 +1315,304 @@ export default function BadgePage() {
       <PageHeader
         title="Badge"
         description="Small status indicators and labels to highlight information, display counts, and show user status."
-        version="v2.0"
+        version="v3.1.0"
       />
 
       <FeatureGrid features={features} />
 
       <DemoTabs tabs={demoTabs} />
 
+      <KeyboardShortcuts shortcuts={badgePageKeyboardShortcutsShortcuts} />
+
       <UsageBlock code={usageCode} />
 
       <APIReference sections={apiReference} />
+
+      <Changelog entries={badgePageChangelogEntries} />
     </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located and follows its source constants.
+const badgePageKeyboardShortcutsShortcuts = [
+  {
+    keys: "Tab",
+    description:
+      "Move between badges and into the tag input (focus rings visible)",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Activate a clickable badge — it renders a native <button> (inherited from the browser); a render prop replaces the element with its own semantics",
+  },
+  {
+    keys: "Esc",
+    description: "Close the tag input popup (inherited from Base UI)",
+  },
+  {
+    keys: "Backspace",
+    description:
+      "Remove the last chip in the tag input (inherited from Base UI)",
+  },
+  {
+    keys: "↑ / ↓",
+    description: "Navigate tag input suggestions (inherited from Base UI)",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const badgePageChangelogEntries = [
+  {
+    version: "3.1.0",
+    date: "4 November 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "Interactive badges render a real <button>",
+        description:
+          'A Badge with onClick and no render prop now renders <button type="button"> instead of a span with tabIndex + Enter/Space shim. Enter no longer needs the shim; press styling via data-pressed.',
+      },
+      {
+        type: "added",
+        title: "pressed prop for toggle chips",
+        description:
+          "Sets aria-pressed and data-pressed so filter chips expose selected state to AT and CSS (data-[pressed]:…).",
+      },
+      {
+        type: "changed",
+        title: "Close button hit area ≥ 24×24",
+        description:
+          "The dismissible × is padded out to the WCAG 2.5.8 floor with an ::after hit area; the visible glyph size is unchanged.",
+      },
+      {
+        type: "changed",
+        title: "CountBadge ticker 0.6s → 0.35s",
+        description:
+          "Under the 400ms motion cap (§3.5); reduced-motion still snaps instantly.",
+      },
+    ],
+  },
+  {
+    version: "3.0.0",
+    date: "2 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Base UI 1.9.0 audit",
+        description:
+          "Full v2.3 re-audit against @base-ui/react 1.9.0 (latest).",
+      },
+      {
+        type: "breaking",
+        title: "TagInput rewritten on Combobox.Chips",
+        description:
+          "New props API: value/defaultValue + onValueChange (was tags/onChange), plus suggestions, maxTags, disabled, ariaLabel. readOnlyInput and variant removed. Chips render via Base UI Combobox with full a11y (arrow-key navigation, result announcements).",
+      },
+      {
+        type: "breaking",
+        title: 'StatusBadge: role="status" removed; children replace label',
+        description:
+          "No more one live region per badge (announcement spam). Render a single contextual status region around your badges if you need live announcements. Children now replace the default label instead of being concatenated after it.",
+      },
+      {
+        type: "changed",
+        title: "Loading spinner reuses shared Spinner",
+        description:
+          "The hand-rolled inline SVG is replaced by <Spinner /> from @/components/ui/spinner, inheriting the badge foreground color and size on every variant.",
+      },
+      {
+        type: "fixed",
+        title: "Transition merge on clickable badges",
+        description:
+          "transition-all was overridden by a later transition-colors, so active:scale-95 never animated. One merged transition now covers colors, opacity and scale.",
+      },
+      {
+        type: "fixed",
+        title: "No double key activation with render props",
+        description:
+          "When render is a native <button>/<a>, Badge no longer adds tabIndex + Enter/Space handling — the consumer element handles its own keys.",
+      },
+      {
+        type: "fixed",
+        title: "Close button no longer double-fires",
+        description:
+          "Redundant Enter/Space keydown removed from the dismiss close button; native button activation is enough.",
+      },
+      {
+        type: "changed",
+        title: "Shimmer visible on soft/ghost/outline variants",
+        description:
+          "The white shimmer sweep was invisible on light backgrounds; those variants now use a foreground-tinted sweep.",
+      },
+      {
+        type: "fixed",
+        title: "CountBadge tween origin",
+        description:
+          'Switching format away from "default" and back no longer animates from a stale previous count.',
+      },
+      {
+        type: "changed",
+        title: "Close-button focus ring",
+        description:
+          "Dismiss close button now uses the kit focus ring (ring-ring/50, 2px).",
+      },
+    ],
+  },
+  {
+    version: "2.0.0",
+    date: "15 December 2025",
+    changes: [
+      {
+        type: "added",
+        title: "Initial documented release",
+        description:
+          "Badge, StatusBadge, CountBadge, TagBadge, BadgeGroup, TagInput, KiraBadge.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
+
+function InteractiveClickableRealButtonsTabEnterSection() {
+  return (
+    <div>
+      <h4 className="text-sm font-medium text-muted-foreground mb-3">
+        Clickable — real buttons (Tab + Enter/Space, native semantics)
+      </h4>
+      <div className="flex flex-wrap gap-3">
+        <Badge
+          variant="primary-soft"
+          icon={<IconStar />}
+          onClick={() => alert("Premium clicked!")}
+        >
+          Premium
+        </Badge>
+        <Badge
+          variant="success-soft"
+          icon={<IconCheck />}
+          onClick={() => alert("Verified clicked!")}
+        >
+          Verified
+        </Badge>
+      </div>
+    </div>
+  );
+}
+
+function InteractiveToggleChipsSection({
+  activeFilters,
+  toggleFilter,
+}: {
+  activeFilters: string[];
+  toggleFilter: (filter: string) => void;
+}) {
+  return (
+    <div>
+      <h4 className="text-sm font-medium text-muted-foreground mb-3">
+        Toggle chips — <code>pressed</code> sets aria-pressed + data-pressed
+      </h4>
+      <div className="flex flex-wrap gap-3">
+        {["react", "vue", "svelte"].map((framework) => (
+          <Badge
+            key={framework}
+            variant={
+              activeFilters.includes(framework) ? "primary-soft" : "outline"
+            }
+            pressed={activeFilters.includes(framework)}
+            onClick={() => toggleFilter(framework)}
+          >
+            {framework}
+          </Badge>
+        ))}
+      </div>
+      <p className="text-sm text-muted-foreground mt-2">
+        Active: {activeFilters.length ? activeFilters.join(", ") : "none"}
+      </p>
+    </div>
+  );
+}
+
+function InteractiveDismissibleCloseHitArea24pxSection() {
+  return (
+    <div>
+      <h4 className="text-sm font-medium text-muted-foreground mb-3">
+        Dismissible — close hit area ≥ 24px (WCAG 2.5.8)
+      </h4>
+      <div className="flex flex-wrap gap-3">
+        <Badge
+          variant="secondary-soft"
+          dismissible
+          onClose={() => alert("Dismissed!")}
+        >
+          Removable
+        </Badge>
+        <Badge
+          variant="warning-soft"
+          icon={<IconAlertCircle />}
+          dismissible
+          onClose={() => alert("Dismissed!")}
+        >
+          Can be closed
+        </Badge>
+      </div>
+    </div>
+  );
+}
+
+function StatesControlsSection({
+  tickerCount,
+  setTickerCount,
+  tickerFormat,
+  setTickerFormat,
+}: {
+  tickerCount: number;
+  setTickerCount: React.Dispatch<React.SetStateAction<number>>;
+  tickerFormat: "default" | "short" | "commas";
+  setTickerFormat: React.Dispatch<
+    React.SetStateAction<"default" | "short" | "commas">
+  >;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <div className="flex items-center gap-2">
+        <CountBadge count={tickerCount} max={9999} animateCount />
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setTickerCount((c) => c + 137)}
+        >
+          +137
+        </Button>
+      </div>
+      <div className="flex items-center gap-2">
+        <CountBadge
+          count={15_230}
+          max={999_999}
+          animateCount
+          format={tickerFormat}
+        />
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() =>
+            setTickerFormat((f) => {
+              const resolveOnClick1 = () => {
+                if (f === "default") {
+                  return "short" as const;
+                }
+
+                if (f === "short") {
+                  return "commas" as const;
+                }
+
+                return "default" as const;
+              };
+
+              return resolveOnClick1();
+            })
+          }
+        >
+          format: {tickerFormat}
+        </Button>
+      </div>
+    </div>
   );
 }
