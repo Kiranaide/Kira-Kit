@@ -3,13 +3,14 @@
 import * as React from "react";
 import { Field } from "@base-ui/react/field";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { IconInfoCircle } from "@tabler/icons-react";
+import { isNumberProp } from "@/components/ui/prop-guards";
 
 interface LabelProps
   extends
@@ -78,7 +79,7 @@ const labelVariants = cva(
       size: "md",
       error: false,
     },
-  }
+  },
 );
 
 const labelHintVariants = cva("text-muted-foreground text-xs font-normal", {
@@ -96,7 +97,7 @@ const labelHintVariants = cva("text-muted-foreground text-xs font-normal", {
 
 function Label({
   className,
-  size = "md",
+  size: sizeInput,
   required,
   optional,
   hint,
@@ -106,73 +107,41 @@ function Label({
   iconAfter,
   tooltip,
   counter,
-  as = "label",
+  as: asInput,
   truncate,
   srOnly,
-  requiredIndicator = "*",
-  optionalText = "optional",
+  requiredIndicator: requiredIndicatorInput,
+  optionalText: optionalTextInput,
   render,
   children,
   ...props
 }: LabelProps) {
+  const { size, as, requiredIndicator, optionalText } = useLabelDefaults({
+    size: sizeInput,
+    as: asInput,
+    requiredIndicator: requiredIndicatorInput,
+    optionalText: optionalTextInput,
+  });
+
   const Component = as;
 
   const content = (
-    <>
-      {srOnly && (
-        <span data-slot="label-sr-only" className="sr-only">
-          {srOnly}
-        </span>
-      )}
-
-      {icon && <LabelIcon position="before">{icon}</LabelIcon>}
-
-      <span
-        data-slot="label-text"
-        className={cn(
-          truncate && "truncate",
-          "inline-flex items-center gap-1"
-        )}
-      >
-        {children}
-      </span>
-
-      {required && (
-        <LabelRequired indicator={requiredIndicator} aria-hidden="true" />
-      )}
-
-      {optional && !required && (
-        <LabelOptional text={optionalText} aria-hidden="true" />
-      )}
-
-      {counter !== undefined && <LabelCounter count={counter} />}
-
-      {iconAfter && <LabelIcon position="after">{iconAfter}</LabelIcon>}
-
-      {tooltip && (
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button
-                data-slot="label-tooltip-trigger"
-                type="button"
-                className="inline-flex items-center justify-center rounded-full hover:bg-muted p-0.5 -my-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label="More information"
-              />
-            }
-          >
-            <IconInfoCircle className="h-3.5 w-3.5 text-muted-foreground" />
-          </TooltipTrigger>
-          <TooltipContent>{tooltip}</TooltipContent>
-        </Tooltip>
-      )}
-
-      {hint && (
-        <LabelHint size={size} className="ml-1">
-          {hint}
-        </LabelHint>
-      )}
-    </>
+    <LabelSrOnlyView
+      srOnly={srOnly}
+      icon={icon}
+      truncate={truncate}
+      required={required}
+      requiredIndicator={requiredIndicator}
+      optional={optional}
+      optionalText={optionalText}
+      counter={counter}
+      iconAfter={iconAfter}
+      tooltip={tooltip}
+      hint={hint}
+      size={size}
+    >
+      {children}
+    </LabelSrOnlyView>
   );
 
   const rootProps = {
@@ -183,10 +152,14 @@ function Label({
     "data-truncate": truncate || undefined,
     className: cn(
       labelVariants({ size, error }),
-      truncate && "min-w-0",
-      className
+      { "min-w-0": truncate },
+      className,
     ),
-    ...(props as object),
+    // SAFETY: `props` is LabelProps minus destructured keys; the rest-spread
+    // lands on a label/span/div root. The cast only silences the
+    // htmlFor-on-non-label excess check — HTML label props are valid on all
+    // three roots, and Base UI render elements receive the same shape.
+    ...(props as React.HTMLAttributes<HTMLElement>),
   };
 
   // `render` swaps the root element (e.g. Base UI's <Field.Label />) while
@@ -246,15 +219,14 @@ function LabelCounter({
   max = 99,
   ...props
 }: LabelCounterProps) {
-  const displayCount =
-    typeof count === "number" && count > max ? `${max}+` : count;
+  const displayCount = isNumberProp(count) && count > max ? `${max}+` : count;
 
   return (
     <span
       data-slot="label-counter"
       className={cn(
         "inline-flex items-center justify-center min-w-5 h-5 px-1.5 text-xs font-medium rounded-full bg-muted text-muted-foreground",
-        className
+        className,
       )}
       {...props}
     >
@@ -275,7 +247,7 @@ function LabelIcon({
       data-position={position}
       className={cn(
         "inline-flex items-center justify-center shrink-0 [&_svg]:h-4 [&_svg]:w-4 text-muted-foreground",
-        className
+        className,
       )}
       {...props}
     >
@@ -292,7 +264,7 @@ function LabelDescription({ className, ...props }: LabelDescriptionProps) {
       data-slot="label-description"
       className={cn(
         "text-muted-foreground text-sm font-normal mt-1",
-        className
+        className,
       )}
       {...props}
     />
@@ -330,8 +302,7 @@ function LabelGroup({
 
 // === KiraLabel: one prop-driven entry point ===
 
-interface KiraLabelProps
-  extends Omit<LabelProps, "counter"> {
+interface KiraLabelProps extends Omit<LabelProps, "counter"> {
   /** Description rendered below the label (folds LabelGroup's job). */
   description?: React.ReactNode;
   /** Live character count; renders `count/maxCount` with an aria-live region. */
@@ -347,7 +318,15 @@ interface KiraLabelProps
   field?: boolean;
 }
 
-function KiraLabelCounter({ count, maxCount }: { count: number; maxCount?: number }) {
+function KiraLabelCounter({
+  count,
+  maxCount,
+}: {
+  count: number;
+  maxCount?: number;
+}) {
+  const resolveClassName1 = () => labelResolveClassName1(over, near);
+
   const over = maxCount !== undefined && count > maxCount;
   const near = maxCount !== undefined && !over && count >= maxCount * 0.8;
 
@@ -357,11 +336,7 @@ function KiraLabelCounter({ count, maxCount }: { count: number; maxCount?: numbe
       aria-live="polite"
       className={cn(
         "ml-auto text-xs font-normal tabular-nums",
-        over
-          ? "text-destructive"
-          : near
-            ? "text-amber-600"
-            : "text-muted-foreground"
+        resolveClassName1(),
       )}
     >
       {count}
@@ -385,6 +360,9 @@ function KiraLabel({
   children,
   ...labelProps
 }: KiraLabelProps) {
+  const resolveClassName2 = () =>
+    labelResolveClassName2(isInvalid, validationState);
+
   const isInvalid = validationState === "invalid";
   const messageId = React.useId();
 
@@ -395,7 +373,7 @@ function KiraLabel({
       size={size}
       hint={hint}
       error={error || isInvalid}
-      className={cn(count !== undefined && "w-full", className)}
+      className={cn({ "w-full": count !== undefined }, className)}
       // Opt into Base UI's Field.Label for automatic control association.
       render={field ? <Field.Label /> : undefined}
     >
@@ -413,22 +391,15 @@ function KiraLabel({
       {label}
       {description && <LabelDescription>{description}</LabelDescription>}
       {validationMessage && (
-        <p
+        <output
           id={htmlFor ? messageId : undefined}
-          role="status"
+
           aria-live="polite"
           data-slot="label-validation-message"
-          className={cn(
-            "text-xs font-normal",
-            isInvalid
-              ? "text-destructive"
-              : validationState === "valid"
-                ? "text-green-600"
-                : "text-muted-foreground"
-          )}
+          className={`block ${cn("text-xs font-normal", resolveClassName2())}`}
         >
           {validationMessage}
-        </p>
+        </output>
       )}
     </div>
   );
@@ -458,4 +429,147 @@ export type {
   LabelDescriptionProps,
   LabelGroupProps,
   KiraLabelProps,
+};
+
+function labelResolveClassName1(over: boolean, near: boolean) {
+  if (over) {
+    return "text-destructive font-medium" as const;
+  }
+
+  if (near) {
+    return "text-warning" as const;
+  }
+
+  return "text-muted-foreground" as const;
+}
+
+function labelResolveClassName2(
+  isInvalid: boolean,
+  validationState: "valid" | "invalid" | "validating" | undefined,
+) {
+  if (isInvalid) {
+    return "text-destructive" as const;
+  }
+
+  if (validationState === "valid") {
+    return "text-success" as const;
+  }
+
+  return "text-muted-foreground" as const;
+}
+
+// oxlint-disable-next-line eslint/complexity -- Pure JSX presentation keeps these related slots and accessibility attributes together.
+function LabelSrOnlyView({
+  srOnly,
+  icon,
+  truncate,
+  children,
+  required,
+  requiredIndicator,
+  optional,
+  optionalText,
+  counter,
+  iconAfter,
+  tooltip,
+  hint,
+  size,
+}: LabelSrOnlyViewParams) {
+  return (
+    <>
+      {srOnly && (
+        <span data-slot="label-sr-only" className="sr-only">
+          {srOnly}
+        </span>
+      )}
+
+      {icon && <LabelIcon position="before">{icon}</LabelIcon>}
+
+      <span
+        data-slot="label-text"
+        className={cn({ truncate: truncate }, "inline-flex items-center gap-1")}
+      >
+        {children}
+      </span>
+
+      {required && (
+        <LabelRequired indicator={requiredIndicator} aria-hidden="true" />
+      )}
+
+      {optional && !required && (
+        <LabelOptional text={optionalText} aria-hidden="true" />
+      )}
+
+      {counter !== undefined && <LabelCounter count={counter} />}
+
+      {iconAfter && <LabelIcon position="after">{iconAfter}</LabelIcon>}
+
+      {tooltip && (
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <button
+                data-slot="label-tooltip-trigger"
+                type="button"
+                className="inline-flex items-center justify-center rounded-full hover:bg-muted p-0.5 -my-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label="More information"
+              />
+            }
+          >
+            <IconInfoCircle className="h-3.5 w-3.5 text-muted-foreground" />
+          </TooltipTrigger>
+          <TooltipContent>{tooltip}</TooltipContent>
+        </Tooltip>
+      )}
+
+      {hint && (
+        <LabelHint size={size} className="ml-1">
+          {hint}
+        </LabelHint>
+      )}
+    </>
+  );
+}
+
+function useLabelDefaults({
+  size: sizeInput,
+  as: asInput,
+  requiredIndicator: requiredIndicatorInput,
+  optionalText: optionalTextInput,
+}: {
+  size?: LabelProps["size"];
+  as?: LabelProps["as"];
+  requiredIndicator?: LabelProps["requiredIndicator"];
+  optionalText?: LabelProps["optionalText"];
+}) {
+  return React.useMemo(() => {
+    const {
+      size = "md",
+      as = "label",
+      requiredIndicator = "*",
+      optionalText = "optional",
+    } = {
+      size: sizeInput,
+      as: asInput,
+      requiredIndicator: requiredIndicatorInput,
+      optionalText: optionalTextInput,
+    };
+
+    return { size, as, requiredIndicator, optionalText };
+  }, [sizeInput, asInput, requiredIndicatorInput, optionalTextInput]);
+}
+
+type LabelSrOnlyViewParams = {
+  srOnly: LabelProps["srOnly"];
+  icon: LabelProps["icon"];
+  truncate: LabelProps["truncate"];
+  children: LabelProps["children"];
+  required: LabelProps["required"];
+  requiredIndicator: LabelProps["requiredIndicator"];
+  optional: LabelProps["optional"];
+  optionalText: LabelProps["optionalText"];
+  counter: LabelProps["counter"];
+  iconAfter: LabelProps["iconAfter"];
+  tooltip: LabelProps["tooltip"];
+  hint: LabelProps["hint"];
+  size: LabelProps["size"];
 };

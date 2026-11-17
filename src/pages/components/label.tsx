@@ -1,5 +1,6 @@
 "use client";
 
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   Label,
@@ -30,6 +31,7 @@ import {
   FeatureGrid,
   DemoTabs,
   DemoWrapper,
+  KeyboardShortcuts,
   UsageBlock,
   APIReference,
   Changelog,
@@ -589,7 +591,7 @@ function ComplexFormDemo() {
         <Checkbox id="terms" />
         <Label htmlFor="terms" className="text-sm font-normal">
           I agree to the{" "}
-          <a href="#" className="underline">
+          <a href="#terms-and-conditions" className="underline">
             terms and conditions
           </a>
         </Label>
@@ -836,7 +838,8 @@ const apiSections = [
       {
         prop: "description",
         type: "ReactNode",
-        description: "Renders a description below the label (folds LabelGroup).",
+        description:
+          "Renders a description below the label (folds LabelGroup).",
       },
       {
         prop: "count",
@@ -846,7 +849,8 @@ const apiSections = [
       {
         prop: "maxCount",
         type: "number",
-        description: "Upper bound for count; near-limit and over show warn/error colours.",
+        description:
+          "Upper bound for count; near-limit and over show warn/error colours.",
       },
       {
         prop: "validationState",
@@ -1066,6 +1070,17 @@ function CounterLabelDemo() {
         onChange={(e) => setValue(e.target.value)}
         placeholder="Tell us about yourself"
       />
+      {/* Warning tone (text-warning) at 80% of maxCount, destructive +
+          font-medium over maxCount — programmatic counts above max render
+          truthfully (61/60). */}
+      <KiraLabel htmlFor="kira-bio-near" count={48} maxCount={60}>
+        Near limit (80%)
+      </KiraLabel>
+      <Input id="kira-bio-near" value={"x".repeat(48)} readOnly />
+      <KiraLabel htmlFor="kira-bio-over" count={61} maxCount={60}>
+        Over limit
+      </KiraLabel>
+      <Input id="kira-bio-over" value={"x".repeat(61)} readOnly />
     </div>
   );
 }
@@ -1077,27 +1092,49 @@ const [value, setValue] = useState("")
 <KiraLabel htmlFor="bio" count={value.length} maxCount={60}>
   Bio
 </KiraLabel>
-<Input value={value} maxLength={60} onChange={(e) => setValue(e.target.value)} />`;
+<Input value={value} maxLength={60} onChange={(e) => setValue(e.target.value)} />
+
+// Counter tones: muted → text-warning at 80% → text-destructive over max
+<KiraLabel htmlFor="bio-over" count={61} maxCount={60}>Over</KiraLabel>`;
 
 // =============================================================================
 // Demo: Inline validation
 // =============================================================================
 function ValidationLabelDemo() {
+  const resolveState1 = () => {
+    if (value.length === 0) {
+      return undefined;
+    }
+
+    if (value.includes("@")) {
+      return "valid" as const;
+    }
+
+    return "invalid" as const;
+  };
+
+  const resolveValidationMessage2 = () => {
+    if (state === "invalid") {
+      return "Enter a valid email address." as const;
+    }
+
+    if (state === "valid") {
+      return "Looks good." as const;
+    }
+
+    return undefined;
+  };
+
   const [value, setValue] = React.useState("");
-  const state = value.length === 0 ? undefined : value.includes("@") ? "valid" : "invalid";
+
+  const state = resolveState1();
 
   return (
     <div className="space-y-2 max-w-md">
       <KiraLabel
         htmlFor="kira-validate"
         validationState={state}
-        validationMessage={
-          state === "invalid"
-            ? "Enter a valid email address."
-            : state === "valid"
-              ? "Looks good."
-              : undefined
-        }
+        validationMessage={resolveValidationMessage2()}
       >
         Email
       </KiraLabel>
@@ -1108,6 +1145,10 @@ function ValidationLabelDemo() {
         placeholder="you@example.com"
         aria-invalid={state === "invalid"}
       />
+      {/* aria-describedby pattern: KiraLabel renders the live region, but the
+          control association is the consumer's job — pass the Input a
+          matching describedby, e.g. <Input aria-describedby="kira-validate-msg" />
+          alongside validationState + validationMessage. */}
     </div>
   );
 }
@@ -1120,7 +1161,9 @@ const validationLabelCode = `import { KiraLabel } from "@/components/ui/label"
   validationMessage={valid ? "Looks good." : "Enter a valid email address."}
 >
   Email
-</KiraLabel>`;
+</KiraLabel>
+// Wire the live message to the control yourself:
+<Input id="email" aria-describedby="email-msg" aria-invalid={!valid} />`;
 
 const demoTabs = [
   {
@@ -1329,12 +1372,18 @@ export default function LabelPage() {
       <PageHeader
         title="Label"
         description="Accessible form labels for inputs and form elements with enhanced features including icons, tooltips, counters, and more."
-        version="v2.0"
+        version="v2.1.0"
       />
 
       <FeatureGrid features={features} />
 
       <DemoTabs tabs={demoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        title="Keyboard Interaction"
+        description="Label is not interactive — it points at controls."
+        shortcuts={labelPageKeyboardShortcutsShortcuts}
+      />
 
       <UsageBlock
         code={usageCode}
@@ -1348,39 +1397,94 @@ export default function LabelPage() {
         description="Complete props reference for Label components."
       />
 
-      <Changelog
-        entries={[
-          {
-            version: "v2.0.0",
-            date: "2026-07-13",
-            changes: [
-              {
-                type: "added",
-                title: "KiraLabel mega-component",
-                description:
-                  "One prop-driven label with description, live character counter, inline validation, and an opt-in Base UI Field.Label path for automatic control association.",
-              },
-              {
-                type: "fixed",
-                title: "Duplicate disabled styling & gap",
-                description:
-                  "Disabled opacity and the label gap are no longer applied in two places.",
-              },
-              {
-                type: "breaking",
-                title: "truncate no longer hard-caps width",
-                description:
-                  "The arbitrary max-w-[200px] was removed; truncation now flex-clamps to the available width.",
-              },
-              {
-                type: "changed",
-                title: "labelVariants / labelHintVariants exported",
-                description: "Variant helpers are now part of the public API.",
-              },
-            ],
-          },
-        ]}
-      />
+      <Changelog entries={labelPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const labelPageKeyboardShortcutsShortcuts = [
+  {
+    keys: "Tab",
+    description:
+      "labels are not tab stops; focus moves past the label to its associated control",
+  },
+  {
+    keys: "Click / label activation",
+    description:
+      "clicking the label (or its access key, where supported) focuses the associated control via htmlFor",
+  },
+  {
+    keys: "Screen reader",
+    description:
+      "reading a label announces the control's name; KiraLabel's validation message is a role=\"status\" polite live region",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const labelPageChangelogEntries = [
+  {
+    version: "v2.1.0",
+    date: "4 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Semantic status tokens",
+        description:
+          "KiraLabel counter warning tone and valid-state message now use text-warning / text-success tokens instead of raw amber/green hexes — theme-consistent in light and dark.",
+      },
+      {
+        type: "changed",
+        title: "Counter over-limit emphasis",
+        description:
+          "KiraLabelCounter adds font-medium when count exceeds maxCount, matching the destructive emphasis.",
+      },
+      {
+        type: "fixed",
+        title: "Lint gate: type-assertion safety comment",
+        description:
+          "The rest-spread cast on Label's root props carries a SAFETY invariant comment (oxlint require-safety-comment-for-type-assertion); cast narrowed to React.HTMLAttributes<HTMLElement>.",
+      },
+      {
+        type: "added",
+        title: "aria-describedby pattern documented",
+        description:
+          'Validation demo documents the consumer-side control wiring: KiraLabel renders the role="status" live region; the consumer links it with aria-describedby on the control.',
+      },
+      {
+        type: "added",
+        title: "Keyboard interaction section",
+        description:
+          "Honest a11y rows: labels are not tab stops, click activation focuses the control, live-region announcement.",
+      },
+    ],
+  },
+  {
+    version: "v2.0.0",
+    date: "2026-07-13",
+    changes: [
+      {
+        type: "added",
+        title: "KiraLabel mega-component",
+        description:
+          "One prop-driven label with description, live character counter, inline validation, and an opt-in Base UI Field.Label path for automatic control association.",
+      },
+      {
+        type: "fixed",
+        title: "Duplicate disabled styling & gap",
+        description:
+          "Disabled opacity and the label gap are no longer applied in two places.",
+      },
+      {
+        type: "breaking",
+        title: "truncate no longer hard-caps width",
+        description:
+          "The arbitrary max-w-[200px] was removed; truncation now flex-clamps to the available width.",
+      },
+      {
+        type: "changed",
+        title: "labelVariants / labelHintVariants exported",
+        description: "Variant helpers are now part of the public API.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
