@@ -12,12 +12,17 @@ bun run build                 # Production (includes tsc, vite build, registry:b
 bun run lint && tsc -b        # Full check
 ```
 
+The registry itself is built by the CLI: `bun run registry:build` runs `kira-kit build`
+(checks → preset themes → shadcn validate/build → docs). The CLI lives in
+`packages/cli` (Node 22+ ESM, own node_modules); run its tests with
+`cd packages/cli && bun run test`.
+
 ## Imports
 
 ```tsx
 // Use @ alias for src/
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "cn"; // the `cn` package — never clsx/tailwind-merge or @/lib/utils in components
+import { Button } from "@/components/ui/button";
 
 // Order: React → External → @/ → ./
 ```
@@ -25,9 +30,9 @@ import { Button } from "@/components/ui/button"
 ## Component Template
 
 ```tsx
-import { ComponentPrimitive } from "@base-ui/react/component"
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
+import { ComponentPrimitive } from "@base-ui/react/component";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "cn";
 
 const variants = cva("base-classes", {
   variants: {
@@ -35,36 +40,49 @@ const variants = cva("base-classes", {
     size: { default: "", sm: "", lg: "" },
   },
   defaultVariants: { variant: "default", size: "default" },
-})
+});
 
-export function Component({ className, variant, size, ...props }: ComponentProps) {
-  return <ComponentPrimitive data-slot="component" className={cn(variants({ variant, size, className }))} {...props} />
+export function Component({
+  className,
+  variant,
+  size,
+  ...props
+}: ComponentProps) {
+  return (
+    <ComponentPrimitive
+      data-slot="component"
+      className={cn(variants({ variant, size, className }))}
+      {...props}
+    />
+  );
 }
 
-export { variants }
+export { variants };
 ```
 
 ## Constraints
 
 - Use `@base-ui/react` primitives (NOT Radix)
+- Import `cn` from the `cn` package (NOT clsx/tailwind-merge/@/lib/utils in components)
 - Use `tailwind-animate` or `gsap` for animations (NOT Framer Motion)
 - Use `data-slot` on root elements
-- Use `bun` runtime (NOT npm/yarn)
+- Use `bun` runtime for this repo (NOT npm/yarn); the published CLI targets Node 22+
 - Export both component and variants
 
 ## Tech Stack
 
-| Package | Purpose |
-|---------|---------|
-| `react` | React 18.3 |
-| `@base-ui/react` | Primitives |
-| `tailwindcss` v4 | CSS |
-| `@tanstack/react-form` | Forms |
-| `@tanstack/react-table` | Tables |
-| `@tanstack/react-virtual` | Virtualization |
-| `@tanstack/react-router` | Routing |
-| `@tabler/icons-react` | Icons |
-| `zod` | Validation |
-| `class-variance-authority` | Variants |
-| `tailwind-animate` | Animations |
-| `gsap` or `@gsap/react` | Animations |
+| Package                    | Purpose        |
+| -------------------------- | -------------- |
+| `react`                    | React 18.3     |
+| `@base-ui/react`           | Primitives     |
+| `tailwindcss` v4           | CSS            |
+| `@tanstack/react-form`     | Forms          |
+| `@tanstack/react-table`    | Tables         |
+| `@tanstack/react-virtual`  | Virtualization |
+| `@tanstack/react-router`   | Routing        |
+| `@tabler/icons-react`      | Icons          |
+| `zod`                      | Validation     |
+| `cn`                       | Class merging |
+| `class-variance-authority` | Variants      |
+| `tailwind-animate`         | Animations     |
+| `gsap` or `@gsap/react`    | Animations     |
