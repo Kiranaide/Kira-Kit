@@ -1,13 +1,12 @@
-import { TreeView, type TreeNode } from "@/components/ui/tree-view";
+import type { ComponentProps as ReactComponentProps } from "react";
+import * as React from "react";
+import { IconHierarchy, IconCheckbox, IconSearch } from "@tabler/icons-react";
 import {
-  IconPhoto,
-  IconFileCode,
-  IconFileText,
-  IconSettings,
-  IconHierarchy,
-  IconCheckbox,
-  IconList,
-} from "@tabler/icons-react";
+  TreeView,
+  KiraTreeView,
+  type TreeNode,
+} from "@/components/ui/tree-view";
+import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
   PageHeader,
@@ -17,9 +16,206 @@ import {
   KeyboardShortcuts,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
-const fileTreeData: TreeNode[] = [
+const documents: TreeNode[] = [
+  {
+    id: "product",
+    name: "Product",
+    children: [
+      {
+        id: "research",
+        name: "Research",
+        children: [
+          { id: "interviews", name: "Customer interviews.md", isFile: true },
+          { id: "findings", name: "Research findings.pdf", isFile: true },
+        ],
+      },
+      { id: "roadmap", name: "October roadmap.md", isFile: true },
+      {
+        id: "archive",
+        name: "Archived strategy.pdf",
+        isFile: true,
+        disabled: true,
+        disabledReason: "Restricted — ask the document owner for access.",
+      },
+    ],
+  },
+  {
+    id: "design",
+    name: "Design",
+    children: [
+      { id: "tokens", name: "Design tokens.json", isFile: true },
+      { id: "guidelines", name: "Accessibility guidelines.md", isFile: true },
+    ],
+  },
+];
+
+function BasicDemo() {
+  const [last, setLast] = React.useState("Choose a document");
+
+  return (
+    <div className="max-w-lg space-y-4">
+      <TreeView
+        data={documents}
+        aria-label="Project documents"
+        defaultExpandedNodes={["product"]}
+        onSelect={(node) => setLast(node.name)}
+      />
+      <output className="block break-words text-sm text-muted-foreground">
+        {last}
+      </output>
+    </div>
+  );
+}
+
+const basicCode = `import { useState } from "react"
+import { TreeView, type TreeNode } from "@/components/ui/tree-view"
+const documents: TreeNode[] = [{ id: "product", name: "Product", children: [
+  { id: "roadmap", name: "October roadmap.md", isFile: true }
+] }]
+export function Documents() {
+  const [last, setLast] = useState("Choose a document")
+  return <><TreeView data={documents} aria-label="Project documents"
+    defaultExpandedNodes={["product"]} onSelect={node => setLast(node.name)} />
+    <p role="status">{last}</p></>
+}`;
+
+function SelectionDemo() {
+  const [ids, setIds] = React.useState<string[]>(["interviews"]);
+  const [manifest, setManifest] = React.useState<string[]>([]);
+
+  const flatten = (nodes: TreeNode[]): TreeNode[] =>
+    nodes.flatMap((node) => [node, ...flatten(node.children ?? [])]);
+
+  const files = flatten(documents).filter(
+    (node) => node.isFile && ids.includes(node.id),
+  );
+
+  return (
+    <div className="max-w-lg space-y-4">
+      <TreeView
+        data={documents}
+        selectionMode="multiple"
+        selectedNodes={ids}
+        onSelectionChange={setIds}
+        defaultExpandedNodes={["product", "research"]}
+        aria-label="Documents for export"
+      />
+      <output className="block text-sm text-muted-foreground tabular-nums">
+        {ids.length} items selected for export. Restricted documents are
+        excluded.
+      </output>
+      <div className="border-t pt-4 space-y-3">
+        <p className="text-sm font-medium">Export manifest</p>
+        <ul className="space-y-1 text-sm text-muted-foreground">
+          {files.map((file) => (
+            <li key={file.id}>{file.name}</li>
+          ))}
+        </ul>
+        {!files.length && (
+          <p className="text-sm text-muted-foreground">
+            Choose documents using the selection boxes.
+          </p>
+        )}
+        <Button
+          className="focus-visible:ring-primary"
+          variant="outline"
+          disabled={!files.length}
+          onClick={() => setManifest(files.map((file) => file.name))}
+        >
+          Prepare manifest
+        </Button>
+        <output className="block text-sm text-muted-foreground">
+          {manifest.length
+            ? `Manifest ready with ${manifest.length} documents. Local example; no files are uploaded.`
+            : "Review the selected documents before preparing the manifest."}
+        </output>
+      </div>
+    </div>
+  );
+}
+
+const selectionCode = `import { useState } from "react"
+import { TreeView, type TreeNode } from "@/components/ui/tree-view"
+import { Button } from "@/components/ui/button"
+const documents: TreeNode[] = [{ id: "folder", name: "Research", children: [
+  { id: "interviews", name: "Customer interviews.md", isFile: true },
+  { id: "report", name: "Report.pdf", isFile: true },
+  { id: "restricted", name: "Strategy.pdf", isFile: true, disabled: true,
+    disabledReason: "Ask the document owner for access." }
+] }]
+export function ExportPicker() {
+  const [ids, setIds] = useState<string[]>(["interviews"])
+  const [manifest, setManifest] = useState<string[]>([])
+  const flatten = (nodes: TreeNode[]): TreeNode[] => nodes.flatMap(node => [node, ...flatten(node.children ?? [])])
+  const files = flatten(documents).filter(node => node.isFile && ids.includes(node.id))
+  return <><TreeView data={documents} selectionMode="multiple" selectedNodes={ids}
+    onSelectionChange={setIds} defaultExpandedNodes={["folder"]} aria-label="Documents for export" />
+    <ul>{files.map(file => <li key={file.id}>{file.name}</li>)}</ul>
+    <Button variant="outline" disabled={!files.length} onClick={() => setManifest(files.map(file => file.name))}>Prepare manifest</Button>
+    <p role="status">{manifest.length ? 'Manifest ready: ' + manifest.length + ' documents' : 'Choose documents first'}</p></>
+}`;
+
+function ControlledDemo() {
+  const [expanded, setExpanded] = React.useState<string[]>([]);
+  const [selected, setSelected] = React.useState<string[]>([]);
+
+  return (
+    <div className="max-w-lg space-y-4">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          className="focus-visible:ring-primary"
+          variant="outline"
+          onClick={() => setExpanded(["product", "research", "design"])}
+        >
+          Expand all
+        </Button>
+        <Button
+          className="focus-visible:ring-primary"
+          variant="outline"
+          onClick={() => {
+            setExpanded([]);
+            setSelected([]);
+          }}
+        >
+          Reset
+        </Button>
+      </div>
+      <TreeView
+        data={documents}
+        expandedNodes={expanded}
+        onExpandedNodesChange={setExpanded}
+        selectedNodes={selected}
+        onSelectionChange={setSelected}
+        showLines={false}
+        aria-label="Controlled documents"
+      />
+      <output className="block text-sm text-muted-foreground">
+        Selected: {selected.join(", ") || "None"}
+      </output>
+    </div>
+  );
+}
+
+const controlledCode = `import { useState } from "react"
+import { TreeView, type TreeNode } from "@/components/ui/tree-view"
+import { Button } from "@/components/ui/button"
+const documents: TreeNode[] = [{ id: "product", name: "Product", children: [
+  { id: "roadmap", name: "October roadmap.md", isFile: true }
+] }]
+export function ControlledDocuments() {
+  const [expanded, setExpanded] = useState<string[]>([])
+  const [selected, setSelected] = useState<string[]>([])
+  return <><Button onClick={() => setExpanded(["product"])}>Expand all</Button>
+    <Button onClick={() => { setExpanded([]); setSelected([]) }}>Reset</Button>
+    <TreeView data={documents} expandedNodes={expanded} onExpandedNodesChange={setExpanded}
+      selectedNodes={selected} onSelectionChange={setSelected} showLines={false} />
+    <p role="status">Selected: {selected.join(", ") || "None"}</p></>
+}`;
+
+const sourceFiles: TreeNode[] = [
   {
     id: "src",
     name: "src",
@@ -32,496 +228,497 @@ const fileTreeData: TreeNode[] = [
             id: "ui",
             name: "ui",
             children: [
-              {
-                id: "button.tsx",
-                name: "button.tsx",
-                isFile: true,
-                icon: <IconFileCode className="h-4 w-4 text-blue-500" />,
-              },
-              {
-                id: "input.tsx",
-                name: "input.tsx",
-                isFile: true,
-                icon: <IconFileCode className="h-4 w-4 text-blue-500" />,
-              },
-              {
-                id: "card.tsx",
-                name: "card.tsx",
-                isFile: true,
-                icon: <IconFileCode className="h-4 w-4 text-blue-500" />,
-              },
+              { id: "tree", name: "tree-view.tsx", isFile: true },
+              { id: "collapse", name: "collapsible.tsx", isFile: true },
+              { id: "button", name: "button.tsx", isFile: true },
             ],
           },
-          {
-            id: "app-layout.tsx",
-            name: "app-layout.tsx",
-            isFile: true,
-            icon: <IconFileCode className="h-4 w-4 text-blue-500" />,
-          },
+          { id: "layout", name: "app-layout.tsx", isFile: true },
         ],
       },
       {
-        id: "pages",
-        name: "pages",
+        id: "hooks",
+        name: "hooks",
         children: [
-          {
-            id: "index.tsx",
-            name: "index.tsx",
-            isFile: true,
-            icon: <IconFileCode className="h-4 w-4 text-blue-500" />,
-          },
-          {
-            id: "about.tsx",
-            name: "about.tsx",
-            isFile: true,
-            icon: <IconFileCode className="h-4 w-4 text-blue-500" />,
-          },
+          { id: "motion", name: "use-reduced-motion.ts", isFile: true },
         ],
       },
-      {
-        id: "main.tsx",
-        name: "main.tsx",
-        isFile: true,
-        icon: <IconFileCode className="h-4 w-4 text-blue-500" />,
-      },
-      {
-        id: "router.tsx",
-        name: "router.tsx",
-        isFile: true,
-        icon: <IconFileCode className="h-4 w-4 text-blue-500" />,
-      },
+      { id: "main", name: "main.tsx", isFile: true },
     ],
   },
-  {
-    id: "public",
-    name: "public",
-    children: [
-      {
-        id: "favicon.ico",
-        name: "favicon.ico",
-        isFile: true,
-        icon: <IconPhoto className="h-4 w-4 text-purple-500" />,
-      },
-      {
-        id: "logo.svg",
-        name: "logo.svg",
-        isFile: true,
-        icon: <IconPhoto className="h-4 w-4 text-purple-500" />,
-      },
-    ],
-  },
-  {
-    id: "package.json",
-    name: "package.json",
-    isFile: true,
-    icon: <IconSettings className="h-4 w-4 text-green-500" />,
-  },
-  {
-    id: "tsconfig.json",
-    name: "tsconfig.json",
-    isFile: true,
-    icon: <IconSettings className="h-4 w-4 text-green-500" />,
-  },
-  {
-    id: "README.md",
-    name: "README.md",
-    isFile: true,
-    icon: <IconFileText className="h-4 w-4 text-gray-500" />,
-  },
+  { id: "readme", name: "README.md", isFile: true },
 ];
 
-const simpleTreeData: TreeNode[] = [
-  {
-    id: "documents",
-    name: "Documents",
-    children: [
-      { id: "resume.pdf", name: "resume.pdf", isFile: true },
-      { id: "cover-letter.docx", name: "cover-letter.docx", isFile: true },
-      {
-        id: "projects",
-        name: "Projects",
-        children: [
-          { id: "project1.md", name: "project1.md", isFile: true },
-          { id: "project2.md", name: "project2.md", isFile: true },
-        ],
-      },
-    ],
-  },
-  {
-    id: "images",
-    name: "Images",
-    children: [
-      { id: "photo1.jpg", name: "photo1.jpg", isFile: true },
-      { id: "photo2.png", name: "photo2.png", isFile: true },
-    ],
-  },
-];
+const filePreviews = {
+  tree: "export { TreeView, KiraTreeView }\n// Browse files with keyboard navigation",
+  collapse:
+    "export { Collapsible, CollapsibleContent }\n// Shared disclosure and motion",
+  button: "export { Button, buttonVariants }",
+  motion:
+    "export function useReducedMotion() {\n  // Subscribe to the system preference\n}",
+};
 
-const features = [
-  {
-    title: "Hierarchical Display",
-    description: "Organize nested data with expand/collapse functionality and connecting lines for visual hierarchy.",
-    icon: <IconHierarchy className="h-5 w-5 text-muted-foreground" />,
-  },
-  {
-    title: "Multi-Selection",
-    description: "Support for single or multiple selection modes with checkbox controls and parent-child selection cascading.",
-    icon: <IconCheckbox className="h-5 w-5 text-muted-foreground" />,
-  },
-  {
-    title: "Customizable",
-    description: "Custom icons per node, optional connecting lines, and built-in folder/file icons with full styling control.",
-    icon: <IconList className="h-5 w-5 text-muted-foreground" />,
-  },
-];
-
-function BasicDemo() {
-  const handleSelect = (node: TreeNode) => {
-    console.log("Selected:", node);
-  };
-
-  return <TreeView data={simpleTreeData} onSelect={handleSelect} />;
-}
-
-const basicCode = `import { TreeView, type TreeNode } from "@/components/ui/tree-view"
-
-const data: TreeNode[] = [
-  {
-    id: "documents",
-    name: "Documents",
-    children: [
-      { id: "resume.pdf", name: "resume.pdf", isFile: true },
-      { id: "cover-letter.docx", name: "cover-letter.docx", isFile: true },
-      {
-        id: "projects",
-        name: "Projects",
-        children: [
-          { id: "project1.md", name: "project1.md", isFile: true },
-          { id: "project2.md", name: "project2.md", isFile: true },
-        ],
-      },
-    ],
-  },
-]
-
-export function BasicTreeViewDemo() {
-  return (
-    <TreeView data={data} onSelect={(node) => console.log(node)} />
-  )
-}`;
-
-function FileExplorerDemo() {
-  const handleSelect = (node: TreeNode) => {
-    console.log("Selected:", node);
-  };
+function ExplorerDemo() {
+  const [file, setFile] = React.useState<TreeNode | null>(null);
 
   return (
-    <TreeView
-      data={fileTreeData}
-      defaultExpandedNodes={["src", "components", "ui"]}
-      onSelect={handleSelect}
-    />
+    <div className="grid gap-6 lg:grid-cols-2">
+      <div>
+        <p className="mb-3 text-sm font-medium">kira-kit / source</p>
+        <TreeView
+          data={sourceFiles}
+          defaultExpandedNodes={["src", "components", "ui"]}
+          size="sm"
+          aria-label="Source files"
+          onSelect={(node) => {
+            if (node.isFile) setFile(node);
+          }}
+        />
+      </div>
+      <div className="min-w-0 rounded-lg border p-4">
+        <h2 className="text-sm font-medium">{file?.name ?? "File preview"}</h2>
+        <p className="my-3 text-xs text-muted-foreground">
+          Illustrative source preview. Choose a file from the tree.
+        </p>
+        <pre className="overflow-auto rounded-md bg-muted p-3 text-xs">
+          {file
+            ? (Object.entries(filePreviews).find(
+                ([id]) => id === file.id,
+              )?.[1] ??
+              `// ${file.name}\n// Preview is not available for this file.`)
+            : "No file selected"}
+        </pre>
+      </div>
+    </div>
   );
 }
 
-const fileExplorerCode = `import { TreeView, type TreeNode } from "@/components/ui/tree-view"
-import { IconFileCode, IconPhoto, IconSettings, IconFileText } from "@tabler/icons-react"
-
-const data: TreeNode[] = [
-  {
-    id: "src",
-    name: "src",
-    children: [
-      {
-        id: "components",
-        name: "components",
-        children: [
-          {
-            id: "button.tsx",
-            name: "button.tsx",
-            isFile: true,
-            icon: <IconFileCode className="h-4 w-4 text-blue-500" />,
-          },
-        ],
-      },
-    ],
-  },
-]
-
-export function FileExplorerDemo() {
-  return (
-    <TreeView
-      data={data}
-      defaultExpandedNodes={["src", "components"]}
-      onSelect={(node) => console.log(node)}
-    />
-  )
+const explorerCode = `import { useState } from "react"
+import { TreeView, type TreeNode } from "@/components/ui/tree-view"
+const files: TreeNode[] = [{ id: "src", name: "src", children: [
+  { id: "tree", name: "tree-view.tsx", isFile: true },
+  { id: "collapse", name: "collapsible.tsx", isFile: true }
+] }]
+export function SourceExplorer() {
+  const [file, setFile] = useState<TreeNode | null>(null)
+  return <><TreeView data={files} size="sm" defaultExpandedNodes={["src"]}
+    onSelect={node => { if (node.isFile) setFile(node) }} />
+    <p>{file?.name ?? "Choose a file to preview"}</p></>
 }`;
 
-function WithoutLinesDemo() {
-  const handleSelect = (node: TreeNode) => {
-    console.log("Selected:", node);
-  };
-
+function KiraDemo() {
   return (
-    <TreeView
-      data={simpleTreeData}
-      showLines={false}
-      onSelect={handleSelect}
-    />
+    <div className="max-w-lg">
+      <KiraTreeView
+        data={documents}
+        title="Prepare a document export"
+        searchLabel="Find documents"
+        selectionMode="multiple"
+        defaultExpandedNodes={["product"]}
+        defaultSelectedNodes={["interviews"]}
+      />
+    </div>
   );
 }
 
-const withoutLinesCode = `import { TreeView, type TreeNode } from "@/components/ui/tree-view"
-
-export function WithoutLinesDemo() {
-  return (
-    <TreeView
-      data={data}
-      showLines={false}
-      onSelect={(node) => console.log(node)}
-    />
-  )
+const kiraCode = `import { KiraTreeView, type TreeNode } from "@/components/ui/tree-view"
+const documents: TreeNode[] = [{ id: "product", name: "Product", children: [
+  { id: "research", name: "Research", children: [
+    { id: "interviews", name: "Customer interviews.md", isFile: true }
+  ] }
+] }]
+export function DocumentExport() {
+  return <KiraTreeView data={documents} title="Prepare a document export"
+    searchLabel="Find documents" selectionMode="multiple"
+    defaultExpandedNodes={["product"]} defaultSelectedNodes={["interviews"]} />
 }`;
 
-function MultiSelectionDemo() {
-  const handleSelect = (node: TreeNode) => {
-    console.log("Selected:", node);
-  };
-
+function StatesDemo() {
   return (
-    <TreeView
-      data={fileTreeData}
-      selectionMode="multiple"
-      defaultExpandedNodes={["src", "components"]}
-      onSelectionChange={(selected) => {
-        console.log("Selected nodes:", selected);
-      }}
-      onSelect={handleSelect}
-    />
+    <div className="max-w-lg space-y-6">
+      <div>
+        <h2 className="mb-2 text-sm font-medium">
+          Long names in a narrow container
+        </h2>
+        <div className="w-full max-w-80">
+          <TreeView
+            size="sm"
+            data={[
+              {
+                id: "long",
+                name: "customer-research-accessibility-and-internationalization-review-october-2026.md",
+                isFile: true,
+              },
+            ]}
+          />
+        </div>
+      </div>
+      <div>
+        <h2 className="mb-2 text-sm font-medium">Loading</h2>
+        <TreeView data={[]} loading />
+      </div>
+      <div>
+        <h2 className="mb-2 text-sm font-medium">Empty</h2>
+        <TreeView
+          data={[]}
+          emptyMessage="No documents yet. Add a document to get started."
+        />
+      </div>
+      <div>
+        <h2 className="mb-2 text-sm font-medium">
+          Read only — browse the saved selection
+        </h2>
+        <TreeView
+          data={documents}
+          readOnly
+          defaultSelectedNodes={["roadmap"]}
+          defaultExpandedNodes={["product"]}
+        />
+      </div>
+      <div>
+        <h2 className="mb-2 text-sm font-medium">
+          Unavailable while the export is prepared
+        </h2>
+        <TreeView data={documents} disabled />
+      </div>
+    </div>
   );
 }
 
-const multiSelectionCode = `import { TreeView, type TreeNode } from "@/components/ui/tree-view"
-
-export function MultiSelectionDemo() {
-  return (
-    <TreeView
-      data={data}
-      selectionMode="multiple"
-      defaultExpandedNodes={["src"]}
-      onSelectionChange={(selectedNodes) => {
-        console.log("Selected:", selectedNodes)
-      }}
-      onSelect={(node) => console.log("Clicked:", node)}
-    />
-  )
+const statesCode = `import { TreeView } from "@/components/ui/tree-view"
+export function TreeStates() {
+  return <>
+    <TreeView size="sm" data={[{ id: "long", name: "customer-research-accessibility-and-internationalization-review-october-2026.md", isFile: true }]} />
+    <TreeView data={[]} loading />
+    <TreeView data={[]} emptyMessage="No documents yet. Add a document to get started." />
+    <TreeView data={[{ id: "saved", name: "Saved document.md", isFile: true }]} readOnly defaultSelectedNodes={["saved"]} />
+    <TreeView data={[{ id: "export", name: "Export in progress" }]} disabled />
+  </>
 }`;
 
-const usageCode = `import { TreeView, type TreeNode } from "@/components/ui/tree-view"
+const prop = (
+  name: string,
+  type: string,
+  value: string,
+  description: string,
+) => ({ prop: name, type, default: value, description });
 
-const data: TreeNode[] = [
-  {
-    id: "folder1",
-    name: "Folder 1",
-    children: [
-      { id: "file1", name: "file1.txt", isFile: true },
-      { id: "file2", name: "file2.txt", isFile: true },
-    ],
-  },
-  { id: "file3", name: "file3.txt", isFile: true },
-]
-
-export function MyTree() {
-  return (
-    <TreeView
-      data={data}
-      defaultExpandedNodes={["folder1"]}
-      showLines={true}
-      selectionMode="single"
-      onSelect={(node) => console.log(node)}
-    />
-  )
-}`;
+const treeProps = [
+  prop(
+    "data",
+    "TreeNode[]",
+    "required",
+    "Nodes with globally unique IDs. Treat arrays as immutable.",
+  ),
+  prop(
+    "expandedNodes / defaultExpandedNodes",
+    "string[]",
+    "[]",
+    "Controlled expansion or initial expansion.",
+  ),
+  prop(
+    "onExpandedNodesChange",
+    "(ids: string[]) => void",
+    "—",
+    "Called once for a disclosure action; filtering leaves saved expansion unchanged.",
+  ),
+  prop(
+    "selectedNodes / defaultSelectedNodes",
+    "string[]",
+    "[]",
+    "Controlled selection or initial selection; single mode expects at most one ID.",
+  ),
+  prop(
+    "onSelectionChange",
+    "(ids: string[]) => void",
+    "—",
+    "User selection callback in both modes. Includes selected branch IDs.",
+  ),
+  prop(
+    "onSelect",
+    "(node: TreeNode) => void",
+    "—",
+    "Once per enabled user activation; never on mount or arrow navigation.",
+  ),
+  prop(
+    "selectionMode",
+    '"single" | "multiple"',
+    '"single"',
+    "Multiple mode cascades enabled descendants and derives mixed branches.",
+  ),
+  prop(
+    "size",
+    '"default" | "sm"',
+    '"default"',
+    "36px or 32px minimum rows; one 20px indentation step per level.",
+  ),
+  prop("showLines", "boolean", "true", "Show nested guide borders."),
+  prop(
+    "filter",
+    "string",
+    '""',
+    "Case-insensitive name search retaining ancestors; searches loaded data only.",
+  ),
+  prop(
+    "disabled / readOnly",
+    "boolean",
+    "false",
+    "Disabled blocks changes. Read only permits browsing and expansion, prevents selection.",
+  ),
+  prop(
+    "loading",
+    "boolean",
+    "false",
+    "Reserve a loading region and announce its text.",
+  ),
+  prop(
+    "emptyMessage",
+    "string",
+    '"No items to display."',
+    "Empty dataset guidance; filtering uses a separate no-match message.",
+  ),
+  prop(
+    "aria-label / aria-describedby",
+    "string",
+    '"Files" / undefined',
+    "Accessible tree name and optional description ID.",
+  ),
+  prop("className", "string", "—", "Classes on the outer wrapper."),
+];
 
 export default function TreeViewPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Tree View"
-        description="A hierarchical tree structure with connecting lines, expand/collapse arrows, and multi-selection support for organizing nested data."
-        version="v1.0"
+        description="Browse nested documents, select complete branches, and find files in context."
+        version="2.0.1"
       />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs
-        defaultValue="basic"
-        tabs={[
-          {
-            value: "basic",
-            label: "Basic",
-            demo: (
-              <DemoWrapper
-                title="Basic Tree"
-                description="Simple hierarchical tree with expand/collapse functionality."
-                code={basicCode}
-              >
-                <BasicDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "file-explorer",
-            label: "File Explorer",
-            demo: (
-              <DemoWrapper
-                title="File Explorer"
-                description="Rich file tree with custom icons and pre-expanded folders."
-                code={fileExplorerCode}
-              >
-                <FileExplorerDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "without-lines",
-            label: "Without Lines",
-            demo: (
-              <DemoWrapper
-                title="Without Connecting Lines"
-                description="Clean tree view without visual connecting lines."
-                code={withoutLinesCode}
-              >
-                <WithoutLinesDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "multi-selection",
-            label: "Multi-Selection",
-            demo: (
-              <DemoWrapper
-                title="Multi-Selection"
-                description="Select multiple nodes using checkboxes with parent-child selection cascading."
-                code={multiSelectionCode}
-              >
-                <MultiSelectionDemo />
-              </DemoWrapper>
-            ),
-          },
-        ]}
-      />
-
-      <KeyboardShortcuts
-        shortcuts={[
-          { keys: "Enter / Space", description: "Toggle expand/collapse for folders" },
-          { keys: "↑ / ↓", description: "Navigate between tree nodes" },
-          { keys: "←", description: "Collapse current folder" },
-          { keys: "→", description: "Expand current folder" },
-          { keys: "Home", description: "Navigate to first node" },
-          { keys: "End", description: "Navigate to last node" },
-        ]}
-      />
-
-      <UsageBlock
-        title="Usage"
-        description="Basic implementation example with default configuration."
-        code={usageCode}
-      />
-
-      <APIReference
-        sections={[
-          {
-            title: "TreeView",
-            props: [
-              {
-                prop: "data",
-                type: "TreeNode[]",
-                default: "-",
-                description: "Array of tree nodes to display.",
-              },
-              {
-                prop: "defaultExpandedNodes",
-                type: "string[]",
-                default: "[]",
-                description: "Array of node IDs that should be expanded by default.",
-              },
-              {
-                prop: "showLines",
-                type: "boolean",
-                default: "true",
-                description: "Whether to show connecting lines between nodes.",
-              },
-              {
-                prop: "selectionMode",
-                type: '"single" | "multiple"',
-                default: '"single"',
-                description: "Selection mode for tree nodes.",
-              },
-              {
-                prop: "defaultSelectedNodes",
-                type: "string[]",
-                default: "[]",
-                description: "Array of node IDs that should be selected by default.",
-              },
-              {
-                prop: "onSelect",
-                type: "(node: TreeNode) => void",
-                default: "-",
-                description: "Callback when a node is clicked.",
-              },
-              {
-                prop: "onSelectionChange",
-                type: "(selectedNodes: string[]) => void",
-                default: "-",
-                description: "Callback when selection changes (multiple mode only).",
-              },
-              {
-                prop: "className",
-                type: "string",
-                default: "-",
-                description: "Additional CSS classes for the tree container.",
-              },
-            ],
-          },
-          {
-            title: "TreeNode",
-            props: [
-              {
-                prop: "id",
-                type: "string",
-                default: "-",
-                description: "Unique identifier for the node.",
-              },
-              {
-                prop: "name",
-                type: "string",
-                default: "-",
-                description: "Display name for the node.",
-              },
-              {
-                prop: "icon",
-                type: "ReactNode",
-                default: "-",
-                description: "Custom icon to display next to the node name.",
-              },
-              {
-                prop: "children",
-                type: "TreeNode[]",
-                default: "-",
-                description: "Array of child nodes (for folders/parents).",
-              },
-              {
-                prop: "isFile",
-                type: "boolean",
-                default: "false",
-                description: "Whether the node represents a file (leaf node).",
-              },
-            ],
-          },
-        ]}
-      />
+      <FeatureGrid features={treeViewPageFeatureGridFeatures} />
+      <DemoTabs defaultValue="basic" tabs={treeViewPageDemoTabsTabs} />
+      <KeyboardShortcuts shortcuts={treeViewPageKeyboardShortcutsShortcuts} />
+      <UsageBlock code={kiraCode} />
+      <UsageBlock title="Primitive usage" code={basicCode} />
+      <APIReference sections={treeViewPageAPIReferenceSections} />
+      <Changelog entries={treeViewPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const treeViewPageFeatureGridFeatures = [
+  {
+    title: "Keyboard navigation",
+    description: "One tab stop with arrows, Home/End and typeahead.",
+    icon: <IconHierarchy className="size-5 text-muted-foreground" />,
+  },
+  {
+    title: "Branch selection",
+    description: "Mixed states and disabled-document exclusions.",
+    icon: <IconCheckbox className="size-5 text-muted-foreground" />,
+  },
+  {
+    title: "Find in context",
+    description: "Search nested names while retaining their ancestors.",
+    icon: <IconSearch className="size-5 text-muted-foreground" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const treeViewPageDemoTabsTabs = [
+  {
+    value: "explorer",
+    label: "Explorer",
+    demo: (
+      <DemoWrapper title="Explorer" code={explorerCode}>
+        <ExplorerDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "basic",
+    label: "Basic",
+    demo: (
+      <DemoWrapper title="Documents" code={basicCode}>
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "selection",
+    label: "Selection",
+    demo: (
+      <DemoWrapper title="Export" code={selectionCode}>
+        <SelectionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "controlled",
+    label: "Controlled",
+    demo: (
+      <DemoWrapper title="Controlled" code={controlledCode}>
+        <ControlledDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    demo: (
+      <DemoWrapper
+        title="Search"
+        description="Try “interviews”. Clear search to restore your previous expansion."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    demo: (
+      <DemoWrapper title="States" code={statesCode}>
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const treeViewPageKeyboardShortcutsShortcuts = [
+  {
+    keys: "Tab / Shift+Tab",
+    description: "Enter or leave the tree using its single tab stop.",
+  },
+  {
+    keys: "↑ / ↓",
+    description: "Kira: focus previous or next visible row without selecting.",
+  },
+  {
+    keys: "→ / ←",
+    description: "Kira: expand or focus first child; collapse or focus parent.",
+  },
+  {
+    keys: "Home / End",
+    description: "Kira: focus the first or last visible row.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Kira: Enter opens folders or selects files; Space selects the row or enabled branch.",
+  },
+  {
+    keys: "Type letters",
+    description:
+      "Kira: find the next visible name. Repeated letters cycle matches.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const treeViewPageChangelogEntries = [
+  {
+    version: "2.0.1",
+    date: "10 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Accessibility verification fixes",
+        description:
+          "Stronger unchecked checkbox boundaries and focus rings; mixed selection exposed on selection buttons; read-only instructions use a supported accessible description; demo headings and manifest button contrast corrected.",
+      },
+    ],
+  },
+  {
+    version: "2.0.0",
+    date: "10 November 2026",
+    changes: [
+      {
+        type: "added",
+        title:
+          "Controlled state, keyboard navigation, mixed branch selection and KiraTreeView search",
+        description:
+          "Audited against Base UI 1.9.0 (October 9, 2026). Disclosure uses Base UI Collapsible; tree navigation belongs to Kira.",
+      },
+      {
+        type: "breaking",
+        title: "Selection and disclosure are separate actions",
+        description:
+          "Folder row click and Enter toggle expansion. Space selects; multiple mode also has separate selection boxes. Arrow keys navigate and disclose. onSelect fires once; onSelectionChange fires on user actions in both modes, no longer on mount. Disabled descendants are excluded and parent selection is derived.",
+      },
+      {
+        type: "changed",
+        title: "Long labels wrap and folders use semantic colors",
+        description:
+          "All existing exports remain. New slots, reduced-motion gating and applicable states replace the legacy checkbox tab stops.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
+
+const treeViewPageAPIReferenceSections = [
+  { title: "TreeView / TreeViewProps", props: treeProps },
+  {
+    title: "KiraTreeView / KiraTreeViewProps",
+    props: [
+      ...treeProps.filter((row) => row.prop !== "filter"),
+      prop(
+        "title",
+        "string",
+        '"Documents"',
+        "Visible heading and default accessible tree name.",
+      ),
+      prop(
+        "searchLabel",
+        "string",
+        '"Find documents"',
+        "Persistent visible search label.",
+      ),
+    ],
+  },
+  {
+    title: "TreeNode",
+    props: [
+      prop(
+        "id / name",
+        "string",
+        "required",
+        "Globally unique identifier and visible name.",
+      ),
+      prop(
+        "icon",
+        "ReactNode",
+        "file/folder icon",
+        "Decorative icon; hidden from assistive technology.",
+      ),
+      prop("children", "TreeNode[]", "[]", "Loaded child nodes."),
+      prop(
+        "isFile",
+        "boolean",
+        "false",
+        "Leaf node; ignores children when true.",
+      ),
+      prop(
+        "disabled",
+        "boolean",
+        "false",
+        "Cannot select this node or cascade into its subtree; remains focusable for explanation.",
+      ),
+      prop(
+        "disabledReason",
+        "string",
+        "—",
+        "Visible explanation, included in the accessible name.",
+      ),
+    ],
+  },
+  {
+    title: "treeViewVariants",
+    props: [
+      prop(
+        "size",
+        '"default" | "sm"',
+        '"default"',
+        "Exported cva row-density styling shared by TreeView and KiraTreeView.",
+      ),
+    ],
+  },
+] satisfies React.ComponentProps<typeof APIReference>["sections"];
