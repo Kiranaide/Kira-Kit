@@ -1,4 +1,5 @@
-import * as React from "react"
+import type { ComponentProps as ReactComponentProps } from "react";
+import * as React from "react";
 import {
   IconCurrencyDollar,
   IconUsers,
@@ -16,7 +17,7 @@ import {
   IconSparkles,
   IconAccessible,
   IconLayoutDashboard,
-} from "@tabler/icons-react"
+} from "@tabler/icons-react";
 import {
   StatsCard,
   StatsCardIcon,
@@ -32,14 +33,14 @@ import {
   StatsCardFooter,
   StatsCardTimeRange,
   StatsCardSkeleton,
-} from "@/components/ui/stats-card"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/stats-card";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   ComponentPage,
   PageHeader,
@@ -49,7 +50,8 @@ import {
   UsageBlock,
   APIReference,
   KeyboardShortcuts,
-} from "@/components/docs"
+  Changelog,
+} from "@/components/docs";
 
 function RevenueDrawerContent() {
   return (
@@ -83,12 +85,12 @@ function RevenueDrawerContent() {
       </div>
       <div className="rounded-lg bg-muted/50 p-4">
         <p className="text-sm text-muted-foreground">
-          Revenue has increased by 12.5% compared to last month. The primary driver
-          was the launch of the new product line.
+          Revenue has increased by 12.5% compared to last month. The primary
+          driver was the launch of the new product line.
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 function BasicStatsDemo() {
@@ -118,7 +120,7 @@ function BasicStatsDemo() {
         <StatsCardTrend value={0.5} />
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const basicStatsCode = `import { StatsCard } from "@/components/ui/stats-card"
@@ -129,7 +131,7 @@ const basicStatsCode = `import { StatsCard } from "@/components/ui/stats-card"
   </StatsCardHeader>
   <StatsCardValue>$12,345</StatsCardValue>
   <StatsCardTrend value={12.5} />
-</StatsCard>`
+</StatsCard>`;
 
 function WithIconsDemo() {
   return (
@@ -186,7 +188,7 @@ function WithIconsDemo() {
         </div>
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const withIconsCode = `import { StatsCard, StatsCardIcon } from "@/components/ui/stats-card"
@@ -202,7 +204,7 @@ const withIconsCode = `import { StatsCard, StatsCardIcon } from "@/components/ui
       <StatsCardTrend value={12.5} showSign />
     </div>
   </div>
-</StatsCard>`
+</StatsCard>`;
 
 function AllVariantsDemo() {
   return (
@@ -255,7 +257,7 @@ function AllVariantsDemo() {
         <StatsCardTrend value={12.5} />
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const allVariantsCode = `import { StatsCard } from "@/components/ui/stats-card"
@@ -266,7 +268,7 @@ const allVariantsCode = `import { StatsCard } from "@/components/ui/stats-card"
   </StatsCardHeader>
   <StatsCardValue>$12,345</StatsCardValue>
   <StatsCardTrend value={12.5} />
-</StatsCard>`
+</StatsCard>`;
 
 function SizesDemo() {
   return (
@@ -295,14 +297,14 @@ function SizesDemo() {
         <StatsCardTrend value={12.5} />
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const sizesCode = `import { StatsCard } from "@/components/ui/stats-card"
 
 <StatsCard size="lg">
   <StatsCardValue size="lg">$12,345</StatsCardValue>
-</StatsCard>`
+</StatsCard>`;
 
 function StatusIndicatorsDemo() {
   return (
@@ -343,7 +345,7 @@ function StatusIndicatorsDemo() {
         <StatsCardDescription>No change</StatsCardDescription>
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const statusIndicatorsCode = `import { StatsCard } from "@/components/ui/stats-card"
@@ -355,7 +357,7 @@ const statusIndicatorsCode = `import { StatsCard } from "@/components/ui/stats-c
   <StatsCardValue>$12,345</StatsCardValue>
   <StatsCardTrend value={12.5} />
   <StatsCardDescription>Target exceeded</StatsCardDescription>
-</StatsCard>`
+</StatsCard>`;
 
 function InteractiveCardsDemo() {
   return (
@@ -386,7 +388,9 @@ function InteractiveCardsDemo() {
         drawerTitle="User Analytics"
         drawerContent={
           <div className="space-y-4">
-            <p className="text-muted-foreground">Detailed user metrics and analytics...</p>
+            <p className="text-muted-foreground">
+              Detailed user metrics and analytics...
+            </p>
           </div>
         }
       >
@@ -410,7 +414,9 @@ function InteractiveCardsDemo() {
         drawerTitle="Order Analytics"
         drawerContent={
           <div className="space-y-4">
-            <p className="text-muted-foreground">Detailed order metrics and trends...</p>
+            <p className="text-muted-foreground">
+              Detailed order metrics and trends...
+            </p>
           </div>
         }
       >
@@ -429,7 +435,7 @@ function InteractiveCardsDemo() {
         </StatsCardFooter>
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const interactiveCardsCode = `import { StatsCard } from "@/components/ui/stats-card"
@@ -443,8 +449,9 @@ const interactiveCardsCode = `import { StatsCard } from "@/components/ui/stats-c
   <StatsCardTitle>Total Revenue</StatsCardTitle>
   <StatsCardValue value={12345} format="currency" />
   <StatsCardTrend value={12.5} comparison="vs last month" />
-</StatsCard>`
+</StatsCard>`;
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 function WithActionMenuDemo() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -453,7 +460,11 @@ function WithActionMenuDemo() {
           <StatsCardTitle>Revenue</StatsCardTitle>
           <StatsCardAction>
             <DropdownMenu>
-              <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="ghost" size="icon" className="h-8 w-8" />
+                }
+              >
                 <IconDotsVertical className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
               </DropdownMenuTrigger>
@@ -483,7 +494,11 @@ function WithActionMenuDemo() {
           <StatsCardTitle>Users</StatsCardTitle>
           <StatsCardAction>
             <DropdownMenu>
-              <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="ghost" size="icon" className="h-8 w-8" />
+                }
+              >
                 <IconDotsVertical className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
               </DropdownMenuTrigger>
@@ -509,7 +524,11 @@ function WithActionMenuDemo() {
           <StatsCardTitle>Conversion</StatsCardTitle>
           <StatsCardAction>
             <DropdownMenu>
-              <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
+              <DropdownMenuTrigger
+                render={
+                  <Button variant="ghost" size="icon" className="h-8 w-8" />
+                }
+              >
                 <IconDotsVertical className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
               </DropdownMenuTrigger>
@@ -526,7 +545,7 @@ function WithActionMenuDemo() {
         <StatsCardTrend value={0.5} />
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const withActionMenuCode = `import { StatsCard, StatsCardAction } from "@/components/ui/stats-card"
@@ -548,15 +567,15 @@ import { Button } from "@/components/ui/button"
     </StatsCardAction>
   </StatsCardHeader>
   <StatsCardValue value={12345} format="currency" />
-</StatsCard>`
+</StatsCard>`;
 
 function LoadingStatesDemo() {
-  const [loading, setLoading] = React.useState(false)
+  const [loading, setLoading] = React.useState(false);
 
   const toggleLoading = () => {
-    setLoading(true)
-    setTimeout(() => setLoading(false), 2000)
-  }
+    setLoading(true);
+    setTimeout(() => setLoading(false), 2000);
+  };
 
   return (
     <div className="space-y-4">
@@ -588,9 +607,11 @@ function LoadingStatesDemo() {
 
         <StatsCardSkeleton showIcon />
         <StatsCardSkeleton showSparkline />
+        <StatsCardSkeleton size="sm" />
+        <StatsCardSkeleton size="lg" showIcon />
       </div>
     </div>
-  )
+  );
 }
 
 const loadingStatesCode = `import { StatsCard, StatsCardSkeleton } from "@/components/ui/stats-card"
@@ -603,7 +624,7 @@ const loadingStatesCode = `import { StatsCard, StatsCardSkeleton } from "@/compo
 </StatsCard>
 
 <StatsCardSkeleton showIcon />
-<StatsCardSkeleton showSparkline />`
+<StatsCardSkeleton showSparkline />`;
 
 function ProgressGoalsDemo() {
   return (
@@ -644,12 +665,17 @@ function ProgressGoalsDemo() {
           <div className="flex-1">
             <StatsCardTitle>Server Uptime</StatsCardTitle>
             <StatsCardValue value={99.9} format="percentage" />
-            <StatsCardProgress value={99.9} max={100} variant="success" showLabel />
+            <StatsCardProgress
+              value={99.9}
+              max={100}
+              variant="success"
+              showLabel
+            />
           </div>
         </div>
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const progressGoalsCode = `import { StatsCard, StatsCardProgress } from "@/components/ui/stats-card"
@@ -664,7 +690,7 @@ const progressGoalsCode = `import { StatsCard, StatsCardProgress } from "@/compo
     <StatsCardProgress value={75} max={100} variant="success" />
     <StatsCardDescription>75% of $100,000 target</StatsCardDescription>
   </div>
-</StatsCard>`
+</StatsCard>`;
 
 function WithSparklinesDemo() {
   return (
@@ -711,7 +737,7 @@ function WithSparklinesDemo() {
         </StatsCardSpark>
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const withSparklinesCode = `import { StatsCard, StatsCardSpark, StatsCardSparkline } from "@/components/ui/stats-card"
@@ -727,7 +753,7 @@ const withSparklinesCode = `import { StatsCard, StatsCardSpark, StatsCardSparkli
       trend="up"
     />
   </StatsCardSpark>
-</StatsCard>`
+</StatsCard>`;
 
 function ValueFormattingDemo() {
   return (
@@ -739,7 +765,12 @@ function ValueFormattingDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Currency (USD)</StatsCardTitle>
-            <StatsCardValue value={12_345.67} format="currency" currency="USD" decimals={2} />
+            <StatsCardValue
+              value={12_345.67}
+              format="currency"
+              currency="USD"
+              decimals={2}
+            />
           </div>
         </div>
       </StatsCard>
@@ -775,15 +806,12 @@ function ValueFormattingDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Custom Formatter</StatsCardTitle>
-            <StatsCardValue
-              value={3.5}
-              formatter={(v) => `${v} hours`}
-            />
+            <StatsCardValue value={3.5} formatter={(v) => `${v} hours`} />
           </div>
         </div>
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const valueFormattingCode = `import { StatsCard, StatsCardValue } from "@/components/ui/stats-card"
@@ -791,7 +819,7 @@ const valueFormattingCode = `import { StatsCard, StatsCardValue } from "@/compon
 <StatsCardValue value={12345.67} format="currency" currency="USD" decimals={2} />
 <StatsCardValue value={89.34} format="percentage" decimals={2} />
 <StatsCardValue value={1234567} format="compact" />
-<StatsCardValue value={3.5} formatter={(v) => \`\${v} hours\`} />`
+<StatsCardValue value={3.5} formatter={(v) => \`\${v} hours\`} />`;
 
 function AnimatedValuesDemo() {
   return (
@@ -803,7 +831,12 @@ function AnimatedValuesDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Animated Currency</StatsCardTitle>
-            <StatsCardValue value={12_345} format="currency" animate animationDuration={1.5} />
+            <StatsCardValue
+              value={12_345}
+              format="currency"
+              animate
+              animationDuration={1.5}
+            />
             <StatsCardTrend value={12.5} />
           </div>
         </div>
@@ -829,13 +862,18 @@ function AnimatedValuesDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Animated Percentage</StatsCardTitle>
-            <StatsCardValue value={89.3} format="percentage" animate decimals={1} />
+            <StatsCardValue
+              value={89.3}
+              format="percentage"
+              animate
+              decimals={1}
+            />
             <StatsCardTrend value={0.5} />
           </div>
         </div>
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const animatedValuesCode = `import { StatsCard, StatsCardValue } from "@/components/ui/stats-card"
@@ -845,18 +883,18 @@ const animatedValuesCode = `import { StatsCard, StatsCardValue } from "@/compone
   format="currency"
   animate
   animationDuration={1.5}
-/>`
+/>`;
 
 function RealtimeUpdatesDemo() {
-  const [liveValue, setLiveValue] = React.useState(12_345)
+  const [liveValue, setLiveValue] = React.useState(12_345);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setLiveValue((prev) => prev + Math.floor(Math.random() * 100) - 50)
-    }, 3000)
+      setLiveValue((prev) => prev + Math.floor(Math.random() * 100) - 50);
+    }, 3000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -867,7 +905,12 @@ function RealtimeUpdatesDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Live Revenue</StatsCardTitle>
-            <StatsCardValue value={liveValue} format="currency" animate animationDuration={0.5} />
+            <StatsCardValue
+              value={liveValue}
+              format="currency"
+              animate
+              animationDuration={0.5}
+            />
             <StatsCardTrend value={((liveValue - 12_345) / 12_345) * 100} />
             <StatsCardFooter>
               <StatsCardTimeRange>Live • Updates every 3s</StatsCardTimeRange>
@@ -883,7 +926,12 @@ function RealtimeUpdatesDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Animated Live Value</StatsCardTitle>
-            <StatsCardValue value={liveValue} format="compact" animate animationDuration={0.3} />
+            <StatsCardValue
+              value={liveValue}
+              format="compact"
+              animate
+              animationDuration={0.3}
+            />
             <StatsCardSpark>
               <StatsCardSparkline
                 data={[10, 15, 13, 18, 20, 25, 22, 28, 30, 35, 32, 40]}
@@ -894,7 +942,7 @@ function RealtimeUpdatesDemo() {
         </div>
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const realtimeUpdatesCode = `import { useState, useEffect } from "react"
@@ -916,8 +964,9 @@ function RealtimeUpdatesDemo() {
       <StatsCardValue value={liveValue} format="currency" animate animationDuration={0.5} />
     </StatsCard>
   )
-}`
+}`;
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 function DashboardGridDemo() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -984,7 +1033,12 @@ function DashboardGridDemo() {
           </StatsCardIcon>
           <div className="flex-1">
             <StatsCardTitle>Conversion</StatsCardTitle>
-            <StatsCardValue value={89.3} format="percentage" animate decimals={1} />
+            <StatsCardValue
+              value={89.3}
+              format="percentage"
+              animate
+              decimals={1}
+            />
             <StatsCardTrend value={0.5} showSign comparison="vs last month" />
           </div>
         </div>
@@ -1025,7 +1079,7 @@ function DashboardGridDemo() {
         </StatsCardFooter>
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const dashboardGridCode = `import { StatsCard } from "@/components/ui/stats-card"
@@ -1037,7 +1091,7 @@ const dashboardGridCode = `import { StatsCard } from "@/components/ui/stats-card
     <StatsCardTrend value={12.5} showSign comparison="vs last month" />
   </StatsCard>
   {/* More cards... */}
-</div>`
+</div>`;
 
 function CompactDashboardDemo() {
   return (
@@ -1062,7 +1116,12 @@ function CompactDashboardDemo() {
 
       <StatsCard size="sm">
         <StatsCardTitle>Conv.</StatsCardTitle>
-        <StatsCardValue size="sm" value={89.3} format="percentage" decimals={0} />
+        <StatsCardValue
+          size="sm"
+          value={89.3}
+          format="percentage"
+          decimals={0}
+        />
         <StatsCardTrend value={0.5} />
       </StatsCard>
 
@@ -1074,11 +1133,16 @@ function CompactDashboardDemo() {
 
       <StatsCard size="sm">
         <StatsCardTitle>Bounce</StatsCardTitle>
-        <StatsCardValue size="sm" value={32.1} format="percentage" decimals={0} />
+        <StatsCardValue
+          size="sm"
+          value={32.1}
+          format="percentage"
+          decimals={0}
+        />
         <StatsCardTrend value={-4.2} />
       </StatsCard>
     </div>
-  )
+  );
 }
 
 const compactDashboardCode = `import { StatsCard } from "@/components/ui/stats-card"
@@ -1089,7 +1153,7 @@ const compactDashboardCode = `import { StatsCard } from "@/components/ui/stats-c
     <StatsCardValue size="sm" value={12345} format="compact" />
     <StatsCardTrend value={12.5} />
   </StatsCard>
-</div>`
+</div>`;
 
 const usageCode = `import { StatsCard } from "@/components/ui/stats-card"
 
@@ -1100,237 +1164,20 @@ const usageCode = `import { StatsCard } from "@/components/ui/stats-card"
   <StatsCardValue value={12345} format="currency" />
   <StatsCardTrend value={12.5} showSign comparison="vs last month" />
   <StatsCardDescription>Target exceeded by $2,345</StatsCardDescription>
-</StatsCard>`
+</StatsCard>`;
 
 export default function StatsCardPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Stats Card"
-        description="Display metrics with trends, sparklines, icons, and interactive features. WCAG 2.1 AA compliant with ARIA live regions."
-        version="v2.0"
+        description="Display metrics with trends, sparklines, icons, and interactive features. WCAG 2.1 AA compliant with ARIA live regions, Base UI Meter progress, and size-aware skeletons."
+        version="v2.1"
       />
 
-      <FeatureGrid
-        features={[
-          {
-            title: "Accessible",
-            description: "WCAG 2.1 AA compliant with ARIA live regions for real-time updates, proper heading hierarchy, and keyboard navigation.",
-            icon: <IconAccessible className="h-5 w-5 text-primary" />,
-          },
-          {
-            title: "Animated",
-            description: "GSAP-powered count-up animations with prefers-reduced-motion support. Smooth transitions for values and trends.",
-            icon: <IconSparkles className="h-5 w-5 text-primary" />,
-          },
-          {
-            title: "Flexible",
-            description: "Multiple variants, sizes, status indicators, interactive drawers, action menus, and comprehensive value formatting.",
-            icon: <IconLayoutDashboard className="h-5 w-5 text-primary" />,
-          },
-        ]}
-      />
+      <FeatureGrid features={statsCardPageFeatureGridFeatures} />
 
-      <DemoTabs
-        defaultValue="basic"
-        tabs={[
-          {
-            value: "basic",
-            label: "Basic Stats",
-            demo: (
-              <DemoWrapper
-                title="Basic Stats"
-                description="Simple value with trend indicator"
-                code={basicStatsCode}
-              >
-                <BasicStatsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "icons",
-            label: "With Icons",
-            demo: (
-              <DemoWrapper
-                title="With Icons"
-                description="Icon variants for different metric types"
-                code={withIconsCode}
-              >
-                <WithIconsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "variants",
-            label: "All Variants",
-            demo: (
-              <DemoWrapper
-                title="All Variants"
-                description="Default, outline, filled, gradient, interactive, and glass styles"
-                code={allVariantsCode}
-              >
-                <AllVariantsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "sizes",
-            label: "Sizes",
-            demo: (
-              <DemoWrapper
-                title="Size Variants"
-                description="Small, default, and large sizes"
-                code={sizesCode}
-              >
-                <SizesDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "status",
-            label: "Status Indicators",
-            demo: (
-              <DemoWrapper
-                title="Status Indicators"
-                description="Left border status colors for quick visual scanning"
-                code={statusIndicatorsCode}
-              >
-                <StatusIndicatorsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "interactive",
-            label: "Interactive Cards",
-            demo: (
-              <DemoWrapper
-                title="Interactive Cards with Drawer"
-                description="Click to open a drawer with detailed information"
-                code={interactiveCardsCode}
-              >
-                <InteractiveCardsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "action",
-            label: "With Action Menu",
-            demo: (
-              <DemoWrapper
-                title="With Action Menu"
-                description="Cards with dropdown action menus"
-                code={withActionMenuCode}
-              >
-                <WithActionMenuDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "loading",
-            label: "Loading States",
-            demo: (
-              <DemoWrapper
-                title="Loading States"
-                description="Skeleton loading demonstration"
-                code={loadingStatesCode}
-              >
-                <LoadingStatesDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "progress",
-            label: "Progress & Goals",
-            demo: (
-              <DemoWrapper
-                title="Progress & Goals"
-                description="Target progress visualization"
-                code={progressGoalsCode}
-              >
-                <ProgressGoalsDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "sparklines",
-            label: "With Sparklines",
-            demo: (
-              <DemoWrapper
-                title="With Sparklines"
-                description="Visual trend using Recharts AreaChart"
-                code={withSparklinesCode}
-              >
-                <WithSparklinesDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "formatting",
-            label: "Value Formatting",
-            demo: (
-              <DemoWrapper
-                title="Value Formatting"
-                description="Currency, percentage, compact number, and custom formatters"
-                code={valueFormattingCode}
-              >
-                <ValueFormattingDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "animated",
-            label: "Animated Values",
-            demo: (
-              <DemoWrapper
-                title="Animated Values (GSAP)"
-                description="Count-up animation using GSAP. Respects prefers-reduced-motion."
-                code={animatedValuesCode}
-              >
-                <AnimatedValuesDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "realtime",
-            label: "Real-time Updates",
-            demo: (
-              <DemoWrapper
-                title="Real-time Updates"
-                description="Live data updates with ARIA live announcements (updates every 3 seconds)"
-                code={realtimeUpdatesCode}
-              >
-                <RealtimeUpdatesDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "dashboard",
-            label: "Dashboard Grid",
-            demo: (
-              <DemoWrapper
-                title="Dashboard Grid"
-                description="Complete 4-card responsive layout with all features"
-                code={dashboardGridCode}
-              >
-                <DashboardGridDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "compact",
-            label: "Compact Dashboard",
-            demo: (
-              <DemoWrapper
-                title="Compact Dashboard"
-                description="Dense sm-size grid layout for data-heavy dashboards"
-                code={compactDashboardCode}
-              >
-                <CompactDashboardDemo />
-              </DemoWrapper>
-            ),
-          },
-        ]}
-      />
+      <DemoTabs defaultValue="basic" tabs={statsCardPageDemoTabsTabs} />
 
       <KeyboardShortcuts
         shortcuts={[
@@ -1346,107 +1193,590 @@ export default function StatsCardPage() {
         code={usageCode}
       />
 
-      <APIReference
-        sections={[
-          {
-            title: "StatsCard",
-            props: [
-              { prop: "variant", type: "'default' | 'outline' | 'filled' | 'gradient' | 'interactive' | 'glass'", default: "'default'", description: "Visual style variant of the card" },
-              { prop: "size", type: "'sm' | 'default' | 'lg'", default: "'default'", description: "Size of the card" },
-              { prop: "status", type: "'success' | 'warning' | 'error' | 'info'", default: "undefined", description: "Status indicator with left border color" },
-              { prop: "loading", type: "boolean", default: "false", description: "Show skeleton loading state" },
-              { prop: "onClick", type: "() => void", default: "undefined", description: "Click handler (for interactive variant)" },
-              { prop: "drawerTitle", type: "string", default: "undefined", description: "Title for the drawer panel" },
-              { prop: "drawerDescription", type: "string", default: "undefined", description: "Description for the drawer panel" },
-              { prop: "drawerContent", type: "ReactNode", default: "undefined", description: "Content for the drawer panel" },
-            ],
-          },
-          {
-            title: "StatsCardIcon",
-            props: [
-              { prop: "variant", type: "'primary' | 'success' | 'warning' | 'error' | 'info' | 'destructive'", default: "'primary'", description: "Color variant of the icon wrapper" },
-            ],
-          },
-          {
-            title: "StatsCardTitle",
-            props: [
-              { prop: "asChild", type: "boolean", default: "false", description: "Merge with child element" },
-            ],
-          },
-          {
-            title: "StatsCardAction",
-            props: [
-              { prop: "asChild", type: "boolean", default: "false", description: "Merge with child element" },
-            ],
-          },
-          {
-            title: "StatsCardValue",
-            props: [
-              { prop: "value", type: "number", default: "undefined", description: "Numeric value for formatting" },
-              { prop: "format", type: "'currency' | 'number' | 'percentage' | 'compact'", default: "undefined", description: "Format type for the value" },
-              { prop: "currency", type: "string", default: "'USD'", description: "Currency code for currency formatting" },
-              { prop: "decimals", type: "number", default: "0", description: "Number of decimal places" },
-              { prop: "formatter", type: "(value: number) => string", default: "undefined", description: "Custom formatter function" },
-              { prop: "animate", type: "boolean", default: "false", description: "Enable count-up animation" },
-              { prop: "animationDuration", type: "number", default: "1", description: "Animation duration in seconds" },
-              { prop: "size", type: "'sm' | 'default' | 'lg'", default: "inherited", description: "Size of the value text" },
-            ],
-          },
-          {
-            title: "StatsCardTrend",
-            props: [
-              { prop: "value", type: "number", default: "required", description: "Trend percentage value" },
-              { prop: "showIcon", type: "boolean", default: "true", description: "Show trend icon" },
-              { prop: "showSign", type: "boolean", default: "false", description: "Show + or - sign" },
-              { prop: "comparison", type: "string", default: "undefined", description: "Comparison text (e.g., 'vs last month')" },
-            ],
-          },
-          {
-            title: "StatsCardDescription",
-            props: [
-              { prop: "asChild", type: "boolean", default: "false", description: "Merge with child element" },
-            ],
-          },
-          {
-            title: "StatsCardProgress",
-            props: [
-              { prop: "value", type: "number", default: "required", description: "Current progress value" },
-              { prop: "max", type: "number", default: "100", description: "Maximum progress value" },
-              { prop: "variant", type: "'primary' | 'success' | 'warning' | 'error' | 'info'", default: "'primary'", description: "Color variant of the progress bar" },
-              { prop: "showLabel", type: "boolean", default: "false", description: "Show percentage label on progress bar" },
-            ],
-          },
-          {
-            title: "StatsCardSpark",
-            props: [],
-          },
-          {
-            title: "StatsCardSparkline",
-            props: [
-              { prop: "data", type: "number[]", default: "required", description: "Array of data points for the sparkline" },
-              { prop: "trend", type: "'up' | 'down' | 'neutral'", default: "'neutral'", description: "Trend direction for color" },
-              { prop: "height", type: "number", default: "40", description: "Height of the sparkline" },
-            ],
-          },
-          {
-            title: "StatsCardFooter",
-            props: [],
-          },
-          {
-            title: "StatsCardTimeRange",
-            props: [
-              { prop: "asChild", type: "boolean", default: "false", description: "Merge with child element" },
-            ],
-          },
-          {
-            title: "StatsCardSkeleton",
-            props: [
-              { prop: "showIcon", type: "boolean", default: "false", description: "Show icon skeleton" },
-              { prop: "showSparkline", type: "boolean", default: "false", description: "Show sparkline skeleton" },
-            ],
-          },
-        ]}
-      />
+      <APIReference sections={statsCardPageAPIReferenceSections} />
+
+      <Changelog entries={statsCardPageChangelogEntries} />
     </ComponentPage>
-  )
+  );
 }
+
+// Static demo metadata stays co-located and follows its source constants.
+const statsCardPageFeatureGridFeatures = [
+  {
+    title: "Accessible",
+    description:
+      "WCAG 2.1 AA compliant with ARIA live regions for real-time updates, proper heading hierarchy, and keyboard navigation.",
+    icon: <IconAccessible className="h-5 w-5 text-primary" />,
+  },
+  {
+    title: "Animated",
+    description:
+      "GSAP-powered count-up animations with prefers-reduced-motion support. Smooth transitions for values and trends.",
+    icon: <IconSparkles className="h-5 w-5 text-primary" />,
+  },
+  {
+    title: "Flexible",
+    description:
+      "Multiple variants, sizes, status indicators, interactive drawers, action menus, and comprehensive value formatting.",
+    icon: <IconLayoutDashboard className="h-5 w-5 text-primary" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const statsCardPageDemoTabsTabs = [
+  {
+    value: "basic",
+    label: "Basic Stats",
+    demo: (
+      <DemoWrapper
+        title="Basic Stats"
+        description="Simple value with trend indicator"
+        code={basicStatsCode}
+      >
+        <BasicStatsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "icons",
+    label: "With Icons",
+    demo: (
+      <DemoWrapper
+        title="With Icons"
+        description="Icon variants for different metric types"
+        code={withIconsCode}
+      >
+        <WithIconsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "variants",
+    label: "All Variants",
+    demo: (
+      <DemoWrapper
+        title="All Variants"
+        description="Default, outline, filled, gradient, interactive, and glass styles"
+        code={allVariantsCode}
+      >
+        <AllVariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="Small, default, and large sizes"
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "status",
+    label: "Status Indicators",
+    demo: (
+      <DemoWrapper
+        title="Status Indicators"
+        description="Left border status colors for quick visual scanning"
+        code={statusIndicatorsCode}
+      >
+        <StatusIndicatorsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "interactive",
+    label: "Interactive Cards",
+    demo: (
+      <DemoWrapper
+        title="Interactive Cards with Drawer"
+        description="Click to open a drawer with detailed information"
+        code={interactiveCardsCode}
+      >
+        <InteractiveCardsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "action",
+    label: "With Action Menu",
+    demo: (
+      <DemoWrapper
+        title="With Action Menu"
+        description="Cards with dropdown action menus"
+        code={withActionMenuCode}
+      >
+        <WithActionMenuDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "loading",
+    label: "Loading States",
+    demo: (
+      <DemoWrapper
+        title="Loading States"
+        description="Skeleton loading demonstration"
+        code={loadingStatesCode}
+      >
+        <LoadingStatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "progress",
+    label: "Progress & Goals",
+    demo: (
+      <DemoWrapper
+        title="Progress & Goals"
+        description="Target progress visualization"
+        code={progressGoalsCode}
+      >
+        <ProgressGoalsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sparklines",
+    label: "With Sparklines",
+    demo: (isActive) =>
+      isActive ? (
+        <DemoWrapper
+          title="With Sparklines"
+          description="Visual trend using Recharts AreaChart"
+          code={withSparklinesCode}
+        >
+          <WithSparklinesDemo />
+        </DemoWrapper>
+      ) : null,
+  },
+  {
+    value: "formatting",
+    label: "Value Formatting",
+    demo: (
+      <DemoWrapper
+        title="Value Formatting"
+        description="Currency, percentage, compact number, and custom formatters"
+        code={valueFormattingCode}
+      >
+        <ValueFormattingDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "animated",
+    label: "Animated Values",
+    demo: (
+      <DemoWrapper
+        title="Animated Values (GSAP)"
+        description="Count-up animation using GSAP. Respects prefers-reduced-motion."
+        code={animatedValuesCode}
+      >
+        <AnimatedValuesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "realtime",
+    label: "Real-time Updates",
+    demo: (isActive) =>
+      isActive ? (
+        <DemoWrapper
+          title="Real-time Updates"
+          description="Live data updates with ARIA live announcements (updates every 3 seconds)"
+          code={realtimeUpdatesCode}
+        >
+          <RealtimeUpdatesDemo />
+        </DemoWrapper>
+      ) : null,
+  },
+  {
+    value: "dashboard",
+    label: "Dashboard Grid",
+    demo: (
+      <DemoWrapper
+        title="Dashboard Grid"
+        description="Complete 4-card responsive layout with all features"
+        code={dashboardGridCode}
+      >
+        <DashboardGridDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "compact",
+    label: "Compact Dashboard",
+    demo: (
+      <DemoWrapper
+        title="Compact Dashboard"
+        description="Dense sm-size grid layout for data-heavy dashboards"
+        code={compactDashboardCode}
+      >
+        <CompactDashboardDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const statsCardPageAPIReferenceSections = [
+  {
+    title: "StatsCard",
+    props: [
+      {
+        prop: "variant",
+        type: "'default' | 'outline' | 'filled' | 'gradient' | 'interactive' | 'glass'",
+        default: "'default'",
+        description: "Visual style variant of the card",
+      },
+      {
+        prop: "size",
+        type: "'sm' | 'default' | 'lg'",
+        default: "'default'",
+        description: "Size of the card",
+      },
+      {
+        prop: "status",
+        type: "'success' | 'warning' | 'error' | 'info'",
+        default: "undefined",
+        description: "Status indicator with left border color",
+      },
+      {
+        prop: "loading",
+        type: "boolean",
+        default: "false",
+        description: "Show skeleton loading state",
+      },
+      {
+        prop: "onClick",
+        type: "() => void",
+        default: "undefined",
+        description: "Click handler (for interactive variant)",
+      },
+      {
+        prop: "drawerTitle",
+        type: "string",
+        default: "undefined",
+        description: "Title for the drawer panel",
+      },
+      {
+        prop: "drawerDescription",
+        type: "string",
+        default: "undefined",
+        description: "Description for the drawer panel",
+      },
+      {
+        prop: "drawerContent",
+        type: "ReactNode",
+        default: "undefined",
+        description: "Content for the drawer panel",
+      },
+    ],
+  },
+  {
+    title: "StatsCardIcon",
+    props: [
+      {
+        prop: "variant",
+        type: "'primary' | 'success' | 'warning' | 'error' | 'info' | 'destructive'",
+        default: "'primary'",
+        description: "Color variant of the icon wrapper",
+      },
+    ],
+  },
+  {
+    title: "StatsCardTitle",
+    props: [
+      {
+        prop: "asChild",
+        type: "boolean",
+        default: "false",
+        description: "Merge with child element",
+      },
+    ],
+  },
+  {
+    title: "StatsCardAction",
+    props: [
+      {
+        prop: "asChild",
+        type: "boolean",
+        default: "false",
+        description: "Merge with child element",
+      },
+    ],
+  },
+  {
+    title: "StatsCardValue",
+    props: [
+      {
+        prop: "value",
+        type: "number",
+        default: "undefined",
+        description: "Numeric value for formatting",
+      },
+      {
+        prop: "format",
+        type: "'currency' | 'number' | 'percentage' | 'compact'",
+        default: "undefined",
+        description: "Format type for the value",
+      },
+      {
+        prop: "currency",
+        type: "string",
+        default: "'USD'",
+        description: "Currency code for currency formatting",
+      },
+      {
+        prop: "decimals",
+        type: "number",
+        default: "0",
+        description: "Number of decimal places",
+      },
+      {
+        prop: "formatter",
+        type: "(value: number) => string",
+        default: "undefined",
+        description: "Custom formatter function",
+      },
+      {
+        prop: "animate",
+        type: "boolean",
+        default: "false",
+        description: "Enable count-up animation",
+      },
+      {
+        prop: "animationDuration",
+        type: "number",
+        default: "1",
+        description: "Animation duration in seconds",
+      },
+      {
+        prop: "size",
+        type: "'sm' | 'default' | 'lg'",
+        default: "inherited",
+        description: "Size of the value text",
+      },
+    ],
+  },
+  {
+    title: "StatsCardTrend",
+    props: [
+      {
+        prop: "value",
+        type: "number",
+        default: "required",
+        description: "Trend percentage value",
+      },
+      {
+        prop: "showIcon",
+        type: "boolean",
+        default: "true",
+        description: "Show trend icon",
+      },
+      {
+        prop: "showSign",
+        type: "boolean",
+        default: "false",
+        description: "Show + or - sign",
+      },
+      {
+        prop: "comparison",
+        type: "string",
+        default: "undefined",
+        description: "Comparison text (e.g., 'vs last month')",
+      },
+    ],
+  },
+  {
+    title: "StatsCardDescription",
+    props: [
+      {
+        prop: "asChild",
+        type: "boolean",
+        default: "false",
+        description: "Merge with child element",
+      },
+    ],
+  },
+  {
+    title: "StatsCardProgress",
+    props: [
+      {
+        prop: "value",
+        type: "number",
+        default: "required",
+        description: "Current progress value",
+      },
+      {
+        prop: "max",
+        type: "number",
+        default: "100",
+        description: "Maximum progress value",
+      },
+      {
+        prop: "variant",
+        type: "'default' | 'success' | 'warning' | 'destructive'",
+        default: "'default'",
+        description: "Color variant of the progress bar",
+      },
+      {
+        prop: "showLabel",
+        type: "boolean",
+        default: "false",
+        description: "Show percentage label on progress bar",
+      },
+    ],
+  },
+  {
+    title: "StatsCardSpark",
+    props: [],
+  },
+  {
+    title: "StatsCardSparkline",
+    props: [
+      {
+        prop: "data",
+        type: "number[]",
+        default: "required",
+        description: "Array of data points for the sparkline",
+      },
+      {
+        prop: "trend",
+        type: "'up' | 'down' | 'neutral'",
+        default: "'neutral'",
+        description: "Trend direction for color",
+      },
+      {
+        prop: "height",
+        type: "number",
+        default: "40",
+        description: "Height of the sparkline",
+      },
+    ],
+  },
+  {
+    title: "StatsCardFooter",
+    props: [],
+  },
+  {
+    title: "StatsCardTimeRange",
+    props: [
+      {
+        prop: "asChild",
+        type: "boolean",
+        default: "false",
+        description: "Merge with child element",
+      },
+    ],
+  },
+  {
+    title: "StatsCardSkeleton",
+    props: [
+      {
+        prop: "showIcon",
+        type: "boolean",
+        default: "false",
+        description: "Show icon skeleton",
+      },
+      {
+        prop: "showSparkline",
+        type: "boolean",
+        default: "false",
+        description: "Show sparkline skeleton",
+      },
+      {
+        prop: "showProgress",
+        type: "boolean",
+        default: "false",
+        description: "Show progress skeleton",
+      },
+      {
+        prop: "size",
+        type: "'sm' | 'default' | 'lg'",
+        default: "'default'",
+        description:
+          "Scales padding and placeholder blocks; auto-applied by StatsCard loading",
+      },
+    ],
+  },
+  {
+    title: "StatsCardProgress",
+    props: [
+      {
+        prop: "value",
+        type: "number",
+        default: "required",
+        description: "Current meter value",
+      },
+      {
+        prop: "max",
+        type: "number",
+        default: "100",
+        description: "Maximum value",
+      },
+      {
+        prop: "showLabel",
+        type: "boolean",
+        default: "false",
+        description: "Show value / max label row",
+      },
+      {
+        prop: "variant",
+        type: "'default' | 'success' | 'warning' | 'destructive'",
+        default: "'default'",
+        description:
+          "Indicator color. Built on Base UI Meter (role=meter, free aria-valuetext formatting)",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const statsCardPageChangelogEntries = [
+  {
+    version: "2.1.0",
+    date: "3 November 2026",
+    changes: [
+      {
+        type: "breaking",
+        title:
+          "Removed statsCardDescriptionVariants and statsCardProgressVariants",
+        description:
+          "Both were empty/dead cva factories with no variants. Description styling is now the literal text-sm text-muted-foreground; the progress track classes are inlined.",
+      },
+      {
+        type: "breaking",
+        title: "StatsCardProgress Rebuilt on Base UI Meter",
+        description:
+          "The hand-rolled role=progressbar div is now Base UI Meter (Root/Track/Indicator/Value). DOM and ARIA role change from progressbar to meter — the correct semantics for quota/gauge KPIs — with 'N% complete' exposed via aria-valuetext.",
+      },
+      {
+        type: "breaking",
+        title: "useReducedMotion No Longer Re-exported",
+        description:
+          "The local SSR-unsafe duplicate was deleted; import { useReducedMotion } from @/hooks/use-reduced-motion directly.",
+      },
+      {
+        type: "fixed",
+        title: "Interrupt-Safe Count-Up",
+        description:
+          "useCountUp captures the live tween value on interrupt, so a re-triggered animation resumes from the current position instead of restarting from the stale start value.",
+      },
+      {
+        type: "fixed",
+        title: "Sparkline Colors Use Theme Tokens",
+        description:
+          "Raw hex fills (#22c55e/#ef4444/#6b7280) replaced with var(--color-success), var(--color-destructive), and var(--color-muted-foreground) so sparklines follow light/dark themes.",
+      },
+      {
+        type: "added",
+        title: "Size-Aware Skeleton",
+        description:
+          "StatsCardSkeleton accepts size (sm/default/lg) scaling padding and placeholder blocks; StatsCard loading state forwards its own size automatically.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

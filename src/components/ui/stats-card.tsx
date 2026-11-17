@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Meter as MeterPrimitive } from "@base-ui/react/meter";
 import {
   IconTrendingUp,
   IconTrendingDown,
@@ -7,7 +8,8 @@ import {
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { cva, type VariantProps } from "class-variance-authority";
 import { gsap } from "gsap";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   Drawer,
   DrawerContent,
@@ -16,39 +18,47 @@ import {
   DrawerDescription,
   DrawerBody,
 } from "@/components/ui/drawer";
+import { resolveComponentDefaults } from "@/lib/component-defaults";
 
-function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
+const statsTrendIcons = {
+  positive: IconTrendingUp,
+  negative: IconTrendingDown,
+  neutral: IconMinus,
+};
 
-  React.useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
+function useAnimatedDisplay(value: number, animated: boolean) {
+  const [displayValue, setDisplayValue] = React.useState(0);
 
-    const handler = (event: MediaQueryListEvent) => {
-      setPrefersReducedMotion(event.matches);
-    };
+  const [previousDisplay, setPreviousDisplay] = React.useState({
+    animated,
+    value,
+  });
 
-    mediaQuery.addEventListener("change", handler);
+  // Re-enabling starts from the last value displayed without animation.
+  if (animated !== previousDisplay.animated) {
+    setPreviousDisplay({ animated, value });
 
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
+    if (animated) setDisplayValue(previousDisplay.value);
+  } else if (!animated && !Object.is(value, previousDisplay.value)) {
+    setPreviousDisplay({ animated, value });
+  }
 
-  return prefersReducedMotion;
+  return [displayValue, setDisplayValue] as const;
 }
 
 function useCountUp(
   value: number,
   duration: number = 1,
   enabled: boolean = true,
-  decimals: number = 0
+  decimals: number = 0,
 ): number {
-  const [displayValue, setDisplayValue] = React.useState(0);
   const reducedMotion = useReducedMotion();
+  const animated = enabled && !reducedMotion;
+  const [displayValue, setDisplayValue] = useAnimatedDisplay(value, animated);
   const previousValue = React.useRef(0);
 
   React.useEffect(() => {
-    if (!enabled || reducedMotion) {
-      setDisplayValue(value);
+    if (!animated) {
       previousValue.current = value;
 
       return;
@@ -68,13 +78,16 @@ function useCountUp(
     });
 
     return () => {
+      previousValue.current = obj.val;
       gsap.killTweensOf(obj);
     };
-  }, [value, duration, enabled, reducedMotion]);
+  }, [value, duration, animated, setDisplayValue]);
+
+  const visibleValue = animated ? displayValue : value;
 
   return decimals > 0
-    ? Number(displayValue.toFixed(decimals))
-    : Math.round(displayValue);
+    ? Number(visibleValue.toFixed(decimals))
+    : Math.round(visibleValue);
 }
 
 type FormatType = "currency" | "percentage" | "compact" | "number" | "custom";
@@ -89,52 +102,57 @@ interface FormatOptions {
   formatter?: (value: number) => string;
 }
 
+function resolveFormatOptions(input: FormatOptions) {
+  const { format, currency, locale, decimals, prefix, suffix, formatter } =
+    resolveComponentDefaults(input, RESOLVE_FORMAT_OPTIONS_DEFAULTS_1);
+
+  return { format, currency, locale, decimals, prefix, suffix, formatter };
+}
+
+function getNumberFormatOptions({
+  format,
+  currency,
+  decimals,
+}: ReturnType<typeof resolveFormatOptions>): Intl.NumberFormatOptions {
+  if (format === "currency") {
+    return {
+      style: "currency",
+      currency,
+      minimumFractionDigits: decimals ?? 0,
+      maximumFractionDigits: decimals ?? 0,
+    };
+  }
+
+  if (format === "compact") {
+    return {
+      notation: "compact",
+      compactDisplay: "short",
+      maximumFractionDigits: decimals ?? 1,
+    };
+  }
+
+  return {
+    minimumFractionDigits: decimals ?? 0,
+    maximumFractionDigits: decimals ?? 0,
+  };
+}
+
 function formatValue(value: number, options: FormatOptions = {}): string {
-  const {
-    format = "number",
-    currency = "USD",
-    locale = "en-US",
-    decimals,
-    prefix = "",
-    suffix = "",
-    formatter,
-  } = options;
+  const resolved = resolveFormatOptions(options);
+  const { formatter, prefix, suffix, format, decimals, locale } = resolved;
 
   if (formatter) {
-    return `${prefix}${formatter(value)}${suffix}`;
+    return prefix + formatter(value) + suffix;
   }
 
-  let formatted: string;
+  const formatted =
+    format === "percentage"
+      ? value.toFixed(decimals ?? 1) + "%"
+      : new Intl.NumberFormat(locale, getNumberFormatOptions(resolved)).format(
+          value,
+        );
 
-  switch (format) {
-    case "currency":
-      formatted = new Intl.NumberFormat(locale, {
-        style: "currency",
-        currency,
-        minimumFractionDigits: decimals ?? 0,
-        maximumFractionDigits: decimals ?? 0,
-      }).format(value);
-      break;
-    case "percentage":
-      formatted = `${value.toFixed(decimals ?? 1)}%`;
-      break;
-    case "compact":
-      formatted = new Intl.NumberFormat(locale, {
-        notation: "compact",
-        compactDisplay: "short",
-        maximumFractionDigits: decimals ?? 1,
-      }).format(value);
-      break;
-    case "number":
-    default:
-      formatted = new Intl.NumberFormat(locale, {
-        minimumFractionDigits: decimals ?? 0,
-        maximumFractionDigits: decimals ?? 0,
-      }).format(value);
-      break;
-  }
-
-  return `${prefix}${formatted}${suffix}`;
+  return prefix + formatted + suffix;
 }
 
 const statsCardVariants = cva(
@@ -146,10 +164,11 @@ const statsCardVariants = cva(
         outline: "border-2",
         filled: "bg-muted/50 border-transparent",
         gradient:
-          "bg-gradient-to-br from-primary/10 to-primary/5 border-transparent",
+          "bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/5 ring-primary/20 border-transparent",
         interactive:
-          "border-border cursor-pointer hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        glass: "bg-background/60 backdrop-blur-xl border-border/50 shadow-lg",
+          "border-border cursor-pointer hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+        glass:
+          "bg-background/60 dark:bg-background/40 backdrop-blur-xl backdrop-saturate-150 border-border/50 shadow-lg ring-0",
       },
       size: {
         sm: "p-3",
@@ -169,7 +188,7 @@ const statsCardVariants = cva(
       size: "default",
       status: "default",
     },
-  }
+  },
 );
 
 const statsCardIconVariants = cva(
@@ -194,7 +213,7 @@ const statsCardIconVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
 const statsCardHeaderVariants = cva("flex items-start justify-between gap-2", {
@@ -236,29 +255,7 @@ const statsCardTrendVariants = cva(
     defaultVariants: {
       trend: "neutral",
     },
-  }
-);
-
-const statsCardDescriptionVariants = cva("text-sm text-muted-foreground", {
-  variants: {},
-  defaultVariants: {},
-});
-
-const statsCardProgressVariants = cva(
-  "relative h-1.5 w-full overflow-hidden rounded-full bg-muted",
-  {
-    variants: {
-      variant: {
-        default: "",
-        success: "",
-        warning: "",
-        destructive: "",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
+  },
 );
 
 interface StatsCardContextValue {
@@ -268,7 +265,7 @@ interface StatsCardContextValue {
 }
 
 const StatsCardContext = React.createContext<StatsCardContextValue | null>(
-  null
+  null,
 );
 
 function useStatsCardContext() {
@@ -327,15 +324,10 @@ interface StatsCardTrendProps
   comparison?: string;
 }
 
-interface StatsCardDescriptionProps
-  extends
-    React.ComponentPropsWithoutRef<"p">,
-    VariantProps<typeof statsCardDescriptionVariants> {}
+interface StatsCardDescriptionProps extends React.ComponentPropsWithoutRef<"p"> {}
 
-interface StatsCardProgressProps
-  extends
-    React.ComponentPropsWithoutRef<"div">,
-    VariantProps<typeof statsCardProgressVariants> {
+interface StatsCardProgressProps extends React.ComponentPropsWithoutRef<"div"> {
+  variant?: "default" | "success" | "warning" | "destructive";
   value: number;
   max?: number;
   showLabel?: boolean;
@@ -356,6 +348,7 @@ interface StatsCardSkeletonProps extends React.ComponentPropsWithoutRef<"div"> {
   showSparkline?: boolean;
   showIcon?: boolean;
   showProgress?: boolean;
+  size?: "sm" | "default" | "lg";
 }
 
 const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
@@ -374,7 +367,7 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
       onClick,
       ...props
     },
-    ref
+    ref,
   ) => {
     const id = React.useId();
     const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -397,59 +390,44 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
 
     const contextValue = React.useMemo(
       () => ({ id, isInteractive, size: size || "default" }),
-      [id, isInteractive, size]
+      [id, isInteractive, size],
     );
 
     if (loading) {
       return (
         <StatsCardContext.Provider value={contextValue}>
-          <StatsCardSkeleton className={className} />
+          <StatsCardSkeleton className={className} size={size || "default"} />
         </StatsCardContext.Provider>
       );
     }
 
     const cardContent = (
-      <article
-        ref={ref}
-        data-slot="stats-card"
-        
-        aria-labelledby={`${id}-title`}
-        tabIndex={isInteractive ? 0 : undefined}
-        onClick={isInteractive ? handleClick : undefined}
-        onKeyDown={
-          isInteractive
-            ? (e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleClick(e as unknown as React.MouseEvent<HTMLElement>);
-                }
-              }
-            : undefined
-        }
-        className={cn(statsCardVariants({ variant, size, status, className }))}
-        {...props}
-      >
-        {children}
-      </article>
+      <RenderStatsCardPart1
+        {...{
+          ref,
+          isInteractive,
+          id,
+          handleClick,
+          variant,
+          size,
+          status,
+          className,
+          props,
+          children,
+        }}
+      />
     );
 
     if (drawerContent) {
-      return (
-        <StatsCardContext.Provider value={contextValue}>
-          <Drawer open={drawerOpen} onOpenChange={handleDrawerOpenChange}>
-            {cardContent}
-            <DrawerContent side="right" size="lg">
-              <DrawerHeader>
-                <DrawerTitle>{drawerTitle || "Details"}</DrawerTitle>
-                {drawerDescription && (
-                  <DrawerDescription>{drawerDescription}</DrawerDescription>
-                )}
-              </DrawerHeader>
-              <DrawerBody>{drawerContent}</DrawerBody>
-            </DrawerContent>
-          </Drawer>
-        </StatsCardContext.Provider>
-      );
+      return renderStatsCardDrawer({
+        contextValue,
+        drawerOpen,
+        handleDrawerOpenChange,
+        drawerTitle,
+        drawerDescription,
+        drawerContent,
+        cardContent,
+      });
     }
 
     return (
@@ -457,8 +435,43 @@ const StatsCard = React.forwardRef<HTMLElement, StatsCardProps>(
         {cardContent}
       </StatsCardContext.Provider>
     );
-  }
+  },
 );
+
+function renderStatsCardDrawer({
+  contextValue,
+  drawerOpen,
+  handleDrawerOpenChange,
+  drawerTitle,
+  drawerDescription,
+  drawerContent,
+  cardContent,
+}: {
+  contextValue: StatsCardContextValue;
+  drawerOpen: boolean;
+  handleDrawerOpenChange: (open: boolean) => void;
+  drawerTitle: React.ReactNode;
+  drawerDescription: React.ReactNode;
+  drawerContent: React.ReactNode;
+  cardContent: React.ReactNode;
+}) {
+  return (
+    <StatsCardContext.Provider value={contextValue}>
+      <Drawer open={drawerOpen} onOpenChange={handleDrawerOpenChange}>
+        {cardContent}
+        <DrawerContent size="lg">
+          <DrawerHeader>
+            <DrawerTitle>{drawerTitle || "Details"}</DrawerTitle>
+            {drawerDescription && (
+              <DrawerDescription>{drawerDescription}</DrawerDescription>
+            )}
+          </DrawerHeader>
+          <DrawerBody>{drawerContent}</DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </StatsCardContext.Provider>
+  );
+}
 
 StatsCard.displayName = "StatsCard";
 
@@ -471,7 +484,7 @@ const StatsCardIcon = React.forwardRef<HTMLDivElement, StatsCardIconProps>(
       aria-hidden="true"
       {...props}
     />
-  )
+  ),
 );
 
 StatsCardIcon.displayName = "StatsCardIcon";
@@ -484,7 +497,7 @@ const StatsCardHeader = React.forwardRef<HTMLDivElement, StatsCardHeaderProps>(
       className={cn(statsCardHeaderVariants({ size, className }))}
       {...props}
     />
-  )
+  ),
 );
 
 StatsCardHeader.displayName = "StatsCardHeader";
@@ -492,7 +505,7 @@ StatsCardHeader.displayName = "StatsCardHeader";
 const StatsCardTitle = React.forwardRef<
   HTMLHeadingElement,
   StatsCardTitleProps
->(({ className, ...props }, ref) => {
+>(({ className, children, ...props }, ref) => {
   const { id } = useStatsCardContext();
 
   return (
@@ -502,7 +515,9 @@ const StatsCardTitle = React.forwardRef<
       data-slot="stats-card-title"
       className={cn("text-sm font-medium text-muted-foreground", className)}
       {...props}
-    />
+    >
+      {children}
+    </h3>
   );
 });
 
@@ -516,7 +531,7 @@ const StatsCardAction = React.forwardRef<HTMLDivElement, StatsCardActionProps>(
       className={cn("shrink-0", className)}
       {...props}
     />
-  )
+  ),
 );
 
 StatsCardAction.displayName = "StatsCardAction";
@@ -539,7 +554,7 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
       children,
       ...props
     },
-    ref
+    ref,
   ) => {
     const { id } = useStatsCardContext();
 
@@ -547,7 +562,7 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
       value ?? 0,
       animationDuration,
       animate && value !== undefined,
-      decimals ?? (format === "percentage" ? 1 : 0)
+      decimals ?? (format === "percentage" ? 1 : 0),
     );
 
     const displayValue =
@@ -568,6 +583,8 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
       <div
         ref={ref}
         data-slot="stats-card-value"
+
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This existing live region preserves its block layout and div ref contract; output introduces form-associated semantics.
         role="status"
         aria-live="polite"
         aria-atomic="true"
@@ -578,7 +595,7 @@ const StatsCardValue = React.forwardRef<HTMLDivElement, StatsCardValueProps>(
         {displayValue}
       </div>
     );
-  }
+  },
 );
 
 StatsCardValue.displayName = "StatsCardValue";
@@ -594,8 +611,40 @@ const StatsCardTrend = React.forwardRef<HTMLDivElement, StatsCardTrendProps>(
       comparison,
       ...props
     },
-    ref
+    ref,
   ) => {
+    const resolveTrendDirection = () => {
+      if (isPositive) return "positive" as const;
+
+      if (isNegative) return "negative" as const;
+
+      return "neutral" as const;
+    };
+
+    const resolveComputedTrend2 = () => {
+      if (isPositive) {
+        return "up" as const;
+      }
+
+      if (isNegative) {
+        return "down" as const;
+      }
+
+      return "neutral" as const;
+    };
+
+    const resolveScreenReaderText3 = () => {
+      if (isPositive) {
+        return `Increased by ${Math.abs(value)} percent`;
+      }
+
+      if (isNegative) {
+        return `Decreased by ${Math.abs(value)} percent`;
+      }
+
+      return "No change" as const;
+    };
+
     const isPositive = Number(value) > 0;
     const isNegative = Number(value) < 0;
     const isNeutral = Number(value) === 0;
@@ -605,27 +654,18 @@ const StatsCardTrend = React.forwardRef<HTMLDivElement, StatsCardTrendProps>(
         ? `${isPositive ? "+" : ""}${Number(value)}%`
         : `${Math.abs(Number(value))}%`;
 
-    const TrendIcon = isPositive
-      ? IconTrendingUp
-      : isNegative
-        ? IconTrendingDown
-        : IconMinus;
+    const TrendIcon = statsTrendIcons[resolveTrendDirection()];
 
-    const computedTrend =
-      trend || (isPositive ? "up" : isNegative ? "down" : "neutral");
+    const computedTrend = trend || resolveComputedTrend2();
 
-    const screenReaderText = isPositive
-      ? `Increased by ${Math.abs(value)} percent`
-      : isNegative
-        ? `Decreased by ${Math.abs(value)} percent`
-        : "No change";
+    const screenReaderText = resolveScreenReaderText3();
 
     return (
       <div
         ref={ref}
         data-slot="stats-card-trend"
         className={cn(
-          statsCardTrendVariants({ trend: computedTrend, className })
+          statsCardTrendVariants({ trend: computedTrend, className }),
         )}
         {...props}
       >
@@ -645,7 +685,7 @@ const StatsCardTrend = React.forwardRef<HTMLDivElement, StatsCardTrendProps>(
         </span>
       </div>
     );
-  }
+  },
 );
 
 StatsCardTrend.displayName = "StatsCardTrend";
@@ -657,7 +697,7 @@ const StatsCardDescription = React.forwardRef<
   <p
     ref={ref}
     data-slot="stats-card-description"
-    className={cn(statsCardDescriptionVariants({ className }))}
+    className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ));
@@ -670,10 +710,8 @@ const StatsCardProgress = React.forwardRef<
 >(
   (
     { className, variant, value, max = 100, showLabel = false, ...props },
-    ref
+    ref,
   ) => {
-    const percentage = Math.min(100, Math.max(0, (value / max) * 100));
-
     const indicatorColor = {
       default: "bg-primary",
       success: "bg-success",
@@ -682,37 +720,38 @@ const StatsCardProgress = React.forwardRef<
     };
 
     return (
-      <div
+      <MeterPrimitive.Root
         ref={ref}
         data-slot="stats-card-progress"
-        className="space-y-1"
+        value={value}
+        max={max}
+        getAriaValueText={(_formattedValue, val) =>
+          `${Math.round((val / max) * 100)}% complete`
+        }
+        className={cn("space-y-1", className)}
         {...props}
       >
         {showLabel && (
-          <div className="flex justify-between text-xs text-muted-foreground">
-            <span>{value}</span>
-            <span>{max}</span>
-          </div>
+          <MeterPrimitive.Value className="flex justify-between text-xs text-muted-foreground">
+            {(_formattedValue, val) => (
+              <>
+                <span>{val}</span>
+                <span>{max}</span>
+              </>
+            )}
+          </MeterPrimitive.Value>
         )}
-        <div
-          role="progressbar"
-          aria-valuenow={value}
-          aria-valuemin={0}
-          aria-valuemax={max}
-          aria-label={`${Math.round(percentage)}% complete`}
-          className={cn(statsCardProgressVariants({ variant, className }))}
-        >
-          <div
+        <MeterPrimitive.Track className="relative h-1.5 w-full overflow-hidden rounded-full bg-muted">
+          <MeterPrimitive.Indicator
             className={cn(
               "h-full rounded-full transition-all duration-300",
-              indicatorColor[variant || "default"]
+              indicatorColor[variant || "default"],
             )}
-            style={{ width: `${percentage}%` }}
           />
-        </div>
-      </div>
+        </MeterPrimitive.Track>
+      </MeterPrimitive.Root>
     );
-  }
+  },
 );
 
 StatsCardProgress.displayName = "StatsCardProgress";
@@ -728,10 +767,16 @@ const StatsCardSpark = React.forwardRef<HTMLDivElement, StatsCardSparkProps>(
     >
       {children}
     </div>
-  )
+  ),
 );
 
 StatsCardSpark.displayName = "StatsCardSpark";
+
+const statsCardSparklineColors = {
+  up: "var(--color-success)",
+  down: "var(--color-destructive)",
+  neutral: "var(--color-muted-foreground)",
+} as const;
 
 const StatsCardSparkline = React.forwardRef<
   HTMLDivElement,
@@ -739,8 +784,7 @@ const StatsCardSparkline = React.forwardRef<
 >(({ className, data, trend = "neutral", ...props }, ref) => {
   const reducedMotion = useReducedMotion();
 
-  const color =
-    trend === "up" ? "#22c55e" : trend === "down" ? "#ef4444" : "#6b7280";
+  const color = statsCardSparklineColors[trend];
 
   const chartData = data.map((value, index) => ({ index, value }));
   const gradientId = React.useId();
@@ -784,11 +828,11 @@ const StatsCardFooter = React.forwardRef<HTMLDivElement, StatsCardFooterProps>(
       data-slot="stats-card-footer"
       className={cn(
         "mt-2 flex items-center justify-between text-xs text-muted-foreground",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  ),
 );
 
 StatsCardFooter.displayName = "StatsCardFooter";
@@ -810,43 +854,72 @@ StatsCardTimeRange.displayName = "StatsCardTimeRange";
 const StatsCardSkeleton = React.forwardRef<
   HTMLDivElement,
   StatsCardSkeletonProps
->(
-  (
-    {
-      className,
-      showSparkline = false,
-      showIcon = false,
-      showProgress = false,
-      ...props
-    },
-    ref
-  ) => (
-    <div
-      ref={ref}
-      data-slot="stats-card-skeleton"
-      className={cn(
-        "relative overflow-hidden rounded-lg border border-border bg-card p-4 shadow-sm animate-pulse",
-        className
-      )}
-      aria-busy="true"
-      aria-label="Loading stats card"
-      {...props}
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 space-y-2">
-          {showIcon && <div className="h-10 w-10 rounded-lg bg-muted" />}
-          <div className="h-4 w-24 rounded bg-muted" />
-          <div className="h-8 w-32 rounded bg-muted" />
-          <div className="h-4 w-16 rounded bg-muted" />
-        </div>
-      </div>
-      {showProgress && (
-        <div className="mt-3 h-1.5 w-full rounded-full bg-muted" />
-      )}
-      {showSparkline && <div className="mt-3 h-16 w-full rounded bg-muted" />}
-    </div>
-  )
-);
+>((input, ref) => {
+  const { className, showSparkline, showIcon, showProgress, size, ...props } =
+    resolveComponentDefaults(input, STATS_CARD_TSX_DEFAULTS_2);
+
+  const resolveClassName4 = () => {
+    if (size === "sm") {
+      return "p-3" as const;
+    }
+
+    if (size === "lg") {
+      return "p-6" as const;
+    }
+
+    return "p-4" as const;
+  };
+
+  const resolveClassName5 = () => {
+    if (size === "sm") {
+      return "h-3 w-20" as const;
+    }
+
+    if (size === "lg") {
+      return "h-5 w-28" as const;
+    }
+
+    return "h-4 w-24" as const;
+  };
+
+  const resolveClassName6 = () => {
+    if (size === "sm") {
+      return "h-6 w-24" as const;
+    }
+
+    if (size === "lg") {
+      return "h-10 w-40" as const;
+    }
+
+    return "h-8 w-32" as const;
+  };
+
+  const resolveClassName7 = () => {
+    if (size === "sm") {
+      return "h-3 w-14" as const;
+    }
+
+    if (size === "lg") {
+      return "h-5 w-20" as const;
+    }
+
+    return "h-4 w-16" as const;
+  };
+
+  return renderStatsCardSkeletonPart2({
+    ref,
+    resolveClassName4,
+    className,
+    props,
+    showIcon,
+    resolveClassName5,
+    resolveClassName6,
+    resolveClassName7,
+    showProgress,
+    showSparkline,
+    size,
+  });
+});
 
 StatsCardSkeleton.displayName = "StatsCardSkeleton";
 
@@ -870,11 +943,8 @@ export {
   statsCardHeaderVariants,
   statsCardValueVariants,
   statsCardTrendVariants,
-  statsCardDescriptionVariants,
-  statsCardProgressVariants,
   formatValue,
   useCountUp,
-  useReducedMotion,
 };
 
 export type {
@@ -895,3 +965,145 @@ export type {
   FormatType,
   FormatOptions,
 };
+
+type renderStatsCardPart1Args = {
+  ref: React.ForwardedRef<HTMLElement>;
+  isInteractive: boolean;
+  id: string;
+  handleClick: (e: React.MouseEvent<HTMLElement>) => void;
+  variant:
+    | "default"
+    | "gradient"
+    | "outline"
+    | "filled"
+    | "interactive"
+    | "glass"
+    | null
+    | undefined;
+  size: "default" | "sm" | "lg" | null;
+  status:
+    "error" | "default" | "success" | "warning" | "info" | null | undefined;
+  className: string | undefined;
+  props: React.HTMLAttributes<HTMLElement>;
+  children: React.ReactNode;
+};
+
+function RenderStatsCardPart1({
+  ref,
+  isInteractive,
+  id,
+  handleClick,
+  variant,
+  size,
+  status,
+  className,
+  props,
+  children,
+}: renderStatsCardPart1Args) {
+  return (
+    // oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Actionable cards set button role, tabIndex, and Enter/Space activation together; informational cards attach no interaction handlers.
+    <article
+      ref={ref}
+      data-slot="stats-card"
+      role={isInteractive ? "button" : undefined}
+
+      aria-labelledby={`${id}-title`}
+      tabIndex={isInteractive ? 0 : undefined}
+      onClick={isInteractive ? handleClick : undefined}
+      onKeyDown={
+        isInteractive
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                e.currentTarget.click();
+              }
+            }
+          : undefined
+      }
+      className={cn(statsCardVariants({ variant, size, status, className }))}
+      {...props}
+    >
+      {children}
+    </article>
+  );
+}
+
+type renderStatsCardSkeletonPart2Args = {
+  ref: React.ForwardedRef<HTMLDivElement>;
+  resolveClassName4: () => "p-3" | "p-4" | "p-6";
+  className: string | undefined;
+  props: React.ComponentPropsWithoutRef<"div">;
+  showIcon: boolean;
+  resolveClassName5: () => "h-3 w-20" | "h-5 w-28" | "h-4 w-24";
+  resolveClassName6: () => "h-6 w-24" | "h-10 w-40" | "h-8 w-32";
+  resolveClassName7: () => "h-3 w-14" | "h-5 w-20" | "h-4 w-16";
+  showProgress: boolean;
+  showSparkline: boolean;
+  size: "default" | "sm" | "lg";
+};
+
+function renderStatsCardSkeletonPart2({
+  ref,
+  resolveClassName4,
+  className,
+  props,
+  showIcon,
+  resolveClassName5,
+  resolveClassName6,
+  resolveClassName7,
+  showProgress,
+  showSparkline,
+  size,
+}: renderStatsCardSkeletonPart2Args) {
+  return (
+    <div
+      ref={ref}
+      data-slot="stats-card-skeleton"
+      className={cn(
+        "relative overflow-hidden rounded-lg border border-border bg-card shadow-sm animate-pulse",
+        resolveClassName4(),
+        className,
+      )}
+      aria-busy="true"
+      aria-label="Loading stats card"
+      {...props}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 space-y-2">
+          {showIcon && <div className="h-10 w-10 rounded-lg bg-muted" />}
+          <div className={cn("rounded bg-muted", resolveClassName5())} />
+          <div className={cn("rounded bg-muted", resolveClassName6())} />
+          <div className={cn("rounded bg-muted", resolveClassName7())} />
+        </div>
+      </div>
+      {showProgress && (
+        <div className="mt-3 h-1.5 w-full rounded-full bg-muted" />
+      )}
+      {showSparkline && (
+        <div
+          className={cn(
+            "mt-3 w-full rounded bg-muted",
+            size === "lg" ? "h-20" : "h-16",
+          )}
+        />
+      )}
+    </div>
+  );
+}
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const RESOLVE_FORMAT_OPTIONS_DEFAULTS_1 = {
+  format: "number",
+  currency: "USD",
+  locale: "en-US",
+  prefix: "",
+  suffix: "",
+} as const;
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const STATS_CARD_TSX_DEFAULTS_2 = {
+  showSparkline: false,
+  showIcon: false,
+  showProgress: false,
+  size: "default",
+} as const;
