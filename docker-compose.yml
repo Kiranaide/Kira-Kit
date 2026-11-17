@@ -1,0 +1,7 @@
+services:
+  kira-kit:
+    build: .
+    image: kira-kit-site
+    ports:
+      - "3000:80"
+    restart: unless-stopped

@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    name: Lint, typecheck, and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install root dependencies
+        run: bun install
+
+      - name: Install CLI dependencies
+        working-directory: packages/cli
+        run: bun install
+
+      - name: Lint (root)
+        run: bunx oxlint
+
+      - name: Typecheck (root)
+        run: bunx tsc -b
+
+      - name: Typecheck (cli)
+        working-directory: packages/cli
+        run: bun run typecheck
+
+      - name: Test (cli)
+        working-directory: packages/cli
+        run: bun run test
+
+      - name: Build (cli)
+        working-directory: packages/cli
+        run: bun run build
+
+      - name: Quality checks (kira-kit check, errors gate, warnings annotate)
+        run: node packages/cli/dist/index.mjs check --format github
+
+      - name: Registry build (kira-kit build)
+        run: node packages/cli/dist/index.mjs build

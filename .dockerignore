@@ -1,0 +1,17 @@
+# Local dev/test artifacts
+node_modules
+dist
+packages/cli/node_modules
+packages/cli/dist
+
+# VCS / editor
+.git
+.github
+
+# Logs and scratch files
+*.log
+debug.log
+tsc-errors.log
+
+# Generated docs app copies (not needed in the image)
+packages/cli/docs
