@@ -1,1405 +1,2585 @@
+/* oxlint-disable react/only-export-components -- public color utilities accompany the component */
 "use client";
 
 import * as React from "react";
-import {
-  type HexColor,
-  hexToHsva,
-  type HslaColor,
-  type HsvaColor,
-  hsvaToHex,
-  hsvaToHsla,
-  hsvaToRgba,
-  type RgbaColor,
-  rgbaToHsva,
-  hsvaToHexa,
-} from "@uiw/color-convert";
-import Hue from "@uiw/react-color-hue";
+import { mergeComponentRefs } from "@/lib/component-refs";
+import { cva, type VariantProps } from "class-variance-authority";
+import { hsvaToHexa, type HsvaColor } from "@uiw/color-convert";
 import Saturation from "@uiw/react-color-saturation";
 import {
   IconCheck,
-  IconChevronDown,
-  IconX,
   IconColorPicker,
   IconCopy,
-  IconCopyCheck,
-  IconRefresh,
+  IconLoader2,
 } from "@tabler/icons-react";
-
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
-  PopoverTrigger,
   PopoverContent,
+  PopoverTitle,
+  PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { KiraSelect } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { useColorPicker } from "@/hooks/use-color-picker";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import {
+  colorValue,
+  findAccessibleColor,
+  formatColor,
+  getContrastRatio,
+  initialColor,
+  isOklchInSrgb,
+  parseColor,
+  parseOklchInput,
+  serializeColorToken,
+  type ColorFormat,
+  type ColorInput,
+  type ColorPickerValue,
+} from "@/lib/color-picker";
+import { cn } from "cn";
+import { resolveComponentDefaults } from "@/lib/component-defaults";
+import { omitComponentProps } from "@/lib/component-native-props";
 
-function getColorAsHsva(
-  color: `#${string}` | HsvaColor | HslaColor | RgbaColor
-): HsvaColor {
-  if (typeof color === "string") {
-    return hexToHsva(color);
-  } else if ("h" in color && "s" in color && "v" in color) {
-    return color;
-  } else if ("r" in color) {
-    return rgbaToHsva(color);
-  } else {
-    return hslaToHsva({ ...color, a: 1 });
-  }
-}
+const colorPickerVariants = cva(
+  "inline-flex min-w-0 max-w-full flex-col gap-1.5",
+  {
+    variants: {
+      size: {
+        sm: "gap-1 text-xs",
+        default: "text-sm",
+        lg: "gap-2 text-base",
+      },
+    },
+    defaultVariants: { size: "default" },
+  },
+);
 
-function hslaToHsva(color: HslaColor): HsvaColor {
-  const h = color.h;
-  const s = color.s / 100;
-  const l = color.l / 100;
+const DEFAULT_SWATCHES = [
+  "#F8371A",
+  "#F97C1B",
+  "#FAC81C",
+  "#3FD0B6",
+  "#2CADF6",
+  "#6462FC",
+] as const;
 
-  const c = (1 - Math.abs(2 * l - 1)) * s;
-  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-  const m = l - c / 2;
-
-  let r = 0,
-    g = 0,
-    b = 0;
-
-  if (0 <= h && h < 60) {
-    r = c;
-    g = x;
-    b = 0;
-  } else if (60 <= h && h < 120) {
-    r = x;
-    g = c;
-    b = 0;
-  } else if (120 <= h && h < 180) {
-    r = 0;
-    g = c;
-    b = x;
-  } else if (180 <= h && h < 240) {
-    r = 0;
-    g = x;
-    b = c;
-  } else if (240 <= h && h < 300) {
-    r = x;
-    g = 0;
-    b = c;
-  } else if (300 <= h && h < 360) {
-    r = c;
-    g = 0;
-    b = x;
-  }
-
-  const maxVal = Math.max(r, g, b);
-
-  return {
-    h,
-    s: Math.round(r * 100),
-    v: Math.round((maxVal + m) * 100),
-    a: 1,
-  };
-}
-
-type OklchColor = {
-  l: number;
-  c: number;
-  h: number;
+const CHECKERBOARD = {
+  background:
+    "repeating-conic-gradient(var(--muted) 0% 25%, var(--background) 0% 50%) 50% / 8px 8px",
 };
 
-function rgbaToOklch(rgb: RgbaColor): OklchColor {
-  const r = rgb.r / 255;
-  const g = rgb.g / 255;
-  const b = rgb.b / 255;
+const FORMATS = [
+  { value: "hex", label: "HEX" },
+  { value: "hexa", label: "HEXA" },
+  { value: "rgb", label: "RGB" },
+  { value: "hsl", label: "HSL" },
+  { value: "oklch", label: "OKLCH" },
+] satisfies { value: ColorFormat; label: string }[];
 
-  const toLinear = (c: number) =>
-    c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-
-  const lr = toLinear(r);
-  const lg = toLinear(g);
-  const lb = toLinear(b);
-
-  const lLms = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
-  const mLms = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
-  const sLms = 0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb;
-
-  const lCbrt = Math.cbrt(lLms);
-  const mCbrt = Math.cbrt(mLms);
-  const sCbrt = Math.cbrt(sLms);
-
-  const L = 0.2104542553 * lCbrt + 0.793617785 * mCbrt - 0.0040720468 * sCbrt;
-  const a = 1.9779984951 * lCbrt - 2.428592205 * mCbrt + 0.4505937099 * sCbrt;
-
-  const bVal =
-    0.0259040371 * lCbrt + 0.7827717662 * mCbrt - 0.808675766 * sCbrt;
-
-  const c = Math.sqrt(a * a + bVal * bVal);
-  let h = Math.atan2(bVal, a) * (180 / Math.PI);
-
-  if (h < 0) h += 360;
-
-  return {
-    l: Math.round(L * 100) / 100,
-    c: Math.round(c * 1000) / 1000,
-    h: Math.round(h * 10) / 10,
-  };
-}
-
-function oklchToRgba(oklch: OklchColor): RgbaColor {
-  const { l: L, c, h } = oklch;
-
-  const hRad = (h * Math.PI) / 180;
-  const a = c * Math.cos(hRad);
-  const b = c * Math.sin(hRad);
-
-  const lCbrt = L + 0.3963377774 * a + 0.2158037573 * b;
-  const mCbrt = L - 0.1055613458 * a - 0.0638541728 * b;
-  const sCbrt = L - 0.0894841775 * a - 1.291485548 * b;
-
-  const lLms = lCbrt * lCbrt * lCbrt;
-  const mLms = mCbrt * mCbrt * mCbrt;
-  const sLms = sCbrt * sCbrt * sCbrt;
-
-  const lr = 4.0767416621 * lLms - 3.3077115913 * mLms + 0.2309699292 * sLms;
-  const lg = -1.2684380046 * lLms + 2.6097574011 * mLms - 0.3413193965 * sLms;
-  const lb = -0.0041960863 * lLms - 0.7034186147 * mLms + 1.707614701 * sLms;
-
-  const toSrgb = (c: number) =>
-    c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
-
-  return {
-    r: Math.max(0, Math.min(255, Math.round(toSrgb(lr) * 255))),
-    g: Math.max(0, Math.min(255, Math.round(toSrgb(lg) * 255))),
-    b: Math.max(0, Math.min(255, Math.round(toSrgb(lb) * 255))),
-    a: 1,
-  };
-}
-
-type ColorPickerValue = {
-  hex: string;
-  hexa: string;
-  hsl: HslaColor;
-  rgb: RgbaColor;
-  hsv: HsvaColor;
-  oklch: OklchColor;
+type ColorPickerError = {
+  type: "invalid" | "format" | "clipboard" | "eyedropper";
+  message: string;
 };
 
-type ColorHarmony = {
-  name: string;
-  colors: string[];
-};
-
-function generateHarmonies(hsva: HsvaColor): ColorHarmony[] {
-  const baseHex = hsvaToHex(hsva);
-  const hsl = hsvaToHsla(hsva);
-
-  const hexFromHSL = (h: number, s: number, l: number): string => {
-    const result = hslaToHsva({ h, s, l, a: 1 });
-
-    return hsvaToHex(result);
-  };
-
-  return [
-    {
-      name: "Complementary",
-      colors: [baseHex, hexFromHSL((hsl.h + 180) % 360, hsl.s, hsl.l)],
-    },
-    {
-      name: "Analogous",
-      colors: [
-        hexFromHSL((hsl.h - 30 + 360) % 360, hsl.s, hsl.l),
-        baseHex,
-        hexFromHSL((hsl.h + 30) % 360, hsl.s, hsl.l),
-      ],
-    },
-    {
-      name: "Triadic",
-      colors: [
-        baseHex,
-        hexFromHSL((hsl.h + 120) % 360, hsl.s, hsl.l),
-        hexFromHSL((hsl.h + 240) % 360, hsl.s, hsl.l),
-      ],
-    },
-    {
-      name: "Monochromatic",
-      colors: [
-        hexFromHSL(hsl.h, hsl.s, Math.min(hsl.l + 30, 95)),
-        hexFromHSL(hsl.h, hsl.s, hsl.l),
-        hexFromHSL(hsl.h, hsl.s, Math.max(hsl.l - 20, 10)),
-        hexFromHSL(hsl.h, hsl.s, Math.max(hsl.l - 40, 5)),
-      ],
-    },
-  ];
-}
-
-type ColorPickerProps = {
-  value?: `#${string}` | HsvaColor | HslaColor | RgbaColor;
-  defaultValue?: `#${string}` | HsvaColor | HslaColor | RgbaColor;
-  type?: "hex" | "hsl" | "rgb" | "hexa" | "oklch";
-  format?: "hex" | "hsl" | "rgb" | "hexa" | "oklch";
-  size?: "sm" | "default" | "lg";
-  swatches?: HexColor[];
+interface ColorPickerProps
+  extends
+    Omit<
+      React.ComponentPropsWithoutRef<"div">,
+      "defaultValue" | "children" | "onError"
+    >,
+    VariantProps<typeof colorPickerVariants> {
+  value?: ColorInput;
+  defaultValue?: ColorInput;
+  /** Controlled display format. */
+  format?: ColorFormat;
+  defaultFormat?: ColorFormat;
+  /** @deprecated Use defaultFormat. */
+  type?: ColorFormat;
+  onFormatChange?: (format: ColorFormat) => void;
+  swatches?: readonly string[];
   hideContrastRatio?: boolean;
   hideDefaultSwatches?: boolean;
   showAlpha?: boolean;
   defaultAlpha?: number;
   showHarmonies?: boolean;
   showBackgroundPreview?: boolean;
-  className?: string;
+  showCopyButton?: boolean;
   onValueChange?: (value: ColorPickerValue) => void;
+  open?: boolean;
+  defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  children?: React.ReactNode;
+  /** One element receiving Base UI trigger props through render. */
+  children?: React.ReactElement;
   disabled?: boolean;
+  disabledReason?: string;
+  readOnly?: boolean;
   name?: string;
   required?: boolean;
-  onBlur?: () => void;
-  onFocus?: () => void;
-  onError?: (error: { type: "invalid" | "format"; message: string }) => void;
-};
+  invalid?: boolean;
+  error?: string;
+  label?: string;
+  contentClassName?: string;
+  onError?: (error: ColorPickerError) => void;
+  /** Lets a composed workflow share one live status region. */
+  onFeedback?: (message: string) => void;
+  announceFeedback?: boolean;
+}
 
-function ColorPicker({
-  value,
-  defaultValue = "#3b82f6",
-  children,
-  type,
-  format,
-  size = "default",
-  swatches = [],
-  hideContrastRatio = false,
-  hideDefaultSwatches = false,
-  showAlpha = false,
-  defaultAlpha = 1,
-  showHarmonies = false,
-  showBackgroundPreview = false,
-  onValueChange,
-  onOpenChange,
-  className,
+interface BrowserEyeDropper {
+  open: (options?: { signal?: AbortSignal }) => Promise<{ sRGBHex: string }>;
+}
+
+function eyeDropperConstructor() {
+  if (typeof window === "undefined" || !window.isSecureContext)
+    return undefined;
+
+  // SAFETY: this optional browser API is only constructed after feature detection.
+  return (window as Window & { EyeDropper?: new () => BrowserEyeDropper })
+    .EyeDropper;
+}
+
+function subscribeToBrowserCapabilities() {
+  return () => {};
+}
+
+function ColorSwatches({
+  title,
+  colors,
+  current,
   disabled,
-  name,
-  required,
-  onBlur,
-  onFocus,
-  onError,
-}: ColorPickerProps) {
-  const initialFormat = format ?? type ?? "hex";
-
-  const [colorType, setColorType] = React.useState<
-    "hex" | "hsl" | "rgb" | "hexa" | "oklch"
-  >(initialFormat);
-
-  const [colorHsv, setColorHsv] = React.useState<HsvaColor>(
-    value ? getColorAsHsva(value) : getColorAsHsva(defaultValue)
-  );
-
-  const [alpha, setAlpha] = React.useState(defaultAlpha);
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [showTypeMenu, setShowTypeMenu] = React.useState(false);
-  const [recentColors, setRecentColors] = React.useState<HexColor[]>([]);
-  const [copied, setCopied] = React.useState(false);
-  const [eyedropperSupported, setEyedropperSupported] = React.useState(false);
-  const [inputError, setInputError] = React.useState<string | null>(null);
-
-  const saturationRef = React.useRef<HTMLDivElement>(null);
-  const hueRef = React.useRef<HTMLDivElement>(null);
-
-  const announcementTimeoutRef = React.useRef<
-    ReturnType<typeof setTimeout> | undefined
-  >(undefined);
-
-  const [announcement, setAnnouncement] = React.useState("");
-
-  const sizeClasses = {
-    sm: { swatch: "h-6 w-6", input: "w-20 text-xs" },
-    default: { swatch: "h-8 w-8", input: "w-24" },
-    lg: { swatch: "h-10 w-10", input: "w-28 text-base" },
-  };
-
-  const currentSize = sizeClasses[size];
-
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const win = window as Window & {
-      EyeDropper?: new () => { open: () => Promise<{ sRGBHex: string }> };
-    };
-
-    setEyedropperSupported(typeof win.EyeDropper !== "undefined");
-  }, []);
-
-  React.useEffect(() => {
-    if (value) {
-      setColorHsv(getColorAsHsva(value));
-    }
-  }, [value]);
-
-  const handleValueChange = (color: HsvaColor, newAlpha?: number) => {
-    setColorHsv(color);
-    const hexColor = hsvaToHex(color);
-    const finalAlpha = newAlpha === undefined ? alpha : newAlpha;
-
-    setRecentColors((prev) => {
-      const filtered = prev.filter(
-        (c) => c.toLowerCase() !== hexColor.toLowerCase()
-      );
-
-      return [hexColor as HexColor, ...filtered].slice(0, 8);
-    });
-
-    setInputError(null);
-    const rgb = hsvaToRgba(color);
-    onValueChange?.({
-      hex: hexColor,
-      hexa: hsvaToHexa({ ...color, a: finalAlpha }),
-      hsl: hsvaToHsla(color),
-      rgb,
-      hsv: color,
-      oklch: rgbaToOklch(rgb),
-    });
-
-    if (announcementTimeoutRef.current) {
-      clearTimeout(announcementTimeoutRef.current);
-    }
-
-    announcementTimeoutRef.current = setTimeout(() => {
-      setAnnouncement(`Color changed to ${hexColor}`);
-    }, 500);
-  };
-
-  const handleAlphaChange = (newAlpha: number) => {
-    setAlpha(newAlpha);
-    handleValueChange(colorHsv, newAlpha);
-  };
-
-  const handleEyedropper = async () => {
-    if (!eyedropperSupported || typeof window === "undefined") return;
-
-    try {
-      const win = window as Window & {
-        EyeDropper?: new () => { open: () => Promise<{ sRGBHex: string }> };
-      };
-
-      if (!win.EyeDropper) return;
-      const eyeDropper = new win.EyeDropper();
-      const result = await eyeDropper.open();
-      const newColor = hexToHsva(result.sRGBHex);
-      handleValueChange(newColor);
-    } catch {
-      // Eyedropper was cancelled
-    }
-  };
-
-  const handleCopy = async () => {
-    const rgb = hsvaToRgba(colorHsv);
-    const hsl = hsvaToHsla(colorHsv);
-    const hexColor = hsvaToHex(colorHsv);
-    const hexaColor = hsvaToHexa({ ...colorHsv, a: alpha });
-
-    let colorValue: string;
-
-    switch (colorType) {
-      case "hexa":
-        colorValue = hexaColor;
-        break;
-      case "rgb":
-        colorValue = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-        break;
-      case "hsl":
-        colorValue = `hsl(${Math.round(hsl.h)}, ${Math.round(
-          hsl.s
-        )}%, ${Math.round(hsl.l)}%)`;
-        break;
-      default:
-        colorValue = showAlpha ? hexaColor : hexColor;
-    }
-
-    try {
-      await navigator.clipboard.writeText(colorValue);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Copy failed silently
-    }
-  };
-
-  const handleSaturationKeyDown = (e: React.KeyboardEvent) => {
-    const step = e.shiftKey ? 10 : 1;
-
-    switch (e.key) {
-      case "ArrowRight":
-        e.preventDefault();
-        handleValueChange({ ...colorHsv, s: Math.min(100, colorHsv.s + step) });
-        break;
-      case "ArrowLeft":
-        e.preventDefault();
-        handleValueChange({ ...colorHsv, s: Math.max(0, colorHsv.s - step) });
-        break;
-      case "ArrowDown":
-        e.preventDefault();
-        handleValueChange({ ...colorHsv, v: Math.max(0, colorHsv.v - step) });
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        handleValueChange({ ...colorHsv, v: Math.min(100, colorHsv.v + step) });
-        break;
-      case "Home":
-        e.preventDefault();
-        handleValueChange({ ...colorHsv, s: 0, v: 0 });
-        break;
-      case "End":
-        e.preventDefault();
-        handleValueChange({ ...colorHsv, s: 100, v: 100 });
-        break;
-    }
-  };
-
-  const handleHueKeyDown = (e: React.KeyboardEvent) => {
-    const step = e.shiftKey ? 15 : 1;
-
-    switch (e.key) {
-      case "ArrowRight":
-      case "ArrowUp":
-        e.preventDefault();
-        handleValueChange({ ...colorHsv, h: (colorHsv.h + step) % 360 });
-        break;
-      case "ArrowLeft":
-      case "ArrowDown":
-        e.preventDefault();
-        handleValueChange({ ...colorHsv, h: (colorHsv.h - step + 360) % 360 });
-        break;
-      case "Home":
-        e.preventDefault();
-        handleValueChange({ ...colorHsv, h: 0 });
-        break;
-      case "End":
-        e.preventDefault();
-        handleValueChange({ ...colorHsv, h: 359 });
-        break;
-    }
-  };
-
-  const handleAlphaKeyDown = (e: React.KeyboardEvent) => {
-    const step = e.shiftKey ? 0.1 : 0.01;
-
-    switch (e.key) {
-      case "ArrowRight":
-      case "ArrowUp":
-        e.preventDefault();
-        handleAlphaChange(Math.min(1, alpha + step));
-        break;
-      case "ArrowLeft":
-      case "ArrowDown":
-        e.preventDefault();
-        handleAlphaChange(Math.max(0, alpha - step));
-        break;
-      case "Home":
-        e.preventDefault();
-        handleAlphaChange(0);
-        break;
-      case "End":
-        e.preventDefault();
-        handleAlphaChange(1);
-        break;
-    }
-  };
-
-  const handleSwatchKeyDown = (e: React.KeyboardEvent, color: string) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleValueChange(hexToHsva(color));
-    }
-  };
-
-  const harmonies = React.useMemo(
-    () => generateHarmonies(colorHsv),
-    [colorHsv]
-  );
-
-  const defaultSwatches: HexColor[] = [
-    "#F8371A",
-    "#F97C1B",
-    "#FAC81C",
-    "#3FD0B6",
-    "#2CADF6",
-    "#6462FC",
-  ];
-
-  const allSwatches = hideDefaultSwatches
-    ? swatches
-    : [...defaultSwatches, ...swatches];
-
-  const formatColorValue = (): string => {
-    const hexColor = hsvaToHex(colorHsv);
-    const hexaColor = hsvaToHexa({ ...colorHsv, a: alpha });
-
-    switch (colorType) {
-      case "hexa":
-        return hexaColor;
-      case "rgb": {
-        const rgb = hsvaToRgba(colorHsv);
-
-        return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-      }
-
-      case "hsl": {
-        const hsl = hsvaToHsla(colorHsv);
-
-        return `hsl(${Math.round(hsl.h)}, ${Math.round(hsl.s)}%, ${Math.round(
-          hsl.l
-        )}%)`;
-      }
-
-      case "oklch": {
-        const oklch = rgbaToOklch(hsvaToRgba(colorHsv));
-
-        return `oklch(${oklch.l} ${oklch.c} ${oklch.h})`;
-      }
-
-      default:
-        return showAlpha ? hexaColor : hexColor;
-    }
-  };
-
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open);
-    onOpenChange?.(open);
-
-    if (open) {
-      setTimeout(() => saturationRef.current?.focus(), 0);
-    }
-  };
-
-  return (
-    <Popover open={isOpen} onOpenChange={handleOpenChange}>
-      <PopoverTrigger disabled={disabled}>
-        {children || (
-          <button
-            type="button"
-            className="flex items-center gap-2"
-            aria-label="Color picker"
-            aria-haspopup="dialog"
-          >
-            <div
-              className={cn(
-                "rounded-md border border-input cursor-pointer transition-transform hover:scale-105",
-                currentSize.swatch
-              )}
-              style={{ backgroundColor: hsvaToHex(colorHsv) }}
-            />
-            <Input
-              value={formatColorValue()}
-              readOnly
-              className={cn("font-mono cursor-pointer", currentSize.input)}
-              aria-label="Current color value"
-            />
-          </button>
-        )}
-      </PopoverTrigger>
-      <PopoverContent className={cn("w-[340px] p-0", className)}>
-        <div className="space-y-3 p-4">
-          <div aria-live="polite" aria-atomic="true" className="sr-only">
-            {announcement}
-          </div>
-          <div role="group" aria-label="Color picker controls">
-            <div
-              ref={saturationRef}
-              className="relative cursor-crosshair"
-              tabIndex={0}
-              role="slider"
-              aria-label="Saturation and brightness"
-              aria-valuenow={colorHsv.s}
-              aria-valuetext={`Saturation ${colorHsv.s}%, Brightness ${colorHsv.v}%`}
-              onKeyDown={handleSaturationKeyDown}
-            >
-              <Saturation
-                hsva={colorHsv}
-                onChange={(newColor) => handleValueChange(newColor)}
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  aspectRatio: "4/2",
-                  borderRadius: "0.375rem",
-                }}
-                className="border border-border"
-              />
-            </div>
-
-            <div
-              ref={hueRef}
-              className="mt-2"
-              tabIndex={0}
-              role="slider"
-              aria-label="Hue"
-              aria-valuenow={Math.round(colorHsv.h)}
-              aria-valuemin={0}
-              aria-valuemax={359}
-              aria-valuetext={`${Math.round(colorHsv.h)} degrees`}
-              onKeyDown={handleHueKeyDown}
-            >
-              <Hue
-                hue={colorHsv.h}
-                onChange={(newHue) =>
-                  handleValueChange({ ...colorHsv, ...newHue })
-                }
-                className="[&>div:first-child]:overflow-hidden [&>div:first-child]:rounded!"
-                style={
-                  {
-                    width: "100%",
-                    height: "0.75rem",
-                    borderRadius: "0.375rem",
-                    "--alpha-pointer-background-color":
-                      "hsl(var(--foreground))",
-                  } as React.CSSProperties
-                }
-              />
-            </div>
-
-            {showAlpha && (
-              <div
-                className="mt-2 relative"
-                tabIndex={0}
-                role="slider"
-                aria-label="Opacity"
-                aria-valuenow={Math.round(alpha * 100)}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuetext={`${Math.round(alpha * 100)}%`}
-                onKeyDown={handleAlphaKeyDown}
-              >
-                <div
-                  className="absolute inset-0 w-full h-4 rounded-md overflow-hidden"
-                  style={{
-                    background: `repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 50% / 8px 8px`,
-                  }}
-                />
-                <div
-                  className="absolute inset-0 w-full h-4 rounded-md border"
-                  style={{
-                    background: `linear-gradient(to right, transparent, ${hsvaToHex(
-                      colorHsv
-                    )})`,
-                  }}
-                />
-                <div
-                  className="absolute top-0 h-4 w-4 rounded-full border-2 border-white shadow-md pointer-events-none transition-transform"
-                  style={{
-                    left: `calc(${alpha * 100}% - 8px)`,
-                    backgroundColor: hsvaToHex(colorHsv),
-                    boxShadow:
-                      "0 0 0 1px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.2)",
-                  }}
-                />
-                <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.01}
-                  value={alpha}
-                  onChange={(e) =>
-                    handleAlphaChange(parseFloat(e.target.value))
-                  }
-                  className="absolute inset-0 w-full h-4 opacity-0 cursor-pointer"
-                  aria-label="Opacity slider"
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            {eyedropperSupported && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleEyedropper}
-                className="flex-1"
-                aria-label="Pick color from screen"
-              >
-                <IconColorPicker className="h-4 w-4 mr-2" />
-                Eyedropper
-              </Button>
-            )}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleCopy}
-              className="flex-1"
-              aria-label={copied ? "Copied!" : "Copy color value"}
-            >
-              {copied ? (
-                <>
-                  <IconCopyCheck className="h-4 w-4 mr-2" />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <IconCopy className="h-4 w-4 mr-2" />
-                  Copy
-                </>
-              )}
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowTypeMenu(!showTypeMenu)}
-                className="w-16 justify-between uppercase text-xs"
-                aria-haspopup="menu"
-                aria-expanded={showTypeMenu}
-                aria-label={`Color format: ${colorType}`}
-              >
-                {colorType}
-                <IconChevronDown className="h-3 w-3" />
-              </Button>
-              {showTypeMenu && (
-                <div
-                  className="absolute top-full left-0 mt-1 z-50 w-20 rounded-md border bg-popover shadow-md"
-                  role="menu"
-                >
-                  {(["hex", "hexa", "hsl", "rgb", "oklch"] as const).map(
-                    (t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          setColorType(t);
-                          setShowTypeMenu(false);
-                        }}
-                        className={cn(
-                          "w-full px-3 py-1.5 text-left text-xs uppercase hover:bg-muted",
-                          colorType === t && "bg-muted font-medium"
-                        )}
-                      >
-                        {t}
-                      </button>
-                    )
-                  )}
-                </div>
-              )}
-            </div>
-            <div className="flex-1">
-              <div aria-live="polite" aria-atomic="true" className="sr-only">
-                Current color: {formatColorValue()}
-              </div>
-              {colorType === "hex" && !showAlpha && (
-                <Input
-                  data-slot="color-input"
-                  value={hsvaToHex(colorHsv)}
-                  onChange={(e) => {
-                    try {
-                      handleValueChange(hexToHsva(e.target.value));
-                    } catch {
-                      setInputError("Invalid hex color");
-                      onError?.({
-                        type: "format",
-                        message: "Invalid hex color",
-                      });
-                    }
-                  }}
-                  onBlur={onBlur}
-                  onFocus={onFocus}
-                  className={cn(
-                    "font-mono",
-                    inputError && "border-destructive"
-                  )}
-                  aria-invalid={!!inputError}
-                  aria-describedby={
-                    inputError ? "color-input-error" : undefined
-                  }
-                  name={name}
-                  required={required}
-                />
-              )}
-              {colorType === "hexa" && showAlpha && (
-                <Input
-                  data-slot="color-input"
-                  value={hsvaToHexa({ ...colorHsv, a: alpha })}
-                  onChange={(e) => {
-                    try {
-                      const hex = e.target.value;
-
-                      if (hex.length >= 7) {
-                        const newColor = hexToHsva(hex.substring(0, 7));
-
-                        const newAlpha =
-                          hex.length >= 9
-                            ? parseInt(hex.substring(7, 9), 16) / 255
-                            : alpha;
-
-                        handleValueChange(newColor, newAlpha);
-                      }
-                    } catch {
-                      setInputError("Invalid hex color");
-                      onError?.({
-                        type: "format",
-                        message: "Invalid hex color",
-                      });
-                    }
-                  }}
-                  onBlur={onBlur}
-                  onFocus={onFocus}
-                  className={cn(
-                    "font-mono",
-                    inputError && "border-destructive"
-                  )}
-                  aria-invalid={!!inputError}
-                  aria-describedby={
-                    inputError ? "color-input-error" : undefined
-                  }
-                  name={name}
-                  required={required}
-                />
-              )}
-              {colorType === "hsl" && (
-                <ObjectColorInput
-                  value={hsvaToHsla(colorHsv)}
-                  label="hsl"
-                  onValueChange={(val) => handleValueChange(hslaToHsva(val))}
-                  onBlur={onBlur}
-                  onFocus={onFocus}
-                  name={name}
-                  required={required}
-                />
-              )}
-              {colorType === "rgb" && (
-                <ObjectColorInput
-                  value={hsvaToRgba(colorHsv)}
-                  label="rgb"
-                  onValueChange={(val) => handleValueChange(rgbaToHsva(val))}
-                  onBlur={onBlur}
-                  onFocus={onFocus}
-                  name={name}
-                  required={required}
-                />
-              )}
-              {colorType === "oklch" && (
-                <OklchColorInput
-                  value={rgbaToOklch(hsvaToRgba(colorHsv))}
-                  onValueChange={(val) =>
-                    handleValueChange(rgbaToHsva(oklchToRgba(val)))
-                  }
-                  onBlur={onBlur}
-                  onFocus={onFocus}
-                  name={name}
-                  required={required}
-                />
-              )}
-              {inputError && (
-                <div
-                  id="color-input-error"
-                  className="flex items-center gap-1.5 mt-1.5"
-                >
-                  <IconX className="h-3 w-3 text-destructive shrink-0" />
-                  <span className="text-xs text-destructive">{inputError}</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {showBackgroundPreview && (
-            <>
-              <div className="h-px bg-border" />
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">Preview</p>
-                <div className="flex gap-1">
-                  <div
-                    className="h-10 w-10 rounded-md border shadow-sm"
-                    style={{ backgroundColor: hsvaToHex(colorHsv) }}
-                    aria-hidden="true"
-                  />
-                  <div
-                    className="h-10 w-10 rounded-md border shadow-sm bg-white"
-                    style={{ backgroundColor: hsvaToHex(colorHsv) }}
-                    aria-label="On white background"
-                  />
-                  <div
-                    className="h-10 w-10 rounded-md border shadow-sm bg-black"
-                    style={{ backgroundColor: hsvaToHex(colorHsv) }}
-                    aria-label="On black background"
-                  />
-                  <div
-                    className="h-10 w-10 rounded-md border shadow-sm"
-                    style={{
-                      background: `repeating-conic-gradient(#808080 0% 25%, white 0% 50%) 50% / 8px 8px`,
-                    }}
-                    aria-label="Transparent background"
-                  />
-                </div>
-              </div>
-            </>
-          )}
-
-          {allSwatches.length > 0 && (
-            <>
-              <div className="h-px bg-border" />
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">Presets</p>
-                <div
-                  className="flex flex-wrap gap-1.5"
-                  role="listbox"
-                  aria-label="Preset colors"
-                >
-                  {allSwatches
-                    .sort((a, b) => hexToHsva(a).h - hexToHsva(b).h)
-                    .map((color) => (
-                      <button
-                        type="button"
-                        role="option"
-                        aria-selected={
-                          hsvaToHex(colorHsv).toLowerCase() ===
-                          color.toLowerCase()
-                        }
-                        key={color}
-                        onClick={() => handleValueChange(hexToHsva(color))}
-                        onKeyDown={(e) => handleSwatchKeyDown(e, color)}
-                        className={cn(
-                          "h-7 w-7 rounded-md border border-input transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                          hsvaToHex(colorHsv).toLowerCase() ===
-                            color.toLowerCase() &&
-                            "ring-2 ring-ring ring-offset-1"
-                        )}
-                        style={{ backgroundColor: color }}
-                        aria-label={`Select color ${color}`}
-                        tabIndex={0}
-                      />
-                    ))}
-                </div>
-              </div>
-            </>
-          )}
-
-          {recentColors.length > 0 && (
-            <>
-              <div className="h-px bg-border" />
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs text-muted-foreground">Recent</p>
-                  {recentColors.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setRecentColors([])}
-                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                      aria-label="Clear recent colors"
-                    >
-                      <IconRefresh className="h-3 w-3" />
-                    </button>
-                  )}
-                </div>
-                <div
-                  className="flex flex-wrap gap-1.5"
-                  role="listbox"
-                  aria-label="Recent colors"
-                >
-                  {recentColors.map((color) => (
-                    <button
-                      type="button"
-                      role="option"
-                      aria-selected={
-                        hsvaToHex(colorHsv).toLowerCase() ===
-                        color.toLowerCase()
-                      }
-                      key={`${color}-${recentColors.indexOf(color)}`}
-                      onClick={() => handleValueChange(hexToHsva(color))}
-                      onKeyDown={(e) => handleSwatchKeyDown(e, color)}
-                      className={cn(
-                        "h-7 w-7 rounded-md border border-input transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                        hsvaToHex(colorHsv).toLowerCase() ===
-                          color.toLowerCase() &&
-                          "ring-2 ring-ring ring-offset-1"
-                      )}
-                      style={{ backgroundColor: color }}
-                      aria-label={`Recent color ${color}`}
-                      tabIndex={0}
-                    />
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-
-          {showHarmonies && (
-            <>
-              <div className="h-px bg-border" />
-              <div className="space-y-2">
-                <p className="text-xs text-muted-foreground">Harmonies</p>
-                {harmonies.map((harmony) => (
-                  <div key={harmony.name}>
-                    <p className="text-xs text-muted-foreground mb-1">
-                      {harmony.name}
-                    </p>
-                    <div
-                      className="flex flex-wrap gap-1"
-                      role="listbox"
-                      aria-label={`${harmony.name} colors`}
-                    >
-                      {harmony.colors.map((color) => (
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={
-                            hsvaToHex(colorHsv).toLowerCase() ===
-                            color.toLowerCase()
-                          }
-                          key={`${harmony.name}-${color}`}
-                          onClick={() => handleValueChange(hexToHsva(color))}
-                          onKeyDown={(e) => handleSwatchKeyDown(e, color)}
-                          className={cn(
-                            "h-6 w-6 rounded-md border border-input transition-transform hover:scale-110 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
-                            hsvaToHex(colorHsv).toLowerCase() ===
-                              color.toLowerCase() &&
-                              "ring-2 ring-ring ring-offset-1"
-                          )}
-                          style={{ backgroundColor: color }}
-                          aria-label={`Select ${harmony.name} color ${color}`}
-                          tabIndex={0}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-
-          {!hideContrastRatio && (
-            <>
-              <div className="h-px bg-border" />
-              <ContrastRatio color={colorHsv} alpha={alpha} />
-            </>
-          )}
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-}
-
-type ContrastRatioProps = {
-  color: HsvaColor;
-  alpha?: number;
-};
-
-function ValidationBadge({
-  ratio,
-  ratioLimit,
-  className,
-  children,
+  onSelect,
 }: {
-  ratio: number;
-  ratioLimit: number;
-  className?: string;
-  children?: React.ReactNode;
+  title: string;
+  colors: readonly string[];
+  current: HsvaColor | null;
+  disabled: boolean;
+  onSelect: (color: HsvaColor) => void;
 }) {
-  const isValid = ratio > ratioLimit;
+  const valid = Array.from(
+    new Set(
+      colors
+        .map((color) => {
+          const parsed = parseColor(color);
 
-  return (
-    <Badge
-      variant="outline"
-      className={cn(
-        "inline-flex items-center gap-1 rounded-full text-muted-foreground text-xs px-2 py-0.5",
-        isValid &&
-          "border-transparent bg-emerald-500/20 text-emerald-700 dark:text-emerald-400",
-        className
-      )}
-      icon={isValid ? <IconCheck /> : <IconX />}
-    >
-      {}
-      <span className="leading-none">{children}</span>
-    </Badge>
+          return parsed ? hsvaToHexa(parsed).toLowerCase() : null;
+        })
+        .filter((color): color is string => color !== null),
+    ),
   );
-}
 
-function ContrastRatio({ color, alpha = 1 }: ContrastRatioProps) {
-  const [darkModeContrastRatio, setDarkModeContrastValue] = React.useState(0);
-  const [lightModeContrastValue, setLightModeContrastValue] = React.useState(0);
-
-  React.useEffect(() => {
-    const rgb = hsvaToRgba(color);
-
-    const effectiveAlpha = alpha < 1;
-    const bgRgb = effectiveAlpha ? { r: 255, g: 255, b: 255 } : rgb;
-
-    const blendedRgb = effectiveAlpha
-      ? {
-          r: Math.round(rgb.r * alpha + bgRgb.r * (1 - alpha)),
-          g: Math.round(rgb.g * alpha + bgRgb.g * (1 - alpha)),
-          b: Math.round(rgb.b * alpha + bgRgb.b * (1 - alpha)),
-        }
-      : rgb;
-
-    const toSRGB = (c: number) => {
-      const channel = c / 255;
-
-      return channel <= 0.03928
-        ? channel / 12.92
-        : ((channel + 0.055) / 1.055) ** 2.4;
-    };
-
-    const r = toSRGB(blendedRgb.r);
-    const g = toSRGB(blendedRgb.g);
-    const b = toSRGB(blendedRgb.b);
-
-    const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-
-    const darkModeRatio = (1.0 + 0.05) / (luminance + 0.05);
-    const lightModeRatio = (luminance + 0.05) / 0.05;
-
-    setDarkModeContrastValue(Number(darkModeRatio.toFixed(2)));
-    setLightModeContrastValue(Number(lightModeRatio.toFixed(2)));
-  }, [color, alpha]);
-
-  return (
-    <div className="flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
-        <div
-          className="flex h-8 w-8 items-center justify-center rounded relative overflow-hidden"
-          style={{ backgroundColor: "var(--selected-color)" }}
-        >
-          <span className="font-medium text-black dark:text-white text-sm relative z-10">
-            A
-          </span>
-          {alpha < 1 && (
-            <div
-              className="absolute inset-0"
-              style={{
-                background: `repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 50% / 4px 4px`,
-                opacity: 1 - alpha,
-              }}
-            />
-          )}
-        </div>
-        <div className="flex flex-col">
-          <span className="text-xs text-muted-foreground">Contrast</span>
-          <span className="hidden text-sm dark:flex">
-            {darkModeContrastRatio}
-          </span>
-          <span className="text-sm dark:hidden">{lightModeContrastValue}</span>
-        </div>
-      </div>
-      <div className="flex items-center gap-1">
-        <ValidationBadge
-          className="dark:hidden"
-          ratio={lightModeContrastValue}
-          ratioLimit={4.5}
-        >
-          AA
-        </ValidationBadge>
-        <ValidationBadge
-          className="dark:hidden"
-          ratio={lightModeContrastValue}
-          ratioLimit={7}
-        >
-          AAA
-        </ValidationBadge>
-        <ValidationBadge
-          className="hidden dark:flex"
-          ratio={darkModeContrastRatio}
-          ratioLimit={4.5}
-        >
-          AA
-        </ValidationBadge>
-        <ValidationBadge
-          className="hidden dark:flex"
-          ratio={darkModeContrastRatio}
-          ratioLimit={7}
-        >
-          AAA
-        </ValidationBadge>
-      </div>
-    </div>
-  );
-}
-
-type ObjectColorInputProps =
-  | {
-      label: "hsl";
-      value: HslaColor;
-      onValueChange?: (value: HslaColor) => void;
-      onBlur?: () => void;
-      onFocus?: () => void;
-      name?: string;
-      required?: boolean;
-    }
-  | {
-      label: "rgb";
-      value: RgbaColor;
-      onValueChange?: (value: RgbaColor) => void;
-      onBlur?: () => void;
-      onFocus?: () => void;
-      name?: string;
-      required?: boolean;
-    };
-
-function ObjectColorInput({
-  value,
-  label,
-  onValueChange,
-  onBlur,
-  onFocus,
-  name,
-  required,
-}: ObjectColorInputProps) {
-  const inputId = React.useId();
-  const labelChars = label === "hsl" ? ["h", "s", "l"] : ["r", "g", "b"];
-
-  function handleChange(val: Partial<HslaColor | RgbaColor>) {
-    if (onValueChange) {
-      if (label === "hsl") {
-        onValueChange({ ...value, ...val } as HslaColor);
-      } else {
-        onValueChange({ ...value, ...val } as RgbaColor);
-      }
-    }
-  }
+  if (!valid.length) return null;
 
   return (
     <div
-      className="flex"
+      data-slot="color-picker-swatches"
+      className="space-y-2"
+
+      // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This composite div groups controls or content without introducing fieldset form behavior, default styling, or a different public ref element.
       role="group"
-      aria-label={`${label.toUpperCase()} color values`}
+      aria-label={title}
     >
-      {labelChars.map((char, index) => {
-        const inputValue =
-          label === "hsl"
-            ? char === "h"
-              ? Math.round((value as HslaColor).h)
-              : char === "s"
-                ? Math.round((value as HslaColor).s)
-                : Math.round((value as HslaColor).l)
-            : char === "r"
-              ? (value as RgbaColor).r
-              : char === "g"
-                ? (value as RgbaColor).g
-                : (value as RgbaColor).b;
+      <p className="text-xs font-medium text-muted-foreground">{title}</p>
+      <div className="flex flex-wrap gap-2">
+        {valid.map((color) => (
+          <Button
+            key={color}
+            variant="outline"
+            size="icon-sm"
+            data-slot="color-picker-swatch"
+            disabled={disabled}
+            aria-label={"Select " + color}
+            aria-pressed={
+              current !== null && hsvaToHexa(current).toLowerCase() === color
+            }
+            onClick={() => {
+              const parsed = parseColor(color);
 
-        const maxValue = label === "hsl" ? (char === "h" ? 360 : 100) : 255;
-
-        return (
-          <div key={char} className="flex-1">
-            <label htmlFor={`${inputId}-${char}`} className="sr-only">
-              {label.toUpperCase()}{" "}
-              {char === "h"
-                ? "Hue"
-                : char === "s"
-                  ? "Saturation"
-                  : char === "l"
-                    ? "Lightness"
-                    : char.toUpperCase()}
-            </label>
-            <Input
-              id={`${inputId}-${char}`}
-              className={cn(
-                "text-center text-sm",
-                index === 0 && "rounded-e-none border-r-0",
-                index === 1 && "rounded-none border-r-0",
-                index === 2 && "rounded-s-none"
-              )}
-              value={inputValue}
-              onChange={(e) =>
-                handleChange({
-                  [char]: Number(e.target.value) || 0,
-                })
-              }
-              onBlur={onBlur}
-              onFocus={onFocus}
-              min={0}
-              max={maxValue}
-              type="number"
-              aria-label={`${label.toUpperCase()} ${
-                char === "h"
-                  ? "hue"
-                  : char === "s"
-                    ? "saturation"
-                    : char === "l"
-                      ? "lightness"
-                      : char
-              }`}
-              name={name ? `${name}-${char}` : undefined}
-              required={required}
-            />
-          </div>
-        );
-      })}
+              if (parsed) onSelect(parsed);
+            }}
+            className="relative overflow-hidden"
+            style={CHECKERBOARD}
+          >
+            <span
+              data-slot="color-picker-swatch-color"
+              aria-hidden="true"
+              className="relative grid size-8 shrink-0 place-items-center"
+              style={{ backgroundColor: color }}
+            >
+              {current !== null &&
+                hsvaToHexa(current).toLowerCase() === color && (
+                  <IconCheck
+                    data-slot="color-picker-swatch-indicator"
+                    aria-hidden="true"
+                    className="size-4 rounded-sm bg-background text-foreground"
+                  />
+                )}
+            </span>
+          </Button>
+        ))}
+      </div>
     </div>
   );
 }
 
-type OklchColorInputProps = {
-  value: OklchColor;
-  onValueChange?: (value: OklchColor) => void;
-  onBlur?: () => void;
-  onFocus?: () => void;
-  name?: string;
-  required?: boolean;
-};
-
-function OklchColorInput({
+function ColorTextField({
+  id,
   value,
-  onValueChange,
-  onBlur,
-  onFocus,
-  name,
-  required,
-}: OklchColorInputProps) {
-  const inputId = React.useId();
-  const labelChars = ["l", "c", "h"] as const;
+  format,
+  disabled,
+  readOnly,
+  onCommit,
+  onError,
+  onNotice,
+}: {
+  id: string;
+  value: string;
+  format: ColorFormat;
+  disabled: boolean;
+  readOnly: boolean;
+  onCommit: (color: HsvaColor) => void;
+  onError: (message: string) => void;
+  onNotice: (message: string) => void;
+}) {
+  const [draft, setDraft] = React.useState(value);
+  const [previous, setPrevious] = React.useState({ value, format });
+  const [error, setError] = React.useState<string | null>(null);
 
-  function handleChange(val: Partial<OklchColor>) {
-    if (onValueChange) {
-      onValueChange({ ...value, ...val });
-    }
+  if (previous.value !== value || previous.format !== format) {
+    setPrevious({ value, format });
+    setDraft(value);
+    setError(null);
   }
 
+  const commit = () => {
+    if (disabled || readOnly || draft === value) return;
+    const parsed = parseColor(draft);
+
+    if (!parsed) {
+      const message = "Enter a valid HEX, RGB, HSL or OKLCH color.";
+      setError(message);
+      onError(message);
+
+      return;
+    }
+
+    onCommit(parsed);
+    const requestedOklch = parseOklchInput(draft);
+
+    if (requestedOklch && !isOklchInSrgb(requestedOklch))
+      onNotice(
+        "Mapped to sRGB. Chroma was reduced to fit this picker’s color space.",
+      );
+    setError(null);
+    // A controlled picker displays only the accepted value after committing.
+    setDraft(value);
+  };
+
+  return renderColorPickerValueFieldPart1({
+    id,
+    draft,
+    disabled,
+    readOnly,
+    error,
+    setDraft,
+    setError,
+    commit,
+    value,
+  });
+}
+
+function ColorSliders({
+  color,
+  showAlpha,
+  disabled,
+  readOnly,
+  onChange,
+}: {
+  color: HsvaColor;
+  showAlpha: boolean;
+  disabled: boolean;
+  readOnly: boolean;
+  onChange: (color: HsvaColor) => void;
+}) {
+  const saturationBrightness = [
+    { key: "s" as const, label: "Saturation", value: color.s },
+    { key: "v" as const, label: "Brightness", value: color.v },
+  ];
+
   return (
-    <div className="flex" role="group" aria-label="OKLCH color values">
-      {labelChars.map((char, index) => {
-        const inputValue =
-          char === "l" ? value.l : char === "c" ? value.c : value.h;
+    <div data-slot="color-picker-sliders" className="space-y-2">
+      <Slider
+        label="Hue"
+        value={color.h}
+        min={0}
+        max={359}
+        step={1}
+        size="sm"
+        disabled={disabled}
+        readOnly={readOnly}
+        tooltipMode="never"
+        getValueText={(value) => Math.round(value) + " degrees"}
+        onValueChange={(h) => onChange({ ...color, h })}
+        className="[&_[data-slot=slider-header]]:sr-only [&_[data-slot=slider-track]]:bg-[linear-gradient(to_right,red,yellow,lime,cyan,blue,magenta,red)] [&_[data-slot=slider-range]]:bg-transparent"
+      />
+      <div
+        data-slot="color-picker-keyboard-channels"
+        className="sr-only focus-within:not-sr-only focus-within:space-y-3"
+      >
+        {saturationBrightness.map((control) => (
+          <Slider
+            key={control.key}
+            label={control.label}
+            value={control.value}
+            min={0}
+            max={100}
+            step={1}
+            size="sm"
+            tooltipMode="never"
+            disabled={disabled}
+            readOnly={readOnly}
+            getValueText={(value) => Math.round(value) + " percent"}
+            onValueChange={(value) =>
+              onChange({ ...color, [control.key]: value })
+            }
+          />
+        ))}
+      </div>
+      {showAlpha && (
+        <Slider
+          label="Opacity"
+          value={color.a * 100}
+          min={0}
+          max={100}
+          step={1}
+          size="sm"
+          disabled={disabled}
+          readOnly={readOnly}
+          tooltipMode="never"
+          getValueText={(value) => Math.round(value) + " percent"}
+          onValueChange={(value) => onChange({ ...color, a: value / 100 })}
+        />
+      )}
+    </div>
+  );
+}
 
-        const maxValue = char === "l" ? 1 : char === "c" ? 0.5 : 360;
-        const step = char === "l" ? 0.01 : char === "c" ? 0.001 : 1;
+const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
+  (input0, input1) => {
+    const state0 = useColorPickerSetup(input0, input1);
+    const state1 = useColorPickerState2(state0);
+    const state2 = useColorPickerState3(state1);
+    const state3 = useColorPickerState4(state2);
+    const state4 = useColorPickerActions(state3);
 
-        return (
-          <div key={char} className="flex-1">
-            <label htmlFor={`${inputId}-${char}`} className="sr-only">
-              OKLCH{" "}
-              {char === "l" ? "Lightness" : char === "c" ? "Chroma" : "Hue"}
-            </label>
-            <Input
-              id={`${inputId}-${char}`}
-              className={cn(
-                "text-center text-sm",
-                index === 0 && "rounded-e-none border-r-0",
-                index === 1 && "rounded-none border-r-0",
-                index === 2 && "rounded-s-none"
-              )}
-              value={inputValue}
-              onChange={(e) =>
-                handleChange({
-                  [char]: Number(e.target.value) || 0,
-                })
+    return renderColorPicker(state4);
+  },
+);
+
+ColorPicker.displayName = "ColorPicker";
+
+type ColorCopyKind = "css" | "dtcg";
+
+type ColorCopyState =
+  | { status: "idle" }
+  | { status: "pending"; kind: ColorCopyKind }
+  | { status: "success"; kind: ColorCopyKind }
+  | { status: "error"; kind: ColorCopyKind; message: string };
+
+interface KiraColorPickerProps extends Omit<
+  ColorPickerProps,
+  "hideContrastRatio" | "showCopyButton" | "announceFeedback"
+> {
+  /** Contrast requires the real, opaque surface behind the foreground. */
+  background: ColorInput;
+  textSize?: "normal" | "large";
+  contrastLevel?: "AA" | "AAA";
+  showAccessibleSuggestion?: boolean;
+  tokenName?: string;
+  showTokenPreview?: boolean;
+  /** Optional clipboard adapter. Completion, failure and cancellation are caller-owned. */
+  copyText?: (text: string, signal: AbortSignal) => Promise<void>;
+}
+
+const CONTRAST_TARGETS = {
+  AA: { normal: 4.5, large: 3 },
+  AAA: { normal: 7, large: 4.5 },
+};
+
+async function writeColorClipboard(
+  text: string,
+  signal: AbortSignal,
+): Promise<void> {
+  if (signal.aborted) throw new DOMException("Copy cancelled", "AbortError");
+
+  if (typeof navigator === "undefined" || !navigator.clipboard)
+    throw new Error(
+      "Clipboard access is unavailable. Select and copy the token text.",
+    );
+  await navigator.clipboard.writeText(text);
+}
+
+const KiraColorPicker = React.forwardRef<HTMLDivElement, KiraColorPickerProps>(
+  (input0, input1) => {
+    const state0 = useKiraColorPickerSetup(input0, input1);
+    const state1 = useKiraColorPickerState2(state0);
+    const state2 = useKiraColorPickerState3(state1);
+    const state3 = useKiraColorPickerState4(state2);
+    const state4 = useKiraColorPickerState5(state3);
+    const state5 = useKiraColorPickerState6(state4);
+    const state6 = useKiraColorPickerActions(state5);
+
+    return renderKiraColorPicker(state6);
+  },
+);
+
+KiraColorPicker.displayName = "KiraColorPicker";
+
+export { ColorPicker, KiraColorPicker, colorPickerVariants };
+
+export type {
+  ColorPickerProps,
+  KiraColorPickerProps,
+  ColorPickerError,
+  ColorCopyState,
+};
+
+export type {
+  ColorInput,
+  ColorFormat,
+  ColorPickerValue,
+  ColorHarmony,
+  OklchColor,
+} from "@/lib/color-picker";
+
+export {
+  getColorAsHsva,
+  rgbaToOklch,
+  oklchToRgba,
+  hslaToHsva,
+} from "@/lib/color-picker";
+
+type resolvecolorpickertsxChoice1Args = {
+  externalInvalid: boolean;
+  requiredError: boolean;
+};
+
+function resolvecolorpickertsxChoice1({
+  externalInvalid,
+  requiredError,
+}: resolvecolorpickertsxChoice1Args) {
+  if (externalInvalid) {
+    return "The supplied color is invalid.";
+  }
+
+  if (requiredError) {
+    return "Choose a color.";
+  }
+
+  return "";
+}
+
+type resolvecolorpickertsxChoice2Args = {
+  copyState: "error" | "idle" | "pending" | "success";
+  reducedMotion: boolean;
+};
+
+function resolvecolorpickertsxChoice2({
+  copyState,
+  reducedMotion,
+}: resolvecolorpickertsxChoice2Args) {
+  if (copyState === "success") {
+    return <IconCheck aria-hidden="true" className="size-4" />;
+  }
+
+  if (copyState === "pending") {
+    return (
+      <IconLoader2
+        aria-hidden="true"
+        className={cn("size-4", !reducedMotion && "animate-spin")}
+      />
+    );
+  }
+
+  return <IconCopy aria-hidden="true" className="size-4" />;
+}
+
+type resolvecolorpickertsxChoice3Args = {
+  copyState: "error" | "idle" | "pending" | "success";
+};
+
+function resolvecolorpickertsxChoice3({
+  copyState,
+}: resolvecolorpickertsxChoice3Args) {
+  if (copyState === "success") {
+    return "Copied";
+  }
+
+  if (copyState === "error") {
+    return "Retry copy";
+  }
+
+  return "Copy color";
+}
+
+type resolvecolorpickertsxChoice4Args = {
+  pending: boolean;
+  reducedMotion: boolean;
+  copied: boolean;
+};
+
+function resolvecolorpickertsxChoice4({
+  pending,
+  reducedMotion,
+  copied,
+}: resolvecolorpickertsxChoice4Args) {
+  if (pending) {
+    return (
+      <IconLoader2
+        aria-hidden="true"
+        className={cn("size-4", !reducedMotion && "animate-spin")}
+      />
+    );
+  }
+
+  if (copied) {
+    return <IconCheck aria-hidden="true" className="size-4" />;
+  }
+
+  return <IconCopy aria-hidden="true" className="size-4" />;
+}
+
+type resolvecolorpickertsxChoice5Args = {
+  copied: boolean;
+  failed: boolean;
+  kind: "css" | "dtcg";
+};
+
+function resolvecolorpickertsxChoice5({
+  copied,
+  failed,
+  kind,
+}: resolvecolorpickertsxChoice5Args) {
+  if (copied) {
+    return "Copied";
+  }
+
+  if (failed) {
+    return "Retry copy";
+  }
+
+  if (kind === "css") {
+    return "Copy CSS variable";
+  }
+
+  return "Copy DTCG token";
+}
+
+function useColorPickerSetup(
+  componentProps: ColorPickerProps,
+  ref: React.ForwardedRef<HTMLDivElement>,
+) {
+  const props = omitComponentProps(
+    componentProps,
+    USE_COLOR_PICKER_SETUP_COMPOSITION_KEYS_1,
+  );
+
+  const resolvedProps = resolveComponentDefaults(
+    componentProps,
+    USE_COLOR_PICKER_SETUP_DEFAULTS_1,
+  );
+
+  const { defaultValue, defaultOpen } = resolvedProps;
+
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+
+  const triggerRef = React.useRef<HTMLButtonElement | null>(null);
+
+  const eyeAbortRef = React.useRef<AbortController | null>(null);
+
+  const commitScreenColorRef = React.useRef<(color: HsvaColor) => void>(
+    () => {},
+  );
+
+  const feedbackTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  const mountedRef = React.useRef(true);
+
+  const copyGenerationRef = React.useRef(0);
+
+  const id = React.useId();
+
+  const reducedMotion = useReducedMotion();
+
+  const [internalFormat, setInternalFormat] = React.useState<ColorFormat>(
+    componentProps.defaultFormat ?? componentProps.type ?? "hex",
+  );
+
+  const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
+
+  const [hasInternalValue, setHasInternalValue] = React.useState(
+    () => !!parseColor(defaultValue),
+  );
+
+  const [feedback, setFeedback] = React.useState("");
+
+  return {
+    ...componentProps,
+    ...resolvedProps,
+    props,
+    ref,
+    rootRef,
+    triggerRef,
+    eyeAbortRef,
+    commitScreenColorRef,
+    feedbackTimerRef,
+    mountedRef,
+    copyGenerationRef,
+    id,
+    reducedMotion,
+    internalFormat,
+    setInternalFormat,
+    internalOpen,
+    setInternalOpen,
+    hasInternalValue,
+    setHasInternalValue,
+    feedback,
+    setFeedback,
+  };
+}
+
+function useColorPickerState2(state: ReturnType<typeof useColorPickerSetup>) {
+  const { setFeedback } = state;
+
+  const [copyState, setCopyState] = React.useState<
+    "idle" | "pending" | "success" | "error"
+  >("idle");
+
+  const [eyePending, setEyePending] = React.useState(false);
+
+  const [requiredError, setRequiredError] = React.useState(false);
+
+  const { colorFormat, hasValue, externalInvalid } =
+    getColorPickerValueState(state);
+
+  const errorText = colorPickerValidationMessage({
+    state,
+    externalInvalid,
+    requiredError,
+  });
+
+  const picker = useColorPicker({
+    value: state.value,
+    defaultValue: state.defaultValue,
+    showAlpha: state.showAlpha,
+    defaultAlpha: state.defaultAlpha,
+    disabled: state.disabled,
+    readOnly: state.readOnly,
+    onValueChange: state.onValueChange,
+  });
+
+  const { formatted, canonical, popupOpen, screenSelectionEnabled } =
+    getColorPickerDisplayState(state, picker, colorFormat, hasValue);
+
+  if (eyePending && !screenSelectionEnabled) setEyePending(false);
+
+  const [previousCopyValue, setPreviousCopyValue] = React.useState(formatted);
+
+  if (previousCopyValue !== formatted) {
+    setPreviousCopyValue(formatted);
+    setCopyState("idle");
+    setFeedback("");
+  }
+
+  const eyedropperSupported = React.useSyncExternalStore(
+    subscribeToBrowserCapabilities,
+    () => !!eyeDropperConstructor(),
+    () => false,
+  );
+
+  return {
+    ...state,
+    copyState,
+    setCopyState,
+    eyePending,
+    setEyePending,
+    setRequiredError,
+    colorFormat,
+    hasValue,
+    errorText,
+    picker,
+    formatted,
+    canonical,
+    popupOpen,
+    screenSelectionEnabled,
+    eyedropperSupported,
+  };
+}
+
+function getColorPickerValueState(
+  state: ReturnType<typeof useColorPickerSetup>,
+) {
+  const colorFormat = state.format ?? state.internalFormat;
+
+  const hasValue =
+    state.value === undefined
+      ? state.hasInternalValue
+      : !!parseColor(state.value);
+
+  const externalInvalid =
+    state.value !== undefined && state.value !== "" && !parseColor(state.value);
+
+  return { colorFormat, hasValue, externalInvalid };
+}
+
+function getColorPickerDisplayState(
+  state: ReturnType<typeof useColorPickerSetup>,
+  picker: ReturnType<typeof useColorPicker>,
+  colorFormat: ColorFormat,
+  hasValue: boolean,
+) {
+  const popupOpen = !state.disabled && (state.open ?? state.internalOpen);
+
+  return {
+    formatted: hasValue ? picker.formatValue(colorFormat) : "",
+    canonical: hasValue
+      ? formatColor(picker.colorHsv, "hex", picker.alpha < 1)
+      : "",
+    popupOpen,
+    screenSelectionEnabled: popupOpen && !state.disabled && !state.readOnly,
+  };
+}
+
+function useColorPickerState3(state: ReturnType<typeof useColorPickerState2>) {
+  const { copyGenerationRef, commitScreenColorRef, eyeAbortRef } = state;
+
+  const {
+    setFeedback,
+    onFeedback,
+    setCopyState,
+    setRequiredError,
+    setHasInternalValue,
+    setInternalOpen,
+    setEyePending,
+    onOpenChange,
+  } = state;
+
+  const report = (message: string) => {
+    setFeedback(message);
+    onFeedback?.(message);
+  };
+
+  const changeColor = (color: HsvaColor) => {
+    if (state.disabled || state.readOnly) return;
+    copyGenerationRef.current += 1;
+    setCopyState("idle");
+    setRequiredError(false);
+
+    if (state.value === undefined) setHasInternalValue(true);
+    state.picker.setColor(color);
+    report(
+      "Color set to " +
+        formatColor(color, state.colorFormat, state.showAlpha || color.a < 1) +
+        ".",
+    );
+  };
+
+  React.useLayoutEffect(() => {
+    commitScreenColorRef.current = (color) => {
+      if (state.screenSelectionEnabled)
+        changeColor({ ...color, a: state.picker.alpha });
+    };
+  });
+
+  React.useLayoutEffect(
+    () => () => {
+      const controller = eyeAbortRef.current;
+      eyeAbortRef.current = null;
+      controller?.abort();
+    },
+    [state.screenSelectionEnabled, eyeAbortRef],
+  );
+
+  const changeOpen = (next: boolean) => {
+    if (state.disabled && next) return;
+
+    if (state.open === undefined) setInternalOpen(next);
+
+    if (!next) {
+      eyeAbortRef.current?.abort();
+      eyeAbortRef.current = null;
+      setEyePending(false);
+    }
+
+    onOpenChange?.(next);
+  };
+
+  return { ...state, report, changeColor, changeOpen };
+}
+
+function useColorPickerState4(state: ReturnType<typeof useColorPickerState3>) {
+  const {
+    triggerRef,
+    copyGenerationRef,
+    mountedRef,
+    feedbackTimerRef,
+    eyeAbortRef,
+    commitScreenColorRef,
+  } = state;
+
+  const {
+    setInternalFormat,
+    onFormatChange,
+    setCopyState,
+    report,
+    onError,
+    setEyePending,
+  } = state;
+
+  const changeFormat = (next: string | string[]) => {
+    if (Array.isArray(next)) return;
+    const selected = FORMATS.find((item) => item.value === next)?.value;
+
+    if (!selected) return;
+
+    if (state.format === undefined) setInternalFormat(selected);
+    onFormatChange?.(selected);
+  };
+
+  const openFromValue = () => {
+    if (!state.disabled && !state.popupOpen) triggerRef.current?.click();
+  };
+
+  const copy = createColorCopyAction({
+    state,
+    copyGenerationRef,
+    setCopyState,
+    report,
+    mountedRef,
+    feedbackTimerRef,
+    onError,
+  });
+
+  const pickFromScreen = createScreenColorAction({
+    state,
+    eyeAbortRef,
+    setEyePending,
+    report,
+    mountedRef,
+    commitScreenColorRef,
+    onError,
+  });
+
+  return { ...state, changeFormat, openFromValue, copy, pickFromScreen };
+}
+
+function useColorPickerActions(state: ReturnType<typeof useColorPickerState4>) {
+  const {
+    rootRef,
+    copyGenerationRef,
+    feedbackTimerRef,
+    mountedRef,
+    eyeAbortRef,
+  } = state;
+
+  const { setHasInternalValue, setRequiredError, setCopyState, ref } = state;
+
+  const resetFormValue = React.useEffectEvent(() => {
+    state.picker.reset();
+    setHasInternalValue(!!parseColor(state.defaultValue));
+    setRequiredError(false);
+    setCopyState("idle");
+  });
+
+  React.useEffect(() => {
+    const form = rootRef.current?.closest("form");
+    const reset = () => resetFormValue();
+    form?.addEventListener("reset", reset);
+
+    return () => form?.removeEventListener("reset", reset);
+  }, [rootRef]);
+
+  React.useEffect(
+    () => () => {
+      copyGenerationRef.current += 1;
+
+      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+    },
+    [state.formatted, state.disabled, feedbackTimerRef, copyGenerationRef],
+  );
+
+  React.useEffect(() => {
+    mountedRef.current = true;
+
+    return () => {
+      mountedRef.current = false;
+      copyGenerationRef.current += 1;
+
+      // oxlint-disable-next-line react-hooks/exhaustive-deps -- Cleanup must cancel the latest pending operation or timer stored in this stable ref, including work started after effect setup.
+      eyeAbortRef.current?.abort();
+
+      // oxlint-disable-next-line react-hooks/exhaustive-deps -- Cleanup must cancel the latest pending operation or timer stored in this stable ref, including work started after effect setup.
+      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+    };
+  }, [feedbackTimerRef, eyeAbortRef, mountedRef, copyGenerationRef]);
+
+  const attachRoot = mergeComponentRefs(rootRef, ref);
+
+  const allSwatches = state.hideDefaultSwatches
+    ? [...state.swatches]
+    : [...DEFAULT_SWATCHES, ...state.swatches];
+
+  const contrasts = [
+    { name: "white", color: "#ffffff" },
+    { name: "black", color: "#000000" },
+  ];
+
+  return { ...state, attachRoot, allSwatches, contrasts };
+}
+
+// oxlint-disable-next-line eslint/max-lines-per-function, eslint/complexity, sonarjs/cognitive-complexity -- Pure compound JSX view: keeping related labels, controls, and conditional styling together makes the markup easier to review than further fragment extraction.
+function renderColorPicker(state: ReturnType<typeof useColorPickerActions>) {
+  const { triggerRef } = state;
+
+  const { openFromValue, changeColor, setRequiredError } = state;
+
+  return (
+    <div
+      ref={state.attachRoot}
+      data-slot="color-picker"
+      data-disabled={state.disabled || undefined}
+      data-readonly={state.readOnly || undefined}
+      data-invalid={state.invalid || !!state.errorText || undefined}
+      className={cn(
+        colorPickerVariants({ size: state.size, className: state.className }),
+      )}
+      {...state.props}
+    >
+      <Popover open={state.popupOpen} onOpenChange={state.changeOpen}>
+        {state.children ? (
+          <PopoverTrigger
+            ref={triggerRef}
+            disabled={state.disabled}
+            data-slot="color-picker-trigger"
+            render={state.children}
+            aria-label={
+              state.label +
+              (state.formatted ? ": " + state.formatted : ": choose a color")
+            }
+            aria-invalid={state.invalid || !!state.errorText || undefined}
+            aria-describedby={resolverenderColorPickerChoice10({ state })}
+          />
+        ) : (
+          <div
+            data-slot="color-picker-trigger-group"
+            className="inline-flex max-w-full items-center gap-2"
+          >
+            <PopoverTrigger
+              ref={triggerRef}
+              disabled={state.disabled}
+              data-slot="color-picker-trigger"
+              aria-label={
+                state.label +
+                (state.formatted ? ": " + state.formatted : ": choose a color")
               }
-              onBlur={onBlur}
-              onFocus={onFocus}
-              min={0}
-              max={maxValue}
-              step={step}
-              type="number"
-              aria-label={`OKLCH ${
-                char === "l" ? "lightness" : char === "c" ? "chroma" : "hue"
-              }`}
-              name={name ? `${name}-${char}` : undefined}
-              required={required}
+              aria-invalid={state.invalid || !!state.errorText || undefined}
+              aria-describedby={resolverenderColorPickerChoice11({ state })}
+              render={renderRenderColorPickerSectionPart2({ state })}
+            />
+            <Input
+              data-slot="color-picker-trigger-value"
+              size={resolverenderColorPickerChoice12({ state })}
+              value={state.formatted}
+              readOnly
+              disabled={state.disabled}
+              aria-label={state.label + " value"}
+              aria-haspopup="dialog"
+              aria-expanded={state.popupOpen}
+              aria-controls={
+                state.popupOpen ? state.id + "-content" : undefined
+              }
+              placeholder="Choose color"
+              className={cn(
+                "min-w-0 font-mono text-xs",
+                state.size === "lg" ? "w-32" : "w-24",
+              )}
+              onClick={openFromValue}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === "ArrowDown") {
+                  event.preventDefault();
+                  openFromValue();
+                }
+              }}
             />
           </div>
+        )}
+        <PopoverContent
+          id={state.id + "-content"}
+          data-slot="color-picker-content"
+          align="start"
+          className={cn(
+            "w-85 max-w-[calc(100vw-2rem)] space-y-3 p-4",
+            state.contentClassName,
+          )}
+        >
+          <PopoverTitle className="sr-only">{state.label}</PopoverTitle>
+          {renderColorPickerSaturationPart3({ state })}
+          <ColorSliders
+            color={state.picker.colorHsv}
+            showAlpha={state.showAlpha}
+            disabled={state.disabled}
+            readOnly={state.readOnly}
+            onChange={changeColor}
+          />
+          {renderColorPickerActionsPart4({ state })}
+          {renderColorPickerFormatRowPart5({ state })}
+          {state.readOnly && (
+            <p className="text-xs text-muted-foreground">
+              Read only. You can inspect and copy this color.
+            </p>
+          )}
+          <ColorSwatches
+            title="Palette"
+            colors={state.allSwatches}
+            current={state.hasValue ? state.picker.colorHsv : null}
+            disabled={state.disabled || state.readOnly}
+            onSelect={changeColor}
+          />
+          <ColorSwatches
+            title="Recent colors"
+            colors={state.picker.recentColors}
+            current={state.hasValue ? state.picker.colorHsv : null}
+            disabled={state.disabled || state.readOnly}
+            onSelect={changeColor}
+          />
+          {state.showHarmonies &&
+            state.picker.harmonies.map((group) => (
+              <ColorSwatches
+                key={group.name}
+                title={group.name}
+                colors={group.colors}
+                current={state.hasValue ? state.picker.colorHsv : null}
+                disabled={state.disabled || state.readOnly}
+                onSelect={(color) =>
+                  changeColor({ ...color, a: state.picker.alpha })
+                }
+              />
+            ))}
+          {!state.hideContrastRatio &&
+            state.hasValue &&
+            renderColorPickerContrastPart6({ state })}
+          {state.showBackgroundPreview &&
+            state.hasValue &&
+            renderColorPickerBackgroundPreviewPart7({ state })}
+          {state.feedback && (
+            <p
+              data-slot="color-picker-feedback"
+              className="wrap-anywhere text-xs text-muted-foreground"
+            >
+              {state.feedback}
+            </p>
+          )}
+        </PopoverContent>
+      </Popover>
+      {state.name && (
+        <input
+          data-slot="color-picker-form-value"
+          className="sr-only pointer-events-none"
+          type="text"
+          tabIndex={-1}
+          aria-hidden="true"
+          name={state.name}
+          value={state.canonical}
+          disabled={state.disabled}
+          required={state.required}
+          onChange={() => {}}
+          onInvalid={(event) => {
+            event.preventDefault();
+            setRequiredError(true);
+            triggerRef.current?.focus();
+          }}
+        />
+      )}
+      {state.errorText && (
+        <p
+          id={state.id + "-error"}
+          data-slot="color-picker-error"
+          className="wrap-anywhere text-xs text-destructive"
+        >
+          {state.errorText}
+        </p>
+      )}
+      {state.disabledReason && (
+        <p
+          id={state.id + "-reason"}
+          data-slot="color-picker-disabled-reason"
+          className="wrap-anywhere text-xs text-muted-foreground"
+        >
+          {state.disabledReason}
+        </p>
+      )}
+      {state.announceFeedback && (
+        <span
+          data-slot="color-picker-live-status"
+
+          // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This existing live region preserves its block layout and div ref contract; output introduces form-associated semantics.
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="sr-only"
+        >
+          {state.feedback}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function useKiraColorPickerSetup(
+  componentProps: KiraColorPickerProps,
+  ref: React.ForwardedRef<HTMLDivElement>,
+) {
+  const props = omitComponentProps(
+    componentProps,
+    USE_KIRA_COLOR_PICKER_SETUP_COMPOSITION_KEYS_2,
+  );
+
+  const resolvedProps = resolveKiraColorPickerDefaults(componentProps);
+
+  const { textSize, contrastLevel, showAccessibleSuggestion, defaultValue } =
+    resolvedProps;
+
+  const core = useKiraColorPickerCoreState(componentProps, defaultValue);
+
+  const {
+    internal,
+    setInternal,
+    internalFormat,
+    setInternalFormat,
+    copyState,
+    setCopyState,
+    feedback,
+    setFeedback,
+    rootRef,
+    copyButtonRef,
+    operationRef,
+    resetTimerRef,
+    mountedRef,
+    id,
+    reducedMotion,
+  } = core;
+
+  const contrast = resolveKiraColorContrast({
+    componentProps,
+    internal,
+    internalFormat,
+    contrastLevel,
+    textSize,
+    showAccessibleSuggestion,
+  });
+
+  return {
+    ...componentProps,
+    ...resolvedProps,
+    ...contrast,
+    props,
+    ref,
+    setInternal,
+    setInternalFormat,
+    copyState,
+    setCopyState,
+    feedback,
+    setFeedback,
+    rootRef,
+    copyButtonRef,
+    operationRef,
+    resetTimerRef,
+    mountedRef,
+    id,
+    reducedMotion,
+  };
+}
+
+function resolveKiraColorPickerDefaults(componentProps: KiraColorPickerProps) {
+  return resolveComponentDefaults(
+    {
+      textSize: componentProps.textSize,
+      contrastLevel: componentProps.contrastLevel,
+      showAccessibleSuggestion: componentProps.showAccessibleSuggestion,
+      tokenName: componentProps.tokenName,
+      showTokenPreview: componentProps.showTokenPreview,
+      copyText: componentProps.copyText,
+      defaultValue: componentProps.defaultValue,
+      disabled: componentProps.disabled,
+      readOnly: componentProps.readOnly,
+    },
+    {
+      textSize: "normal",
+      contrastLevel: "AA",
+      showAccessibleSuggestion: false,
+      tokenName: "brand.primary",
+      showTokenPreview: true,
+      copyText: writeColorClipboard,
+      defaultValue: "#3b82f6",
+      disabled: false,
+      readOnly: false,
+    },
+  );
+}
+
+function useKiraColorPickerCoreState(
+  componentProps: KiraColorPickerProps,
+  defaultValue: ColorInput,
+) {
+  const [internal, setInternal] = React.useState<ColorInput>(() =>
+    parseColor(defaultValue)
+      ? initialColor(defaultValue, componentProps.defaultAlpha)
+      : "",
+  );
+
+  const [internalFormat, setInternalFormat] = React.useState<ColorFormat>(
+    componentProps.defaultFormat ?? componentProps.type ?? "hex",
+  );
+
+  const [copyState, setCopyState] = React.useState<ColorCopyState>({
+    status: "idle",
+  });
+
+  const [feedback, setFeedback] = React.useState("");
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const copyButtonRef = React.useRef<HTMLButtonElement | null>(null);
+  const operationRef = React.useRef<AbortController | null>(null);
+
+  const resetTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  const mountedRef = React.useRef(true);
+  const id = React.useId();
+  const reducedMotion = useReducedMotion();
+
+  return {
+    internal,
+    setInternal,
+    internalFormat,
+    setInternalFormat,
+    copyState,
+    setCopyState,
+    feedback,
+    setFeedback,
+    rootRef,
+    copyButtonRef,
+    operationRef,
+    resetTimerRef,
+    mountedRef,
+    id,
+    reducedMotion,
+  };
+}
+
+function resolveKiraColorContrast({
+  componentProps,
+  internal,
+  internalFormat,
+  contrastLevel,
+  textSize,
+  showAccessibleSuggestion,
+}: {
+  componentProps: KiraColorPickerProps;
+  internal: ColorInput;
+  internalFormat: ColorFormat;
+  contrastLevel: "AA" | "AAA";
+  textSize: "normal" | "large";
+  showAccessibleSuggestion: boolean;
+}) {
+  const selected = componentProps.value ?? internal;
+  const color = parseColor(selected);
+  const backgroundColor = parseColor(componentProps.background);
+  const selectedFormat = componentProps.format ?? internalFormat;
+  const target = CONTRAST_TARGETS[contrastLevel][textSize];
+
+  const ratio = color
+    ? getContrastRatio(color, componentProps.background)
+    : null;
+
+  const passes = ratio !== null && ratio >= target;
+
+  const suggestion = accessibleColorSuggestion({
+    showAccessibleSuggestion,
+    color,
+    ratio,
+    passes,
+    componentProps,
+    target,
+  });
+
+  return {
+    selected,
+    color,
+    backgroundColor,
+    selectedFormat,
+    target,
+    ratio,
+    passes,
+    suggestion,
+  };
+}
+
+function useKiraColorPickerState2(
+  state: ReturnType<typeof useKiraColorPickerSetup>,
+) {
+  const { setCopyState, setFeedback, onFeedback } = state;
+
+  const canonical = state.color
+    ? formatColor(
+        state.color,
+        state.selectedFormat,
+        state.props.showAlpha || state.color.a < 1,
+      )
+    : "";
+
+  const exportValue = React.useMemo(() => {
+    if (!state.color)
+      return { css: "", dtcg: "", error: "Choose a valid color to export." };
+
+    try {
+      const dtcg = serializeColorToken(state.tokenName, state.color);
+
+      return {
+        css:
+          "--" +
+          state.tokenName.replaceAll(".", "-") +
+          ": " +
+          formatColor(
+            state.color,
+            state.selectedFormat,
+            state.props.showAlpha || state.color.a < 1,
+          ) +
+          ";",
+        dtcg,
+        error: "",
+      };
+    } catch (cause) {
+      return {
+        css: "",
+        dtcg: "",
+        error:
+          cause instanceof Error ? cause.message : "Enter a valid token name.",
+      };
+    }
+  }, [
+    state.color,
+    state.selectedFormat,
+    state.tokenName,
+    state.props.showAlpha,
+  ]);
+
+  const exportKey =
+    exportValue.css + "\n" + exportValue.dtcg + "\n" + state.disabled;
+
+  const [previousExportKey, setPreviousExportKey] = React.useState(exportKey);
+
+  if (previousExportKey !== exportKey) {
+    setPreviousExportKey(exportKey);
+    setCopyState({ status: "idle" });
+    setFeedback("");
+  }
+
+  const report = (message: string) => {
+    setFeedback(message);
+    onFeedback?.(message);
+  };
+
+  return { ...state, canonical, exportValue, exportKey, report };
+}
+
+function useKiraColorPickerState3(
+  state: ReturnType<typeof useKiraColorPickerState2>,
+) {
+  const { operationRef, resetTimerRef, mountedRef } = state;
+
+  const {
+    setCopyState,
+    setInternal,
+    onValueChange,
+    setInternalFormat,
+    onFormatChange,
+    report,
+    copyText,
+    onError,
+  } = state;
+
+  const change = (nextValue: ColorPickerValue) => {
+    if (state.disabled || state.readOnly) return;
+    operationRef.current?.abort();
+    operationRef.current = null;
+
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    setCopyState({ status: "idle" });
+
+    if (state.value === undefined) setInternal(nextValue.hsv);
+    onValueChange?.(nextValue);
+  };
+
+  const changeFormat = (nextFormat: ColorFormat) => {
+    if (state.format === undefined) setInternalFormat(nextFormat);
+    onFormatChange?.(nextFormat);
+  };
+
+  const copy = async (kind: ColorCopyKind) => {
+    if (
+      !canStartTokenCopy(
+        state.disabled,
+        state.exportValue.error,
+        operationRef.current,
+      )
+    )
+      return;
+    const controller = new AbortController();
+    operationRef.current = controller;
+
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    const text = state.exportValue[kind];
+    setCopyState({ status: "pending", kind });
+    report(
+      kind === "css" ? "Copying CSS variable…" : "Copying DTCG color token…",
+    );
+
+    try {
+      await copyText(text, controller.signal);
+
+      if (!isTokenCopyCurrent(mountedRef, controller, operationRef)) return;
+      setCopyState({ status: "success", kind });
+      report(
+        kind === "css" ? "CSS variable copied." : "DTCG color token copied.",
+      );
+      resetTimerRef.current = setTimeout(
+        () => setCopyState({ status: "idle" }),
+        2000,
+      );
+    } catch (cause) {
+      return reportTokenCopyError({
+        mountedRef,
+        controller,
+        operationRef,
+        cause,
+        setCopyState,
+        kind,
+        report,
+        onError,
+      });
+    } finally {
+      if (operationRef.current === controller) operationRef.current = null;
+    }
+  };
+
+  return { ...state, change, changeFormat, copy };
+}
+
+function canStartTokenCopy(
+  disabled: boolean,
+  exportError: string | undefined,
+  operation: AbortController | null,
+) {
+  return !disabled && !exportError && !operation;
+}
+
+function isTokenCopyCurrent(
+  mountedRef: React.RefObject<boolean>,
+  controller: AbortController,
+  operationRef: React.RefObject<AbortController | null>,
+) {
+  return (
+    mountedRef.current &&
+    !controller.signal.aborted &&
+    operationRef.current === controller
+  );
+}
+
+function useKiraColorPickerState4(
+  state: ReturnType<typeof useKiraColorPickerState3>,
+) {
+  const { operationRef, copyButtonRef, resetTimerRef, rootRef, mountedRef } =
+    state;
+
+  const { setCopyState, report, setInternal } = state;
+
+  const cancelCopy = () => {
+    operationRef.current?.abort();
+    operationRef.current = null;
+    setCopyState({ status: "idle" });
+    report("Copy cancelled. You can retry.");
+    copyButtonRef.current?.focus();
+  };
+
+  const resetForm = React.useEffectEvent(() => {
+    operationRef.current?.abort();
+    operationRef.current = null;
+
+    if (state.value === undefined)
+      setInternal(
+        parseColor(state.defaultValue)
+          ? initialColor(state.defaultValue, state.defaultAlpha)
+          : "",
+      );
+    setCopyState({ status: "idle" });
+  });
+
+  React.useEffect(
+    () => () => {
+      operationRef.current?.abort();
+      operationRef.current = null;
+
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    },
+    [state.exportKey, resetTimerRef, operationRef],
+  );
+
+  React.useEffect(() => {
+    const form = rootRef.current?.closest("form");
+    const reset = () => resetForm();
+    form?.addEventListener("reset", reset);
+
+    return () => form?.removeEventListener("reset", reset);
+  }, [rootRef]);
+
+  React.useEffect(() => {
+    mountedRef.current = true;
+
+    return () => {
+      mountedRef.current = false;
+      operationRef.current?.abort();
+      operationRef.current = null;
+
+      // oxlint-disable-next-line react-hooks/exhaustive-deps -- Cleanup must cancel the latest pending operation or timer stored in this stable ref, including work started after effect setup.
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
+  }, [resetTimerRef, mountedRef, operationRef]);
+
+  return { ...state, cancelCopy };
+}
+
+function useKiraColorPickerState5(
+  state: ReturnType<typeof useKiraColorPickerState4>,
+) {
+  const buildContrast = () => (
+    <div data-slot="kira-color-picker-contrast" className="space-y-2">
+      <p className="text-sm font-medium">Contrast on your background</p>
+      {state.backgroundColor?.a === 1 && state.color ? (
+        renderKiraColorPickerTextPreviewPart8({ state })
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Choose a color and supply an opaque background to evaluate contrast.
+        </p>
+      )}
+      {state.ratio !== null && (
+        <p className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+          <span
+            data-slot="kira-color-picker-contrast-ratio"
+            className="font-medium tabular-nums"
+          >
+            {state.ratio.toFixed(2)}:1
+          </span>
+          <span>
+            {state.passes ? "Pass" : "Fail"} · {state.contrastLevel}{" "}
+            {state.textSize} text · requires {state.target}:1
+          </span>
+        </p>
+      )}
+      {state.showAccessibleSuggestion &&
+        state.ratio !== null &&
+        !state.passes &&
+        (state.suggestion ? (
+          renderBuildContrastSectionPart9({ state })
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            No lightness adjustment meets this target at the current opacity.
+            Increase opacity or change the background.
+          </p>
+        ))}
+    </div>
+  );
+
+  return { ...state, buildContrast };
+}
+
+function useKiraColorPickerState6(
+  state: ReturnType<typeof useKiraColorPickerState5>,
+) {
+  const { copyButtonRef } = state;
+
+  const { copy } = state;
+
+  const buildExports = () => (
+    <div
+      data-slot="kira-color-picker-export"
+      className="space-y-2 border-t pt-3"
+    >
+      <p className="wrap-anywhere text-sm font-medium">
+        Token: {state.tokenName || "Enter a token name"}
+      </p>
+      {state.exportValue.error && (
+        <p id={state.id + "-export-error"} className="text-xs text-destructive">
+          {state.exportValue.error}
+        </p>
+      )}
+      {state.showTokenPreview && !state.exportValue.error && (
+        <pre
+          data-slot="kira-color-picker-token-preview"
+
+          // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- The bounded scroll region is keyboard focusable so users can scroll and select its content without a pointer.
+          tabIndex={0}
+          aria-label="DTCG color token JSON"
+          className="max-h-48 overflow-auto rounded-md bg-muted p-3 text-xs"
+        >
+          {state.exportValue.dtcg}
+        </pre>
+      )}
+      <div className="flex flex-wrap gap-2">
+        {(["css", "dtcg"] as const).map((kind, index) => {
+          const active =
+            "kind" in state.copyState && state.copyState.kind === kind;
+
+          const pending = active && state.copyState.status === "pending";
+          const copied = active && state.copyState.status === "success";
+          const failed = active && state.copyState.status === "error";
+
+          return (
+            <Button
+              key={kind}
+              ref={index === 0 ? copyButtonRef : undefined}
+              variant="outline"
+              size="sm"
+              disabled={
+                state.disabled ||
+                !!state.exportValue.error ||
+                state.copyState.status === "pending"
+              }
+              focusableWhenDisabled
+              aria-describedby={
+                state.exportValue.error ? state.id + "-export-error" : undefined
+              }
+              aria-busy={pending || undefined}
+              onClick={() => {
+                void copy(kind);
+              }}
+            >
+              {resolvecolorpickertsxChoice4({
+                pending,
+                reducedMotion: state.reducedMotion,
+                copied,
+              })}
+              {resolvecolorpickertsxChoice5({ copied, failed, kind })}
+            </Button>
+          );
+        })}
+        {state.copyState.status === "pending" && (
+          <Button variant="ghost" size="sm" onClick={state.cancelCopy}>
+            Cancel copy
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+
+  return { ...state, buildExports };
+}
+
+function useKiraColorPickerActions(
+  state: ReturnType<typeof useKiraColorPickerState6>,
+) {
+  const { rootRef } = state;
+
+  const { ref } = state;
+
+  const attachRoot = mergeComponentRefs(rootRef, ref);
+
+  return { ...state, attachRoot };
+}
+
+function renderKiraColorPicker(
+  state: ReturnType<typeof useKiraColorPickerActions>,
+) {
+  const { buildContrast, buildExports } = state;
+
+  return (
+    <div
+      ref={state.attachRoot}
+      data-slot="kira-color-picker"
+      className={cn(
+        colorPickerVariants({ size: state.size }),
+        "w-full max-w-md gap-4",
+        state.className,
+      )}
+    >
+      <ColorPicker
+        {...state.props}
+        value={state.selected}
+        defaultValue={state.defaultValue}
+        defaultAlpha={state.defaultAlpha}
+        format={state.selectedFormat}
+        onFormatChange={state.changeFormat}
+        onValueChange={state.change}
+        onError={state.onError}
+        onFeedback={state.report}
+        disabled={state.disabled}
+        readOnly={state.readOnly}
+        size={state.size}
+        hideContrastRatio
+        showCopyButton={false}
+        announceFeedback={false}
+      />
+      {buildContrast()}
+      {buildExports()}
+      <p
+        data-slot="kira-color-picker-status"
+
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This existing live region preserves its block layout and div ref contract; output introduces form-associated semantics.
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="min-h-5 wrap-anywhere text-xs text-muted-foreground"
+      >
+        {state.feedback}
+      </p>
+    </div>
+  );
+}
+
+type renderColorPickerValueFieldPart1Args = {
+  id: {
+    id: string;
+    value: string;
+    format: ColorFormat;
+    disabled: boolean;
+    readOnly: boolean;
+    onCommit: (color: HsvaColor) => void;
+    onError: (message: string) => void;
+    onNotice: (message: string) => void;
+  }["id"];
+  draft: string;
+  disabled: {
+    id: string;
+    value: string;
+    format: ColorFormat;
+    disabled: boolean;
+    readOnly: boolean;
+    onCommit: (color: HsvaColor) => void;
+    onError: (message: string) => void;
+    onNotice: (message: string) => void;
+  }["disabled"];
+  readOnly: {
+    id: string;
+    value: string;
+    format: ColorFormat;
+    disabled: boolean;
+    readOnly: boolean;
+    onCommit: (color: HsvaColor) => void;
+    onError: (message: string) => void;
+    onNotice: (message: string) => void;
+  }["readOnly"];
+  error: string | null;
+  setDraft: React.Dispatch<React.SetStateAction<string>>;
+  setError: React.Dispatch<React.SetStateAction<string | null>>;
+  commit: () => void;
+  value: {
+    id: string;
+    value: string;
+    format: ColorFormat;
+    disabled: boolean;
+    readOnly: boolean;
+    onCommit: (color: HsvaColor) => void;
+    onError: (message: string) => void;
+    onNotice: (message: string) => void;
+  }["value"];
+};
+
+function renderColorPickerValueFieldPart1({
+  id,
+  draft,
+  disabled,
+  readOnly,
+  error,
+  setDraft,
+  setError,
+  commit,
+  value,
+}: renderColorPickerValueFieldPart1Args) {
+  return (
+    <div
+      data-slot="color-picker-value-field"
+      className="flex min-w-0 flex-col gap-1.5"
+    >
+      <label htmlFor={id} className="block text-xs font-medium leading-4">
+        Color value
+      </label>
+      <Input
+        id={id}
+        size="sm"
+        data-slot="color-picker-value-input"
+        value={draft}
+        disabled={disabled}
+        readOnly={readOnly}
+        spellCheck={false}
+        autoComplete="off"
+        className="font-mono text-xs"
+        aria-invalid={!!error}
+        aria-describedby={error ? id + "-error" : id + "-hint"}
+        onChange={(event) => {
+          setDraft(event.target.value);
+          setError(null);
+        }}
+        onBlur={commit}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            commit();
+          }
+
+          if (event.key === "Escape" && draft !== value) {
+            event.preventDefault();
+            event.stopPropagation();
+            setDraft(value);
+            setError(null);
+          }
+        }}
+      />
+      <p
+        id={error ? id + "-error" : id + "-hint"}
+        data-slot="color-picker-value-hint"
+        className={cn(
+          "text-xs",
+          error ? "text-destructive" : "text-muted-foreground",
+        )}
+      >
+        {error ?? "Press Enter or leave the field to apply."}
+      </p>
+    </div>
+  );
+}
+
+type renderRenderColorPickerSectionPart2Args = {
+  state: ReturnType<typeof useColorPickerActions>;
+};
+
+function renderRenderColorPickerSectionPart2({
+  state,
+}: renderRenderColorPickerSectionPart2Args) {
+  return (
+    <Button
+      variant="outline"
+      size="icon-sm"
+      className={cn(
+        "relative shrink-0 overflow-hidden",
+        state.size === "sm" && "size-7",
+        state.size === "lg" && "size-9",
+      )}
+      style={CHECKERBOARD}
+    >
+      {state.hasValue && (
+        <span
+          data-slot="color-picker-preview"
+          aria-hidden="true"
+          className={cn(
+            "block shrink-0",
+            resolverenderRenderColorPickerSectionPart2Choice1({ state }),
+          )}
+          style={{ backgroundColor: state.canonical }}
+        />
+      )}
+    </Button>
+  );
+}
+
+type renderColorPickerSaturationPart3Args = {
+  state: ReturnType<typeof useColorPickerActions>;
+};
+
+function renderColorPickerSaturationPart3({
+  state,
+}: renderColorPickerSaturationPart3Args) {
+  const { changeColor } = state;
+
+  return (
+    <div
+      data-slot="color-picker-saturation"
+      aria-hidden="true"
+      className="relative overflow-hidden rounded-md border"
+      inert={state.disabled || state.readOnly || undefined}
+    >
+      <Saturation
+        hsva={state.picker.colorHsv}
+        onChange={(next) =>
+          changeColor({
+            ...state.picker.colorHsv,
+            ...next,
+            a: state.picker.alpha,
+          })
+        }
+        style={{ width: "100%", height: "auto", aspectRatio: "2 / 1" }}
+      />
+    </div>
+  );
+}
+
+type renderColorPickerActionsPart4Args = {
+  state: ReturnType<typeof useColorPickerActions>;
+};
+
+function renderColorPickerActionsPart4({
+  state,
+}: renderColorPickerActionsPart4Args) {
+  const { copy, pickFromScreen } = state;
+
+  return (
+    <div data-slot="color-picker-actions" className="flex flex-wrap gap-2">
+      {state.showCopyButton && (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={
+            state.disabled || !state.hasValue || state.copyState === "pending"
+          }
+          aria-busy={state.copyState === "pending" || undefined}
+          onClick={() => {
+            void copy();
+          }}
+        >
+          {resolvecolorpickertsxChoice2({
+            copyState: state.copyState,
+            reducedMotion: state.reducedMotion,
+          })}
+          {resolvecolorpickertsxChoice3({ copyState: state.copyState })}
+        </Button>
+      )}
+      {state.eyedropperSupported && (
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={state.disabled || state.readOnly || state.eyePending}
+          aria-busy={state.eyePending || undefined}
+          onClick={() => {
+            void pickFromScreen();
+          }}
+        >
+          <IconColorPicker aria-hidden="true" className="size-4" />
+          {state.eyePending ? "Selecting…" : "Pick from screen"}
+        </Button>
+      )}
+    </div>
+  );
+}
+
+type renderColorPickerFormatRowPart5Args = {
+  state: ReturnType<typeof useColorPickerActions>;
+};
+
+function renderColorPickerFormatRowPart5({
+  state,
+}: renderColorPickerFormatRowPart5Args) {
+  const { report, onError } = state;
+
+  return (
+    <div
+      data-slot="color-picker-format-row"
+      className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-start gap-2"
+    >
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <label
+          htmlFor={state.id + "-format"}
+          className="block text-xs font-medium leading-4"
+        >
+          Format
+        </label>
+        <KiraSelect
+          id={state.id + "-format"}
+          options={FORMATS}
+          value={state.colorFormat}
+          onChange={state.changeFormat}
+          disabled={state.disabled}
+          size="sm"
+          aria-label="Color format"
+        />
+      </div>
+      <div className="min-w-0 flex-1">
+        <ColorTextField
+          id={state.id + "-value"}
+          value={state.formatted}
+          format={state.colorFormat}
+          disabled={state.disabled}
+          readOnly={state.readOnly}
+          onCommit={state.changeColor}
+          onNotice={report}
+          onError={(message) => {
+            report(message);
+            onError?.({ type: "format", message });
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+type renderColorPickerContrastPart6Args = {
+  state: ReturnType<typeof useColorPickerActions>;
+};
+
+function renderColorPickerContrastPart6({
+  state,
+}: renderColorPickerContrastPart6Args) {
+  const color = state.picker.colorHsv;
+
+  if (!color) return null;
+
+  return (
+    <div
+      data-slot="color-picker-contrast"
+      className="space-y-2 border-t pt-3 text-xs"
+    >
+      <p className="font-medium">Normal text contrast (AA ≥ 4.5:1)</p>
+      {state.contrasts.map((background) => {
+        const ratio = getContrastRatio(color, background.color) ?? 1;
+
+        return (
+          <p key={background.name} className="flex justify-between gap-2">
+            <span>On {background.name}</span>
+            <span className="tabular-nums">
+              {ratio.toFixed(2)}:1 · {ratio >= 4.5 ? "Pass" : "Fail"}
+            </span>
+          </p>
         );
       })}
     </div>
   );
 }
 
-export { ColorPicker };
+type renderColorPickerBackgroundPreviewPart7Args = {
+  state: ReturnType<typeof useColorPickerActions>;
+};
 
-export type { ColorPickerProps, ColorPickerValue, ColorHarmony, OklchColor };
+function renderColorPickerBackgroundPreviewPart7({
+  state,
+}: renderColorPickerBackgroundPreviewPart7Args) {
+  return (
+    <div
+      data-slot="color-picker-background-preview"
+      className="grid grid-cols-2 overflow-hidden rounded-md border"
+    >
+      {state.contrasts.map((background) => (
+        <div
+          key={background.name}
+          className="p-3 text-center text-sm"
+          style={{
+            backgroundColor: background.color,
+            color: state.canonical,
+          }}
+        >
+          Text sample
+        </div>
+      ))}
+    </div>
+  );
+}
 
-export { getColorAsHsva, rgbaToOklch, oklchToRgba, hslaToHsva };
+type renderKiraColorPickerTextPreviewPart8Args = {
+  state: ReturnType<typeof useKiraColorPickerState4>;
+};
+
+function renderKiraColorPickerTextPreviewPart8({
+  state,
+}: renderKiraColorPickerTextPreviewPart8Args) {
+  const background = state.backgroundColor;
+
+  if (!background) return null;
+
+  return (
+    <div
+      data-slot="kira-color-picker-text-preview"
+      className="rounded-md border p-4"
+      style={{
+        backgroundColor: formatColor(background, "hex"),
+        color: state.canonical,
+      }}
+    >
+      <span
+        className={cn(
+          "block",
+          state.textSize === "large" ? "text-2xl" : "text-sm",
+        )}
+      >
+        The next chapter starts here.
+      </span>
+    </div>
+  );
+}
+
+type renderBuildContrastSectionPart9Args = {
+  state: ReturnType<typeof useKiraColorPickerState4>;
+};
+
+function renderBuildContrastSectionPart9({
+  state,
+}: renderBuildContrastSectionPart9Args) {
+  const { change, report } = state;
+
+  const suggestion = state.suggestion;
+
+  if (!suggestion) return null;
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={state.disabled || state.readOnly}
+      onClick={() => {
+        change(colorValue(suggestion));
+        report(
+          "Suggested color applied for this background and text category.",
+        );
+      }}
+    >
+      Use accessible suggestion
+    </Button>
+  );
+}
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const USE_COLOR_PICKER_SETUP_DEFAULTS_1 = {
+  defaultValue: "#3b82f6",
+  swatches: [],
+  hideContrastRatio: false,
+  hideDefaultSwatches: false,
+  showAlpha: false,
+  showHarmonies: false,
+  showBackgroundPreview: false,
+  showCopyButton: true,
+  defaultOpen: false,
+  disabled: false,
+  readOnly: false,
+  required: false,
+  invalid: false,
+  label: "Color",
+  announceFeedback: true,
+} as const;
+
+// SAFETY: This immutable list names the composition props removed from the native root.
+const USE_COLOR_PICKER_SETUP_COMPOSITION_KEYS_1 = [
+  "value",
+  "defaultValue",
+  "format",
+  "defaultFormat",
+  "type",
+  "onFormatChange",
+  "size",
+  "swatches",
+  "hideContrastRatio",
+  "hideDefaultSwatches",
+  "showAlpha",
+  "defaultAlpha",
+  "showHarmonies",
+  "showBackgroundPreview",
+  "showCopyButton",
+  "onValueChange",
+  "open",
+  "defaultOpen",
+  "onOpenChange",
+  "children",
+  "disabled",
+  "disabledReason",
+  "readOnly",
+  "name",
+  "required",
+  "invalid",
+  "error",
+  "label",
+  "contentClassName",
+  "onError",
+  "onFeedback",
+  "announceFeedback",
+  "className",
+] as const;
+
+// SAFETY: This immutable list names the composition props removed from the native root.
+const USE_KIRA_COLOR_PICKER_SETUP_COMPOSITION_KEYS_2 = [
+  "background",
+  "textSize",
+  "contrastLevel",
+  "showAccessibleSuggestion",
+  "tokenName",
+  "showTokenPreview",
+  "copyText",
+  "value",
+  "defaultValue",
+  "defaultAlpha",
+  "format",
+  "defaultFormat",
+  "type",
+  "onFormatChange",
+  "onValueChange",
+  "onFeedback",
+  "onError",
+  "disabled",
+  "readOnly",
+  "className",
+  "size",
+] as const;
+
+type resolverenderRenderColorPickerSectionPart2Choice1Args = {
+  state: ReturnType<typeof useColorPickerActions>;
+};
+
+function resolverenderRenderColorPickerSectionPart2Choice1({
+  state,
+}: resolverenderRenderColorPickerSectionPart2Choice1Args) {
+  if (state.size === "sm") {
+    return "size-7";
+  }
+
+  if (state.size === "lg") {
+    return "size-9";
+  }
+
+  return "size-8";
+}
+
+type colorPickerValidationMessageArgs = {
+  state: ReturnType<typeof useColorPickerSetup>;
+  externalInvalid: boolean;
+  requiredError: boolean;
+};
+
+function colorPickerValidationMessage({
+  state,
+  externalInvalid,
+  requiredError,
+}: colorPickerValidationMessageArgs) {
+  return (
+    state.error ||
+    resolvecolorpickertsxChoice1({ externalInvalid, requiredError })
+  );
+}
+
+type reportColorCopyErrorArgs = {
+  mountedRef: ReturnType<typeof useColorPickerState3>["mountedRef"];
+  generation: number;
+  copyGenerationRef: ReturnType<
+    typeof useColorPickerState3
+  >["copyGenerationRef"];
+  setCopyState: ReturnType<typeof useColorPickerState3>["setCopyState"];
+  report: ReturnType<typeof useColorPickerState3>["report"];
+  onError: ReturnType<typeof useColorPickerState3>["onError"];
+};
+
+function reportColorCopyError({
+  mountedRef,
+  generation,
+  copyGenerationRef,
+  setCopyState,
+  report,
+  onError,
+}: reportColorCopyErrorArgs) {
+  if (!mountedRef.current || generation !== copyGenerationRef.current) return;
+
+  const message = "Could not copy. Select the color text and copy it manually.";
+
+  setCopyState("error");
+  report(message);
+  onError?.({ type: "clipboard", message });
+}
+
+type reportScreenColorErrorArgs = {
+  mountedRef: ReturnType<typeof useColorPickerState3>["mountedRef"];
+  eyeAbortRef: ReturnType<typeof useColorPickerState3>["eyeAbortRef"];
+  controller: AbortController;
+  cause: unknown;
+  report: ReturnType<typeof useColorPickerState3>["report"];
+  onError: ReturnType<typeof useColorPickerState3>["onError"];
+};
+
+function reportScreenColorError({
+  mountedRef,
+  eyeAbortRef,
+  controller,
+  cause,
+  report,
+  onError,
+}: reportScreenColorErrorArgs) {
+  if (!mountedRef.current || eyeAbortRef.current !== controller) return;
+
+  if (
+    controller.signal.aborted ||
+    (cause instanceof DOMException && cause.name === "AbortError")
+  )
+    report("Screen selection cancelled.");
+  else {
+    const message =
+      "Screen selection failed. Enter a color or use the sliders.";
+
+    report(message);
+    onError?.({ type: "eyedropper", message });
+  }
+}
+
+type reportTokenCopyErrorArgs = {
+  mountedRef: ReturnType<typeof useKiraColorPickerState2>["mountedRef"];
+  controller: AbortController;
+  operationRef: ReturnType<typeof useKiraColorPickerState2>["operationRef"];
+  cause: unknown;
+  setCopyState: ReturnType<typeof useKiraColorPickerState2>["setCopyState"];
+  kind: ColorCopyKind;
+  report: ReturnType<typeof useKiraColorPickerState2>["report"];
+  onError: ReturnType<typeof useKiraColorPickerState2>["onError"];
+};
+
+function reportTokenCopyError({
+  mountedRef,
+  controller,
+  operationRef,
+  cause,
+  setCopyState,
+  kind,
+  report,
+  onError,
+}: reportTokenCopyErrorArgs) {
+  if (
+    !mountedRef.current ||
+    controller.signal.aborted ||
+    operationRef.current !== controller
+  )
+    return;
+
+  const message =
+    cause instanceof Error
+      ? cause.message
+      : "Copy failed. Retry or select the token text and copy it manually.";
+
+  setCopyState({ status: "error", kind, message });
+  report(message);
+  onError?.({ type: "clipboard", message });
+}
+
+type accessibleColorSuggestionArgs = {
+  showAccessibleSuggestion: boolean;
+  color: HsvaColor | null;
+  ratio: number | null;
+  passes: boolean;
+  componentProps: KiraColorPickerProps;
+  target: number;
+};
+
+function accessibleColorSuggestion({
+  showAccessibleSuggestion,
+  color,
+  ratio,
+  passes,
+  componentProps,
+  target,
+}: accessibleColorSuggestionArgs) {
+  return showAccessibleSuggestion && color && ratio !== null && !passes
+    ? findAccessibleColor(color, componentProps.background, target)
+    : null;
+}
+
+type resolverenderColorPickerChoice10Args = {
+  state: ReturnType<typeof useColorPickerActions>;
+};
+
+function resolverenderColorPickerChoice10({
+  state,
+}: resolverenderColorPickerChoice10Args) {
+  if (state.errorText) {
+    return state.id + "-error";
+  }
+
+  if (state.disabledReason) {
+    return state.id + "-reason";
+  }
+
+  return undefined;
+}
+
+type resolverenderColorPickerChoice11Args = {
+  state: ReturnType<typeof useColorPickerActions>;
+};
+
+function resolverenderColorPickerChoice11({
+  state,
+}: resolverenderColorPickerChoice11Args) {
+  return resolverenderColorPickerChoice10({ state });
+}
+
+type resolverenderColorPickerChoice12Args = {
+  state: ReturnType<typeof useColorPickerActions>;
+};
+
+function resolverenderColorPickerChoice12({
+  state,
+}: resolverenderColorPickerChoice12Args) {
+  if (state.size === "sm") {
+    return "sm";
+  }
+
+  if (state.size === "lg") {
+    return "lg";
+  }
+
+  return "default";
+}
+
+type createColorCopyActionArgs = {
+  state: ReturnType<typeof useColorPickerState3>;
+  copyGenerationRef: ReturnType<
+    typeof useColorPickerState3
+  >["copyGenerationRef"];
+  setCopyState: ReturnType<typeof useColorPickerState3>["setCopyState"];
+  report: ReturnType<typeof useColorPickerState3>["report"];
+  mountedRef: ReturnType<typeof useColorPickerState3>["mountedRef"];
+  feedbackTimerRef: ReturnType<typeof useColorPickerState3>["feedbackTimerRef"];
+  onError: ReturnType<typeof useColorPickerState3>["onError"];
+};
+
+function createColorCopyAction({
+  state,
+  copyGenerationRef,
+  setCopyState,
+  report,
+  mountedRef,
+  feedbackTimerRef,
+  onError,
+}: createColorCopyActionArgs) {
+  return async () => {
+    if (!canStartColorCopy(state)) return;
+    const generation = ++copyGenerationRef.current;
+    setCopyState("pending");
+    report("Copying color…");
+
+    try {
+      const text = await state.picker.copyToClipboard(state.colorFormat);
+
+      if (!isColorCopyCurrent(mountedRef, generation, copyGenerationRef))
+        return;
+      setCopyState("success");
+      report("Copied " + text + ".");
+
+      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+      feedbackTimerRef.current = setTimeout(() => setCopyState("idle"), 2000);
+    } catch {
+      return reportColorCopyError({
+        mountedRef,
+        generation,
+        copyGenerationRef,
+        setCopyState,
+        report,
+        onError,
+      });
+    }
+  };
+}
+
+function canStartColorCopy(state: ReturnType<typeof useColorPickerState3>) {
+  return !state.disabled && state.hasValue && state.copyState !== "pending";
+}
+
+function isColorCopyCurrent(
+  mountedRef: React.RefObject<boolean>,
+  generation: number,
+  copyGenerationRef: React.RefObject<number>,
+) {
+  return mountedRef.current && generation === copyGenerationRef.current;
+}
+
+type createScreenColorActionArgs = {
+  state: ReturnType<typeof useColorPickerState3>;
+  eyeAbortRef: ReturnType<typeof useColorPickerState3>["eyeAbortRef"];
+  setEyePending: ReturnType<typeof useColorPickerState3>["setEyePending"];
+  report: ReturnType<typeof useColorPickerState3>["report"];
+  mountedRef: ReturnType<typeof useColorPickerState3>["mountedRef"];
+  commitScreenColorRef: ReturnType<
+    typeof useColorPickerState3
+  >["commitScreenColorRef"];
+  onError: ReturnType<typeof useColorPickerState3>["onError"];
+};
+
+function createScreenColorAction({
+  state,
+  eyeAbortRef,
+  setEyePending,
+  report,
+  mountedRef,
+  commitScreenColorRef,
+  onError,
+}: createScreenColorActionArgs) {
+  return async () => {
+    const Constructor = eyeDropperConstructor();
+
+    if (!Constructor || !isScreenColorSelectionAllowed(Constructor, state))
+      return;
+    const controller = new AbortController();
+    eyeAbortRef.current = controller;
+    setEyePending(true);
+    report("Choose a color on screen. Escape cancels.");
+
+    try {
+      const result = await new Constructor().open({
+        signal: controller.signal,
+      });
+
+      if (!isScreenColorOperationCurrent(mountedRef, eyeAbortRef, controller))
+        return;
+      const color = parseColor(result.sRGBHex);
+
+      if (!color) throw new Error("The screen color could not be read.");
+      commitScreenColorRef.current(color);
+    } catch (cause) {
+      return reportScreenColorError({
+        mountedRef,
+        eyeAbortRef,
+        controller,
+        cause,
+        report,
+        onError,
+      });
+    } finally {
+      finishScreenColorOperation(
+        eyeAbortRef,
+        controller,
+        mountedRef,
+        setEyePending,
+      );
+    }
+  };
+}
+
+function isScreenColorSelectionAllowed(
+  Constructor: ReturnType<typeof eyeDropperConstructor>,
+  state: ReturnType<typeof useColorPickerState3>,
+) {
+  return !!Constructor && state.screenSelectionEnabled && !state.eyePending;
+}
+
+function isScreenColorOperationCurrent(
+  mountedRef: React.RefObject<boolean>,
+  eyeAbortRef: React.RefObject<AbortController | null>,
+  controller: AbortController,
+) {
+  return (
+    mountedRef.current &&
+    !controller.signal.aborted &&
+    eyeAbortRef.current === controller
+  );
+}
+
+function finishScreenColorOperation(
+  eyeAbortRef: React.RefObject<AbortController | null>,
+  controller: AbortController,
+  mountedRef: React.RefObject<boolean>,
+  setEyePending: (pending: boolean) => void,
+) {
+  if (eyeAbortRef.current !== controller) return;
+  eyeAbortRef.current = null;
+
+  if (mountedRef.current) setEyePending(false);
+}
