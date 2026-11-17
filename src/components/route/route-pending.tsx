@@ -37,7 +37,7 @@ function getRouteName(pathname: string): string {
 }
 
 function getSkeletonType(
-  pathname: string
+  pathname: string,
 ): "component" | "overview" | "generic" {
   if (pathname === "/") return "overview";
 
@@ -164,9 +164,9 @@ export function RoutePending() {
   const skeletonType = getSkeletonType(location.pathname);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
-      role="status"
+    <output
+      className="block fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+
       aria-live="polite"
       aria-label={`Loading ${routeName}`}
     >
@@ -186,6 +186,6 @@ export function RoutePending() {
           </div>
         )}
       </div>
-    </div>
+    </output>
   );
 }

@@ -11,10 +11,7 @@ import {
   IconChevronDown,
 } from "@tabler/icons-react";
 
-const ERROR_MESSAGES: Record<
-  string,
-  { title: string; description: string; badge: string }
-> = {
+const ERROR_MESSAGES = {
   ChunkLoadError: {
     title: "Failed to load page",
     description:
@@ -31,11 +28,13 @@ const ERROR_MESSAGES: Record<
     description: "An unexpected error occurred. Please try again.",
     badge: "Error",
   },
-};
+} satisfies Record<
+  string,
+  { title: string; description: string; badge: string }
+>;
 
-function getErrorInfo(error: unknown) {
-  const name = error instanceof Error ? error.name : "";
-  const message = error instanceof Error ? error.message : "";
+function getErrorInfo(error: Pick<Error, "name" | "message">) {
+  const { name, message } = error;
 
   if (name.includes("ChunkLoadError") || message.includes("Loading chunk")) {
     return ERROR_MESSAGES.ChunkLoadError;
@@ -53,7 +52,9 @@ export function RouteError({ error, reset }: ErrorComponentProps) {
   const [showDetails, setShowDetails] = useState(false);
   const retryButtonRef = useRef<HTMLButtonElement>(null);
 
-  const errorInfo = getErrorInfo(error);
+  const errorInfo = getErrorInfo(
+    error instanceof Error ? error : { name: "", message: "" },
+  );
 
   useEffect(() => {
     retryButtonRef.current?.focus();
@@ -125,35 +126,53 @@ export function RouteError({ error, reset }: ErrorComponentProps) {
           </Button>
         </div>
 
-        <Dialog open={showDetails} onOpenChange={setShowDetails}>
-          <DialogTrigger>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full text-muted-foreground"
-            >
-              View Error Details
-              <span className="ml-auto" aria-hidden="true">
-                {showDetails ? (
-                  <IconChevronDown className="w-4 h-4" />
-                ) : (
-                  <IconChevronRight className="w-4 h-4" />
-                )}
-              </span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <div className="space-y-2">
-              <h3 className="font-semibold text-foreground">Error Details</h3>
-              <pre className="p-4 text-xs bg-muted rounded-lg overflow-auto max-h-64 text-muted-foreground">
-                {error instanceof Error
-                  ? `${error.name}: ${error.message}${error.stack ? "\n\n" + error.stack : ""}`
-                  : String(error)}
-              </pre>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <RouteErrorErrorDetailsSection
+          showDetails={showDetails}
+          setShowDetails={setShowDetails}
+          error={error}
+        />
       </div>
     </div>
+  );
+}
+
+function RouteErrorErrorDetailsSection({
+  showDetails,
+  setShowDetails,
+  error,
+}: {
+  showDetails: boolean;
+  setShowDetails: React.Dispatch<React.SetStateAction<boolean>>;
+  error: unknown;
+}) {
+  return (
+    <Dialog open={showDetails} onOpenChange={setShowDetails}>
+      <DialogTrigger>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full text-muted-foreground"
+        >
+          View Error Details
+          <span className="ml-auto" aria-hidden="true">
+            {showDetails ? (
+              <IconChevronDown className="w-4 h-4" />
+            ) : (
+              <IconChevronRight className="w-4 h-4" />
+            )}
+          </span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <div className="space-y-2">
+          <h3 className="font-semibold text-foreground">Error Details</h3>
+          <pre className="p-4 text-xs bg-muted rounded-lg overflow-auto max-h-64 text-muted-foreground">
+            {error instanceof Error
+              ? `${error.name}: ${error.message}${error.stack ? "\n\n" + error.stack : ""}`
+              : String(error)}
+          </pre>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -66,8 +66,8 @@ interface FeatureGridProps {
 export function FeatureGrid({ features }: FeatureGridProps) {
   return (
     <div className="grid gap-4 md:grid-cols-3">
-      {features.map((feature, index) => (
-        <FeatureCard key={index} {...feature} />
+      {features.map((feature) => (
+        <FeatureCard key={feature.title} {...feature} />
       ))}
     </div>
   );
@@ -97,8 +97,8 @@ export function DemoWrapper({
   return (
     <Card className={className}>
       <CardHeader className="border-b">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <CardTitle>{title}</CardTitle>
             {description && <CardDescription>{description}</CardDescription>}
           </div>
@@ -158,12 +158,13 @@ export function DemoTabs({
   lazyMount = false,
 }: DemoTabsProps) {
   const [activeTab, setActiveTab] = React.useState(
-    defaultValue || tabs[0]?.value
+    defaultValue || tabs[0]?.value,
   );
 
   const renderTabContent = (tab: DemoTab) => {
     const isActive = activeTab === tab.value;
 
+    // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React's typed node/render-prop union requires callable discrimination.
     if (typeof tab.demo === "function") {
       return tab.demo(isActive);
     }
@@ -189,7 +190,7 @@ export function DemoTabs({
         ))}
       </TabsList>
       {tabs.map((tab) => (
-        <TabsContent key={tab.value} value={tab.value}>
+        <TabsContent key={tab.value} value={tab.value} animation="none">
           {renderTabContent(tab)}
         </TabsContent>
       ))}
@@ -232,8 +233,8 @@ export function KeyboardShortcuts({
       </CardHeader>
       <CardContent>
         <div className="grid gap-2 sm:grid-cols-2">
-          {shortcuts.map((shortcut, index) => (
-            <KeyboardShortcut key={index} {...shortcut} />
+          {shortcuts.map((shortcut) => (
+            <KeyboardShortcut key={shortcut.keys} {...shortcut} />
           ))}
         </div>
       </CardContent>
@@ -297,8 +298,8 @@ export function APIReference({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-8">
-        {sections.map((section, index) => (
-          <div key={index} className="space-y-4">
+        {sections.map((section) => (
+          <div key={section.title} className="space-y-4">
             <h3 className="text-lg font-semibold">{section.title}</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -317,8 +318,8 @@ export function APIReference({
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {section.props.map((prop, propIndex) => (
-                    <tr key={propIndex}>
+                  {section.props.map((prop) => (
+                    <tr key={prop.prop}>
                       <td className="py-2 font-mono text-xs">{prop.prop}</td>
                       <td className="py-2 font-mono text-xs text-muted-foreground">
                         {prop.type}
@@ -378,8 +379,11 @@ export function ChangelogEntry({
         <span className="text-sm text-muted-foreground">{date}</span>
       </div>
       <div className="space-y-3">
-        {changes.map((change, index) => (
-          <div key={index} className="flex flex-wrap items-start gap-2">
+        {changes.map((change) => (
+          <div
+            key={change.type + change.title}
+            className="flex flex-wrap items-start gap-2"
+          >
             <Badge variant={changeTypeVariants[change.type]}>
               {change.type}
             </Badge>
@@ -416,8 +420,8 @@ export function Changelog({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-8">
-        {entries.map((entry, index) => (
-          <ChangelogEntry key={index} {...entry} />
+        {entries.map((entry) => (
+          <ChangelogEntry key={entry.version} {...entry} />
         ))}
       </CardContent>
     </Card>
