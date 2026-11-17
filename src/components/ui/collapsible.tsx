@@ -3,68 +3,110 @@
 import * as React from "react";
 import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible";
 import { cva, type VariantProps } from "class-variance-authority";
-import { IconChevronDown } from "@tabler/icons-react";
-import gsap from "gsap";
+import { IconChevronRight } from "@tabler/icons-react";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { cn } from "cn";
+import { resolveComponentDefaults } from "@/lib/component-defaults";
+import { isCallbackProp } from "@/lib/component-prop-guards";
 
-import { cn } from "@/lib/utils";
+const CollapsibleContext = React.createContext({
+  open: false,
+  hasOpened: false,
+  motion: true,
+});
 
 const collapsibleTriggerVariants = cva(
-  "flex items-center justify-between w-full font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "group flex min-h-8 w-full items-center gap-2 text-start font-medium outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50 data-disabled:opacity-50 motion-safe:transition-colors motion-safe:duration-150",
   {
     variants: {
       variant: {
         default: "hover:bg-muted/50",
-        info: "bg-info/10 text-info dark:text-info hover:bg-info/20",
+        info: "bg-info/10 text-[color-mix(in_oklab,var(--info)_55%,var(--foreground))] hover:bg-info/20 dark:text-[color-mix(in_oklab,var(--info)_90%,var(--foreground))]",
         success:
-          "bg-success/10 text-success dark:text-success hover:bg-success/20",
+          "bg-success/10 text-[color-mix(in_oklab,var(--success)_55%,var(--foreground))] hover:bg-success/20 dark:text-[color-mix(in_oklab,var(--success)_90%,var(--foreground))]",
         warning:
-          "bg-warning/10 text-warning dark:text-warning hover:bg-warning/20",
+          "bg-warning/10 text-[color-mix(in_oklab,var(--warning)_55%,var(--foreground))] hover:bg-warning/20 dark:text-warning",
         destructive:
-          "bg-destructive/10 text-destructive dark:text-destructive hover:bg-destructive/20",
+          "bg-destructive/10 text-[color-mix(in_oklab,var(--destructive)_75%,var(--foreground))] hover:bg-destructive/20",
         ghost: "hover:bg-muted/30",
         outline: "border border-border hover:bg-muted/30",
-        link: "hover:underline text-primary",
+        link: "text-primary hover:underline",
       },
       size: {
-        xs: "py-1.5 px-3 text-xs rounded-md",
-        sm: "py-2 px-3.5 text-xs rounded-md",
-        default: "py-3 px-4 text-sm rounded-lg",
-        lg: "py-4 px-5 text-base rounded-lg",
+        xs: "rounded-md px-3 py-1.5 text-xs",
+        sm: "rounded-md px-3 py-2 text-sm",
+        default: "rounded-lg px-4 py-3 text-sm",
+        lg: "rounded-lg px-5 py-4 text-base",
       },
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
+    defaultVariants: { variant: "default", size: "default" },
+  },
 );
+
+const collapsibleContentVariants = cva("min-w-0", {
+  variants: {
+    size: {
+      none: "",
+      xs: "px-3 py-1.5 text-xs",
+      sm: "px-3 py-2 text-sm",
+      default: "px-4 py-3 text-sm",
+      lg: "px-5 py-4 text-base",
+    },
+  },
+  defaultVariants: { size: "default" },
+});
 
 type CollapsibleRootProps = React.ComponentProps<
   typeof CollapsiblePrimitive.Root
->;
+> & { motion?: boolean };
 
-function Collapsible({ className, ...props }: CollapsibleRootProps) {
+function Collapsible({
+  open: controlledOpen,
+  defaultOpen = false,
+  onOpenChange,
+  motion = true,
+  className,
+  children,
+  ...props
+}: CollapsibleRootProps) {
+  const [localOpen, setLocalOpen] = React.useState(defaultOpen);
+  const open = controlledOpen ?? localOpen;
+  const [hasOpened, setHasOpened] = React.useState(open);
+
+  if (open && !hasOpened) setHasOpened(true);
+
   return (
-    <CollapsiblePrimitive.Root
-      data-slot="collapsible"
-      className={cn("w-full", className)}
-      {...props}
-    />
+    <CollapsibleContext.Provider value={{ open, hasOpened, motion }}>
+      <CollapsiblePrimitive.Root
+        data-slot="collapsible"
+        {...props}
+        open={open}
+        onOpenChange={(next, details) => {
+          onOpenChange?.(next, details);
+
+          if (!details.isCanceled && controlledOpen === undefined)
+            setLocalOpen(next);
+        }}
+        className={(state) =>
+          cn(
+            "min-w-0",
+            isCallbackProp(className) ? className(state) : className,
+          )
+        }
+      >
+        {children}
+      </CollapsiblePrimitive.Root>
+    </CollapsibleContext.Provider>
   );
 }
 
-type CollapsibleTriggerProps = Omit<
-  CollapsiblePrimitive.Trigger.Props,
-  "children"
-> & {
-  children?: React.ReactNode;
-  variant?: VariantProps<typeof collapsibleTriggerVariants>["variant"];
-  size?: VariantProps<typeof collapsibleTriggerVariants>["size"];
-  showArrow?: boolean;
-  chevronIcon?: React.ReactNode;
-  chevronPosition?: "start" | "end";
-  icon?: React.ReactNode;
-};
+type CollapsibleTriggerProps = CollapsiblePrimitive.Trigger.Props &
+  VariantProps<typeof collapsibleTriggerVariants> & {
+    showArrow?: boolean;
+    chevronIcon?: React.ReactNode;
+    chevronPosition?: "start" | "end";
+    icon?: React.ReactNode;
+  };
 
 function CollapsibleTrigger({
   className,
@@ -77,194 +119,172 @@ function CollapsibleTrigger({
   icon,
   ...props
 }: CollapsibleTriggerProps) {
-  const defaultChevron = (
-    <IconChevronDown
-      data-collapsible-chevron
-      className="h-4 w-4 transition-transform duration-300 ease-out in-data-panel-open:rotate-180"
-    />
+  const { open, motion } = React.useContext(CollapsibleContext);
+  const reduced = useReducedMotion();
+
+  const arrow = showArrow && (
+    <span
+      data-slot="collapsible-chevron"
+      aria-hidden="true"
+      className={cn(
+        "flex shrink-0 items-center",
+        open && "rotate-90",
+        motion && !reduced && "transition-transform duration-200 ease-out",
+      )}
+    >
+      {chevronIcon ?? <IconChevronRight className="size-4" />}
+    </span>
   );
 
-  return (
-    <CollapsiblePrimitive.Trigger
-      data-slot="collapsible-trigger"
-      className={cn(collapsibleTriggerVariants({ variant, size, className }))}
-      {...props}
-    >
-      <span className="flex items-center gap-2 flex-1 min-w-0">
-        {chevronPosition === "start" && (showArrow || chevronIcon) && (
-          <span className="shrink-0">{chevronIcon || defaultChevron}</span>
-        )}
-        {icon && <span className="shrink-0 flex items-center">{icon}</span>}
-        <span className="flex-1 min-w-0 truncate">{children}</span>
-        {chevronPosition === "end" && (showArrow || chevronIcon) && (
-          <span className="shrink-0">{chevronIcon || defaultChevron}</span>
-        )}
-      </span>
-    </CollapsiblePrimitive.Trigger>
-  );
+  return renderCollapsibleTriggerPart1({
+    props,
+    variant,
+    size,
+    className,
+    chevronPosition,
+    arrow,
+    icon,
+    children,
+  });
 }
 
-const collapsibleContentVariants = cva("", {
-  variants: {
-    size: {
-      xs: "px-3 py-1.5 text-xs",
-      sm: "px-3.5 py-2 text-xs",
-      default: "px-4 py-3 text-sm",
-      lg: "px-5 py-4 text-base",
-    },
-  },
-  defaultVariants: {
-    size: "default",
-  },
-});
+type CollapsibleContentProps = CollapsiblePrimitive.Panel.Props &
+  VariantProps<typeof collapsibleContentVariants> & {
+    inset?: boolean;
+    /** Retain children after the first opening. Default panels mount only while open. */
+    lazyMount?: boolean;
+    loading?: boolean;
+    skeletonLines?: number;
+  };
 
-type CollapsibleContentProps = Omit<
-  CollapsiblePrimitive.Panel.Props,
-  "children"
-> & {
-  children?: React.ReactNode;
-  inset?: boolean;
-  lazyMount?: boolean;
-  showSkeleton?: boolean;
-  skeletonLines?: number;
-  size?: "xs" | "sm" | "default" | "lg";
-};
+function CollapsibleContent(input: CollapsibleContentProps) {
+  const {
+    className,
+    children,
+    inset,
+    lazyMount,
+    loading,
+    skeletonLines,
+    size,
+    keepMounted,
+    ...props
+  } = resolveComponentDefaults(input, COLLAPSIBLE_CONTENT_DEFAULTS_1);
 
-function CollapsibleContent({
-  className,
-  children,
-  inset = false,
-  lazyMount = false,
-  showSkeleton = false,
-  skeletonLines = 3,
-  size = "default",
-  ...props
-}: CollapsibleContentProps) {
-  const panelRef = React.useRef<HTMLDivElement>(null);
-  const contentRef = React.useRef<HTMLDivElement>(null);
-  const [hasBeenOpened, setHasBeenOpened] = React.useState(false);
-  const animationRef = React.useRef<gsap.core.Tween | null>(null);
+  const { hasOpened, motion } = React.useContext(CollapsibleContext);
+  const reduced = useReducedMotion();
 
-  React.useEffect(() => {
-    const panel = panelRef.current;
-    const content = contentRef.current;
-
-    if (!panel || !content) return;
-
-    let prevOpen = panel.hasAttribute("data-open");
-
-    if (prevOpen) {
-      panel.style.height = "auto";
-      panel.style.opacity = "1";
-      setHasBeenOpened(true);
-    } else {
-      panel.style.height = "0";
-      panel.style.opacity = "0";
-    }
-
-    const handleStateChange = () => {
-      const isOpen = panel.hasAttribute("data-open");
-
-      if (isOpen === prevOpen) return;
-
-      if (animationRef.current) {
-        animationRef.current.pause();
-        animationRef.current = null;
-      }
-
-      const contentHeight = content.scrollHeight;
-
-      if (isOpen) {
-        setHasBeenOpened(true);
-        animationRef.current = gsap.fromTo(
-          panel,
-          { height: 0, opacity: 0 },
-          {
-            height: contentHeight,
-            opacity: 1,
-            duration: 0.3,
-            ease: "power2.out",
-            onComplete: () => {
-              gsap.set(panel, { height: "auto" });
-            },
-          }
-        );
-      } else {
-        gsap.set(panel, { height: contentHeight });
-        void panel.offsetHeight;
-        animationRef.current = gsap.to(panel, {
-          height: 0,
-          opacity: 0,
-          duration: 0.3,
-          ease: "power2.in",
-        });
-      }
-
-      prevOpen = isOpen;
-    };
-
-    const observer = new MutationObserver(handleStateChange);
-    observer.observe(panel, {
-      attributes: true,
-      attributeFilter: ["data-open", "data-closed"],
-    });
-
-    return () => {
-      observer.disconnect();
-
-      if (animationRef.current) {
-        animationRef.current.kill();
-      }
-    };
-  }, []);
-
-  const skeletonWidths = React.useMemo(() => {
-    const widths = ["75%", "85%", "60%", "90%", "70%"];
-
-    return Array.from({ length: skeletonLines }).map(
-      (_, i) => widths[i % widths.length]
-    );
-  }, [skeletonLines]);
-
-  const skeleton = (
-    <div className="space-y-2 px-4 py-3">
-      {skeletonWidths.map((width, i) => (
-        <div
-          key={i}
-          className="h-3 bg-muted rounded animate-pulse"
-          style={{ width }}
-        />
-      ))}
-    </div>
-  );
-
-  const shouldRenderChildren = !lazyMount || hasBeenOpened;
-
-  const renderContent = shouldRenderChildren
-    ? children
-    : showSkeleton
-      ? skeleton
-      : null;
+  const lines = Number.isFinite(skeletonLines)
+    ? Math.max(1, Math.min(8, Math.floor(skeletonLines)))
+    : 3;
 
   return (
     <CollapsiblePrimitive.Panel
-      ref={panelRef}
       data-slot="collapsible-panel"
-      keepMounted
-      className={cn("overflow-hidden", inset && "pl-8", className)}
-      style={{
-        height: 0,
-        opacity: 0,
-      }}
       {...props}
+      keepMounted={keepMounted ?? (lazyMount && hasOpened)}
+      aria-busy={loading || undefined}
+      className={(state) =>
+        cn(
+          "min-w-0 overflow-hidden",
+          motion &&
+            !reduced &&
+            "h-(--collapsible-panel-height) transition-[height,opacity] duration-200 ease-out data-starting-style:h-0 data-starting-style:opacity-0 data-ending-style:h-0 data-ending-style:opacity-0 data-ending-style:duration-150",
+          isCallbackProp(className) ? className(state) : className,
+        )
+      }
     >
       <div
-        ref={contentRef}
-        className={cn(collapsibleContentVariants({ size }))}
+        data-slot="collapsible-content"
+        className={cn(collapsibleContentVariants({ size }), inset && "ps-8")}
       >
-        {renderContent}
+        {loading ? (
+          <output
+            data-slot="collapsible-loading"
+
+            className="block space-y-2"
+          >
+            <span className="sr-only">Loading details…</span>
+            {Array.from({ length: lines }, (_, index) => (
+              <span
+                key={`line-${index}`}
+                aria-hidden="true"
+                className={cn(
+                  "block h-3 rounded-sm bg-muted",
+                  index % 2 ? "w-3/4" : "w-full",
+                )}
+              />
+            ))}
+          </output>
+        ) : (
+          children
+        )}
       </div>
     </CollapsiblePrimitive.Panel>
+  );
+}
+
+interface KiraCollapsibleProps extends Omit<
+  CollapsibleRootProps,
+  "children" | "title"
+> {
+  title: React.ReactNode;
+  children?: React.ReactNode;
+  description?: string;
+  disabledReason?: string;
+  icon?: React.ReactNode;
+  variant?: CollapsibleTriggerProps["variant"];
+  size?: CollapsibleTriggerProps["size"];
+  loading?: boolean;
+  keepMounted?: boolean;
+}
+
+function KiraCollapsible({
+  title,
+  description,
+  disabledReason,
+  icon,
+  variant,
+  size,
+  loading,
+  keepMounted,
+  children,
+  ...props
+}: KiraCollapsibleProps) {
+  const descriptionId = React.useId();
+
+  const buildTrigger = () => (
+    <CollapsibleTrigger
+      variant={variant}
+      size={size}
+      icon={icon}
+      aria-describedby={
+        description || disabledReason ? descriptionId : undefined
+      }
+    >
+      {title}
+    </CollapsibleTrigger>
+  );
+
+  const buildContent = () => (
+    <CollapsibleContent size={size} loading={loading} keepMounted={keepMounted}>
+      {children}
+    </CollapsibleContent>
+  );
+
+  return (
+    <Collapsible {...props}>
+      {buildTrigger()}
+      {(description || disabledReason) && (
+        <p
+          data-slot="collapsible-description"
+          id={descriptionId}
+          className="px-4 py-2 text-sm text-muted-foreground"
+        >
+          {props.disabled && disabledReason ? disabledReason : description}
+        </p>
+      )}
+      {buildContent()}
+    </Collapsible>
   );
 }
 
@@ -272,11 +292,88 @@ export {
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,
+  KiraCollapsible,
   collapsibleTriggerVariants,
+  collapsibleContentVariants,
 };
 
 export type {
   CollapsibleRootProps,
   CollapsibleTriggerProps,
   CollapsibleContentProps,
+  KiraCollapsibleProps,
 };
+
+type renderCollapsibleTriggerPart1Args = {
+  props: Omit<
+    CollapsibleTriggerProps,
+    | "className"
+    | "children"
+    | "variant"
+    | "size"
+    | "showArrow"
+    | "chevronIcon"
+    | "chevronPosition"
+    | "icon"
+  >;
+  variant: CollapsibleTriggerProps["variant"];
+  size: CollapsibleTriggerProps["size"];
+  className: CollapsibleTriggerProps["className"];
+  chevronPosition: Exclude<
+    CollapsibleTriggerProps["chevronPosition"],
+    undefined
+  >;
+  arrow: false | React.JSX.Element;
+  icon: CollapsibleTriggerProps["icon"];
+  children: CollapsibleTriggerProps["children"];
+};
+
+function renderCollapsibleTriggerPart1({
+  props,
+  variant,
+  size,
+  className,
+  chevronPosition,
+  arrow,
+  icon,
+  children,
+}: renderCollapsibleTriggerPart1Args) {
+  return (
+    <CollapsiblePrimitive.Trigger
+      data-slot="collapsible-trigger"
+      {...props}
+      className={(state) =>
+        cn(
+          collapsibleTriggerVariants({ variant, size }),
+          isCallbackProp(className) ? className(state) : className,
+        )
+      }
+    >
+      {chevronPosition === "start" && arrow}
+      {icon && (
+        <span
+          data-slot="collapsible-icon"
+          aria-hidden="true"
+          className="shrink-0"
+        >
+          {icon}
+        </span>
+      )}
+      <span
+        data-slot="collapsible-label"
+        className="min-w-0 flex-1 wrap-break-word"
+      >
+        {children}
+      </span>
+      {chevronPosition === "end" && arrow}
+    </CollapsiblePrimitive.Trigger>
+  );
+}
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const COLLAPSIBLE_CONTENT_DEFAULTS_1 = {
+  inset: false,
+  lazyMount: false,
+  loading: false,
+  skeletonLines: 3,
+} as const;
