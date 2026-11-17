@@ -1,5 +1,17 @@
-import { IconTypography, IconAlignLeft, IconPalette } from "@tabler/icons-react"
-import { ComponentPage, PageHeader, FeatureGrid, DemoTabs, DemoWrapper, UsageBlock, APIReference } from "@/components/docs"
+import {
+  IconTypography,
+  IconAlignLeft,
+  IconPalette,
+} from "@tabler/icons-react";
+import {
+  ComponentPage,
+  PageHeader,
+  FeatureGrid,
+  DemoTabs,
+  DemoWrapper,
+  UsageBlock,
+  APIReference,
+} from "@/components/docs";
 
 function HeadingsDemo() {
   return (
@@ -23,7 +35,7 @@ function HeadingsDemo() {
         Heading 6
       </h6>
     </div>
-  )
+  );
 }
 
 const headingsCode = `<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
@@ -43,22 +55,22 @@ const headingsCode = `<h1 className="scroll-m-20 text-4xl font-extrabold trackin
 </h5>
 <h6 className="scroll-m-20 text-base font-semibold tracking-tight">
   Heading 6
-</h6>`
+</h6>`;
 
 function ParagraphDemo() {
   return (
     <div className="space-y-6">
       <p className="leading-7">
         The king, seeing how much happier his subjects were, realized the error
-        of his ways. He gave up his greedy nature and began to share the kingdom's
-        wealth with all.
+        of his ways. He gave up his greedy nature and began to share the
+        kingdom's wealth with all.
       </p>
       <p className="leading-7">
         And so, the kingdom flourished under his benevolent rule, and the people
         lived happily ever after.
       </p>
     </div>
-  )
+  );
 }
 
 const paragraphCode = `<p className="leading-7">
@@ -69,7 +81,7 @@ const paragraphCode = `<p className="leading-7">
 <p className="leading-7">
   And so, the kingdom flourished under his benevolent rule, and the people
   lived happily ever after.
-</p>`
+</p>`;
 
 function TextVariantsDemo() {
   return (
@@ -98,7 +110,7 @@ function TextVariantsDemo() {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 const textVariantsCode = `<p className="text-xl text-muted-foreground">
@@ -114,19 +126,19 @@ const textVariantsCode = `<p className="text-xl text-muted-foreground">
 
 <p className="text-sm text-muted-foreground">
   Enter your email address.
-</p>`
+</p>`;
 
 function BlockquoteDemo() {
   return (
     <blockquote className="mt-6 border-l-2 border-border pl-6 italic">
       "After all," he said, "everyone deserves a chance to fly."
     </blockquote>
-  )
+  );
 }
 
 const blockquoteCode = `<blockquote className="mt-6 border-l-2 border-border pl-6 italic">
   "After all," he said, "everyone deserves a chance to fly."
-</blockquote>`
+</blockquote>`;
 
 function InlineCodeDemo() {
   return (
@@ -137,7 +149,7 @@ function InlineCodeDemo() {
       </code>{" "}
       library for powerful data tables.
     </p>
-  )
+  );
 }
 
 const inlineCodeCode = `<p className="leading-7">
@@ -146,7 +158,7 @@ const inlineCodeCode = `<p className="leading-7">
     @tanstack/react-table
   </code>{" "}
   library for powerful data tables.
-</p>`
+</p>`;
 
 function ListsDemo() {
   return (
@@ -168,7 +180,7 @@ function ListsDemo() {
         </ol>
       </div>
     </div>
-  )
+  );
 }
 
 const listsCode = `<ul className="my-6 ml-6 list-disc [&>li]:mt-2">
@@ -181,21 +193,21 @@ const listsCode = `<ul className="my-6 ml-6 list-disc [&>li]:mt-2">
   <li>First item</li>
   <li>Second item</li>
   <li>Third item</li>
-</ol>`
+</ol>`;
 
 function LinksDemo() {
   return (
     <p className="leading-7">
       Visit our{" "}
       <a
-        href="#"
+        href="/components/typography"
         className="font-medium text-primary underline underline-offset-4"
       >
         documentation
       </a>{" "}
       to learn more.
     </p>
-  )
+  );
 }
 
 const linksCode = `<p className="leading-7">
@@ -207,26 +219,30 @@ const linksCode = `<p className="leading-7">
     documentation
   </a>{" "}
   to learn more.
-</p>`
+</p>`;
 
+// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function TypographyPage() {
   const features = [
     {
       title: "Semantic",
-      description: "HTML5 semantic elements with proper ARIA attributes for accessibility and SEO.",
+      description:
+        "HTML5 semantic elements with proper ARIA attributes for accessibility and SEO.",
       icon: <IconTypography className="h-4 w-4" />,
     },
     {
       title: "Consistent",
-      description: "Pre-configured Tailwind classes for consistent typography across your application.",
+      description:
+        "Pre-configured Tailwind classes for consistent typography across your application.",
       icon: <IconAlignLeft className="h-4 w-4" />,
     },
     {
       title: "Flexible",
-      description: "Customizable variants for headings, paragraphs, lists, code, and more.",
+      description:
+        "Customizable variants for headings, paragraphs, lists, code, and more.",
       icon: <IconPalette className="h-4 w-4" />,
     },
-  ]
+  ];
 
   const tabs = [
     {
@@ -320,7 +336,7 @@ export default function TypographyPage() {
         </DemoWrapper>
       ),
     },
-  ]
+  ];
 
   const apiSections = [
     {
@@ -496,7 +512,7 @@ export default function TypographyPage() {
         },
       ],
     },
-  ]
+  ];
 
   const usageCode = `import { cn } from "@/lib/utils"
 
@@ -533,7 +549,7 @@ export default function TypographyPage() {
 // Link
 <a href="#" className="font-medium text-primary underline underline-offset-4">
   Link text
-</a>`
+</a>`;
 
   return (
     <ComponentPage>
@@ -559,5 +575,5 @@ export default function TypographyPage() {
         description="Tailwind CSS classes used for typography styling"
       />
     </ComponentPage>
-  )
+  );
 }
