@@ -1,0 +1,1974 @@
+{
+  "items": [
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion",
+      "description": "Compound disclosure component whose data-driven KiraAccordion supports recursive nested items, searchable match highlighting, keyboard and pointer drag reordering, persistence, and URL hash deep links. Items can lazy-mount panels and provide loading skeletons, retryable errors, disabled-reason tooltips, asynchronous open handlers, and expand/collapse-all controls.",
+      "categories": [
+        "data-display",
+        "navigation"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/tooltip",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "accordion.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "Semantic alert with solid, soft, and outlined tones, banner layout, automatic icons, action buttons, and reduced-motion-aware GSAP dismissal. KiraAlert adds expandable content, copy-to-clipboard, relative timestamps, and a hover/focus-pausing undo-dismiss timer.",
+      "categories": [
+        "feedback"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "alert.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "content-keys.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "Base UI confirmation dialog with a configurable backdrop, content sizes, semantic media and lists, and a full-screen scrollable body. It supports type-to-confirm gates, delayed countdowns, Cmd/Ctrl+Enter, asynchronous confirmation states, and guarded closing while pending or locked.",
+      "categories": [
+        "overlay",
+        "feedback"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/dialog",
+        "@kira-kit/input"
+      ],
+      "files": [
+        {
+          "path": "alert-dialog.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "announcement-bar",
+      "type": "registry:ui",
+      "title": "Announcement Bar",
+      "description": "Inline, sticky, fixed, or floating announcement with semantic variants, marquees, message rotation, countdowns, and pause-aware auto-dismiss progress. Dismissals persist across sessions and tabs, while KiraAnnouncementBar handles abortable asynchronous actions and persisted consent decisions.",
+      "categories": [
+        "feedback"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/spinner",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "announcement-bar.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "content-keys.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "title": "Aspect Ratio",
+      "description": "Media frame with ratio presets, object-fit and object-position controls, responsive breakpoint ratios, loading skeletons, and focal-point hover zoom. It includes image, video, and iframe helpers, with KiraAspectRatio adding fallback/retry states and explicit click-to-load embeds.",
+      "categories": [
+        "media",
+        "layout"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/skeleton",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "aspect-ratio.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "content-keys.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "Avatar supports sizes from xs through 4xl, multiple shapes, semantic rings, positioned status dots, corner badges, initials, and blur-up fallbacks. Group and stack variants add overflow popovers, tooltips, horizontal scrolling, and add-member actions.",
+      "categories": [
+        "data-display",
+        "media"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/popover",
+        "@kira-kit/tooltip",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "avatar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "Badge covers semantic, outline, ghost, link, and soft styles with status dots, trend arrows, loading, dismissal, and beta/new/version presets. CountBadge formats and animates changing counts, while the suite also provides status, tag, and group modes plus a Combobox-backed TagInput with suggestions and deduplication.",
+      "categories": [
+        "data-display",
+        "form"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@gsap/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/spinner",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "badge.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "box",
+      "type": "registry:ui",
+      "title": "Box",
+      "description": "Polymorphic layout primitive for semantic HTML tags with responsive background, color, sizing, spacing, and border props. CVA variants add rounding, shadows, display modes, and positioning using safelisted runtime-generated utilities.",
+      "categories": [
+        "layout",
+        "utility"
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/flex"
+      ],
+      "files": [
+        {
+          "path": "box.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "Accessible breadcrumb with configurable separators, link variants, middle truncation, collapsible ellipsis menus, and responsive mobile navigation. Hooks derive items from paths or router matches, while KiraBreadcrumb adds scrollable overflow, JSON-LD structured data, trailing actions, and current-path copying.",
+      "categories": [
+        "navigation"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "breadcrumb.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "Base UI button with extensive semantic variants, icon sizes, full-width layout, press ripples, and pointer/keyboard hold-to-complete progress. Loading, tooltip, and expandable-icon helpers are included, and KiraButton supports optimistic asynchronous toggles with an error toast on rejection.",
+      "categories": [
+        "form"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@gsap/react",
+        "class-variance-authority",
+        "cn",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/toast",
+        "@kira-kit/tooltip",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "button.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "button-group",
+      "type": "registry:ui",
+      "title": "Button Group",
+      "description": "Horizontal or vertical button groups offer connected or gapped layouts, RTL-safe rounding, toolbar parts, and none, single, or multiple selection. Segmented mode measures the selected item to animate its background pill, while KiraButtonGroup adds data-driven icons, loading states, and required-selection guards.",
+      "categories": [
+        "form"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@gsap/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/separator",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "button-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "React Day Picker calendar with single, multiple, and range selection, IANA time zones, multi-month layouts, and min/max/disabled constraints. Range mode includes hover previews and night limits, with marker legends and an accessible keyboard-navigable month/year grid picker.",
+      "categories": [
+        "form"
+      ],
+      "dependencies": [
+        "@date-fns/tz",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "date-fns",
+        "react-day-picker"
+      ],
+      "files": [
+        {
+          "path": "calendar.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "camera",
+      "type": "registry:ui",
+      "title": "Camera",
+      "description": "Compound browser camera suite for photo and video capture with permission recovery, recording controls, timers, zoom and focus, composition grids, and face/document scan guides. It adds keyboard, gesture, voice, and haptic controls, while KiraCamera provides a capture/file-selection review workflow with abortable asynchronous acceptance.",
+      "categories": [
+        "media"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/dialog",
+        "@kira-kit/drawer",
+        "@kira-kit/select",
+        "@kira-kit/switch",
+        "@kira-kit/tabs",
+        "@kira-kit/use-camera",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "camera.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "Compound card with header, title, description, action, content, footer, and skeleton slots. Its ten surface variants include interactive lift, glass, gradient, outline, and elevated styles, alongside compact sizing and a container-aware header grid.",
+      "categories": [
+        "layout",
+        "data-display"
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "cn"
+      ],
+      "files": [
+        {
+          "path": "card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "Embla carousel with horizontal and vertical axes, cards, fade, peek, zoom, and flip variants, keyboard navigation, and reduced-motion-aware autoplay. It includes arrows, dots, progress, thumbnails, and a composed KiraCarousel; its lightbox adds pinch/double-tap zoom, panning, swipe dismissal, download, and sharing.",
+      "categories": [
+        "media"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@gsap/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "embla-carousel",
+        "embla-carousel-autoplay",
+        "embla-carousel-react",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "carousel.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "center",
+      "type": "registry:ui",
+      "title": "Center",
+      "description": "Polymorphic centering primitive with flex, grid, and absolute modes, inline display, and safe alignment to prevent overflow clipping. KiraCenter adds constrained content widths, viewport-height offsets, configurable padding, and device safe-area support.",
+      "categories": [
+        "layout"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "files": [
+        {
+          "path": "center.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "Base UI checkbox supports indeterminate state, multiple sizes, variants and colors, loading and error states, custom icons, and reduced-motion-aware GSAP feedback. Labeled, card, and group compositions add select-all progress, disabled-reason tooltips, and optimistic asynchronous card commits that revert on failure.",
+      "categories": [
+        "form"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@gsap/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/toast",
+        "@kira-kit/tooltip",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "checkbox.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code Block",
+      "description": "Syntax-highlighted code display and editor with line numbers, diff and highlight markers, formatting, light/dark themes, clipboard feedback, and streamed-output pause/follow controls. It supports plain or lazily loaded Monaco editing with a textarea fallback, preview tabs, and multi-file KiraCodeBlock drafts.",
+      "categories": [
+        "typography",
+        "data-display"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "modern-monaco"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/tabs",
+        "@kira-kit/toast",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "code-block.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "A Base UI disclosure with eight trigger variants, four sizes, configurable icons and chevron placement, and reduced-motion-aware height transitions. Content can stay mounted or mount lazily, show configurable loading skeletons, and be composed through KiraCollapsible with a title, description, and disabled reason.",
+      "categories": [
+        "layout",
+        "animation"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "collapsible.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "color-picker",
+      "type": "registry:ui",
+      "title": "Color Picker",
+      "description": "A popover color editor with saturation, hue, optional alpha, swatches, recent colors, harmonies, EyeDropper support, and HEX, HEXA, RGB, HSL, and OKLCH formats. KiraColorPicker also evaluates WCAG contrast against a required background, suggests accessible replacements, and exports CSS variables or DTCG color tokens with cancellable async feedback.",
+      "categories": [
+        "form",
+        "theme"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "@uiw/color-convert",
+        "@uiw/react-color-saturation",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/input",
+        "@kira-kit/popover",
+        "@kira-kit/select",
+        "@kira-kit/slider",
+        "@kira-kit/use-color-picker",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "color-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "A cmdk command palette with three visual variants, nested action pages, breadcrumbs, keyboard-aware selection, and a KiraCommandDialog that can bind Cmd/Ctrl+K. Async actions support cancellation, retry, and success or error status, while Escape intelligently clears search, goes back, or cancels pending work.",
+      "categories": [
+        "navigation",
+        "overlay"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cmdk",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/dialog",
+        "@kira-kit/kbd",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "command.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "container",
+      "type": "registry:ui",
+      "title": "Container",
+      "description": "A polymorphic, centered layout wrapper with responsive max-widths including prose, adjustable padding, optional flex centering, and named CSS container queries. KiraContainer adds header and footer slots plus inert loading skeletons and error content with retry handling.",
+      "categories": [
+        "layout"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/skeleton"
+      ],
+      "files": [
+        {
+          "path": "container.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "context-menu",
+      "type": "registry:ui",
+      "title": "Context Menu",
+      "description": "A Base UI context menu supporting links, checkbox and radio items, submenus, shortcuts, positioning, and keyboard opening via the Context Menu key or Shift+F10. Its data-driven KiraContextMenu runs async actions with pending states, inline errors, screen-reader announcements, and configurable close-on-success behavior.",
+      "categories": [
+        "overlay",
+        "navigation"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/dropdown-menu",
+        "@kira-kit/use-menu-action"
+      ],
+      "files": [
+        {
+          "path": "context-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "data-table",
+      "type": "registry:ui",
+      "title": "Data Table",
+      "description": "A TanStack Table data grid with sorting, filtering, pagination, grouping, expansion, selection, pinning, resizing, editable cells, and faceted or range filters. It also supports measured-row virtualization, APG-style keyboard navigation, dnd-kit row reordering, infinite loading, and versioned localStorage persistence of table state.",
+      "categories": [
+        "data-display"
+      ],
+      "dependencies": [
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities",
+        "@tabler/icons-react",
+        "@tanstack/react-store",
+        "@tanstack/react-table",
+        "@tanstack/react-virtual",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/avatar",
+        "@kira-kit/badge",
+        "@kira-kit/button",
+        "@kira-kit/checkbox",
+        "@kira-kit/dropdown-menu",
+        "@kira-kit/input",
+        "@kira-kit/popover",
+        "@kira-kit/table",
+        "@kira-kit/tooltip"
+      ],
+      "files": [
+        {
+          "path": "data-table.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date Picker",
+      "description": "A date picker with single, datetime, and range modes, built around a native popover, Calendar, date-fns, and timezone-aware values. It includes typed date entry, presets, locale and IANA time-zone options, pending Cancel/Apply selection, time granularity, and range constraints such as minimum nights and disabled-date exclusion.",
+      "categories": [
+        "form",
+        "overlay"
+      ],
+      "dependencies": [
+        "@date-fns/tz",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "date-fns",
+        "react-day-picker"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/calendar",
+        "@kira-kit/time-picker"
+      ],
+      "files": [
+        {
+          "path": "date-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "A Base UI modal composition with five content sizes, an optional close button, and reduced-motion-aware scale and opacity transitions. Non-modal dialogs disable pointer dismissal by default, while scrollable content keeps the header and footer visible around an independently scrolling body.",
+      "categories": [
+        "overlay"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "files": [
+        {
+          "path": "dialog.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "drawer",
+      "type": "registry:ui",
+      "title": "Drawer",
+      "description": "A swipe-enabled Base UI drawer that opens from any side with size variants, scrollable content, and overlay opacity tied to swipe progress. Bottom drawers exclusively expose snap-point controls, and DrawerHandle provides a keyboard-operable expand/collapse button rather than only a decorative grip.",
+      "categories": [
+        "overlay"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "files": [
+        {
+          "path": "drawer.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "description": "A Base UI menu supporting actions, links, checkboxes, radios, searchable submenus, filtering, and detached typed-payload popups shared by multiple triggers. Async items provide pending and retry states with live announcements, while a dedicated viewport animates detached popup size and content changes.",
+      "categories": [
+        "overlay",
+        "navigation"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/use-menu-action",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "dropdown-menu.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "An empty-state layout with centered or inline arrangements, three sizes, media variants, and reusable inbox, search, and file presets. KiraEmpty supplies seven contextual states including offline, forbidden, and loading, plus query-aware messaging and abortable async actions with disabled reasons and live status feedback.",
+      "categories": [
+        "feedback",
+        "data-display"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/spinner"
+      ],
+      "files": [
+        {
+          "path": "empty.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "field",
+      "type": "registry:ui",
+      "title": "Field",
+      "description": "A form-field system with vertical, horizontal, and container-responsive orientations, shared control state, descriptions, validation icons, character counts, and focusable error summaries. It integrates TanStack Form and Zod, including debounced async validation, and KiraField can compose either a standard input or a custom registered control.",
+      "categories": [
+        "form"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "@tanstack/react-form",
+        "class-variance-authority",
+        "cn",
+        "zod"
+      ],
+      "registryDependencies": [
+        "@kira-kit/input",
+        "@kira-kit/separator",
+        "@kira-kit/textarea"
+      ],
+      "files": [
+        {
+          "path": "field.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "file-upload",
+      "type": "registry:ui",
+      "title": "File Upload",
+      "description": "A drag-and-drop file selector with optional paste input, controlled values, and validation for accepted types, size, count, and duplicates. It supports batch or sequential per-file uploads with progress, cancellation, and retry, plus a full-screen preview dialog for media and sanitized Markdown with image zoom, rotation, and keyboard navigation.",
+      "categories": [
+        "form",
+        "media"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "@uiw/react-md-editor",
+        "class-variance-authority",
+        "cn",
+        "rehype-sanitize"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/dialog",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "file-upload.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "flex",
+      "type": "registry:ui",
+      "title": "Flex",
+      "description": "A polymorphic flexbox primitive whose direction, wrapping, justification, alignment, and gap props accept either fixed values or breakpoint maps from base through 2xl. It supports inline flex and semantic elements such as forms, navigation, lists, and fieldsets while preserving element-specific props and refs.",
+      "categories": [
+        "layout"
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "cn"
+      ],
+      "files": [
+        {
+          "path": "flex.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "grid",
+      "type": "registry:ui",
+      "title": "Grid",
+      "description": "A responsive CSS Grid system with breakpoint-aware columns, rows, gaps, alignment, item spans, and placement, including auto-fit and auto-fill tracks controlled by minItemWidth. KiraGrid renders keyed collections with semantic list handling, skeleton loading, empty content, and full-span error states with retry.",
+      "categories": [
+        "layout"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/skeleton"
+      ],
+      "files": [
+        {
+          "path": "grid.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "title": "Hover Card",
+      "description": "A Base UI PreviewCard wrapper with five content sizes, default or blurred surfaces, configurable positioning, arrows, and typed detached handles for payload-driven triggers. Optional viewport transitions crossfade changing content, and companion parts cover headers, footers, loading states, and aspect-ratio-controlled images.",
+      "categories": [
+        "overlay",
+        "data-display"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "files": [
+        {
+          "path": "hover-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "A Base UI text input with four sizes, prefix and suffix content, clear and clipboard actions, and an announced character counter. The module also provides scrub-enabled numeric and formatted decimal inputs, debounced search, OTP fields, half-star ratings, password strength feedback, and separator-driven tag entry.",
+      "categories": [
+        "form"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/field",
+        "@kira-kit/select",
+        "@kira-kit/toast",
+        "@kira-kit/tooltip",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "input.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "input-group",
+      "type": "registry:ui",
+      "title": "Input Group",
+      "description": "A compound control container that joins inputs or textareas with text, compact buttons, and addons aligned at inline or block start and end. Shared focus, invalid, and disabled styling surrounds the group, while clicking noninteractive addon space focuses its associated control.",
+      "categories": [
+        "form",
+        "layout"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/textarea"
+      ],
+      "files": [
+        {
+          "path": "input-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "kanban",
+      "type": "registry:ui",
+      "title": "Kanban",
+      "description": "A sortable Kanban board with controlled or uncontrolled columns, mouse/touch/keyboard dragging, collapsible columns, and wipMode \"warn\" | \"enforce\" limits. Cards support priorities, covers, tags, due dates, checklists, comments, attachments, assignees, and blocked reasons, with an accessible Move card dialog and KiraKanban search, loading, error, and retry states.",
+      "categories": [
+        "data-display",
+        "layout"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/avatar",
+        "@kira-kit/button",
+        "@kira-kit/dialog",
+        "@kira-kit/input",
+        "@kira-kit/select",
+        "@kira-kit/skeleton",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "kanban.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "title": "Kbd",
+      "description": "Renders keyboard keys and shortcut groups with default, outline, and ghost variants, three sizes, and custom separators. KbdShortcut parses combinations such as mod+shift+k, handles literal + keys, chooses platform-specific labels or macOS symbols, and emits aria-keyshortcuts.",
+      "categories": [
+        "typography",
+        "utility"
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/use-platform"
+      ],
+      "files": [
+        {
+          "path": "kbd.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "A form label family with required/optional markers, hints, errors, icons, tooltips, counters, truncation, and Field.Label rendering through render. KiraLabel adds live character counts, near-limit and over-limit feedback, validation states, and automatic Base UI field association.",
+      "categories": [
+        "form",
+        "typography"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/tooltip"
+      ],
+      "files": [
+        {
+          "path": "label.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "menubar",
+      "type": "registry:ui",
+      "title": "Menu Bar",
+      "description": "A Base UI menubar with horizontal or vertical orientation, default/outline/soft variants, comfortable or compact density, and dropdown-menu primitives for checkbox items, radio items, submenus, shortcuts, filtering, and input. KiraMenubar builds menus from data and can aggregate enabled actions and links into a searchable Ctrl/Cmd+K command menu.",
+      "categories": [
+        "navigation",
+        "overlay"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/dropdown-menu",
+        "@kira-kit/use-platform"
+      ],
+      "files": [
+        {
+          "path": "menubar.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "title": "Navigation Menu",
+      "description": "Website navigation with native links, shared popup/viewport composition, active-link underlines, direction-aware transitions, and mega-menu section, header, and footer helpers. KiraNavigationMenu accepts recursive grouped data and custom router links, switching at 768px to a right-side mobile Drawer with collapsible groups unless mobileMode=\"inline\" is used.",
+      "categories": [
+        "navigation",
+        "overlay"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/drawer"
+      ],
+      "files": [
+        {
+          "path": "navigation-menu.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "Accessible numbered and cursor pagination with five visual variants, localized formatting, link rendering, responsive page ranges, ellipsis page-jump popovers, item ranges, and page-size controls. KiraPagination includes loading, error/retry, disabled-reason, and live status feedback, while cursor mode uses hasPreviousPage and hasNextPage without requiring a total.",
+      "categories": [
+        "navigation",
+        "data-display"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/select",
+        "@kira-kit/spinner",
+        "@kira-kit/use-pagination",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "pagination.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "A Base UI popover family with payload-aware triggers, five sizes, positioning props, arrows, backdrops, viewport transitions, and reduced-motion support. KiraPopover adds guarded dirty-draft dismissal with discard confirmation, while KiraPopoverFlow provides multi-view history and focus restoration.",
+      "categories": [
+        "overlay",
+        "utility"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "popover.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "description": "Linear, circular, and segmented progress with custom ranges, locale-aware values, indeterminate states, stripes, buffering, and animation that pauses offscreen or while the document is hidden. KiraProgress adds weighted phases, idle/running/paused/error/complete/canceled states, and pause, resume, cancel, and retry actions.",
+      "categories": [
+        "feedback",
+        "animation"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "progress.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "progress-indicator",
+      "type": "registry:ui",
+      "title": "Progress Indicator",
+      "description": "A step-based indicator with horizontal, vertical, and responsive layouts, clickable steps, optional steps, semantic tones, and pending/active/completed/error/paused/skipped states. KiraProgressIndicator adds milestone summaries, finished counts, current-phase linear progress, live status, and retry for failed steps.",
+      "categories": [
+        "feedback",
+        "navigation"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/progress",
+        "@kira-kit/spinner",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "progress-indicator.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "Base UI radio groups with labeled options, rich RadioCard metadata, and a RadioButtonGroup whose GSAP indicator slides between selections. KiraRadioGroup provides data-driven list, cards, and segmented layouts with selected-option details, loading skeletons, empty states, and field validation.",
+      "categories": [
+        "form"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "radio-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "resizable",
+      "type": "registry:ui",
+      "title": "Resizable",
+      "description": "Accessible horizontal and vertical panel groups built on react-resizable-panels, with three handle variants, optional grips, coarse-pointer targets, collapsible panels, and validated autoSaveId layout persistence. KiraResizable renders data-driven panels with hide/show, restore, and balance controls plus inert collapsed content.",
+      "categories": [
+        "layout",
+        "utility"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "react-resizable-panels"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "resizable.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll Area",
+      "description": "Vertical, horizontal, or dual scrolling with three scrollbar thicknesses, always-visible or revealed bars, overflow shadows, and composable viewport, content, thumb, and corner primitives. KiraScrollArea's followOutput mode tracks streaming content only while the reader stays at the latest output, reports unseen activity, and offers Jump to latest.",
+      "categories": [
+        "layout",
+        "utility"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "scroll-area.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "A Base UI Select and Combobox family supporting grouped options, multiple selection with removable chips, fuzzy and debounced asynchronous search, creatable options, and virtualized long lists. KiraSelect also provides clear controls, loading/empty/create states, three trigger variants, invalid styling, and reduced-motion-aware option staggering.",
+      "categories": [
+        "form",
+        "overlay"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@gsap/react",
+        "@tabler/icons-react",
+        "@tanstack/react-virtual",
+        "cn",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "select.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "Horizontal or vertical separators with six thicknesses, solid/dashed/dotted/gradient styles, semantic colors, labels, icons, alignment, spacing, and insets. KiraSeparator can show counts and descriptions, run a pending-aware action, or control a collapsible section with keepMounted and motion options.",
+      "categories": [
+        "layout",
+        "utility"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/collapsible",
+        "@kira-kit/spinner"
+      ],
+      "files": [
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "separator.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "title": "Sheet",
+      "description": "Drawer-based sheets with trigger, title, description, body, and footer composition, defaulting to the right side on desktop and the bottom below 640px with configurable side and mobileSide. KiraSheet supports guarded close requests, live status text, inert skeleton loading, and error/retry states.",
+      "categories": [
+        "overlay",
+        "layout"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/drawer",
+        "@kira-kit/skeleton"
+      ],
+      "files": [
+        {
+          "path": "sheet.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "An application navigation shell with offcanvas/icon/none collapse modes, floating and inset variants, custom widths, persisted collapse state, hover expansion, pointer-only GSAP layout motion, and a mobile Drawer below 768px. KiraSidebar adds searchable data-driven sections, router navigation, badges, favorites with drag or arrow-button reordering, user and theme controls, and loading, error, and empty states.",
+      "categories": [
+        "navigation",
+        "layout"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "@tanstack/react-router",
+        "class-variance-authority",
+        "cn",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/avatar",
+        "@kira-kit/collapsible",
+        "@kira-kit/drawer",
+        "@kira-kit/dropdown-menu",
+        "@kira-kit/skeleton",
+        "@kira-kit/tooltip",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "sidebar.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "Skeleton bones and text, card, list, table, avatar, image, and button presets with shimmer/wave animation, delay, pause, reduced-motion, offscreen, and document-visibility controls. KiraSkeleton supports delayed fallback display, minimum visible duration, retained content during refresh, minimum-height reservation, and live loading announcements.",
+      "categories": [
+        "feedback",
+        "animation"
+      ],
+      "dependencies": [
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "skeleton.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "Single and range sliders with horizontal or vertical orientation, semantic and gradient variants, inversion, read-only and error states, formatted values, thumb labels and icons, and four tooltip modes. Explicit or step-generated markers and stepOptions support constrained stops, while KiraRangeSlider adds synchronized From/To numeric inputs and KiraSlider exposes an accessible disabled-reason tooltip.",
+      "categories": [
+        "form"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/input",
+        "@kira-kit/tooltip"
+      ],
+      "files": [
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "slider.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "spacer",
+      "type": "registry:ui",
+      "title": "Spacer",
+      "description": "Responsive horizontal or vertical whitespace with spacing-token sizes, an auto flex-fill mode, and decorative semantics enforced through aria-hidden, presentation role, and inert. KiraSpacer adds clamp-based fluid gaps with safe-area insets and a reserve mode that preserves height while showing accessible loading placeholders.",
+      "categories": [
+        "layout",
+        "utility"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/skeleton"
+      ],
+      "files": [
+        {
+          "path": "spacer.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "SVG loading indicator with six sizes and semantic colors, supporting indeterminate rotation, clamped determinate progress arcs, and success/error glyph states. It pauses in hidden documents, honors reduced motion, and KiraProgressSpinner adds a label with an optional percentage readout.",
+      "categories": [
+        "feedback",
+        "animation"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "spinner.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "split-view",
+      "type": "registry:ui",
+      "title": "Split View",
+      "description": "Resizable two-pane layout with horizontal or vertical orientation, a collapsible sidebar, sizing constraints, localStorage persistence, and imperative resize controls. KiraSplitView switches to single-pane navigation below 640px and adds presets plus loading, empty, and retryable error feedback.",
+      "categories": [
+        "layout",
+        "navigation"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "react-resizable-panels"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/resizable",
+        "@kira-kit/skeleton"
+      ],
+      "files": [
+        {
+          "path": "split-view.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "spotlight",
+      "type": "registry:ui",
+      "title": "Spotlight",
+      "description": "Command-palette dialog for grouped, keyboard-navigable results with keywords, shortcuts, recent items, custom filtering, and an optional selected-item preview. KiraSpotlight adds scoped debounced async search with cancellation and retries, recent-result memory, and a configurable Ctrl/Cmd+K shortcut.",
+      "categories": [
+        "overlay",
+        "navigation"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/command",
+        "@kira-kit/empty",
+        "@kira-kit/kbd",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "content-keys.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "spotlight.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "stack",
+      "type": "registry:ui",
+      "title": "Stack",
+      "description": "Polymorphic flex layout with responsive direction, wrapping, independent row and column gaps, alignment, justification, and list-safe automatic dividers. KiraStack adds a container-width switcher layout, child-count limits, and accessible loading placeholders.",
+      "categories": [
+        "layout"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/separator",
+        "@kira-kit/skeleton"
+      ],
+      "files": [
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "stack.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "stats-card",
+      "type": "registry:ui",
+      "title": "Stats Card",
+      "description": "Composable metric card with visual and status variants, locale-aware value formatting, GSAP count-up numbers, trend indicators, meters, and Recharts sparklines. Interactive cards support keyboard activation and an optional details drawer, with reduced-motion handling and loading skeletons.",
+      "categories": [
+        "data-display",
+        "animation"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "gsap",
+        "recharts"
+      ],
+      "registryDependencies": [
+        "@kira-kit/drawer",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "stats-card.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "stepper",
+      "type": "registry:ui",
+      "title": "Stepper",
+      "description": "Multi-step workflow with horizontal or vertical rails, six step states, conditional and optional steps, linear navigation rules, and localStorage persistence. It includes RTL-aware keyboard navigation, progress and async next controls, mobile stacking, and a data-driven KiraStepper.",
+      "categories": [
+        "navigation",
+        "feedback"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "zod"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/use-announce",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "stepper.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "Base UI toggle with three sizes, semantic colors, labels and validation, custom thumb icons, loading states, and enlarged hit targets. Controlled optimistic commits can await persistence and revert failures with a toast, while disabled reasons use a focusable tooltip and SwitchGroup shares disabled state.",
+      "categories": [
+        "form",
+        "feedback"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/toast",
+        "@kira-kit/tooltip",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "switch.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "Semantic table primitives with three densities, striping, sticky headers, RTL-aware pinned cells, sortable headers, selection, skeletons, and empty states. KiraTable combines typed columns and multi-type sorting with row selection, persisted density preferences, and screen-reader sort announcements.",
+      "categories": [
+        "data-display"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/checkbox"
+      ],
+      "files": [
+        {
+          "path": "table.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "Base UI tabs with horizontal or vertical layouts, seven variants including sliding segment indicators, animated or lazy panels, and scrollable lists with edge-aware chevrons. KiraTabs adds addable and guarded-closable dirty tabs, hash deep links, overflow menus, and pointer/keyboard drag reordering.",
+      "categories": [
+        "navigation"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@dnd-kit/core",
+        "@dnd-kit/sortable",
+        "@dnd-kit/utilities",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/dropdown-menu",
+        "@kira-kit/use-announce",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "tabs.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "Auto-sizing native textarea with size and resize variants plus minRows and maxRows height limits. Counter variants add warning thresholds, optional hard limits, and debounced announcements, while KiraTextarea provides inline validation, clearing, and Enter or Ctrl/Cmd+Enter submission.",
+      "categories": [
+        "form"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "textarea.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "time-picker",
+      "type": "registry:ui",
+      "title": "Time Picker",
+      "description": "Date-based time selector with typeable hour, minute, and optional second steppers, 12/24-hour cycles, configurable increments, quick-pick presets, and selection grids. It enforces minimum, maximum, and disabled times and renders inline or in a native anchored popover with clear and focus-return behavior.",
+      "categories": [
+        "form",
+        "overlay"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "date-fns"
+      ],
+      "files": [
+        {
+          "path": "time-picker.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "timeline",
+      "type": "registry:ui",
+      "title": "Timeline",
+      "description": "Chronological event list with vertical or horizontal rails, alternating or centered layouts, status dots, solid/dashed/gradient connectors, and collapsible details. It supports locale/time-zone grouping, relative timestamps, optional virtualization, and a KiraTimeline wrapper with skeletons and cancellable, retryable older-event loading.",
+      "categories": [
+        "data-display"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "@tanstack/react-virtual",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/avatar",
+        "@kira-kit/button",
+        "@kira-kit/collapsible",
+        "@kira-kit/skeleton",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "timeline.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toast",
+      "type": "registry:ui",
+      "title": "Toast",
+      "description": "Base UI toast system with an imperative API for six variants, stable-ID updates and deduplication, actions, promise transitions, variant-specific timeouts, and optional anchoring to an element. Stacked toasts expand, swipe away in four directions, and show a pausing countdown bar, with separate managers for stacked and anchored notifications.",
+      "categories": [
+        "feedback",
+        "overlay"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "files": [
+        {
+          "path": "toast.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toggle",
+      "type": "registry:ui",
+      "title": "Toggle",
+      "description": "Pressable Base UI toggle with seven visual variants, six text/icon sizes, three radii, loading and check indicators, pressed-icon support, and native checkbox-like hidden form inputs. KiraToggle adds tooltips and disabled explanations, global shortcut handling, reduced-motion GSAP feedback, and optimistic async toggles that roll back with an error toast.",
+      "categories": [
+        "form",
+        "animation"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/toast",
+        "@kira-kit/tooltip",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "toggle.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "toggle-group",
+      "type": "registry:ui",
+      "title": "Toggle Group",
+      "description": "Single- or multi-select toggle group with default, outline, segment, and pills variants, horizontal or vertical layouts, scrolling or icon-only overflow, and a GSAP sliding selection indicator. It supports current, radio, or pressed-button semantics, one-selected-always enforcement, validation and repeated hidden form inputs, plus an item-driven KiraToggleGroup with optimistic async updates.",
+      "categories": [
+        "form",
+        "animation"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "@gsap/react",
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn",
+        "gsap"
+      ],
+      "registryDependencies": [
+        "@kira-kit/toast",
+        "@kira-kit/tooltip",
+        "@kira-kit/use-press-bounce",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "toggle-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "Base UI tooltip family with five color variants, three sizes, configurable delays and collision-aware positioning, arrows, maximum widths, and visual keyboard-shortcut keycaps. SharedTooltip reuses one animated popup across handle-based triggers, while SimpleTooltip wraps a single trigger without adding a wrapper element.",
+      "categories": [
+        "overlay"
+      ],
+      "dependencies": [
+        "@base-ui/react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "files": [
+        {
+          "path": "prop-guards.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "tooltip.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "tree-view",
+      "type": "registry:ui",
+      "title": "Tree View",
+      "description": "ARIA tree for hierarchical file/folder data with controlled expansion, single or recursive multi-selection with mixed parent states, guide lines, disabled reasons, read-only browsing, and loading/empty states. Arrow/Home/End navigation, branch disclosure, typeahead, and focus restoration support keyboard use; filtering reveals matching descendants and ancestors without overwriting saved expansion.",
+      "categories": [
+        "navigation",
+        "data-display"
+      ],
+      "dependencies": [
+        "@tabler/icons-react",
+        "class-variance-authority",
+        "cn"
+      ],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/collapsible",
+        "@kira-kit/input",
+        "@kira-kit/use-reduced-motion"
+      ],
+      "files": [
+        {
+          "path": "tree-view.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    }
+  ]
+}

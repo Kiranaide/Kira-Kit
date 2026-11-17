@@ -26,53 +26,54 @@ npx shadcn@latest add @kira-kit/button @kira-kit/dialog @kira-kit/card
 
 ## Available Components
 
-| Component | Dependencies |
-|-----------|-------------|
-| accordion | @base-ui/react |
-| alert | @base-ui/react, @tabler/icons-react |
-| alert-dialog | @base-ui/react, @tabler/icons-react |
-| avatar | — |
-| badge | — |
-| button | @base-ui/react, animejs |
-| calendar | @base-ui/react, date-fns |
-| card | — |
-| checkbox | @base-ui/react |
-| color-picker | @uiw/color-* |
-| combobox | @base-ui/react |
-| context-menu | @base-ui/react, @tabler/icons-react |
-| data-table | @tanstack/react-table, @tanstack/react-virtual |
-| date-picker | @base-ui/react, date-fns |
-| dialog | @base-ui/react, @tabler/icons-react |
-| drawer | @base-ui/react, @tabler/icons-react |
-| dropdown-menu | @base-ui/react, @tabler/icons-react |
-| empty | @tabler/icons-react |
-| field | — |
-| file-upload | @tabler/icons-react |
-| hover-card | @base-ui/react |
-| input | @base-ui/react |
-| input-group | — |
-| kbd | — |
-| label | — |
-| menubar | @base-ui/react, @tabler/icons-react |
-| navigation-menu | @base-ui/react, @tabler/icons-react |
-| pagination | @tabler/icons-react |
-| popover | @base-ui/react |
-| progress | — |
-| radio-group | @base-ui/react |
-| resizable | react-resizable-panels |
-| select | @base-ui/react, @tabler/icons-react |
-| separator | @base-ui/react |
-| sidebar | @base-ui/react, @tabler/icons-react |
-| skeleton | — |
-| slider | @base-ui/react |
-| sonner | sonner |
-| table | — |
-| tabs | @base-ui/react |
-| textarea | — |
-| toggle | @base-ui/react |
-| toggle-group | @base-ui/react |
-| tooltip | @base-ui/react |
-| tree-view | @tabler/icons-react |
+| Component       | Dependencies                                    |
+| --------------- | ----------------------------------------------- |
+| accordion       | @base-ui/react                                  |
+| alert           | @base-ui/react, @tabler/icons-react             |
+| alert-dialog    | @base-ui/react, @tabler/icons-react             |
+| avatar          | —                                               |
+| badge           | —                                               |
+| button          | @base-ui/react, animejs                         |
+| calendar        | @base-ui/react, date-fns                        |
+| camera          | @tabler/icons-react                             |
+| card            | —                                               |
+| checkbox        | @base-ui/react                                  |
+| color-picker    | @uiw/color-convert, @uiw/react-color-saturation |
+| combobox        | @base-ui/react                                  |
+| context-menu    | @base-ui/react, @tabler/icons-react             |
+| data-table      | @tanstack/react-table, @tanstack/react-virtual  |
+| date-picker     | @base-ui/react, date-fns                        |
+| dialog          | @base-ui/react, @tabler/icons-react             |
+| drawer          | @base-ui/react, @tabler/icons-react             |
+| dropdown-menu   | @base-ui/react, @tabler/icons-react             |
+| empty           | @tabler/icons-react                             |
+| field           | —                                               |
+| file-upload     | @tabler/icons-react                             |
+| hover-card      | @base-ui/react                                  |
+| input           | @base-ui/react                                  |
+| input-group     | —                                               |
+| kbd             | —                                               |
+| label           | —                                               |
+| menubar         | @base-ui/react, @tabler/icons-react             |
+| navigation-menu | @base-ui/react, @tabler/icons-react             |
+| pagination      | @tabler/icons-react                             |
+| popover         | @base-ui/react                                  |
+| progress        | —                                               |
+| radio-group     | @base-ui/react                                  |
+| resizable       | react-resizable-panels                          |
+| select          | @base-ui/react, @tabler/icons-react             |
+| separator       | @base-ui/react                                  |
+| sidebar         | @base-ui/react, @tabler/icons-react             |
+| skeleton        | —                                               |
+| slider          | @base-ui/react                                  |
+| sonner          | sonner                                          |
+| table           | —                                               |
+| tabs            | @base-ui/react                                  |
+| textarea        | —                                               |
+| toggle          | @base-ui/react                                  |
+| toggle-group    | @base-ui/react                                  |
+| tooltip         | @base-ui/react                                  |
+| tree-view       | @tabler/icons-react                             |
 
 ## Requirements
 
