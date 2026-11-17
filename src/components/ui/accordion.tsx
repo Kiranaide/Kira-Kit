@@ -36,20 +36,22 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { resolveComponentDefaults } from "@/lib/component-defaults";
+import { isCallbackProp, isObjectProp } from "@/lib/component-prop-guards";
 
 interface AccordionItemData {
   value: string;
   title: React.ReactNode;
   content: React.ReactNode;
   disabled?: boolean;
-  /** Shown as a tooltip on the disabled trigger (§9: never unexplained). */
+  /** Shown as a tooltip on the disabled trigger (Â§9: never unexplained). */
   disabledReason?: string;
   icon?: React.ReactNode;
   variant?: VariantProps<typeof accordionTriggerVariants>["variant"];
@@ -90,7 +92,7 @@ interface KiraAccordionProps extends Omit<
   searchPlaceholder?: string;
   /** Persist open state (and reorder) to storage under this key. */
   persistKey?: string;
-  /** Register panels for browser find-in-page: ⌘F/Ctrl-F auto-expands matches. */
+  /** Register panels for browser find-in-page: âŒ˜F/Ctrl-F auto-expands matches. */
   hiddenUntilFound?: boolean;
   /** Sync open state with the URL hash: open an item to share `#value` links. */
   deepLink?: boolean;
@@ -312,7 +314,7 @@ function Accordion({
 /**
  * Base UI 1.9's AccordionItem never calls the consumer's onOpenChange (it wires
  * its own internal handler), so open/close transitions are observed from the
- * item's data-open attribute instead — the same technique usePanelOpened uses
+ * item's data-open attribute instead â€” the same technique usePanelOpened uses
  * for panels. The initial state never fires; only transitions do.
  */
 function AccordionItem({
@@ -331,8 +333,10 @@ function AccordionItem({
   const onOpenRef = React.useRef(onOpen);
   const onCloseRef = React.useRef(onClose);
 
-  onOpenRef.current = onOpen;
-  onCloseRef.current = onClose;
+  React.useLayoutEffect(() => {
+    onOpenRef.current = onOpen;
+    onCloseRef.current = onClose;
+  }, [onOpen, onClose]);
 
   React.useEffect(() => {
     const item = itemRef.current;
@@ -369,13 +373,10 @@ function AccordionItem({
         itemRef.current = node as HTMLDivElement | null;
 
         // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
-        if (typeof userRef === "function") userRef(node);
+        if (isCallbackProp(userRef)) userRef(node);
         // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
-        else if (userRef && typeof userRef === "object") {
-          // SAFETY: object-form refs are MutableRefObject; the node is the
-          // HTMLDivElement Item renders (see above).
-          (userRef as React.MutableRefObject<HTMLDivElement | null>).current =
-            node as HTMLDivElement | null;
+        else if (userRef && isObjectProp(userRef)) {
+          userRef.current = node;
         }
       }}
       data-slot="accordion-item"
@@ -408,7 +409,7 @@ type AccordionTriggerProps = Omit<
   dragHandle?: React.ReactNode;
   dragHandlePosition?: "start" | "end";
   disabled?: boolean;
-  /** Tooltip shown on a disabled trigger (§9: never leave a disabled control unexplained). */
+  /** Tooltip shown on a disabled trigger (Â§9: never leave a disabled control unexplained). */
   disabledReason?: string;
 };
 
@@ -541,7 +542,7 @@ function useLoadingSuccessFlash(
   const [prevLoading, setPrevLoading] = React.useState(loading);
   const [showSuccess, setShowSuccess] = React.useState(false);
 
-  // Adjust during render (playbook §4) so no effect chases the prop.
+  // Adjust during render (playbook Â§4) so no effect chases the prop.
   if (loading !== prevLoading) {
     setPrevLoading(loading);
 
@@ -563,7 +564,7 @@ function useLoadingSuccessFlash(
   return showSuccess;
 }
 
-/** Focusable wrapper so a disabled trigger can host a tooltip (§9). */
+/** Focusable wrapper so a disabled trigger can host a tooltip (Â§9). */
 function DisabledReasonWrapper({
   reason,
   children,
@@ -574,10 +575,10 @@ function DisabledReasonWrapper({
   // Focus proxy for a native-disabled trigger (Base UI's documented pattern for
   // tooltips on disabled controls): the span is hit-tested where the disabled
   // button is not, and Tab reaches it so keyboard users can read the reason.
-  // role="button" is deliberately avoided — the accessible "disabled button" is
+  // role="button" is deliberately avoided â€” the accessible "disabled button" is
   // already announced via aria-disabled; the label carries the reason.
   const anchorProps = {
-    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus proxy required for disabled-control tooltip reachability (WCAG 2.2 §9)
+    // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus proxy required for disabled-control tooltip reachability (WCAG 2.2 Â§9)
     tabIndex: 0,
     "aria-disabled": true,
     "aria-label": reason,
@@ -613,72 +614,49 @@ function dragHandlePadding(
   return "pr-8";
 }
 
-function AccordionTrigger({
-  className,
-  children,
-  variant,
-  size,
-  showArrow = true,
-  chevronIcon,
-  chevronPosition = "end",
-  icon,
-  loading = false,
-  error = null,
-  onRetry,
-  dragHandle,
-  dragHandlePosition = "start",
-  disabled = false,
-  disabledReason,
-  ...props
-}: AccordionTriggerProps) {
+function AccordionTrigger(input: AccordionTriggerProps) {
+  const {
+    className,
+    children,
+    variant,
+    size,
+    showArrow,
+    chevronIcon,
+    chevronPosition,
+    icon,
+    loading,
+    error,
+    onRetry,
+    dragHandle,
+    dragHandlePosition,
+    disabled,
+    disabledReason,
+    ...props
+  } = resolveComponentDefaults(input, ACCORDION_TRIGGER_DEFAULTS_1);
+
   const reducedMotion = useReducedMotion();
   const showSuccess = useLoadingSuccessFlash(loading, error);
   const handlePadding = dragHandlePadding(!!dragHandle, dragHandlePosition);
 
-  const trigger = (
-    <AccordionPrimitive.Header data-slot="accordion-header">
-      <AccordionPrimitive.Trigger
-        data-slot="accordion-trigger"
-        className={cn(
-          accordionTriggerVariants({ variant, size, className }),
-          handlePadding,
-        )}
-        {...props}
-      >
-        <span className="flex items-center gap-2 flex-1 min-w-0">
-          <TriggerDragHandleSlot
-            handle={dragHandle}
-            position={dragHandlePosition}
-            side="start"
-          />
-          <TriggerChevron
-            icon={chevronIcon}
-            position={chevronPosition}
-            side="start"
-            show={showArrow}
-            reducedMotion={reducedMotion}
-          />
-          <TriggerIcon icon={icon} />
-          <span className="flex-1 min-w-0 truncate">{children}</span>
-          <TriggerLoading loading={loading} reducedMotion={reducedMotion} />
-          <TriggerSuccess active={showSuccess} />
-          <TriggerRetry error={error} loading={loading} onRetry={onRetry} />
-          <TriggerChevron
-            icon={chevronIcon}
-            position={chevronPosition}
-            side="end"
-            show={showArrow}
-            reducedMotion={reducedMotion}
-          />
-          <TriggerDragHandleSlot
-            handle={dragHandle}
-            position={dragHandlePosition}
-            side="end"
-          />
-        </span>
-      </AccordionPrimitive.Trigger>
-    </AccordionPrimitive.Header>
-  );
+  const trigger = renderAccordionHeaderPart1({
+    variant,
+    size,
+    className,
+    handlePadding,
+    props,
+    dragHandle,
+    dragHandlePosition,
+    chevronIcon,
+    chevronPosition,
+    showArrow,
+    reducedMotion,
+    icon,
+    children,
+    loading,
+    showSuccess,
+    error,
+    onRetry,
+  });
 
   if (disabled && disabledReason) {
     return (
@@ -771,17 +749,18 @@ function AccordionContentBody({
 }: AccordionContentBodyProps) {
   const widths = ["75%", "85%", "60%", "90%", "70%"];
 
-  const skeletonWidths = Array.from({ length: skeletonLines }).map(
-    (_, i) => widths[i % widths.length],
-  );
+  const skeletonRows = Array.from({ length: skeletonLines }, (_, row) => ({
+    id: row,
+    width: widths[row % widths.length],
+  }));
 
   const reducedMotion = useReducedMotion();
 
   const skeleton = (
     <div className="space-y-2 px-4 py-3">
-      {skeletonWidths.map((width, i) => (
+      {skeletonRows.map(({ id, width }) => (
         <div
-          key={i}
+          key={id}
           className={cn(
             "h-3 bg-muted rounded",
             !reducedMotion && "animate-pulse",
@@ -825,20 +804,22 @@ function AccordionContentBody({
   );
 }
 
-function AccordionContent({
-  className,
-  children,
-  size,
-  inset = false,
-  lazyMount = false,
-  forceMounted = false,
-  showSkeleton = false,
-  skeletonLines = 3,
-  loading = false,
-  error = null,
-  onRetry,
-  ...props
-}: AccordionContentProps) {
+function AccordionContent(input: AccordionContentProps) {
+  const {
+    className,
+    children,
+    size,
+    inset,
+    lazyMount,
+    forceMounted,
+    showSkeleton,
+    skeletonLines,
+    loading,
+    error,
+    onRetry,
+    ...props
+  } = resolveComponentDefaults(input, ACCORDION_CONTENT_DEFAULTS_2);
+
   const panelRef = React.useRef<HTMLDivElement>(null);
   const hasBeenOpened = usePanelOpened(panelRef);
   const reducedMotion = useReducedMotion();
@@ -1070,6 +1051,8 @@ function useHashDeepLink(
   reducedMotion: boolean,
   setOpenValues: React.Dispatch<React.SetStateAction<string[]>>,
 ) {
+  const initialItemsRef = React.useRef(initialItems);
+
   React.useEffect(() => {
     if (!deepLink || typeof window === "undefined") return;
 
@@ -1077,7 +1060,7 @@ function useHashDeepLink(
 
     const target = decodeURIComponent(window.location.hash.slice(1));
 
-    const exists = flattenItems(initialItems).some(
+    const exists = flattenItems(initialItemsRef.current).some(
       (item) => item.value === target,
     );
 
@@ -1100,8 +1083,6 @@ function useHashDeepLink(
         `[data-accordion-item-value="${target}"] [data-slot="accordion-trigger"]`,
       )
       ?.scrollIntoView({ behavior, block: "nearest" });
-    // initialItems is only read on mount; re-running on identity change would
-    // re-open a hash item the user deliberately closed.
   }, [deepLink, reducedMotion, setOpenValues]);
 }
 
@@ -1257,8 +1238,8 @@ function useAccordionItems(
   const [adoptedItems, setAdoptedItems] = React.useState(initialItems);
 
   // Uncontrolled mode still honors parent-driven item updates (loading flags,
-  // content, errors): when the items prop identity changes, adopt it —
-  // render-time adjust per playbook §4. Internal reorder keeps the local copy.
+  // content, errors): when the items prop identity changes, adopt it â€”
+  // render-time adjust per playbook Â§4. Internal reorder keeps the local copy.
   if (initialItems !== adoptedItems) {
     setAdoptedItems(initialItems);
     setLocalItems(initialItems);
@@ -1359,52 +1340,20 @@ function AccordionItemsRoot({
     );
   }
 
-  return (
-    <DndContext
-      sensors={drag.sensors}
-      collisionDetection={closestCenter}
-      onDragStart={drag.handleDragStart}
-      onDragEnd={drag.handleDragEnd}
-    >
-      <SortableContext
-        items={visibleItems.map((item) => item.value)}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className="space-y-1">
-          {visibleItems.map((item) => (
-            <SortableAccordionItem
-              key={item.value}
-              item={item}
-              defaultVariant={variant}
-              defaultSize={size}
-              level={0}
-              dragHandlePosition={dragHandlePosition}
-              nested={nested}
-              onItemOpen={onItemOpen}
-              onItemClose={onItemClose}
-              asyncLoading={asyncLoading}
-              highlightQuery={highlightQuery}
-              forceMounted={forceMounted}
-            />
-          ))}
-        </div>
-      </SortableContext>
-      <DragOverlay
-        dropAnimation={{
-          sideEffects: defaultDropAnimationSideEffects({
-            styles: { active: { opacity: "0.5" } },
-          }),
-        }}
-      >
-        <DragOverlayContent
-          activeId={drag.activeId}
-          items={items}
-          variant={variant}
-          size={size}
-        />
-      </DragOverlay>
-    </DndContext>
-  );
+  return renderAccordionItems({
+    drag,
+    visibleItems,
+    variant,
+    size,
+    dragHandlePosition,
+    nested,
+    onItemOpen,
+    onItemClose,
+    asyncLoading,
+    highlightQuery,
+    forceMounted,
+    items,
+  });
 }
 
 /** Filter + highlight query derived from the search box state. */
@@ -1577,7 +1526,7 @@ const CORE_DEFAULTS = {
   showExpandAll: false,
   dragHandlePosition: "start",
   searchable: false,
-  searchPlaceholder: "Search…",
+  searchPlaceholder: "Searchâ€¦",
   hiddenUntilFound: false,
   deepLink: false,
 } as const;
@@ -1639,57 +1588,49 @@ function KiraAccordionCore({
 
   const expandedButtonClasses = useExpandedButtonClasses(reducedMotion);
 
-  return (
-    <div data-slot="kira-accordion" className="space-y-2">
-      <KiraAccordionChrome
-        showExpandAll={showExpandAll}
-        searchable={searchable}
-        query={query}
-        searchPlaceholder={searchPlaceholder}
-        visibleCount={visibleItems.length}
-        buttonClasses={expandedButtonClasses}
-        onExpandAll={handleExpandAll}
-        onCollapseAll={handleCollapseAll}
-        onQueryChange={setQuery}
-      />
-      <Accordion
-        scrollIntoView={scrollIntoView}
-        className={className}
-        value={openValues}
-        onValueChange={handleValueChange}
-        hiddenUntilFound={hiddenUntilFound}
-        {...props}
-      >
-        <AccordionItemsRoot
-          draggable={draggable}
-          visibleItems={visibleItems}
-          items={items}
-          variant={variant}
-          size={size}
-          dragHandlePosition={dragHandlePosition}
-          nested={nested}
-          onItemOpen={onItemOpen}
-          onItemClose={onItemClose}
-          asyncLoading={asyncLoading}
-          highlightQuery={highlightQuery}
-          forceMounted={forceMounted}
-          drag={drag}
-        />
-      </Accordion>
-    </div>
-  );
+  return renderKiraAccordion({
+    showExpandAll,
+    searchable,
+    query,
+    searchPlaceholder,
+    visibleItems,
+    expandedButtonClasses,
+    handleExpandAll,
+    handleCollapseAll,
+    setQuery,
+    scrollIntoView,
+    className,
+    openValues,
+    handleValueChange,
+    hiddenUntilFound,
+    props,
+    draggable,
+    items,
+    variant,
+    size,
+    dragHandlePosition,
+    nested,
+    onItemOpen,
+    onItemClose,
+    asyncLoading,
+    highlightQuery,
+    forceMounted,
+    drag,
+  });
 }
 
-function KiraAccordion({
-  items,
-  draggable = false,
-  asyncLoading = false,
-  nested = false,
-  showExpandAll = false,
-  searchable = false,
-  deepLink = false,
-  ...props
-}: KiraAccordionProps) {
+function KiraAccordion(input: KiraAccordionProps) {
+  const {
+    items,
+    draggable,
+    asyncLoading,
+    nested,
+    showExpandAll,
+    searchable,
+    deepLink,
+    ...props
+  } = resolveComponentDefaults(input, KIRA_ACCORDION_DEFAULTS_3);
+
   return (
     <KiraAccordionCore
       items={items}
@@ -1873,3 +1814,2336 @@ export type {
   AccordionContentProps,
   KiraAccordionProps,
 };
+
+function renderAccordionItems({
+  drag,
+  visibleItems,
+  variant,
+  size,
+  dragHandlePosition,
+  nested,
+  onItemOpen,
+  onItemClose,
+  asyncLoading,
+  highlightQuery,
+  forceMounted,
+  items,
+}: {
+  drag: AccordionDragWiring;
+  visibleItems: AccordionItemData[];
+  variant:
+    | "default"
+    | "info"
+    | "success"
+    | "warning"
+    | "destructive"
+    | "ghost"
+    | "outline"
+    | null
+    | undefined;
+  size: "default" | "xs" | "sm" | "lg" | null | undefined;
+  dragHandlePosition: "start" | "end";
+  nested: boolean;
+  onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+  onItemClose: ((item: AccordionItemData) => void) | undefined;
+  asyncLoading: boolean;
+  highlightQuery: string | undefined;
+  forceMounted: boolean;
+  items: AccordionItemData[];
+}) {
+  return renderRenderAccordionItemsSectionPart2({
+    drag,
+    visibleItems,
+    variant,
+    size,
+    dragHandlePosition,
+    nested,
+    onItemOpen,
+    onItemClose,
+    asyncLoading,
+    highlightQuery,
+    forceMounted,
+    items,
+  });
+}
+
+function renderKiraAccordion(
+  args: Parameters<typeof renderKiraAccordionPart3>[0],
+) {
+  return renderKiraAccordionPart3(args);
+}
+
+type renderAccordionHeaderPart1Args = {
+  variant: AccordionTriggerProps["variant"];
+  size: AccordionTriggerProps["size"];
+  className: AccordionTriggerProps["className"];
+  handlePadding: ReturnType<typeof dragHandlePadding>;
+  props: Omit<
+    AccordionTriggerProps,
+    | "className"
+    | "children"
+    | "variant"
+    | "size"
+    | "showArrow"
+    | "chevronIcon"
+    | "chevronPosition"
+    | "icon"
+    | "loading"
+    | "error"
+    | "onRetry"
+    | "dragHandle"
+    | "dragHandlePosition"
+    | "disabled"
+    | "disabledReason"
+  >;
+  dragHandle: AccordionTriggerProps["dragHandle"];
+  dragHandlePosition: "start" | "end";
+  chevronIcon: AccordionTriggerProps["chevronIcon"];
+  chevronPosition: "start" | "end";
+  showArrow: boolean;
+  reducedMotion: ReturnType<typeof useReducedMotion>;
+  icon: AccordionTriggerProps["icon"];
+  children: AccordionTriggerProps["children"];
+  loading: boolean;
+  showSuccess: ReturnType<typeof useLoadingSuccessFlash>;
+  error: Error | null;
+  onRetry: AccordionTriggerProps["onRetry"];
+};
+
+function renderAccordionHeaderPart1({
+  variant,
+  size,
+  className,
+  handlePadding,
+  props,
+  dragHandle,
+  dragHandlePosition,
+  chevronIcon,
+  chevronPosition,
+  showArrow,
+  reducedMotion,
+  icon,
+  children,
+  loading,
+  showSuccess,
+  error,
+  onRetry,
+}: renderAccordionHeaderPart1Args) {
+  return (
+    <AccordionPrimitive.Header data-slot="accordion-header">
+      <AccordionPrimitive.Trigger
+        data-slot="accordion-trigger"
+        className={cn(
+          accordionTriggerVariants({ variant, size, className }),
+          handlePadding,
+        )}
+        {...props}
+      >
+        <span className="flex items-center gap-2 flex-1 min-w-0">
+          <TriggerDragHandleSlot
+            handle={dragHandle}
+            position={dragHandlePosition}
+            side="start"
+          />
+          <TriggerChevron
+            icon={chevronIcon}
+            position={chevronPosition}
+            side="start"
+            show={showArrow}
+            reducedMotion={reducedMotion}
+          />
+          <TriggerIcon icon={icon} />
+          <span className="flex-1 min-w-0 truncate">{children}</span>
+          <TriggerLoading loading={loading} reducedMotion={reducedMotion} />
+          <TriggerSuccess active={showSuccess} />
+          <TriggerRetry error={error} loading={loading} onRetry={onRetry} />
+          <TriggerChevron
+            icon={chevronIcon}
+            position={chevronPosition}
+            side="end"
+            show={showArrow}
+            reducedMotion={reducedMotion}
+          />
+          <TriggerDragHandleSlot
+            handle={dragHandle}
+            position={dragHandlePosition}
+            side="end"
+          />
+        </span>
+      </AccordionPrimitive.Trigger>
+    </AccordionPrimitive.Header>
+  );
+}
+
+type renderRenderAccordionItemsSectionPart2Args = {
+  drag: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["drag"];
+  visibleItems: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["visibleItems"];
+  variant: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["variant"];
+  size: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["size"];
+  dragHandlePosition: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["dragHandlePosition"];
+  nested: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["nested"];
+  onItemOpen: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["onItemOpen"];
+  onItemClose: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["onItemClose"];
+  asyncLoading: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["asyncLoading"];
+  highlightQuery: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["highlightQuery"];
+  forceMounted: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["forceMounted"];
+  items: {
+    drag: AccordionDragWiring;
+    visibleItems: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null
+      | undefined;
+    size: "default" | "xs" | "sm" | "lg" | null | undefined;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    items: AccordionItemData[];
+  }["items"];
+};
+
+function renderRenderAccordionItemsSectionPart2({
+  drag,
+  visibleItems,
+  variant,
+  size,
+  dragHandlePosition,
+  nested,
+  onItemOpen,
+  onItemClose,
+  asyncLoading,
+  highlightQuery,
+  forceMounted,
+  items,
+}: renderRenderAccordionItemsSectionPart2Args) {
+  return (
+    <DndContext
+      sensors={drag.sensors}
+      collisionDetection={closestCenter}
+      onDragStart={drag.handleDragStart}
+      onDragEnd={drag.handleDragEnd}
+    >
+      <SortableContext
+        items={visibleItems.map((item) => item.value)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className="space-y-1">
+          {visibleItems.map((item) => (
+            <SortableAccordionItem
+              key={item.value}
+              item={item}
+              defaultVariant={variant}
+              defaultSize={size}
+              level={0}
+              dragHandlePosition={dragHandlePosition}
+              nested={nested}
+              onItemOpen={onItemOpen}
+              onItemClose={onItemClose}
+              asyncLoading={asyncLoading}
+              highlightQuery={highlightQuery}
+              forceMounted={forceMounted}
+            />
+          ))}
+        </div>
+      </SortableContext>
+      <DragOverlay
+        dropAnimation={{
+          sideEffects: defaultDropAnimationSideEffects({
+            styles: { active: { opacity: "0.5" } },
+          }),
+        }}
+      >
+        <DragOverlayContent
+          activeId={drag.activeId}
+          items={items}
+          variant={variant}
+          size={size}
+        />
+      </DragOverlay>
+    </DndContext>
+  );
+}
+
+type renderKiraAccordionPart3Args = {
+  showExpandAll: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["showExpandAll"];
+  searchable: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["searchable"];
+  query: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["query"];
+  searchPlaceholder: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["searchPlaceholder"];
+  visibleItems: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["visibleItems"];
+  expandedButtonClasses: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["expandedButtonClasses"];
+  handleExpandAll: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["handleExpandAll"];
+  handleCollapseAll: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["handleCollapseAll"];
+  setQuery: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["setQuery"];
+  scrollIntoView: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["scrollIntoView"];
+  className: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["className"];
+  openValues: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["openValues"];
+  handleValueChange: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["handleValueChange"];
+  hiddenUntilFound: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["hiddenUntilFound"];
+  props: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["props"];
+  draggable: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["draggable"];
+  items: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["items"];
+  variant: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["variant"];
+  size: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["size"];
+  dragHandlePosition: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["dragHandlePosition"];
+  nested: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["nested"];
+  onItemOpen: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["onItemOpen"];
+  onItemClose: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["onItemClose"];
+  asyncLoading: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["asyncLoading"];
+  highlightQuery: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["highlightQuery"];
+  forceMounted: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["forceMounted"];
+  drag: {
+    showExpandAll: boolean;
+    searchable: boolean;
+    query: string;
+    searchPlaceholder: string;
+    visibleItems: AccordionItemData[];
+    expandedButtonClasses: string;
+    handleExpandAll: () => void;
+    handleCollapseAll: () => void;
+    setQuery: React.Dispatch<React.SetStateAction<string>>;
+    scrollIntoView: boolean;
+    className:
+      | string
+      | ((state: AccordionPrimitive.Root.State<unknown>) => string | undefined)
+      | undefined;
+    openValues: string[];
+    handleValueChange: NonNullable<
+      React.ComponentProps<typeof Accordion>["onValueChange"]
+    >;
+    hiddenUntilFound: boolean;
+    props: {
+      variant?:
+        | "default"
+        | "info"
+        | "success"
+        | "warning"
+        | "destructive"
+        | "ghost"
+        | "outline"
+        | null
+        | undefined;
+      size?: "default" | "xs" | "sm" | "lg" | null | undefined;
+      scrollIntoView?: boolean | undefined;
+      draggable?: boolean | undefined;
+      asyncLoading?: boolean | undefined;
+      nested?: boolean | undefined;
+      showExpandAll?: boolean | undefined;
+      dragHandlePosition?: "start" | "end" | undefined;
+      searchable?: boolean | undefined;
+      searchPlaceholder?: string | undefined;
+      hiddenUntilFound?: boolean | undefined;
+      deepLink?: boolean | undefined;
+    };
+    draggable: boolean;
+    items: AccordionItemData[];
+    variant:
+      | "default"
+      | "info"
+      | "success"
+      | "warning"
+      | "destructive"
+      | "ghost"
+      | "outline"
+      | null;
+    size: "default" | "xs" | "sm" | "lg" | null;
+    dragHandlePosition: "start" | "end";
+    nested: boolean;
+    onItemOpen: ((item: AccordionItemData) => void | Promise<void>) | undefined;
+    onItemClose: ((item: AccordionItemData) => void) | undefined;
+    asyncLoading: boolean;
+    highlightQuery: string | undefined;
+    forceMounted: boolean;
+    drag: AccordionDragWiring;
+  }["drag"];
+};
+
+function renderKiraAccordionPart3({
+  showExpandAll,
+  searchable,
+  query,
+  searchPlaceholder,
+  visibleItems,
+  expandedButtonClasses,
+  handleExpandAll,
+  handleCollapseAll,
+  setQuery,
+  scrollIntoView,
+  className,
+  openValues,
+  handleValueChange,
+  hiddenUntilFound,
+  props,
+  draggable,
+  items,
+  variant,
+  size,
+  dragHandlePosition,
+  nested,
+  onItemOpen,
+  onItemClose,
+  asyncLoading,
+  highlightQuery,
+  forceMounted,
+  drag,
+}: renderKiraAccordionPart3Args) {
+  return (
+    <div data-slot="kira-accordion" className="space-y-2">
+      <KiraAccordionChrome
+        showExpandAll={showExpandAll}
+        searchable={searchable}
+        query={query}
+        searchPlaceholder={searchPlaceholder}
+        visibleCount={visibleItems.length}
+        buttonClasses={expandedButtonClasses}
+        onExpandAll={handleExpandAll}
+        onCollapseAll={handleCollapseAll}
+        onQueryChange={setQuery}
+      />
+      <Accordion
+        scrollIntoView={scrollIntoView}
+        className={className}
+        value={openValues}
+        onValueChange={handleValueChange}
+        hiddenUntilFound={hiddenUntilFound}
+        {...props}
+      >
+        <AccordionItemsRoot
+          draggable={draggable}
+          visibleItems={visibleItems}
+          items={items}
+          variant={variant}
+          size={size}
+          dragHandlePosition={dragHandlePosition}
+          nested={nested}
+          onItemOpen={onItemOpen}
+          onItemClose={onItemClose}
+          asyncLoading={asyncLoading}
+          highlightQuery={highlightQuery}
+          forceMounted={forceMounted}
+          drag={drag}
+        />
+      </Accordion>
+    </div>
+  );
+}
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const ACCORDION_TRIGGER_DEFAULTS_1 = {
+  showArrow: true,
+  chevronPosition: "end",
+  loading: false,
+  error: null,
+  dragHandlePosition: "start",
+  disabled: false,
+} as const;
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const ACCORDION_CONTENT_DEFAULTS_2 = {
+  inset: false,
+  lazyMount: false,
+  forceMounted: false,
+  showSkeleton: false,
+  skeletonLines: 3,
+  loading: false,
+  error: null,
+} as const;
+
+// SAFETY: Immutable fallback tokens preserve the component's public default values.
+const KIRA_ACCORDION_DEFAULTS_3 = {
+  draggable: false,
+  asyncLoading: false,
+  nested: false,
+  showExpandAll: false,
+  searchable: false,
+  deepLink: false,
+} as const;
