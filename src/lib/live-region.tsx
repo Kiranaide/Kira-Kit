@@ -36,14 +36,18 @@ function LiveRegion({
   children,
   id,
 }: LiveRegionProps) {
-  const [currentMessage, setCurrentMessage] = React.useState(message);
+  const [expiredMessage, setExpiredMessage] = React.useState<string>();
+  const [previousMessage, setPreviousMessage] = React.useState(message);
+
+  if (previousMessage !== message) {
+    setPreviousMessage(message);
+    setExpiredMessage(undefined);
+  }
 
   React.useEffect(() => {
-    setCurrentMessage(message);
-
     if (message && clearAfter > 0) {
       const timer = setTimeout(() => {
-        setCurrentMessage(undefined);
+        setExpiredMessage(message);
       }, clearAfter);
 
       return () => clearTimeout(timer);
@@ -51,20 +55,21 @@ function LiveRegion({
   }, [message, clearAfter]);
 
   return (
-    <div
+    <output
+      data-slot="live-region"
       id={id}
-      role="status"
+
       aria-live={politeness}
       aria-atomic={atomic}
       aria-relevant={relevant}
       className={cn(
         // Visually hidden but accessible to screen readers
         "sr-only",
-        className
+        className,
       )}
     >
-      {children ?? currentMessage}
-    </div>
+      {children ?? (expiredMessage === message ? undefined : message)}
+    </output>
   );
 }
 
@@ -82,14 +87,14 @@ interface Announcement {
 interface LiveRegionContextValue {
   announce: (
     message: string,
-    options?: { politeness?: "polite" | "assertive" }
+    options?: { politeness?: "polite" | "assertive" },
   ) => void;
   announcePolite: (message: string) => void;
   announceAssertive: (message: string) => void;
 }
 
 const LiveRegionContext = React.createContext<LiveRegionContextValue | null>(
-  null
+  null,
 );
 
 interface LiveRegionProviderProps {
@@ -105,10 +110,7 @@ function LiveRegionProvider({
   const [announcements, setAnnouncements] = React.useState<Announcement[]>([]);
 
   const announce = React.useCallback(
-    (
-      message: string,
-      options?: { politeness?: "polite" | "assertive" }
-    ) => {
+    (message: string, options?: { politeness?: "polite" | "assertive" }) => {
       const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
       const newAnnouncement: Announcement = {
@@ -124,40 +126,35 @@ function LiveRegionProvider({
         setAnnouncements((prev) => prev.filter((a) => a.id !== id));
       }, announcementDuration);
     },
-    [announcementDuration]
+    [announcementDuration],
   );
 
   const announcePolite = React.useCallback(
     (message: string) => announce(message, { politeness: "polite" }),
-    [announce]
+    [announce],
   );
 
   const announceAssertive = React.useCallback(
     (message: string) => announce(message, { politeness: "assertive" }),
-    [announce]
+    [announce],
   );
 
   const contextValue = React.useMemo(
     () => ({ announce, announcePolite, announceAssertive }),
-    [announce, announcePolite, announceAssertive]
+    [announce, announcePolite, announceAssertive],
   );
 
   return (
     <LiveRegionContext.Provider value={contextValue}>
       {children}
       {/* Polite announcements */}
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        className="sr-only"
-      >
+      <output aria-live="polite" aria-atomic="true" className="block sr-only">
         {announcements
           .filter((a) => a.politeness === "polite")
           .map((a) => (
             <div key={a.id}>{a.message}</div>
           ))}
-      </div>
+      </output>
       {/* Assertive announcements */}
       <div
         role="alert"
