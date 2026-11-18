@@ -778,7 +778,7 @@ function SliderDisabledReason({
             tabIndex={0}
             aria-disabled
             aria-label={reason}
-            className="block w-full cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="block w-full cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         }
       >
