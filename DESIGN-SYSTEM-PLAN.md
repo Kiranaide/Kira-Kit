@@ -37,13 +37,13 @@ One ladder for **every interactive control**: button, input, select,
 combobox trigger, textarea (min-height), numeric stepper, menu search field.
 The button's existing ladder wins; inputs/selects move up to meet it.
 
-| Size      | Height        | px     | Text                  | Icon | Typical use                    |
-| --------- | ------------- | ------ | --------------------- | ---- | ------------------------------ |
-| `xs`      | `h-7` (28px)  | `px-2` | `text-xs`             | 12px | dense tables, chips, toolbars  |
-| `sm`      | `h-8` (32px)  | `px-3` | `text-xs`             | 14px | filters, secondary toolbars    |
-| `default` | `h-9` (36px)  | `px-4` | `text-base md:text-sm`| 16px | forms, dialogs                 |
-| `lg`      | `h-10` (40px) | `px-5` | `text-base md:text-sm`| 20px | primary CTAs                   |
-| `xl` NEW  | `h-11` (44px) | `px-5` | `text-base`           | 20px | touch surfaces, auth, marketing|
+| Size      | Height        | px     | Text                   | Icon | Typical use                     |
+| --------- | ------------- | ------ | ---------------------- | ---- | ------------------------------- |
+| `xs`      | `h-7` (28px)  | `px-2` | `text-xs`              | 12px | dense tables, chips, toolbars   |
+| `sm`      | `h-8` (32px)  | `px-3` | `text-xs`              | 14px | filters, secondary toolbars     |
+| `default` | `h-9` (36px)  | `px-4` | `text-base md:text-sm` | 16px | forms, dialogs                  |
+| `lg`      | `h-10` (40px) | `px-5` | `text-base md:text-sm` | 20px | primary CTAs                    |
+| `xl` NEW  | `h-11` (44px) | `px-5` | `text-base`            | 20px | touch surfaces, auth, marketing |
 
 Rules:
 
@@ -60,27 +60,27 @@ Rules:
 
 ### 1.3 Gap tiers
 
-| Relationship                          | Gap     |
-| ------------------------------------- | ------- |
-| Icon ↔ label inside a control         | `gap-2` |
-| Label ↔ control (field stack)         | `gap-2` |
-| Control ↔ helper/error text           | `gap-1` |
-| Sibling controls, button rows         | `gap-2` (never `gap-1` for touch) |
-| Form fields (FieldGroup/FieldSet)     | `gap-6` |
-| Card internal sections                | `gap-6` |
-| Page sections                         | `gap-8` |
+| Relationship                      | Gap                               |
+| --------------------------------- | --------------------------------- |
+| Icon ↔ label inside a control     | `gap-2`                           |
+| Label ↔ control (field stack)     | `gap-2`                           |
+| Control ↔ helper/error text       | `gap-1`                           |
+| Sibling controls, button rows     | `gap-2` (never `gap-1` for touch) |
+| Form fields (FieldGroup/FieldSet) | `gap-6`                           |
+| Card internal sections            | `gap-6`                           |
+| Page sections                     | `gap-8`                           |
 
 ### 1.4 Container padding tiers
 
-| Container                        | Padding | Radius       |
-| -------------------------------- | ------- | ------------ |
-| Menu/list popup (select, combobox, dropdown) | `p-1` | `rounded-lg` |
-| Menu item (all menus, one metric)| `px-2 py-1.5 min-h-8 gap-2` | `rounded-md` |
-| Popover body / toast / drawer    | `p-4`   | `rounded-lg` (toast/drawer), `rounded-lg` popover |
-| Dialog                           | `p-6`   | `rounded-xl` |
-| **Card (new primitive)**         | `p-6`, compact `p-4` | `rounded-xl` |
-| Inline alert (ErrorSummary, FieldGroup outline) | `p-4` | `rounded-lg` |
-| Page shell                       | `px-6 py-10 sm:px-10` | — |
+| Container                                       | Padding                     | Radius                                            |
+| ----------------------------------------------- | --------------------------- | ------------------------------------------------- |
+| Menu/list popup (select, combobox, dropdown)    | `p-1`                       | `rounded-lg`                                      |
+| Menu item (all menus, one metric)               | `px-2 py-1.5 min-h-8 gap-2` | `rounded-md`                                      |
+| Popover body / toast / drawer                   | `p-4`                       | `rounded-lg` (toast/drawer), `rounded-lg` popover |
+| Dialog                                          | `p-6`                       | `rounded-xl`                                      |
+| **Card (new primitive)**                        | `p-6`, compact `p-4`        | `rounded-xl`                                      |
+| Inline alert (ErrorSummary, FieldGroup outline) | `p-4`                       | `rounded-lg`                                      |
+| Page shell                                      | `px-6 py-10 sm:px-10`       | —                                                 |
 
 ### 1.5 Radius ladder
 
@@ -98,11 +98,11 @@ all control sizes use `rounded-lg`.
 
 ## 2. Why it feels off today (evidence)
 
-| Concept   | Button      | Input         | Select      |
-| --------- | ----------- | ------------- | ----------- |
-| `sm`      | h-8 px-3    | h-7 px-2      | h-7 px-2    |
-| `default` | **h-9 px-4**| **h-8 px-2.5**| h-8 px-2    |
-| `lg`      | h-10 px-5   | h-9 px-3      | missing     |
+| Concept   | Button       | Input          | Select   |
+| --------- | ------------ | -------------- | -------- |
+| `sm`      | h-8 px-3     | h-7 px-2       | h-7 px-2 |
+| `default` | **h-9 px-4** | **h-8 px-2.5** | h-8 px-2 |
+| `lg`      | h-10 px-5    | h-9 px-3       | missing  |
 
 - A default Button beside a default Input is 4px taller with 6px more side
   padding. `InputWithButton` contains a `sizeToButton` workaround that steps
@@ -131,13 +131,13 @@ Format: current → target. Only listed values change; everything else stays.
 
 `inputVariants` sizes:
 
-| Size    | Current                          | Target                                        |
-| ------- | -------------------------------- | --------------------------------------------- |
-| xs      | `h-6 px-2 py-0.5 text-xs`        | `h-7 px-2 py-0.5 text-xs`                     |
-| sm      | `h-7 px-2 py-1 text-[0.8rem]`    | `h-8 px-3 py-1 text-xs`                       |
+| Size    | Current                                | Target                                  |
+| ------- | -------------------------------------- | --------------------------------------- |
+| xs      | `h-6 px-2 py-0.5 text-xs`              | `h-7 px-2 py-0.5 text-xs`               |
+| sm      | `h-7 px-2 py-1 text-[0.8rem]`          | `h-8 px-3 py-1 text-xs`                 |
 | default | `h-8 px-2.5 py-1 text-base md:text-sm` | `h-9 px-4 py-1 text-base md:text-sm`    |
 | lg      | `h-9 px-3 py-1.5 text-base md:text-sm` | `h-10 px-5 py-1.5 text-base md:text-sm` |
-| xl NEW  | —                                | `h-11 px-5 py-2 text-base`                    |
+| xl NEW  | —                                      | `h-11 px-5 py-2 text-base`              |
 
 (`file:h-*` helpers step with the ladder: h-5/6/7/8/8.)
 
@@ -178,7 +178,7 @@ Trigger uses `data-[size=…]` utilities (not cva):
 - `data-[size=default]:h-8` → `h-9`; `data-[size=sm]:h-7` → `h-8`.
 - Add `data-[size=xs]:h-7`, `data-[size=lg]:h-10`, `data-[size=xl]:h-11`.
 - Base `px-2 py-1` → per-size px: `data-[size=xs]:px-2 data-[size=sm]:px-3
-  data-[size=default]:px-4 data-[size=lg]:px-5 data-[size=xl]:px-5`.
+data-[size=default]:px-4 data-[size=lg]:px-5 data-[size=xl]:px-5`.
 - Delete `data-[size=sm]:rounded-[min(var(--radius-md),10px)]` (both trigger
   and combobox). All sizes `rounded-lg`.
 - Combobox trigger: `min-h-8`/`min-h-7` → ladder min-heights, same px mapping,
@@ -198,12 +198,12 @@ Trigger uses `data-[size=…]` utilities (not cva):
 
 ### 3.5 textarea.tsx
 
-| Size    | Current                     | Target                              |
-| ------- | --------------------------- | ----------------------------------- |
-| sm      | `px-2 py-1.5 min-h-12 text-xs` | `px-3 py-1.5 min-h-12 text-xs`   |
+| Size    | Current                                     | Target                                    |
+| ------- | ------------------------------------------- | ----------------------------------------- |
+| sm      | `px-2 py-1.5 min-h-12 text-xs`              | `px-3 py-1.5 min-h-12 text-xs`            |
 | default | `px-2.5 py-2 min-h-16 text-base md:text-sm` | `px-4 py-2 min-h-16 text-base md:text-sm` |
-| lg      | `px-3 py-2.5 min-h-20 text-base` | `px-5 py-2.5 min-h-20 text-base` |
-| xl NEW  | —                           | `px-5 py-3 min-h-24 text-base`      |
+| lg      | `px-3 py-2.5 min-h-20 text-base`            | `px-5 py-2.5 min-h-20 text-base`          |
+| xl NEW  | —                                           | `px-5 py-3 min-h-24 text-base`            |
 
 Update the JS auto-height constants to match (paddingY 12/16/20 → 12/16/20/24;
 lineHeight stays 20/24/28). `py` half-steps are the documented vertical-text
