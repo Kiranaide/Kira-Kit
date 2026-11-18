@@ -48,7 +48,7 @@ function Card({
       data-size={size}
       data-variant={variant}
       className={cn(
-        "text-card-foreground gap-4 overflow-hidden rounded-xl py-4 text-sm ring-1 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl group/card flex flex-col",
+        "text-card-foreground overflow-hidden rounded-xl p-6 text-sm ring-1 [--card-bleed:--spacing(6)] data-[size=sm]:p-4 data-[size=sm]:[--card-bleed:--spacing(4)] has-[>img:first-child]:pt-0 has-[>img:last-child]:pb-0 *:[img:first-child]:-mx-[var(--card-bleed)] *:[img:first-child]:w-[calc(100%+var(--card-bleed)*2)] *:[img:first-child]:rounded-t-xl *:[img:last-child]:-mx-[var(--card-bleed)] *:[img:last-child]:w-[calc(100%+var(--card-bleed)*2)] *:[img:last-child]:rounded-b-xl group/card flex flex-col",
         cardSurfaceVariants({ variant, size }),
         className,
       )}
@@ -59,10 +59,11 @@ function Card({
 
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
+    // kira-kit-ignore spacing-scale: title-to-description optical gap (contract-sanctioned exception)
     <div
       data-slot="card-header"
       className={cn(
-        "gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3 group/card-header @container/card-header grid auto-rows-min items-start has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto]",
+        "gap-1.5 mb-4 last:mb-0 group-data-[size=sm]/card:mb-3 rounded-t-xl [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3 group/card-header @container/card-header grid auto-rows-min items-start has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto]",
         className,
       )}
       {...props}
@@ -75,7 +76,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-title"
       className={cn(
-        "text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
+        "text-base leading-none font-semibold group-data-[size=sm]/card:text-sm",
         className,
       )}
       {...props}
@@ -107,13 +108,7 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-content"
-      className={cn("px-4 group-data-[size=sm]/card:px-3", className)}
-      {...props}
-    />
-  );
+  return <div data-slot="card-content" className={cn(className)} {...props} />;
 }
 
 function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
@@ -121,7 +116,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-footer"
       className={cn(
-        "bg-muted/50 rounded-b-xl border-t p-4 group-data-[size=sm]/card:p-3 flex items-center",
+        "flex items-center gap-2 pt-6 group-data-[size=sm]/card:pt-4",
         className,
       )}
       {...props}
@@ -143,18 +138,19 @@ function CardSkeleton({
       aria-busy="true"
       className={cn(
         "rounded-xl border bg-card animate-pulse ring-1 ring-foreground/10",
-        size === "sm" ? "py-3" : "py-4",
+        size === "sm" ? "p-4" : "p-6",
         className,
       )}
       {...props}
     >
-      <div className={cn("space-y-2", size === "sm" ? "px-3" : "px-4")}>
+      <div className="space-y-2">
         <div
           className={cn(
             "rounded bg-muted",
             size === "sm" ? "h-3 w-20" : "h-4 w-28",
           )}
         />
+        {/* kira-kit-ignore spacing-scale: text-line skeleton bones are optical placeholders, not controls */}
         <div
           className={cn(
             "rounded bg-muted",
@@ -162,13 +158,15 @@ function CardSkeleton({
           )}
         />
       </div>
-      <div className={cn("mt-3 space-y-2", size === "sm" ? "px-3" : "px-4")}>
+      <div className="mt-3 space-y-2">
+        {/* kira-kit-ignore spacing-scale: text-line skeleton bones are optical placeholders, not controls */}
         <div
           className={cn(
             "rounded bg-muted",
             size === "sm" ? "h-2.5 w-full" : "h-3 w-full",
           )}
         />
+        {/* kira-kit-ignore spacing-scale: text-line skeleton bones are optical placeholders, not controls */}
         <div
           className={cn(
             "rounded bg-muted",

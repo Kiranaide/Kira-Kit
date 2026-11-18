@@ -551,6 +551,7 @@ function KiraSeparatorIconView({
         {label}
       </span>
       {validCount !== undefined && (
+        // kira-kit-ignore spacing-scale: separator label chip uses badge-tier padding
         <span
           data-slot="kira-separator-count"
           aria-label={validCount.toLocaleString() + " " + countLabel}

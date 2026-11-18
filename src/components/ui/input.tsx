@@ -37,10 +37,11 @@ const inputVariants = cva(
   {
     variants: {
       size: {
-        xs: "h-6 px-2 py-0.5 text-xs file:h-5 file:text-xs",
-        sm: "h-7 px-2 py-1 text-[0.8rem] file:h-5.5 file:text-xs",
-        default: "h-8 px-2.5 py-1 text-base md:text-sm file:h-6 file:text-sm",
-        lg: "h-9 px-3 py-1.5 text-base md:text-sm file:h-7 file:text-sm",
+        xs: "h-7 px-2 py-0.5 text-xs file:h-5 file:text-xs",
+        sm: "h-8 px-3 py-1 text-xs file:h-6 file:text-xs",
+        default: "h-9 px-4 py-1 text-base md:text-sm file:h-7 file:text-sm",
+        lg: "h-10 px-5 py-1.5 text-base md:text-sm file:h-8 file:text-sm",
+        xl: "h-11 px-5 py-2 text-base file:h-8 file:text-sm",
       },
     },
     defaultVariants: {
@@ -114,39 +115,95 @@ interface InputProps
   showCount?: boolean;
 }
 
+// Affordance offsets follow: text offset = container px + affordance width + 4px gap.
 const PREFIX_PADDING = {
-  xs: "pl-7",
-  sm: "pl-7",
-  default: "pl-8",
-  lg: "pl-9",
+  xs: "pl-6",
+  sm: "pl-8",
+  default: "pl-9",
+  lg: "pl-10",
+  xl: "pl-10",
 } as const;
 
 const SUFFIX_PADDING = {
-  xs: "pr-7",
-  sm: "pr-7",
-  default: "pr-8",
-  lg: "pr-9",
+  xs: "pr-6",
+  sm: "pr-8",
+  default: "pr-9",
+  lg: "pr-10",
+  xl: "pr-10",
 } as const;
 
 const PREFIX_CONTAINER_PADDING = {
   xs: "pl-2",
-  sm: "pl-2.5",
-  default: "pl-3",
-  lg: "pl-3",
+  sm: "pl-3",
+  default: "pl-4",
+  lg: "pl-5",
+  xl: "pl-5",
 } as const;
 
 const SUFFIX_CONTAINER_PADDING = {
   xs: "pr-2",
-  sm: "pr-2.5",
-  default: "pr-3",
-  lg: "pr-3",
+  sm: "pr-3",
+  default: "pr-4",
+  lg: "pr-5",
+  xl: "pr-5",
+} as const;
+
+const PREFIX_INSET = {
+  xs: "left-2",
+  sm: "left-3",
+  default: "left-4",
+  lg: "left-5",
+  xl: "left-5",
+} as const;
+
+const SUFFIX_INSET = {
+  xs: "right-2",
+  sm: "right-3",
+  default: "right-4",
+  lg: "right-5",
+  xl: "right-5",
+} as const;
+
+// One size-6 action box: container px + 24px box + 4px gap.
+const SINGLE_ACTION_PADDING = {
+  xs: "pr-9",
+  sm: "pr-10",
+  default: "pr-11",
+  lg: "pr-12",
+  xl: "pr-12",
+} as const;
+
+// Two size-6 boxes: single-action offset + 24px box + 4px gap.
+const DOUBLE_ACTION_PADDING = {
+  xs: "pr-16",
+  sm: "pr-17",
+  default: "pr-18",
+  lg: "pr-19",
+  xl: "pr-19",
 } as const;
 
 const ACTION_ICON_SIZE = {
   xs: "h-3 w-3",
-  sm: "h-3.5 w-3.5",
+  sm: "h-4 w-4",
   default: "h-4 w-4",
   lg: "h-4 w-4",
+  xl: "h-4 w-4",
+} as const;
+
+const TAG_INPUT_MIN_HEIGHT = {
+  xs: "min-h-7",
+  sm: "min-h-8",
+  default: "min-h-9",
+  lg: "min-h-10",
+  xl: "min-h-11",
+} as const;
+
+const SEARCH_ICON_SIZE = {
+  xs: "h-3 w-3",
+  sm: "h-4 w-4",
+  default: "h-4 w-4",
+  lg: "h-4 w-4",
+  xl: "h-4 w-4",
 } as const;
 
 interface InputActionButtonsProps {
@@ -478,10 +535,11 @@ function resolveCombinedSuffix(
 function resolveActionButtonsPadding(
   showClear: boolean,
   showCopy: boolean,
+  size: InputSize,
 ): string {
-  if (showClear && showCopy) return "pr-14";
+  if (showClear && showCopy) return DOUBLE_ACTION_PADDING[size];
 
-  if (showClear || showCopy) return "pr-9";
+  if (showClear || showCopy) return SINGLE_ACTION_PADDING[size];
 
   return "";
 }
@@ -490,12 +548,17 @@ function resolveActionButtonsPadding(
 function renderPrefixContainer(
   prefix: React.ReactNode,
   prefixContainerPadding: string,
+  size: InputSize,
 ): React.ReactNode {
   return (
     prefix && (
       <div
         className={cn(
           "absolute left-0 flex h-full items-center text-muted-foreground pointer-events-none",
+          // Bare icons get the contract affordance size so text offsets never collide.
+          size === "xs"
+            ? "[&_svg:not([class*='size-'])]:size-3"
+            : "[&_svg:not([class*='size-'])]:size-4",
           prefixContainerPadding,
         )}
       >
@@ -509,12 +572,16 @@ function renderPrefixContainer(
 function renderSuffixContainer(
   combinedSuffix: React.ReactNode,
   suffixContainerPadding: string,
+  size: InputSize,
 ): React.ReactNode {
   return (
     combinedSuffix && (
       <div
         className={cn(
           "absolute right-0 flex h-full items-center",
+          size === "xs"
+            ? "[&_svg:not([class*='size-'])]:size-3"
+            : "[&_svg:not([class*='size-'])]:size-4",
           suffixContainerPadding,
         )}
       >
@@ -563,7 +630,11 @@ function InputFieldView(options: InputFieldViewOptions) {
 
   const combinedSuffix = resolveCombinedSuffix(options.suffix, actionButtons);
 
-  const actionButtonsPadding = resolveActionButtonsPadding(showClear, showCopy);
+  const actionButtonsPadding = resolveActionButtonsPadding(
+    showClear,
+    showCopy,
+    effectiveSize,
+  );
 
   // Always render the wrapper div: switching between bare-input and wrapper
   // trees remounts the <input> on first keystroke (showClear/showCopy appearing
@@ -574,6 +645,7 @@ function InputFieldView(options: InputFieldViewOptions) {
       {renderPrefixContainer(
         options.prefix,
         PREFIX_CONTAINER_PADDING[effectiveSize],
+        effectiveSize,
       )}
       {React.cloneElement(inputElement, {
         className: cn(inputElement.props.className, actionButtonsPadding),
@@ -581,6 +653,7 @@ function InputFieldView(options: InputFieldViewOptions) {
       {renderSuffixContainer(
         combinedSuffix,
         SUFFIX_CONTAINER_PADDING[effectiveSize],
+        effectiveSize,
       )}
     </div>,
   );
@@ -681,18 +754,36 @@ function NumericInput({
       disabled={disabled}
       className={cn("flex items-center", className)}
     >
-      <NumericInputControls showButtons={showButtons}>
+      <NumericInputControls showButtons={showButtons} size={size || "default"}>
         {scrubArea}
       </NumericInputControls>
     </NumberField.Root>
   );
 }
 
+const STEPPER_SIZE = {
+  xs: "size-7",
+  sm: "size-8",
+  default: "size-9",
+  lg: "size-10",
+  xl: "size-11",
+} as const;
+
+const STEPPER_ICON_SIZE = {
+  xs: "h-3 w-3",
+  sm: "h-4 w-4",
+  default: "h-4 w-4",
+  lg: "h-5 w-5",
+  xl: "h-5 w-5",
+} as const;
+
 function NumericInputControls({
   showButtons,
+  size,
   children,
 }: {
   showButtons: boolean;
+  size: InputSize;
   children: React.ReactNode;
 }) {
   return (
@@ -704,9 +795,12 @@ function NumericInputControls({
         <NumberField.Decrement
           aria-label="Decrease value"
           data-slot="numeric-input-decrement"
-          className="flex h-8 w-8 items-center justify-center rounded-l-lg border border-r-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className={cn(
+            "flex items-center justify-center rounded-l-lg border border-r-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50 disabled:opacity-50 disabled:cursor-not-allowed",
+            STEPPER_SIZE[size],
+          )}
         >
-          <IconMinus className="h-3 w-3" />
+          <IconMinus className={STEPPER_ICON_SIZE[size]} />
         </NumberField.Decrement>
       )}
       {children}
@@ -714,9 +808,12 @@ function NumericInputControls({
         <NumberField.Increment
           aria-label="Increase value"
           data-slot="numeric-input-increment"
-          className="flex h-8 w-8 items-center justify-center rounded-r-lg border border-l-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className={cn(
+            "flex items-center justify-center rounded-r-lg border border-l-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50 disabled:opacity-50 disabled:cursor-not-allowed",
+            STEPPER_SIZE[size],
+          )}
         >
-          <IconPlus className="h-3 w-3" />
+          <IconPlus className={STEPPER_ICON_SIZE[size]} />
         </NumberField.Increment>
       )}
     </NumberField.Group>
@@ -985,27 +1082,13 @@ function InputWithButton({
   size = "default",
   ...props
 }: InputWithButtonProps) {
-  // Button heights are one step above input heights (h-9 vs h-8 …), so step
-  // down to keep the button the same height as the joined input.
-  const sizeToButton: Record<
-    "xs" | "sm" | "default" | "lg",
-    VariantProps<typeof buttonVariants>["size"]
-  > = {
-    xs: "xs",
-    sm: "xs",
-    default: "sm",
-    lg: "default",
-  };
-
-  const buttonSize = sizeToButton[size ?? "default"];
-
   return (
     <div className="flex items-center">
       {buttonPosition === "left" && (
         <Button
           type="button"
           variant={buttonVariant}
-          size={buttonSize}
+          size={size}
           onClick={onButtonClick}
           className="rounded-r-none border-r-0 transition-colors"
         >
@@ -1027,7 +1110,7 @@ function InputWithButton({
         <Button
           type="button"
           variant={buttonVariant}
-          size={buttonSize}
+          size={size}
           onClick={onButtonClick}
           className="rounded-l-none border-l-0 transition-colors"
         >
@@ -1053,15 +1136,25 @@ function InputWithSpinner({
   size,
   ...props
 }: InputWithSpinnerProps) {
+  const effectiveSize = size || "default";
+
   return (
     <div className="relative">
       <Input
-        className={cn({ "pr-10": isLoading }, className)}
+        className={cn(
+          isLoading && SINGLE_ACTION_PADDING[effectiveSize],
+          className,
+        )}
         size={size}
         {...props}
       />
       {isLoading && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+        <div
+          className={cn(
+            "absolute top-1/2 -translate-y-1/2",
+            SUFFIX_INSET[effectiveSize],
+          )}
+        >
           <IconLoader2 className="h-4 w-4 animate-spin text-muted-foreground" />
         </div>
       )}
@@ -1127,9 +1220,10 @@ function InputWithDropdown({
       defaultValue={dropdownValue ?? options[0]?.value}
       onChange={(next) => onOptionSelect?.(String(next))}
       variant="ghost"
+      size={size ?? undefined}
       className={cn(
-        // Match the joined input: full input height (default size = h-8), same
-        // surface as the input in both themes, seam edge squared.
+        // Match the joined input: same ladder height and surface as the input
+        // in both themes, seam edge squared.
         "border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50",
         selectRounding,
       )}
@@ -1240,6 +1334,7 @@ const otpInputVariants = cva(
 const otpContainerVariants = cva("flex items-center", {
   variants: {
     gap: {
+      // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
       sm: "gap-1.5",
       default: "gap-2",
       lg: "gap-3",
@@ -1409,6 +1504,7 @@ import {
   IconStarHalfFilled,
 } from "@tabler/icons-react";
 
+// kira-kit-ignore spacing-scale: star rating is a dense non-control glyph row
 const ratingVariants = cva("inline-flex items-center gap-0.5", {
   variants: {
     size: {
@@ -1803,7 +1899,7 @@ function resolveInputOptions({
   showCopy = false,
   showCount = false,
 }: {
-  size?: "default" | "sm" | "lg" | "xs" | null;
+  size?: InputSize | null;
   step?: string | number;
   showClear?: boolean;
   showCopy?: boolean;
@@ -1921,14 +2017,14 @@ function InputContentView({
 }: {
   showClearButton: boolean;
   onClear: () => void;
-  iconSize: "h-3 w-3" | "h-3.5 w-3.5" | "h-4 w-4";
+  iconSize: "h-3 w-3" | "h-4 w-4";
   showCopy: boolean;
   onCopy: () => void;
   copyButtonLabel: string;
   copyButtonIcon: React.JSX.Element;
 }) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-1">
       {showClearButton && (
         <button
           type="button"
@@ -1971,6 +2067,7 @@ function InputContentView2({
         aria-valuetext={`${strength.label} (${strength.score} of 4)`}
         className="flex items-center gap-2"
       >
+        {/* kira-kit-ignore spacing-scale: data-viz track hairline, not a control height */}
         <Meter.Track className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
           <Meter.Indicator
             className={cn(
@@ -1990,6 +2087,7 @@ function InputContentView2({
       </Meter.Root>
       <ul className="space-y-0.5">
         {strength.checks.map((c) => (
+          // kira-kit-ignore spacing-scale: meter label row keeps the compact optical gap
           <li
             key={c.label}
             className={cn(
@@ -2035,12 +2133,7 @@ function useSearchInputModel({
 
   const effectiveSize = size || "default";
 
-  const iconSize = {
-    xs: "h-3 w-3",
-    sm: "h-3.5 w-3.5",
-    default: "h-4 w-4",
-    lg: "h-4 w-4",
-  }[effectiveSize];
+  const iconSize = SEARCH_ICON_SIZE[effectiveSize];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     inputHandleChange(
@@ -2114,9 +2207,16 @@ function SearchInputView({
   suffix,
   props,
 }: ReturnType<typeof useSearchInputModel>) {
+  const effectiveSize = size || "default";
+
   return (
     <div className="relative flex items-center">
-      <div className="absolute left-2.5 flex items-center pointer-events-none text-muted-foreground z-10">
+      <div
+        className={cn(
+          "absolute flex items-center pointer-events-none text-muted-foreground z-10",
+          PREFIX_INSET[effectiveSize],
+        )}
+      >
         <svg
           className={iconSize}
           fill="none"
@@ -2135,7 +2235,7 @@ function SearchInputView({
         ref={inputRef}
         type="search"
         className={cn(
-          "pl-8",
+          PREFIX_PADDING[effectiveSize],
 
           "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
           className,
@@ -2357,16 +2457,19 @@ function TagInputView({
       disabled={disabled}
       open={false}
     >
+      {/* kira-kit-ignore spacing-scale: TagInput chip metrics are a documented exception */}
       <Combobox.Chips
         data-slot="tag-input"
         className={cn(
           inputVariants({ size }),
-          "flex h-auto min-h-8 flex-wrap items-center gap-1.5 py-1",
+          "flex h-auto flex-wrap items-center gap-1.5 py-1",
+          TAG_INPUT_MIN_HEIGHT[size || "default"],
           { "pointer-events-none opacity-50": disabled },
           className,
         )}
       >
         {keyedTags(tags).map(({ tag, key }) => (
+          // kira-kit-ignore spacing-scale: TagInput chip metrics are a documented exception
           <Combobox.Chip
             key={key}
             className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium"

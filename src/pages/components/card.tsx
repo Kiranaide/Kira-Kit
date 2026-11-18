@@ -486,7 +486,7 @@ export default function CardPage() {
           prop: "size",
           type: '"default" | "sm"',
           default: '"default"',
-          description: "Density of the card; sm tightens gaps and padding",
+          description: "Density of the card; sm uses p-4 instead of p-6",
         },
         {
           prop: "className",
@@ -632,6 +632,36 @@ export default function CardPage() {
 
 // Static demo metadata stays co-located and follows its source constants.
 const cardPageChangelogEntries = [
+  {
+    version: "2.2.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Spacing Contract Padding Model",
+        description:
+          'Card now owns all padding: p-6 (size="sm" p-4) instead of py-4 plus per-section px. Card\'s own gap-4 is gone — CardHeader adds mb-4 (sm mb-3) and CardFooter adds pt-6 (sm pt-4) for section rhythm. Direct image children still bleed to the card edges.',
+      },
+      {
+        type: "changed",
+        title: "CardFooter Is No Longer a Tinted Band",
+        description:
+          "Removed the bg-muted/50 border-t full-width band. CardFooter is now a plain flex items-center gap-2 row with pt-6 (sm pt-4), inside the card padding.",
+      },
+      {
+        type: "changed",
+        title: "CardTitle Typography",
+        description:
+          "Title is now text-base font-semibold leading-none (sm keeps text-sm), matching the design-system contract.",
+      },
+      {
+        type: "changed",
+        title: "CardSkeleton Padding",
+        description:
+          "Skeleton placeholder now mirrors the new p-6/p-4 card padding instead of py-4/py-3 plus section px.",
+      },
+    ],
+  },
   {
     version: "2.1.0",
     date: "3 November 2026",

@@ -573,6 +573,18 @@ const inputGroupPageAPIReferenceSections = [
 
 const inputGroupPageChangelogEntries = [
   {
+    version: "2.3.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Shell height matches the default control",
+        description:
+          "InputGroup shell h-8 → h-9 so it sits flush beside default Button/Input/Select; inner input padding px-2.5 → px-3. Compact addon buttons keep their in-control affordance sizing.",
+      },
+    ],
+  },
+  {
     version: "2.2.1",
     date: "17 October 2026",
     changes: [

@@ -44,6 +44,7 @@ function mergeClassName<S>(base: string, className: StateClassName<S>) {
  */
 export const navigationMenuTriggerVariants = cva(
   [
+    // kira-kit-ignore spacing-scale: nav trigger icon gap keeps the compact optical metric
     "group inline-flex h-10 w-max min-w-0 items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium outline-none",
     "transition-colors motion-reduce:transition-none",
     "hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground",

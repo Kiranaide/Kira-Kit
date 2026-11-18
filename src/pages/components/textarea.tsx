@@ -286,6 +286,7 @@ const usageCode = `import { Textarea, TextareaWithCounter, KiraTextarea } from "
 <Textarea size="sm" />
 <Textarea size="default" />
 <Textarea size="lg" />
+<Textarea size="xl" />
 
 // Resize control
 <Textarea resize="vertical" />
@@ -375,6 +376,19 @@ function SizesDemo() {
           id={`${textareaLabelsId}-3`}
           size="lg"
           placeholder="Large textarea..."
+        />
+      </div>
+      <div className="space-y-2">
+        <label
+          htmlFor={`${textareaLabelsId}-4`}
+          className="text-sm font-medium"
+        >
+          Extra Large
+        </label>
+        <Textarea
+          id={`${textareaLabelsId}-4`}
+          size="xl"
+          placeholder="Extra large textarea..."
         />
       </div>
     </div>
@@ -970,7 +984,7 @@ const demoTabs = [
     demo: (
       <DemoWrapper
         title="Size Variants"
-        description="Choose from sm, default, or lg sizes for different visual emphasis."
+        description="Choose from sm, default, lg, or xl sizes — horizontal padding follows the shared control ladder (px-3/4/5/5)."
         code={sizesCode}
       >
         <SizesDemo />
@@ -1082,6 +1096,24 @@ export default function TextareaPage() {
 
 // Static demo metadata stays co-located and follows its source constants.
 const textareaPageChangelogEntries = [
+  {
+    version: "v2.3",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "xl size",
+        description:
+          "New xl size (px-5 py-3, min-h-24, text-base) completes the ladder; auto-height math gains paddingY 24 for xl.",
+      },
+      {
+        type: "changed",
+        title: "Ladder-aligned padding",
+        description:
+          "Horizontal padding now matches the shared control ladder: sm px-3, default px-4, lg px-5 (were px-2/2.5/3). KiraTextarea's clear button aligns to the container padding with the single-action text offset per size.",
+      },
+    ],
+  },
   {
     version: "v2.2",
     date: "22 October 2026",

@@ -76,6 +76,7 @@ import {
   IconToggleRight,
   IconPlayerPlay,
   IconCamera,
+  IconRuler2,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -102,6 +103,13 @@ export function AppLayout() {
               <SidebarContent>
                 <SidebarItem to="/" icon={<IconHome className="w-5 h-5" />}>
                   Overview
+                </SidebarItem>
+
+                <SidebarItem
+                  to="/ui-preview"
+                  icon={<IconRuler2 className="w-5 h-5" />}
+                >
+                  UI Preview
                 </SidebarItem>
 
                 <SidebarDivider />

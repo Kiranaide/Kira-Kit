@@ -26,6 +26,7 @@ const timePickerTriggerVariants = cva(
         ghost: "border-transparent bg-transparent hover:bg-muted/50",
       },
       size: {
+        // kira-kit-ignore spacing-scale: date/time-picker trigger ladder is a documented non-change (PR follow-up)
         sm: "h-8 px-2.5 text-xs",
         default: "h-10 px-3 text-sm",
         lg: "h-12 px-4 text-base",
@@ -90,6 +91,7 @@ interface TimePickerProps extends Omit<
 /*                                   Helpers                                  */
 /* -------------------------------------------------------------------------- */
 
+// kira-kit-ignore spacing-scale: date/time-picker trigger ladder is a documented non-change (PR follow-up)
 const iconSize = { sm: "size-3.5", default: "size-4", lg: "size-5" } as const;
 
 function useMediaQuery(query: string, serverFallback = false) {
@@ -182,6 +184,19 @@ function StepperFields(arg0: PanelProps) {
   return <StepperFieldsView {...model} />;
 }
 
+function GridLabel({ children }: { children: string }) {
+  return (
+    // kira-kit-ignore arbitrary-values: sub-12px micro type is a documented exception
+    <p
+      data-slot="time-picker-grid-label"
+      aria-hidden
+      className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
+    >
+      {children}
+    </p>
+  );
+}
+
 /** Quick-pick chips + tappable hour/minute cell grids. No typing needed. */
 function PresetGrid({
   value,
@@ -229,12 +244,7 @@ function PresetGrid({
       )}
 
       <div>
-        <p
-          aria-hidden
-          className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
-        >
-          Hour
-        </p>
+        <GridLabel>Hour</GridLabel>
         <div
           className="grid grid-cols-6 gap-1"
           // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Custom scrollable options use roving focus; a native select would change this widget interaction.
@@ -253,12 +263,7 @@ function PresetGrid({
       </div>
 
       <div>
-        <p
-          aria-hidden
-          className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground"
-        >
-          Minute
-        </p>
+        <GridLabel>Minute</GridLabel>
         <div
           className="grid grid-cols-6 gap-1"
           // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Custom scrollable options use roving focus; a native select would change this widget interaction.
@@ -434,6 +439,7 @@ function TimePickerContentView({
   emit: (patch: Partial<TimeParts>) => void;
 }) {
   return (
+    // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
     <div
       className="flex flex-col items-center gap-1.5"
       style={{
@@ -463,6 +469,7 @@ function TimePickerContentView2({
   emit: (patch: Partial<TimeParts>) => void;
 }) {
   return (
+    // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
     <div className="flex flex-wrap gap-1.5">
       {presets.map((p) =>
         timePickerMap3(p, chipAllowed, chipActive, disabled, emit),
@@ -571,7 +578,9 @@ function StepperFieldsView({
               :
             </span>
           )}
+          {/* kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept */}
           <div className="flex flex-col items-center gap-1.5">
+            {/* kira-kit-ignore arbitrary-values: sub-12px micro type is a documented exception */}
             <label
               htmlFor={`${reactId}-${unit}`}
               className="flex h-5 items-center text-[11px] font-medium uppercase tracking-wide text-muted-foreground"

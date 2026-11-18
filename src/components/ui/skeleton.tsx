@@ -66,6 +66,10 @@ interface SkeletonImageProps extends SkeletonBoneProps {
   aspectRatio?: string;
 }
 
+interface SkeletonButtonProps extends SkeletonBoneProps {
+  size?: "xs" | "sm" | "default" | "lg" | "xl";
+}
+
 interface SkeletonAvatarProps extends Omit<SkeletonBoneProps, "variant"> {
   size?: "sm" | "md" | "lg" | "xl";
 }
@@ -286,11 +290,23 @@ function SkeletonHeading({ className, ...props }: SkeletonBoneProps) {
   );
 }
 
-function SkeletonButton({ className, ...props }: SkeletonBoneProps) {
+function SkeletonButton({
+  size = "default",
+  className,
+  ...props
+}: SkeletonButtonProps) {
+  const sizes = {
+    xs: "h-7",
+    sm: "h-8",
+    default: "h-9",
+    lg: "h-10",
+    xl: "h-11",
+  };
+
   return (
     <SkeletonBone
       data-slot="skeleton-button"
-      className={cn("h-9 w-24", className)}
+      className={cn(sizes[size], "w-24", className)}
       {...props}
     />
   );
@@ -647,6 +663,7 @@ export type {
   SkeletonMotionProps,
   SkeletonLinesProps,
   SkeletonImageProps,
+  SkeletonButtonProps,
   SkeletonAvatarProps,
   SkeletonTableRowProps,
   KiraSkeletonProps,

@@ -1339,6 +1339,7 @@ function renderCodeBlockStreamIndicator(
       aria-hidden="true"
       className="inline-flex size-3 items-center justify-center"
     >
+      {/* kira-kit-ignore spacing-scale: non-control indicator dot on the compact ladder */}
       <span className="size-1.5 rounded-full bg-info" />
     </span>
   );
@@ -1362,6 +1363,7 @@ function useCodeBlockState5(state: ReturnType<typeof useCodeBlockState4>) {
             aria-label="Code presentation"
             className="shrink-0 rounded-md border border-border/70 bg-muted/40 p-0.5"
           >
+            {/* kira-kit-ignore spacing-scale: code-block tab chrome keeps compact optical metrics */}
             <TabsTrigger
               data-slot="code-block-formatted-tab"
               value="formatted"
@@ -1369,6 +1371,7 @@ function useCodeBlockState5(state: ReturnType<typeof useCodeBlockState4>) {
             >
               Formatted
             </TabsTrigger>
+            {/* kira-kit-ignore spacing-scale: code-block tab chrome keeps compact optical metrics */}
             <TabsTrigger
               data-slot="code-block-source-tab"
               value="source"

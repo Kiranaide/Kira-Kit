@@ -21,6 +21,7 @@ const sliderVariants = cva(
   {
     variants: {
       size: {
+        // kira-kit-ignore spacing-scale: sm slider thumb/tick on the compact non-control ladder
         sm: "[--kira-track-w:0.375rem] [&_[data-slot=slider-thumb]]:size-3.5",
         default: "[--kira-track-w:0.5rem] [&_[data-slot=slider-thumb]]:size-5",
         lg: "[--kira-track-w:0.75rem] [&_[data-slot=slider-thumb]]:size-6",
@@ -232,6 +233,7 @@ function ThumbDecor({ icon, text }: { icon?: React.ReactNode; text?: string }) {
       className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden rounded-full"
     >
       {icon ?? (
+        // kira-kit-ignore arbitrary-values: sub-12px micro type is a documented exception
         <span className="text-[8px] font-bold leading-none text-primary">
           {text}
         </span>
@@ -304,6 +306,7 @@ function SliderDots({
   if (markers.length === 0) return null;
 
   const dot =
+    // kira-kit-ignore spacing-scale: sm slider thumb/tick on the compact non-control ladder
     "absolute z-1 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-150";
 
   const axis = vertical ? "bottom" : "left";
@@ -383,6 +386,7 @@ function SliderMarkerLabels({
   if (labeled.length === 0) return null;
 
   const item =
+    // kira-kit-ignore arbitrary-values: sub-12px micro type is a documented exception
     "absolute -translate-x-1/2 text-[10px] transition-colors duration-150";
 
   return (

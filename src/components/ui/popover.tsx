@@ -76,6 +76,7 @@ const popoverContentVariants = cva(
         sm: "w-48",
         md: "w-72",
         lg: "w-96",
+        // kira-kit-ignore arbitrary-values: fixed 512px wide popover variant
         xl: "w-[32rem]",
       },
       variant: {

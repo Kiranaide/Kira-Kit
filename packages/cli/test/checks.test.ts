@@ -13,6 +13,7 @@ import { targetSize } from "../src/core/checks/target-size";
 import { rawColors } from "../src/core/checks/raw-colors";
 import { layoutTransitions } from "../src/core/checks/layout-transitions";
 import { arbitraryValues } from "../src/core/checks/arbitrary-values";
+import { spacingScale } from "../src/core/checks/spacing-scale";
 import { registryMetadata } from "../src/core/checks/registry-metadata";
 import { baseUiOnly } from "../src/core/checks/base-ui-only";
 import { cnSource } from "../src/core/checks/cn-source";
@@ -323,6 +324,85 @@ describe("arbitrary-values", () => {
       ).toHaveLength(0);
     }
   });
+
+  it("warns on arbitrary spacing, sizing, and font values", () => {
+    for (const className of [
+      "text-[0.8rem]",
+      "h-[43px]",
+      "px-[7px]",
+      "gap-[3px]",
+      "min-h-[43px]",
+    ]) {
+      expect(
+        arbitraryValues(file(`<div className="${className}" />`), ctx()),
+        className,
+      ).toHaveLength(1);
+    }
+  });
+
+  it("passes fluid and environment-relative values", () => {
+    for (const className of [
+      "text-[clamp(1rem,2vw,1.5rem)]",
+      "pb-[max(0.75rem,env(safe-area-inset-bottom))]",
+      "max-h-[85vh]",
+      "max-w-[65ch]",
+      "w-[1em]",
+      "max-w-[calc(100vw-2rem)]",
+      "w-[calc(100%+3rem)]",
+    ]) {
+      expect(
+        arbitraryValues(file(`<div className="${className}" />`), ctx()),
+        className,
+      ).toHaveLength(0);
+    }
+  });
+});
+
+describe("spacing-scale", () => {
+  it("warns on half-step heights, widths, gaps, and horizontal padding", () => {
+    for (const className of [
+      "gap-1.5",
+      "h-4.5",
+      "size-3.5",
+      "px-2.5",
+      "pr-1.5",
+      "min-w-37.5",
+      "gap-y-1.5",
+    ]) {
+      expect(
+        spacingScale(file(`<div className="${className}" />`), ctx()),
+        className,
+      ).toHaveLength(1);
+    }
+  });
+
+  it("allows vertical text padding and whole steps", () => {
+    for (const className of [
+      "py-1.5",
+      "py-2.5",
+      "pt-0.5",
+      "h-9",
+      "gap-2",
+      "px-3",
+      "w-1/2",
+      "h-px",
+    ]) {
+      expect(
+        spacingScale(file(`<div className="${className}" />`), ctx()),
+        className,
+      ).toHaveLength(0);
+    }
+  });
+
+  it("honors line suppressions with reasons", () => {
+    const source = `const a = "gap-1.5";\n// kira-kit-ignore spacing-scale: optical exception\nconst b = "gap-1.5";`;
+    const findings = spacingScale(file(source), ctx());
+    const { suppressions } = parseSuppressions(source, "ui/test");
+
+    expect(findings).toHaveLength(2);
+    expect(isSuppressed(findings[0], suppressions)).toBe(false);
+    expect(isSuppressed(findings[1], suppressions)).toBe(true);
+  });
 });
 
 describe("registry-metadata", () => {
@@ -462,6 +542,81 @@ describe("suppressions", () => {
     const unused = unusedSuppressions([], suppressions, "ui/test");
     expect(unused).toHaveLength(1);
     expect(unused[0].severity).toBe("warning");
+  });
+});
+
+describe("suppressions (extended forms)", () => {
+  it("supports JSX comment suppressions", () => {
+    const source = `{/* kira-kit-ignore spacing-scale: optical gap */}\n<div className="gap-1.5" />`;
+    const { errors, suppressions } = parseSuppressions(source, "ui/test");
+    expect(errors).toHaveLength(0);
+
+    const finding = {
+      checkId: "spacing-scale",
+      severity: "warning" as const,
+      file: "ui/test",
+      line: 2,
+      message: "x",
+    };
+
+    expect(isSuppressed(finding, suppressions)).toBe(true);
+  });
+
+  it("stacked suppressions cover the same target line", () => {
+    const source = `// kira-kit-ignore spacing-scale: optical\n// kira-kit-ignore arbitrary-values: micro type\nconst a = "px-1.5 text-[10px]";`;
+    const { suppressions } = parseSuppressions(source, "ui/test");
+
+    for (const checkId of ["spacing-scale", "arbitrary-values"]) {
+      expect(
+        isSuppressed(
+          {
+            checkId,
+            severity: "warning",
+            file: "ui/test",
+            line: 3,
+            message: "x",
+          },
+          suppressions,
+        ),
+        checkId,
+      ).toBe(true);
+    }
+  });
+
+  it("a suppression above a JSX opening tag covers its attribute lines", () => {
+    const source = `// kira-kit-ignore spacing-scale: optical\n<kbd\n  aria-hidden="true"\n  className="px-1.5"\n/>`;
+    const { suppressions } = parseSuppressions(source, "ui/test");
+
+    expect(
+      isSuppressed(
+        {
+          checkId: "spacing-scale",
+          severity: "warning",
+          file: "ui/test",
+          line: 4,
+          message: "x",
+        },
+        suppressions,
+      ),
+    ).toBe(true);
+    expect(
+      isSuppressed(
+        {
+          checkId: "spacing-scale",
+          severity: "warning",
+          file: "ui/test",
+          line: 6,
+          message: "x",
+        },
+        suppressions,
+      ),
+    ).toBe(false);
+  });
+
+  it("parses multiple file-level suppressions", () => {
+    const source = `/* kira-kit-ignore-file spacing-scale: ladder */\n/* kira-kit-ignore-file arbitrary-values: micro type */\nconst a = 1;`;
+    const { suppressions } = parseSuppressions(source, "ui/test");
+    expect(suppressions.file).toHaveLength(2);
   });
 });
 

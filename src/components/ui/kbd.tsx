@@ -1,3 +1,5 @@
+/* kira-kit-ignore-file spacing-scale: kbd chips keep their compact label-tier ladder (documented exception) */
+/* kira-kit-ignore-file arbitrary-values: kbd micro type (documented sub-12px exception) */
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";

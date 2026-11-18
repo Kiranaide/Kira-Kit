@@ -211,6 +211,7 @@ function ResizableHandle({
   const vertical = context.orientation === "vertical";
 
   return (
+    // kira-kit-ignore spacing-scale: 6px resize handle/grip is an optical hit-area metric
     <Separator
       data-slot="resizable-handle"
       aria-label={
@@ -236,6 +237,7 @@ function ResizableHandle({
               vertical ? "h-3 w-4" : "h-4 w-3",
             )}
           >
+            {/* kira-kit-ignore spacing-scale: 6px resize handle/grip is an optical hit-area metric */}
             <IconGripVertical
               data-slot="resizable-handle-icon"
               className={cn("size-2.5", { "rotate-90": vertical })}

@@ -481,10 +481,15 @@ function ShowcaseDemo() {
           <KiraSelect options={[]} placeholder="No options" />
         </div>
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Size: sm + default</p>
+          <p className="text-sm text-muted-foreground">
+            Size ladder: xs / sm / default / lg / xl
+          </p>
           <div className="space-y-2">
+            <KiraSelect options={fruits} size="xs" placeholder="Extra small" />
             <KiraSelect options={fruits} size="sm" placeholder="Small" />
             <KiraSelect options={fruits} placeholder="Default" />
+            <KiraSelect options={fruits} size="lg" placeholder="Large" />
+            <KiraSelect options={fruits} size="xl" placeholder="Extra large" />
           </div>
         </div>
       </div>
@@ -973,7 +978,7 @@ const demoTabs = [
     demo: (
       <DemoWrapper
         title="Grouped Options with Search"
-        description="Group labels survive filtering in the rich path."
+        description="Group labels survive filtering in every mode."
         code={groupedCode}
       >
         <GroupedSearchableDemo />
@@ -1029,6 +1034,48 @@ export default function SelectPage() {
 
 // Static demo metadata stays co-located and follows its source constants.
 const selectPageChangelogEntries = [
+  {
+    version: "3.4.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "One combobox layout for every mode",
+        description:
+          "KiraSelect now renders basic, multiple, async, searchable, and creatable modes through the same combobox trigger and popup: the list anchors below the trigger at its exact width, with no overlay positioning and no trigger peeking through. Basic selects gain type-to-filter and show the selected label in the closed trigger; opening starts a fresh query so the full list shows. Low-level SelectContent defaults move below the trigger (align start, no item alignment) to match.",
+      },
+    ],
+  },
+  {
+    version: "3.3.1",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Popup padding and single-select trigger layout",
+        description:
+          "SelectContent gains the contract p-1 popup padding (items no longer sit flush against the rounded edge). The combobox trigger only wraps for multiple-selection chips; single-select stays on one line with a shrinkable input, so the chevron never drops to a second row at narrow widths.",
+      },
+    ],
+  },
+  {
+    version: "3.3.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Full Control-Height Ladder",
+        description:
+          "SelectTrigger, KiraSelect, and ComboboxField now accept xs / sm / default / lg / xl (h-7/8/9/10/11 with px-2/3/4/5/5), matching Button and Input on a shared baseline. sm and default move up one step (h-7→h-8, h-8→h-9).",
+      },
+      {
+        type: "changed",
+        title: "One Menu-Item Metric",
+        description:
+          "SelectItem and combobox items share px-2 py-1.5 min-h-8 gap-2 (select keeps pr-8 for the check indicator); SelectLabel aligns to px-2 py-1.5. The sm-only rounded-[min(...)] radius hack is gone — every size uses rounded-lg. Virtualized row estimate updated 36→32px to match.",
+      },
+    ],
+  },
   {
     version: "3.2.0",
     date: "18 October 2026",

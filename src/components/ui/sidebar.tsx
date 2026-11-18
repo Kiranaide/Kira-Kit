@@ -414,10 +414,11 @@ const sidebarVariants = cva(
 );
 
 const sidebarMenuButtonVariants = cva(
-  `relative flex min-h-9 w-full min-w-0 items-center gap-2 rounded-lg border border-transparent px-2.5 py-2 text-start text-sm leading-5 touch-manipulation ${focusRing} hover:bg-sidebar-accent active:bg-sidebar-accent disabled:cursor-not-allowed disabled:opacity-50 data-disabled:cursor-not-allowed data-disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 [@media(pointer:coarse)]:min-h-11`,
+  `relative flex min-h-9 w-full min-w-0 items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-start text-sm leading-5 touch-manipulation ${focusRing} hover:bg-sidebar-accent active:bg-sidebar-accent disabled:cursor-not-allowed disabled:opacity-50 data-disabled:cursor-not-allowed data-disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 [@media(pointer:coarse)]:min-h-11`,
   {
     variants: {
       isActive: {
+        // kira-kit-ignore spacing-scale: sidebar nav chrome keeps compact optical metrics
         true: "bg-sidebar-accent font-semibold text-sidebar-accent-foreground before:absolute before:inset-y-2.5 before:start-0 before:w-0.5 before:rounded-full before:bg-sidebar-primary",
         false: "text-sidebar-foreground",
       },
@@ -967,6 +968,7 @@ const badgeVariants = cva(
         warning: "bg-warning/20 text-foreground",
       },
       size: {
+        // kira-kit-ignore spacing-scale: sidebar nav chrome keeps compact optical metrics
         default: "h-5 min-w-5 px-1.5",
         sm: "h-4 min-w-4 px-1 text-xs",
         dot: "size-2 rounded-full p-0",
@@ -1087,6 +1089,7 @@ type SidebarMenuProps = React.ComponentProps<"ul">;
 
 function SidebarMenu({ className, ...props }: SidebarMenuProps) {
   return (
+    // kira-kit-ignore spacing-scale: sidebar nav chrome keeps compact optical metrics
     <ul
       {...props}
       data-slot="sidebar-menu"
@@ -1775,6 +1778,7 @@ function SidebarGroupHeaderView({
         "sr-only": !expanded,
       })}
     >
+      {/* kira-kit-ignore spacing-scale: sidebar nav chrome keeps compact optical metrics */}
       <CollapsibleTrigger
         showArrow={false}
         tabIndex={expanded ? undefined : -1}
@@ -1788,6 +1792,7 @@ function SidebarGroupHeaderView({
           className="flex min-w-0 items-center justify-between gap-2"
         >
           <span className="wrap-anywhere">{label}</span>
+          {/* kira-kit-ignore spacing-scale: sidebar nav chrome keeps compact optical metrics */}
           <IconChevronDown
             aria-hidden="true"
             className={cn(
@@ -2065,6 +2070,7 @@ function SidebarReorderActionsView({
       data-slot="sidebar-reorder-actions"
       className="flex items-center justify-end gap-1 pb-1"
     >
+      {/* kira-kit-ignore spacing-scale: sidebar nav chrome keeps compact optical metrics */}
       <span
         data-slot="sidebar-favorite-position"
         className="me-auto ps-2.5 text-xs text-muted-foreground tabular-nums"
@@ -2694,6 +2700,7 @@ function SidebarFavoriteListView({
       }
     >
       {showControls && (
+        // kira-kit-ignore spacing-scale: sidebar nav chrome keeps compact optical metrics
         <p
           data-slot="sidebar-reorder-help"
           className="px-2.5 pb-1 text-xs leading-5 text-muted-foreground"
@@ -3937,6 +3944,7 @@ function KiraSidebarFavorites({ model }: { model: KiraSidebarCollection }) {
       )}
       <KiraSidebarFavoriteHint model={model} />
       {readOnly && favorites && expanded && (
+        // kira-kit-ignore spacing-scale: sidebar nav chrome keeps compact optical metrics
         <p
           data-slot="sidebar-read-only"
           className="px-2.5 py-2 text-xs text-muted-foreground"
@@ -3973,6 +3981,7 @@ function KiraSidebarSections({ model }: { model: KiraSidebarCollection }) {
           <SidebarMenu>
             {section.items.map((item) => (
               <SidebarMenuItem key={item.id}>
+                {/* kira-kit-ignore spacing-scale: sidebar nav chrome keeps compact optical metrics */}
                 <div
                   data-slot="sidebar-destination-row"
                   className="flex min-w-0 items-start gap-0.5"

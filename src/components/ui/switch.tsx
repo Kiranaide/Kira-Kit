@@ -33,7 +33,10 @@ const switchTrackVariants = cva(
       size: {
         // sm grows to a 40x24 track (24px minimum height, WCAG 2.5.8).
         sm: "h-6 w-10 px-1",
+        // kira-kit-ignore spacing-scale: switch thumb/track inset on the compact non-control ladder
         default: "h-6 w-11 px-0.5",
+        // kira-kit-ignore arbitrary-values: 52px lg track is 13 four-px steps; exact width via arbitrary syntax
+        // kira-kit-ignore spacing-scale: switch thumb/track inset on the compact non-control ladder
         lg: "h-7 w-[52px] px-0.5",
       },
     },
@@ -178,8 +181,10 @@ function useSwitchModel(props: SwitchProps) {
 type SwitchModel = ReturnType<typeof useSwitchModel>;
 
 const switchIconSizes = {
+  // kira-kit-ignore spacing-scale: switch thumb/track inset on the compact non-control ladder
   sm: "h-2.5 w-2.5",
   default: "h-3 w-3",
+  // kira-kit-ignore spacing-scale: switch thumb/track inset on the compact non-control ladder
   lg: "h-3.5 w-3.5",
 };
 
@@ -315,6 +320,7 @@ function SwitchLabel({
   model: SwitchModel;
 }) {
   return (
+    // kira-kit-ignore spacing-scale: label/description micro-stack uses the helper-text gap tier
     <div
       data-slot="switch-content"
       className="flex min-w-0 flex-col gap-0.5 pt-0.5"

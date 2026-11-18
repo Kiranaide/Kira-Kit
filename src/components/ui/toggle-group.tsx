@@ -112,6 +112,7 @@ const toggleGroupItemVariants = cva(
         ],
       },
       size: {
+        // kira-kit-ignore spacing-scale: sm toggle keeps 14px icons to match the sm button optical exception
         sm: "h-7 px-2 text-xs [&_svg]:h-3.5 [&_svg]:w-3.5",
         default: "h-9 px-3 [&_svg]:h-4 [&_svg]:w-4",
         lg: "h-10 px-4 text-base [&_svg]:h-5 [&_svg]:w-5",

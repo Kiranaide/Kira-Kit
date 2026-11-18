@@ -23,6 +23,12 @@ const indexRoute = createRoute({
   component: lazyRouteComponent(() => import("@/pages/overview")),
 });
 
+const uiPreviewRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/ui-preview",
+  component: lazyRouteComponent(() => import("@/pages/ui-preview")),
+});
+
 // Component routes (lazy loaded)
 const buttonRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -519,6 +525,7 @@ const cameraRoute = createRoute({
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  uiPreviewRoute,
   buttonRoute,
   cardRoute,
   inputRoute,

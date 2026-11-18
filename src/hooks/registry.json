@@ -5,10 +5,7 @@
       "type": "registry:hook",
       "title": "useAnnounce",
       "description": "Creates provider-free polite and assertive ARIA live regions and returns announce, announcePolite, announceAssertive, and clear functions for screen-reader updates. Use it for dynamic status messages, with defaultPoliteness and debounceMs options to control announcement urgency and rapid updates.",
-      "categories": [
-        "hooks",
-        "feedback"
-      ],
+      "categories": ["hooks", "feedback"],
       "files": [
         {
           "path": "use-announce.ts",
@@ -21,13 +18,8 @@
       "type": "registry:hook",
       "title": "useAsyncDataTable",
       "description": "Coordinates server-side table pagination, sorting, column filters, and global search through a fetchFn that returns rows and totalCount. It returns fetched data, loading and error states, table state setters, pageCount, refetch, and page-navigation flags, while debouncing filters and resetting to the first page when queries change.",
-      "categories": [
-        "hooks",
-        "data-display"
-      ],
-      "dependencies": [
-        "@tanstack/react-table"
-      ],
+      "categories": ["hooks", "data-display"],
+      "dependencies": ["@tanstack/react-table"],
       "files": [
         {
           "path": "use-async-data-table.ts",
@@ -40,10 +32,7 @@
       "type": "registry:hook",
       "title": "useCamera",
       "description": "Controls browser camera previews, photo capture, video recording, device switching, zoom, focus, flash, timers, and optional keyboard, gesture, and voice input. It returns videoRef and gestureContainerRef plus stream, permission, device, and capture state and actions, with options for facingMode, media constraints, autoStart, capture format and quality, and lifecycle callbacks.",
-      "categories": [
-        "hooks",
-        "media"
-      ],
+      "categories": ["hooks", "media"],
       "files": [
         {
           "path": "use-camera.ts",
@@ -56,13 +45,8 @@
       "type": "registry:hook",
       "title": "useColorPicker",
       "description": "Manages controlled or uncontrolled HSVA color and alpha state and returns setters, recent colors, generated harmonies, contrast ratios, formatting, and clipboard-copy helpers. Use it to build color-picker interfaces with value/defaultValue, onValueChange, showAlpha, maxRecentColors, disabled, and readOnly options.",
-      "categories": [
-        "hooks",
-        "form"
-      ],
-      "dependencies": [
-        "@uiw/color-convert"
-      ],
+      "categories": ["hooks", "form"],
+      "dependencies": ["@uiw/color-convert"],
       "files": [
         {
           "path": "use-color-picker.ts",
@@ -75,10 +59,7 @@
       "type": "registry:hook",
       "title": "useFocusManager",
       "description": "Implements roving-tabindex keyboard navigation for grids using rowCount and colCount, with optional wrapping, initial positioning, and enable/disable control. It returns the current position, directional and boundary movement methods, getTabIndex, handleKeyDown, and a containerRef that focuses cells marked with data-row and data-col.",
-      "categories": [
-        "hooks",
-        "navigation"
-      ],
+      "categories": ["hooks", "navigation"],
       "files": [
         {
           "path": "use-focus-manager.ts",
@@ -91,10 +72,7 @@
       "type": "registry:hook",
       "title": "useMenuAction",
       "description": "Runs dropdown or menubar actions as single-flight, abortable operations, passing an AbortSignal to each item's onSelect callback. Given a sessionKey and optional success/error callbacks, it returns run and reset plus state, activeId, message, and animatePending for rendering pending, success, and error feedback without stale sessions overwriting newer state.",
-      "categories": [
-        "hooks",
-        "overlay"
-      ],
+      "categories": ["hooks", "overlay"],
       "files": [
         {
           "path": "use-menu-action.ts",
@@ -107,10 +85,7 @@
       "type": "registry:hook",
       "title": "usePagination",
       "description": "Manages controlled or uncontrolled 1-indexed page, pageSize, and total state and returns page bounds, navigation flags and actions, ellipsis-aware getPageRange output, and getPageData for slicing local arrays. Use it for pagination controls that need configurable page ranges, atomic page-and-size updates, and optional bounds correction.",
-      "categories": [
-        "hooks",
-        "navigation"
-      ],
+      "categories": ["hooks", "navigation"],
       "files": [
         {
           "path": "use-pagination.ts",
@@ -123,10 +98,7 @@
       "type": "registry:hook",
       "title": "usePlatform",
       "description": "Detects and caches the browser operating system from the user agent, returning \"mac\", \"windows\", \"linux\", or \"unknown\" without requiring options. Use it for platform-specific UI such as keyboard-shortcut labels; server rendering returns \"unknown\" before the client snapshot is applied.",
-      "categories": [
-        "hooks",
-        "utility"
-      ],
+      "categories": ["hooks", "utility"],
       "files": [
         {
           "path": "use-platform.ts",
@@ -139,16 +111,9 @@
       "type": "registry:hook",
       "title": "usePressBounce",
       "description": "Accepts an element ref and enabled flag and returns a callback that runs an interruptible GSAP press animation scaling the element to 0.95 for 75ms before rebounding. Use it from press handlers for subtle button feedback; it does nothing when disabled or when reduced motion is preferred.",
-      "categories": [
-        "hooks",
-        "animation"
-      ],
-      "dependencies": [
-        "gsap"
-      ],
-      "registryDependencies": [
-        "@kira-kit/use-reduced-motion"
-      ],
+      "categories": ["hooks", "animation"],
+      "dependencies": ["gsap"],
+      "registryDependencies": ["@kira-kit/use-reduced-motion"],
       "files": [
         {
           "path": "use-press-bounce.ts",
@@ -161,10 +126,7 @@
       "type": "registry:hook",
       "title": "useReducedMotion",
       "description": "Returns a live boolean for the user's prefers-reduced-motion: reduce media query and updates when the operating-system setting changes. Use it to gate JavaScript-driven animation, smooth scrolling, and timers; it returns false during SSR and hydration, with prefersReducedMotion also available for non-React reads.",
-      "categories": [
-        "hooks",
-        "animation"
-      ],
+      "categories": ["hooks", "animation"],
       "files": [
         {
           "path": "use-reduced-motion.ts",
@@ -177,10 +139,7 @@
       "type": "registry:hook",
       "title": "useSpotlight",
       "description": "Reads spotlight state from SpotlightProvider and returns open, query, setQuery, and openSpotlight, closeSpotlight, and toggleSpotlight controls. Use it inside command-palette interfaces whose provider supplies a global Cmd+K/Ctrl+K-style shortcut with customizable shortcut and disableShortcut options.",
-      "categories": [
-        "hooks",
-        "overlay"
-      ],
+      "categories": ["hooks", "overlay"],
       "files": [
         {
           "path": "use-spotlight.tsx",

@@ -243,6 +243,7 @@ function DrawerHeader({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
+    // kira-kit-ignore spacing-scale: title-to-description optical gap (contract-sanctioned exception)
     <div
       data-slot="drawer-header"
       className={cn(

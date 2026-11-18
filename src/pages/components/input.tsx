@@ -76,6 +76,10 @@ export function BasicInputDemo() {
         <Label>Large (lg)</Label>
         <Input size="lg" placeholder="Large input" />
       </div>
+      <div className="space-y-2">
+        <Label>Extra Large (xl)</Label>
+        <Input size="xl" placeholder="Extra large input" />
+      </div>
     </div>
   )
 }`;
@@ -474,7 +478,7 @@ function BasicDemo() {
           <Input size="sm" placeholder="Small input" />
           <Input
             size="sm"
-            prefix={<IconAt className="h-3.5 w-3.5" />}
+            prefix={<IconAt className="h-4 w-4" />}
             placeholder="With prefix"
           />
         </div>
@@ -491,6 +495,16 @@ function BasicDemo() {
           <Input size="lg" placeholder="Large input" />
           <Input
             size="lg"
+            prefix={<IconCurrencyDollar className="h-4 w-4" />}
+            suffix={<IconPercentage className="h-4 w-4" />}
+            placeholder="With prefix & suffix"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Extra Large (xl)</Label>
+          <Input size="xl" placeholder="Extra large input" />
+          <Input
+            size="xl"
             prefix={<IconCurrencyDollar className="h-4 w-4" />}
             suffix={<IconPercentage className="h-4 w-4" />}
             placeholder="With prefix & suffix"
@@ -728,9 +742,11 @@ function SearchActionsDemo() {
       </div>
       <div className="space-y-2">
         <Label>Size Variants</Label>
+        <SearchInput size="xs" placeholder="Extra small search..." />
         <SearchInput size="sm" placeholder="Small search..." />
         <SearchInput placeholder="Default search..." />
         <SearchInput size="lg" placeholder="Large search..." />
+        <SearchInput size="xl" placeholder="Extra large search..." />
       </div>
 
       <div className="space-y-2">
@@ -1746,6 +1762,42 @@ export default function InputPage() {
 
 // Static demo metadata stays co-located and follows its source constants.
 const inputPageChangelogEntries = [
+  {
+    version: "2.3.1",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Prefix/suffix icons get the contract affordance size",
+        description:
+          "Bare icons passed as prefix/suffix are now sized by the container (size-3 at xs, size-4 above), so they can never overlap the text offsets recomputed in 2.3.0. Explicitly sized icons are untouched.",
+      },
+    ],
+  },
+  {
+    version: "2.3.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "xl size",
+        description:
+          "New h-11 (44px) xl size with px-5 and text-base completes the shared control ladder (h-7/8/9/10/11) across Input, SearchInput, NumericInput, TagInput, and the composites.",
+      },
+      {
+        type: "changed",
+        title: "Ladder-aligned heights and padding",
+        description:
+          "xs h-6→h-7, sm h-7→h-8 (text-[0.8rem]→text-xs), default h-8→h-9 with px-4, lg h-9→h-10 with px-5. Inputs now render equal heights beside Buttons and Selects at every size. Prefix/suffix and clear/copy offsets recomputed from container px + affordance width + 4px gap (single action pr-9/10/11/12, double pr-16/17/18/19).",
+      },
+      {
+        type: "changed",
+        title: "Composites follow the ladder",
+        description:
+          "InputWithButton's sizeToButton step-down workaround is gone — the button now takes the input's size directly. InputWithDropdown passes size to its select, NumericInput steppers scale size-7/8/9/10/11 with the ladder, and InputWithSpinner/SearchInput offsets are per-size.",
+      },
+    ],
+  },
   {
     version: "2.2.1",
     date: "6 November 2026",
