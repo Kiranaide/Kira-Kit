@@ -19,9 +19,10 @@ const textareaVariants = cva(
   {
     variants: {
       size: {
-        sm: "px-2 py-1.5 text-xs min-h-12",
-        default: "px-2.5 py-2 text-base md:text-sm min-h-16",
-        lg: "px-3 py-2.5 text-base min-h-20",
+        sm: "px-3 py-1.5 text-xs min-h-12",
+        default: "px-4 py-2 text-base md:text-sm min-h-16",
+        lg: "px-5 py-2.5 text-base min-h-20",
+        xl: "px-5 py-3 text-base min-h-24",
       },
       resize: {
         none: "resize-none",
@@ -689,6 +690,22 @@ function TextareaAdornmentsView({
   clear,
   reduced,
 }: TextareaAdornmentsViewParams) {
+  const effectiveSize = props.size || "default";
+
+  const clearPadding = {
+    sm: "pr-10",
+    default: "pr-11",
+    lg: "pr-12",
+    xl: "pr-12",
+  }[effectiveSize];
+
+  const clearInset = {
+    sm: "right-3",
+    default: "right-4",
+    lg: "right-5",
+    xl: "right-5",
+  }[effectiveSize];
+
   return (
     <div className="relative">
       <Textarea
@@ -703,7 +720,7 @@ function TextareaAdornmentsView({
         aria-invalid={isError || !!error || !!validateMessage || undefined}
         aria-describedby={describedBy}
         disabled={disabled}
-        className={cn({ "pr-9": clearable && currentLength > 0 })}
+        className={cn(clearable && currentLength > 0 && clearPadding)}
         {...props}
       />
       {clearable && currentLength > 0 && !disabled && (
@@ -714,7 +731,8 @@ function TextareaAdornmentsView({
           onMouseDown={(e) => e.preventDefault()}
           onClick={clear}
           className={cn(
-            "absolute right-2 top-2 grid size-6 place-items-center rounded text-muted-foreground",
+            "absolute top-2 grid size-6 place-items-center rounded text-muted-foreground",
+            clearInset,
             "hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             { "transition-colors": !reduced },
           )}
@@ -756,7 +774,7 @@ function useKiraTextareaOptions({
 }
 
 function textareaResolveLineHeight1(
-  size: "sm" | "lg" | "default" | null | undefined,
+  size: "sm" | "lg" | "xl" | "default" | null | undefined,
 ) {
   if (size === "sm") {
     return 20 as const;
@@ -770,7 +788,7 @@ function textareaResolveLineHeight1(
 }
 
 function textareaResolvePaddingY2(
-  size: "sm" | "lg" | "default" | null | undefined,
+  size: "sm" | "lg" | "xl" | "default" | null | undefined,
 ) {
   if (size === "sm") {
     return 12 as const;
@@ -778,6 +796,10 @@ function textareaResolvePaddingY2(
 
   if (size === "lg") {
     return 20 as const;
+  }
+
+  if (size === "xl") {
+    return 24 as const;
   }
 
   return 16 as const;
