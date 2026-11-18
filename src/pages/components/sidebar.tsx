@@ -1658,7 +1658,7 @@ export default function SidebarPage() {
     <ComponentPage>
       <PageHeader
         title="Sidebar"
-        version="3.1.1"
+        version="3.1.2"
         description="Navigation that stays close to your work. Search views, keep personal favorites, and move between a compact rail and a mobile drawer."
       />
       <FeatureGrid features={sidebarPageFeatureGridFeatures} />
@@ -1909,6 +1909,18 @@ const sidebarPageKeyboardShortcutsShortcuts = [
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
 const sidebarPageChangelogEntries = [
+  {
+    version: "3.1.2",
+    date: "2026-11-18",
+    changes: [
+      {
+        type: "fixed",
+        title: "Crash when toggling the sidebar with a mouse",
+        description:
+          "Expanding or collapsing the sidebar, a group, or a nested group no longer throws. The FLIP animation waits until cleanup to read the initialized GSAP context.",
+      },
+    ],
+  },
   {
     version: "3.1.1",
     date: "2026-11-11",
