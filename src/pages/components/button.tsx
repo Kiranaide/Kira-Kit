@@ -123,6 +123,7 @@ function SizesDemo() {
         <Button size="sm">Small</Button>
         <Button size="default">Default</Button>
         <Button size="lg">Large</Button>
+        <Button size="xl">Extra Large</Button>
       </div>
       <div className="flex flex-wrap items-center gap-3">
         <Button size="icon-xs" variant="outline">
@@ -137,6 +138,9 @@ function SizesDemo() {
         <Button size="icon-lg" variant="outline">
           <IconPlus className="w-5 h-5" />
         </Button>
+        <Button size="icon-xl" variant="outline">
+          <IconPlus className="w-5 h-5" />
+        </Button>
       </div>
     </div>
   );
@@ -149,12 +153,14 @@ const sizesCode = `import { Button } from "@/components/ui/button"
 <Button size="sm">Small</Button>
 <Button size="default">Default</Button>
 <Button size="lg">Large</Button>
+<Button size="xl">Extra Large</Button>
 
 // Icon button sizes
 <Button size="icon-xs"><IconPlus /></Button>
 <Button size="icon-sm"><IconPlus /></Button>
 <Button size="icon"><IconPlus /></Button>
-<Button size="icon-lg"><IconPlus /></Button>`;
+<Button size="icon-lg"><IconPlus /></Button>
+<Button size="icon-xl"><IconPlus /></Button>`;
 
 function WithIconsDemo() {
   return (
@@ -1027,7 +1033,7 @@ export default function ButtonPage() {
         },
         {
           prop: "size",
-          type: '"default" | "xs" | "sm" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg"',
+          type: '"default" | "xs" | "sm" | "lg" | "xl" | "icon" | "icon-xs" | "icon-sm" | "icon-lg" | "icon-xl"',
           default: '"default"',
           description: "Size of the button",
         },
@@ -1240,6 +1246,18 @@ export default function ButtonPage() {
 
 // Static demo metadata stays co-located and follows its source constants.
 const buttonPageChangelogEntries = [
+  {
+    version: "2.4.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "xl and icon-xl Sizes",
+        description:
+          "New h-11 (44px) xl size with text-base and size-5 icons, plus the matching icon-xl square. Completes the shared control-height ladder (h-7/8/9/10/11) and the 44px touch minimum for auth, marketing, and touch surfaces. Existing sizes are unchanged.",
+      },
+    ],
+  },
   {
     version: "2.3.0",
     date: "17 October 2026",
