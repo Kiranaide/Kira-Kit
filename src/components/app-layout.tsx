@@ -77,6 +77,10 @@ import {
   IconPlayerPlay,
   IconCamera,
   IconRuler2,
+  IconBook2,
+  IconDownload,
+  IconTerminal2,
+  IconHistory,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -111,6 +115,10 @@ export function AppLayout() {
                 >
                   UI Preview
                 </SidebarItem>
+
+                <SidebarDivider />
+
+                <DocsNavigation />
 
                 <SidebarDivider />
 
@@ -157,6 +165,32 @@ export function AppLayout() {
     </ThemeProvider>
   );
 }
+
+function DocsNavigation() {
+  return (
+    <SidebarGroup label="Documentation">
+      {docsNavigation.map((item) => (
+        <SidebarItem
+          key={item.to}
+          to={item.to}
+          icon={<item.icon className="w-5 h-5" />}
+        >
+          {item.label}
+        </SidebarItem>
+      ))}
+    </SidebarGroup>
+  );
+}
+
+const docsNavigation = [
+  { to: "/docs/introduction", icon: IconBook2, label: "Introduction" },
+  { to: "/docs/installation", icon: IconDownload, label: "Installation" },
+  { to: "/docs/theming", icon: IconPalette, label: "Theming" },
+  { to: "/docs/cli", icon: IconTerminal2, label: "CLI" },
+  { to: "/docs/typeset", icon: IconTypography, label: "Typeset" },
+  { to: "/docs/form", icon: IconForms, label: "Form" },
+  { to: "/docs/changelog", icon: IconHistory, label: "Changelog" },
+] as const;
 
 const layoutNavigation = [
   { to: "/components/box", icon: IconSquare, label: "Box" },
