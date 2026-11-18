@@ -198,7 +198,7 @@ const roundedImageCode = `export function RoundedImageDemo() {
 
 function WithCaptionDemo() {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden p-0">
       <div className="overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=400&fit=crop"
@@ -220,7 +220,7 @@ const withCaptionCode = `import { Card } from "@/components/ui/card"
 
 export function WithCaptionDemo() {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden p-0">
       <div className="overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=400&fit=crop"
@@ -296,7 +296,7 @@ export function LoadingImageDemo() {
 function ResponsiveImageDemo() {
   return (
     <div className="space-y-4">
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden p-0">
         <div className="aspect-video w-full overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=600&fit=crop"
@@ -310,7 +310,7 @@ function ResponsiveImageDemo() {
       </p>
 
       <div className="grid grid-cols-2 gap-4">
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden p-0">
           <div className="aspect-square w-full overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=600&fit=crop"
@@ -319,7 +319,7 @@ function ResponsiveImageDemo() {
             />
           </div>
         </Card>
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden p-0">
           <div className="aspect-square w-full overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&h=600&fit=crop"
@@ -338,7 +338,7 @@ const responsiveImageCode = `import { Card } from "@/components/ui/card"
 export function ResponsiveImageDemo() {
   return (
     <div className="space-y-4">
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden p-0">
         <div className="aspect-video w-full overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=600&fit=crop"
