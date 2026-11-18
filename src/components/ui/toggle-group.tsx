@@ -86,7 +86,7 @@ const toggleGroupVariants = cva("inline-flex items-center", {
 const toggleGroupItemVariants = cva(
   [
     "relative inline-flex items-center justify-center gap-2 text-sm font-medium transition-[color,background-color,border-color,box-shadow]",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
     "disabled:pointer-events-none disabled:opacity-50",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
   ],

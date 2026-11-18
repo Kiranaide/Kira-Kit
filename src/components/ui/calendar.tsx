@@ -666,7 +666,7 @@ function CalendarDayButtonView({
       }
       className={cn(
         "relative inline-flex size-full items-center justify-center rounded-md font-normal tabular-nums outline-none transition-colors",
-        "hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+        "hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring",
         { "text-muted-foreground/50": modifiers.outside },
         { "font-semibold text-primary": modifiers.today },
         {
