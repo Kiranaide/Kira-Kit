@@ -1564,6 +1564,18 @@ export default function DropdownMenuPage() {
 // Static demo metadata stays co-located and follows its source constants.
 const dropdownMenuPageChangelogEntries = [
   {
+    version: "v2.1.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Unified menu metrics",
+        description:
+          "Popup padding p-1.5→p-1 and rows min-h-9 px-2.5 py-2 gap-2.5→min-h-8 px-2 py-1.5 gap-2 — the same item metric as Select and Combobox (menubar wrappers share the row variants). Labels align to px-2 py-1.5. The search header becomes an sm-tier h-8 field with a recomputed clear offset (pe-8, inset-e-1 top-1).",
+      },
+    ],
+  },
+  {
     version: "v2.0.2",
     date: "7 November 2026",
     changes: [
