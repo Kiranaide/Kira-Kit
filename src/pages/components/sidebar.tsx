@@ -1910,6 +1910,18 @@ const sidebarPageKeyboardShortcutsShortcuts = [
 
 const sidebarPageChangelogEntries = [
   {
+    version: "3.2.0",
+    date: "2026-11-18",
+    changes: [
+      {
+        type: "changed",
+        title: "MenuButton horizontal padding px-2.5 → px-3",
+        description:
+          "Nav rows move to the sanctioned px-3 step (nav tier, slightly roomier than menu items). min-h-9 and the coarse-pointer min-h-11 touch target are unchanged.",
+      },
+    ],
+  },
+  {
     version: "3.1.2",
     date: "2026-11-18",
     changes: [

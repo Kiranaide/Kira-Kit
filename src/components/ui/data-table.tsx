@@ -2043,11 +2043,12 @@ function MultiSelectFilter({
         {searchable && (
           <Input
             type="search"
+            size="sm"
             aria-label="Search options"
             placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="mb-2 h-8"
+            className="mb-2"
           />
         )}
         <div className="mb-2 flex items-center gap-2">
@@ -2121,24 +2122,26 @@ function NumberRangeFilter(inputProps: NumberRangeFilterProps) {
     >
       <Input
         type="number"
+        size="sm"
         aria-label={`Minimum ${columnLabel(column)}`}
         placeholder={minPlaceholder}
         value={min ?? ""}
         onChange={(e) => set(parse(e.target.value), max)}
         step={step}
-        className="h-8 w-20"
+        className="w-20"
       />
       <span className="text-muted-foreground" aria-hidden="true">
         to
       </span>
       <Input
         type="number"
+        size="sm"
         aria-label={`Maximum ${columnLabel(column)}`}
         placeholder={maxPlaceholder}
         value={max ?? ""}
         onChange={(e) => set(min, parse(e.target.value))}
         step={step}
-        className="h-8 w-20"
+        className="w-20"
       />
     </div>
   );
@@ -2172,22 +2175,22 @@ function DateRangeFilter({ columnId, className }: DateRangeFilterProps) {
     >
       <Input
         type="date"
+        size="sm"
         aria-label="From date"
         value={from ?? ""}
         max={to}
         onChange={(e) => set(e.target.value || undefined, to)}
-        className="h-8"
       />
       <span className="text-muted-foreground" aria-hidden="true">
         to
       </span>
       <Input
         type="date"
+        size="sm"
         aria-label="To date"
         value={to ?? ""}
         min={from}
         onChange={(e) => set(from, e.target.value || undefined)}
-        className="h-8"
       />
     </div>
   );
@@ -3327,9 +3330,9 @@ function renderDataTablePaginationSectionPart4({
             onChange={(e) => table.setPageSize(Number(e.target.value))}
             className={cn(
               "rounded-md border border-input bg-background px-2 focus:outline-none focus:ring-2 focus:ring-ring",
-              size === "sm" && "h-7 text-xs",
-              size === "default" && "h-8 text-sm",
-              size === "lg" && "h-9 text-base",
+              size === "sm" && "h-8 text-xs",
+              size === "default" && "h-9 text-sm",
+              size === "lg" && "h-10 text-base",
             )}
           >
             {pageSizeOptions.map((s) => (

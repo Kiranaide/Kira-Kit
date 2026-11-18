@@ -1731,6 +1731,18 @@ const accordionPageAPIReferenceSections = [
 
 const accordionPageChangelogEntries = [
   {
+    version: "2.2.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Trigger and panel padding join the spacing ladder",
+        description:
+          "xs horizontal padding px-3 → px-2 and sm px-3.5 → px-3 on both trigger and panel, matching the control ladder's px steps. Vertical py values are unchanged (optical text exception).",
+      },
+    ],
+  },
+  {
     version: "2.1.2",
     date: "18 October 2026",
     changes: [

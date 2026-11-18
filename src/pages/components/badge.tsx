@@ -1362,6 +1362,18 @@ const badgePageKeyboardShortcutsShortcuts = [
 
 const badgePageChangelogEntries = [
   {
+    version: "3.1.1",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "lg close button off the 4px grid",
+        description:
+          "The lg dismiss button drops h-4.5 w-4.5 (18px) to h-4 w-4 with size-3 icons. The compact badge ladder itself is unchanged — badges are labels, not controls.",
+      },
+    ],
+  },
+  {
     version: "3.1.0",
     date: "4 November 2026",
     changes: [

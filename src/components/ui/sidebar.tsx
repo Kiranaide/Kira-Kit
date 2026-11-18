@@ -414,7 +414,7 @@ const sidebarVariants = cva(
 );
 
 const sidebarMenuButtonVariants = cva(
-  `relative flex min-h-9 w-full min-w-0 items-center gap-2 rounded-lg border border-transparent px-2.5 py-2 text-start text-sm leading-5 touch-manipulation ${focusRing} hover:bg-sidebar-accent active:bg-sidebar-accent disabled:cursor-not-allowed disabled:opacity-50 data-disabled:cursor-not-allowed data-disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 [@media(pointer:coarse)]:min-h-11`,
+  `relative flex min-h-9 w-full min-w-0 items-center gap-2 rounded-lg border border-transparent px-3 py-2 text-start text-sm leading-5 touch-manipulation ${focusRing} hover:bg-sidebar-accent active:bg-sidebar-accent disabled:cursor-not-allowed disabled:opacity-50 data-disabled:cursor-not-allowed data-disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 [@media(pointer:coarse)]:min-h-11`,
   {
     variants: {
       isActive: {

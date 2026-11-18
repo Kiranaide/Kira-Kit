@@ -281,7 +281,7 @@ function CheckboxWithLabel({
   return (
     <div
       data-slot="checkbox-with-label"
-      className={cn("flex items-start gap-3", wrapperClassName)}
+      className={cn("flex items-start gap-2", wrapperClassName)}
     >
       {labelPlacement === "left" && text}
       <Checkbox
@@ -761,7 +761,7 @@ function CheckboxGroupView({
       onValueChange={handleValueChange}
       allValues={allValues}
       disabled={disabled}
-      className={cn("flex flex-col gap-3", className)}
+      className={cn("flex flex-col gap-2", className)}
     >
       {(label || description) && (
         <div className="flex flex-col gap-0.5">
@@ -800,7 +800,7 @@ function CheckboxGroupView({
 
       <div
         className={cn(
-          "flex gap-3",
+          "flex gap-2",
           orientation === "vertical" ? "flex-col" : "flex-row flex-wrap",
         )}
       >
@@ -1151,7 +1151,7 @@ function CheckboxCardView({
       data-disabled={disabled || undefined}
       data-error={error || undefined}
       className={cn(
-        "group relative flex cursor-pointer items-start gap-3 rounded-lg border-2 border-input bg-transparent",
+        "group relative flex cursor-pointer items-start gap-2 rounded-lg border-2 border-input bg-transparent",
         "transition-[background-color,border-color,box-shadow] duration-150 motion-reduce:transition-none",
         "hover:bg-muted/50",
         "has-data-checked:border-primary has-data-checked:bg-primary/5 has-data-checked:ring-1 has-data-checked:ring-primary/40",

@@ -229,8 +229,8 @@ const accordionTriggerVariants = cva(
         outline: "border border-border hover:bg-muted/30",
       },
       size: {
-        xs: "py-1.5 px-3 text-xs",
-        sm: "py-2 px-3.5 text-xs",
+        xs: "py-1.5 px-2 text-xs",
+        sm: "py-2 px-3 text-xs",
         default: "py-3 px-4 text-sm",
         lg: "py-4 px-5 text-base",
       },
@@ -245,8 +245,8 @@ const accordionTriggerVariants = cva(
 const accordionContentVariants = cva("", {
   variants: {
     size: {
-      xs: "px-3 py-1.5 text-xs",
-      sm: "px-3.5 py-2 text-xs",
+      xs: "px-2 py-1.5 text-xs",
+      sm: "px-3 py-2 text-xs",
       default: "px-4 py-3 text-sm",
       lg: "px-5 py-4 text-base",
     },
