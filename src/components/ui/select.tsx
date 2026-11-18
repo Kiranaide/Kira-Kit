@@ -124,7 +124,7 @@ function SelectContent(
         <SelectPrimitive.Popup
           data-slot="select-content"
           className={cn(
-            "bg-popover text-popover-foreground ring-foreground/10 min-w-36 rounded-lg shadow-md ring-1 duration-100 relative isolate z-50 max-h-(--available-height) w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto",
+            "bg-popover text-popover-foreground ring-foreground/10 min-w-36 rounded-lg p-1 shadow-md ring-1 duration-100 relative isolate z-50 max-h-(--available-height) w-(--anchor-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto",
             !reducedMotion &&
               "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
             className,
@@ -433,7 +433,6 @@ interface KiraSelectProps<T extends SelectOption = SelectOption> {
   "aria-describedby"?: string;
 }
 
-/* oxlint-disable complexity -- prop-driven mode router (simple vs rich path); branching mirrors the public API */
 function KiraSelect<T extends SelectOption = SelectOption>(
   input0: KiraSelectProps<T>,
 ) {
@@ -442,7 +441,6 @@ function KiraSelect<T extends SelectOption = SelectOption>(
 
   return renderSelect<T>(state1);
 }
-/* oxlint-enable complexity -- end KiraSelect */
 
 export {
   Select,
@@ -689,7 +687,18 @@ function useComboboxFieldState4<T extends SelectOption = SelectOption>(
     state;
 
   const handleValueChange = React.useCallback(
-    (next: RawComboboxEventValue, eventDetails: { cancel: () => void }) => {
+    (
+      next: RawComboboxEventValue,
+      eventDetails: { cancel: () => void; reason?: string },
+    ) => {
+      // Base UI clears the selection on Escape while closed (a search-combobox
+      // habit); a select keeps its value unless cleared explicitly.
+      if (eventDetails.reason === "escape-key") {
+        eventDetails.cancel();
+
+        return;
+      }
+
       // Base UI's onValueChange delivers: derived string(s) from the
       // createItems() collection, or the create pseudo-item's { value, label }
       // object, or null (clear). Normalize to a flat list of strings.
@@ -713,6 +722,10 @@ function useComboboxFieldState4<T extends SelectOption = SelectOption>(
       }
 
       emitComboboxValueChange(state.multiple, state.flat, nextList, onChange);
+
+      if (state.multiple) {
+        setInputValue("");
+      }
     },
     [
       state.multiple,
@@ -788,14 +801,14 @@ function useComboboxFieldState5<T extends SelectOption = SelectOption>(
     [onOpenChange, setIsOpen],
   );
 
-  // When closing, clear the query so reopening shows the full list and the
-  // selected label doesn't stick in the input (pre-rebuild bug fix).
+  // Opening starts a fresh query so the full list shows; the closed trigger
+  // displays the selected label instead (see displayInputValue).
   const [prevIsOpen, setPrevIsOpen] = React.useState(false);
 
   if (prevIsOpen !== state.isOpen) {
     setPrevIsOpen(state.isOpen);
 
-    if (!state.isOpen && state.inputValue) {
+    if (state.isOpen && state.inputValue) {
       setInputValue("");
     }
   }
@@ -889,7 +902,8 @@ function useComboboxFieldState6<T extends SelectOption = SelectOption>(
   );
 
   const triggerClasses = cn(
-    "flex flex-wrap items-center gap-2 py-1 rounded-lg border bg-transparent cursor-text w-full transition-colors",
+    "flex items-center gap-2 py-1 rounded-lg border bg-transparent cursor-text w-full transition-colors",
+    state.multiple ? "flex-wrap" : "flex-nowrap",
     COMBOBOX_SIZE_CLASSES[state.size || "default"],
     state.variant === "default" &&
       "border-input dark:bg-input/30 dark:hover:bg-input/50",
@@ -1036,7 +1050,19 @@ function useComboboxFieldState8<T extends SelectOption = SelectOption>(
     return state.placeholder;
   })();
 
-  return { ...state, useGroupedRendering, FilteredItemsList, inputPlaceholder };
+  const closedLabel = state.multiple
+    ? ""
+    : (state.selectedOptions[0]?.label ?? "");
+
+  const displayInputValue = state.isOpen ? state.inputValue : closedLabel;
+
+  return {
+    ...state,
+    useGroupedRendering,
+    FilteredItemsList,
+    inputPlaceholder,
+    displayInputValue,
+  };
 }
 
 function useComboboxFieldActions<T extends SelectOption = SelectOption>(
@@ -1126,7 +1152,7 @@ function renderComboboxField<T extends SelectOption = SelectOption>(
       defaultValue={state.defaultValue as never}
       /* SAFETY: handler receives derived string values; runtime shape is guarded in the handler body. */
       onValueChange={state.handleValueChange as never}
-      inputValue={state.inputValue}
+      inputValue={state.displayInputValue}
       onInputValueChange={state.handleInputValueChange}
       /* SAFETY: filter receives source items (T) per the collection contract; `false` disables internal filtering for async. */
       filter={state.filterFn_ as never}
@@ -1164,7 +1190,17 @@ function renderComboboxField<T extends SelectOption = SelectOption>(
         <ComboboxPrimitive.Input
           data-slot="select-field-input"
           placeholder={state.inputPlaceholder}
-          className="flex-1 min-w-20 bg-transparent text-sm placeholder:text-muted-foreground outline-none"
+          onFocus={(event) => {
+            // Closed triggers show the selected label; select it so the first
+            // keystroke replaces it instead of appending to it.
+            if (!state.isOpen) {
+              event.currentTarget.select();
+            }
+          }}
+          className={cn(
+            "flex-1 bg-transparent text-sm placeholder:text-muted-foreground outline-none",
+            state.multiple ? "min-w-20" : "min-w-0",
+          )}
         />
         {state.isLoading && (
           <IconLoader2
@@ -1236,74 +1272,6 @@ interface ComboboxFilteredGroup<T> {
 type ComboboxEmitted = string | ComboboxEmittedValue | null;
 
 type RawComboboxEventValue = ComboboxEmitted | ComboboxEmitted[];
-
-type renderKiraSelectSectionPart1Args<T extends SelectOption = SelectOption> = {
-  selectValue: string;
-  handleSimpleChange: (next: string | null) => void;
-  labelMap: Record<string, React.ReactNode>;
-  disabled: boolean;
-  readOnly: boolean;
-  name: KiraSelectProps<T>["name"];
-  required: KiraSelectProps<T>["required"];
-  id: KiraSelectProps<T>["id"];
-  size: SelectSize;
-  dataSlot: KiraSelectProps<T>["data-slot"];
-  invalid: KiraSelectProps<T>["invalid"];
-  ariaLabel: KiraSelectProps<T>["aria-label"];
-  ariaDescribedby: KiraSelectProps<T>["aria-describedby"];
-  className: KiraSelectProps<T>["className"];
-  leftIcon: KiraSelectProps<T>["leftIcon"];
-  placeholder: string;
-  renderContent: () => React.JSX.Element[];
-};
-
-function renderKiraSelectSectionPart1<T extends SelectOption = SelectOption>({
-  selectValue,
-  handleSimpleChange,
-  labelMap,
-  disabled,
-  readOnly,
-  name,
-  required,
-  id,
-  size,
-  dataSlot,
-  invalid,
-  ariaLabel,
-  ariaDescribedby,
-  className,
-  leftIcon,
-  placeholder,
-  renderContent,
-}: renderKiraSelectSectionPart1Args<T>) {
-  return (
-    <Select
-      value={selectValue || ""}
-      onValueChange={handleSimpleChange}
-      items={labelMap}
-      disabled={disabled}
-      readOnly={readOnly}
-      name={name}
-      required={required}
-    >
-      <SelectTrigger
-        id={id}
-        size={size}
-        data-slot={dataSlot ?? "select-trigger"}
-        aria-invalid={invalid}
-        aria-label={ariaLabel}
-        aria-describedby={ariaDescribedby}
-        className={className}
-      >
-        {leftIcon && (
-          <span className="shrink-0 text-muted-foreground">{leftIcon}</span>
-        )}
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>{renderContent()}</SelectContent>
-    </Select>
-  );
-}
 
 type renderSelectFieldChipsPart2Args<T extends SelectOption = SelectOption> = {
   state: ReturnType<typeof useComboboxFieldActions<T>>;
@@ -1414,9 +1382,9 @@ function renderRenderComboboxFieldSectionPart3<
 const SELECT_CONTENT_DEFAULTS_1 = {
   side: "bottom",
   sideOffset: 4,
-  align: "center",
+  align: "start",
   alignOffset: 0,
-  alignItemWithTrigger: true,
+  alignItemWithTrigger: false,
 } as const;
 
 // SAFETY: Immutable fallback tokens preserve the component's public default values.
@@ -1500,24 +1468,14 @@ function useSelectSetup<T extends SelectOption = SelectOption>(
 function useSelectActions<T extends SelectOption = SelectOption>(
   state: ReturnType<typeof useSelectSetup<T>>,
 ) {
-  const { options, multiple, searchable, async, creatable } = state;
-
-  const isRich = searchable || async || creatable || multiple;
-
   const normalizedOptions = React.useMemo(
-    () => normalizeOptions(options),
-    [options],
+    () => normalizeOptions(state.options),
+    [state.options],
   );
 
-  const flat = React.useMemo(
-    () => flattenOptions(normalizedOptions),
-    [normalizedOptions],
-  );
-
-  return { ...state, isRich, normalizedOptions, flat };
+  return { ...state, normalizedOptions };
 }
 
-// oxlint-disable-next-line eslint/max-lines-per-function -- Pure compound JSX view: keeping related labels, controls, and conditional styling together makes the markup easier to review than further fragment extraction.
 function renderSelect<T extends SelectOption = SelectOption>({
   defaultValue,
   onChange,
@@ -1551,108 +1509,46 @@ function renderSelect<T extends SelectOption = SelectOption>({
   setInternalValue,
   isControlled,
   currentValue,
-  isRich,
   normalizedOptions,
-  flat,
 }: ReturnType<typeof useSelectActions<T>>) {
-  if (isRich) {
-    return (
-      <ComboboxField<T>
-        options={normalizedOptions}
-        value={currentValue}
-        defaultValue={defaultValue}
-        onChange={(val, opt) => {
-          if (!isControlled) setInternalValue(val);
-          onChange?.(val, opt);
-        }}
-        multiple={multiple}
-        searchable={searchable || async || creatable}
-        async={async}
-        onSearch={onSearch}
-        creatable={creatable}
-        onCreateOption={onCreateOption}
-        createLabel={createLabel}
-        placeholder={placeholder}
-        id={id}
-        readOnly={readOnly}
-        disabled={disabled}
-        size={size}
-        variant={variant}
-        leftIcon={leftIcon}
-        hideChevron={hideChevron}
-        maxDisplayedTags={maxDisplayedTags}
-        virtualized={virtualized}
-        emptyMessage={emptyMessage}
-        loadingMessage={loadingMessage}
-        searchingMessage={searchingMessage}
-        aria-invalid={invalid}
-        required={required}
-        name={name}
-        data-slot={dataSlot}
-        aria-label={ariaLabel}
-        aria-describedby={ariaDescribedby}
-        className={className}
-      />
-    );
-  }
-
-  const renderItems = (items: T[]) =>
-    items.map((opt) => (
-      <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>
-        {opt.label}
-      </SelectItem>
-    ));
-
-  const renderContent = () => {
-    if (isGroupedOptions(normalizedOptions)) {
-      return normalizedOptions.map((group) => (
-        <SelectGroup key={group.label}>
-          <SelectLabel>{group.label}</SelectLabel>
-          {renderItems(group.options)}
-        </SelectGroup>
-      ));
-    }
-
-    return renderItems(normalizedOptions);
-  };
-
-  // SAFETY: this single-select branch normalizes null to an empty string above.
-  const selectValue = currentValue as string;
-
-  const labelMap: Record<string, React.ReactNode> = Object.fromEntries(
-    flat.map((o) => [o.value, o.label]),
+  return (
+    <ComboboxField<T>
+      options={normalizedOptions}
+      value={currentValue}
+      defaultValue={defaultValue}
+      onChange={(val, opt) => {
+        if (!isControlled) setInternalValue(val);
+        onChange?.(val, opt);
+      }}
+      multiple={multiple}
+      searchable={searchable || async || creatable}
+      async={async}
+      onSearch={onSearch}
+      creatable={creatable}
+      onCreateOption={onCreateOption}
+      createLabel={createLabel}
+      placeholder={placeholder}
+      id={id}
+      readOnly={readOnly}
+      disabled={disabled}
+      size={size}
+      variant={variant}
+      leftIcon={leftIcon}
+      hideChevron={hideChevron}
+      maxDisplayedTags={maxDisplayedTags}
+      virtualized={virtualized}
+      emptyMessage={emptyMessage}
+      loadingMessage={loadingMessage}
+      searchingMessage={searchingMessage}
+      aria-invalid={invalid}
+      required={required}
+      name={name}
+      data-slot={dataSlot}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedby}
+      className={className}
+    />
   );
-
-  const handleSimpleChange = (next: string | null) => {
-    const val = next ?? "";
-
-    if (!isControlled) {
-      setInternalValue(val);
-    }
-
-    const opt = flat.find((o) => o.value === val) ?? null;
-    onChange?.(val, opt);
-  };
-
-  return renderKiraSelectSectionPart1({
-    selectValue,
-    handleSimpleChange,
-    labelMap,
-    disabled,
-    readOnly,
-    name,
-    required,
-    id,
-    size,
-    dataSlot,
-    invalid,
-    ariaLabel,
-    ariaDescribedby,
-    className,
-    leftIcon,
-    placeholder,
-    renderContent,
-  });
 }
 
 const isStringEmitted = (item: ComboboxEmitted): item is string =>

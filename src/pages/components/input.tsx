@@ -1763,6 +1763,18 @@ export default function InputPage() {
 // Static demo metadata stays co-located and follows its source constants.
 const inputPageChangelogEntries = [
   {
+    version: "2.3.1",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Prefix/suffix icons get the contract affordance size",
+        description:
+          "Bare icons passed as prefix/suffix are now sized by the container (size-3 at xs, size-4 above), so they can never overlap the text offsets recomputed in 2.3.0. Explicitly sized icons are untouched.",
+      },
+    ],
+  },
+  {
     version: "2.3.0",
     date: "18 November 2026",
     changes: [

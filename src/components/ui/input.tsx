@@ -548,12 +548,17 @@ function resolveActionButtonsPadding(
 function renderPrefixContainer(
   prefix: React.ReactNode,
   prefixContainerPadding: string,
+  size: InputSize,
 ): React.ReactNode {
   return (
     prefix && (
       <div
         className={cn(
           "absolute left-0 flex h-full items-center text-muted-foreground pointer-events-none",
+          // Bare icons get the contract affordance size so text offsets never collide.
+          size === "xs"
+            ? "[&_svg:not([class*='size-'])]:size-3"
+            : "[&_svg:not([class*='size-'])]:size-4",
           prefixContainerPadding,
         )}
       >
@@ -567,12 +572,16 @@ function renderPrefixContainer(
 function renderSuffixContainer(
   combinedSuffix: React.ReactNode,
   suffixContainerPadding: string,
+  size: InputSize,
 ): React.ReactNode {
   return (
     combinedSuffix && (
       <div
         className={cn(
           "absolute right-0 flex h-full items-center",
+          size === "xs"
+            ? "[&_svg:not([class*='size-'])]:size-3"
+            : "[&_svg:not([class*='size-'])]:size-4",
           suffixContainerPadding,
         )}
       >
@@ -636,6 +645,7 @@ function InputFieldView(options: InputFieldViewOptions) {
       {renderPrefixContainer(
         options.prefix,
         PREFIX_CONTAINER_PADDING[effectiveSize],
+        effectiveSize,
       )}
       {React.cloneElement(inputElement, {
         className: cn(inputElement.props.className, actionButtonsPadding),
@@ -643,6 +653,7 @@ function InputFieldView(options: InputFieldViewOptions) {
       {renderSuffixContainer(
         combinedSuffix,
         SUFFIX_CONTAINER_PADDING[effectiveSize],
+        effectiveSize,
       )}
     </div>,
   );

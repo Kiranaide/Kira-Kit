@@ -978,7 +978,7 @@ const demoTabs = [
     demo: (
       <DemoWrapper
         title="Grouped Options with Search"
-        description="Group labels survive filtering in the rich path."
+        description="Group labels survive filtering in every mode."
         code={groupedCode}
       >
         <GroupedSearchableDemo />
@@ -1034,6 +1034,30 @@ export default function SelectPage() {
 
 // Static demo metadata stays co-located and follows its source constants.
 const selectPageChangelogEntries = [
+  {
+    version: "3.4.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "One combobox layout for every mode",
+        description:
+          "KiraSelect now renders basic, multiple, async, searchable, and creatable modes through the same combobox trigger and popup: the list anchors below the trigger at its exact width, with no overlay positioning and no trigger peeking through. Basic selects gain type-to-filter and show the selected label in the closed trigger; opening starts a fresh query so the full list shows. Low-level SelectContent defaults move below the trigger (align start, no item alignment) to match.",
+      },
+    ],
+  },
+  {
+    version: "3.3.1",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Popup padding and single-select trigger layout",
+        description:
+          "SelectContent gains the contract p-1 popup padding (items no longer sit flush against the rounded edge). The combobox trigger only wraps for multiple-selection chips; single-select stays on one line with a shrinkable input, so the chevron never drops to a second row at narrow widths.",
+      },
+    ],
+  },
   {
     version: "3.3.0",
     date: "18 November 2026",
