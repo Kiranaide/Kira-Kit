@@ -481,10 +481,15 @@ function ShowcaseDemo() {
           <KiraSelect options={[]} placeholder="No options" />
         </div>
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Size: sm + default</p>
+          <p className="text-sm text-muted-foreground">
+            Size ladder: xs / sm / default / lg / xl
+          </p>
           <div className="space-y-2">
+            <KiraSelect options={fruits} size="xs" placeholder="Extra small" />
             <KiraSelect options={fruits} size="sm" placeholder="Small" />
             <KiraSelect options={fruits} placeholder="Default" />
+            <KiraSelect options={fruits} size="lg" placeholder="Large" />
+            <KiraSelect options={fruits} size="xl" placeholder="Extra large" />
           </div>
         </div>
       </div>
@@ -1029,6 +1034,24 @@ export default function SelectPage() {
 
 // Static demo metadata stays co-located and follows its source constants.
 const selectPageChangelogEntries = [
+  {
+    version: "3.3.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Full Control-Height Ladder",
+        description:
+          "SelectTrigger, KiraSelect, and ComboboxField now accept xs / sm / default / lg / xl (h-7/8/9/10/11 with px-2/3/4/5/5), matching Button and Input on a shared baseline. sm and default move up one step (h-7→h-8, h-8→h-9).",
+      },
+      {
+        type: "changed",
+        title: "One Menu-Item Metric",
+        description:
+          "SelectItem and combobox items share px-2 py-1.5 min-h-8 gap-2 (select keeps pr-8 for the check indicator); SelectLabel aligns to px-2 py-1.5. The sm-only rounded-[min(...)] radius hack is gone — every size uses rounded-lg. Virtualized row estimate updated 36→32px to match.",
+      },
+    ],
+  },
   {
     version: "3.2.0",
     date: "18 October 2026",

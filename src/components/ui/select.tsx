@@ -22,6 +22,16 @@ import { isStringProp } from "@/lib/component-prop-guards";
 
 const Select = SelectPrimitive.Root;
 
+type SelectSize = "xs" | "sm" | "default" | "lg" | "xl";
+
+const COMBOBOX_SIZE_CLASSES: Record<SelectSize, string> = {
+  xs: "min-h-7 px-2",
+  sm: "min-h-8 px-3",
+  default: "min-h-9 px-4",
+  lg: "min-h-10 px-5",
+  xl: "min-h-11 px-5",
+};
+
 function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   return (
     <SelectPrimitive.Group
@@ -48,19 +58,19 @@ function SelectTrigger({
   children,
   ...props
 }: SelectPrimitive.Trigger.Props & {
-  size?: "sm" | "default";
+  size?: SelectSize;
 }) {
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-full items-center justify-between rounded-lg border border-input bg-transparent px-2 py-1 text-sm transition-colors select-none gap-1.5",
+        "flex w-full items-center justify-between rounded-lg border border-input bg-transparent py-1 text-sm transition-colors select-none gap-2",
         "dark:bg-input/30 dark:hover:bg-input/50",
         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
         "data-placeholder:text-muted-foreground",
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 aria-invalid:ring-[3px]",
-        "data-[size=default]:h-8 data-[size=sm]:h-7 data-[size=sm]:rounded-[min(var(--radius-md),10px)]",
+        "data-[size=xs]:h-7 data-[size=xs]:px-2 data-[size=sm]:h-8 data-[size=sm]:px-3 data-[size=default]:h-9 data-[size=default]:px-4 data-[size=lg]:h-10 data-[size=lg]:px-5 data-[size=xl]:h-11 data-[size=xl]:px-5",
         "*:data-[slot=select-value]:flex *:data-[slot=select-value]:gap-1.5 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:items-center",
         "[&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         "disabled:cursor-not-allowed disabled:opacity-50",
@@ -138,7 +148,7 @@ function SelectLabel({
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
-      className={cn("text-muted-foreground px-1.5 py-1 text-xs", className)}
+      className={cn("text-muted-foreground px-2 py-1.5 text-xs", className)}
       {...props}
     />
   );
@@ -153,7 +163,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2 relative flex w-full cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground gap-2 rounded-md px-2 py-1.5 pr-8 min-h-8 text-sm [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2 relative flex w-full cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         className,
       )}
       {...props}
@@ -311,7 +321,7 @@ interface ComboboxFieldProps<T extends SelectOption = SelectOption> {
   id?: string;
   readOnly?: boolean;
   disabled?: boolean;
-  size?: "sm" | "default";
+  size?: SelectSize;
   className?: string;
   maxDisplayedTags?: number;
   showSearchIcon?: boolean;
@@ -402,7 +412,7 @@ interface KiraSelectProps<T extends SelectOption = SelectOption> {
   id?: string;
   readOnly?: boolean;
   disabled?: boolean;
-  size?: "sm" | "default";
+  size?: SelectSize;
   variant?: "default" | "ghost" | "outline";
   leftIcon?: React.ReactNode;
   hideChevron?: boolean;
@@ -878,7 +888,8 @@ function useComboboxFieldState6<T extends SelectOption = SelectOption>(
   );
 
   const triggerClasses = cn(
-    "flex flex-wrap items-center gap-1 min-h-8 px-2 py-1 rounded-lg border bg-transparent cursor-text w-full transition-colors",
+    "flex flex-wrap items-center gap-2 py-1 rounded-lg border bg-transparent cursor-text w-full transition-colors",
+    COMBOBOX_SIZE_CLASSES[state.size || "default"],
     state.variant === "default" &&
       "border-input dark:bg-input/30 dark:hover:bg-input/50",
     state.variant === "ghost" && "border-transparent hover:bg-muted",
@@ -887,7 +898,6 @@ function useComboboxFieldState6<T extends SelectOption = SelectOption>(
     "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
     state.ariaInvalid &&
       "border-destructive ring-destructive/20 focus-within:border-destructive focus-within:ring-destructive/30",
-    state.size === "sm" && "min-h-7 rounded-[min(var(--radius-md),10px)]",
     state.disabled && "opacity-50 pointer-events-none cursor-not-allowed",
     state.className,
   );
@@ -908,7 +918,7 @@ function useComboboxFieldState7<T extends SelectOption = SelectOption>(
   );
 
   const itemClasses = cn(
-    "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none cursor-pointer",
+    "flex w-full items-center gap-2 rounded-md px-2 py-1.5 min-h-8 text-sm outline-none cursor-pointer",
     "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
     "data-selected:font-medium",
     "data-disabled:opacity-50 data-disabled:pointer-events-none data-disabled:cursor-not-allowed",
@@ -918,7 +928,7 @@ function useComboboxFieldState7<T extends SelectOption = SelectOption>(
   const virtualItems = useVirtualizer({
     count: state.flatOptionsList.length,
     getScrollElement: () => state.popupEl,
-    estimateSize: () => 36,
+    estimateSize: () => 32,
     overscan: 8,
     getItemKey: (i) => state.flatOptionsList[i].value,
     enabled: state.virtualized,
@@ -1235,7 +1245,7 @@ type renderKiraSelectSectionPart1Args<T extends SelectOption = SelectOption> = {
   name: KiraSelectProps<T>["name"];
   required: KiraSelectProps<T>["required"];
   id: KiraSelectProps<T>["id"];
-  size: "default" | "sm";
+  size: SelectSize;
   dataSlot: KiraSelectProps<T>["data-slot"];
   invalid: KiraSelectProps<T>["invalid"];
   ariaLabel: KiraSelectProps<T>["aria-label"];
