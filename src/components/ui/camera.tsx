@@ -208,6 +208,7 @@ const cameraVariants = cva(
         default: "w-full aspect-video",
         sm: "w-64 max-w-full aspect-video",
         md: "w-96 max-w-full aspect-video",
+        // kira-kit-ignore arbitrary-values: fixed 512px camera stage width
         lg: "w-[32rem] max-w-full aspect-video",
         full: "w-full h-full",
         square: "w-full aspect-square",
@@ -3915,10 +3916,13 @@ function KiraCameraImageDetailsView({
         </p>
       )}
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+        {/* kira-kit-ignore spacing-scale: camera overlay chrome keeps compact optical metrics (documented non-change) */}
         <span className="inline-flex items-center gap-1.5">
           {review.source === "camera" ? (
+            // kira-kit-ignore spacing-scale: camera overlay chrome keeps compact optical metrics (documented non-change)
             <IconCamera aria-hidden="true" className="size-3.5" />
           ) : (
+            // kira-kit-ignore spacing-scale: camera overlay chrome keeps compact optical metrics (documented non-change)
             <IconPhoto aria-hidden="true" className="size-3.5" />
           )}
           {review.source === "camera" ? "Camera photo" : "Chosen image"}
@@ -3995,6 +3999,7 @@ function KiraCameraProgressView({
         const active = index === currentStep && phase.status !== "accepted";
 
         return (
+          // kira-kit-ignore spacing-scale: camera overlay chrome keeps compact optical metrics (documented non-change)
           <li
             key={step}
             data-slot="kira-camera-step"
@@ -4516,6 +4521,7 @@ function cameraButtonBadge(badge: CameraButtonProps["badge"]) {
   if (badge === undefined || badge === null || badge === "") return null;
 
   return (
+    // kira-kit-ignore spacing-scale: camera overlay chrome keeps compact optical metrics (documented non-change)
     <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-info px-1.5 text-xs font-semibold text-info-foreground">
       {badge}
     </span>
@@ -4528,6 +4534,7 @@ function cameraButtonIndicator(
 ) {
   if (indicator === "dot") {
     return (
+      // kira-kit-ignore spacing-scale: camera overlay chrome keeps compact optical metrics (documented non-change)
       <span
         className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full"
         style={{ backgroundColor: color }}
@@ -5104,6 +5111,8 @@ function CameraGuideView({
       >
         {renderGuide()}
         {showMeasurements && (
+          // kira-kit-ignore arbitrary-values: sub-12px micro type is a documented exception
+          // kira-kit-ignore spacing-scale: camera overlay chrome keeps compact optical metrics (documented non-change)
           <div className="absolute left-2 bottom-2 text-[10px] px-1.5 py-0.5 rounded bg-black/60 text-white/80">
             {cameraValueValue2(guideConfig)}
           </div>

@@ -461,6 +461,7 @@ function KanbanCardContent({
         />
       )}
       {card.blockedReason && (
+        // kira-kit-ignore spacing-scale: compact card-metadata tier keeps optical metrics
         <p
           data-slot="kanban-card-blocked"
           className="mt-3 rounded-md bg-destructive/10 px-2.5 py-2 text-xs leading-5 text-destructive [overflow-wrap:anywhere]"
@@ -1645,11 +1646,13 @@ function renderKanbanCardLabelsPart4({
   card,
 }: renderKanbanCardLabelsPart4Args) {
   return (
+    // kira-kit-ignore spacing-scale: compact card-metadata tier keeps optical metrics
     <div
       data-slot="kanban-card-labels"
       className="mt-3 flex min-w-0 flex-wrap items-center gap-1.5 text-xs"
     >
       {card.priority && (
+        // kira-kit-ignore spacing-scale: compact card-metadata tier keeps optical metrics
         <span
           data-slot="kanban-card-priority"
           className={cn(
@@ -1664,6 +1667,7 @@ function renderKanbanCardLabelsPart4({
       )}
       {withOccurrenceKeys(card.tags ?? [], (tag) => tag).map(
         ({ item: tag, key }) => (
+          // kira-kit-ignore spacing-scale: compact card-metadata tier keeps optical metrics
           <span
             data-slot="kanban-card-tag"
             key={key}
@@ -1690,6 +1694,7 @@ function renderKanbanCardMetadataPart5({
   card,
 }: renderKanbanCardMetadataPart5Args) {
   return (
+    // kira-kit-ignore spacing-scale: compact card-metadata tier keeps optical metrics
     <div
       data-slot="kanban-card-metadata"
       className="mt-3 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground"
@@ -1699,6 +1704,7 @@ function renderKanbanCardMetadataPart5({
           data-slot="kanban-card-due"
           className="inline-flex min-w-0 items-center gap-1 [overflow-wrap:anywhere]"
         >
+          {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
           <IconCalendarDue aria-hidden="true" className="size-3.5 shrink-0" />
           <span>
             <span className="sr-only">Due </span>
@@ -1711,6 +1717,7 @@ function renderKanbanCardMetadataPart5({
           data-slot="kanban-card-checklist"
           className="inline-flex items-center gap-1 tabular-nums"
         >
+          {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
           <IconChecklist aria-hidden="true" className="size-3.5" />
           {card.checklist.completed}/{card.checklist.total}
           <span className="sr-only"> tasks completed</span>
@@ -1721,6 +1728,7 @@ function renderKanbanCardMetadataPart5({
           data-slot="kanban-card-comments"
           className="inline-flex items-center gap-1 tabular-nums"
         >
+          {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
           <IconMessageCircle aria-hidden="true" className="size-3.5" />
           {card.comments}
           <span className="sr-only"> comments</span>
@@ -1731,6 +1739,7 @@ function renderKanbanCardMetadataPart5({
           data-slot="kanban-card-attachments"
           className="inline-flex items-center gap-1 tabular-nums"
         >
+          {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
           <IconPaperclip aria-hidden="true" className="size-3.5" />
           {card.attachments}
           <span className="sr-only"> attachments</span>
@@ -1765,6 +1774,7 @@ function renderKanbanCardFooterPart6({
       className="mt-3 flex min-w-0 flex-wrap items-center justify-between gap-2 border-t pt-2"
     >
       {card.assignee && (
+        // kira-kit-ignore spacing-scale: compact card-metadata tier keeps optical metrics
         <span
           data-slot="kanban-card-assignee"
           className="flex min-w-0 flex-1 items-center gap-1.5 text-xs text-muted-foreground"

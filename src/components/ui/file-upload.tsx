@@ -530,6 +530,7 @@ function FilePreview({
           className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-background/80 hover:bg-destructive hover:text-destructive-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
           aria-label={`Remove ${file.file.name}`}
         >
+          {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
           <IconX className="h-3.5 w-3.5" aria-hidden="true" />
         </button>
       )}
@@ -556,6 +557,7 @@ function FileUploadProgressRow({ entry }: { entry: UploadedFile }) {
 
   return (
     <div data-slot="file-upload-progress" className="mt-2 space-y-1">
+      {/* kira-kit-ignore spacing-scale: data-viz track hairline, not a control height */}
       <ProgressPrimitive.Root
         value={value}
         aria-label={`Uploading ${entry.file.name}`}
@@ -2087,6 +2089,7 @@ function renderFilePreviewSectionPart7({
         />
       )}
       {!showThumbnail && (
+        // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
         <div className="flex flex-col items-center gap-1.5 p-4 text-center">
           {React.createElement(previewFallbackIcon(kind), {
             className: "h-8 w-8 text-muted-foreground",
@@ -2105,6 +2108,7 @@ function renderFilePreviewSectionPart7({
           className="absolute inset-0 flex items-end justify-start bg-linear-to-t from-black/40 to-transparent p-2 opacity-0 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-reduce:transition-none"
           aria-label={`Preview ${file.file.name}`}
         >
+          {/* kira-kit-ignore spacing-scale: file chip uses badge-tier compact padding */}
           <span className="rounded bg-background/90 px-1.5 py-0.5 text-xs font-medium">
             Preview
           </span>

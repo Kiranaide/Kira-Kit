@@ -61,6 +61,7 @@ function SelectTrigger({
   size?: SelectSize;
 }) {
   return (
+    // kira-kit-ignore spacing-scale: value-to-icon optical gap inside the trigger
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       data-size={size}
@@ -1006,7 +1007,7 @@ function useComboboxFieldState8<T extends SelectOption = SelectOption>(
               <ComboboxPrimitive.Group key={group.label}>
                 <ComboboxPrimitive.GroupLabel
                   data-slot="select-field-group-label"
-                  className="text-muted-foreground px-1.5 py-1 text-xs"
+                  className="text-muted-foreground px-2 py-1.5 text-xs"
                 >
                   {group.label}
                 </ComboboxPrimitive.GroupLabel>

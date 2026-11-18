@@ -741,6 +741,7 @@ const StatsCardProgress = React.forwardRef<
             )}
           </MeterPrimitive.Value>
         )}
+        {/* kira-kit-ignore spacing-scale: data-viz track hairline, not a control height */}
         <MeterPrimitive.Track className="relative h-1.5 w-full overflow-hidden rounded-full bg-muted">
           <MeterPrimitive.Indicator
             className={cn(
@@ -1078,6 +1079,7 @@ function renderStatsCardSkeletonPart2({
         </div>
       </div>
       {showProgress && (
+        // kira-kit-ignore spacing-scale: data-viz track hairline, not a control height
         <div className="mt-3 h-1.5 w-full rounded-full bg-muted" />
       )}
       {showSparkline && (

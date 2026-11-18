@@ -390,13 +390,16 @@ function SortableTableHead({
 
   const resolveValue3 = () => {
     if (sortState === "asc") {
+      // kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
       return <IconArrowUp className="size-3.5" />;
     }
 
     if (sortState === "desc") {
+      // kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
       return <IconArrowDown className="size-3.5" />;
     }
 
+    // kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
     return <IconArrowsSort className="size-3.5 opacity-50" />;
   };
 
@@ -412,6 +415,7 @@ function SortableTableHead({
       ariaSort={sortState === "none" ? undefined : SORT_TO_ARIA[sortState]}
       {...props}
     >
+      {/* kira-kit-ignore spacing-scale: sort-header icon gap keeps the compact optical metric */}
       <button
         type="button"
         onClick={onSort}

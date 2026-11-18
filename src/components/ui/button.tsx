@@ -52,12 +52,14 @@ const buttonVariants = cva(
       },
       size: {
         xs: "h-7 gap-1 px-2 text-xs has-[>svg]:px-2 [&_svg:not([class*='size-'])]:size-3",
+        // kira-kit-ignore spacing-scale: sm button optical exception: 14px icons, 6px gap, 10px icon-side padding (contract 3.1)
         sm: "h-8 gap-1.5 px-3 text-xs has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-3.5",
         default: "h-9 gap-2 px-4 has-[>svg]:px-3",
         lg: "h-10 gap-2 px-5 has-[>svg]:px-4 [&_svg:not([class*='size-'])]:size-5",
         xl: "h-11 gap-2 px-5 text-base has-[>svg]:px-4 [&_svg:not([class*='size-'])]:size-5",
         icon: "size-9",
         "icon-xs": "size-7 [&_svg:not([class*='size-'])]:size-3",
+        // kira-kit-ignore spacing-scale: sm button optical exception: 14px icons, 6px gap, 10px icon-side padding (contract 3.1)
         "icon-sm": "size-8 [&_svg:not([class*='size-'])]:size-3.5",
         "icon-lg": "size-10 [&_svg:not([class*='size-'])]:size-5",
         "icon-xl": "size-11 [&_svg:not([class*='size-'])]:size-5",
@@ -102,12 +104,14 @@ type ButtonSize =
 const getButtonIconSize = (size: ButtonSize | null | undefined): string => {
   const sizes = {
     xs: "h-3 w-3",
+    // kira-kit-ignore spacing-scale: sm button optical exception: 14px icons, 6px gap, 10px icon-side padding (contract 3.1)
     sm: "h-3.5 w-3.5",
     default: "h-4 w-4",
     lg: "h-5 w-5",
     xl: "h-5 w-5",
     icon: "h-4 w-4",
     "icon-xs": "h-3 w-3",
+    // kira-kit-ignore spacing-scale: sm button optical exception: 14px icons, 6px gap, 10px icon-side padding (contract 3.1)
     "icon-sm": "h-3.5 w-3.5",
     "icon-lg": "h-5 w-5",
     "icon-xl": "h-5 w-5",

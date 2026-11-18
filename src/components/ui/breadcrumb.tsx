@@ -20,11 +20,13 @@ import { resolveComponentDefaults } from "@/lib/component-defaults";
 import { isStringProp } from "@/lib/component-prop-guards";
 
 const breadcrumbListVariants = cva(
+  // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
   "flex flex-wrap items-center gap-1.5 break-words text-sm",
   {
     variants: {
       size: {
         sm: "text-xs gap-1",
+        // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
         default: "text-sm gap-1.5",
         lg: "text-base gap-2",
       },
@@ -36,6 +38,7 @@ const breadcrumbListVariants = cva(
 );
 
 const breadcrumbLinkVariants = cva(
+  // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
   "inline-flex items-center gap-1.5 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
   {
     variants: {
@@ -272,6 +275,7 @@ BreadcrumbList.displayName = "BreadcrumbList";
 
 const BreadcrumbItem = React.forwardRef<HTMLLIElement, BreadcrumbItemProps>(
   ({ className, ...props }, ref) => (
+    // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
     <li
       ref={ref}
       data-slot="breadcrumb-item"
@@ -412,6 +416,7 @@ const BreadcrumbSeparator = React.forwardRef<
     switch (variant) {
       case "dot":
         return (
+          // kira-kit-ignore spacing-scale: non-control indicator dot on the compact ladder
           <span
             className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50"
             aria-hidden="true"
@@ -456,6 +461,7 @@ const BreadcrumbHome = React.forwardRef<HTMLAnchorElement, BreadcrumbHomeProps>(
         {
           itemProp: "item",
           className: cn(
+            // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
             "inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm",
             !reduced && "transition-colors",
             className,
@@ -763,6 +769,7 @@ function BreadcrumbMobileMenu({ items, className }: BreadcrumbMobileMenuProps) {
   return (
     <Menu.Root>
       <div className={cn("md:hidden", className)}>
+        {/* kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept */}
         <Menu.Trigger
           aria-label={`Navigate to ancestors of ${current.label}`}
           className="inline-flex items-center gap-1.5 rounded-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -1334,6 +1341,7 @@ function renderKiraBreadcrumbSectionPart4({
         />
       )}
       <BreadcrumbMobileMenu items={items} />
+      {/* kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept */}
       <BreadcrumbList
         size={size}
         className="hidden md:flex flex-wrap items-center gap-1.5 wrap-break-word text-sm"

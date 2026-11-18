@@ -44,6 +44,7 @@ import { resolveComponentDefaults } from "@/lib/component-defaults";
 import { omitComponentProps } from "@/lib/component-native-props";
 
 const colorPickerVariants = cva(
+  // kira-kit-ignore spacing-scale: compact swatch-field stack gap
   "inline-flex min-w-0 max-w-full flex-col gap-1.5",
   {
     variants: {
@@ -1810,6 +1811,7 @@ function renderColorPickerValueFieldPart1({
   value,
 }: renderColorPickerValueFieldPart1Args) {
   return (
+    // kira-kit-ignore spacing-scale: compact swatch-field stack gap
     <div
       data-slot="color-picker-value-field"
       className="flex min-w-0 flex-col gap-1.5"
@@ -1988,6 +1990,7 @@ function renderColorPickerFormatRowPart5({
       data-slot="color-picker-format-row"
       className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-start gap-2"
     >
+      {/* kira-kit-ignore spacing-scale: compact swatch-field stack gap */}
       <div className="flex min-w-0 flex-col gap-1.5">
         <label
           htmlFor={state.id + "-format"}

@@ -65,10 +65,12 @@ const toggleVariants = cva(
           "bg-transparent data-[pressed]:bg-destructive data-[pressed]:text-destructive-foreground",
       },
       size: {
+        // kira-kit-ignore spacing-scale: sm toggle keeps 14px icons to match the sm button optical exception
         sm: "h-8 px-2 text-xs [&_svg]:h-3.5 [&_svg]:w-3.5",
         default: "h-9 px-3 [&_svg]:h-4 [&_svg]:w-4",
         lg: "h-10 px-4 text-base [&_svg]:h-5 [&_svg]:w-5",
         icon: "h-9 w-9 [&_svg]:h-4 [&_svg]:w-4",
+        // kira-kit-ignore spacing-scale: sm toggle keeps 14px icons to match the sm button optical exception
         "icon-sm": "h-8 w-8 [&_svg]:h-3.5 [&_svg]:w-3.5",
         "icon-lg": "h-10 w-10 [&_svg]:h-5 [&_svg]:w-5",
       },
@@ -816,6 +818,8 @@ function useKiraToggleState({
 /** Shortcut hint chip rendered inside KiraToggle. */
 function ToggleShortcut({ kbd }: { kbd: string }) {
   return (
+    // kira-kit-ignore arbitrary-values: sub-12px micro type is a documented exception
+    // kira-kit-ignore spacing-scale: kbd shortcut chip: compact label-tier padding and micro type
     <kbd
       data-slot="toggle-shortcut"
       className="pointer-events-none ml-1 inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground"

@@ -1,3 +1,5 @@
+/* kira-kit-ignore-file spacing-scale: avatar status dots follow the non-control avatar ladder */
+/* kira-kit-ignore-file arbitrary-values: avatar fallback/status micro type (documented sub-12px exception) */
 /* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 

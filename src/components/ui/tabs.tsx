@@ -229,9 +229,11 @@ function TabsIndicatorInternal() {
       "inset-y-1 left-0 rounded-full w-[var(--active-tab-width)] translate-x-[var(--active-tab-left)]";
   } else if (vertical) {
     position =
+      // kira-kit-ignore spacing-scale: 2px active-indicator stroke/hairline
       "right-0 top-0 w-0.5 h-[var(--active-tab-height)] translate-y-[var(--active-tab-top)]";
   } else {
     position =
+      // kira-kit-ignore spacing-scale: 2px active-indicator stroke/hairline
       "bottom-0 left-0 w-[var(--active-tab-width)] h-0.5 translate-x-[var(--active-tab-left)]";
   }
 
@@ -359,18 +361,22 @@ function TabsScrollButton({
 
   if (vertical && backward) {
     label = "Scroll tabs up";
+    // kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
     icon = <IconChevronUp className="size-3.5" aria-hidden="true" />;
     position = "top-1 left-1/2 -translate-x-1/2";
   } else if (vertical) {
     label = "Scroll tabs down";
+    // kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
     icon = <IconChevronDown className="size-3.5" aria-hidden="true" />;
     position = "bottom-1 left-1/2 -translate-x-1/2";
   } else if (backward) {
     label = "Scroll tabs left";
+    // kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
     icon = <IconChevronLeft className="size-3.5" aria-hidden="true" />;
     position = "left-1 top-1/2 -translate-y-1/2";
   } else {
     label = "Scroll tabs right";
+    // kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
     icon = <IconChevronRight className="size-3.5" aria-hidden="true" />;
     position = "right-1 top-1/2 -translate-y-1/2";
   }
@@ -491,6 +497,7 @@ const tabsTriggerVariants = cva(
     "motion-reduce:transition-none",
     "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-1 focus-visible:outline-ring",
     "disabled:pointer-events-none disabled:opacity-50",
+    // kira-kit-ignore arbitrary-values: explicit 44px touch minimum (11 steps)
     "min-h-[44px] sm:min-h-0",
   ],
   {
@@ -789,6 +796,7 @@ function TabCloseAffordance({
         )}
       />
       {dirty && !closePending && (
+        // kira-kit-ignore spacing-scale: non-control indicator dot on the compact ladder
         <span
           data-slot="tabs-dirty-dot"
           aria-hidden="true"
@@ -1051,6 +1059,7 @@ function useSortableTab(item: TabItem) {
       }}
       className="-ms-1 inline-flex size-6 shrink-0 cursor-grab items-center justify-center rounded text-muted-foreground hover:bg-foreground/10 active:cursor-grabbing touch-none"
     >
+      {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
       <IconGripVertical className="size-3.5" />
     </span>
   );
@@ -1492,6 +1501,7 @@ function renderTabsTriggerPart3({
       )}
       <span className="min-w-0 truncate">{children}</span>
       {badge !== undefined && (
+        // kira-kit-ignore spacing-scale: badge/chip-tier compact padding (labels, not controls)
         <span
           data-slot="tabs-badge"
           className={cn(
@@ -1503,6 +1513,7 @@ function renderTabsTriggerPart3({
         </span>
       )}
       {dirty && !closable && (
+        // kira-kit-ignore spacing-scale: non-control indicator dot on the compact ladder
         <span
           data-slot="tabs-dirty-dot"
           aria-hidden="true"

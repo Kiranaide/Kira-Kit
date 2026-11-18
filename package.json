@@ -14,6 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "oxlint && tsc -b && prettier --check .",
+    "check:pages": "bun packages/cli/src/index.ts check src/pages/components",
     "lint:strict": "oxlint --type-aware"
   },
   "dependencies": {

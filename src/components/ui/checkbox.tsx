@@ -63,6 +63,7 @@ const checkboxVariants = cva(
       },
       size: {
         sm: "size-4 rounded-sm [&_svg]:size-3",
+        // kira-kit-ignore spacing-scale: check glyph fits the 20px box optically
         default: "size-5 rounded-sm [&_svg]:size-3.5",
         lg: "size-6 rounded-md [&_svg]:size-4",
       },
@@ -260,6 +261,7 @@ function CheckboxWithLabel({
   const inactive = props.disabled || props.readOnly;
 
   const text = (
+    // kira-kit-ignore spacing-scale: label/description micro-stack uses the helper-text gap tier
     <div className="flex flex-col gap-0.5">
       <label
         htmlFor={checkboxId}
@@ -764,6 +766,7 @@ function CheckboxGroupView({
       className={cn("flex flex-col gap-2", className)}
     >
       {(label || description) && (
+        // kira-kit-ignore spacing-scale: label/description micro-stack uses the helper-text gap tier
         <div className="flex flex-col gap-0.5">
           {label && (
             <span id={labelId} className="text-sm font-medium leading-none">

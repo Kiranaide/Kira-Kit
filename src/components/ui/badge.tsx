@@ -1,3 +1,5 @@
+/* kira-kit-ignore-file spacing-scale: badges are labels, not controls; the compact ladder keeps optical half-steps (contract 3.9) */
+/* kira-kit-ignore-file arbitrary-values: xs micro badges keep 10px type (documented sub-12px exception) */
 /* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 

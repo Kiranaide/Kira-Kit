@@ -776,6 +776,7 @@ function DataTableFrame<TData extends RowData>({
   }
 
   return (
+    // kira-kit-ignore arbitrary-values: 600px scroll viewport bound for the table body
     <Table
       ref={tableRef}
       density={DENSITY_TO_TABLE[density]}
@@ -2451,6 +2452,7 @@ function DataTableBulkActions({
           className="h-6 px-2"
           aria-label="Clear selection"
         >
+          {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
           <IconX className="size-3.5" aria-hidden="true" />
         </Button>
       </div>

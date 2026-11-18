@@ -14,6 +14,7 @@ import { targetSize } from "./target-size";
 import { rawColors } from "./raw-colors";
 import { layoutTransitions } from "./layout-transitions";
 import { arbitraryValues } from "./arbitrary-values";
+import { spacingScale } from "./spacing-scale";
 import { registryMetadata } from "./registry-metadata";
 import { baseUiOnly } from "./base-ui-only";
 import { cnSource } from "./cn-source";
@@ -27,6 +28,7 @@ const CHECKS = [
   rawColors,
   layoutTransitions,
   arbitraryValues,
+  spacingScale,
   registryMetadata,
   baseUiOnly,
   cnSource,
@@ -55,6 +57,14 @@ export interface CheckRunResult {
   filesChecked: number;
 }
 
+function prefixForPath(abs: string): string {
+  if (abs.includes(join("src", "components", "ui"))) return "ui/";
+
+  if (abs.includes(join("src", "pages"))) return "pages/";
+
+  return "hooks/";
+}
+
 function sourceDirs(
   repoRoot: string,
   paths: string[],
@@ -69,11 +79,7 @@ function sourceDirs(
   return paths.map((path) => {
     const abs = join(repoRoot, path);
 
-    const prefix = abs.includes(join("src", "components", "ui"))
-      ? "ui/"
-      : "hooks/";
-
-    return [abs, prefix];
+    return [abs, prefixForPath(abs)];
   });
 }
 
@@ -235,7 +241,8 @@ function githubAnnotation(f: Finding): string {
 
   const filePath = f.file
     .replace(/^ui\//, "src/components/ui/")
-    .replace(/^hooks\//, "src/hooks/");
+    .replace(/^hooks\//, "src/hooks/")
+    .replace(/^pages\//, "src/pages/components/");
 
   const props = [`file=${filePath}${lineProp}`, `title=${f.checkId}`].join(",");
 

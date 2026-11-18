@@ -59,6 +59,7 @@ function Card({
 
 function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
+    // kira-kit-ignore spacing-scale: title-to-description optical gap (contract-sanctioned exception)
     <div
       data-slot="card-header"
       className={cn(
@@ -149,6 +150,7 @@ function CardSkeleton({
             size === "sm" ? "h-3 w-20" : "h-4 w-28",
           )}
         />
+        {/* kira-kit-ignore spacing-scale: text-line skeleton bones are optical placeholders, not controls */}
         <div
           className={cn(
             "rounded bg-muted",
@@ -157,12 +159,14 @@ function CardSkeleton({
         />
       </div>
       <div className="mt-3 space-y-2">
+        {/* kira-kit-ignore spacing-scale: text-line skeleton bones are optical placeholders, not controls */}
         <div
           className={cn(
             "rounded bg-muted",
             size === "sm" ? "h-2.5 w-full" : "h-3 w-full",
           )}
         />
+        {/* kira-kit-ignore spacing-scale: text-line skeleton bones are optical placeholders, not controls */}
         <div
           className={cn(
             "rounded bg-muted",

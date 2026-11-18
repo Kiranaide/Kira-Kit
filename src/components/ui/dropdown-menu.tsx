@@ -890,20 +890,22 @@ function KiraMenuSearch({
   clearLabel?: string;
 }) {
   return (
+    // kira-kit-ignore spacing-scale: search-header divider chrome keeps optical spacing
     <div
       data-slot="dropdown-menu-search"
-      className="relative mb-1.5 border-b border-border px-0.5 pb-2.5 pt-0.5"
+      className="relative mb-1.5 border-b border-border px-0.5 pb-2.5"
     >
       <IconSearch
         aria-hidden="true"
-        className="pointer-events-none absolute inset-s-3 top-3 size-4 text-muted-foreground"
+        className="pointer-events-none absolute inset-s-3 top-2 size-4 text-muted-foreground"
       />
       <DropdownMenuInput
         aria-label={label}
         placeholder={label}
-        className="ps-9"
+        className="ps-8"
       />
       <DropdownMenuClear aria-label={clearLabel}>
+        {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
         <IconX aria-hidden="true" className="h-3.5 w-3.5" />
       </DropdownMenuClear>
     </div>

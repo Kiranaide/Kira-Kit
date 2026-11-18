@@ -52,13 +52,17 @@ const buttonGroupSizeVariants = cva("inline-flex", {
   variants: {
     size: {
       xs: "[&>[data-slot=button]]:h-6 [&>[data-slot=button]]:px-2 [&>[data-slot=button]]:text-xs [&>[data-slot=toggle-group-item]]:h-6 [&>[data-slot=toggle-group-item]]:px-2 [&>[data-slot=toggle-group-item]]:text-xs",
+      // kira-kit-ignore arbitrary-values: compact button-group keeps 12.8px text (documented inconsistency, PR follow-up)
+      // kira-kit-ignore spacing-scale: compact button-group ladder is a documented non-change (PR follow-up)
       sm: "[&>[data-slot=button]]:h-7 [&>[data-slot=button]]:px-2.5 [&>[data-slot=button]]:text-[0.8rem] [&>[data-slot=toggle-group-item]]:h-7 [&>[data-slot=toggle-group-item]]:px-2.5 [&>[data-slot=toggle-group-item]]:text-[0.8rem]",
       default:
+        // kira-kit-ignore spacing-scale: compact button-group ladder is a documented non-change (PR follow-up)
         "[&>[data-slot=button]]:h-8 [&>[data-slot=button]]:px-2.5 [&>[data-slot=button]]:text-sm [&>[data-slot=toggle-group-item]]:h-8 [&>[data-slot=toggle-group-item]]:px-2.5 [&>[data-slot=toggle-group-item]]:text-sm",
       lg: "[&>[data-slot=button]]:h-9 [&>[data-slot=button]]:px-3 [&>[data-slot=button]]:text-base [&>[data-slot=toggle-group-item]]:h-9 [&>[data-slot=toggle-group-item]]:px-3 [&>[data-slot=toggle-group-item]]:text-base",
     },
     gap: {
       none: "gap-0",
+      // kira-kit-ignore spacing-scale: compact button-group ladder is a documented non-change (PR follow-up)
       sm: "gap-0.5",
       default: "gap-1",
       lg: "gap-2",

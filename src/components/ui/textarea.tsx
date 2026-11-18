@@ -595,6 +595,7 @@ function KiraTextareaView({
   errId,
 }: ReturnType<typeof useKiraTextareaModel>) {
   return (
+    // kira-kit-ignore spacing-scale: textarea label/description stack uses the optical header gap
     <div className={cn("flex flex-col gap-1.5", wrapperClassName)}>
       {label && (
         <label

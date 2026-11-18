@@ -490,6 +490,7 @@ interface FieldValidationIconProps extends React.ComponentProps<"span"> {
   size?: "sm" | "default" | "lg";
 }
 
+// kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
 const validationIconSizes = { sm: "size-3.5", default: "size-4", lg: "size-5" };
 
 function FieldValidationIcon({

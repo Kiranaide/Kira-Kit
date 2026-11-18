@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
+    // kira-kit-ignore spacing-scale: in-control affordance tier keeps compact optical metrics
     <div
       data-slot="input-group"
 
@@ -30,12 +31,16 @@ const inputGroupAddonVariants = cva(
     variants: {
       align: {
         "inline-start":
+          // kira-kit-ignore arbitrary-values: negative optical pull aligns addon buttons/kbd with the shell edge
           "pl-2 has-[>button]:ml-[-0.3rem] has-[>kbd]:ml-[-0.15rem] order-first",
         "inline-end":
+          // kira-kit-ignore arbitrary-values: negative optical pull aligns addon buttons/kbd with the shell edge
           "pr-2 has-[>button]:mr-[-0.3rem] has-[>kbd]:mr-[-0.15rem] order-last",
         "block-start":
+          // kira-kit-ignore spacing-scale: in-control affordance tier keeps compact optical metrics
           "px-2.5 pt-2 group-has-[>input]/input-group:pt-2 [.border-b]:pb-2 order-first w-full justify-start",
         "block-end":
+          // kira-kit-ignore spacing-scale: in-control affordance tier keeps compact optical metrics
           "px-2.5 pb-2 group-has-[>input]/input-group:pb-2 [.border-t]:pt-2 order-last w-full justify-start",
       },
     },
@@ -80,6 +85,7 @@ const inputGroupButtonVariants = cva(
   {
     variants: {
       size: {
+        // kira-kit-ignore spacing-scale: in-control affordance tier keeps compact optical metrics
         xs: "h-6 gap-1 rounded-[calc(var(--radius)-3px)] px-1.5 [&>svg:not([class*='size-'])]:size-3.5",
         sm: "",
         "icon-xs":

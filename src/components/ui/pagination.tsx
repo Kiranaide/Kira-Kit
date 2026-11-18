@@ -49,6 +49,7 @@ const paginationLinkVariants = cva(
     variants: {
       size: {
         sm: "min-h-8 min-w-8 px-2 text-xs",
+        // kira-kit-ignore spacing-scale: pagination cell keeps 10px optical side padding
         default: "min-h-9 min-w-9 px-2.5 text-sm",
         lg: "min-h-11 min-w-11 px-3 text-base",
       },
@@ -278,6 +279,7 @@ function PaginationNavigation({
   const action = resolveAction2();
 
   return (
+    // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
     <PaginationLink
       {...props}
       data-slot={`pagination-${direction}`}
@@ -2135,6 +2137,7 @@ function cursorPaginationNavigation({
   return (
     <PaginationContent>
       <PaginationItem>
+        {/* kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept */}
         <PaginationLink
           data-slot="pagination-previous"
           disabled={unavailable || !hasPreviousPage}
@@ -2165,6 +2168,7 @@ function cursorPaginationNavigation({
         </span>
       </PaginationItem>
       <PaginationItem>
+        {/* kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept */}
         <PaginationLink
           data-slot="pagination-next"
           disabled={unavailable || !hasNextPage}

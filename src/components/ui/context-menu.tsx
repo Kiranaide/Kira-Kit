@@ -344,7 +344,7 @@ function KiraContextMenu({
         return (
           <p
             data-slot="context-menu-empty"
-            className="px-2.5 py-2 text-sm text-muted-foreground"
+            className="px-2 py-1.5 text-sm text-muted-foreground"
           >
             No actions available.
           </p>
@@ -489,7 +489,7 @@ function renderKiraContextMenuSectionPart1({
           {action.state === "error" && (
             <p
               data-slot="context-menu-error"
-              className="px-2.5 py-2 text-sm text-destructive wrap-anywhere"
+              className="px-2 py-1.5 text-sm text-destructive wrap-anywhere"
             >
               {action.message}
             </p>

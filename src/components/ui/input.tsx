@@ -1323,6 +1323,7 @@ const otpInputVariants = cva(
 const otpContainerVariants = cva("flex items-center", {
   variants: {
     gap: {
+      // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
       sm: "gap-1.5",
       default: "gap-2",
       lg: "gap-3",
@@ -1492,6 +1493,7 @@ import {
   IconStarHalfFilled,
 } from "@tabler/icons-react";
 
+// kira-kit-ignore spacing-scale: star rating is a dense non-control glyph row
 const ratingVariants = cva("inline-flex items-center gap-0.5", {
   variants: {
     size: {
@@ -2054,6 +2056,7 @@ function InputContentView2({
         aria-valuetext={`${strength.label} (${strength.score} of 4)`}
         className="flex items-center gap-2"
       >
+        {/* kira-kit-ignore spacing-scale: data-viz track hairline, not a control height */}
         <Meter.Track className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
           <Meter.Indicator
             className={cn(
@@ -2073,6 +2076,7 @@ function InputContentView2({
       </Meter.Root>
       <ul className="space-y-0.5">
         {strength.checks.map((c) => (
+          // kira-kit-ignore spacing-scale: meter label row keeps the compact optical gap
           <li
             key={c.label}
             className={cn(
@@ -2442,6 +2446,7 @@ function TagInputView({
       disabled={disabled}
       open={false}
     >
+      {/* kira-kit-ignore spacing-scale: TagInput chip metrics are a documented exception */}
       <Combobox.Chips
         data-slot="tag-input"
         className={cn(
@@ -2453,6 +2458,7 @@ function TagInputView({
         )}
       >
         {keyedTags(tags).map(({ tag, key }) => (
+          // kira-kit-ignore spacing-scale: TagInput chip metrics are a documented exception
           <Combobox.Chip
             key={key}
             className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium"

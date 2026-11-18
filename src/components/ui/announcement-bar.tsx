@@ -1301,12 +1301,14 @@ function AnnouncementBarCountdownPrefixView({
   return (
     <>
       <span data-slot="announcement-bar-countdown-prefix">{prefix}</span>
+      {/* kira-kit-ignore spacing-scale: inline announcement text keeps compact optical gaps */}
       <span
         data-slot="announcement-bar-countdown-value"
         className="inline-flex items-baseline gap-1.5"
       >
         <span className="sr-only">{label}</span>
         {label.split(" ").map((part) => (
+          // kira-kit-ignore spacing-scale: inline announcement text keeps compact optical gaps
           <span
             key={part.slice(-1)}
             data-slot="announcement-bar-countdown-unit"
@@ -2473,6 +2475,7 @@ function KiraAnnouncementContent({ model }: { model: KiraAnnouncementModel }) {
   const { state, messages, rotateInterval, message } = model;
 
   const feedback = state.message && (
+    // kira-kit-ignore spacing-scale: inline announcement text keeps compact optical gaps
     <p
       data-slot="announcement-bar-action-feedback"
       className={cn("mt-1 flex items-start gap-1.5 text-xs font-normal", {

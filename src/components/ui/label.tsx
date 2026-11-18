@@ -62,6 +62,7 @@ interface LabelIconProps extends React.ComponentProps<"span"> {
 }
 
 const labelVariants = cva(
+  // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
   "text-sm leading-none font-medium flex items-center gap-1.5 select-none group-data-[disabled=true]:opacity-50 peer-disabled:opacity-50 group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed data-[disabled=true]:opacity-50 data-[disabled=true]:cursor-not-allowed",
   {
     variants: {
@@ -85,6 +86,7 @@ const labelVariants = cva(
 const labelHintVariants = cva("text-muted-foreground text-xs font-normal", {
   variants: {
     size: {
+      // kira-kit-ignore arbitrary-values: sub-12px micro type is a documented exception
       sm: "text-[10px]",
       md: "text-xs",
       lg: "text-sm",
@@ -222,6 +224,7 @@ function LabelCounter({
   const displayCount = isNumberProp(count) && count > max ? `${max}+` : count;
 
   return (
+    // kira-kit-ignore spacing-scale: optional/count badge uses badge-tier compact padding
     <span
       data-slot="label-counter"
       className={cn(
@@ -515,6 +518,7 @@ function LabelSrOnlyView({
               />
             }
           >
+            {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
             <IconInfoCircle className="h-3.5 w-3.5 text-muted-foreground" />
           </TooltipTrigger>
           <TooltipContent>{tooltip}</TooltipContent>

@@ -201,6 +201,7 @@ function HighlightMatch({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, index)}
+      {/* kira-kit-ignore spacing-scale: inline marker pill uses badge-tier 2px padding */}
       <mark
         data-slot="accordion-search-match"
         className="bg-warning/30 text-inherit rounded-sm px-0.5"
@@ -1214,6 +1215,7 @@ function ExpandAllHeader({
         className={buttonClasses}
         aria-label="Expand all accordion items"
       >
+        {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
         <IconChevronsDown className="h-3.5 w-3.5" />
         Expand all
       </button>
@@ -1222,6 +1224,7 @@ function ExpandAllHeader({
         className={buttonClasses}
         aria-label="Collapse all accordion items"
       >
+        {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
         <IconChevronsUp className="h-3.5 w-3.5" />
         Collapse all
       </button>
