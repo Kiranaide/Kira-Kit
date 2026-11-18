@@ -118,9 +118,17 @@ function useSidebarLayoutMotion(
       offsets.set(node, { x: previous.x - next.x, y: previous.y - next.y });
     }
 
+    // GSAP runs this callback synchronously, so defer reading `context` to avoid the TDZ.
     const context = gsap.context(
       () =>
-        sidebarContext(contextRef, context, cancel, timelineRef, offsets, Math),
+        sidebarContext(
+          contextRef,
+          () => context,
+          cancel,
+          timelineRef,
+          offsets,
+          Math,
+        ),
       root,
     );
 
@@ -3208,7 +3216,7 @@ function useKiraSidebarOptions2({
 
 function sidebarContext(
   contextRef: React.RefObject<gsap.Context | null>,
-  context: gsap.Context,
+  getContext: () => gsap.Context,
   cancel: () => void,
   timelineRef: React.RefObject<gsap.core.Timeline | null>,
   offsets: Map<HTMLElement, { x: number; y: number }>,
@@ -3217,7 +3225,7 @@ function sidebarContext(
   const timeline = gsap.timeline({
     defaults: { duration: 0.2, ease: sidebarLayoutEase },
     onComplete: () => {
-      if (contextRef.current === context) cancel();
+      if (contextRef.current === getContext()) cancel();
     },
   });
 
