@@ -225,7 +225,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 // oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 function NativeInputsDemo() {
   return (
-    <div className="grid max-w-3xl min-w-0 gap-5 sm:grid-cols-2">
+    <div className="grid max-w-3xl min-w-0 gap-6 sm:grid-cols-2">
       <KiraField
         name="email"
         label="Contact email"
@@ -1542,6 +1542,18 @@ const fieldPageAPIReferenceSections = [
 
 const fieldPageChangelogEntries = [
   {
+    version: "3.2.0",
+    date: "November 18, 2026",
+    changes: [
+      {
+        type: "changed" as const,
+        title: "Contract gaps and FieldControl metrics",
+        description:
+          "FieldSet and FieldGroup move gap-5→gap-6 (form-field tier); FieldError and FieldStatus icon gaps move gap-1.5→gap-2. FieldControl now matches the default control: min-h-9 px-4 py-1 rounded-lg (was min-h-10 px-3 py-2 rounded-md), so it renders equal-height beside a plain Input. Outline and ErrorSummary keep the inline-alert p-4 rounded-lg tier.",
+      },
+    ],
+  },
+  {
     version: "3.1.1",
     date: "November 13, 2026",
     changes: [
@@ -1696,7 +1708,7 @@ function ControlsControlsSection2({
             { value: "us", label: "United States" },
           ]}
         >
-          <SelectTrigger id={id} className="min-h-10 pointer-coarse:min-h-11">
+          <SelectTrigger id={id} size="lg" className="pointer-coarse:min-h-11">
             <SelectValue />
           </SelectTrigger>
           <SelectContent alignItemWithTrigger={false}>
@@ -1868,7 +1880,7 @@ interface ControlTextFieldsProps {
 function ControlFieldGrid({ state, seats, setSeats }: ControlFieldGridProps) {
   return (
     <>
-      <div className="grid min-w-0 gap-5 sm:grid-cols-2">
+      <div className="grid min-w-0 gap-6 sm:grid-cols-2">
         <ControlTextFields state={state} />
         <ControlsControlsSection2 state={state} />
         <ControlsControlsSection3 state={state} />

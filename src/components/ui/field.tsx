@@ -64,7 +64,7 @@ const fieldVariants = cva("group/field flex min-w-0 w-full gap-2", {
 });
 
 const fieldControlVariants = cva(
-  "flex min-w-0 w-full rounded-md border border-input bg-background px-3 py-2 text-base text-foreground shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 read-only:bg-muted/50 aria-invalid:border-destructive aria-invalid:focus-visible:ring-destructive sm:text-sm",
+  "flex min-w-0 w-full rounded-lg border border-input bg-background px-4 py-1 text-base text-foreground shadow-xs placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 read-only:bg-muted/50 aria-invalid:border-destructive aria-invalid:focus-visible:ring-destructive sm:text-sm",
 );
 
 interface FieldProps
@@ -147,7 +147,7 @@ function FieldSet({ className, ...props }: FieldSetProps) {
   return (
     <FieldsetPrimitive.Root
       data-slot="field-set"
-      className={cn("flex min-w-0 flex-col gap-5", className)}
+      className={cn("flex min-w-0 flex-col gap-6", className)}
       {...props}
     />
   );
@@ -209,7 +209,7 @@ function FieldGroup({
       data-slot="field-group"
       data-variant={variant}
       className={cn(
-        "group/field-group @container/field-group flex min-w-0 w-full flex-col gap-5",
+        "group/field-group @container/field-group flex min-w-0 w-full flex-col gap-6",
         variant === "outline" && "rounded-lg border border-input p-4",
         className,
       )}
@@ -356,7 +356,7 @@ function FieldControl({
   return (
     <FieldPrimitive.Control
       data-slot="field-control"
-      className={cn(fieldControlVariants(), "min-h-10", className)}
+      className={cn(fieldControlVariants(), "min-h-9", className)}
       disabled={disabled || context?.disabled}
       required={required ?? context?.required}
       readOnly={readOnly ?? context?.readOnly}
@@ -564,7 +564,7 @@ function FieldError({
       match={match ?? (presentation.hasExternalContent ? true : undefined)}
       aria-live="polite"
       className={cn(
-        "flex items-start gap-1.5 text-sm leading-relaxed text-destructive wrap-anywhere",
+        "flex items-start gap-2 text-sm leading-relaxed text-destructive wrap-anywhere",
         className,
       )}
       {...props}
@@ -688,7 +688,7 @@ function FieldStatus({
       aria-live="polite"
       aria-atomic="true"
       className={cn(
-        "flex items-start gap-1.5",
+        "flex items-start gap-2",
         state === "valid" && "text-foreground",
         state === "invalid" && "text-destructive",
         className,
@@ -1239,7 +1239,7 @@ function renderFieldInputSectionPart2({
             !(
               React.isValidElement(render) &&
               (render.type === Input || render.type === Textarea)
-            ) && [fieldControlVariants(), "min-h-10"],
+            ) && [fieldControlVariants(), "min-h-9"],
             className,
           )}
         />
