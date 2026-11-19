@@ -36,8 +36,8 @@ interface Release {
 
 const releases: Release[] = [
   {
-    version: "Unreleased",
-    date: "November 18, 2026",
+    version: "0.3.0",
+    date: "November 19, 2026",
     changes: [
       {
         type: "added",
@@ -50,6 +50,18 @@ const releases: Release[] = [
         title: "/ui-preview kitchen sink",
         description:
           "A single page rendering the contract's control ladder, gap tiers, and container metrics side by side.",
+      },
+      {
+        type: "added",
+        title: "Documentation pages",
+        description:
+          "New docs for introduction, installation, theming, CLI, typeset, form, and this changelog (PR #5).",
+      },
+      {
+        type: "added",
+        title: "Site-wide theme preset picker",
+        description:
+          "A theme preset picker with dark/light control across the docs site, backed by shared theme presets (PR #8).",
       },
       {
         type: "changed",
@@ -74,6 +86,12 @@ const releases: Release[] = [
         title: "Combobox select layout and affordance icon sizes",
         description:
           "One combobox select layout regression and contract affordance icon sizes corrected.",
+      },
+      {
+        type: "fixed",
+        title: "Build and deploy refinements",
+        description:
+          "Subtle theme borders, configurable deploy port, and faster builds (PR #6); deployment publishes no host port so Coolify proxy routing works (PR #7).",
       },
     ],
   },
