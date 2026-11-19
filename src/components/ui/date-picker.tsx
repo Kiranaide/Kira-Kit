@@ -92,7 +92,7 @@ interface DatePickerBaseProps extends VariantProps<
   /** Close after a complete selection in "immediate" mode. Default: true. */
   closeOnSelect?: boolean;
   locale?: Locale;
-  /** IANA time zone, e.g. "Asia/Jakarta". */
+  /** IANA time zone, e.g. "America/New_York". */
   timeZone?: string;
   weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   /** date-fns pattern for the trigger. Defaults to Intl medium date style. */

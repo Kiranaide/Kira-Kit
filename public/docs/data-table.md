@@ -29,6 +29,7 @@ kira-kit add @kira-kit/data-table
 - @kira-kit/component-prop-guards
 - @kira-kit/dropdown-menu
 - @kira-kit/input
+- @kira-kit/pagination
 - @kira-kit/popover
 - @kira-kit/table
 - @kira-kit/tooltip

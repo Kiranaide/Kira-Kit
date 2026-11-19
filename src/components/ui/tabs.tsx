@@ -1,4 +1,3 @@
-/* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 
 import * as React from "react";
@@ -1200,7 +1199,8 @@ function useCloseGuard(
     // order, wrapping to first (WAI-ARIA APG tabs pattern).
     if (activeValue === closedValue && next.length > 0) {
       const neighbour = next[idx] ?? next[0];
-      selectValue(neighbour.value);
+
+      if (neighbour) selectValue(neighbour.value);
     }
 
     setItems(next);

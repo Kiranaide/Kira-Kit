@@ -472,12 +472,12 @@ import { addDays, subDays } from "date-fns"
 <DatePicker mode="range" name={{ from: "checkin", to: "checkout" }} value={stay} onChange={setStay} />
 
 {/* Booking rules */}
-const today = getToday("Asia/Jakarta")
+const today = getToday("America/New_York")
 <DatePicker
   mode="range"
   value={stay}
   onChange={setStay}
-  timeZone="Asia/Jakarta"
+  timeZone="America/New_York"
   minDate={today}
   maxDate={addDays(today, 365)}
   disabledDays={bookedRanges}
@@ -502,8 +502,8 @@ const today = getToday("Asia/Jakarta")
 {/* Controlled open state */}
 <DatePicker open={open} onOpenChange={setOpen} />
 
-{/* Locale + week start */}
-<DatePicker locale={id} weekStartsOn={1} />
+{/* Locale + week start — import { enUS } from "date-fns/locale" */}
+<DatePicker locale={enUS} weekStartsOn={1} />
 
 {/* Custom display format (date-fns pattern) */}
 <DatePicker displayFormat="yyyy/MM/dd" />`}

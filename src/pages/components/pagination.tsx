@@ -1183,6 +1183,20 @@ const paginationPageAPIReferenceSections = [
           "Available sizes; the current size is retained when it is not in the list.",
       },
       {
+        prop: "infoFormat / emptyInfoText / infoMobileCompact",
+        type: "string / string / boolean",
+        default: '"Showing {start}–{end} of {total}" / "No results" / false',
+        description:
+          "Customize the item-range text ({start} {end} {total} {page} {pageCount} tokens), the zero-total message, and show a compact 'Page x of y' in narrow containers.",
+      },
+      {
+        prop: "pageSizeLabel / pageSizeSuffix",
+        type: "string",
+        default: '"Rows per page"',
+        description:
+          "Label before the size selector and an optional suffix after it; the suffix is tied to the control via aria-describedby.",
+      },
+      {
         prop: "showEdges / showLabels",
         type: "boolean",
         default: "false",
@@ -1557,6 +1571,30 @@ const paginationPageAPIReferenceSections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const paginationPageChangelogEntries = [
+  {
+    version: "3.2.0",
+    date: "November 19, 2026",
+    changes: [
+      {
+        type: "added" as const,
+        title: "Info and size-selector customization",
+        description:
+          "KiraPagination gains infoFormat, emptyInfoText and infoMobileCompact for the item-range text, plus pageSizeLabel and pageSizeSuffix for the size selector. The suffix is associated with the control through aria-describedby.",
+      },
+      {
+        type: "fixed" as const,
+        title: "Stable footer width across page ranges",
+        description:
+          "Windowed ranges keep a constant desktop slot count: a missing ellipsis renders an invisible placeholder, so navigating near the edges no longer shifts the footer width. The active page control keeps its identity and focus.",
+      },
+      {
+        type: "fixed" as const,
+        title: "Size selector width and touch target",
+        description:
+          "The input fallback widens to 5ch so formatted sizes like 1,000 are not clipped (field-sizing:content still applies where supported); coarse pointers keep the 44px target.",
+      },
+    ],
+  },
   {
     version: "3.1.2",
     date: "November 13, 2026",

@@ -147,7 +147,7 @@ export function TypedEntryDemo() {
 }`;
 
 function TimeZoneDemo() {
-  const TZ = "Asia/Jakarta";
+  const TZ = "America/New_York";
   const [date, setDate] = React.useState<Date | undefined>();
   const today = getToday(TZ);
 
@@ -158,10 +158,10 @@ function TimeZoneDemo() {
         value={date}
         onChange={setDate}
         timeZone={TZ}
-        placeholder="Asia/Jakarta (UTC+7)"
+        placeholder="America/New_York (UTC−5)"
       />
       <p className="text-sm text-muted-foreground">
-        Jakarta today: {format(today, "PPP")}
+        New York today: {format(today, "PPP")}
         {date && ` — picked: ${format(date, "PPP")}`}
       </p>
     </div>
@@ -181,7 +181,7 @@ export function TimeZoneDemo() {
       mode="single"
       value={date}
       onChange={setDate}
-      timeZone="Asia/Jakarta"
+      timeZone="America/New_York"
     />
   )
 }`;
@@ -745,8 +745,8 @@ import { Calendar, MonthYearPicker, formatDateValue, getToday } from "@/componen
   onChange={setStay}
 />
 
-{/* Time zone + locale */}
-<DatePicker timeZone="Asia/Jakarta" locale={id} weekStartsOn={1} />
+{/* Time zone + locale — import { enUS } from "date-fns/locale" */}
+<DatePicker timeZone="America/New_York" locale={enUS} weekStartsOn={1} />
 
 {/* Booking rules */}
 <DatePicker

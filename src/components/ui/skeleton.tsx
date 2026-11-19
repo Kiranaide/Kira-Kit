@@ -1,4 +1,3 @@
-/* oxlint-disable react/only-export-components -- public compound API and variants */
 "use client";
 
 import * as React from "react";

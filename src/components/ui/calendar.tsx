@@ -78,7 +78,7 @@ interface CalendarBaseProps {
   showOutsideDays?: boolean;
   locale?: Locale;
   weekStartsOn?: WeekStartsOn;
-  /** IANA time zone, e.g. "Asia/Jakarta". */
+  /** IANA time zone, e.g. "America/New_York". */
   timeZone?: string;
   markers?: CalendarMarker[];
   /** Defaults to `true` when markers are provided. */

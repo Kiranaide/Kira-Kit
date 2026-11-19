@@ -1,4 +1,3 @@
-/** Narrow already typed React/DOM prop unions without coercing their values. */
 type CallableMember<Value> = Value extends (...args: never[]) => infer _Return
   ? Value
   : never;

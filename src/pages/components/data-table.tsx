@@ -435,6 +435,85 @@ const virtualCode = `const bigData = Array.from({ length: 500 }, (_, i) => ({
 // grid keyboard navigation work in virtualized mode (arrows scroll).
 // Pair with onLoadMore / hasNextPage / isLoading for infinite loading.`;
 
+function ServerPaginationDemo() {
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const [rows, setRows] = React.useState<User[]>(() => bigData.slice(0, 10));
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      const start = pagination.pageIndex * pagination.pageSize;
+
+      setRows(bigData.slice(start, start + pagination.pageSize));
+      setLoading(false);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [pagination]);
+
+  const handlePageChange = (pageIndex: number) => {
+    setLoading(true);
+    setPagination((prev) => ({ ...prev, pageIndex }));
+  };
+
+  const handlePageSizeChange = (pageSize: number) => {
+    setLoading(true);
+    setPagination((prev) => ({ ...prev, pageSize }));
+  };
+
+  return (
+    <DataTableRoot
+      columns={rendererColumns}
+      data={rows}
+      isLoading={loading}
+      serverPagination={{
+        state: pagination,
+        rowCount: bigData.length,
+        onPageChange: handlePageChange,
+        onPageSizeChange: handlePageSizeChange,
+      }}
+    >
+      <DataTableContent />
+      <DataTablePagination showPageSize showPageInfo />
+    </DataTableRoot>
+  );
+}
+
+const serverPaginationCode = `const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 })
+const [rows, setRows] = React.useState<User[]>([])
+const [loading, setLoading] = React.useState(false)
+
+// Fetch the current page from your API whenever pagination changes.
+React.useEffect(() => {
+  setLoading(true)
+  fetchUsers(pagination).then((page) => {
+    setRows(page.rows)
+    setLoading(false)
+  })
+}, [pagination])
+
+<DataTableRoot
+  columns={columns}
+  data={rows}
+  isLoading={loading}
+  serverPagination={{
+    state: pagination,
+    rowCount: totalFromServer, // total matching rows, not rows.length
+    onPageChange: (pageIndex) => setPagination((p) => ({ ...p, pageIndex })),
+    onPageSizeChange: (pageSize) => setPagination((p) => ({ ...p, pageSize })),
+  }}
+>
+  <DataTableContent />
+  <DataTablePagination showPageSize showPageInfo />
+</DataTableRoot>
+// Changing the page size resets to page 1 and fires both callbacks in one
+// atomic update. If the server total shrinks below the current page, the
+// table clamps pageIndex and notifies onPageChange (skipped while loading).`;
+
 const resizeCode = `const columns: ColumnDef<User, unknown>[] = [
   {
     accessorKey: "email",
@@ -826,6 +905,13 @@ const dataTablePageAPIReferenceSections = [
         description: "Initial number of rows per page",
       },
       {
+        prop: "serverPagination",
+        type: "{ state: PaginationState; rowCount: number; onPageChange; onPageSizeChange? }",
+        default: "-",
+        description:
+          "Controlled server-side pagination. rowCount is the server total; data holds only the current page. Size changes reset to page 1 and fire both callbacks atomically.",
+      },
+      {
         prop: "initialSorting",
         type: "SortingState",
         default: "[]",
@@ -960,6 +1046,12 @@ const dataTablePageAPIReferenceSections = [
         type: "boolean",
         default: "true",
         description: "Show first/last page buttons",
+      },
+      {
+        prop: "showPreviousNextText",
+        type: "boolean",
+        default: "true",
+        description: "Show Previous/Next text labels beside the arrows",
       },
       {
         prop: "variant",
@@ -1404,6 +1496,42 @@ const dataTablePageKeyboardShortcutsShortcuts = [
 
 const dataTablePageChangelogEntries = [
   {
+    version: "3.2.0",
+    date: "19 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Pagination footer delegates to KiraPagination",
+        description:
+          "DataTablePagination now renders the shared KiraPagination component instead of a hand-rolled footer, so page buttons, ellipsis jump, size selector and screen-reader announcements match the standalone Pagination component.",
+      },
+      {
+        type: "added",
+        title: "Server-side pagination",
+        description:
+          "New serverPagination prop on DataTableRoot ({ state, rowCount, onPageChange, onPageSizeChange }) drives controlled manual pagination. Page-size changes reset to page 1 and fire both callbacks in one atomic update; a shrinking server total clamps the page index (skipped while loading). The footer also renders for virtualized tables when serverPagination is set.",
+      },
+      {
+        type: "breaking",
+        title: "BREAKING: locale prop removed from DataTablePagination",
+        description:
+          'The "en" | "id" locale option and its Indonesian strings are gone; the footer is English-only. Number formatting follows KiraPagination\'s en-US default.',
+      },
+      {
+        type: "added",
+        title: "showPreviousNextText prop",
+        description:
+          "Toggle the Previous/Next text labels beside the arrows (default true).",
+      },
+      {
+        type: "fixed",
+        title: "Accurate counts under server pagination",
+        description:
+          "Row-count and filter announcements use the server rowCount when provided instead of the client-side filtered row length.",
+      },
+    ],
+  },
+  {
     version: "3.1.0",
     date: "18 November 2026",
     changes: [
@@ -1822,6 +1950,20 @@ const dataTableVirtualizationTab = {
   ),
 } satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
 
+const dataTableServerPaginationTab = {
+  value: "server-pagination",
+  label: "Server Pagination",
+  demo: (
+    <DemoWrapper
+      title="Server-side Pagination"
+      description="The table holds only the current page; rowCount is the server total. Changing page size resets to page 1 and fires both callbacks atomically. A simulated 400ms fetch shows the loading state."
+      code={serverPaginationCode}
+    >
+      <ServerPaginationDemo />
+    </DemoWrapper>
+  ),
+} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
+
 const dataTableResizingTab = {
   value: "resizing",
   label: "Resizing",
@@ -1936,6 +2078,7 @@ function DataTableDemos() {
         },
         dataTableExportTab,
         dataTableVirtualizationTab,
+        dataTableServerPaginationTab,
         dataTableResizingTab,
         dataTableFacetedTab,
         dataTableKeyboardNavTab,

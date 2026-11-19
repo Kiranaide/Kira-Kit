@@ -1,4 +1,3 @@
-/* oxlint-disable react/only-export-components -- compound component exports are the public API */
 import * as React from "react";
 import type { BaseUIEvent } from "@base-ui/react/types";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";

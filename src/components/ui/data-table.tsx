@@ -20,6 +20,7 @@ import {
   createPaginatedRowModel,
   createSortedRowModel,
   filterFns,
+  functionalUpdate,
   sortFns,
   stockFeatures,
   tableFeatures,
@@ -36,8 +37,10 @@ import type {
   Row,
   RowData,
   RowSelectionState,
+  PaginationState,
   SortingState,
   Table as TanstackTable,
+  Updater,
 } from "@tanstack/react-table";
 import { useSelector } from "@tanstack/react-store";
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -61,11 +64,8 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   IconCheck,
   IconChevronDown,
-  IconChevronLeft,
   IconChevronRight,
   IconChevronUp,
-  IconChevronsLeft,
-  IconChevronsRight,
   IconCopy,
   IconDotsVertical,
   IconEdit,
@@ -91,6 +91,7 @@ import {
   type StickyCellProps,
   type TableDensity,
 } from "@/components/ui/table";
+import { KiraPagination } from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -472,7 +473,7 @@ function describeChange<TData extends RowData>(
     next.columnFilters !== prev.columnFilters ||
     next.globalFilter !== prev.globalFilter
   ) {
-    const n = table.getFilteredRowModel().rows.length;
+    const n = table.options.rowCount ?? table.getFilteredRowModel().rows.length;
 
     return `${n} ${n === 1 ? "result" : "results"}`;
   }
@@ -507,6 +508,12 @@ interface DataTableProps<TData extends RowData, TValue> {
   announceChanges?: boolean;
   density?: DataTableDensity;
   initialPageSize?: number;
+  serverPagination?: {
+    state: PaginationState;
+    rowCount: number;
+    onPageChange: (pageIndex: number) => void;
+    onPageSizeChange?: (pageSize: number) => void;
+  };
   initialSorting?: SortingState;
   onRowSelectionChange?: (selection: RowSelectionState) => void;
   getSubRows?: (originalRow: TData) => TData[] | undefined;
@@ -1346,7 +1353,9 @@ function DataTableRowCount() {
   const { table } = useDataTable();
   useTableState(table);
   const selectedCount = table.getFilteredSelectedRowModel().rows.length;
-  const totalCount = table.getFilteredRowModel().rows.length;
+
+  const totalCount =
+    table.options.rowCount ?? table.getFilteredRowModel().rows.length;
 
   return (
     <div className="text-sm text-muted-foreground">
@@ -1359,8 +1368,9 @@ function DataTableRowCount() {
 
 interface DataTablePaginationProps {
   showPageSize?: boolean;
-  pageSizeOptions?: number[];
+  pageSizeOptions?: readonly number[];
   showPageInfo?: boolean;
+  showPreviousNextText?: boolean;
   showFirstLast?: boolean;
   variant?: "default" | "outline" | "ghost";
   size?: "sm" | "default" | "lg";
@@ -1372,47 +1382,34 @@ function DataTablePagination(input: DataTablePaginationProps) {
     pageSizeOptions,
     showPageInfo,
     showFirstLast,
+    showPreviousNextText,
     variant,
     size,
   } = resolveComponentDefaults(input, DATA_TABLE_PAGINATION_DEFAULTS_1);
 
   const { table, enablePagination } = useDataTable();
-  const state = useTableState(table);
-  const pageSizeId = React.useId();
+  const { pagination } = useTableState(table);
 
   if (!enablePagination) return null;
 
-  const pageCount = Math.max(1, table.getPageCount());
-  const currentPage = state.pagination.pageIndex + 1;
-  const pageSize = state.pagination.pageSize;
-  const totalRows = table.getFilteredRowModel().rows.length;
-
   return (
-    <nav
+    <KiraPagination
+      page={pagination.pageIndex + 1}
+      pageSize={pagination.pageSize}
+      total={table.options.rowCount ?? table.getFilteredRowModel().rows.length}
+      onPaginationChange={({ page, pageSize }) => {
+        table.setPagination({ pageIndex: page - 1, pageSize });
+      }}
+      showSizeSelector={showPageSize}
+      pageSizeOptions={pageSizeOptions}
+      showInfo={showPageInfo}
+      infoMobileCompact
+      showEdges={showFirstLast}
+      showLabels={showPreviousNextText}
       aria-label="Pagination"
-      className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center"
-    >
-      {renderDataTablePaginationSectionPart4({
-        showPageSize,
-        pageSizeId,
-        pageSize,
-        table,
-        size,
-        pageSizeOptions,
-        showPageInfo,
-        totalRows,
-        currentPage,
-        pageCount,
-      })}{" "}
-      {renderDataTablePaginationSectionPart5({
-        showFirstLast,
-        variant,
-        size,
-        table,
-        currentPage,
-        pageCount,
-      })}
-    </nav>
+      variant={variant}
+      size={size}
+    />
   );
 }
 
@@ -3290,144 +3287,6 @@ function RenderDataTableReorderableContentSectionPart3<TData extends RowData>({
   );
 }
 
-type renderDataTablePaginationSectionPart4Args = {
-  showPageSize: boolean;
-  pageSizeId: string;
-  pageSize: number;
-  table: ReturnType<typeof useDataTable>["table"];
-  size: "default" | "sm" | "lg";
-  pageSizeOptions: number[];
-  showPageInfo: boolean;
-  totalRows: number;
-  currentPage: number;
-  pageCount: number;
-};
-
-function renderDataTablePaginationSectionPart4({
-  showPageSize,
-  pageSizeId,
-  pageSize,
-  table,
-  size,
-  pageSizeOptions,
-  showPageInfo,
-  totalRows,
-  currentPage,
-  pageCount,
-}: renderDataTablePaginationSectionPart4Args) {
-  return (
-    <div className="flex items-center gap-4">
-      {showPageSize && (
-        <div className="flex items-center gap-2">
-          <label
-            htmlFor={pageSizeId}
-            className="hidden whitespace-nowrap text-sm text-muted-foreground sm:inline"
-          >
-            Rows per page
-          </label>
-          <select
-            id={pageSizeId}
-            aria-label="Rows per page"
-            value={pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
-            className={cn(
-              "rounded-md border border-input bg-background px-2 focus:outline-none focus:ring-2 focus:ring-ring",
-              size === "sm" && "h-8 text-xs",
-              size === "default" && "h-9 text-sm",
-              size === "lg" && "h-10 text-base",
-            )}
-          >
-            {pageSizeOptions.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-      {showPageInfo && totalRows > 0 && (
-        <div className="text-sm text-muted-foreground">
-          <span className="hidden sm:inline">
-            Showing {(currentPage - 1) * pageSize + 1}–
-            {Math.min(currentPage * pageSize, totalRows)} of {totalRows}
-          </span>
-          <span className="sm:hidden">
-            {currentPage}/{pageCount}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-type renderDataTablePaginationSectionPart5Args = {
-  showFirstLast: boolean;
-  variant: "default" | "outline" | "ghost";
-  size: "default" | "sm" | "lg";
-  table: ReturnType<typeof useDataTable>["table"];
-  currentPage: number;
-  pageCount: number;
-};
-
-function renderDataTablePaginationSectionPart5({
-  showFirstLast,
-  variant,
-  size,
-  table,
-  currentPage,
-  pageCount,
-}: renderDataTablePaginationSectionPart5Args) {
-  return (
-    <div className="flex items-center gap-1">
-      {showFirstLast && (
-        <Button
-          variant={variant}
-          size={size}
-          onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage()}
-          aria-label="Go to first page"
-        >
-          <IconChevronsLeft className="size-4" aria-hidden="true" />
-        </Button>
-      )}
-      <Button
-        variant={variant}
-        size={size}
-        onClick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-        aria-label="Go to previous page"
-      >
-        <IconChevronLeft className="size-4" aria-hidden="true" />
-        <span className="hidden sm:inline">Previous</span>
-      </Button>
-      <span className="mx-1 text-sm text-muted-foreground" aria-current="page">
-        Page {currentPage} of {pageCount}
-      </span>
-      <Button
-        variant={variant}
-        size={size}
-        onClick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-        aria-label="Go to next page"
-      >
-        <span className="hidden sm:inline">Next</span>
-        <IconChevronRight className="size-4" aria-hidden="true" />
-      </Button>
-      {showFirstLast && (
-        <Button
-          variant={variant}
-          size={size}
-          onClick={() => table.setPageIndex(pageCount - 1)}
-          disabled={!table.getCanNextPage()}
-          aria-label="Go to last page"
-        >
-          <IconChevronsRight className="size-4" aria-hidden="true" />
-        </Button>
-      )}
-    </div>
-  );
-}
-
 type renderFilterOptionsListSectionPart6Args = {
   listRef: React.RefObject<HTMLDivElement | null>;
   label: {
@@ -3627,6 +3486,7 @@ const DATA_TABLE_PAGINATION_DEFAULTS_1 = {
   pageSizeOptions: [10, 20, 30, 40, 50],
   showPageInfo: false,
   showFirstLast: true,
+  showPreviousNextText: true,
   variant: "outline",
   size: "sm",
 } as const;
@@ -3669,6 +3529,27 @@ function renderDataTableRootView<TData extends RowData, TValue>({
   );
 }
 
+function getServerPaginationOptions({
+  state,
+  rowCount,
+  onPageChange,
+  onPageSizeChange,
+}: NonNullable<DataTableProps<RowData, unknown>["serverPagination"]>) {
+  return {
+    state: { pagination: state },
+    rowCount,
+    onPaginationChange: (updater: Updater<PaginationState>) => {
+      const next = functionalUpdate(updater, state);
+
+      // Size changes arrive with the reset page index in one atomic update;
+      // deliver both so the consumer never keeps a stale page.
+      if (next.pageSize !== state.pageSize) onPageSizeChange?.(next.pageSize);
+
+      if (next.pageIndex !== state.pageIndex) onPageChange(next.pageIndex);
+    },
+  };
+}
+
 function useDataTableSetup<TData extends RowData, TValue>(
   input: DataTableProps<TData, TValue>,
 ) {
@@ -3707,6 +3588,8 @@ function useDataTableSetup<TData extends RowData, TValue>(
     enableGrouping,
     enableVirtualization,
     initialPageSize,
+    serverPagination,
+    isLoading,
     initialSorting,
     getSubRows,
     getRowCanExpand,
@@ -3732,7 +3615,9 @@ function useDataTableSetup<TData extends RowData, TValue>(
       enableGrouping,
       // The virtualizer needs every row; manual pagination bypasses the
       // paginated row model (previously it silently capped rows at pageSize).
-      manualPagination: !enablePagination || enableVirtualization,
+      manualPagination:
+        !enablePagination || enableVirtualization || Boolean(serverPagination),
+      ...(serverPagination && getServerPaginationOptions(serverPagination)),
       initialState: {
         sorting: initialSorting,
         pagination: { pageIndex: 0, pageSize: initialPageSize },
@@ -3742,6 +3627,18 @@ function useDataTableSetup<TData extends RowData, TValue>(
     // themselves, so `children` updates without prop drilling.
     () => null,
   );
+
+  // Controlled pagination clamps the rendered view only; when the server
+  // total shrinks below the current page, notify the owner so its state
+  // (and the next fetch) follows. Skipped while loading: rowCount may be
+  // stale mid-fetch.
+  React.useEffect(() => {
+    if (!serverPagination || isLoading) return;
+    const { rowCount, state } = serverPagination;
+    const lastPageIndex = Math.max(0, Math.ceil(rowCount / state.pageSize) - 1);
+
+    if (state.pageIndex > lastPageIndex) table.setPageIndex(lastPageIndex);
+  }, [serverPagination, isLoading, table]);
 
   return { ...resolvedProps, table };
 }
@@ -3823,6 +3720,7 @@ function useDataTableActions<TData extends RowData, TValue>(
     onLoadMore,
     isLoading,
     hasNextPage,
+    serverPagination,
     table,
     densityState,
     setDensity,
@@ -3854,13 +3752,15 @@ function useDataTableActions<TData extends RowData, TValue>(
   // the context inside this provider yields this TData; the context type
   // erases TData to RowData to keep one shared context object.
   const contextTable = table as DTTable<RowData>;
+  const serverPaged = Boolean(serverPagination);
 
   const contextValue = React.useMemo<DataTableContextValue<RowData>>(
     () => ({
       table: contextTable,
       density: densityState,
       setDensity,
-      enablePagination: enablePagination && !enableVirtualization,
+      enablePagination:
+        enablePagination && (!enableVirtualization || serverPaged),
       enableVirtualization,
       enableKeyboardNavigation,
       estimateRowHeight,
@@ -3875,6 +3775,7 @@ function useDataTableActions<TData extends RowData, TValue>(
       setDensity,
       enablePagination,
       enableVirtualization,
+      serverPaged,
       enableKeyboardNavigation,
       estimateRowHeight,
       containerHeight,
