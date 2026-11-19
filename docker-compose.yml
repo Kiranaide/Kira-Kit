@@ -2,8 +2,12 @@ services:
   kira-kit:
     build: .
     image: kira-kit-site
-    # Host port is configurable (defaults to 8080, not 3000). The container
-    # listens on 80; set PORT in the environment to change the container port.
-    ports:
-      - "${HOST_PORT:-8080}:80"
+    # No host port is published: Coolify's proxy routes the domain straight to
+    # the container port over its Docker network. A fixed `ports:` host binding
+    # bypasses that routing, disables rolling updates, and collides with other
+    # apps ("Bind for 0.0.0.0:8080 failed: port is already allocated"). The
+    # container listens on PORT (default 80); set the domain's internal port to
+    # match in Coolify. `expose` only declares the port — it binds nothing.
+    expose:
+      - "80"
     restart: unless-stopped
