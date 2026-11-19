@@ -1,6 +1,11 @@
 import { useState, type CSSProperties } from "react";
 import { Link } from "@tanstack/react-router";
-import { IconSun, IconMoon, IconArrowRight } from "@tabler/icons-react";
+import {
+  IconSun,
+  IconMoon,
+  IconArrowRight,
+  IconCheck,
+} from "@tabler/icons-react";
 import { cn } from "cn";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -16,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ComponentPage, PageHeader, Section } from "@/components/docs";
 import themesRegistry from "@/themes/registry.json";
+import { DEFAULT_PRESET, usePreset } from "@/lib/theme-presets";
 
 interface ThemeRegistryItem {
   name: string;
@@ -187,9 +193,12 @@ function PresetPreview({
 export default function ThemingPage() {
   const [selectedName, setSelectedName] = useState("theme-phase-line");
   const [mode, setMode] = useState<"light" | "dark">("light");
+  const { presetName, setPresetName } = usePreset();
 
   const selected =
     themeItems.find((item) => item.name === selectedName) ?? themeItems[0];
+
+  const isApplied = presetName === selected.name;
 
   const slug = selected.name.replace("theme-", "");
   const meta = metaFor(slug);
@@ -204,7 +213,7 @@ export default function ThemingPage() {
 
       <Section
         title="Theme presets"
-        description="Pick a preset to preview it live — the panel below renders real kit components under that preset's tokens, in light or dark. Nothing on the rest of this page changes."
+        description="Pick a preset to preview it live — the panel below renders real kit components under that preset's tokens, in light or dark. Hit “Apply to site” to theme the whole docs site with it; the choice persists across pages and reloads."
       >
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {themeItems.map((item) => {
@@ -264,6 +273,21 @@ export default function ThemingPage() {
                   leftIcon={<IconMoon className="h-4 w-4" aria-hidden="true" />}
                 >
                   Dark
+                </Button>
+                <Button
+                  size="sm"
+                  variant={isApplied ? "default" : "outline"}
+                  aria-pressed={isApplied}
+                  onClick={() =>
+                    setPresetName(isApplied ? DEFAULT_PRESET : selected.name)
+                  }
+                  leftIcon={
+                    isApplied ? (
+                      <IconCheck className="h-4 w-4" aria-hidden="true" />
+                    ) : undefined
+                  }
+                >
+                  {isApplied ? "Applied" : "Apply to site"}
                 </Button>
               </div>
             </div>
