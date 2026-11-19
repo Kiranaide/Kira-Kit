@@ -104,8 +104,10 @@ interface RadioGroupItemProps<Value = string>
     VariantProps<typeof radioItemVariants> {}
 
 const dotSizes = {
+  // kira-kit-ignore spacing-scale: radio dot scales inside the non-control size ladder
   sm: "size-1.5",
   default: "size-2",
+  // kira-kit-ignore spacing-scale: radio dot scales inside the non-control size ladder
   lg: "size-2.5",
 };
 
@@ -332,6 +334,7 @@ function renderRadioCardIndicator(icon: React.ReactNode) {
           keepMounted
           className="flex scale-100 items-center justify-center opacity-100 data-unchecked:scale-75 data-unchecked:opacity-0 motion-safe:transition-[opacity,scale] motion-safe:duration-150 motion-safe:ease-[cubic-bezier(0.23,1,0.32,1)]"
         >
+          {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
           <IconCheck className="size-3.5" />
         </RadioPrimitive.Indicator>
       </span>
@@ -557,6 +560,7 @@ const radioButtonVariants = cva(
   {
     variants: {
       size: {
+        // kira-kit-ignore spacing-scale: radio card option keeps compact optical side padding
         sm: "min-h-11 px-2.5 py-1.5 text-xs sm:min-h-8",
         default: "min-h-11 px-3 py-2 text-sm sm:min-h-9",
         lg: "min-h-11 px-4 py-2.5 text-base",

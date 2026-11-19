@@ -520,6 +520,7 @@ function renderToastPart1({
             rounded Content. Pauses with Base UI's timers via data-expanded;
             `updateKey` remounts it so updates restart the countdown. */}
         {timeout > 0 && (
+          // kira-kit-ignore spacing-scale: toast progress hairline is 2px by design
           <span
             key={t.updateKey}
             aria-hidden

@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/sidebar";
 import { KiraToastProvider } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeCustomizer } from "@/components/theme-customizer";
+import { PresetProvider } from "@/lib/theme-presets";
 import {
   IconHome,
   IconClick,
@@ -76,79 +78,126 @@ import {
   IconToggleRight,
   IconPlayerPlay,
   IconCamera,
+  IconRuler2,
+  IconBook2,
+  IconDownload,
+  IconTerminal2,
+  IconHistory,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
   return (
     <ThemeProvider>
-      <TooltipProvider>
-        <SidebarProvider>
-          <KiraToastProvider />
-          <div className="flex h-screen overflow-hidden">
-            <header className="fixed top-0 left-0 right-0 z-40 flex items-center h-14 px-4 border-b border-border bg-background md:hidden">
-              <SidebarTrigger />
-              <div className="flex items-center gap-2 ml-2">
-                <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-xs">
-                    K
+      <PresetProvider>
+        <TooltipProvider>
+          <SidebarProvider>
+            <KiraToastProvider />
+            <div className="flex h-screen overflow-hidden">
+              <header className="fixed top-0 left-0 right-0 z-40 flex items-center h-14 px-4 border-b border-border bg-background md:hidden">
+                <SidebarTrigger />
+                <div className="flex items-center gap-2 ml-2">
+                  <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                    <span className="text-primary-foreground font-bold text-xs">
+                      K
+                    </span>
+                  </div>
+                  <span className="font-semibold text-foreground">
+                    Kira Kit
                   </span>
                 </div>
-                <span className="font-semibold text-foreground">Kira Kit</span>
-              </div>
-            </header>
+              </header>
 
-            <Sidebar>
-              <SidebarHeader />
-              <SidebarContent>
-                <SidebarItem to="/" icon={<IconHome className="w-5 h-5" />}>
-                  Overview
-                </SidebarItem>
+              <Sidebar>
+                <SidebarHeader />
+                <SidebarContent>
+                  <SidebarItem to="/" icon={<IconHome className="w-5 h-5" />}>
+                    Overview
+                  </SidebarItem>
 
-                <SidebarDivider />
+                  <SidebarItem
+                    to="/ui-preview"
+                    icon={<IconRuler2 className="w-5 h-5" />}
+                  >
+                    UI Preview
+                  </SidebarItem>
 
-                <SidebarGroup label="Layout">
-                  {layoutNavigation.map((item) => (
-                    <SidebarItem
-                      key={item.to}
-                      to={item.to}
-                      icon={<item.icon className="w-5 h-5" />}
-                    >
-                      {item.label}
-                    </SidebarItem>
-                  ))}
-                </SidebarGroup>
+                  <SidebarDivider />
 
-                <SidebarDivider />
+                  <DocsNavigation />
 
-                <SidebarGroup label="Components">
-                  {componentsNavigation.map((item) => (
-                    <SidebarItem
-                      key={item.to}
-                      to={item.to}
-                      icon={<item.icon className="w-5 h-5" />}
-                    >
-                      {item.label}
-                    </SidebarItem>
-                  ))}
-                </SidebarGroup>
+                  <SidebarDivider />
 
-                <SidebarDivider />
+                  <SidebarGroup label="Layout">
+                    {layoutNavigation.map((item) => (
+                      <SidebarItem
+                        key={item.to}
+                        to={item.to}
+                        icon={<item.icon className="w-5 h-5" />}
+                      >
+                        {item.label}
+                      </SidebarItem>
+                    ))}
+                  </SidebarGroup>
 
-                <SidebarGroup label="Settings">
-                  <ThemeToggle />
-                </SidebarGroup>
-              </SidebarContent>
-            </Sidebar>
+                  <SidebarDivider />
 
-            <main className="flex-1 overflow-y-auto bg-background pt-14 md:pt-0">
-              <Outlet />
-            </main>
-          </div>
-        </SidebarProvider>
-      </TooltipProvider>
+                  <SidebarGroup label="Components">
+                    {componentsNavigation.map((item) => (
+                      <SidebarItem
+                        key={item.to}
+                        to={item.to}
+                        icon={<item.icon className="w-5 h-5" />}
+                      >
+                        {item.label}
+                      </SidebarItem>
+                    ))}
+                  </SidebarGroup>
+
+                  <SidebarDivider />
+
+                  <SidebarGroup label="Settings">
+                    <ThemeCustomizer />
+                    <ThemeToggle />
+                  </SidebarGroup>
+                </SidebarContent>
+              </Sidebar>
+
+              <main className="flex-1 overflow-y-auto bg-background pt-14 md:pt-0">
+                <Outlet />
+              </main>
+            </div>
+          </SidebarProvider>
+        </TooltipProvider>
+      </PresetProvider>
     </ThemeProvider>
   );
 }
+
+function DocsNavigation() {
+  return (
+    <SidebarGroup label="Documentation">
+      {docsNavigation.map((item) => (
+        <SidebarItem
+          key={item.to}
+          to={item.to}
+          icon={<item.icon className="w-5 h-5" />}
+        >
+          {item.label}
+        </SidebarItem>
+      ))}
+    </SidebarGroup>
+  );
+}
+
+const docsNavigation = [
+  { to: "/docs/introduction", icon: IconBook2, label: "Introduction" },
+  { to: "/docs/installation", icon: IconDownload, label: "Installation" },
+  { to: "/docs/theming", icon: IconPalette, label: "Theming" },
+  { to: "/docs/cli", icon: IconTerminal2, label: "CLI" },
+  { to: "/docs/typeset", icon: IconTypography, label: "Typeset" },
+  { to: "/docs/form", icon: IconForms, label: "Form" },
+  { to: "/docs/changelog", icon: IconHistory, label: "Changelog" },
+] as const;
 
 const layoutNavigation = [
   { to: "/components/box", icon: IconSquare, label: "Box" },

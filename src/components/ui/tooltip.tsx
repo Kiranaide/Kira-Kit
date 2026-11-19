@@ -70,10 +70,13 @@ const tooltipContentVariants = cva(
 
 const tooltipArrowVariants = cva(
   [
+    // kira-kit-ignore spacing-scale: tooltip arrow glyph/offset is optical, not a control
     "flex h-1.5 w-3",
     "data-[side=bottom]:-top-1.5",
     "data-[side=top]:-bottom-1.5 data-[side=top]:rotate-180",
+    // kira-kit-ignore arbitrary-values: 9px arrow offset optically centers the arrow on the rounded corner
     "data-[side=left]:-right-[9px] data-[side=left]:rotate-90",
+    // kira-kit-ignore arbitrary-values: 9px arrow offset optically centers the arrow on the rounded corner
     "data-[side=right]:-left-[9px] data-[side=right]:-rotate-90",
     "data-[uncentered]:opacity-0",
   ],
@@ -224,6 +227,7 @@ function TooltipShortcut({ keys, className, ...props }: TooltipShortcutProps) {
   });
 
   return (
+    // kira-kit-ignore spacing-scale: tooltip arrow glyph/offset is optical, not a control
     <span
       data-slot="tooltip-shortcut"
       aria-hidden="true"
@@ -231,6 +235,7 @@ function TooltipShortcut({ keys, className, ...props }: TooltipShortcutProps) {
       {...props}
     >
       {keycaps.map(({ label, id }) => (
+        // kira-kit-ignore arbitrary-values: 11.2px tooltip micro type (overlay-text tier)
         <kbd
           key={id}
           className="inline-flex h-5 min-w-5 items-center justify-center rounded border border-current/20 bg-current/10 px-1 font-sans text-[0.7rem] leading-none font-medium"

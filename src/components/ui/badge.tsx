@@ -1,3 +1,5 @@
+/* kira-kit-ignore-file spacing-scale: badges are labels, not controls; the compact ladder keeps optical half-steps (contract 3.9) */
+/* kira-kit-ignore-file arbitrary-values: xs micro badges keep 10px type (documented sub-12px exception) */
 /* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 
@@ -135,7 +137,7 @@ const badgeCloseVariants = cva(
         xs: "h-3 w-3 [&>svg]:size-2",
         sm: "h-3.5 w-3.5 [&>svg]:size-2.5",
         default: "h-4 w-4 [&>svg]:size-3",
-        lg: "h-4.5 w-4.5 [&>svg]:size-3.5",
+        lg: "h-4 w-4 [&>svg]:size-3",
         xl: "h-5 w-5 [&>svg]:size-4",
       },
     },

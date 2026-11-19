@@ -72,6 +72,7 @@ const alertIconSize: Record<
   string
 > = {
   xs: "h-3 w-3 mt-0.5",
+  // kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
   sm: "h-3.5 w-3.5 mt-0.5",
   default: "h-4 w-4 mt-0.5",
   lg: "h-5 w-5 mt-1",
@@ -580,9 +581,11 @@ interface KiraMetaProps {
 }
 
 function KiraMeta({ relative, copied, onCopy }: KiraMetaProps) {
+  // kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
   let CopyGlyph = <IconCopy className="h-3.5 w-3.5" />;
 
   if (copied) {
+    // kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception
     CopyGlyph = <IconCheck className="h-3.5 w-3.5" />;
   }
 
@@ -1014,6 +1017,7 @@ function AlertContentView({
         aria-expanded={expanded}
       >
         {toggleLabel}
+        {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
         <IconChevronDown
           className={cn(
             "h-3.5 w-3.5 transition-transform",

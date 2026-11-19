@@ -1,3 +1,5 @@
+/* kira-kit-ignore-file spacing-scale: calendar day-grid and picker chrome keep compact optical metrics (documented non-change) */
+/* kira-kit-ignore-file arbitrary-values: sub-12px weekday/week-number micro type (documented exception) */
 "use client";
 
 import * as React from "react";

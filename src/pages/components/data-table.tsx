@@ -1404,6 +1404,24 @@ const dataTablePageKeyboardShortcutsShortcuts = [
 
 const dataTablePageChangelogEntries = [
   {
+    version: "3.1.0",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Pagination select follows the control ladder",
+        description:
+          "The native rows-per-page select moves from h-7/8/9 to h-8/9/10 for sm/default/lg, matching Button/Input/Select heights.",
+      },
+      {
+        type: "changed",
+        title: 'Filter popover inputs use size="sm"',
+        description:
+          "Faceted-search, number-range and date-range filter inputs drop hardcoded h-8 className overrides in favor of the Input size ladder (sm = h-8).",
+      },
+    ],
+  },
+  {
     version: "3.0.0",
     date: "23 October 2026",
     changes: [

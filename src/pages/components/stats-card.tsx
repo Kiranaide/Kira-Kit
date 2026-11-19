@@ -461,9 +461,7 @@ function WithActionMenuDemo() {
           <StatsCardAction>
             <DropdownMenu>
               <DropdownMenuTrigger
-                render={
-                  <Button variant="ghost" size="icon" className="h-8 w-8" />
-                }
+                render={<Button variant="ghost" size="icon-sm" />}
               >
                 <IconDotsVertical className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
@@ -495,9 +493,7 @@ function WithActionMenuDemo() {
           <StatsCardAction>
             <DropdownMenu>
               <DropdownMenuTrigger
-                render={
-                  <Button variant="ghost" size="icon" className="h-8 w-8" />
-                }
+                render={<Button variant="ghost" size="icon-sm" />}
               >
                 <IconDotsVertical className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
@@ -525,9 +521,7 @@ function WithActionMenuDemo() {
           <StatsCardAction>
             <DropdownMenu>
               <DropdownMenuTrigger
-                render={
-                  <Button variant="ghost" size="icon" className="h-8 w-8" />
-                }
+                render={<Button variant="ghost" size="icon-sm" />}
               >
                 <IconDotsVertical className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
@@ -557,7 +551,7 @@ import { Button } from "@/components/ui/button"
     <StatsCardTitle>Revenue</StatsCardTitle>
     <StatsCardAction>
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8" />}>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
           <IconDotsVertical className="h-4 w-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -1736,6 +1730,18 @@ const statsCardPageAPIReferenceSections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const statsCardPageChangelogEntries = [
+  {
+    version: "2.1.1",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: 'Icon actions use size="icon-sm"',
+        description:
+          "Ghost icon buttons in the examples drop the h-8 w-8 className override for the built-in icon-sm size now that the button ladder covers it.",
+      },
+    ],
+  },
   {
     version: "2.1.0",
     date: "3 November 2026",

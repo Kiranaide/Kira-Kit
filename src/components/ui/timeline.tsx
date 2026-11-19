@@ -82,6 +82,7 @@ const timelineDotVariants = cva(
     variants: {
       size: {
         sm: "size-3 [&>svg]:size-2",
+        // kira-kit-ignore spacing-scale: icon inside the 16px timeline node is optical
         default: "size-4 [&>svg]:size-2.5",
         lg: "size-6",
         xl: "size-8 [&>svg]:size-4",

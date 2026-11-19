@@ -57,6 +57,13 @@ function GeometryDemo() {
       <SkeletonText />
       <SkeletonLines count={3} lastLineWidth="2/3" />
       <SkeletonButton />
+      <div className="flex flex-wrap items-center gap-2">
+        <SkeletonButton size="xs" />
+        <SkeletonButton size="sm" />
+        <SkeletonButton size="default" />
+        <SkeletonButton size="lg" />
+        <SkeletonButton size="xl" />
+      </div>
       <div className="grid gap-4 sm:grid-cols-3">
         <SkeletonImage aspectRatio="16/9" />
         <SkeletonImage aspectRatio="4/3" />
@@ -565,13 +572,22 @@ const rootProps = [
 ];
 
 const apiSections = [
-  ...[
-    "Skeleton",
-    "SkeletonBone",
-    "SkeletonText",
-    "SkeletonHeading",
-    "SkeletonButton",
-  ].map((title) => ({ title, props: boneProps })),
+  ...["Skeleton", "SkeletonBone", "SkeletonText", "SkeletonHeading"].map(
+    (title) => ({ title, props: boneProps }),
+  ),
+  {
+    title: "SkeletonButton",
+    props: [
+      ...boneProps,
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description:
+          "Button bone height follows the control ladder: h-7/8/9/10/11.",
+      },
+    ],
+  },
   ...["SkeletonRoot", "SkeletonGroup"].map((title) => ({
     title,
     props: rootProps,
@@ -724,6 +740,18 @@ export default function SkeletonPage() {
       <APIReference sections={apiSections} />
       <Changelog
         entries={[
+          {
+            version: "v2.1.0",
+            date: "2026-11-18",
+            changes: [
+              {
+                type: "added",
+                title: "SkeletonButton size prop",
+                description:
+                  'size="xs" | "sm" | "default" | "lg" | "xl" maps the button bone to the control-height ladder (h-7/8/9/10/11), so placeholders match every button size.',
+              },
+            ],
+          },
           {
             version: "v2.0.0",
             date: "2026-11-13",

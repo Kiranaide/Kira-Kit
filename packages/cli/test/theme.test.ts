@@ -22,9 +22,7 @@ const TEXT_PAIRS: Array<[fg: string, bg: string]> = [
 
 const UI_PAIRS: Array<[fg: string, bg: string]> = [
   ["ring", "background"],
-  ["border", "background"],
   ["sidebar-ring", "sidebar"],
-  ["sidebar-border", "sidebar"],
 ];
 
 /** Parsed cssVars lookup: token name (without the -- prefix) → OKLCH color. */

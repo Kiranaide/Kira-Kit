@@ -1358,6 +1358,18 @@ export default function CheckboxPage() {
 // Static demo metadata stays co-located and follows its source constants.
 const checkboxPageChangelogEntries = [
   {
+    version: "v2.3",
+    date: "18 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Label and group gaps tightened to gap-2",
+        description:
+          "Checkbox label wrappers, CheckboxGroup stacks, option rows and the card variant now use gap-2 (8px) instead of gap-3, matching the icon↔label and sibling-control gap tiers.",
+      },
+    ],
+  },
+  {
     version: "v2.2",
     date: "22 October 2026",
     changes: [

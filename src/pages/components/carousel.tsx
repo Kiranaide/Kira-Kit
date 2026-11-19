@@ -410,7 +410,7 @@ function VerticalDemo() {
       <CarouselContent className="h-[300px]">
         {images.slice(0, 4).map((img) => (
           <CarouselItem key={img.src}>
-            <Card>
+            <Card className="p-0">
               <CardContent className="p-0">
                 <img
                   src={img.src}

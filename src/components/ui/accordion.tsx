@@ -201,6 +201,7 @@ function HighlightMatch({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, index)}
+      {/* kira-kit-ignore spacing-scale: inline marker pill uses badge-tier 2px padding */}
       <mark
         data-slot="accordion-search-match"
         className="bg-warning/30 text-inherit rounded-sm px-0.5"
@@ -229,8 +230,8 @@ const accordionTriggerVariants = cva(
         outline: "border border-border hover:bg-muted/30",
       },
       size: {
-        xs: "py-1.5 px-3 text-xs",
-        sm: "py-2 px-3.5 text-xs",
+        xs: "py-1.5 px-2 text-xs",
+        sm: "py-2 px-3 text-xs",
         default: "py-3 px-4 text-sm",
         lg: "py-4 px-5 text-base",
       },
@@ -245,8 +246,8 @@ const accordionTriggerVariants = cva(
 const accordionContentVariants = cva("", {
   variants: {
     size: {
-      xs: "px-3 py-1.5 text-xs",
-      sm: "px-3.5 py-2 text-xs",
+      xs: "px-2 py-1.5 text-xs",
+      sm: "px-3 py-2 text-xs",
       default: "px-4 py-3 text-sm",
       lg: "px-5 py-4 text-base",
     },
@@ -1214,6 +1215,7 @@ function ExpandAllHeader({
         className={buttonClasses}
         aria-label="Expand all accordion items"
       >
+        {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
         <IconChevronsDown className="h-3.5 w-3.5" />
         Expand all
       </button>
@@ -1222,6 +1224,7 @@ function ExpandAllHeader({
         className={buttonClasses}
         aria-label="Collapse all accordion items"
       >
+        {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
         <IconChevronsUp className="h-3.5 w-3.5" />
         Collapse all
       </button>

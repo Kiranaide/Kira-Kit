@@ -1,5 +1,9 @@
+# Rendered by the stock nginx entrypoint (envsubst) into conf.d/default.conf.
+# PORT lets Coolify (or any host) pick the container listen port; defaults to 80.
+# nginx runtime variables like $uri are left untouched — only defined env vars
+# (PORT) are substituted.
 server {
-    listen 80;
+    listen ${PORT};
     server_name _;
 
     root /usr/share/nginx/html;
@@ -11,7 +15,7 @@ server {
         add_header Access-Control-Allow-Origin "*" always;
     }
 
-    # Registry JSON — consumed by remote `shadcn add` fetches.
+    # Registry JSON — consumed by remote `kira-kit add` fetches.
     # Never cached so consumers always get the latest items.
     location /r/ {
         add_header Access-Control-Allow-Origin "*" always;

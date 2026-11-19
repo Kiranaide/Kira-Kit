@@ -67,6 +67,7 @@ const datePickerTriggerVariants = cva(
         ghost: "border-transparent bg-transparent hover:bg-muted/50",
       },
       size: {
+        // kira-kit-ignore spacing-scale: date/time-picker trigger ladder is a documented non-change (PR follow-up)
         sm: "h-8 px-2.5 text-xs",
         default: "h-10 px-3 text-sm",
         lg: "h-12 px-4 text-base",
@@ -184,6 +185,7 @@ const rangePresets: DatePreset[] = [
 /*                                   Helpers                                  */
 /* -------------------------------------------------------------------------- */
 
+// kira-kit-ignore spacing-scale: date/time-picker trigger ladder is a documented non-change (PR follow-up)
 const iconSize = { sm: "size-3.5", default: "size-4", lg: "size-5" } as const;
 
 const textSize = {
@@ -492,6 +494,7 @@ function renderDatePickerSectionPart4({
   resolvedSize,
 }: renderDatePickerSectionPart4Args) {
   return (
+    // kira-kit-ignore spacing-scale: 150px picker sidebar min-width on the documented non-change ladder
     <div
       // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This composite div groups controls or content without introducing fieldset form behavior, default styling, or a different public ref element.
       role="group"

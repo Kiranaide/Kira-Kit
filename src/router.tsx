@@ -23,6 +23,55 @@ const indexRoute = createRoute({
   component: lazyRouteComponent(() => import("@/pages/overview")),
 });
 
+const uiPreviewRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/ui-preview",
+  component: lazyRouteComponent(() => import("@/pages/ui-preview")),
+});
+
+// Documentation routes (lazy loaded)
+const docsIntroductionRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/docs/introduction",
+  component: lazyRouteComponent(() => import("@/pages/docs/introduction")),
+});
+
+const docsInstallationRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/docs/installation",
+  component: lazyRouteComponent(() => import("@/pages/docs/installation")),
+});
+
+const docsThemingRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/docs/theming",
+  component: lazyRouteComponent(() => import("@/pages/docs/theming")),
+});
+
+const docsCliRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/docs/cli",
+  component: lazyRouteComponent(() => import("@/pages/docs/cli")),
+});
+
+const docsTypesetRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/docs/typeset",
+  component: lazyRouteComponent(() => import("@/pages/docs/typeset")),
+});
+
+const docsFormRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/docs/form",
+  component: lazyRouteComponent(() => import("@/pages/docs/form")),
+});
+
+const docsChangelogRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/docs/changelog",
+  component: lazyRouteComponent(() => import("@/pages/docs/changelog")),
+});
+
 // Component routes (lazy loaded)
 const buttonRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -519,6 +568,14 @@ const cameraRoute = createRoute({
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
+  uiPreviewRoute,
+  docsIntroductionRoute,
+  docsInstallationRoute,
+  docsThemingRoute,
+  docsCliRoute,
+  docsTypesetRoute,
+  docsFormRoute,
+  docsChangelogRoute,
   buttonRoute,
   cardRoute,
   inputRoute,

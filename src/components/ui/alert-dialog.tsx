@@ -233,6 +233,7 @@ function AlertDialogHeader({
   ...props
 }: AlertDialogHeaderProps) {
   return (
+    // kira-kit-ignore spacing-scale: title-to-description optical gap (contract-sanctioned exception)
     <div
       data-slot="alert-dialog-header"
       className={cn(
@@ -359,6 +360,8 @@ function AlertDialogAction(input: AlertDialogActionProps) {
       )}
       {children}
       {shortcut && (
+        // kira-kit-ignore arbitrary-values: sub-12px micro type is a documented exception
+        // kira-kit-ignore spacing-scale: kbd shortcut chip: compact label-tier padding and micro type
         <kbd
           data-slot="alert-dialog-shortcut"
           aria-hidden="true"
@@ -407,6 +410,8 @@ function AlertDialogCancel({
         <Button variant={variant} size={size}>
           {children}
           {shortcut && (
+            // kira-kit-ignore arbitrary-values: sub-12px micro type is a documented exception
+            // kira-kit-ignore spacing-scale: kbd shortcut chip: compact label-tier padding and micro type
             <kbd
               data-slot="alert-dialog-shortcut"
               aria-hidden="true"

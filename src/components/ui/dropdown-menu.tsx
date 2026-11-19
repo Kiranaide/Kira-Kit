@@ -83,7 +83,7 @@ function useDocumentVisible(): boolean {
  */
 export const dropdownMenuContentVariants = cva(
   [
-    "z-50 min-w-32 overflow-hidden rounded-lg border border-border bg-popover p-1.5 text-popover-foreground shadow-lg outline-none",
+    "z-50 min-w-32 overflow-hidden rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-lg outline-none",
     "max-h-(--available-height) max-w-(--available-width) origin-(--transform-origin)",
     "overflow-x-hidden overflow-y-auto",
     "transition-[opacity,scale] duration-200 ease-out data-[ending-style]:duration-150",
@@ -109,7 +109,7 @@ export const dropdownMenuContentVariants = cva(
  */
 export const dropdownMenuItemVariants = cva(
   [
-    "relative flex min-h-9 cursor-pointer select-none items-center gap-2.5 rounded-md px-2.5 py-2 text-sm leading-5 outline-none transition-colors",
+    "relative flex min-h-8 cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-sm leading-5 outline-none transition-colors",
     "group/dropdown-menu-item [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
     "data-highlighted:bg-accent data-highlighted:text-accent-foreground",
     "focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
@@ -469,7 +469,7 @@ function DropdownMenuLabel({
       data-inset={inset || undefined}
       className={mergeClassName<Menu.GroupLabel.State>(
         cn(
-          "px-2.5 py-2 text-xs font-medium text-muted-foreground",
+          "px-2 py-1.5 text-xs font-medium text-muted-foreground",
           inset && "ps-8",
         ),
         className,
@@ -890,20 +890,22 @@ function KiraMenuSearch({
   clearLabel?: string;
 }) {
   return (
+    // kira-kit-ignore spacing-scale: search-header divider chrome keeps optical spacing
     <div
       data-slot="dropdown-menu-search"
-      className="relative mb-1.5 border-b border-border px-0.5 pb-2.5 pt-0.5"
+      className="relative mb-1.5 border-b border-border px-0.5 pb-2.5"
     >
       <IconSearch
         aria-hidden="true"
-        className="pointer-events-none absolute inset-s-3 top-3 size-4 text-muted-foreground"
+        className="pointer-events-none absolute inset-s-3 top-2 size-4 text-muted-foreground"
       />
       <DropdownMenuInput
         aria-label={label}
         placeholder={label}
-        className="ps-9"
+        className="ps-8"
       />
       <DropdownMenuClear aria-label={clearLabel}>
+        {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
         <IconX aria-hidden="true" className="h-3.5 w-3.5" />
       </DropdownMenuClear>
     </div>
@@ -1442,7 +1444,7 @@ function DropdownMenuInput({ className, ...props }: Menu.Input.Props) {
       data-slot="dropdown-menu-input"
       className={mergeClassName<Menu.Input.State>(
         cn(
-          "flex h-9 w-full items-center rounded-md border border-border bg-background ps-3 pe-9 text-sm outline-none",
+          "flex h-8 w-full items-center rounded-md border border-border bg-background ps-3 pe-8 text-sm outline-none",
           "placeholder:text-muted-foreground",
           "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
         ),
@@ -1474,7 +1476,7 @@ function DropdownMenuClear({ className, ...props }: Menu.Clear.Props) {
       data-slot="dropdown-menu-clear"
       className={mergeClassName<Menu.Clear.State>(
         cn(
-          "absolute inset-e-1.5 top-2 flex size-6 items-center justify-center rounded-md text-muted-foreground outline-none",
+          "absolute inset-e-1 top-1 flex size-6 items-center justify-center rounded-md text-muted-foreground outline-none",
           "hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50",
           "disabled:pointer-events-none disabled:opacity-50",
         ),

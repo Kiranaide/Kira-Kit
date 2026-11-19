@@ -117,7 +117,7 @@
 }
 
 @theme inline {
-  --font-sans: "Montserrat Variable", sans-serif;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
 
   /* Animation tokens for consistent motion */
   --animate-shimmer: shimmer 2s infinite;
