@@ -5,7 +5,7 @@ An application navigation shell with offcanvas/icon/none collapse modes, floatin
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/sidebar
+kira-kit add @kira-kit/sidebar
 ```
 
 ## Dependencies

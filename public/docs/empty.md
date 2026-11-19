@@ -5,7 +5,7 @@ An empty-state layout with centered or inline arrangements, three sizes, media v
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/empty
+kira-kit add @kira-kit/empty
 ```
 
 ## Dependencies

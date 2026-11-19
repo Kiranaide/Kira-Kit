@@ -5,7 +5,7 @@ A Base UI text input with five sizes, prefix and suffix content, clear and clipb
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/input
+kira-kit add @kira-kit/input
 ```
 
 ## Dependencies

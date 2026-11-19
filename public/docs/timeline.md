@@ -5,7 +5,7 @@ Chronological event list with vertical or horizontal rails, alternating or cente
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/timeline
+kira-kit add @kira-kit/timeline
 ```
 
 ## Dependencies
@@ -20,6 +20,8 @@ npx shadcn add @kira-kit/timeline
 - @kira-kit/avatar
 - @kira-kit/button
 - @kira-kit/collapsible
+- @kira-kit/component-defaults
+- @kira-kit/component-prop-guards
 - @kira-kit/skeleton
 - @kira-kit/use-reduced-motion
 

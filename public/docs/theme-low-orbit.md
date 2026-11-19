@@ -5,12 +5,11 @@ A steel-indigo instrument palette for geospatial, aviation, and infrastructure t
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/theme-low-orbit
+kira-kit add @kira-kit/theme-low-orbit
 ```
 
 ## Usage
 
 ```tsx
-import { ThemeLowOrbit } from "@/components/ui/theme-low-orbit";
-/* Applied as CSS variables by shadcn. */
+/* Applied as CSS variables by kira-kit. */
 ```

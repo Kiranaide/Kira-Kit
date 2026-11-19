@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { readConfig } from "../../lib/config";
 import type { CheckContext, Finding, ItemMeta, SourceFile } from "./types";
 import {
   isSuppressed,
@@ -18,6 +19,7 @@ import { spacingScale } from "./spacing-scale";
 import { registryMetadata } from "./registry-metadata";
 import { baseUiOnly } from "./base-ui-only";
 import { cnSource } from "./cn-source";
+import { libResolution } from "./lib-resolution";
 
 const CHECKS = [
   importsMatchDeps,
@@ -32,6 +34,7 @@ const CHECKS = [
   registryMetadata,
   baseUiOnly,
   cnSource,
+  libResolution,
 ];
 
 const SKIP_FILES = new Set([
@@ -62,6 +65,8 @@ function prefixForPath(abs: string): string {
 
   if (abs.includes(join("src", "pages"))) return "pages/";
 
+  if (abs.includes(join("src", "lib"))) return "lib/";
+
   return "hooks/";
 }
 
@@ -73,6 +78,7 @@ function sourceDirs(
     return [
       [join(repoRoot, "src/components/ui"), "ui/"],
       [join(repoRoot, "src/hooks"), "hooks/"],
+      [join(repoRoot, "src/lib"), "lib/"],
     ];
   }
 
@@ -83,11 +89,49 @@ function sourceDirs(
   });
 }
 
-function collectSourceFiles(repoRoot: string, paths: string[]): SourceFile[] {
+function collectSourceFiles(
+  repoRoot: string,
+  paths: string[],
+  items: Map<string, ItemMeta>,
+): SourceFile[] {
   const files: SourceFile[] = [];
 
   for (const [dir, prefix] of sourceDirs(repoRoot, paths)) {
     if (!existsSync(dir)) continue;
+
+    if (prefix === "lib/") {
+      // Lib items may bundle subdirectories (camera/). Only scan files a
+      // registry:lib item actually ships; docs-only modules stay unchecked.
+      const walk = (rel: string): void => {
+        for (const entry of readdirSync(join(dir, rel), {
+          withFileTypes: true,
+        })) {
+          const relPath = rel ? `${rel}/${entry.name}` : entry.name;
+
+          if (entry.isDirectory()) {
+            walk(relPath);
+
+            continue;
+          }
+
+          if (!/\.(tsx|ts)$/.test(entry.name)) continue;
+
+          const name = `lib/${relPath.replace(/\.(tsx|ts)$/, "")}`;
+
+          if (!items.has(name)) continue;
+
+          files.push({
+            name,
+            path: join(dir, relPath),
+            content: readFileSync(join(dir, relPath), "utf-8"),
+          });
+        }
+      };
+
+      walk("");
+
+      continue;
+    }
 
     for (const entry of readdirSync(dir)) {
       if (!/\.(tsx|ts)$/.test(entry)) continue;
@@ -142,8 +186,13 @@ export function runChecks(options: CheckRunOptions): CheckRunResult {
     ? readFileSync(indexCssPath, "utf-8")
     : "";
 
-  const ctx: CheckContext = { indexCss, items: loadItemMeta(repoRoot) };
-  const files = collectSourceFiles(repoRoot, options.paths);
+  const ctx: CheckContext = {
+    indexCss,
+    items: loadItemMeta(repoRoot),
+    iconLibrary: readConfig(repoRoot)?.iconLibrary,
+  };
+
+  const files = collectSourceFiles(repoRoot, options.paths, ctx.items);
   const allFindings: Finding[] = [];
   let suppressed = 0;
 
@@ -204,7 +253,7 @@ function toItemMeta(item: RegistryIndexItem): ItemMeta {
   return {
     dependencies: item.dependencies ?? [],
     registryDependencies: item.registryDependencies ?? [],
-    // oxlint-disable-next-line anti-slop/no-runtime-typeof -- the shadcn registry schema allows files as strings or {path} objects; typeof discriminates that union
+    // oxlint-disable-next-line anti-slop/no-runtime-typeof -- the registry schema allows files as strings or {path} objects; typeof discriminates that union
     files: (item.files ?? []).map((f) => (typeof f === "string" ? f : f.path)),
     description: item.description ?? "",
     categories: item.categories ?? [],
@@ -218,6 +267,7 @@ function loadItemMeta(repoRoot: string): Map<string, ItemMeta> {
   const registryFiles: Array<[string, string]> = [
     [join(repoRoot, "src/components/ui/registry.json"), "ui"],
     [join(repoRoot, "src/hooks/registry.json"), "hooks"],
+    [join(repoRoot, "src/lib/registry.json"), "lib"],
     [join(repoRoot, "src/themes/registry.json"), "theme"],
   ];
 
@@ -229,10 +279,20 @@ function loadItemMeta(repoRoot: string): Map<string, ItemMeta> {
       // and "ui/button"-style naming schemes.
       metaByKey.set(item.name, meta);
       metaByKey.set(`${prefix}/${item.name}`, meta);
+
+      // Lib items ship modules whose file names differ from the item name
+      // (color-picker-lib ships color-picker.ts); key each shipped module.
+      if (prefix === "lib") keyLibModules(metaByKey, meta);
     }
   }
 
   return metaByKey;
+}
+
+function keyLibModules(metaByKey: Map<string, ItemMeta>, meta: ItemMeta): void {
+  for (const path of meta.files) {
+    metaByKey.set(`lib/${path.replace(/\.(tsx|ts)$/, "")}`, meta);
+  }
 }
 
 function githubAnnotation(f: Finding): string {
@@ -242,6 +302,7 @@ function githubAnnotation(f: Finding): string {
   const filePath = f.file
     .replace(/^ui\//, "src/components/ui/")
     .replace(/^hooks\//, "src/hooks/")
+    .replace(/^lib\//, "src/lib/")
     .replace(/^pages\//, "src/pages/components/");
 
   const props = [`file=${filePath}${lineProp}`, `title=${f.checkId}`].join(",");

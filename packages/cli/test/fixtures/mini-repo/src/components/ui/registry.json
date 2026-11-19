@@ -1,23 +1,32 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry.json",
   "items": [
     {
-      "name": "ui/button",
+      "name": "button",
       "type": "registry:ui",
       "title": "Button",
       "description": "A trigger for actions with variant and size support.",
       "categories": ["component"],
       "dependencies": [],
-      "files": [{ "path": "ui/button.tsx" }]
+      "files": [{ "path": "button.tsx" }]
     },
     {
-      "name": "ui/card",
+      "name": "card",
       "type": "registry:ui",
       "title": "Card",
       "description": "A container surface that groups related content.",
       "categories": ["component"],
       "dependencies": [],
-      "files": [{ "path": "ui/card.tsx" }]
+      "files": [{ "path": "card.tsx" }]
+    },
+    {
+      "name": "widget",
+      "type": "registry:ui",
+      "title": "Widget",
+      "description": "A fixture widget that consumes a registry lib module.",
+      "categories": ["component"],
+      "dependencies": ["cn"],
+      "registryDependencies": ["@kira-kit/layout-responsive"],
+      "files": [{ "path": "widget.tsx" }]
     }
   ]
 }

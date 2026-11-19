@@ -52,7 +52,7 @@ function BasicDemo() {
           <HoverCardArrow />
           <div className="flex gap-4">
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src="https://github.com/mui.png" />
               <AvatarFallback>KK</AvatarFallback>
             </Avatar>
             <div className="space-y-1">
@@ -89,7 +89,7 @@ export function BasicDemo() {
         <HoverCardArrow />
         <div className="flex gap-4">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src="https://github.com/mui.png" />
             <AvatarFallback>KK</AvatarFallback>
           </Avatar>
           <div className="space-y-1">
@@ -115,7 +115,7 @@ function BasicWithSectionsDemo() {
           <HoverCardArrow />
           <HoverCardHeader>
             <Avatar size="lg">
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src="https://github.com/mui.png" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
             <div>
@@ -168,7 +168,7 @@ export function BasicWithSectionsDemo() {
         <HoverCardArrow />
         <HoverCardHeader>
           <Avatar size="lg">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src="https://github.com/mui.png" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div>
@@ -413,7 +413,7 @@ function LoadingDemo() {
 
   return (
     <div className="flex items-center justify-center min-h-[200px]">
-      <HoverCard onOpenChange={(open) => open && load("shadcn")}>
+      <HoverCard onOpenChange={(open) => open && load("mui")}>
         <HoverCardTrigger
           render={<Button variant="outline">Fetch Profile on Open</Button>}
         />
@@ -467,7 +467,7 @@ export function LoadingDemo() {
   }
 
   return (
-    <HoverCard onOpenChange={(open) => open && load("shadcn")}>
+    <HoverCard onOpenChange={(open) => open && load("mui")}>
       <HoverCardTrigger render={<Button variant="outline">Fetch Profile on Open</Button>} />
       <HoverCardContent size="md">
         <HoverCardArrow />

@@ -5,7 +5,7 @@ Date-based time selector with typeable hour, minute, and optional second stepper
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/time-picker
+kira-kit add @kira-kit/time-picker
 ```
 
 ## Dependencies

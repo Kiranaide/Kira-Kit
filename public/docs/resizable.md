@@ -5,7 +5,7 @@ Accessible horizontal and vertical panel groups built on react-resizable-panels,
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/resizable
+kira-kit add @kira-kit/resizable
 ```
 
 ## Dependencies

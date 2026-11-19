@@ -5,7 +5,7 @@ Syntax-highlighted code display and editor with line numbers, diff and highlight
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/code-block
+kira-kit add @kira-kit/code-block
 ```
 
 ## Dependencies
@@ -19,6 +19,11 @@ npx shadcn add @kira-kit/code-block
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/code-presentation
+- @kira-kit/component-defaults
+- @kira-kit/component-native-props
+- @kira-kit/component-prop-guards
+- @kira-kit/component-refs
 - @kira-kit/tabs
 - @kira-kit/toast
 - @kira-kit/use-reduced-motion

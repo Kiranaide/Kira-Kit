@@ -5,7 +5,7 @@ A sortable Kanban board with controlled or uncontrolled columns, mouse/touch/key
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/kanban
+kira-kit add @kira-kit/kanban
 ```
 
 ## Dependencies
@@ -22,6 +22,10 @@ npx shadcn add @kira-kit/kanban
 
 - @kira-kit/avatar
 - @kira-kit/button
+- @kira-kit/component-defaults
+- @kira-kit/component-item-keys
+- @kira-kit/component-native-props
+- @kira-kit/component-prop-guards
 - @kira-kit/dialog
 - @kira-kit/input
 - @kira-kit/select

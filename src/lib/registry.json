@@ -1,0 +1,98 @@
+{
+  "items": [
+    {
+      "name": "camera-lib",
+      "type": "registry:lib",
+      "title": "Camera Support",
+      "description": "Camera capture types, browser permission constants, and scan-overlay guide presets shared by the camera component and hook.",
+      "categories": ["lib", "camera"],
+      "files": [
+        { "path": "camera/constants.ts", "type": "registry:lib" },
+        { "path": "camera/guide-presets.ts", "type": "registry:lib" },
+        { "path": "camera/types.ts", "type": "registry:lib" },
+        { "path": "camera/utils.ts", "type": "registry:lib" }
+      ]
+    },
+    {
+      "name": "code-presentation",
+      "type": "registry:lib",
+      "title": "Code Presentation",
+      "description": "Shiki highlighting and Prettier formatting pipeline that powers code block rendering and copy-ready output.",
+      "categories": ["lib", "code"],
+      "dependencies": [
+        "@shikijs/core",
+        "@shikijs/engine-javascript",
+        "@shikijs/langs",
+        "@shikijs/themes",
+        "prettier"
+      ],
+      "files": [{ "path": "code-presentation.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "color-picker-lib",
+      "type": "registry:lib",
+      "title": "Color Picker Math",
+      "description": "Color parsing, format conversion, and accessible-contrast math powering the color picker component and hook.",
+      "categories": ["lib", "color"],
+      "dependencies": ["@uiw/color-convert"],
+      "files": [{ "path": "color-picker.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "component-defaults",
+      "type": "registry:lib",
+      "title": "Component Defaults",
+      "description": "Resolves component default props from context providers and explicit overrides across the kit.",
+      "categories": ["lib", "support"],
+      "files": [{ "path": "component-defaults.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "component-item-keys",
+      "type": "registry:lib",
+      "title": "Component Item Keys",
+      "description": "Stable key derivation for list-based components such as alert dialog, field, kanban, and split view.",
+      "categories": ["lib", "support"],
+      "files": [{ "path": "component-item-keys.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "component-native-props",
+      "type": "registry:lib",
+      "title": "Component Native Props",
+      "description": "Filters custom component props out of native element prop spreads so DOM attributes stay clean.",
+      "categories": ["lib", "support"],
+      "files": [{ "path": "component-native-props.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "component-prop-guards",
+      "type": "registry:lib",
+      "title": "Component Prop Guards",
+      "description": "Type guards for callback and event props shared across components to keep prop forwarding type-safe.",
+      "categories": ["lib", "support"],
+      "files": [{ "path": "component-prop-guards.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "component-refs",
+      "type": "registry:lib",
+      "title": "Component Refs",
+      "description": "Merges multiple refs into a single callback ref for composed components such as code block and color picker.",
+      "categories": ["lib", "support"],
+      "registryDependencies": ["@kira-kit/component-prop-guards"],
+      "files": [{ "path": "component-refs.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "data-table-helpers",
+      "type": "registry:lib",
+      "title": "Data Table Helpers",
+      "description": "Sorting, filtering, and sample-data helpers used by the data table documentation demos.",
+      "categories": ["lib", "data"],
+      "files": [{ "path": "data-table-helpers.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "layout-responsive",
+      "type": "registry:lib",
+      "title": "Responsive Layout",
+      "description": "Responsive class composition for layout primitives like stack and spacer, driven by the kit CSS safelists.",
+      "categories": ["lib", "layout"],
+      "files": [{ "path": "layout-responsive.ts", "type": "registry:lib" }]
+    }
+  ]
+}

@@ -4,7 +4,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "description": "CLI for Kira Kit — a shadcn-compatible registry of Base UI components, plus OKLCH theme generation and quality checks",
+  "description": "CLI for Kira Kit — a native registry of Base UI components, plus OKLCH theme generation and quality checks",
   "type": "module",
   "bin": {
     "kira-kit": "dist/index.mjs"
@@ -17,7 +17,7 @@
     "templates"
   ],
   "scripts": {
-    "build": "tsdown",
+    "build": "bun scripts/embed-assets.ts && tsdown",
     "dev": "tsdown --watch",
     "start": "node dist/index.mjs",
     "test": "vitest run",
@@ -30,7 +30,6 @@
   },
   "keywords": [
     "kira-kit",
-    "shadcn",
     "ui-components",
     "base-ui",
     "registry",
@@ -47,9 +46,9 @@
     "apca-w3": "^0.1.9",
     "commander": "^15.1.0",
     "culori": "^4.0.2",
+    "diff": "^8.0.2",
     "package-manager-detector": "^1.9.0",
     "picocolors": "^1.1.1",
-    "shadcn": "4.22.1",
     "typescript": "^5.9.0",
     "zod": "^4.6.7"
   },
@@ -58,6 +57,7 @@
     "@changesets/cli": "^3.0.3",
     "@types/culori": "^4.0.1",
     "@types/node": "^22.0.0",
+    "lucide-react": "^1.76.0",
     "tsdown": "^0.23.7",
     "vitest": "^5.1.0"
   }

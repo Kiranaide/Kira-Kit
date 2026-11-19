@@ -24,11 +24,12 @@ const commands: CommandDoc[] = [
   {
     name: "init",
     summary:
-      "Set up a project: delegates base setup to the pinned shadcn CLI (4.22.1), registers the @kira-kit namespace in components.json without overwriting existing entries, and optionally applies a theme.",
+      "Set up a project: writes components.json with the @kira-kit registry, installs the kit's base CSS and default theme, adds the base dependencies, and optionally applies a preset or custom theme. Requires React 19.2+.",
     example: `kira-kit init
 kira-kit init --preset ember-press
 kira-kit init --primary "#0B7F79"
-kira-kit init --base-color stone --yes`,
+kira-kit init --font inter --font-mono jetbrains-mono --icon lucide
+kira-kit init --primary "#0B7F79" --base-color stone --yes`,
     options: [
       {
         flag: "--preset <name>",
@@ -40,12 +41,25 @@ kira-kit init --base-color stone --yes`,
       },
       {
         flag: "--base-color <name>",
-        description: "Neutral family for shadcn base setup.",
+        description: "Neutral family for a generated custom theme.",
       },
-      { flag: "--base <name>", description: "shadcn base library selection." },
+      {
+        flag: "--font <name>",
+        description:
+          "Sans font: geist, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans.",
+      },
+      {
+        flag: "--font-mono <name>",
+        description: "Mono font: geist-mono, jetbrains-mono, fira-code.",
+      },
+      {
+        flag: "--icon <library>",
+        description:
+          "tabler (default) or lucide — lucide rewrites icon imports at install time.",
+      },
       {
         flag: "--force",
-        description: "Overwrite existing files where shadcn allows it.",
+        description: "Re-apply the theme even if one already exists.",
       },
       { flag: "-y, --yes", description: "Skip confirmation prompts." },
       {
@@ -57,7 +71,7 @@ kira-kit init --base-color stone --yes`,
   {
     name: "add [items...]",
     summary:
-      "Add components, hooks, or themes via the pinned shadcn CLI. Transitive registry dependencies are resolved automatically.",
+      "Add components, hooks, and lib modules from the registry. Transitive registry dependencies are resolved automatically and missing npm packages are installed with your detected package manager.",
     example: `kira-kit add button
 kira-kit add button card dialog --overwrite
 kira-kit add --all`,
@@ -66,7 +80,11 @@ kira-kit add --all`,
         flag: "-o, --overwrite",
         description: "Overwrite existing local files.",
       },
-      { flag: "-a, --all", description: "Add every item in the registry." },
+      {
+        flag: "-a, --all",
+        description:
+          "Add every component, hook, and lib item (themes and styles are excluded).",
+      },
       {
         flag: "-p, --path <path>",
         description: "Target directory for the added files.",
@@ -81,12 +99,16 @@ kira-kit add --all`,
         description: "Print item contents instead of installing.",
       },
       { flag: "-y, --yes", description: "Skip confirmation prompts." },
+      {
+        flag: "-c, --cwd <path>",
+        description: "Run against a different project directory.",
+      },
     ],
   },
   {
     name: "list / view / search",
     summary:
-      "Registry inspection, all delegating to shadcn. list enumerates items, view prints one item's contents, search filters by keyword.",
+      "Registry inspection. list enumerates items, view prints one item's contents, search filters by keyword.",
     example: `kira-kit list
 kira-kit list --json
 kira-kit view button
@@ -96,15 +118,21 @@ kira-kit search table --json`,
         flag: "--json",
         description: "Machine-readable output for scripting and agents.",
       },
+      {
+        flag: "-c, --cwd <path>",
+        description: "Read registry settings from a different project.",
+      },
     ],
   },
   {
     name: "theme",
     summary:
-      "Generate an OKLCH palette from a primary color: light/dark schemes, chart hues, and APCA-verified contrast. Every token lands in the 4.5:1 (text) / 3:1 (UI) range.",
+      "Generate an OKLCH palette from a primary color: light/dark schemes, chart hues, and APCA-verified contrast. Every token lands in the 4.5:1 (text) / 3:1 (UI) range. Also applies font and icon options on their own — no color change required.",
     example: `kira-kit theme --primary "#0B7F79"
 kira-kit theme --primary "#0B7F79" --apply
-kira-kit theme --primary "#0B7F79" --out my-theme.json`,
+kira-kit theme --primary "#0B7F79" --out my-theme.json
+kira-kit theme --font manrope --font-mono fira-code --apply
+kira-kit theme --icon lucide --apply`,
     options: [
       {
         flag: "--primary <hex>",
@@ -116,12 +144,27 @@ kira-kit theme --primary "#0B7F79" --out my-theme.json`,
           "neutral, stone, zinc, slate, gray, mauve, olive, mist, taupe.",
       },
       {
+        flag: "--font <name>",
+        description:
+          "Sans font: geist, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans.",
+      },
+      {
+        flag: "--font-mono <name>",
+        description: "Mono font: geist-mono, jetbrains-mono, fira-code.",
+      },
+      {
+        flag: "--icon <library>",
+        description:
+          "tabler or lucide — rewrites icon imports across project sources.",
+      },
+      {
         flag: "--out <file>",
         description: "Write the registry:theme JSON to a file.",
       },
       {
         flag: "--apply",
-        description: "Install the generated theme into the project.",
+        description:
+          "Install the generated theme and/or font/icon options into the project.",
       },
       {
         flag: "-c, --cwd <path>",
@@ -132,7 +175,7 @@ kira-kit theme --primary "#0B7F79" --out my-theme.json`,
   {
     name: "check [paths...]",
     summary:
-      "Run the 12 parser-based quality checks over component sources (defaults to src/components/ui + src/hooks). Errors fail the run; warnings are advisory unless --ci is passed.",
+      "Run the 13 parser-based quality checks over component sources (defaults to src/components/ui + src/hooks + src/lib). Errors fail the run; warnings are advisory unless --ci is passed.",
     example: `kira-kit check
 kira-kit check --format github
 kira-kit check --ci
@@ -169,7 +212,7 @@ kira-kit create my-app --template next --install --git`,
   {
     name: "migrate",
     summary:
-      "Migrate a pre-1.0 project: converts the legacy registryUrl field to the registries map, runs shadcn migrate cn to switch clsx/tailwind-merge imports to the cn package, and reports diverged components. Read-only — it never overwrites your work.",
+      "Migrate a legacy project: converts the legacy registryUrl field to the registries map, rewrites clsx/tailwind-merge imports to the cn package, and reports components that diverged from the published registry. Your component files are never overwritten.",
     example: `kira-kit migrate
 kira-kit migrate --dry-run`,
     options: [
@@ -177,12 +220,17 @@ kira-kit migrate --dry-run`,
         flag: "--dry-run",
         description: "Report what would change without writing.",
       },
+      { flag: "-y, --yes", description: "Apply changes without prompting." },
+      {
+        flag: "-c, --cwd <path>",
+        description: "Run against a different project directory.",
+      },
     ],
   },
   {
     name: "build",
     summary:
-      "Maintainers only: the full registry pipeline — quality checks, regenerate the 9 theme presets, shadcn registry validate + build into public/r/*.json, prune stale outputs, and generate llms.txt plus per-item markdown docs.",
+      "Maintainers only: the full registry pipeline — quality checks, regenerate the theme presets, validate the import graph, build public/r/*.json and the JSON schemas, prune stale outputs, and generate llms.txt plus per-item markdown docs.",
     example: `kira-kit build
 kira-kit build --skip-checks`,
     options: [
@@ -242,6 +290,10 @@ const checks = [
     name: "cn-source",
     catches: "clsx/tailwind-merge imports instead of the cn package.",
   },
+  {
+    name: "lib-resolution",
+    catches: "Lib imports not covered by the item's transitive dependencies.",
+  },
 ];
 
 const suppressionCode = `// Line-level, with a required reason:
@@ -268,7 +320,7 @@ function RunItSection() {
   return (
     <Section
       title="Run it"
-      description="No global install needed. The shadcn CLI is bundled as a pinned dependency (4.22.1) — there is nothing else to install."
+      description="No global install needed — run it with npx, bunx, or pnpx. The CLI is self-contained; there is nothing else to install."
     >
       <CodeBlock
         code={`npx kira-kit --help\nnpx kira-kit init\nnpx kira-kit check`}
@@ -336,7 +388,7 @@ function QualityChecksSection() {
   return (
     <Section
       title="Quality checks"
-      description="Twelve parser-based checks run over component sources. They encode the kit's constraints — Base UI only, cn package, spacing contract, reduced motion — so drift is caught before review."
+      description="Thirteen parser-based checks run over component sources. They encode the kit's constraints — Base UI only, cn package, spacing contract, reduced motion — so drift is caught before review."
     >
       <Card>
         <CardContent className="pt-6">
@@ -450,7 +502,7 @@ export default function CliPage() {
     <ComponentPage>
       <PageHeader
         title="CLI"
-        description="The kira-kit CLI covers what shadcn doesn't: OKLCH theme generation, quality checks, scaffolding, and migration. Installation itself is delegated to a pinned shadcn CLI, so what you add is exactly what shadcn would add."
+        description="The kira-kit CLI is a self-contained registry client: install components, generate OKLCH themes, run quality checks, scaffold projects, and migrate legacy setups — no other CLI involved."
         version="v0.4.0"
         badge={<Badge variant="secondary">Node 22+</Badge>}
       />

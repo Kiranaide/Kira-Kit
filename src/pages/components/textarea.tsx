@@ -1128,7 +1128,7 @@ const textareaPageChangelogEntries = [
         type: "changed",
         title: "Re-audited against Base UI 1.9.0",
         description:
-          "shadcn Base UI textarea remains a bare styled textarea; parity reconfirmed, no primitive changes required.",
+          "the stock Base UI textarea remains a bare styled textarea; parity reconfirmed, no primitive changes required.",
       },
     ],
   },

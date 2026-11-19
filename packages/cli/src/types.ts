@@ -1,3 +1,5 @@
+import type { DepInstaller } from "./core/install/deps";
+
 export type RegistryItemType =
   | "registry:ui"
   | "registry:hook"
@@ -52,6 +54,8 @@ export interface ComponentsConfig {
     prefix?: string;
   };
   iconLibrary?: string;
+  font?: string;
+  fontMono?: string;
   aliases?: {
     components?: string;
     utils?: string;
@@ -76,20 +80,29 @@ export interface AddOptions {
 
 export interface InitOptions {
   cwd: string;
-  base?: string;
   preset?: string;
   primary?: string;
   baseColor?: string;
+  font?: string;
+  fontMono?: string;
+  icon?: string;
   force: boolean;
   yes: boolean;
+  /** Injectable package installer (tests); defaults to the detected PM. */
+  installer?: DepInstaller;
 }
 
 export interface ThemeOptions {
   primary?: string;
   baseColor?: string;
+  font?: string;
+  fontMono?: string;
+  icon?: string;
   out?: string;
   apply: boolean;
   cwd: string;
+  /** Injectable package installer (tests); defaults to the detected PM. */
+  installer?: DepInstaller;
 }
 
 export interface CheckOptions {

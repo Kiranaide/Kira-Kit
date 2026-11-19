@@ -31,12 +31,18 @@ export function readConfig(cwd: string): ComponentsConfig | null {
 
 /**
  * components.json read raw from disk. The file is user-owned and
- * shape-unstable (shadcn owns its shape); unknown keys are preserved
- * verbatim on write, so only the keys kira-kit reads are typed here.
+ * shape-unstable; unknown keys are preserved verbatim on write, so only the
+ * keys kira-kit reads are typed here.
  */
 export interface RawComponentsConfig {
+  $schema?: string;
+  style?: string;
+  tailwind?: { css?: string };
   aliases?: Record<string, string>;
   registries?: Record<string, string>;
+  iconLibrary?: string;
+  font?: string;
+  fontMono?: string;
   /** Legacy pre-namespace registry URL (removed by `kira-kit migrate`). */
   registryUrl?: string;
 }
@@ -90,4 +96,18 @@ export function getRegistryUrl(cwd: string): string {
   if (!url) return DEFAULT_REGISTRY_URL.replace("/{name}.json", "");
 
   return url.replace("/{name}.json", "");
+}
+
+/** Merge a patch into components.json, preserving unknown keys. */
+export function updateRawConfig(
+  cwd: string,
+  patch: Partial<RawComponentsConfig>,
+): void {
+  const next = { ...readRawConfig(cwd), ...patch };
+
+  writeFileSync(
+    join(cwd, "components.json"),
+    JSON.stringify(next, null, 2) + "\n",
+    "utf-8",
+  );
 }

@@ -5,7 +5,7 @@ Pressable Base UI toggle with seven visual variants, six text/icon sizes, three 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/toggle
+kira-kit add @kira-kit/toggle
 ```
 
 ## Dependencies

@@ -10,6 +10,8 @@ import { ValidationError } from "../../lib/errors";
 export interface LoadedRegistry {
   root: SourceRegistry;
   items: SourceRegistryItem[];
+  /** Item name → absolute dir of the registry file that declared it. */
+  origins: Map<string, string>;
 }
 
 function parseRegistryFile(
@@ -29,16 +31,16 @@ function parseRegistryFile(
   }
 }
 
-function collectItems(
-  root: SourceRegistry,
-  rootPath: string,
-): SourceRegistryItem[] {
+function collectItems(root: SourceRegistry, rootPath: string) {
   const items: SourceRegistryItem[] = [];
+  const origins = new Map<string, string>();
   const seen = new Set<string>();
 
   for (const include of root.include ?? []) {
+    const includePath = join(dirname(rootPath), include);
+
     const included = parseRegistryFile(
-      join(dirname(rootPath), include),
+      includePath,
       `included registry ${include}`,
       "Every include must be a valid registry file with an items array.",
     );
@@ -53,6 +55,7 @@ function collectItems(
 
       seen.add(item.name);
       items.push(item);
+      origins.set(item.name, dirname(includePath));
     }
   }
 
@@ -60,16 +63,17 @@ function collectItems(
     if (!seen.has(item.name)) {
       seen.add(item.name);
       items.push(item);
+      origins.set(item.name, dirname(rootPath));
     }
   }
 
-  return items;
+  return { items, origins };
 }
 
 /**
  * Load the root source registry and resolve its `include` list. The root
- * registry.json is the source of truth for metadata; shadcn build consumes
- * the same files.
+ * registry.json is the source of truth for metadata; the native build
+ * consumes the same files.
  */
 export function loadSourceRegistry(rootDir: string): LoadedRegistry {
   const rootPath = resolve(rootDir, "registry.json");
@@ -77,8 +81,10 @@ export function loadSourceRegistry(rootDir: string): LoadedRegistry {
   const root = parseRegistryFile(
     rootPath,
     `source registry at ${rootPath}`,
-    "Fix registry.json (and any included files) so it matches the shadcn registry schema.",
+    "Fix registry.json (and any included files) so it matches the registry schema.",
   );
 
-  return { root, items: collectItems(root, rootPath) };
+  const { items, origins } = collectItems(root, rootPath);
+
+  return { root, items, origins };
 }

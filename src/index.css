@@ -1,7 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import "./styles/kira-utilities.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 
 /* Flex */
 @source inline("{sm:,md:,lg:,xl:,2xl:,}flex-{row,row-reverse,col,col-reverse,nowrap,wrap,wrap-reverse}");
@@ -118,6 +119,7 @@
 
 @theme inline {
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
 
   /* Animation tokens for consistent motion */
   --animate-shimmer: shimmer 2s infinite;

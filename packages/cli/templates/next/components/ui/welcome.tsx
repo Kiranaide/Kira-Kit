@@ -4,7 +4,7 @@ import type { ComponentPropsWithoutRef } from "react";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { IconSparkles } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 export const welcomeVariants = cva(
   "w-full max-w-lg rounded-xl border bg-card p-8 text-card-foreground shadow-sm",
@@ -48,7 +48,7 @@ export function Welcome({ className, variant, ...props }: WelcomeProps) {
       </div>
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <code className="rounded-md bg-muted px-3 py-2 text-xs sm:text-sm">
-          shadcn add @kira-kit/button
+          kira-kit add @kira-kit/button
         </code>
         <ButtonPrimitive
           type="button"

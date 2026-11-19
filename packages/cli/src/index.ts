@@ -17,26 +17,34 @@ const program = new Command();
 program
   .name("kira-kit")
   .description(
-    "Kira Kit — shadcn-compatible Base UI component registry, OKLCH themes, and quality checks",
+    "Kira Kit — native Base UI component registry, OKLCH themes, and quality checks",
   )
   .version(getVersion());
 
 program
   .command("init")
   .description(
-    "Initialize Kira Kit in your project (delegates base setup to shadcn)",
+    "Initialize Kira Kit in your project (config, base CSS, deps, default theme)",
   )
   .option("-c, --cwd <directory>", "Working directory", process.cwd())
-  .option("--base <base>", "Component library base (base, radix, aria)")
-  .option("--preset <name>", "Install a theme preset (e.g. terracotta)")
+  .option("--preset <name>", "Install a theme preset (e.g. ember-press)")
   .option(
     "--primary <color>",
     "Generate a custom theme from this primary color",
   )
   .option(
     "--base-color <name>",
-    "Base color (neutral, stone, zinc, slate, gray)",
+    "Base color for a custom theme (neutral, stone, zinc, slate, gray, mauve, olive, mist, taupe)",
   )
+  .option(
+    "--font <name>",
+    "Sans font (geist, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans)",
+  )
+  .option(
+    "--font-mono <name>",
+    "Mono font (geist-mono, jetbrains-mono, fira-code)",
+  )
+  .option("--icon <library>", "Icon library (tabler, lucide)")
   .option("--force", "Re-apply the theme even if one already exists")
   .option("-y, --yes", "Skip prompts, use defaults")
   .action(async (options) => {
@@ -45,7 +53,7 @@ program
 
 program
   .command("add [items...]")
-  .description("Add component(s) via the pinned shadcn CLI")
+  .description("Add component(s) from the Kira Kit registry")
   .option("-c, --cwd <directory>", "Working directory", process.cwd())
   .option("-o, --overwrite", "Overwrite existing files")
   .option("-y, --yes", "Skip confirmation prompts")
@@ -61,6 +69,7 @@ program
 program
   .command("list")
   .description("List available registry items")
+  .option("-c, --cwd <directory>", "Working directory", process.cwd())
   .option("--json", "Print machine-readable JSON")
   .action(async (options) => {
     process.exit(await run(() => listComponents(options)));
@@ -69,6 +78,7 @@ program
 program
   .command("view [items...]")
   .description("View registry item contents")
+  .option("-c, --cwd <directory>", "Working directory", process.cwd())
   .action(async (items: string[], options) => {
     process.exit(await run(() => viewItems({ ...options, items })));
   });
@@ -76,6 +86,7 @@ program
 program
   .command("search [query...]")
   .description("Search the registry")
+  .option("-c, --cwd <directory>", "Working directory", process.cwd())
   .option("--json", "Print machine-readable JSON")
   .action(async (query: string[], options) => {
     process.exit(await run(() => searchItems({ ...options, query })));
@@ -83,14 +94,23 @@ program
 
 program
   .command("theme")
-  .description("Generate an OKLCH theme palette from a primary color")
+  .description("Generate an OKLCH theme palette, or apply font/icon options")
   .option("--primary <color>", "Primary color (hex or any CSS color)")
   .option(
     "--base-color <name>",
-    "Base color (neutral, stone, zinc, slate, gray)",
+    "Base color (neutral, stone, zinc, slate, gray, mauve, olive, mist, taupe)",
   )
+  .option(
+    "--font <name>",
+    "Sans font (geist, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans)",
+  )
+  .option(
+    "--font-mono <name>",
+    "Mono font (geist-mono, jetbrains-mono, fira-code)",
+  )
+  .option("--icon <library>", "Icon library (tabler, lucide)")
   .option("--out <file>", "Write the registry item to this file")
-  .option("--apply", "Install the generated theme via shadcn")
+  .option("--apply", "Install the generated theme into your global CSS")
   .option("-c, --cwd <directory>", "Working directory", process.cwd())
   .action(async (options) => {
     process.exit(await run(() => theme(options)));
@@ -136,7 +156,7 @@ program
 
 program
   .command("migrate")
-  .description("Migrate a v0.2.x project to the shadcn-native setup")
+  .description("Migrate a legacy project to the native kira-kit setup")
   .option("-c, --cwd <directory>", "Working directory", process.cwd())
   .option("--dry-run", "Print changes without writing files")
   .option("-y, --yes", "Skip prompts, apply automatically")
@@ -144,7 +164,9 @@ program
     process.exit(await run(() => migrate(options)));
   });
 
-async function run(action: () => Promise<number | void>): Promise<number> {
+async function run(
+  action: () => number | void | Promise<number | void>,
+): Promise<number> {
   try {
     const code = await action();
 

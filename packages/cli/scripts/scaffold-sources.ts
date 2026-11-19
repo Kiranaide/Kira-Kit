@@ -12,6 +12,7 @@ import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { extractImports, packageNameOf } from "../src/core/registry/extract";
+import { libItemNameFor } from "../src/core/registry/lib-items";
 
 const REPO_ROOT = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -41,20 +42,6 @@ function loadMetadata(): Metadata {
   return JSON.parse(readFileSync(METADATA_PATH, "utf-8")) as Metadata;
 }
 
-const VERSION_RANGES = {
-  // majors that matter for consumers get explicit ranges; bare elsewhere
-  "react-day-picker": "^10.0.0",
-  "embla-carousel": "8.6.0",
-  "embla-carousel-react": "^8.6.0",
-  "react-resizable-panels": "4.16.0",
-  "modern-monaco": "^0.4.2",
-  recharts: "^3.10.0",
-  "date-fns": "^4.4.0",
-  "@date-fns/tz": "^1.5.0",
-} satisfies Record<string, string>;
-
-void VERSION_RANGES;
-
 interface ScaffoldItem {
   name: string;
   type: "registry:ui" | "registry:hook";
@@ -76,7 +63,7 @@ function buildItem(
   const name = entry.replace(/\.(tsx|ts)$/, "");
   const ext = entry.slice(name.length);
   const source = readFileSync(join(dir, entry), "utf-8");
-  const { external, internal } = extractImports(source, entry);
+  const { external, internal, lib } = extractImports(source, entry);
 
   const dependencies = [
     ...new Set(
@@ -87,12 +74,17 @@ function buildItem(
   ].sort();
 
   const registryDependencies = [
-    ...new Set(
-      internal
+    ...new Set([
+      ...internal
         .map((imp) => imp.specifier.replace(/.*\//, ""))
         .filter((dep) => !SUPPORT_FILES.has(dep))
         .map((dep) => `@kira-kit/${dep}`),
-    ),
+      ...lib.flatMap((imp) => {
+        const item = libItemNameFor(imp.specifier);
+
+        return item ? [`@kira-kit/${item}`] : [];
+      }),
+    ]),
   ].sort();
 
   const supportFileNames = internal

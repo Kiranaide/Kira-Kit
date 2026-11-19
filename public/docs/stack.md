@@ -5,7 +5,7 @@ Polymorphic flex layout with responsive direction, wrapping, independent row and
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/stack
+kira-kit add @kira-kit/stack
 ```
 
 ## Dependencies
@@ -16,6 +16,7 @@ npx shadcn add @kira-kit/stack
 
 ## Registry dependencies
 
+- @kira-kit/layout-responsive
 - @kira-kit/separator
 - @kira-kit/skeleton
 

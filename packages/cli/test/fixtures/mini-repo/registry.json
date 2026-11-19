@@ -1,0 +1,4 @@
+{
+  "name": "mini-repo",
+  "include": ["src/components/ui/registry.json", "src/lib/registry.json"]
+}

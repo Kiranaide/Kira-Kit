@@ -5,12 +5,11 @@ A hot coral accent on warm stone that makes collaborative canvases and campaign 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/theme-coral-circuit
+kira-kit add @kira-kit/theme-coral-circuit
 ```
 
 ## Usage
 
 ```tsx
-import { ThemeCoralCircuit } from "@/components/ui/theme-coral-circuit";
-/* Applied as CSS variables by shadcn. */
+/* Applied as CSS variables by kira-kit. */
 ```

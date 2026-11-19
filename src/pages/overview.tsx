@@ -39,7 +39,7 @@ const highlights = [
   {
     title: "90+ components & hooks",
     description:
-      "A growing catalog delivered as a shadcn-compatible registry — the source code lands in your project.",
+      "A growing catalog delivered as a source registry — the source code lands in your project.",
     icon: IconBox,
   },
 ];

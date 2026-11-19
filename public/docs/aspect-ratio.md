@@ -5,7 +5,7 @@ Media frame with ratio presets, object-fit and object-position controls, respons
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/aspect-ratio
+kira-kit add @kira-kit/aspect-ratio
 ```
 
 ## Dependencies

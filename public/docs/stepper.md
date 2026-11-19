@@ -5,7 +5,7 @@ Multi-step workflow with horizontal or vertical rails, six step states, conditio
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/stepper
+kira-kit add @kira-kit/stepper
 ```
 
 ## Dependencies

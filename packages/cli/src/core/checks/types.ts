@@ -11,6 +11,8 @@ export interface CheckContext {
   indexCss: string;
   /** Registry metadata by item name (for checks 1 and 10). */
   items: Map<string, ItemMeta>;
+  /** Consumer icon library; lucide imports count as tabler declarations. */
+  iconLibrary?: string;
 }
 
 export interface ItemMeta {

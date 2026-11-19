@@ -5,7 +5,7 @@ A Base UI PreviewCard wrapper with five content sizes, default or blurred surfac
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/hover-card
+kira-kit add @kira-kit/hover-card
 ```
 
 ## Dependencies

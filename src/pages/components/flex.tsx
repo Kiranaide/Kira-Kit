@@ -415,7 +415,7 @@ export function RealWorldDemos() {
         <p className="text-sm text-muted-foreground mb-2">User Profile Card</p>
         <Flex gap={4} align="center" className="p-4 border rounded-lg bg-background">
           <Avatar size="lg">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src="https://github.com/mui.png" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Flex direction="column" gap={1} className="flex-1">
@@ -496,7 +496,7 @@ function RealWorldDemos() {
           className="p-4 border rounded-lg bg-background"
         >
           <Avatar size="lg">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src="https://github.com/mui.png" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Flex direction="column" gap={1} className="flex-1">

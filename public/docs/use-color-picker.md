@@ -5,12 +5,16 @@ Manages controlled or uncontrolled HSVA color and alpha state and returns setter
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-color-picker
+kira-kit add @kira-kit/use-color-picker
 ```
 
 ## Dependencies
 
 - @uiw/color-convert
+
+## Registry dependencies
+
+- @kira-kit/color-picker-lib
 
 ## Usage
 

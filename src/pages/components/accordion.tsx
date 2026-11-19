@@ -1900,7 +1900,7 @@ const accordionPageChangelogEntries = [
         type: "changed",
         title: "Single-File Architecture",
         description:
-          "Refactored to single-file architecture following shadcn/ui patterns for better maintainability.",
+          "Refactored to single-file architecture following stock registry patterns for better maintainability.",
       },
       {
         type: "changed",

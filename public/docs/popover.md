@@ -5,7 +5,7 @@ A Base UI popover family with payload-aware triggers, five sizes, positioning pr
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/popover
+kira-kit add @kira-kit/popover
 ```
 
 ## Dependencies

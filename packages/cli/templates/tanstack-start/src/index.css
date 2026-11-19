@@ -1,80 +1,79 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "./styles/kira-utilities.css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+/* Flex */
+@source inline("{sm:,md:,lg:,xl:,2xl:,}flex-{row,row-reverse,col,col-reverse,nowrap,wrap,wrap-reverse}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}justify-{start,end,center,between,around,evenly}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}items-{start,end,center,baseline,stretch}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}gap-{0,1,2,3,4,5,6,8,10,12,16,20,24}");
+
+/* Box — sizing */
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{w,h,min-w,min-h,max-w,max-h}-{0,0.5,1,1.5,2,2.5,3,3.5,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96,px,full,fit,min,max}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}w-{auto,screen,svw,lvw,dvw}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{h,min-h,max-h}-{screen,svh,lvh,dvh}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{h,min-w,min-h}-auto");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{max-w,max-h}-none");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}max-w-{prose,3xs,2xs,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl}");
+
+/* Box — spacing */
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{p,px,py,m,mx,my}-{0,1,2,3,4,5,6,8,10,12}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{m,mx,my}-auto");
+
+/* Box — color */
+@source inline("{sm:,md:,lg:,xl:,2xl:,}bg-{background,foreground,card,popover,border,input,ring}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}{bg,text}-{primary,secondary,muted,accent,destructive,success,warning,info}{,-foreground}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}bg-{primary/10,primary/20,muted/50,destructive/10,success/10,warning/10,info/10}");
+@source inline("{sm:,md:,lg:,xl:,2xl:,}text-foreground");
+
+/* Box — border */
+@source inline("{sm:,md:,lg:,xl:,2xl:,}border{,-2,-4,-8,-none}");
 
 @custom-variant dark (&:is(.dark *));
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-}
+@custom-variant marked (&:is([data-checked], [data-indeterminate]));
 
 :root {
-  --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --primary: oklch(0.59 0.22 1);
+  --primary-foreground: oklch(0.97 0.01 343);
+  --secondary: oklch(0.75 0.1 10);
+  --secondary-foreground: oklch(0.2 0.03 15);
+  --muted: oklch(0.95 0.02 20);
+  --muted-foreground: oklch(0.5 0.03 25);
+  --accent: oklch(0.92 0.04 15);
+  --accent-foreground: oklch(0.3 0.04 20);
+  --destructive: oklch(0.6 0.22 20);
+  --destructive-foreground: oklch(0.98 0.01 20);
+  --info: oklch(0.75 0.16 225);
+  --info-foreground: oklch(0.98 0.01 225);
+  --success: oklch(0.75 0.18 150);
+  --success-foreground: oklch(0.98 0.01 150);
+  --warning: oklch(0.8 0.16 80);
+  --warning-foreground: oklch(0.2 0.03 80);
+  --border: oklch(0.9 0.01 20);
+  --input: oklch(0.9 0.01 20);
+  --ring: oklch(0.7 0.12 350);
+  --chart-1: oklch(0.75 0.14 185);
+  --chart-2: oklch(0.75 0.18 35);
+  --chart-3: oklch(0.78 0.14 95);
+  --chart-4: oklch(0.7 0.12 280);
+  --chart-5: oklch(0.65 0.1 160);
+  --radius: 0.45rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-primary: oklch(0.59 0.22 1);
+  --sidebar-primary-foreground: oklch(0.97 0.01 343);
+  --sidebar-accent: oklch(0.9 0.04 15);
+  --sidebar-accent-foreground: oklch(0.25 0.04 15);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-ring: oklch(0.7 0.12 350);
 }
 
 .dark {
@@ -84,40 +83,505 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  --primary: oklch(0.66 0.21 354);
+  --primary-foreground: oklch(0.97 0.01 343);
+  --secondary: oklch(0.6 0.08 10);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --muted: oklch(0.25 0.02 15);
+  --muted-foreground: oklch(0.65 0.03 20);
+  --accent: oklch(0.4 0.08 10);
+  --accent-foreground: oklch(0.98 0.01 10);
+  --destructive: oklch(0.65 0.2 15);
+  --destructive-foreground: oklch(0.98 0.01 15);
+  --info: oklch(0.65 0.14 220);
+  --info-foreground: oklch(0.98 0.01 220);
+  --success: oklch(0.65 0.16 145);
+  --success-foreground: oklch(0.98 0.01 145);
+  --warning: oklch(0.7 0.14 75);
+  --warning-foreground: oklch(0.15 0.03 75);
+  --border: oklch(1 0 0 / 15%);
+  --input: oklch(1 0 0 / 20%);
+  --ring: oklch(0.65 0.14 350);
+  --chart-1: oklch(0.7 0.12 185);
+  --chart-2: oklch(0.7 0.16 35);
+  --chart-3: oklch(0.72 0.12 95);
+  --chart-4: oklch(0.65 0.1 280);
+  --chart-5: oklch(0.6 0.08 160);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.73 0.18 350);
+  --sidebar-primary-foreground: oklch(0.97 0.01 343);
+  --sidebar-accent: oklch(0.45 0.08 10);
+  --sidebar-accent-foreground: oklch(0.98 0.01 10);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.65 0.14 350);
+}
+
+@theme inline {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+
+  /* Animation tokens for consistent motion */
+  --animate-shimmer: shimmer 2s infinite;
+  --animate-skeleton-wave: skeleton-wave 2s ease-in-out infinite;
+  --animate-badge-pulse: badge-pulse 2s ease-in-out infinite;
+  --animate-ping-once: ping-once 0.8s cubic-bezier(0, 0, 0.2, 1);
+  --animate-badge-shimmer: badge-shimmer 1.75s linear infinite;
+  --animate-marquee: marquee 18s linear infinite;
+  --animate-shake: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-toast-progress: toast-progress linear forwards;
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-
   body {
-    @apply bg-background text-foreground;
+    @apply font-sans bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Hide scrollbars while keeping scrollability (carousel/stack rails) */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Mac-like scrollbar styling with cross-browser support */
+@layer base {
+  /* Standard scrollbar styling (Firefox) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+
+  :root {
+    --scrollbar-thumb: oklch(0.7 0 0 / 40%);
+    --scrollbar-track: transparent;
+    --scrollbar-thumb-hover: oklch(0.6 0 0 / 60%);
+  }
+
+  .dark {
+    --scrollbar-thumb: oklch(0.5 0 0 / 40%);
+    --scrollbar-thumb-hover: oklch(0.6 0 0 / 60%);
+  }
+
+  /* Webkit scrollbar styling (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* Accessibility: Respect user preferences for reduced motion.
+     Shared gate per playbook §5 — kills keyframe animations and transitions
+     kit-wide (skeleton-wave, badge-pulse, marquee, sticky-bar enter, ...). */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    ::-webkit-scrollbar-thumb {
+      transition: none;
+    }
+  }
+
+  /* Accessibility: High contrast mode support */
+  @media (forced-colors: active) {
+    ::-webkit-scrollbar-thumb {
+      background: CanvasText;
+    }
+    ::-webkit-scrollbar-track {
+      background: Canvas;
+    }
+  }
+}
+
+/* Shimmer animation for skeleton loading - seamless infinite loop */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Wave animation for skeleton loading - subtle opacity pulse */
+@keyframes skeleton-wave {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Badge pulse - gentle attention pulse for count/notification badges */
+@keyframes badge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+/* Ping once - single expanding ring (for one-shot "new" indication) */
+@keyframes ping-once {
+  75%,
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Badge shimmer - light sweep across a badge. The keyframes own the whole
+   travel (no static translate alongside them — Tailwind v4's native
+   `translate` property composes with `transform` and would shift the range).
+   The element is inset-0, so ±100% moves it fully off the badge: it enters
+   from the left edge and exits past the right edge instead of parking in
+   the middle, with a beat of stillness between passes. */
+@keyframes badge-shimmer {
+  0%,
+  20% {
+    transform: translateX(-100%);
+  }
+  80%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Marquee - continuous horizontal scroll for announcement content */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Fade in - quick entrance for feedback overlays (short, opacity only) */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+/* Toast auto-dismiss countdown — width is the semantically correct axis for a
+   progress bar (transform scaleX would work but is documented as a permitted
+   exception only if the width variant is rejected). */
+@theme {
+  --animate-toast-progress: toast-progress linear forwards;
+
+  @keyframes toast-progress {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0);
+    }
+  }
+}
+
+/* Progress bar animations */
+@keyframes progress-stripes {
+  from {
+    background-position: 1rem 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+/* Camera Scan Overlay animations */
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes scan-overlay-pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+  50% {
+    opacity: 0.7;
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+}
+
+@keyframes scan-overlay-corner-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@layer components {
+  .date-picker-popover {
+    /* reset UA [popover] styles */
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    max-height: calc(100dvh - 1rem);
+    overflow: auto;
+
+    opacity: 0;
+    translate: 0 -4px;
+    transition:
+      opacity 150ms ease-out,
+      translate 150ms ease-out,
+      overlay 150ms allow-discrete,
+      display 150ms allow-discrete;
+  }
+
+  .date-picker-popover:popover-open {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .date-picker-popover:popover-open {
+      opacity: 0;
+      translate: 0 -4px;
+    }
+  }
+
+  /* Tether to the trigger (anchor-name / position-anchor are set inline per instance) */
+  @supports (position-area: bottom) {
+    .date-picker-popover {
+      position-area: bottom span-right;
+      margin-block: 0.5rem;
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+  }
+
+  /* Fallback: centered when anchor positioning is unavailable */
+  @supports not (position-area: bottom) {
+    .date-picker-popover {
+      inset: 0;
+      margin: auto;
+      width: fit-content;
+      height: fit-content;
+    }
+  }
+
+  /* Small screens: bottom sheet */
+  @media (max-width: 639px) {
+    .date-picker-popover {
+      position-area: none;
+      inset: auto 0 0 0;
+      margin: 0;
+      width: 100%;
+      max-height: 85dvh;
+    }
+    .date-picker-popover::backdrop {
+      background: rgb(0 0 0 / 0.4);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .date-picker-popover {
+      transition: none;
+    }
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /* TimePicker popover — same native-popover contract as .date-picker-popover */
+  /* ------------------------------------------------------------------------ */
+  .time-picker-popover {
+    /* reset UA [popover] styles */
+    inset: auto;
+    margin: 0;
+    padding: 0;
+    max-height: calc(100dvh - 1rem);
+    overflow: auto;
+
+    opacity: 0;
+    translate: 0 -4px;
+    transition:
+      opacity 150ms ease-out,
+      translate 150ms ease-out,
+      overlay 150ms allow-discrete,
+      display 150ms allow-discrete;
+  }
+
+  .time-picker-popover:popover-open {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .time-picker-popover:popover-open {
+      opacity: 0;
+      translate: 0 -4px;
+    }
+  }
+
+  /* Tether to the trigger (anchor-name / position-anchor are set inline per instance) */
+  @supports (position-area: bottom) {
+    .time-picker-popover {
+      position-area: bottom span-right;
+      margin-block: 0.5rem;
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+  }
+
+  /* Fallback: centered when anchor positioning is unavailable */
+  @supports not (position-area: bottom) {
+    .time-picker-popover {
+      inset: 0;
+      margin: auto;
+      width: fit-content;
+      height: fit-content;
+    }
+  }
+
+  /* Small screens: bottom sheet */
+  @media (max-width: 639px) {
+    .time-picker-popover {
+      position-area: none;
+      inset: auto 0 0 0;
+      margin: 0;
+      width: 100%;
+      max-height: 85dvh;
+    }
+    .time-picker-popover::backdrop {
+      background: rgb(0 0 0 / 0.4);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .time-picker-popover {
+      transition: none;
+    }
   }
 }

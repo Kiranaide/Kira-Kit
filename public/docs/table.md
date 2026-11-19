@@ -5,7 +5,7 @@ Semantic table primitives with three densities, striping, sticky headers, RTL-aw
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/table
+kira-kit add @kira-kit/table
 ```
 
 ## Dependencies
@@ -17,6 +17,8 @@ npx shadcn add @kira-kit/table
 ## Registry dependencies
 
 - @kira-kit/checkbox
+- @kira-kit/component-defaults
+- @kira-kit/component-prop-guards
 
 ## Usage
 

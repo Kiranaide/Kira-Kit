@@ -5,7 +5,7 @@ A Base UI modal composition with five content sizes, an optional close button, a
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/dialog
+kira-kit add @kira-kit/dialog
 ```
 
 ## Dependencies

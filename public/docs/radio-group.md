@@ -5,7 +5,7 @@ Base UI radio groups with labeled options, rich RadioCard metadata, and a RadioB
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/radio-group
+kira-kit add @kira-kit/radio-group
 ```
 
 ## Dependencies
@@ -18,6 +18,9 @@ npx shadcn add @kira-kit/radio-group
 
 ## Registry dependencies
 
+- @kira-kit/component-defaults
+- @kira-kit/component-native-props
+- @kira-kit/component-prop-guards
 - @kira-kit/use-reduced-motion
 
 ## Usage

@@ -5,7 +5,7 @@ A step-based indicator with horizontal, vertical, and responsive layouts, clicka
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/progress-indicator
+kira-kit add @kira-kit/progress-indicator
 ```
 
 ## Dependencies

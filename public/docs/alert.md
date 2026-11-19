@@ -5,7 +5,7 @@ Semantic alert with solid, soft, and outlined tones, banner layout, automatic ic
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/alert
+kira-kit add @kira-kit/alert
 ```
 
 ## Dependencies

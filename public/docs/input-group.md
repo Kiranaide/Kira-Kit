@@ -5,7 +5,7 @@ A compound control container that joins inputs or textareas with text, compact b
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/input-group
+kira-kit add @kira-kit/input-group
 ```
 
 ## Dependencies
@@ -17,6 +17,7 @@ npx shadcn add @kira-kit/input-group
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-defaults
 - @kira-kit/textarea
 
 ## Usage

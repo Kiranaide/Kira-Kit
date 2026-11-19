@@ -1,10 +1,11 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "$schema": "https://kira-kit.vercel.app/schema/registry.json",
   "name": "kira-kit",
   "homepage": "https://kira-kit.vercel.app",
   "include": [
     "src/components/ui/registry.json",
     "src/hooks/registry.json",
+    "src/lib/registry.json",
     "src/themes/registry.json"
   ]
 }

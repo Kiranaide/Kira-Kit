@@ -5,7 +5,7 @@ A responsive CSS Grid system with breakpoint-aware columns, rows, gaps, alignmen
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/grid
+kira-kit add @kira-kit/grid
 ```
 
 ## Dependencies

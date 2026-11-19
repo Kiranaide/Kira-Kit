@@ -5,7 +5,7 @@ Auto-sizing native textarea with size and resize variants plus minRows and maxRo
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/textarea
+kira-kit add @kira-kit/textarea
 ```
 
 ## Dependencies

@@ -5,7 +5,7 @@ Renders keyboard keys and shortcut groups with default, outline, and ghost varia
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/kbd
+kira-kit add @kira-kit/kbd
 ```
 
 ## Dependencies
