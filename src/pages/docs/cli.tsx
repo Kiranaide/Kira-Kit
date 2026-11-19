@@ -270,7 +270,7 @@ export default function CliPage() {
       <PageHeader
         title="CLI"
         description="The kira-kit CLI covers what shadcn doesn't: OKLCH theme generation, quality checks, scaffolding, and migration. Installation itself is delegated to a pinned shadcn CLI, so what you add is exactly what shadcn would add."
-        version="v0.3.0"
+        version="v0.4.0"
         badge={<Badge variant="secondary">Node 22+</Badge>}
       />
 

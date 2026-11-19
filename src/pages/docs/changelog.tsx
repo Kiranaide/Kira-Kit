@@ -36,7 +36,7 @@ interface Release {
 
 const releases: Release[] = [
   {
-    version: "0.3.0",
+    version: "0.4.0",
     date: "November 19, 2026",
     changes: [
       {
@@ -77,12 +77,6 @@ const releases: Release[] = [
       },
       {
         type: "fixed",
-        title: "Input focus ring offsets",
-        description:
-          "Focus rings sit flush with control borders instead of offsetting outside them (PR #1).",
-      },
-      {
-        type: "fixed",
         title: "Combobox select layout and affordance icon sizes",
         description:
           "One combobox select layout regression and contract affordance icon sizes corrected.",
@@ -92,6 +86,18 @@ const releases: Release[] = [
         title: "Build and deploy refinements",
         description:
           "Subtle theme borders, configurable deploy port, and faster builds (PR #6); deployment publishes no host port so Coolify proxy routing works (PR #7).",
+      },
+    ],
+  },
+  {
+    version: "0.3.0",
+    date: "November 18, 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Input focus ring offsets",
+        description:
+          "Focus rings sit flush with control borders instead of offsetting outside them (PR #1).",
       },
     ],
   },
