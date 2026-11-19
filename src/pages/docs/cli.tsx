@@ -264,6 +264,187 @@ const exitCodes = [
   { code: "3", meaning: "Quality checks failed" },
 ];
 
+function RunItSection() {
+  return (
+    <Section
+      title="Run it"
+      description="No global install needed. The shadcn CLI is bundled as a pinned dependency (4.22.1) — there is nothing else to install."
+    >
+      <CodeBlock
+        code={`npx kira-kit --help\nnpx kira-kit init\nnpx kira-kit check`}
+        language="bash"
+        copyFormat="shell"
+      />
+    </Section>
+  );
+}
+
+function CommandReferenceSection() {
+  return (
+    <Section
+      title="Command reference"
+      description="Eight command groups. Every example is copy-ready; options tables list the flags each command accepts."
+    >
+      <div className="space-y-6">
+        {commands.map((command) => (
+          <Card key={command.name}>
+            <CardHeader>
+              <CardTitle className="font-mono text-base">
+                kira-kit {command.name}
+              </CardTitle>
+              <CardDescription>{command.summary}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <CodeBlock
+                code={command.example}
+                language="bash"
+                copyFormat="shell"
+              />
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="py-2 text-left font-medium">Option</th>
+                      <th className="py-2 text-left font-medium">
+                        Description
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {command.options.map((option) => (
+                      <tr key={option.flag}>
+                        <td className="py-2 font-mono text-xs">
+                          {option.flag}
+                        </td>
+                        <td className="py-2 text-muted-foreground">
+                          {option.description}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function QualityChecksSection() {
+  return (
+    <Section
+      title="Quality checks"
+      description="Twelve parser-based checks run over component sources. They encode the kit's constraints — Base UI only, cn package, spacing contract, reduced motion — so drift is caught before review."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-2 text-left font-medium">Check</th>
+                  <th className="py-2 text-left font-medium">
+                    What it catches
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {checks.map((check) => (
+                  <tr key={check.name}>
+                    <td className="py-2 font-mono text-xs">{check.name}</td>
+                    <td className="py-2 text-muted-foreground">
+                      {check.catches}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function SuppressionSection() {
+  return (
+    <Section
+      title="Suppressing a false positive"
+      description="Suppressions require a reason — an unexplained suppression is itself an error, and unused suppressions are flagged. Keep them surgical."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <CodeBlock code={suppressionCode} language="tsx" />
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function ContinuousIntegrationSection() {
+  return (
+    <Section
+      title="Continuous integration"
+      description="--format github emits Actions annotations inline on the PR; --ci turns warnings into failures so nothing drifts silently."
+    >
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">GitHub Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CodeBlock code={ciCode} language="yaml" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Exit codes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-2 text-left font-medium">Code</th>
+                  <th className="py-2 text-left font-medium">Meaning</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {exitCodes.map((entry) => (
+                  <tr key={entry.code}>
+                    <td className="py-2 font-mono text-xs">{entry.code}</td>
+                    <td className="py-2 text-muted-foreground">
+                      {entry.meaning}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      </div>
+    </Section>
+  );
+}
+
+function InstallationBanner() {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
+      <p className="text-sm text-muted-foreground">
+        New project? Start with the installation quickstart.
+      </p>
+      <Link
+        to="/docs/installation"
+        className={cn(buttonVariants({ size: "sm" }), "gap-2")}
+      >
+        Installation
+        <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+      </Link>
+    </div>
+  );
+}
+
 export default function CliPage() {
   return (
     <ComponentPage>
@@ -274,162 +455,17 @@ export default function CliPage() {
         badge={<Badge variant="secondary">Node 22+</Badge>}
       />
 
-      <Section
-        title="Run it"
-        description="No global install needed. The shadcn CLI is bundled as a pinned dependency (4.22.1) — there is nothing else to install."
-      >
-        <CodeBlock
-          code={`npx kira-kit --help\nnpx kira-kit init\nnpx kira-kit check`}
-          language="bash"
-          copyFormat="shell"
-        />
-      </Section>
+      <RunItSection />
 
-      <Section
-        title="Command reference"
-        description="Eight command groups. Every example is copy-ready; options tables list the flags each command accepts."
-      >
-        <div className="space-y-6">
-          {commands.map((command) => (
-            <Card key={command.name}>
-              <CardHeader>
-                <CardTitle className="font-mono text-base">
-                  kira-kit {command.name}
-                </CardTitle>
-                <CardDescription>{command.summary}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <CodeBlock
-                  code={command.example}
-                  language="bash"
-                  copyFormat="shell"
-                />
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="py-2 text-left font-medium">Option</th>
-                        <th className="py-2 text-left font-medium">
-                          Description
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                      {command.options.map((option) => (
-                        <tr key={option.flag}>
-                          <td className="py-2 font-mono text-xs">
-                            {option.flag}
-                          </td>
-                          <td className="py-2 text-muted-foreground">
-                            {option.description}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </Section>
+      <CommandReferenceSection />
 
-      <Section
-        title="Quality checks"
-        description="Twelve parser-based checks run over component sources. They encode the kit's constraints — Base UI only, cn package, spacing contract, reduced motion — so drift is caught before review."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium">Check</th>
-                    <th className="py-2 text-left font-medium">
-                      What it catches
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {checks.map((check) => (
-                    <tr key={check.name}>
-                      <td className="py-2 font-mono text-xs">{check.name}</td>
-                      <td className="py-2 text-muted-foreground">
-                        {check.catches}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      </Section>
+      <QualityChecksSection />
 
-      <Section
-        title="Suppressing a false positive"
-        description="Suppressions require a reason — an unexplained suppression is itself an error, and unused suppressions are flagged. Keep them surgical."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <CodeBlock code={suppressionCode} language="tsx" />
-          </CardContent>
-        </Card>
-      </Section>
+      <SuppressionSection />
 
-      <Section
-        title="Continuous integration"
-        description="--format github emits Actions annotations inline on the PR; --ci turns warnings into failures so nothing drifts silently."
-      >
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">GitHub Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CodeBlock code={ciCode} language="yaml" />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Exit codes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium">Code</th>
-                    <th className="py-2 text-left font-medium">Meaning</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {exitCodes.map((entry) => (
-                    <tr key={entry.code}>
-                      <td className="py-2 font-mono text-xs">{entry.code}</td>
-                      <td className="py-2 text-muted-foreground">
-                        {entry.meaning}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        </div>
-      </Section>
+      <ContinuousIntegrationSection />
 
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
-        <p className="text-sm text-muted-foreground">
-          New project? Start with the installation quickstart.
-        </p>
-        <Link
-          to="/docs/installation"
-          className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-        >
-          Installation
-          <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
-      </div>
+      <InstallationBanner />
     </ComponentPage>
   );
 }

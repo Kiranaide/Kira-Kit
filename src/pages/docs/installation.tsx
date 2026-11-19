@@ -173,6 +173,236 @@ function StepHeading({
   );
 }
 
+function RequirementsSection() {
+  return (
+    <Section
+      title="Requirements"
+      description="An existing shadcn project on Tailwind v4 already satisfies most of this list."
+    >
+      <div className="grid gap-4 sm:grid-cols-2">
+        {requirements.map((req) => (
+          <Card key={req.title}>
+            <CardContent className="flex items-start gap-2 pt-6">
+              <IconCheck
+                className="mt-0.5 h-5 w-5 shrink-0 text-success"
+                aria-hidden="true"
+              />
+              <div>
+                <p className="font-medium">{req.title}</p>
+                <p className="text-sm text-muted-foreground">
+                  {req.description}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function QuickstartSection() {
+  return (
+    <Section
+      title="Quick start"
+      description="Follow the four steps in order — each one ends with something you can run or see."
+    >
+      <div className="space-y-8">
+        <StepHeading step={1} title="Create a project (optional)">
+          <p className="text-sm text-muted-foreground">
+            Starting fresh? Scaffold a project pre-wired for Kira Kit. Skip this
+            step if you already have a React + Tailwind v4 app.
+          </p>
+          <CommandTabs command="kira-kit create my-app --template vite --install" />
+        </StepHeading>
+
+        <StepHeading step={2} title="Initialize your project">
+          <p className="text-sm text-muted-foreground">
+            In an existing project, init delegates base setup to the pinned
+            shadcn CLI and registers the{" "}
+            <span className="font-mono text-xs">@kira-kit</span> namespace. Add{" "}
+            <span className="font-mono text-xs">--preset phase-line</span> to
+            apply a theme in the same step — see{" "}
+            <Link
+              to="/docs/theming"
+              className="font-medium text-primary underline underline-offset-4"
+            >
+              Theming
+            </Link>
+            .
+          </p>
+          <CommandTabs command="kira-kit init" />
+        </StepHeading>
+
+        <StepHeading step={3} title="Add your first component">
+          <p className="text-sm text-muted-foreground">
+            Either command works — kira-kit add delegates to the same pinned
+            shadcn CLI and resolves transitive registry dependencies for you.
+          </p>
+          <CommandTabs command="shadcn@latest add @kira-kit/button" />
+          <CodeBlock
+            code="npx kira-kit add button card dialog"
+            language="bash"
+            copyFormat="shell"
+            filename="or use the kira-kit CLI directly"
+          />
+        </StepHeading>
+
+        <StepHeading step={4} title="Render it">
+          <CodeBlock code={firstComponentCode} language="tsx" />
+          <div className="flex items-start gap-2 rounded-lg border border-success/40 bg-success/10 p-4 text-sm">
+            <IconCheck
+              className="mt-0.5 h-4 w-4 shrink-0 text-success"
+              aria-hidden="true"
+            />
+            <p>
+              If you see a styled button, the registry, tokens, and fonts are
+              all wired correctly. Continue with{" "}
+              <Link
+                to="/docs/theming"
+                className="font-medium text-primary underline underline-offset-4"
+              >
+                Theming
+              </Link>{" "}
+              to make it look like your product.
+            </p>
+          </div>
+        </StepHeading>
+      </div>
+    </Section>
+  );
+}
+
+function RegistryConfigSection() {
+  return (
+    <Section
+      title="Registry configuration"
+      description="This is what init writes. The {name} placeholder is part of the shadcn registries format — keep it literal."
+    >
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">components.json</CardTitle>
+          <CardDescription>
+            Existing entries are never overwritten; the namespace is added only
+            when absent.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CodeBlock
+            code={registryConfigCode}
+            language="json"
+            filename="components.json"
+          />
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function FileTreeSection() {
+  return (
+    <Section
+      title="What lands in your project"
+      description="Registry items are source files, not a runtime package. Dependencies such as cn, class-variance-authority, and @base-ui/react are added to package.json by shadcn."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <CodeBlock code={fileTreeCode} language="text" showCopy={false} />
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function TemplatesSection() {
+  return (
+    <Section
+      title="Project templates"
+      description="kira-kit create embeds four templates, each pre-wired with the registry, theme tokens, and the cn package."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-2 text-left font-medium">Template</th>
+                  <th className="py-2 text-left font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {templates.map((template) => (
+                  <tr key={template.name}>
+                    <td className="py-2 font-mono text-xs">{template.name}</td>
+                    <td className="py-2 text-muted-foreground">
+                      {template.description}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function TroubleshootingSection() {
+  return (
+    <Section
+      title="Troubleshooting"
+      description="The failures people actually hit, and how to recover from each."
+    >
+      <Accordion defaultValue={[]}>
+        {troubleshooting.map((item) => (
+          <AccordionItem key={item.value} value={item.value}>
+            <AccordionTrigger>
+              <span className="flex items-center gap-2">
+                <IconAlertCircle
+                  className="h-4 w-4 shrink-0 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                {item.question}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent>{item.answer}</AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </Section>
+  );
+}
+
+function NextStepsCta() {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
+      <p className="text-sm text-muted-foreground">
+        Installed? Shape the look next, or learn the CLI in depth.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <Link
+          to="/docs/theming"
+          className={cn(buttonVariants({ size: "sm" }), "gap-2")}
+        >
+          Theming
+          <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
+        <Link
+          to="/docs/cli"
+          className={cn(
+            buttonVariants({ variant: "outline", size: "sm" }),
+            "gap-2",
+          )}
+        >
+          CLI reference
+          <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function InstallationPage() {
   return (
     <ComponentPage>
@@ -181,209 +411,19 @@ export default function InstallationPage() {
         description="From zero to a rendered Kira Kit component in a few minutes. Every command below is copy-ready for your package manager."
       />
 
-      <Section
-        title="Requirements"
-        description="An existing shadcn project on Tailwind v4 already satisfies most of this list."
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          {requirements.map((req) => (
-            <Card key={req.title}>
-              <CardContent className="flex items-start gap-2 pt-6">
-                <IconCheck
-                  className="mt-0.5 h-5 w-5 shrink-0 text-success"
-                  aria-hidden="true"
-                />
-                <div>
-                  <p className="font-medium">{req.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {req.description}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </Section>
+      <RequirementsSection />
 
-      <Section
-        title="Quick start"
-        description="Follow the four steps in order — each one ends with something you can run or see."
-      >
-        <div className="space-y-8">
-          <StepHeading step={1} title="Create a project (optional)">
-            <p className="text-sm text-muted-foreground">
-              Starting fresh? Scaffold a project pre-wired for Kira Kit. Skip
-              this step if you already have a React + Tailwind v4 app.
-            </p>
-            <CommandTabs command="kira-kit create my-app --template vite --install" />
-          </StepHeading>
+      <QuickstartSection />
 
-          <StepHeading step={2} title="Initialize your project">
-            <p className="text-sm text-muted-foreground">
-              In an existing project, init delegates base setup to the pinned
-              shadcn CLI and registers the{" "}
-              <span className="font-mono text-xs">@kira-kit</span> namespace.
-              Add <span className="font-mono text-xs">--preset phase-line</span>{" "}
-              to apply a theme in the same step — see{" "}
-              <Link
-                to="/docs/theming"
-                className="font-medium text-primary underline underline-offset-4"
-              >
-                Theming
-              </Link>
-              .
-            </p>
-            <CommandTabs command="kira-kit init" />
-          </StepHeading>
+      <RegistryConfigSection />
 
-          <StepHeading step={3} title="Add your first component">
-            <p className="text-sm text-muted-foreground">
-              Either command works — kira-kit add delegates to the same pinned
-              shadcn CLI and resolves transitive registry dependencies for you.
-            </p>
-            <CommandTabs command="shadcn@latest add @kira-kit/button" />
-            <CodeBlock
-              code="npx kira-kit add button card dialog"
-              language="bash"
-              copyFormat="shell"
-              filename="or use the kira-kit CLI directly"
-            />
-          </StepHeading>
+      <FileTreeSection />
 
-          <StepHeading step={4} title="Render it">
-            <CodeBlock code={firstComponentCode} language="tsx" />
-            <div className="flex items-start gap-2 rounded-lg border border-success/40 bg-success/10 p-4 text-sm">
-              <IconCheck
-                className="mt-0.5 h-4 w-4 shrink-0 text-success"
-                aria-hidden="true"
-              />
-              <p>
-                If you see a styled button, the registry, tokens, and fonts are
-                all wired correctly. Continue with{" "}
-                <Link
-                  to="/docs/theming"
-                  className="font-medium text-primary underline underline-offset-4"
-                >
-                  Theming
-                </Link>{" "}
-                to make it look like your product.
-              </p>
-            </div>
-          </StepHeading>
-        </div>
-      </Section>
+      <TemplatesSection />
 
-      <Section
-        title="Registry configuration"
-        description="This is what init writes. The {name} placeholder is part of the shadcn registries format — keep it literal."
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">components.json</CardTitle>
-            <CardDescription>
-              Existing entries are never overwritten; the namespace is added
-              only when absent.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <CodeBlock
-              code={registryConfigCode}
-              language="json"
-              filename="components.json"
-            />
-          </CardContent>
-        </Card>
-      </Section>
+      <TroubleshootingSection />
 
-      <Section
-        title="What lands in your project"
-        description="Registry items are source files, not a runtime package. Dependencies such as cn, class-variance-authority, and @base-ui/react are added to package.json by shadcn."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <CodeBlock code={fileTreeCode} language="text" showCopy={false} />
-          </CardContent>
-        </Card>
-      </Section>
-
-      <Section
-        title="Project templates"
-        description="kira-kit create embeds four templates, each pre-wired with the registry, theme tokens, and the cn package."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium">Template</th>
-                    <th className="py-2 text-left font-medium">Description</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {templates.map((template) => (
-                    <tr key={template.name}>
-                      <td className="py-2 font-mono text-xs">
-                        {template.name}
-                      </td>
-                      <td className="py-2 text-muted-foreground">
-                        {template.description}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      </Section>
-
-      <Section
-        title="Troubleshooting"
-        description="The failures people actually hit, and how to recover from each."
-      >
-        <Accordion defaultValue={[]}>
-          {troubleshooting.map((item) => (
-            <AccordionItem key={item.value} value={item.value}>
-              <AccordionTrigger>
-                <span className="flex items-center gap-2">
-                  <IconAlertCircle
-                    className="h-4 w-4 shrink-0 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                  {item.question}
-                </span>
-              </AccordionTrigger>
-              <AccordionContent>{item.answer}</AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </Section>
-
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
-        <p className="text-sm text-muted-foreground">
-          Installed? Shape the look next, or learn the CLI in depth.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <Link
-            to="/docs/theming"
-            className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-          >
-            Theming
-            <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-          <Link
-            to="/docs/cli"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "gap-2",
-            )}
-          >
-            CLI reference
-            <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
-        </div>
-      </div>
+      <NextStepsCta />
     </ComponentPage>
   );
 }

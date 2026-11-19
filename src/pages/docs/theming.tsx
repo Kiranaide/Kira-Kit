@@ -190,6 +190,292 @@ function PresetPreview({
   );
 }
 
+function PresetPickerGrid({
+  selectedName,
+  onSelect,
+}: {
+  selectedName: string;
+  onSelect: (name: string) => void;
+}) {
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {themeItems.map((item) => {
+        const itemSlug = item.name.replace("theme-", "");
+        const itemMeta = metaFor(itemSlug);
+        const isSelected = item.name === selectedName;
+
+        return (
+          <button
+            key={item.name}
+            type="button"
+            aria-pressed={isSelected}
+            onClick={() => onSelect(item.name)}
+            className={cn(
+              "cursor-pointer rounded-lg border border-border bg-card p-4 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+              isSelected && "border-primary ring-2 ring-ring",
+            )}
+          >
+            <span className="flex items-center gap-2">
+              <span
+                className="h-4 w-4 shrink-0 rounded-full border border-border"
+                style={{ backgroundColor: itemMeta?.primary }}
+                aria-hidden="true"
+              />
+              <span className="font-medium">{item.title}</span>
+            </span>
+            <span className="mt-1 block text-xs text-muted-foreground">
+              {itemMeta?.family} · {itemMeta?.primary}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function PresetPreviewCard({
+  selected,
+  mode,
+  onModeChange,
+  isApplied,
+  onApply,
+}: {
+  selected: ThemeRegistryItem;
+  mode: "light" | "dark";
+  onModeChange: (mode: "light" | "dark") => void;
+  isApplied: boolean;
+  onApply: () => void;
+}) {
+  const slug = selected.name.replace("theme-", "");
+
+  return (
+    <Card>
+      <CardHeader className="border-b">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <CardTitle>Live preview</CardTitle>
+            <CardDescription>{selected.description}</CardDescription>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant={mode === "light" ? "default" : "outline"}
+              aria-pressed={mode === "light"}
+              onClick={() => onModeChange("light")}
+              leftIcon={<IconSun className="h-4 w-4" aria-hidden="true" />}
+            >
+              Light
+            </Button>
+            <Button
+              size="sm"
+              variant={mode === "dark" ? "default" : "outline"}
+              aria-pressed={mode === "dark"}
+              onClick={() => onModeChange("dark")}
+              leftIcon={<IconMoon className="h-4 w-4" aria-hidden="true" />}
+            >
+              Dark
+            </Button>
+            <Button
+              size="sm"
+              variant={isApplied ? "default" : "outline"}
+              aria-pressed={isApplied}
+              onClick={onApply}
+              leftIcon={
+                isApplied ? (
+                  <IconCheck className="h-4 w-4" aria-hidden="true" />
+                ) : undefined
+              }
+            >
+              {isApplied ? "Applied" : "Apply to site"}
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 pt-6">
+        <PresetPreview item={selected} mode={mode} />
+        <CodeBlock
+          code={`npx shadcn@latest add @kira-kit/${selected.name}\n# or apply it during setup:\nnpx kira-kit init --preset ${slug}`}
+          language="bash"
+          copyFormat="shell"
+          filename={`install ${selected.title}`}
+        />
+      </CardContent>
+    </Card>
+  );
+}
+
+function PresetsSection({
+  selected,
+  onSelect,
+  mode,
+  onModeChange,
+  isApplied,
+  onApply,
+}: {
+  selected: ThemeRegistryItem;
+  onSelect: (name: string) => void;
+  mode: "light" | "dark";
+  onModeChange: (mode: "light" | "dark") => void;
+  isApplied: boolean;
+  onApply: () => void;
+}) {
+  return (
+    <Section
+      title="Theme presets"
+      description="Pick a preset to preview it live — the panel below renders real kit components under that preset's tokens, in light or dark. Hit “Apply to site” to theme the whole docs site with it; the choice persists across pages and reloads."
+    >
+      <PresetPickerGrid selectedName={selected.name} onSelect={onSelect} />
+      <PresetPreviewCard
+        selected={selected}
+        mode={mode}
+        onModeChange={onModeChange}
+        isApplied={isApplied}
+        onApply={onApply}
+      />
+    </Section>
+  );
+}
+
+function CustomThemeSection() {
+  return (
+    <Section
+      title="Generate a custom theme"
+      description="The same OKLCH engine that builds the presets runs locally. Give it a primary color; it derives light and dark schemes, chart hues, and a neutral family."
+    >
+      <Card>
+        <CardContent className="space-y-4 pt-6">
+          <CodeBlock
+            code={customThemeCode}
+            language="bash"
+            copyFormat="shell"
+          />
+          <p className="text-sm text-muted-foreground">
+            Neutral families: neutral, stone, zinc, slate, gray, plus mauve,
+            olive, mist, and taupe. Every generated token is checked against
+            WCAG 2.2 AA — 4.5:1 for text, 3:1 for UI — with APCA used as a
+            perceptual cross-check.
+          </p>
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function TokenAnatomySection() {
+  return (
+    <Section
+      title="Token anatomy"
+      description="Swatches below show the tokens active on this site right now. Toggle the theme in the sidebar to watch them flip."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-2 text-left font-medium">Token</th>
+                  <th className="py-2 text-left font-medium">Swatch</th>
+                  <th className="py-2 text-left font-medium">Purpose</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {tokenGroups.map((group) => (
+                  <tr key={group.tokens[0]}>
+                    <td className="py-2 font-mono text-xs">
+                      {group.tokens.join(", ")}
+                    </td>
+                    <td className="py-2">
+                      <div className="flex gap-1" aria-hidden="true">
+                        {group.tokens
+                          .filter((token) => token !== "--radius")
+                          .map((token) => (
+                            <span
+                              key={token}
+                              className="h-6 w-6 rounded-md border border-border"
+                              style={{ background: `var(${token})` }}
+                            />
+                          ))}
+                      </div>
+                    </td>
+                    <td className="py-2 text-muted-foreground">
+                      {group.purpose}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function RadiusLadderSection() {
+  return (
+    <Section
+      title="Radius ladder"
+      description="One --radius variable drives every corner. This repo uses 0.45rem; presets may ship their own value (Ember Press uses 0.625rem). The ladder below reflects the active theme."
+    >
+      <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        {radiusSteps.map((step) => (
+          <Card key={step.label}>
+            <CardContent className="flex flex-col items-center gap-2 pt-6">
+              <div
+                className={cn(
+                  "h-12 w-full border-2 border-primary bg-primary/10",
+                  step.className,
+                )}
+                aria-hidden="true"
+              />
+              <p className="font-mono text-xs">{step.className}</p>
+              <p className="text-xs text-muted-foreground">{step.note}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function DarkModeSection() {
+  return (
+    <Section
+      title="Dark mode"
+      description="Dark mode is a .dark class on <html>. The kit's ThemeProvider persists the choice to localStorage and respects prefers-color-scheme on first visit — no flash, no prop drilling."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <CodeBlock code={darkModeCode} language="css" />
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function CliCtaBanner({ selected }: { selected: ThemeRegistryItem }) {
+  const slug = selected.name.replace("theme-", "");
+  const meta = metaFor(slug);
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
+      <p className="text-sm text-muted-foreground">
+        {meta
+          ? `${selected.title} (${meta.family}) is one command away.`
+          : "Presets install as registry:theme items."}{" "}
+        See the CLI reference for every theme flag.
+      </p>
+      <Link
+        to="/docs/cli"
+        className={cn(buttonVariants({ size: "sm" }), "gap-2")}
+      >
+        CLI reference
+        <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+      </Link>
+    </div>
+  );
+}
+
 export default function ThemingPage() {
   const [selectedName, setSelectedName] = useState("theme-phase-line");
   const [mode, setMode] = useState<"light" | "dark">("light");
@@ -200,9 +486,6 @@ export default function ThemingPage() {
 
   const isApplied = presetName === selected.name;
 
-  const slug = selected.name.replace("theme-", "");
-  const meta = metaFor(slug);
-
   return (
     <ComponentPage>
       <PageHeader
@@ -211,215 +494,26 @@ export default function ThemingPage() {
         badge={<Badge variant="secondary">OKLCH</Badge>}
       />
 
-      <Section
-        title="Theme presets"
-        description="Pick a preset to preview it live — the panel below renders real kit components under that preset's tokens, in light or dark. Hit “Apply to site” to theme the whole docs site with it; the choice persists across pages and reloads."
-      >
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {themeItems.map((item) => {
-            const itemSlug = item.name.replace("theme-", "");
-            const itemMeta = metaFor(itemSlug);
-            const isSelected = item.name === selected.name;
+      <PresetsSection
+        selected={selected}
+        onSelect={setSelectedName}
+        mode={mode}
+        onModeChange={setMode}
+        isApplied={isApplied}
+        onApply={() =>
+          setPresetName(isApplied ? DEFAULT_PRESET : selected.name)
+        }
+      />
 
-            return (
-              <button
-                key={item.name}
-                type="button"
-                aria-pressed={isSelected}
-                onClick={() => setSelectedName(item.name)}
-                className={cn(
-                  "cursor-pointer rounded-lg border border-border bg-card p-4 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                  isSelected && "border-primary ring-2 ring-ring",
-                )}
-              >
-                <span className="flex items-center gap-2">
-                  <span
-                    className="h-4 w-4 shrink-0 rounded-full border border-border"
-                    style={{ backgroundColor: itemMeta?.primary }}
-                    aria-hidden="true"
-                  />
-                  <span className="font-medium">{item.title}</span>
-                </span>
-                <span className="mt-1 block text-xs text-muted-foreground">
-                  {itemMeta?.family} · {itemMeta?.primary}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      <CustomThemeSection />
 
-        <Card>
-          <CardHeader className="border-b">
-            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0">
-                <CardTitle>Live preview</CardTitle>
-                <CardDescription>{selected.description}</CardDescription>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant={mode === "light" ? "default" : "outline"}
-                  aria-pressed={mode === "light"}
-                  onClick={() => setMode("light")}
-                  leftIcon={<IconSun className="h-4 w-4" aria-hidden="true" />}
-                >
-                  Light
-                </Button>
-                <Button
-                  size="sm"
-                  variant={mode === "dark" ? "default" : "outline"}
-                  aria-pressed={mode === "dark"}
-                  onClick={() => setMode("dark")}
-                  leftIcon={<IconMoon className="h-4 w-4" aria-hidden="true" />}
-                >
-                  Dark
-                </Button>
-                <Button
-                  size="sm"
-                  variant={isApplied ? "default" : "outline"}
-                  aria-pressed={isApplied}
-                  onClick={() =>
-                    setPresetName(isApplied ? DEFAULT_PRESET : selected.name)
-                  }
-                  leftIcon={
-                    isApplied ? (
-                      <IconCheck className="h-4 w-4" aria-hidden="true" />
-                    ) : undefined
-                  }
-                >
-                  {isApplied ? "Applied" : "Apply to site"}
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4 pt-6">
-            <PresetPreview item={selected} mode={mode} />
-            <CodeBlock
-              code={`npx shadcn@latest add @kira-kit/${selected.name}\n# or apply it during setup:\nnpx kira-kit init --preset ${slug}`}
-              language="bash"
-              copyFormat="shell"
-              filename={`install ${selected.title}`}
-            />
-          </CardContent>
-        </Card>
-      </Section>
+      <TokenAnatomySection />
 
-      <Section
-        title="Generate a custom theme"
-        description="The same OKLCH engine that builds the presets runs locally. Give it a primary color; it derives light and dark schemes, chart hues, and a neutral family."
-      >
-        <Card>
-          <CardContent className="space-y-4 pt-6">
-            <CodeBlock
-              code={customThemeCode}
-              language="bash"
-              copyFormat="shell"
-            />
-            <p className="text-sm text-muted-foreground">
-              Neutral families: neutral, stone, zinc, slate, gray, plus mauve,
-              olive, mist, and taupe. Every generated token is checked against
-              WCAG 2.2 AA — 4.5:1 for text, 3:1 for UI — with APCA used as a
-              perceptual cross-check.
-            </p>
-          </CardContent>
-        </Card>
-      </Section>
+      <RadiusLadderSection />
 
-      <Section
-        title="Token anatomy"
-        description="Swatches below show the tokens active on this site right now. Toggle the theme in the sidebar to watch them flip."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium">Token</th>
-                    <th className="py-2 text-left font-medium">Swatch</th>
-                    <th className="py-2 text-left font-medium">Purpose</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {tokenGroups.map((group) => (
-                    <tr key={group.tokens[0]}>
-                      <td className="py-2 font-mono text-xs">
-                        {group.tokens.join(", ")}
-                      </td>
-                      <td className="py-2">
-                        <div className="flex gap-1" aria-hidden="true">
-                          {group.tokens
-                            .filter((token) => token !== "--radius")
-                            .map((token) => (
-                              <span
-                                key={token}
-                                className="h-6 w-6 rounded-md border border-border"
-                                style={{ background: `var(${token})` }}
-                              />
-                            ))}
-                        </div>
-                      </td>
-                      <td className="py-2 text-muted-foreground">
-                        {group.purpose}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      </Section>
+      <DarkModeSection />
 
-      <Section
-        title="Radius ladder"
-        description="One --radius variable drives every corner. This repo uses 0.45rem; presets may ship their own value (Ember Press uses 0.625rem). The ladder below reflects the active theme."
-      >
-        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          {radiusSteps.map((step) => (
-            <Card key={step.label}>
-              <CardContent className="flex flex-col items-center gap-2 pt-6">
-                <div
-                  className={cn(
-                    "h-12 w-full border-2 border-primary bg-primary/10",
-                    step.className,
-                  )}
-                  aria-hidden="true"
-                />
-                <p className="font-mono text-xs">{step.className}</p>
-                <p className="text-xs text-muted-foreground">{step.note}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </Section>
-
-      <Section
-        title="Dark mode"
-        description="Dark mode is a .dark class on <html>. The kit's ThemeProvider persists the choice to localStorage and respects prefers-color-scheme on first visit — no flash, no prop drilling."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <CodeBlock code={darkModeCode} language="css" />
-          </CardContent>
-        </Card>
-      </Section>
-
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
-        <p className="text-sm text-muted-foreground">
-          {meta
-            ? `${selected.title} (${meta.family}) is one command away.`
-            : "Presets install as registry:theme items."}{" "}
-          See the CLI reference for every theme flag.
-        </p>
-        <Link
-          to="/docs/cli"
-          className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-        >
-          CLI reference
-          <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
-      </div>
+      <CliCtaBanner selected={selected} />
     </ComponentPage>
   );
 }

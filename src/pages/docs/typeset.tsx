@@ -143,6 +143,211 @@ const donts = [
   "All-caps body copy; reserve uppercase for short labels with added tracking.",
 ];
 
+function FontStackSection() {
+  return (
+    <Section
+      title="Font stack"
+      description="Geist Variable is self-hosted through @fontsource-variable/geist — one variable file covers weights 100–900 with no layout shift from font swapping."
+    >
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardContent className="flex items-center gap-6 pt-6">
+            <span
+              className="text-6xl font-semibold tracking-tight"
+              aria-hidden="true"
+            >
+              Aa
+            </span>
+            <div className="space-y-1">
+              <p className="text-2xl font-medium">Geist Variable</p>
+              <p className="text-sm text-muted-foreground">
+                ABCDEFGHIJKLMNOPQRSTUVWXYZ
+                <br />
+                abcdefghijklmnopqrstuvwxyz 0123456789
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <CodeBlock code={fontStackCode} language="css" />
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {weights.map((weight) => (
+          <Card key={weight}>
+            <CardContent className="pt-6 text-center">
+              <p className="text-2xl" style={{ fontWeight: weight }}>
+                Ag
+              </p>
+              <p className="mt-1 font-mono text-xs text-muted-foreground">
+                {weight}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function TypeScaleSection() {
+  return (
+    <Section
+      title="Type scale"
+      description="Nine steps, each with a fixed size and line height. The specimen column renders the actual utility class."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-2 text-left font-medium">Class</th>
+                  <th className="py-2 text-left font-medium">Size / LH</th>
+                  <th className="py-2 text-left font-medium">Specimen</th>
+                  <th className="py-2 text-left font-medium">Use for</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {typeScale.map((step) => (
+                  <tr key={step.className}>
+                    <td className="py-2 font-mono text-xs">{step.className}</td>
+                    <td className="py-2 font-mono text-xs text-muted-foreground">
+                      {step.px} / {step.lineHeight}
+                    </td>
+                    <td className="py-2">
+                      <span className={step.className}>Design once</span>
+                    </td>
+                    <td className="py-2 text-muted-foreground">{step.usage}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function HeadingRecipesSection() {
+  return (
+    <Section
+      title="Heading recipes"
+      description="The same recipes used by the Typography component page. scroll-m-20 keeps anchored headings clear of sticky headers."
+    >
+      <Card>
+        <CardContent className="space-y-6 pt-6">
+          {headingRecipes.map((recipe) => (
+            <div key={recipe.label} className="space-y-1">
+              <p className="font-mono text-xs text-muted-foreground">
+                {recipe.label} · {recipe.className}
+              </p>
+              <p className={recipe.className}>{recipe.sample}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function CodeTypographySection() {
+  return (
+    <Section
+      title="Code typography"
+      description="Inline code gets a muted chip; block code uses the CodeBlock component with Shiki highlighting and a copy button — never a raw pre."
+    >
+      <Card>
+        <CardContent className="space-y-4 pt-6">
+          <p className="text-sm">
+            Install with{" "}
+            <code className="rounded bg-muted px-1 py-0.5 font-mono text-sm">
+              npx kira-kit init
+            </code>{" "}
+            and import from{" "}
+            <code className="rounded bg-muted px-1 py-0.5 font-mono text-sm">
+              @/components/ui
+            </code>
+            .
+          </p>
+          <CodeBlock code={inlineCode} language="tsx" />
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function FluidTypeSection() {
+  return (
+    <Section
+      title="Fluid type"
+      description="App UI uses the fixed scale so controls stay on the spacing ladder. Marketing and hero surfaces may use clamp() — the spacing contract explicitly sanctions it for page gutters and display type."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <CodeBlock code={fluidTypeCode} language="css" />
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function DoDontSection() {
+  return (
+    <Section title="Do / Don't">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="border-success/40">
+          <CardHeader>
+            <CardTitle className="text-base text-success">Do</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+              {dos.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+        <Card className="border-destructive/40">
+          <CardHeader>
+            <CardTitle className="text-base text-destructive">
+              Don&apos;t
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+              {donts.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+    </Section>
+  );
+}
+
+function TypographyCta() {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
+      <p className="text-sm text-muted-foreground">
+        Live demos of every recipe, including lists and blockquotes, are on the
+        Typography component page.
+      </p>
+      <Link
+        to="/components/typography"
+        className={cn(buttonVariants({ size: "sm" }), "gap-2")}
+      >
+        Typography demos
+        <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+      </Link>
+    </div>
+  );
+}
+
 export default function TypesetPage() {
   return (
     <ComponentPage>
@@ -150,187 +355,13 @@ export default function TypesetPage() {
         title="Typeset"
         description="The kit's typography is a fixed Tailwind scale set in Geist Variable, with heading recipes shared across every docs page. This page is the reference — every specimen below renders the real classes."
       />
-
-      <Section
-        title="Font stack"
-        description="Geist Variable is self-hosted through @fontsource-variable/geist — one variable file covers weights 100–900 with no layout shift from font swapping."
-      >
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardContent className="flex items-center gap-6 pt-6">
-              <span
-                className="text-6xl font-semibold tracking-tight"
-                aria-hidden="true"
-              >
-                Aa
-              </span>
-              <div className="space-y-1">
-                <p className="text-2xl font-medium">Geist Variable</p>
-                <p className="text-sm text-muted-foreground">
-                  ABCDEFGHIJKLMNOPQRSTUVWXYZ
-                  <br />
-                  abcdefghijklmnopqrstuvwxyz 0123456789
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <CodeBlock code={fontStackCode} language="css" />
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {weights.map((weight) => (
-            <Card key={weight}>
-              <CardContent className="pt-6 text-center">
-                <p className="text-2xl" style={{ fontWeight: weight }}>
-                  Ag
-                </p>
-                <p className="mt-1 font-mono text-xs text-muted-foreground">
-                  {weight}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </Section>
-
-      <Section
-        title="Type scale"
-        description="Nine steps, each with a fixed size and line height. The specimen column renders the actual utility class."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2 text-left font-medium">Class</th>
-                    <th className="py-2 text-left font-medium">Size / LH</th>
-                    <th className="py-2 text-left font-medium">Specimen</th>
-                    <th className="py-2 text-left font-medium">Use for</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {typeScale.map((step) => (
-                    <tr key={step.className}>
-                      <td className="py-2 font-mono text-xs">
-                        {step.className}
-                      </td>
-                      <td className="py-2 font-mono text-xs text-muted-foreground">
-                        {step.px} / {step.lineHeight}
-                      </td>
-                      <td className="py-2">
-                        <span className={step.className}>Design once</span>
-                      </td>
-                      <td className="py-2 text-muted-foreground">
-                        {step.usage}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      </Section>
-
-      <Section
-        title="Heading recipes"
-        description="The same recipes used by the Typography component page. scroll-m-20 keeps anchored headings clear of sticky headers."
-      >
-        <Card>
-          <CardContent className="space-y-6 pt-6">
-            {headingRecipes.map((recipe) => (
-              <div key={recipe.label} className="space-y-1">
-                <p className="font-mono text-xs text-muted-foreground">
-                  {recipe.label} · {recipe.className}
-                </p>
-                <p className={recipe.className}>{recipe.sample}</p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </Section>
-
-      <Section
-        title="Code typography"
-        description="Inline code gets a muted chip; block code uses the CodeBlock component with Shiki highlighting and a copy button — never a raw pre."
-      >
-        <Card>
-          <CardContent className="space-y-4 pt-6">
-            <p className="text-sm">
-              Install with{" "}
-              <code className="rounded bg-muted px-1 py-0.5 font-mono text-sm">
-                npx kira-kit init
-              </code>{" "}
-              and import from{" "}
-              <code className="rounded bg-muted px-1 py-0.5 font-mono text-sm">
-                @/components/ui
-              </code>
-              .
-            </p>
-            <CodeBlock code={inlineCode} language="tsx" />
-          </CardContent>
-        </Card>
-      </Section>
-
-      <Section
-        title="Fluid type"
-        description="App UI uses the fixed scale so controls stay on the spacing ladder. Marketing and hero surfaces may use clamp() — the spacing contract explicitly sanctions it for page gutters and display type."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <CodeBlock code={fluidTypeCode} language="css" />
-          </CardContent>
-        </Card>
-      </Section>
-
-      <Section title="Do / Don't">
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="border-success/40">
-            <CardHeader>
-              <CardTitle className="text-base text-success">Do</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-                {dos.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-          <Card className="border-destructive/40">
-            <CardHeader>
-              <CardTitle className="text-base text-destructive">
-                Don&apos;t
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-                {donts.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-      </Section>
-
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
-        <p className="text-sm text-muted-foreground">
-          Live demos of every recipe, including lists and blockquotes, are on
-          the Typography component page.
-        </p>
-        <Link
-          to="/components/typography"
-          className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-        >
-          Typography demos
-          <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
-      </div>
+      <FontStackSection />
+      <TypeScaleSection />
+      <HeadingRecipesSection />
+      <CodeTypographySection />
+      <FluidTypeSection />
+      <DoDontSection />
+      <TypographyCta />
     </ComponentPage>
   );
 }

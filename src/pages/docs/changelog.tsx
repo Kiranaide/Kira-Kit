@@ -214,9 +214,13 @@ const filterTypes: { value: ChangeType | "all"; label: string }[] = [
   { value: "removed", label: "Removed" },
 ];
 
-export default function ChangelogPage() {
-  const [filter, setFilter] = useState<ChangeType | "all">("all");
-
+function ReleasesSection({
+  filter,
+  setFilter,
+}: {
+  filter: ChangeType | "all";
+  setFilter: (value: ChangeType | "all") => void;
+}) {
   const countFor = (value: ChangeType | "all") =>
     releases.reduce(
       (total, release) =>
@@ -236,119 +240,136 @@ export default function ChangelogPage() {
   });
 
   return (
+    <Section
+      title="Releases"
+      description="Filter by change type to find what matters to your integration — breaking changes and removals are the ones to read before upgrading."
+    >
+      <Tabs
+        value={filter}
+        onValueChange={(value) => {
+          const match = filterTypes.find((type) => type.value === value);
+
+          setFilter(match ? match.value : "all");
+        }}
+      >
+        <TabsList className="flex-wrap">
+          {filterTypes.map((type) => (
+            <TabsTrigger
+              key={type.value}
+              value={type.value}
+              badge={countFor(type.value)}
+            >
+              {type.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+
+      <Card>
+        <CardContent className="space-y-8 pt-6">
+          {visibleReleases.map((release) => (
+            <ChangelogEntry
+              key={release.version}
+              version={release.version}
+              date={release.date}
+              changes={release.changes}
+            />
+          ))}
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function HowWeVersionSection() {
+  return (
+    <Section
+      title="How we version"
+      description="The kit is registry-first: components are source files you own, so upgrades are deliberate diffs, not silent dependency bumps."
+    >
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              CLI: semver + Changesets
+            </CardTitle>
+            <CardDescription>
+              kira-kit releases are scoped to packages/cli and versioned with
+              Changesets. Breaking CLI changes get a major bump and a migration
+              path (kira-kit migrate).
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              Components: diff before you add
+            </CardTitle>
+            <CardDescription>
+              Use kira-kit add --diff to preview incoming changes against your
+              local edits, and kira-kit migrate to report divergence. Nothing
+              overwrites your work without asking.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Full history</CardTitle>
+            <CardDescription>
+              Every entry above traces to commits on GitHub. Per-component
+              upgrade notes live in docs/*-upgrade.md in the repository.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <a
+              href="https://github.com/Kiranaide/kira-kit-v2/commits/development"
+              target="_blank"
+              rel="noreferrer"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                "gap-2",
+              )}
+            >
+              Commit history
+              <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          </CardContent>
+        </Card>
+      </div>
+    </Section>
+  );
+}
+
+function IntroductionCta() {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
+      <p className="text-sm text-muted-foreground">
+        New to the kit? Start with the introduction.
+      </p>
+      <Link
+        to="/docs/introduction"
+        className={cn(buttonVariants({ size: "sm" }), "gap-2")}
+      >
+        Introduction
+        <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+      </Link>
+    </div>
+  );
+}
+
+export default function ChangelogPage() {
+  const [filter, setFilter] = useState<ChangeType | "all">("all");
+
+  return (
     <ComponentPage>
       <PageHeader
         title="Changelog"
         description="Notable changes to Kira Kit and the kira-kit CLI, in Keep a Changelog format. Entries are drawn from the repository's release history; the CLI is versioned with Changesets."
         badge={<Badge variant="secondary">Keep a Changelog</Badge>}
       />
-
-      <Section
-        title="Releases"
-        description="Filter by change type to find what matters to your integration — breaking changes and removals are the ones to read before upgrading."
-      >
-        <Tabs
-          value={filter}
-          onValueChange={(value) => {
-            const match = filterTypes.find((type) => type.value === value);
-
-            setFilter(match ? match.value : "all");
-          }}
-        >
-          <TabsList className="flex-wrap">
-            {filterTypes.map((type) => (
-              <TabsTrigger
-                key={type.value}
-                value={type.value}
-                badge={countFor(type.value)}
-              >
-                {type.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-
-        <Card>
-          <CardContent className="space-y-8 pt-6">
-            {visibleReleases.map((release) => (
-              <ChangelogEntry
-                key={release.version}
-                version={release.version}
-                date={release.date}
-                changes={release.changes}
-              />
-            ))}
-          </CardContent>
-        </Card>
-      </Section>
-
-      <Section
-        title="How we version"
-        description="The kit is registry-first: components are source files you own, so upgrades are deliberate diffs, not silent dependency bumps."
-      >
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">
-                CLI: semver + Changesets
-              </CardTitle>
-              <CardDescription>
-                kira-kit releases are scoped to packages/cli and versioned with
-                Changesets. Breaking CLI changes get a major bump and a
-                migration path (kira-kit migrate).
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">
-                Components: diff before you add
-              </CardTitle>
-              <CardDescription>
-                Use kira-kit add --diff to preview incoming changes against your
-                local edits, and kira-kit migrate to report divergence. Nothing
-                overwrites your work without asking.
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Full history</CardTitle>
-              <CardDescription>
-                Every entry above traces to commits on GitHub. Per-component
-                upgrade notes live in docs/*-upgrade.md in the repository.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <a
-                href="https://github.com/Kiranaide/kira-kit-v2/commits/development"
-                target="_blank"
-                rel="noreferrer"
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "sm" }),
-                  "gap-2",
-                )}
-              >
-                Commit history
-                <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
-            </CardContent>
-          </Card>
-        </div>
-      </Section>
-
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
-        <p className="text-sm text-muted-foreground">
-          New to the kit? Start with the introduction.
-        </p>
-        <Link
-          to="/docs/introduction"
-          className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-        >
-          Introduction
-          <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
-      </div>
+      <ReleasesSection filter={filter} setFilter={setFilter} />
+      <HowWeVersionSection />
+      <IntroductionCta />
     </ComponentPage>
   );
 }
