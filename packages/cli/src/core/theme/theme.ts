@@ -13,6 +13,7 @@ import {
   type PairFailure,
 } from "./contrast";
 import type { RegistryItem } from "../../types";
+import type { RegistryItemPayload } from "../../lib/schemas";
 
 export interface ThemeDefinition {
   name: string;
@@ -51,7 +52,7 @@ export class ThemeContrastError extends Error {
 
 /**
  * Generate a complete theme: numeric OKLCH palette, contrast verification with
- * bounded auto-adjustment, APCA reporting, and a shadcn registry:theme item.
+ * bounded auto-adjustment, APCA reporting, and a registry:theme item.
  * Throws ThemeContrastError when a pair still fails after adjustment.
  */
 export function generateTheme(definition: ThemeDefinition): GeneratedTheme {
@@ -126,3 +127,15 @@ function suggestLightness(failure: PairFailure): number {
 }
 
 export { BASE_COLORS, BASE_COLOR_NAMES };
+
+/** Convert a generated theme item into an installable payload (no files). */
+export function themePayload(item: RegistryItem): RegistryItemPayload {
+  return {
+    name: item.name,
+    type: "registry:theme",
+    title: item.title,
+    description: item.description,
+    cssVars: item.cssVars,
+    files: [],
+  };
+}

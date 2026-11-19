@@ -5,7 +5,7 @@ Composable metric card with visual and status variants, locale-aware value forma
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/stats-card
+kira-kit add @kira-kit/stats-card
 ```
 
 ## Dependencies
@@ -19,6 +19,7 @@ npx shadcn add @kira-kit/stats-card
 
 ## Registry dependencies
 
+- @kira-kit/component-defaults
 - @kira-kit/drawer
 - @kira-kit/use-reduced-motion
 

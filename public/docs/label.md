@@ -5,7 +5,7 @@ A form label family with required/optional markers, hints, errors, icons, toolti
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/label
+kira-kit add @kira-kit/label
 ```
 
 ## Dependencies

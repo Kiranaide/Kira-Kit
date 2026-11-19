@@ -1853,7 +1853,7 @@ const USE_CODE_BLOCK_SETUP_DEFAULTS_1 = {
   height: "auto",
   minimap: false,
   fontSize: 14,
-  fontFamily: "Geist Mono, ui-monospace, monospace",
+  fontFamily: "var(--font-mono, ui-monospace, monospace)",
   wordWrap: "on",
   editable: false,
   editor: "monaco",

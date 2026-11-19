@@ -5,7 +5,7 @@ Base UI checkbox supports indeterminate state, multiple sizes, variants and colo
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/checkbox
+kira-kit add @kira-kit/checkbox
 ```
 
 ## Dependencies

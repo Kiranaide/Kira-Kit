@@ -5,12 +5,11 @@ A deep magenta against cool zinc that brings editorial confidence to community p
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/theme-magenta-riot
+kira-kit add @kira-kit/theme-magenta-riot
 ```
 
 ## Usage
 
 ```tsx
-import { ThemeMagentaRiot } from "@/components/ui/theme-magenta-riot";
-/* Applied as CSS variables by shadcn. */
+/* Applied as CSS variables by kira-kit. */
 ```

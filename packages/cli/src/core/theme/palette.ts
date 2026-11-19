@@ -28,7 +28,7 @@ export const BASE_COLORS: Record<BaseColorName, OklchColor> = {
 // member and no extras, so Object.keys returns the union members.
 export const BASE_COLOR_NAMES = Object.keys(BASE_COLORS) as BaseColorName[];
 
-/** Open token map: every shadcn semantic token name → its OKLCH color. */
+/** Open token map: every semantic token name → its OKLCH color. */
 export interface TokenMap {
   [token: string]: OklchColor;
 }

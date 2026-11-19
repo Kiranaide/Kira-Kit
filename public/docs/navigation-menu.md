@@ -5,7 +5,7 @@ Website navigation with native links, shared popup/viewport composition, active-
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/navigation-menu
+kira-kit add @kira-kit/navigation-menu
 ```
 
 ## Dependencies

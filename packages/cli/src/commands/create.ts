@@ -160,7 +160,7 @@ function printNextSteps(targetDir: string, installed: boolean): void {
   if (!installed)
     console.log("  npm install   # or bun install / pnpm install");
   console.log(
-    "  kira-kit init --preset terracotta   # apply a theme (optional)",
+    "  kira-kit init --preset ember-press   # apply a theme (optional)",
   );
   console.log(
     "  kira-kit add button                 # add your first component",

@@ -8,9 +8,11 @@ import { ComponentPage, PageHeader, Section } from "@/components/docs";
 
 const fontStackCode = `/* index.css */
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 
 @theme inline {
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
 }`;
 
 const typeScale = [
@@ -147,24 +149,44 @@ function FontStackSection() {
   return (
     <Section
       title="Font stack"
-      description="Geist Variable is self-hosted through @fontsource-variable/geist — one variable file covers weights 100–900 with no layout shift from font swapping."
+      description="Geist Variable and Geist Mono Variable are self-hosted through @fontsource-variable — one variable file per family covers every weight with no layout shift from font swapping. Swap either with kira-kit init --font / --font-mono (see Theming)."
     >
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
-          <CardContent className="flex items-center gap-6 pt-6">
-            <span
-              className="text-6xl font-semibold tracking-tight"
-              aria-hidden="true"
-            >
-              Aa
-            </span>
-            <div className="space-y-1">
-              <p className="text-2xl font-medium">Geist Variable</p>
-              <p className="text-sm text-muted-foreground">
-                ABCDEFGHIJKLMNOPQRSTUVWXYZ
-                <br />
-                abcdefghijklmnopqrstuvwxyz 0123456789
-              </p>
+          <CardContent className="space-y-6 pt-6">
+            <div className="flex items-center gap-6">
+              <span
+                className="text-6xl font-semibold tracking-tight"
+                aria-hidden="true"
+              >
+                Aa
+              </span>
+              <div className="space-y-1">
+                <p className="text-2xl font-medium">Geist Variable</p>
+                <p className="text-sm text-muted-foreground">
+                  ABCDEFGHIJKLMNOPQRSTUVWXYZ
+                  <br />
+                  abcdefghijklmnopqrstuvwxyz 0123456789
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-6 border-t pt-6">
+              <span
+                className="font-mono text-6xl font-semibold"
+                aria-hidden="true"
+              >
+                {"{ }"}
+              </span>
+              <div className="space-y-1">
+                <p className="font-mono text-2xl font-medium">
+                  Geist Mono Variable
+                </p>
+                <p className="font-mono text-sm text-muted-foreground">
+                  0O 1l iI =&gt; {"!="} {"<="}
+                  <br />
+                  const answer = 42;
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -353,7 +375,7 @@ export default function TypesetPage() {
     <ComponentPage>
       <PageHeader
         title="Typeset"
-        description="The kit's typography is a fixed Tailwind scale set in Geist Variable, with heading recipes shared across every docs page. This page is the reference — every specimen below renders the real classes."
+        description="The kit's typography is a fixed Tailwind scale set in Geist Variable, with Geist Mono Variable for code and heading recipes shared across every docs page. This page is the reference — every specimen below renders the real classes."
       />
       <FontStackSection />
       <TypeScaleSection />

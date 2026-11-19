@@ -36,6 +36,60 @@ interface Release {
 
 const releases: Release[] = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "breaking",
+        title: "Native install engine — no external CLI",
+        description:
+          "init, add, build, list, view, search, theme, and migrate now run on a self-contained registry client. init installs the kit's own base CSS and default theme with no base-theme picker; add --all installs components, hooks, and lib modules (themes and styles are excluded). React 19.2+ is required and enforced by init.",
+      },
+      {
+        type: "added",
+        title: "Lib support modules ship with components",
+        description:
+          "The src/lib support modules are now registry:lib items resolved transitively, so color-picker and every other component install complete. A new lib-resolution check prevents missing-module regressions.",
+      },
+      {
+        type: "added",
+        title: "Published JSON schemas",
+        description:
+          "registry, registry-item, and components schemas are emitted to /schema/*.json and referenced by built payloads and new configs.",
+      },
+      {
+        type: "added",
+        title: "Font options for sans and mono",
+        description:
+          "init and theme accept --font (geist, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans) and --font-mono (geist-mono, jetbrains-mono, fira-code). Fonts apply to existing projects without --force — only the @fontsource imports and font tokens change, never colors. The theming page previews every pairing live, and the preview persists across pages and reloads.",
+      },
+      {
+        type: "added",
+        title: "Icon library switch: Tabler or Lucide",
+        description:
+          '--icon lucide rewrites icon imports at install time, keeping local names aliased so usages keep their names. Filled Tabler icons get fill="currentColor" injected and Tabler stroke-width props become strokeWidth; a few names map to approximate Lucide equivalents. Switch an existing project with kira-kit theme --icon lucide --apply, then kira-kit add --all --overwrite.',
+      },
+      {
+        type: "removed",
+        title: "Legacy public/r/index.json",
+        description:
+          "The stale legacy index is pruned; registry.json is the single registry index.",
+      },
+      {
+        type: "fixed",
+        title: "Code blocks follow the mono font token",
+        description:
+          "A --font-mono token and @fontsource-variable/geist-mono import ship with the base CSS; CodeBlock's default fontFamily is now var(--font-mono, ui-monospace, monospace) instead of a hardcoded family that was never installed.",
+      },
+      {
+        type: "fixed",
+        title: "Theming picker reflects the applied preset",
+        description:
+          "The theming page's preset grid, live preview, and Applied state now initialize from the site-wide preset and follow the sidebar switcher, instead of always highlighting a hardcoded preset that contradicted the active theme.",
+      },
+    ],
+  },
+  {
     version: "0.4.0",
     date: "November 19, 2026",
     changes: [
@@ -137,9 +191,9 @@ const releases: Release[] = [
       },
       {
         type: "added",
-        title: "CLI rewrite on a pinned shadcn core",
+        title: "CLI rewrite on a pinned registry core",
         description:
-          "build/check/add/init delegate to shadcn 4.22.1; new create, migrate, search, theme, and view commands; four embedded project templates; vitest coverage.",
+          "build/check/add/init delegate to a pinned registry CLI; new create, migrate, search, theme, and view commands; four embedded project templates; vitest coverage.",
       },
       {
         type: "added",
@@ -155,7 +209,7 @@ const releases: Release[] = [
       },
       {
         type: "changed",
-        title: "Registry sync: 92 shadcn-compatible items",
+        title: "Registry sync: 92 items in registries-map format",
         description:
           "Components and hooks re-manifested for the registries map format; Kira* mega-components (KiraSidebar, KiraTable, KiraToaster, KiraStepper, and more) land across the catalog.",
       },

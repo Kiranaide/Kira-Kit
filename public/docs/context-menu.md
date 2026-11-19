@@ -5,7 +5,7 @@ A Base UI context menu supporting links, checkbox and radio items, submenus, sho
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/context-menu
+kira-kit add @kira-kit/context-menu
 ```
 
 ## Dependencies
@@ -15,6 +15,8 @@ npx shadcn add @kira-kit/context-menu
 
 ## Registry dependencies
 
+- @kira-kit/component-defaults
+- @kira-kit/component-prop-guards
 - @kira-kit/dropdown-menu
 - @kira-kit/use-menu-action
 

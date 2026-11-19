@@ -5,7 +5,7 @@ Responsive horizontal or vertical whitespace with spacing-token sizes, an auto f
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/spacer
+kira-kit add @kira-kit/spacer
 ```
 
 ## Dependencies
@@ -16,6 +16,8 @@ npx shadcn add @kira-kit/spacer
 
 ## Registry dependencies
 
+- @kira-kit/component-prop-guards
+- @kira-kit/layout-responsive
 - @kira-kit/skeleton
 
 ## Usage

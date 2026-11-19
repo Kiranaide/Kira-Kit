@@ -5,7 +5,7 @@ Horizontal or vertical button groups offer connected or gapped layouts, RTL-safe
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/button-group
+kira-kit add @kira-kit/button-group
 ```
 
 ## Dependencies
@@ -20,6 +20,8 @@ npx shadcn add @kira-kit/button-group
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-defaults
+- @kira-kit/component-native-props
 - @kira-kit/separator
 - @kira-kit/use-reduced-motion
 

@@ -5,7 +5,7 @@ Compound browser camera suite for photo and video capture with permission recove
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/camera
+kira-kit add @kira-kit/camera
 ```
 
 ## Dependencies
@@ -17,6 +17,7 @@ npx shadcn add @kira-kit/camera
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/camera-lib
 - @kira-kit/dialog
 - @kira-kit/drawer
 - @kira-kit/select

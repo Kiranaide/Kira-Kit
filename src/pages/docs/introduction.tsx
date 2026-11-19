@@ -42,7 +42,7 @@ const features = [
   {
     title: "You own the code",
     description:
-      "Kira Kit is a shadcn-compatible registry, not a runtime dependency. Components are copied into your source tree, so you can read, edit, and extend every line.",
+      "Kira Kit is a source registry, not a runtime dependency. Components are copied into your source tree, so you can read, edit, and extend every line.",
     icon: <IconBox className="h-5 w-5 text-primary" aria-hidden="true" />,
   },
   {
@@ -122,8 +122,8 @@ const steps = [
   {
     title: "Add components",
     description:
-      "The pinned shadcn CLI copies components, hooks, and themes into your project and resolves their dependencies automatically.",
-    code: "npx shadcn@latest add @kira-kit/button @kira-kit/card",
+      "The kira-kit CLI copies components, hooks, and support modules into your project and resolves their dependencies automatically.",
+    code: "npx kira-kit add button card",
   },
   {
     title: "Make it yours",
@@ -168,7 +168,7 @@ function HowItWorksSection() {
   return (
     <Section
       title="How it works"
-      description="No runtime package to version-pin. The registry delivers source files through the same shadcn CLI you may already use."
+      description="No runtime package to version-pin. The registry delivers source files through the self-contained kira-kit CLI."
     >
       <div className="grid gap-4 md:grid-cols-3">
         {steps.map((step, index) => (
@@ -316,7 +316,7 @@ export default function IntroductionPage() {
     <ComponentPage>
       <PageHeader
         title="Introduction"
-        description="Kira Kit is an enterprise React UI kit built on Base UI and Tailwind CSS v4, distributed as a shadcn-compatible registry. Accessible primitives, a disciplined spacing system, and contrast-verified theming — with source code you own."
+        description="Kira Kit is an enterprise React UI kit built on Base UI and Tailwind CSS v4, distributed as a source registry. Accessible primitives, a disciplined spacing system, and contrast-verified theming — with source code you own."
         badge={<Badge variant="secondary">Registry-first</Badge>}
       />
 

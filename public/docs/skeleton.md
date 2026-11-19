@@ -5,7 +5,7 @@ Skeleton bones and text, card, list, table, avatar, image, and button presets wi
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/skeleton
+kira-kit add @kira-kit/skeleton
 ```
 
 ## Dependencies
@@ -15,6 +15,8 @@ npx shadcn add @kira-kit/skeleton
 
 ## Registry dependencies
 
+- @kira-kit/component-defaults
+- @kira-kit/component-prop-guards
 - @kira-kit/use-reduced-motion
 
 ## Usage

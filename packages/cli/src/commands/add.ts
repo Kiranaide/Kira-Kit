@@ -1,62 +1,41 @@
-import { runShadcnChecked } from "../lib/shadcn";
+import { readFileSync } from "node:fs";
+import { relative } from "node:path";
+import { createTwoFilesPatch } from "diff";
+import pc from "picocolors";
+import { fetchIndex } from "../core/install/client";
+import { installItems, planInstall } from "../core/install/engine";
+import type { PlannedWrite } from "../core/install/write";
+import { readConfig } from "../lib/config";
 import { toItemAddress } from "../lib/namespace";
 import { ValidationError, RegistryError } from "../lib/errors";
-import { getRegistryUrl } from "../lib/config";
+import { success } from "../lib/logger";
 import type { AddOptions } from "../types";
 
-/** Entry of the registry index (registry.json) — only the name is needed. */
-interface RegistryIndexEntry {
-  name: string;
-}
+/** --all installs components, hooks, and lib modules — not themes/styles. */
+const INSTALLABLE_TYPES = new Set([
+  "registry:ui",
+  "registry:hook",
+  "registry:lib",
+]);
 
-/** Shape of the registry index payload fetched from the registry URL. */
-interface RegistryIndex {
-  items?: RegistryIndexEntry[];
-}
+async function allItemAddresses(cwd: string): Promise<string[]> {
+  const entries = await fetchIndex({
+    cwd,
+    registries: readConfig(cwd)?.registries,
+  });
 
-async function fetchAllItemNames(cwd: string): Promise<string[]> {
-  const registryUrl = getRegistryUrl(cwd);
-  let response: Response;
+  const names = entries
+    .filter((entry) => entry.type && INSTALLABLE_TYPES.has(entry.type))
+    .map((entry) => entry.name);
 
-  try {
-    response = await fetch(`${registryUrl}/registry.json`);
-  } catch {
+  if (names.length === 0) {
     throw new RegistryError(
-      `Could not reach the Kira Kit registry at ${registryUrl}`,
-      "Check your internet connection and retry, or run 'kira-kit list' to see what's cached.",
+      "The registry index contains no installable items.",
+      "Check the '@kira-kit' registry URL in components.json.",
     );
   }
 
-  if (!response.ok) {
-    throw new RegistryError(
-      `Registry index request failed (HTTP ${response.status}) at ${registryUrl}/registry.json`,
-      "Verify your components.json '@kira-kit' registry URL, then retry.",
-    );
-  }
-
-  // SAFETY: registry.json is served by the Kira Kit registry, whose items
-  // always carry a kebab-case name; a missing items array yields an empty list.
-  const data = (await response.json()) as RegistryIndex;
-
-  return (data.items ?? []).map((item) => item.name);
-}
-
-function shadcnFlags(options: AddOptions): string[] {
-  const args: string[] = [];
-
-  if (options.yes) args.push("--yes");
-
-  if (options.overwrite) args.push("--overwrite");
-
-  if (options.path) args.push("--path", options.path);
-
-  if (options.dryRun) args.push("--dry-run");
-
-  if (options.diff) args.push("--diff");
-
-  if (options.view) args.push("--view");
-
-  return args;
+  return names.map(toItemAddress);
 }
 
 async function resolveItems(
@@ -83,25 +62,70 @@ async function resolveItems(
     );
   }
 
-  const names = await fetchAllItemNames(cwd);
+  return allItemAddresses(cwd);
+}
 
-  if (names.length === 0) {
-    throw new RegistryError(
-      "The registry index contains no items.",
-      "Check the '@kira-kit' registry URL in components.json.",
-    );
+function printView(planned: PlannedWrite[], cwd: string): void {
+  for (const write of planned) {
+    console.log(pc.bold(`\n--- ${relative(cwd, write.target)} ---`));
+    console.log(write.content);
+  }
+}
+
+function printDiff(planned: PlannedWrite[], cwd: string): void {
+  for (const write of planned) {
+    if (write.identical) continue;
+
+    const before = write.exists ? readFileSync(write.target, "utf-8") : "";
+
+    const name = relative(cwd, write.target);
+    const patch = createTwoFilesPatch(name, name, before, write.content);
+
+    console.log(patch);
+  }
+}
+
+async function preview(
+  addresses: string[],
+  options: AddOptions,
+  cwd: string,
+): Promise<number> {
+  const { planned } = await planInstall(
+    { addresses },
+    { cwd, path: options.path },
+  );
+
+  if (options.view) {
+    printView(planned, cwd);
+  } else {
+    printDiff(planned, cwd);
   }
 
-  // One shadcn invocation for everything — no per-item prompts.
-  return names.map(toItemAddress);
+  return 0;
 }
 
 export async function addComponents(options: AddOptions): Promise<number> {
   const cwd = options.cwd || process.cwd();
-  const items = await resolveItems(options, cwd);
+  const addresses = await resolveItems(options, cwd);
 
-  return runShadcnChecked(
-    ["add", ...shadcnFlags(options), "--cwd", cwd, ...items],
-    cwd,
+  if (options.view || options.diff) {
+    return preview(addresses, options, cwd);
+  }
+
+  const result = await installItems(
+    { addresses },
+    {
+      cwd,
+      yes: options.yes,
+      overwrite: options.overwrite,
+      dryRun: options.dryRun,
+      path: options.path,
+    },
   );
+
+  success(
+    `Added ${result.items.length} item(s): ${result.written.length} file(s) written, ${result.skipped.length} skipped.`,
+  );
+
+  return 0;
 }

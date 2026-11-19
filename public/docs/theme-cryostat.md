@@ -5,12 +5,11 @@ A chilled petrol-cyan theme for data platforms that need the visual discipline o
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/theme-cryostat
+kira-kit add @kira-kit/theme-cryostat
 ```
 
 ## Usage
 
 ```tsx
-import { ThemeCryostat } from "@/components/ui/theme-cryostat";
-/* Applied as CSS variables by shadcn. */
+/* Applied as CSS variables by kira-kit. */
 ```

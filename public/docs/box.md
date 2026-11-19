@@ -5,7 +5,7 @@ Polymorphic layout primitive for semantic HTML tags with responsive background, 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/box
+kira-kit add @kira-kit/box
 ```
 
 ## Dependencies

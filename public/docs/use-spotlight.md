@@ -5,7 +5,7 @@ Reads spotlight state from SpotlightProvider and returns open, query, setQuery, 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-spotlight
+kira-kit add @kira-kit/use-spotlight
 ```
 
 ## Usage

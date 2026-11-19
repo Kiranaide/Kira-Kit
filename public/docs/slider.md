@@ -5,7 +5,7 @@ Single and range sliders with horizontal or vertical orientation, semantic and g
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/slider
+kira-kit add @kira-kit/slider
 ```
 
 ## Dependencies

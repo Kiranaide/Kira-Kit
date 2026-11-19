@@ -5,7 +5,7 @@ Runs dropdown or menubar actions as single-flight, abortable operations, passing
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-menu-action
+kira-kit add @kira-kit/use-menu-action
 ```
 
 ## Usage

@@ -38,7 +38,8 @@
           "path": "use-camera.ts",
           "type": "registry:hook"
         }
-      ]
+      ],
+      "registryDependencies": ["@kira-kit/camera-lib"]
     },
     {
       "name": "use-color-picker",
@@ -52,7 +53,8 @@
           "path": "use-color-picker.ts",
           "type": "registry:hook"
         }
-      ]
+      ],
+      "registryDependencies": ["@kira-kit/color-picker-lib"]
     },
     {
       "name": "use-focus-manager",

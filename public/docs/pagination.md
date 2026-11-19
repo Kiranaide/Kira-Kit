@@ -5,7 +5,7 @@ Accessible numbered and cursor pagination with five visual variants, localized f
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/pagination
+kira-kit add @kira-kit/pagination
 ```
 
 ## Dependencies

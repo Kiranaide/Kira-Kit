@@ -5,12 +5,11 @@ A burnished terracotta theme for editorial platforms, independent publications, 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/theme-ember-press
+kira-kit add @kira-kit/theme-ember-press
 ```
 
 ## Usage
 
 ```tsx
-import { ThemeEmberPress } from "@/components/ui/theme-ember-press";
-/* Applied as CSS variables by shadcn. */
+/* Applied as CSS variables by kira-kit. */
 ```

@@ -5,7 +5,7 @@ Base UI button with extensive semantic variants, icon sizes, full-width layout, 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/button
+kira-kit add @kira-kit/button
 ```
 
 ## Dependencies

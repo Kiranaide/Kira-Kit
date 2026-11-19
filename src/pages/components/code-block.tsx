@@ -675,7 +675,7 @@ const api = [
       "height / fontSize / fontFamily",
       "string | number / number / string",
       "Default renderer height capped at 480px; custom parts own their layout.",
-      "'auto' / 14 / 'Geist Mono, ui-monospace, monospace'",
+      "'auto' / 14 / 'var(--font-mono, ui-monospace, monospace)'",
     ],
     [
       "wordWrap",
@@ -909,7 +909,7 @@ export default function CodeBlockPage() {
                 type: "added",
                 title: "Composable code and file workflows",
                 description:
-                  "Stock-shaped header/actions/content and Base UI tabs, per-file drafts and clean active-file copying. Audited on Base UI 1.9.0 and October 2026 shadcn Code Block.",
+                  "Stock-shaped header/actions/content and Base UI tabs, per-file drafts and clean active-file copying. Audited on Base UI 1.9.0 and the October 2026 stock Code Block.",
               },
               {
                 type: "added",

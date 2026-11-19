@@ -343,7 +343,7 @@ export default function EmptyPage() {
                 type: "added",
                 title: "Composable Empty parts",
                 description:
-                  "EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription and EmptyContent match the stock shadcn shape with native refs and Base UI render composition. Audited against Base UI 1.9.0.",
+                  "EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription and EmptyContent match the stock registry shape with native refs and Base UI render composition. Audited against Base UI 1.9.0.",
               },
               {
                 type: "added",

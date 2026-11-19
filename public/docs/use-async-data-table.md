@@ -5,7 +5,7 @@ Coordinates server-side table pagination, sorting, column filters, and global se
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-async-data-table
+kira-kit add @kira-kit/use-async-data-table
 ```
 
 ## Dependencies

@@ -36,7 +36,7 @@ function BasicDemo() {
   return (
     <div className="flex items-center gap-4">
       <Avatar>
-        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <AvatarImage src="https://github.com/mui.png" alt="@mui" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar>
@@ -53,7 +53,7 @@ function BasicDemo() {
 const basicCode = `import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 <Avatar>
-  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+  <AvatarImage src="https://github.com/mui.png" alt="@mui" />
   <AvatarFallback>CN</AvatarFallback>
 </Avatar>`;
 
@@ -221,7 +221,7 @@ function BadgeDemo() {
   return (
     <div className="flex items-center gap-8">
       <Avatar size="lg" badge={<AvatarBadge content="5" size="sm" />}>
-        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <AvatarImage src="https://github.com/mui.png" alt="@mui" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar
@@ -264,7 +264,7 @@ function KiraAvatarDemo() {
       <KiraAvatar name="John Doe" size="lg" status="online" statusPulse />
       <KiraAvatar
         name="Jane Smith"
-        src="https://github.com/shadcn.png"
+        src="https://github.com/mui.png"
         size="lg"
         badge="3"
       />
@@ -296,7 +296,7 @@ function LoadingDemo() {
       </p>
       <div className="flex items-center gap-4">
         <Avatar size="lg">
-          <AvatarImage src="https://github.com/shadcn.png" alt="Loaded" />
+          <AvatarImage src="https://github.com/mui.png" alt="Loaded" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <Avatar size="lg">
@@ -336,7 +336,7 @@ function PresenceDemo() {
         </p>
         <div className="flex items-center gap-6">
           <Avatar size="lg" status="online" statusPulse>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarImage src="https://github.com/mui.png" alt="@mui" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Avatar size="lg" status="online" statusPulse>
@@ -417,7 +417,7 @@ function GroupDemo() {
         <p className="text-sm text-muted-foreground mb-2">Default (max 3)</p>
         <AvatarGroup max={3}>
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarImage src="https://github.com/mui.png" alt="@mui" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Avatar>
@@ -441,7 +441,7 @@ function GroupDemo() {
         </p>
         <AvatarGroup max={3} tooltips overflowNames={["Dana", "Erin"]}>
           <Avatar data-name="Cody">
-            <AvatarImage src="https://github.com/shadcn.png" alt="Cody" />
+            <AvatarImage src="https://github.com/mui.png" alt="Cody" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Avatar data-name="Vera">
@@ -498,7 +498,7 @@ function StackDemo() {
     <div className="max-w-xl">
       <AvatarStack>
         <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarImage src="https://github.com/mui.png" alt="@mui" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <Avatar>

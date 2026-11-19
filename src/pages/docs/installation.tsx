@@ -60,8 +60,9 @@ function CommandTabs({ command }: { command: string }) {
 
 const requirements = [
   {
-    title: "React 18.3+",
-    description: "Components target modern React with hooks and refs.",
+    title: "React 19.2+",
+    description:
+      "Components use useEffectEvent and modern ref APIs; init enforces this floor.",
   },
   {
     title: "Tailwind CSS v4",
@@ -96,7 +97,9 @@ const fileTreeCode = `my-app/
 │   │   ├── button.tsx
 │   │   └── card.tsx
 │   ├── hooks/               # copied hooks (use-reduced-motion, ...)
-│   └── index.css            # OKLCH theme tokens
+│   ├── lib/                 # support modules shipped with components
+│   ├── styles/              # kira-utilities.css (vendored utilities)
+│   └── index.css            # kit base CSS + OKLCH theme tokens
 └── package.json             # cn, cva, @base-ui/react, ...`;
 
 const templates = [
@@ -127,7 +130,7 @@ const troubleshooting = [
   },
   {
     value: "registry-404",
-    question: "shadcn reports it cannot fetch @kira-kit items",
+    question: "The CLI reports it cannot fetch @kira-kit items",
     answer:
       "Confirm components.json contains the @kira-kit entry pointing at https://kira-kit.vercel.app/r/{name}.json — the {name} placeholder is literal and must stay in the URL. Running kira-kit init again repairs the entry without touching your other registries.",
   },
@@ -141,7 +144,7 @@ const troubleshooting = [
     value: "existing-config",
     question: "I already have a components.json — will init overwrite it?",
     answer:
-      "No. init registers the @kira-kit namespace only if it is absent and never overwrites an existing entry. Your shadcn configuration, aliases, and other registries are preserved.",
+      "No. init registers the @kira-kit namespace only if it is absent and never overwrites an existing entry. Your existing configuration, aliases, and other registries are preserved.",
   },
   {
     value: "diverged",
@@ -177,7 +180,7 @@ function RequirementsSection() {
   return (
     <Section
       title="Requirements"
-      description="An existing shadcn project on Tailwind v4 already satisfies most of this list."
+      description="An existing React + Tailwind v4 project already satisfies most of this list."
     >
       <div className="grid gap-4 sm:grid-cols-2">
         {requirements.map((req) => (
@@ -218,11 +221,12 @@ function QuickstartSection() {
 
         <StepHeading step={2} title="Initialize your project">
           <p className="text-sm text-muted-foreground">
-            In an existing project, init delegates base setup to the pinned
-            shadcn CLI and registers the{" "}
-            <span className="font-mono text-xs">@kira-kit</span> namespace. Add{" "}
+            In an existing project, init writes components.json with the{" "}
+            <span className="font-mono text-xs">@kira-kit</span> namespace,
+            installs the kit&apos;s base CSS and default theme, and adds the
+            base dependencies. Add{" "}
             <span className="font-mono text-xs">--preset phase-line</span> to
-            apply a theme in the same step — see{" "}
+            apply a curated theme in the same step — see{" "}
             <Link
               to="/docs/theming"
               className="font-medium text-primary underline underline-offset-4"
@@ -236,15 +240,15 @@ function QuickstartSection() {
 
         <StepHeading step={3} title="Add your first component">
           <p className="text-sm text-muted-foreground">
-            Either command works — kira-kit add delegates to the same pinned
-            shadcn CLI and resolves transitive registry dependencies for you.
+            kira-kit add resolves transitive registry dependencies and installs
+            missing npm packages with your detected package manager.
           </p>
-          <CommandTabs command="shadcn@latest add @kira-kit/button" />
+          <CommandTabs command="kira-kit add button" />
           <CodeBlock
             code="npx kira-kit add button card dialog"
             language="bash"
             copyFormat="shell"
-            filename="or use the kira-kit CLI directly"
+            filename="or add several at once"
           />
         </StepHeading>
 
@@ -277,7 +281,7 @@ function RegistryConfigSection() {
   return (
     <Section
       title="Registry configuration"
-      description="This is what init writes. The {name} placeholder is part of the shadcn registries format — keep it literal."
+      description="This is what init writes. The {name} placeholder is part of the registries format — keep it literal."
     >
       <Card>
         <CardHeader>
@@ -303,7 +307,7 @@ function FileTreeSection() {
   return (
     <Section
       title="What lands in your project"
-      description="Registry items are source files, not a runtime package. Dependencies such as cn, class-variance-authority, and @base-ui/react are added to package.json by shadcn."
+      description="Registry items are source files, not a runtime package. Dependencies such as cn, class-variance-authority, and @base-ui/react are added to package.json by the CLI."
     >
       <Card>
         <CardContent className="pt-6">

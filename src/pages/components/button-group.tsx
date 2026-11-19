@@ -1418,7 +1418,7 @@ const buttonGroupPageChangelogEntries = [
         type: "added",
         title: "ButtonGroupSeparator and ButtonGroupText",
         description:
-          "shadcn-parity parts: a Separator wrapper for visual seams between buttons, and a text chunk for group labels. Connected-group rounding is now CSS sibling selectors with logical properties (RTL-safe) instead of cloneElement position classes. Inputs inside a group stretch via [&>input]:flex-1.",
+          "Stock-parity parts: a Separator wrapper for visual seams between buttons, and a text chunk for group labels. Connected-group rounding is now CSS sibling selectors with logical properties (RTL-safe) instead of cloneElement position classes. Inputs inside a group stretch via [&>input]:flex-1.",
       },
       {
         type: "changed",

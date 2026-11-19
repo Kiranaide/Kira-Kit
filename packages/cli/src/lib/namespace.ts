@@ -7,6 +7,7 @@ export function toItemAddress(name: string): string {
     name.startsWith("./") ||
     name.startsWith("../") ||
     name.startsWith("/") ||
+    /^[a-zA-Z]:[\\/]/.test(name) ||
     name === "." ||
     name === "..";
 

@@ -1383,7 +1383,7 @@ const checkboxPageChangelogEntries = [
         type: "changed",
         title: "WCAG 2.5.8 hit area",
         description:
-          "The 16/20px boxes now get a 24px+ pointer target via an expanded ::after hit area (shadcn base-nova pattern).",
+          "The 16/20px boxes now get a 24px+ pointer target via an expanded ::after hit area (stock registry pattern).",
       },
       {
         type: "changed",

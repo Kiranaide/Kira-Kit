@@ -1,6 +1,6 @@
 {
-  "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "base-nova",
+  "$schema": "https://kira-kit.vercel.app/schema/components.json",
+  "style": "kira",
   "rsc": true,
   "tsx": true,
   "tailwind": {

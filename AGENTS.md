@@ -1,6 +1,6 @@
 # Kira Kit V2 - LLM Agent Context
 
-> Enterprise UI Kit built on Base UI and shadcn patterns.
+> Enterprise UI Kit built on Base UI primitives, distributed as a source registry.
 
 **Package Manager:** `bun`
 
@@ -13,7 +13,7 @@ bun run lint && tsc -b        # Full check
 ```
 
 The registry itself is built by the CLI: `bun run registry:build` runs `kira-kit build`
-(checks → preset themes → shadcn validate/build → docs). The CLI lives in
+(checks → preset themes → native validate/build → docs). The CLI lives in
 `packages/cli` (Node 22+ ESM, own node_modules); run its tests with
 `cd packages/cli && bun run test`.
 
@@ -64,7 +64,7 @@ export { variants };
 
 - Use `@base-ui/react` primitives (NOT Radix)
 - Import `cn` from the `cn` package (NOT clsx/tailwind-merge/@/lib/utils in components)
-- Use `tailwind-animate` or `gsap` for animations (NOT Framer Motion)
+- Use `tw-animate-css` or `gsap` for animations (NOT Framer Motion)
 - Use `data-slot` on root elements
 - Use `bun` runtime for this repo (NOT npm/yarn); the published CLI targets Node 22+
 - Export both component and variants
@@ -73,7 +73,7 @@ export { variants };
 
 | Package                    | Purpose        |
 | -------------------------- | -------------- |
-| `react`                    | React 18.3     |
+| `react`                    | React 19.2+    |
 | `@base-ui/react`           | Primitives     |
 | `tailwindcss` v4           | CSS            |
 | `@tanstack/react-form`     | Forms          |
@@ -84,5 +84,5 @@ export { variants };
 | `zod`                      | Validation     |
 | `cn`                       | Class merging  |
 | `class-variance-authority` | Variants       |
-| `tailwind-animate`         | Animations     |
+| `tw-animate-css`           | Animations     |
 | `gsap` or `@gsap/react`    | Animations     |

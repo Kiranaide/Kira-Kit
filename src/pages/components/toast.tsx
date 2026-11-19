@@ -1190,7 +1190,7 @@ const toastPageChangelogEntries = [
         type: "breaking",
         title: "Bottom-right collapsed stack",
         description:
-          "The viewport moves from a flat top-right column to a bottom-right collapsed stack (shadcn/Base UI 1.9 parity): older toasts peek behind the frontmost, the stack fans out on hover with paused timers, and z-order is index-driven. Apps relying on top-right placement need a code change.",
+          "The viewport moves from a flat top-right column to a bottom-right collapsed stack (Base UI 1.9 parity): older toasts peek behind the frontmost, the stack fans out on hover with paused timers, and z-order is index-driven. Apps relying on top-right placement need a code change.",
       },
       {
         type: "breaking",

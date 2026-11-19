@@ -5,7 +5,7 @@ Compound card with header, title, description, action, content, footer, and skel
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/card
+kira-kit add @kira-kit/card
 ```
 
 ## Dependencies

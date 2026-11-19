@@ -5,7 +5,7 @@ Embla carousel with horizontal and vertical axes, cards, fade, peek, zoom, and f
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/carousel
+kira-kit add @kira-kit/carousel
 ```
 
 ## Dependencies
@@ -22,6 +22,9 @@ npx shadcn add @kira-kit/carousel
 
 ## Registry dependencies
 
+- @kira-kit/component-defaults
+- @kira-kit/component-native-props
+- @kira-kit/component-prop-guards
 - @kira-kit/use-reduced-motion
 
 ## Usage

@@ -5,7 +5,7 @@ Drawer-based sheets with trigger, title, description, body, and footer compositi
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/sheet
+kira-kit add @kira-kit/sheet
 ```
 
 ## Registry dependencies

@@ -5,7 +5,7 @@ A polymorphic, centered layout wrapper with responsive max-widths including pros
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/container
+kira-kit add @kira-kit/container
 ```
 
 ## Dependencies

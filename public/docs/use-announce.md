@@ -5,7 +5,7 @@ Creates provider-free polite and assertive ARIA live regions and returns announc
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-announce
+kira-kit add @kira-kit/use-announce
 ```
 
 ## Usage

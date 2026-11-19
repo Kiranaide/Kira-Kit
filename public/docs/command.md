@@ -5,7 +5,7 @@ A cmdk command palette with three visual variants, nested action pages, breadcru
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/command
+kira-kit add @kira-kit/command
 ```
 
 ## Dependencies
@@ -19,6 +19,9 @@ npx shadcn add @kira-kit/command
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-defaults
+- @kira-kit/component-native-props
+- @kira-kit/component-prop-guards
 - @kira-kit/dialog
 - @kira-kit/kbd
 - @kira-kit/use-reduced-motion

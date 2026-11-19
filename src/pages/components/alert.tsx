@@ -974,7 +974,7 @@ const alertPageChangelogEntries = [
         type: "changed",
         title: "WCAG AA Contrast for Tone Variants",
         description:
-          "Tone variant body text now uses foreground color in light and dark; the semantic tone is carried by icon, border, and left accent. Audited against @base-ui/react 1.9.0 (stock shadcn Base UI alert has no primitive — parity unchanged).",
+          "Tone variant body text now uses foreground color in light and dark; the semantic tone is carried by icon, border, and left accent. Audited against @base-ui/react 1.9.0 (the stock Base UI alert has no primitive — parity unchanged).",
       },
       {
         type: "fixed",

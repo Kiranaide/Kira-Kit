@@ -5,7 +5,7 @@ A Base UI menubar with horizontal or vertical orientation, default/outline/soft 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/menubar
+kira-kit add @kira-kit/menubar
 ```
 
 ## Dependencies

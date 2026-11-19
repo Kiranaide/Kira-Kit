@@ -5,7 +5,7 @@ Single- or multi-select toggle group with default, outline, segment, and pills v
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/toggle-group
+kira-kit add @kira-kit/toggle-group
 ```
 
 ## Dependencies

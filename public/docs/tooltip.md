@@ -5,7 +5,7 @@ Base UI tooltip family with five color variants, three sizes, configurable delay
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/tooltip
+kira-kit add @kira-kit/tooltip
 ```
 
 ## Dependencies

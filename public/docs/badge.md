@@ -5,7 +5,7 @@ Badge covers semantic, outline, ghost, link, and soft styles with status dots, t
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/badge
+kira-kit add @kira-kit/badge
 ```
 
 ## Dependencies

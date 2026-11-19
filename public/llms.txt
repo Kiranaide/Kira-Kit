@@ -1,9 +1,9 @@
 # Kira Kit
 
-> Enterprise UI kit built on Base UI primitives, 92 components and hooks.
+> Enterprise UI kit built on Base UI primitives, 104 components and hooks.
 
-Kira Kit is a shadcn-compatible component registry. Install items with the shadcn CLI:
-`shadcn add @kira-kit/<name>`, or register the registry once with `shadcn registry add`.
+Kira Kit is a component registry. Install items with the kira-kit CLI:
+`kira-kit add @kira-kit/<name>`.
 
 Conventions:
 - Primitives: @base-ui/react (Base UI only — no Radix, no React Aria)
@@ -12,7 +12,7 @@ Conventions:
 - Slots: every component root carries data-slot
 - Variants: class-variance-authority, exported as `<name>Variants`
 - Motion: GSAP and CSS animations, always gated by useReducedMotion / gsap.matchMedia
-- Icons: @tabler/icons-react
+- Icons: @tabler/icons-react (lucide-react with --icon lucide)
 
 Items:
 - [Accordion](https://kira-kit.vercel.app/docs/accordion.md): Compound disclosure component whose data-driven KiraAccordion supports recursive nested items, searchable match highlighting, keyboard and pointer drag reordering, persistence, and URL hash deep links. Items can lazy-mount panels and provide loading skeletons, retryable errors, disabled-reason tooltips, asynchronous open handlers, and expand/collapse-all controls.
@@ -98,6 +98,17 @@ Items:
 - [usePressBounce](https://kira-kit.vercel.app/docs/use-press-bounce.md): Accepts an element ref and enabled flag and returns a callback that runs an interruptible GSAP press animation scaling the element to 0.95 for 75ms before rebounding. Use it from press handlers for subtle button feedback; it does nothing when disabled or when reduced motion is preferred.
 - [useReducedMotion](https://kira-kit.vercel.app/docs/use-reduced-motion.md): Returns a live boolean for the user's prefers-reduced-motion: reduce media query and updates when the operating-system setting changes. Use it to gate JavaScript-driven animation, smooth scrolling, and timers; it returns false during SSR and hydration, with prefersReducedMotion also available for non-React reads.
 - [useSpotlight](https://kira-kit.vercel.app/docs/use-spotlight.md): Reads spotlight state from SpotlightProvider and returns open, query, setQuery, and openSpotlight, closeSpotlight, and toggleSpotlight controls. Use it inside command-palette interfaces whose provider supplies a global Cmd+K/Ctrl+K-style shortcut with customizable shortcut and disableShortcut options.
+- [Camera Support](https://kira-kit.vercel.app/docs/camera-lib.md): Camera capture types, browser permission constants, and scan-overlay guide presets shared by the camera component and hook.
+- [Code Presentation](https://kira-kit.vercel.app/docs/code-presentation.md): Shiki highlighting and Prettier formatting pipeline that powers code block rendering and copy-ready output.
+- [Color Picker Math](https://kira-kit.vercel.app/docs/color-picker-lib.md): Color parsing, format conversion, and accessible-contrast math powering the color picker component and hook.
+- [Component Defaults](https://kira-kit.vercel.app/docs/component-defaults.md): Resolves component default props from context providers and explicit overrides across the kit.
+- [Component Item Keys](https://kira-kit.vercel.app/docs/component-item-keys.md): Stable key derivation for list-based components such as alert dialog, field, kanban, and split view.
+- [Component Native Props](https://kira-kit.vercel.app/docs/component-native-props.md): Filters custom component props out of native element prop spreads so DOM attributes stay clean.
+- [Component Prop Guards](https://kira-kit.vercel.app/docs/component-prop-guards.md): Type guards for callback and event props shared across components to keep prop forwarding type-safe.
+- [Component Refs](https://kira-kit.vercel.app/docs/component-refs.md): Merges multiple refs into a single callback ref for composed components such as code block and color picker.
+- [Data Table Helpers](https://kira-kit.vercel.app/docs/data-table-helpers.md): Sorting, filtering, and sample-data helpers used by the data table documentation demos.
+- [Responsive Layout](https://kira-kit.vercel.app/docs/layout-responsive.md): Responsive class composition for layout primitives like stack and spacer, driven by the kit CSS safelists.
+- [Kira Default](https://kira-kit.vercel.app/docs/theme-default.md): The kit's own docs-app theme: a pink primary on neutral surfaces with a compact 0.45rem radius.
 - [Ember Press](https://kira-kit.vercel.app/docs/theme-ember-press.md): A burnished terracotta theme for editorial platforms, independent publications, and content-rich products with a confident point of view.
 - [Oxblood Atelier](https://kira-kit.vercel.app/docs/theme-oxblood-atelier.md): A deep wine-red theme for luxury services, cultural institutions, and membership products that need drama in measured doses.
 - [Olive Ledger](https://kira-kit.vercel.app/docs/theme-olive-ledger.md): A cultivated olive theme for research tools, financial workspaces, and sustainability products that value credibility over corporate polish.
@@ -107,3 +118,4 @@ Items:
 - [Low Orbit](https://kira-kit.vercel.app/docs/theme-low-orbit.md): A steel-indigo instrument palette for geospatial, aviation, and infrastructure tools built around exact coordinates and layered evidence.
 - [Coral Circuit](https://kira-kit.vercel.app/docs/theme-coral-circuit.md): A hot coral accent on warm stone that makes collaborative canvases and campaign workspaces feel quick, tactile, and optimistic.
 - [Magenta Riot](https://kira-kit.vercel.app/docs/theme-magenta-riot.md): A deep magenta against cool zinc that brings editorial confidence to community platforms, music products, and launch dashboards.
+- [Kira Base](https://kira-kit.vercel.app/docs/kira-base.md): The kit's base stylesheet: Tailwind imports, responsive safelists, design tokens, and the vendored utility classes.

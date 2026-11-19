@@ -5,7 +5,7 @@ Base UI tabs with horizontal or vertical layouts, seven variants including slidi
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/tabs
+kira-kit add @kira-kit/tabs
 ```
 
 ## Dependencies
@@ -20,6 +20,8 @@ npx shadcn add @kira-kit/tabs
 
 ## Registry dependencies
 
+- @kira-kit/component-defaults
+- @kira-kit/component-prop-guards
 - @kira-kit/dropdown-menu
 - @kira-kit/use-announce
 - @kira-kit/use-reduced-motion

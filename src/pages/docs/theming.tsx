@@ -1,11 +1,36 @@
-import { useState, type CSSProperties } from "react";
+import {
+  Fragment,
+  useEffect,
+  useState,
+  type ComponentType,
+  type CSSProperties,
+} from "react";
 import { Link } from "@tanstack/react-router";
 import {
   IconSun,
   IconMoon,
   IconArrowRight,
   IconCheck,
+  IconChevronDown,
+  IconSearch,
+  IconStar,
+  IconCopy,
+  IconTrash,
+  IconSettings,
+  IconX,
 } from "@tabler/icons-react";
+import {
+  Check,
+  ChevronDown,
+  Search,
+  Star,
+  Copy,
+  Trash2,
+  Settings,
+  X,
+  Sun,
+  Moon,
+} from "lucide-react";
 import { cn } from "cn";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -22,6 +47,14 @@ import { Progress } from "@/components/ui/progress";
 import { ComponentPage, PageHeader, Section } from "@/components/docs";
 import themesRegistry from "@/themes/registry.json";
 import { DEFAULT_PRESET, usePreset } from "@/lib/theme-presets";
+import {
+  DEFAULT_DOC_MONO,
+  DEFAULT_DOC_SANS,
+  DOC_MONO_FONTS,
+  DOC_SANS_FONTS,
+  type DocsFont,
+} from "@/lib/fonts";
+import { applyFontPreview } from "@/lib/font-preview";
 
 interface ThemeRegistryItem {
   name: string;
@@ -294,7 +327,7 @@ function PresetPreviewCard({
       <CardContent className="space-y-4 pt-6">
         <PresetPreview item={selected} mode={mode} />
         <CodeBlock
-          code={`npx shadcn@latest add @kira-kit/${selected.name}\n# or apply it during setup:\nnpx kira-kit init --preset ${slug}`}
+          code={`npx kira-kit add @kira-kit/${selected.name}\n# or apply it during setup:\nnpx kira-kit init --preset ${slug}`}
           language="bash"
           copyFormat="shell"
           filename={`install ${selected.title}`}
@@ -411,6 +444,275 @@ function TokenAnatomySection() {
   );
 }
 
+const iconPairs: Array<{
+  label: string;
+  lucideName: string;
+  tabler: ComponentType<{ className?: string }>;
+  lucide: ComponentType<{ className?: string }>;
+}> = [
+  { label: "Check", lucideName: "Check", tabler: IconCheck, lucide: Check },
+  {
+    label: "ChevronDown",
+    lucideName: "ChevronDown",
+    tabler: IconChevronDown,
+    lucide: ChevronDown,
+  },
+  { label: "Search", lucideName: "Search", tabler: IconSearch, lucide: Search },
+  { label: "Star", lucideName: "Star", tabler: IconStar, lucide: Star },
+  { label: "Sun", lucideName: "Sun", tabler: IconSun, lucide: Sun },
+  { label: "Moon", lucideName: "Moon", tabler: IconMoon, lucide: Moon },
+  { label: "Copy", lucideName: "Copy", tabler: IconCopy, lucide: Copy },
+  { label: "Trash", lucideName: "Trash2", tabler: IconTrash, lucide: Trash2 },
+  {
+    label: "Settings",
+    lucideName: "Settings",
+    tabler: IconSettings,
+    lucide: Settings,
+  },
+  { label: "X", lucideName: "X", tabler: IconX, lucide: X },
+];
+
+function readStored(key: string, fallback: string): string {
+  try {
+    return localStorage.getItem(key) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function FontPicker({
+  fonts,
+  flag,
+  sample,
+  selected,
+  onSelect,
+}: {
+  fonts: DocsFont[];
+  flag: string;
+  sample: string;
+  selected: string;
+  onSelect: (name: string) => void;
+}) {
+  return (
+    <div className="grid gap-2 sm:grid-cols-2">
+      {fonts.map((font) => {
+        const isSelected = font.name === selected;
+
+        return (
+          <button
+            key={font.name}
+            type="button"
+            aria-pressed={isSelected}
+            onClick={() => onSelect(font.name)}
+            className={cn(
+              "cursor-pointer rounded-lg border border-border bg-card p-3 text-left transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+              isSelected && "border-primary ring-2 ring-ring",
+            )}
+          >
+            <span className="block text-xl" style={{ fontFamily: font.stack }}>
+              {sample}
+            </span>
+            <span className="mt-1 block text-xs font-medium">
+              {font.family.replace(" Variable", "")}
+            </span>
+            <span className="block font-mono text-xs text-muted-foreground">
+              {flag} {font.name}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function IconComparisonGrid({ icon }: { icon: "tabler" | "lucide" }) {
+  return (
+    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-border bg-border">
+      <div
+        className={cn(
+          "bg-card p-3 text-xs font-medium",
+          icon === "tabler" && "bg-primary/10",
+        )}
+      >
+        Tabler
+      </div>
+      <div
+        className={cn(
+          "bg-card p-3 text-xs font-medium",
+          icon === "lucide" && "bg-primary/10",
+        )}
+      >
+        Lucide
+      </div>
+      {iconPairs.map((pair) => (
+        <Fragment key={pair.label}>
+          <div
+            className={cn(
+              "flex items-center gap-3 bg-card p-3",
+              icon === "tabler" && "bg-primary/5",
+            )}
+          >
+            <pair.tabler className="h-5 w-5 shrink-0" aria-hidden="true" />
+            <span className="font-mono text-xs text-muted-foreground">
+              Icon{pair.label}
+            </span>
+          </div>
+          <div
+            className={cn(
+              "flex items-center gap-3 bg-card p-3",
+              icon === "lucide" && "bg-primary/5",
+            )}
+          >
+            <pair.lucide className="h-5 w-5 shrink-0" aria-hidden="true" />
+            <span className="font-mono text-xs text-muted-foreground">
+              {pair.lucideName}
+            </span>
+          </div>
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
+function IconLibraryCard({
+  icon,
+  onSelect,
+}: {
+  icon: "tabler" | "lucide";
+  onSelect: (icon: "tabler" | "lucide") => void;
+}) {
+  return (
+    <Card>
+      <CardHeader className="border-b">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <CardTitle>Icon library</CardTitle>
+            <CardDescription>
+              Tabler ships by default; --icon lucide rewrites imports at install
+              time. The docs site itself stays on Tabler.
+            </CardDescription>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant={icon === "tabler" ? "default" : "outline"}
+              aria-pressed={icon === "tabler"}
+              onClick={() => onSelect("tabler")}
+            >
+              Tabler
+            </Button>
+            <Button
+              size="sm"
+              variant={icon === "lucide" ? "default" : "outline"}
+              aria-pressed={icon === "lucide"}
+              onClick={() => onSelect("lucide")}
+            >
+              Lucide
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <IconComparisonGrid icon={icon} />
+        <p className="mt-4 text-sm text-muted-foreground">
+          Filled Tabler icons map to their Lucide counterpart with
+          fill=&quot;currentColor&quot; injected, and Tabler stroke-width props
+          become strokeWidth. A few names are approximate visual matches. Local
+          bindings stay aliased, so usages keep their names.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+function useFontPreview(sans: string, mono: string) {
+  useEffect(() => {
+    applyFontPreview(sans, mono);
+  }, [sans, mono]);
+}
+
+function FontsIconsSection() {
+  const [sans, setSans] = useState(() =>
+    readStored("kira-font", DEFAULT_DOC_SANS),
+  );
+
+  const [mono, setMono] = useState(() =>
+    readStored("kira-font-mono", DEFAULT_DOC_MONO),
+  );
+
+  const [icon, setIcon] = useState<"tabler" | "lucide">(() =>
+    readStored("kira-icon", "tabler") === "lucide" ? "lucide" : "tabler",
+  );
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("kira-font", sans);
+      localStorage.setItem("kira-font-mono", mono);
+      localStorage.setItem("kira-icon", icon);
+    } catch {
+      // Storage unavailable — the live preview still works.
+    }
+  }, [sans, mono, icon]);
+
+  useFontPreview(sans, mono);
+
+  const code = `kira-kit init --font ${sans} --font-mono ${mono} --icon ${icon}
+
+# change typography on an existing project:
+kira-kit theme --font ${sans} --font-mono ${mono} --apply`;
+
+  return (
+    <Section
+      title="Fonts & icons"
+      description="Pick a sans and mono font to preview them live across this docs site — the choice persists across pages and reloads. The icon library is applied at install time: the CLI rewrites component imports to lucide-react, keeping every local name aliased so usages keep their names."
+    >
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle>Sans font</CardTitle>
+            <CardDescription>
+              Drives --font-sans and the default body text.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <FontPicker
+              fonts={DOC_SANS_FONTS}
+              flag="--font"
+              sample="Aa Bb Cc"
+              selected={sans}
+              onSelect={setSans}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="border-b">
+            <CardTitle>Mono font</CardTitle>
+            <CardDescription>
+              Drives --font-mono: code blocks, kbd, inline code.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <FontPicker
+              fonts={DOC_MONO_FONTS}
+              flag="--font-mono"
+              sample="0O 1l iI"
+              selected={mono}
+              onSelect={setMono}
+            />
+          </CardContent>
+        </Card>
+      </div>
+      <IconLibraryCard icon={icon} onSelect={setIcon} />
+      <CodeBlock
+        code={code}
+        language="bash"
+        copyFormat="shell"
+        filename="typography setup"
+      />
+    </Section>
+  );
+}
+
 function RadiusLadderSection() {
   return (
     <Section
@@ -477,9 +779,26 @@ function CliCtaBanner({ selected }: { selected: ThemeRegistryItem }) {
 }
 
 export default function ThemingPage() {
-  const [selectedName, setSelectedName] = useState("theme-phase-line");
-  const [mode, setMode] = useState<"light" | "dark">("light");
   const { presetName, setPresetName } = usePreset();
+
+  const [selectedName, setSelectedName] = useState(
+    () =>
+      themeItems.find((item) => item.name === presetName)?.name ??
+      "theme-phase-line",
+  );
+
+  const [mode, setMode] = useState<"light" | "dark">("light");
+
+  // Follow the site-wide preset (sidebar switcher or "Apply to site") so the
+  // highlighted card and the Applied state reflect what's actually live.
+  const [syncedPreset, setSyncedPreset] = useState(presetName);
+
+  if (presetName !== syncedPreset) {
+    setSyncedPreset(presetName);
+    const applied = themeItems.find((item) => item.name === presetName);
+
+    if (applied) setSelectedName(applied.name);
+  }
 
   const selected =
     themeItems.find((item) => item.name === selectedName) ?? themeItems[0];
@@ -490,7 +809,7 @@ export default function ThemingPage() {
     <ComponentPage>
       <PageHeader
         title="Theming"
-        description="Kira Kit themes are plain CSS variables in OKLCH. Nine curated presets ship with the registry, and the CLI generates a contrast-verified palette from any primary color you choose."
+        description="Kira Kit themes are plain CSS variables in OKLCH. Nine curated presets ship with the registry, the CLI generates a contrast-verified palette from any primary color, and font and icon-library options round out the theme."
         badge={<Badge variant="secondary">OKLCH</Badge>}
       />
 
@@ -508,6 +827,8 @@ export default function ThemingPage() {
       <CustomThemeSection />
 
       <TokenAnatomySection />
+
+      <FontsIconsSection />
 
       <RadiusLadderSection />
 

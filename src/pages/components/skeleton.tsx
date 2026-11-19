@@ -760,7 +760,7 @@ export default function SkeletonPage() {
                 type: "changed",
                 title: "Audited against Base UI 1.9.0",
                 description:
-                  "No Skeleton primitive exists. Existing exports extend shadcn's basic placeholder model.",
+                  "No Skeleton primitive exists. Existing exports extend the stock placeholder model.",
               },
               {
                 type: "fixed",

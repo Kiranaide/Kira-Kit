@@ -5,7 +5,7 @@ Linear, circular, and segmented progress with custom ranges, locale-aware values
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/progress
+kira-kit add @kira-kit/progress
 ```
 
 ## Dependencies

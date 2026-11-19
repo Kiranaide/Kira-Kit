@@ -5,7 +5,7 @@ Polymorphic centering primitive with flex, grid, and absolute modes, inline disp
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/center
+kira-kit add @kira-kit/center
 ```
 
 ## Dependencies

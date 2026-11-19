@@ -5,12 +5,11 @@ A deep wine-red theme for luxury services, cultural institutions, and membership
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/theme-oxblood-atelier
+kira-kit add @kira-kit/theme-oxblood-atelier
 ```
 
 ## Usage
 
 ```tsx
-import { ThemeOxbloodAtelier } from "@/components/ui/theme-oxblood-atelier";
-/* Applied as CSS variables by shadcn. */
+/* Applied as CSS variables by kira-kit. */
 ```

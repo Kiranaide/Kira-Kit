@@ -5,7 +5,7 @@ ARIA tree for hierarchical file/folder data with controlled expansion, single or
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/tree-view
+kira-kit add @kira-kit/tree-view
 ```
 
 ## Dependencies

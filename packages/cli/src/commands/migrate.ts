@@ -3,14 +3,18 @@ import { join, relative, resolve } from "node:path";
 import { ValidationError } from "../lib/errors";
 import { info, success, warning } from "../lib/logger";
 import {
+  readConfig,
   readRawConfig,
   upsertKiraRegistry,
   getRegistryUrl,
   findConfigFile,
   type RawComponentsConfig,
 } from "../lib/config";
-import { runShadcn } from "../lib/shadcn";
-import { DEFAULT_REGISTRY_URL } from "../lib/schemas";
+import { fetchItem } from "../core/install/client";
+import { installNpmDeps, readConsumerPackage } from "../core/install/deps";
+import { migrateCnSource } from "../core/migrate/cn-codemod";
+import { COMPONENTS_SCHEMA_URL } from "../core/registry/build";
+import { DEFAULT_REGISTRY_URL, type RegistryItemPayload } from "../lib/schemas";
 import type { MigrateOptions } from "../types";
 
 const LEGACY_CN_SPECIFIERS = [
@@ -61,13 +65,10 @@ async function collectSourceFiles(dir: string, out: string[]): Promise<void> {
 }
 
 /**
- * Rewrite legacy `cn` imports (clsx / tailwind-merge / @/lib/cn) to the
- * single `@/lib/utils` alias. Returns the planned rewrites.
+ * Detect legacy `cn` imports (clsx / tailwind-merge / @/lib/cn) that the
+ * native codemod will rewrite to the `cn` npm package.
  */
-async function planCnRewrites(
-  sourceDir: string,
-  utilsAlias: string,
-): Promise<ImportRewrite[]> {
+async function planCnRewrites(sourceDir: string): Promise<ImportRewrite[]> {
   const files: string[] = [];
 
   await collectSourceFiles(sourceDir, files);
@@ -85,7 +86,7 @@ async function planCnRewrites(
         rewrites.push({
           file: relative(process.cwd(), file),
           from: specifier,
-          to: utilsAlias,
+          to: "cn",
         });
       }
     }
@@ -94,38 +95,9 @@ async function planCnRewrites(
   return rewrites;
 }
 
-/** A single file entry inside a fetched registry item JSON. */
-interface RegistryItemFile {
-  path: string;
-  content: string;
-}
-
-/** Subset of a registry item JSON payload that diffing reads. */
-interface FetchedRegistryItem {
-  files?: RegistryItemFile[];
-}
-
-/** Best-effort: fetch a registry item JSON. Returns null on any failure. */
-async function fetchRegistryItem(
-  url: string,
-): Promise<FetchedRegistryItem | null> {
-  try {
-    const response = await fetch(url);
-
-    if (!response.ok) return null;
-
-    // SAFETY: registry items are served by the Kira Kit registry, whose schema
-    // guarantees each files[] entry has path+content; unreadable payloads are
-    // filtered out by the null checks below.
-    return (await response.json()) as FetchedRegistryItem;
-  } catch {
-    return null;
-  }
-}
-
 async function countChangedFiles(
-  componentsDir: string,
-  item: FetchedRegistryItem,
+  cwd: string,
+  item: RegistryItemPayload,
 ): Promise<number> {
   let changed = 0;
 
@@ -136,7 +108,7 @@ async function countChangedFiles(
     )
       continue;
 
-    const localPath = resolve(componentsDir, registryFile.path);
+    const localPath = resolve(cwd, registryFile.path);
     let localContent: string;
 
     try {
@@ -155,7 +127,11 @@ async function countChangedFiles(
 async function findDivergentComponents(
   options: MigrateOptions,
 ): Promise<DivergentComponent[]> {
-  const registryUrl = getRegistryUrl(options.cwd) ?? DEFAULT_REGISTRY_URL;
+  const ctx = {
+    cwd: options.cwd,
+    registries: readConfig(options.cwd)?.registries,
+  };
+
   const componentsDir = resolve(options.cwd, "src", "components", "ui");
   let localNames: string[];
 
@@ -174,11 +150,15 @@ async function findDivergentComponents(
 
     if (name === "index" || name === "registry") continue;
 
-    const item = await fetchRegistryItem(registryUrl.replace("{name}", name));
+    let item: RegistryItemPayload;
 
-    if (!item?.files?.length) continue;
+    try {
+      item = await fetchItem(`@kira-kit/${name}`, ctx);
+    } catch {
+      continue;
+    }
 
-    const changed = await countChangedFiles(componentsDir, item);
+    const changed = await countChangedFiles(options.cwd, item);
 
     if (changed > 0) divergent.push({ name, changedFiles: changed });
   }
@@ -191,10 +171,12 @@ interface MigrationFacts {
   hadLegacyRegistryUrl: boolean;
   alreadyHasNamespace: boolean;
   legacyAlias: boolean;
+  legacySchema: boolean;
 }
 
 function configFacts(raw: RawComponentsConfig | null): MigrationFacts {
   const aliases: Record<string, string> = raw?.aliases ?? {};
+  const schema = raw?.$schema ?? "";
 
   return {
     utilsAlias:
@@ -204,6 +186,7 @@ function configFacts(raw: RawComponentsConfig | null): MigrationFacts {
     hadLegacyRegistryUrl: typeof raw?.registryUrl === "string",
     alreadyHasNamespace: "@kira-kit" in (raw?.registries ?? {}),
     legacyAlias: aliases.lib === "@/lib/cn" || aliases.lib === "@/lib",
+    legacySchema: schema.includes("ui.shadcn.com"),
   };
 }
 
@@ -235,9 +218,7 @@ async function planMigration(options: MigrateOptions): Promise<MigrationPlan> {
     sourceDirExists = false;
   }
 
-  const cnRewrites = sourceDirExists
-    ? await planCnRewrites(sourceDir, facts.utilsAlias)
-    : [];
+  const cnRewrites = sourceDirExists ? await planCnRewrites(sourceDir) : [];
 
   return { configPath, raw, facts, cnRewrites };
 }
@@ -261,13 +242,40 @@ function printDryRun(facts: MigrationFacts, cnRewrites: ImportRewrite[]): void {
     );
   }
 
-  console.log(`  run \`shadcn migrate cn\` (clsx + tailwind-merge → cn)`);
+  if (facts.legacySchema) {
+    console.log(
+      `  components.json: replace the legacy $schema/style with kira values`,
+    );
+  }
+
+  console.log(`  rewrite cn imports and calls to the \`cn\` npm package`);
 
   for (const rewrite of cnRewrites) {
     console.log(`  ${rewrite.file}: "${rewrite.from}" → "${rewrite.to}"`);
   }
 
   console.log("\nApply with `kira-kit migrate` (no --dry-run).");
+}
+
+/** Drop legacy keys from a raw config; returns whether anything changed. */
+function normalizeLegacyKeys(
+  updated: RawComponentsConfig,
+  facts: MigrationFacts,
+): boolean {
+  let changed = false;
+
+  if (facts.hadLegacyRegistryUrl) {
+    delete updated.registryUrl;
+    changed = true;
+  }
+
+  if (facts.legacySchema) {
+    updated.$schema = COMPONENTS_SCHEMA_URL;
+    updated.style = "kira";
+    changed = true;
+  }
+
+  return changed;
 }
 
 /** components.json: legacy registryUrl → registries map (idempotent). */
@@ -277,7 +285,11 @@ async function updateRegistryConfig(
   raw: RawComponentsConfig | null,
   facts: MigrationFacts,
 ): Promise<void> {
-  if (!facts.hadLegacyRegistryUrl && facts.alreadyHasNamespace) {
+  if (
+    !facts.hadLegacyRegistryUrl &&
+    facts.alreadyHasNamespace &&
+    !facts.legacySchema
+  ) {
     info("components.json already has the @kira-kit registry (nothing to do)");
 
     return;
@@ -296,14 +308,13 @@ async function updateRegistryConfig(
       : `${url.replace(/\/$/, "")}/{name}.json`,
   );
 
-  if (facts.hadLegacyRegistryUrl) {
-    // SAFETY: this is components.json, user-owned and shape-unstable; we only
-    // touch the legacy registryUrl key and stringify the rest back verbatim.
-    const updated = JSON.parse(
-      await readFile(resolve(configPath), "utf-8"),
-    ) as RawComponentsConfig;
+  // SAFETY: this is components.json, user-owned and shape-unstable; we only
+  // touch the legacy keys and stringify the rest back verbatim.
+  const updated = JSON.parse(
+    await readFile(resolve(configPath), "utf-8"),
+  ) as RawComponentsConfig;
 
-    delete updated.registryUrl;
+  if (normalizeLegacyKeys(updated, facts)) {
     await writeFile(
       resolve(configPath),
       JSON.stringify(updated, null, 2) + "\n",
@@ -314,42 +325,36 @@ async function updateRegistryConfig(
   success("components.json updated (@kira-kit registry namespace)");
 }
 
-/** clsx / tailwind-merge → cn via shadcn, then rewrite remaining legacy imports. */
+/** Native cn codemod: legacy imports/calls → the `cn` npm package. */
 async function applyCnMigration(
   options: MigrateOptions,
   cnRewrites: ImportRewrite[],
-  facts: MigrationFacts,
 ): Promise<void> {
-  if (cnRewrites.length > 0 || facts.legacyAlias) {
-    info("Running `shadcn migrate cn`…");
-
-    const { code } = await runShadcn(["migrate", "cn", "--yes"], options.cwd);
-
-    if (code !== 0) {
-      warning("`shadcn migrate cn` failed — continuing with import rewrites.");
-    }
-  }
-
   let rewritten = 0;
 
   for (const rewrite of cnRewrites) {
     const fullPath = resolve(process.cwd(), rewrite.file);
     const content = await readFile(fullPath, "utf-8");
 
-    const updated = content
-      .replaceAll(`from "${rewrite.from}"`, `from "${rewrite.to}"`)
-      .replaceAll(`from '${rewrite.from}'`, `from '${rewrite.to}'`);
-
-    await writeFile(fullPath, updated, "utf-8");
+    await writeFile(fullPath, migrateCnSource(content), "utf-8");
     rewritten += 1;
   }
 
-  if (rewritten > 0) {
-    success(
-      `Rewrote ${rewritten} file${rewritten === 1 ? "" : "s"} to import cn from ${facts.utilsAlias}`,
-    );
-  } else {
+  if (rewritten === 0) {
     info("No legacy cn imports found");
+
+    return;
+  }
+
+  success(
+    `Rewrote ${rewritten} file${rewritten === 1 ? "" : "s"} to the cn package`,
+  );
+
+  const pkg = readConsumerPackage(options.cwd);
+  const hasCn = Object.hasOwn(pkg.dependencies ?? {}, "cn");
+
+  if (!hasCn) {
+    await installNpmDeps(options.cwd, ["cn"], { yes: options.yes });
   }
 }
 
@@ -393,7 +398,7 @@ export async function migrateProject(options: MigrateOptions): Promise<number> {
   }
 
   await updateRegistryConfig(options, configPath, raw, facts);
-  await applyCnMigration(options, cnRewrites, facts);
+  await applyCnMigration(options, cnRewrites);
   await reportDivergence(options);
 
   return 0;
