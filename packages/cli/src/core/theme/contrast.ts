@@ -17,12 +17,15 @@ const TEXT_PAIRS: Array<[fg: string, bg: string]> = [
   ["sidebar-accent-foreground", "sidebar-accent"],
 ];
 
-/** UI-boundary pairs: WCAG 2.2 requires >= 3:1. Blocking. */
+/**
+ * UI-boundary pairs: WCAG 2.2 requires >= 3:1. Blocking.
+ * Only focus rings are checked here. Decorative borders (border, sidebar-border)
+ * are exempt from WCAG 1.4.11 — they aren't functional UI boundaries — so forcing
+ * them to 3:1 would crush the intentionally subtle hairlines the palette designs.
+ */
 const UI_PAIRS: Array<[fg: string, bg: string]> = [
   ["ring", "background"],
-  ["border", "background"],
   ["sidebar-ring", "sidebar"],
-  ["sidebar-border", "sidebar"],
 ];
 
 export interface PairFailure {
