@@ -52,13 +52,17 @@ const fieldKeys: (keyof typeof fieldLabels)[] = [
   "notes",
 ];
 
-function firstErrorMessage(error: unknown): string | undefined {
+type FieldErrorInput = z.input<typeof errorMessageSchema>;
+
+function firstErrorMessage(
+  error: FieldErrorInput | undefined,
+): string | undefined {
   const parsed = errorMessageSchema.safeParse(error);
 
   return parsed.success ? parsed.data : undefined;
 }
 
-function WorkspaceFormDemo() {
+function useWorkspaceForm() {
   const [created, setCreated] = useState<{
     displayName: string;
     email: string;
@@ -72,67 +76,68 @@ function WorkspaceFormDemo() {
     },
   });
 
-  if (created) {
-    return (
-      <output className="block space-y-4 rounded-lg border border-success/40 bg-success/10 p-6">
-        <p className="flex items-center gap-2 font-medium">
-          <IconCheck className="h-5 w-5 text-success" aria-hidden="true" />
-          Workspace created
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {created.displayName} · {created.email}. In a real app this is where
-          the server response lands — the form state stays the source of truth.
-        </p>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setCreated(null);
-            form.reset();
-          }}
-        >
-          Start over
-        </Button>
-      </output>
-    );
-  }
+  return { form, created, setCreated };
+}
 
+type WorkspaceForm = ReturnType<typeof useWorkspaceForm>["form"];
+
+function WorkspaceCreatedOutput({
+  created,
+  onStartOver,
+}: {
+  created: { displayName: string; email: string };
+  onStartOver: () => void;
+}) {
   return (
-    <form
-      noValidate
-      className="max-w-lg space-y-6"
-      onSubmit={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        form.handleSubmit();
-      }}
+    <output className="block space-y-4 rounded-lg border border-success/40 bg-success/10 p-6">
+      <p className="flex items-center gap-2 font-medium">
+        <IconCheck className="h-5 w-5 text-success" aria-hidden="true" />
+        Workspace created
+      </p>
+      <p className="text-sm text-muted-foreground">
+        {created.displayName} · {created.email}. In a real app this is where the
+        server response lands — the form state stays the source of truth.
+      </p>
+      <Button variant="outline" size="sm" onClick={onStartOver}>
+        Start over
+      </Button>
+    </output>
+  );
+}
+
+function WorkspaceErrorSummary({ form }: { form: WorkspaceForm }) {
+  return (
+    <form.Subscribe
+      selector={(state) => ({
+        fieldMeta: state.fieldMeta,
+        attempts: state.submissionAttempts,
+        isValid: state.isValid,
+      })}
     >
-      <form.Subscribe
-        selector={(state) => ({
-          fieldMeta: state.fieldMeta,
-          attempts: state.submissionAttempts,
-          isValid: state.isValid,
-        })}
-      >
-        {({ fieldMeta, attempts, isValid }) => {
-          const summary = fieldKeys.flatMap((key) => {
-            const message = firstErrorMessage(fieldMeta[key]?.errors?.[0]);
+      {({ fieldMeta, attempts, isValid }) => {
+        const summary = fieldKeys.flatMap((key) => {
+          const message = firstErrorMessage(fieldMeta[key]?.errors?.[0]);
 
-            return attempts > 0 && !isValid && message
-              ? [{ id: controlIds[key], label: fieldLabels[key], message }]
-              : [];
-          });
+          return attempts > 0 && !isValid && message
+            ? [{ id: controlIds[key], label: fieldLabels[key], message }]
+            : [];
+        });
 
-          return (
-            <FieldErrorSummary
-              errors={summary}
-              focusOnError
-              focusKey={attempts}
-            />
-          );
-        }}
-      </form.Subscribe>
+        return (
+          <FieldErrorSummary
+            errors={summary}
+            focusOnError
+            focusKey={attempts}
+          />
+        );
+      }}
+    </form.Subscribe>
+  );
+}
 
+function WorkspaceFields({ form }: { form: WorkspaceForm }) {
+  return (
+    <>
       <form.Field
         name="displayName"
         validators={{ ...createZodValidator(nameSchema) }}
@@ -186,6 +191,38 @@ function WorkspaceFormDemo() {
           />
         )}
       </form.Field>
+    </>
+  );
+}
+
+function WorkspaceFormDemo() {
+  const { form, created, setCreated } = useWorkspaceForm();
+
+  if (created) {
+    return (
+      <WorkspaceCreatedOutput
+        created={created}
+        onStartOver={() => {
+          setCreated(null);
+          form.reset();
+        }}
+      />
+    );
+  }
+
+  return (
+    <form
+      noValidate
+      className="max-w-lg space-y-6"
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        form.handleSubmit();
+      }}
+    >
+      <WorkspaceErrorSummary form={form} />
+
+      <WorkspaceFields form={form} />
 
       <form.Subscribe selector={(state) => state.isSubmitting}>
         {(isSubmitting) => (
@@ -309,6 +346,161 @@ const donts = [
   "Disable the submit button until the form is valid — users get no feedback about what is wrong.",
 ];
 
+function LiveExampleSection() {
+  return (
+    <Section
+      title="Live example"
+      description="A complete create-workspace form: blur validation, a focusable error summary, character counting, and a pending submit state. Everything below is the actual kit running."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <WorkspaceFormDemo />
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function AnatomySection() {
+  return (
+    <Section
+      title="Anatomy"
+      description="Three pieces: useForm owns state and submission, form.Field binds a control, and KiraField renders label, description, control, and error as one accessible unit."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <CodeBlock code={anatomyCode} language="tsx" />
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function ValidationTimingSection() {
+  return (
+    <Section
+      title="Validation timing"
+      description="When validation runs matters as much as what it checks. These four rules come from form-UX research and are the kit's defaults."
+    >
+      <div className="grid gap-4 sm:grid-cols-2">
+        {validationTiming.map((rule) => (
+          <Card key={rule.title}>
+            <CardHeader>
+              <CardTitle className="text-base">{rule.title}</CardTitle>
+              <CardDescription>{rule.description}</CardDescription>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Async validation</CardTitle>
+          <CardDescription>
+            The abort signal cancels stale requests when the user keeps typing —
+            the field page has a runnable version of this demo.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CodeBlock code={asyncCode} language="tsx" />
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function ErrorSummariesSection() {
+  return (
+    <Section
+      title="Error summaries"
+      description="Inline errors tell users what is wrong in context; a summary makes failed submits recoverable by keyboard and screen reader. Use both together."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <CodeBlock code={summaryCode} language="tsx" />
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function AccessibilityChecklistSection() {
+  return (
+    <Section
+      title="Accessibility checklist"
+      description="KiraField handles the wiring; this list is what to verify when composing custom controls with the control prop."
+    >
+      <Card>
+        <CardContent className="pt-6">
+          <ul className="space-y-2">
+            {accessibilityChecklist.map((item) => (
+              <li key={item} className="flex items-start gap-2 text-sm">
+                <IconCheck
+                  className="mt-0.5 h-4 w-4 shrink-0 text-success"
+                  aria-hidden="true"
+                />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
+    </Section>
+  );
+}
+
+function DoDontSection() {
+  return (
+    <Section title="Do / Don't">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="border-success/40">
+          <CardHeader>
+            <CardTitle className="text-base text-success">Do</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+              {dos.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+        <Card className="border-destructive/40">
+          <CardHeader>
+            <CardTitle className="text-base text-destructive">
+              Don&apos;t
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
+              {donts.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+    </Section>
+  );
+}
+
+function FieldReferenceBanner() {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
+      <p className="text-sm text-muted-foreground">
+        Every field primitive — FieldSet, FieldRow, custom controls, status
+        icons — is documented on the Field component page.
+      </p>
+      <Link
+        to="/components/field"
+        className={cn(buttonVariants({ size: "sm" }), "gap-2")}
+      >
+        Field reference
+        <IconArrowRight className="h-4 w-4" aria-hidden="true" />
+      </Link>
+    </div>
+  );
+}
+
 export default function FormPage() {
   return (
     <ComponentPage>
@@ -322,132 +514,19 @@ export default function FormPage() {
         }
       />
 
-      <Section
-        title="Live example"
-        description="A complete create-workspace form: blur validation, a focusable error summary, character counting, and a pending submit state. Everything below is the actual kit running."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <WorkspaceFormDemo />
-          </CardContent>
-        </Card>
-      </Section>
+      <LiveExampleSection />
 
-      <Section
-        title="Anatomy"
-        description="Three pieces: useForm owns state and submission, form.Field binds a control, and KiraField renders label, description, control, and error as one accessible unit."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <CodeBlock code={anatomyCode} language="tsx" />
-          </CardContent>
-        </Card>
-      </Section>
+      <AnatomySection />
 
-      <Section
-        title="Validation timing"
-        description="When validation runs matters as much as what it checks. These four rules come from form-UX research and are the kit's defaults."
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          {validationTiming.map((rule) => (
-            <Card key={rule.title}>
-              <CardHeader>
-                <CardTitle className="text-base">{rule.title}</CardTitle>
-                <CardDescription>{rule.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Async validation</CardTitle>
-            <CardDescription>
-              The abort signal cancels stale requests when the user keeps typing
-              — the field page has a runnable version of this demo.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <CodeBlock code={asyncCode} language="tsx" />
-          </CardContent>
-        </Card>
-      </Section>
+      <ValidationTimingSection />
 
-      <Section
-        title="Error summaries"
-        description="Inline errors tell users what is wrong in context; a summary makes failed submits recoverable by keyboard and screen reader. Use both together."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <CodeBlock code={summaryCode} language="tsx" />
-          </CardContent>
-        </Card>
-      </Section>
+      <ErrorSummariesSection />
 
-      <Section
-        title="Accessibility checklist"
-        description="KiraField handles the wiring; this list is what to verify when composing custom controls with the control prop."
-      >
-        <Card>
-          <CardContent className="pt-6">
-            <ul className="space-y-2">
-              {accessibilityChecklist.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm">
-                  <IconCheck
-                    className="mt-0.5 h-4 w-4 shrink-0 text-success"
-                    aria-hidden="true"
-                  />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </Section>
+      <AccessibilityChecklistSection />
 
-      <Section title="Do / Don't">
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="border-success/40">
-            <CardHeader>
-              <CardTitle className="text-base text-success">Do</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-                {dos.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-          <Card className="border-destructive/40">
-            <CardHeader>
-              <CardTitle className="text-base text-destructive">
-                Don&apos;t
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-                {donts.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-      </Section>
+      <DoDontSection />
 
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
-        <p className="text-sm text-muted-foreground">
-          Every field primitive — FieldSet, FieldRow, custom controls, status
-          icons — is documented on the Field component page.
-        </p>
-        <Link
-          to="/components/field"
-          className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-        >
-          Field reference
-          <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
-      </div>
+      <FieldReferenceBanner />
     </ComponentPage>
   );
 }
