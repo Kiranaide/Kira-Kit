@@ -284,7 +284,7 @@ function TableHead({
       role={isGridCell ? "columnheader" : undefined}
       aria-sort={ariaSort}
       className={cn(
-        "h-(--head-h,3rem) px-(--cell-px,1rem) text-left align-middle font-medium text-muted-foreground has-[[role=checkbox]]:pr-0 motion-safe:transition-colors",
+        "h-(--head-h,3rem) px-(--cell-px,1rem) text-left align-middle font-medium text-muted-foreground has-[[role=checkbox]]:pr-0 motion-safe:transition-colors whitespace-nowrap",
         STICKY_CELL,
         className,
       )}
@@ -314,6 +314,7 @@ function TableCell({
       role={isGridCell ? "gridcell" : undefined}
       className={cn(
         "px-(--cell-px,1rem) py-(--cell-py,1rem) align-middle has-[[role=checkbox]]:pr-0 motion-safe:transition-colors",
+        "whitespace-nowrap",
         STICKY_CELL,
         className,
       )}

@@ -2439,7 +2439,7 @@ function DataTableBulkActions({
       )}
     >
       <div className="flex items-center gap-2 text-sm font-medium">
-        <span>{selectedCount} selected</span>
+        <span className="whitespace-nowrap">{selectedCount} selected</span>
         <Button
           variant="ghost"
           size="sm"
@@ -3486,7 +3486,7 @@ const DATA_TABLE_PAGINATION_DEFAULTS_1 = {
   pageSizeOptions: [10, 20, 30, 40, 50],
   showPageInfo: false,
   showFirstLast: true,
-  showPreviousNextText: true,
+  showPreviousNextText: false,
   variant: "outline",
   size: "sm",
 } as const;

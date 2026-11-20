@@ -949,12 +949,6 @@ function useDatePickerState4(state: ReturnType<typeof useDatePickerState3>) {
 
   /* -------------------------------- Selection ------------------------------ */
   const handleSelect = (next: DateValue) => {
-    // eslint-disable-next-line no-console
-    console.log(
-      "DP.handleSelect",
-      JSON.stringify(next instanceof Date ? "Date" : next),
-    );
-
     if (applyMode === "confirm") {
       setPendingValue(next);
 

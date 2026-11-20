@@ -414,58 +414,6 @@ interface PaginationPagesProps {
   getPageHref?: (page: number) => string;
 }
 
-type DesktopPageItem = PageRangeItem & { placeholder?: boolean };
-
-// Windowed ranges gain or lose an ellipsis near the edges, shifting the
-// footer width mid-navigation. Pad the missing ellipsis slot with an
-// invisible placeholder so the desktop slot count stays constant.
-function stabilizePageRange(items: PageRangeItem[]): DesktopPageItem[] {
-  if (!items.some((item) => item.type === "ellipsis")) return items;
-
-  const result: DesktopPageItem[] = [...items];
-
-  const has = (key: string) =>
-    result.some((item) => item.type === "ellipsis" && item.key === key);
-
-  if (!has("ellipsis-start"))
-    result.splice(1, 0, {
-      type: "ellipsis",
-      key: "ellipsis-start",
-      placeholder: true,
-    });
-
-  if (!has("ellipsis-end"))
-    result.splice(result.length - 1, 0, {
-      type: "ellipsis",
-      key: "ellipsis-end",
-      placeholder: true,
-    });
-
-  return result;
-}
-
-function PaginationEllipsisPlaceholder() {
-  const context = usePaginationContext();
-
-  if (!context) return null;
-
-  return (
-    <span
-      data-slot="pagination-ellipsis-placeholder"
-      aria-hidden="true"
-      className={cn(
-        paginationLinkVariants({
-          size: context.size,
-          variant: context.variant,
-        }),
-        "invisible text-muted-foreground pointer-coarse:min-h-11 pointer-coarse:min-w-11",
-      )}
-    >
-      <IconDots className="size-4" aria-hidden="true" />
-    </span>
-  );
-}
-
 function PaginationPages({
   renderPage,
   renderEllipsis,
@@ -475,7 +423,7 @@ function PaginationPages({
   const context = usePaginationContext();
 
   if (!context || context.pageCount === 0) return null;
-  const desktop = stabilizePageRange(context.getPageRange());
+  const desktop = context.getPageRange();
 
   const mobile =
     mobileMaxPages < 3
@@ -510,11 +458,7 @@ function PaginationPages({
           key={item.type === "page" ? item.page : item.key}
           mobileHide
         >
-          {item.placeholder ? (
-            <PaginationEllipsisPlaceholder />
-          ) : (
-            renderItem(item, index)
-          )}
+          {renderItem(item, index)}
         </PaginationItem>
       ))}
       {mobile.map((item, index) => (

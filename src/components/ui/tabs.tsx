@@ -1199,8 +1199,7 @@ function useCloseGuard(
     // order, wrapping to first (WAI-ARIA APG tabs pattern).
     if (activeValue === closedValue && next.length > 0) {
       const neighbour = next[idx] ?? next[0];
-
-      if (neighbour) selectValue(neighbour.value);
+      selectValue(neighbour.value);
     }
 
     setItems(next);
