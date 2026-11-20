@@ -953,6 +953,24 @@ const datePickerPageAPIReferenceSections = [
 
 const datePickerPageChangelogEntries = [
   {
+    version: "v2.1.1",
+    date: "20 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Mobile bottom sheet layout",
+        description:
+          "The calendar centers in the full-width sheet instead of hugging the left edge, and the preset rail spans the sheet with its native scrollbar hidden and 44px touch targets.",
+      },
+      {
+        type: "changed",
+        title: "Sheet motion and scroll feel",
+        description:
+          "The sheet slides up from the bottom edge on an iOS-style curve (300ms enter, 200ms exit) instead of the desktop drop-fade, and contains its overscroll so scrolling the sheet never drags the page. Reduced motion still shows it instantly.",
+      },
+    ],
+  },
+  {
     version: "v2.1.0",
     date: "26 October 2026",
     changes: [

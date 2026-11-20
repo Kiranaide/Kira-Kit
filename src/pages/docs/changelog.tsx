@@ -40,6 +40,24 @@ const releases: Release[] = [
     date: "In development",
     changes: [
       {
+        type: "fixed",
+        title: "Every component animation ships with its registry item",
+        description:
+          "The registry build now derives per-item motion CSS from the animations each component actually uses — tokens, keyframes, var() closures, and a slot-scoped reduced-motion gate — and kira-kit add merges it into your global stylesheet even when init kept an existing theme. Calendar month-transition keyframes ship with the calendar item; re-adding is idempotent.",
+      },
+      {
+        type: "fixed",
+        title: "DatePicker and TimePicker mobile bottom sheets",
+        description:
+          "Sheet content centers in the full-width sheet, the preset rail hides its native scrollbar and gives presets 44px touch targets, and the sheet slides up from the bottom edge on an iOS-style curve with a faster exit and contained overscroll. Demo previews no longer reserve desktop popover height on mobile.",
+      },
+      {
+        type: "removed",
+        title: "Orphan scan-overlay-pulse-glow keyframes",
+        description:
+          "Unused keyframes dropped from the base stylesheet and CLI templates; the camera scan overlay keeps scan-overlay-corner-pulse.",
+      },
+      {
         type: "breaking",
         title: "Native install engine — no external CLI",
         description:

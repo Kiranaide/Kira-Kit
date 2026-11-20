@@ -1456,6 +1456,18 @@ const calendarPageAPIReferenceSections = [
 
 const calendarPageChangelogEntries = [
   {
+    version: "v2.0.1",
+    date: "20 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Month transitions survive CLI installs",
+        description:
+          "The animate prop's slide/fade keyframes, kira-calendar-* transition classes, RTL overrides, and a slot-scoped reduced-motion gate now ship in the calendar registry item's css, so kira-kit add backfills them even when your base stylesheet predates them. Previously animate produced unstyled classes and left the old month snapshot stuck in the DOM.",
+      },
+    ],
+  },
+  {
     version: "v2.0.0",
     date: "24 October 2026",
     changes: [
