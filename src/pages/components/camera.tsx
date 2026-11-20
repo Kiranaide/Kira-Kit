@@ -1725,6 +1725,18 @@ const apiSections = [
 
 const changelog = [
   {
+    version: "v3.0.1",
+    date: "November 20, 2026",
+    changes: [
+      {
+        type: "removed",
+        title: "Orphan scan-overlay-pulse-glow keyframes",
+        description:
+          "The base stylesheet declared keyframes no component references — the scan overlay animates with scan-overlay-corner-pulse. Dropped from the kit CSS and CLI templates.",
+      },
+    ],
+  },
+  {
     version: "v3.0.0",
     date: "November 14, 2026",
     changes: [

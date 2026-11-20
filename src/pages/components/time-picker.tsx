@@ -591,6 +591,18 @@ const timePickerPageAPIReferenceSections = [
 
 const timePickerPageChangelogEntries = [
   {
+    version: "v1.0.1",
+    date: "20 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Mobile bottom sheet centering and motion",
+        description:
+          "Fixed-width panels center in the full-width sheet; the sheet shares the DatePicker's slide-up curve, faster exit, and overscroll containment.",
+      },
+    ],
+  },
+  {
     version: "v1.0.0",
     date: "26 October 2026",
     changes: [
