@@ -26,10 +26,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demos — one focused demo per feature, co-located snippets
-// =============================================================================
-
 function BasicDemo() {
   return (
     <div className="flex flex-wrap items-center gap-6">
@@ -663,10 +659,6 @@ export function SettingsPanelDemo() {
     </div>
   )
 }`;
-
-// =============================================================================
-// Page
-// =============================================================================
 
 const features = [
   {

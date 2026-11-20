@@ -40,11 +40,10 @@ const toggleGroupVariants = cva("inline-flex items-center", {
     },
     orientation: {
       horizontal: "flex-row",
-      // Cross axis is horizontal in a column, so the base `items-center` shrinks
-      // each item to its own text width — a short label's hover fill then can't
-      // span the column. `items-stretch` makes every item fill the column width
-      // so hover/pressed covers the full tab; the item's own `justify-center`
-      // keeps the label centred. Applies to all vertical variants.
+      // In a column the cross axis is horizontal, so the base `items-center`
+      // shrinks each item to its label width and a short label's hover fill
+      // can't span the column. `items-stretch` fills the column so the fill
+      // covers the whole tab; the item's own `justify-center` centres the label.
       vertical: "flex-col items-stretch",
     },
     /**
@@ -173,13 +172,10 @@ const toggleGroupItemVariants = cva(
 );
 
 /**
- * The three documented segmented-control semantics — 2026 practice genuinely
- * splits, so this is a prop rather than a hidden decision:
- *
- * - `"current"` — Primer/eBay: `aria-current="true"` on the active segment.
- * - `"radio"` — ARIA17-normative for single-select: `role="radiogroup"` +
- *   `role="radio"`/`aria-checked`, one Tab stop, arrow keys move *and* select.
- * - `"toggle"` — Base UI's default: independent `aria-pressed` buttons.
+ * The three segmented-control semantics 2026 practice genuinely splits
+ * between, so it is a prop rather than a hidden decision: `"current"`
+ * (Primer/eBay `aria-current`), `"radio"` (ARIA17 `role="radiogroup"`, one
+ * Tab stop, arrows select), `"toggle"` (Base UI `aria-pressed` buttons).
  */
 type ToggleGroupSemantics = "current" | "radio" | "toggle";
 
@@ -416,19 +412,10 @@ interface ToggleGroupProps
    */
   slidingIndicator?: boolean;
   /**
-   * ARIA model for single-select groups. There is no single 2026 standard:
-   *
-   * - `"current"` (default) follows Primer/eBay — `aria-current="true"` on the
-   *   active segment, conveying "one of a set is active".
-   * - `"radio"` is ARIA17-normative for a mutually-exclusive set:
-   *   `role="radiogroup"` on the container, `role="radio"` + `aria-checked` on
-   *   items, one Tab stop, and arrow keys that move focus *and* selection.
-   *   Use it when the group is a real form field.
-   * - `"toggle"` keeps Base UI's `aria-pressed` on/off buttons.
-   *
-   * Multi-select groups are always `"toggle"` (a formatting bar of independent
-   * toggles is `aria-pressed` per the APG), so this prop is ignored when
-   * `multiple` is set.
+   * ARIA model for single-select groups (multi-select is always `"toggle"`):
+   * `"current"` marks the active segment with `aria-current`, `"radio"` is
+   * the ARIA17 exclusive set with one Tab stop and arrow selection, and
+   * `"toggle"` keeps Base UI's `aria-pressed` on/off buttons.
    */
   semantics?: ToggleGroupSemantics;
   /**
@@ -441,16 +428,10 @@ interface ToggleGroupProps
   /** Render `IconCheck` on the selected item — Material 3's default affordance. */
   showSelectedIcon?: boolean;
   /**
-   * M3 Expressive button-group behavior: the selected item's radius grows
-   * (`rounded-xl`) and it springs into place (scale 0.92 → 1, `back.out(2)`).
-   *
-   * Guards — visually inert when any of these hold:
-   * - `variant="outline"` (joined borders conflict with the morph)
-   * - `variant="segment"` (the muted track owns the silhouette)
-   * - `slidingIndicator` (the sliding pill owns the selected fill)
-   * - `multiple` (no single "selected" item to morph)
-   *
-   * Reduced-motion aware: the spring is skipped, the static radius morph stays.
+   * M3 Expressive button-group behaviour: the selected item's radius grows
+   * and it springs into place. Inert with `variant="outline"`, `"segment"`,
+   * `slidingIndicator`, or `multiple`, each of which already owns the
+   * selected silhouette. Reduced motion keeps the radius, skips the spring.
    */
   shapeMorph?: boolean;
   /** Marks the group required, forwarding `aria-required`. */
@@ -463,13 +444,10 @@ interface ToggleGroupProps
   /** Error text rendered below the group and linked via `aria-describedby`. */
   errorMessage?: React.ReactNode;
   /**
-   * Submits with the enclosing `<form>`: one hidden input per selected value,
-   * matching native checkbox/radio behaviour, so `formData.getAll(name)`
-   * returns each value as its own entry. An empty selection emits no input at
-   * all (absent key, not an empty string).
-   *
-   * Note `required` is `aria-required` only — browsers skip native validation
-   * on hidden inputs, so enforce it in your own submit handler.
+   * Submits with the enclosing `<form>` as one hidden input per selected
+   * value, so `formData.getAll(name)` returns each entry and an empty
+   * selection emits none. `required` is `aria-required` only: browsers skip
+   * native validation on hidden inputs, so enforce it in your submit handler.
    */
   name?: string;
   children: React.ReactNode;
@@ -690,10 +668,9 @@ function GroupContextProvider(args: GroupRenderArgs) {
           aria-describedby={describedBy}
         >
           {/* One input per selected value, so `formData.getAll(name)` yields each
-              value separately. Single-select simply produces one (or none), so
-              there's no `multiple` branch to keep in sync. Driven by
-              `resolvedValue`, the same source the items and indicator read, so
-              controlled and uncontrolled modes stay consistent by construction. */}
+   entry separately and single-select produces one or none. Driven by
+   `resolvedValue`, the same source items and indicator read, so
+   controlled and uncontrolled modes agree by construction. */}
           <GroupInputs name={name} resolvedValue={resolvedValue} />
           {slide && (
             <ToggleGroupIndicator
@@ -1027,11 +1004,10 @@ function DisabledReasonWrapper({
   reason: React.ReactNode;
   children: React.ReactNode;
 }) {
-  // Focus proxy for a native-disabled trigger (Base UI's documented pattern for
-  // tooltips on disabled controls): the span is hit-tested where the disabled
-  // button is not, and Tab reaches it so keyboard users can read the reason.
-  // role="button" is deliberately avoided — the accessible "disabled button" is
-  // already announced via aria-disabled; the label carries the reason.
+  // Focus proxy for a native-disabled trigger (Base UI's documented pattern
+  // for tooltips on disabled controls): the span is hit-tested where the
+  // disabled button is not, and Tab reaches it so keyboard users can read the
+  // reason. `role="button"` is avoided — aria-disabled already announces it.
   const anchorProps = {
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus proxy required for disabled-control tooltip reachability (WCAG 2.2 §9)
     tabIndex: 0,
@@ -1172,12 +1148,10 @@ function useToggleGroupItemHandlers({
   };
 
   /**
-   * Space/Enter/click on a radio selects; it must never deselect. Base UI's own
-   * handler toggles, which for the already-checked item would emit `[]`.
-   * Merged handlers run right-to-left with ours first, so
-   * `preventBaseUIHandler()` suppresses the toggle and we commit the value
-   * outright. (`preventDefault()` would not stop it — Base UI gates on its own
-   * flag, not the DOM's.)
+   * Space/Enter/click on a radio selects and must never deselect, but Base
+   * UI's handler toggles and would emit `[]` for the checked item. Ours runs
+   * first, so `preventBaseUIHandler()` suppresses it and we commit outright;
+   * `preventDefault()` would not stop it — Base UI gates on its own flag.
    */
   const handleClick: NonNullable<TogglePrimitive.Props["onClick"]> = (
     event,
@@ -1505,12 +1479,10 @@ function GroupItemElement({
       {...props}
       onFocus={handleFocus}
       onClick={handleClick}
-      // Base UI hard-codes `role="button"`-ish semantics and `aria-pressed` on
-      // the item. The playbook's polymorphism route is `useRender`/`mergeProps`,
-      // and `render`'s props are merged *last* (`mergeProps(props, render.props)`
-      // in `useRenderElement`), so this is the supported override seam rather
-      // than a spread-order accident. Each mode exposes exactly one state
-      // attribute — `aria-pressed` and `aria-checked` are never both present.
+      // Base UI hard-codes button semantics and `aria-pressed` on the item.
+      // `useRender`/`mergeProps` is the documented polymorphism route and
+      // `render`'s props merge last, so this is a supported override seam, not
+      // a spread-order accident: one state attribute per mode.
       render={<button type="button" {...renderState} />}
     >
       <ItemContent
@@ -1537,10 +1509,6 @@ function GroupItemElement({
     />
   );
 }
-
-// =============================================================================
-// KiraToggleGroup — one prop-driven entry point over the group family
-// =============================================================================
 
 interface KiraToggleGroupItem {
   value: string;

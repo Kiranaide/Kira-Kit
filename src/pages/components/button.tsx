@@ -40,10 +40,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo Components
-// =============================================================================
-
 function VariantsDemo() {
   return (
     <div className="space-y-6">
@@ -637,7 +633,9 @@ function KiraButtonDemo() {
 
   const handleLoadingClick = async () => {
     setLoading(true);
-    await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 2000);
+    });
     setLoading(false);
   };
 
@@ -789,10 +787,6 @@ function ToggleDemo() {
     </div>
   );
 }
-
-// =============================================================================
-// Main Page Component
-// =============================================================================
 
 // oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function ButtonPage() {
@@ -1405,7 +1399,7 @@ const buttonPageChangelogEntries = [
 ] satisfies ReactComponentProps<typeof Changelog>["entries"];
 
 const flaky = (setter: (v: boolean) => void, next: boolean) =>
-  new Promise<void>((resolve, reject) =>
+  new Promise<void>((resolve, reject) => {
     setTimeout(() => {
       if (Math.random() < 0.33) {
         reject(new Error("network"));
@@ -1413,8 +1407,8 @@ const flaky = (setter: (v: boolean) => void, next: boolean) =>
         setter(next);
         resolve();
       }
-    }, 600),
-  );
+    }, 600);
+  });
 
 function KiraButtonIconsSection() {
   return (

@@ -28,10 +28,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo Components
-// =============================================================================
-
 function BasicDemo() {
   return (
     <div className="flex items-center gap-4">
@@ -537,13 +533,6 @@ const stackCode = `import { Avatar, AvatarFallback, AvatarStack } from "@/compon
   <Avatar><AvatarFallback>C</AvatarFallback></Avatar>
 </AvatarStack>`;
 
-// =============================================================================
-// Main Page Component
-// =============================================================================
-
-// =============================================================================
-// Demo: Avatar states
-// =============================================================================
 function StatesDemo() {
   const imageRequestId = React.useId();
 

@@ -35,10 +35,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo Components
-// =============================================================================
-
 function BasicDemo() {
   return (
     <div className="flex items-center justify-center min-h-[200px]">
@@ -345,7 +341,9 @@ function SaveDemo() {
     }
 
     setState("pending");
-    await new Promise<void>((resolve) => window.setTimeout(resolve, 600));
+    await new Promise<void>((resolve) => {
+      window.setTimeout(resolve, 600);
+    });
     setSavedName(name.trim());
     setState("saved");
   };
@@ -616,10 +614,6 @@ export function CustomDemo() {
   );
 }`;
 
-// =============================================================================
-// Usage Code
-// =============================================================================
-
 const usageCode = `import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogBody, DialogFooter, DialogTitle, DialogDescription, DialogClose, DialogPortal, DialogOverlay, KiraDialog, dialogContentVariants } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -655,10 +649,6 @@ export function CustomPopup() {
     </DialogPortal>
   </Dialog>
 }`;
-
-// =============================================================================
-// API Reference Data
-// =============================================================================
 
 const apiSections = [
   {
@@ -893,10 +883,6 @@ const apiSections = [
     ],
   },
 ];
-
-// =============================================================================
-// Main Page Component
-// =============================================================================
 
 // oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function DialogPage() {

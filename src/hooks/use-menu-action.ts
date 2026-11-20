@@ -1,8 +1,6 @@
 import * as React from "react";
 
-/* -------------------------------------------------------------------------- */
 /*                          Menu action data contract                         */
-/* -------------------------------------------------------------------------- */
 
 export interface MenuActionContext {
   signal: AbortSignal;
@@ -93,13 +91,9 @@ export type MenuItemData =
 
 export type MenuActionState = "idle" | "pending" | "success" | "error";
 
-/* -------------------------------------------------------------------------- */
 /*                               ID validation                                */
-/* -------------------------------------------------------------------------- */
 
-/* -------------------------------------------------------------------------- */
 /*                            Document visibility                             */
-/* -------------------------------------------------------------------------- */
 
 function subscribeVisibility(onChange: () => void): () => void {
   document.addEventListener("visibilitychange", onChange);
@@ -119,9 +113,7 @@ function useDocumentVisible(): boolean {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  The hook                                  */
-/* -------------------------------------------------------------------------- */
 
 export interface UseMenuActionOptions {
   /** Changing this invalidates any in-flight operation (opening session). */
@@ -136,12 +128,10 @@ interface FinishFn {
 }
 
 /**
- * Invokes the user callback once and funnels sync/async outcomes through
- * `finish`. Promise success: the wrapper closes the menu (dismissal aborts
- * and invalidation runs on close); the success announcement stays mirrored
- * in the stable outer status region. Synchronous success: no spinner.
- * SAFETY: onSelect is typed `void | Promise<void>`; any object return is
- * thenable by contract, so the `.then` probe is a domain shape check.
+ * Invokes the callback once and funnels outcomes through `finish`. Promise
+ * success closes the menu (dismissal aborts, invalidation runs on close)
+ * and the announcement stays in the stable outer status region; a
+ * synchronous success shows no spinner. `onSelect` is `void | Promise<void>`.
  */
 async function runMenuActionItem(
   item: MenuActionItem,
@@ -166,15 +156,10 @@ export interface UseMenuActionResult {
 }
 
 /**
- * One bounded async action model for dropdown and menubar.
- *
- * - Single-flight: a ref lock prevents duplicate activation.
- * - Abortable: each invocation gets an AbortController; closing, switching
- *   trigger/payload, or changing session aborts the signal. Callbacks that
- *   ignore the signal may still finish externally — late results never
- *   update or close a newer session (generation guard).
- * - `animatePending` freezes while the document is hidden (looping spinner
- *   pauses; static glyph + label remain).
+ * One bounded async action model for dropdown and menubar: a ref lock makes
+ * activation single-flight, each invocation gets an AbortController aborted
+ * on close/switch/session change, and a generation guard keeps late results
+ * from updating a newer session. `animatePending` freezes while hidden.
  */
 export function useMenuAction({
   sessionKey,

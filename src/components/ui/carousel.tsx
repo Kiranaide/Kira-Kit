@@ -370,7 +370,7 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
     const { emblaRef, orientation, variant } = carouselContext;
 
     const indexedChildren = React.useMemo(() => {
-      let nextIndex = 0;
+      const cursor = { index: 0 };
 
       const injectIndex = (node: React.ReactNode): React.ReactNode => {
         if (!React.isValidElement(node)) return node;
@@ -390,8 +390,8 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
         }
 
         if (node.type === CarouselItem) {
-          const index = nextIndex;
-          nextIndex++;
+          const index = cursor.index;
+          cursor.index += 1;
 
           // SAFETY: node is a valid CarouselItem element (isValidElement guard
           // above), so cloning with an extra index prop is type-safe.
@@ -1900,9 +1900,8 @@ function useCarouselActions(state: ReturnType<typeof useCarouselState3>) {
 
       // Press feedback targets the VIEWPORT wrapper, never the translated
       // container: both GSAP and embla write `transform`, so a tween tail
-      // from a press could overwrite embla's momentum/final snap position
-      // and freeze the carousel half-way (stuck between slides after fast
-      // drags or rapid button clicks following a drag).
+      // from a press could overwrite embla's momentum/snap position and
+      // freeze the carousel half-way between slides.
       const viewportNode = emblaApi.rootNode();
 
       const handlePointerDown = () => {

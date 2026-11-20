@@ -1,12 +1,8 @@
 /**
- * Maintainer bootstrap: (re)generate the source registry JSONs
- * (src/components/ui/registry.json, src/hooks/registry.json) with files,
+ * Maintainer bootstrap: regenerates the source registry JSONs with files,
  * dependencies, and registryDependencies extracted programmatically.
- * Titles/descriptions/categories come from a metadata JSON file (curated);
- * the emitted files are hand-maintained afterwards — rerunning only refreshes
- * dep/file facts and leaves curated fields intact when they already exist.
- *
- * Usage (from packages/cli): bun run scripts/scaffold-sources.ts
+ * Curated titles/descriptions/categories come from a metadata JSON and are
+ * left intact on reruns. Usage: `bun run scripts/scaffold-sources.ts`.
  */
 import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";

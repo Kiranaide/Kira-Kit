@@ -1,19 +1,10 @@
 import * as React from "react";
 
-// ============================================
-// USE SPOTLIGHT HOOK
-// ============================================
-// Global spotlight/command palette state management
-// with keyboard shortcut support (Cmd+K / Ctrl+K)
-
 interface SpotlightContextValue {
   /** Whether the spotlight is open */
   open: boolean;
-  /** Open the spotlight */
   openSpotlight: () => void;
-  /** Close the spotlight */
   closeSpotlight: () => void;
-  /** Toggle the spotlight */
   toggleSpotlight: () => void;
   /** Set the search query programmatically */
   setQuery: (query: string) => void;
@@ -127,11 +118,6 @@ export function useSpotlight() {
 
   return context;
 }
-
-// ============================================
-// STANDALONE SPOTLIGHT STATE HOOK
-// ============================================
-// For use without provider (local state)
 
 interface UseSpotlightStateOptions {
   /** Initial open state */

@@ -357,6 +357,7 @@ function VirtualizedDemo() {
 }
 
 const virtualizedCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import { Timeline, type TimelineItemData } from "@/components/ui/timeline";\n\nexport default function VirtualizedDemo() {\n  const items: TimelineItemData[] = Array.from({ length: 150 }, (_, index) => ({\n    id: `event-${index}`, title: `Artifact ${index + 1} verified`, datetime: `2026-10-${String(1 + Math.floor(index / 10)).padStart(2, "0")}T09:00:00Z`, status: "success",\n    description: index % 3 === 0 ? "The build passed signature verification, accessibility checks, and the integration smoke run. This longer event demonstrates measured rows and text wrapping." : "Signature verification passed.",\n    collapsible: true, defaultCollapsed: index % 3 !== 0,\n  }));\n  return <Timeline items={items} virtualized groupBy="day" timeZone="UTC" size="lg" estimateSize={140} aria-label="150 artifact checks" />;\n}\n';
 
 function KiraDemo() {

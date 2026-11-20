@@ -24,9 +24,7 @@ import {
 import { resolveComponentDefaults } from "@/lib/component-defaults";
 import { isCallbackProp } from "@/lib/component-prop-guards";
 
-/* -------------------------------------------------------------------------- */
 /*                                  Helpers                                   */
-/* -------------------------------------------------------------------------- */
 
 type StateClassName<S> =
   string | ((state: S) => string | undefined) | undefined;
@@ -71,9 +69,7 @@ function useDocumentVisible(): boolean {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Semantic surface + motion for menu popups (shared by Content and
@@ -231,9 +227,7 @@ function describedWithReason(
     : describedBy;
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
 
 type DropdownMenuProps<Payload = unknown> = Menu.Root.Props<Payload>;
 
@@ -324,9 +318,7 @@ type DropdownMenuBackdropProps = Menu.Backdrop.Props;
 
 type DropdownMenuArrowProps = Menu.Arrow.Props;
 
-/* -------------------------------------------------------------------------- */
 /*                                Components                                  */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Typed factory for a detached-menu handle: multiple triggers can share one
@@ -838,9 +830,7 @@ function DropdownMenuShortcut({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                        KiraDropdownMenu (data-driven)                      */
-/* -------------------------------------------------------------------------- */
 
 const kiraNoActions = "No actions available.";
 const kiraNoItem = "No item selected";
@@ -1094,20 +1084,10 @@ function kiraItemNode(
 }
 
 /**
- * Data tree → live menu. Three modes:
- *
- * 1. `trigger` + `items` (static data): colocated trigger via the primitive
- *    `render` composition, one popup.
- * 2. `trigger` + `children`: low-level composition; children manage their
- *    own actions (Kira claims no async ownership here).
- * 3. `handle` + `items(payload)`: detached triggers share one popup; each
- *    trigger passes its own payload. Undefined payload shows a
- *    noninteractive "No item selected" empty state and never calls the
- *    factory.
- *
- * The shared async lifecycle (useMenuAction) applies to rendered data items;
- * the polite live status region lives OUTSIDE the Portal so a success
- * announcement survives closing.
+ * Data tree → live menu, in three modes: `trigger` + `items` renders static
+ * data through the primitive `render` composition; `trigger` + `children`
+ * leaves actions to the caller; `handle` + `items(payload)` shares one popup
+ * across detached triggers, empty state included when payload is undefined.
  */
 export function KiraDropdownMenu<Payload = unknown>(
   props: KiraDropdownMenuProps<Payload>,
@@ -1424,9 +1404,7 @@ function resolveKiraDropdownSessionProps<Payload>(
   return { ...defaults, ...mode };
 }
 
-/* -------------------------------------------------------------------------- */
 /*                        Filtering parts (Base UI 1.9)                       */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Enables filtering for the menu or submenu it wraps (Base UI preview
@@ -1524,9 +1502,7 @@ function DropdownMenuViewport({ className, ...props }: Menu.Viewport.Props) {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Exports                                   */
-/* -------------------------------------------------------------------------- */
 
 export {
   DropdownMenu,

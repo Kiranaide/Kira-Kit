@@ -68,7 +68,9 @@ function FeaturesDemo() {
             icon: <IconDownload />,
             errorMessage: "Export failed. Select Export report to retry.",
             onSelect: async ({ signal }) => {
-              await new Promise((resolve) => setTimeout(resolve, 900));
+              await new Promise((resolve) => {
+                setTimeout(resolve, 900);
+              });
 
               if (signal.aborted) return;
               attempts.current += 1;

@@ -4,9 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { resolveResponsive, type ResponsiveValue } from "@/components/ui/flex";
 import { cn } from "cn";
 
-/* -------------------------------------------------------------------------- */
 /*                                 Scales                                     */
-/* -------------------------------------------------------------------------- */
 // Every class produced below is assembled at runtime (`w-${key}`), which
 // Tailwind cannot detect by scanning. ALL of them (base + breakpoint variants)
 // are safelisted with `@source inline()` in globals.css.
@@ -194,9 +192,7 @@ type BoxMaxHeight = (typeof MAX_H_KEYS)[number];
 
 type BoxBorder = boolean | "none" | 2 | 4 | 8;
 
-/* -------------------------------------------------------------------------- */
 /*                                 Variants                                   */
-/* -------------------------------------------------------------------------- */
 // These classes are literal in source, so no safelist is needed.
 // Tailwind v4 shifted the radius/shadow scales down one step; `xs`/`2xs`
 // are the v4 names for the smallest sizes.
@@ -246,9 +242,7 @@ const boxVariants = cva("", {
   },
 });
 
-/* -------------------------------------------------------------------------- */
 /*                                 Component                                  */
-/* -------------------------------------------------------------------------- */
 
 type BoxElement =
   | "div"

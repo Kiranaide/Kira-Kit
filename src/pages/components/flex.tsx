@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import {
   IconBrandGithub,
   IconBell,
@@ -22,6 +23,7 @@ import {
   DemoWrapper,
   UsageBlock,
   APIReference,
+  Changelog,
 } from "@/components/docs";
 
 const directionCode = `import { Flex } from "@/components/ui/flex"
@@ -598,9 +600,32 @@ export default function FlexPage() {
         title="API Reference"
         description="Key props and configuration options"
       />
+
+      <Changelog entries={flexPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+const flexPageChangelogEntries = [
+  {
+    version: "1.0",
+    date: "20 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Responsive layout props over a static class map",
+        description:
+          "direction, wrap, justify, align and gap take either a plain value or a breakpoint map ({ base, md, lg }), resolved against fixed class maps so no interpolated class strings are ever built. Breakpoint-prefixed classes are assembled at runtime, so they must be safelisted with @source inline(...) in your global CSS — the kira-base stylesheet installed by init already lists them.",
+      },
+      {
+        type: "added",
+        title: "Polymorphic element with a stable styling hook",
+        description:
+          "as renders any element (nav, section, ul) with its own props and ref forwarded, defaulting to div; data-slot flex stays constant across modes and inline swaps to inline-flex.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
 
 const flexPageFeatureGridFeatures = [
   {

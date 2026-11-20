@@ -535,6 +535,7 @@ function SearchDemo() {
 }
 
 const searchCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import * as React from "react";\nimport { KiraCommand } from "@/components/ui/command";\n\nexport function SearchDemo() {\n  const [query, setQuery] = React.useState("");\n  const [selection, setSelection] = React.useState("");\n\n  const documents = [\n    "Release checklist",\n    "Accessibility review",\n    "Support handoff",\n  ];\n\n  return (\n    <div className="max-w-lg space-y-4">\n      <KiraCommand\n        label="Document search"\n        shouldFilter={false}\n        search={query}\n        onSearchChange={setQuery}\n        placeholder="Search document previews…"\n        actions={documents.flatMap((name) => {\n          if (!name.toLowerCase().includes(query.toLowerCase())) return [];\n\n          return [\n            {\n              id: name,\n              label: name,\n              description: "Results supplied by the caller.",\n              onSelect: () => setSelection(name),\n            },\n          ];\n        })}\n        emptyMessage="No document previews match this search."\n      />\n      <p className="text-sm text-muted-foreground">\n        {selection\n          ? `Selected preview: ${selection}.`\n          : "Filtering happens in this demo\'s caller. No remote search is connected."}\n      </p>\n    </div>\n  );\n}';
 
 function StatesDemo() {

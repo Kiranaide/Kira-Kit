@@ -6,9 +6,7 @@ import { format, isValid, set } from "date-fns";
 import { IconClock, IconMinus, IconPlus, IconX } from "@tabler/icons-react";
 import { cn } from "cn";
 
-/* -------------------------------------------------------------------------- */
 /*                                   Trigger                                  */
-/* -------------------------------------------------------------------------- */
 
 const timePickerTriggerVariants = cva(
   [
@@ -36,9 +34,7 @@ const timePickerTriggerVariants = cva(
   },
 );
 
-/* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
 
 type TimeGranularity = "minute" | "second";
 
@@ -87,9 +83,7 @@ interface TimePickerProps extends Omit<
   className?: string;
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
-/* -------------------------------------------------------------------------- */
 
 // kira-kit-ignore spacing-scale: date/time-picker trigger ladder is a documented non-change (PR follow-up)
 const iconSize = { sm: "size-3.5", default: "size-4", lg: "size-5" } as const;
@@ -145,9 +139,7 @@ function timeTotal(p: TimeParts, granularity: TimeGranularity): number {
     : p.hours * 60 + p.minutes;
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                   Panel                                    */
-/* -------------------------------------------------------------------------- */
 
 const fieldLabels = {
   hours: "Hour",
@@ -279,9 +271,7 @@ function PresetGrid({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Component                                 */
-/* -------------------------------------------------------------------------- */
 
 const DEFAULT_PRESETS = ["09:00", "12:30", "17:00", "21:00"];
 
@@ -321,7 +311,6 @@ function useTimePickerModel(props: TimePickerProps) {
     ...getTimePickerDefaults(props),
   });
 
-  /* ------------------------------ Open handling ----------------------------- */
   useTimePopover({
     popoverRef,
     isOpen,
@@ -329,7 +318,6 @@ function useTimePickerModel(props: TimePickerProps) {
     setUncontrolledOpen,
   });
 
-  /* --------------------------------- Labels -------------------------------- */
   const pattern =
     displayFormat ?? (granularity === "second" ? "HH:mm:ss" : "HH:mm");
 
@@ -765,10 +753,9 @@ function timePickerUseCallback2(
     el.showPopover();
   } catch {
     // SAFETY: a popover show/hide operation was still in flight (re-entrant
-    // effect during beforetoggle, or Fast-Refresh remount). Retrying from a
-    // microtask runs outside the in-flight operation; if it can't open, the
-    // native state governs. An uncaught throw here would abort the React
-    // commit and kill all event handling on the page.
+    // effect during beforetoggle, Fast-Refresh remount). Retrying from a
+    // microtask runs outside it, and if it can't open, native state governs.
+    // An uncaught throw here would abort the commit and kill page events.
     queueMicrotask(() => {
       if (!el.matches(":popover-open")) {
         try {
@@ -839,11 +826,10 @@ function timePickerUseEffect(
   const el = popoverRef.current;
 
   if (!el) return;
-  // SAFETY: "toggle" on popover elements is a ToggleEvent per spec; it fires
-  // only after the show/hide operation completes, so syncing state here never
-  // re-enters showPopover() mid-operation (beforetoggle would — it fires
-  // synchronously at the state flip, and a setState from it re-renders into
-  // the open effect while the operation is in flight).
+  // SAFETY: "toggle" is a ToggleEvent that fires only after the show/hide
+  // operation completes, so syncing state here never re-enters
+  // showPopover() mid-operation. beforetoggle would: it fires at the state
+  // flip, and setState there re-renders into the open effect mid-operation.
   const listener = (event: Event) => onPopoverToggle(event as ToggleEvent);
   el.addEventListener("toggle", listener);
 
@@ -1302,7 +1288,6 @@ function useTimePickerPanel({
     ? timeParts(value)
     : { hours: 0, minutes: 0, seconds: 0 };
 
-  /* ------------------------------ Constraints ------------------------------ */
   const { isAllowed } = useTimeConstraints({
     minTime,
     maxTime,
@@ -1311,7 +1296,6 @@ function useTimePickerPanel({
     parts,
   });
 
-  /* -------------------------------- Emitting ------------------------------- */
   const emit = (patch: Partial<TimeParts>) =>
     timePickerEmit(patch, disabled, value, now, parts, onChange);
 

@@ -164,11 +164,10 @@ function unusedDeclarations(
 }
 
 /**
- * Check 1: imports vs declared dependencies — bidirectional.
- * Every bare npm import must be declared in the item's `dependencies`
- * (or be a React builtin), every internal import must be declared as
- * `@kira-kit/<name>`, every `@/lib/*` import must map to a declared
- * registry:lib item, and every declared dependency must actually be used.
+ * Check 1: imports vs declared dependencies, bidirectionally. Bare npm
+ * imports must be declared (or be React builtins), internal imports must be
+ * `@kira-kit/<name>`, `@/lib/*` imports must map to a registry:lib item, and
+ * every declared dependency must actually be used.
  */
 export const importsMatchDeps: Check = (file, ctx) => {
   const meta = ctx.items.get(file.name);

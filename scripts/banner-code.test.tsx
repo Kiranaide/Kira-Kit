@@ -61,8 +61,10 @@ test("explicit pause exposes resume and suspends progress", () => {
 });
 
 test("countdown has explicit readable text alongside decorative digit cells", () => {
+  // The server snapshot is 0, so `to` reads as remaining time from the epoch:
+  // a fixed 90s window instead of a value that drifts with runner load.
   const html = renderToStaticMarkup(
-    <AnnouncementBarCountdown to={new Date(Date.now() + 90_000)} />,
+    <AnnouncementBarCountdown to={new Date(90_000)} />,
   );
 
   expect(html).toContain('class="sr-only"');

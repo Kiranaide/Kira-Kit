@@ -16,9 +16,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo: Basic Toast
-// =============================================================================
 function BasicDemo() {
   return (
     <div className="flex flex-wrap gap-4">
@@ -65,9 +62,6 @@ export function BasicToastDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: Variants
-// =============================================================================
 function VariantsDemo() {
   return (
     <div className="space-y-6">
@@ -166,9 +160,6 @@ export function ToastVariantsDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: Actions
-// =============================================================================
 function ActionsDemo() {
   return (
     <div className="flex flex-wrap gap-4">
@@ -266,9 +257,6 @@ export function ToastActionsDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: Promise
-// =============================================================================
 function PromiseDemo() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
@@ -383,9 +371,6 @@ export function ToastPromiseDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: Dismiss
-// =============================================================================
 function DismissDemo() {
   return (
     <div className="space-y-6">
@@ -520,9 +505,6 @@ export function ToastDismissDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: Stacking & Swipe
-// =============================================================================
 function StackingDemo() {
   return (
     <div className="space-y-4">
@@ -569,9 +551,6 @@ import { Button } from "@/components/ui/button"
   Show a burst of toasts
 </Button>`;
 
-// =============================================================================
-// Usage Code
-// =============================================================================
 const usageCode = `import { toast } from "@/components/ui/toast"
 
 // Basic usage
@@ -611,9 +590,6 @@ toast.promise(saveData(), {
   error: (err) => \`Error: \${err.message}\`
 })`;
 
-// =============================================================================
-// API Reference Data
-// =============================================================================
 const apiSections = [
   {
     title: "toast()",
@@ -759,9 +735,6 @@ const apiSections = [
   },
 ];
 
-// =============================================================================
-// Demo: Progress Bar & Pause
-// =============================================================================
 function ProgressDemo() {
   return (
     <div className="space-y-4">
@@ -803,9 +776,6 @@ toast.info("Heads up")                        // 5s
 toast.warning("Review needed", { duration: 10000 })
 toast.loading("Long-running task")            // no timer, no bar`;
 
-// =============================================================================
-// Demo: Anchored Toasts
-// =============================================================================
 function AnchoredDemo() {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [copied, setCopied] = useState(false);
@@ -878,9 +848,6 @@ export function AnchoredToastDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: Update in Place
-// =============================================================================
 function UpdateDemo() {
   return (
     <div className="space-y-4">
@@ -968,9 +935,6 @@ import { Button } from "@/components/ui/button"
 // Partial updates keep unspecified fields (description, action, icon):
 toast.update(id, { title: "Step 2 of 3: working…" })`;
 
-// =============================================================================
-// Features Data
-// =============================================================================
 const features = [
   {
     title: "Accessible",
@@ -992,9 +956,6 @@ const features = [
   },
 ];
 
-// =============================================================================
-// Demo Tabs Configuration
-// =============================================================================
 const demoTabs = [
   {
     value: "basic",
@@ -1115,9 +1076,6 @@ const demoTabs = [
   },
 ];
 
-// =============================================================================
-// Main Page Component
-// =============================================================================
 export default function ToastPage() {
   return (
     <ComponentPage>

@@ -29,10 +29,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Code Examples
-// =============================================================================
-
 const basicCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
 export function Example() {
@@ -178,10 +174,6 @@ const usageCode = `import { Alert, AlertTitle, AlertDescription, KiraAlert } fro
 // For transient notifications, use the toast() API instead
 import { toast } from "@/components/ui/toast"
 toast.success("Saved")`;
-
-// =============================================================================
-// Demo Components
-// =============================================================================
 
 // Fixture timestamps — fixed at module scope so demo renders stay pure
 // (react-hooks/purity) and relative labels don't drift between re-renders.
@@ -531,10 +523,6 @@ function UndoDismissDemo() {
   );
 }
 
-// =============================================================================
-// Showcase — every variant, size, banner, accent + stress cases (§7)
-// =============================================================================
-
 function StressDemo() {
   return (
     <div className="max-w-[320px] space-y-4">
@@ -567,10 +555,6 @@ function StressDemo() {
     </div>
   );
 }
-
-// =============================================================================
-// API
-// =============================================================================
 
 const apiSections = [
   {
@@ -707,10 +691,6 @@ const apiSections = [
   },
 ];
 
-// =============================================================================
-// Features
-// =============================================================================
-
 const features = [
   {
     title: "Accessible",
@@ -728,10 +708,6 @@ const features = [
       "One prop-driven component: title, actions, expandable, copy, and timestamp.",
   },
 ];
-
-// =============================================================================
-// Demo Tabs Configuration
-// =============================================================================
 
 const demoTabs = [
   {
@@ -878,10 +854,6 @@ const demoTabs = [
     ),
   },
 ];
-
-// =============================================================================
-// Main Page Component
-// =============================================================================
 
 export default function AlertPage() {
   return (

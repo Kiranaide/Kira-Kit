@@ -31,10 +31,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Interactive KiraAlertDialog demos
-// =============================================================================
-
 function TypeToConfirmDemo() {
   const [open, setOpen] = useState(false);
 
@@ -100,7 +96,9 @@ function AsyncConfirmDemo() {
         confirmLabel="Save"
         shortcut="⌘↵"
         onConfirmAsync={() =>
-          new Promise<void>((resolve) => setTimeout(resolve, 1200))
+          new Promise<void>((resolve) => {
+            setTimeout(resolve, 1200);
+          })
         }
       />
     </div>
@@ -186,7 +184,9 @@ function AsyncRecoveryDemo() {
         errorMessage="The publishing service is unavailable. Try publishing again."
         onConfirmAsync={async () => {
           setAttempts((value) => value + 1);
-          await new Promise<void>((resolve) => window.setTimeout(resolve, 900));
+          await new Promise<void>((resolve) => {
+            window.setTimeout(resolve, 900);
+          });
 
           if (attempts === 0) throw new Error("Illustrative service failure");
         }}

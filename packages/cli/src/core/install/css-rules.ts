@@ -32,12 +32,10 @@ function findBlock(css: string, selector: string): TopLevelBlock | undefined {
 }
 
 /**
- * Merge one top-level rule into CSS text, idempotently:
- * - :root / @theme blocks upsert declarations, never replace the block.
- * - @media / @supports blocks merge their inner rules, so an existing
- *   reduced-motion gate keeps its other rules.
- * - Anything else (@keyframes, pseudo-element rules) replaces the body of a
- *   same-selector block, or appends when none exists.
+ * Merge one top-level rule into CSS text, idempotently: `:root`/`@theme`
+ * blocks upsert declarations, `@media`/`@supports` blocks merge their inner
+ * rules (so an existing reduced-motion gate keeps its other rules), and
+ * anything else replaces a same-selector block's body or appends.
  */
 function mergeRule(css: string, selector: string, body: string): string {
   const norm = normalizeSelector(selector);

@@ -1496,6 +1496,24 @@ const dataTablePageKeyboardShortcutsShortcuts = [
 
 const dataTablePageChangelogEntries = [
   {
+    version: "3.2.1",
+    date: "20 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Bulk-action count stays on one line",
+        description:
+          'The selected-count label is now whitespace-nowrap, so a narrow toolbar breaks around the buttons instead of splitting "7 selected" across two lines.',
+      },
+      {
+        type: "changed",
+        title: "Icon-only previous and next by default",
+        description:
+          "The pagination defaults set showPreviousNextText to false, so the footer shows chevrons rather than text that reflows the control row. Pass showPreviousNextText to get the labelled buttons back.",
+      },
+    ],
+  },
+  {
     version: "3.2.0",
     date: "19 November 2026",
     changes: [

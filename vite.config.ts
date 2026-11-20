@@ -32,14 +32,10 @@ export default defineConfig({
     },
   },
   build: {
-    // This showcase intentionally ships heavy code tooling as lazy bundles: the
-    // Monaco editor (~1.5 MB), the Markdown editor (~1.1 MB) and Shiki grammars
-    // (~0.9 MB). Each loads on demand via dynamic import / lazy routes, so none
-    // affect first paint (the entry chunk is ~490 kB). Rolldown's automatic
-    // splitting isolates them per dynamic import; manual maxSize chunk groups
-    // were tried but produced circular-chunk init errors at runtime, so we keep
-    // the default splitting and set the advisory limit above the largest lazy
-    // bundle rather than force-splitting tightly-coupled editor internals.
+    // This showcase ships heavy code tooling (Monaco, the Markdown editor,
+    // Shiki grammars) as lazy bundles that load on demand, so none affect
+    // first paint. Rolldown's automatic splitting isolates each dynamic import;
+    // manual maxSize groups were tried and caused circular-chunk init errors.
     chunkSizeWarningLimit: 1600,
     rolldownOptions: {
       onwarn(warning, defaultHandler) {

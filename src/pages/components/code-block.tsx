@@ -24,6 +24,7 @@ import {
 } from "@/components/docs";
 
 const example =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'export type Guide = { id: string; title: string };\n\nexport async function loadGuide(id: string): Promise<Guide> {\n  const response = await fetch(`/api/guides/${id}`);\n  if (!response.ok) throw new Error("Guide unavailable");\n  return response.json();\n}';
 
 function BasicDemo() {
@@ -35,6 +36,7 @@ function FormattingDemo() {
     <div className="space-y-3">
       <CodeBlock
         code={
+          // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
           'export const guide={title:"Alpine trail",distance:8.4,tags:["ridge","lake"]};export function distanceLabel(km:number){return `${km.toFixed(1)} km`; }'
         }
         filename="trail.ts"
@@ -91,6 +93,7 @@ const previewCode =
   'import { CodeBlock } from "@/components/ui/code-block";\nimport { TrailPreview } from "./trail-preview";\nexport function TrailExample({ source }: { source: string }) {\n  return <CodeBlock code={source} filename="trail-preview.tsx" language="tsx" preview={<TrailPreview />} />;\n}';
 
 const basicCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import { CodeBlock } from "@/components/ui/code-block";\nconst code = "export type Guide = { id: string; title: string };\\n\\nexport async function loadGuide(id: string): Promise<Guide> {\\n  const response = await fetch(`/api/guides/${id}`);\\n  if (!response.ok) throw new Error(\\"Guide unavailable\\");\\n  return response.json();\\n}";\nexport function GuideSnippet() {\n  return <CodeBlock code={code} filename="guide.ts" language="typescript" />;\n}';
 
 function PartsDemo() {
@@ -137,7 +140,9 @@ function ClipboardDemo() {
         code={example}
         filename="guide.ts"
         onCopy={async (value) => {
-          await new Promise((resolve) => setTimeout(resolve, 200));
+          await new Promise((resolve) => {
+            setTimeout(resolve, 200);
+          });
 
           if (fail) throw new Error("Clipboard rejected by fixture");
           setCopied(value);
@@ -151,6 +156,7 @@ function ClipboardDemo() {
 }
 
 const clipboardCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import * as React from "react";\nimport { CodeBlock } from "@/components/ui/code-block";\nconst code = "export type Guide = { id: string; title: string };\\n\\nexport async function loadGuide(id: string): Promise<Guide> {\\n  const response = await fetch(`/api/guides/${id}`);\\n  if (!response.ok) throw new Error(\\"Guide unavailable\\");\\n  return response.json();\\n}";\nexport function ClipboardAdapter() {\n  const [captured, setCaptured] = React.useState("");\n  return <div>\n    <CodeBlock code={code} filename="guide.ts" onCopy={async (value) => {\n      await navigator.clipboard.writeText(value);\n      setCaptured(value);\n    }} onCopyError={(error) => console.error(error.message)} />\n    <output>{captured}</output>\n  </div>;\n}';
 
 function FormatsDemo() {
@@ -234,6 +240,7 @@ function FilesDemo() {
 }
 
 const filesCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import * as React from "react";\nimport { KiraCodeBlock, type CodeBlockFile } from "@/components/ui/code-block";\nconst code = "export type Guide = { id: string; title: string };\\n\\nexport async function loadGuide(id: string): Promise<Guide> {\\n  const response = await fetch(`/api/guides/${id}`);\\n  if (!response.ok) throw new Error(\\"Guide unavailable\\");\\n  return response.json();\\n}";\nconst files: CodeBlockFile[] = [\n  { value: "guide", filename: "guide.ts", language: "typescript", code },\n  { value: "config", filename: "guide.config.json", language: "json", code: \'{ "region": "alpine", "offline": true }\' },\n];\nexport function GuideFiles() {\n  const [value, setValue] = React.useState("guide");\n  return <KiraCodeBlock files={files} value={value} onValueChange={setValue} />;\n}';
 
 const fragments = [
@@ -241,6 +248,7 @@ const fragments = [
   " loadGuide(id: string)",
   " {\n",
   "  const response = await fetch(\n",
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   "    `/api/guides/${id}`\n",
   "  );\n",
   "  if (!response.ok) {\n",
@@ -363,6 +371,7 @@ function EditorDemo() {
 }
 
 const editorCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import * as React from "react";\nimport { CodeBlock } from "@/components/ui/code-block";\nconst code = "export type Guide = { id: string; title: string };\\n\\nexport async function loadGuide(id: string): Promise<Guide> {\\n  const response = await fetch(`/api/guides/${id}`);\\n  if (!response.ok) throw new Error(\\"Guide unavailable\\");\\n  return response.json();\\n}";\nexport function EditableGuide() {\n  const [value, setValue] = React.useState(code);\n  return <CodeBlock code={value} onChange={setValue} editable editor="plain"\n    filename="editable-guide.ts" language="typescript" height={280} />;\n}';
 
 function KiraDemo() {
@@ -387,6 +396,7 @@ function KiraDemo() {
 }
 
 const kiraCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import { KiraCodeBlock, type CodeBlockFile } from "@/components/ui/code-block";\nconst code = "export type Guide = { id: string; title: string };\\n\\nexport async function loadGuide(id: string): Promise<Guide> {\\n  const response = await fetch(`/api/guides/${id}`);\\n  if (!response.ok) throw new Error(\\"Guide unavailable\\");\\n  return response.json();\\n}";\nconst files: CodeBlockFile[] = [\n  { value: "guide", filename: "guide.ts", language: "typescript", code },\n  { value: "readme", filename: "README.md", language: "markdown", code: "# Alpine guide" },\n];\nexport function FileDrafts() {\n  return <KiraCodeBlock files={files} editable editor="plain" height={240} />;\n}';
 
 function AppearanceDemo() {
@@ -426,6 +436,7 @@ function AppearanceDemo() {
 }
 
 const appearanceCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import { CodeBlock } from "@/components/ui/code-block";\nconst code = "export type Guide = { id: string; title: string };\\n\\nexport async function loadGuide(id: string): Promise<Guide> {\\n  const response = await fetch(`/api/guides/${id}`);\\n  if (!response.ok) throw new Error(\\"Guide unavailable\\");\\n  return response.json();\\n}";\nexport function CodeSurfaces() {\n  return <div>\n    <CodeBlock code={code} variant="light" filename="Surface variant" wordWrap="bounded" showLineNumbers={false} />\n    <CodeBlock code={code} filename="Default surface" wordWrap="off" />\n  </div>;\n}';
 
 function StatesDemo() {

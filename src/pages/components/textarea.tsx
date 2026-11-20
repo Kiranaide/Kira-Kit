@@ -24,10 +24,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// CODE SNIPPETS
-// =============================================================================
-
 const basicCode = `import { Textarea } from "@/components/ui/textarea"
 
 export function BasicTextareaDemo() {
@@ -322,10 +318,6 @@ const usageCode = `import { Textarea, TextareaWithCounter, KiraTextarea } from "
   onSubmit={(value) => console.log(value)}
 />`;
 
-// =============================================================================
-// DEMO COMPONENTS
-// =============================================================================
-
 function BasicDemo() {
   return (
     <div className="max-w-md">
@@ -619,10 +611,6 @@ function AccessibilityDemo() {
   );
 }
 
-// =============================================================================
-// FEATURES
-// =============================================================================
-
 function KiraDemo() {
   const [messages, setMessages] = React.useState<
     { id: string; text: string }[]
@@ -722,10 +710,6 @@ function ValidationDemoLive() {
   );
 }
 
-// =============================================================================
-// FEATURES
-// =============================================================================
-
 const features = [
   {
     title: "Auto-resize",
@@ -747,10 +731,6 @@ const features = [
   },
 ];
 
-// =============================================================================
-// KEYBOARD SHORTCUTS
-// =============================================================================
-
 const keyboardShortcuts = [
   { keys: "Tab", description: "Move focus to/from textarea" },
   { keys: "Shift + Tab", description: "Move focus backwards" },
@@ -759,10 +739,6 @@ const keyboardShortcuts = [
   { keys: "Ctrl + C", description: "Copy selected text" },
   { keys: "Ctrl + V", description: "Paste from clipboard" },
 ];
-
-// =============================================================================
-// API REFERENCE
-// =============================================================================
 
 const apiSections = [
   {
@@ -907,10 +883,6 @@ const apiSections = [
     ],
   },
 ];
-
-// =============================================================================
-// DEMO TABS
-// =============================================================================
 
 const demoTabs = [
   {
@@ -1057,10 +1029,6 @@ const demoTabs = [
     ),
   },
 ];
-
-// =============================================================================
-// MAIN PAGE COMPONENT
-// =============================================================================
 
 export default function TextareaPage() {
   return (

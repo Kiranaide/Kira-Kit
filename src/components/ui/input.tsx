@@ -1649,10 +1649,6 @@ const RatingDisplay = React.forwardRef<HTMLDivElement, RatingDisplayProps>(
 
 RatingDisplay.displayName = "RatingDisplay";
 
-// =============================================================================
-// Password input + strength meter
-// =============================================================================
-
 type PasswordStrength = {
   score: 0 | 1 | 2 | 3 | 4;
   label: string;
@@ -1793,10 +1789,6 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
 );
 
 PasswordInput.displayName = "PasswordInput";
-
-// =============================================================================
-// Tag / chips input — Base UI Combobox multiple + Chips
-// =============================================================================
 
 interface TagInputProps extends Omit<
   React.ComponentProps<"input">,

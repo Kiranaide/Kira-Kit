@@ -1572,6 +1572,18 @@ const paginationPageAPIReferenceSections = [
 
 const paginationPageChangelogEntries = [
   {
+    version: "3.2.1",
+    date: "November 20, 2026",
+    changes: [
+      {
+        type: "removed" as const,
+        title: "Invisible ellipsis placeholders",
+        description:
+          "The desktop range no longer pads the slots where an ellipsis would appear, so the footer is as wide as the pages it actually shows. Edge pages no longer carry dead space next to the first and last buttons; expect the footer width to change as the window slides.",
+      },
+    ],
+  },
+  {
     version: "3.2.0",
     date: "November 19, 2026",
     changes: [

@@ -74,6 +74,7 @@ function RatiosDemo() {
 }
 
 const ratiosCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import { AspectRatio, AspectRatioImage, type AspectRatioPreset } from "@/components/ui/aspect-ratio";\nconst source = "/kira-alpine-landscape.svg";\nconst ratios: AspectRatioPreset[] = ["1:1", "4:3", "3:2", "16:9", "9:16", "21:9", "3:4", "2:3"];\nexport function GuideCrops() {\n  return <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">\n    {ratios.map((ratio) => <AspectRatio key={ratio} ratio={ratio} className="rounded-lg"><AspectRatioImage src={source} alt={`Guide crop at ${ratio}`} /></AspectRatio>)}\n  </div>;\n}';
 
 function LoadingDemo() {
@@ -128,7 +129,9 @@ function RecoveryDemo() {
         className="max-w-xl rounded-lg"
         errorMessage="The field guide image is unavailable."
         onRetry={async () => {
-          await new Promise((resolve) => setTimeout(resolve, 300));
+          await new Promise((resolve) => {
+            setTimeout(resolve, 300);
+          });
           setBroken(false);
         }}
       />

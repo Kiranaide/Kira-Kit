@@ -60,7 +60,6 @@ export const STATUS_ANNOUNCEMENTS = {
   paused: "Camera is paused",
 } satisfies Record<string, string>;
 
-// Keyboard shortcuts
 export const KEYBOARD_SHORTCUTS = {
   capture: " ", // Space
   record: "r",
@@ -80,32 +79,27 @@ export const ENHANCED_KEYBOARD_SHORTCUTS = {
   switchCamera: ["c", "C"],
   toggleFlash: ["f", "F"],
 
-  // Zoom
   zoomIn: ["+", "=", "ArrowUp"],
   zoomOut: ["-", "_", "ArrowDown"],
   zoomReset: ["0"],
   zoom2x: ["2"],
   zoom3x: ["3"],
 
-  // Focus
   focusCenter: ["Home"],
 
   // Guides
   toggleGrid: ["g", "G"],
   cycleGrid: ["Shift+g", "Shift+G"],
 
-  // Timer
   toggleTimer: ["t", "T"],
   cycleTimer: ["Shift+t", "Shift+T"],
 
-  // Settings
   openSettings: [","],
 
   // Navigation
   prevMode: ["ArrowLeft", "["],
   nextMode: ["ArrowRight", "]"],
 
-  // Help
   showHelp: ["?", "/"],
 } as const;
 
@@ -124,7 +118,6 @@ export const KEYBOARD_DESCRIPTIONS = {
   showHelp: "Show keyboard shortcuts",
 } satisfies Record<string, string>;
 
-// Animation durations
 export const ANIMATION_DURATION_MS = {
   fade: 300,
   capture: 150,
@@ -139,7 +132,6 @@ export const SAFE_AREA_INSETS = {
   right: "env(safe-area-inset-right)",
 } as const;
 
-// Default camera settings
 export const CAMERA_DEFAULT_SETTINGS = {
   quality: "hd" as const,
   aspectRatio: "16:9" as const,
@@ -259,7 +251,6 @@ export const VOICE_COMMANDS = {
   timer: ["timer", "countdown"],
 } as const;
 
-// Timer durations
 export const TIMER_DURATIONS = [0, 3, 5, 10] as const;
 
 // Aspect ratio options
@@ -272,7 +263,6 @@ export const ASPECT_RATIOS = [
   { name: "2:3", value: 2 / 3 },
 ] as const;
 
-// Quality options
 export const QUALITY_OPTIONS = [
   { name: "Standard", value: "standard" },
   { name: "HD", value: "hd" },

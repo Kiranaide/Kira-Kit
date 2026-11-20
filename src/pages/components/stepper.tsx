@@ -37,10 +37,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demos — one focused demo per feature, co-located snippets
-// =============================================================================
-
 const accountSteps = [
   { title: "Account", description: "Create your account" },
   { title: "Profile", description: "Set up your profile" },
@@ -435,10 +431,6 @@ export function MobileStepperDemo() {
     />
   )
 }`;
-
-// =============================================================================
-// Page
-// =============================================================================
 
 const features = [
   {

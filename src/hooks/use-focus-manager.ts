@@ -1,11 +1,5 @@
 import * as React from "react";
 
-// ============================================
-// USE FOCUS MANAGER HOOK
-// ============================================
-// Implements roving tabindex pattern for grid/table navigation
-// Following WAI-ARIA grid navigation best practices
-
 interface FocusPosition {
   row: number;
   col: number;
@@ -33,9 +27,7 @@ interface UseFocusManagerReturn {
   setPosition: (position: FocusPosition) => void;
   /** Move focus in a direction */
   move: (direction: "up" | "down" | "left" | "right") => void;
-  /** Move to start of current row */
   moveToRowStart: () => void;
-  /** Move to end of current row */
   moveToRowEnd: () => void;
   /** Move to first cell (0, 0) */
   moveToStart: () => void;

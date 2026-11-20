@@ -912,6 +912,18 @@ const tablePageAPIReferenceSections = [
 
 const tablePageChangelogEntries = [
   {
+    version: "2.2.1",
+    date: "20 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Header and body cells no longer wrap",
+        description:
+          "TableHead and TableCell carry whitespace-nowrap, so a column sizes to its content instead of breaking phrases mid-word at narrow widths. Long free text is now your call: give the cell a max width and whitespace-normal.",
+      },
+    ],
+  },
+  {
     version: "2.2",
     date: "23 October 2026",
     changes: [

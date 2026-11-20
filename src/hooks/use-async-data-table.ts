@@ -5,23 +5,15 @@ import type {
   SortingState,
 } from "@tanstack/react-table";
 
-// ============================================
-// USE ASYNC DATA TABLE HOOK
-// ============================================
-// Manages server-side pagination, sorting, and filtering
-
 interface UseAsyncDataTableOptions<TData> {
   /** Fetch function that returns data and total count */
   fetchFn: (params: FetchParams) => Promise<FetchResult<TData>>;
-  /** Initial page size */
   initialPageSize?: number;
   /** Initial sorting state */
   initialSorting?: SortingState;
-  /** Initial column filters */
   initialColumnFilters?: ColumnFiltersState;
   /** Debounce delay for filter changes (ms) */
   filterDebounceMs?: number;
-  /** Whether to fetch on mount */
   fetchOnMount?: boolean;
   /** Unique key for caching/deduplication */
   queryKey?: string;
@@ -61,13 +53,9 @@ interface UseAsyncDataTableReturn<TData> {
   sorting: SortingState;
   /** Set sorting state */
   setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
-  /** Current column filters */
   columnFilters: ColumnFiltersState;
-  /** Set column filters */
   setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFiltersState>>;
-  /** Global filter value */
   globalFilter: string;
-  /** Set global filter */
   setGlobalFilter: React.Dispatch<React.SetStateAction<string>>;
   /** Manually trigger a refetch */
   refetch: () => Promise<void>;

@@ -13,10 +13,6 @@ import {
 } from "@tabler/icons-react";
 import { isCallbackProp } from "@/lib/component-prop-guards";
 
-// -----------------------------------------------------------------------------
-// Types & styling
-// -----------------------------------------------------------------------------
-
 const TOAST_TYPES = [
   "default",
   "success",
@@ -83,12 +79,10 @@ const toastIcons: Record<ToastType, React.ReactNode> = {
 };
 
 /**
- * Collapsed-stack geometry (Base UI 1.9 stacking recipe): the frontmost toast
- * sits on the viewport's bottom edge, older toasts peek 0.75rem behind it with
- * decreasing scale, and `data-expanded` fans the stack out.
- *
- * No `overflow-hidden` here: it would clip the `after:` hover bridge.
- * Clipping happens on Toast.Content instead.
+ * Collapsed-stack geometry (Base UI 1.9 stacking recipe): the frontmost
+ * toast sits on the bottom edge, older ones peek 0.75rem behind at
+ * decreasing scale, and `data-expanded` fans them out. No
+ * `overflow-hidden` here — it would clip the `after:` hover bridge.
  */
 const stackedRootClasses = cn(
   "pointer-events-auto absolute inset-x-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom select-none outline-none",
@@ -135,10 +129,6 @@ const contentClasses = cn(
   "motion-reduce:transition-none",
 );
 
-// -----------------------------------------------------------------------------
-// Managers — one per provider, per Base UI guidance
-// -----------------------------------------------------------------------------
-
 const stackedManager = Toast.createToastManager<ToastData>();
 const anchoredManager = Toast.createToastManager<ToastData>();
 
@@ -182,10 +172,6 @@ interface ToastAction {
 
 const toActionProps = (action?: ToastAction) =>
   action ? { children: action.label, onClick: action.onClick } : undefined;
-
-// -----------------------------------------------------------------------------
-// Imperative `toast()` API (works outside React)
-// -----------------------------------------------------------------------------
 
 interface ToastOptions {
   /** Stable ID. Re-adding the same ID updates the toast in place (dedupe). */
@@ -350,10 +336,6 @@ const toast = Object.assign(createToast("default"), {
     }),
 });
 
-// -----------------------------------------------------------------------------
-// Rendering
-// -----------------------------------------------------------------------------
-
 function ToastItem({
   toast: t,
   anchored = false,
@@ -407,10 +389,6 @@ function KiraAnchoredToaster() {
     </Toast.Portal>
   );
 }
-
-// -----------------------------------------------------------------------------
-// Provider (mount once)
-// -----------------------------------------------------------------------------
 
 interface KiraToastProviderProps {
   children?: React.ReactNode;

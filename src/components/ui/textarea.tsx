@@ -88,13 +88,6 @@ function Textarea({
   );
 }
 
-// =============================================================================
-// TextareaWithCounter — accessible 3-element counter (GOV.UK / USWDS pattern)
-// =============================================================================
-//   1. static hint read once      → aria-describedby
-//   2. visible counter             → aria-hidden (updates every keystroke)
-//   3. debounced sr-only live node → announces at ~400ms rest, not per key
-
 interface TextareaWithCounterProps extends TextareaProps {
   maxLength: number;
   warningThreshold?: number;
@@ -116,10 +109,6 @@ function TextareaWithCounter(arg0: TextareaWithCounterProps) {
 
   return <TextareaWithCounterView {...model} />;
 }
-
-// =============================================================================
-// KiraTextarea — one prop-driven API: label + counter + submit + clear
-// =============================================================================
 
 interface KiraTextareaProps extends Omit<TextareaProps, "onSubmit"> {
   label?: string;

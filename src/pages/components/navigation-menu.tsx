@@ -42,9 +42,7 @@ import {
   Changelog,
 } from "@/components/docs";
 
-/* -------------------------------------------------------------------------- */
 /*                              Demo components                               */
-/* -------------------------------------------------------------------------- */
 
 /** Shared link-card row: icon + title + description. */
 function PanelLink({
@@ -469,9 +467,7 @@ function StatesDemo() {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                              Demo code snippets                            */
-/* -------------------------------------------------------------------------- */
 
 const basicCode = `import {
   NavigationMenu,
@@ -739,9 +735,7 @@ export function SiteNavigation() {
   return <KiraNavigationMenu items={items} label="Explore" activeHref="/changelog" />;
 }`;
 
-/* -------------------------------------------------------------------------- */
 /*                                   Page                                     */
-/* -------------------------------------------------------------------------- */
 
 const primitiveApi = [
   {

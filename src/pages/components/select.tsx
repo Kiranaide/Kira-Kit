@@ -25,10 +25,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Data
-// =============================================================================
-
 const fruits: SelectOption[] = [
   { value: "apple", label: "Apple" },
   { value: "banana", label: "Banana" },
@@ -41,7 +37,9 @@ const fruits: SelectOption[] = [
 ];
 
 const searchUsers = async (query: string): Promise<SelectOption[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => {
+    setTimeout(resolve, 500);
+  });
 
   const allUsers = [
     { value: "1", label: "John Doe" },
@@ -135,10 +133,6 @@ const LONG_LABEL_OPTIONS: SelectOption[] = [
       "A very long option label that keeps going well past eighty characters to prove truncation behaves inside the trigger and the popup list",
   },
 ];
-
-// =============================================================================
-// Demo Components
-// =============================================================================
 
 function BasicSelectDemo() {
   const [basicValue, setBasicValue] = React.useState<string>("");
@@ -663,10 +657,6 @@ export function DisabledDemo() {
   )
 }`;
 
-// =============================================================================
-// Code Examples
-// =============================================================================
-
 const usageCode = `import { KiraSelect } from "@/components/ui/select"
 
 // One component, behaviour chosen by props:
@@ -681,10 +671,6 @@ const usageCode = `import { KiraSelect } from "@/components/ui/select"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"`;
-
-// =============================================================================
-// Features
-// =============================================================================
 
 const features = [
   {
@@ -708,10 +694,6 @@ const features = [
       "Windowed rendering for very long lists (5,000+ options) with scroll position, End/Home, and selection verified.",
   },
 ];
-
-// =============================================================================
-// Keyboard Shortcuts
-// =============================================================================
 
 const keyboardShortcuts = [
   { keys: "↓ / ↑", description: "Navigate options — inherited from Base UI" },
@@ -742,10 +724,6 @@ const keyboardShortcuts = [
     description: "Kira: create item flow when 'Create \"…\"' is highlighted",
   },
 ];
-
-// =============================================================================
-// API Reference
-// =============================================================================
 
 const apiSections = [
   {
@@ -849,10 +827,6 @@ const apiSections = [
     ],
   },
 ];
-
-// =============================================================================
-// Demo Tabs Configuration
-// =============================================================================
 
 const demoTabs = [
   {
@@ -999,10 +973,6 @@ const demoTabs = [
     ),
   },
 ];
-
-// =============================================================================
-// Page Component
-// =============================================================================
 
 export default function SelectPage() {
   return (

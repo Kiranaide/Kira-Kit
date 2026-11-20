@@ -1263,12 +1263,12 @@ function AsyncSection() {
   const [failNext, setFailNext] = useState(false);
 
   const save = () =>
-    new Promise<void>((resolve, reject) =>
+    new Promise<void>((resolve, reject) => {
       setTimeout(
         () => (failNext ? reject(new Error("offline")) : resolve()),
         900,
-      ),
-    );
+      );
+    });
 
   return (
     <div className="space-y-2 border-t pt-4">

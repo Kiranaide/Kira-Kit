@@ -129,17 +129,10 @@ function useAriaLabelWarning(
 }
 
 /**
- * Dev-only nudge for the rule people get wrong most often. The APG calls it
- * critical that "the label on a toggle does not change when its state changes":
- * a button labelled "Mute" stays "Mute" when pressed, because `aria-pressed`
- * already carries the state. Swapping the text to "Unmute" double-announces it
- * and breaks voice control, which targets the visible name.
- *
- * If the label genuinely must swap (Play → Pause), that's the text-carries-state
- * pattern — drop `aria-pressed` entirely rather than shipping both.
- *
- * Only labels observed at *different* pressed states are compared, so a label
- * that changes for unrelated reasons while the state holds isn't flagged.
+ * Dev-only nudge for the APG rule that a toggle's label must not change
+ * with its state: `aria-pressed` already carries it, so swapping "Mute"
+ * for "Unmute" double-announces and breaks voice control. When a label
+ * genuinely must swap, drop `aria-pressed` rather than shipping both.
  */
 function useLabelStabilityWarning({
   pressed,
@@ -555,10 +548,6 @@ function withFormInput({
   );
 }
 
-// =============================================================================
-// KiraToggle — one prop-driven entry point over every toggle mode
-// =============================================================================
-
 interface KiraToggleProps extends Omit<
   ToggleProps,
   "onPressedChange" | "children"
@@ -603,11 +592,10 @@ function DisabledReasonWrapper({
   reason: React.ReactNode;
   children: React.ReactNode;
 }) {
-  // Focus proxy for a native-disabled trigger (Base UI's documented pattern for
-  // tooltips on disabled controls): the span is hit-tested where the disabled
-  // button is not, and Tab reaches it so keyboard users can read the reason.
-  // role="button" is deliberately avoided — the accessible "disabled button" is
-  // already announced via aria-disabled; the label carries the reason.
+  // Focus proxy for a native-disabled trigger (Base UI's documented pattern
+  // for tooltips on disabled controls): the span is hit-tested where the
+  // disabled button is not, and Tab reaches it so keyboard users can read the
+  // reason. `role="button"` is avoided — aria-disabled already announces it.
   const anchorProps = {
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus proxy required for disabled-control tooltip reachability (WCAG 2.2 §9)
     tabIndex: 0,

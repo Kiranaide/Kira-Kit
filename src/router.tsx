@@ -672,7 +672,6 @@ const routeTree = rootRoute.addChildren([
   routeTransitionRoute,
 ]);
 
-// Create router
 export const router = createRouter({
   routeTree,
   defaultPreload: "intent",

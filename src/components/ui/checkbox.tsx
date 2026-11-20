@@ -15,10 +15,6 @@ import { isFunctionProp } from "@/components/ui/prop-guards";
 
 gsap.registerPlugin(useGSAP);
 
-// -----------------------------------------------------------------------------
-// Styling
-// -----------------------------------------------------------------------------
-
 type CheckboxSize = "sm" | "default" | "lg";
 
 type CheckboxVariant = "default" | "outline" | "filled" | "soft";
@@ -109,26 +105,18 @@ const rippleRadius: Record<CheckboxSize, string> = {
   lg: "rounded-md",
 };
 
-// -----------------------------------------------------------------------------
-// Utilities
-// -----------------------------------------------------------------------------
-
 function useMergedRef<T>(...refs: (React.Ref<T> | undefined)[]) {
   return React.useCallback((node: T | null) => {
     for (const ref of refs) {
       if (isFunctionProp(ref)) ref(node);
       else if (ref) ref.current = node;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refs is a rest parameter, so the array itself is the only dependency expressible here
   }, refs);
 }
 
 const joinIds = (...ids: (string | false | null | undefined)[]) =>
   ids.filter(Boolean).join(" ") || undefined;
-
-// -----------------------------------------------------------------------------
-// Checkbox
-// -----------------------------------------------------------------------------
 
 type CheckedChangeDetails = CheckboxPrimitive.Root.ChangeEventDetails;
 
@@ -237,10 +225,6 @@ function Checkbox({
   );
 }
 
-// -----------------------------------------------------------------------------
-// CheckboxWithLabel — sibling label, so render a native button (per docs)
-// -----------------------------------------------------------------------------
-
 interface CheckboxWithLabelProps extends CheckboxProps {
   label: string;
   description?: string;
@@ -303,10 +287,6 @@ function CheckboxWithLabel({
   );
 }
 
-// -----------------------------------------------------------------------------
-// CheckboxGroup — always controlled internally (required for `parent`)
-// -----------------------------------------------------------------------------
-
 interface CheckboxGroupOption {
   value: string;
   label: string;
@@ -344,10 +324,6 @@ function CheckboxGroup(arg0: CheckboxGroupProps) {
 
   return <CheckboxGroupView {...model} />;
 }
-
-// -----------------------------------------------------------------------------
-// CheckboxCard — enclosing label (default <span> root is correct here)
-// -----------------------------------------------------------------------------
 
 interface CheckboxCardProps extends Omit<CheckboxProps, "customIcon"> {
   label: string;
@@ -487,10 +463,6 @@ function useCheckboxCardCommit({
 
   return { pending, handleChange };
 }
-
-// -----------------------------------------------------------------------------
-// KiraCheckbox
-// -----------------------------------------------------------------------------
 
 type KiraCheckboxProps =
   | ({ mode?: "checkbox" } & CheckboxProps)

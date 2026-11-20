@@ -163,7 +163,7 @@ function copySourceText(
     return description;
   }
 
-  // oxlint-disable-next-line anti-slop/no-runtime-typeof
+  // oxlint-disable-next-line anti-slop/no-runtime-typeof -- title is a ReactNode union, so only a runtime check can pick the string case
   if (isStringProp(title) && title.length > 0) {
     return title;
   }
@@ -427,10 +427,6 @@ function AlertDescription({
   );
 }
 
-// =============================================================================
-// AlertActions — per-alert action button row
-// =============================================================================
-
 interface AlertAction {
   /** Stable identity for actions whose labels may change. */
   id?: string;
@@ -467,10 +463,6 @@ function AlertActions({ actions, className, ...props }: AlertActionsProps) {
   );
 }
 
-// =============================================================================
-// Relative time helper
-// =============================================================================
-
 function formatRelativeTime(date: Date, now: number = Date.now()): string {
   const diff = now - date.getTime();
   const s = Math.floor(diff / 1000);
@@ -506,10 +498,6 @@ function useRelativeTime(date?: Date): string | null {
 
   return formatRelativeTime(date, now);
 }
-
-// =============================================================================
-// KiraAlert — one prop-driven inline alert
-// =============================================================================
 
 // Strip replacing the alert after dismissal (undoDismiss only). Instant
 // swap for everyone — calm by design (§3.5), no reduced-motion gate needed.
@@ -1172,11 +1160,10 @@ function useKiraAlertActions({
 
   const meta = resolveKiraMeta(alertProps.meta, copyable, relative, metaNode);
 
-  // Non-undo dismissals delegate to Alert's internal GSAP close; the undo
-  // path intercepts so the strip replaces the alert instead. The caller's
-  // onClose composes with the intercept and fires at dismiss time (not
-  // undo-expiry) — parent state matches what the user last saw; undo is
-  // purely visual restoration.
+  // Non-undo dismissals delegate to Alert's internal GSAP close; the undo path
+  // intercepts so the strip replaces the alert instead. The caller's onClose
+  // composes with the intercept and fires at dismiss time, not undo-expiry, so
+  // parent state matches what the user saw; undo is purely visual restoration.
   const closeHandler = composeOnClose(
     alertProps.onClose,
     dismissible,

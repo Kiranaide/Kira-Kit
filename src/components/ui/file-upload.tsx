@@ -36,9 +36,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "cn";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
-/* ------------------------------------------------------------------ */
 /* Public types                                                        */
-/* ------------------------------------------------------------------ */
 
 export type FileUploadStatus =
   "idle" | "uploading" | "success" | "error" | "canceled";
@@ -110,9 +108,7 @@ export interface FilePreviewProps {
   className?: string;
 }
 
-/* ------------------------------------------------------------------ */
 /* Variants                                                            */
-/* ------------------------------------------------------------------ */
 
 const fileUploadVariants = cva(
   "relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed text-center transition-[border-color,background-color] motion-reduce:transition-none",
@@ -128,9 +124,7 @@ const fileUploadVariants = cva(
   },
 );
 
-/* ------------------------------------------------------------------ */
 /* Shared private helpers                                              */
-/* ------------------------------------------------------------------ */
 
 const DEFAULT_MAX_SIZE = 10 * 1024 * 1024;
 const DEFAULT_MAX_FILES = 10;
@@ -288,9 +282,7 @@ function toPublicEntry(entry: InternalEntry): UploadedFile {
   return rest;
 }
 
-/* ------------------------------------------------------------------ */
 /* Download helper                                                     */
-/* ------------------------------------------------------------------ */
 
 interface PendingDownload {
   url: string;
@@ -317,9 +309,7 @@ function cleanupDownload(download: PendingDownload) {
   URL.revokeObjectURL(download.url);
 }
 
-/* ------------------------------------------------------------------ */
 /* Media preview body                                                  */
-/* ------------------------------------------------------------------ */
 
 function MediaPreviewBody({
   file,
@@ -403,9 +393,7 @@ function MediaPreviewBody({
   );
 }
 
-/* ------------------------------------------------------------------ */
 /* Preview dialog                                                      */
-/* ------------------------------------------------------------------ */
 
 function isEditableTarget(
   target: HTMLElement | null,
@@ -477,9 +465,7 @@ function PreviewDialogContent(input0: {
   return renderFilePreview(state2);
 }
 
-/* ------------------------------------------------------------------ */
 /* FilePreview (standalone renderer)                                   */
-/* ------------------------------------------------------------------ */
 
 function FilePreview({
   file,
@@ -538,9 +524,7 @@ function FilePreview({
   );
 }
 
-/* ------------------------------------------------------------------ */
 /* Per-file progress row                                               */
-/* ------------------------------------------------------------------ */
 
 function FileUploadProgressRow({ entry }: { entry: UploadedFile }) {
   const reducedMotion = useReducedMotion();
@@ -585,9 +569,7 @@ function FileUploadProgressRow({ entry }: { entry: UploadedFile }) {
   );
 }
 
-/* ------------------------------------------------------------------ */
 /* FileUpload (root)                                                   */
-/* ------------------------------------------------------------------ */
 
 function FileUploadImpl(input0: FileUploadProps) {
   const state0 = useFileUploadSetup(input0);
@@ -616,9 +598,7 @@ function FileUpload(props: FileUploadProps) {
   return <FileUploadImpl {...props} />;
 }
 
-/* ------------------------------------------------------------------ */
 /* KiraFileUpload (labelled composition)                               */
-/* ------------------------------------------------------------------ */
 
 export type KiraFileUploadProps = FileUploadProps & {
   label?: string;
@@ -733,8 +713,6 @@ function useFileUploadState2(state: ReturnType<typeof useFileUploadSetup>) {
   const dragDepthRef = React.useRef(0);
 
   const listRef = React.useRef<HTMLDivElement>(null);
-
-  /* ------------------------------ queue state --------------------------- */
 
   const makeInitial = (files: File[] | undefined): InternalEntry[] =>
     (files ?? []).map((f) => ({
@@ -893,8 +871,6 @@ function useFileUploadState4(state: ReturnType<typeof useFileUploadState3>) {
     }
   }, [state.previewId, state.previewFile, setPreviewId]);
 
-  /* ------------------------------ validation ----------------------------- */
-
   const buildRejections = React.useCallback(
     (candidates: File[], retained: File[]): AdmissionResult => {
       const accepted: File[] = [];
@@ -980,8 +956,6 @@ function useFileUploadState5(state: ReturnType<typeof useFileUploadState4>) {
       })),
     [state.effMaxFiles],
   );
-
-  /* --------------------------- one ingest pipeline ----------------------- */
 
   const ingestFiles = React.useCallback(
     (fileList: FileList | File[] | null) => {
@@ -1126,8 +1100,6 @@ function useFileUploadState6(state: ReturnType<typeof useFileUploadState5>) {
     [commit, setPreviewId, setRejections, entriesRef],
   );
 
-  /* ------------------------------ drag & drop ----------------------------- */
-
   const handleDragEnter = (event: React.DragEvent) => {
     if (state.disabled) return;
 
@@ -1188,8 +1160,6 @@ function useFileUploadState7(state: ReturnType<typeof useFileUploadState6>) {
     ingestFiles(event.dataTransfer.files);
   };
 
-  /* -------------------------------- paste --------------------------------- */
-
   const handlePaste = (event: React.ClipboardEvent) => {
     if (!state.paste || state.disabled) return;
     // SAFETY: ClipboardEvent targets inside the uploader are DOM elements.
@@ -1209,8 +1179,6 @@ function useFileUploadState7(state: ReturnType<typeof useFileUploadState6>) {
     event.preventDefault();
     ingestFiles(clipboardFiles);
   };
-
-  /* --------------------------- form reset wiring --------------------------- */
 
   const defaultValueRef = React.useRef(state.defaultValue);
 
@@ -1259,8 +1227,6 @@ function useFileUploadState8(state: ReturnType<typeof useFileUploadState7>) {
 
   const { commit, setBatchBusy, onUpload, setStatusMessage } = state;
 
-  /* ------------------------------ transport ------------------------------- */
-
   let transportMode: "batch" | "perFile" | "none" = "none";
 
   if (state.uploadFile !== undefined) {
@@ -1285,8 +1251,6 @@ function useFileUploadState8(state: ReturnType<typeof useFileUploadState7>) {
     },
     [commit],
   );
-
-  /* ------------------------------- batch mode ----------------------------- */
 
   const runBatchUpload = React.useCallback(async () => {
     if (transportMode !== "batch" || state.disabled) return;
@@ -1435,8 +1399,6 @@ function useFileUploadState9(state: ReturnType<typeof useFileUploadState8>) {
   const transportMode = state.transportMode;
   const disabled = state.disabled;
 
-  /* ------------------------------ per-file mode --------------------------- */
-
   const startAttempt = async (entryId: string) => {
     if (
       !canStartFileUploadAttempt(
@@ -1567,8 +1529,6 @@ function useFileUploadState10(state: ReturnType<typeof useFileUploadState9>) {
     void startAttempt(entryId);
   };
 
-  /* --------------------- disabled / unmount invalidation ------------------ */
-
   React.useEffect(() => {
     if (state.disabled) {
       entriesRef.current.forEach((e) => e.abortController?.abort());
@@ -1604,8 +1564,6 @@ function useFileUploadActions(state: ReturnType<typeof useFileUploadState10>) {
       perFileBusyRef.current = false;
     };
   }, [entriesRef, batchBusyRef, perFileBusyRef]);
-
-  /* -------------------------------- render -------------------------------- */
 
   const pickerId = state.id ?? `${state.instanceId}-input`;
 
