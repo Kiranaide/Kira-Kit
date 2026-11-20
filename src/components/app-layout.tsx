@@ -1,4 +1,4 @@
-import { Outlet } from "@tanstack/react-router";
+import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
 import {
   Sidebar,
   SidebarHeader,
@@ -13,8 +13,13 @@ import {
 } from "@/components/ui/sidebar";
 import { KiraToastProvider } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import {
+  RouteTransition,
+  NavigationProgress,
+} from "@/components/ui/route-transition";
 import { ThemeCustomizer } from "@/components/theme-customizer";
 import { PresetProvider } from "@/lib/theme-presets";
+import { supportsViewTransitions } from "@/lib/view-transition";
 import {
   IconHome,
   IconClick,
@@ -83,6 +88,7 @@ import {
   IconDownload,
   IconTerminal2,
   IconHistory,
+  IconRoute,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -163,14 +169,38 @@ export function AppLayout() {
               </Sidebar>
 
               <main className="flex-1 overflow-y-auto bg-background pt-14 md:pt-0">
-                <Outlet />
+                <RouteOutlet />
               </main>
+
+              <RouteProgress />
             </div>
           </SidebarProvider>
         </TooltipProvider>
       </PresetProvider>
     </ThemeProvider>
   );
+}
+
+function RouteOutlet() {
+  const pathname = useLocation({ select: (location) => location.pathname });
+
+  return (
+    <RouteTransition
+      transitionKey={pathname}
+      // The native crossfade owns the entrance where supported; running the
+      // CSS fade on top of it (or restarting it when the crossfade ends)
+      // reads as a double blink.
+      variant={supportsViewTransitions() ? "none" : "fade"}
+    >
+      <Outlet />
+    </RouteTransition>
+  );
+}
+
+function RouteProgress() {
+  const isLoading = useRouterState({ select: (state) => state.isLoading });
+
+  return <NavigationProgress active={isLoading} />;
 }
 
 function DocsNavigation() {
@@ -299,6 +329,11 @@ const componentsNavigation = [
     to: "/components/resizable",
     icon: IconLayoutBoardSplit,
     label: "Resizable",
+  },
+  {
+    to: "/components/route-transition",
+    icon: IconRoute,
+    label: "Route Transition",
   },
   { to: "/components/select", icon: IconSelector, label: "Select" },
   { to: "/components/separator", icon: IconSeparator, label: "Separator" },

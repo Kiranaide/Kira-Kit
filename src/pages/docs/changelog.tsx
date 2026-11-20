@@ -47,6 +47,18 @@ const releases: Release[] = [
       },
       {
         type: "added",
+        title: "Route transition utilities",
+        description:
+          "New RouteTransition (keyed fade / fade-up entrance) and NavigationProgress (2px top bar with grace delay, CSS trickle, and interruptible completion) components, plus a reduced-motion-aware startViewTransition lib helper. All motion is composite-only and ships with a demo page at /components/route-transition.",
+      },
+      {
+        type: "changed",
+        title: "Smoother docs navigation",
+        description:
+          "The docs app now crossfades path changes with the native View Transitions API (150ms, tuned in base CSS), falls back to the keyed entrance fade elsewhere, shows the top progress bar while routes load, and preloads lazy route chunks on hover intent.",
+      },
+      {
+        type: "added",
         title: "Lib support modules ship with components",
         description:
           "The src/lib support modules are now registry:lib items resolved transitively, so color-picker and every other component install complete. A new lib-resolution check prevents missing-module regressions.",

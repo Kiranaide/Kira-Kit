@@ -565,6 +565,14 @@ const cameraRoute = createRoute({
   component: lazyRouteComponent(() => import("@/pages/components/camera")),
 });
 
+const routeTransitionRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/components/route-transition",
+  component: lazyRouteComponent(
+    () => import("@/pages/components/route-transition"),
+  ),
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -654,10 +662,18 @@ const routeTree = rootRoute.addChildren([
   toggleGroupRoute,
   videoPlayerRoute,
   cameraRoute,
+  routeTransitionRoute,
 ]);
 
 // Create router
-export const router = createRouter({ routeTree });
+export const router = createRouter({
+  routeTree,
+  defaultPreload: "intent",
+  // Crossfade only real path changes; search/hash updates stay instant.
+  defaultViewTransition: {
+    types: ({ pathChanged }) => (pathChanged ? ["route-change"] : false),
+  },
+});
 
 // Type declaration for router
 declare module "@tanstack/react-router" {
