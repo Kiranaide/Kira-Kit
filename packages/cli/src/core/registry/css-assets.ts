@@ -12,10 +12,15 @@ function declarations(body: string): Array<[string, string]> {
   const pairs: Array<[string, string]> = [];
 
   for (const match of body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
-    pairs.push([match[1], match[2].trim()]);
+    pairs.push([match[1], match[2].replace(/\s+/g, " ").trim()]);
   }
 
   return pairs;
+}
+
+/** Motion tokens ship with the base/item CSS, never with a color theme. */
+function isMotionToken(key: string): boolean {
+  return key.startsWith("--animate-") || key.startsWith("--ease-");
 }
 
 /** Extract depth-0 :root/.dark custom properties (kit CSS tokens). */
@@ -29,6 +34,8 @@ export function extractThemeTokens(css: string): ThemeTokens {
     const body = css.slice(block.open + 1, block.close);
 
     for (const [key, value] of declarations(body)) {
+      if (isMotionToken(key)) continue;
+
       target[key] = value;
     }
   }

@@ -89,6 +89,7 @@ import {
   IconTerminal2,
   IconHistory,
   IconRoute,
+  IconSparkles,
 } from "@tabler/icons-react";
 
 export function AppLayout() {
@@ -223,6 +224,7 @@ const docsNavigation = [
   { to: "/docs/introduction", icon: IconBook2, label: "Introduction" },
   { to: "/docs/installation", icon: IconDownload, label: "Installation" },
   { to: "/docs/theming", icon: IconPalette, label: "Theming" },
+  { to: "/docs/transitions", icon: IconSparkles, label: "Transitions" },
   { to: "/docs/cli", icon: IconTerminal2, label: "CLI" },
   { to: "/docs/typeset", icon: IconTypography, label: "Typeset" },
   { to: "/docs/form", icon: IconForms, label: "Form" },

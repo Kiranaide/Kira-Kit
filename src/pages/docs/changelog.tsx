@@ -49,7 +49,13 @@ const releases: Release[] = [
         type: "added",
         title: "Route transition utilities",
         description:
-          "New RouteTransition (keyed fade / fade-up entrance) and NavigationProgress (2px top bar with grace delay, CSS trickle, and interruptible completion) components, plus a reduced-motion-aware startViewTransition lib helper. All motion is composite-only and ships with a demo page at /components/route-transition.",
+          "New RouteTransition (keyed entrance with fade, fade-up, fade-down, slide-left, slide-right, zoom, and none variants — movement variants ride a gentle spring curve with ~7% overshoot at 250ms) and NavigationProgress (glowing 2px top bar with grace delay, CSS trickle, and interruptible completion) components, plus a reduced-motion-aware startViewTransition lib helper. All motion is composite-only, with a variant gallery at /components/route-transition and a choosing-a-variant guide at /docs/transitions.",
+      },
+      {
+        type: "added",
+        title: "Per-item CSS injection in the CLI",
+        description:
+          "Registry items can now carry a css snippet: kira-kit add route-transition merges the spring token, entrance keyframes, and view-transition tuning straight into your global stylesheet. The merge is idempotent — tokens upsert, keyframes replace, and @media blocks merge without clobbering existing rules. The TanStack Start template ships pre-wired with route transitions.",
       },
       {
         type: "changed",

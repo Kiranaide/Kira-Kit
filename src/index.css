@@ -117,6 +117,65 @@
   --sidebar-ring: oklch(0.65 0.14 350);
 }
 
+/* Spring curve (damping 0.65, ~7% overshoot) sampled into linear() so route
+   entrances get spring physics while staying composite-only CSS. Lives on
+   :root, not @theme, so it is always emitted for the tokens' var() lookup. */
+:root {
+  --ease-spring: linear(
+    0,
+    0.015,
+    0.0552,
+    0.1142,
+    0.1865,
+    0.2671,
+    0.352,
+    0.4379,
+    0.522,
+    0.6024,
+    0.6774,
+    0.7461,
+    0.8078,
+    0.8621,
+    0.9091,
+    0.9489,
+    0.9819,
+    1.0085,
+    1.0293,
+    1.0449,
+    1.056,
+    1.0631,
+    1.067,
+    1.0681,
+    1.067,
+    1.0642,
+    1.0601,
+    1.0552,
+    1.0497,
+    1.0439,
+    1.0381,
+    1.0324,
+    1.0269,
+    1.0218,
+    1.0171,
+    1.013,
+    1.0093,
+    1.0061,
+    1.0034,
+    1.0012,
+    0.9994,
+    0.998,
+    0.9969,
+    0.9962,
+    0.9957,
+    0.9954,
+    0.9954,
+    0.9954,
+    0.9956,
+    0.9959,
+    1
+  );
+}
+
 @theme inline {
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, monospace;
@@ -131,8 +190,11 @@
   --animate-shake: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
   --animate-fade-in: fade-in 0.3s ease-out;
   --animate-route-fade: route-fade 0.15s cubic-bezier(0.23, 1, 0.32, 1) both;
-  --animate-route-fade-up: route-fade-up 0.2s cubic-bezier(0.23, 1, 0.32, 1)
-    both;
+  --animate-route-fade-up: route-fade-up 0.25s var(--ease-spring) both;
+  --animate-route-fade-down: route-fade-down 0.25s var(--ease-spring) both;
+  --animate-route-slide-left: route-slide-left 0.25s var(--ease-spring) both;
+  --animate-route-slide-right: route-slide-right 0.25s var(--ease-spring) both;
+  --animate-route-zoom: route-zoom 0.25s var(--ease-spring) both;
   --animate-nav-progress: nav-progress 10s ease-out forwards;
   --animate-toast-progress: toast-progress linear forwards;
 
@@ -411,9 +473,10 @@
   }
 }
 
-/* Route entrance fades — opacity-only, short enough for tens-of-times-a-day
-   sidebar navigation. The native view transition crossfade replaces these
-   while it is active (see below), so the two never stack. */
+/* Route entrances — short enough for tens-of-times-a-day sidebar navigation.
+   Movement variants ride the spring curve for a hint of overshoot; plain fade
+   stays ease-out. The native view transition crossfade replaces these while
+   it is active (see below), so the two never stack. */
 @keyframes route-fade {
   from {
     opacity: 0;
@@ -426,11 +489,58 @@
 @keyframes route-fade-up {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes route-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slides travel 24px, not the full viewport — route content is read dozens of
+   times a day, so direction is hinted, not performed. slide-left enters from
+   the right (forward navigation); slide-right enters from the left (back). */
+@keyframes route-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes route-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes route-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

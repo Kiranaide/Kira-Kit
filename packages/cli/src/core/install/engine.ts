@@ -5,6 +5,7 @@ import { warning } from "../../lib/logger";
 import type { RegistryItemPayload } from "../../lib/schemas";
 import type { ComponentsConfig } from "../../types";
 import { resolveTree } from "./client";
+import { mergeCssRules } from "./css-rules";
 import { mergeCssVars } from "./css-vars";
 import {
   installNpmDeps,
@@ -55,6 +56,7 @@ export interface InstallResult {
   conflicts: string[];
   npmDeps: string[];
   cssVarsApplied: boolean;
+  cssRulesApplied: boolean;
 }
 
 function transformContent(
@@ -149,6 +151,34 @@ function applyCssVars(
   return changed;
 }
 
+function applyCss(
+  items: RegistryItemPayload[],
+  config: ComponentsConfig,
+  options: InstallOptions,
+): boolean {
+  const withCss = items.filter((item) => item.css);
+
+  if (withCss.length === 0 || options.dryRun) return false;
+
+  const cssPath = config.tailwind?.css;
+
+  if (!cssPath) {
+    warning("No tailwind.css path in components.json — skipped item CSS.");
+
+    return false;
+  }
+
+  let changed = false;
+
+  for (const item of withCss) {
+    if (mergeCssRules(resolve(options.cwd, cssPath), item.css ?? "")) {
+      changed = true;
+    }
+  }
+
+  return changed;
+}
+
 export interface InstallPlan {
   items: RegistryItemPayload[];
   planned: PlannedWrite[];
@@ -216,6 +246,7 @@ export async function installItems(
 
   const outcome = await applyWrites(planned, options);
   const cssVarsApplied = applyCssVars(items, config, options);
+  const cssRulesApplied = applyCss(items, config, options);
 
   return {
     items: items.map((item) => item.name),
@@ -224,5 +255,6 @@ export async function installItems(
     conflicts: outcome.conflicts,
     npmDeps,
     cssVarsApplied,
+    cssRulesApplied,
   };
 }

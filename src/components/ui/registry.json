@@ -1179,7 +1179,7 @@
       "name": "route-transition",
       "type": "registry:ui",
       "title": "Route Transition",
-      "description": "Route-change motion utilities: a keyed entrance fade (fade, fade-up, none) that replays when the transitionKey changes, and a fixed 2px top navigation progress bar with a grace delay, composite-only CSS trickle, and interruptible completion. Pairs with the view-transition lib helper and the kit's native View Transitions crossfade.",
+      "description": "Route-change motion utilities: a keyed entrance with seven variants (fade, fade-up, fade-down, slide-left, slide-right, zoom, none) — movement variants ride a gentle spring curve — that replays when the transitionKey changes, and a fixed glowing 2px top navigation progress bar with a grace delay, composite-only CSS trickle, and interruptible completion. Adding the item merges its motion CSS (spring token, keyframes, view-transition tuning) into your global stylesheet. Pairs with the view-transition lib helper and the kit's native View Transitions crossfade.",
       "categories": ["navigation", "animation"],
       "dependencies": ["class-variance-authority", "cn"],
       "files": [
@@ -1187,7 +1187,8 @@
           "path": "route-transition.tsx",
           "type": "registry:ui"
         }
-      ]
+      ],
+      "css": ":root {\n  --ease-spring: linear(0, 0.015, 0.0552, 0.1142, 0.1865, 0.2671, 0.352, 0.4379, 0.522, 0.6024, 0.6774, 0.7461, 0.8078, 0.8621, 0.9091, 0.9489, 0.9819, 1.0085, 1.0293, 1.0449, 1.056, 1.0631, 1.067, 1.0681, 1.067, 1.0642, 1.0601, 1.0552, 1.0497, 1.0439, 1.0381, 1.0324, 1.0269, 1.0218, 1.0171, 1.013, 1.0093, 1.0061, 1.0034, 1.0012, 0.9994, 0.998, 0.9969, 0.9962, 0.9957, 0.9954, 0.9954, 0.9954, 0.9956, 0.9959, 1);\n}\n\n@theme inline {\n  --animate-route-fade: route-fade 0.15s cubic-bezier(0.23, 1, 0.32, 1) both;\n  --animate-route-fade-up: route-fade-up 0.25s var(--ease-spring) both;\n  --animate-route-fade-down: route-fade-down 0.25s var(--ease-spring) both;\n  --animate-route-slide-left: route-slide-left 0.25s var(--ease-spring) both;\n  --animate-route-slide-right: route-slide-right 0.25s var(--ease-spring) both;\n  --animate-route-zoom: route-zoom 0.25s var(--ease-spring) both;\n  --animate-nav-progress: nav-progress 10s ease-out forwards;\n}\n\n@keyframes route-fade {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}\n\n@keyframes route-fade-up {\n  from { opacity: 0; transform: translateY(8px); }\n  to { opacity: 1; transform: translateY(0); }\n}\n\n@keyframes route-fade-down {\n  from { opacity: 0; transform: translateY(-8px); }\n  to { opacity: 1; transform: translateY(0); }\n}\n\n@keyframes route-slide-left {\n  from { opacity: 0; transform: translateX(24px); }\n  to { opacity: 1; transform: translateX(0); }\n}\n\n@keyframes route-slide-right {\n  from { opacity: 0; transform: translateX(-24px); }\n  to { opacity: 1; transform: translateX(0); }\n}\n\n@keyframes route-zoom {\n  from { opacity: 0; transform: scale(0.96); }\n  to { opacity: 1; transform: scale(1); }\n}\n\n@keyframes nav-progress {\n  0% { transform: scaleX(0); }\n  15% { transform: scaleX(0.4); }\n  40% { transform: scaleX(0.65); }\n  70% { transform: scaleX(0.8); }\n  100% { transform: scaleX(0.9); }\n}\n\n::view-transition-old(root),\n::view-transition-new(root) {\n  animation-duration: 150ms;\n  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);\n}\n\n@media (prefers-reduced-motion: reduce) {\n  ::view-transition-old(root),\n  ::view-transition-new(root) {\n    animation-duration: 0.01ms;\n  }\n\n  [data-slot=\"route-transition\"],\n  [data-slot=\"navigation-progress\"] {\n    animation-duration: 0.01ms !important;\n    transition-duration: 0.01ms !important;\n  }\n}"
     },
     {
       "name": "scroll-area",
