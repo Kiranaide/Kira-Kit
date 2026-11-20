@@ -13,6 +13,7 @@ import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { extractImports, packageNameOf } from "../src/core/registry/extract";
 import { libItemNameFor } from "../src/core/registry/lib-items";
+import type { SourceRegistryItem } from "../src/lib/schemas";
 
 const REPO_ROOT = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -51,6 +52,39 @@ interface ScaffoldItem {
   dependencies?: string[];
   registryDependencies?: string[];
   files: Array<{ path: string; type: "registry:ui" | "registry:hook" }>;
+  css?: string;
+  cssVars?: SourceRegistryItem["cssVars"];
+  docs?: string;
+}
+
+/** Curated fields the scaffold does not compute; carried over on reruns. */
+function loadExistingItems(dir: string): Map<string, SourceRegistryItem> {
+  const path = join(dir, "registry.json");
+
+  if (!existsSync(path)) return new Map();
+
+  // SAFETY: registry.json is this script's own output, validated by the
+  // registry loader on every build; only curated fields are read back.
+  const parsed = JSON.parse(readFileSync(path, "utf-8")) as {
+    items?: SourceRegistryItem[];
+  };
+
+  return new Map((parsed.items ?? []).map((item) => [item.name, item]));
+}
+
+/** Curated fields the scaffold does not compute; carried over on reruns. */
+function curatedFields(
+  prior: SourceRegistryItem | undefined,
+): Pick<ScaffoldItem, "css" | "cssVars" | "docs"> {
+  const curated: Pick<ScaffoldItem, "css" | "cssVars" | "docs"> = {};
+
+  if (prior?.css !== undefined) curated.css = prior.css;
+
+  if (prior?.cssVars !== undefined) curated.cssVars = prior.cssVars;
+
+  if (prior?.docs !== undefined) curated.docs = prior.docs;
+
+  return curated;
 }
 
 function buildItem(
@@ -59,6 +93,7 @@ function buildItem(
   type: "registry:ui" | "registry:hook",
   filesGlob: (name: string, ext: string) => string,
   metadata: Metadata,
+  existing: Map<string, SourceRegistryItem>,
 ): ScaffoldItem {
   const name = entry.replace(/\.(tsx|ts)$/, "");
   const ext = entry.slice(name.length);
@@ -121,6 +156,7 @@ function buildItem(
     files: [...new Map(files.map((f) => [f.path, f])).values()].sort((a, b) =>
       a.path.localeCompare(b.path),
     ),
+    ...curatedFields(existing.get(name)),
   };
 }
 
@@ -130,6 +166,7 @@ async function buildItems(
   filesGlob: (name: string, ext: string) => string,
 ): Promise<ScaffoldItem[]> {
   const metadata = loadMetadata();
+  const existing = loadExistingItems(dir);
   const entries = readdirSync(dir).filter((f) => /\.tsx?$/.test(f));
   const items: ScaffoldItem[] = [];
 
@@ -138,7 +175,7 @@ async function buildItems(
 
     if (SUPPORT_FILES.has(name)) continue;
 
-    items.push(buildItem(entry, dir, type, filesGlob, metadata));
+    items.push(buildItem(entry, dir, type, filesGlob, metadata, existing));
   }
 
   items.sort((a, b) => a.name.localeCompare(b.name));

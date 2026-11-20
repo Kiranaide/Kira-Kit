@@ -499,7 +499,7 @@ function renderDatePickerSectionPart4({
       // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This composite div groups controls or content without introducing fieldset form behavior, default styling, or a different public ref element.
       role="group"
       aria-label="Quick select"
-      className="flex gap-1 overflow-x-auto border-b border-border p-2 sm:min-w-37.5 sm:flex-col sm:overflow-visible sm:border-r sm:border-b-0 sm:p-3"
+      className="flex gap-1 overflow-x-auto border-b border-border p-2 max-sm:w-full max-sm:scrollbar-hide sm:min-w-37.5 sm:flex-col sm:overflow-visible sm:border-r sm:border-b-0 sm:p-3"
     >
       <p
         aria-hidden
@@ -519,7 +519,7 @@ function renderDatePickerSectionPart4({
             disabled={isPresetBlocked(presetValue)}
             onClick={() => handlePreset(presetValue)}
             className={cn(
-              "shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-left font-medium transition-colors",
+              "shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-left font-medium transition-colors max-sm:min-h-11",
               "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               "disabled:pointer-events-none disabled:opacity-40",
               active && "bg-primary/10 text-primary",
@@ -1525,7 +1525,7 @@ function renderDatePicker({
       >
         {isOpen && (
           <div className="flex flex-col">
-            <div className="flex flex-col sm:flex-row">
+            <div className="flex flex-col max-sm:items-center sm:flex-row">
               {showPresets &&
                 presets.length > 0 &&
                 renderDatePickerSectionPart4({

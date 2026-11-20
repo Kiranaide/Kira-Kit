@@ -171,7 +171,7 @@
   },
   "input": {
     "title": "Input",
-    "description": "A Base UI text input with four sizes, prefix and suffix content, clear and clipboard actions, and an announced character counter. The module also provides scrub-enabled numeric and formatted decimal inputs, debounced search, OTP fields, half-star ratings, password strength feedback, and separator-driven tag entry.",
+    "description": "A Base UI text input with five sizes, prefix and suffix content, clear and clipboard actions, and an announced character counter. The module also provides scrub-enabled numeric and formatted decimal inputs, debounced search, OTP fields, half-star ratings, password strength feedback, and separator-driven tag entry.",
     "categories": ["form"]
   },
   "input-group": {
@@ -233,6 +233,11 @@
     "title": "Resizable",
     "description": "Accessible horizontal and vertical panel groups built on react-resizable-panels, with three handle variants, optional grips, coarse-pointer targets, collapsible panels, and validated autoSaveId layout persistence. KiraResizable renders data-driven panels with hide/show, restore, and balance controls plus inert collapsed content.",
     "categories": ["layout", "utility"]
+  },
+  "route-transition": {
+    "title": "Route Transition",
+    "description": "Route-change motion utilities: a keyed entrance with seven variants (fade, fade-up, fade-down, slide-left, slide-right, zoom, none) — movement variants ride a gentle spring curve — that replays when the transitionKey changes, and a fixed glowing 2px top navigation progress bar with a grace delay, composite-only CSS trickle, and interruptible completion. Adding the item merges its motion CSS (spring token, keyframes, view-transition tuning) into your global stylesheet. Pairs with the view-transition lib helper and the kit's native View Transitions crossfade.",
+    "categories": ["navigation", "animation"]
   },
   "scroll-area": {
     "title": "Scroll Area",

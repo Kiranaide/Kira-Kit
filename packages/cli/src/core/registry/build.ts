@@ -10,6 +10,11 @@ import {
   type SourceRegistryItem,
 } from "../../lib/schemas";
 import { buildBaseCss } from "./css-assets";
+import {
+  deriveMotionCss,
+  extractMotionAssets,
+  type MotionAssets,
+} from "./motion-css";
 import type { LoadedRegistry } from "./loader";
 
 export const REGISTRY_SCHEMA_URL =
@@ -25,7 +30,28 @@ function itemPayload(
   repoRoot: string,
   item: SourceRegistryItem,
   baseDir: string,
+  motion?: MotionAssets,
 ): RegistryItemPayload {
+  const files = (item.files ?? []).map((file) => ({
+    path: relative(repoRoot, join(baseDir, file.path)).replaceAll("\\", "/"),
+    type: file.type ?? item.type,
+    target: file.target,
+    content: readFileSync(join(baseDir, file.path), "utf-8"),
+  }));
+
+  let css = item.css;
+
+  if (motion) {
+    const source = files
+      .filter((file) => /\.(tsx|ts)$/.test(file.path))
+      .map((file) => file.content)
+      .join("\n");
+
+    const derived = deriveMotionCss(source, motion, item.css);
+
+    if (derived) css = css ? `${css}\n\n${derived}` : derived;
+  }
+
   return {
     $schema: REGISTRY_ITEM_SCHEMA_URL,
     name: item.name,
@@ -35,14 +61,9 @@ function itemPayload(
     categories: item.categories,
     dependencies: item.dependencies,
     registryDependencies: item.registryDependencies,
-    files: (item.files ?? []).map((file) => ({
-      path: relative(repoRoot, join(baseDir, file.path)).replaceAll("\\", "/"),
-      type: file.type ?? item.type,
-      target: file.target,
-      content: readFileSync(join(baseDir, file.path), "utf-8"),
-    })),
+    files,
     cssVars: item.cssVars,
-    css: item.css,
+    css,
     docs: item.docs,
   };
 }
@@ -83,8 +104,19 @@ export function buildPayloads(
   repoRoot: string,
   loaded: LoadedRegistry,
 ): RegistryItemPayload[] {
+  const motion = extractMotionAssets(
+    readFileSync(join(repoRoot, "src/index.css"), "utf-8") +
+      "\n" +
+      readFileSync(join(repoRoot, "src/styles/kira-utilities.css"), "utf-8"),
+  );
+
   const payloads = loaded.items.map((item) =>
-    itemPayload(repoRoot, item, loaded.origins.get(item.name) ?? repoRoot),
+    itemPayload(
+      repoRoot,
+      item,
+      loaded.origins.get(item.name) ?? repoRoot,
+      motion,
+    ),
   );
 
   payloads.push(kiraBasePayload(repoRoot));

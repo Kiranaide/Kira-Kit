@@ -1395,7 +1395,7 @@ const calendarPageAPIReferenceSections = [
         type: "boolean",
         default: "false",
         description:
-          "Month transition. Requires DayPicker style.css keyframes.",
+          "Month transition. Keyframes ship with the calendar registry item's CSS.",
       },
       {
         prop: "size",

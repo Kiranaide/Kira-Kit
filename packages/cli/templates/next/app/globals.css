@@ -593,18 +593,6 @@
   }
 }
 
-@keyframes scan-overlay-pulse-glow {
-  0%,
-  100% {
-    opacity: 1;
-    filter: drop-shadow(0 0 4px currentColor);
-  }
-  50% {
-    opacity: 0.7;
-    filter: drop-shadow(0 0 8px currentColor);
-  }
-}
-
 @keyframes scan-overlay-corner-pulse {
   0%,
   100% {
@@ -675,6 +663,28 @@
       margin: 0;
       width: 100%;
       max-height: 85dvh;
+      overscroll-behavior: contain;
+      translate: 0 100%;
+      /* iOS-style sheet curve; exit runs faster than enter */
+      transition:
+        opacity 200ms ease-out,
+        translate 200ms cubic-bezier(0.32, 0.72, 0, 1),
+        overlay 200ms allow-discrete,
+        display 200ms allow-discrete;
+    }
+    .date-picker-popover:popover-open {
+      translate: 0 0;
+      transition:
+        opacity 250ms ease-out,
+        translate 300ms cubic-bezier(0.32, 0.72, 0, 1),
+        overlay 300ms allow-discrete,
+        display 300ms allow-discrete;
+    }
+    @starting-style {
+      .date-picker-popover:popover-open {
+        opacity: 0;
+        translate: 0 100%;
+      }
     }
     .date-picker-popover::backdrop {
       background: rgb(0 0 0 / 0.4);
@@ -749,6 +759,32 @@
       margin: 0;
       width: 100%;
       max-height: 85dvh;
+      overscroll-behavior: contain;
+      translate: 0 100%;
+      /* iOS-style sheet curve; exit runs faster than enter */
+      transition:
+        opacity 200ms ease-out,
+        translate 200ms cubic-bezier(0.32, 0.72, 0, 1),
+        overlay 200ms allow-discrete,
+        display 200ms allow-discrete;
+    }
+    .time-picker-popover:popover-open {
+      translate: 0 0;
+      transition:
+        opacity 250ms ease-out,
+        translate 300ms cubic-bezier(0.32, 0.72, 0, 1),
+        overlay 300ms allow-discrete,
+        display 300ms allow-discrete;
+    }
+    @starting-style {
+      .time-picker-popover:popover-open {
+        opacity: 0;
+        translate: 0 100%;
+      }
+    }
+    /* Panels keep a fixed width; center them in the full-width sheet */
+    .time-picker-popover > * {
+      margin-inline: auto;
     }
     .time-picker-popover::backdrop {
       background: rgb(0 0 0 / 0.4);
@@ -760,4 +796,114 @@
       transition: none;
     }
   }
+}
+
+/* Calendar month transition (`animate` prop) — adapted from react-day-picker
+   (MIT, https://github.com/gpbl/react-day-picker) style.css and namespaced so
+   the kit never needs the rdp-* stylesheet. */
+@keyframes kira-calendar-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes kira-calendar-slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes kira-calendar-slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes kira-calendar-slide-out-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes kira-calendar-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes kira-calendar-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.kira-calendar-weeks-before-enter {
+  animation: kira-calendar-slide-in-left
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+.kira-calendar-weeks-before-exit {
+  animation: kira-calendar-slide-out-left
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+.kira-calendar-weeks-after-enter {
+  animation: kira-calendar-slide-in-right
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+.kira-calendar-weeks-after-exit {
+  animation: kira-calendar-slide-out-right
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+[dir="rtl"] .kira-calendar-weeks-after-enter {
+  animation-name: kira-calendar-slide-in-left;
+}
+
+[dir="rtl"] .kira-calendar-weeks-before-exit {
+  animation-name: kira-calendar-slide-out-right;
+}
+
+[dir="rtl"] .kira-calendar-weeks-before-enter {
+  animation-name: kira-calendar-slide-in-right;
+}
+
+[dir="rtl"] .kira-calendar-weeks-after-exit {
+  animation-name: kira-calendar-slide-out-left;
+}
+
+.kira-calendar-caption-before-enter,
+.kira-calendar-caption-after-enter {
+  animation: kira-calendar-fade-in var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+.kira-calendar-caption-before-exit,
+.kira-calendar-caption-after-exit {
+  animation: kira-calendar-fade-out
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
 }
