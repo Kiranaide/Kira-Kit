@@ -593,18 +593,6 @@
   }
 }
 
-@keyframes scan-overlay-pulse-glow {
-  0%,
-  100% {
-    opacity: 1;
-    filter: drop-shadow(0 0 4px currentColor);
-  }
-  50% {
-    opacity: 0.7;
-    filter: drop-shadow(0 0 8px currentColor);
-  }
-}
-
 @keyframes scan-overlay-corner-pulse {
   0%,
   100% {
@@ -760,4 +748,114 @@
       transition: none;
     }
   }
+}
+
+/* Calendar month transition (`animate` prop) — adapted from react-day-picker
+   (MIT, https://github.com/gpbl/react-day-picker) style.css and namespaced so
+   the kit never needs the rdp-* stylesheet. */
+@keyframes kira-calendar-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes kira-calendar-slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes kira-calendar-slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes kira-calendar-slide-out-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes kira-calendar-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes kira-calendar-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.kira-calendar-weeks-before-enter {
+  animation: kira-calendar-slide-in-left
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+.kira-calendar-weeks-before-exit {
+  animation: kira-calendar-slide-out-left
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+.kira-calendar-weeks-after-enter {
+  animation: kira-calendar-slide-in-right
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+.kira-calendar-weeks-after-exit {
+  animation: kira-calendar-slide-out-right
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+[dir="rtl"] .kira-calendar-weeks-after-enter {
+  animation-name: kira-calendar-slide-in-left;
+}
+
+[dir="rtl"] .kira-calendar-weeks-before-exit {
+  animation-name: kira-calendar-slide-out-right;
+}
+
+[dir="rtl"] .kira-calendar-weeks-before-enter {
+  animation-name: kira-calendar-slide-in-right;
+}
+
+[dir="rtl"] .kira-calendar-weeks-after-exit {
+  animation-name: kira-calendar-slide-out-left;
+}
+
+.kira-calendar-caption-before-enter,
+.kira-calendar-caption-after-enter {
+  animation: kira-calendar-fade-in var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+.kira-calendar-caption-before-exit,
+.kira-calendar-caption-after-exit {
+  animation: kira-calendar-fade-out
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
 }

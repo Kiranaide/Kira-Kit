@@ -88,7 +88,7 @@ interface CalendarBaseProps {
   showWeekNumber?: boolean;
   fixedWeeks?: boolean;
   autoFocus?: boolean;
-  /** Month transition animation. Requires DayPicker's style.css keyframes. */
+  /** Month transition animation. The keyframes ship with the calendar registry item's CSS. */
   animate?: boolean;
   "aria-label"?: string;
   /** Live-region content announced politely by DayPicker. Defaults to an sr-only selection summary. */
@@ -1499,6 +1499,16 @@ function getCalendarClasses({
     range_middle: "bg-primary/10",
     range_end: "rounded-r-md bg-primary/10",
     hidden: "invisible",
+    // Month transition classes — styled by the calendar item's registry CSS,
+    // so `animate` works without importing react-day-picker/style.css.
+    weeks_before_enter: "kira-calendar-weeks-before-enter",
+    weeks_before_exit: "kira-calendar-weeks-before-exit",
+    weeks_after_enter: "kira-calendar-weeks-after-enter",
+    weeks_after_exit: "kira-calendar-weeks-after-exit",
+    caption_before_enter: "kira-calendar-caption-before-enter",
+    caption_before_exit: "kira-calendar-caption-before-exit",
+    caption_after_enter: "kira-calendar-caption-after-enter",
+    caption_after_exit: "kira-calendar-caption-after-exit",
     ...classNamesProp,
   };
 

@@ -320,7 +320,8 @@
           "path": "prop-guards.ts",
           "type": "registry:ui"
         }
-      ]
+      ],
+      "css": "/* Calendar month transition (`animate` prop) — adapted from react-day-picker\n   (MIT, https://github.com/gpbl/react-day-picker) style.css and namespaced so\n   the kit never needs the rdp-* stylesheet. */\n@keyframes kira-calendar-slide-in-left {\n  from { transform: translateX(-100%); }\n  to { transform: translateX(0); }\n}\n\n@keyframes kira-calendar-slide-in-right {\n  from { transform: translateX(100%); }\n  to { transform: translateX(0); }\n}\n\n@keyframes kira-calendar-slide-out-left {\n  from { transform: translateX(0); }\n  to { transform: translateX(-100%); }\n}\n\n@keyframes kira-calendar-slide-out-right {\n  from { transform: translateX(0); }\n  to { transform: translateX(100%); }\n}\n\n@keyframes kira-calendar-fade-in {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}\n\n@keyframes kira-calendar-fade-out {\n  from { opacity: 1; }\n  to { opacity: 0; }\n}\n\n.kira-calendar-weeks-before-enter {\n  animation: kira-calendar-slide-in-left var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-before-exit {\n  animation: kira-calendar-slide-out-left var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-after-enter {\n  animation: kira-calendar-slide-in-right var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-after-exit {\n  animation: kira-calendar-slide-out-right var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-after-enter {\n  animation-name: kira-calendar-slide-in-left;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-before-exit {\n  animation-name: kira-calendar-slide-out-right;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-before-enter {\n  animation-name: kira-calendar-slide-in-right;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-after-exit {\n  animation-name: kira-calendar-slide-out-left;\n}\n\n.kira-calendar-caption-before-enter,\n.kira-calendar-caption-after-enter {\n  animation: kira-calendar-fade-in var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-caption-before-exit,\n.kira-calendar-caption-after-exit {\n  animation: kira-calendar-fade-out var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-slot=\"calendar\"],\n  [data-slot=\"calendar\"] * {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n  }\n}\n"
     },
     {
       "name": "camera",
@@ -815,13 +816,13 @@
       "description": "A polymorphic flexbox primitive whose direction, wrapping, justification, alignment, and gap props accept either fixed values or breakpoint maps from base through 2xl. It supports inline flex and semantic elements such as forms, navigation, lists, and fieldsets while preserving element-specific props and refs.",
       "categories": ["layout"],
       "dependencies": ["class-variance-authority", "cn"],
+      "registryDependencies": ["@kira-kit/component-prop-guards"],
       "files": [
         {
           "path": "flex.tsx",
           "type": "registry:ui"
         }
-      ],
-      "registryDependencies": ["@kira-kit/component-prop-guards"]
+      ]
     },
     {
       "name": "grid",
@@ -1659,13 +1660,13 @@
         "class-variance-authority",
         "cn"
       ],
+      "registryDependencies": ["@kira-kit/component-prop-guards"],
       "files": [
         {
           "path": "toast.tsx",
           "type": "registry:ui"
         }
-      ],
-      "registryDependencies": ["@kira-kit/component-prop-guards"]
+      ]
     },
     {
       "name": "toggle",

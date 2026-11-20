@@ -33,13 +33,13 @@
       "title": "useCamera",
       "description": "Controls browser camera previews, photo capture, video recording, device switching, zoom, focus, flash, timers, and optional keyboard, gesture, and voice input. It returns videoRef and gestureContainerRef plus stream, permission, device, and capture state and actions, with options for facingMode, media constraints, autoStart, capture format and quality, and lifecycle callbacks.",
       "categories": ["hooks", "media"],
+      "registryDependencies": ["@kira-kit/camera-lib"],
       "files": [
         {
           "path": "use-camera.ts",
           "type": "registry:hook"
         }
-      ],
-      "registryDependencies": ["@kira-kit/camera-lib"]
+      ]
     },
     {
       "name": "use-color-picker",
@@ -48,13 +48,13 @@
       "description": "Manages controlled or uncontrolled HSVA color and alpha state and returns setters, recent colors, generated harmonies, contrast ratios, formatting, and clipboard-copy helpers. Use it to build color-picker interfaces with value/defaultValue, onValueChange, showAlpha, maxRecentColors, disabled, and readOnly options.",
       "categories": ["hooks", "form"],
       "dependencies": ["@uiw/color-convert"],
+      "registryDependencies": ["@kira-kit/color-picker-lib"],
       "files": [
         {
           "path": "use-color-picker.ts",
           "type": "registry:hook"
         }
-      ],
-      "registryDependencies": ["@kira-kit/color-picker-lib"]
+      ]
     },
     {
       "name": "use-focus-manager",
