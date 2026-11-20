@@ -1,6 +1,6 @@
 # Kira Kit
 
-> Enterprise UI kit built on Base UI primitives, 104 components and hooks.
+> Enterprise UI kit built on Base UI primitives, 106 components and hooks.
 
 Kira Kit is a component registry. Install items with the kira-kit CLI:
 `kira-kit add @kira-kit/<name>`.
@@ -62,6 +62,7 @@ Items:
 - [Progress Indicator](https://kira-kit.vercel.app/docs/progress-indicator.md): A step-based indicator with horizontal, vertical, and responsive layouts, clickable steps, optional steps, semantic tones, and pending/active/completed/error/paused/skipped states. KiraProgressIndicator adds milestone summaries, finished counts, current-phase linear progress, live status, and retry for failed steps.
 - [Radio Group](https://kira-kit.vercel.app/docs/radio-group.md): Base UI radio groups with labeled options, rich RadioCard metadata, and a RadioButtonGroup whose GSAP indicator slides between selections. KiraRadioGroup provides data-driven list, cards, and segmented layouts with selected-option details, loading skeletons, empty states, and field validation.
 - [Resizable](https://kira-kit.vercel.app/docs/resizable.md): Accessible horizontal and vertical panel groups built on react-resizable-panels, with three handle variants, optional grips, coarse-pointer targets, collapsible panels, and validated autoSaveId layout persistence. KiraResizable renders data-driven panels with hide/show, restore, and balance controls plus inert collapsed content.
+- [Route Transition](https://kira-kit.vercel.app/docs/route-transition.md): Route-change motion utilities: a keyed entrance fade (fade, fade-up, none) that replays when the transitionKey changes, and a fixed 2px top navigation progress bar with a grace delay, composite-only CSS trickle, and interruptible completion. Pairs with the view-transition lib helper and the kit's native View Transitions crossfade.
 - [Scroll Area](https://kira-kit.vercel.app/docs/scroll-area.md): Vertical, horizontal, or dual scrolling with three scrollbar thicknesses, always-visible or revealed bars, overflow shadows, and composable viewport, content, thumb, and corner primitives. KiraScrollArea's followOutput mode tracks streaming content only while the reader stays at the latest output, reports unseen activity, and offers Jump to latest.
 - [Select](https://kira-kit.vercel.app/docs/select.md): A Base UI Select and Combobox family supporting grouped options, multiple selection with removable chips, fuzzy and debounced asynchronous search, creatable options, and virtualized long lists. KiraSelect also provides clear controls, loading/empty/create states, three trigger variants, invalid styling, and reduced-motion-aware option staggering.
 - [Separator](https://kira-kit.vercel.app/docs/separator.md): Horizontal or vertical separators with six thicknesses, solid/dashed/dotted/gradient styles, semantic colors, labels, icons, alignment, spacing, and insets. KiraSeparator can show counts and descriptions, run a pending-aware action, or control a collapsible section with keepMounted and motion options.
@@ -108,6 +109,7 @@ Items:
 - [Component Refs](https://kira-kit.vercel.app/docs/component-refs.md): Merges multiple refs into a single callback ref for composed components such as code block and color picker.
 - [Data Table Helpers](https://kira-kit.vercel.app/docs/data-table-helpers.md): Sorting, filtering, and sample-data helpers used by the data table documentation demos.
 - [Responsive Layout](https://kira-kit.vercel.app/docs/layout-responsive.md): Responsive class composition for layout primitives like stack and spacer, driven by the kit CSS safelists.
+- [View Transition Utility](https://kira-kit.vercel.app/docs/view-transition.md): Reduced-motion-aware wrapper around the native View Transitions API: runs DOM updates inside document.startViewTransition when supported, and applies them instantly otherwise.
 - [Kira Default](https://kira-kit.vercel.app/docs/theme-default.md): The kit's own docs-app theme: a pink primary on neutral surfaces with a compact 0.45rem radius.
 - [Ember Press](https://kira-kit.vercel.app/docs/theme-ember-press.md): A burnished terracotta theme for editorial platforms, independent publications, and content-rich products with a confident point of view.
 - [Oxblood Atelier](https://kira-kit.vercel.app/docs/theme-oxblood-atelier.md): A deep wine-red theme for luxury services, cultural institutions, and membership products that need drama in measured doses.

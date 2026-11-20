@@ -93,6 +93,14 @@
       "description": "Responsive class composition for layout primitives like stack and spacer, driven by the kit CSS safelists.",
       "categories": ["lib", "layout"],
       "files": [{ "path": "layout-responsive.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "view-transition",
+      "type": "registry:lib",
+      "title": "View Transition Utility",
+      "description": "Reduced-motion-aware wrapper around the native View Transitions API: runs DOM updates inside document.startViewTransition when supported, and applies them instantly otherwise.",
+      "categories": ["lib", "animation"],
+      "files": [{ "path": "view-transition.ts", "type": "registry:lib" }]
     }
   ]
 }
