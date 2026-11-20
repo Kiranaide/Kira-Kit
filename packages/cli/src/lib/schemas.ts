@@ -73,6 +73,8 @@ export const sourceRegistryItemSchema = z.object({
     )
     .optional(),
   cssVars: cssVarsSchema.optional(),
+  /** Raw CSS (keyframes, @theme tokens, rules) merged into the consumer's global stylesheet on add. */
+  css: z.string().optional(),
   docs: z.string().optional(),
 });
 
@@ -112,6 +114,7 @@ export const registryItemPayloadSchema = z.looseObject({
     )
     .optional(),
   cssVars: cssVarsSchema.optional(),
+  css: z.string().optional(),
   docs: z.string().optional(),
 });
 

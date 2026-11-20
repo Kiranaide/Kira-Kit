@@ -123,8 +123,13 @@ export async function addComponents(options: AddOptions): Promise<number> {
     },
   );
 
+  const cssNote =
+    result.cssVarsApplied || result.cssRulesApplied
+      ? " Global stylesheet updated."
+      : "";
+
   success(
-    `Added ${result.items.length} item(s): ${result.written.length} file(s) written, ${result.skipped.length} skipped.`,
+    `Added ${result.items.length} item(s): ${result.written.length} file(s) written, ${result.skipped.length} skipped.${cssNote}`,
   );
 
   return 0;

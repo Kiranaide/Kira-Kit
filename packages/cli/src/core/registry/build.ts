@@ -42,6 +42,7 @@ function itemPayload(
       content: readFileSync(join(baseDir, file.path), "utf-8"),
     })),
     cssVars: item.cssVars,
+    css: item.css,
     docs: item.docs,
   };
 }

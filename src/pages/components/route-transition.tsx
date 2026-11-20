@@ -103,11 +103,82 @@ const demoPages = {
 
 type DemoPage = keyof typeof demoPages;
 
-type FadeVariant = "fade" | "fade-up" | "none";
+type FadeVariant =
+  | "fade"
+  | "fade-up"
+  | "fade-down"
+  | "slide-left"
+  | "slide-right"
+  | "zoom"
+  | "none";
 
 const demoPageOrder: DemoPage[] = ["overview", "components", "settings"];
 
-const fadeVariantOrder: FadeVariant[] = ["fade", "fade-up", "none"];
+const fadeVariantOrder: FadeVariant[] = [
+  "fade",
+  "fade-up",
+  "fade-down",
+  "slide-left",
+  "slide-right",
+  "zoom",
+  "none",
+];
+
+type GalleryVariant = Exclude<FadeVariant, "none">;
+
+const galleryVariantOrder: GalleryVariant[] = [
+  "fade",
+  "fade-up",
+  "fade-down",
+  "slide-left",
+  "slide-right",
+  "zoom",
+];
+
+const galleryVariantNotes = {
+  fade: "Opacity only · 150ms",
+  "fade-up": "8px spring rise · 250ms",
+  "fade-down": "8px spring drop · 250ms",
+  "slide-left": "Spring from the right · 250ms",
+  "slide-right": "Spring from the left · 250ms",
+  zoom: "Spring scale 0.96 → 1 · 250ms",
+} satisfies Record<GalleryVariant, string>;
+
+function VariantGalleryDemo() {
+  const [run, setRun] = React.useState(0);
+
+  return (
+    <div className="space-y-4">
+      <Button size="sm" onClick={() => setRun((current) => current + 1)}>
+        Replay all
+      </Button>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {galleryVariantOrder.map((value) => (
+          <div
+            key={value}
+            className="overflow-hidden rounded-lg border border-border"
+          >
+            <RouteTransition
+              transitionKey={`${value}-${run}`}
+              variant={value}
+              className="space-y-1 p-4"
+            >
+              <p className="text-sm font-medium">{value}</p>
+              <p className="text-xs text-muted-foreground">
+                {galleryVariantNotes[value]}
+              </p>
+            </RouteTransition>
+          </div>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Every variant is transform/opacity only and settles within 250ms.
+        Movement variants ride a gentle spring curve. See the Transitions guide
+        under Documentation for when to use each.
+      </p>
+    </div>
+  );
+}
 
 function RouteFadeDemo() {
   const [page, setPage] = React.useState<DemoPage>("overview");
@@ -151,9 +222,9 @@ function RouteFadeDemo() {
         </RouteTransition>
       </div>
       <p className="text-xs text-muted-foreground">
-        The entrance is opacity-only at 150ms (fade-up adds a 4px rise at 200ms)
-        — fast enough for navigation you do dozens of times a day. Reduced
-        motion shows content instantly.
+        The entrance is opacity-only at 150ms (fade-up adds an 8px spring rise
+        at 250ms) — fast enough for navigation you do dozens of times a day.
+        Reduced motion shows content instantly.
       </p>
     </div>
   );
@@ -289,6 +360,19 @@ const routeTransitionPageDemoTabsTabs = [
     ),
   },
   {
+    value: "gallery",
+    label: "Variant gallery",
+    demo: (
+      <DemoWrapper
+        title="All variants"
+        description="Replay every entrance side by side and pick the one that fits your navigation."
+        code={fadeCode}
+      >
+        <VariantGalleryDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "progress",
     label: "Navigation progress",
     demo: (
@@ -329,10 +413,10 @@ const routeTransitionPageAPIReferenceSections = [
       },
       {
         prop: "variant",
-        type: '"fade" | "fade-up" | "none"',
+        type: '"fade" | "fade-up" | "fade-down" | "slide-left" | "slide-right" | "zoom" | "none"',
         default: '"fade"',
         description:
-          "fade: 150ms opacity entrance. fade-up: adds a 4px rise at 200ms. none: layout wrapper only.",
+          "fade: 150ms opacity entrance. fade-up / fade-down: 8px spring rise or drop at 250ms. slide-left / slide-right: 24px directional spring travel at 250ms (left enters from the right, for forward navigation). zoom: spring scale 0.96 to 1 at 250ms. none: layout wrapper only.",
       },
       {
         prop: "className",
@@ -391,7 +475,13 @@ const routeTransitionPageChangelogEntries = [
         type: "added",
         title: "RouteTransition + NavigationProgress",
         description:
-          "Keyed entrance fade (fade / fade-up / none) and a fixed 2px top progress bar with a grace delay, CSS trickle, and interruptible completion.",
+          "Keyed entrance fade and a fixed 2px top progress bar with a grace delay, CSS trickle, and interruptible completion.",
+      },
+      {
+        type: "added",
+        title: "Six entrance variants + gallery",
+        description:
+          "fade, fade-up, fade-down, slide-left, slide-right, and zoom (plus none), with a replayable gallery demo and a choosing-a-variant guide at /docs/transitions.",
       },
       {
         type: "added",

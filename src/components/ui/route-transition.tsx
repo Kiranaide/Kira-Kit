@@ -8,6 +8,10 @@ const routeTransitionVariants = cva("", {
     variant: {
       fade: "animate-route-fade motion-reduce:animate-none",
       "fade-up": "animate-route-fade-up motion-reduce:animate-none",
+      "fade-down": "animate-route-fade-down motion-reduce:animate-none",
+      "slide-left": "animate-route-slide-left motion-reduce:animate-none",
+      "slide-right": "animate-route-slide-right motion-reduce:animate-none",
+      zoom: "animate-route-zoom motion-reduce:animate-none",
       none: "",
     },
   },
@@ -88,7 +92,7 @@ function NavigationProgress({
       role="progressbar"
       aria-label="Loading page"
       className={cn(
-        "pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 origin-left bg-primary",
+        "pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 origin-left bg-primary drop-shadow-[0_0_6px_var(--primary)]",
         phase === "loading" && "animate-nav-progress",
         className,
       )}

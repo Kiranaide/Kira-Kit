@@ -48,6 +48,12 @@ const docsThemingRoute = createRoute({
   component: lazyRouteComponent(() => import("@/pages/docs/theming")),
 });
 
+const docsTransitionsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/docs/transitions",
+  component: lazyRouteComponent(() => import("@/pages/docs/transitions")),
+});
+
 const docsCliRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/docs/cli",
@@ -580,6 +586,7 @@ const routeTree = rootRoute.addChildren([
   docsIntroductionRoute,
   docsInstallationRoute,
   docsThemingRoute,
+  docsTransitionsRoute,
   docsCliRoute,
   docsTypesetRoute,
   docsFormRoute,

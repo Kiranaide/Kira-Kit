@@ -123,6 +123,9 @@
             },
             "additionalProperties": {}
           },
+          "css": {
+            "type": "string"
+          },
           "docs": {
             "type": "string"
           }

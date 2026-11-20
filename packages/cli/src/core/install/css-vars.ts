@@ -15,7 +15,7 @@ const SCOPE_SELECTOR: Record<Scope, string> = {
   theme: "@theme inline",
 };
 
-interface TopLevelBlock {
+export interface TopLevelBlock {
   selector: string;
   /** Index of the opening brace. */
   open: number;
@@ -81,7 +81,7 @@ function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function upsertDeclarations(
+export function upsertDeclarations(
   body: string,
   vars: Record<string, string>,
 ): string {

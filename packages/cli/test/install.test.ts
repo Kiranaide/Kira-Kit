@@ -92,6 +92,20 @@ function libPayload(): RegistryItemPayload {
   };
 }
 
+function motionPayload(): RegistryItemPayload {
+  return {
+    name: "route-transition",
+    type: "registry:ui",
+    files: [
+      {
+        path: "src/components/ui/route-transition.tsx",
+        content: "export {};\n",
+      },
+    ],
+    css: ":root {\n  --ease-spring: linear(0, 1);\n}\n\n@theme inline {\n  --animate-route-fade: route-fade 0.15s ease-out both;\n}\n\n@keyframes route-fade {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}\n",
+  };
+}
+
 beforeEach(() => {
   installCalls = [];
 });
@@ -249,5 +263,48 @@ describe("installItems (css and config)", () => {
         { cwd: dir, yes: true, installer: fakeInstaller },
       ),
     ).rejects.toThrow("No components.json");
+  });
+});
+
+describe("installItems (item css)", () => {
+  it("merges item css into the global stylesheet, idempotently", async () => {
+    const dir = tempConsumer();
+
+    const result = await installItems(
+      { items: [motionPayload()] },
+      { cwd: dir, yes: true, installer: fakeInstaller },
+    );
+
+    const css = readFileSync(join(dir, "src/index.css"), "utf-8");
+
+    expect(result.cssRulesApplied).toBe(true);
+    expect(css).toContain("--ease-spring: linear(0, 1);");
+    expect(css).toContain(
+      "--animate-route-fade: route-fade 0.15s ease-out both;",
+    );
+    expect(css).toContain("@keyframes route-fade");
+    expect(css).toContain("--primary: oklch(0.59 0.22 1);");
+
+    const again = await installItems(
+      { items: [motionPayload()] },
+      { cwd: dir, yes: true, installer: fakeInstaller },
+    );
+
+    expect(again.cssRulesApplied).toBe(false);
+    expect(readFileSync(join(dir, "src/index.css"), "utf-8")).toBe(css);
+  });
+
+  it("skips item css on dry run", async () => {
+    const dir = tempConsumer();
+
+    const result = await installItems(
+      { items: [motionPayload()] },
+      { cwd: dir, yes: true, dryRun: true, installer: fakeInstaller },
+    );
+
+    expect(result.cssRulesApplied).toBe(false);
+    expect(readFileSync(join(dir, "src/index.css"), "utf-8")).not.toContain(
+      "@keyframes route-fade",
+    );
   });
 });
