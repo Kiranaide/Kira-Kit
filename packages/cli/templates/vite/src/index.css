@@ -663,6 +663,28 @@
       margin: 0;
       width: 100%;
       max-height: 85dvh;
+      overscroll-behavior: contain;
+      translate: 0 100%;
+      /* iOS-style sheet curve; exit runs faster than enter */
+      transition:
+        opacity 200ms ease-out,
+        translate 200ms cubic-bezier(0.32, 0.72, 0, 1),
+        overlay 200ms allow-discrete,
+        display 200ms allow-discrete;
+    }
+    .date-picker-popover:popover-open {
+      translate: 0 0;
+      transition:
+        opacity 250ms ease-out,
+        translate 300ms cubic-bezier(0.32, 0.72, 0, 1),
+        overlay 300ms allow-discrete,
+        display 300ms allow-discrete;
+    }
+    @starting-style {
+      .date-picker-popover:popover-open {
+        opacity: 0;
+        translate: 0 100%;
+      }
     }
     .date-picker-popover::backdrop {
       background: rgb(0 0 0 / 0.4);
@@ -737,6 +759,32 @@
       margin: 0;
       width: 100%;
       max-height: 85dvh;
+      overscroll-behavior: contain;
+      translate: 0 100%;
+      /* iOS-style sheet curve; exit runs faster than enter */
+      transition:
+        opacity 200ms ease-out,
+        translate 200ms cubic-bezier(0.32, 0.72, 0, 1),
+        overlay 200ms allow-discrete,
+        display 200ms allow-discrete;
+    }
+    .time-picker-popover:popover-open {
+      translate: 0 0;
+      transition:
+        opacity 250ms ease-out,
+        translate 300ms cubic-bezier(0.32, 0.72, 0, 1),
+        overlay 300ms allow-discrete,
+        display 300ms allow-discrete;
+    }
+    @starting-style {
+      .time-picker-popover:popover-open {
+        opacity: 0;
+        translate: 0 100%;
+      }
+    }
+    /* Panels keep a fixed width; center them in the full-width sheet */
+    .time-picker-popover > * {
+      margin-inline: auto;
     }
     .time-picker-popover::backdrop {
       background: rgb(0 0 0 / 0.4);

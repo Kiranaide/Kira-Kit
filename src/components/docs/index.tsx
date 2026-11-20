@@ -127,7 +127,7 @@ export function DemoWrapper({
       </CardHeader>
       <CardContent className="pt-6">
         {view === "preview" ? (
-          <div className={cn("min-h-[200px]", previewClassName)}>
+          <div className={cn("sm:min-h-[200px]", previewClassName)}>
             {children}
           </div>
         ) : (
