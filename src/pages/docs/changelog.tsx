@@ -41,6 +41,36 @@ const releases: Release[] = [
     changes: [
       {
         type: "fixed",
+        title: "The whole repository lints clean under strict oxlint",
+        description:
+          "485 errors are gone without relaxing a rule: section dividers and name-echo comments were deleted, why-comments over the four-line cap were cut to the constraint they protect, and doc-sample strings that looked like template literals now carry reasoned suppressions. The strict @kiranaide/oxlint-kit presets are the installed config. Source changes are real but narrow: promise executors no longer resolve with the timer id, the carousel's child-index cursor avoids a React Compiler immutability violation, and two test helpers stopped reading the wall clock.",
+      },
+      {
+        type: "changed",
+        title: "Table cells hold to one line",
+        description:
+          "TableHead and TableCell are whitespace-nowrap now, so a column sizes to its content instead of breaking a phrase mid-word at narrow widths. The data-table bulk-action count no longer splits, and its pagination arrows default to icon-only. Long free text is yours to wrap.",
+      },
+      {
+        type: "removed",
+        title: "Invisible ellipsis placeholders in pagination",
+        description:
+          "The desktop range stopped padding the slots where an ellipsis would appear, so the footer is as wide as the pages it shows and edge pages carry no dead space beside the buttons.",
+      },
+      {
+        type: "fixed",
+        title: "DatePicker stops logging every selection",
+        description:
+          "A debug console.log left in the select handler during the mobile sheet work fired on every pick, production builds included.",
+      },
+      {
+        type: "added",
+        title: "Changelog coverage on every component page",
+        description:
+          "Flex gained the Changelog section it was missing, so each of the 73 pages that documents an installable component now records its own version history alongside this page. The six pattern pages (color-usage, image, layout-utilities, modal, typography, video-player) teach with existing primitives and have nothing of their own to version.",
+      },
+      {
+        type: "fixed",
         title: "Every component animation ships with its registry item",
         description:
           "The registry build now derives per-item motion CSS from the animations each component actually uses — tokens, keyframes, var() closures, and a slot-scoped reduced-motion gate — and kira-kit add merges it into your global stylesheet even when init kept an existing theme. Calendar month-transition keyframes ship with the calendar item; re-adding is idempotent.",

@@ -953,6 +953,18 @@ const datePickerPageAPIReferenceSections = [
 
 const datePickerPageChangelogEntries = [
   {
+    version: "v2.1.2",
+    date: "20 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Selecting a date no longer writes to the console",
+        description:
+          "A debug console.log left in the select handler during the mobile sheet work fired on every pick, shipping to production builds. The handler is now silent.",
+      },
+    ],
+  },
+  {
     version: "v2.1.1",
     date: "20 November 2026",
     changes: [
