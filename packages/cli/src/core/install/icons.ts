@@ -6,11 +6,10 @@ import { info, success } from "../../lib/logger";
 import { installNpmDeps, readConsumerPackage, type DepInstaller } from "./deps";
 
 /**
- * Tabler → lucide name map. Local bindings stay `IconX` after the rewrite
- * (`import { Check as IconCheck } from "lucide-react"`), so usages, typeof
- * references, and icon records need no changes. Filled tabler variants map
- * to the base lucide icon plus a fill prop injected at the JSX usage site.
- * A few entries are approximate visual matches (Grid4x4, ZoomReset).
+ * Tabler → lucide name map. Local bindings stay `IconX` after the rewrite,
+ * so usages, typeof references, and icon records need no changes. Filled
+ * tabler variants map to the base lucide icon plus a fill prop injected at
+ * the JSX usage site; a few entries are approximate visual matches.
  */
 export const TABLER_TO_LUCIDE = {
   IconAlertCircle: "CircleAlert",

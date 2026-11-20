@@ -646,6 +646,7 @@ function SideOffsetDemo() {
 }
 
 const sideOffsetCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import { Popover, PopoverTrigger, PopoverContent, PopoverTitle, PopoverDescription, PopoverArrow } from "@/components/ui/popover";\nimport { Button } from "@/components/ui/button";\n\nexport function SideOffsetDemo() {\n  const offsets = [\n    { offset: 0, label: "No Offset" },\n    { offset: 8, label: "8px" },\n    { offset: 16, label: "16px" },\n    { offset: 24, label: "24px" },\n  ] as const;\n\n  return (\n    <div className="flex flex-wrap items-center justify-center gap-4">\n      {offsets.map(({ offset, label }) => (\n        <Popover key={offset}>\n          <PopoverTrigger render={<Button variant="outline">{label}</Button>} />\n          <PopoverContent side="bottom" sideOffset={offset}>\n            <PopoverArrow />\n            <PopoverTitle>Offset: {label}</PopoverTitle>\n            <PopoverDescription>\n              This popover is{" "}\n              {offset === 0 ? "directly adjacent" : `${offset}px away`} from the\n              trigger.\n            </PopoverDescription>\n          </PopoverContent>\n        </Popover>\n      ))}\n    </div>\n  );\n}';
 
 function FormDemo() {

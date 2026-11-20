@@ -40,9 +40,7 @@ import {
   Changelog,
 } from "@/components/docs";
 
-/* -------------------------------------------------------------------------- */
 /*                              Demo components                               */
-/* -------------------------------------------------------------------------- */
 
 function BasicDemo() {
   return (
@@ -337,9 +335,7 @@ function StatesDemo() {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                              Demo code snippets                            */
-/* -------------------------------------------------------------------------- */
 
 const basicCode = `import {
   Menubar,
@@ -530,9 +526,7 @@ export function DocumentMenus() {
   return <KiraMenubar menus={menus} commandSearch rootProps={{ variant: "soft", density: "comfortable", "aria-label": "Document commands" }} />;
 }`;
 
-/* -------------------------------------------------------------------------- */
 /*                                   Page                                     */
-/* -------------------------------------------------------------------------- */
 
 const primitiveApi = [
   {

@@ -33,10 +33,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo Components
-// =============================================================================
-
 function VariantsDemo() {
   return (
     <div className="space-y-6">
@@ -453,9 +449,6 @@ const badgeGroupCode = `import { Badge, BadgeGroup } from "@/components/ui/badge
   <Badge>Step 2</Badge>
 </BadgeGroup>`;
 
-// =============================================================================
-// Demo: Number ticker (animated count)
-// =============================================================================
 function NumberTickerDemo() {
   const [count, setCount] = useState(3);
 
@@ -512,9 +505,6 @@ const numberTickerCode = `import { CountBadge } from "@/components/ui/badge"
 <CountBadge count={count} animateCount />
 <CountBadge count={count} animateCount size="sm" variant="destructive" />`;
 
-// =============================================================================
-// Demo: Trends & shimmer
-// =============================================================================
 function TrendsShimmerDemo() {
   return (
     <div className="space-y-6">
@@ -560,9 +550,6 @@ const trendsShimmerCode = `import { Badge } from "@/components/ui/badge"
 // Shimmer sweep (respects reduced motion)
 <Badge variant="primary-soft" shimmer>Featured</Badge>`;
 
-// =============================================================================
-// Demo: Beta / version presets
-// =============================================================================
 function PresetsDemo() {
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -583,9 +570,6 @@ const presetsCode = `import { Badge } from "@/components/ui/badge"
 <Badge preset="new" shimmer />     {/* → "New", success-soft + shimmer */}
 <Badge preset="version">v2.0.0</Badge>`;
 
-// =============================================================================
-// Demo: Badge states
-// =============================================================================
 function StatesDemo() {
   const [tickerCount, setTickerCount] = useState(980);
 
@@ -672,9 +656,6 @@ const statesCode = `import { Badge, StatusBadge, CountBadge } from "@/components
 // CountBadge ticker + format switch (no stale tween origin)
 <CountBadge count={count} animateCount format={format} />`;
 
-// =============================================================================
-// Demo: Tag input (Combobox.Chips)
-// =============================================================================
 function TagInputDemo() {
   const [tags, setTags] = useState<string[]>(["design", "frontend"]);
   const [capped, setCapped] = useState<string[]>([]);
@@ -725,9 +706,6 @@ const [tags, setTags] = useState(["design", "frontend"])
 // Combobox.Chips chips · Enter commits · Backspace removes last
 // comma input splits into multiple tags · dedupe case-insensitive`;
 
-// =============================================================================
-// Demo: KiraBadge (prop-driven)
-// =============================================================================
 function KiraBadgeDemo() {
   return (
     <div className="space-y-6">
@@ -758,10 +736,6 @@ const kiraBadgeCode = `import { KiraBadge } from "@/components/ui/badge"
 <KiraBadge mode="count" count={128} animateCount />
 <KiraBadge mode="dot" variant="warning">Pending</KiraBadge>
 <KiraBadge mode="badge" preset="new" shimmer />`;
-
-// =============================================================================
-// Main Page Component
-// =============================================================================
 
 // oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function BadgePage() {

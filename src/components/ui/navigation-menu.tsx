@@ -17,9 +17,7 @@ import {
 import { IconChevronDown, IconMenu2 } from "@tabler/icons-react";
 import { isFunctionProp } from "@/components/ui/prop-guards";
 
-/* -------------------------------------------------------------------------- */
 /*                                  Helpers                                   */
-/* -------------------------------------------------------------------------- */
 
 type StateClassName<S> =
   string | ((state: S) => string | undefined) | undefined;
@@ -34,9 +32,7 @@ function mergeClassName<S>(base: string, className: StateClassName<S>) {
     : cn(base, className);
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Trigger and link row styling. Active page is marked with weight +
@@ -92,9 +88,7 @@ export const navigationMenuContentVariants = cva(
   },
 );
 
-/* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
 
 type NavigationMenuProps<Value = string> =
   NavigationMenuPrimitive.Root.Props<Value>;
@@ -132,9 +126,7 @@ type NavigationMenuArrowProps = NavigationMenuPrimitive.Arrow.Props;
 
 type NavigationMenuBackdropProps = NavigationMenuPrimitive.Backdrop.Props;
 
-/* -------------------------------------------------------------------------- */
 /*                                Components                                  */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Website disclosure navigation built on the Base UI primitive (50ms
@@ -422,9 +414,7 @@ function NavigationMenuBackdrop({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                       Presentational content helpers                       */
-/* -------------------------------------------------------------------------- */
 
 function NavigationMenuHeader({
   className,
@@ -537,9 +527,7 @@ function NavigationMenuViewAll({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Exports                                   */
-/* -------------------------------------------------------------------------- */
 
 export {
   NavigationMenu,
@@ -579,9 +567,7 @@ export type {
   NavigationMenuViewAllProps,
 };
 
-/* -------------------------------------------------------------------------- */
 /*                        KiraNavigationMenu (data-driven)                    */
-/* -------------------------------------------------------------------------- */
 
 export interface NavigationLinkData {
   type: "link";
@@ -633,9 +619,7 @@ function assertNavigationIds(items: readonly NavigationItemData[]): void {
   walk(items);
 }
 
-/* -------------------------------------------------------------------------- */
 /*                        Responsive presentation switch                      */
-/* -------------------------------------------------------------------------- */
 
 const NAV_DESKTOP_QUERY = "(min-width: 768px)";
 
@@ -678,9 +662,7 @@ function useNavDesktop(): boolean {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                          Context-free nav anchor                           */
-/* -------------------------------------------------------------------------- */
 
 const navigationLinkCardVariants = cva([
   "group flex w-full min-w-0 select-none items-start gap-3 rounded-md p-2.5 text-start leading-5 outline-none",
@@ -792,9 +774,7 @@ function renderDesktopItems(
   ));
 }
 
-/* -------------------------------------------------------------------------- */
 /*                            KiraNavigationMenu                              */
-/* -------------------------------------------------------------------------- */
 
 interface MobileNavDrawerProps {
   label: string;
@@ -893,18 +873,10 @@ function MobileNavDrawer({
 }
 
 /**
- * One typed navigation tree, two presentations:
- *
- * - Desktop (≥768px): native NavigationMenu — top-level links plus group
- *   triggers opening labelled mega panels (li-wrapped link cards); nested
- *   groups render as recursive labelled sections.
- * - Mobile (<768px): a labelled right-side Drawer with plain nav > ul/li
- *   links; nested groups use Collapsible Root/Trigger/Panel directly (the
- *   primitive Link requires root context and must not render alone here).
- *
- * `inline` keeps the responsive wrapping panels at every width instead.
- * Only one presentation renders at a time; breakpoint changes reset the
- * drawer open state.
+ * One typed navigation tree, two presentations: native NavigationMenu mega
+ * panels at ≥768px, and a labelled right-side Drawer below that, where
+ * nested groups use Collapsible directly (the primitive Link needs root
+ * context). Only one renders at a time; `inline` keeps panels at any width.
  */
 export function KiraNavigationMenu(
   props: KiraNavigationMenuProps,

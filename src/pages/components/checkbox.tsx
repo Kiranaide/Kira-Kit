@@ -33,10 +33,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo Components
-// =============================================================================
-
 function BasicDemo() {
   return (
     <div className="flex items-center space-x-2">
@@ -685,10 +681,6 @@ export function CheckboxCardDemo() {
   )
 }`;
 
-// =============================================================================
-// Kira / Loading / Progress demos (v2.0)
-// =============================================================================
-
 function KiraDemo() {
   const [fruits, setFruits] = React.useState<string[]>(["apple"]);
 
@@ -797,10 +789,6 @@ const disabledReasonCode = `import { CheckboxWithLabel } from "@/components/ui/c
   disabledReason="Requires an admin role"
 />`;
 
-// =============================================================================
-// Optimistic toggle demo (v2.2 — §3.5 like/bookmark pattern)
-// =============================================================================
-
 function OptimisticDemo() {
   const [bookmarked, setBookmarked] = React.useState(false);
   const [liked, setLiked] = React.useState(false);
@@ -829,7 +817,9 @@ function OptimisticDemo() {
         onCheckedChange={(c) => setLiked(c === true)}
         optimistic
         onCommit={async (next) => {
-          await new Promise<void>((resolve) => setTimeout(resolve, 900));
+          await new Promise<void>((resolve) => {
+            setTimeout(resolve, 900);
+          });
 
           return next;
         }}
@@ -859,10 +849,6 @@ export function OptimisticCardDemo() {
     />
   )
 }`;
-
-// =============================================================================
-// Usage Code
-// =============================================================================
 
 const usageCode = `import {
   Checkbox,
@@ -913,10 +899,6 @@ const usageCode = `import {
   description="iOS and Android"
   icon={<IconDeviceMobile />}
 />`;
-
-// =============================================================================
-// Main Page Component
-// =============================================================================
 
 // oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function CheckboxPage() {

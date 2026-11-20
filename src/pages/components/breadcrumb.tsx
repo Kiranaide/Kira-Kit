@@ -35,10 +35,6 @@ import {
   KeyboardShortcuts,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo Components
-// =============================================================================
-
 function BasicDemo() {
   return (
     <div className="space-y-6">
@@ -706,10 +702,6 @@ import { IconShoppingCart } from "@tabler/icons-react"
   Shop
 </BreadcrumbLink>`;
 
-// =============================================================================
-// KiraBreadcrumb / Scroll / Copy + Actions demos
-// =============================================================================
-
 const kiraItems = [
   { href: "/", label: "Home" },
   { href: "/shop", label: "Shop" },
@@ -765,10 +757,6 @@ const items = [
 
 // Mobile-first: hide all but the last crumbs
 <KiraBreadcrumb items={responsiveItems} responsive />`;
-
-// =============================================================================
-// Truncation / Mobile menu demos
-// =============================================================================
 
 const truncationItems = [
   { href: "/", label: "Home" },
@@ -926,10 +914,6 @@ import { IconStar } from "@tabler/icons-react"
   }
 />`;
 
-// =============================================================================
-// Usage Code
-// =============================================================================
-
 const usageCode = `import {
   Breadcrumb,
   BreadcrumbList,
@@ -968,10 +952,6 @@ const breadcrumbs = useBreadcrumbs("/products/electronics/phones", {
     phones: "Phones",
   },
 })`;
-
-// =============================================================================
-// API Reference Data
-// =============================================================================
 
 const apiSections = [
   {
@@ -1291,10 +1271,6 @@ const apiSections = [
 // Hooks: useBreadcrumbs(pathname, { labels, includeHome, homeLabel, basePath }) and
 // useBreadcrumbsFromMatches(matches) build the items[] array from a router path or matches.
 
-// =============================================================================
-// Features Data
-// =============================================================================
-
 const features = [
   {
     title: "SEO Optimized",
@@ -1321,10 +1297,6 @@ const features = [
     icon: <IconFolder className="h-4 w-4" />,
   },
 ];
-
-// =============================================================================
-// Demo Tabs Configuration
-// =============================================================================
 
 const demoTabs = [
   {
@@ -1458,10 +1430,6 @@ const demoTabs = [
     ),
   },
 ];
-
-// =============================================================================
-// Main Page Component
-// =============================================================================
 
 export default function BreadcrumbExamplePage() {
   return (

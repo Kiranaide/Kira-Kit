@@ -501,8 +501,6 @@ function ApplyModeDemo() {
 const applyModeCode = `<DatePicker mode="range" applyMode="immediate" />
 <DatePicker mode="range" applyMode="confirm" />`;
 
-/* ------------------------------- Calendar demos ------------------------------ */
-
 function BasicCalendarDemo() {
   const [date, setDate] = React.useState<Date | undefined>();
 

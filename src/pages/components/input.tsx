@@ -45,10 +45,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Code Snippets
-// =============================================================================
-
 const basicCode = `import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -450,10 +446,6 @@ const usageCode = `import {
 
 // Rating Display (read-only with review count)
 <RatingDisplay value={4.7} reviewCount={1234} />`;
-
-// =============================================================================
-// Demo Components
-// =============================================================================
 
 function BasicDemo() {
   return (
@@ -949,10 +941,6 @@ function RatingDemo() {
   );
 }
 
-// =============================================================================
-// Password / Counter / Tags demos
-// =============================================================================
-
 function PasswordDemo() {
   const [pwd, setPwd] = useState("");
 
@@ -1098,10 +1086,6 @@ const tagsCode = `import { TagInput } from "@/components/ui/input"
 
 // Uncontrolled
 <TagInput defaultValue={["one"]} placeholder="Add a tag…" />`;
-
-// =============================================================================
-// Main Page Component
-// =============================================================================
 
 function FileInputDemo() {
   const [selectedNames, setSelectedNames] = useState<string[]>([]);

@@ -179,10 +179,6 @@ const sizePx: Record<AvatarSize, number> = {
   "4xl": 128,
 };
 
-// -----------------------------------------------------------------------------
-// Avatar (Base UI Root)
-// -----------------------------------------------------------------------------
-
 interface AvatarProps
   extends
     React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>,
@@ -237,12 +233,10 @@ function Avatar(input: AvatarProps) {
   const reducedMotion = useReducedMotion();
 
   return (
-    // The status dot must live outside the image-clipping box: `Avatar`'s
-    // own `overflow-hidden` (needed to crop the image/fallback to its
-    // shape) would otherwise clip a corner-positioned dot that sits right
-    // at the circle's edge, cutting most of it off. This wrapper is an
-    // unstyled, size-less positioning context (it shrinks to fit its one
-    // child) so the dot can be a sibling instead.
+    // The status dot must live outside the image-clipping box: `Avatar`'s own
+    // `overflow-hidden` (needed to crop the image to its shape) would clip a
+    // corner dot sitting at the circle's edge. This wrapper is an unstyled,
+    // size-less positioning context so the dot can be a sibling instead.
     renderAvatarWrapperPart1({
       isInteractive,
       onClick,
@@ -262,10 +256,6 @@ function Avatar(input: AvatarProps) {
     })
   );
 }
-
-// -----------------------------------------------------------------------------
-// AvatarImage (Base UI Image, blur-up)
-// -----------------------------------------------------------------------------
 
 interface AvatarImageProps extends React.ComponentPropsWithoutRef<
   typeof AvatarPrimitive.Image
@@ -314,10 +304,6 @@ function AvatarImage({
   );
 }
 
-// -----------------------------------------------------------------------------
-// AvatarFallback (Base UI Fallback)
-// -----------------------------------------------------------------------------
-
 interface AvatarFallbackProps extends React.ComponentPropsWithoutRef<
   typeof AvatarPrimitive.Fallback
 > {
@@ -348,10 +334,6 @@ function AvatarFallback({
     </AvatarPrimitive.Fallback>
   );
 }
-
-// -----------------------------------------------------------------------------
-// AvatarBadge
-// -----------------------------------------------------------------------------
 
 interface AvatarBadgeProps extends Omit<
   React.HTMLAttributes<HTMLSpanElement>,
@@ -392,10 +374,6 @@ function AvatarBadge(inputProps: AvatarBadgeProps) {
   );
 }
 
-// -----------------------------------------------------------------------------
-// AvatarTyping — animated typing dots
-// -----------------------------------------------------------------------------
-
 function AvatarTyping({ className }: { className?: string }) {
   const reducedMotion = useReducedMotion();
 
@@ -429,10 +407,6 @@ function getInitials(name: string): string {
 
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
-
-// -----------------------------------------------------------------------------
-// AvatarGroup — overlapped, tooltips, expandable overflow
-// -----------------------------------------------------------------------------
 
 interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   max?: number;
@@ -542,10 +516,6 @@ function AvatarGroup(input: AvatarGroupProps) {
   );
 }
 
-// -----------------------------------------------------------------------------
-// AvatarStack — horizontally scrollable overlap (fixed padding)
-// -----------------------------------------------------------------------------
-
 interface AvatarStackProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: AvatarSize;
   showCount?: boolean;
@@ -595,10 +565,6 @@ function AvatarStack({
     </div>
   );
 }
-
-// -----------------------------------------------------------------------------
-// KiraAvatar — one prop-driven avatar (supersedes AutoAvatar)
-// -----------------------------------------------------------------------------
 
 interface KiraAvatarProps extends Omit<AvatarProps, "children"> {
   name: string;
@@ -749,11 +715,10 @@ function renderAvatarWrapperPart1({
     >
       <AvatarPrimitive.Root
         data-slot="avatar"
-        // §3.5/§9: an interactive avatar is a real button — AT announces a
-        // control (named by aria-label), native Enter/Space activation and
-        // focusability apply, and the old tabIndex/onKeyDown shim is gone.
-        // `role="img"` only applies to the non-interactive case (a button
-        // with role="img" would erase its own button semantics).
+        // An interactive avatar is a real button: AT announces a control named by
+        // aria-label, and native Enter/Space activation and focusability apply —
+        // no tabIndex/onKeyDown shim. `role="img"` is for the non-interactive case
+        // only; on a button it would erase the button semantics.
         render={
           isInteractive ? (
             <button

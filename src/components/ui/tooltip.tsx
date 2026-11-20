@@ -9,9 +9,7 @@ import {
   isStringProp,
 } from "@/components/ui/prop-guards";
 
-/* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
-/* -------------------------------------------------------------------------- */
 
 type StateClassName<S> =
   string | ((state: S) => string | undefined) | undefined;
@@ -35,9 +33,7 @@ function mergeStyle<S>(base: React.CSSProperties, style: StateStyle<S>) {
 
 const toCssLength = (v: number | string) => (isNumberProp(v) ? `${v}px` : v);
 
-/* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
 
 const tooltipContentVariants = cva(
   [
@@ -98,9 +94,7 @@ type TooltipVariant = VariantProps<typeof tooltipContentVariants>["variant"];
 
 type TooltipSize = VariantProps<typeof tooltipContentVariants>["size"];
 
-/* -------------------------------------------------------------------------- */
 /*                                   Context                                  */
-/* -------------------------------------------------------------------------- */
 
 type TooltipContextValue = {
   variant?: TooltipVariant;
@@ -111,9 +105,7 @@ type TooltipContextValue = {
 
 const TooltipContext = React.createContext<TooltipContextValue>({});
 
-/* -------------------------------------------------------------------------- */
 /*                                   Provider                                 */
-/* -------------------------------------------------------------------------- */
 
 interface TooltipProviderProps extends TooltipPrimitive.Provider.Props {
   /** @deprecated Use `delay` */
@@ -140,9 +132,7 @@ function TooltipProvider({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                    Root                                    */
-/* -------------------------------------------------------------------------- */
 
 interface TooltipProps<Payload = unknown> extends TooltipPrimitive.Root
   .Props<Payload> {
@@ -182,9 +172,7 @@ function Tooltip<Payload = unknown>({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                   Trigger                                  */
-/* -------------------------------------------------------------------------- */
 
 type TooltipTriggerProps<Payload = unknown> =
   TooltipPrimitive.Trigger.Props<Payload>;
@@ -206,9 +194,7 @@ function TooltipTrigger<Payload = unknown>({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Shortcut                                  */
-/* -------------------------------------------------------------------------- */
 
 interface TooltipShortcutProps extends React.ComponentProps<"span"> {
   keys: string | readonly string[];
@@ -247,9 +233,7 @@ function TooltipShortcut({ keys, className, ...props }: TooltipShortcutProps) {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                   Content                                  */
-/* -------------------------------------------------------------------------- */
 
 type PositionerProps = TooltipPrimitive.Positioner.Props;
 
@@ -356,9 +340,7 @@ function TooltipContent({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                    Arrow                                   */
-/* -------------------------------------------------------------------------- */
 
 interface TooltipArrowProps
   extends
@@ -385,9 +367,7 @@ function TooltipArrow({ className, variant, ...props }: TooltipArrowProps) {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                    Shared tooltip (one popup, many triggers)               */
-/* -------------------------------------------------------------------------- */
 
 type SharedTooltipPayload = {
   label: string;
@@ -495,9 +475,7 @@ function SharedTooltipTrigger({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                SimpleTooltip                               */
-/* -------------------------------------------------------------------------- */
 
 interface SimpleTooltipProps extends Pick<
   TooltipContentProps,
@@ -548,8 +526,6 @@ function SimpleTooltip({
     </Tooltip>
   );
 }
-
-/* -------------------------------------------------------------------------- */
 
 export {
   Tooltip,

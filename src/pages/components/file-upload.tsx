@@ -29,9 +29,7 @@ import {
   type UploadedFile,
 } from "@/components/ui/file-upload";
 
-/* ------------------------------------------------------------------ */
 /* Shared demo fixtures                                                */
-/* ------------------------------------------------------------------ */
 
 function makeFile(name: string, size: number, type: string): File {
   const body = new Uint8Array(size);
@@ -39,9 +37,7 @@ function makeFile(name: string, size: number, type: string): File {
   return new File([body], name, { type });
 }
 
-/* ------------------------------------------------------------------ */
 /* Local demonstration harness — files are NOT sent to a server.       */
-/* ------------------------------------------------------------------ */
 
 /**
  * Manual settlement harness for the per-file transport. The buttons drive
@@ -206,9 +202,7 @@ function BatchHarness({
   );
 }
 
-/* ------------------------------------------------------------------ */
 /* Tab demos                                                           */
-/* ------------------------------------------------------------------ */
 
 function BasicTabDemo() {
   const [queue, setQueue] = React.useState<UploadedFile[]>([]);
@@ -723,9 +717,7 @@ export function ShowcaseDemo() {
   return <FilePreview file={file} onRemove={(id) => console.log(id)} />
 }`;
 
-/* ------------------------------------------------------------------ */
 /* Page                                                                */
-/* ------------------------------------------------------------------ */
 
 const features = [
   {

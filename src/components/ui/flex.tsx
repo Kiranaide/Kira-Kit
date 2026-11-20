@@ -4,9 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 import { isObjectProp } from "@/lib/component-prop-guards";
 
-/* -------------------------------------------------------------------------- */
 /*                                 Responsive                                 */
-/* -------------------------------------------------------------------------- */
 
 // Order matters: mobile-first, so later breakpoints win.
 const BREAKPOINTS = ["sm", "md", "lg", "xl", "2xl"] as const;
@@ -52,9 +50,7 @@ function resolveResponsive<T extends string | number | boolean>(
   return classes.join(" ");
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                 Class maps                                 */
-/* -------------------------------------------------------------------------- */
 // Prop types are derived from these maps, so they can never drift apart.
 
 const directionMap = {
@@ -113,9 +109,7 @@ type FlexAlign = keyof typeof alignMap;
 
 type FlexGap = keyof typeof gapMap;
 
-/* -------------------------------------------------------------------------- */
 /*                                  Component                                 */
-/* -------------------------------------------------------------------------- */
 
 const flexVariants = cva("", {
   variants: {

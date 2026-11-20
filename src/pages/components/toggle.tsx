@@ -31,10 +31,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo Components
-// =============================================================================
-
 function BasicDemo() {
   return (
     <div className="flex gap-2">
@@ -805,9 +801,9 @@ export function FormDemo() {
 }`;
 
 const saveLike = () =>
-  new Promise<void>((_resolve, reject) =>
-    setTimeout(() => reject(new Error("offline")), 900),
-  );
+  new Promise<void>((_resolve, reject) => {
+    setTimeout(() => reject(new Error("offline")), 900);
+  });
 
 function OptimisticSection() {
   return (
@@ -1682,10 +1678,6 @@ const changelogEntries = [
     ],
   },
 ] satisfies React.ComponentProps<typeof Changelog>["entries"];
-
-// =============================================================================
-// Page Component
-// =============================================================================
 
 export default function TogglePage() {
   return (

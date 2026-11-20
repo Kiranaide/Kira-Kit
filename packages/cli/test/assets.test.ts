@@ -82,8 +82,9 @@ function readNormalized(path: string): string {
 }
 
 describe("template CSS drift guard", () => {
-  for (const target of TEMPLATE_CSS_TARGETS) {
-    it(`${target.css} ships the kit base CSS + utilities`, () => {
+  it.each(TEMPLATE_CSS_TARGETS)(
+    "$css ships the kit base CSS + utilities",
+    (target) => {
       expect(readNormalized(join(TEMPLATES_ROOT, target.css))).toBe(
         buildBaseCss(indexCss, target.utilitiesImport),
       );
@@ -91,6 +92,6 @@ describe("template CSS drift guard", () => {
       expect(readNormalized(join(TEMPLATES_ROOT, target.utilities))).toBe(
         utilities,
       );
-    });
-  }
+    },
+  );
 });

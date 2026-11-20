@@ -202,13 +202,10 @@ const tabsListVariants = cva(
   },
 );
 
-// Indicator renders for "underline" (edge underline) and "segment" (sliding
-// pill). For every other variant the trigger's own data-[active] background
-// owns the "pill", so a second fill layer here would double the selected
-// treatment. Base UI supplies --active-tab-* on the span. Position/size come
-// from the CSS vars as static values; motion animates translate (and size)
-// only — CSS transitions interrupt cleanly on rapid retargeting and the final
-// state never depends on transitionend.
+// Indicator renders only for "underline" and "segment": other variants let
+// the trigger's own data-[active] background own the pill, so a second fill
+// layer would double the selected treatment. Position/size come from Base
+// UI's --active-tab-* vars and motion animates translate/size only.
 function TabsIndicatorInternal() {
   const { orientation, variant, color } = useTabsContext();
   const reducedMotion = useReducedMotion();
@@ -909,11 +906,10 @@ const tabsContentVariants = cva(
         slideUp:
           "motion-safe:animate-in motion-safe:slide-in-from-bottom-4 motion-safe:fade-in-0 motion-safe:animation-duration-300",
         zoom: "motion-safe:animate-in motion-safe:zoom-in-95 motion-safe:fade-in-0 motion-safe:animation-duration-200",
-        // Direction-aware entry: Base UI Panel exposes data-activation-direction
-        // natively, so the panel slides in from the side the selection came from.
-        // NOTE: never use `duration-*` here — it sets transition-duration and the
-        // browser default transition-property:all then delays Base UI's exit
-        // detection, breaking animation restarts on keepMounted panels.
+        // Direction-aware entry via Base UI's data-activation-direction on the Panel.
+        // NOTE: never use `duration-*` here — it sets transition-duration, and the
+        // default transition-property:all then delays Base UI's exit detection,
+        // breaking animation restarts on keepMounted panels.
         auto: "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:animation-duration-200 data-[activation-direction=left]:motion-safe:slide-in-from-right-4 data-[activation-direction=right]:motion-safe:slide-in-from-left-4 data-[activation-direction=up]:motion-safe:slide-in-from-bottom-4 data-[activation-direction=down]:motion-safe:slide-in-from-top-4",
       },
       orientation: {
@@ -1806,7 +1802,6 @@ function useTabsState2(state: ReturnType<typeof useTabsSetup>) {
     }
   };
 
-  // --- Drag reorder (dnd-kit) ---
   const dragSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: DND_SENSORS_ACTIVATION,
@@ -1859,7 +1854,6 @@ function useTabsActions(state: ReturnType<typeof useTabsState2>) {
     handleDragEnd,
   } = state;
 
-  // --- Sortable wiring ---
   const sortableIds = items.map((i) => i.value);
 
   const baseListNode = renderKiraTabsSectionPart4({

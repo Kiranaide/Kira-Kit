@@ -1,11 +1,10 @@
 "use client";
 
 "use no memo";
-// Compiler opt-out: TanStack Virtual's useVirtualizer is still on React
-// Compiler's incompatible-library list, and getters like getRowModel() read
-// instance state the compiler can't see. Re-renders are driven explicitly by
-// useSelector subscriptions below. Re-evaluate once TanStack Virtual ships a
-// compiler-safe API.
+// Compiler opt-out: TanStack Virtual's useVirtualizer is on React Compiler's
+// incompatible-library list, and getters like getRowModel() read instance
+// state the compiler can't see. Re-renders are driven explicitly by the
+// useSelector subscriptions below; re-evaluate once a safe API ships.
 
 import * as React from "react";
 import {
@@ -121,10 +120,6 @@ import {
   isNumberProp,
 } from "@/lib/component-prop-guards";
 
-// =============================================================================
-// Features & types (TanStack Table v9)
-// =============================================================================
-
 // Every feature + row model this component can use. Narrow it (and replace the
 // deprecated full fn registries with individual sortFn_* / filterFn_* imports)
 // if bundle size matters.
@@ -186,10 +181,6 @@ const DENSITY_ROW_ESTIMATE: Record<DataTableDensity, number> = {
 };
 
 const EMPTY_SORTING: SortingState = [];
-
-// =============================================================================
-// Small helpers
-// =============================================================================
 
 /** Column ids may contain dots/spaces — make them safe custom-property names. */
 const cssId = (id: string) => id.replace(/[^\w-]/g, "_");
@@ -258,10 +249,6 @@ function pinProps<TData extends RowData>(
   };
 }
 
-// =============================================================================
-// Context
-// =============================================================================
-
 interface DataTableContextValue<TData extends RowData> {
   table: DTTable<TData>;
   density: DataTableDensity;
@@ -289,10 +276,6 @@ function useDataTable<TData extends RowData = RowData>() {
   // table it created, so a context read inside that provider carries TData.
   return context as DataTableContextValue<TData>;
 }
-
-// =============================================================================
-// Persistence
-// =============================================================================
 
 export interface PersistedTableState {
   version?: number;
@@ -452,10 +435,6 @@ function useTablePersistence<TData extends RowData>(
   }, [table, key, version]);
 }
 
-// =============================================================================
-// Announcements (WCAG 4.1.3)
-// =============================================================================
-
 function describeChange<TData extends RowData>(
   table: DTTable<TData>,
   prev: DTState,
@@ -484,10 +463,6 @@ function describeChange<TData extends RowData>(
 
   return null;
 }
-
-// =============================================================================
-// DataTableRoot
-// =============================================================================
 
 interface DataTableProps<TData extends RowData, TValue> {
   columns: DTColumnDef<TData, TValue>[];
@@ -538,10 +513,6 @@ function DataTableRoot<TData extends RowData, TValue>(
 
   return renderDataTable<TData, TValue>(state2);
 }
-
-// =============================================================================
-// DataTableSearch
-// =============================================================================
 
 interface DataTableSearchProps {
   columnKey?: string;
@@ -599,10 +570,6 @@ function updateDataTableSearch<TData extends RowData>(
   if (globalSearch) table.setGlobalFilter(value);
   else column?.setFilterValue(value || undefined);
 }
-
-// =============================================================================
-// Grid keyboard navigation — APG data grid, roving tabindex
-// =============================================================================
 
 type GridPos = { rowIndex: number; colIndex: number };
 
@@ -712,10 +679,6 @@ function handleGridCellEntry(
 
   return true;
 }
-
-// =============================================================================
-// Shared frame: <Table> + header
-// =============================================================================
 
 interface DataTableContentProps<TData extends RowData> {
   renderSubComponent?: (props: { row: DTRow<TData> }) => React.ReactNode;
@@ -862,10 +825,6 @@ function DataTableHeadCell<TData extends RowData>({
   );
 }
 
-// =============================================================================
-// Body rows
-// =============================================================================
-
 interface DataTableRowProps<TData extends RowData> {
   row: DTRow<TData>;
   rowIndex: number;
@@ -985,14 +944,9 @@ function DataTableRows<TData extends RowData>({
 
 // Only used *while resizing* (TanStack's recommended pattern): selection and
 // expansion don't change row-model identity, so an always-on memo would paint
-// stale checkboxes.
-// SAFETY: React.memo returns Exactly<T> at runtime; the cast hides only the
-// memo wrapper's distinct call signature to keep JSX usage unchanged.
+// stale checkboxes. SAFETY: React.memo returns Exactly<T> at runtime; the cast
+// hides only the wrapper's call signature, keeping JSX usage unchanged.
 const DataTableRowsMemo = React.memo(DataTableRows) as typeof DataTableRows;
-
-// =============================================================================
-// DataTableContent — static / virtualized / reorderable
-// =============================================================================
 
 function DataTableContent<TData extends RowData>(
   props: DataTableContentProps<TData>,
@@ -1333,10 +1287,6 @@ function DataTableSortableRow<TData extends RowData>({
   );
 }
 
-// =============================================================================
-// Pagination & counts
-// =============================================================================
-
 function DataTablePageCount() {
   const { table } = useDataTable();
   const state = useTableState(table);
@@ -1412,10 +1362,6 @@ function DataTablePagination(input: DataTablePaginationProps) {
     />
   );
 }
-
-// =============================================================================
-// Column header, resize handle, pinning menu
-// =============================================================================
 
 interface DataTableColumnHeaderProps<
   TData extends RowData,
@@ -1618,10 +1564,6 @@ function DataTableColumnPinningMenu<TData extends RowData, TValue>({
   );
 }
 
-// =============================================================================
-// Column factories
-// =============================================================================
-
 function createSelectColumn<TData extends RowData>(): DTColumnDef<TData> {
   return {
     id: "select",
@@ -1719,10 +1661,6 @@ function createDragHandleColumn<TData extends RowData>(): DTColumnDef<TData> {
   };
 }
 
-// =============================================================================
-// Column visibility & pinning summary
-// =============================================================================
-
 function DataTableColumnVisibility() {
   const { table } = useDataTable();
   useTableState(table);
@@ -1780,10 +1718,6 @@ function DataTablePinningControls() {
     </div>
   );
 }
-
-// =============================================================================
-// Filters
-// =============================================================================
 
 /** Filter fn for faceted / multi-select filters: keep rows whose value is selected. */
 function facetedFilterFn(
@@ -2194,10 +2128,6 @@ function DateRangeFilter({ columnId, className }: DateRangeFilterProps) {
   );
 }
 
-// =============================================================================
-// Editable cell
-// =============================================================================
-
 interface DataTableEditableCellProps {
   value: string | number;
   onSave: (value: string | number) => void;
@@ -2311,10 +2241,6 @@ function handleEditableCellKeyDown(
     finish(false);
   }
 }
-
-// =============================================================================
-// Skeleton, empty state, bulk actions, row actions
-// =============================================================================
 
 interface DataTableSkeletonProps {
   rows?: number;
@@ -2537,10 +2463,6 @@ function DataTableRowActions<TData>({
     </DropdownMenu>
   );
 }
-
-// =============================================================================
-// Cell renderers
-// =============================================================================
 
 type StatusVariant = "default" | "success" | "warning" | "error" | "info";
 
@@ -2887,10 +2809,6 @@ function ActionsCell<TData>({
   );
 }
 
-// =============================================================================
-// Density toggle
-// =============================================================================
-
 interface DataTableDensityToggleProps {
   value?: DataTableDensity;
   defaultValue?: DataTableDensity;
@@ -2952,10 +2870,6 @@ function DataTableDensityToggle({
     </div>
   );
 }
-
-// =============================================================================
-// Exports
-// =============================================================================
 
 export {
   DataTableRoot,

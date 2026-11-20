@@ -744,11 +744,6 @@ function BreadcrumbResponsive({
   );
 }
 
-// =============================================================================
-// BreadcrumbMobileMenu — mobile-first ancestor picker: current page as the
-// trigger, all ancestors listed in a Base UI Menu on <md viewports.
-// =============================================================================
-
 interface BreadcrumbMobileMenuProps {
   items: {
     href: string;
@@ -815,10 +810,6 @@ function BreadcrumbMobileMenu({ items, className }: BreadcrumbMobileMenuProps) {
   );
 }
 
-// =============================================================================
-// BreadcrumbActions — right-aligned trailing region for page-level actions
-// =============================================================================
-
 type BreadcrumbActionsProps = React.ComponentPropsWithoutRef<"div">;
 
 function BreadcrumbActions({
@@ -836,10 +827,6 @@ function BreadcrumbActions({
     </div>
   );
 }
-
-// =============================================================================
-// BreadcrumbCopy — copy-the-current-path affordance with a copied-check flash
-// =============================================================================
 
 interface BreadcrumbCopyProps extends Omit<
   React.ComponentPropsWithoutRef<"button">,
@@ -928,10 +915,6 @@ function BreadcrumbCopy({
     </button>
   );
 }
-
-// =============================================================================
-// KiraBreadcrumb — one prop-driven entry point over the breadcrumb family
-// =============================================================================
 
 interface KiraBreadcrumbItem {
   href: string;

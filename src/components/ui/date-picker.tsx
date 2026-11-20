@@ -37,9 +37,7 @@ import {
 } from "@/components/ui/calendar";
 import { isStringProp } from "@/lib/component-prop-guards";
 
-/* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
 
 type ApplyMode = "immediate" | "confirm";
 
@@ -153,9 +151,7 @@ interface DatePickerRangeProps extends DatePickerBaseProps {
 type DatePickerProps =
   DatePickerSingleProps | DatePickerDateTimeProps | DatePickerRangeProps;
 
-/* -------------------------------------------------------------------------- */
 /*                                   Presets                                  */
-/* -------------------------------------------------------------------------- */
 
 const singlePresets: DatePreset[] = [
   { label: "Today", getValue: (t) => t },
@@ -181,9 +177,7 @@ const rangePresets: DatePreset[] = [
   { label: "Year to date", getValue: (t) => ({ from: startOfYear(t), to: t }) },
 ];
 
-/* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
-/* -------------------------------------------------------------------------- */
 
 // kira-kit-ignore spacing-scale: date/time-picker trigger ladder is a documented non-change (PR follow-up)
 const iconSize = { sm: "size-3.5", default: "size-4", lg: "size-5" } as const;
@@ -272,9 +266,7 @@ function dateInputPatterns(
     : [inputPattern, "P", "PP", "PPP", "yyyy-MM-dd"];
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                 DatePicker                                 */
-/* -------------------------------------------------------------------------- */
 
 function DatePicker(input0: DatePickerProps) {
   const state0 = useDatePickerSetup(input0);
@@ -730,7 +722,6 @@ function useDatePickerState2(state: ReturnType<typeof useDatePickerSetup>) {
     isDatetime,
   } = state;
 
-  /* ---------------------------------- Ids ---------------------------------- */
   const reactId = React.useId();
 
   const baseId = id ?? `date-picker-${reactId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
@@ -753,7 +744,6 @@ function useDatePickerState2(state: ReturnType<typeof useDatePickerSetup>) {
     ? 1 // popover width budget: calendar + time comb side by side
     : (numberOfMonthsProp ?? (isRange && isDesktop ? 2 : 1));
 
-  /* ------------------------------- Open state ------------------------------ */
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
 
   const isOpen = openProp ?? uncontrolledOpen;
@@ -847,10 +837,9 @@ function useDatePickerState3(state: ReturnType<typeof useDatePickerState2>) {
       el.showPopover();
     } catch {
       // SAFETY: a popover show/hide operation was still in flight (re-entrant
-      // effect during beforetoggle, or Fast-Refresh remount). Retrying from a
-      // microtask runs outside the in-flight operation; if it can't open, the
-      // native state governs. An uncaught throw here would abort the React
-      // commit and kill all event handling on the page.
+      // effect during beforetoggle, Fast-Refresh remount). Retrying from a
+      // microtask runs outside it, and if it can't open, native state governs.
+      // An uncaught throw here would abort the commit and kill page events.
       queueMicrotask(() => {
         if (!el.matches(":popover-open")) {
           try {
@@ -887,11 +876,10 @@ function useDatePickerState3(state: ReturnType<typeof useDatePickerState2>) {
     const el = popoverRef.current;
 
     if (!el) return;
-    // SAFETY: "toggle" on popover elements is a ToggleEvent per spec; it fires
-    // only after the show/hide operation completes, so syncing state here never
-    // re-enters showPopover() mid-operation (beforetoggle would — it fires
-    // synchronously at the state flip, and a setState from it re-renders into
-    // the controlled-open effect while the operation is in flight).
+    // SAFETY: "toggle" is a ToggleEvent that fires only after the show/hide
+    // operation completes, so syncing state here never re-enters
+    // showPopover() mid-operation. beforetoggle would: it fires at the state
+    // flip, and setState there re-renders into the open effect mid-operation.
     const listener = (event: Event) => onPopoverToggle(event as ToggleEvent);
     el.addEventListener("toggle", listener);
 
@@ -923,7 +911,6 @@ function useDatePickerState4(state: ReturnType<typeof useDatePickerState3>) {
     else closePopover();
   }, [isOpen, openPopover, closePopover]);
 
-  /* ------------------------------ Blocked days ----------------------------- */
   const blockedMatchers = React.useMemo(() => {
     const list: Matcher[] = [];
 
@@ -947,7 +934,6 @@ function useDatePickerState4(state: ReturnType<typeof useDatePickerState3>) {
       ? isBlocked(v)
       : (!!v.from && isBlocked(v.from)) || (!!v.to && isBlocked(v.to));
 
-  /* -------------------------------- Selection ------------------------------ */
   const handleSelect = (next: DateValue) => {
     if (applyMode === "confirm") {
       setPendingValue(next);
@@ -1322,7 +1308,6 @@ function useDatePickerActions(state: ReturnType<typeof useDatePickerState7>) {
     resolveRangeNames2,
   } = state;
 
-  /* --------------------------------- Labels -------------------------------- */
   const hasValue = isDateRange(value) ? !!value.from : !!value;
 
   const label = resolveLabel1();
@@ -1344,7 +1329,6 @@ function useDatePickerActions(state: ReturnType<typeof useDatePickerState7>) {
   // only widens the literal key for the inline style object.
   const popoverStyle = { positionAnchor: anchorName } as React.CSSProperties;
 
-  /* --------------------------------- Calendar ------------------------------ */
   const calendarShared = {
     size: resolvedSize,
     minDate,

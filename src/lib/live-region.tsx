@@ -1,12 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// ============================================
-// LIVE REGION COMPONENT
-// ============================================
-// A reusable component for screen reader announcements
-// following WAI-ARIA live region patterns
-
 interface LiveRegionProps {
   /** The message to announce */
   message?: string;
@@ -72,11 +66,6 @@ function LiveRegion({
     </output>
   );
 }
-
-// ============================================
-// LIVE REGION PROVIDER & HOOK
-// ============================================
-// For imperative announcements from anywhere in the app
 
 interface Announcement {
   id: string;
@@ -182,9 +171,6 @@ function useLiveRegion() {
   return context;
 }
 
-// ============================================
-// EXPORTS
-// ============================================
 export { LiveRegion, LiveRegionProvider, useLiveRegion };
 
 export type { LiveRegionProps, LiveRegionContextValue };

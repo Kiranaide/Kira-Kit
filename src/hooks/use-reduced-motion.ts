@@ -36,19 +36,10 @@ function getServerSnapshot(): boolean {
 }
 
 /**
- * Tracks the user's `prefers-reduced-motion` setting.
- *
+ * Tracks the user's `prefers-reduced-motion` setting, for motion driven
+ * from JS (WAAPI, scroll-into-view `behavior`, animation libraries, timers).
  * Prefer Tailwind's `motion-reduce:` / `motion-safe:` variants for CSS-only
  * animation: they apply before hydration, so there's no flash of motion.
- * Use this hook for motion driven from JS (WAAPI, scroll-into-view
- * `behavior`, animation libraries, timers).
- *
- * SSR-safe: returns `false` on the server and during hydration, then
- * updates live when the OS setting changes.
- *
- * @example
- * const reducedMotion = useReducedMotion();
- * el.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
  */
 export function useReducedMotion(): boolean {
   return React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);

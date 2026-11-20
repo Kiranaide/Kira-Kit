@@ -402,9 +402,6 @@ const displayBoxCode = `import { Box } from "@/components/ui/box"
 <Box display="grid" p={4}>Grid container</Box>
 <Box display="hidden" p={4}>Hidden</Box>`;
 
-// =============================================================================
-// Demo: Responsive
-// =============================================================================
 function ResponsiveBoxDemo() {
   return (
     <div className="space-y-6">
@@ -472,9 +469,6 @@ const responsiveBoxCode = `import { Box } from "@/components/ui/box"
 // Single values remain shorthand for all breakpoints
 <Box p={4} bg="muted" rounded="lg">Static spacing</Box>`;
 
-// =============================================================================
-// Demo: Stress
-// =============================================================================
 function StressBoxDemo() {
   return (
     <div className="space-y-6">
@@ -988,6 +982,7 @@ const boxPageChangelogEntries = [
         type: "fixed",
         title: "Dynamic Tailwind classes removed",
         description:
+          // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
           "bg-${bg}, text-${color}, w-${w}, border-${border}-style interpolation replaced with static lookup maps. Previously classes only rendered when the same literal existed elsewhere in source (Tailwind JIT purge) — every demo usage was a latent purge risk.",
       },
       {

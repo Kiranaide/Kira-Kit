@@ -37,9 +37,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo: Basic Label
-// =============================================================================
 function BasicLabelDemo() {
   return (
     <div className="space-y-2 max-w-md">
@@ -61,9 +58,6 @@ export function BasicLabelDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: With Icons
-// =============================================================================
 function WithIconsDemo() {
   return (
     <div className="space-y-4 max-w-md">
@@ -134,9 +128,6 @@ export function WithIconsDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: With Tooltip
-// =============================================================================
 function WithTooltipDemo() {
   return (
     <div className="space-y-4 max-w-md">
@@ -197,9 +188,6 @@ export function WithTooltipDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: With Counter
-// =============================================================================
 function WithCounterDemo() {
   return (
     <div className="space-y-4 max-w-md">
@@ -258,9 +246,6 @@ export function WithCounterDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: Sizes
-// =============================================================================
 function SizesDemo() {
   return (
     <div className="space-y-4 max-w-md">
@@ -308,9 +293,6 @@ export function SizesDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: Required & Optional
-// =============================================================================
 function RequiredOptionalDemo() {
   return (
     <div className="space-y-6 max-w-md">
@@ -401,9 +383,6 @@ export function RequiredOptionalDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: LabelGroup
-// =============================================================================
 function LabelGroupDemo() {
   return (
     <div className="space-y-4 max-w-md">
@@ -452,9 +431,6 @@ export function LabelGroupDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: States
-// =============================================================================
 function StatesDemo() {
   return (
     <div className="space-y-6 max-w-md">
@@ -526,9 +502,6 @@ export function StatesDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: With Hint
-// =============================================================================
 function WithHintDemo() {
   return (
     <div className="space-y-2 max-w-md">
@@ -554,9 +527,6 @@ export function WithHintDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: Complex Form
-// =============================================================================
 function ComplexFormDemo() {
   return (
     <div className="max-w-md p-4 border rounded-lg space-y-4">
@@ -659,9 +629,6 @@ export function ComplexFormDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: Radio Group
-// =============================================================================
 function RadioGroupDemo() {
   return (
     <div className="max-w-md">
@@ -734,9 +701,6 @@ export function RadioGroupDemo() {
   )
 }`;
 
-// =============================================================================
-// Demo: As Different Element
-// =============================================================================
 function AsElementDemo() {
   return (
     <div className="space-y-4 max-w-md">
@@ -766,9 +730,6 @@ export function AsElementDemo() {
   )
 }`;
 
-// =============================================================================
-// Usage Code
-// =============================================================================
 const usageCode = `import { Label, LabelGroup, LabelHint } from "@/components/ui/label"
 
 // Basic
@@ -804,9 +765,6 @@ const usageCode = `import { Label, LabelGroup, LabelHint } from "@/components/ui
 // Render as different element
 <Label as="span">Rendered as span</Label>`;
 
-// =============================================================================
-// Features
-// =============================================================================
 const features = [
   {
     title: "Accessible",
@@ -828,9 +786,6 @@ const features = [
   },
 ];
 
-// =============================================================================
-// API Reference Sections
-// =============================================================================
 const apiSections = [
   {
     title: "KiraLabel",
@@ -1018,12 +973,6 @@ const apiSections = [
   },
 ];
 
-// =============================================================================
-// Demo Tabs Configuration
-// =============================================================================
-// =============================================================================
-// Demo: KiraLabel (unified API)
-// =============================================================================
 function KiraLabelDemo() {
   return (
     <div className="space-y-4 max-w-md">
@@ -1051,9 +1000,6 @@ const kiraLabelCode = `import { KiraLabel } from "@/components/ui/label"
   Email
 </KiraLabel>`;
 
-// =============================================================================
-// Demo: Live character counter
-// =============================================================================
 function CounterLabelDemo() {
   const [value, setValue] = React.useState("");
   const maxCount = 60;
@@ -1097,9 +1043,6 @@ const [value, setValue] = useState("")
 // Counter tones: muted → text-warning at 80% → text-destructive over max
 <KiraLabel htmlFor="bio-over" count={61} maxCount={60}>Over</KiraLabel>`;
 
-// =============================================================================
-// Demo: Inline validation
-// =============================================================================
 function ValidationLabelDemo() {
   const resolveState1 = () => {
     if (value.length === 0) {
@@ -1363,9 +1306,6 @@ const demoTabs = [
   },
 ];
 
-// =============================================================================
-// Main Page Component
-// =============================================================================
 export default function LabelPage() {
   return (
     <ComponentPage>

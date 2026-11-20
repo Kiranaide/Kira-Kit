@@ -792,7 +792,9 @@ function AsyncLoadingDemo() {
       asyncLoading
       items={items}
       onItemOpen={async (item) => {
-        await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+        await new Promise<void>((resolve) => {
+          setTimeout(resolve, 1000);
+        });
         setItems((prev) =>
           prev.map((i) => {
             if (i.value === item.value) {

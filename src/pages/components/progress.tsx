@@ -25,10 +25,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// DEMO COMPONENTS
-// =============================================================================
-
 function useDemoClock(tick: () => void, active: boolean) {
   React.useEffect(() => {
     if (!active) return;
@@ -374,6 +370,7 @@ function BackgroundTasksDemo({ active = true }: { active?: boolean }) {
 }
 
 const backgroundCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import * as React from "react";\nimport { KiraProgress, type ProgressStatus } from "@/components/ui/progress";\nimport { KiraPopover } from "@/components/ui/popover";\nimport { Button } from "@/components/ui/button";\n\nfunction useDemoClock(tick: () => void, active: boolean) {\n  React.useEffect(() => {\n    if (!active) return;\n\n    const timer = setInterval(() => {\n      if (!document.hidden) tick();\n    }, 800);\n\n    return () => clearInterval(timer);\n  }, [active, tick]);\n}\n\ninterface DemoTask {\n  id: string;\n  label: string;\n  value: number;\n  status: ProgressStatus;\n}\n\ninterface BackgroundTaskListProps {\n  tasks: DemoTask[];\n  change: (id: string, status: ProgressStatus) => void;\n}\n\nfunction BackgroundTaskList({ tasks, change }: BackgroundTaskListProps) {\n  return (\n    <ul className="space-y-5">\n      {tasks.map((task) => (\n        <li key={task.id} className="space-y-2">\n          <KiraProgress\n            label={task.label}\n            status={task.status}\n            value={task.value}\n            onCancel={() => change(task.id, "canceled")}\n            onRetry={() => change(task.id, "running")}\n          />\n          {task.status === "running" && (\n            <Button\n              size="sm"\n              variant="outline"\n              onClick={() => change(task.id, "error")}\n            >\n              Simulate {task.id} failure\n            </Button>\n          )}\n          {task.status === "complete" && (\n            <a\n              className="text-sm text-primary underline"\n              href={`#result-${task.id}`}\n            >\n              View {task.label.toLowerCase()} result\n            </a>\n          )}\n        </li>\n      ))}\n    </ul>\n  );\n}\n\nexport function BackgroundTasksDemo({ active = true }: { active?: boolean }) {\n  const [tasks, setTasks] = React.useState<DemoTask[]>([\n    {\n      id: "export",\n      label: "Export customer report",\n      value: 20,\n      status: "running",\n    },\n    { id: "index", label: "Index project files", value: 40, status: "running" },\n    {\n      id: "archive",\n      label: "Archive previous release",\n      value: 100,\n      status: "complete",\n    },\n  ]);\n\n  const change = (id: string, status: ProgressStatus) =>\n    setTasks((previous) =>\n      previous.map((task) => (task.id === id ? { ...task, status } : task)),\n    );\n\n  const tick = React.useCallback(\n    () =>\n      setTasks((previous) =>\n        previous.map((task) => {\n          if (task.status !== "running") return task;\n          const next = Math.min(100, task.value + 5);\n\n          // Illustrative work result, not a rule inside KiraProgress.\n          return {\n            ...task,\n            value: next,\n            status: next === 100 ? "complete" : "running",\n          };\n        }),\n      ),\n    [],\n  );\n\n  useDemoClock(tick, active && tasks.some((task) => task.status === "running"));\n  const running = tasks.filter((task) => task.status === "running").length;\n\n  return (\n    <div className="space-y-3">\n      <p className="text-sm text-muted-foreground">\n        Illustrative background tasks continue while the popup is closed.\n        Simulation pauses in an inactive demo tab or hidden document.\n      </p>\n      <KiraPopover\n        title="Background tasks"\n        trigger={<Button variant="outline">{running} tasks running</Button>}\n        contentProps={{ size: "lg" }}\n      >\n        <BackgroundTaskList tasks={tasks} change={change} />\n      </KiraPopover>\n      <output className="text-sm">{running} background tasks running.</output>\n      {tasks\n        .filter((task) => task.status === "complete")\n        .map((task) => (\n          <p\n            tabIndex={-1}\n            id={`result-${task.id}`}\n            key={task.id}\n            className="text-sm"\n          >\n            {task.label}: illustrative result ready.\n          </p>\n        ))}\n      <Button\n        size="sm"\n        variant="outline"\n        onClick={() =>\n          setTasks((previous) =>\n            previous.map((task) => ({ ...task, status: "running", value: 0 })),\n          )\n        }\n      >\n        Restart tasks\n      </Button>\n    </div>\n  );\n}';
 
 function StatesDemo() {
@@ -1159,10 +1156,6 @@ const apiSections = [
     ],
   },
 ];
-
-// =============================================================================
-// MAIN PAGE COMPONENT
-// =============================================================================
 
 const features = [
   {

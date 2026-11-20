@@ -60,9 +60,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { isFunctionProp } from "@/components/ui/prop-guards";
 
-/* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
 
 /** Menubar root container; `data-[orientation]` comes from the primitive. */
 export const menubarVariants = cva(
@@ -96,9 +94,7 @@ export const menubarTriggerVariants = cva([
   "motion-reduce:transition-none",
 ]);
 
-/* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
 
 interface MenubarProps
   extends MenubarPrimitive.Props, VariantProps<typeof menubarVariants> {}
@@ -162,9 +158,7 @@ function mergeClassName<S>(
     : cn(base, className);
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                Components                                  */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Container for menus. Delegates orientation, loopFocus, disabled, modal and
@@ -301,9 +295,7 @@ function MenubarViewport(props: MenubarViewportProps) {
   return <DropdownMenuViewport data-slot="menubar-viewport" {...props} />;
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Exports                                   */
-/* -------------------------------------------------------------------------- */
 
 export {
   Menubar,
@@ -364,9 +356,7 @@ export type {
 
 export { dropdownMenuContentVariants, dropdownMenuItemVariants };
 
-/* -------------------------------------------------------------------------- */
 /*                           KiraMenubar (data-driven)                        */
-/* -------------------------------------------------------------------------- */
 
 export interface KiraMenubarMenuData {
   id: string;

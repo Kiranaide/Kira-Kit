@@ -301,6 +301,7 @@ function ScheduleDemo() {
 }
 
 const scheduleCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import * as React from "react";\nimport { KiraAnnouncementBar, useAnnouncementExpiry, useCountdown } from "@/components/ui/announcement-bar";\nexport function ScheduledMaintenance() {\n  const [start] = React.useState(() => new Date(Date.now() + 8000));\n  const [end] = React.useState(() => new Date(Date.now() + 24000));\n  const expired = useAnnouncementExpiry(end);\n  const countdown = useCountdown(start);\n  return <div>\n    <p>{expired ? "Notice expired" : countdown ? `Notice appears in ${countdown}.` : "Notice active"}</p>\n    <KiraAnnouncementBar startsAt={start} expiresAt={end} variant="warning"\n      message="Maintenance is in progress. Saved work remains available." animation="none" />\n  </div>;\n}';
 
 function simulateRequest(signal: AbortSignal, fail: boolean): Promise<void> {

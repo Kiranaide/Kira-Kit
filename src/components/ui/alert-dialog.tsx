@@ -183,14 +183,10 @@ function AlertDialogContent({
   );
 }
 
-// Splits header/footer out from the scrollable body for `size="full"`, so:
-//  - the footer always pins to the bottom (it's a flex sibling after the
-//    flex-1 scroll area, not just another item flowing inside it), even
-//    when the body content doesn't fill the available height.
-//  - header/footer can bleed edge-to-edge via their negative margins.
-//    (Setting `overflow-y-auto` on a container implicitly forces its
-//    `overflow-x` to `auto` too per the CSS spec, which was clipping that
-//    bleed — keeping header/footer outside the scroll container avoids it.)
+// Splits header/footer out of the scrollable body for `size="full"`: the
+// footer is a flex sibling after the flex-1 scroll area, so it pins to the
+// bottom even when the body doesn't fill the height, and both can bleed
+// edge-to-edge. `overflow-y-auto` would implicitly force `overflow-x: auto`.
 function FullScreenBody({ children }: { children: React.ReactNode }) {
   let header: React.ReactNode = null;
   let footer: React.ReactNode = null;

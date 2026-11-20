@@ -26,25 +26,6 @@ type SortDirection = "asc" | "desc" | "none";
 
 type Align = "left" | "center" | "right";
 
-// =============================================================================
-// Row paint model
-// =============================================================================
-// Each row state writes its OWN variable; the row resolves them through a
-// var() fallback chain, so precedence (selected > hover > stripe) is encoded in
-// the chain rather than fought out via selector specificity:
-//
-//   --row-tint = var(--kt-sel, var(--kt-hover, var(--kt-stripe, 0%)))
-//
-// <tr>          paints muted @ tint% over transparent   (translucent)
-// pinned cells  paint  muted @ tint% over --table-surface (opaque)
-//
-// Mixing in srgb reproduces the browser's alpha compositing exactly, so the
-// pinned cell is pixel-identical to the rest of the row. Both are
-// background-color, so transition-colors animates them in lockstep.
-//
-// Tunables (set on any ancestor): --table-surface (default var(--card)),
-// --table-stripe (40%), --table-hover (65%).
-
 const STICKY_CELL = [
   "data-[sticky-cell]:sticky data-[sticky-cell]:z-10",
   // Logical insets so pinning follows dir="rtl".
@@ -336,10 +317,6 @@ function TableCaption({
   );
 }
 
-// =============================================================================
-// SortableTableHead
-// =============================================================================
-
 interface SortableTableHeadProps extends Omit<
   TableHeadProps,
   "onClick" | "aria-sort" | "ariaSort"
@@ -435,10 +412,6 @@ function SortableTableHead({
   );
 }
 
-// =============================================================================
-// TableEmpty
-// =============================================================================
-
 interface TableEmptyProps extends React.HTMLAttributes<HTMLTableRowElement> {
   colSpan: number;
   message?: React.ReactNode;
@@ -468,10 +441,6 @@ function TableEmpty({
     </tr>
   );
 }
-
-// =============================================================================
-// TableSkeleton — now respects density and striping
-// =============================================================================
 
 interface TableSkeletonProps extends React.HTMLAttributes<HTMLTableSectionElement> {
   rows?: number;
@@ -506,10 +475,6 @@ function TableSkeleton({
     </tbody>
   );
 }
-
-// =============================================================================
-// useTableSort
-// =============================================================================
 
 // numeric: "item 2" < "item 10"; base sensitivity: case/accent-insensitive.
 const collator = new Intl.Collator(undefined, {
@@ -599,10 +564,6 @@ function useTableSort<T>(
   return { sorted, sortKey, sortDir, toggle };
 }
 
-// =============================================================================
-// useRowSelection
-// =============================================================================
-
 function useRowSelection<T>(rows: T[], getId: (row: T) => string) {
   const [selected, setSelected] = React.useState<Set<string>>(() => new Set());
 
@@ -665,12 +626,6 @@ function useRowSelection<T>(rows: T[], getId: (row: T) => string) {
     clear,
   };
 }
-
-// =============================================================================
-// Density persistence — SSR-safe, no longer clobbers the stored value on mount
-// =============================================================================
-// Intentionally duplicated from data-table.tsx (data-table imports table).
-// Shares the same "kira-table:<key>" record format.
 
 const STORAGE_PREFIX = "kira-table:";
 const storageListeners = new Set<() => void>();
@@ -744,10 +699,6 @@ function useDensityPersistence(
 
   return parseDensity(raw);
 }
-
-// =============================================================================
-// KiraTable
-// =============================================================================
 
 interface KiraTableColumn<T> {
   key: keyof T;

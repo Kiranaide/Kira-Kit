@@ -572,11 +572,10 @@ function DisabledReasonWrapper({
   reason: string;
   children: React.ReactNode;
 }) {
-  // Focus proxy for a native-disabled trigger (Base UI's documented pattern for
-  // tooltips on disabled controls): the span is hit-tested where the disabled
-  // button is not, and Tab reaches it so keyboard users can read the reason.
-  // role="button" is deliberately avoided â€” the accessible "disabled button" is
-  // already announced via aria-disabled; the label carries the reason.
+  // Focus proxy for a native-disabled trigger (Base UI's documented pattern
+  // for tooltips on disabled controls): the span is hit-tested where the
+  // disabled button is not, and Tab reaches it so keyboard users can read the
+  // reason. `role="button"` is avoided — aria-disabled already announces it.
   const anchorProps = {
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus proxy required for disabled-control tooltip reachability (WCAG 2.2 Â§9)
     tabIndex: 0,

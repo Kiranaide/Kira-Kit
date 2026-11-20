@@ -635,10 +635,6 @@ function BadgeGroup({
   );
 }
 
-// =============================================================================
-// TagInput — tag collection built on Base UI Combobox.Chips
-// =============================================================================
-
 interface TagInputProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "onChange" | "value"
@@ -666,10 +662,6 @@ function TagInput(arg0: TagInputProps) {
   return <TagInputView {...model} />;
 }
 
-// =============================================================================
-// KiraBadge — one prop-driven entry point over every badge mode
-// =============================================================================
-
 interface KiraBadgeProps {
   mode?: "badge" | "status" | "count" | "tag" | "dot";
   // Shared
@@ -685,16 +677,13 @@ interface KiraBadgeProps {
   preset?: BadgeProps["preset"];
   dismissible?: boolean;
   onClose?: () => void;
-  // status
   status?: StatusBadgeProps["status"];
   label?: string;
   pulse?: "none" | "continuous" | "once";
-  // count
   count?: number;
   max?: number;
   format?: CountFormat;
   animateCount?: boolean;
-  // dot
   dot?: BadgeProps["dot"];
   dotPulse?: BadgeProps["dotPulse"];
 }

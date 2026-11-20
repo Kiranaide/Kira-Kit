@@ -37,8 +37,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-/* ------------------------------- demos ------------------------------- */
-
 function BasicDemo() {
   return (
     <Tabs defaultValue="overview">
@@ -487,8 +485,6 @@ function IconsBadgesDemo() {
   );
 }
 
-/* --------------------------- stress cases ---------------------------- */
-
 // oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 function StressDemo() {
   return (
@@ -670,8 +666,6 @@ function KiraEditorStress() {
     />
   );
 }
-
-/* ------------------------------ code ---------------------------------- */
 
 const basicCode = `import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 

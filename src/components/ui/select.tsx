@@ -394,8 +394,6 @@ function ComboboxField<T extends SelectOption = SelectOption>(
   return renderComboboxField<T>(state8);
 }
 
-// === KiraSelect: one prop-driven combobox ===
-
 interface KiraSelectProps<T extends SelectOption = SelectOption> {
   /** Options to display. A `string[]` shorthand maps each entry to `{ value, label }`. */
   options: T[] | GroupedSelectOption<T>[] | readonly string[];
@@ -862,7 +860,6 @@ function useComboboxFieldState6<T extends SelectOption = SelectOption>(
 
   const filterFn_ = resolveFilter();
 
-  // === GSAP stagger (open only, never while typing) ===
   useGSAP(
     () => {
       if (!state.isOpen || !state.popupEl || state.isLoading) return;

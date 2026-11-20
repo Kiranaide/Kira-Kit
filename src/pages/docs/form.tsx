@@ -71,7 +71,9 @@ function useWorkspaceForm() {
   const form = useForm({
     defaultValues: { displayName: "", email: "", notes: "" },
     onSubmit: async ({ value }) => {
-      await new Promise((resolve) => setTimeout(resolve, 700));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 700);
+      });
       setCreated({ displayName: value.displayName, email: value.email });
     },
   });

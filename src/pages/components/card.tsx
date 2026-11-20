@@ -29,10 +29,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo Components
-// =============================================================================
-
 function BasicDemo() {
   return (
     <Card className="max-w-md">
@@ -323,10 +319,6 @@ const skeletonCode = `import { CardSkeleton } from "@/components/ui/card"
   <CardSkeleton />
   <CardSkeleton size="sm" />
 </div>`;
-
-// =============================================================================
-// Main Page Component
-// =============================================================================
 
 // oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function CardPage() {

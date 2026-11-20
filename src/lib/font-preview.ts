@@ -9,10 +9,9 @@ const STYLE_ID = "kira-font-preview";
 
 /**
  * Docs-only live font preview. Unlayered rules beat Tailwind's layered font
- * utilities (which inline literal stacks via @theme inline), and the :root
- * tokens retarget var(--font-*) consumers like the code-block's inline
- * fontFamily. The style element is never removed on unmount so the preview
- * survives SPA navigation; initFontPreview re-applies it after a full load.
+ * utilities (which inline literal stacks via @theme inline) and the :root
+ * tokens retarget `var(--font-*)` consumers. The style element is never
+ * removed on unmount, so the preview survives SPA navigation.
  */
 export function applyFontPreview(sans: string, mono: string): void {
   const sansFont =

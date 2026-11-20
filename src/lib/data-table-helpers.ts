@@ -1,7 +1,3 @@
-// ============================================
-// EXPORT UTILITIES
-// ============================================
-
 function formatHeader(key: string): string {
   return key
     .replace(/[_-]/g, " ")
@@ -55,9 +51,6 @@ export function exportToJSON<TData>(
   downloadFile(jsonContent, filename, "application/json");
 }
 
-/**
- * Download a file
- */
 function downloadFile(
   content: string,
   filename: string,

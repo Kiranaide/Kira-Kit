@@ -303,8 +303,6 @@ function LabelGroup({
   );
 }
 
-// === KiraLabel: one prop-driven entry point ===
-
 interface KiraLabelProps extends Omit<LabelProps, "counter"> {
   /** Description rendered below the label (folds LabelGroup's job). */
   description?: React.ReactNode;
