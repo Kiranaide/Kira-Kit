@@ -40,6 +40,11 @@ const releases: Release[] = [
     date: "In development",
     changes: [
       {
+        type: "added",
+        title: "kira-kit init detects your runtime and wires up Tailwind CSS v4",
+        description:
+          "init now reads your project (Vite, Vite + Nitro v3, TanStack Start, Next.js with Turbopack, standalone Nitro, Astro, Bun, or plain PostCSS) and installs and configures Tailwind CSS v4 for it: @tailwindcss/vite in the Vite config, @tailwindcss/postcss with a postcss.config.mjs for Next.js, Nitro and PostCSS projects, and bun-plugin-tailwind in bunfig.toml. It also adds the @/* TypeScript path (no deprecated baseUrl, JSONC comments preserved, split tsconfig.app.json handled) and, on Vite, enables native resolve.tsconfigPaths on Vite 8 or a resolve.alias on older versions. Every edit is idempotent and skips configs you already set up.",
+      },      {
         type: "fixed",
         title: "The whole repository lints clean under strict oxlint",
         description:
