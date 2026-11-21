@@ -119,10 +119,7 @@ program
 program
   .command("check [paths...]")
   .description("Run quality checks on component sources")
-  .option(
-    "--ci",
-    "Fail on every finding unless suppressed (auto when CI is set)",
-  )
+  .option("--ci", "Fail on every finding unless suppressed, not just errors")
   .option("--format <format>", "Output format: pretty, json, github")
   .option("--json", "Shorthand for --format json")
   .action(async (paths: string[], options) => {
