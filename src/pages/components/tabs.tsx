@@ -1434,6 +1434,18 @@ const apiSections = [
 
 const changelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "fixed",
+        title: "Focus indicators at full strength",
+        description:
+          "Selected and focused tabs paint border-ring, ring-ring and outline-ring at full opacity instead of the /50 halo, which measured 1.63–2.82:1 against the page — under WCAG 1.4.11. Active tab surfaces inherit the retuned default-theme primary pair.",
+      },
+    ],
+  },
+  {
     version: "v2.2.0",
     date: "2026-10-18",
     changes: [
@@ -1770,7 +1782,7 @@ export default function TabsPage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Props and configuration options for each exported Tabs component."
       />
 

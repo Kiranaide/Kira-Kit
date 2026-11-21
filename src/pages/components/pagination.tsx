@@ -818,11 +818,7 @@ export default function PaginationPage() {
         version="v3.1.2"
       />
       <FeatureGrid features={paginationPageFeatureGridFeatures} />
-      <DemoTabs
-        defaultValue="basic"
-        lazyMount
-        tabs={paginationPageDemoTabsTabs}
-      />
+      <DemoTabs defaultValue="basic" tabs={paginationPageDemoTabsTabs} />
       <KeyboardShortcuts
         shortcuts={paginationPageKeyboardShortcutsShortcuts}
         description="Use the Keyboard, Links, and URL state demos. Pagination adds no global arrow-key shortcuts."

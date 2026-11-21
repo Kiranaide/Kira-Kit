@@ -581,7 +581,7 @@ const classes = boxVariants({ rounded: "lg", shadow: "md" })`}
       />
 
       <KeyboardShortcuts
-        title="Keyboard Navigation"
+        title="Keyboard shortcuts"
         description="Box is a static, passive element with no interactive behavior of its own — there is no keyboard interaction to document. Content inside a Box (buttons, links, inputs) is focusable as usual."
         shortcuts={[
           {

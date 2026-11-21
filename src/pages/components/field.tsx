@@ -913,7 +913,7 @@ export default function FieldPage() {
         version="v3.1.1"
       />
       <FeatureGrid features={fieldPageFeatureGridFeatures} />
-      <DemoTabs defaultValue="basic" lazyMount tabs={fieldPageDemoTabsTabs} />
+      <DemoTabs defaultValue="basic" tabs={fieldPageDemoTabsTabs} />
       <KeyboardShortcuts
         shortcuts={fieldPageKeyboardShortcutsShortcuts}
         description="Use the Keyboard and Error summary demos as the walkthrough. Field adds no arrow-key navigation."

@@ -1340,6 +1340,18 @@ export default function CheckboxPage() {
 // Static demo metadata stays co-located and follows its source constants.
 const checkboxPageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "fixed",
+        title: "Focus ring at full strength",
+        description:
+          "focus-visible now paints ring-[3px] ring-ring rather than ring-ring/50; the 50% halo fell to 1.63–2.82:1 against the page, below WCAG 1.4.11. The checked box inherits the retuned default-theme primary pair.",
+      },
+    ],
+  },
+  {
     version: "v2.3",
     date: "18 November 2026",
     changes: [

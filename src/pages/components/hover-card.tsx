@@ -1256,7 +1256,7 @@ export default function HoverCardPage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Props and configuration options for HoverCard components"
       />
 

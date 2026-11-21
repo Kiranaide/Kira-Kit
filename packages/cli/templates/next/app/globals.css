@@ -41,7 +41,7 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.59 0.22 1);
+  --primary: oklch(0.57 0.22 1);
   --primary-foreground: oklch(0.97 0.01 343);
   --secondary: oklch(0.75 0.1 10);
   --secondary-foreground: oklch(0.2 0.03 15);
@@ -59,7 +59,9 @@
   --warning-foreground: oklch(0.2 0.03 80);
   --border: oklch(0.9 0.01 20);
   --input: oklch(0.9 0.01 20);
-  --ring: oklch(0.7 0.12 350);
+  /* Focus indicators must clear 3:1 against the page (WCAG 1.4.11); L 0.63 is the
+     floor that holds it on both background and muted in light mode. */
+  --ring: oklch(0.63 0.12 350);
   --chart-1: oklch(0.75 0.14 185);
   --chart-2: oklch(0.75 0.18 35);
   --chart-3: oklch(0.78 0.14 95);
@@ -73,7 +75,7 @@
   --sidebar-accent: oklch(0.9 0.04 15);
   --sidebar-accent-foreground: oklch(0.25 0.04 15);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.7 0.12 350);
+  --sidebar-ring: oklch(0.63 0.12 350);
 }
 
 .dark {
@@ -84,7 +86,9 @@
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.66 0.21 354);
-  --primary-foreground: oklch(0.97 0.01 343);
+  /* The dark primary is a light pink, so its foreground is dark ink — the pair
+     needs 4.5:1 like every other preset's does. */
+  --primary-foreground: oklch(0.16 0.05 354);
   --secondary: oklch(0.6 0.08 10);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.25 0.02 15);
@@ -115,6 +119,12 @@
   --sidebar-accent-foreground: oklch(0.98 0.01 10);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.65 0.14 350);
+}
+
+/* Strong ease-out: the built-in ease-out is too weak to read as deliberate
+   motion at the 150–350ms durations the docs frame uses. */
+:root {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 /* Spring curve (damping 0.65, ~7% overshoot) sampled into linear() so route
@@ -247,7 +257,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
   }
   body {
     @apply font-sans bg-background text-foreground;

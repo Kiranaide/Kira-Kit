@@ -1900,6 +1900,18 @@ onValueChange={setValue}
 
 const changelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "fixed",
+        title: "Focus ring at full strength",
+        description:
+          "Every toggle in a group now paints border-ring + ring-ring + ring-[3px] without the /50 alpha; the half-strength ring measured 1.63–2.82:1 against the page, below WCAG 1.4.11.",
+      },
+    ],
+  },
+  {
     version: "2.2.0",
     date: "20 October 2026",
     changes: [

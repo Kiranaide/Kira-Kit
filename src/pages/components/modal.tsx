@@ -767,7 +767,7 @@ export default function ModalPage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Props and configuration options for all modal components."
       />
     </ComponentPage>

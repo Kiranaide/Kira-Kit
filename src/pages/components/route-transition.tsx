@@ -316,7 +316,6 @@ export default function RouteTransitionPage() {
 
       <UsageBlock
         code={usageCode}
-        title="Router wiring"
         description="How this docs app combines native view transitions, intent preloading, the entrance fade, and the progress bar."
       />
 

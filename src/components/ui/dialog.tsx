@@ -131,7 +131,7 @@ function DialogContent({
           {children}
           {showCloseButton && (
             <DialogClose
-              className="absolute right-4 top-4 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-reduce:transition-none"
+              className="absolute right-4 top-4 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring motion-reduce:transition-none"
               aria-label="Close"
             >
               <IconX aria-hidden="true" className="h-4 w-4" />

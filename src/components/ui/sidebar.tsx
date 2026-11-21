@@ -166,7 +166,7 @@ function useSidebarLayoutMotion(
 }
 
 const focusRing =
-  "outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:border-ring";
+  "outline-none focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:border-ring";
 
 function readStorage(key: string) {
   try {

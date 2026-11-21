@@ -54,7 +54,7 @@ import {
 } from "@/components/docs";
 
 const controlClass =
-  "min-h-9 rounded-lg border border-input bg-background px-3 py-1.5 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
+  "min-h-9 rounded-lg border border-input bg-background px-3 py-1.5 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring";
 
 function PreviewToolbar() {
   const resolveValue1 = () => {
@@ -495,7 +495,7 @@ function GroupsDemo() {
               <button
                 type="button"
                 aria-label="Add collection"
-                className="inline-flex size-8 shrink-0 items-center justify-center rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                className="inline-flex size-8 shrink-0 items-center justify-center rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
                 onClick={() => setCount((previous) => previous + 1)}
               >
                 <IconPlus aria-hidden="true" className="size-4" />
@@ -1662,7 +1662,7 @@ export default function SidebarPage() {
         description="Navigation that stays close to your work. Search views, keep personal favorites, and move between a compact rail and a mobile drawer."
       />
       <FeatureGrid features={sidebarPageFeatureGridFeatures} />
-      <DemoTabs defaultValue="basic" lazyMount tabs={sidebarPageDemoTabsTabs} />
+      <DemoTabs defaultValue="basic" tabs={sidebarPageDemoTabsTabs} />
       <KeyboardShortcuts shortcuts={sidebarPageKeyboardShortcutsShortcuts} />
       <UsageBlock
         code={usageCode}

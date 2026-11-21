@@ -1063,6 +1063,18 @@ const apiSections = [
 
 const changelogEntries: React.ComponentProps<typeof Changelog>["entries"] = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "fixed",
+        title: "Focus ring at full strength",
+        description:
+          "focus-visible now paints ring-[3px] ring-ring rather than ring-ring/50; the 50% halo fell to 1.63–2.82:1 against the page, below WCAG 1.4.11's minimum for a state indicator.",
+      },
+    ],
+  },
+  {
     version: "2.0.1",
     date: "9 November 2026",
     changes: [

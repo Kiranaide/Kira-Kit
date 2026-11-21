@@ -1090,7 +1090,6 @@ export default function ToastPage() {
       <DemoTabs tabs={demoTabs} defaultValue="basic" />
 
       <KeyboardShortcuts
-        title="Keyboard & Pointer Interactions"
         description="Provided by the Base UI Toast primitive. Action and close buttons are normal tab stops; toasts are announced via ARIA live regions."
         shortcuts={toastPageKeyboardShortcutsShortcuts}
       />
@@ -1103,7 +1102,7 @@ export default function ToastPage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Complete API for the toast notification system."
       />
 

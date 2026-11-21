@@ -467,7 +467,7 @@ function KiraProgressIndicatorStatusView({
       aria-live="polite"
       aria-atomic="true"
       data-slot="kira-progress-indicator-status"
-      className="min-w-0 flex-1 wrap-anywhere rounded-md text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      className="min-w-0 flex-1 wrap-anywhere rounded-md text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
     >
       <span
         data-slot="kira-progress-indicator-message"

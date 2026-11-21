@@ -133,7 +133,7 @@ function DrawerHandle({
       aria-label={expanded ? "Collapse drawer" : "Expand drawer"}
       aria-expanded={expanded}
       className={mergeClassName<ButtonPrimitive.State>(
-        "mx-auto flex min-h-8 w-20 shrink-0 items-center justify-center rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50",
+        "mx-auto flex min-h-8 w-20 shrink-0 items-center justify-center rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:opacity-50",
         className,
       )}
       onClick={(event) => {
@@ -226,7 +226,7 @@ function DrawerContent({
           </DrawerPrimitive.Content>
           {showCloseButton && (
             <DrawerClose
-              className="absolute right-4 top-4 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-reduce:transition-none"
+              className="absolute right-4 top-4 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring motion-reduce:transition-none"
               aria-label="Close"
             >
               <IconX aria-hidden="true" className="h-4 w-4" />

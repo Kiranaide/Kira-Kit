@@ -86,7 +86,7 @@ const toastIcons: Record<ToastType, React.ReactNode> = {
  */
 const stackedRootClasses = cn(
   "pointer-events-auto absolute inset-x-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom select-none outline-none",
-  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
   "[--gap:0.75rem] [--peek:0.75rem]",
   "[--height:var(--toast-frontmost-height,var(--toast-height))]",
   "[--scale:calc(max(0,1-(var(--toast-index)*0.1)))]",
@@ -115,7 +115,7 @@ const stackedRootClasses = cn(
 /** Geometry for `Toast.Positioner`-wrapped (anchored) toasts. */
 const anchoredRootClasses = cn(
   "pointer-events-auto relative w-max max-w-96 origin-(--transform-origin) select-none outline-none",
-  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
   "transition-[scale,opacity] duration-150 ease-out",
   "data-starting-style:scale-96 data-starting-style:opacity-0",
   "data-ending-style:scale-96 data-ending-style:opacity-0 data-ending-style:ease-in",

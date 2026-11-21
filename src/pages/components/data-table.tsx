@@ -770,7 +770,7 @@ export default function DataTablePage() {
       />
 
       <KeyboardShortcuts
-        title="Keyboard Navigation"
+        title="Keyboard shortcuts"
         description="Spreadsheet-grade grid flow when enableKeyboardNavigation is set (non-virtualized mode)."
         shortcuts={dataTablePageKeyboardShortcutsShortcuts}
       />

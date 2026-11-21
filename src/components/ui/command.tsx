@@ -59,7 +59,7 @@ const commandVariants = cva(
 );
 
 const commandItemVariants = cva(
-  "group/command-item relative flex min-h-11 min-w-0 cursor-default select-none items-center gap-3 rounded-md px-3 py-2 text-sm leading-5 outline-none touch-manipulation sm:min-h-9 motion-safe:transition-colors motion-safe:duration-150 group-data-[navigation=keyboard]/command:transition-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "group/command-item relative flex min-h-11 min-w-0 cursor-default select-none items-center gap-3 rounded-md px-3 py-2 text-sm leading-5 outline-none touch-manipulation sm:min-h-9 motion-safe:transition-colors motion-safe:duration-150 group-data-[navigation=keyboard]/command:transition-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 focus-visible:ring-[3px] focus-visible:ring-ring [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -204,7 +204,7 @@ const CommandInput = React.forwardRef<HTMLInputElement, CommandInputProps>(
   ({ className, ...props }, ref) => (
     <div
       data-slot="command-input-wrapper"
-      className="m-2 flex min-h-11 shrink-0 items-center gap-3 rounded-md border border-input bg-background px-3 motion-safe:transition-[border-color,box-shadow] motion-safe:duration-150 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50"
+      className="m-2 flex min-h-11 shrink-0 items-center gap-3 rounded-md border border-input bg-background px-3 motion-safe:transition-[border-color,box-shadow] motion-safe:duration-150 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring"
       cmdk-input-wrapper=""
     >
       <IconSearch
@@ -1091,7 +1091,7 @@ function renderCommandDialogSectionPart1({
             {showCloseButton && (
               <DialogClose
                 aria-label="Close commands"
-                className="absolute inset-e-3.5 top-3.5 flex size-8 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                className="absolute inset-e-3.5 top-3.5 flex size-8 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
               >
                 <IconX aria-hidden="true" className="size-4" />
               </DialogClose>

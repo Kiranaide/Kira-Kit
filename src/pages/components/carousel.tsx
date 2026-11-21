@@ -946,7 +946,7 @@ export default function CarouselPage() {
 
       <APIReference
         sections={carouselPageAPIReferenceSections}
-        title="API Reference"
+        title="API reference"
         description="Key props and configuration options for all Carousel components"
       />
       <Changelog

@@ -869,7 +869,7 @@ export default function AlertPage() {
       <DemoTabs tabs={demoTabs} defaultValue="basic" />
 
       <KeyboardShortcuts
-        title="Keyboard Navigation"
+        title="Keyboard shortcuts"
         description="Alert is a static region with regular buttons — Kira additions only; there is no Base UI primitive underneath, so no inherited behavior. Reference: WAI-ARIA alert pattern."
         shortcuts={alertPageKeyboardShortcutsShortcuts}
       />
@@ -882,7 +882,7 @@ export default function AlertPage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Props and configuration options for Alert components"
       />
 

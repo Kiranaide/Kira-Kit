@@ -389,7 +389,7 @@ function TabsScrollButton({
         "border border-border bg-background/90 text-muted-foreground shadow-sm backdrop-blur",
         "hover:text-foreground hover:bg-background",
         "disabled:pointer-events-none disabled:opacity-40 disabled:hover:text-muted-foreground",
-        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-1 focus-visible:outline-ring",
+        "focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px] focus-visible:outline-1 focus-visible:outline-ring",
         "transition-colors duration-150 motion-reduce:transition-none",
         position,
       )}
@@ -491,7 +491,7 @@ const tabsTriggerVariants = cva(
     "relative z-10",
     "transition-[color,background-color,border-color,box-shadow] duration-200",
     "motion-reduce:transition-none",
-    "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] focus-visible:outline-1 focus-visible:outline-ring",
+    "focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px] focus-visible:outline-1 focus-visible:outline-ring",
     "disabled:pointer-events-none disabled:opacity-50",
     // kira-kit-ignore arbitrary-values: explicit 44px touch minimum (11 steps)
     "min-h-[44px] sm:min-h-0",
@@ -893,9 +893,7 @@ function TabsTrigger(input: TabsTriggerProps) {
 }
 
 const tabsContentVariants = cva(
-  [
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-  ],
+  ["focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"],
   {
     variants: {
       animation: {

@@ -45,7 +45,7 @@ const avatarVariants = cva(
         rounded: "rounded-lg",
       },
       interactive: {
-        true: "cursor-pointer transition-[opacity,scale,box-shadow] duration-150 hover:opacity-90 active:scale-95 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+        true: "cursor-pointer transition-[opacity,scale,box-shadow] duration-150 hover:opacity-90 active:scale-95 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px]",
         false: "",
       },
     },

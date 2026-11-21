@@ -339,11 +339,7 @@ export default function SpotlightPage() {
         version="v2.0.0"
       />
       <FeatureGrid features={spotlightPageFeatureGridFeatures} />
-      <DemoTabs
-        defaultValue="basic"
-        lazyMount
-        tabs={spotlightPageDemoTabsTabs}
-      />
+      <DemoTabs defaultValue="basic" tabs={spotlightPageDemoTabsTabs} />
       <KeyboardShortcuts
         shortcuts={[
           {

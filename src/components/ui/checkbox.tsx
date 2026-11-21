@@ -31,7 +31,7 @@ const checkboxVariants = cva(
     "transition-[color,background-color,border-color,box-shadow] duration-150 motion-reduce:transition-none",
     // Root is a <span> by default, so use data-disabled (not :disabled).
     "data-disabled:cursor-not-allowed data-disabled:opacity-50",
-    "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+    "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
     // Single error path: `error` prop and Field both set aria-invalid.
     "aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20",
     "dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
@@ -1130,7 +1130,7 @@ function CheckboxCardView({
         "transition-[background-color,border-color,box-shadow] duration-150 motion-reduce:transition-none",
         "hover:bg-muted/50",
         "has-data-checked:border-primary has-data-checked:bg-primary/5 has-data-checked:ring-1 has-data-checked:ring-primary/40",
-        "has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50",
+        "has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring",
         "data-disabled:cursor-not-allowed data-disabled:opacity-50 data-disabled:hover:bg-transparent",
         "data-error:border-destructive",
         padding,

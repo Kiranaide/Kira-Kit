@@ -585,7 +585,7 @@ function StepTarget({ children }: { children: React.ReactNode }) {
       onClick={activate}
       onKeyDown={(event) => handleStepKey(event, model, item.stepValue)}
       className={cn(
-        "relative flex min-h-11 w-full min-w-0 rounded-lg p-1 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-safe:transition-colors motion-safe:duration-150",
+        "relative flex min-h-11 w-full min-w-0 rounded-lg p-1 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring motion-safe:transition-colors motion-safe:duration-150",
         model.orientation === "horizontal"
           ? "flex-col items-center gap-3"
           : "items-start gap-3",
@@ -874,7 +874,7 @@ const StepperPanel = React.forwardRef<HTMLElement, StepperPanelProps>(
         data-slot="stepper-panel"
         data-state={active ? "active" : "inactive"}
         className={cn(
-          "min-w-0 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+          "min-w-0 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring",
           !active && "hidden",
           className,
         )}

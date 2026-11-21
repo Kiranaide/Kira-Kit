@@ -1606,6 +1606,18 @@ Enabled
 
 const changelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "fixed",
+        title: "Focus ring at full strength",
+        description:
+          "focus-visible now paints border-ring + ring-ring + ring-[3px] without the /50 alpha; the half-strength ring measured 1.63–2.82:1 against the page, below WCAG 1.4.11. The default pressed surface inherits the retuned primary pair.",
+      },
+    ],
+  },
+  {
     version: "2.2.0",
     date: "20 October 2026",
     changes: [

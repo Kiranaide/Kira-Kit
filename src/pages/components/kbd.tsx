@@ -295,7 +295,7 @@ export default function KbdPage() {
       <DemoTabs defaultValue="basic" tabs={kbdPageDemoTabsTabs} />
 
       <KeyboardShortcuts
-        title="Keyboard Interaction"
+        title="Keyboard shortcuts"
         description="Kbd is display-only — it renders shortcut hints, not interactive controls."
         shortcuts={kbdPageKeyboardShortcutsShortcuts}
       />

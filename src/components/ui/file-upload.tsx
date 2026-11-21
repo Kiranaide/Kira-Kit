@@ -513,7 +513,7 @@ function FilePreview({
           type="button"
           data-slot="file-upload-remove"
           onClick={() => onRemove(file.id)}
-          className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-background/80 hover:bg-destructive hover:text-destructive-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-background/80 hover:bg-destructive hover:text-destructive-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
           aria-label={`Remove ${file.file.name}`}
         >
           {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
@@ -1850,7 +1850,7 @@ function renderResolveValue1SectionPart3({
       title={zoom > 1 ? "Click to fit image" : "Click to zoom image"}
       onClick={() => setZoom((current) => (current > 1 ? 1 : 2))}
       className={cn(
-        "flex min-h-full w-full items-center justify-center rounded-lg focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        "flex min-h-full w-full items-center justify-center rounded-lg focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring",
         zoom > 1 ? "cursor-zoom-out" : "cursor-zoom-in",
       )}
     >
@@ -1989,7 +1989,7 @@ function renderPreviewDialogContentSectionPart6({
       <button
         type="button"
         onClick={() => onNavigate("prev")}
-        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-2 backdrop-blur hover:bg-background focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-2 backdrop-blur hover:bg-background focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         aria-label="Previous file"
       >
         <IconChevronLeft aria-hidden="true" className="h-5 w-5" />
@@ -1997,7 +1997,7 @@ function renderPreviewDialogContentSectionPart6({
       <button
         type="button"
         onClick={() => onNavigate("next")}
-        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-2 backdrop-blur hover:bg-background focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-2 backdrop-blur hover:bg-background focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         aria-label="Next file"
       >
         <IconChevronRight aria-hidden="true" className="h-5 w-5" />
@@ -2063,7 +2063,7 @@ function renderFilePreviewSectionPart7({
           type="button"
           data-slot="file-upload-preview-trigger"
           onClick={onPreview}
-          className="absolute inset-0 flex items-end justify-start bg-linear-to-t from-black/40 to-transparent p-2 opacity-0 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-reduce:transition-none"
+          className="absolute inset-0 flex items-end justify-start bg-linear-to-t from-black/40 to-transparent p-2 opacity-0 hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring motion-reduce:transition-none"
           aria-label={`Preview ${file.file.name}`}
         >
           {/* kira-kit-ignore spacing-scale: file chip uses badge-tier compact padding */}
@@ -2214,7 +2214,7 @@ function renderFileUploadErrorsPart10({
             onClick={() =>
               setRejections((prev) => prev.filter((_, i) => i !== index))
             }
-            className="shrink-0 rounded p-0.5 hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+            className="shrink-0 rounded p-0.5 hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={`Dismiss error for ${rejection.file.name}`}
           >
             <IconX className="h-3 w-3" aria-hidden="true" />
@@ -2258,7 +2258,7 @@ function renderFileUploadListPart11({ state }: renderFileUploadListPart11Args) {
             <button
               type="button"
               onClick={() => cancelAttempt(file.id)}
-              className="mt-1 text-xs text-muted-foreground underline hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              className="mt-1 text-xs text-muted-foreground underline hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               Cancel
             </button>
@@ -2269,7 +2269,7 @@ function renderFileUploadListPart11({ state }: renderFileUploadListPart11Args) {
                 type="button"
                 disabled={state.perFileBusy}
                 onClick={() => retryAttempt(file.id)}
-                className="mt-1 text-xs text-primary underline hover:text-primary/80 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                className="mt-1 text-xs text-primary underline hover:text-primary/80 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 Retry
               </button>
@@ -2558,7 +2558,7 @@ function renderFilePreview({
             </Button>
             <DialogClose
               type="button"
-              className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-[color,background-color,transform] hover:bg-muted hover:text-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-reduce:transition-none motion-reduce:active:scale-100"
+              className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-[color,background-color,transform] hover:bg-muted hover:text-foreground active:scale-95 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring motion-reduce:transition-none motion-reduce:active:scale-100"
               aria-label="Close preview"
             >
               <IconX aria-hidden="true" className="h-4 w-4" />
