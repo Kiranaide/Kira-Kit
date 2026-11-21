@@ -5,9 +5,65 @@ export interface DocsOptions {
   repoRoot: string;
   /** Output directory for docs (default: public). */
   outDir?: string;
+  /**
+   * Optional origin for links in llms.txt (e.g. "https://example.com").
+   * When omitted, resolved from deployment env vars or left empty so links
+   * stay root-relative ("/docs/<name>.md") and work on any deployed host.
+   */
+  siteUrl?: string;
 }
 
-const HOMEPAGE = "https://kira-kit.vercel.app";
+function normalizeOrigin(raw: string | undefined): string {
+  if (!raw) return "";
+
+  // Coolify can pass comma-separated URLs/FQDNs when multiple domains are bound.
+  const first = raw
+    .split(",")
+    .map((part) => part.trim())
+    .find(Boolean);
+
+  if (!first) return "";
+
+  const withScheme = /^https?:\/\//i.test(first) ? first : `https://${first}`;
+
+  return withScheme.replace(/\/+$/, "");
+}
+
+/**
+ * Resolve the deployed site origin from an explicit override or standard
+ * platform environment variables. Returns "" when none is set so generated
+ * llms.txt links stay root-relative ("/docs/<name>.md").
+ */
+export function resolveDocsBaseUrl(
+  explicit?: string,
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const direct = normalizeOrigin(explicit);
+
+  if (direct) return direct;
+
+  const candidates = [
+    env.SITE_URL,
+    env.PUBLIC_SITE_URL,
+    env.VITE_SITE_URL,
+    env.COOLIFY_URL,
+    env.COOLIFY_FQDN,
+    env.VERCEL_ENV === "production"
+      ? env.VERCEL_PROJECT_PRODUCTION_URL
+      : undefined,
+    env.VERCEL_URL,
+    env.CF_PAGES_URL,
+    env.URL && /^https?:\/\//i.test(env.URL) ? env.URL : undefined,
+  ];
+
+  for (const candidate of candidates) {
+    const normalized = normalizeOrigin(candidate);
+
+    if (normalized) return normalized;
+  }
+
+  return "";
+}
 
 /** One rendered per-item markdown page (llms.txt links to it). */
 export interface PerItemDoc {
@@ -30,19 +86,21 @@ export interface DocsOutputPaths {
 /** Generate public/llms.txt and public/docs/<item>.md from registry items. */
 export function generateDocs(
   items: SourceRegistryItem[],
-  _options: DocsOptions,
+  options: DocsOptions,
 ): GeneratedDocs {
+  const baseUrl = resolveDocsBaseUrl(options.siteUrl);
+
   const perItem = items.map((item) => ({
     name: item.name,
     content: renderMarkdown(item),
   }));
 
-  const llmsTxt = renderLlmsTxt(items);
+  const llmsTxt = renderLlmsTxt(items, baseUrl);
 
   return { llmsTxt, perItem };
 }
 
-function renderLlmsTxt(items: SourceRegistryItem[]): string {
+function renderLlmsTxt(items: SourceRegistryItem[], baseUrl: string): string {
   const lines: string[] = [
     "# Kira Kit",
     "",
@@ -65,7 +123,7 @@ function renderLlmsTxt(items: SourceRegistryItem[]): string {
 
   for (const item of items) {
     lines.push(
-      `- [${item.title ?? item.name}](${HOMEPAGE}/docs/${item.name}.md): ${item.description}`,
+      `- [${item.title ?? item.name}](${baseUrl}/docs/${item.name}.md): ${item.description}`,
     );
   }
 

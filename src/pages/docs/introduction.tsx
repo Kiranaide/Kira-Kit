@@ -92,7 +92,7 @@ function AgentsSection() {
           inventing props.
         </p>
         <a
-          href="https://kira-kit.vercel.app/llms.txt"
+          href="/llms.txt"
           target="_blank"
           rel="noreferrer"
           className={cn(
