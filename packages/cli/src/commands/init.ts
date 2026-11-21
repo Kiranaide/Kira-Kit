@@ -14,6 +14,12 @@ import { installItems } from "../core/install/engine";
 import { DEFAULT_ALIASES } from "../core/install/targets";
 import { applyFontToCss, detectCssPath } from "../core/install/apply-fonts";
 import { applyIconLibrary, resolveIconLibrary } from "../core/install/icons";
+import {
+  detectProjectRuntime,
+  type DetectedRuntime,
+} from "../core/init/detect-runtime";
+import { configureRuntime } from "../core/init/configure-runtime";
+import { configureTsconfigPaths } from "../core/init/tsconfig";
 import { buildBaseCss } from "../core/registry/css-assets";
 import {
   generateTheme,
@@ -56,26 +62,31 @@ function resolveTypography(cwd: string, options: InitOptions): Typography {
 }
 
 /** Packages every Kira Kit consumer needs, regardless of which items they add. */
-function baseDeps(typo: Typography): string[] {
+function baseDeps(typo: Typography, runtime: DetectedRuntime): string[] {
   return [
-    "@base-ui/react",
-    "cn",
-    "class-variance-authority",
-    typo.iconLibrary === "lucide" ? "lucide-react" : "@tabler/icons-react",
-    "tailwindcss",
-    "tw-animate-css",
-    typo.sans.pkg,
-    typo.mono.pkg,
+    ...new Set([
+      "@base-ui/react",
+      "cn",
+      "class-variance-authority",
+      typo.iconLibrary === "lucide" ? "lucide-react" : "@tabler/icons-react",
+      ...runtime.tailwindDeps,
+      "tw-animate-css",
+      typo.sans.pkg,
+      typo.mono.pkg,
+    ]),
   ];
 }
 
-function writeFreshConfig(cwd: string, css: string, typo: Typography): void {
-  const pkg = readConsumerPackage(cwd);
-
+function writeFreshConfig(
+  cwd: string,
+  css: string,
+  typo: Typography,
+  runtime: DetectedRuntime,
+): void {
   const config = {
     $schema: COMPONENTS_SCHEMA_URL,
     style: "kira",
-    rsc: Object.hasOwn(pkg.dependencies ?? {}, "next"),
+    rsc: runtime.isNext,
     tsx: true,
     tailwind: { config: "", css, baseColor: "neutral", cssVariables: true },
     iconLibrary: typo.iconLibrary,
@@ -115,14 +126,18 @@ function fillExistingConfig(
   );
 }
 
-function ensureKiraConfig(cwd: string, typo: Typography): void {
+function ensureKiraConfig(
+  cwd: string,
+  typo: Typography,
+  runtime: DetectedRuntime,
+): void {
   const css = detectCssPath(cwd);
   const raw = readRawConfig(cwd);
 
   if (raw) {
     fillExistingConfig(cwd, raw, css, typo);
   } else {
-    writeFreshConfig(cwd, css, typo);
+    writeFreshConfig(cwd, css, typo, runtime);
   }
 
   if (upsertKiraRegistry(cwd)) {
@@ -230,6 +245,7 @@ async function installBaseDeps(
   cwd: string,
   options: InitOptions,
   typo: Typography,
+  runtime: DetectedRuntime,
 ): Promise<void> {
   const pkg = readConsumerPackage(cwd);
 
@@ -239,7 +255,7 @@ async function installBaseDeps(
     ...Object.keys(pkg.peerDependencies ?? {}),
   ]);
 
-  const missing = baseDeps(typo).filter((dep) => !present.has(dep));
+  const missing = baseDeps(typo, runtime).filter((dep) => !present.has(dep));
 
   await installNpmDeps(cwd, missing, { yes: options.yes }, options.installer);
 }
@@ -436,10 +452,37 @@ async function interactiveTheme(
   return applyCustomTheme(cwd, primary, options.baseColor, force);
 }
 
+function applyProjectSetup(cwd: string, runtime: DetectedRuntime): void {
+  const configNote = runtime.configFile ? ` (${runtime.configFile})` : "";
+
+  info(`Detected ${runtime.label} project${configNote}.`);
+
+  const tsResult = configureTsconfigPaths(cwd);
+
+  if (tsResult.updatedFiles.length > 0) {
+    success(
+      `Configured "@/*" -> "${tsResult.aliasTarget}" in ${tsResult.updatedFiles.join(", ")}.`,
+    );
+  }
+
+  const runtimeResult = configureRuntime(cwd, runtime);
+
+  for (const note of runtimeResult.notes) {
+    success(note);
+  }
+
+  for (const warn of runtimeResult.warnings) {
+    warning(warn);
+  }
+}
+
 export async function init(options: InitOptions): Promise<number> {
   const cwd = options.cwd || process.cwd();
 
   checkReactVersion(cwd);
+
+  const runtime = detectProjectRuntime(cwd);
+
   await interactiveTypography(cwd, options);
 
   const raw = readRawConfig(cwd);
@@ -450,9 +493,10 @@ export async function init(options: InitOptions): Promise<number> {
 
   const typo = resolveTypography(cwd, options);
 
-  ensureKiraConfig(cwd, typo);
+  ensureKiraConfig(cwd, typo, runtime);
   writeBaseCss(cwd, options, typo, fontsRequested);
-  await installBaseDeps(cwd, options, typo);
+  applyProjectSetup(cwd, runtime);
+  await installBaseDeps(cwd, options, typo, runtime);
   await applyIconLibrary(cwd, typo.iconLibrary, {
     yes: options.yes,
     installer: options.installer,

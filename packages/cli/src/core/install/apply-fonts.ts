@@ -10,6 +10,10 @@ const CSS_CANDIDATES = [
   "src/index.css",
   "src/app/globals.css",
   "app/globals.css",
+  "src/styles/global.css",
+  "src/styles/globals.css",
+  "src/globals.css",
+  "src/app.css",
 ];
 
 export function detectCssPath(cwd: string): string {
