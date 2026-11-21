@@ -27,6 +27,8 @@ export const PINNED_RANGES = {
 const FRAMEWORK_DEPS = new Set(["react", "react-dom", "next"]);
 
 export interface ConsumerPackageJson {
+  type?: string;
+  scripts?: Record<string, string>;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
