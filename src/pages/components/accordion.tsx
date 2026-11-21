@@ -1113,24 +1113,39 @@ export default function AccordionPage() {
         version="v2.1.2"
       />
 
-      <FeatureGrid features={accordionPageFeatureGridFeatures} />
+      <FeatureGrid
+        features={accordionPageFeatureGridFeatures}
+        description="Accordion capabilities built into Kira Kit."
+      />
 
       <DemoTabs defaultValue="basic" tabs={accordionPageDemoTabsTabs} />
 
-      <KeyboardShortcuts shortcuts={accordionPageKeyboardShortcutsShortcuts} />
+      <KeyboardShortcuts
+        shortcuts={accordionPageKeyboardShortcutsShortcuts}
+        description="Use the keyboard to navigate, open, and reorder panels."
+      />
 
       <UsageBlock
         code={usageCode}
         title="Usage"
-        description="Import and use the Accordion components with various configuration options."
+        description="Import the primitives, then compose an item, trigger, and panel."
+        notes={[
+          {
+            label: "KiraAccordion",
+            body: "Use the items prop for a data-driven accordion.",
+          },
+        ]}
       />
 
-      <APIReference sections={accordionPageAPIReferenceSections} />
+      <APIReference
+        sections={accordionPageAPIReferenceSections}
+        description="Props, types, and defaults for each part of the accordion."
+      />
 
       <Changelog
         entries={accordionPageChangelogEntries}
         title="Changelog"
-        description="Version history and changes for the Accordion component."
+        description="Version history for the accordion."
       />
     </ComponentPage>
   );
@@ -1243,6 +1258,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Accordion"
@@ -1256,6 +1272,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "collapsible",
     label: "Collapsible",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Collapsible Behavior"
@@ -1269,6 +1286,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "icons",
     label: "Icons",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="With Icons"
@@ -1282,6 +1300,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "vertical",
     label: "Vertical",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Vertical / Nested"
@@ -1295,6 +1314,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "easy",
     label: "Easy",
+    group: "KiraAccordion",
     demo: (
       <DemoWrapper
         title="Easy Accordion"
@@ -1308,6 +1328,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "easy-icons",
     label: "Easy Icons",
+    group: "KiraAccordion",
     demo: (
       <DemoWrapper
         title="Easy Accordion with Icons"
@@ -1321,6 +1342,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "easy-nested",
     label: "Easy Nested",
+    group: "KiraAccordion",
     demo: (
       <DemoWrapper
         title="Easy Nested Accordion"
@@ -1334,6 +1356,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "easy-variants",
     label: "Easy Variants",
+    group: "KiraAccordion",
     demo: (
       <DemoWrapper
         title="Easy Accordion with Variants"
@@ -1347,6 +1370,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "draggable",
     label: "Draggable",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Draggable Accordion"
@@ -1360,6 +1384,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "end-handle",
     label: "End Handle",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Trailing Drag Handle"
@@ -1373,6 +1398,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "search",
     label: "Search",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Searchable Accordion"
@@ -1386,6 +1412,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "find-in-page",
     label: "Find in Page",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Find in Page"
@@ -1399,6 +1426,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "deep-link",
     label: "Deep Link",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Deep Link"
@@ -1410,21 +1438,9 @@ const accordionPageDemoTabsTabs = [
     ),
   },
   {
-    value: "stress",
-    label: "Stress Cases",
-    demo: (
-      <DemoWrapper
-        title="Stress Cases"
-        description="Long titles truncate, empty content renders nothing, and disabled items stay inert — all inside a max-w-xs column."
-        code={stressCode}
-      >
-        <StressDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "persisted",
     label: "Persisted",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Persisted Open State"
@@ -1438,6 +1454,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "async",
     label: "Async Loading",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Async Loading"
@@ -1451,6 +1468,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "disabled-reasons",
     label: "Disabled Reasons",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Disabled Items with Reasons"
@@ -1464,6 +1482,7 @@ const accordionPageDemoTabsTabs = [
   {
     value: "expand-collapse",
     label: "Expand All",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Expand/Collapse All"
@@ -1474,40 +1493,57 @@ const accordionPageDemoTabsTabs = [
       </DemoWrapper>
     ),
   },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long titles truncate, empty content renders nothing, and disabled items stay inert — all inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
 ] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
 const accordionPageKeyboardShortcutsShortcuts = [
   {
     keys: "Tab",
-    description:
-      "inherited from Base UI: move focus to the next accordion trigger (triggers are normal tab stops)",
+    group: "Navigate & toggle",
+    description: "Move focus to the next trigger.",
   },
   {
     keys: "Shift + Tab",
-    description: "inherited from Base UI: move focus to the previous trigger",
+    group: "Navigate & toggle",
+    description: "Move focus to the previous trigger.",
   },
   {
     keys: "Enter / Space",
-    description: "inherited from Base UI: toggle the focused item's panel",
+    group: "Navigate & toggle",
+    description: "Toggle the focused panel.",
   },
   {
     keys: "Tab",
-    description:
-      "focus a disabled item that has a disabledReason — the reason tooltip opens on focus (Kira addition)",
+    group: "Navigate & toggle",
+    description: "Focus a disabled item to read its reason, when provided.",
   },
   {
     keys: "Space",
-    description:
-      "on a drag handle (draggable mode): pick up the item; press again to drop it",
+    group: "Reorder items",
+    description: "Pick up or drop an item when its drag handle has focus.",
   },
   {
     keys: "Arrow keys",
-    description: "while dragging: move the picked-up item up or down the list",
+    group: "Reorder items",
+    description: "Move the picked-up item up or down.",
   },
   {
     keys: "Escape",
-    description:
-      "while dragging: cancel and return the item to its original position",
+    group: "Reorder items",
+    description: "Cancel and return the item to its original position.",
   },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 

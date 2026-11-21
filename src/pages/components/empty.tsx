@@ -308,7 +308,7 @@ export default function EmptyPage() {
         version="v2.0.0"
       />
       <FeatureGrid features={emptyPageFeatureGridFeatures} />
-      <DemoTabs defaultValue="basic" lazyMount tabs={emptyPageDemoTabsTabs} />
+      <DemoTabs defaultValue="basic" tabs={emptyPageDemoTabsTabs} />
       <KeyboardShortcuts
         shortcuts={[
           {

@@ -1457,7 +1457,7 @@ export default function BreadcrumbExamplePage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Props and configuration options for all breadcrumb components."
       />
 

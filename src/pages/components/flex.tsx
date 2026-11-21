@@ -597,7 +597,7 @@ export default function FlexPage() {
 
       <APIReference
         sections={flexPageAPIReferenceSections}
-        title="API Reference"
+        title="API reference"
         description="Key props and configuration options"
       />
 

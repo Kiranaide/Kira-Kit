@@ -676,7 +676,7 @@ export default function SpinnerPage() {
 
       <APIReference
         sections={spinnerPageAPIReferenceSections}
-        title="API Reference"
+        title="API reference"
         description="Props and configuration options for the Spinner component."
       />
 

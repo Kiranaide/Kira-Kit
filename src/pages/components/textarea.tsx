@@ -1053,7 +1053,7 @@ export default function TextareaPage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Props for Textarea, TextareaWithCounter, and KiraTextarea"
       />
 

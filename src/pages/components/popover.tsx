@@ -1395,7 +1395,7 @@ export default function PopoverPage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Complete props reference for all popover components."
       />
       <Changelog entries={changelogEntries} />

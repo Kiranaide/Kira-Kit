@@ -1336,6 +1336,18 @@ const badgePageKeyboardShortcutsShortcuts = [
 
 const badgePageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "fixed",
+        title: "Dismiss focus ring at full strength",
+        description:
+          "The close button draws the kit focus ring as ring-ring at 2px instead of ring-ring/50, which sat below the 3:1 WCAG 1.4.11 minimum. Primary badges inherit the retuned default-theme primary pair.",
+      },
+    ],
+  },
+  {
     version: "3.1.1",
     date: "18 November 2026",
     changes: [

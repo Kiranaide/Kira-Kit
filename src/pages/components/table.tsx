@@ -587,7 +587,7 @@ export default function TablePage() {
       <Changelog entries={tablePageChangelogEntries} />
 
       <KeyboardShortcuts
-        title="Keyboard Navigation"
+        title="Keyboard shortcuts"
         description="Table keyboard support. Data-table-specific keys (resize handles, grid navigation) are documented on the Data Table page."
         shortcuts={tablePageKeyboardShortcutsShortcuts}
       />

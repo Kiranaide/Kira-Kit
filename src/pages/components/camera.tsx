@@ -1813,7 +1813,7 @@ export default function CameraPage() {
         description="Composable photo/video capture with reviewed image handoff, shared controls and framing guides."
       />
       <FeatureGrid features={features} />
-      <DemoTabs tabs={demoTabs} defaultValue="basic" lazyMount />
+      <DemoTabs tabs={demoTabs} defaultValue="basic" />
       <KeyboardShortcuts shortcuts={shortcuts} />
       <UsageBlock code={usageCode} />
       <APIReference sections={apiSections} />

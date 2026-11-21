@@ -1109,7 +1109,7 @@ import { Button } from "@/components/ui/button"
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Props and configuration options for all dialog components."
       />
       <Changelog entries={dialogPageChangelogEntries} />

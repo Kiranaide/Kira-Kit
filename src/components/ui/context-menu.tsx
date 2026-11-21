@@ -54,7 +54,7 @@ const ContextMenuTrigger = React.forwardRef<
       data-slot="context-menu-trigger"
       tabIndex={tabIndex}
       className={mergeClassName<ContextMenuPrimitive.Trigger.State>(
-        "outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        "outline-none focus-visible:ring-[3px] focus-visible:ring-ring",
         className,
       )}
       onKeyDown={(event) => {

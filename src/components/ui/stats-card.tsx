@@ -166,7 +166,7 @@ const statsCardVariants = cva(
         gradient:
           "bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/5 ring-primary/20 border-transparent",
         interactive:
-          "border-border cursor-pointer hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+          "border-border cursor-pointer hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px]",
         glass:
           "bg-background/60 dark:bg-background/40 backdrop-blur-xl backdrop-saturate-150 border-border/50 shadow-lg ring-0",
       },

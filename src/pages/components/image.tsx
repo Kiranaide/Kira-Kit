@@ -1,4 +1,5 @@
 import { IconPhoto } from "@tabler/icons-react";
+import { cn } from "cn";
 import {
   ComponentPage,
   PageHeader,
@@ -10,7 +11,6 @@ import {
   KeyboardShortcuts,
 } from "@/components/docs";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
@@ -77,7 +77,7 @@ function BasicImageDemo() {
   );
 }
 
-const basicImageCode = `import { cn } from "@/lib/utils"
+const basicImageCode = `import { cn } from "cn"
 
 export function BasicImageDemo() {
   return (
@@ -609,13 +609,12 @@ export default function ImagePage() {
 
       <KeyboardShortcuts
         shortcuts={keyboardShortcuts}
-        title="Accessibility"
         description="Keyboard navigation for screen readers"
       />
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="HTML attributes and Tailwind utilities for images"
       />
     </ComponentPage>

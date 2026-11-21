@@ -22,7 +22,7 @@ const switchTrackVariants = cva(
     "transition-[background-color,box-shadow] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
     "motion-reduce:transition-none",
     // Button-exemplar focus ring (no offset — the hit area already pads).
-    "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+    "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring",
     "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
     // Single error path: `error` prop and Field both set aria-invalid.
     "aria-invalid:bg-destructive",
@@ -376,7 +376,7 @@ function DisabledReasonAnchor({
               type="button"
               aria-label={label}
               aria-describedby={describedBy}
-              className="absolute inset-0 cursor-not-allowed rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="absolute inset-0 cursor-not-allowed rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
             />
           }
         />

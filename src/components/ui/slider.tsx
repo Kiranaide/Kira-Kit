@@ -62,7 +62,7 @@ const THUMB_CLASSES =
   "transition-[inset-inline-start,bottom,translate,scale,box-shadow] duration-150 ease-out hover:scale-110 hover:shadow-lg " +
   "data-[dragging]:scale-110 data-[dragging]:shadow-lg " +
   "data-[focused]:scale-110 data-[focused]:shadow-lg " +
-  "focus-visible:outline-none data-[focused]:ring-[3px] data-[focused]:ring-ring/50 group/thumb";
+  "focus-visible:outline-none data-[focused]:ring-[3px] data-[focused]:ring-ring group/thumb";
 
 function toPercent(value: number, min: number, max: number): number {
   const range = max - min;

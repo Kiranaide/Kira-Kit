@@ -579,7 +579,7 @@ export default function VideoPlayerPage() {
           { keys: "Home / End", description: "Seek to start/end" },
           { keys: "0-9", description: "Seek to percentage (0=0%, 9=90%)" },
         ]}
-        title="Keyboard Shortcuts"
+        title="Keyboard shortcuts"
         description="Full keyboard support for accessible video control"
       />
 

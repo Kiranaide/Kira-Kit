@@ -6,7 +6,7 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const textareaVariants = cva(
   [
-    "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50",
+    "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring",
     "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
     "aria-invalid:border-destructive dark:aria-invalid:border-destructive/50",
     "disabled:bg-input/50 dark:disabled:bg-input/80",

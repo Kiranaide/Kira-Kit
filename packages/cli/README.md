@@ -26,6 +26,11 @@ theme tokens into your global CSS. No other CLI is involved.
 
 ## Usage
 
+The per-command notes below cover the common calls. For every flag, its
+default, what each command writes, and where `--help` disagrees with the code,
+see the full reference at [`docs/cli-reference.md`](../../docs/cli-reference.md)
+in the repository.
+
 ### `kira-kit init`
 
 Set up a project for Kira Kit:
@@ -134,7 +139,7 @@ are advisory unless `--ci` is passed.
 kira-kit check
 kira-kit check --format github          # GitHub Actions annotations
 kira-kit check --ci                     # strict: every finding fails
-kira-kit check src/components/ui/button.tsx
+kira-kit check src/components/ui        # directories only, not file paths
 ```
 
 Checks include: imports-vs-declared-deps, lib resolution, dead animation
@@ -150,10 +155,10 @@ flagged):
 // kira-kit-ignore target-size: decorative icon, no pointer target needed
 ```
 
-Or for a whole file:
+Or for a whole file — the reason is mandatory in both forms:
 
 ```tsx
-/* kira-kit-ignore-file */
+/* kira-kit-ignore-file raw-colors: this file defines the raw palette itself */
 ```
 
 ### `kira-kit create [dir]`

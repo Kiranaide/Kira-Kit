@@ -1108,6 +1108,18 @@ const avatarPageKeyboardShortcutsShortcuts = [
 
 const avatarPageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "fixed",
+        title: "Focus ring at full strength",
+        description:
+          "Interactive avatars draw the kit focus ring as ring-ring at 3px instead of ring-ring/50 — the half-strength halo measured 1.63–2.82:1 against the page, under WCAG 1.4.11's 3:1 for a state indicator. The primary ring also inherits the retuned default-theme primary pair.",
+      },
+    ],
+  },
+  {
     version: "3.1.0",
     date: "4 November 2026",
     changes: [

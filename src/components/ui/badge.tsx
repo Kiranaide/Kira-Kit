@@ -16,7 +16,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const badgeVariants = cva(
-  "gap-1.5 rounded-full border border-transparent font-medium transition-[color,background-color,border-color,box-shadow,opacity,scale] duration-150 inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden group/badge",
+  "gap-1.5 rounded-full border border-transparent font-medium transition-[color,background-color,border-color,box-shadow,opacity,scale] duration-150 inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px] overflow-hidden group/badge",
   {
     variants: {
       variant: {
@@ -129,7 +129,7 @@ const badgeDotVariants = cva("rounded-full shrink-0", {
 // but the hit box is padded to ≥ 24×24 and pulled back with negative margin
 // so the visible footprint doesn't grow.
 const badgeCloseVariants = cva(
-  "relative rounded-full p-0.5 opacity-70 hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-ring/50 focus-visible:ring-[2px] after:absolute after:-inset-y-1.5 after:-inset-x-1.5 after:content-['']",
+  "relative rounded-full p-0.5 opacity-70 hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-[2px] after:absolute after:-inset-y-1.5 after:-inset-x-1.5 after:content-['']",
   {
     variants: {
       size: {
@@ -1048,7 +1048,7 @@ function TagInputView({
         role="group"
         aria-label={ariaLabel}
         className={cn(
-          "flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-background p-2 text-sm focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px] transition-colors",
+          "flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-background p-2 text-sm focus-within:border-ring focus-within:ring-ring focus-within:ring-[3px] transition-colors",
           { "pointer-events-none opacity-50": disabled },
           className,
         )}

@@ -348,7 +348,7 @@ function DropdownMenuTrigger<Payload = unknown>({
     <Menu.Trigger
       data-slot="dropdown-menu-trigger"
       className={mergeClassName<Menu.Trigger.State>(
-        "focus-visible:outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+        "focus-visible:outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
         className,
       )}
       {...props}
@@ -1424,7 +1424,7 @@ function DropdownMenuInput({ className, ...props }: Menu.Input.Props) {
         cn(
           "flex h-8 w-full items-center rounded-md border border-border bg-background ps-3 pe-8 text-sm outline-none",
           "placeholder:text-muted-foreground",
-          "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+          "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
         ),
         className,
       )}
@@ -1455,7 +1455,7 @@ function DropdownMenuClear({ className, ...props }: Menu.Clear.Props) {
       className={mergeClassName<Menu.Clear.State>(
         cn(
           "absolute inset-e-1 top-1 flex size-6 items-center justify-center rounded-md text-muted-foreground outline-none",
-          "hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50",
+          "hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring",
           "disabled:pointer-events-none disabled:opacity-50",
         ),
         className,

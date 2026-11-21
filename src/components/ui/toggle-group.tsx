@@ -1022,7 +1022,7 @@ function DisabledReasonWrapper({
           <span
             data-slot="toggle-group-item-reason-anchor"
             {...anchorProps}
-            className="inline-flex cursor-not-allowed rounded-md outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+            className="inline-flex cursor-not-allowed rounded-md outline-none focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px]"
           />
         }
       >

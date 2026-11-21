@@ -44,7 +44,7 @@ export const navigationMenuTriggerVariants = cva(
     "group inline-flex h-10 w-max min-w-0 items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium outline-none",
     "transition-colors motion-reduce:transition-none",
     "hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground",
-    "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+    "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
     "disabled:pointer-events-none disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50",
     "data-[popup-open]:bg-muted data-[popup-open]:text-foreground",
     "data-[active]:underline data-[active]:underline-offset-4 data-[active]:font-semibold",
@@ -494,7 +494,7 @@ function NavigationMenuViewAll({
       data-slot="navigation-menu-view-all"
       closeOnClick
       className={mergeClassName<NavigationMenuPrimitive.Link.State>(
-        "group flex items-center gap-2 rounded-md p-3 text-sm outline-none transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-reduce:transition-none",
+        "group flex items-center gap-2 rounded-md p-3 text-sm outline-none transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring motion-reduce:transition-none",
         className,
       )}
       {...props}
@@ -667,7 +667,7 @@ function useNavDesktop(): boolean {
 const navigationLinkCardVariants = cva([
   "group flex w-full min-w-0 select-none items-start gap-3 rounded-md p-2.5 text-start leading-5 outline-none",
   "transition-colors hover:bg-muted focus-visible:bg-muted",
-  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
   "motion-reduce:transition-none",
   "data-[active]:font-semibold data-[active]:underline data-[active]:underline-offset-4",
 ]);
@@ -990,7 +990,7 @@ function NavigationMobileGroupView({
           data-slot="navigation-mobile-group-trigger"
           className={cn(
             "group/navgroup flex min-h-11 w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium",
-            "hover:bg-muted focus-visible:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50",
+            "hover:bg-muted focus-visible:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring",
             "focus-visible:outline-none motion-reduce:transition-none",
           )}
         >
@@ -1046,7 +1046,7 @@ function KiraNavigationMobileTriggerView({
             aria-label={mobileLabel}
             className={cn(
               "inline-flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-medium",
-              "hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+              "hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:outline-none",
               "motion-reduce:transition-none",
             )}
           >

@@ -284,7 +284,7 @@ import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader,
 import { dialogContentVariants } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { IconAlertTriangle } from "@tabler/icons-react"
-import { cn } from "@/lib/utils"
+import { cn } from "cn"
 
 export function ConfirmArchive({ archiveProject }: { archiveProject: () => Promise<void> }) {
   return <KiraAlertDialog trigger={<Button variant="destructive">Archive project</Button>}

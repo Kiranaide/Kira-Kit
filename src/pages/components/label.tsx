@@ -1320,7 +1320,7 @@ export default function LabelPage() {
       <DemoTabs tabs={demoTabs} defaultValue="basic" />
 
       <KeyboardShortcuts
-        title="Keyboard Interaction"
+        title="Keyboard shortcuts"
         description="Label is not interactive — it points at controls."
         shortcuts={labelPageKeyboardShortcutsShortcuts}
       />
@@ -1333,7 +1333,7 @@ export default function LabelPage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Complete props reference for Label components."
       />
 

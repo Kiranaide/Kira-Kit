@@ -1465,7 +1465,7 @@ export default function ProgressPage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Props and configuration options for all progress components."
       />
       <Changelog entries={changelogEntries} />

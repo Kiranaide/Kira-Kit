@@ -118,8 +118,10 @@ inline:
 // kira-kit-ignore target-size: decorative icon, no pointer target needed
 ```
 
-See `COMPONENT-UPGRADE-PLAYBOOK.md` §8 for the full check catalog and
-`packages/cli/README.md` for CLI usage.
+See `COMPONENT-UPGRADE-PLAYBOOK.md` §8 for the full check catalog,
+`packages/cli/README.md` for CLI usage, and `docs/cli-reference.md` for the
+complete flag-by-flag reference — the same file the site's `/docs/cli` page
+links to.
 
 ## Deployment
 

@@ -78,7 +78,7 @@ function RadioGroup<Value = string>({
 }
 
 const radioItemVariants = cva(
-  "peer relative inline-flex shrink-0 items-center justify-center rounded-full border-2 bg-background outline-none touch-manipulation after:absolute after:-inset-2 after:content-[''] motion-safe:transition-colors motion-safe:duration-150 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-readonly:cursor-default aria-invalid:border-destructive aria-invalid:ring-destructive/20",
+  "peer relative inline-flex shrink-0 items-center justify-center rounded-full border-2 bg-background outline-none touch-manipulation after:absolute after:-inset-2 after:content-[''] motion-safe:transition-colors motion-safe:duration-150 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring data-disabled:cursor-not-allowed data-disabled:opacity-50 data-readonly:cursor-default aria-invalid:border-destructive aria-invalid:ring-destructive/20",
   {
     variants: {
       size: {
@@ -235,7 +235,7 @@ function RadioWithLabel<Value = string>({
 }
 
 const radioCardVariants = cva(
-  "group/radio-card relative flex min-w-0 w-full cursor-pointer items-start gap-3 rounded-lg border border-input bg-background p-4 text-start outline-none touch-manipulation motion-safe:transition-colors motion-safe:duration-150 hover:border-primary/50 hover:bg-muted/50 active:bg-muted data-checked:border-primary data-checked:bg-primary/5 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-disabled:hover:border-input data-disabled:hover:bg-background data-readonly:cursor-default aria-invalid:border-destructive",
+  "group/radio-card relative flex min-w-0 w-full cursor-pointer items-start gap-3 rounded-lg border border-input bg-background p-4 text-start outline-none touch-manipulation motion-safe:transition-colors motion-safe:duration-150 hover:border-primary/50 hover:bg-muted/50 active:bg-muted data-checked:border-primary data-checked:bg-primary/5 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring data-disabled:cursor-not-allowed data-disabled:opacity-50 data-disabled:hover:border-input data-disabled:hover:bg-background data-readonly:cursor-default aria-invalid:border-destructive",
 );
 
 interface RadioCardProps<Value = string> extends RadioPrimitive.Root
@@ -556,7 +556,7 @@ function RadioButtonGroup<Value = string>({
 }
 
 const radioButtonVariants = cva(
-  "relative isolate z-10 inline-flex min-w-0 max-w-full cursor-pointer select-none items-center justify-center rounded-md font-medium text-muted-foreground outline-none touch-manipulation motion-safe:transition-colors motion-safe:duration-150 hover:text-foreground active:bg-background/70 data-checked:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-readonly:cursor-default aria-invalid:ring-[3px] aria-invalid:ring-destructive/20",
+  "relative isolate z-10 inline-flex min-w-0 max-w-full cursor-pointer select-none items-center justify-center rounded-md font-medium text-muted-foreground outline-none touch-manipulation motion-safe:transition-colors motion-safe:duration-150 hover:text-foreground active:bg-background/70 data-checked:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring data-disabled:cursor-not-allowed data-disabled:opacity-50 data-readonly:cursor-default aria-invalid:ring-[3px] aria-invalid:ring-destructive/20",
   {
     variants: {
       size: {

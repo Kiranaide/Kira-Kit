@@ -1,4 +1,9 @@
-import { Outlet, useLocation, useRouterState } from "@tanstack/react-router";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useRouterState,
+} from "@tanstack/react-router";
 import {
   Sidebar,
   SidebarHeader,
@@ -7,18 +12,14 @@ import {
   SidebarItem,
   SidebarDivider,
   SidebarProvider,
-  ThemeProvider,
   ThemeToggle,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { KiraToastProvider } from "@/components/ui/toast";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   RouteTransition,
   NavigationProgress,
 } from "@/components/ui/route-transition";
 import { ThemeCustomizer } from "@/components/theme-customizer";
-import { PresetProvider } from "@/lib/theme-presets";
 import { supportsViewTransitions } from "@/lib/view-transition";
 import {
   IconHome,
@@ -94,91 +95,88 @@ import {
 
 export function AppLayout() {
   return (
-    <ThemeProvider>
-      <PresetProvider>
-        <TooltipProvider>
-          <SidebarProvider>
-            <KiraToastProvider />
-            <div className="flex h-screen overflow-hidden">
-              <header className="fixed top-0 left-0 right-0 z-40 flex items-center h-14 px-4 border-b border-border bg-background md:hidden">
-                <SidebarTrigger />
-                <div className="flex items-center gap-2 ml-2">
-                  <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-                    <span className="text-primary-foreground font-bold text-xs">
-                      K
-                    </span>
-                  </div>
-                  <span className="font-semibold text-foreground">
-                    Kira Kit
-                  </span>
-                </div>
-              </header>
+    <SidebarProvider>
+      <div className="flex h-screen overflow-hidden">
+        <header className="fixed top-0 left-0 right-0 z-40 flex items-center h-14 px-4 border-b border-border bg-background md:hidden">
+          <SidebarTrigger />
+          <div className="flex items-center gap-2 ml-2">
+            <Link
+              to="/"
+              aria-label="Kira Kit home"
+              className="docs-focus-ring flex items-center gap-2 rounded-[8px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-xs">
+                  K
+                </span>
+              </div>
+              <span className="font-semibold text-foreground">Kira Kit</span>
+            </Link>
+          </div>
+        </header>
 
-              <Sidebar>
-                <SidebarHeader />
-                <SidebarContent>
-                  <SidebarItem to="/" icon={<IconHome className="w-5 h-5" />}>
-                    Overview
-                  </SidebarItem>
+        <Sidebar>
+          <SidebarHeader />
+          <SidebarContent>
+            <SidebarItem to="/overview" icon={<IconHome className="w-5 h-5" />}>
+              Overview
+            </SidebarItem>
 
-                  <SidebarItem
-                    to="/ui-preview"
-                    icon={<IconRuler2 className="w-5 h-5" />}
-                  >
-                    UI Preview
-                  </SidebarItem>
+            <SidebarItem
+              to="/ui-preview"
+              icon={<IconRuler2 className="w-5 h-5" />}
+            >
+              UI Preview
+            </SidebarItem>
 
-                  <SidebarDivider />
+            <SidebarDivider />
 
-                  <DocsNavigation />
+            <DocsNavigation />
 
-                  <SidebarDivider />
+            <SidebarDivider />
 
-                  <SidebarGroup label="Layout">
-                    {layoutNavigation.map((item) => (
-                      <SidebarItem
-                        key={item.to}
-                        to={item.to}
-                        icon={<item.icon className="w-5 h-5" />}
-                      >
-                        {item.label}
-                      </SidebarItem>
-                    ))}
-                  </SidebarGroup>
+            <SidebarGroup label="Layout">
+              {layoutNavigation.map((item) => (
+                <SidebarItem
+                  key={item.to}
+                  to={item.to}
+                  icon={<item.icon className="w-5 h-5" />}
+                >
+                  {item.label}
+                </SidebarItem>
+              ))}
+            </SidebarGroup>
 
-                  <SidebarDivider />
+            <SidebarDivider />
 
-                  <SidebarGroup label="Components">
-                    {componentsNavigation.map((item) => (
-                      <SidebarItem
-                        key={item.to}
-                        to={item.to}
-                        icon={<item.icon className="w-5 h-5" />}
-                      >
-                        {item.label}
-                      </SidebarItem>
-                    ))}
-                  </SidebarGroup>
+            <SidebarGroup label="Components">
+              {componentsNavigation.map((item) => (
+                <SidebarItem
+                  key={item.to}
+                  to={item.to}
+                  icon={<item.icon className="w-5 h-5" />}
+                >
+                  {item.label}
+                </SidebarItem>
+              ))}
+            </SidebarGroup>
 
-                  <SidebarDivider />
+            <SidebarDivider />
 
-                  <SidebarGroup label="Settings">
-                    <ThemeCustomizer />
-                    <ThemeToggle />
-                  </SidebarGroup>
-                </SidebarContent>
-              </Sidebar>
+            <SidebarGroup label="Settings">
+              <ThemeCustomizer />
+              <ThemeToggle />
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
 
-              <main className="flex-1 overflow-y-auto bg-background pt-14 md:pt-0">
-                <RouteOutlet />
-              </main>
+        <main className="flex-1 overflow-y-auto bg-background pt-14 md:pt-0">
+          <RouteOutlet />
+        </main>
 
-              <RouteProgress />
-            </div>
-          </SidebarProvider>
-        </TooltipProvider>
-      </PresetProvider>
-    </ThemeProvider>
+        <RouteProgress />
+      </div>
+    </SidebarProvider>
   );
 }
 

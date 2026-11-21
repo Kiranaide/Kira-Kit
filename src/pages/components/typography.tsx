@@ -514,7 +514,7 @@ export default function TypographyPage() {
     },
   ];
 
-  const usageCode = `import { cn } from "@/lib/utils"
+  const usageCode = `import { cn } from "cn"
 
 // Heading 1
 <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
@@ -571,7 +571,7 @@ export default function TypographyPage() {
 
       <APIReference
         sections={apiSections}
-        title="API Reference"
+        title="API reference"
         description="Tailwind CSS classes used for typography styling"
       />
     </ComponentPage>
