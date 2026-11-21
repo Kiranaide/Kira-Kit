@@ -2,6 +2,12 @@
 # PORT lets Coolify (or any host) pick the container listen port; defaults to 80.
 # nginx runtime variables like $uri are left untouched — only defined env vars
 # (PORT) are substituted.
+# Preserve the external scheme when running behind a reverse proxy (e.g. Coolify).
+map $http_x_forwarded_proto $public_scheme {
+    default $http_x_forwarded_proto;
+    ""      $scheme;
+}
+
 server {
     listen ${PORT};
     server_name _;
@@ -9,8 +15,20 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
-    # Agent docs — render as plain text in the browser
-    location ~ ^/(llms\.txt|docs/.*\.md)$ {
+    # Agent index — render as plain text and qualify relative /docs/ links
+    # with the live request origin so any deployment domain works dynamically.
+    location = /llms.txt {
+        default_type text/plain;
+        add_header Access-Control-Allow-Origin "*" always;
+        add_header Cache-Control "no-cache" always;
+        add_header Vary "Host, X-Forwarded-Proto" always;
+        sub_filter_types text/plain;
+        sub_filter_once off;
+        sub_filter '](/docs/' ']($public_scheme://$http_host/docs/';
+    }
+
+    # Per-item agent docs — render as plain text in the browser
+    location ~ ^/docs/.*\.md$ {
         default_type text/plain;
         add_header Access-Control-Allow-Origin "*" always;
     }
