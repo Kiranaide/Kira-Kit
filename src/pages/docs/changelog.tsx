@@ -40,11 +40,18 @@ const releases: Release[] = [
     date: "In development",
     changes: [
       {
+        type: "changed",
+        title: "Redesigned UI Preview and Overview pages",
+        description:
+          "/ui-preview now runs in DocPage with an interactive component playground (Button, Input, Select, Dialog with Preview/Code tabs), a 5-tier control size table, size-selectable input combinations, Demo/Worst-case input actions, menu and overlay comparisons, container and form spacing cards, side-by-side light/dark preset previews, and a mobile section-jump selector. /overview adopts DocPage with a copyable init command pill, key metrics strip, Start Here path cards, architecture pillars, a linked 6-category component catalog, and a Quickstart CLI terminal card.",
+      },
+      { 
         type: "added",
         title: "kira-kit init detects your runtime and wires up Tailwind CSS v4",
         description:
           "init now reads your project (Vite, Vite + Nitro v3, TanStack Start, Next.js with Turbopack, standalone Nitro, Astro, Bun, or plain PostCSS) and installs and configures Tailwind CSS v4 for it: @tailwindcss/vite in the Vite config, @tailwindcss/postcss with a postcss.config.mjs for Next.js, Nitro and PostCSS projects, and bun-plugin-tailwind in bunfig.toml. It also adds the @/* TypeScript path (no deprecated baseUrl, JSONC comments preserved, split tsconfig.app.json handled) and, on Vite, enables native resolve.tsconfigPaths on Vite 8 or a resolve.alias on older versions. Every edit is idempotent and skips configs you already set up.",
-      },      {
+      },      
+      {
         type: "fixed",
         title: "llms.txt resolves to the deployed site dynamically",
         description:
