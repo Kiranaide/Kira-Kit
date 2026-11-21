@@ -12,6 +12,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 import { buildRegistry } from "../src/commands/build";
+import { generateDocs, resolveDocsBaseUrl } from "../src/core/docs/generate";
 import {
   REGISTRY_ITEM_SCHEMA_URL,
   buildPayloads,
@@ -189,5 +190,68 @@ describe("buildRegistry (integration)", () => {
 
     expect(buildRegistry({ cwd: dir, skipChecks: true })).toBe(1);
     expect(existsSync(join(dir, "public/r/registry.json"))).toBe(false);
+  });
+});
+
+describe("generateDocs / resolveDocsBaseUrl", () => {
+  it("emits root-relative /docs/ links when no deployment origin is set", () => {
+    expect(resolveDocsBaseUrl(undefined, {})).toBe("");
+
+    const { llmsTxt } = generateDocs(
+      [
+        {
+          name: "button",
+          type: "registry:ui",
+          title: "Button",
+          description: "Base UI button.",
+        },
+      ],
+      { repoRoot: FIXTURE, siteUrl: "" },
+    );
+
+    expect(llmsTxt).toContain("- [Button](/docs/button.md): Base UI button.");
+    expect(llmsTxt).not.toContain("kira-kit.vercel.app");
+    expect(llmsTxt).not.toMatch(/shadcn/i);
+  });
+
+  it("resolves deployed origins from explicit option or platform env vars", () => {
+    expect(resolveDocsBaseUrl("https://ui.example.com/", {})).toBe(
+      "https://ui.example.com",
+    );
+    expect(
+      resolveDocsBaseUrl(undefined, {
+        COOLIFY_FQDN: "ui.example.com,www.example.com",
+      }),
+    ).toBe("https://ui.example.com");
+    expect(
+      resolveDocsBaseUrl(undefined, {
+        VERCEL_ENV: "production",
+        VERCEL_PROJECT_PRODUCTION_URL: "kira.example.com",
+        VERCEL_URL: "kira-abc123.vercel.app",
+      }),
+    ).toBe("https://kira.example.com");
+    expect(
+      resolveDocsBaseUrl(undefined, {
+        VERCEL_ENV: "preview",
+        VERCEL_PROJECT_PRODUCTION_URL: "kira.example.com",
+        VERCEL_URL: "kira-abc123.vercel.app",
+      }),
+    ).toBe("https://kira-abc123.vercel.app");
+
+    const { llmsTxt } = generateDocs(
+      [
+        {
+          name: "button",
+          type: "registry:ui",
+          title: "Button",
+          description: "Base UI button.",
+        },
+      ],
+      { repoRoot: FIXTURE, siteUrl: "https://ui.example.com/" },
+    );
+
+    expect(llmsTxt).toContain(
+      "- [Button](https://ui.example.com/docs/button.md): Base UI button.",
+    );
   });
 });

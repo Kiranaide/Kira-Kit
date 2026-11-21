@@ -41,6 +41,12 @@ const releases: Release[] = [
     changes: [
       {
         type: "fixed",
+        title: "llms.txt resolves to the deployed site dynamically",
+        description:
+          'The Introduction page\'s "Read llms.txt" button now links to /llms.txt instead of the hardcoded kira-kit.vercel.app host, and the docs generator emits root-relative /docs/<name>.md links by default or reads platform origin env vars (SITE_URL, COOLIFY_URL, COOLIFY_FQDN, VERCEL_PROJECT_PRODUCTION_URL, VERCEL_URL, CF_PAGES_URL). Docker/nginx and Vite dev/preview middleware qualify /docs/ links to the live request origin automatically.',
+      },
+      {
+        type: "fixed",
         title: "The whole repository lints clean under strict oxlint",
         description:
           "485 errors are gone without relaxing a rule: section dividers and name-echo comments were deleted, why-comments over the four-line cap were cut to the constraint they protect, and doc-sample strings that looked like template literals now carry reasoned suppressions. The strict @kiranaide/oxlint-kit presets are the installed config. Source changes are real but narrow: promise executors no longer resolve with the timer id, the carousel's child-index cursor avoids a React Compiler immutability violation, and two test helpers stopped reading the wall clock.",
