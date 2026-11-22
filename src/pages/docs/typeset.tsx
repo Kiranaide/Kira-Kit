@@ -4,6 +4,13 @@ import {
   DocGuideSection,
   type DocGuideTocItem,
 } from "@/components/docs/doc-guide";
+import {
+  DEFAULT_DOC_MONO,
+  DEFAULT_DOC_SANS,
+  DOC_MONO_FONTS,
+  DOC_SANS_FONTS,
+  type DocsFont,
+} from "@/lib/fonts";
 
 const SECTIONS: readonly DocGuideTocItem[] = [
   { id: "font-stack", label: "Font stack" },
@@ -78,44 +85,62 @@ const CODE_TYPOGRAPHY_CODE = `code {
 
 const FLUID_TYPE_CODE = `<h1 className="text-4xl lg:text-5xl">Build with the system</h1>`;
 
+function FontSpecimens({
+  title,
+  fonts,
+  defaultName,
+}: {
+  title: string;
+  fonts: readonly DocsFont[];
+  defaultName: string;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      <ul className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,10rem),1fr))] gap-3">
+        {fonts.map((font) => (
+          <li
+            key={font.name}
+            className="flex min-w-0 flex-col gap-2 rounded-[14px] border border-border bg-card p-4 text-card-foreground"
+          >
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <span className="text-sm font-medium">
+                {font.family.replace(/ Variable$/, "")}
+              </span>
+              {font.name === defaultName && (
+                <span className="text-xs text-muted-foreground">Default</span>
+              )}
+            </div>
+            <p
+              className="text-[32px] font-semibold leading-tight tracking-tight"
+              style={{ fontFamily: font.stack }}
+            >
+              Aa 012
+            </p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function FontStackSection() {
   return (
     <DocGuideSection
       id="font-stack"
       title="Font stack"
-      description="Geist is the default interface font. Geist Mono is used for code, commands, and tabular data."
+      description="Use sans-serif for interface text and prose. Use monospace for code, commands, and tabular data."
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div
-          data-slot="typeset-specimen-sans"
-          className="flex flex-col gap-2.5 rounded-[14px] border border-border bg-card p-4 lg:gap-3 lg:p-6"
-        >
-          <span className="font-mono text-[13px] leading-[1.42] docs-accent">
-            Geist
-          </span>
-          <p className="font-sans text-[45px] font-semibold leading-[1.15] tracking-[-1.05px] text-card-foreground lg:text-[53px]">
-            Aa 012
-          </p>
-          <p className="text-sm leading-[1.53] text-muted-foreground">
-            Interface &amp; long-form text
-          </p>
-        </div>
-
-        <div
-          data-slot="typeset-specimen-mono"
-          className="flex flex-col gap-2.5 rounded-[14px] border border-[#34454A] bg-[#080A0C] p-4 text-[#F4F5F6] lg:gap-3 lg:p-6 dark:border-border"
-        >
-          <span className="font-mono text-[13px] leading-[1.42] text-[color-mix(in_oklch,var(--primary)_72%,white)]">
-            Geist Mono
-          </span>
-          <p className="font-mono text-[45px] font-semibold leading-[1.15] tracking-[-1.05px] text-[#F4F5F6] lg:text-[53px]">
-            Aa 012
-          </p>
-          <p className="text-sm leading-[1.53] text-[#9C9FA0]">
-            Code &amp; tabular data
-          </p>
-        </div>
-      </div>
+      <FontSpecimens
+        title="Sans-serif"
+        fonts={DOC_SANS_FONTS}
+        defaultName={DEFAULT_DOC_SANS}
+      />
+      <FontSpecimens
+        title="Monospace"
+        fonts={DOC_MONO_FONTS}
+        defaultName={DEFAULT_DOC_MONO}
+      />
     </DocGuideSection>
   );
 }
