@@ -102,9 +102,18 @@ function useDocToc(root: React.RefObject<HTMLElement | null>) {
   return { entries, activeId };
 }
 
-function DocToc({ root }: { root: React.RefObject<HTMLElement | null> }) {
-  const { entries, activeId } = useDocToc(root);
+export const docDesktopLayout =
+  "lg:flex-row lg:gap-10 lg:px-10 lg:pt-8 lg:pb-10";
 
+export function DocTocRail({
+  entries,
+  activeId,
+  onNavigate = scrollToSection,
+}: {
+  entries: readonly TocEntry[];
+  activeId: string | null;
+  onNavigate?: (id: string) => void;
+}) {
   if (entries.length < 2) return null;
 
   return (
@@ -133,7 +142,7 @@ function DocToc({ root }: { root: React.RefObject<HTMLElement | null> }) {
                   aria-current={active ? "true" : undefined}
                   onClick={(event) => {
                     event.preventDefault();
-                    scrollToSection(entry.id);
+                    onNavigate(entry.id);
                   }}
                   className={cn(
                     "docs-focus-ring flex min-h-9 items-center rounded-[7px] px-2.5 text-[13px] font-medium transition-colors duration-150 ease-out",
@@ -151,6 +160,10 @@ function DocToc({ root }: { root: React.RefObject<HTMLElement | null> }) {
       </div>
     </aside>
   );
+}
+
+function DocToc({ root }: { root: React.RefObject<HTMLElement | null> }) {
+  return <DocTocRail {...useDocToc(root)} />;
 }
 
 interface DocPageProps {
@@ -185,7 +198,10 @@ export function DocPage({
 
       <div
         ref={root}
-        className="mx-auto flex w-full max-w-[1180px] flex-col gap-8 px-4 pt-8 pb-10 sm:px-6 lg:flex-row lg:gap-10 lg:px-10"
+        className={cn(
+          "mx-auto flex w-full max-w-[1180px] flex-col gap-8 px-4 pt-8 pb-10 sm:px-6",
+          docDesktopLayout,
+        )}
       >
         <article className="flex min-w-0 flex-1 flex-col gap-9 lg:max-w-[740px]">
           <header className="flex flex-col gap-4">

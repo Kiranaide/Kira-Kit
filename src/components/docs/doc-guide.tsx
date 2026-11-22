@@ -8,6 +8,7 @@ import {
   IconChevronDown,
 } from "@tabler/icons-react";
 import { cn } from "cn";
+import { DocTocRail, docDesktopLayout } from "@/components/docs/doc-page";
 import { useReveal } from "@/components/docs/layout";
 import { PageTopBar } from "@/components/site-chrome";
 
@@ -158,62 +159,6 @@ function MobileJumpToSection({
   );
 }
 
-function DesktopToc({
-  sections,
-  activeId,
-}: {
-  sections: readonly DocGuideTocItem[];
-  activeId: string | null;
-}) {
-  if (sections.length < 2) return null;
-
-  return (
-    <aside
-      aria-label="On this page"
-      data-slot="doc-guide-toc"
-      className="hidden shrink-0 lg:block lg:w-[212px]"
-    >
-      <div className="sticky top-14 flex flex-col gap-2.5 pt-[42px] pr-5 pb-6">
-        <p className="text-[13px] font-semibold leading-[1.42] text-foreground">
-          On this page
-        </p>
-        <ul className="flex flex-col border-l border-border pl-2.5">
-          {sections.map((section) => {
-            const active = section.id === activeId;
-
-            return (
-              <li key={section.id} className="relative">
-                {active && (
-                  <span
-                    aria-hidden="true"
-                    className="docs-nav-indicator absolute top-1/2 -left-[11px] h-4 w-0.5 -translate-y-1/2 rounded-full docs-accent-fill"
-                  />
-                )}
-                <a
-                  href={`#${section.id}`}
-                  aria-current={active ? "location" : undefined}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    navigateToSection(section.id);
-                  }}
-                  className={cn(
-                    "docs-focus-ring flex min-h-[35px] items-center rounded-[5px] text-[13px] leading-[1.42] transition-colors duration-150 ease-out",
-                    active
-                      ? "font-semibold docs-accent"
-                      : "font-normal text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {section.label}
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    </aside>
-  );
-}
-
 function RelatedDocButton({
   direction,
   link,
@@ -263,8 +208,13 @@ export function DocGuidePage({
     <div data-slot="doc-guide-page" className="min-h-full bg-background">
       <PageTopBar crumb={crumb ?? title} />
 
-      <div className="mx-auto flex w-full max-w-[1184px] flex-col lg:flex-row lg:items-start">
-        <article className="flex min-w-0 w-full flex-1 flex-col gap-7 px-5 pt-[26px] pb-7 sm:px-8 lg:max-w-[972px] lg:gap-[34px] lg:px-[58px] lg:pt-[30px] lg:pb-9">
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-[1180px] flex-col px-5 pt-[26px] pb-7 sm:px-8",
+          docDesktopLayout,
+        )}
+      >
+        <article className="flex min-w-0 flex-1 flex-col gap-7 lg:max-w-[740px] lg:gap-[34px]">
           <header className="flex flex-col gap-3">
             <h1 className="text-[38px] font-semibold leading-[1.05] tracking-[-1.3px] text-balance text-foreground lg:text-[54px] lg:tracking-[-2.6px]">
               {title}
@@ -296,7 +246,11 @@ export function DocGuidePage({
           )}
         </article>
 
-        <DesktopToc sections={sections} activeId={activeId} />
+        <DocTocRail
+          entries={sections}
+          activeId={activeId}
+          onNavigate={navigateToSection}
+        />
       </div>
     </div>
   );
