@@ -38,6 +38,12 @@ const RELEASES: readonly Release[] = [
     changes: [
       {
         type: "changed",
+        title: "Redesigned Typeset, Form, and Changelog pages",
+        description:
+          "All three pages now have mobile section navigation. Typeset shows font specimens and a visual type scale, Form demonstrates validation and recovery in a live workspace form, and Changelog groups older releases into expandable rows.",
+      },
+      {
+        type: "changed",
         title: "Redesigned UI Preview and Overview pages",
         description:
           "/ui-preview now runs in DocPage with an interactive component playground (Button, Input, Select, Dialog with Preview/Code tabs), a 5-tier control size table, size-selectable input combinations, Demo/Worst-case input actions, menu and overlay comparisons, container and form spacing cards, side-by-side light/dark preset previews, and a mobile section-jump selector. /overview adopts DocPage with a copyable init command pill, key metrics strip, Start Here path cards, architecture pillars, a linked 6-category component catalog, and a Quickstart CLI terminal card.",
