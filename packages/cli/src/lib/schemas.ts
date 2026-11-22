@@ -22,7 +22,11 @@ export const componentsConfigSchema = z.looseObject({
     .optional(),
   iconLibrary: z.string().optional(),
   font: z.string().optional(),
+  fontDisplay: z.string().optional(),
   fontMono: z.string().optional(),
+  fontPreset: z.string().optional(),
+  radius: z.string().optional(),
+  surface: z.string().optional(),
   aliases: z
     .looseObject({
       components: z.string().optional(),

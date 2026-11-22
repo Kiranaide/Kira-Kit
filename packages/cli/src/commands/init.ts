@@ -22,7 +22,10 @@ import { configureRuntime } from "../core/init/configure-runtime";
 import { configureTsconfigPaths } from "../core/init/tsconfig";
 import { buildBaseCss } from "../core/registry/css-assets";
 import {
+  generateBaseColorVars,
   generateTheme,
+  isBaseColorName,
+  normalizeBaseColor,
   themePayload,
   ThemeContrastError,
 } from "../core/theme/theme";
@@ -30,12 +33,19 @@ import { PRESETS } from "../core/theme/presets";
 import {
   DEFAULT_MONO,
   DEFAULT_SANS,
+  FONT_PRESETS,
   MONO_FONTS,
   SANS_FONTS,
   resolveFont,
+  resolveFontPreset,
   type FontSpec,
 } from "../core/theme/fonts";
-import type { BaseColorName } from "../core/theme/palette";
+import {
+  resolveRadius,
+  resolveSurface,
+  type SurfacePreset,
+} from "../core/theme/geometry";
+import { mergeCssVars, type CssVars } from "../core/install/css-vars";
 import { ValidationError } from "../lib/errors";
 import { info, success, warning } from "../lib/logger";
 import { select, text, confirm, type PromptContext } from "../lib/prompts";
@@ -45,36 +55,94 @@ import type { InitOptions } from "../types";
 interface Typography {
   sans: FontSpec;
   mono: FontSpec;
+  display?: FontSpec;
+  headingTracking?: string;
+  fontPreset?: string;
   iconLibrary: string;
+}
+
+function resolveFontPresetOption(options: InitOptions) {
+  return options.fontPreset ? resolveFontPreset(options.fontPreset) : undefined;
+}
+
+function firstDefined(values: Array<string | undefined>): string | undefined {
+  return values.find((value) => value !== undefined);
+}
+
+function pickFontSlots(options: InitOptions, raw: RawComponentsConfig | null) {
+  const preset = resolveFontPresetOption(options);
+  const config: RawComponentsConfig = raw ?? {};
+
+  const sans =
+    firstDefined([options.font, preset?.sans, config.font]) ?? DEFAULT_SANS;
+
+  const mono =
+    firstDefined([options.fontMono, preset?.mono, config.fontMono]) ??
+    DEFAULT_MONO;
+
+  const display = firstDefined([
+    options.fontDisplay,
+    preset?.display,
+    config.fontDisplay,
+  ]);
+
+  return {
+    sans,
+    mono,
+    display,
+    fontPreset: firstDefined([preset?.name, config.fontPreset]),
+  };
 }
 
 function resolveTypography(cwd: string, options: InitOptions): Typography {
   const raw = readRawConfig(cwd);
+  const slots = pickFontSlots(options, raw);
+  const iconChoice = firstDefined([options.icon, raw?.iconLibrary]);
 
   return {
-    sans: resolveFont("sans", options.font ?? raw?.font ?? DEFAULT_SANS),
-    mono: resolveFont(
-      "mono",
-      options.fontMono ?? raw?.fontMono ?? DEFAULT_MONO,
-    ),
-    iconLibrary: resolveIconLibrary(options.icon ?? raw?.iconLibrary),
+    sans: resolveFont("sans", slots.sans),
+    mono: resolveFont("mono", slots.mono),
+    display: slots.display ? resolveFont("display", slots.display) : undefined,
+    headingTracking: Object.values(FONT_PRESETS).find(
+      (preset) => preset.name === slots.fontPreset,
+    )?.headingTracking,
+    fontPreset: slots.fontPreset,
+    iconLibrary: resolveIconLibrary(iconChoice),
   };
 }
 
 /** Packages every Kira Kit consumer needs, regardless of which items they add. */
 function baseDeps(typo: Typography, runtime: DetectedRuntime): string[] {
-  return [
-    ...new Set([
-      "@base-ui/react",
-      "cn",
-      "class-variance-authority",
-      typo.iconLibrary === "lucide" ? "lucide-react" : "@tabler/icons-react",
-      ...runtime.tailwindDeps,
-      "tw-animate-css",
-      typo.sans.pkg,
-      typo.mono.pkg,
-    ]),
+  const deps = [
+    "@base-ui/react",
+    "cn",
+    "class-variance-authority",
+    typo.iconLibrary === "lucide" ? "lucide-react" : "@tabler/icons-react",
+    ...runtime.tailwindDeps,
+    "tw-animate-css",
+    typo.sans.pkg,
+    typo.mono.pkg,
   ];
+
+  if (typo.display && typo.display.name !== typo.sans.name) {
+    deps.push(typo.display.pkg);
+  }
+
+  return [...new Set(deps)];
+}
+
+function attachPresetConfigFields(
+  target: RawComponentsConfig,
+  typo: Typography,
+  options: InitOptions,
+): void {
+  if (typo.display) target.fontDisplay = typo.display.name;
+
+  if (typo.fontPreset) target.fontPreset = typo.fontPreset;
+
+  if (options.radius) target.radius = resolveRadius(options.radius).name;
+
+  if (options.surface) target.surface = resolveSurface(options.surface).name;
 }
 
 function writeFreshConfig(
@@ -82,19 +150,26 @@ function writeFreshConfig(
   css: string,
   typo: Typography,
   runtime: DetectedRuntime,
+  options: InitOptions,
 ): void {
-  const config = {
+  const config: RawComponentsConfig & { rsc: boolean; tsx: boolean } = {
     $schema: COMPONENTS_SCHEMA_URL,
     style: "kira",
     rsc: runtime.isNext,
     tsx: true,
-    tailwind: { config: "", css, baseColor: "neutral", cssVariables: true },
+    tailwind: {
+      css,
+      baseColor: normalizeBaseColor(options.baseColor),
+      cssVariables: true,
+    },
     iconLibrary: typo.iconLibrary,
     font: typo.sans.name,
     fontMono: typo.mono.name,
     aliases: { ...DEFAULT_ALIASES },
     registries: { [KIRA_NAMESPACE]: DEFAULT_REGISTRY_URL },
   };
+
+  attachPresetConfigFields(config, typo, options);
 
   writeFileSync(
     join(cwd, "components.json"),
@@ -109,15 +184,24 @@ function fillExistingConfig(
   raw: RawComponentsConfig,
   css: string,
   typo: Typography,
+  options: InitOptions,
 ): void {
-  const next = {
+  const tailwind = { ...raw.tailwind, css: raw.tailwind?.css ?? css };
+
+  if (options.baseColor) {
+    tailwind.baseColor = normalizeBaseColor(options.baseColor);
+  }
+
+  const next: RawComponentsConfig = {
     ...raw,
     iconLibrary: typo.iconLibrary,
     font: typo.sans.name,
     fontMono: typo.mono.name,
     aliases: { ...DEFAULT_ALIASES, ...raw.aliases },
-    tailwind: { ...raw.tailwind, css: raw.tailwind?.css ?? css },
+    tailwind,
   };
+
+  attachPresetConfigFields(next, typo, options);
 
   writeFileSync(
     join(cwd, "components.json"),
@@ -130,14 +214,15 @@ function ensureKiraConfig(
   cwd: string,
   typo: Typography,
   runtime: DetectedRuntime,
+  options: InitOptions,
 ): void {
   const css = detectCssPath(cwd);
   const raw = readRawConfig(cwd);
 
   if (raw) {
-    fillExistingConfig(cwd, raw, css, typo);
+    fillExistingConfig(cwd, raw, css, typo, options);
   } else {
-    writeFreshConfig(cwd, css, typo, runtime);
+    writeFreshConfig(cwd, css, typo, runtime, options);
   }
 
   if (upsertKiraRegistry(cwd)) {
@@ -205,7 +290,14 @@ function writeBaseCss(
   if (hasTheme && !options.force) {
     if (fontsRequested) {
       const css = readFileSync(cssPath, "utf-8");
-      const next = applyFontToCss(css, typo.sans, typo.mono);
+
+      const next = applyFontToCss(
+        css,
+        typo.sans,
+        typo.mono,
+        typo.display,
+        typo.headingTracking,
+      );
 
       if (next !== css) {
         writeFileSync(cssPath, next, "utf-8");
@@ -225,10 +317,7 @@ function writeBaseCss(
   mkdirSync(dirname(cssPath), { recursive: true });
   writeFileSync(
     cssPath,
-    buildBaseCss(BASE_CSS, "./kira-utilities.css", {
-      sans: typo.sans,
-      mono: typo.mono,
-    }),
+    buildBaseCss(BASE_CSS, "./kira-utilities.css", typo),
     "utf-8",
   );
   writeFileSync(
@@ -286,18 +375,20 @@ async function applyCustomTheme(
   primary: string,
   baseColor: string | undefined,
   force: boolean,
+  radius?: string,
+  surface?: string,
 ): Promise<number> {
   let generated;
 
   try {
-    // SAFETY: --base-color is an unvalidated CLI string, but generateTheme
-    // re-checks it against BASE_COLOR_NAMES and falls back to "neutral".
     generated = generateTheme({
       name: "custom",
       title: "Custom Kira Kit theme",
       description: `Custom OKLCH theme generated from primary ${primary}.`,
       primary,
-      baseColor: (baseColor as BaseColorName) ?? "neutral",
+      baseColor: normalizeBaseColor(baseColor),
+      radius,
+      surface: surface ? resolveSurface(surface).name : undefined,
     });
   } catch (error) {
     if (error instanceof ThemeContrastError) {
@@ -321,8 +412,14 @@ async function applyPreset(cwd: string, options: InitOptions): Promise<number> {
       title: preset.title,
       description: preset.description,
       primary: preset.primary,
-      baseColor: preset.baseColor,
+      baseColor: options.baseColor
+        ? normalizeBaseColor(options.baseColor)
+        : preset.baseColor,
       chartHues: preset.chartHues,
+      radius: options.radius ?? preset.radius,
+      surface: options.surface
+        ? resolveSurface(options.surface).name
+        : preset.surface,
     });
 
     return applyTheme(
@@ -340,6 +437,66 @@ async function applyPreset(cwd: string, options: InitOptions): Promise<number> {
   success(`Theme preset "${options.preset}" applied.`);
 
   return 0;
+}
+
+function buildStandaloneInitCssVars(options: InitOptions): CssVars | null {
+  const cssVars: CssVars = {};
+  let changed = false;
+
+  if (options.baseColor && isBaseColorName(options.baseColor)) {
+    const baseVars = generateBaseColorVars(options.baseColor);
+
+    cssVars.light = { ...cssVars.light, ...baseVars.light };
+    cssVars.dark = { ...cssVars.dark, ...baseVars.dark };
+    changed = true;
+  }
+
+  if (options.surface) {
+    const surface: SurfacePreset = resolveSurface(options.surface);
+
+    cssVars.light = { ...cssVars.light, ...surface.light };
+    cssVars.dark = { ...cssVars.dark, ...surface.dark };
+    changed = true;
+  }
+
+  if (options.radius) {
+    const radius = resolveRadius(options.radius);
+
+    cssVars.theme = { ...cssVars.theme, "--radius": radius.value };
+    cssVars.light = { ...cssVars.light, "--radius": radius.value };
+    changed = true;
+  }
+
+  return changed ? cssVars : null;
+}
+
+function applyStandaloneInitTokens(cwd: string, options: InitOptions): void {
+  const cssVars = buildStandaloneInitCssVars(options);
+
+  if (!cssVars) return;
+
+  const cssPath = join(cwd, detectCssPath(cwd));
+
+  if (existsSync(cssPath)) {
+    mergeCssVars(cssPath, cssVars);
+  }
+}
+
+function hasRequestedFonts(
+  options: InitOptions,
+  raw: RawComponentsConfig | null,
+): boolean {
+  const flags = [
+    options.fontPreset,
+    options.font,
+    options.fontDisplay,
+    options.fontMono,
+    raw?.font,
+    raw?.fontDisplay,
+    raw?.fontMono,
+  ];
+
+  return flags.some(Boolean);
 }
 
 async function promptFonts(
@@ -486,14 +643,10 @@ export async function init(options: InitOptions): Promise<number> {
   await interactiveTypography(cwd, options);
 
   const raw = readRawConfig(cwd);
-
-  const fontsRequested = Boolean(
-    options.font || options.fontMono || raw?.font || raw?.fontMono,
-  );
-
+  const fontsRequested = hasRequestedFonts(options, raw);
   const typo = resolveTypography(cwd, options);
 
-  ensureKiraConfig(cwd, typo, runtime);
+  ensureKiraConfig(cwd, typo, runtime, options);
   writeBaseCss(cwd, options, typo, fontsRequested);
   applyProjectSetup(cwd, runtime);
   await installBaseDeps(cwd, options, typo, runtime);
@@ -510,8 +663,12 @@ export async function init(options: InitOptions): Promise<number> {
       options.primary,
       options.baseColor,
       options.force,
+      options.radius,
+      options.surface,
     );
   }
+
+  applyStandaloneInitTokens(cwd, options);
 
   const interactiveCode = await interactiveTheme(cwd, options);
 

@@ -1,6 +1,6 @@
 # Olive Ledger
 
-A cultivated olive theme for research tools, financial workspaces, and sustainability products that value credibility over corporate polish.
+A cultivated olive theme for research tools, financial workspaces, and sustainability products that value credibility over polish.
 
 ## Install
 

@@ -6,18 +6,21 @@ import { cn } from "cn";
 const cardSurfaceVariants = cva("", {
   variants: {
     variant: {
-      default: "ring-foreground/10 bg-card",
+      default:
+        "ring-foreground/10 bg-card shadow-[var(--shadow-card,0_0_transparent)]",
       interactive:
-        "ring-foreground/10 bg-card hover:shadow-lg hover:-translate-y-1 transition-[box-shadow,translate] duration-200 cursor-pointer",
+        "ring-foreground/10 bg-card hover:shadow-[var(--shadow-card,var(--shadow-lg))] hover:-translate-y-1 transition-[box-shadow,translate] duration-200 cursor-pointer",
       gradient:
         "bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/5 ring-primary/20",
       glass:
-        "bg-background/60 dark:bg-background/40 backdrop-blur-xl backdrop-saturate-150 border border-border/50 shadow-lg ring-0",
+        "bg-background/60 dark:bg-background/40 backdrop-blur-xl backdrop-saturate-150 border border-border/50 shadow-[var(--shadow-card,var(--shadow-lg))] ring-0",
       outline: "bg-transparent border-2 border-border ring-0",
-      elevated: "ring-foreground/10 bg-card shadow-lg",
+      elevated:
+        "ring-foreground/10 bg-card shadow-[var(--shadow-card,var(--shadow-lg))]",
       bordered: "bg-card border-2 border-border ring-0",
       flat: "bg-muted/30 border-0 ring-0",
-      elevated2: "ring-foreground/10 bg-card shadow-2xl",
+      elevated2:
+        "ring-foreground/10 bg-card shadow-[var(--shadow-card,var(--shadow-2xl)),var(--shadow-card,0_0_transparent)]",
       soft: "bg-muted/50 border border-border/50 ring-0",
     },
     size: {

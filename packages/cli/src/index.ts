@@ -34,16 +34,29 @@ program
   )
   .option(
     "--base-color <name>",
-    "Base color for a custom theme (neutral, stone, zinc, slate, gray, mauve, olive, mist, taupe)",
+    "Base color (neutral, paper, stone, taupe, zinc, gray, anthracite, slate, mist, olive, mauve)",
+  )
+  .option(
+    "--font-preset <name>",
+    "Curated font pairing (precision, editorial, atelier, terminal, expressive, fintech)",
   )
   .option(
     "--font <name>",
-    "Sans font (geist, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans)",
+    "Sans font (geist, instrument-sans, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans, bricolage-grotesque, sora, outfit)",
+  )
+  .option(
+    "--font-display <name>",
+    "Display/heading font (any sans font, plus newsreader, fraunces)",
   )
   .option(
     "--font-mono <name>",
     "Mono font (geist-mono, jetbrains-mono, fira-code)",
   )
+  .option(
+    "--radius <preset>",
+    "Corner radius preset (sharp, crisp, balanced, soft, pill) or CSS length",
+  )
+  .option("--surface <preset>", "Surface style (hairline, tactile, elevated)")
   .option("--icon <library>", "Icon library (tabler, lucide)")
   .option("--force", "Re-apply the theme even if one already exists")
   .option("-y, --yes", "Skip prompts, use defaults")
@@ -94,20 +107,35 @@ program
 
 program
   .command("theme")
-  .description("Generate an OKLCH theme palette, or apply font/icon options")
+  .description(
+    "Generate an OKLCH theme palette, or apply base color, font, radius, surface, and icon presets",
+  )
   .option("--primary <color>", "Primary color (hex or any CSS color)")
   .option(
     "--base-color <name>",
-    "Base color (neutral, stone, zinc, slate, gray, mauve, olive, mist, taupe)",
+    "Base color (neutral, paper, stone, taupe, zinc, gray, anthracite, slate, mist, olive, mauve)",
+  )
+  .option(
+    "--font-preset <name>",
+    "Curated font pairing (precision, editorial, atelier, terminal, expressive, fintech)",
   )
   .option(
     "--font <name>",
-    "Sans font (geist, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans)",
+    "Sans font (geist, instrument-sans, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans, bricolage-grotesque, sora, outfit)",
+  )
+  .option(
+    "--font-display <name>",
+    "Display/heading font (any sans font, plus newsreader, fraunces)",
   )
   .option(
     "--font-mono <name>",
     "Mono font (geist-mono, jetbrains-mono, fira-code)",
   )
+  .option(
+    "--radius <preset>",
+    "Corner radius preset (sharp, crisp, balanced, soft, pill) or CSS length",
+  )
+  .option("--surface <preset>", "Surface style (hairline, tactile, elevated)")
   .option("--icon <library>", "Icon library (tabler, lucide)")
   .option("--out <file>", "Write the registry item to this file")
   .option("--apply", "Install the generated theme into your global CSS")

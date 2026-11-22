@@ -37,12 +37,16 @@ export function readConfig(cwd: string): ComponentsConfig | null {
 export interface RawComponentsConfig {
   $schema?: string;
   style?: string;
-  tailwind?: { css?: string };
+  tailwind?: { css?: string; baseColor?: string; cssVariables?: boolean };
   aliases?: Record<string, string>;
   registries?: Record<string, string>;
   iconLibrary?: string;
   font?: string;
+  fontDisplay?: string;
   fontMono?: string;
+  fontPreset?: string;
+  radius?: string;
+  surface?: string;
   /** Legacy pre-namespace registry URL (removed by `kira-kit migrate`). */
   registryUrl?: string;
 }

@@ -1,6 +1,6 @@
 # Low Orbit
 
-A steel-indigo instrument palette for geospatial, aviation, and infrastructure tools built around exact coordinates and layered evidence.
+A steel-indigo instrument palette on slate for geospatial, aviation, and infrastructure tools built around exact coordinates.
 
 ## Install
 

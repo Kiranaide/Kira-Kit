@@ -32,6 +32,8 @@ export function generatePresetItems(): PresetGenerationResult {
       primary: preset.primary,
       baseColor: preset.baseColor,
       chartHues: preset.chartHues,
+      radius: preset.radius,
+      surface: preset.surface,
     });
 
     for (const adjustment of generated.adjustments) {

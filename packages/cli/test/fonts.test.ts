@@ -20,10 +20,13 @@ import { buildBaseCss } from "../src/core/registry/css-assets";
 import {
   DEFAULT_MONO,
   DEFAULT_SANS,
+  DISPLAY_FONTS,
+  FONT_PRESETS,
   MONO_FONTS,
   SANS_FONTS,
   fontCatalog,
   resolveFont,
+  resolveFontPreset,
 } from "../src/core/theme/fonts";
 import { BASE_CSS } from "../src/generated/assets";
 import { ValidationError } from "../src/lib/errors";
@@ -85,13 +88,24 @@ const KIT_CSS = `@import "tailwindcss";
 `;
 
 describe("font catalog", () => {
-  it("ships six sans and three mono fonts with the documented defaults", () => {
-    expect(Object.keys(SANS_FONTS)).toHaveLength(6);
+  it("ships ten sans, twelve display, three mono fonts, and six font presets", () => {
+    expect(Object.keys(SANS_FONTS)).toHaveLength(10);
+    expect(Object.keys(DISPLAY_FONTS)).toHaveLength(12);
     expect(Object.keys(MONO_FONTS)).toHaveLength(3);
+    expect(Object.keys(FONT_PRESETS)).toHaveLength(6);
     expect(DEFAULT_SANS).toBe("geist");
     expect(DEFAULT_MONO).toBe("geist-mono");
     expect(fontCatalog("sans")).toBe(SANS_FONTS);
+    expect(fontCatalog("display")).toBe(DISPLAY_FONTS);
     expect(fontCatalog("mono")).toBe(MONO_FONTS);
+  });
+
+  it("resolves curated font presets and rejects unknown ones", () => {
+    const editorial = resolveFontPreset("editorial");
+    expect(editorial.display).toBe("newsreader");
+    expect(editorial.sans).toBe("instrument-sans");
+    expect(editorial.mono).toBe("jetbrains-mono");
+    expect(() => resolveFontPreset("unknown-preset")).toThrow(ValidationError);
   });
 
   it("derives package, family, and stack from the font name", () => {
@@ -225,6 +239,17 @@ describe("applyFontToCss", () => {
 
     expect(next).toContain('@import "@fontsource-variable/inter";\r\n');
     expect(next).not.toMatch(/[^\r]\n/);
+  });
+
+  it("keeps the display font when changing the body font", () => {
+    const display = resolveFont("display", "geist");
+    const manrope = resolveFont("sans", "manrope");
+    const withDisplay = applyFontToCss(KIT_CSS, manrope, fira, display);
+    const withNewSans = applyFontToCss(withDisplay, inter, fira);
+
+    expect(withNewSans).toContain('@import "@fontsource-variable/geist";');
+    expect(withNewSans).toContain(`--font-display: ${display.stack};`);
+    expect(withNewSans).toContain(`--font-sans: ${inter.stack};`);
   });
 });
 
@@ -376,6 +401,80 @@ describe("theme command (font and icon options)", () => {
     );
 
     expect(config.iconLibrary).toBe("lucide");
+  });
+});
+
+describe("theme command (base color, font preset, radius, surface)", () => {
+  it("applies --font-preset, --base-color, --radius, and --surface standalone", async () => {
+    const dir = tempConsumer(REACT_19);
+
+    writeCss(dir, KIT_CSS);
+    writeFileSync(
+      join(dir, "components.json"),
+      JSON.stringify({ style: "kira", tailwind: { css: "src/index.css" } }),
+      "utf-8",
+    );
+
+    const calls: string[][] = [];
+
+    const code = await theme({
+      cwd: dir,
+      baseColor: "paper",
+      fontPreset: "editorial",
+      radius: "crisp",
+      surface: "tactile",
+      apply: true,
+      installer: fakeInstaller(calls),
+    });
+
+    expect(code).toBe(0);
+
+    const css = readFileSync(join(dir, "src/index.css"), "utf-8");
+
+    expect(css).toContain('@import "@fontsource-variable/instrument-sans";');
+    expect(css).toContain('@import "@fontsource-variable/newsreader";');
+    expect(css).toContain('@import "@fontsource-variable/jetbrains-mono";');
+    expect(css).toContain("--font-display:");
+    expect(css).toContain("--tracking-kira-heading: -0.02em;");
+    expect(css).toContain(
+      "font-family: var(--font-display, var(--font-sans));",
+    );
+    expect(css).toContain("--radius: 0.375rem;");
+    expect(css).toContain("--shadow-card:");
+    expect(css).toContain("--primary: oklch(0.59 0.22 1);");
+
+    const config = readJson<{
+      font: string;
+      fontDisplay: string;
+      fontMono: string;
+      fontPreset: string;
+      radius: string;
+      surface: string;
+      tailwind: { baseColor: string };
+    }>(join(dir, "components.json"));
+
+    expect(config.font).toBe("instrument-sans");
+    expect(config.fontDisplay).toBe("newsreader");
+    expect(config.fontMono).toBe("jetbrains-mono");
+    expect(config.fontPreset).toBe("editorial");
+    expect(config.radius).toBe("crisp");
+    expect(config.surface).toBe("tactile");
+    expect(config.tailwind.baseColor).toBe("paper");
+
+    expect(
+      await theme({
+        cwd: dir,
+        fontPreset: "precision",
+        apply: true,
+        installer: fakeInstaller(calls),
+      }),
+    ).toBe(0);
+    const resetCss = readFileSync(join(dir, "src/index.css"), "utf-8");
+    expect(resetCss).toContain(
+      `--font-display: ${resolveFont("display", "geist").stack};`,
+    );
+    expect(resetCss).toContain("--tracking-kira-heading: -0.025em;");
+    expect(resetCss.match(/font-family: var\(--font-display/g)).toHaveLength(1);
   });
 });
 
