@@ -55,7 +55,11 @@ export interface ComponentsConfig {
   };
   iconLibrary?: string;
   font?: string;
+  fontDisplay?: string;
   fontMono?: string;
+  fontPreset?: string;
+  radius?: string;
+  surface?: string;
   aliases?: {
     components?: string;
     utils?: string;
@@ -83,8 +87,12 @@ export interface InitOptions {
   preset?: string;
   primary?: string;
   baseColor?: string;
+  fontPreset?: string;
   font?: string;
+  fontDisplay?: string;
   fontMono?: string;
+  radius?: string;
+  surface?: string;
   icon?: string;
   force: boolean;
   yes: boolean;
@@ -95,8 +103,12 @@ export interface InitOptions {
 export interface ThemeOptions {
   primary?: string;
   baseColor?: string;
+  fontPreset?: string;
   font?: string;
+  fontDisplay?: string;
   fontMono?: string;
+  radius?: string;
+  surface?: string;
   icon?: string;
   out?: string;
   apply: boolean;

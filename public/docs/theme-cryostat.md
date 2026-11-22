@@ -1,6 +1,6 @@
 # Cryostat
 
-A chilled petrol-cyan theme for data platforms that need the visual discipline of laboratory equipment.
+A chilled petrol-cyan theme on mist for data platforms that need the visual discipline of laboratory equipment.
 
 ## Install
 

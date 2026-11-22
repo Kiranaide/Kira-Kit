@@ -68,7 +68,7 @@ function PopoverClose(props: PopoverCloseProps) {
 }
 
 const popoverContentVariants = cva(
-  "origin-(--transform-origin) max-w-[min(var(--available-width),calc(100vw-2rem))] max-h-(--available-height) overflow-y-auto overscroll-contain rounded-lg border p-4 shadow-lg outline-none data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[instant]:transition-none motion-reduce:transition-none",
+  "origin-(--transform-origin) max-w-[min(var(--available-width),calc(100vw-2rem))] max-h-(--available-height) overflow-y-auto overscroll-contain rounded-lg border p-4 shadow-[var(--shadow-popover,var(--shadow-lg))] outline-none data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[instant]:transition-none motion-reduce:transition-none",
   {
     variants: {
       size: {

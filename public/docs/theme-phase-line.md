@@ -1,6 +1,6 @@
 # Phase Line
 
-A locked-in teal accent for operations consoles where live signals must remain readable through dense, quiet interfaces.
+A locked-in teal accent on slate for operations consoles where live signals must remain readable through dense interfaces.
 
 ## Install
 

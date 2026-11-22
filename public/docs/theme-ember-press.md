@@ -1,6 +1,6 @@
 # Ember Press
 
-A burnished terracotta theme for editorial platforms, independent publications, and content-rich products with a confident point of view.
+A burnished terracotta theme on warm paper for editorial platforms, independent publications, and content-rich products.
 
 ## Install
 

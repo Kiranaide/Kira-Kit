@@ -1,6 +1,6 @@
 # Laurel Study
 
-A shaded laurel-green theme for wellness, hospitality, and knowledge products that should feel composed, discreet, and quietly restorative.
+A shaded laurel-green theme on calm mist for wellness, hospitality, and knowledge products that feel quietly restorative.
 
 ## Install
 

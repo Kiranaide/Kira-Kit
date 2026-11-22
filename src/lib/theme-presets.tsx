@@ -1,5 +1,20 @@
 import * as React from "react";
 import themesRegistry from "@/themes/registry.json";
+import {
+  DEFAULT_DOC_FONT_PRESET,
+  findDocFontPreset,
+  type DocFontPresetName,
+} from "@/lib/fonts";
+import { applyFontPreview } from "@/lib/font-preview";
+import {
+  findBaseColor,
+  findRadiusPreset,
+  findSurfacePreset,
+  findThemeRecipeMeta,
+  type DocBaseColorName,
+  type DocRadiusPresetName,
+  type DocSurfacePresetName,
+} from "@/lib/presets-catalog";
 
 export interface ThemePreset {
   name: string;
@@ -20,12 +35,39 @@ export const themePresets = (themesRegistry.items as ThemePreset[]).filter(
 );
 
 export const DEFAULT_PRESET = "default";
-const STORAGE_KEY = "kira-preset";
+
+export const AUTO_VALUE = "auto" as const;
+
+export type BaseColorSelection = typeof AUTO_VALUE | DocBaseColorName;
+
+export type RadiusSelection = typeof AUTO_VALUE | DocRadiusPresetName;
+
+export type SurfaceSelection = typeof AUTO_VALUE | DocSurfacePresetName;
+
+const STORAGE_KEYS = {
+  preset: "kira-preset",
+  baseColor: "kira-base-color",
+  fontPreset: "kira-font-preset",
+  radius: "kira-radius",
+  surface: "kira-surface",
+} as const;
+
 const STYLE_ID = "kira-preset-theme";
 
 interface PresetContextValue {
   presetName: string;
   setPresetName: (name: string) => void;
+  baseColor: BaseColorSelection;
+  setBaseColor: (value: BaseColorSelection) => void;
+  fontPreset: DocFontPresetName;
+  setFontPreset: (value: DocFontPresetName) => void;
+  radius: RadiusSelection;
+  setRadius: (value: RadiusSelection) => void;
+  surface: SurfaceSelection;
+  setSurface: (value: SurfaceSelection) => void;
+  applyRecipe: (themeName: string) => void;
+  resetAll: () => void;
+  isCustomized: boolean;
   presets: ThemePreset[];
 }
 
@@ -38,56 +80,192 @@ function declarations(vars: Record<string, string>): string {
 }
 
 /**
- * A preset is applied as a stylesheet appended after the base tokens, so its
- * `:root` (light) and `.dark` rules win the cascade. The existing ThemeProvider
- * flips the `.dark` class, so light/dark keeps working with no re-application.
+ * Compose the active ThemePreset + optional Base Color / Radius / Surface
+ * overrides into a single `:root` + `.dark` stylesheet. Appended after base
+ * tokens so overrides win the cascade while `.dark` toggling keeps working.
  */
-function presetCss(preset: ThemePreset): string {
-  const light = { ...preset.cssVars.light, ...preset.cssVars.theme };
-  const dark = { ...preset.cssVars.dark, ...preset.cssVars.theme };
+function composedCss(
+  preset: ThemePreset | undefined,
+  baseColor: BaseColorSelection,
+  radius: RadiusSelection,
+  surface: SurfaceSelection,
+): string | null {
+  const light: Record<string, string> = {};
+  const dark: Record<string, string> = {};
+
+  if (preset) {
+    Object.assign(light, preset.cssVars.light, preset.cssVars.theme);
+    Object.assign(dark, preset.cssVars.dark, preset.cssVars.theme);
+  }
+
+  if (baseColor !== AUTO_VALUE) {
+    const base = findBaseColor(baseColor);
+
+    if (base) {
+      Object.assign(light, base.light);
+      Object.assign(dark, base.dark);
+    }
+  }
+
+  if (surface !== AUTO_VALUE) {
+    const surf = findSurfacePreset(surface);
+
+    if (surf) {
+      Object.assign(light, surf.light);
+      Object.assign(dark, surf.dark);
+    }
+  }
+
+  if (radius !== AUTO_VALUE) {
+    const rad = findRadiusPreset(radius);
+
+    if (rad) {
+      light["--radius"] = rad.value;
+      dark["--radius"] = rad.value;
+    }
+  }
+
+  if (Object.keys(light).length === 0 && Object.keys(dark).length === 0) {
+    return null;
+  }
 
   return `:root{${declarations(light)}}.dark{${declarations(dark)}}`;
 }
 
-function readStoredPreset(): string {
-  try {
-    return localStorage.getItem(STORAGE_KEY) ?? DEFAULT_PRESET;
-  } catch {
-    return DEFAULT_PRESET;
-  }
-}
+function useStoredString<T extends string>(
+  key: string,
+  fallback: T,
+): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [value, setValue] = React.useState<T>(() => {
+    try {
+      const stored = localStorage.getItem(key);
 
-export function PresetProvider({ children }: { children: React.ReactNode }) {
-  const [presetName, setPresetName] = React.useState<string>(readStoredPreset);
+      // SAFETY: values are written exclusively from typed preset selections;
+      // unknown stored strings safely fall back inside lookup helpers.
+      return (stored as T | null) ?? fallback;
+    } catch {
+      return fallback;
+    }
+  });
 
   React.useEffect(() => {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // Persistence is optional; the live preview still works without it.
+    }
+  }, [key, value]);
+
+  return [value, setValue];
+}
+
+function useSyncPresetStyles(
+  presetName: string,
+  baseColor: BaseColorSelection,
+  fontPreset: DocFontPresetName,
+  radius: RadiusSelection,
+  surface: SurfaceSelection,
+): void {
+  React.useEffect(() => {
     const preset = themePresets.find((item) => item.name === presetName);
+    const css = composedCss(preset, baseColor, radius, surface);
     const existing = document.getElementById(STYLE_ID);
 
-    if (!preset) {
+    if (!css) {
       existing?.remove();
 
       return;
     }
 
     const style = existing ?? document.createElement("style");
+
     style.id = STYLE_ID;
-    style.textContent = presetCss(preset);
+    style.textContent = css;
 
     if (!existing) document.head.appendChild(style);
-  }, [presetName]);
+  }, [presetName, baseColor, radius, surface]);
 
   React.useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, presetName);
-    } catch {
-      // Persistence is optional; the live preview still works without it.
-    }
-  }, [presetName]);
+    const spec = findDocFontPreset(fontPreset);
+
+    applyFontPreview(spec.sans, spec.mono, spec.display, spec.headingTracking);
+  }, [fontPreset]);
+}
+
+export function PresetProvider({ children }: { children: React.ReactNode }) {
+  const [presetName, setPresetName] = useStoredString<string>(
+    STORAGE_KEYS.preset,
+    DEFAULT_PRESET,
+  );
+
+  const [baseColor, setBaseColor] = useStoredString<BaseColorSelection>(
+    STORAGE_KEYS.baseColor,
+    AUTO_VALUE,
+  );
+
+  const [fontPreset, setFontPreset] = useStoredString<DocFontPresetName>(
+    STORAGE_KEYS.fontPreset,
+    DEFAULT_DOC_FONT_PRESET,
+  );
+
+  const [radius, setRadius] = useStoredString<RadiusSelection>(
+    STORAGE_KEYS.radius,
+    AUTO_VALUE,
+  );
+
+  const [surface, setSurface] = useStoredString<SurfaceSelection>(
+    STORAGE_KEYS.surface,
+    AUTO_VALUE,
+  );
+
+  useSyncPresetStyles(presetName, baseColor, fontPreset, radius, surface);
+
+  const applyRecipe = React.useCallback(
+    (themeName: string) => {
+      const meta = findThemeRecipeMeta(themeName);
+
+      setPresetName(themeName);
+      setBaseColor(AUTO_VALUE);
+      setRadius(AUTO_VALUE);
+      setSurface(AUTO_VALUE);
+      setFontPreset(meta?.fontPreset ?? DEFAULT_DOC_FONT_PRESET);
+    },
+    [setBaseColor, setFontPreset, setPresetName, setRadius, setSurface],
+  );
+
+  const resetAll = React.useCallback(() => {
+    setPresetName(DEFAULT_PRESET);
+    setBaseColor(AUTO_VALUE);
+    setFontPreset(DEFAULT_DOC_FONT_PRESET);
+    setRadius(AUTO_VALUE);
+    setSurface(AUTO_VALUE);
+  }, [setBaseColor, setFontPreset, setPresetName, setRadius, setSurface]);
+
+  const isCustomized =
+    presetName !== DEFAULT_PRESET ||
+    baseColor !== AUTO_VALUE ||
+    fontPreset !== DEFAULT_DOC_FONT_PRESET ||
+    radius !== AUTO_VALUE ||
+    surface !== AUTO_VALUE;
 
   return (
     <PresetContext.Provider
-      value={{ presetName, setPresetName, presets: themePresets }}
+      value={{
+        presetName,
+        setPresetName,
+        baseColor,
+        setBaseColor,
+        fontPreset,
+        setFontPreset,
+        radius,
+        setRadius,
+        surface,
+        setSurface,
+        applyRecipe,
+        resetAll,
+        isCustomized,
+        presets: themePresets,
+      }}
     >
       {children}
     </PresetContext.Provider>

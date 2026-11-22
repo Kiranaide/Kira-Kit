@@ -47,14 +47,27 @@ export function extractThemeTokens(css: string): ThemeTokens {
 export function buildBaseCss(
   css: string,
   utilitiesImport: string,
-  fonts?: { sans: FontSpec; mono: FontSpec },
+  fonts?: {
+    sans: FontSpec;
+    mono: FontSpec;
+    display?: FontSpec;
+    headingTracking?: string;
+  },
 ): string {
   const rewired = css.replace(
     /@import\s+["'][^"']*kira-utilities\.css["'];?/,
     `@import "${utilitiesImport}";`,
   );
 
-  return fonts ? applyFontToCss(rewired, fonts.sans, fonts.mono) : rewired;
+  return fonts
+    ? applyFontToCss(
+        rewired,
+        fonts.sans,
+        fonts.mono,
+        fonts.display,
+        fonts.headingTracking,
+      )
+    : rewired;
 }
 
 /** registry:theme item carrying the kit's own docs-app theme. */

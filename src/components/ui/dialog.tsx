@@ -15,7 +15,7 @@ function mergeClassName<S>(
 }
 
 const dialogContentVariants = cva(
-  "pointer-events-auto relative flex min-h-0 max-h-full min-w-0 w-full flex-col overflow-y-auto break-words rounded-xl border border-border bg-background p-6 transition-[opacity,scale,box-shadow] duration-200 motion-reduce:transition-none data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 shadow-xl data-non-modal:shadow-md data-non-modal:data-starting-style:scale-[0.98] data-non-modal:data-ending-style:scale-[0.98]",
+  "pointer-events-auto relative flex min-h-0 max-h-full min-w-0 w-full flex-col overflow-y-auto break-words rounded-xl border border-border bg-background p-6 transition-[opacity,scale,box-shadow] duration-200 motion-reduce:transition-none data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 shadow-[var(--shadow-modal,var(--shadow-xl))] data-non-modal:shadow-[var(--shadow-popover,var(--shadow-md))] data-non-modal:data-starting-style:scale-[0.98] data-non-modal:data-ending-style:scale-[0.98]",
   {
     variants: {
       size: {

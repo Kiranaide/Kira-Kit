@@ -1,6 +1,6 @@
 # Magenta Riot
 
-A deep magenta against cool zinc that brings editorial confidence to community platforms, music products, and launch dashboards.
+A deep magenta against studio mauve that brings editorial confidence to community platforms, music products, and launch dashboards.
 
 ## Install
 

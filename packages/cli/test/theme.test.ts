@@ -1,6 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { generateTheme, ThemeContrastError } from "../src/core/theme/theme";
+import {
+  BASE_COLOR_NAMES,
+  generateBaseColorVars,
+  generateTheme,
+  ThemeContrastError,
+} from "../src/core/theme/theme";
 import { parseToOklch, wcagRatio } from "../src/core/theme/color";
+import {
+  RADIUS_PRESET_NAMES,
+  SURFACE_PRESET_NAMES,
+  resolveRadius,
+  resolveSurface,
+} from "../src/core/theme/geometry";
 import { PRESETS } from "../src/core/theme/presets";
 import { generatePresetItems } from "../src/core/theme/generate-presets";
 
@@ -15,6 +26,9 @@ const TEXT_PAIRS: Array<[fg: string, bg: string]> = [
   ["muted-foreground", "background"],
   ["accent-foreground", "accent"],
   ["destructive-foreground", "destructive"],
+  ["info-foreground", "info"],
+  ["success-foreground", "success"],
+  ["warning-foreground", "warning"],
   ["sidebar-foreground", "sidebar"],
   ["sidebar-primary-foreground", "sidebar-primary"],
   ["sidebar-accent-foreground", "sidebar-accent"],
@@ -30,11 +44,12 @@ interface ParsedTokens {
   [token: string]: ReturnType<typeof parseToOklch>;
 }
 
-/** Parse cssVars strings back into OKLCH colors. */
+/** Parse color cssVars strings back into OKLCH colors (skips non-color tokens like --shadow-*). */
 function toTokens(vars: Record<string, string>): ParsedTokens {
   const out: ParsedTokens = {};
 
   for (const [key, value] of Object.entries(vars)) {
+    if (key.startsWith("--shadow-") || key === "--radius") continue;
     out[key.replace(/^--/, "")] = parseToOklch(value);
   }
 
@@ -193,5 +208,56 @@ describe("presets", () => {
         `${item.name} dark`,
       );
     }
+  });
+
+  it("generates perceptually distinct AA-passing base color presets", () => {
+    expect(BASE_COLOR_NAMES).toContain("paper");
+    expect(BASE_COLOR_NAMES).toContain("anthracite");
+
+    for (const baseColor of BASE_COLOR_NAMES) {
+      const vars = generateBaseColorVars(baseColor);
+      expectSchemeToPassAA(toTokens(vars.light), `${baseColor} light`);
+      expectSchemeToPassAA(toTokens(vars.dark), `${baseColor} dark`);
+    }
+
+    const paper = generateBaseColorVars("paper");
+    const slate = generateBaseColorVars("slate");
+    expect(paper.light["--background"]).not.toBe(slate.light["--background"]);
+    expect(paper.dark["--background"]).not.toBe(slate.dark["--background"]);
+  });
+
+  it("resolves radius and surface presets", () => {
+    expect(RADIUS_PRESET_NAMES).toEqual([
+      "sharp",
+      "crisp",
+      "balanced",
+      "soft",
+      "pill",
+    ]);
+    expect(SURFACE_PRESET_NAMES).toEqual(["hairline", "tactile", "elevated"]);
+    expect(resolveRadius("crisp").value).toBe("0.375rem");
+    expect(resolveRadius("0.5rem").value).toBe("0.5rem");
+    expect(resolveSurface("tactile").light["--shadow-card"]).toContain("inset");
+  });
+
+  it("applies radius, surface, and semantic status tokens in generateTheme", () => {
+    const generated = generateTheme({
+      name: "geom",
+      title: "Geom",
+      description: "Geometry test",
+      primary: "#2552D9",
+      baseColor: "anthracite",
+      radius: "sharp",
+      surface: "elevated",
+    });
+
+    const themeVars = generated.item.cssVars?.theme ?? {};
+    const light = generated.item.cssVars?.light ?? {};
+
+    expect(themeVars["--radius"]).toBe("0rem");
+    expect(light["--shadow-card"]).toBeDefined();
+    expect(light["--info"]).toBeDefined();
+    expect(light["--success"]).toBeDefined();
+    expect(light["--warning"]).toBeDefined();
   });
 });

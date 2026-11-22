@@ -7,12 +7,16 @@ import {
 import {
   DEFAULT_DOC_MONO,
   DEFAULT_DOC_SANS,
+  DOC_FONT_PRESETS,
   DOC_MONO_FONTS,
   DOC_SANS_FONTS,
+  DOC_SERIF_FONTS,
+  findDocFont,
   type DocsFont,
 } from "@/lib/fonts";
 
 const SECTIONS: readonly DocGuideTocItem[] = [
+  { id: "font-presets", label: "Font pairings" },
   { id: "font-stack", label: "Font stack" },
   { id: "type-scale", label: "Type scale" },
   { id: "heading-recipes", label: "Heading recipes" },
@@ -25,55 +29,55 @@ const TYPE_SCALE = [
     utility: "text-5xl",
     metrics: "48/48",
     sample: "Display",
-    sampleClass: "text-5xl font-semibold tracking-[-1.05px]",
+    sampleClass: "text-5xl font-semibold tracking-tight",
   },
   {
     utility: "text-4xl",
     metrics: "36/40",
     sample: "Hero",
-    sampleClass: "text-4xl font-semibold tracking-[-1.05px]",
+    sampleClass: "text-4xl font-semibold tracking-tight",
   },
   {
     utility: "text-3xl",
     metrics: "30/36",
     sample: "Page title",
-    sampleClass: "text-3xl font-semibold tracking-[-1.05px]",
+    sampleClass: "text-3xl font-semibold tracking-tight",
   },
   {
     utility: "text-2xl",
     metrics: "24/32",
     sample: "Subsection",
-    sampleClass: "text-2xl font-semibold tracking-[-0.35px]",
+    sampleClass: "text-2xl font-semibold tracking-tight",
   },
   {
     utility: "text-xl",
     metrics: "20/28",
     sample: "Section title",
-    sampleClass: "text-xl font-semibold tracking-[-0.35px]",
+    sampleClass: "text-xl font-semibold tracking-tight",
   },
   {
     utility: "text-lg",
     metrics: "18/28",
     sample: "Lead",
-    sampleClass: "text-lg font-normal tracking-[-0.35px]",
+    sampleClass: "text-lg font-normal",
   },
   {
     utility: "text-base",
     metrics: "16/24",
     sample: "Body",
-    sampleClass: "text-base font-normal tracking-[-0.35px]",
+    sampleClass: "text-base font-normal",
   },
   {
     utility: "text-sm",
     metrics: "14/20",
     sample: "Supporting text",
-    sampleClass: "text-sm font-normal tracking-[-0.35px]",
+    sampleClass: "text-sm font-normal",
   },
   {
     utility: "text-xs",
     metrics: "12/16",
     sample: "Labels",
-    sampleClass: "text-xs font-normal tracking-[-0.35px]",
+    sampleClass: "text-xs font-normal",
   },
 ] as const;
 
@@ -101,7 +105,7 @@ function FontSpecimens({
         {fonts.map((font) => (
           <li
             key={font.name}
-            className="flex min-w-0 flex-col gap-2 rounded-[14px] border border-border bg-card p-4 text-card-foreground"
+            className="flex min-w-0 flex-col gap-2 rounded-xl border border-border bg-card p-4 text-card-foreground"
           >
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
               <span className="text-sm font-medium">
@@ -112,7 +116,7 @@ function FontSpecimens({
               )}
             </div>
             <p
-              className="text-[32px] font-semibold leading-tight tracking-tight"
+              className="text-3xl font-semibold leading-tight tracking-tight"
               style={{ fontFamily: font.stack }}
             >
               Aa 012
@@ -124,17 +128,82 @@ function FontSpecimens({
   );
 }
 
+function FontPresetsSection() {
+  return (
+    <DocGuideSection
+      id="font-presets"
+      title="Curated font pairings"
+      description="Install a complete Display + Body + Mono variable font stack with one --font-preset flag."
+    >
+      <ul
+        data-slot="typeset-font-presets"
+        className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        {DOC_FONT_PRESETS.map((preset) => {
+          const display = findDocFont("display", preset.display);
+          const sans = findDocFont("sans", preset.sans);
+          const mono = findDocFont("mono", preset.mono);
+
+          return (
+            <li
+              key={preset.name}
+              className="flex flex-col gap-2 rounded-xl border border-border bg-card p-4 text-card-foreground"
+            >
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="font-mono text-xs text-muted-foreground">
+                  {preset.name}
+                </span>
+                <span className="rounded-full border border-border bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
+                  {preset.badge}
+                </span>
+              </div>
+              <p
+                className="text-2xl font-semibold leading-tight"
+                style={{
+                  fontFamily: display.stack,
+                  letterSpacing: preset.headingTracking,
+                }}
+              >
+                {preset.title}
+              </p>
+              <p
+                className="text-xs leading-relaxed text-muted-foreground"
+                style={{ fontFamily: sans.stack }}
+              >
+                {preset.description}
+              </p>
+              <p
+                className="mt-auto pt-1 text-xs text-muted-foreground"
+                style={{ fontFamily: mono.stack }}
+              >
+                {display.family.replace(/ Variable$/, "")} /{" "}
+                {sans.family.replace(/ Variable$/, "")} /{" "}
+                {mono.family.replace(/ Variable$/, "")}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+    </DocGuideSection>
+  );
+}
+
 function FontStackSection() {
   return (
     <DocGuideSection
       id="font-stack"
       title="Font stack"
-      description="Use sans-serif for interface text and prose. Use monospace for code, commands, and tabular data."
+      description="Use sans-serif for interface text, optional display serifs for editorial headlines, and monospace for code and tabular data."
     >
       <FontSpecimens
         title="Sans-serif"
         fonts={DOC_SANS_FONTS}
         defaultName={DEFAULT_DOC_SANS}
+      />
+      <FontSpecimens
+        title="Display serif"
+        fonts={DOC_SERIF_FONTS}
+        defaultName=""
       />
       <FontSpecimens
         title="Monospace"
@@ -159,9 +228,9 @@ function TypeScaleSection() {
         {TYPE_SCALE.map((step) => (
           <li
             key={step.utility}
-            className="flex flex-col gap-1.5 py-2.5 sm:flex-row sm:items-center sm:gap-5"
+            className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:gap-6"
           >
-            <span className="flex w-[175px] shrink-0 items-center gap-2.5 font-mono text-xs leading-[1.42] tabular-nums docs-accent">
+            <span className="flex w-44 shrink-0 items-center gap-3 font-mono text-xs leading-snug tabular-nums docs-accent">
               <span>{step.utility}</span>
               <span>{step.metrics}</span>
             </span>
@@ -223,6 +292,7 @@ export default function TypesetPage() {
       previous={{ to: "/docs/cli", label: "CLI" }}
       next={{ to: "/docs/form", label: "Form" }}
     >
+      <FontPresetsSection />
       <FontStackSection />
       <TypeScaleSection />
       <HeadingRecipesSection />

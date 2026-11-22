@@ -2,9 +2,17 @@ import { oklchCss, parseToOklch, type OklchColor } from "./color";
 import {
   BASE_COLORS,
   BASE_COLOR_NAMES,
+  buildBaseSchemes,
   buildSchemes,
   type BaseColorName,
 } from "./palette";
+import {
+  DEFAULT_RADIUS,
+  DEFAULT_SURFACE,
+  resolveRadius,
+  resolveSurface,
+  type SurfacePresetName,
+} from "./geometry";
 import {
   autoAdjust,
   buildApcaReport,
@@ -22,6 +30,8 @@ export interface ThemeDefinition {
   primary: string;
   baseColor: BaseColorName;
   chartHues?: number[];
+  radius?: string;
+  surface?: SurfacePresetName;
 }
 
 export interface GeneratedTheme {
@@ -29,6 +39,17 @@ export interface GeneratedTheme {
   adjustments: Adjustment[];
   failures: PairFailure[];
   apca: ApcaReportEntry[];
+}
+
+/** Flattened CSS custom properties for one scheme: "--token" → oklch() string. */
+export interface CssVarsMap {
+  [cssVar: string]: string;
+}
+
+/** Standalone light + dark base-color surface token maps. */
+export interface BaseColorVars {
+  light: CssVarsMap;
+  dark: CssVarsMap;
 }
 
 export class ThemeContrastError extends Error {
@@ -50,19 +71,49 @@ export class ThemeContrastError extends Error {
   }
 }
 
+export function isBaseColorName(value: string): value is BaseColorName {
+  return Object.hasOwn(BASE_COLORS, value);
+}
+
+export function normalizeBaseColor(value?: string): BaseColorName {
+  if (value && isBaseColorName(value)) {
+    return value;
+  }
+
+  return "neutral";
+}
+
+/**
+ * Generate standalone neutral/surface CSS variables for a base color preset
+ * (verified against WCAG 2.2 AA), without overwriting primary or chart tokens.
+ */
+export function generateBaseColorVars(baseColor: BaseColorName): BaseColorVars {
+  const schemes = buildBaseSchemes(baseColor);
+
+  for (const schemeName of ["light", "dark"] as const) {
+    const result = autoAdjust(schemeName, schemes[schemeName]);
+
+    if (result.remaining.length > 0) {
+      throw new ThemeContrastError(result.remaining);
+    }
+  }
+
+  return {
+    light: toCssVars(schemes.light),
+    dark: toCssVars(schemes.dark),
+  };
+}
+
 /**
  * Generate a complete theme: numeric OKLCH palette, contrast verification with
  * bounded auto-adjustment, APCA reporting, and a registry:theme item.
  * Throws ThemeContrastError when a pair still fails after adjustment.
  */
 export function generateTheme(definition: ThemeDefinition): GeneratedTheme {
-  const baseColor: BaseColorName = BASE_COLOR_NAMES.includes(
-    definition.baseColor,
-  )
-    ? definition.baseColor
-    : "neutral";
-
+  const baseColor = normalizeBaseColor(definition.baseColor);
   const primary = parseToOklch(definition.primary);
+  const radius = resolveRadius(definition.radius ?? DEFAULT_RADIUS);
+  const surface = resolveSurface(definition.surface ?? DEFAULT_SURFACE);
 
   const schemes = buildSchemes({
     primary,
@@ -94,18 +145,13 @@ export function generateTheme(definition: ThemeDefinition): GeneratedTheme {
     title: definition.title,
     description: definition.description,
     cssVars: {
-      theme: { "--radius": "0.625rem" },
-      light: toCssVars(schemes.light),
-      dark: toCssVars(schemes.dark),
+      theme: { "--radius": radius.value },
+      light: { ...toCssVars(schemes.light), ...surface.light },
+      dark: { ...toCssVars(schemes.dark), ...surface.dark },
     },
   };
 
   return { item, adjustments, failures, apca };
-}
-
-/** Flattened CSS custom properties for one scheme: "--token" → oklch() string. */
-interface CssVarsMap {
-  [cssVar: string]: string;
 }
 
 function toCssVars(tokens: Record<string, OklchColor>): CssVarsMap {

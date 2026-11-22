@@ -1,6 +1,6 @@
 # Coral Circuit
 
-A hot coral accent on warm stone that makes collaborative canvases and campaign workspaces feel quick, tactile, and optimistic.
+A hot coral accent on warm paper that makes collaborative canvases and campaign workspaces feel quick, tactile, and optimistic.
 
 ## Install
 

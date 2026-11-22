@@ -1,6 +1,6 @@
 # Kira Kit
 
-> Enterprise UI kit built on Base UI primitives, 106 components and hooks.
+> Enterprise UI kit built on Base UI primitives, 107 components and hooks.
 
 Kira Kit is a component registry. Install items with the kira-kit CLI:
 `kira-kit add @kira-kit/<name>`.
@@ -111,13 +111,14 @@ Items:
 - [Responsive Layout](/docs/layout-responsive.md): Responsive class composition for layout primitives like stack and spacer, driven by the kit CSS safelists.
 - [View Transition Utility](/docs/view-transition.md): Reduced-motion-aware wrapper around the native View Transitions API: runs DOM updates inside document.startViewTransition when supported, and applies them instantly otherwise.
 - [Kira Default](/docs/theme-default.md): The kit's own docs-app theme: a pink primary on neutral surfaces with a compact 0.45rem radius.
-- [Ember Press](/docs/theme-ember-press.md): A burnished terracotta theme for editorial platforms, independent publications, and content-rich products with a confident point of view.
-- [Oxblood Atelier](/docs/theme-oxblood-atelier.md): A deep wine-red theme for luxury services, cultural institutions, and membership products that need drama in measured doses.
-- [Olive Ledger](/docs/theme-olive-ledger.md): A cultivated olive theme for research tools, financial workspaces, and sustainability products that value credibility over corporate polish.
-- [Laurel Study](/docs/theme-laurel-study.md): A shaded laurel-green theme for wellness, hospitality, and knowledge products that should feel composed, discreet, and quietly restorative.
-- [Phase Line](/docs/theme-phase-line.md): A locked-in teal accent for operations consoles where live signals must remain readable through dense, quiet interfaces.
-- [Cryostat](/docs/theme-cryostat.md): A chilled petrol-cyan theme for data platforms that need the visual discipline of laboratory equipment.
-- [Low Orbit](/docs/theme-low-orbit.md): A steel-indigo instrument palette for geospatial, aviation, and infrastructure tools built around exact coordinates and layered evidence.
-- [Coral Circuit](/docs/theme-coral-circuit.md): A hot coral accent on warm stone that makes collaborative canvases and campaign workspaces feel quick, tactile, and optimistic.
-- [Magenta Riot](/docs/theme-magenta-riot.md): A deep magenta against cool zinc that brings editorial confidence to community platforms, music products, and launch dashboards.
+- [Ember Press](/docs/theme-ember-press.md): A burnished terracotta theme on warm paper for editorial platforms, independent publications, and content-rich products.
+- [Oxblood Atelier](/docs/theme-oxblood-atelier.md): A deep wine-red theme on warm stone for luxury services, cultural institutions, and membership products that need measured drama.
+- [Olive Ledger](/docs/theme-olive-ledger.md): A cultivated olive theme for research tools, financial workspaces, and sustainability products that value credibility over polish.
+- [Laurel Study](/docs/theme-laurel-study.md): A shaded laurel-green theme on calm mist for wellness, hospitality, and knowledge products that feel quietly restorative.
+- [Phase Line](/docs/theme-phase-line.md): A locked-in teal accent on slate for operations consoles where live signals must remain readable through dense interfaces.
+- [Cryostat](/docs/theme-cryostat.md): A chilled petrol-cyan theme on mist for data platforms that need the visual discipline of laboratory equipment.
+- [Low Orbit](/docs/theme-low-orbit.md): A steel-indigo instrument palette on slate for geospatial, aviation, and infrastructure tools built around exact coordinates.
+- [Cobalt Studio](/docs/theme-cobalt-studio.md): A high-velocity electric cobalt anchor on dark-first anthracite for AI workspaces, fintech dashboards, and modern SaaS.
+- [Coral Circuit](/docs/theme-coral-circuit.md): A hot coral accent on warm paper that makes collaborative canvases and campaign workspaces feel quick, tactile, and optimistic.
+- [Magenta Riot](/docs/theme-magenta-riot.md): A deep magenta against studio mauve that brings editorial confidence to community platforms, music products, and launch dashboards.
 - [Kira Base](/docs/kira-base.md): The kit's base stylesheet: Tailwind imports, responsive safelists, design tokens, and the vendored utility classes.

@@ -78,9 +78,10 @@ quietly use the built-in default registry URL; plain `add` and `migrate` hard-er
 | `rsc`                                                                               | `add`                                   | `true` prepends `"use client";` to `registry:ui` and `registry:hook` files. `init` derives it from a `next` dependency. |
 | `tsx`                                                                               | —                                       | Written by `init`, never read.                                                                                          |
 | `tailwind.css`                                                                      | `init`, `add`, `theme`, `detectCssPath` | The single target for every CSS merge.                                                                                  |
-| `tailwind.baseColor`, `tailwind.cssVariables`, `tailwind.config`, `tailwind.prefix` | —                                       | Written for shadcn compatibility, never read.                                                                           |
+| `tailwind.baseColor`, `tailwind.cssVariables`, `tailwind.config`, `tailwind.prefix` | `init`, `theme`                         | `baseColor` records the chosen base foundation; the rest stay for shadcn compatibility.                                 |
 | `iconLibrary`                                                                       | `add`, `init`, `theme`, `check`         | `"lucide"` rewrites tabler imports and swaps the installed icon package.                                                |
-| `font`, `fontMono`                                                                  | `init`, `theme`                         | Defaults `geist` / `geist-mono`.                                                                                        |
+| `font`, `fontDisplay`, `fontMono`, `fontPreset`                                     | `init`, `theme`                         | Defaults `geist` / `geist-mono` (`precision` preset).                                                                   |
+| `radius`, `surface`                                                                 | `init`, `theme`                         | Corner radius (`sharp`..`pill` or CSS length) and surface style (`hairline`, `tactile`, `elevated`).                    |
 | `aliases.{components,ui,hooks,lib,utils}`                                           | `add`                                   | Where files land; resolved through `tsconfig` `compilerOptions.paths`.                                                  |
 | `registries`                                                                        | every network command                   | Namespace → URL template. `{"@kira-kit": "https://kira-kit.vercel.app/r/{name}.json"}`.                                 |
 | `registryUrl`                                                                       | `migrate` only                          | Legacy string; deleted on migration.                                                                                    |
@@ -136,20 +137,26 @@ dependencies, icon library, and optionally a theme.
 
 ```bash
 kira-kit init [-c <dir>] [--preset <name> | --primary <color>] [--base-color <name>]
-              [--font <name>] [--font-mono <name>] [--icon <library>] [--force] [-y]
+              [--font-preset <name>] [--font <name>] [--font-display <name>]
+              [--font-mono <name>] [--radius <preset>] [--surface <preset>]
+              [--icon <library>] [--force] [-y]
 ```
 
-| Flag                  | Default      | Accepted values                                                                                               |
-| --------------------- | ------------ | ------------------------------------------------------------------------------------------------------------- |
-| `-c, --cwd <dir>`     | invoking cwd | Any directory.                                                                                                |
-| `--preset <name>`     | none         | 9 built-ins (below) or **any** string, which becomes a registry fetch.                                        |
-| `--primary <color>`   | none         | Any color `culori` parses: hex, named, `oklch()`, `hsl()`, `rgb()`.                                           |
-| `--base-color <name>` | `neutral`    | `neutral, stone, zinc, gray, slate, mauve, olive, mist, taupe`. Invalid values **silently** become `neutral`. |
-| `--font <name>`       | `geist`      | `geist, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans`. Invalid exits `1`.                        |
-| `--font-mono <name>`  | `geist-mono` | `geist-mono, jetbrains-mono, fira-code`. Invalid exits `1`.                                                   |
-| `--icon <library>`    | `tabler`     | `tabler`, `lucide`. Invalid exits `1`.                                                                        |
-| `--force`             | `false`      | Re-apply the base stylesheet over an existing theme.                                                          |
-| `-y, --yes`           | `false`      | Take every default.                                                                                           |
+| Flag                    | Default      | Accepted values                                                                                                                            |
+| ----------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `-c, --cwd <dir>`       | invoking cwd | Any directory.                                                                                                                             |
+| `--preset <name>`       | none         | 10 built-ins (below) or **any** string, which becomes a registry fetch.                                                                    |
+| `--primary <color>`     | none         | Any color `culori` parses: hex, named, `oklch()`, `hsl()`, `rgb()`.                                                                        |
+| `--base-color <name>`   | `neutral`    | `neutral, paper, stone, taupe, zinc, gray, anthracite, slate, mist, olive, mauve`.                                                         |
+| `--font-preset <name>`  | `precision`  | `precision, editorial, atelier, terminal, expressive, fintech`. Invalid exits `1`.                                                         |
+| `--font <name>`         | `geist`      | `geist, instrument-sans, inter, manrope, plus-jakarta-sans, space-grotesk, dm-sans, bricolage-grotesque, sora, outfit`. Invalid exits `1`. |
+| `--font-display <name>` | same as font | Any `--font` value plus `newsreader, fraunces`. Invalid exits `1`.                                                                         |
+| `--font-mono <name>`    | `geist-mono` | `geist-mono, jetbrains-mono, fira-code`. Invalid exits `1`.                                                                                |
+| `--radius <preset>`     | `balanced`   | `sharp` (`0rem`), `crisp` (`0.375rem`), `balanced` (`0.625rem`), `soft` (`0.875rem`), `pill` (`1.25rem`), or CSS length (`0.5rem`, `8px`). |
+| `--surface <preset>`    | `tactile`    | `hairline, tactile, elevated`. Invalid exits `1`.                                                                                          |
+| `--icon <library>`      | `tabler`     | `tabler`, `lucide`. Invalid exits `1`.                                                                                                     |
+| `--force`               | `false`      | Re-apply the base stylesheet over an existing theme.                                                                                       |
+| `-y, --yes`             | `false`      | Take every default.                                                                                                                        |
 
 Order, and what each step can cost you:
 
@@ -185,9 +192,9 @@ Order, and what each step can cost you:
    `kira-theme.json`; `--primary` generates `theme-custom` and writes `kira-theme.json`;
    anything else leaves the default theme in place.
 
-The nine built-in presets, all generated offline: `ember-press`, `oxblood-atelier`,
-`olive-ledger`, `laurel-study`, `phase-line`, `cryostat`, `low-orbit`, `coral-circuit`,
-`magenta-riot`.
+The ten built-in presets, all generated offline: `ember-press`, `oxblood-atelier`,
+`olive-ledger`, `laurel-study`, `phase-line`, `cryostat`, `low-orbit`, `cobalt-studio`,
+`coral-circuit`, `magenta-riot`.
 **`--preset` is not validated against that list.** A typo silently becomes a live fetch of
 `@kira-kit/theme-<typo>`, so you get exit `2` and a message that mentions the URL, not
 `unknown preset`.
@@ -285,22 +292,25 @@ searched. An empty query matches everything and prints `… match(es) for "(all 
 
 ## kira-kit theme
 
-Generate an OKLCH theme from a primary color, or change typography and icons, without
-re-running `init`. Fully offline.
+Generate an OKLCH theme from a primary color, or apply standalone base color, font pairing, radius, surface, and icon presets without re-running `init`. Fully offline.
 
 ```bash
-kira-kit theme [--primary <color>] [--base-color <name>] [--font <name>]
-               [--font-mono <name>] [--icon <library>] [--out <file>] [--apply] [-c <dir>]
+kira-kit theme [--primary <color>] [--base-color <name>] [--font-preset <name>]
+               [--font <name>] [--font-display <name>] [--font-mono <name>]
+               [--radius <preset>] [--surface <preset>] [--icon <library>]
+               [--out <file>] [--apply] [-c <dir>]
 ```
 
-| Flag                                | Default                                        | Notes                                                                     |
-| ----------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------- |
-| `--primary <color>`                 | none                                           | Switches to palette mode.                                                 |
-| `--base-color <name>`               | `neutral`                                      | Used **only** with `--primary`; invalid values silently become `neutral`. |
-| `--font` / `--font-mono` / `--icon` | config, else `geist` / `geist-mono` / `tabler` | Same value sets and errors as `init`.                                     |
-| `--out <file>`                      | `kira-theme.json`                              | Resolved as `join(cwd, out)`. Used **only** with `--primary`.             |
-| `--apply`                           | `false`                                        | Write the CSS and config changes.                                         |
-| `-c, --cwd <dir>`                   | invoking cwd                                   |                                                                           |
+| Flag                                                                     | Default                                        | Notes                                                                                                                           |
+| ------------------------------------------------------------------------ | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `--primary <color>`                                                      | none                                           | Switches to full palette mode.                                                                                                  |
+| `--base-color <name>`                                                    | `neutral`                                      | Works both with `--primary` and standalone (`neutral, paper, stone, taupe, zinc, gray, anthracite, slate, mist, olive, mauve`). |
+| `--font-preset` / `--font` / `--font-display` / `--font-mono` / `--icon` | config, else `geist` / `geist-mono` / `tabler` | Same value sets and errors as `init`.                                                                                           |
+| `--radius <preset>`                                                      | none                                           | `sharp`, `crisp`, `balanced`, `soft`, `pill`, or CSS length.                                                                    |
+| `--surface <preset>`                                                     | none                                           | `hairline`, `tactile`, `elevated`.                                                                                              |
+| `--out <file>`                                                           | `kira-theme.json`                              | Resolved as `join(cwd, out)`. Used **only** with `--primary`.                                                                   |
+| `--apply`                                                                | `false`                                        | Write the CSS and config changes.                                                                                               |
+| `-c, --cwd <dir>`                                                        | invoking cwd                                   |                                                                                                                                 |
 
 There is **no `-y`**: `theme` passes `yes: true` internally to every step, so it never
 asks — but it will still spawn a package manager to install fontsource packages.
