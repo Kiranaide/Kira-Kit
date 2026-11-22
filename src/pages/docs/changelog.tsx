@@ -1,23 +1,17 @@
-import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { IconArrowRight } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
+import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible";
+import {
+  IconArrowUpRight,
+  IconBook,
+  IconChevronDown,
+} from "@tabler/icons-react";
 import { cn } from "cn";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  ComponentPage,
-  PageHeader,
-  Section,
-  ChangelogEntry,
-} from "@/components/docs";
+  DocGuidePage,
+  DocGuideSection,
+  scrollToAnchor,
+  type DocGuideTocItem,
+} from "@/components/docs/doc-guide";
 
 type ChangeType =
   "added" | "changed" | "fixed" | "deprecated" | "removed" | "breaking";
@@ -34,7 +28,10 @@ interface Release {
   changes: Change[];
 }
 
-const releases: Release[] = [
+const COMMIT_HISTORY_URL =
+  "https://github.com/Kiranaide/kira-kit-v2/commits/development";
+
+const RELEASES: readonly Release[] = [
   {
     version: "Unreleased",
     date: "In development",
@@ -45,12 +42,13 @@ const releases: Release[] = [
         description:
           "/ui-preview now runs in DocPage with an interactive component playground (Button, Input, Select, Dialog with Preview/Code tabs), a 5-tier control size table, size-selectable input combinations, Demo/Worst-case input actions, menu and overlay comparisons, container and form spacing cards, side-by-side light/dark preset previews, and a mobile section-jump selector. /overview adopts DocPage with a copyable init command pill, key metrics strip, Start Here path cards, architecture pillars, a linked 6-category component catalog, and a Quickstart CLI terminal card.",
       },
-      { 
+      {
         type: "added",
-        title: "kira-kit init detects your runtime and wires up Tailwind CSS v4",
+        title:
+          "kira-kit init detects your runtime and wires up Tailwind CSS v4",
         description:
           "init now reads your project (Vite, Vite + Nitro v3, TanStack Start, Next.js with Turbopack, standalone Nitro, Astro, Bun, or plain PostCSS) and installs and configures Tailwind CSS v4 for it: @tailwindcss/vite in the Vite config, @tailwindcss/postcss with a postcss.config.mjs for Next.js, Nitro and PostCSS projects, and bun-plugin-tailwind in bunfig.toml. It also adds the @/* TypeScript path (no deprecated baseUrl, JSONC comments preserved, split tsconfig.app.json handled) and, on Vite, enables native resolve.tsconfigPaths on Vite 8 or a resolve.alias on older versions. Every edit is idempotent and skips configs you already set up.",
-      },      
+      },
       {
         type: "fixed",
         title: "llms.txt resolves to the deployed site dynamically",
@@ -343,171 +341,380 @@ const releases: Release[] = [
   },
 ];
 
-const filterTypes: { value: ChangeType | "all"; label: string }[] = [
+const LATEST_RELEASES = RELEASES.slice(0, 2);
+const EARLIER_RELEASES = RELEASES.slice(2);
+
+const FILTER_TYPES: readonly { value: ChangeType | "all"; label: string }[] = [
   { value: "all", label: "All" },
+  { value: "breaking", label: "Breaking" },
   { value: "added", label: "Added" },
   { value: "changed", label: "Changed" },
   { value: "fixed", label: "Fixed" },
-  { value: "breaking", label: "Breaking" },
   { value: "removed", label: "Removed" },
 ];
 
-function ReleasesSection({
+const CHANGE_BADGE_STYLES: Record<
+  ChangeType,
+  { label: string; className: string }
+> = {
+  breaking: { label: "Breaking", className: "docs-chip-deprecated" },
+  added: { label: "Added", className: "bg-primary/10 docs-accent" },
+  changed: { label: "Changed", className: "docs-chip-fixed" },
+  fixed: { label: "Fixed", className: "docs-chip-added" },
+  deprecated: { label: "Deprecated", className: "docs-chip-deprecated" },
+  removed: { label: "Removed", className: "bg-muted text-muted-foreground" },
+};
+
+const SECTIONS: readonly DocGuideTocItem[] = [
+  { id: "releases", label: "Releases" },
+  { id: "unreleased", label: "Unreleased" },
+  { id: "0.4.0", label: "0.4.0" },
+  { id: "earlier-releases", label: "Earlier releases" },
+  { id: "how-we-version", label: "How we version" },
+];
+
+function releaseAnchorId(version: string) {
+  return version.toLowerCase().replace(/\s+/g, "-");
+}
+
+function normalizeAnchor(hash: string) {
+  return hash
+    .replace(/^#/, "")
+    .trim()
+    .toLowerCase()
+    .replace(/^v(?=\d)/, "")
+    .replace(/-/g, ".");
+}
+
+function findMatchingRelease(hash: string) {
+  const target = normalizeAnchor(hash);
+
+  if (!target) return undefined;
+
+  return RELEASES.find((release) => {
+    const id = releaseAnchorId(release.version);
+
+    return (
+      id === target || id.replace(/\./g, "-") === target.replace(/\./g, "-")
+    );
+  });
+}
+
+function filterChanges(changes: readonly Change[], filter: ChangeType | "all") {
+  return filter === "all"
+    ? changes
+    : changes.filter((change) => change.type === filter);
+}
+
+function ChangeRowList({ changes }: { changes: readonly Change[] }) {
+  return (
+    <ul className="flex flex-col divide-y divide-border border-t border-border">
+      {changes.map((change) => {
+        const badge = CHANGE_BADGE_STYLES[change.type];
+
+        return (
+          <li
+            key={`${change.type}-${change.title}`}
+            className="flex flex-col gap-1.5 py-3.5 sm:flex-row sm:items-start sm:gap-3"
+          >
+            <div className="flex shrink-0 sm:w-[100px]">
+              <span
+                className={cn(
+                  "inline-flex h-[23px] items-center rounded-[4px] px-2 text-xs font-semibold leading-[1.42]",
+                  badge.className,
+                )}
+              >
+                {badge.label}
+              </span>
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <h3 className="text-base font-semibold leading-[1.15] tracking-[-0.35px] text-foreground">
+                {change.title}
+              </h3>
+              {change.description && (
+                <p className="text-sm leading-[1.53] text-muted-foreground">
+                  {change.description}
+                </p>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function FilterChipsSection({
   filter,
-  setFilter,
+  onFilterChange,
+  totalMatches,
 }: {
   filter: ChangeType | "all";
-  setFilter: (value: ChangeType | "all") => void;
+  onFilterChange: (next: ChangeType | "all") => void;
+  totalMatches: number;
 }) {
-  const countFor = (value: ChangeType | "all") =>
-    releases.reduce(
-      (total, release) =>
-        total +
-        release.changes.filter(
-          (change) => value === "all" || change.type === value,
-        ).length,
-      0,
-    );
+  return (
+    <DocGuideSection id="releases" title="Releases">
+      <fieldset className="flex flex-wrap gap-1.5 border-0 p-0 sm:gap-2">
+        <legend className="sr-only">Filter releases by change type</legend>
+        {FILTER_TYPES.map((option) => {
+          const active = filter === option.value;
 
-  const visibleReleases = releases.flatMap((release) => {
-    const changes = release.changes.filter(
-      (change) => filter === "all" || change.type === filter,
-    );
+          return (
+            <button
+              key={option.value}
+              type="button"
+              aria-pressed={active}
+              onClick={active ? undefined : () => onFilterChange(option.value)}
+              className={cn(
+                "docs-focus-ring inline-flex h-11 items-center rounded-[6px] border px-2.5 text-[13px] font-semibold leading-[1.42] transition-colors duration-150 sm:px-3.5",
+                active
+                  ? "border-primary bg-primary/10 docs-accent"
+                  : "border-border bg-card text-foreground hover:bg-accent/50",
+              )}
+            >
+              {option.label}
+            </button>
+          );
+        })}
+      </fieldset>
+      <p className="sr-only" aria-live="polite">
+        Showing {totalMatches} matching{" "}
+        {totalMatches === 1 ? "entry" : "entries"}.
+      </p>
+    </DocGuideSection>
+  );
+}
 
-    return changes.length > 0 ? [{ ...release, changes }] : [];
+function LatestReleaseSection({
+  release,
+  filter,
+}: {
+  release: Release;
+  filter: ChangeType | "all";
+}) {
+  const changes = filterChanges(release.changes, filter);
+  const id = releaseAnchorId(release.version);
+
+  return (
+    <DocGuideSection id={id} title={release.version} meta={release.date}>
+      {changes.length > 0 ? (
+        <ChangeRowList changes={changes} />
+      ) : (
+        <p className="border-t border-border pt-3.5 text-sm leading-[1.53] text-muted-foreground">
+          No {filter} entries in {release.version}.
+        </p>
+      )}
+    </DocGuideSection>
+  );
+}
+
+function EarlierReleaseRow({
+  release,
+  changes,
+  open,
+  onOpenChange,
+  filterActive,
+}: {
+  release: Release;
+  changes: readonly Change[];
+  open: boolean;
+  onOpenChange: (next: boolean) => void;
+  filterActive: boolean;
+}) {
+  const anchorId = releaseAnchorId(release.version);
+
+  return (
+    <CollapsiblePrimitive.Root
+      id={anchorId}
+      open={open}
+      onOpenChange={onOpenChange}
+      className="scroll-mt-20"
+    >
+      <CollapsiblePrimitive.Trigger className="docs-focus-ring flex min-h-11 w-full items-center gap-2.5 py-2.5 text-left transition-colors duration-150 hover:bg-muted/30">
+        <span className="w-[87px] shrink-0 font-mono text-[13px] font-semibold leading-[1.42] docs-accent sm:w-[110px]">
+          {release.version}
+        </span>
+        <span className="min-w-0 flex-1 text-[13px] leading-[1.53] text-muted-foreground">
+          {release.date}
+          {filterActive && (
+            <span className="ml-2 font-mono text-xs text-foreground/75">
+              ({changes.length})
+            </span>
+          )}
+        </span>
+        <IconChevronDown
+          aria-hidden="true"
+          className={cn(
+            "size-[15px] shrink-0 text-muted-foreground transition-transform duration-150 motion-reduce:transition-none",
+            open && "rotate-180",
+          )}
+        />
+      </CollapsiblePrimitive.Trigger>
+
+      <CollapsiblePrimitive.Panel className="overflow-hidden">
+        <div className="pb-3">
+          <ChangeRowList changes={changes} />
+        </div>
+      </CollapsiblePrimitive.Panel>
+    </CollapsiblePrimitive.Root>
+  );
+}
+
+function EarlierReleasesSection({
+  filter,
+  expandedVersions,
+  onToggleVersion,
+}: {
+  filter: ChangeType | "all";
+  expandedVersions: ReadonlySet<string>;
+  onToggleVersion: (version: string, nextOpen: boolean) => void;
+}) {
+  const visibleReleases = EARLIER_RELEASES.flatMap((release) => {
+    const changes = filterChanges(release.changes, filter);
+
+    return changes.length > 0 ? [{ release, changes }] : [];
   });
 
   return (
-    <Section
-      title="Releases"
-      description="Filter by change type to find what matters to your integration — breaking changes and removals are the ones to read before upgrading."
-    >
-      <Tabs
-        value={filter}
-        onValueChange={(value) => {
-          const match = filterTypes.find((type) => type.value === value);
-
-          setFilter(match ? match.value : "all");
-        }}
-      >
-        <TabsList className="flex-wrap">
-          {filterTypes.map((type) => (
-            <TabsTrigger
-              key={type.value}
-              value={type.value}
-              badge={countFor(type.value)}
-            >
-              {type.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-
-      <Card>
-        <CardContent className="space-y-8 pt-6">
-          {visibleReleases.map((release) => (
-            <ChangelogEntry
+    <DocGuideSection id="earlier-releases" title="Earlier releases">
+      {visibleReleases.length > 0 ? (
+        <div className="flex flex-col divide-y divide-border border-t border-border">
+          {visibleReleases.map(({ release, changes }) => (
+            <EarlierReleaseRow
               key={release.version}
-              version={release.version}
-              date={release.date}
-              changes={release.changes}
+              release={release}
+              changes={changes}
+              open={expandedVersions.has(release.version)}
+              onOpenChange={(next) => onToggleVersion(release.version, next)}
+              filterActive={filter !== "all"}
             />
           ))}
-        </CardContent>
-      </Card>
-    </Section>
+        </div>
+      ) : (
+        <p className="border-t border-border pt-3.5 text-sm leading-[1.53] text-muted-foreground">
+          No {filter} entries in earlier releases.
+        </p>
+      )}
+    </DocGuideSection>
   );
 }
 
 function HowWeVersionSection() {
   return (
-    <Section
+    <DocGuideSection
+      id="how-we-version"
       title="How we version"
-      description="The kit is registry-first: components are source files you own, so upgrades are deliberate diffs, not silent dependency bumps."
+      description="The CLI uses Changesets. Installed components are source files you own. Check the component’s page for item-level history."
     >
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
-              CLI: semver + Changesets
-            </CardTitle>
-            <CardDescription>
-              kira-kit releases are scoped to packages/cli and versioned with
-              Changesets. Breaking CLI changes get a major bump and a migration
-              path (kira-kit migrate).
-            </CardDescription>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">
-              Components: diff before you add
-            </CardTitle>
-            <CardDescription>
-              Use kira-kit add --diff to preview incoming changes against your
-              local edits, and kira-kit migrate to report divergence. Nothing
-              overwrites your work without asking.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Full history</CardTitle>
-            <CardDescription>
-              Every entry above traces to commits on GitHub. Per-component
-              upgrade notes live in docs/*-upgrade.md in the repository.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <a
-              href="https://github.com/Kiranaide/kira-kit-v2/commits/development"
-              target="_blank"
-              rel="noreferrer"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "sm" }),
-                "gap-2",
-              )}
-            >
-              Commit history
-              <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-            </a>
-          </CardContent>
-        </Card>
-      </div>
-    </Section>
-  );
-}
-
-function IntroductionCta() {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
-      <p className="text-sm text-muted-foreground">
-        New to the kit? Start with the introduction.
-      </p>
-      <Link
-        to="/docs/introduction"
-        className={cn(buttonVariants({ size: "sm" }), "gap-2")}
+      <a
+        href={COMMIT_HISTORY_URL}
+        target="_blank"
+        rel="noreferrer"
+        className="docs-focus-ring inline-flex min-h-11 w-fit items-center gap-1.5 rounded-[6px] text-sm font-semibold leading-[1.42] docs-accent underline-offset-4 hover:underline"
       >
-        Introduction
-        <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-      </Link>
-    </div>
+        <span>Browse full commit history on GitHub</span>
+        <IconArrowUpRight aria-hidden="true" className="size-[15px]" />
+      </a>
+    </DocGuideSection>
   );
 }
 
 export default function ChangelogPage() {
   const [filter, setFilter] = useState<ChangeType | "all">("all");
 
+  const [expandedVersions, setExpandedVersions] = useState<ReadonlySet<string>>(
+    () => {
+      if (typeof window === "undefined") return new Set();
+
+      const matched = findMatchingRelease(window.location.hash);
+
+      return matched ? new Set([matched.version]) : new Set();
+    },
+  );
+
+  useEffect(() => {
+    const syncHash = () => {
+      const matched = findMatchingRelease(window.location.hash);
+
+      if (!matched) return;
+
+      const anchorId = releaseAnchorId(matched.version);
+
+      setExpandedVersions((current) =>
+        current.has(matched.version)
+          ? current
+          : new Set([...current, matched.version]),
+      );
+
+      window.requestAnimationFrame(() => scrollToAnchor(anchorId));
+    };
+
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, []);
+
+  const totalMatches = RELEASES.reduce(
+    (sum, release) => sum + filterChanges(release.changes, filter).length,
+    0,
+  );
+
+  const handleToggleVersion = (version: string, nextOpen: boolean) => {
+    setExpandedVersions((current) => {
+      const next = new Set(current);
+
+      if (nextOpen) next.add(version);
+      else next.delete(version);
+
+      return next;
+    });
+  };
+
   return (
-    <ComponentPage>
-      <PageHeader
-        title="Changelog"
-        description="Notable changes to Kira Kit and the kira-kit CLI, in Keep a Changelog format. Entries are drawn from the repository's release history; the CLI is versioned with Changesets."
-        badge={<Badge variant="secondary">Keep a Changelog</Badge>}
+    <DocGuidePage
+      title="Changelog"
+      crumb="Changelog"
+      description="Follow changes to the registry and CLI. Check breaking changes before updating local components."
+      sections={SECTIONS}
+      previous={{ to: "/docs/form", label: "Form" }}
+      next={{
+        to: "/docs/introduction",
+        label: "Introduction",
+        icon: IconBook,
+      }}
+    >
+      <FilterChipsSection
+        filter={filter}
+        onFilterChange={(next) => {
+          setFilter(next);
+          setExpandedVersions(
+            new Set(
+              next === "all"
+                ? []
+                : EARLIER_RELEASES.map(({ version }) => version),
+            ),
+          );
+        }}
+        totalMatches={totalMatches}
       />
-      <ReleasesSection filter={filter} setFilter={setFilter} />
+
+      {LATEST_RELEASES.map((release) => (
+        <LatestReleaseSection
+          key={release.version}
+          release={release}
+          filter={filter}
+        />
+      ))}
+
+      <EarlierReleasesSection
+        filter={filter}
+        expandedVersions={expandedVersions}
+        onToggleVersion={handleToggleVersion}
+      />
+
       <HowWeVersionSection />
-      <IntroductionCta />
-    </ComponentPage>
+    </DocGuidePage>
   );
 }
