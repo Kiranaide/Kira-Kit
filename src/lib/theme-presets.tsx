@@ -1,20 +1,16 @@
 import * as React from "react";
 import themesRegistry from "@/themes/registry.json";
 import {
+  applyFontPreview,
+  composeThemeCss,
   DEFAULT_DOC_FONT_PRESET,
   findDocFontPreset,
-  type DocFontPresetName,
-} from "@/lib/fonts";
-import { applyFontPreview } from "@/lib/font-preview";
-import {
-  findBaseColor,
-  findRadiusPreset,
-  findSurfacePreset,
   findThemeRecipeMeta,
   type DocBaseColorName,
+  type DocFontPresetName,
   type DocRadiusPresetName,
   type DocSurfacePresetName,
-} from "@/lib/presets-catalog";
+} from "@/lib/theme-studio";
 
 export interface ThemePreset {
   name: string;
@@ -73,63 +69,18 @@ interface PresetContextValue {
 
 const PresetContext = React.createContext<PresetContextValue | null>(null);
 
-function declarations(vars: Record<string, string>): string {
-  return Object.entries(vars)
-    .map(([token, value]) => `${token}:${value};`)
-    .join("");
-}
-
-/**
- * Compose the active ThemePreset + optional Base Color / Radius / Surface
- * overrides into a single `:root` + `.dark` stylesheet. Appended after base
- * tokens so overrides win the cascade while `.dark` toggling keeps working.
- */
 function composedCss(
   preset: ThemePreset | undefined,
   baseColor: BaseColorSelection,
   radius: RadiusSelection,
   surface: SurfaceSelection,
 ): string | null {
-  const light: Record<string, string> = {};
-  const dark: Record<string, string> = {};
-
-  if (preset) {
-    Object.assign(light, preset.cssVars.light, preset.cssVars.theme);
-    Object.assign(dark, preset.cssVars.dark, preset.cssVars.theme);
-  }
-
-  if (baseColor !== AUTO_VALUE) {
-    const base = findBaseColor(baseColor);
-
-    if (base) {
-      Object.assign(light, base.light);
-      Object.assign(dark, base.dark);
-    }
-  }
-
-  if (surface !== AUTO_VALUE) {
-    const surf = findSurfacePreset(surface);
-
-    if (surf) {
-      Object.assign(light, surf.light);
-      Object.assign(dark, surf.dark);
-    }
-  }
-
-  if (radius !== AUTO_VALUE) {
-    const rad = findRadiusPreset(radius);
-
-    if (rad) {
-      light["--radius"] = rad.value;
-      dark["--radius"] = rad.value;
-    }
-  }
-
-  if (Object.keys(light).length === 0 && Object.keys(dark).length === 0) {
-    return null;
-  }
-
-  return `:root{${declarations(light)}}.dark{${declarations(dark)}}`;
+  return composeThemeCss({
+    cssVars: preset?.cssVars,
+    baseColor,
+    radius,
+    surface,
+  });
 }
 
 function useStoredString<T extends string>(

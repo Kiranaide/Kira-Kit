@@ -8,15 +8,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DOC_FONT_PRESETS } from "@/lib/fonts";
 import {
   DOC_BASE_COLORS,
+  DOC_FONT_PRESETS,
   DOC_RADIUS_PRESETS,
   DOC_SURFACE_PRESETS,
   findBaseColor,
   findRadiusPreset,
   findSurfacePreset,
-} from "@/lib/presets-catalog";
+} from "@/lib/theme-studio";
 import {
   AUTO_VALUE,
   DEFAULT_PRESET,

@@ -20,10 +20,9 @@ kira-kit add @kira-kit/timeline
 - @kira-kit/avatar
 - @kira-kit/button
 - @kira-kit/collapsible
-- @kira-kit/component-defaults
-- @kira-kit/component-prop-guards
 - @kira-kit/skeleton
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

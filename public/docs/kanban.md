@@ -22,15 +22,12 @@ kira-kit add @kira-kit/kanban
 
 - @kira-kit/avatar
 - @kira-kit/button
-- @kira-kit/component-defaults
-- @kira-kit/component-item-keys
-- @kira-kit/component-native-props
-- @kira-kit/component-prop-guards
 - @kira-kit/dialog
 - @kira-kit/input
 - @kira-kit/select
 - @kira-kit/skeleton
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

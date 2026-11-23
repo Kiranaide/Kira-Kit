@@ -17,7 +17,7 @@ kira-kit add @kira-kit/toast
 
 ## Registry dependencies
 
-- @kira-kit/component-prop-guards
+- @kira-kit/component-utils
 
 ## Usage
 

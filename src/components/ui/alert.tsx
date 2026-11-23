@@ -2,7 +2,11 @@
 "use client";
 
 import * as React from "react";
-import { reactContentKey, withContentKeys } from "@/components/ui/content-keys";
+import {
+  isStringProp,
+  reactContentKey,
+  withOccurrenceKeys,
+} from "@/lib/component-utils";
 import gsap from "gsap";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
@@ -18,7 +22,6 @@ import {
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { isStringProp } from "@/components/ui/prop-guards";
 
 const alertVariants = cva("relative w-full rounded-lg p-4", {
   variants: {
@@ -446,7 +449,7 @@ function AlertActions({ actions, className, ...props }: AlertActionsProps) {
       className={cn("mt-3 flex flex-wrap gap-2", className)}
       {...props}
     >
-      {withContentKeys(
+      {withOccurrenceKeys(
         actions,
         (action) => action.id ?? reactContentKey(action.label),
       ).map(({ item: action, key }, i) => (

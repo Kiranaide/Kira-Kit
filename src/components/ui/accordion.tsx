@@ -42,8 +42,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp, isObjectProp } from "@/lib/component-prop-guards";
+import {
+  isFunctionProp,
+  isObjectProp,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 interface AccordionItemData {
   value: string;
@@ -373,7 +376,7 @@ function AccordionItem({
         itemRef.current = node as HTMLDivElement | null;
 
         // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
-        if (isCallbackProp(userRef)) userRef(node);
+        if (isFunctionProp(userRef)) userRef(node);
         // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
         else if (userRef && isObjectProp(userRef)) {
           userRef.current = node;

@@ -18,6 +18,7 @@ kira-kit add @kira-kit/navigation-menu
 ## Registry dependencies
 
 - @kira-kit/drawer
+- @kira-kit/component-utils
 
 ## Usage
 

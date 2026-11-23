@@ -1,9 +1,5 @@
 import { CodeBlock } from "@/components/ui/code-block";
-import {
-  DocGuidePage,
-  DocGuideSection,
-  type DocGuideTocItem,
-} from "@/components/docs/doc-guide";
+import { DocPage, DocSection, type TocEntry } from "@/components/docs/doc-page";
 import {
   DEFAULT_DOC_MONO,
   DEFAULT_DOC_SANS,
@@ -13,9 +9,9 @@ import {
   DOC_SERIF_FONTS,
   findDocFont,
   type DocsFont,
-} from "@/lib/fonts";
+} from "@/lib/theme-studio";
 
-const SECTIONS: readonly DocGuideTocItem[] = [
+const SECTIONS: readonly TocEntry[] = [
   { id: "font-presets", label: "Font pairings" },
   { id: "font-stack", label: "Font stack" },
   { id: "type-scale", label: "Type scale" },
@@ -130,7 +126,7 @@ function FontSpecimens({
 
 function FontPresetsSection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="font-presets"
       title="Curated font pairings"
       description="Install a complete Display + Body + Mono variable font stack with one --font-preset flag."
@@ -184,13 +180,13 @@ function FontPresetsSection() {
           );
         })}
       </ul>
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 function FontStackSection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="font-stack"
       title="Font stack"
       description="Use sans-serif for interface text, optional display serifs for editorial headlines, and monospace for code and tabular data."
@@ -210,13 +206,13 @@ function FontStackSection() {
         fonts={DOC_MONO_FONTS}
         defaultName={DEFAULT_DOC_MONO}
       />
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 function TypeScaleSection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="type-scale"
       title="Type scale"
       description="Use the utility shown beside each sample. Keep paragraphs around 45 to 75 characters per line."
@@ -242,49 +238,49 @@ function TypeScaleSection() {
           </li>
         ))}
       </ul>
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 function HeadingRecipesSection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="heading-recipes"
       title="Heading recipes"
       description="Use headings in document order. Set the visual size with utilities to match the content hierarchy."
     >
       <CodeBlock code={HEADING_RECIPE_CODE} language="tsx" showLineNumbers />
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 function CodeTypographySection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="code-typography"
       title="Code typography"
       description="Use font-mono for inline code and CodeBlock for copyable examples. Both follow --font-mono."
     >
       <CodeBlock code={CODE_TYPOGRAPHY_CODE} language="css" showLineNumbers />
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 function FluidTypeSection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="fluid-type"
       title="Fluid type"
       description="Use responsive sizes for display headings. Keep body copy at a consistent reading size."
     >
       <CodeBlock code={FLUID_TYPE_CODE} language="tsx" showLineNumbers />
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 export default function TypesetPage() {
   return (
-    <DocGuidePage
+    <DocPage
       title="Typeset"
       crumb="Typeset"
       description="Use a shared type scale for interface copy, documentation, and code. Choose sizes by reading role."
@@ -298,6 +294,6 @@ export default function TypesetPage() {
       <HeadingRecipesSection />
       <CodeTypographySection />
       <FluidTypeSection />
-    </DocGuidePage>
+    </DocPage>
   );
 }

@@ -21,6 +21,7 @@ kira-kit add @kira-kit/button
 - @kira-kit/toast
 - @kira-kit/tooltip
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

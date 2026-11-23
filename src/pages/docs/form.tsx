@@ -16,15 +16,15 @@ import {
   createZodValidator,
 } from "@/components/ui/field";
 import {
-  DocGuideChecklist,
-  DocGuidePage,
-  DocGuideSection,
-  DocGuideTable,
-  type DocGuideTableRow,
-  type DocGuideTocItem,
-} from "@/components/docs/doc-guide";
+  Code,
+  DocChecklist,
+  DocPage,
+  DocSection,
+  DocTable,
+  type TocEntry,
+} from "@/components/docs/doc-page";
 
-const SECTIONS: readonly DocGuideTocItem[] = [
+const SECTIONS: readonly TocEntry[] = [
   { id: "live-example", label: "Live example" },
   { id: "field-anatomy", label: "Field anatomy" },
   { id: "validation-timing", label: "Validation timing" },
@@ -342,22 +342,19 @@ const SUBMIT_NOTES = [
   },
 ] as const;
 
-const FIELD_ANATOMY_ROWS: readonly DocGuideTableRow[] = [
-  {
-    key: "useForm",
-    term: "useForm",
-    detail: "Defaults, schema validation, and submit state.",
-  },
-  {
-    key: "form.Field",
-    term: "form.Field",
-    detail: "Binds the workspace field to form state.",
-  },
-  {
-    key: "KiraField",
-    term: "KiraField",
-    detail: "Connects labels, helper text, and errors to the input.",
-  },
+const FIELD_ANATOMY_ROWS = [
+  [
+    <Code key="useForm">useForm</Code>,
+    "Defaults, schema validation, and submit state.",
+  ],
+  [
+    <Code key="field">form.Field</Code>,
+    "Binds the workspace field to form state.",
+  ],
+  [
+    <Code key="kira">KiraField</Code>,
+    "Connects labels, helper text, and errors to the input.",
+  ],
 ];
 
 const ANATOMY_CODE = `<KiraField
@@ -367,27 +364,20 @@ const ANATOMY_CODE = `<KiraField
   required
 />`;
 
-const VALIDATION_TIMING_ROWS: readonly DocGuideTableRow[] = [
-  {
-    key: "on-blur",
-    term: "On blur",
-    detail: "Validate once users leave the field.",
-  },
-  {
-    key: "on-change",
-    term: "On change",
-    detail: "Clear or revalidate an existing error as it’s fixed.",
-  },
-  {
-    key: "on-submit",
-    term: "On submit",
-    detail: "Validate the full schema and focus the error summary.",
-  },
-  {
-    key: "async-validation",
-    term: "Async validation",
-    detail: "Abort stale requests when the value changes.",
-  },
+const VALIDATION_TIMING_ROWS = [
+  [<Code key="blur">On blur</Code>, "Validate once users leave the field."],
+  [
+    <Code key="change">On change</Code>,
+    "Clear or revalidate an existing error as it’s fixed.",
+  ],
+  [
+    <Code key="submit">On submit</Code>,
+    "Validate the full schema and focus the error summary.",
+  ],
+  [
+    <Code key="async">Async validation</Code>,
+    "Abort stale requests when the value changes.",
+  ],
 ];
 
 const ACCESSIBILITY_CHECKLIST = [
@@ -414,7 +404,7 @@ const ACCESSIBILITY_CHECKLIST = [
 
 function LiveExampleSection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="live-example"
       title="Live example"
       description="The example shows a failed submit. Users can jump from the summary to the field and fix it in place."
@@ -428,21 +418,21 @@ function LiveExampleSection() {
           <h3 className="text-lg font-semibold leading-[1.15] tracking-[-0.35px] text-foreground">
             What happens on submit
           </h3>
-          <DocGuideChecklist items={SUBMIT_NOTES} />
+          <DocChecklist items={SUBMIT_NOTES} />
         </div>
       </div>
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 function FieldAnatomySection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="field-anatomy"
       title="Field anatomy"
       description="useForm owns state and submission. form.Field binds values. KiraField renders the label, description, control, and error."
     >
-      <DocGuideTable
+      <DocTable
         columns={["Part", "Responsibility"]}
         rows={FIELD_ANATOMY_ROWS}
         caption="Field anatomy"
@@ -455,29 +445,29 @@ function FieldAnatomySection() {
         <span>Open the Field reference</span>
         <IconArrowUpRight aria-hidden="true" className="size-[15px]" />
       </Link>
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 function ValidationTimingSection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="validation-timing"
       title="Validation timing"
       description="Validate when feedback can help people complete the form."
     >
-      <DocGuideTable
+      <DocTable
         columns={["Trigger", "Behavior"]}
         rows={VALIDATION_TIMING_ROWS}
         caption="Validation timing"
       />
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 function ErrorSummariesSection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="error-summaries"
       title="Error summaries"
       description="Use a short summary for navigation and an inline message for recovery. Link each summary item to the field ID."
@@ -499,24 +489,21 @@ function ErrorSummariesSection() {
           </p>
         </div>
       </div>
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 function AccessibilityChecklistSection() {
   return (
-    <DocGuideSection
-      id="accessibility-checklist"
-      title="Accessibility checklist"
-    >
-      <DocGuideChecklist items={ACCESSIBILITY_CHECKLIST} />
-    </DocGuideSection>
+    <DocSection id="accessibility-checklist" title="Accessibility checklist">
+      <DocChecklist items={ACCESSIBILITY_CHECKLIST} />
+    </DocSection>
   );
 }
 
 export default function FormPage() {
   return (
-    <DocGuidePage
+    <DocPage
       title="Form"
       crumb="Form"
       description="Build accessible forms with TanStack Form, Zod, and KiraField, from first input to submit."
@@ -529,6 +516,6 @@ export default function FormPage() {
       <ValidationTimingSection />
       <ErrorSummariesSection />
       <AccessibilityChecklistSection />
-    </DocGuidePage>
+    </DocPage>
   );
 }

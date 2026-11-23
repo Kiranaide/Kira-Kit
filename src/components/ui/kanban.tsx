@@ -1,7 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { withOccurrenceKeys } from "@/lib/component-item-keys";
+import {
+  isFunctionProp,
+  omitComponentProps,
+  resolveComponentDefaults,
+  withOccurrenceKeys,
+} from "@/lib/component-utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible";
 import {
@@ -51,9 +56,6 @@ import {
 } from "@/components/ui/dialog";
 import { KiraSelect } from "@/components/ui/select";
 import { cn } from "cn";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
-import { omitComponentProps } from "@/lib/component-native-props";
 
 interface KanbanCardData {
   id: string;
@@ -941,7 +943,7 @@ function useKanbanState2(state: ReturnType<typeof useKanbanSetup>) {
   const setColumns: KanbanContextValue["setColumns"] = (update) => {
     if (state.disabled || state.readOnly) return;
     const current = columnsRef.current;
-    const next = isCallbackProp(update) ? update(current) : update;
+    const next = isFunctionProp(update) ? update(current) : update;
 
     if (next === current) return;
 
@@ -1261,7 +1263,7 @@ function renderKanban(state: ReturnType<typeof useKanbanActions>) {
           ref={(node) => {
             boardRef.current = node;
 
-            if (isCallbackProp(ref)) return ref(node);
+            if (isFunctionProp(ref)) return ref(node);
 
             if (ref) ref.current = node;
           }}
@@ -2130,7 +2132,7 @@ function KanbanColumnView({
       ref={(node) => {
         setNodeRef(node);
 
-        if (isCallbackProp(ref)) return ref(node);
+        if (isFunctionProp(ref)) return ref(node);
 
         if (ref) ref.current = node;
       }}
@@ -2248,7 +2250,7 @@ function KanbanCardView({
         setNodeRef(node);
         setActivatorNodeRef(node);
 
-        if (isCallbackProp(ref)) return ref(node);
+        if (isFunctionProp(ref)) return ref(node);
 
         if (ref) ref.current = node;
       }}

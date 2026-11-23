@@ -18,7 +18,7 @@ import {
   DrawerDescription,
   DrawerBody,
 } from "@/components/ui/drawer";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
+import { resolveComponentDefaults } from "@/lib/component-utils";
 
 const statsTrendIcons = {
   positive: IconTrendingUp,

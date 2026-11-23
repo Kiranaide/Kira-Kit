@@ -17,9 +17,8 @@ kira-kit add @kira-kit/collapsible
 
 ## Registry dependencies
 
-- @kira-kit/component-defaults
-- @kira-kit/component-prop-guards
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

@@ -26,6 +26,7 @@ kira-kit add @kira-kit/sidebar
 - @kira-kit/skeleton
 - @kira-kit/tooltip
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

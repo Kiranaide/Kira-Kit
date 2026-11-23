@@ -21,21 +21,17 @@ import {
 } from "@/components/docs/doc-page";
 import {
   DEFAULT_DOC_FONT_PRESET,
-  DOC_FONT_PRESETS,
-  findDocFont,
-  findDocFontPreset,
-  type DocFontPresetName,
-} from "@/lib/fonts";
-import {
   DOC_BASE_COLORS,
+  DOC_FONT_PRESETS,
   DOC_RADIUS_PRESETS,
   DOC_SURFACE_PRESETS,
-  findBaseColor,
-  findRadiusPreset,
-  findSurfacePreset,
+  findDocFont,
+  findDocFontPreset,
   findThemeRecipeMeta,
+  resolveThemeTokens,
   type DocBaseColorPreset,
-} from "@/lib/presets-catalog";
+  type DocFontPresetName,
+} from "@/lib/theme-studio";
 import {
   AUTO_VALUE,
   DEFAULT_PRESET,
@@ -91,29 +87,14 @@ function buildPreviewStyle(
   selection: PreviewSelection,
   mode: "light" | "dark",
 ): React.CSSProperties {
-  const vars: PreviewTokenVars = {
-    ...selection.preset.cssVars[mode],
-    ...selection.preset.cssVars.theme,
-  };
+  const resolved = resolveThemeTokens({
+    cssVars: selection.preset.cssVars,
+    baseColor: selection.baseColor,
+    radius: selection.radius,
+    surface: selection.surface,
+  });
 
-  if (selection.baseColor !== AUTO_VALUE) {
-    const base = findBaseColor(selection.baseColor);
-
-    if (base) Object.assign(vars, base[mode]);
-  }
-
-  if (selection.surface !== AUTO_VALUE) {
-    const surf = findSurfacePreset(selection.surface);
-
-    if (surf) Object.assign(vars, surf[mode]);
-  }
-
-  if (selection.radius !== AUTO_VALUE) {
-    const rad = findRadiusPreset(selection.radius);
-
-    if (rad) vars["--radius"] = rad.value;
-  }
-
+  const vars: PreviewTokenVars = { ...resolved[mode] };
   const fontSpec = findDocFontPreset(selection.fontPreset);
   const sansFont = findDocFont("sans", fontSpec.sans);
   const displayFont = findDocFont("display", fontSpec.display);

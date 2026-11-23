@@ -11,7 +11,7 @@ import { toast } from "@/components/ui/toast";
 import { IconCheck, IconMinus, IconLoader } from "@tabler/icons-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { isFunctionProp } from "@/components/ui/prop-guards";
+import { isFunctionProp } from "@/lib/component-utils";
 
 gsap.registerPlugin(useGSAP);
 

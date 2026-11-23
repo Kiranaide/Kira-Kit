@@ -19,6 +19,7 @@ kira-kit add @kira-kit/empty
 
 - @kira-kit/button
 - @kira-kit/spinner
+- @kira-kit/component-utils
 
 ## Usage
 

@@ -1,4 +1,6 @@
-const ANIMATE_BUILTINS = new Set([
+import { maskComments, matchingBrace } from "../css/stylesheet";
+
+export const ANIMATE_BUILTINS = new Set([
   "in",
   "out",
   "spin",
@@ -18,25 +20,6 @@ export interface MotionAssets {
 interface MotionUsage {
   tokens: Set<string>;
   keyframes: Set<string>;
-}
-
-function maskComments(css: string): string {
-  return css.replace(/\/\*[\s\S]*?\*\//g, (match) => " ".repeat(match.length));
-}
-
-function matchingBrace(masked: string, open: number): number {
-  let depth = 0;
-
-  for (let i = open; i < masked.length; i += 1) {
-    if (masked[i] === "{") depth += 1;
-    else if (masked[i] === "}") {
-      depth -= 1;
-
-      if (depth === 0) return i;
-    }
-  }
-
-  return -1;
 }
 
 /** Collect motion tokens and keyframes from the kit's CSS sources. */

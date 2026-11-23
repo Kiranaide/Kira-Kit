@@ -18,6 +18,7 @@ kira-kit add @kira-kit/grid
 
 - @kira-kit/button
 - @kira-kit/skeleton
+- @kira-kit/component-utils
 
 ## Usage
 

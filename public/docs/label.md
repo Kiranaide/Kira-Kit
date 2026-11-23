@@ -18,6 +18,7 @@ kira-kit add @kira-kit/label
 ## Registry dependencies
 
 - @kira-kit/tooltip
+- @kira-kit/component-utils
 
 ## Usage
 

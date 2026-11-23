@@ -2,7 +2,10 @@
 "use client";
 
 import * as React from "react";
-import { omitComponentProps } from "@/lib/component-native-props";
+import {
+  omitComponentProps,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { cva } from "class-variance-authority";
@@ -15,7 +18,6 @@ import { cn } from "cn";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { Separator, type SeparatorProps } from "@/components/ui/separator";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
 
 const buttonGroupVariants = cva(
   "inline-flex items-center [&>[data-slot=button]]:shadow-none [&>[data-slot=toggle-group-item]]:shadow-none *:focus-visible:relative *:focus-visible:z-10 [&>input]:flex-1",

@@ -15,10 +15,9 @@ kira-kit add @kira-kit/context-menu
 
 ## Registry dependencies
 
-- @kira-kit/component-defaults
-- @kira-kit/component-prop-guards
 - @kira-kit/dropdown-menu
 - @kira-kit/use-menu-action
+- @kira-kit/component-utils
 
 ## Usage
 

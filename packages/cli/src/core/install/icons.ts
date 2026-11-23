@@ -1,9 +1,10 @@
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join, relative } from "node:path";
+import { readFileSync, writeFileSync } from "node:fs";
+import { relative } from "node:path";
+import { collectSourceFiles } from "../../lib/fs-walk";
 import { updateRawConfig } from "../../lib/config";
 import { ValidationError } from "../../lib/errors";
 import { info, success } from "../../lib/logger";
-import { installNpmDeps, readConsumerPackage, type DepInstaller } from "./deps";
+import { ensureNpmDeps, readConsumerPackage, type DepInstaller } from "./deps";
 
 /**
  * Tabler → lucide name map. Local bindings stay `IconX` after the rewrite,
@@ -185,42 +186,12 @@ export function rewriteIconImports(content: string): string {
   return rewriteStrokeProps(injectFilledProps(rewritten), locals);
 }
 
-function collectSourceFiles(dir: string, out: string[]): void {
-  let entries;
-
-  try {
-    entries = readdirSync(dir, { withFileTypes: true });
-  } catch {
-    return;
-  }
-
-  for (const entry of entries) {
-    if (
-      entry.name === "node_modules" ||
-      entry.name === ".git" ||
-      entry.name === "dist"
-    ) {
-      continue;
-    }
-
-    const full = join(dir, entry.name);
-
-    if (entry.isDirectory()) {
-      collectSourceFiles(full, out);
-    } else if (/\.(tsx?|jsx?)$/.test(entry.name)) {
-      out.push(full);
-    }
-  }
-}
-
 /**
  * Convert every tabler-importing source file under cwd to lucide.
  * Returns the rewritten paths relative to cwd.
  */
 export function rewriteIconSources(cwd: string): string[] {
-  const files: string[] = [];
-
-  collectSourceFiles(cwd, files);
+  const files = collectSourceFiles(cwd);
 
   const rewritten: string[] = [];
 
@@ -241,11 +212,7 @@ export function rewriteIconSources(cwd: string): string[] {
 }
 
 function hasLucideImports(cwd: string): boolean {
-  const files: string[] = [];
-
-  collectSourceFiles(cwd, files);
-
-  return files.some((file) =>
+  return collectSourceFiles(cwd).some((file) =>
     readFileSync(file, "utf-8").includes('from "lucide-react"'),
   );
 }
@@ -275,20 +242,12 @@ async function applyLucide(
 ): Promise<void> {
   const pkg = readConsumerPackage(cwd);
 
-  const present = new Set([
-    ...Object.keys(pkg.dependencies ?? {}),
-    ...Object.keys(pkg.devDependencies ?? {}),
-    ...Object.keys(pkg.peerDependencies ?? {}),
-  ]);
-
-  if (!present.has("lucide-react")) {
-    await installNpmDeps(
-      cwd,
-      ["lucide-react"],
-      { yes: options.yes },
-      options.installer,
-    );
-  }
+  await ensureNpmDeps(
+    cwd,
+    ["lucide-react"],
+    { yes: options.yes },
+    options.installer,
+  );
 
   const rewritten = rewriteIconSources(cwd);
 

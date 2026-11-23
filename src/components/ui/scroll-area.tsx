@@ -7,8 +7,10 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "cn";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
+import {
+  isFunctionProp,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 type ScrollAreaOrientation = "vertical" | "horizontal" | "both";
 
@@ -32,7 +34,7 @@ function partClassName<S>(
   base: string,
   className?: string | ((state: S) => string | undefined),
 ) {
-  return isCallbackProp(className)
+  return isFunctionProp(className)
     ? (state: S) => cn(base, className(state))
     : cn(base, className);
 }
@@ -41,7 +43,7 @@ function partStyle<S>(
   base: React.CSSProperties,
   style?: React.CSSProperties | ((state: S) => React.CSSProperties | undefined),
 ) {
-  return isCallbackProp(style)
+  return isFunctionProp(style)
     ? (state: S) => ({ ...base, ...style(state) })
     : { ...base, ...style };
 }
@@ -309,7 +311,7 @@ function useJoinedRefs<T>(
   return React.useCallback(
     (node) => {
       const assign = (ref: React.Ref<T> | undefined, value: T | null) => {
-        if (isCallbackProp(ref)) return ref(value);
+        if (isFunctionProp(ref)) return ref(value);
 
         if (ref) ref.current = value;
       };
@@ -318,10 +320,10 @@ function useJoinedRefs<T>(
       const cleanSecond = assign(second, node);
 
       return () => {
-        if (isCallbackProp(cleanFirst)) cleanFirst();
+        if (isFunctionProp(cleanFirst)) cleanFirst();
         else assign(first, null);
 
-        if (isCallbackProp(cleanSecond)) cleanSecond();
+        if (isFunctionProp(cleanSecond)) cleanSecond();
         else assign(second, null);
       };
     },

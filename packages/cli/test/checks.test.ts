@@ -121,6 +121,11 @@ describe("cn-source", () => {
   it("allows the cn package", () => {
     expect(cnSource(file(`import { cn } from "cn";`), ctx())).toHaveLength(0);
   });
+
+  it("ignores local cn references inside comments and strings", () => {
+    const commented = `// Do not use: import { cn } from "@/lib/utils";\nimport { cn } from "cn";`;
+    expect(cnSource(file(commented), ctx())).toHaveLength(0);
+  });
 });
 
 describe("data-slot-cva", () => {
@@ -505,22 +510,22 @@ describe("imports-deps", () => {
 
 describe("imports-deps (lib modules)", () => {
   it("errors on an undeclared lib import", () => {
-    const content = `import { resolveComponentDefaults } from "@/lib/component-defaults";`;
+    const content = `import { resolveComponentDefaults } from "@/lib/component-utils";`;
     const items = new Map([["ui/test", depsMeta({ dependencies: [] })]]);
     const findings = importsMatchDeps(file(content, "ui/test"), ctx({ items }));
 
-    expect(findings[0].message).toContain("@kira-kit/component-defaults");
+    expect(findings[0].message).toContain("@kira-kit/component-utils");
   });
 
   it("passes when the mapped lib item is declared", () => {
-    const content = `import { resolveComponentDefaults } from "@/lib/component-defaults";`;
+    const content = `import { resolveComponentDefaults } from "@/lib/component-utils";`;
 
     const items = new Map([
       [
         "ui/test",
         depsMeta({
           dependencies: [],
-          registryDependencies: ["@kira-kit/component-defaults"],
+          registryDependencies: ["@kira-kit/component-utils"],
         }),
       ],
     ]);
@@ -545,7 +550,7 @@ describe("imports-deps (lib modules)", () => {
       [
         "ui/test",
         depsMeta({
-          registryDependencies: ["@kira-kit/component-defaults"],
+          registryDependencies: ["@kira-kit/component-utils"],
         }),
       ],
     ]);
@@ -556,7 +561,7 @@ describe("imports-deps (lib modules)", () => {
     );
 
     expect(
-      findings.some((f) => f.message.includes("@kira-kit/component-defaults")),
+      findings.some((f) => f.message.includes("@kira-kit/component-utils")),
     ).toBe(true);
   });
 
@@ -625,7 +630,7 @@ describe("lib-resolution", () => {
   });
 
   it("errors when a mapped lib item is not registered", () => {
-    const content = `import { x } from "@/lib/component-defaults";`;
+    const content = `import { x } from "@/lib/component-utils";`;
     const items = new Map([["lib/camera/utils", libMeta()]]);
 
     const findings = libResolution(

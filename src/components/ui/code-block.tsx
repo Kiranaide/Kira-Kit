@@ -24,10 +24,18 @@ import {
   type CodeToken,
   type CodeTokenCache,
 } from "@/lib/code-presentation";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isStringProp } from "@/lib/component-prop-guards";
-import { mergeComponentRefs } from "@/lib/component-refs";
-import { omitComponentProps } from "@/lib/component-native-props";
+import {
+  isFunctionProp,
+  isStringProp,
+  omitComponentProps,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
+
+function assignRef<T>(ref: React.Ref<T> | undefined, value: T | null) {
+  if (isFunctionProp(ref)) return ref(value);
+
+  if (ref) ref.current = value;
+}
 
 type MonacoTheme =
   | "vitesse-dark"
@@ -2291,8 +2299,12 @@ function useCodeContentActions(state: ReturnType<typeof useCodeContentSetup>) {
 
   let offset = 0;
 
-  const setViewport = React.useMemo(
-    () => mergeComponentRefs<HTMLPreElement>(setElement, ref),
+  const setViewport = React.useCallback(
+    (element: HTMLPreElement | null) => {
+      setElement(element);
+
+      return assignRef(ref, element);
+    },
     [ref, setElement],
   );
 

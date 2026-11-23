@@ -19,13 +19,10 @@ kira-kit add @kira-kit/field
 
 ## Registry dependencies
 
-- @kira-kit/component-defaults
-- @kira-kit/component-item-keys
-- @kira-kit/component-native-props
-- @kira-kit/component-prop-guards
 - @kira-kit/input
 - @kira-kit/separator
 - @kira-kit/textarea
+- @kira-kit/component-utils
 
 ## Usage
 

@@ -1,7 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { withOccurrenceKeys } from "@/lib/component-item-keys";
+import {
+  resolveComponentDefaults,
+  withOccurrenceKeys,
+} from "@/lib/component-utils";
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
@@ -17,17 +20,6 @@ import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { dialogContentVariants } from "@/components/ui/dialog";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
-
-function mergeClassName<State>(
-  base: string,
-  className: string | ((state: State) => string | undefined) | undefined,
-) {
-  return isCallbackProp(className)
-    ? (state: State) => cn(base, className(state))
-    : cn(base, className);
-}
 
 function AlertDialog({ ...props }: AlertDialogPrimitive.Root.Props) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
@@ -77,7 +69,11 @@ const overlayBlurMap = {
   xl: "supports-backdrop-filter:backdrop-blur-xl",
 };
 
-interface AlertDialogOverlayProps extends AlertDialogPrimitive.Backdrop.Props {
+interface AlertDialogOverlayProps extends Omit<
+  AlertDialogPrimitive.Backdrop.Props,
+  "className"
+> {
+  className?: string;
   opacity?: 20 | 30 | 40 | 50 | 60 | 70 | 80;
   blur?: "none" | "xs" | "sm" | "md" | "lg" | "xl";
   color?: "black" | "white";
@@ -96,12 +92,10 @@ function AlertDialogOverlay(input: AlertDialogOverlayProps) {
   return (
     <AlertDialogPrimitive.Backdrop
       data-slot="alert-dialog-overlay"
-      className={mergeClassName<AlertDialogPrimitive.Backdrop.State>(
-        cn(
-          "fixed inset-0 isolate z-50 transition-opacity duration-200 motion-reduce:transition-none data-starting-style:opacity-0 data-ending-style:opacity-0",
-          colorClass,
-          blurClass,
-        ),
+      className={cn(
+        "fixed inset-0 isolate z-50 transition-opacity duration-200 motion-reduce:transition-none data-starting-style:opacity-0 data-ending-style:opacity-0",
+        colorClass,
+        blurClass,
         className,
       )}
       {...props}
@@ -109,7 +103,12 @@ function AlertDialogOverlay(input: AlertDialogOverlayProps) {
   );
 }
 
-interface AlertDialogContentProps extends AlertDialogPrimitive.Popup.Props {
+interface AlertDialogContentProps extends Omit<
+  AlertDialogPrimitive.Popup.Props,
+  "className" | "style"
+> {
+  className?: string;
+  style?: React.CSSProperties;
   size?: "sm" | "default" | "lg" | "xl" | "full";
   duration?: number;
   showCloseButton?: boolean;
@@ -156,19 +155,13 @@ function AlertDialogContent({
         <AlertDialogPrimitive.Popup
           data-slot="alert-dialog-content"
           data-size={size}
-          className={mergeClassName<AlertDialogPrimitive.Popup.State>(
-            cn(
-              dialogContentVariants(),
-              alertDialogContentVariants({ size }),
-              "outline-none",
-            ),
+          className={cn(
+            dialogContentVariants(),
+            alertDialogContentVariants({ size }),
+            "outline-none",
             className,
           )}
-          style={
-            isCallbackProp(style)
-              ? (state) => ({ ...transitionStyle, ...style(state) })
-              : { ...transitionStyle, ...style }
-          }
+          style={{ ...transitionStyle, ...style }}
           {...props}
         >
           {size === "full" ? (
@@ -381,7 +374,11 @@ function AlertDialogAction(input: AlertDialogActionProps) {
   );
 }
 
-interface AlertDialogCancelProps extends AlertDialogPrimitive.Close.Props {
+interface AlertDialogCancelProps extends Omit<
+  AlertDialogPrimitive.Close.Props,
+  "className"
+> {
+  className?: string;
   variant?: "outline" | "secondary" | "ghost" | "link";
   size?: "default" | "sm" | "lg" | "icon" | "icon-sm" | "icon-xs";
   shortcut?: string;
@@ -398,7 +395,7 @@ function AlertDialogCancel({
   return (
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-cancel"
-      className={mergeClassName<AlertDialogPrimitive.Close.State>(
+      className={cn(
         "h-auto min-h-9 max-w-full whitespace-normal py-2",
         className,
       )}
@@ -428,11 +425,16 @@ function AlertDialogCancel({
 function AlertDialogTitle({
   className,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Title>) {
+}: Omit<
+  React.ComponentProps<typeof AlertDialogPrimitive.Title>,
+  "className"
+> & {
+  className?: string;
+}) {
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
-      className={mergeClassName<AlertDialogPrimitive.Title.State>(
+      className={cn(
         "text-sm font-medium sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2",
         className,
       )}
@@ -444,11 +446,14 @@ function AlertDialogTitle({
 function AlertDialogDescription({
   className,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Description>) {
+}: Omit<
+  React.ComponentProps<typeof AlertDialogPrimitive.Description>,
+  "className"
+> & { className?: string }) {
   return (
     <AlertDialogPrimitive.Description
       data-slot="alert-dialog-description"
-      className={mergeClassName<AlertDialogPrimitive.Description.State>(
+      className={cn(
         "text-muted-foreground *:[a]:hover:text-foreground text-sm text-balance md:text-pretty *:[a]:underline *:[a]:underline-offset-3",
         className,
       )}
@@ -548,9 +553,11 @@ function AlertDialogList({
   );
 }
 
-interface AlertDialogCloseProps extends React.ComponentProps<
-  typeof AlertDialogPrimitive.Close
+interface AlertDialogCloseProps extends Omit<
+  React.ComponentProps<typeof AlertDialogPrimitive.Close>,
+  "className"
 > {
+  className?: string;
   variant?: "outline" | "ghost" | "secondary";
   size?: "icon-xs" | "icon-sm" | "icon" | "default" | "sm";
 }
@@ -564,7 +571,7 @@ function AlertDialogClose({
   return (
     <AlertDialogPrimitive.Close
       data-slot="alert-dialog-close"
-      className={mergeClassName<AlertDialogPrimitive.Close.State>(
+      className={cn(
         // `Button` always appends its own `relative` class, which (by
         // Tailwind's utility ordering) beats a plain `absolute` here
         // regardless of source order — use `!absolute` so this reliably

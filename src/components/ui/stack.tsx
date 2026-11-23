@@ -14,7 +14,7 @@ import {
 } from "@/lib/layout-responsive";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { isObjectProp, isStringProp } from "@/components/ui/prop-guards";
+import { isObjectProp, isStringProp } from "@/lib/component-utils";
 
 const alignClasses = {
   start: [

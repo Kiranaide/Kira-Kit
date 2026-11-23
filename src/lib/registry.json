@@ -38,45 +38,12 @@
       "files": [{ "path": "color-picker.ts", "type": "registry:lib" }]
     },
     {
-      "name": "component-defaults",
+      "name": "component-utils",
       "type": "registry:lib",
-      "title": "Component Defaults",
-      "description": "Resolves component default props from context providers and explicit overrides across the kit.",
+      "title": "Component Utils",
+      "description": "Shared component boundary plumbing: prop type guards, default resolution, native prop filtering, and occurrence-key derivation.",
       "categories": ["lib", "support"],
-      "files": [{ "path": "component-defaults.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "component-item-keys",
-      "type": "registry:lib",
-      "title": "Component Item Keys",
-      "description": "Stable key derivation for list-based components such as alert dialog, field, kanban, and split view.",
-      "categories": ["lib", "support"],
-      "files": [{ "path": "component-item-keys.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "component-native-props",
-      "type": "registry:lib",
-      "title": "Component Native Props",
-      "description": "Filters custom component props out of native element prop spreads so DOM attributes stay clean.",
-      "categories": ["lib", "support"],
-      "files": [{ "path": "component-native-props.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "component-prop-guards",
-      "type": "registry:lib",
-      "title": "Component Prop Guards",
-      "description": "Type guards for callback and event props shared across components to keep prop forwarding type-safe.",
-      "categories": ["lib", "support"],
-      "files": [{ "path": "component-prop-guards.ts", "type": "registry:lib" }]
-    },
-    {
-      "name": "component-refs",
-      "type": "registry:lib",
-      "title": "Component Refs",
-      "description": "Merges multiple refs into a single callback ref for composed components such as code block and color picker.",
-      "categories": ["lib", "support"],
-      "registryDependencies": ["@kira-kit/component-prop-guards"],
-      "files": [{ "path": "component-refs.ts", "type": "registry:lib" }]
+      "files": [{ "path": "component-utils.ts", "type": "registry:lib" }]
     },
     {
       "name": "data-table-helpers",

@@ -19,12 +19,10 @@ kira-kit add @kira-kit/command
 ## Registry dependencies
 
 - @kira-kit/button
-- @kira-kit/component-defaults
-- @kira-kit/component-native-props
-- @kira-kit/component-prop-guards
 - @kira-kit/dialog
 - @kira-kit/kbd
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

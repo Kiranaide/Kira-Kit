@@ -4,18 +4,8 @@ import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { IconX } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
-import { isFunctionProp } from "@/components/ui/prop-guards";
 
 type DrawerSide = "left" | "right" | "top" | "bottom";
-
-function mergeClassName<S>(
-  base: string,
-  className: string | ((state: S) => string | undefined) | undefined,
-) {
-  return isFunctionProp(className)
-    ? (state: S) => cn(base, className(state))
-    : cn(base, className);
-}
 
 // SAFETY: React's CSSProperties omits custom properties; this value is a CSS variable reference.
 const snapStyle = {
@@ -114,7 +104,11 @@ function DrawerClose({ ...props }: DrawerPrimitive.Close.Props) {
   return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />;
 }
 
-interface DrawerHandleProps extends Omit<ButtonPrimitive.Props, "children"> {
+interface DrawerHandleProps extends Omit<
+  ButtonPrimitive.Props,
+  "children" | "className"
+> {
+  className?: string;
   expanded: boolean;
   onExpandedChange: (expanded: boolean) => void;
 }
@@ -132,7 +126,7 @@ function DrawerHandle({
       data-base-ui-swipe-ignore=""
       aria-label={expanded ? "Collapse drawer" : "Expand drawer"}
       aria-expanded={expanded}
-      className={mergeClassName<ButtonPrimitive.State>(
+      className={cn(
         "mx-auto flex min-h-8 w-20 shrink-0 items-center justify-center rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring disabled:opacity-50",
         className,
       )}
@@ -152,14 +146,15 @@ function DrawerHandle({
   );
 }
 
-function DrawerOverlay({
-  className,
-  ...props
-}: DrawerPrimitive.Backdrop.Props) {
+type DrawerOverlayProps = Omit<DrawerPrimitive.Backdrop.Props, "className"> & {
+  className?: string;
+};
+
+function DrawerOverlay({ className, ...props }: DrawerOverlayProps) {
   return (
     <DrawerPrimitive.Backdrop
       data-slot="drawer-overlay"
-      className={mergeClassName<DrawerPrimitive.Backdrop.State>(
+      className={cn(
         "fixed inset-0 z-50 min-h-dvh bg-black/50 opacity-[max(var(--drawer-overlay-min-opacity,0),calc(1-var(--drawer-swipe-progress,0)))] transition-opacity duration-300 motion-reduce:transition-none data-snap-points:[--drawer-overlay-min-opacity:0.5] data-starting-style:opacity-0 data-ending-style:opacity-0 data-swiping:duration-0 supports-[-webkit-touch-callout:none]:absolute",
         className,
       )}
@@ -169,11 +164,15 @@ function DrawerOverlay({
 }
 
 interface DrawerContentProps
-  extends DrawerPrimitive.Popup.Props, VariantProps<typeof drawerVariants> {
+  extends
+    Omit<DrawerPrimitive.Popup.Props, "className" | "style">,
+    VariantProps<typeof drawerVariants> {
+  className?: string;
+  style?: React.CSSProperties;
   showCloseButton?: boolean;
   portalProps?: Omit<DrawerPrimitive.Portal.Props, "children">;
   /** Configure the internal backdrop without duplicating drawer composition. */
-  overlayProps?: DrawerPrimitive.Backdrop.Props;
+  overlayProps?: DrawerOverlayProps;
 }
 
 function DrawerContent({
@@ -186,8 +185,6 @@ function DrawerContent({
   showCloseButton = true,
   ...props
 }: DrawerContentProps) {
-  const resolveStyle1 = () => drawerResolveStyle1(style);
-
   const { modal, hasSnapPoints } = React.useContext(DrawerModalContext);
 
   return (
@@ -207,13 +204,11 @@ function DrawerContent({
           data-slot="drawer-popup"
           data-modal={modal}
           data-snap-points={hasSnapPoints ? "" : undefined}
-          style={resolveStyle1()}
-          className={mergeClassName<DrawerPrimitive.Popup.State>(
-            cn(
-              drawerVariants({ size }),
-              "pointer-events-auto data-snap-points:data-[swipe-direction=up]:h-dvh data-snap-points:data-[swipe-direction=up]:max-h-none data-snap-points:data-[swipe-direction=down]:h-dvh data-snap-points:data-[swipe-direction=down]:max-h-none",
-              { "data-[modal=false]:shadow-md": !modal },
-            ),
+          style={style ? { ...snapStyle, ...style } : snapStyle}
+          className={cn(
+            drawerVariants({ size }),
+            "pointer-events-auto data-snap-points:data-[swipe-direction=up]:h-dvh data-snap-points:data-[swipe-direction=up]:max-h-none data-snap-points:data-[swipe-direction=down]:h-dvh data-snap-points:data-[swipe-direction=down]:max-h-none",
+            { "data-[modal=false]:shadow-md": !modal },
             className,
           )}
           {...props}
@@ -271,14 +266,14 @@ function DrawerFooter({
   );
 }
 
-function DrawerTitle({ className, ...props }: DrawerPrimitive.Title.Props) {
+function DrawerTitle({
+  className,
+  ...props
+}: Omit<DrawerPrimitive.Title.Props, "className"> & { className?: string }) {
   return (
     <DrawerPrimitive.Title
       data-slot="drawer-title"
-      className={mergeClassName<DrawerPrimitive.Title.State>(
-        "min-w-0 wrap-break-word text-lg font-semibold",
-        className,
-      )}
+      className={cn("min-w-0 wrap-break-word text-lg font-semibold", className)}
       {...props}
     />
   );
@@ -287,14 +282,13 @@ function DrawerTitle({ className, ...props }: DrawerPrimitive.Title.Props) {
 function DrawerDescription({
   className,
   ...props
-}: DrawerPrimitive.Description.Props) {
+}: Omit<DrawerPrimitive.Description.Props, "className"> & {
+  className?: string;
+}) {
   return (
     <DrawerPrimitive.Description
       data-slot="drawer-description"
-      className={mergeClassName<DrawerPrimitive.Description.State>(
-        "text-sm text-muted-foreground",
-        className,
-      )}
+      className={cn("text-sm text-muted-foreground", className)}
       {...props}
     />
   );
@@ -392,23 +386,3 @@ export type {
   DrawerHandleProps,
   KiraDrawerProps,
 };
-
-function drawerResolveStyle1(
-  style:
-    | React.CSSProperties
-    | ((state: DrawerPrimitive.Popup.State) => React.CSSProperties | undefined)
-    | undefined,
-) {
-  if (isFunctionProp(style)) {
-    return (state: DrawerPrimitive.Popup.State) => ({
-      ...snapStyle,
-      ...style(state),
-    });
-  }
-
-  if (style) {
-    return { ...snapStyle, ...style };
-  }
-
-  return snapStyle;
-}

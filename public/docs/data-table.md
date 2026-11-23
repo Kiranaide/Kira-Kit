@@ -25,14 +25,13 @@ kira-kit add @kira-kit/data-table
 - @kira-kit/badge
 - @kira-kit/button
 - @kira-kit/checkbox
-- @kira-kit/component-defaults
-- @kira-kit/component-prop-guards
 - @kira-kit/dropdown-menu
 - @kira-kit/input
 - @kira-kit/pagination
 - @kira-kit/popover
 - @kira-kit/table
 - @kira-kit/tooltip
+- @kira-kit/component-utils
 
 ## Usage
 

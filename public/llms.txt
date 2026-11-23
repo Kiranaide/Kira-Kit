@@ -1,6 +1,6 @@
 # Kira Kit
 
-> Enterprise UI kit built on Base UI primitives, 107 components and hooks.
+> Enterprise UI kit built on Base UI primitives, 103 components and hooks.
 
 Kira Kit is a component registry. Install items with the kira-kit CLI:
 `kira-kit add @kira-kit/<name>`.
@@ -62,7 +62,7 @@ Items:
 - [Progress Indicator](/docs/progress-indicator.md): A step-based indicator with horizontal, vertical, and responsive layouts, clickable steps, optional steps, semantic tones, and pending/active/completed/error/paused/skipped states. KiraProgressIndicator adds milestone summaries, finished counts, current-phase linear progress, live status, and retry for failed steps.
 - [Radio Group](/docs/radio-group.md): Base UI radio groups with labeled options, rich RadioCard metadata, and a RadioButtonGroup whose GSAP indicator slides between selections. KiraRadioGroup provides data-driven list, cards, and segmented layouts with selected-option details, loading skeletons, empty states, and field validation.
 - [Resizable](/docs/resizable.md): Accessible horizontal and vertical panel groups built on react-resizable-panels, with three handle variants, optional grips, coarse-pointer targets, collapsible panels, and validated autoSaveId layout persistence. KiraResizable renders data-driven panels with hide/show, restore, and balance controls plus inert collapsed content.
-- [Route Transition](/docs/route-transition.md): Route-change motion utilities: a keyed entrance with seven variants (fade, fade-up, fade-down, slide-left, slide-right, zoom, none) — movement variants ride a gentle spring curve — that replays when the transitionKey changes, and a fixed glowing 2px top navigation progress bar with a grace delay, composite-only CSS trickle, and interruptible completion. Adding the item merges its motion CSS (spring token, keyframes, view-transition tuning) into your global stylesheet. Pairs with the view-transition lib helper and the kit's native View Transitions crossfade.
+- [Route Transition](/docs/route-transition.md): Route-change motion utilities: a keyed entrance with seven variants (fade, fade-up, fade-down, slide-left, slide-right, zoom, none) Ã¢â‚¬â€ movement variants ride a gentle spring curve Ã¢â‚¬â€ that replays when the transitionKey changes, and a fixed glowing 2px top navigation progress bar with a grace delay, composite-only CSS trickle, and interruptible completion. Adding the item merges its motion CSS (spring token, keyframes, view-transition tuning) into your global stylesheet. Pairs with the view-transition lib helper and the kit's native View Transitions crossfade.
 - [Scroll Area](/docs/scroll-area.md): Vertical, horizontal, or dual scrolling with three scrollbar thicknesses, always-visible or revealed bars, overflow shadows, and composable viewport, content, thumb, and corner primitives. KiraScrollArea's followOutput mode tracks streaming content only while the reader stays at the latest output, reports unseen activity, and offers Jump to latest.
 - [Select](/docs/select.md): A Base UI Select and Combobox family supporting grouped options, multiple selection with removable chips, fuzzy and debounced asynchronous search, creatable options, and virtualized long lists. KiraSelect also provides clear controls, loading/empty/create states, three trigger variants, invalid styling, and reduced-motion-aware option staggering.
 - [Separator](/docs/separator.md): Horizontal or vertical separators with six thicknesses, solid/dashed/dotted/gradient styles, semantic colors, labels, icons, alignment, spacing, and insets. KiraSeparator can show counts and descriptions, run a pending-aware action, or control a collapsible section with keepMounted and motion options.
@@ -102,11 +102,7 @@ Items:
 - [Camera Support](/docs/camera-lib.md): Camera capture types, browser permission constants, and scan-overlay guide presets shared by the camera component and hook.
 - [Code Presentation](/docs/code-presentation.md): Shiki highlighting and Prettier formatting pipeline that powers code block rendering and copy-ready output.
 - [Color Picker Math](/docs/color-picker-lib.md): Color parsing, format conversion, and accessible-contrast math powering the color picker component and hook.
-- [Component Defaults](/docs/component-defaults.md): Resolves component default props from context providers and explicit overrides across the kit.
-- [Component Item Keys](/docs/component-item-keys.md): Stable key derivation for list-based components such as alert dialog, field, kanban, and split view.
-- [Component Native Props](/docs/component-native-props.md): Filters custom component props out of native element prop spreads so DOM attributes stay clean.
-- [Component Prop Guards](/docs/component-prop-guards.md): Type guards for callback and event props shared across components to keep prop forwarding type-safe.
-- [Component Refs](/docs/component-refs.md): Merges multiple refs into a single callback ref for composed components such as code block and color picker.
+- [Component Utils](/docs/component-utils.md): Shared component boundary plumbing: prop type guards, default resolution, native prop filtering, and occurrence-key derivation.
 - [Data Table Helpers](/docs/data-table-helpers.md): Sorting, filtering, and sample-data helpers used by the data table documentation demos.
 - [Responsive Layout](/docs/layout-responsive.md): Responsive class composition for layout primitives like stack and spacer, driven by the kit CSS safelists.
 - [View Transition Utility](/docs/view-transition.md): Reduced-motion-aware wrapper around the native View Transitions API: runs DOM updates inside document.startViewTransition when supported, and applies them instantly otherwise.
@@ -122,3 +118,4 @@ Items:
 - [Coral Circuit](/docs/theme-coral-circuit.md): A hot coral accent on warm paper that makes collaborative canvases and campaign workspaces feel quick, tactile, and optimistic.
 - [Magenta Riot](/docs/theme-magenta-riot.md): A deep magenta against studio mauve that brings editorial confidence to community platforms, music products, and launch dashboards.
 - [Kira Base](/docs/kira-base.md): The kit's base stylesheet: Tailwind imports, responsive safelists, design tokens, and the vendored utility classes.
+he vendored utility classes.

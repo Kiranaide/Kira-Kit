@@ -1,16 +1,5 @@
+import { ANIMATE_BUILTINS } from "../registry/motion-css";
 import type { Check, Finding } from "./types";
-
-const ANIMATE_BUILTINS = new Set([
-  "in",
-  "out",
-  "spin",
-  "ping",
-  "pulse",
-  "bounce",
-  "none",
-]);
-
-const ANIMATE_REGEX = /animate-([a-z0-9-]+)/g;
 
 /**
  * Check 3: `animate-*` utility without a matching `--animate-*` token AND
@@ -19,14 +8,8 @@ const ANIMATE_REGEX = /animate-([a-z0-9-]+)/g;
  */
 export const deadAnimate: Check = (file, ctx) => {
   const findings: Finding[] = [];
-  const names = new Set<string>();
-  let match: RegExpExecArray | null;
 
-  while ((match = ANIMATE_REGEX.exec(file.content)) !== null) {
-    names.add(match[1]);
-  }
-
-  for (const name of names) {
+  for (const name of animateNames(file.content)) {
     if (ANIMATE_BUILTINS.has(name)) continue;
     const hasToken = ctx.indexCss.includes(`--animate-${name}`);
 
@@ -51,9 +34,8 @@ export const deadAnimate: Check = (file, ctx) => {
 
 export function animateNames(content: string): Set<string> {
   const names = new Set<string>();
-  let match: RegExpExecArray | null;
 
-  while ((match = ANIMATE_REGEX.exec(content)) !== null) {
+  for (const match of content.matchAll(/animate-([a-z0-9-]+)/g)) {
     names.add(match[1]);
   }
 

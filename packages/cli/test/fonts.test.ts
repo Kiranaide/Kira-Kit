@@ -16,7 +16,7 @@ import {
   detectCssPath,
 } from "../src/core/install/apply-fonts";
 import type { DepInstaller } from "../src/core/install/deps";
-import { buildBaseCss } from "../src/core/registry/css-assets";
+import { buildBaseCss } from "../src/core/css/stylesheet";
 import {
   DEFAULT_MONO,
   DEFAULT_SANS,
@@ -388,7 +388,7 @@ describe("theme command (font and icon options)", () => {
     });
 
     expect(code).toBe(0);
-    expect(calls.flat()).toContain("lucide-react");
+    expect(calls.flat()).toContain("lucide-react@^1.76.0");
 
     const source = readFileSync(join(dir, "src/welcome.tsx"), "utf-8");
 
@@ -513,7 +513,7 @@ describe("init (typography)", () => {
 
     const flat = calls.flat();
 
-    expect(flat).toContain("lucide-react");
+    expect(flat).toContain("lucide-react@^1.76.0");
     expect(flat).toContain("@fontsource-variable/inter");
     expect(flat).toContain("@fontsource-variable/fira-code");
     expect(flat).not.toContain("@tabler/icons-react");

@@ -49,7 +49,7 @@ import {
 import { SkeletonBone } from "@/components/ui/skeleton";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "cn";
-import { isFunctionProp, isStringProp } from "@/components/ui/prop-guards";
+import { isFunctionProp, isStringProp } from "@/lib/component-utils";
 
 type Theme = "light" | "dark";
 

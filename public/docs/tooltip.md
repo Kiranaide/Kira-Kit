@@ -14,6 +14,10 @@ kira-kit add @kira-kit/tooltip
 - class-variance-authority
 - cn
 
+## Registry dependencies
+
+- @kira-kit/component-utils
+
 ## Usage
 
 ```tsx

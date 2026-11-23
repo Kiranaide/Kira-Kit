@@ -19,6 +19,7 @@ kira-kit add @kira-kit/stack
 - @kira-kit/layout-responsive
 - @kira-kit/separator
 - @kira-kit/skeleton
+- @kira-kit/component-utils
 
 ## Usage
 

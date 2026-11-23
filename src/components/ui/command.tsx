@@ -26,18 +26,10 @@ import {
 } from "@/components/ui/dialog";
 import { Kbd } from "@/components/ui/kbd";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
-import { omitComponentProps } from "@/lib/component-native-props";
-
-function mergeClassName<State>(
-  base: string,
-  className: string | ((state: State) => string | undefined) | undefined,
-) {
-  return isCallbackProp(className)
-    ? (state: State) => cn(base, className(state))
-    : cn(base, className);
-}
+import {
+  omitComponentProps,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 const commandVariants = cva(
   "group/command flex min-h-0 min-w-0 w-full flex-col overflow-hidden rounded-lg bg-background text-foreground",
@@ -408,7 +400,9 @@ interface CommandDialogProps extends Omit<
   children: React.ReactNode;
   className?: string;
   showCloseButton?: boolean;
-  contentProps?: Omit<DialogPrimitive.Popup.Props, "children">;
+  contentProps?: Omit<DialogPrimitive.Popup.Props, "children" | "className"> & {
+    className?: string;
+  };
   portalProps?: Omit<DialogPrimitive.Portal.Props, "children">;
 }
 
@@ -1069,15 +1063,13 @@ function renderCommandDialogSectionPart1({
           <DialogPrimitive.Popup
             {...popupProps}
             data-slot="command-dialog"
-            className={mergeClassName<DialogPrimitive.Popup.State>(
-              cn(
-                dialogContentVariants(),
-                "max-h-[calc(100dvh-4rem)] overflow-hidden p-0 transition-[opacity,scale] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] data-starting-style:scale-97 data-starting-style:opacity-0 data-ending-style:scale-97 data-ending-style:opacity-0 data-ending-style:duration-150 motion-reduce:transition-none motion-reduce:data-starting-style:scale-100 motion-reduce:data-starting-style:opacity-100 motion-reduce:data-ending-style:scale-100 motion-reduce:data-ending-style:opacity-100 *:data-[slot=command]:rounded-none *:data-[slot=command]:border-0",
-                reducedMotion &&
-                  "transition-none data-starting-style:scale-100 data-starting-style:opacity-100 data-ending-style:scale-100 data-ending-style:opacity-100",
-                showCloseButton && "**:data-[slot=command-input-wrapper]:pr-12",
-                className,
-              ),
+            className={cn(
+              dialogContentVariants(),
+              "max-h-[calc(100dvh-4rem)] overflow-hidden p-0 transition-[opacity,scale] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] data-starting-style:scale-97 data-starting-style:opacity-0 data-ending-style:scale-97 data-ending-style:opacity-0 data-ending-style:duration-150 motion-reduce:transition-none motion-reduce:data-starting-style:scale-100 motion-reduce:data-starting-style:opacity-100 motion-reduce:data-ending-style:scale-100 motion-reduce:data-ending-style:opacity-100 *:data-[slot=command]:rounded-none *:data-[slot=command]:border-0",
+              reducedMotion &&
+                "transition-none data-starting-style:scale-100 data-starting-style:opacity-100 data-ending-style:scale-100 data-ending-style:opacity-100",
+              showCloseButton && "**:data-[slot=command-input-wrapper]:pr-12",
+              className,
               popupClassName,
             )}
           >

@@ -26,7 +26,7 @@ import {
 } from "@/hooks/use-pagination";
 import { KiraSelect } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import { isStringProp } from "@/components/ui/prop-guards";
+import { isStringProp } from "@/lib/component-utils";
 
 const paginationNavigationIcons = {
   first: IconChevronsLeft,

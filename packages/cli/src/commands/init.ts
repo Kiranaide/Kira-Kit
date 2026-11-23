@@ -9,148 +9,66 @@ import {
 } from "../lib/config";
 import { COMPONENTS_SCHEMA_URL } from "../core/registry/build";
 import { BASE_CSS, UTILITIES_CSS } from "../generated/assets";
-import { installNpmDeps, readConsumerPackage } from "../core/install/deps";
+import { ensureNpmDeps, readConsumerPackage } from "../core/install/deps";
 import { installItems } from "../core/install/engine";
 import { DEFAULT_ALIASES } from "../core/install/targets";
 import { applyFontToCss, detectCssPath } from "../core/install/apply-fonts";
-import { applyIconLibrary, resolveIconLibrary } from "../core/install/icons";
+import { applyIconLibrary } from "../core/install/icons";
 import {
   detectProjectRuntime,
   type DetectedRuntime,
 } from "../core/init/detect-runtime";
-import { configureRuntime } from "../core/init/configure-runtime";
-import { configureTsconfigPaths } from "../core/init/tsconfig";
-import { buildBaseCss } from "../core/registry/css-assets";
+import { setupProjectRuntime } from "../core/init/setup";
+import { buildBaseCss } from "../core/css/stylesheet";
+import { generateTheme, themePayload } from "../core/theme/theme";
 import {
-  generateBaseColorVars,
-  generateTheme,
-  isBaseColorName,
-  normalizeBaseColor,
-  themePayload,
-  ThemeContrastError,
-} from "../core/theme/theme";
+  applyStandaloneTokens,
+  applyThemePayload,
+  attachThemeConfigFields,
+  buildCustomTheme,
+  resolveThemeSelection,
+  type ResolvedThemeSelection,
+} from "../core/theme/apply";
 import { PRESETS } from "../core/theme/presets";
 import {
   DEFAULT_MONO,
   DEFAULT_SANS,
-  FONT_PRESETS,
   MONO_FONTS,
   SANS_FONTS,
-  resolveFont,
-  resolveFontPreset,
-  type FontSpec,
 } from "../core/theme/fonts";
-import {
-  resolveRadius,
-  resolveSurface,
-  type SurfacePreset,
-} from "../core/theme/geometry";
-import { mergeCssVars, type CssVars } from "../core/install/css-vars";
 import { ValidationError } from "../lib/errors";
 import { info, success, warning } from "../lib/logger";
 import { select, text, confirm, type PromptContext } from "../lib/prompts";
-import type { RegistryItemPayload } from "../lib/schemas";
 import type { InitOptions } from "../types";
 
-interface Typography {
-  sans: FontSpec;
-  mono: FontSpec;
-  display?: FontSpec;
-  headingTracking?: string;
-  fontPreset?: string;
-  iconLibrary: string;
-}
-
-function resolveFontPresetOption(options: InitOptions) {
-  return options.fontPreset ? resolveFontPreset(options.fontPreset) : undefined;
-}
-
-function firstDefined(values: Array<string | undefined>): string | undefined {
-  return values.find((value) => value !== undefined);
-}
-
-function pickFontSlots(options: InitOptions, raw: RawComponentsConfig | null) {
-  const preset = resolveFontPresetOption(options);
-  const config: RawComponentsConfig = raw ?? {};
-
-  const sans =
-    firstDefined([options.font, preset?.sans, config.font]) ?? DEFAULT_SANS;
-
-  const mono =
-    firstDefined([options.fontMono, preset?.mono, config.fontMono]) ??
-    DEFAULT_MONO;
-
-  const display = firstDefined([
-    options.fontDisplay,
-    preset?.display,
-    config.fontDisplay,
-  ]);
-
-  return {
-    sans,
-    mono,
-    display,
-    fontPreset: firstDefined([preset?.name, config.fontPreset]),
-  };
-}
-
-function resolveTypography(cwd: string, options: InitOptions): Typography {
-  const raw = readRawConfig(cwd);
-  const slots = pickFontSlots(options, raw);
-  const iconChoice = firstDefined([options.icon, raw?.iconLibrary]);
-
-  return {
-    sans: resolveFont("sans", slots.sans),
-    mono: resolveFont("mono", slots.mono),
-    display: slots.display ? resolveFont("display", slots.display) : undefined,
-    headingTracking: Object.values(FONT_PRESETS).find(
-      (preset) => preset.name === slots.fontPreset,
-    )?.headingTracking,
-    fontPreset: slots.fontPreset,
-    iconLibrary: resolveIconLibrary(iconChoice),
-  };
-}
-
 /** Packages every Kira Kit consumer needs, regardless of which items they add. */
-function baseDeps(typo: Typography, runtime: DetectedRuntime): string[] {
+function baseDeps(
+  selection: ResolvedThemeSelection,
+  runtime: DetectedRuntime,
+): string[] {
   const deps = [
     "@base-ui/react",
     "cn",
     "class-variance-authority",
-    typo.iconLibrary === "lucide" ? "lucide-react" : "@tabler/icons-react",
+    selection.iconLibrary === "lucide" ? "lucide-react" : "@tabler/icons-react",
     ...runtime.tailwindDeps,
     "tw-animate-css",
-    typo.sans.pkg,
-    typo.mono.pkg,
+    selection.sans.pkg,
+    selection.mono.pkg,
   ];
 
-  if (typo.display && typo.display.name !== typo.sans.name) {
-    deps.push(typo.display.pkg);
+  if (selection.display && selection.display.name !== selection.sans.name) {
+    deps.push(selection.display.pkg);
   }
 
   return [...new Set(deps)];
 }
 
-function attachPresetConfigFields(
-  target: RawComponentsConfig,
-  typo: Typography,
-  options: InitOptions,
-): void {
-  if (typo.display) target.fontDisplay = typo.display.name;
-
-  if (typo.fontPreset) target.fontPreset = typo.fontPreset;
-
-  if (options.radius) target.radius = resolveRadius(options.radius).name;
-
-  if (options.surface) target.surface = resolveSurface(options.surface).name;
-}
-
 function writeFreshConfig(
   cwd: string,
   css: string,
-  typo: Typography,
+  selection: ResolvedThemeSelection,
   runtime: DetectedRuntime,
-  options: InitOptions,
 ): void {
   const config: RawComponentsConfig & { rsc: boolean; tsx: boolean } = {
     $schema: COMPONENTS_SCHEMA_URL,
@@ -159,17 +77,17 @@ function writeFreshConfig(
     tsx: true,
     tailwind: {
       css,
-      baseColor: normalizeBaseColor(options.baseColor),
+      baseColor: selection.baseColor ?? "neutral",
       cssVariables: true,
     },
-    iconLibrary: typo.iconLibrary,
-    font: typo.sans.name,
-    fontMono: typo.mono.name,
+    iconLibrary: selection.iconLibrary,
+    font: selection.sans.name,
+    fontMono: selection.mono.name,
     aliases: { ...DEFAULT_ALIASES },
     registries: { [KIRA_NAMESPACE]: DEFAULT_REGISTRY_URL },
   };
 
-  attachPresetConfigFields(config, typo, options);
+  attachThemeConfigFields(config, selection);
 
   writeFileSync(
     join(cwd, "components.json"),
@@ -183,25 +101,24 @@ function fillExistingConfig(
   cwd: string,
   raw: RawComponentsConfig,
   css: string,
-  typo: Typography,
-  options: InitOptions,
+  selection: ResolvedThemeSelection,
 ): void {
   const tailwind = { ...raw.tailwind, css: raw.tailwind?.css ?? css };
 
-  if (options.baseColor) {
-    tailwind.baseColor = normalizeBaseColor(options.baseColor);
+  if (selection.baseColor) {
+    tailwind.baseColor = selection.baseColor;
   }
 
   const next: RawComponentsConfig = {
     ...raw,
-    iconLibrary: typo.iconLibrary,
-    font: typo.sans.name,
-    fontMono: typo.mono.name,
+    iconLibrary: selection.iconLibrary,
+    font: selection.sans.name,
+    fontMono: selection.mono.name,
     aliases: { ...DEFAULT_ALIASES, ...raw.aliases },
     tailwind,
   };
 
-  attachPresetConfigFields(next, typo, options);
+  attachThemeConfigFields(next, selection);
 
   writeFileSync(
     join(cwd, "components.json"),
@@ -212,17 +129,16 @@ function fillExistingConfig(
 
 function ensureKiraConfig(
   cwd: string,
-  typo: Typography,
+  selection: ResolvedThemeSelection,
   runtime: DetectedRuntime,
-  options: InitOptions,
 ): void {
   const css = detectCssPath(cwd);
   const raw = readRawConfig(cwd);
 
   if (raw) {
-    fillExistingConfig(cwd, raw, css, typo, options);
+    fillExistingConfig(cwd, raw, css, selection);
   } else {
-    writeFreshConfig(cwd, css, typo, runtime, options);
+    writeFreshConfig(cwd, css, selection, runtime);
   }
 
   if (upsertKiraRegistry(cwd)) {
@@ -278,7 +194,7 @@ function checkReactVersion(cwd: string): void {
 function writeBaseCss(
   cwd: string,
   options: InitOptions,
-  typo: Typography,
+  typo: ResolvedThemeSelection,
   fontsRequested: boolean,
 ): void {
   const cssRel = detectCssPath(cwd);
@@ -333,77 +249,38 @@ function writeBaseCss(
 async function installBaseDeps(
   cwd: string,
   options: InitOptions,
-  typo: Typography,
+  typo: ResolvedThemeSelection,
   runtime: DetectedRuntime,
 ): Promise<void> {
-  const pkg = readConsumerPackage(cwd);
-
-  const present = new Set([
-    ...Object.keys(pkg.dependencies ?? {}),
-    ...Object.keys(pkg.devDependencies ?? {}),
-    ...Object.keys(pkg.peerDependencies ?? {}),
-  ]);
-
-  const missing = baseDeps(typo, runtime).filter((dep) => !present.has(dep));
-
-  await installNpmDeps(cwd, missing, { yes: options.yes }, options.installer);
-}
-
-async function applyTheme(
-  cwd: string,
-  payload: RegistryItemPayload,
-  force: boolean,
-  label: string,
-): Promise<number> {
-  writeFileSync(
-    join(cwd, "kira-theme.json"),
-    JSON.stringify(payload, null, 2) + "\n",
-    "utf-8",
+  await ensureNpmDeps(
+    cwd,
+    baseDeps(typo, runtime),
+    { yes: options.yes },
+    options.installer,
   );
-
-  await installItems(
-    { items: [payload] },
-    { cwd, yes: true, overwrite: force, skipDeps: true },
-  );
-  success(`${label} applied.`);
-
-  return 0;
 }
 
 async function applyCustomTheme(
   cwd: string,
   primary: string,
-  baseColor: string | undefined,
+  selection: ResolvedThemeSelection,
   force: boolean,
-  radius?: string,
-  surface?: string,
 ): Promise<number> {
-  let generated;
+  const generated = buildCustomTheme(primary, selection);
 
-  try {
-    generated = generateTheme({
-      name: "custom",
-      title: "Custom Kira Kit theme",
-      description: `Custom OKLCH theme generated from primary ${primary}.`,
-      primary,
-      baseColor: normalizeBaseColor(baseColor),
-      radius,
-      surface: surface ? resolveSurface(surface).name : undefined,
-    });
-  } catch (error) {
-    if (error instanceof ThemeContrastError) {
-      console.error(`error: ${error.message}`);
+  if (!generated) return 1;
 
-      return 1;
-    }
+  await applyThemePayload(cwd, themePayload(generated.item), force);
+  success("Custom theme applied.");
 
-    throw error;
-  }
-
-  return applyTheme(cwd, themePayload(generated.item), force, "Custom theme");
+  return 0;
 }
 
-async function applyPreset(cwd: string, options: InitOptions): Promise<number> {
+async function applyPreset(
+  cwd: string,
+  options: InitOptions,
+  selection: ResolvedThemeSelection,
+): Promise<number> {
   const preset = PRESETS.find((p) => p.name === options.preset);
 
   if (preset) {
@@ -412,22 +289,16 @@ async function applyPreset(cwd: string, options: InitOptions): Promise<number> {
       title: preset.title,
       description: preset.description,
       primary: preset.primary,
-      baseColor: options.baseColor
-        ? normalizeBaseColor(options.baseColor)
-        : preset.baseColor,
+      baseColor: selection.baseColor ?? preset.baseColor,
       chartHues: preset.chartHues,
-      radius: options.radius ?? preset.radius,
-      surface: options.surface
-        ? resolveSurface(options.surface).name
-        : preset.surface,
+      radius: selection.radius?.name ?? preset.radius,
+      surface: selection.surface?.name ?? preset.surface,
     });
 
-    return applyTheme(
-      cwd,
-      themePayload(generated.item),
-      options.force,
-      `Theme preset "${preset.name}"`,
-    );
+    await applyThemePayload(cwd, themePayload(generated.item), options.force);
+    success(`Theme preset "${preset.name}" applied.`);
+
+    return 0;
   }
 
   await installItems(
@@ -437,66 +308,6 @@ async function applyPreset(cwd: string, options: InitOptions): Promise<number> {
   success(`Theme preset "${options.preset}" applied.`);
 
   return 0;
-}
-
-function buildStandaloneInitCssVars(options: InitOptions): CssVars | null {
-  const cssVars: CssVars = {};
-  let changed = false;
-
-  if (options.baseColor && isBaseColorName(options.baseColor)) {
-    const baseVars = generateBaseColorVars(options.baseColor);
-
-    cssVars.light = { ...cssVars.light, ...baseVars.light };
-    cssVars.dark = { ...cssVars.dark, ...baseVars.dark };
-    changed = true;
-  }
-
-  if (options.surface) {
-    const surface: SurfacePreset = resolveSurface(options.surface);
-
-    cssVars.light = { ...cssVars.light, ...surface.light };
-    cssVars.dark = { ...cssVars.dark, ...surface.dark };
-    changed = true;
-  }
-
-  if (options.radius) {
-    const radius = resolveRadius(options.radius);
-
-    cssVars.theme = { ...cssVars.theme, "--radius": radius.value };
-    cssVars.light = { ...cssVars.light, "--radius": radius.value };
-    changed = true;
-  }
-
-  return changed ? cssVars : null;
-}
-
-function applyStandaloneInitTokens(cwd: string, options: InitOptions): void {
-  const cssVars = buildStandaloneInitCssVars(options);
-
-  if (!cssVars) return;
-
-  const cssPath = join(cwd, detectCssPath(cwd));
-
-  if (existsSync(cssPath)) {
-    mergeCssVars(cssPath, cssVars);
-  }
-}
-
-function hasRequestedFonts(
-  options: InitOptions,
-  raw: RawComponentsConfig | null,
-): boolean {
-  const flags = [
-    options.fontPreset,
-    options.font,
-    options.fontDisplay,
-    options.fontMono,
-    raw?.font,
-    raw?.fontDisplay,
-    raw?.fontMono,
-  ];
-
-  return flags.some(Boolean);
 }
 
 async function promptFonts(
@@ -567,6 +378,7 @@ async function interactiveTypography(
 async function interactiveTheme(
   cwd: string,
   options: InitOptions,
+  selection: ResolvedThemeSelection,
 ): Promise<number | null> {
   if (options.yes || !process.stdin.isTTY) return null;
 
@@ -606,7 +418,7 @@ async function interactiveTheme(
     ? await confirm(ctx, "A theme already exists. Overwrite it?", true)
     : true;
 
-  return applyCustomTheme(cwd, primary, options.baseColor, force);
+  return applyCustomTheme(cwd, primary, selection, force);
 }
 
 function applyProjectSetup(cwd: string, runtime: DetectedRuntime): void {
@@ -614,21 +426,13 @@ function applyProjectSetup(cwd: string, runtime: DetectedRuntime): void {
 
   info(`Detected ${runtime.label} project${configNote}.`);
 
-  const tsResult = configureTsconfigPaths(cwd);
+  const setup = setupProjectRuntime(cwd, runtime);
 
-  if (tsResult.updatedFiles.length > 0) {
-    success(
-      `Configured "@/*" -> "${tsResult.aliasTarget}" in ${tsResult.updatedFiles.join(", ")}.`,
-    );
-  }
-
-  const runtimeResult = configureRuntime(cwd, runtime);
-
-  for (const note of runtimeResult.notes) {
+  for (const note of setup.notes) {
     success(note);
   }
 
-  for (const warn of runtimeResult.warnings) {
+  for (const warn of setup.warnings) {
     warning(warn);
   }
 }
@@ -642,35 +446,26 @@ export async function init(options: InitOptions): Promise<number> {
 
   await interactiveTypography(cwd, options);
 
-  const raw = readRawConfig(cwd);
-  const fontsRequested = hasRequestedFonts(options, raw);
-  const typo = resolveTypography(cwd, options);
+  const selection = resolveThemeSelection(cwd, options);
 
-  ensureKiraConfig(cwd, typo, runtime, options);
-  writeBaseCss(cwd, options, typo, fontsRequested);
+  ensureKiraConfig(cwd, selection, runtime);
+  writeBaseCss(cwd, options, selection, selection.hasRequestedFonts);
   applyProjectSetup(cwd, runtime);
-  await installBaseDeps(cwd, options, typo, runtime);
-  await applyIconLibrary(cwd, typo.iconLibrary, {
+  await installBaseDeps(cwd, options, selection, runtime);
+  await applyIconLibrary(cwd, selection.iconLibrary, {
     yes: options.yes,
     installer: options.installer,
   });
 
-  if (options.preset) return applyPreset(cwd, options);
+  if (options.preset) return applyPreset(cwd, options, selection);
 
   if (options.primary) {
-    return applyCustomTheme(
-      cwd,
-      options.primary,
-      options.baseColor,
-      options.force,
-      options.radius,
-      options.surface,
-    );
+    return applyCustomTheme(cwd, options.primary, selection, options.force);
   }
 
-  applyStandaloneInitTokens(cwd, options);
+  applyStandaloneTokens(cwd, selection);
 
-  const interactiveCode = await interactiveTheme(cwd, options);
+  const interactiveCode = await interactiveTheme(cwd, options, selection);
 
   if (interactiveCode !== null) return interactiveCode;
 

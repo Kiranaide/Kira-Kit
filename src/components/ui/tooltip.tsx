@@ -3,33 +3,9 @@ import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "cn";
-import {
-  isFunctionProp,
-  isNumberProp,
-  isStringProp,
-} from "@/components/ui/prop-guards";
+import { isNumberProp, isStringProp } from "@/lib/component-utils";
 
 /*                                   Helpers                                  */
-
-type StateClassName<S> =
-  string | ((state: S) => string | undefined) | undefined;
-
-type StateStyle<S> =
-  | React.CSSProperties
-  | ((state: S) => React.CSSProperties | undefined)
-  | undefined;
-
-function mergeClassName<S>(base: string, className: StateClassName<S>) {
-  return isFunctionProp(className)
-    ? (state: S) => cn(base, className(state))
-    : cn(base, className);
-}
-
-function mergeStyle<S>(base: React.CSSProperties, style: StateStyle<S>) {
-  return isFunctionProp(style)
-    ? (state: S) => ({ ...base, ...style(state) })
-    : { ...base, ...style };
-}
 
 const toCssLength = (v: number | string) => (isNumberProp(v) ? `${v}px` : v);
 
@@ -235,12 +211,16 @@ function TooltipShortcut({ keys, className, ...props }: TooltipShortcutProps) {
 
 /*                                   Content                                  */
 
-type PositionerProps = TooltipPrimitive.Positioner.Props;
+type PositionerProps = Omit<TooltipPrimitive.Positioner.Props, "className"> & {
+  className?: string;
+};
 
 interface TooltipContentProps
   extends
-    Omit<TooltipPrimitive.Popup.Props, "children">,
+    Omit<TooltipPrimitive.Popup.Props, "children" | "className" | "style">,
     VariantProps<typeof tooltipContentVariants> {
+  className?: string;
+  style?: React.CSSProperties;
   side?: "top" | "right" | "bottom" | "left";
   align?: "start" | "center" | "end";
   sideOffset?: number;
@@ -303,26 +283,26 @@ function TooltipContent({
         alignOffset={alignOffset}
         collisionPadding={collisionPadding}
         {...positionerProps}
-        className={mergeClassName("z-50", positionerProps?.className)}
+        className={cn("z-50", positionerProps?.className)}
       >
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
-          className={mergeClassName(
+          className={cn(
             tooltipContentVariants({
               variant: resolvedVariant,
               size: resolvedSize,
             }),
             className,
           )}
-          style={mergeStyle(
+          style={{
             // SAFETY: only the custom `--tooltip-max-width` key is added; it is a
             // valid CSSProperties key (CSS custom property) whose value is
             // always a string produced by toCssLength above.
-            {
+            ...({
               "--tooltip-max-width": toCssLength(maxWidth),
-            } as React.CSSProperties,
-            style,
-          )}
+            } as React.CSSProperties),
+            ...style,
+          }}
           {...props}
         >
           {showArrow && <TooltipArrow variant={resolvedVariant} />}
@@ -344,8 +324,10 @@ function TooltipContent({
 
 interface TooltipArrowProps
   extends
-    Omit<TooltipPrimitive.Arrow.Props, "children">,
-    VariantProps<typeof tooltipArrowVariants> {}
+    Omit<TooltipPrimitive.Arrow.Props, "children" | "className">,
+    VariantProps<typeof tooltipArrowVariants> {
+  className?: string;
+}
 
 function TooltipArrow({ className, variant, ...props }: TooltipArrowProps) {
   const ctx = React.useContext(TooltipContext);
@@ -354,7 +336,7 @@ function TooltipArrow({ className, variant, ...props }: TooltipArrowProps) {
   return (
     <TooltipPrimitive.Arrow
       data-slot="tooltip-arrow"
-      className={mergeClassName(
+      className={cn(
         tooltipArrowVariants({ variant: resolvedVariant }),
         className,
       )}
@@ -379,20 +361,20 @@ const createTooltipHandle = TooltipPrimitive.createHandle;
 function TooltipViewport({
   className,
   ...props
-}: TooltipPrimitive.Viewport.Props) {
+}: Omit<TooltipPrimitive.Viewport.Props, "className"> & {
+  className?: string;
+}) {
   return (
     <TooltipPrimitive.Viewport
       data-slot="tooltip-viewport"
-      className={mergeClassName(
-        cn(
-          "relative",
-          "*:data-previous:absolute *:data-previous:top-0 *:data-previous:left-0",
-          "*:data-previous:w-(--popup-width) *:data-previous:animate-out *:data-previous:fade-out-0",
-          "*:data-current:animate-in *:data-current:fade-in-0",
-          "[&[data-activation-direction~=right]>[data-current]]:slide-in-from-right-2",
-          "[&[data-activation-direction~=left]>[data-current]]:slide-in-from-left-2",
-          "data-instant:*:animate-none motion-reduce:*:animate-none",
-        ),
+      className={cn(
+        "relative",
+        "*:data-previous:absolute *:data-previous:top-0 *:data-previous:left-0",
+        "*:data-previous:w-(--popup-width) *:data-previous:animate-out *:data-previous:fade-out-0",
+        "*:data-current:animate-in *:data-current:fade-in-0",
+        "[&[data-activation-direction~=right]>[data-current]]:slide-in-from-right-2",
+        "[&[data-activation-direction~=left]>[data-current]]:slide-in-from-left-2",
+        "data-instant:*:animate-none motion-reduce:*:animate-none",
         className,
       )}
       {...props}
@@ -421,13 +403,11 @@ function SharedTooltip({
           {...contentProps}
           positionerProps={{
             ...positionerProps,
-            className: mergeClassName(
-              cn(
-                "h-(--positioner-height) w-(--positioner-width)",
-                // kira-kit-ignore layout-transitions: positioner coords track Base UI flip/shift repositioning while open
-                "transition-[top,left,right,bottom] duration-200 ease-out",
-                "data-[instant]:transition-none motion-reduce:transition-none",
-              ),
+            className: cn(
+              "h-(--positioner-height) w-(--positioner-width)",
+              // kira-kit-ignore layout-transitions: positioner coords track Base UI flip/shift repositioning while open
+              "transition-[top,left,right,bottom] duration-200 ease-out",
+              "data-[instant]:transition-none motion-reduce:transition-none",
               positionerProps?.className,
             ),
           }}

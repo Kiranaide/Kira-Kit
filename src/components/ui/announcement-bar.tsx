@@ -2,7 +2,12 @@
 "use client";
 
 import * as React from "react";
-import { reactContentKey, withContentKeys } from "@/components/ui/content-keys";
+import {
+  isNumberProp,
+  isStringProp,
+  reactContentKey,
+  withOccurrenceKeys,
+} from "@/lib/component-utils";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
@@ -22,7 +27,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "cn";
-import { isNumberProp, isStringProp } from "@/components/ui/prop-guards";
 
 const announcementBarVariants = cva(
   "relative flex w-full min-w-0 flex-wrap items-center gap-3 px-4 py-3 text-sm",
@@ -1350,7 +1354,7 @@ function AnnouncementRotatorMessagesView({
       aria-atomic="true"
     >
       {messages.length ? (
-        withContentKeys(messages, reactContentKey).map(
+        withOccurrenceKeys(messages, reactContentKey).map(
           ({ item: message, key }, messageIndex) => (
             <div
               data-slot="announcement-rotator-message"

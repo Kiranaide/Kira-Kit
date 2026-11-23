@@ -20,6 +20,7 @@ kira-kit add @kira-kit/aspect-ratio
 - @kira-kit/button
 - @kira-kit/skeleton
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

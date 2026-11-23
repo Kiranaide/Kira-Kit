@@ -25,6 +25,7 @@ kira-kit add @kira-kit/camera
 - @kira-kit/tabs
 - @kira-kit/use-camera
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

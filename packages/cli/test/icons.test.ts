@@ -328,7 +328,7 @@ describe("applyIconLibrary", () => {
       installer: fakeInstaller(calls),
     });
 
-    expect(calls.flat()).toEqual(["lucide-react"]);
+    expect(calls.flat()).toEqual(["lucide-react@^1.76.0"]);
     expect(readFileSync(join(dir, "src/welcome.tsx"), "utf-8")).toContain(
       'from "lucide-react"',
     );

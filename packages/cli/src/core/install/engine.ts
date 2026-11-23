@@ -4,9 +4,8 @@ import { ValidationError } from "../../lib/errors";
 import { warning } from "../../lib/logger";
 import type { RegistryItemPayload } from "../../lib/schemas";
 import type { ComponentsConfig } from "../../types";
-import { resolveTree } from "./client";
-import { mergeCssRules } from "./css-rules";
-import { mergeCssVars } from "./css-vars";
+import { createClientContext, resolveTree } from "./client";
+import { applyItemStyles, type ApplyItemStylesResult } from "../css/stylesheet";
 import {
   installNpmDeps,
   planNpmDeps,
@@ -123,60 +122,26 @@ function buildWriteRequests(
   return requests;
 }
 
-function applyCssVars(
+function applyStyles(
   items: RegistryItemPayload[],
   config: ComponentsConfig,
   options: InstallOptions,
-): boolean {
-  const withVars = items.filter((item) => item.cssVars);
+): ApplyItemStylesResult {
+  const styled = items.filter((item) => item.cssVars || item.css);
 
-  if (withVars.length === 0 || options.dryRun) return false;
+  if (styled.length === 0 || options.dryRun) {
+    return { cssVarsApplied: false, cssRulesApplied: false };
+  }
 
   const cssPath = config.tailwind?.css;
 
   if (!cssPath) {
-    warning("No tailwind.css path in components.json — skipped CSS variables.");
+    warning("No tailwind.css path in components.json — skipped item styles.");
 
-    return false;
+    return { cssVarsApplied: false, cssRulesApplied: false };
   }
 
-  let changed = false;
-
-  for (const item of withVars) {
-    if (mergeCssVars(resolve(options.cwd, cssPath), item.cssVars ?? {})) {
-      changed = true;
-    }
-  }
-
-  return changed;
-}
-
-function applyCss(
-  items: RegistryItemPayload[],
-  config: ComponentsConfig,
-  options: InstallOptions,
-): boolean {
-  const withCss = items.filter((item) => item.css);
-
-  if (withCss.length === 0 || options.dryRun) return false;
-
-  const cssPath = config.tailwind?.css;
-
-  if (!cssPath) {
-    warning("No tailwind.css path in components.json — skipped item CSS.");
-
-    return false;
-  }
-
-  let changed = false;
-
-  for (const item of withCss) {
-    if (mergeCssRules(resolve(options.cwd, cssPath), item.css ?? "")) {
-      changed = true;
-    }
-  }
-
-  return changed;
+  return applyItemStyles(resolve(options.cwd, cssPath), styled);
 }
 
 export interface InstallPlan {
@@ -202,10 +167,10 @@ export async function planInstall(
 
   const items =
     input.items ??
-    (await resolveTree(input.addresses ?? [], {
-      cwd: options.cwd,
-      registries: config.registries,
-    }));
+    (await resolveTree(
+      input.addresses ?? [],
+      createClientContext(options.cwd, config.registries),
+    ));
 
   if (items.length === 0) {
     throw new ValidationError(
@@ -245,8 +210,12 @@ export async function installItems(
   }
 
   const outcome = await applyWrites(planned, options);
-  const cssVarsApplied = applyCssVars(items, config, options);
-  const cssRulesApplied = applyCss(items, config, options);
+
+  const { cssVarsApplied, cssRulesApplied } = applyStyles(
+    items,
+    config,
+    options,
+  );
 
   return {
     items: items.map((item) => item.name),

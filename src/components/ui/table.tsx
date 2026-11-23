@@ -10,13 +10,13 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "cn";
 import { Checkbox } from "@/components/ui/checkbox";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
 import {
-  isStringProp,
-  isNumberProp,
-  isBooleanProp,
   isBigIntProp,
-} from "@/lib/component-prop-guards";
+  isBooleanProp,
+  isNumberProp,
+  isStringProp,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 type AriaSort = "ascending" | "descending" | "none" | "other";
 

@@ -20,10 +20,9 @@ kira-kit add @kira-kit/button-group
 ## Registry dependencies
 
 - @kira-kit/button
-- @kira-kit/component-defaults
-- @kira-kit/component-native-props
 - @kira-kit/separator
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

@@ -15,7 +15,7 @@ import {
   deriveMotionCss,
   extractMotionAssets,
 } from "../src/core/registry/motion-css";
-import { mergeCssRulesText } from "../src/core/install/css-rules";
+import { mergeCssRulesText } from "../src/core/css/stylesheet";
 
 const KIT_CSS = `:root {
   --ease-spring: linear(0, 0.5, 1);

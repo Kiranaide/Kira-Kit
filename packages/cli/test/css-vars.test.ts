@@ -12,7 +12,7 @@ import {
   mergeCssVars,
   mergeCssVarsText,
   topLevelBlocks,
-} from "../src/core/install/css-vars";
+} from "../src/core/css/stylesheet";
 
 const KIT_CSS = `@import "tailwindcss";
 

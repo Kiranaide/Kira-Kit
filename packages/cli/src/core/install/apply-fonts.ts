@@ -14,8 +14,8 @@ import {
   type FontSpec,
 } from "../theme/fonts";
 import type { CssVarsMap } from "../theme/theme";
-import { mergeCssVarsText } from "./css-vars";
-import { installNpmDeps, readConsumerPackage, type DepInstaller } from "./deps";
+import { mergeCssVarsText } from "../css/stylesheet";
+import { ensureNpmDeps, type DepInstaller } from "./deps";
 
 const CSS_CANDIDATES = [
   "src/index.css",
@@ -194,27 +194,18 @@ function recordFontConfig(
   updateRawConfig(cwd, patch);
 }
 
-function missingFontPackages(
-  cwd: string,
+function wantedFontPackages(
   sans: FontSpec,
   mono: FontSpec,
   display?: FontSpec,
 ): string[] {
-  const pkg = readConsumerPackage(cwd);
-
-  const present = new Set([
-    ...Object.keys(pkg.dependencies ?? {}),
-    ...Object.keys(pkg.devDependencies ?? {}),
-    ...Object.keys(pkg.peerDependencies ?? {}),
-  ]);
-
   const wanted = [sans.pkg, mono.pkg];
 
   if (display && display.name !== sans.name) {
     wanted.push(display.pkg);
   }
 
-  return [...new Set(wanted)].filter((name) => !present.has(name));
+  return wanted;
 }
 
 /** Apply fonts to an existing project: CSS, components.json, missing packages. */
@@ -246,7 +237,7 @@ export async function applyFonts(
 
   recordFontConfig(cwd, sans, mono, options);
 
-  const missing = missingFontPackages(cwd, sans, mono, options.display);
+  const wanted = wantedFontPackages(sans, mono, options.display);
 
-  await installNpmDeps(cwd, missing, { yes: options.yes }, options.installer);
+  await ensureNpmDeps(cwd, wanted, { yes: options.yes }, options.installer);
 }

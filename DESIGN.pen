@@ -87999,7 +87999,8 @@
                                   "content": "Control sizes",
                                   "lineHeight": 1.42,
                                   "fontFamily": "Geist",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -88019,7 +88020,8 @@
                                   "content": "Input combinations",
                                   "lineHeight": 1.42,
                                   "fontFamily": "Geist",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -88039,7 +88041,8 @@
                                   "content": "Input actions",
                                   "lineHeight": 1.42,
                                   "fontFamily": "Geist",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -88059,7 +88062,8 @@
                                   "content": "Menus and overlays",
                                   "lineHeight": 1.42,
                                   "fontFamily": "Geist",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -88079,7 +88083,8 @@
                                   "content": "Container spacing",
                                   "lineHeight": 1.42,
                                   "fontFamily": "Geist",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -88099,7 +88104,8 @@
                                   "content": "Form spacing",
                                   "lineHeight": 1.42,
                                   "fontFamily": "Geist",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -88119,7 +88125,8 @@
                                   "content": "Touch and motion",
                                   "lineHeight": 1.42,
                                   "fontFamily": "Geist",
-                                  "fontSize": 13
+                                  "fontSize": 13,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -95776,11 +95783,11 @@
     {
       "type": "frame",
       "id": "ov0mf",
-      "name": "Kira Kit / Overview",
       "x": 3655,
       "y": 10140,
-      "width": 1440,
+      "name": "Kira Kit / Overview",
       "clip": true,
+      "width": 1440,
       "fill": "$phase-paper",
       "layout": "vertical",
       "children": [
@@ -95977,22 +95984,22 @@
                               "id": "ov0f9",
                               "name": "SidebarItem",
                               "fill": "$phase-action-ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Overview",
                               "lineHeight": 1.45,
                               "fontFamily": "Geist",
                               "fontSize": 14,
-                              "fontWeight": "600",
-                              "width": "fill_container",
-                              "textGrowth": "fixed-width"
+                              "fontWeight": "600"
                             },
                             {
                               "type": "rectangle",
+                              "cornerRadius": 1,
                               "id": "ov0fa",
                               "name": "Active item indicator",
-                              "width": 2,
-                              "height": 18,
                               "fill": "$phase-action",
-                              "cornerRadius": 1
+                              "width": 2,
+                              "height": 18
                             }
                           ]
                         },
@@ -96233,9 +96240,9 @@
               "type": "frame",
               "id": "ov0md",
               "name": "Documentation main",
-              "layout": "vertical",
               "width": "fill_container",
               "fill": "$phase-paper",
+              "layout": "vertical",
               "children": [
                 {
                   "type": "frame",
@@ -96439,6 +96446,8 @@
                       "type": "frame",
                       "id": "ov0ly",
                       "name": "Article",
+                      "width": "fill_container",
+                      "fill": "$phase-paper",
                       "layout": "vertical",
                       "gap": 40,
                       "padding": [
@@ -96447,16 +96456,14 @@
                         48,
                         58
                       ],
-                      "width": "fill_container",
-                      "fill": "$phase-paper",
                       "children": [
                         {
                           "type": "frame",
                           "id": "ov0gi",
                           "name": "Page introduction",
+                          "width": "fill_container",
                           "layout": "vertical",
                           "gap": 16,
-                          "width": "fill_container",
                           "children": [
                             {
                               "type": "frame",
@@ -96473,12 +96480,12 @@
                               "children": [
                                 {
                                   "type": "rectangle",
+                                  "cornerRadius": 999,
                                   "id": "ov0g0",
                                   "name": "Status dot",
-                                  "width": 6,
-                                  "height": 6,
                                   "fill": "$phase-action",
-                                  "cornerRadius": 999
+                                  "width": 6,
+                                  "height": 6
                                 },
                                 {
                                   "type": "text",
@@ -96498,34 +96505,34 @@
                               "id": "ov0gf",
                               "name": "Page title",
                               "fill": "$phase-ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Welcome to Kira Kit",
                               "lineHeight": 1.08,
                               "fontFamily": "Geist",
                               "fontSize": 54,
                               "fontWeight": "600",
-                              "letterSpacing": -2.4,
-                              "width": "fill_container",
-                              "textGrowth": "fixed-width"
+                              "letterSpacing": -2.4
                             },
                             {
                               "type": "text",
                               "id": "ov0gg",
                               "name": "Page purpose",
                               "fill": "$phase-secondary-ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "An enterprise React component system built on Base UI primitives, Tailwind CSS v4, and TypeScript — delivered as a source registry so you own every line.",
                               "lineHeight": 1.55,
                               "fontFamily": "Geist",
                               "fontSize": 18,
-                              "fontWeight": "normal",
-                              "width": "fill_container",
-                              "textGrowth": "fixed-width"
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "frame",
                               "id": "ov0ge",
                               "name": "Hero actions",
-                              "gap": 10,
                               "width": "fill_container",
+                              "gap": 10,
                               "alignItems": "center",
                               "children": [
                                 {
@@ -96572,10 +96579,10 @@
                                   "name": "Button / Explore UI Preview",
                                   "height": 40,
                                   "fill": "$phase-paper",
+                                  "cornerRadius": 8,
                                   "stroke": "$phase-line",
                                   "strokeWidth": 1,
                                   "strokeAlignment": "inner",
-                                  "cornerRadius": 8,
                                   "gap": 7,
                                   "padding": [
                                     0,
@@ -96613,10 +96620,10 @@
                                   "name": "CLI quickstart pill",
                                   "height": 36,
                                   "fill": "$phase-surface",
+                                  "cornerRadius": 8,
                                   "stroke": "$phase-line",
                                   "strokeWidth": 1,
                                   "strokeAlignment": "inner",
-                                  "cornerRadius": 8,
                                   "gap": 10,
                                   "padding": [
                                     0,
@@ -96674,9 +96681,9 @@
                               "type": "rectangle",
                               "id": "ov0gh",
                               "name": "Divider",
+                              "fill": "$phase-line",
                               "width": "fill_container",
-                              "height": 1,
-                              "fill": "$phase-line"
+                              "height": 1
                             }
                           ]
                         },
@@ -96684,25 +96691,25 @@
                           "type": "frame",
                           "id": "ov0gz",
                           "name": "Key metrics",
-                          "gap": 12,
                           "width": "fill_container",
+                          "gap": 12,
                           "children": [
                             {
                               "type": "frame",
                               "id": "ov0gm",
                               "name": "Metric / Components & hooks",
+                              "width": "fill_container",
+                              "fill": "$phase-paper",
+                              "cornerRadius": 12,
+                              "stroke": "$phase-line",
+                              "strokeWidth": 1,
+                              "strokeAlignment": "inner",
                               "layout": "vertical",
                               "gap": 3,
-                              "width": "fill_container",
                               "padding": [
                                 14,
                                 16
                               ],
-                              "fill": "$phase-paper",
-                              "stroke": "$phase-line",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "cornerRadius": 12,
                               "children": [
                                 {
                                   "type": "text",
@@ -96744,18 +96751,18 @@
                               "type": "frame",
                               "id": "ov0gq",
                               "name": "Metric / Spacing contract",
+                              "width": "fill_container",
+                              "fill": "$phase-paper",
+                              "cornerRadius": 12,
+                              "stroke": "$phase-line",
+                              "strokeWidth": 1,
+                              "strokeAlignment": "inner",
                               "layout": "vertical",
                               "gap": 3,
-                              "width": "fill_container",
                               "padding": [
                                 14,
                                 16
                               ],
-                              "fill": "$phase-paper",
-                              "stroke": "$phase-line",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "cornerRadius": 12,
                               "children": [
                                 {
                                   "type": "text",
@@ -96797,18 +96804,18 @@
                               "type": "frame",
                               "id": "ov0gu",
                               "name": "Metric / Accessibility",
+                              "width": "fill_container",
+                              "fill": "$phase-paper",
+                              "cornerRadius": 12,
+                              "stroke": "$phase-line",
+                              "strokeWidth": 1,
+                              "strokeAlignment": "inner",
                               "layout": "vertical",
                               "gap": 3,
-                              "width": "fill_container",
                               "padding": [
                                 14,
                                 16
                               ],
-                              "fill": "$phase-paper",
-                              "stroke": "$phase-line",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "cornerRadius": 12,
                               "children": [
                                 {
                                   "type": "text",
@@ -96850,18 +96857,18 @@
                               "type": "frame",
                               "id": "ov0gy",
                               "name": "Metric / Runtime lock-in",
+                              "width": "fill_container",
+                              "fill": "$phase-paper",
+                              "cornerRadius": 12,
+                              "stroke": "$phase-line",
+                              "strokeWidth": 1,
+                              "strokeAlignment": "inner",
                               "layout": "vertical",
                               "gap": 3,
-                              "width": "fill_container",
                               "padding": [
                                 14,
                                 16
                               ],
-                              "fill": "$phase-paper",
-                              "stroke": "$phase-line",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "cornerRadius": 12,
                               "children": [
                                 {
                                   "type": "text",
@@ -96905,17 +96912,17 @@
                           "type": "frame",
                           "id": "ov0ia",
                           "name": "Start here",
+                          "width": "fill_container",
                           "layout": "vertical",
                           "gap": 16,
-                          "width": "fill_container",
                           "children": [
                             {
                               "type": "frame",
                               "id": "ov0i9",
                               "name": "Section heading",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 6,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "text",
@@ -96934,13 +96941,13 @@
                                   "id": "ov0i8",
                                   "name": "Description",
                                   "fill": "$phase-secondary-ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "Pick the workflow that matches where you are — from first install to live spacing verification.",
                                   "lineHeight": 1.5,
                                   "fontFamily": "Geist",
                                   "fontSize": 15,
-                                  "fontWeight": "normal",
-                                  "width": "fill_container",
-                                  "textGrowth": "fixed-width"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -96948,37 +96955,37 @@
                               "type": "frame",
                               "id": "ov0i6",
                               "name": "Path cards",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 12,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "ov0hk",
                                   "name": "Row 1",
-                                  "gap": 12,
                                   "width": "fill_container",
+                                  "gap": 12,
                                   "children": [
                                     {
                                       "type": "frame",
                                       "id": "ov0h9",
                                       "name": "Path card / Introduction",
-                                      "layout": "vertical",
-                                      "gap": 10,
-                                      "padding": 20,
                                       "width": "fill_container",
                                       "fill": "$phase-paper",
+                                      "cornerRadius": 14,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 14,
+                                      "layout": "vertical",
+                                      "gap": 10,
+                                      "padding": 20,
                                       "children": [
                                         {
                                           "type": "frame",
                                           "id": "ov0h7",
                                           "name": "Card header",
-                                          "gap": 10,
                                           "width": "fill_container",
+                                          "gap": 10,
                                           "justifyContent": "space_between",
                                           "alignItems": "center",
                                           "children": [
@@ -97062,13 +97069,13 @@
                                           "id": "ov0h8",
                                           "name": "Description",
                                           "fill": "$phase-secondary-ink",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
                                           "content": "Learn how Base UI primitives, OKLCH theme tokens, and the source registry fit together.",
                                           "lineHeight": 1.5,
                                           "fontFamily": "Geist",
                                           "fontSize": 13,
-                                          "fontWeight": "normal",
-                                          "width": "fill_container",
-                                          "textGrowth": "fixed-width"
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     },
@@ -97076,22 +97083,22 @@
                                       "type": "frame",
                                       "id": "ov0hj",
                                       "name": "Path card / Installation",
-                                      "layout": "vertical",
-                                      "gap": 10,
-                                      "padding": 20,
                                       "width": "fill_container",
                                       "fill": "$phase-paper",
+                                      "cornerRadius": 14,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 14,
+                                      "layout": "vertical",
+                                      "gap": 10,
+                                      "padding": 20,
                                       "children": [
                                         {
                                           "type": "frame",
                                           "id": "ov0hh",
                                           "name": "Card header",
-                                          "gap": 10,
                                           "width": "fill_container",
+                                          "gap": 10,
                                           "justifyContent": "space_between",
                                           "alignItems": "center",
                                           "children": [
@@ -97175,13 +97182,13 @@
                                           "id": "ov0hi",
                                           "name": "Description",
                                           "fill": "$phase-secondary-ink",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
                                           "content": "Scaffold a new Vite + React app or drop Kira Kit into an existing TypeScript workspace.",
                                           "lineHeight": 1.5,
                                           "fontFamily": "Geist",
                                           "fontSize": 13,
-                                          "fontWeight": "normal",
-                                          "width": "fill_container",
-                                          "textGrowth": "fixed-width"
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     }
@@ -97191,29 +97198,29 @@
                                   "type": "frame",
                                   "id": "ov0i5",
                                   "name": "Row 2",
-                                  "gap": 12,
                                   "width": "fill_container",
+                                  "gap": 12,
                                   "children": [
                                     {
                                       "type": "frame",
                                       "id": "ov0hu",
                                       "name": "Path card / UI Preview",
-                                      "layout": "vertical",
-                                      "gap": 10,
-                                      "padding": 20,
                                       "width": "fill_container",
                                       "fill": "$phase-paper",
+                                      "cornerRadius": 14,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 14,
+                                      "layout": "vertical",
+                                      "gap": 10,
+                                      "padding": 20,
                                       "children": [
                                         {
                                           "type": "frame",
                                           "id": "ov0hs",
                                           "name": "Card header",
-                                          "gap": 10,
                                           "width": "fill_container",
+                                          "gap": 10,
                                           "justifyContent": "space_between",
                                           "alignItems": "center",
                                           "children": [
@@ -97297,13 +97304,13 @@
                                           "id": "ov0ht",
                                           "name": "Description",
                                           "fill": "$phase-secondary-ink",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
                                           "content": "Inspect the 4px control ladder, composite input seams, worst-case strings, and motion.",
                                           "lineHeight": 1.5,
                                           "fontFamily": "Geist",
                                           "fontSize": 13,
-                                          "fontWeight": "normal",
-                                          "width": "fill_container",
-                                          "textGrowth": "fixed-width"
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     },
@@ -97311,22 +97318,22 @@
                                       "type": "frame",
                                       "id": "ov0i4",
                                       "name": "Path card / Theming",
-                                      "layout": "vertical",
-                                      "gap": 10,
-                                      "padding": 20,
                                       "width": "fill_container",
                                       "fill": "$phase-paper",
+                                      "cornerRadius": 14,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 14,
+                                      "layout": "vertical",
+                                      "gap": 10,
+                                      "padding": 20,
                                       "children": [
                                         {
                                           "type": "frame",
                                           "id": "ov0i2",
                                           "name": "Card header",
-                                          "gap": 10,
                                           "width": "fill_container",
+                                          "gap": 10,
                                           "justifyContent": "space_between",
                                           "alignItems": "center",
                                           "children": [
@@ -97410,13 +97417,13 @@
                                           "id": "ov0i3",
                                           "name": "Description",
                                           "fill": "$phase-secondary-ink",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
                                           "content": "Switch between curated presets, tune primary colors, typography pairs, and dark mode.",
                                           "lineHeight": 1.5,
                                           "fontFamily": "Geist",
                                           "fontSize": 13,
-                                          "fontWeight": "normal",
-                                          "width": "fill_container",
-                                          "textGrowth": "fixed-width"
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     }
@@ -97430,17 +97437,17 @@
                           "type": "frame",
                           "id": "ov0j6",
                           "name": "Why Kira Kit",
+                          "width": "fill_container",
                           "layout": "vertical",
                           "gap": 16,
-                          "width": "fill_container",
                           "children": [
                             {
                               "type": "frame",
                               "id": "ov0j4",
                               "name": "Section heading",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 6,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "text",
@@ -97459,13 +97466,13 @@
                                   "id": "ov0j3",
                                   "name": "Description",
                                   "fill": "$phase-secondary-ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "Engineered for consistency across desktop density and mobile touch targets.",
                                   "lineHeight": 1.5,
                                   "fontFamily": "Geist",
                                   "fontSize": 15,
-                                  "fontWeight": "normal",
-                                  "width": "fill_container",
-                                  "textGrowth": "fixed-width"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -97473,24 +97480,24 @@
                               "type": "frame",
                               "id": "ov0j5",
                               "name": "Architecture pillars",
-                              "layout": "vertical",
                               "width": "fill_container",
                               "fill": "$phase-paper",
+                              "cornerRadius": 12,
                               "stroke": "$phase-line",
                               "strokeWidth": 1,
                               "strokeAlignment": "inner",
-                              "cornerRadius": 12,
+                              "layout": "vertical",
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "ov0ig",
                                   "name": "Pillar / 4px spacing contract",
+                                  "width": "fill_container",
                                   "gap": 12,
                                   "padding": [
                                     16,
                                     18
                                   ],
-                                  "width": "fill_container",
                                   "children": [
                                     {
                                       "type": "frame",
@@ -97499,10 +97506,10 @@
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$phase-surface",
+                                      "cornerRadius": 8,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 8,
                                       "justifyContent": "center",
                                       "alignItems": "center",
                                       "children": [
@@ -97522,9 +97529,9 @@
                                       "type": "frame",
                                       "id": "ov0if",
                                       "name": "Copy",
+                                      "width": "fill_container",
                                       "layout": "vertical",
                                       "gap": 3,
-                                      "width": "fill_container",
                                       "children": [
                                         {
                                           "type": "text",
@@ -97542,13 +97549,13 @@
                                           "id": "ov0ie",
                                           "name": "Description",
                                           "fill": "$phase-secondary-ink",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
                                           "content": "Every control shares one height ladder (28px to 44px) and verified light/dark contrast tokens.",
                                           "lineHeight": 1.5,
                                           "fontFamily": "Geist",
                                           "fontSize": 13,
-                                          "fontWeight": "normal",
-                                          "width": "fill_container",
-                                          "textGrowth": "fixed-width"
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     }
@@ -97558,20 +97565,20 @@
                                   "type": "rectangle",
                                   "id": "ov0ih",
                                   "name": "Divider",
+                                  "fill": "$phase-line",
                                   "width": "fill_container",
-                                  "height": 1,
-                                  "fill": "$phase-line"
+                                  "height": 1
                                 },
                                 {
                                   "type": "frame",
                                   "id": "ov0in",
                                   "name": "Pillar / Base UI powered",
+                                  "width": "fill_container",
                                   "gap": 12,
                                   "padding": [
                                     16,
                                     18
                                   ],
-                                  "width": "fill_container",
                                   "children": [
                                     {
                                       "type": "frame",
@@ -97580,10 +97587,10 @@
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$phase-surface",
+                                      "cornerRadius": 8,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 8,
                                       "justifyContent": "center",
                                       "alignItems": "center",
                                       "children": [
@@ -97603,9 +97610,9 @@
                                       "type": "frame",
                                       "id": "ov0im",
                                       "name": "Copy",
+                                      "width": "fill_container",
                                       "layout": "vertical",
                                       "gap": 3,
-                                      "width": "fill_container",
                                       "children": [
                                         {
                                           "type": "text",
@@ -97623,13 +97630,13 @@
                                           "id": "ov0il",
                                           "name": "Description",
                                           "fill": "$phase-secondary-ink",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
                                           "content": "Unstyled, accessible primitives with WAI-ARIA patterns, focus restoration, and keyboard navigation built in.",
                                           "lineHeight": 1.5,
                                           "fontFamily": "Geist",
                                           "fontSize": 13,
-                                          "fontWeight": "normal",
-                                          "width": "fill_container",
-                                          "textGrowth": "fixed-width"
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     }
@@ -97639,20 +97646,20 @@
                                   "type": "rectangle",
                                   "id": "ov0io",
                                   "name": "Divider",
+                                  "fill": "$phase-line",
                                   "width": "fill_container",
-                                  "height": 1,
-                                  "fill": "$phase-line"
+                                  "height": 1
                                 },
                                 {
                                   "type": "frame",
                                   "id": "ov0iu",
                                   "name": "Pillar / TypeScript first",
+                                  "width": "fill_container",
                                   "gap": 12,
                                   "padding": [
                                     16,
                                     18
                                   ],
-                                  "width": "fill_container",
                                   "children": [
                                     {
                                       "type": "frame",
@@ -97661,10 +97668,10 @@
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$phase-surface",
+                                      "cornerRadius": 8,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 8,
                                       "justifyContent": "center",
                                       "alignItems": "center",
                                       "children": [
@@ -97684,9 +97691,9 @@
                                       "type": "frame",
                                       "id": "ov0it",
                                       "name": "Copy",
+                                      "width": "fill_container",
                                       "layout": "vertical",
                                       "gap": 3,
-                                      "width": "fill_container",
                                       "children": [
                                         {
                                           "type": "text",
@@ -97704,13 +97711,13 @@
                                           "id": "ov0is",
                                           "name": "Description",
                                           "fill": "$phase-secondary-ink",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
                                           "content": "Strict generic props, exported cva variants, and clean compound APIs designed for autocomplete.",
                                           "lineHeight": 1.5,
                                           "fontFamily": "Geist",
                                           "fontSize": 13,
-                                          "fontWeight": "normal",
-                                          "width": "fill_container",
-                                          "textGrowth": "fixed-width"
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     }
@@ -97720,20 +97727,20 @@
                                   "type": "rectangle",
                                   "id": "ov0iv",
                                   "name": "Divider",
+                                  "fill": "$phase-line",
                                   "width": "fill_container",
-                                  "height": 1,
-                                  "fill": "$phase-line"
+                                  "height": 1
                                 },
                                 {
                                   "type": "frame",
                                   "id": "ov0j1",
                                   "name": "Pillar / Source registry ownership",
+                                  "width": "fill_container",
                                   "gap": 12,
                                   "padding": [
                                     16,
                                     18
                                   ],
-                                  "width": "fill_container",
                                   "children": [
                                     {
                                       "type": "frame",
@@ -97742,10 +97749,10 @@
                                       "width": 32,
                                       "height": 32,
                                       "fill": "$phase-surface",
+                                      "cornerRadius": 8,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 8,
                                       "justifyContent": "center",
                                       "alignItems": "center",
                                       "children": [
@@ -97765,9 +97772,9 @@
                                       "type": "frame",
                                       "id": "ov0j0",
                                       "name": "Copy",
+                                      "width": "fill_container",
                                       "layout": "vertical",
                                       "gap": 3,
-                                      "width": "fill_container",
                                       "children": [
                                         {
                                           "type": "text",
@@ -97785,13 +97792,13 @@
                                           "id": "ov0iz",
                                           "name": "Description",
                                           "fill": "$phase-secondary-ink",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
                                           "content": "Components install directly into your codebase with zero black-box dependency lock-in.",
                                           "lineHeight": 1.5,
                                           "fontFamily": "Geist",
                                           "fontSize": 13,
-                                          "fontWeight": "normal",
-                                          "width": "fill_container",
-                                          "textGrowth": "fixed-width"
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     }
@@ -97805,17 +97812,17 @@
                           "type": "frame",
                           "id": "ov0l8",
                           "name": "Component catalog",
+                          "width": "fill_container",
                           "layout": "vertical",
                           "gap": 16,
-                          "width": "fill_container",
                           "children": [
                             {
                               "type": "frame",
                               "id": "ov0l7",
                               "name": "Section heading",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 6,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "text",
@@ -97834,13 +97841,13 @@
                                   "id": "ov0l6",
                                   "name": "Description",
                                   "fill": "$phase-secondary-ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "Browse by category in the sidebar or add individual primitives directly with the CLI.",
                                   "lineHeight": 1.5,
                                   "fontFamily": "Geist",
                                   "fontSize": 15,
-                                  "fontWeight": "normal",
-                                  "width": "fill_container",
-                                  "textGrowth": "fixed-width"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -97848,30 +97855,30 @@
                               "type": "frame",
                               "id": "ov0l4",
                               "name": "Catalog grid",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 12,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "ov0jt",
                                   "name": "Row 1",
-                                  "gap": 12,
                                   "width": "fill_container",
+                                  "gap": 12,
                                   "children": [
                                     {
                                       "type": "frame",
                                       "id": "ov0jh",
                                       "name": "Category / Forms & Inputs",
-                                      "layout": "vertical",
-                                      "gap": 10,
-                                      "padding": 16,
                                       "width": "fill_container",
                                       "fill": "$phase-paper",
+                                      "cornerRadius": 12,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 12,
+                                      "layout": "vertical",
+                                      "gap": 10,
+                                      "padding": 16,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -97909,20 +97916,20 @@
                                           "type": "frame",
                                           "id": "ov0jg",
                                           "name": "Samples",
-                                          "gap": 6,
                                           "width": "fill_container",
+                                          "gap": 6,
                                           "alignItems": "center",
                                           "children": [
                                             {
                                               "type": "frame",
                                               "id": "ov0jb",
                                               "name": "Chip / Button",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -97942,12 +97949,12 @@
                                               "type": "frame",
                                               "id": "ov0jd",
                                               "name": "Chip / Input",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -97967,12 +97974,12 @@
                                               "type": "frame",
                                               "id": "ov0jf",
                                               "name": "Chip / Select",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -97996,15 +98003,15 @@
                                       "type": "frame",
                                       "id": "ov0js",
                                       "name": "Category / Overlays & Menus",
-                                      "layout": "vertical",
-                                      "gap": 10,
-                                      "padding": 16,
                                       "width": "fill_container",
                                       "fill": "$phase-paper",
+                                      "cornerRadius": 12,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 12,
+                                      "layout": "vertical",
+                                      "gap": 10,
+                                      "padding": 16,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -98042,20 +98049,20 @@
                                           "type": "frame",
                                           "id": "ov0jr",
                                           "name": "Samples",
-                                          "gap": 6,
                                           "width": "fill_container",
+                                          "gap": 6,
                                           "alignItems": "center",
                                           "children": [
                                             {
                                               "type": "frame",
                                               "id": "ov0jm",
                                               "name": "Chip / Dialog",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98075,12 +98082,12 @@
                                               "type": "frame",
                                               "id": "ov0jo",
                                               "name": "Chip / Drawer",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98100,12 +98107,12 @@
                                               "type": "frame",
                                               "id": "ov0jq",
                                               "name": "Chip / Popover",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98131,22 +98138,22 @@
                                   "type": "frame",
                                   "id": "ov0kg",
                                   "name": "Row 2",
-                                  "gap": 12,
                                   "width": "fill_container",
+                                  "gap": 12,
                                   "children": [
                                     {
                                       "type": "frame",
                                       "id": "ov0k4",
                                       "name": "Category / Navigation & Layout",
-                                      "layout": "vertical",
-                                      "gap": 10,
-                                      "padding": 16,
                                       "width": "fill_container",
                                       "fill": "$phase-paper",
+                                      "cornerRadius": 12,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 12,
+                                      "layout": "vertical",
+                                      "gap": 10,
+                                      "padding": 16,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -98184,20 +98191,20 @@
                                           "type": "frame",
                                           "id": "ov0k3",
                                           "name": "Samples",
-                                          "gap": 6,
                                           "width": "fill_container",
+                                          "gap": 6,
                                           "alignItems": "center",
                                           "children": [
                                             {
                                               "type": "frame",
                                               "id": "ov0jy",
                                               "name": "Chip / Sidebar",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98217,12 +98224,12 @@
                                               "type": "frame",
                                               "id": "ov0k0",
                                               "name": "Chip / Tabs",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98242,12 +98249,12 @@
                                               "type": "frame",
                                               "id": "ov0k2",
                                               "name": "Chip / Breadcrumb",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98271,15 +98278,15 @@
                                       "type": "frame",
                                       "id": "ov0kf",
                                       "name": "Category / Data Display",
-                                      "layout": "vertical",
-                                      "gap": 10,
-                                      "padding": 16,
                                       "width": "fill_container",
                                       "fill": "$phase-paper",
+                                      "cornerRadius": 12,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 12,
+                                      "layout": "vertical",
+                                      "gap": 10,
+                                      "padding": 16,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -98317,20 +98324,20 @@
                                           "type": "frame",
                                           "id": "ov0ke",
                                           "name": "Samples",
-                                          "gap": 6,
                                           "width": "fill_container",
+                                          "gap": 6,
                                           "alignItems": "center",
                                           "children": [
                                             {
                                               "type": "frame",
                                               "id": "ov0k9",
                                               "name": "Chip / Table",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98350,12 +98357,12 @@
                                               "type": "frame",
                                               "id": "ov0kb",
                                               "name": "Chip / Badge",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98375,12 +98382,12 @@
                                               "type": "frame",
                                               "id": "ov0kd",
                                               "name": "Chip / Avatar",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98406,22 +98413,22 @@
                                   "type": "frame",
                                   "id": "ov0l3",
                                   "name": "Row 3",
-                                  "gap": 12,
                                   "width": "fill_container",
+                                  "gap": 12,
                                   "children": [
                                     {
                                       "type": "frame",
                                       "id": "ov0kr",
                                       "name": "Category / Feedback & Status",
-                                      "layout": "vertical",
-                                      "gap": 10,
-                                      "padding": 16,
                                       "width": "fill_container",
                                       "fill": "$phase-paper",
+                                      "cornerRadius": 12,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 12,
+                                      "layout": "vertical",
+                                      "gap": 10,
+                                      "padding": 16,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -98459,20 +98466,20 @@
                                           "type": "frame",
                                           "id": "ov0kq",
                                           "name": "Samples",
-                                          "gap": 6,
                                           "width": "fill_container",
+                                          "gap": 6,
                                           "alignItems": "center",
                                           "children": [
                                             {
                                               "type": "frame",
                                               "id": "ov0kl",
                                               "name": "Chip / Toast",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98492,12 +98499,12 @@
                                               "type": "frame",
                                               "id": "ov0kn",
                                               "name": "Chip / Alert",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98517,12 +98524,12 @@
                                               "type": "frame",
                                               "id": "ov0kp",
                                               "name": "Chip / Progress",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98546,15 +98553,15 @@
                                       "type": "frame",
                                       "id": "ov0l2",
                                       "name": "Category / Utilities & Hooks",
-                                      "layout": "vertical",
-                                      "gap": 10,
-                                      "padding": 16,
                                       "width": "fill_container",
                                       "fill": "$phase-paper",
+                                      "cornerRadius": 12,
                                       "stroke": "$phase-line",
                                       "strokeWidth": 1,
                                       "strokeAlignment": "inner",
-                                      "cornerRadius": 12,
+                                      "layout": "vertical",
+                                      "gap": 10,
+                                      "padding": 16,
                                       "children": [
                                         {
                                           "type": "frame",
@@ -98592,20 +98599,20 @@
                                           "type": "frame",
                                           "id": "ov0l1",
                                           "name": "Samples",
-                                          "gap": 6,
                                           "width": "fill_container",
+                                          "gap": 6,
                                           "alignItems": "center",
                                           "children": [
                                             {
                                               "type": "frame",
                                               "id": "ov0kw",
                                               "name": "Chip / CodeBlock",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98625,12 +98632,12 @@
                                               "type": "frame",
                                               "id": "ov0ky",
                                               "name": "Chip / Command",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98650,12 +98657,12 @@
                                               "type": "frame",
                                               "id": "ov0l0",
                                               "name": "Chip / ReducedMotion",
+                                              "fill": "$phase-surface",
+                                              "cornerRadius": 6,
                                               "padding": [
                                                 3,
                                                 8
                                               ],
-                                              "fill": "$phase-surface",
-                                              "cornerRadius": 6,
                                               "alignItems": "center",
                                               "children": [
                                                 {
@@ -98685,17 +98692,17 @@
                           "type": "frame",
                           "id": "ov0lx",
                           "name": "Quickstart CLI",
+                          "width": "fill_container",
                           "layout": "vertical",
                           "gap": 16,
-                          "width": "fill_container",
                           "children": [
                             {
                               "type": "frame",
                               "id": "ov0lw",
                               "name": "Section heading",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 6,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "text",
@@ -98714,13 +98721,13 @@
                                   "id": "ov0lv",
                                   "name": "Description",
                                   "fill": "$phase-secondary-ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "Initialize once, then pull only the components you need into src/components/ui.",
                                   "lineHeight": 1.5,
                                   "fontFamily": "Geist",
                                   "fontSize": 15,
-                                  "fontWeight": "normal",
-                                  "width": "fill_container",
-                                  "textGrowth": "fixed-width"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -98728,15 +98735,15 @@
                               "type": "frame",
                               "id": "ov0lt",
                               "name": "CLI quickstart terminal",
-                              "layout": "vertical",
-                              "gap": 14,
-                              "padding": 22,
                               "width": "fill_container",
                               "fill": "$phase-night",
+                              "cornerRadius": 14,
                               "stroke": "#263338",
                               "strokeWidth": 1,
                               "strokeAlignment": "inner",
-                              "cornerRadius": 14,
+                              "layout": "vertical",
+                              "gap": 14,
+                              "padding": 22,
                               "children": [
                                 {
                                   "type": "frame",
@@ -98780,16 +98787,16 @@
                                       "type": "frame",
                                       "id": "ov0le",
                                       "name": "Copy button",
+                                      "fill": "#121B1F",
+                                      "cornerRadius": 7,
+                                      "stroke": "#34454A",
+                                      "strokeWidth": 1,
+                                      "strokeAlignment": "inner",
                                       "gap": 6,
                                       "padding": [
                                         6,
                                         10
                                       ],
-                                      "fill": "#121B1F",
-                                      "stroke": "#34454A",
-                                      "strokeWidth": 1,
-                                      "strokeAlignment": "inner",
-                                      "cornerRadius": 7,
                                       "alignItems": "center",
                                       "children": [
                                         {
@@ -98821,24 +98828,24 @@
                                   "type": "rectangle",
                                   "id": "ov0lg",
                                   "name": "Divider",
+                                  "fill": "#263338",
                                   "width": "fill_container",
-                                  "height": 1,
-                                  "fill": "#263338"
+                                  "height": 1
                                 },
                                 {
                                   "type": "frame",
                                   "id": "ov0ln",
                                   "name": "Commands",
+                                  "width": "fill_container",
                                   "layout": "vertical",
                                   "gap": 8,
-                                  "width": "fill_container",
                                   "children": [
                                     {
                                       "type": "frame",
                                       "id": "ov0lj",
                                       "name": "Step 1",
-                                      "gap": 8,
                                       "width": "fill_container",
+                                      "gap": 8,
                                       "children": [
                                         {
                                           "type": "text",
@@ -98856,13 +98863,13 @@
                                           "id": "ov0li",
                                           "name": "Cmd",
                                           "fill": "$phase-night-ink",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
                                           "content": "npx kira-kit init",
                                           "lineHeight": 1.45,
                                           "fontFamily": "Geist Mono",
                                           "fontSize": 13,
-                                          "fontWeight": "normal",
-                                          "width": "fill_container",
-                                          "textGrowth": "fixed-width"
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     },
@@ -98870,8 +98877,8 @@
                                       "type": "frame",
                                       "id": "ov0lm",
                                       "name": "Step 2",
-                                      "gap": 8,
                                       "width": "fill_container",
+                                      "gap": 8,
                                       "children": [
                                         {
                                           "type": "text",
@@ -98889,13 +98896,13 @@
                                           "id": "ov0ll",
                                           "name": "Cmd",
                                           "fill": "$phase-night-ink",
+                                          "textGrowth": "fixed-width",
+                                          "width": "fill_container",
                                           "content": "npx kira-kit add button input select dialog",
                                           "lineHeight": 1.45,
                                           "fontFamily": "Geist Mono",
                                           "fontSize": 13,
-                                          "fontWeight": "normal",
-                                          "width": "fill_container",
-                                          "textGrowth": "fixed-width"
+                                          "fontWeight": "normal"
                                         }
                                       ]
                                     }
@@ -98905,9 +98912,9 @@
                                   "type": "frame",
                                   "id": "ov0ls",
                                   "name": "Terminal footer",
+                                  "width": "fill_container",
                                   "justifyContent": "space_between",
                                   "alignItems": "center",
-                                  "width": "fill_container",
                                   "children": [
                                     {
                                       "type": "text",
@@ -98970,6 +98977,7 @@
                       "type": "frame",
                       "id": "ov0mb",
                       "name": "On this page",
+                      "width": 212,
                       "layout": "vertical",
                       "gap": 10,
                       "padding": [
@@ -98978,7 +98986,6 @@
                         24,
                         0
                       ],
-                      "width": 212,
                       "children": [
                         {
                           "type": "text",
@@ -98995,6 +99002,12 @@
                           "type": "frame",
                           "id": "ov0ma",
                           "name": "Section links",
+                          "width": "fill_container",
+                          "stroke": "$phase-line",
+                          "strokeWidth": {
+                            "left": 1
+                          },
+                          "strokeAlignment": "inner",
                           "layout": "vertical",
                           "padding": [
                             0,
@@ -99002,12 +99015,6 @@
                             0,
                             12
                           ],
-                          "width": "fill_container",
-                          "stroke": "$phase-line",
-                          "strokeWidth": {
-                            "left": 1
-                          },
-                          "strokeAlignment": "inner",
                           "children": [
                             {
                               "type": "frame",
@@ -99129,11 +99136,11 @@
     {
       "type": "frame",
       "id": "ov0sv",
-      "name": "Kira Kit / Overview / Mobile",
-      "x": 5225,
+      "x": 6150,
       "y": 10140,
-      "width": 390,
+      "name": "Kira Kit / Overview / Mobile",
       "clip": true,
+      "width": 390,
       "fill": "$phase-paper",
       "layout": "vertical",
       "children": [
@@ -99359,6 +99366,8 @@
               "type": "frame",
               "id": "ov0st",
               "name": "Article",
+              "width": "fill_container",
+              "fill": "$phase-paper",
               "layout": "vertical",
               "gap": 28,
               "padding": [
@@ -99367,16 +99376,14 @@
                 36,
                 20
               ],
-              "width": "fill_container",
-              "fill": "$phase-paper",
               "children": [
                 {
                   "type": "frame",
                   "id": "ov0ng",
                   "name": "Page introduction",
+                  "width": "fill_container",
                   "layout": "vertical",
                   "gap": 14,
-                  "width": "fill_container",
                   "children": [
                     {
                       "type": "frame",
@@ -99393,12 +99400,12 @@
                       "children": [
                         {
                           "type": "rectangle",
+                          "cornerRadius": 999,
                           "id": "ov0my",
                           "name": "Status dot",
-                          "width": 6,
-                          "height": 6,
                           "fill": "$phase-action",
-                          "cornerRadius": 999
+                          "width": 6,
+                          "height": 6
                         },
                         {
                           "type": "text",
@@ -99418,42 +99425,42 @@
                       "id": "ov0nd",
                       "name": "Page title",
                       "fill": "$phase-ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
                       "content": "Welcome to Kira Kit",
                       "lineHeight": 1.08,
                       "fontFamily": "Geist",
                       "fontSize": 36,
                       "fontWeight": "600",
-                      "letterSpacing": -1.4,
-                      "width": "fill_container",
-                      "textGrowth": "fixed-width"
+                      "letterSpacing": -1.4
                     },
                     {
                       "type": "text",
                       "id": "ov0ne",
                       "name": "Page purpose",
                       "fill": "$phase-secondary-ink",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
                       "content": "An enterprise React component system built on Base UI primitives, Tailwind CSS v4, and TypeScript — delivered as a source registry so you own every line.",
                       "lineHeight": 1.55,
                       "fontFamily": "Geist",
                       "fontSize": 16,
-                      "fontWeight": "normal",
-                      "width": "fill_container",
-                      "textGrowth": "fixed-width"
+                      "fontWeight": "normal"
                     },
                     {
                       "type": "frame",
                       "id": "ov0nc",
                       "name": "Hero actions",
+                      "width": "fill_container",
                       "layout": "vertical",
                       "gap": 10,
-                      "width": "fill_container",
                       "children": [
                         {
                           "type": "frame",
                           "id": "ov0n8",
                           "name": "Button / Get started",
-                          "height": 44,
                           "width": "fill_container",
+                          "height": 44,
                           "fill": "$phase-action",
                           "cornerRadius": 8,
                           "gap": 7,
@@ -99491,13 +99498,13 @@
                           "type": "frame",
                           "id": "ov0nb",
                           "name": "Button / Explore UI Preview",
-                          "height": 44,
                           "width": "fill_container",
+                          "height": 44,
                           "fill": "$phase-paper",
+                          "cornerRadius": 8,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 8,
                           "gap": 7,
                           "padding": [
                             0,
@@ -99536,10 +99543,10 @@
                           "width": "fill_container",
                           "height": 44,
                           "fill": "$phase-surface",
+                          "cornerRadius": 8,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 8,
                           "gap": 10,
                           "padding": [
                             0,
@@ -99597,9 +99604,9 @@
                       "type": "rectangle",
                       "id": "ov0nf",
                       "name": "Divider",
+                      "fill": "$phase-line",
                       "width": "fill_container",
-                      "height": 1,
-                      "fill": "$phase-line"
+                      "height": 1
                     }
                   ]
                 },
@@ -99607,33 +99614,33 @@
                   "type": "frame",
                   "id": "ov0nz",
                   "name": "Key metrics",
+                  "width": "fill_container",
                   "layout": "vertical",
                   "gap": 10,
-                  "width": "fill_container",
                   "children": [
                     {
                       "type": "frame",
                       "id": "ov0np",
                       "name": "Row 1",
-                      "gap": 10,
                       "width": "fill_container",
+                      "gap": 10,
                       "children": [
                         {
                           "type": "frame",
                           "id": "ov0nk",
                           "name": "Metric / Components & hooks",
+                          "width": "fill_container",
+                          "fill": "$phase-paper",
+                          "cornerRadius": 12,
+                          "stroke": "$phase-line",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 3,
-                          "width": "fill_container",
                           "padding": [
                             12,
                             14
                           ],
-                          "fill": "$phase-paper",
-                          "stroke": "$phase-line",
-                          "strokeWidth": 1,
-                          "strokeAlignment": "inner",
-                          "cornerRadius": 12,
                           "children": [
                             {
                               "type": "text",
@@ -99675,18 +99682,18 @@
                           "type": "frame",
                           "id": "ov0no",
                           "name": "Metric / Spacing contract",
+                          "width": "fill_container",
+                          "fill": "$phase-paper",
+                          "cornerRadius": 12,
+                          "stroke": "$phase-line",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 3,
-                          "width": "fill_container",
                           "padding": [
                             12,
                             14
                           ],
-                          "fill": "$phase-paper",
-                          "stroke": "$phase-line",
-                          "strokeWidth": 1,
-                          "strokeAlignment": "inner",
-                          "cornerRadius": 12,
                           "children": [
                             {
                               "type": "text",
@@ -99730,25 +99737,25 @@
                       "type": "frame",
                       "id": "ov0ny",
                       "name": "Row 2",
-                      "gap": 10,
                       "width": "fill_container",
+                      "gap": 10,
                       "children": [
                         {
                           "type": "frame",
                           "id": "ov0nt",
                           "name": "Metric / Accessibility",
+                          "width": "fill_container",
+                          "fill": "$phase-paper",
+                          "cornerRadius": 12,
+                          "stroke": "$phase-line",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 3,
-                          "width": "fill_container",
                           "padding": [
                             12,
                             14
                           ],
-                          "fill": "$phase-paper",
-                          "stroke": "$phase-line",
-                          "strokeWidth": 1,
-                          "strokeAlignment": "inner",
-                          "cornerRadius": 12,
                           "children": [
                             {
                               "type": "text",
@@ -99790,18 +99797,18 @@
                           "type": "frame",
                           "id": "ov0nx",
                           "name": "Metric / Runtime lock-in",
+                          "width": "fill_container",
+                          "fill": "$phase-paper",
+                          "cornerRadius": 12,
+                          "stroke": "$phase-line",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
                           "layout": "vertical",
                           "gap": 3,
-                          "width": "fill_container",
                           "padding": [
                             12,
                             14
                           ],
-                          "fill": "$phase-paper",
-                          "stroke": "$phase-line",
-                          "strokeWidth": 1,
-                          "strokeAlignment": "inner",
-                          "cornerRadius": 12,
                           "children": [
                             {
                               "type": "text",
@@ -99847,17 +99854,17 @@
                   "type": "frame",
                   "id": "ov0p8",
                   "name": "Start here",
+                  "width": "fill_container",
                   "layout": "vertical",
                   "gap": 16,
-                  "width": "fill_container",
                   "children": [
                     {
                       "type": "frame",
                       "id": "ov0p7",
                       "name": "Section heading",
+                      "width": "fill_container",
                       "layout": "vertical",
                       "gap": 6,
-                      "width": "fill_container",
                       "children": [
                         {
                           "type": "text",
@@ -99876,13 +99883,13 @@
                           "id": "ov0p6",
                           "name": "Description",
                           "fill": "$phase-secondary-ink",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
                           "content": "Pick the workflow that matches where you are — from first install to live spacing verification.",
                           "lineHeight": 1.5,
                           "fontFamily": "Geist",
                           "fontSize": 15,
-                          "fontWeight": "normal",
-                          "width": "fill_container",
-                          "textGrowth": "fixed-width"
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -99890,30 +99897,30 @@
                       "type": "frame",
                       "id": "ov0p4",
                       "name": "Path cards",
+                      "width": "fill_container",
                       "layout": "vertical",
                       "gap": 12,
-                      "width": "fill_container",
                       "children": [
                         {
                           "type": "frame",
                           "id": "ov0o9",
                           "name": "Path card / Introduction",
-                          "layout": "vertical",
-                          "gap": 10,
-                          "padding": 16,
                           "width": "fill_container",
                           "fill": "$phase-paper",
+                          "cornerRadius": 14,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 14,
+                          "layout": "vertical",
+                          "gap": 10,
+                          "padding": 16,
                           "children": [
                             {
                               "type": "frame",
                               "id": "ov0o7",
                               "name": "Card header",
-                              "gap": 10,
                               "width": "fill_container",
+                              "gap": 10,
                               "justifyContent": "space_between",
                               "alignItems": "center",
                               "children": [
@@ -99997,13 +100004,13 @@
                               "id": "ov0o8",
                               "name": "Description",
                               "fill": "$phase-secondary-ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Learn how Base UI primitives, OKLCH theme tokens, and the source registry fit together.",
                               "lineHeight": 1.5,
                               "fontFamily": "Geist",
                               "fontSize": 13,
-                              "fontWeight": "normal",
-                              "width": "fill_container",
-                              "textGrowth": "fixed-width"
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -100011,22 +100018,22 @@
                           "type": "frame",
                           "id": "ov0oj",
                           "name": "Path card / Installation",
-                          "layout": "vertical",
-                          "gap": 10,
-                          "padding": 16,
                           "width": "fill_container",
                           "fill": "$phase-paper",
+                          "cornerRadius": 14,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 14,
+                          "layout": "vertical",
+                          "gap": 10,
+                          "padding": 16,
                           "children": [
                             {
                               "type": "frame",
                               "id": "ov0oh",
                               "name": "Card header",
-                              "gap": 10,
                               "width": "fill_container",
+                              "gap": 10,
                               "justifyContent": "space_between",
                               "alignItems": "center",
                               "children": [
@@ -100110,13 +100117,13 @@
                               "id": "ov0oi",
                               "name": "Description",
                               "fill": "$phase-secondary-ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Scaffold a new Vite + React app or drop Kira Kit into an existing TypeScript workspace.",
                               "lineHeight": 1.5,
                               "fontFamily": "Geist",
                               "fontSize": 13,
-                              "fontWeight": "normal",
-                              "width": "fill_container",
-                              "textGrowth": "fixed-width"
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -100124,22 +100131,22 @@
                           "type": "frame",
                           "id": "ov0ot",
                           "name": "Path card / UI Preview",
-                          "layout": "vertical",
-                          "gap": 10,
-                          "padding": 16,
                           "width": "fill_container",
                           "fill": "$phase-paper",
+                          "cornerRadius": 14,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 14,
+                          "layout": "vertical",
+                          "gap": 10,
+                          "padding": 16,
                           "children": [
                             {
                               "type": "frame",
                               "id": "ov0or",
                               "name": "Card header",
-                              "gap": 10,
                               "width": "fill_container",
+                              "gap": 10,
                               "justifyContent": "space_between",
                               "alignItems": "center",
                               "children": [
@@ -100223,13 +100230,13 @@
                               "id": "ov0os",
                               "name": "Description",
                               "fill": "$phase-secondary-ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Inspect the 4px control ladder, composite input seams, worst-case strings, and motion.",
                               "lineHeight": 1.5,
                               "fontFamily": "Geist",
                               "fontSize": 13,
-                              "fontWeight": "normal",
-                              "width": "fill_container",
-                              "textGrowth": "fixed-width"
+                              "fontWeight": "normal"
                             }
                           ]
                         },
@@ -100237,22 +100244,22 @@
                           "type": "frame",
                           "id": "ov0p3",
                           "name": "Path card / Theming",
-                          "layout": "vertical",
-                          "gap": 10,
-                          "padding": 16,
                           "width": "fill_container",
                           "fill": "$phase-paper",
+                          "cornerRadius": 14,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 14,
+                          "layout": "vertical",
+                          "gap": 10,
+                          "padding": 16,
                           "children": [
                             {
                               "type": "frame",
                               "id": "ov0p1",
                               "name": "Card header",
-                              "gap": 10,
                               "width": "fill_container",
+                              "gap": 10,
                               "justifyContent": "space_between",
                               "alignItems": "center",
                               "children": [
@@ -100336,13 +100343,13 @@
                               "id": "ov0p2",
                               "name": "Description",
                               "fill": "$phase-secondary-ink",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Switch between curated presets, tune primary colors, typography pairs, and dark mode.",
                               "lineHeight": 1.5,
                               "fontFamily": "Geist",
                               "fontSize": 13,
-                              "fontWeight": "normal",
-                              "width": "fill_container",
-                              "textGrowth": "fixed-width"
+                              "fontWeight": "normal"
                             }
                           ]
                         }
@@ -100354,17 +100361,17 @@
                   "type": "frame",
                   "id": "ov0q4",
                   "name": "Why Kira Kit",
+                  "width": "fill_container",
                   "layout": "vertical",
                   "gap": 16,
-                  "width": "fill_container",
                   "children": [
                     {
                       "type": "frame",
                       "id": "ov0q2",
                       "name": "Section heading",
+                      "width": "fill_container",
                       "layout": "vertical",
                       "gap": 6,
-                      "width": "fill_container",
                       "children": [
                         {
                           "type": "text",
@@ -100383,13 +100390,13 @@
                           "id": "ov0q1",
                           "name": "Description",
                           "fill": "$phase-secondary-ink",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
                           "content": "Engineered for consistency across desktop density and mobile touch targets.",
                           "lineHeight": 1.5,
                           "fontFamily": "Geist",
                           "fontSize": 15,
-                          "fontWeight": "normal",
-                          "width": "fill_container",
-                          "textGrowth": "fixed-width"
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -100397,24 +100404,21 @@
                       "type": "frame",
                       "id": "ov0q3",
                       "name": "Architecture pillars",
-                      "layout": "vertical",
                       "width": "fill_container",
                       "fill": "$phase-paper",
+                      "cornerRadius": 12,
                       "stroke": "$phase-line",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
-                      "cornerRadius": 12,
+                      "layout": "vertical",
                       "children": [
                         {
                           "type": "frame",
                           "id": "ov0pe",
                           "name": "Pillar / 4px spacing contract",
-                          "gap": 12,
-                          "padding": [
-                            14,
-                            14
-                          ],
                           "width": "fill_container",
+                          "gap": 12,
+                          "padding": 14,
                           "children": [
                             {
                               "type": "frame",
@@ -100423,10 +100427,10 @@
                               "width": 32,
                               "height": 32,
                               "fill": "$phase-surface",
+                              "cornerRadius": 8,
                               "stroke": "$phase-line",
                               "strokeWidth": 1,
                               "strokeAlignment": "inner",
-                              "cornerRadius": 8,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -100446,9 +100450,9 @@
                               "type": "frame",
                               "id": "ov0pd",
                               "name": "Copy",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 3,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "text",
@@ -100466,13 +100470,13 @@
                                   "id": "ov0pc",
                                   "name": "Description",
                                   "fill": "$phase-secondary-ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "Every control shares one height ladder (28px to 44px) and verified light/dark contrast tokens.",
                                   "lineHeight": 1.5,
                                   "fontFamily": "Geist",
                                   "fontSize": 13,
-                                  "fontWeight": "normal",
-                                  "width": "fill_container",
-                                  "textGrowth": "fixed-width"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -100482,20 +100486,17 @@
                           "type": "rectangle",
                           "id": "ov0pf",
                           "name": "Divider",
+                          "fill": "$phase-line",
                           "width": "fill_container",
-                          "height": 1,
-                          "fill": "$phase-line"
+                          "height": 1
                         },
                         {
                           "type": "frame",
                           "id": "ov0pl",
                           "name": "Pillar / Base UI powered",
-                          "gap": 12,
-                          "padding": [
-                            14,
-                            14
-                          ],
                           "width": "fill_container",
+                          "gap": 12,
+                          "padding": 14,
                           "children": [
                             {
                               "type": "frame",
@@ -100504,10 +100505,10 @@
                               "width": 32,
                               "height": 32,
                               "fill": "$phase-surface",
+                              "cornerRadius": 8,
                               "stroke": "$phase-line",
                               "strokeWidth": 1,
                               "strokeAlignment": "inner",
-                              "cornerRadius": 8,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -100527,9 +100528,9 @@
                               "type": "frame",
                               "id": "ov0pk",
                               "name": "Copy",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 3,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "text",
@@ -100547,13 +100548,13 @@
                                   "id": "ov0pj",
                                   "name": "Description",
                                   "fill": "$phase-secondary-ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "Unstyled, accessible primitives with WAI-ARIA patterns, focus restoration, and keyboard navigation built in.",
                                   "lineHeight": 1.5,
                                   "fontFamily": "Geist",
                                   "fontSize": 13,
-                                  "fontWeight": "normal",
-                                  "width": "fill_container",
-                                  "textGrowth": "fixed-width"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -100563,20 +100564,17 @@
                           "type": "rectangle",
                           "id": "ov0pm",
                           "name": "Divider",
+                          "fill": "$phase-line",
                           "width": "fill_container",
-                          "height": 1,
-                          "fill": "$phase-line"
+                          "height": 1
                         },
                         {
                           "type": "frame",
                           "id": "ov0ps",
                           "name": "Pillar / TypeScript first",
-                          "gap": 12,
-                          "padding": [
-                            14,
-                            14
-                          ],
                           "width": "fill_container",
+                          "gap": 12,
+                          "padding": 14,
                           "children": [
                             {
                               "type": "frame",
@@ -100585,10 +100583,10 @@
                               "width": 32,
                               "height": 32,
                               "fill": "$phase-surface",
+                              "cornerRadius": 8,
                               "stroke": "$phase-line",
                               "strokeWidth": 1,
                               "strokeAlignment": "inner",
-                              "cornerRadius": 8,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -100608,9 +100606,9 @@
                               "type": "frame",
                               "id": "ov0pr",
                               "name": "Copy",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 3,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "text",
@@ -100628,13 +100626,13 @@
                                   "id": "ov0pq",
                                   "name": "Description",
                                   "fill": "$phase-secondary-ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "Strict generic props, exported cva variants, and clean compound APIs designed for autocomplete.",
                                   "lineHeight": 1.5,
                                   "fontFamily": "Geist",
                                   "fontSize": 13,
-                                  "fontWeight": "normal",
-                                  "width": "fill_container",
-                                  "textGrowth": "fixed-width"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -100644,20 +100642,17 @@
                           "type": "rectangle",
                           "id": "ov0pt",
                           "name": "Divider",
+                          "fill": "$phase-line",
                           "width": "fill_container",
-                          "height": 1,
-                          "fill": "$phase-line"
+                          "height": 1
                         },
                         {
                           "type": "frame",
                           "id": "ov0pz",
                           "name": "Pillar / Source registry ownership",
-                          "gap": 12,
-                          "padding": [
-                            14,
-                            14
-                          ],
                           "width": "fill_container",
+                          "gap": 12,
+                          "padding": 14,
                           "children": [
                             {
                               "type": "frame",
@@ -100666,10 +100661,10 @@
                               "width": 32,
                               "height": 32,
                               "fill": "$phase-surface",
+                              "cornerRadius": 8,
                               "stroke": "$phase-line",
                               "strokeWidth": 1,
                               "strokeAlignment": "inner",
-                              "cornerRadius": 8,
                               "justifyContent": "center",
                               "alignItems": "center",
                               "children": [
@@ -100689,9 +100684,9 @@
                               "type": "frame",
                               "id": "ov0py",
                               "name": "Copy",
+                              "width": "fill_container",
                               "layout": "vertical",
                               "gap": 3,
-                              "width": "fill_container",
                               "children": [
                                 {
                                   "type": "text",
@@ -100709,13 +100704,13 @@
                                   "id": "ov0px",
                                   "name": "Description",
                                   "fill": "$phase-secondary-ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "Components install directly into your codebase with zero black-box dependency lock-in.",
                                   "lineHeight": 1.5,
                                   "fontFamily": "Geist",
                                   "fontSize": 13,
-                                  "fontWeight": "normal",
-                                  "width": "fill_container",
-                                  "textGrowth": "fixed-width"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -100729,17 +100724,17 @@
                   "type": "frame",
                   "id": "ov0s3",
                   "name": "Component catalog",
+                  "width": "fill_container",
                   "layout": "vertical",
                   "gap": 16,
-                  "width": "fill_container",
                   "children": [
                     {
                       "type": "frame",
                       "id": "ov0s2",
                       "name": "Section heading",
+                      "width": "fill_container",
                       "layout": "vertical",
                       "gap": 6,
-                      "width": "fill_container",
                       "children": [
                         {
                           "type": "text",
@@ -100758,13 +100753,13 @@
                           "id": "ov0s1",
                           "name": "Description",
                           "fill": "$phase-secondary-ink",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
                           "content": "Browse by category in the sidebar or add individual primitives directly with the CLI.",
                           "lineHeight": 1.5,
                           "fontFamily": "Geist",
                           "fontSize": 15,
-                          "fontWeight": "normal",
-                          "width": "fill_container",
-                          "textGrowth": "fixed-width"
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -100772,23 +100767,23 @@
                       "type": "frame",
                       "id": "ov0rz",
                       "name": "Catalog grid",
+                      "width": "fill_container",
                       "layout": "vertical",
                       "gap": 10,
-                      "width": "fill_container",
                       "children": [
                         {
                           "type": "frame",
                           "id": "ov0qf",
                           "name": "Category / Forms & Inputs",
-                          "layout": "vertical",
-                          "gap": 10,
-                          "padding": 16,
                           "width": "fill_container",
                           "fill": "$phase-paper",
+                          "cornerRadius": 12,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 12,
+                          "layout": "vertical",
+                          "gap": 10,
+                          "padding": 16,
                           "children": [
                             {
                               "type": "frame",
@@ -100826,20 +100821,20 @@
                               "type": "frame",
                               "id": "ov0qe",
                               "name": "Samples",
-                              "gap": 6,
                               "width": "fill_container",
+                              "gap": 6,
                               "alignItems": "center",
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "ov0q9",
                                   "name": "Chip / Button",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -100859,12 +100854,12 @@
                                   "type": "frame",
                                   "id": "ov0qb",
                                   "name": "Chip / Input",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -100884,12 +100879,12 @@
                                   "type": "frame",
                                   "id": "ov0qd",
                                   "name": "Chip / Select",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -100913,15 +100908,15 @@
                           "type": "frame",
                           "id": "ov0qq",
                           "name": "Category / Overlays & Menus",
-                          "layout": "vertical",
-                          "gap": 10,
-                          "padding": 16,
                           "width": "fill_container",
                           "fill": "$phase-paper",
+                          "cornerRadius": 12,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 12,
+                          "layout": "vertical",
+                          "gap": 10,
+                          "padding": 16,
                           "children": [
                             {
                               "type": "frame",
@@ -100959,20 +100954,20 @@
                               "type": "frame",
                               "id": "ov0qp",
                               "name": "Samples",
-                              "gap": 6,
                               "width": "fill_container",
+                              "gap": 6,
                               "alignItems": "center",
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "ov0qk",
                                   "name": "Chip / Dialog",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -100992,12 +100987,12 @@
                                   "type": "frame",
                                   "id": "ov0qm",
                                   "name": "Chip / Drawer",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101017,12 +101012,12 @@
                                   "type": "frame",
                                   "id": "ov0qo",
                                   "name": "Chip / Popover",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101046,15 +101041,15 @@
                           "type": "frame",
                           "id": "ov0r1",
                           "name": "Category / Navigation & Layout",
-                          "layout": "vertical",
-                          "gap": 10,
-                          "padding": 16,
                           "width": "fill_container",
                           "fill": "$phase-paper",
+                          "cornerRadius": 12,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 12,
+                          "layout": "vertical",
+                          "gap": 10,
+                          "padding": 16,
                           "children": [
                             {
                               "type": "frame",
@@ -101092,20 +101087,20 @@
                               "type": "frame",
                               "id": "ov0r0",
                               "name": "Samples",
-                              "gap": 6,
                               "width": "fill_container",
+                              "gap": 6,
                               "alignItems": "center",
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "ov0qv",
                                   "name": "Chip / Sidebar",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101125,12 +101120,12 @@
                                   "type": "frame",
                                   "id": "ov0qx",
                                   "name": "Chip / Tabs",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101150,12 +101145,12 @@
                                   "type": "frame",
                                   "id": "ov0qz",
                                   "name": "Chip / Breadcrumb",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101179,15 +101174,15 @@
                           "type": "frame",
                           "id": "ov0rc",
                           "name": "Category / Data Display",
-                          "layout": "vertical",
-                          "gap": 10,
-                          "padding": 16,
                           "width": "fill_container",
                           "fill": "$phase-paper",
+                          "cornerRadius": 12,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 12,
+                          "layout": "vertical",
+                          "gap": 10,
+                          "padding": 16,
                           "children": [
                             {
                               "type": "frame",
@@ -101225,20 +101220,20 @@
                               "type": "frame",
                               "id": "ov0rb",
                               "name": "Samples",
-                              "gap": 6,
                               "width": "fill_container",
+                              "gap": 6,
                               "alignItems": "center",
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "ov0r6",
                                   "name": "Chip / Table",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101258,12 +101253,12 @@
                                   "type": "frame",
                                   "id": "ov0r8",
                                   "name": "Chip / Badge",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101283,12 +101278,12 @@
                                   "type": "frame",
                                   "id": "ov0ra",
                                   "name": "Chip / Avatar",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101312,15 +101307,15 @@
                           "type": "frame",
                           "id": "ov0rn",
                           "name": "Category / Feedback & Status",
-                          "layout": "vertical",
-                          "gap": 10,
-                          "padding": 16,
                           "width": "fill_container",
                           "fill": "$phase-paper",
+                          "cornerRadius": 12,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 12,
+                          "layout": "vertical",
+                          "gap": 10,
+                          "padding": 16,
                           "children": [
                             {
                               "type": "frame",
@@ -101358,20 +101353,20 @@
                               "type": "frame",
                               "id": "ov0rm",
                               "name": "Samples",
-                              "gap": 6,
                               "width": "fill_container",
+                              "gap": 6,
                               "alignItems": "center",
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "ov0rh",
                                   "name": "Chip / Toast",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101391,12 +101386,12 @@
                                   "type": "frame",
                                   "id": "ov0rj",
                                   "name": "Chip / Alert",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101416,12 +101411,12 @@
                                   "type": "frame",
                                   "id": "ov0rl",
                                   "name": "Chip / Progress",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101445,15 +101440,15 @@
                           "type": "frame",
                           "id": "ov0ry",
                           "name": "Category / Utilities & Hooks",
-                          "layout": "vertical",
-                          "gap": 10,
-                          "padding": 16,
                           "width": "fill_container",
                           "fill": "$phase-paper",
+                          "cornerRadius": 12,
                           "stroke": "$phase-line",
                           "strokeWidth": 1,
                           "strokeAlignment": "inner",
-                          "cornerRadius": 12,
+                          "layout": "vertical",
+                          "gap": 10,
+                          "padding": 16,
                           "children": [
                             {
                               "type": "frame",
@@ -101491,20 +101486,20 @@
                               "type": "frame",
                               "id": "ov0rx",
                               "name": "Samples",
-                              "gap": 6,
                               "width": "fill_container",
+                              "gap": 6,
                               "alignItems": "center",
                               "children": [
                                 {
                                   "type": "frame",
                                   "id": "ov0rs",
                                   "name": "Chip / CodeBlock",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101524,12 +101519,12 @@
                                   "type": "frame",
                                   "id": "ov0ru",
                                   "name": "Chip / Command",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101549,12 +101544,12 @@
                                   "type": "frame",
                                   "id": "ov0rw",
                                   "name": "Chip / ReducedMotion",
+                                  "fill": "$phase-surface",
+                                  "cornerRadius": 6,
                                   "padding": [
                                     3,
                                     8
                                   ],
-                                  "fill": "$phase-surface",
-                                  "cornerRadius": 6,
                                   "alignItems": "center",
                                   "children": [
                                     {
@@ -101582,17 +101577,17 @@
                   "type": "frame",
                   "id": "ov0ss",
                   "name": "Quickstart CLI",
+                  "width": "fill_container",
                   "layout": "vertical",
                   "gap": 16,
-                  "width": "fill_container",
                   "children": [
                     {
                       "type": "frame",
                       "id": "ov0sr",
                       "name": "Section heading",
+                      "width": "fill_container",
                       "layout": "vertical",
                       "gap": 6,
-                      "width": "fill_container",
                       "children": [
                         {
                           "type": "text",
@@ -101611,13 +101606,13 @@
                           "id": "ov0sq",
                           "name": "Description",
                           "fill": "$phase-secondary-ink",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
                           "content": "Initialize once, then pull only the components you need into src/components/ui.",
                           "lineHeight": 1.5,
                           "fontFamily": "Geist",
                           "fontSize": 15,
-                          "fontWeight": "normal",
-                          "width": "fill_container",
-                          "textGrowth": "fixed-width"
+                          "fontWeight": "normal"
                         }
                       ]
                     },
@@ -101625,15 +101620,15 @@
                       "type": "frame",
                       "id": "ov0so",
                       "name": "CLI quickstart terminal",
-                      "layout": "vertical",
-                      "gap": 14,
-                      "padding": 16,
                       "width": "fill_container",
                       "fill": "$phase-night",
+                      "cornerRadius": 14,
                       "stroke": "#263338",
                       "strokeWidth": 1,
                       "strokeAlignment": "inner",
-                      "cornerRadius": 14,
+                      "layout": "vertical",
+                      "gap": 14,
+                      "padding": 16,
                       "children": [
                         {
                           "type": "frame",
@@ -101677,16 +101672,16 @@
                               "type": "frame",
                               "id": "ov0s9",
                               "name": "Copy button",
+                              "fill": "#121B1F",
+                              "cornerRadius": 7,
+                              "stroke": "#34454A",
+                              "strokeWidth": 1,
+                              "strokeAlignment": "inner",
                               "gap": 6,
                               "padding": [
                                 6,
                                 10
                               ],
-                              "fill": "#121B1F",
-                              "stroke": "#34454A",
-                              "strokeWidth": 1,
-                              "strokeAlignment": "inner",
-                              "cornerRadius": 7,
                               "alignItems": "center",
                               "children": [
                                 {
@@ -101718,24 +101713,24 @@
                           "type": "rectangle",
                           "id": "ov0sb",
                           "name": "Divider",
+                          "fill": "#263338",
                           "width": "fill_container",
-                          "height": 1,
-                          "fill": "#263338"
+                          "height": 1
                         },
                         {
                           "type": "frame",
                           "id": "ov0si",
                           "name": "Commands",
+                          "width": "fill_container",
                           "layout": "vertical",
                           "gap": 8,
-                          "width": "fill_container",
                           "children": [
                             {
                               "type": "frame",
                               "id": "ov0se",
                               "name": "Step 1",
-                              "gap": 8,
                               "width": "fill_container",
+                              "gap": 8,
                               "children": [
                                 {
                                   "type": "text",
@@ -101753,13 +101748,13 @@
                                   "id": "ov0sd",
                                   "name": "Cmd",
                                   "fill": "$phase-night-ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "npx kira-kit init",
                                   "lineHeight": 1.45,
                                   "fontFamily": "Geist Mono",
                                   "fontSize": 13,
-                                  "fontWeight": "normal",
-                                  "width": "fill_container",
-                                  "textGrowth": "fixed-width"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -101767,8 +101762,8 @@
                               "type": "frame",
                               "id": "ov0sh",
                               "name": "Step 2",
-                              "gap": 8,
                               "width": "fill_container",
+                              "gap": 8,
                               "children": [
                                 {
                                   "type": "text",
@@ -101786,13 +101781,13 @@
                                   "id": "ov0sg",
                                   "name": "Cmd",
                                   "fill": "$phase-night-ink",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "npx kira-kit add button input select dialog",
                                   "lineHeight": 1.45,
                                   "fontFamily": "Geist Mono",
                                   "fontSize": 13,
-                                  "fontWeight": "normal",
-                                  "width": "fill_container",
-                                  "textGrowth": "fixed-width"
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -101802,29 +101797,29 @@
                           "type": "frame",
                           "id": "ov0sn",
                           "name": "Terminal footer",
+                          "width": "fill_container",
                           "layout": "vertical",
                           "gap": 10,
-                          "width": "fill_container",
                           "children": [
                             {
                               "type": "text",
                               "id": "ov0sj",
                               "name": "Footnote",
                               "fill": "$phase-night-muted",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "Auto-detects your package manager, Tailwind v4 CSS, and TS path aliases.",
                               "lineHeight": 1.45,
                               "fontFamily": "Geist",
                               "fontSize": 12,
-                              "fontWeight": "normal",
-                              "width": "fill_container",
-                              "textGrowth": "fixed-width"
+                              "fontWeight": "normal"
                             },
                             {
                               "type": "frame",
                               "id": "ov0sm",
                               "name": "Button / Read CLI docs",
-                              "height": 44,
                               "width": "fill_container",
+                              "height": 44,
                               "fill": "$phase-signal",
                               "cornerRadius": 8,
                               "gap": 7,

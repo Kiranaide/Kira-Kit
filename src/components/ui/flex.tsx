@@ -2,7 +2,7 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "cn";
-import { isObjectProp } from "@/lib/component-prop-guards";
+import { isObjectProp } from "@/lib/component-utils";
 
 /*                                 Responsive                                 */
 

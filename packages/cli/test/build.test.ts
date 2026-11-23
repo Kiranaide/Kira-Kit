@@ -17,7 +17,7 @@ import {
   REGISTRY_ITEM_SCHEMA_URL,
   buildPayloads,
 } from "../src/core/registry/build";
-import { extractThemeTokens } from "../src/core/registry/css-assets";
+import { extractThemeTokens } from "../src/core/css/stylesheet";
 import { loadSourceRegistry } from "../src/core/registry/loader";
 import { validateRegistry } from "../src/core/registry/validate";
 import type { RegistryIndex, SourceRegistry } from "../src/lib/schemas";

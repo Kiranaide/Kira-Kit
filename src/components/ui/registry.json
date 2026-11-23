@@ -16,10 +16,9 @@
         "cn"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/tooltip",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -42,19 +41,12 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
           "path": "alert.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "content-keys.ts",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -73,11 +65,9 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-item-keys",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/dialog",
-        "@kira-kit/input"
+        "@kira-kit/input",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -101,19 +91,12 @@
       "registryDependencies": [
         "@kira-kit/button",
         "@kira-kit/spinner",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
           "path": "announcement-bar.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "content-keys.ts",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -133,19 +116,12 @@
       "registryDependencies": [
         "@kira-kit/button",
         "@kira-kit/skeleton",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
           "path": "aspect-ratio.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "content-keys.ts",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -163,11 +139,10 @@
         "cn"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/popover",
         "@kira-kit/tooltip",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -229,9 +204,8 @@
         "cn"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -256,15 +230,12 @@
       "registryDependencies": [
         "@kira-kit/toast",
         "@kira-kit/tooltip",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
           "path": "button.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -285,10 +256,9 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-native-props",
         "@kira-kit/separator",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -315,13 +285,10 @@
         {
           "path": "calendar.tsx",
           "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
         }
       ],
-      "css": "/* Calendar month transition (`animate` prop) — adapted from react-day-picker\n   (MIT, https://github.com/gpbl/react-day-picker) style.css and namespaced so\n   the kit never needs the rdp-* stylesheet. */\n@keyframes kira-calendar-slide-in-left {\n  from { transform: translateX(-100%); }\n  to { transform: translateX(0); }\n}\n\n@keyframes kira-calendar-slide-in-right {\n  from { transform: translateX(100%); }\n  to { transform: translateX(0); }\n}\n\n@keyframes kira-calendar-slide-out-left {\n  from { transform: translateX(0); }\n  to { transform: translateX(-100%); }\n}\n\n@keyframes kira-calendar-slide-out-right {\n  from { transform: translateX(0); }\n  to { transform: translateX(100%); }\n}\n\n@keyframes kira-calendar-fade-in {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}\n\n@keyframes kira-calendar-fade-out {\n  from { opacity: 1; }\n  to { opacity: 0; }\n}\n\n.kira-calendar-weeks-before-enter {\n  animation: kira-calendar-slide-in-left var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-before-exit {\n  animation: kira-calendar-slide-out-left var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-after-enter {\n  animation: kira-calendar-slide-in-right var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-after-exit {\n  animation: kira-calendar-slide-out-right var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-after-enter {\n  animation-name: kira-calendar-slide-in-left;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-before-exit {\n  animation-name: kira-calendar-slide-out-right;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-before-enter {\n  animation-name: kira-calendar-slide-in-right;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-after-exit {\n  animation-name: kira-calendar-slide-out-left;\n}\n\n.kira-calendar-caption-before-enter,\n.kira-calendar-caption-after-enter {\n  animation: kira-calendar-fade-in var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-caption-before-exit,\n.kira-calendar-caption-after-exit {\n  animation: kira-calendar-fade-out var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-slot=\"calendar\"],\n  [data-slot=\"calendar\"] * {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n  }\n}\n"
+      "css": "/* Calendar month transition (`animate` prop) Ã¢â‚¬â€ adapted from react-day-picker\n   (MIT, https://github.com/gpbl/react-day-picker) style.css and namespaced so\n   the kit never needs the rdp-* stylesheet. */\n@keyframes kira-calendar-slide-in-left {\n  from { transform: translateX(-100%); }\n  to { transform: translateX(0); }\n}\n\n@keyframes kira-calendar-slide-in-right {\n  from { transform: translateX(100%); }\n  to { transform: translateX(0); }\n}\n\n@keyframes kira-calendar-slide-out-left {\n  from { transform: translateX(0); }\n  to { transform: translateX(-100%); }\n}\n\n@keyframes kira-calendar-slide-out-right {\n  from { transform: translateX(0); }\n  to { transform: translateX(100%); }\n}\n\n@keyframes kira-calendar-fade-in {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}\n\n@keyframes kira-calendar-fade-out {\n  from { opacity: 1; }\n  to { opacity: 0; }\n}\n\n.kira-calendar-weeks-before-enter {\n  animation: kira-calendar-slide-in-left var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-before-exit {\n  animation: kira-calendar-slide-out-left var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-after-enter {\n  animation: kira-calendar-slide-in-right var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-after-exit {\n  animation: kira-calendar-slide-out-right var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-after-enter {\n  animation-name: kira-calendar-slide-in-left;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-before-exit {\n  animation-name: kira-calendar-slide-out-right;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-before-enter {\n  animation-name: kira-calendar-slide-in-right;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-after-exit {\n  animation-name: kira-calendar-slide-out-left;\n}\n\n.kira-calendar-caption-before-enter,\n.kira-calendar-caption-after-enter {\n  animation: kira-calendar-fade-in var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-caption-before-exit,\n.kira-calendar-caption-after-exit {\n  animation: kira-calendar-fade-out var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-slot=\"calendar\"],\n  [data-slot=\"calendar\"] * {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n  }\n}\n",
+      "registryDependencies": ["@kira-kit/component-utils"]
     },
     {
       "name": "camera",
@@ -339,15 +306,12 @@
         "@kira-kit/switch",
         "@kira-kit/tabs",
         "@kira-kit/use-camera",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
           "path": "camera.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -384,10 +348,8 @@
         "gsap"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-native-props",
-        "@kira-kit/component-prop-guards",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -427,15 +389,12 @@
       "registryDependencies": [
         "@kira-kit/toast",
         "@kira-kit/tooltip",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
           "path": "checkbox.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -456,13 +415,10 @@
       "registryDependencies": [
         "@kira-kit/button",
         "@kira-kit/code-presentation",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-native-props",
-        "@kira-kit/component-prop-guards",
-        "@kira-kit/component-refs",
         "@kira-kit/tabs",
         "@kira-kit/toast",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -484,9 +440,8 @@
         "cn"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -511,15 +466,13 @@
       "registryDependencies": [
         "@kira-kit/button",
         "@kira-kit/color-picker-lib",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-native-props",
-        "@kira-kit/component-refs",
         "@kira-kit/input",
         "@kira-kit/popover",
         "@kira-kit/select",
         "@kira-kit/slider",
         "@kira-kit/use-color-picker",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -543,12 +496,10 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-native-props",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/dialog",
         "@kira-kit/kbd",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -580,10 +531,9 @@
       "categories": ["overlay", "navigation"],
       "dependencies": ["@base-ui/react", "cn"],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/dropdown-menu",
-        "@kira-kit/use-menu-action"
+        "@kira-kit/use-menu-action",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -613,14 +563,13 @@
         "@kira-kit/badge",
         "@kira-kit/button",
         "@kira-kit/checkbox",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/dropdown-menu",
         "@kira-kit/input",
         "@kira-kit/pagination",
         "@kira-kit/popover",
         "@kira-kit/table",
-        "@kira-kit/tooltip"
+        "@kira-kit/tooltip",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -636,6 +585,7 @@
       "description": "A date picker with single, datetime, and range modes, built around a native popover, Calendar, date-fns, and timezone-aware values. It includes typed date entry, presets, locale and IANA time-zone options, pending Cancel/Apply selection, time granularity, and range constraints such as minimum nights and disabled-date exclusion.",
       "categories": ["form", "overlay"],
       "dependencies": [
+        "@base-ui/react",
         "@date-fns/tz",
         "@tabler/icons-react",
         "class-variance-authority",
@@ -646,9 +596,8 @@
       "registryDependencies": [
         "@kira-kit/button",
         "@kira-kit/calendar",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
-        "@kira-kit/time-picker"
+        "@kira-kit/time-picker",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -673,10 +622,6 @@
         {
           "path": "dialog.tsx",
           "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
         }
       ]
     },
@@ -696,10 +641,6 @@
         {
           "path": "drawer.tsx",
           "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
         }
       ]
     },
@@ -716,10 +657,9 @@
         "cn"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/use-menu-action",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -740,14 +680,14 @@
         "class-variance-authority",
         "cn"
       ],
-      "registryDependencies": ["@kira-kit/button", "@kira-kit/spinner"],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/spinner",
+        "@kira-kit/component-utils"
+      ],
       "files": [
         {
           "path": "empty.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -767,13 +707,10 @@
         "zod"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-item-keys",
-        "@kira-kit/component-native-props",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/input",
         "@kira-kit/separator",
-        "@kira-kit/textarea"
+        "@kira-kit/textarea",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -798,9 +735,9 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
-        "@kira-kit/component-defaults",
         "@kira-kit/dialog",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -816,7 +753,7 @@
       "description": "A polymorphic flexbox primitive whose direction, wrapping, justification, alignment, and gap props accept either fixed values or breakpoint maps from base through 2xl. It supports inline flex and semantic elements such as forms, navigation, lists, and fieldsets while preserving element-specific props and refs.",
       "categories": ["layout"],
       "dependencies": ["class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/component-prop-guards"],
+      "registryDependencies": ["@kira-kit/component-utils"],
       "files": [
         {
           "path": "flex.tsx",
@@ -831,14 +768,14 @@
       "description": "A responsive CSS Grid system with breakpoint-aware columns, rows, gaps, alignment, item spans, and placement, including auto-fit and auto-fill tracks controlled by minItemWidth. KiraGrid renders keyed collections with semantic list handling, skeleton loading, empty content, and full-span error states with retry.",
       "categories": ["layout"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/button", "@kira-kit/skeleton"],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/skeleton",
+        "@kira-kit/component-utils"
+      ],
       "files": [
         {
           "path": "grid.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -898,8 +835,8 @@
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
       "registryDependencies": [
         "@kira-kit/button",
-        "@kira-kit/component-defaults",
-        "@kira-kit/textarea"
+        "@kira-kit/textarea",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -926,15 +863,12 @@
       "registryDependencies": [
         "@kira-kit/avatar",
         "@kira-kit/button",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-item-keys",
-        "@kira-kit/component-native-props",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/dialog",
         "@kira-kit/input",
         "@kira-kit/select",
         "@kira-kit/skeleton",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -970,14 +904,13 @@
         "class-variance-authority",
         "cn"
       ],
-      "registryDependencies": ["@kira-kit/tooltip"],
+      "registryDependencies": [
+        "@kira-kit/tooltip",
+        "@kira-kit/component-utils"
+      ],
       "files": [
         {
           "path": "label.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -1002,10 +935,6 @@
         {
           "path": "menubar.tsx",
           "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
         }
       ]
     },
@@ -1021,14 +950,10 @@
         "class-variance-authority",
         "cn"
       ],
-      "registryDependencies": ["@kira-kit/drawer"],
+      "registryDependencies": ["@kira-kit/drawer", "@kira-kit/component-utils"],
       "files": [
         {
           "path": "navigation-menu.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -1049,15 +974,12 @@
         "@kira-kit/select",
         "@kira-kit/spinner",
         "@kira-kit/use-pagination",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
           "path": "pagination.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -1137,10 +1059,8 @@
         "gsap"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-native-props",
-        "@kira-kit/component-prop-guards",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1163,13 +1083,10 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "resizable.tsx",
           "type": "registry:ui"
@@ -1180,7 +1097,7 @@
       "name": "route-transition",
       "type": "registry:ui",
       "title": "Route Transition",
-      "description": "Route-change motion utilities: a keyed entrance with seven variants (fade, fade-up, fade-down, slide-left, slide-right, zoom, none) — movement variants ride a gentle spring curve — that replays when the transitionKey changes, and a fixed glowing 2px top navigation progress bar with a grace delay, composite-only CSS trickle, and interruptible completion. Adding the item merges its motion CSS (spring token, keyframes, view-transition tuning) into your global stylesheet. Pairs with the view-transition lib helper and the kit's native View Transitions crossfade.",
+      "description": "Route-change motion utilities: a keyed entrance with seven variants (fade, fade-up, fade-down, slide-left, slide-right, zoom, none) Ã¢â‚¬â€ movement variants ride a gentle spring curve Ã¢â‚¬â€ that replays when the transitionKey changes, and a fixed glowing 2px top navigation progress bar with a grace delay, composite-only CSS trickle, and interruptible completion. Adding the item merges its motion CSS (spring token, keyframes, view-transition tuning) into your global stylesheet. Pairs with the view-transition lib helper and the kit\u0027s native View Transitions crossfade.",
       "categories": ["navigation", "animation"],
       "dependencies": ["class-variance-authority", "cn"],
       "files": [
@@ -1195,14 +1112,13 @@
       "name": "scroll-area",
       "type": "registry:ui",
       "title": "Scroll Area",
-      "description": "Vertical, horizontal, or dual scrolling with three scrollbar thicknesses, always-visible or revealed bars, overflow shadows, and composable viewport, content, thumb, and corner primitives. KiraScrollArea's followOutput mode tracks streaming content only while the reader stays at the latest output, reports unseen activity, and offers Jump to latest.",
+      "description": "Vertical, horizontal, or dual scrolling with three scrollbar thicknesses, always-visible or revealed bars, overflow shadows, and composable viewport, content, thumb, and corner primitives. KiraScrollArea\u0027s followOutput mode tracks streaming content only while the reader stays at the latest output, reports unseen activity, and offers Jump to latest.",
       "categories": ["layout", "utility"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
       "registryDependencies": [
         "@kira-kit/button",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1226,9 +1142,8 @@
         "gsap"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1247,13 +1162,10 @@
       "registryDependencies": [
         "@kira-kit/button",
         "@kira-kit/collapsible",
-        "@kira-kit/spinner"
+        "@kira-kit/spinner",
+        "@kira-kit/component-utils"
       ],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "separator.tsx",
           "type": "registry:ui"
@@ -1299,13 +1211,10 @@
         "@kira-kit/dropdown-menu",
         "@kira-kit/skeleton",
         "@kira-kit/tooltip",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "sidebar.tsx",
           "type": "registry:ui"
@@ -1320,9 +1229,8 @@
       "categories": ["feedback", "animation"],
       "dependencies": ["class-variance-authority", "cn"],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1338,12 +1246,12 @@
       "description": "Single and range sliders with horizontal or vertical orientation, semantic and gradient variants, inversion, read-only and error states, formatted values, thumb labels and icons, and four tooltip modes. Explicit or step-generated markers and stepOptions support constrained stops, while KiraRangeSlider adds synchronized From/To numeric inputs and KiraSlider exposes an accessible disabled-reason tooltip.",
       "categories": ["form"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/input", "@kira-kit/tooltip"],
+      "registryDependencies": [
+        "@kira-kit/input",
+        "@kira-kit/tooltip",
+        "@kira-kit/component-utils"
+      ],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "slider.tsx",
           "type": "registry:ui"
@@ -1358,9 +1266,9 @@
       "categories": ["layout", "utility"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
       "registryDependencies": [
-        "@kira-kit/component-prop-guards",
         "@kira-kit/layout-responsive",
-        "@kira-kit/skeleton"
+        "@kira-kit/skeleton",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1377,8 +1285,8 @@
       "categories": ["feedback", "animation"],
       "dependencies": ["@tabler/icons-react", "class-variance-authority", "cn"],
       "registryDependencies": [
-        "@kira-kit/component-prop-guards",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1401,12 +1309,9 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-item-keys",
-        "@kira-kit/component-native-props",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/resizable",
-        "@kira-kit/skeleton"
+        "@kira-kit/skeleton",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1427,13 +1332,10 @@
         "@kira-kit/command",
         "@kira-kit/empty",
         "@kira-kit/kbd",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
-        {
-          "path": "content-keys.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "spotlight.tsx",
           "type": "registry:ui"
@@ -1450,13 +1352,10 @@
       "registryDependencies": [
         "@kira-kit/layout-responsive",
         "@kira-kit/separator",
-        "@kira-kit/skeleton"
+        "@kira-kit/skeleton",
+        "@kira-kit/component-utils"
       ],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "stack.tsx",
           "type": "registry:ui"
@@ -1478,9 +1377,9 @@
         "recharts"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
         "@kira-kit/drawer",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1547,8 +1446,7 @@
       "dependencies": ["@tabler/icons-react", "class-variance-authority", "cn"],
       "registryDependencies": [
         "@kira-kit/checkbox",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards"
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1573,11 +1471,10 @@
         "cn"
       ],
       "registryDependencies": [
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/dropdown-menu",
         "@kira-kit/use-announce",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1608,6 +1505,7 @@
       "description": "Date-based time selector with typeable hour, minute, and optional second steppers, 12/24-hour cycles, configurable increments, quick-pick presets, and selection grids. It enforces minimum, maximum, and disabled times and renders inline or in a native anchored popover with clear and focus-return behavior.",
       "categories": ["form", "overlay"],
       "dependencies": [
+        "@base-ui/react",
         "@tabler/icons-react",
         "class-variance-authority",
         "cn",
@@ -1636,10 +1534,9 @@
         "@kira-kit/avatar",
         "@kira-kit/button",
         "@kira-kit/collapsible",
-        "@kira-kit/component-defaults",
-        "@kira-kit/component-prop-guards",
         "@kira-kit/skeleton",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/component-utils"
       ],
       "files": [
         {
@@ -1660,7 +1557,7 @@
         "class-variance-authority",
         "cn"
       ],
-      "registryDependencies": ["@kira-kit/component-prop-guards"],
+      "registryDependencies": ["@kira-kit/component-utils"],
       "files": [
         {
           "path": "toast.tsx",
@@ -1729,14 +1626,11 @@
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
       "files": [
         {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
-        {
           "path": "tooltip.tsx",
           "type": "registry:ui"
         }
-      ]
+      ],
+      "registryDependencies": ["@kira-kit/component-utils"]
     },
     {
       "name": "tree-view",

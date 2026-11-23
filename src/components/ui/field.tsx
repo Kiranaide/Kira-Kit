@@ -1,8 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { omitComponentProps } from "@/lib/component-native-props";
-import { withOccurrenceKeys } from "@/lib/component-item-keys";
+import {
+  isNumberProp,
+  isStringProp,
+  omitComponentProps,
+  resolveComponentDefaults,
+  withOccurrenceKeys,
+} from "@/lib/component-utils";
 import { Field as FieldPrimitive } from "@base-ui/react/field";
 import { Fieldset as FieldsetPrimitive } from "@base-ui/react/fieldset";
 import { Input as InputPrimitive } from "@base-ui/react/input";
@@ -15,8 +20,6 @@ import { cn } from "cn";
 import { Input, type InputProps } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isStringProp, isNumberProp } from "@/lib/component-prop-guards";
 
 const fieldValidationIcons = {
   valid: IconCheck,

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
+import { resolveComponentDefaults } from "@/lib/component-utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 import { Input as InputPrimitive } from "@base-ui/react/input";

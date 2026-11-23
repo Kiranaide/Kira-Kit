@@ -7,11 +7,11 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "cn";
 import {
-  DocGuidePage,
-  DocGuideSection,
-  scrollToAnchor,
-  type DocGuideTocItem,
-} from "@/components/docs/doc-guide";
+  DocPage,
+  DocSection,
+  scrollToSection,
+  type TocEntry,
+} from "@/components/docs/doc-page";
 
 type ChangeType =
   "added" | "changed" | "fixed" | "deprecated" | "removed" | "breaking";
@@ -36,6 +36,99 @@ const RELEASES: readonly Release[] = [
     version: "Unreleased",
     date: "In development",
     changes: [
+      {
+        type: "changed",
+        title:
+          "DatePicker and TimePicker migrated onto Base UI Popover; overlay wrappers narrowed to static className/style",
+        description:
+          "DatePicker and TimePicker now use @base-ui/react/popover instead of native [popover='auto'] and CSS Anchor Positioning. Eleven Base UI overlay and menu wrappers (alert-dialog, command, context-menu, dialog, drawer, dropdown-menu, menubar, navigation-menu, popover, radio-group, tooltip) now accept static className/style props and style states through Base UI's native data-* attributes and cn(...), removing @kira-kit/component-utils from dialog, drawer, menubar, popover, and time-picker.",
+      },
+      {
+        type: "removed",
+        title:
+          "Redundant helpers from @kira-kit/component-utils and .kira-anchored-popover CSS",
+        description:
+          "Removed 9 exports from src/lib/component-utils.ts (StateClassName, StateStyle, mergeClassName, mergeStyle, mergeComponentRefs, NativePopoverOptions, showNativePopover, hideNativePopover, useNativePopover), dropped its cn dependency, replaced mergeComponentRefs with React 19 cleanup-preserving ref callbacks in code-block and color-picker, and removed .kira-anchored-popover from src/index.css and all four CLI templates.",
+      },
+      {
+        type: "changed",
+        title:
+          "Shared native anchored-popover and Base UI state-prop helpers in @kira-kit/component-utils",
+        description:
+          "Consolidated mergeClassName, mergeStyle, and useNativePopover into src/lib/component-utils.ts across all overlay components and pickers, unified .date-picker-popover and .time-picker-popover into .kira-anchored-popover in base CSS and all four CLI templates, and removed the duplicate --animate-toast-progress block and discarded useMediaQuery subscription in TimePicker.",
+      },
+      {
+        type: "changed",
+        title:
+          "Memoized check AST extraction, kira-kit check -c <dir>, and centralized ClientContext",
+        description:
+          "checks/runner.ts now parses TypeScript imports once per file across imports-deps, base-ui-only, cn-source, and lib-resolution; cn-source uses AST lib imports instead of a regex fallback; dead-animate replaces its shared stateful /g RegExp with matchAll; kira-kit check accepts -c, --cwd; ComponentsConfig is inferred directly from componentsConfigSchema; and createClientContext() centralizes registry context creation across list, view, search, add, and engine with new command-level tests.",
+      },
+      {
+        type: "fixed",
+        title: "Consistent npm dependency installation via ensureNpmDeps",
+        description:
+          "init, icons, apply-fonts, and migrate now route package installs through one ensureNpmDeps helper in core/install/deps.ts, preserving pinned version ranges (including lucide-react) and checking devDependencies and peerDependencies alongside dependencies.",
+      },
+      {
+        type: "removed",
+        title:
+          "Unreferenced starter scaffolding and src/lib/utils.ts pass-through",
+        description:
+          "Deleted dead starter files (src/App.tsx, src/components/component-example.tsx, src/components/example.tsx) and the 1-line src/lib/utils.ts pass-through.",
+      },
+      {
+        type: "changed",
+        title:
+          "Unified docs article shell with mobile section navigation on all docs pages",
+        description:
+          "Folded MobileJumpToSection, accessible anchor focusing (hash update + focus on target section), optional section metadata, and explicit section lists into DocPage, migrating Typeset, Form, and Changelog off the duplicate DocGuidePage shell and deleting doc-guide.tsx.",
+      },
+      {
+        type: "changed",
+        title:
+          "Unified registry discovery and kit CSS loading across check and build",
+        description:
+          "checks/runner.ts now loads registry metadata and combined kit CSS (index.css + kira-utilities.css) through core/registry/loader.ts instead of hardcoding four registry paths, and dead-animate.ts shares ANIMATE_BUILTINS with motion-css.ts.",
+      },
+      {
+        type: "changed",
+        title: "Unified CLI runtime setup and AST patching",
+        description:
+          "Extracted the five duplicated TypeScript/JSONC AST splice helpers from tsconfig.ts and configure-runtime.ts into core/init/ast-patch.ts, shared POSTCSS_CONFIGS from detect-runtime.ts, and collapsed init's multi-step runtime and tsconfig setup behind one setupProjectRuntime(cwd) interface.",
+      },
+      {
+        type: "changed",
+        title:
+          "Unified component boundary plumbing into @kira-kit/component-utils",
+        description:
+          "Merged the five tiny src/lib/component-*.ts modules and the two duplicated src/components/ui/{prop-guards,content-keys}.ts files into one @kira-kit/component-utils registry item, standardizing on isFunctionProp and withOccurrenceKeys across all UI components and pruning the five legacy public/r/component-*.json payloads.",
+      },
+      {
+        type: "changed",
+        title: "Single source of truth for the theme and font studio catalog",
+        description:
+          "kira-kit build now emits src/themes/catalog.json directly from the CLI's WCAG-verified base colors, radius/surface presets, fonts, font pairings, and recipe defaults. The docs app consolidates presets-catalog.ts, fonts.ts, font-preview.ts, and its duplicated token cascade into one src/lib/theme-studio.ts module, removing ~600 lines of hand-mirrored definitions.",
+      },
+      {
+        type: "fixed",
+        title: "Unified theme and typography resolution across init and theme",
+        description:
+          "Flag precedence, --base-color validation, standalone token assembly, and custom primary generation now share one core/theme/apply.ts module: invalid --base-color values fail fast with a ValidationError in both commands, defaults remain geist and geist-mono, and kira-kit theme --font-mono preserves an existing fontDisplay from components.json.",
+      },
+      {
+        type: "fixed",
+        title:
+          "kira-kit migrate respects -c <dir> and rewrites legacy aliases.lib",
+        description:
+          "migrate previously resolved source rewrites against process.cwd() instead of --cwd, double-counted files importing both clsx and tailwind-merge, and announced aliases.lib changes in --dry-run without applying them (while falsely flagging the standard @/lib alias). Both migrate and create now sit behind deep core engine modules with injectable installer/git seams and integration tests.",
+      },
+      {
+        type: "fixed",
+        title: "Consumer kira-utilities.css no longer ships docs-site CSS",
+        description:
+          "The 134 lines of .docs-* rules moved to a docs-only src/styles/docs.css imported solely by the docs app, so kira-kit init and kira-kit create templates ship clean consumer utilities. CLI CSS parsing, variable/rule merging, and template syncing are unified in core/css/, and kira-kit build keeps embedded assets and all four templates in sync automatically.",
+      },
       {
         type: "changed",
         title: "Redesigned Typeset, Form, and Changelog pages",
@@ -371,7 +464,7 @@ const CHANGE_BADGE_STYLES: Record<
   removed: { label: "Removed", className: "bg-muted text-muted-foreground" },
 };
 
-const SECTIONS: readonly DocGuideTocItem[] = [
+const SECTIONS: readonly TocEntry[] = [
   { id: "releases", label: "Releases" },
   { id: "unreleased", label: "Unreleased" },
   { id: "0.4.0", label: "0.4.0" },
@@ -460,7 +553,7 @@ function FilterChipsSection({
   totalMatches: number;
 }) {
   return (
-    <DocGuideSection id="releases" title="Releases">
+    <DocSection id="releases" title="Releases">
       <fieldset className="flex flex-wrap gap-1.5 border-0 p-0 sm:gap-2">
         <legend className="sr-only">Filter releases by change type</legend>
         {FILTER_TYPES.map((option) => {
@@ -488,7 +581,7 @@ function FilterChipsSection({
         Showing {totalMatches} matching{" "}
         {totalMatches === 1 ? "entry" : "entries"}.
       </p>
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
@@ -503,7 +596,7 @@ function LatestReleaseSection({
   const id = releaseAnchorId(release.version);
 
   return (
-    <DocGuideSection id={id} title={release.version} meta={release.date}>
+    <DocSection id={id} title={release.version} meta={release.date}>
       {changes.length > 0 ? (
         <ChangeRowList changes={changes} />
       ) : (
@@ -511,7 +604,7 @@ function LatestReleaseSection({
           No {filter} entries in {release.version}.
         </p>
       )}
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
@@ -583,7 +676,7 @@ function EarlierReleasesSection({
   });
 
   return (
-    <DocGuideSection id="earlier-releases" title="Earlier releases">
+    <DocSection id="earlier-releases" title="Earlier releases">
       {visibleReleases.length > 0 ? (
         <div className="flex flex-col divide-y divide-border border-t border-border">
           {visibleReleases.map(({ release, changes }) => (
@@ -602,13 +695,13 @@ function EarlierReleasesSection({
           No {filter} entries in earlier releases.
         </p>
       )}
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
 function HowWeVersionSection() {
   return (
-    <DocGuideSection
+    <DocSection
       id="how-we-version"
       title="How we version"
       description="The CLI uses Changesets. Installed components are source files you own. Check the component’s page for item-level history."
@@ -622,7 +715,7 @@ function HowWeVersionSection() {
         <span>Browse full commit history on GitHub</span>
         <IconArrowUpRight aria-hidden="true" className="size-[15px]" />
       </a>
-    </DocGuideSection>
+    </DocSection>
   );
 }
 
@@ -653,7 +746,7 @@ export default function ChangelogPage() {
           : new Set([...current, matched.version]),
       );
 
-      window.requestAnimationFrame(() => scrollToAnchor(anchorId));
+      window.requestAnimationFrame(() => scrollToSection(anchorId));
     };
 
     syncHash();
@@ -679,7 +772,7 @@ export default function ChangelogPage() {
   };
 
   return (
-    <DocGuidePage
+    <DocPage
       title="Changelog"
       crumb="Changelog"
       description="Follow changes to the registry and CLI. Check breaking changes before updating local components."
@@ -721,6 +814,6 @@ export default function ChangelogPage() {
       />
 
       <HowWeVersionSection />
-    </DocGuidePage>
+    </DocPage>
   );
 }
