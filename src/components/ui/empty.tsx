@@ -17,7 +17,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { isStringProp } from "@/components/ui/prop-guards";
+import { isStringProp } from "@/lib/component-utils";
 
 const emptyVariants = cva("group/empty flex min-w-0 w-full gap-4 rounded-lg", {
   variants: {

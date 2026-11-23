@@ -8,10 +8,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import {
-  mergeCssRules,
-  mergeCssRulesText,
-} from "../src/core/install/css-rules";
+import { mergeCssRules, mergeCssRulesText } from "../src/core/css/stylesheet";
 
 const SNIPPET = `:root {
   --ease-spring: linear(0, 0.5, 1);

@@ -12,7 +12,7 @@ import {
   type LayoutSpacing,
 } from "@/lib/layout-responsive";
 import { Skeleton } from "@/components/ui/skeleton";
-import { isObjectProp } from "@/lib/component-prop-guards";
+import { isObjectProp } from "@/lib/component-utils";
 
 const sizeClasses = {
   "0": [

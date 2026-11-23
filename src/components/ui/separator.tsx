@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "cn";
-import { isFunctionProp } from "@/components/ui/prop-guards";
+import { isFunctionProp } from "@/lib/component-utils";
 
 const separatorVariants = cva(
   "shrink-0 data-[orientation=horizontal]:h-[var(--separator-size)] data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-[var(--separator-size)] data-[orientation=vertical]:self-stretch",

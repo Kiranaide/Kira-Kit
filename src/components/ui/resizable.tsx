@@ -24,7 +24,7 @@ import {
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "cn";
-import { isNumberProp, isObjectProp } from "@/components/ui/prop-guards";
+import { isNumberProp, isObjectProp } from "@/lib/component-utils";
 
 type Orientation = "horizontal" | "vertical";
 

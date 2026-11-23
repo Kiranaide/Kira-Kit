@@ -3,8 +3,9 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
 
 import "./index.css";
+import "./styles/docs.css";
 import "./lib/docs-fonts";
-import { initFontPreview } from "./lib/font-preview";
+import { initFontPreview } from "./lib/theme-studio";
 import { router } from "./router";
 
 initFontPreview();

@@ -15,15 +15,27 @@ type PopoverPayloadTriggerProps<Payload = unknown> =
 
 type PopoverPortalProps = PopoverPrimitive.Portal.Props;
 
-type PopoverPositionerProps = PopoverPrimitive.Positioner.Props;
+type PopoverPositionerProps = Omit<
+  PopoverPrimitive.Positioner.Props,
+  "className"
+> & { className?: string };
 
-type PopoverViewportProps = PopoverPrimitive.Viewport.Props;
+type PopoverViewportProps = Omit<
+  PopoverPrimitive.Viewport.Props,
+  "className"
+> & { className?: string };
 
 type PopoverCloseProps = PopoverPrimitive.Close.Props;
 
-type PopoverBackdropProps = PopoverPrimitive.Backdrop.Props;
+type PopoverBackdropProps = Omit<
+  PopoverPrimitive.Backdrop.Props,
+  "className"
+> & { className?: string };
 
-type PopoverDescriptionProps = PopoverPrimitive.Description.Props;
+type PopoverDescriptionProps = Omit<
+  PopoverPrimitive.Description.Props,
+  "className"
+> & { className?: string };
 
 function Popover<Payload = unknown>(props: PopoverProps<Payload>) {
   return <PopoverPrimitive.Root {...props} />;
@@ -55,9 +67,7 @@ function PopoverPositioner({ className, ...props }: PopoverPositionerProps) {
   return (
     <PopoverPrimitive.Positioner
       data-slot="popover-positioner"
-      className={(state) =>
-        cn("z-50", className instanceof Function ? className(state) : className)
-      }
+      className={cn("z-50", className)}
       {...props}
     />
   );
@@ -102,9 +112,10 @@ type Positioning = Pick<
 
 interface PopoverContentProps
   extends
-    PopoverPrimitive.Popup.Props,
+    Omit<PopoverPrimitive.Popup.Props, "className">,
     VariantProps<typeof popoverContentVariants>,
     Positioning {
+  className?: string;
   positionerProps?: PopoverPositionerProps;
   portalProps?: PopoverPortalProps;
 }
@@ -153,14 +164,12 @@ function PopoverContent({
       >
         <PopoverPrimitive.Popup
           data-slot="popover-content"
-          className={(state) =>
-            cn(
-              popoverContentVariants({ size, variant }),
-              !reduced &&
-                "transition-[opacity,scale] duration-200 ease-out data-ending-style:duration-150 data-ending-style:ease-in",
-              className instanceof Function ? className(state) : className,
-            )
-          }
+          className={cn(
+            popoverContentVariants({ size, variant }),
+            !reduced &&
+              "transition-[opacity,scale] duration-200 ease-out data-ending-style:duration-150 data-ending-style:ease-in",
+            className,
+          )}
           {...props}
         />
       </PopoverPositioner>
@@ -174,14 +183,12 @@ function PopoverViewport({ className, ...props }: PopoverViewportProps) {
   return (
     <PopoverPrimitive.Viewport
       data-slot="popover-viewport"
-      className={(state) =>
-        cn(
-          "relative *:data-previous:absolute *:data-previous:inset-0 data-instant:*:animate-none motion-reduce:*:animate-none",
-          !reduced &&
-            "*:data-current:animate-in *:data-current:fade-in-0 *:data-previous:animate-out *:data-previous:fade-out-0",
-          className instanceof Function ? className(state) : className,
-        )
-      }
+      className={cn(
+        "relative *:data-previous:absolute *:data-previous:inset-0 data-instant:*:animate-none motion-reduce:*:animate-none",
+        !reduced &&
+          "*:data-current:animate-in *:data-current:fade-in-0 *:data-previous:animate-out *:data-previous:fade-out-0",
+        className,
+      )}
       {...props}
     />
   );
@@ -193,14 +200,12 @@ function PopoverBackdrop({ className, ...props }: PopoverBackdropProps) {
   return (
     <PopoverPrimitive.Backdrop
       data-slot="popover-backdrop"
-      className={(state) =>
-        cn(
-          "fixed inset-0 z-40 bg-foreground/40 data-starting-style:opacity-0 data-ending-style:opacity-0 motion-reduce:transition-none",
-          !reduced &&
-            "transition-opacity duration-200 data-ending-style:duration-150",
-          className instanceof Function ? className(state) : className,
-        )
-      }
+      className={cn(
+        "fixed inset-0 z-40 bg-foreground/40 data-starting-style:opacity-0 data-ending-style:opacity-0 motion-reduce:transition-none",
+        !reduced &&
+          "transition-opacity duration-200 data-ending-style:duration-150",
+        className,
+      )}
       {...props}
     />
   );
@@ -215,25 +220,26 @@ const popoverArrowVariants = cva("", {
 
 interface PopoverArrowProps
   extends
-    PopoverPrimitive.Arrow.Props,
-    VariantProps<typeof popoverArrowVariants> {}
+    Omit<PopoverPrimitive.Arrow.Props, "className">,
+    VariantProps<typeof popoverArrowVariants> {
+  className?: string;
+}
 
 function PopoverArrow({ className, variant, ...props }: PopoverArrowProps) {
   return (
     <PopoverPrimitive.Arrow
       data-slot="popover-arrow"
-      className={(state) =>
-        cn(
-          popoverArrowVariants({ variant }),
-          className instanceof Function ? className(state) : className,
-        )
-      }
+      className={cn(popoverArrowVariants({ variant }), className)}
       {...props}
     />
   );
 }
 
-interface PopoverTitleProps extends PopoverPrimitive.Title.Props {
+interface PopoverTitleProps extends Omit<
+  PopoverPrimitive.Title.Props,
+  "className"
+> {
+  className?: string;
   as?: "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
@@ -247,12 +253,10 @@ function PopoverTitle({
     <PopoverPrimitive.Title
       data-slot="popover-title"
       render={render ?? <Heading />}
-      className={(state) =>
-        cn(
-          "font-medium text-base leading-snug wrap-break-word",
-          className instanceof Function ? className(state) : className,
-        )
-      }
+      className={cn(
+        "font-medium text-base leading-snug wrap-break-word",
+        className,
+      )}
       {...props}
     />
   );
@@ -262,12 +266,10 @@ function PopoverDescription({ className, ...props }: PopoverDescriptionProps) {
   return (
     <PopoverPrimitive.Description
       data-slot="popover-description"
-      className={(state) =>
-        cn(
-          "text-sm text-muted-foreground mt-1 wrap-break-word",
-          className instanceof Function ? className(state) : className,
-        )
-      }
+      className={cn(
+        "text-sm text-muted-foreground mt-1 wrap-break-word",
+        className,
+      )}
       {...props}
     />
   );

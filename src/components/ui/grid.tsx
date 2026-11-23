@@ -12,7 +12,7 @@ import {
   isNumberProp,
   isObjectProp,
   isStringProp,
-} from "@/components/ui/prop-guards";
+} from "@/lib/component-utils";
 
 // Literal candidates travel with the registry component so responsive props also
 // work in consuming apps without a separate application stylesheet safelist.

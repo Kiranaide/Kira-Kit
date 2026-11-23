@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import { cva, type VariantProps } from "class-variance-authority";
 import { format, isValid, set } from "date-fns";
 import { IconClock, IconMinus, IconPlus, IconX } from "@tabler/icons-react";
@@ -87,19 +88,6 @@ interface TimePickerProps extends Omit<
 
 // kira-kit-ignore spacing-scale: date/time-picker trigger ladder is a documented non-change (PR follow-up)
 const iconSize = { sm: "size-3.5", default: "size-4", lg: "size-5" } as const;
-
-function useMediaQuery(query: string, serverFallback = false) {
-  return React.useSyncExternalStore(
-    (onChange) => {
-      const mql = window.matchMedia(query);
-      mql.addEventListener("change", onChange);
-
-      return () => mql.removeEventListener("change", onChange);
-    },
-    () => window.matchMedia(query).matches,
-    () => serverFallback,
-  );
-}
 
 /** Named contract for hour/minute/second triples shared by parsing, panels and emits. */
 interface TimeParts {
@@ -297,12 +285,10 @@ function useTimePickerModel(props: TimePickerProps) {
   const reactId = React.useId();
   const baseId = id ?? `time-picker-${reactId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const popoverId = `${baseId}-popover`;
-  const anchorName = `--${baseId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
 
-  const popoverRef = React.useRef<HTMLDivElement>(null);
+  const anchorRef = React.useRef<HTMLDivElement>(null);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
 
-  useMediaQuery("(min-width: 640px)"); // reserve: anchored flip handled in CSS
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
   const isOpen = popover && uncontrolledOpen && !disabled;
 
@@ -311,12 +297,9 @@ function useTimePickerModel(props: TimePickerProps) {
     ...getTimePickerDefaults(props),
   });
 
-  useTimePopover({
-    popoverRef,
-    isOpen,
-    triggerRef,
-    setUncontrolledOpen,
-  });
+  const handleOpenChange = (opened: boolean) => {
+    if (!disabled) setUncontrolledOpen(opened);
+  };
 
   const pattern =
     displayFormat ?? (granularity === "second" ? "HH:mm:ss" : "HH:mm");
@@ -329,20 +312,20 @@ function useTimePickerModel(props: TimePickerProps) {
     className,
     triggerVariant,
     size,
-    anchorName,
+    anchorRef,
     disabled,
     invalid,
     triggerRef,
     baseId,
     popoverId,
     isOpen,
+    handleOpenChange,
     ariaLabel,
     hasValue,
     label,
     required,
     resolvedSize,
     onChange,
-    popoverRef,
     panel,
     popover,
   };
@@ -353,20 +336,20 @@ function TimePicker(props: TimePickerProps) {
     className,
     triggerVariant,
     size,
-    anchorName,
+    anchorRef,
     disabled,
     invalid,
     triggerRef,
     baseId,
     popoverId,
     isOpen,
+    handleOpenChange,
     ariaLabel,
     hasValue,
     label,
     required,
     resolvedSize,
     onChange,
-    popoverRef,
     panel,
     popover,
   } = useTimePickerModel(props);
@@ -394,20 +377,20 @@ function TimePicker(props: TimePickerProps) {
       className={className}
       triggerVariant={triggerVariant}
       size={size}
-      anchorName={anchorName}
+      anchorRef={anchorRef}
       disabled={disabled}
       invalid={invalid}
       triggerRef={triggerRef}
       baseId={baseId}
       popoverId={popoverId}
       isOpen={isOpen}
+      onOpenChange={handleOpenChange}
       ariaLabel={ariaLabel}
       hasValue={hasValue}
       label={label}
       required={required}
       resolvedSize={resolvedSize}
       onChange={onChange}
-      popoverRef={popoverRef}
       panel={panel}
     />
   );
@@ -742,102 +725,6 @@ function timePickerEmit(
   onChange?.(next);
 }
 
-function timePickerUseCallback2(
-  popoverRef: React.RefObject<HTMLDivElement | null>,
-) {
-  const el = popoverRef.current;
-
-  if (!el || el.matches(":popover-open")) return;
-
-  try {
-    el.showPopover();
-  } catch {
-    // SAFETY: a popover show/hide operation was still in flight (re-entrant
-    // effect during beforetoggle, Fast-Refresh remount). Retrying from a
-    // microtask runs outside it, and if it can't open, native state governs.
-    // An uncaught throw here would abort the commit and kill page events.
-    queueMicrotask(() => {
-      if (!el.matches(":popover-open")) {
-        try {
-          el.showPopover();
-        } catch {
-          /* still blocked — native state governs */
-        }
-      }
-    });
-  }
-}
-
-function timePickerUseCallback3(
-  popoverRef: React.RefObject<HTMLDivElement | null>,
-) {
-  const el = popoverRef.current;
-
-  if (!el?.matches(":popover-open")) return;
-
-  try {
-    el.hidePopover();
-  } catch {
-    // SAFETY: a popover hide/show operation was still in flight (re-entrant
-    // effect during beforetoggle, or Fast-Refresh remount). Retry once the
-    // operation settles; light dismiss may have closed it meanwhile.
-    queueMicrotask(() => {
-      if (el.matches(":popover-open")) {
-        try {
-          el.hidePopover();
-        } catch {
-          /* still blocked — native state governs */
-        }
-      }
-    });
-  }
-}
-
-function timePickerUseEffectEvent(
-  event: ToggleEvent,
-  popoverRef: React.RefObject<HTMLDivElement | null>,
-  triggerRef: React.RefObject<HTMLButtonElement | null>,
-  setUncontrolledOpen: React.Dispatch<React.SetStateAction<boolean>>,
-) {
-  const opened = event.newState === "open";
-
-  if (!opened) {
-    requestAnimationFrame(() => {
-      const active = document.activeElement;
-
-      // Return focus unless the user already moved it somewhere meaningful.
-      if (
-        !active ||
-        active === document.body ||
-        popoverRef.current?.contains(active)
-      ) {
-        triggerRef.current?.focus();
-      }
-    });
-  }
-
-  setUncontrolledOpen(opened);
-}
-
-function timePickerUseEffect(
-  popoverRef: React.RefObject<HTMLDivElement | null>,
-  onPopoverToggle: (event: ToggleEvent) => void,
-) {
-  const el = popoverRef.current;
-
-  if (!el) return;
-  // SAFETY: "toggle" is a ToggleEvent that fires only after the show/hide
-  // operation completes, so syncing state here never re-enters
-  // showPopover() mid-operation. beforetoggle would: it fires at the state
-  // flip, and setState there re-renders into the open effect mid-operation.
-  const listener = (event: Event) => onPopoverToggle(event as ToggleEvent);
-  el.addEventListener("toggle", listener);
-
-  return () => {
-    el.removeEventListener("toggle", listener);
-  };
-}
-
 function timePickerMap2(
   period: "AM" | "PM",
   parts: TimeParts | null,
@@ -1054,47 +941,6 @@ function useTimeConstraints({
   return { isAllowed } satisfies { isAllowed: typeof isAllowed };
 }
 
-function useTimePopover({
-  popoverRef,
-  isOpen,
-  triggerRef,
-  setUncontrolledOpen,
-}: {
-  popoverRef: React.RefObject<HTMLDivElement | null>;
-  isOpen: boolean;
-  triggerRef: React.RefObject<HTMLButtonElement | null>;
-  setUncontrolledOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  const openPopover = React.useCallback(
-    () => timePickerUseCallback2(popoverRef),
-    [popoverRef],
-  );
-
-  const closePopover = React.useCallback(
-    () => timePickerUseCallback3(popoverRef),
-    [popoverRef],
-  );
-
-  React.useEffect(() => {
-    if (isOpen) openPopover();
-    else closePopover();
-  }, [isOpen, openPopover, closePopover]);
-
-  const onPopoverToggle = React.useEffectEvent((event: ToggleEvent) =>
-    timePickerUseEffectEvent(
-      event,
-      popoverRef,
-      triggerRef,
-      setUncontrolledOpen,
-    ),
-  );
-
-  React.useEffect(
-    () => timePickerUseEffect(popoverRef, onPopoverToggle),
-    [popoverRef],
-  );
-}
-
 function getTimePickerDefaults(props: TimePickerProps) {
   const {
     granularity = "minute",
@@ -1132,115 +978,122 @@ type TimePickerPopoverViewProps = {
   className: string | undefined;
   triggerVariant: "default" | "outline" | "ghost" | null | undefined;
   size: "default" | "sm" | "lg" | null | undefined;
-  anchorName: string;
+  anchorRef: React.RefObject<HTMLDivElement | null>;
   disabled: boolean | undefined;
   invalid: boolean | undefined;
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   baseId: string;
   popoverId: string;
   isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
   ariaLabel: string | undefined;
   hasValue: boolean;
   label: string;
   required: boolean | undefined;
   resolvedSize: "default" | "sm" | "lg";
   onChange: ((value: Date | undefined) => void) | undefined;
-  popoverRef: React.RefObject<HTMLDivElement | null>;
   panel: React.JSX.Element;
 };
 
-// oxlint-disable-next-line eslint/max-lines-per-function -- The pure native-popover renderer keeps its target, paired trigger and labelled dialog contract together.
+// oxlint-disable-next-line eslint/max-lines-per-function -- The pure popover renderer keeps its trigger, clear button, and labelled dialog contract together.
 function TimePickerPopoverView({
   className,
   triggerVariant,
   size,
-  anchorName,
+  anchorRef,
   disabled,
   invalid,
   triggerRef,
   baseId,
   popoverId,
   isOpen,
+  onOpenChange,
   ariaLabel,
   hasValue,
   label,
   required,
   resolvedSize,
   onChange,
-  popoverRef,
   panel,
 }: TimePickerPopoverViewProps) {
   return (
     <div data-slot="time-picker" className={cn("relative w-full", className)}>
-      <div
-        className={timePickerTriggerVariants({ variant: triggerVariant, size })}
-        // SAFETY: anchorName is a `--name` custom-property string; the assertion
-        // only widens the literal key for the inline style object.
-        style={{ anchorName } as React.CSSProperties}
-        data-disabled={disabled || undefined}
-        data-invalid={invalid || undefined}
-      >
-        <button
-          ref={triggerRef}
-          id={baseId}
-          type="button"
-          popoverTarget={popoverId}
-          // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This button opens the custom time-selection popup; a native input would change the public interaction.
-          role="combobox"
-          aria-haspopup="dialog"
-          aria-expanded={isOpen}
-          aria-controls={popoverId}
-          aria-label={`${ariaLabel ?? "Time"}: ${hasValue ? label : "not selected"}`}
-          aria-required={required || undefined}
-          aria-invalid={invalid || undefined}
-          disabled={disabled}
-          className="flex h-full min-w-0 flex-1 items-center gap-2 text-left outline-none"
+      <PopoverPrimitive.Root open={isOpen} onOpenChange={onOpenChange}>
+        <div
+          ref={anchorRef}
+          className={timePickerTriggerVariants({
+            variant: triggerVariant,
+            size,
+          })}
+          data-disabled={disabled || undefined}
+          data-invalid={invalid || undefined}
         >
-          <IconClock
-            aria-hidden
-            className={cn(
-              iconSize[resolvedSize],
-              "shrink-0 text-muted-foreground",
-            )}
-          />
-          <span
-            className={cn("truncate", { "text-muted-foreground": !hasValue })}
+          <PopoverPrimitive.Trigger
+            ref={triggerRef}
+            id={baseId}
+            // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This button opens the custom time-selection popup; a native input would change the public interaction.
+            role="combobox"
+            aria-haspopup="dialog"
+            aria-expanded={isOpen}
+            aria-controls={popoverId}
+            aria-label={`${ariaLabel ?? "Time"}: ${hasValue ? label : "not selected"}`}
+            aria-required={required || undefined}
+            aria-invalid={invalid || undefined}
+            disabled={disabled}
+            className="flex h-full min-w-0 flex-1 items-center gap-2 text-left outline-none"
           >
-            {label}
-          </span>
-        </button>
-        {hasValue && !disabled && (
-          <button
-            type="button"
-            onClick={() => {
-              onChange?.(undefined);
-              triggerRef.current?.focus();
-            }}
-            aria-label="Clear time"
-            className="rounded p-0.5 text-muted-foreground outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <IconX aria-hidden className={iconSize[resolvedSize]} />
-          </button>
-        )}
-      </div>
+            <IconClock
+              aria-hidden
+              className={cn(
+                iconSize[resolvedSize],
+                "shrink-0 text-muted-foreground",
+              )}
+            />
+            <span
+              className={cn("truncate", { "text-muted-foreground": !hasValue })}
+            >
+              {label}
+            </span>
+          </PopoverPrimitive.Trigger>
+          {hasValue && !disabled && (
+            <button
+              type="button"
+              onClick={() => {
+                onChange?.(undefined);
+                triggerRef.current?.focus();
+              }}
+              aria-label="Clear time"
+              className="rounded p-0.5 text-muted-foreground outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <IconX aria-hidden className={iconSize[resolvedSize]} />
+            </button>
+          )}
+        </div>
 
-      <div
-        ref={popoverRef}
-        id={popoverId}
-        popover="auto"
-        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- The native popover already owns visibility; this ARIA dialog provides the custom focus-trapped popup semantics.
-        role="dialog"
-        aria-label="Choose time"
-        // SAFETY: positionAnchor is a valid csstype anchor property; the
-        // assertion only widens the literal key for the inline style object.
-        style={{ positionAnchor: anchorName } as React.CSSProperties}
-        className={cn(
-          "time-picker-popover rounded-xl border border-border bg-popover text-popover-foreground shadow-xl",
-          "max-sm:w-full max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0",
-        )}
-      >
-        {isOpen && panel}
-      </div>
+        <PopoverPrimitive.Portal>
+          <PopoverPrimitive.Positioner
+            anchor={anchorRef}
+            side="bottom"
+            align="start"
+            sideOffset={8}
+            collisionPadding={8}
+            className="z-50"
+          >
+            <PopoverPrimitive.Popup
+              id={popoverId}
+              // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Base UI Popover.Popup owns visibility and focus; ARIA dialog provides the time-picker popup semantics.
+              role="dialog"
+              aria-label="Choose time"
+              className={cn(
+                "origin-(--transform-origin) max-h-[calc(100dvh-1rem)] overflow-auto rounded-xl border border-border bg-popover text-popover-foreground shadow-xl outline-none",
+                "transition-[opacity,scale] duration-150 ease-out data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 motion-reduce:transition-none",
+              )}
+            >
+              {panel}
+            </PopoverPrimitive.Popup>
+          </PopoverPrimitive.Positioner>
+        </PopoverPrimitive.Portal>
+      </PopoverPrimitive.Root>
     </div>
   );
 }

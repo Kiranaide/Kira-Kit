@@ -6,8 +6,10 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { IconChevronRight } from "@tabler/icons-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "cn";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
+import {
+  isFunctionProp,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 const CollapsibleContext = React.createContext({
   open: false,
@@ -90,7 +92,7 @@ function Collapsible({
         className={(state) =>
           cn(
             "min-w-0",
-            isCallbackProp(className) ? className(state) : className,
+            isFunctionProp(className) ? className(state) : className,
           )
         }
       >
@@ -190,7 +192,7 @@ function CollapsibleContent(input: CollapsibleContentProps) {
             !reduced &&
             // kira-kit-ignore layout-transitions: Base UI collapsible panel height var is the standard expand/collapse animation
             "h-(--collapsible-panel-height) transition-[height,opacity] duration-200 ease-out data-starting-style:h-0 data-starting-style:opacity-0 data-ending-style:h-0 data-ending-style:opacity-0 data-ending-style:duration-150",
-          isCallbackProp(className) ? className(state) : className,
+          isFunctionProp(className) ? className(state) : className,
         )
       }
     >
@@ -346,7 +348,7 @@ function renderCollapsibleTriggerPart1({
       className={(state) =>
         cn(
           collapsibleTriggerVariants({ variant, size }),
-          isCallbackProp(className) ? className(state) : className,
+          isFunctionProp(className) ? className(state) : className,
         )
       }
     >

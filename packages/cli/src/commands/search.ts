@@ -1,6 +1,5 @@
 import pc from "picocolors";
-import { fetchIndex } from "../core/install/client";
-import { readConfig } from "../lib/config";
+import { createClientContext, fetchIndex } from "../core/install/client";
 import { success } from "../lib/logger";
 import type { RegistryIndexEntry } from "../lib/schemas";
 
@@ -23,12 +22,7 @@ export async function searchItems(options: {
   json?: boolean;
   cwd?: string;
 }): Promise<number> {
-  const cwd = options.cwd ?? process.cwd();
-
-  const entries = await fetchIndex({
-    cwd,
-    registries: readConfig(cwd)?.registries,
-  });
+  const entries = await fetchIndex(createClientContext(options.cwd));
 
   const query = options.query.join(" ");
   const hits = entries.filter((entry) => matches(entry, query));

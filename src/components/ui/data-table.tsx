@@ -113,12 +113,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
 import {
-  isStringProp,
-  isCallbackProp,
+  isFunctionProp,
   isNumberProp,
-} from "@/lib/component-prop-guards";
+  isStringProp,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 // Every feature + row model this component can use. Narrow it (and replace the
 // deprecated full fn registries with individual sortFn_* / filterFn_* imports)
@@ -217,7 +217,7 @@ function subscribeTable<TData extends RowData>(
 function unsubscribeTable(
   subscription: (() => void) | { unsubscribe?: () => void } | undefined,
 ) {
-  if (isCallbackProp(subscription)) {
+  if (isFunctionProp(subscription)) {
     subscription();
 
     return;

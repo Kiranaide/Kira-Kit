@@ -70,6 +70,37 @@ function iconSubstitute(raw: string, iconLibrary?: string): string {
     : raw;
 }
 
+function declaredDepNames(pkg: ConsumerPackageJson): Set<string> {
+  return new Set([
+    ...Object.keys(pkg.dependencies ?? {}),
+    ...Object.keys(pkg.devDependencies ?? {}),
+    ...Object.keys(pkg.peerDependencies ?? {}),
+  ]);
+}
+
+/**
+ * Install specs for the wanted packages the consumer has not declared in
+ * dependencies, devDependencies, or peerDependencies, with major-pinned
+ * ranges applied and duplicates collapsed.
+ */
+export function planMissingDeps(
+  wanted: readonly string[],
+  pkg: ConsumerPackageJson,
+): string[] {
+  const present = declaredDepNames(pkg);
+  const specs = new Map<string, string>();
+
+  for (const raw of wanted) {
+    const { name, spec } = splitDep(raw);
+
+    if (present.has(name)) continue;
+
+    specs.set(name, spec);
+  }
+
+  return [...specs.values()];
+}
+
 /**
  * Union of item npm deps (pinned where majors matter), minus framework
  * packages and anything the consumer already declares. With iconLibrary
@@ -80,25 +111,13 @@ export function planNpmDeps(
   pkg: ConsumerPackageJson,
   iconLibrary?: string,
 ): string[] {
-  const present = new Set([
-    ...Object.keys(pkg.dependencies ?? {}),
-    ...Object.keys(pkg.devDependencies ?? {}),
-    ...Object.keys(pkg.peerDependencies ?? {}),
-  ]);
+  const wanted = items
+    .flatMap((item) =>
+      (item.dependencies ?? []).map((raw) => iconSubstitute(raw, iconLibrary)),
+    )
+    .filter((raw) => !FRAMEWORK_DEPS.has(splitDep(raw).name));
 
-  const specs = new Map<string, string>();
-
-  for (const item of items) {
-    for (const raw of item.dependencies ?? []) {
-      const { name, spec } = splitDep(iconSubstitute(raw, iconLibrary));
-
-      if (FRAMEWORK_DEPS.has(name) || present.has(name)) continue;
-
-      specs.set(name, spec);
-    }
-  }
-
-  return [...specs.values()];
+  return planMissingDeps(wanted, pkg);
 }
 
 async function run(
@@ -126,6 +145,7 @@ async function run(
 /** Package-install side effects, injectable for tests and embedders. */
 export interface DepInstaller {
   install(cwd: string, deps: string[]): Promise<void>;
+  installAll?(cwd: string): Promise<void>;
 }
 
 export const defaultDepInstaller: DepInstaller = {
@@ -143,7 +163,52 @@ export const defaultDepInstaller: DepInstaller = {
 
     await run(command.command, command.args, cwd);
   },
+
+  async installAll(cwd) {
+    const detected = await detect({ cwd });
+    const agent = detected?.name ?? "npm";
+    const command = resolveCommand(agent, "install", []);
+
+    if (!command) {
+      throw new ValidationError(
+        `Could not build an install command for ${agent}.`,
+        `Install manually: ${agent} install`,
+      );
+    }
+
+    await run(command.command, command.args, cwd);
+  },
 };
+
+/** Install all project dependencies in `cwd` using the detected package manager. */
+export async function installProjectDeps(
+  cwd: string,
+  installer: DepInstaller = defaultDepInstaller,
+): Promise<boolean> {
+  const detected = await detect({ cwd });
+  const pm = detected?.name ?? "npm";
+
+  info(`Installing dependencies with ${pm}…`);
+
+  try {
+    if (installer.installAll) {
+      await installer.installAll(cwd);
+    } else {
+      await defaultDepInstaller.installAll!(cwd);
+    }
+
+    success("Dependencies installed.");
+
+    return true;
+  } catch (error) {
+    warning(
+      `Dependency install failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    info(`Install manually: cd ${cwd} && ${pm} install`);
+
+    return false;
+  }
+}
 
 /** Install missing npm deps with the consumer's detected package manager. */
 export async function installNpmDeps(
@@ -175,4 +240,22 @@ export async function installNpmDeps(
   success("Dependencies installed.");
 
   return true;
+}
+
+/**
+ * Install whichever of the wanted npm packages the consumer has not declared,
+ * pinned where majors matter. Returns whether anything was installed.
+ */
+export async function ensureNpmDeps(
+  cwd: string,
+  wanted: readonly string[],
+  ctx: { yes?: boolean },
+  installer: DepInstaller = defaultDepInstaller,
+): Promise<boolean> {
+  return installNpmDeps(
+    cwd,
+    planMissingDeps(wanted, readConsumerPackage(cwd)),
+    ctx,
+    installer,
+  );
 }

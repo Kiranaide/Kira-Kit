@@ -8,10 +8,14 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { runChecks, formatFindings } from "../core/checks/runner";
-import { generatePresetItems } from "../core/theme/generate-presets";
+import {
+  generatePresetItems,
+  generateThemeCatalog,
+} from "../core/theme/generate-presets";
 import { loadSourceRegistry } from "../core/registry/loader";
 import { buildPayloads, writeRegistryOutputs } from "../core/registry/build";
-import { defaultThemeItem } from "../core/registry/css-assets";
+import { defaultThemeItem } from "../core/css/stylesheet";
+import { syncEmbeddedAssets } from "../core/css/assets-sync";
 import { validateRegistry } from "../core/registry/validate";
 import { docsOutputPaths, generateDocs } from "../core/docs/generate";
 import type { RegistryItemPayload, SourceRegistryItem } from "../lib/schemas";
@@ -52,6 +56,11 @@ function writeThemePresets(repoRoot: string): void {
       null,
       2,
     ) + "\n",
+    "utf-8",
+  );
+  writeFileSync(
+    join(repoRoot, "src/themes/catalog.json"),
+    JSON.stringify(generateThemeCatalog(), null, 2) + "\n",
     "utf-8",
   );
 
@@ -164,6 +173,14 @@ export function buildRegistry(options: {
     repoRoot,
     kiraBase ? [...loaded.items, styleDocItem(kiraBase)] : loaded.items,
   );
+
+  const synced = syncEmbeddedAssets(repoRoot);
+
+  if (synced.assetsWritten) {
+    success(
+      `Synced embedded CLI CSS assets and ${synced.templatesSynced} template(s).`,
+    );
+  }
 
   return 0;
 }

@@ -38,8 +38,7 @@ import {
   IconPlus,
   IconX,
 } from "@tabler/icons-react";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isStringProp } from "@/lib/component-prop-guards";
+import { isStringProp, resolveComponentDefaults } from "@/lib/component-utils";
 
 interface TabsContextValue {
   orientation: "horizontal" | "vertical";

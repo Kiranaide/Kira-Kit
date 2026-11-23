@@ -17,8 +17,7 @@ import {
 } from "@tabler/icons-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isStringProp } from "@/lib/component-prop-guards";
+import { isStringProp, resolveComponentDefaults } from "@/lib/component-utils";
 
 const Select = SelectPrimitive.Root;
 

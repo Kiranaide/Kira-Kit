@@ -4,8 +4,10 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "cn";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
+import {
+  isFunctionProp,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 const skeletonVariants = cva("min-w-0 rounded-md bg-muted", {
   variants: {
@@ -763,7 +765,7 @@ function RenderSkeletonRootSectionPart1({
         ref={(node) => {
           localRef.current = node;
 
-          if (isCallbackProp(ref)) return ref(node);
+          if (isFunctionProp(ref)) return ref(node);
 
           if (ref) ref.current = node;
         }}
@@ -839,7 +841,7 @@ function RenderSkeletonBonePart2({
       ref={(node) => {
         localRef.current = node;
 
-        if (isCallbackProp(ref)) return ref(node);
+        if (isFunctionProp(ref)) return ref(node);
 
         if (ref) ref.current = node;
       }}

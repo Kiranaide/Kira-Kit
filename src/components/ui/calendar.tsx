@@ -35,7 +35,7 @@ import {
   IconChevronUp,
 } from "@tabler/icons-react";
 import { cn } from "cn";
-import { isObjectProp } from "@/components/ui/prop-guards";
+import { isObjectProp } from "@/lib/component-utils";
 
 const calendarNavigationIcons = {
   left: IconChevronLeft,

@@ -1,167 +1,23 @@
-import { existsSync, writeFileSync } from "node:fs";
+import { writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { themePayload, type GeneratedTheme } from "../core/theme/theme";
 import {
-  BASE_COLOR_NAMES,
-  generateBaseColorVars,
-  generateTheme,
-  isBaseColorName,
-  normalizeBaseColor,
-  themePayload,
-  ThemeContrastError,
-  type GeneratedTheme,
-} from "../core/theme/theme";
-import type { BaseColorName } from "../core/theme/palette";
-import {
-  DEFAULT_MONO,
-  DEFAULT_SANS,
-  resolveFont,
-  resolveFontPreset,
-  type FontSpec,
-} from "../core/theme/fonts";
-import {
-  resolveRadius,
-  resolveSurface,
-  type ResolvedRadius,
-  type SurfacePreset,
-} from "../core/theme/geometry";
+  applyStandaloneTokens,
+  buildCustomTheme,
+  persistThemeConfig,
+  resolveThemeSelection,
+  type ResolvedThemeSelection,
+} from "../core/theme/apply";
 import { installItems } from "../core/install/engine";
-import { applyFonts, detectCssPath } from "../core/install/apply-fonts";
-import { mergeCssVars, type CssVars } from "../core/install/css-vars";
-import { applyIconLibrary, resolveIconLibrary } from "../core/install/icons";
-import {
-  readRawConfig,
-  updateRawConfig,
-  type RawComponentsConfig,
-} from "../lib/config";
+import { applyFonts } from "../core/install/apply-fonts";
+import { applyIconLibrary } from "../core/install/icons";
 import { ValidationError } from "../lib/errors";
 import { info, success } from "../lib/logger";
 import type { ThemeOptions } from "../types";
 
-interface ThemeSelection {
-  sans: FontSpec;
-  mono: FontSpec;
-  display?: FontSpec;
-  fontPreset?: string;
-  iconLibrary: string;
-  baseColor?: BaseColorName;
-  radius?: ResolvedRadius;
-  surface?: SurfacePreset;
-  hasFonts: boolean;
-  hasIcon: boolean;
-  hasTokens: boolean;
-}
-
-function resolveStandaloneBaseColor(value?: string): BaseColorName | undefined {
-  if (!value) return undefined;
-
-  const trimmed = value.trim();
-
-  if (!isBaseColorName(trimmed)) {
-    throw new ValidationError(
-      `Unknown base color "${value}".`,
-      `Valid options: ${BASE_COLOR_NAMES.join(", ")}.`,
-    );
-  }
-
-  return trimmed;
-}
-
-function firstDefined(values: Array<string | undefined>): string | undefined {
-  return values.find((value) => value !== undefined);
-}
-
-function pickThemeFontSlots(
-  raw: RawComponentsConfig | null,
-  options: ThemeOptions,
-) {
-  const preset = options.fontPreset
-    ? resolveFontPreset(options.fontPreset)
-    : undefined;
-
-  const sans =
-    firstDefined([options.font, preset?.sans, raw?.font]) ?? DEFAULT_SANS;
-
-  const mono =
-    firstDefined([options.fontMono, preset?.mono, raw?.fontMono]) ??
-    DEFAULT_MONO;
-
-  const display = firstDefined([options.fontDisplay, preset?.display]);
-
-  return { sans, mono, display, fontPreset: preset?.name };
-}
-
-function resolveTypographyFields(
-  raw: RawComponentsConfig | null,
-  options: ThemeOptions,
-) {
-  const slots = pickThemeFontSlots(raw, options);
-
-  const fontFlags = [
-    options.fontPreset,
-    options.font,
-    options.fontDisplay,
-    options.fontMono,
-  ];
-
-  return {
-    sans: resolveFont("sans", slots.sans),
-    mono: resolveFont("mono", slots.mono),
-    display: slots.display ? resolveFont("display", slots.display) : undefined,
-    fontPreset: slots.fontPreset,
-    hasFonts: fontFlags.some(Boolean),
-  };
-}
-
-function resolveSelection(cwd: string, options: ThemeOptions): ThemeSelection {
-  const raw = readRawConfig(cwd);
-  const typo = resolveTypographyFields(raw, options);
-
-  const baseColor = options.primary
-    ? normalizeBaseColor(options.baseColor)
-    : resolveStandaloneBaseColor(options.baseColor);
-
-  const radius = options.radius ? resolveRadius(options.radius) : undefined;
-  const surface = options.surface ? resolveSurface(options.surface) : undefined;
-
-  return {
-    ...typo,
-    iconLibrary: resolveIconLibrary(options.icon ?? raw?.iconLibrary),
-    baseColor,
-    radius,
-    surface,
-    hasIcon: Boolean(options.icon),
-    hasTokens: Boolean(baseColor || radius || surface),
-  };
-}
-
-function persistThemeConfig(
-  cwd: string,
-  selection: ThemeSelection,
-  defaultBaseColor?: BaseColorName,
-): void {
-  const raw = readRawConfig(cwd);
-
-  if (!raw) return;
-
-  const patch: Partial<RawComponentsConfig> = {};
-  const nextBase = selection.baseColor ?? defaultBaseColor;
-
-  if (nextBase) {
-    patch.tailwind = { ...raw.tailwind, baseColor: nextBase };
-  }
-
-  if (selection.radius) patch.radius = selection.radius.name;
-
-  if (selection.surface) patch.surface = selection.surface.name;
-
-  if (Object.keys(patch).length > 0) {
-    updateRawConfig(cwd, patch);
-  }
-}
-
 async function applyTypography(
   cwd: string,
-  selection: ThemeSelection,
+  selection: ResolvedThemeSelection,
   installer: ThemeOptions["installer"],
 ): Promise<void> {
   if (selection.hasFonts) {
@@ -181,35 +37,6 @@ async function applyTypography(
   }
 }
 
-function applyStandaloneTokens(cwd: string, selection: ThemeSelection): void {
-  const cssVars: CssVars = {};
-
-  if (selection.baseColor) {
-    const baseVars = generateBaseColorVars(selection.baseColor);
-
-    cssVars.light = { ...cssVars.light, ...baseVars.light };
-    cssVars.dark = { ...cssVars.dark, ...baseVars.dark };
-  }
-
-  if (selection.surface) {
-    cssVars.light = { ...cssVars.light, ...selection.surface.light };
-    cssVars.dark = { ...cssVars.dark, ...selection.surface.dark };
-  }
-
-  if (selection.radius) {
-    cssVars.theme = { ...cssVars.theme, "--radius": selection.radius.value };
-    cssVars.light = { ...cssVars.light, "--radius": selection.radius.value };
-  }
-
-  const cssPath = join(cwd, detectCssPath(cwd));
-
-  if (existsSync(cssPath)) {
-    mergeCssVars(cssPath, cssVars);
-  }
-
-  persistThemeConfig(cwd, selection);
-}
-
 function reportContrast(generated: GeneratedTheme): void {
   for (const adjustment of generated.adjustments) {
     info(
@@ -226,38 +53,13 @@ function reportContrast(generated: GeneratedTheme): void {
   }
 }
 
-function buildPrimaryTheme(
-  primary: string,
-  selection: ThemeSelection,
-): GeneratedTheme | null {
-  try {
-    return generateTheme({
-      name: "custom",
-      title: "Custom Kira Kit theme",
-      description: `Custom OKLCH theme generated from primary ${primary}.`,
-      primary,
-      baseColor: selection.baseColor ?? "neutral",
-      radius: selection.radius?.name,
-      surface: selection.surface?.name,
-    });
-  } catch (error) {
-    if (error instanceof ThemeContrastError) {
-      console.error(`error: ${error.message}`);
-
-      return null;
-    }
-
-    throw error;
-  }
-}
-
 async function applyPrimaryTheme(
   cwd: string,
   primary: string,
   options: ThemeOptions,
-  selection: ThemeSelection,
+  selection: ResolvedThemeSelection,
 ): Promise<number> {
-  const generated = buildPrimaryTheme(primary, selection);
+  const generated = buildCustomTheme(primary, selection);
 
   if (!generated) return 1;
 
@@ -307,7 +109,7 @@ function hasAnyThemeOption(options: ThemeOptions): boolean {
   return flags.some(Boolean);
 }
 
-function formatDryRunSummary(selection: ThemeSelection): string {
+function formatDryRunSummary(selection: ResolvedThemeSelection): string {
   const parts: string[] = [];
 
   if (selection.baseColor) parts.push(`base=${selection.baseColor}`);
@@ -337,7 +139,7 @@ export async function theme(options: ThemeOptions): Promise<number> {
     );
   }
 
-  const selection = resolveSelection(cwd, options);
+  const selection = resolveThemeSelection(cwd, options);
 
   if (options.primary) {
     return applyPrimaryTheme(cwd, options.primary, options, selection);
@@ -352,6 +154,7 @@ export async function theme(options: ThemeOptions): Promise<number> {
 
   if (selection.hasTokens) {
     applyStandaloneTokens(cwd, selection);
+    persistThemeConfig(cwd, selection);
   }
 
   await applyTypography(cwd, selection, options.installer);

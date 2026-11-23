@@ -7,10 +7,8 @@ import {
   DEFAULT_THEME_CSSVARS,
   UTILITIES_CSS,
 } from "../src/generated/assets";
-import {
-  buildBaseCss,
-  defaultThemeItem,
-} from "../src/core/registry/css-assets";
+import { buildBaseCss, defaultThemeItem } from "../src/core/css/stylesheet";
+import { TEMPLATE_CSS_TARGETS } from "../src/core/css/assets-sync";
 
 const REPO_ROOT = fileURLToPath(new URL("../../..", import.meta.url));
 
@@ -29,8 +27,9 @@ describe("embedded assets drift guard", () => {
     expect(BASE_CSS).toBe(buildBaseCss(indexCss, "./kira-utilities.css"));
   });
 
-  it("UTILITIES_CSS matches the vendored utilities verbatim", () => {
+  it("UTILITIES_CSS matches the vendored utilities verbatim and leaks no docs-only rules", () => {
     expect(UTILITIES_CSS).toBe(utilities);
+    expect(UTILITIES_CSS).not.toMatch(/\.docs-/);
   });
 
   it("DEFAULT_THEME_CSSVARS matches the extracted default theme", () => {
@@ -54,44 +53,24 @@ describe("embedded assets drift guard", () => {
 
 const TEMPLATES_ROOT = join(REPO_ROOT, "packages/cli/templates");
 
-const TEMPLATE_CSS_TARGETS = [
-  {
-    css: "vite/src/index.css",
-    utilities: "vite/src/styles/kira-utilities.css",
-    utilitiesImport: "./styles/kira-utilities.css",
-  },
-  {
-    css: "tanstack-start/src/index.css",
-    utilities: "tanstack-start/src/styles/kira-utilities.css",
-    utilitiesImport: "./styles/kira-utilities.css",
-  },
-  {
-    css: "next/app/globals.css",
-    utilities: "next/app/kira-utilities.css",
-    utilitiesImport: "./kira-utilities.css",
-  },
-  {
-    css: "monorepo/packages/ui/src/index.css",
-    utilities: "monorepo/packages/ui/src/styles/kira-utilities.css",
-    utilitiesImport: "./styles/kira-utilities.css",
-  },
-];
-
 function readNormalized(path: string): string {
   return readFileSync(path, "utf-8").replaceAll("\r\n", "\n");
 }
 
 describe("template CSS drift guard", () => {
   it.each(TEMPLATE_CSS_TARGETS)(
-    "$css ships the kit base CSS + utilities",
+    "$css ships the kit base CSS + clean consumer utilities",
     (target) => {
       expect(readNormalized(join(TEMPLATES_ROOT, target.css))).toBe(
         buildBaseCss(indexCss, target.utilitiesImport),
       );
 
-      expect(readNormalized(join(TEMPLATES_ROOT, target.utilities))).toBe(
-        utilities,
+      const templateUtilities = readNormalized(
+        join(TEMPLATES_ROOT, target.utilities),
       );
+
+      expect(templateUtilities).toBe(utilities);
+      expect(templateUtilities).not.toMatch(/\.docs-/);
     },
   );
 });

@@ -134,7 +134,7 @@ function mergeRefs<T>(
 }
 
 import { getGuidePreset, type GuidePreset } from "@/lib/camera/guide-presets";
-import { isFunctionProp } from "@/components/ui/prop-guards";
+import { isFunctionProp } from "@/lib/component-utils";
 
 type CameraActions = Pick<
   UseCameraReturn,

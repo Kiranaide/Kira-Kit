@@ -4,11 +4,7 @@
  * every `@/lib/*` import resolves to exactly one shippable item.
  */
 export const LIB_ITEM_MAP = {
-  "component-defaults": "component-defaults",
-  "component-prop-guards": "component-prop-guards",
-  "component-item-keys": "component-item-keys",
-  "component-native-props": "component-native-props",
-  "component-refs": "component-refs",
+  "component-utils": "component-utils",
   "layout-responsive": "layout-responsive",
   "code-presentation": "code-presentation",
   "color-picker": "color-picker-lib",

@@ -18,6 +18,7 @@ kira-kit add @kira-kit/slider
 
 - @kira-kit/input
 - @kira-kit/tooltip
+- @kira-kit/component-utils
 
 ## Usage
 

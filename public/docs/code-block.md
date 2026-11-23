@@ -20,13 +20,10 @@ kira-kit add @kira-kit/code-block
 
 - @kira-kit/button
 - @kira-kit/code-presentation
-- @kira-kit/component-defaults
-- @kira-kit/component-native-props
-- @kira-kit/component-prop-guards
-- @kira-kit/component-refs
 - @kira-kit/tabs
 - @kira-kit/toast
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

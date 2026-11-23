@@ -19,6 +19,7 @@ kira-kit add @kira-kit/alert
 
 - @kira-kit/button
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

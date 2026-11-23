@@ -15,8 +15,7 @@ import {
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isStringProp } from "@/lib/component-prop-guards";
+import { isStringProp, resolveComponentDefaults } from "@/lib/component-utils";
 
 const breadcrumbListVariants = cva(
   // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept

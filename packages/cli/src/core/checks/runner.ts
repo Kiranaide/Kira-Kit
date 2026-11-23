@@ -1,6 +1,8 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { readConfig } from "../../lib/config";
+import { extractImports } from "../registry/extract";
+import { loadItemMetaMap, loadKitCss } from "../registry/loader";
 import type { CheckContext, Finding, ItemMeta, SourceFile } from "./types";
 import {
   isSuppressed,
@@ -157,7 +159,11 @@ interface FileCheckResult {
 }
 
 function checkFile(file: SourceFile, ctx: CheckContext): FileCheckResult {
-  const fileFindings = CHECKS.flatMap((check) => check(file, ctx));
+  const parsed: SourceFile = file.imports
+    ? file
+    : { ...file, imports: extractImports(file.content, file.path) };
+
+  const fileFindings = CHECKS.flatMap((check) => check(parsed, ctx));
   const { errors, suppressions } = parseSuppressions(file.content, file.name);
 
   const valid = errors.filter(
@@ -180,15 +186,10 @@ function checkFile(file: SourceFile, ctx: CheckContext): FileCheckResult {
 
 export function runChecks(options: CheckRunOptions): CheckRunResult {
   const { repoRoot } = options;
-  const indexCssPath = join(repoRoot, "src/index.css");
-
-  const indexCss = existsSync(indexCssPath)
-    ? readFileSync(indexCssPath, "utf-8")
-    : "";
 
   const ctx: CheckContext = {
-    indexCss,
-    items: loadItemMeta(repoRoot),
+    indexCss: loadKitCss(repoRoot),
+    items: loadItemMetaMap(repoRoot),
     iconLibrary: readConfig(repoRoot)?.iconLibrary,
   };
 
@@ -214,85 +215,6 @@ export function runChecks(options: CheckRunOptions): CheckRunResult {
     failing,
     filesChecked: files.length,
   };
-}
-
-/** Subset of a registry item that metadata checks read from registry.json. */
-interface RegistryIndexItem {
-  name: string;
-  dependencies?: string[];
-  registryDependencies?: string[];
-  files?: Array<string | { path: string }>;
-  description?: string;
-  categories?: string[];
-}
-
-/** Shape of a source registry.json file as parsed for metadata checks. */
-interface RegistryIndex {
-  items?: RegistryIndexItem[];
-}
-
-function readRegistryItems(registryFile: string): RegistryIndexItem[] {
-  if (!existsSync(registryFile)) return [];
-
-  try {
-    // SAFETY: these registry.json files are kira-kit's own, hand-maintained
-    // sources; every field the metadata checks read is present or optional
-    // per the schema, and a malformed file is skipped by the catch below.
-    const data = JSON.parse(
-      readFileSync(registryFile, "utf-8"),
-    ) as RegistryIndex;
-
-    return data.items ?? [];
-  } catch {
-    // Missing/invalid registry files make metadata checks skip, not crash.
-    return [];
-  }
-}
-
-function toItemMeta(item: RegistryIndexItem): ItemMeta {
-  return {
-    dependencies: item.dependencies ?? [],
-    registryDependencies: item.registryDependencies ?? [],
-    // oxlint-disable-next-line anti-slop/no-runtime-typeof -- the registry schema allows files as strings or {path} objects; typeof discriminates that union
-    files: (item.files ?? []).map((f) => (typeof f === "string" ? f : f.path)),
-    description: item.description ?? "",
-    categories: item.categories ?? [],
-  };
-}
-
-function loadItemMeta(repoRoot: string): Map<string, ItemMeta> {
-  const metaByKey = new Map<string, ItemMeta>();
-
-  // Registry file → the check-lookup prefix for its items ("ui/button" etc.).
-  const registryFiles: Array<[string, string]> = [
-    [join(repoRoot, "src/components/ui/registry.json"), "ui"],
-    [join(repoRoot, "src/hooks/registry.json"), "hooks"],
-    [join(repoRoot, "src/lib/registry.json"), "lib"],
-    [join(repoRoot, "src/themes/registry.json"), "theme"],
-  ];
-
-  for (const [registryFile, prefix] of registryFiles) {
-    for (const item of readRegistryItems(registryFile)) {
-      const meta = toItemMeta(item);
-
-      // Key by item name and prefixed name so lookups work for both plain
-      // and "ui/button"-style naming schemes.
-      metaByKey.set(item.name, meta);
-      metaByKey.set(`${prefix}/${item.name}`, meta);
-
-      // Lib items ship modules whose file names differ from the item name
-      // (color-picker-lib ships color-picker.ts); key each shipped module.
-      if (prefix === "lib") keyLibModules(metaByKey, meta);
-    }
-  }
-
-  return metaByKey;
-}
-
-function keyLibModules(metaByKey: Map<string, ItemMeta>, meta: ItemMeta): void {
-  for (const path of meta.files) {
-    metaByKey.set(`lib/${path.replace(/\.(tsx|ts)$/, "")}`, meta);
-  }
 }
 
 function githubAnnotation(f: Finding): string {

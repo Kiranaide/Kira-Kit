@@ -20,6 +20,7 @@ kira-kit add @kira-kit/announcement-bar
 - @kira-kit/button
 - @kira-kit/spinner
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

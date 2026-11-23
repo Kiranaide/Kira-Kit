@@ -16,9 +16,9 @@ kira-kit add @kira-kit/spacer
 
 ## Registry dependencies
 
-- @kira-kit/component-prop-guards
 - @kira-kit/layout-responsive
 - @kira-kit/skeleton
+- @kira-kit/component-utils
 
 ## Usage
 

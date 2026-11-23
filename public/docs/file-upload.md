@@ -20,9 +20,9 @@ kira-kit add @kira-kit/file-upload
 ## Registry dependencies
 
 - @kira-kit/button
-- @kira-kit/component-defaults
 - @kira-kit/dialog
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

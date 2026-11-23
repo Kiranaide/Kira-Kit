@@ -11,7 +11,7 @@ import {
   IconInfoCircle,
   IconLoader2,
 } from "@tabler/icons-react";
-import { isCallbackProp } from "@/lib/component-prop-guards";
+import { isFunctionProp } from "@/lib/component-utils";
 
 const TOAST_TYPES = [
   "default",
@@ -256,7 +256,7 @@ interface PromiseToastOptions<T> {
 const resolve = <A,>(
   value: React.ReactNode | ((arg: A) => React.ReactNode),
   arg: A,
-) => (isCallbackProp(value) ? value(arg) : value);
+) => (isFunctionProp(value) ? value(arg) : value);
 
 /** Global imperative toast API. Mirrors the previous sonner-based signature. */
 const toast = Object.assign(createToast("default"), {

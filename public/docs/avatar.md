@@ -17,11 +17,10 @@ kira-kit add @kira-kit/avatar
 
 ## Registry dependencies
 
-- @kira-kit/component-defaults
-- @kira-kit/component-prop-guards
 - @kira-kit/popover
 - @kira-kit/tooltip
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

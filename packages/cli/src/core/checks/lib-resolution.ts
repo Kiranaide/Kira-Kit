@@ -1,7 +1,6 @@
 import { dirname, join, normalize } from "node:path/posix";
-import { extractImports } from "../registry/extract";
 import { libItemNameFor } from "../registry/lib-items";
-import type { Check, Finding } from "./types";
+import { getImports, type Check, type Finding } from "./types";
 
 /**
  * Check 13: registry:lib integrity. Lib files must not depend on ui/hook
@@ -16,7 +15,7 @@ export const libResolution: Check = (file, ctx) => {
   if (!meta) return [];
 
   const findings: Finding[] = [];
-  const { internal, lib, relative } = extractImports(file.content, file.path);
+  const { internal, lib, relative } = getImports(file);
 
   for (const entry of internal) {
     findings.push({

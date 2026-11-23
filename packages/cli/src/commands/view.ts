@@ -1,6 +1,5 @@
 import pc from "picocolors";
-import { fetchItem } from "../core/install/client";
-import { readConfig } from "../lib/config";
+import { createClientContext, fetchItem } from "../core/install/client";
 import { toItemAddress } from "../lib/namespace";
 import { ValidationError } from "../lib/errors";
 import type { RegistryItemPayload } from "../lib/schemas";
@@ -31,8 +30,7 @@ export async function viewItems(options: {
     );
   }
 
-  const cwd = options.cwd ?? process.cwd();
-  const ctx = { cwd, registries: readConfig(cwd)?.registries };
+  const ctx = createClientContext(options.cwd);
 
   for (const address of options.items.map(toItemAddress)) {
     printItem(await fetchItem(address, ctx));

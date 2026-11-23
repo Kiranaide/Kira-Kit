@@ -21,6 +21,7 @@ kira-kit add @kira-kit/spotlight
 - @kira-kit/empty
 - @kira-kit/kbd
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readConfig } from "../../lib/config";
 import { RegistryError, ValidationError } from "../../lib/errors";
 import { toItemAddress } from "../../lib/namespace";
 import {
@@ -21,6 +22,17 @@ export interface ResolvedAddress {
 export interface ClientContext {
   cwd: string;
   registries?: Record<string, string>;
+}
+
+/** Build a ClientContext from a working directory and optional pre-read registries. */
+export function createClientContext(
+  cwd: string = process.cwd(),
+  registries?: Record<string, string>,
+): ClientContext {
+  return {
+    cwd,
+    registries: registries ?? readConfig(cwd)?.registries,
+  };
 }
 
 function classifyLocation(location: string, cwd: string): ResolvedAddress {

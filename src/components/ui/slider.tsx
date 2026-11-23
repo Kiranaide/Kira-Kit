@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { NumericInput } from "@/components/ui/input";
-import { isFunctionProp, isNumberProp } from "@/components/ui/prop-guards";
+import { isFunctionProp, isNumberProp } from "@/lib/component-utils";
 
 // Track cross-axis size flows through a CSS var so the vertical orientation
 // can swap width/height without fighting arbitrary-variant selectors.

@@ -147,6 +147,7 @@ program
 program
   .command("check [paths...]")
   .description("Run quality checks on component sources")
+  .option("-c, --cwd <directory>", "Working directory", process.cwd())
   .option("--ci", "Fail on every finding unless suppressed, not just errors")
   .option("--format <format>", "Output format: pretty, json, github")
   .option("--json", "Shorthand for --format json")

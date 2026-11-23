@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
+import { resolveComponentDefaults } from "@/lib/component-utils";
 import { Progress as ProgressPrimitive } from "@base-ui/react/progress";
 import { cva } from "class-variance-authority";
 import MDEditor from "@uiw/react-md-editor";

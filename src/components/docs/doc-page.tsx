@@ -1,6 +1,12 @@
 import * as React from "react";
+import { Collapsible as CollapsiblePrimitive } from "@base-ui/react/collapsible";
 import { Link } from "@tanstack/react-router";
-import { IconArrowLeft, IconArrowRight, IconCheck } from "@tabler/icons-react";
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconCheck,
+  IconChevronDown,
+} from "@tabler/icons-react";
 import { cn } from "cn";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -14,55 +20,80 @@ import {
 import { useReveal } from "@/components/docs/layout";
 import { PageTopBar } from "@/components/site-chrome";
 
-interface TocEntry {
+export interface TocEntry {
   id: string;
   label: string;
 }
 
+export interface DocNavLink {
+  to: string;
+  label: string;
+  icon?: React.ElementType;
+}
+
 /** Jump to a section, skipping the smooth scroll when motion is reduced. */
-function scrollToSection(id: string) {
+export function scrollToSection(id: string) {
+  const target = document.getElementById(id);
+
+  if (!target) return;
+
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  document.getElementById(id)?.scrollIntoView({
+  target.scrollIntoView({
     behavior: reduce ? "auto" : "smooth",
     block: "start",
   });
 }
 
+function navigateToSection(id: string) {
+  window.history.replaceState(window.history.state, "", `#${id}`);
+  document.getElementById(id)?.focus({ preventScroll: true });
+  scrollToSection(id);
+}
+
 /**
- * Collects the section headings that actually rendered and tracks which one the
- * reader is in. Reading the DOM keeps the list in sync with the page — no second
- * copy of the headings to maintain.
+ * Collects the section headings that actually rendered (or uses an explicit
+ * list) and tracks which one the reader is in.
  */
-function useDocToc(root: React.RefObject<HTMLElement | null>) {
-  const [entries, setEntries] = React.useState<TocEntry[]>([]);
-  const [activeId, setActiveId] = React.useState<string | null>(null);
+function useDocToc(
+  root: React.RefObject<HTMLElement | null>,
+  explicitSections?: readonly TocEntry[],
+) {
+  const [domEntries, setDomEntries] = React.useState<TocEntry[]>([]);
+  const entries = explicitSections ?? domEntries;
+
+  const [activeId, setActiveId] = React.useState<string | null>(
+    explicitSections?.[0]?.id ?? null,
+  );
 
   React.useEffect(() => {
     const container = root.current;
 
     if (!container) return;
 
-    const sections = [
-      ...container.querySelectorAll<HTMLElement>("[data-doc-section]"),
-    ];
+    const sections = explicitSections
+      ? explicitSections.flatMap((item) => {
+          const node = document.getElementById(item.id);
 
-    // The list is only knowable after the sections mount, so it is read from
-    // the DOM here rather than passed down a second time by every page.
-    // oxlint-disable-next-line react/set-state-in-effect -- one pass per mount; the scroll handler owns later updates.
-    setEntries(
-      sections.map((section) => ({
-        id: section.id,
-        label:
-          section.dataset.title ??
-          section.querySelector("h2")?.textContent ??
-          section.id,
-      })),
-    );
+          return node ? [node] : [];
+        })
+      : [...container.querySelectorAll<HTMLElement>("[data-doc-section]")];
+
+    if (!explicitSections) {
+      // oxlint-disable-next-line react/set-state-in-effect -- one pass per mount; the scroll handler owns later updates.
+      setDomEntries(
+        sections.map((section) => ({
+          id: section.id,
+          label:
+            section.dataset.title ??
+            section.querySelector("h2")?.textContent ??
+            section.id,
+        })),
+      );
+    }
 
     const update = () => {
-      const marker = 120;
-
+      const marker = 128;
       let current = sections[0]?.id ?? null;
 
       for (const section of sections) {
@@ -84,8 +115,8 @@ function useDocToc(root: React.RefObject<HTMLElement | null>) {
       });
     };
 
-    // The scrollable element is the app shell's <main>; listening on window
-    // catches it because scroll bubbles to the document for nested scrollers.
+    // The scrollable element is the app shell's <main>; listening on document
+    // catches it because scroll bubbles in capture phase for nested scrollers.
     document.addEventListener("scroll", onScroll, {
       passive: true,
       capture: true,
@@ -97,9 +128,76 @@ function useDocToc(root: React.RefObject<HTMLElement | null>) {
       document.removeEventListener("scroll", onScroll, { capture: true });
       window.removeEventListener("resize", onScroll);
     };
-  }, [root]);
+  }, [root, explicitSections]);
 
-  return { entries, activeId };
+  return { entries, activeId: activeId ?? entries[0]?.id ?? null };
+}
+
+function MobileJumpToSection({
+  entries,
+  activeId,
+}: {
+  entries: readonly TocEntry[];
+  activeId: string | null;
+}) {
+  const [open, setOpen] = React.useState(false);
+
+  if (entries.length < 2) return null;
+
+  return (
+    <CollapsiblePrimitive.Root
+      open={open}
+      onOpenChange={setOpen}
+      data-slot="doc-mobile-toc"
+      className="lg:hidden"
+    >
+      <CollapsiblePrimitive.Trigger className="docs-focus-ring flex h-11 w-full items-center justify-between rounded-[6px] border border-border bg-muted/60 px-3 text-[13px] font-semibold leading-[1.42] text-foreground transition-colors duration-150 hover:bg-muted">
+        <span>On this page</span>
+        <IconChevronDown
+          aria-hidden="true"
+          className={cn(
+            "size-4 shrink-0 text-muted-foreground transition-transform duration-150 motion-reduce:transition-none",
+            open && "rotate-180",
+          )}
+        />
+      </CollapsiblePrimitive.Trigger>
+
+      <CollapsiblePrimitive.Panel className="overflow-hidden">
+        <nav
+          aria-label="On this page"
+          className="mt-1.5 rounded-[6px] border border-border bg-card p-1"
+        >
+          <ul className="flex flex-col">
+            {entries.map((entry) => {
+              const active = entry.id === activeId;
+
+              return (
+                <li key={entry.id}>
+                  <a
+                    href={`#${entry.id}`}
+                    aria-current={active ? "location" : undefined}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setOpen(false);
+                      navigateToSection(entry.id);
+                    }}
+                    className={cn(
+                      "docs-focus-ring flex min-h-11 items-center rounded-[5px] px-3 text-[13px] leading-[1.42] transition-colors duration-150",
+                      active
+                        ? "bg-primary/10 font-semibold docs-accent"
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                    )}
+                  >
+                    {entry.label}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </CollapsiblePrimitive.Panel>
+    </CollapsiblePrimitive.Root>
+  );
 }
 
 export const docDesktopLayout =
@@ -108,7 +206,7 @@ export const docDesktopLayout =
 export function DocTocRail({
   entries,
   activeId,
-  onNavigate = scrollToSection,
+  onNavigate = navigateToSection,
 }: {
   entries: readonly TocEntry[];
   activeId: string | null;
@@ -162,35 +260,35 @@ export function DocTocRail({
   );
 }
 
-function DocToc({ root }: { root: React.RefObject<HTMLElement | null> }) {
-  return <DocTocRail {...useDocToc(root)} />;
-}
-
 interface DocPageProps {
   title: string;
   description: string;
   /** Top-bar crumb; falls back to the page title. */
   crumb?: string;
   badge?: React.ReactNode;
-  previous?: { to: string; label: string };
-  next?: { to: string; label: string };
+  sections?: readonly TocEntry[];
+  previous?: DocNavLink;
+  next?: DocNavLink;
   children: React.ReactNode;
 }
 
 /**
- * Article frame for the guide pages: sticky breadcrumb bar, one measure-limited
- * writing column, a scroll-spy "On this page" rail, and prev/next at the foot.
+ * Article frame for all docs pages: sticky breadcrumb bar, measure-limited
+ * writing column, mobile + desktop scroll-spy "On this page" navigation, and
+ * prev/next links at the foot.
  */
 export function DocPage({
   title,
   description,
   crumb,
   badge,
+  sections,
   previous,
   next,
   children,
 }: DocPageProps) {
   const root = React.useRef<HTMLDivElement>(null);
+  const toc = useDocToc(root, sections);
 
   return (
     <div data-slot="doc-page" className="min-h-full bg-background">
@@ -214,6 +312,10 @@ export function DocPage({
             <p className="max-w-[640px] text-base leading-7 text-muted-foreground lg:text-lg lg:leading-8">
               {description}
             </p>
+            <MobileJumpToSection
+              entries={toc.entries}
+              activeId={toc.activeId}
+            />
           </header>
 
           {children}
@@ -231,7 +333,7 @@ export function DocPage({
           )}
         </article>
 
-        <DocToc root={root} />
+        <DocTocRail entries={toc.entries} activeId={toc.activeId} />
       </div>
     </div>
   );
@@ -242,9 +344,10 @@ function DocDirectionLink({
   link,
 }: {
   direction: "previous" | "next";
-  link: { to: string; label: string };
+  link: DocNavLink;
 }) {
   const isNext = direction === "next";
+  const CustomIcon = link.icon;
 
   return (
     <Link
@@ -269,7 +372,13 @@ function DocDirectionLink({
           />
         )}
       </span>
-      <span className="text-sm font-semibold text-foreground">
+      <span className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+        {CustomIcon && (
+          <CustomIcon
+            aria-hidden="true"
+            className="size-4 shrink-0 docs-accent"
+          />
+        )}
         {link.label}
       </span>
     </Link>
@@ -280,6 +389,7 @@ interface DocSectionProps {
   id: string;
   title: string;
   description?: React.ReactNode;
+  meta?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
 }
@@ -289,6 +399,7 @@ export function DocSection({
   id,
   title,
   description,
+  meta,
   children,
   className,
 }: DocSectionProps) {
@@ -298,6 +409,7 @@ export function DocSection({
     <section
       ref={ref}
       id={id}
+      tabIndex={-1}
       data-doc-section
       data-title={title}
       data-revealed={revealed ? "true" : undefined}
@@ -310,6 +422,11 @@ export function DocSection({
         <h2 className="text-[22px] font-semibold leading-[1.25] tracking-[-0.03em] text-balance text-foreground lg:text-[28px]">
           {title}
         </h2>
+        {meta && (
+          <p className="font-mono text-[13px] leading-[1.42] text-muted-foreground">
+            {meta}
+          </p>
+        )}
         {description && (
           <p className="max-w-[620px] text-sm leading-6 text-muted-foreground lg:text-base lg:leading-7">
             {description}

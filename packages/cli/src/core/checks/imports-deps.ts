@@ -1,11 +1,8 @@
-import {
-  extractImports,
-  packageNameOf,
-  type LocatedImport,
-} from "../registry/extract";
+import { packageNameOf, type LocatedImport } from "../registry/extract";
 import { libItemNameFor } from "../registry/lib-items";
 import {
   BUILTIN_IMPORTS,
+  getImports,
   type Check,
   type Finding,
   type ItemMeta,
@@ -174,7 +171,7 @@ export const importsMatchDeps: Check = (file, ctx) => {
 
   if (!meta) return [];
 
-  const { external, internal, lib } = extractImports(file.content, file.path);
+  const { external, internal, lib } = getImports(file);
 
   // Consumers on lucide still declare tabler in registry metadata; normalize
   // so both check directions compare against the canonical dependency list.

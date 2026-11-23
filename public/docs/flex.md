@@ -15,7 +15,7 @@ kira-kit add @kira-kit/flex
 
 ## Registry dependencies
 
-- @kira-kit/component-prop-guards
+- @kira-kit/component-utils
 
 ## Usage
 

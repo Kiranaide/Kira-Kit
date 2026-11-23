@@ -1,8 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { omitComponentProps } from "@/lib/component-native-props";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
+import {
+  isFunctionProp,
+  omitComponentProps,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 import { useId } from "react";
 import {
   IconChevronLeft,
@@ -30,7 +33,6 @@ import { cn } from "cn";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { isCallbackProp } from "@/lib/component-prop-guards";
 
 const carouselVariants = cva("relative group", {
   variants: {
@@ -733,7 +735,7 @@ const CarouselProgressBar = React.forwardRef<
       ref={(node) => {
         barRef.current = node;
 
-        if (isCallbackProp(ref)) ref(node);
+        if (isFunctionProp(ref)) ref(node);
         else if (ref) ref.current = node;
       }}
       data-slot="carousel-progress-bar"
@@ -1091,7 +1093,7 @@ function RenderCarouselItemPart1({
       ref={(node) => {
         itemRef.current = node;
 
-        if (isCallbackProp(ref)) ref(node);
+        if (isFunctionProp(ref)) ref(node);
         else if (ref) ref.current = node;
       }}
       data-slot="carousel-item"
@@ -2003,7 +2005,7 @@ function renderCarousel({
         ref={(node) => {
           containerRef.current = node;
 
-          if (isCallbackProp(ref)) ref(node);
+          if (isFunctionProp(ref)) ref(node);
           else if (ref) ref.current = node;
         }}
         data-slot="carousel"

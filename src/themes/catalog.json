@@ -1,0 +1,838 @@
+{
+  "baseColors": [
+    {
+      "name": "neutral",
+      "title": "Neutral",
+      "family": "achromatic",
+      "description": "True achromatic gallery white and pure carbon dark.",
+      "light": {
+        "--background": "oklch(0.992 0 0)",
+        "--foreground": "oklch(0.18 0 0)",
+        "--card": "oklch(1 0 0)",
+        "--card-foreground": "oklch(0.18 0 0)",
+        "--popover": "oklch(1 0 0)",
+        "--popover-foreground": "oklch(0.18 0 0)",
+        "--secondary": "oklch(0.936 0 0)",
+        "--secondary-foreground": "oklch(0.24 0 0)",
+        "--muted": "oklch(0.936 0 0)",
+        "--muted-foreground": "oklch(0.48 0 0)",
+        "--accent": "oklch(0.925 0 0)",
+        "--accent-foreground": "oklch(0.2 0 0)",
+        "--border": "oklch(0.862 0 0)",
+        "--input": "oklch(0.862 0 0)",
+        "--sidebar": "oklch(0.978 0 0)",
+        "--sidebar-foreground": "oklch(0.18 0 0)",
+        "--sidebar-accent": "oklch(0.922 0 0)",
+        "--sidebar-accent-foreground": "oklch(0.2 0 0)",
+        "--sidebar-border": "oklch(0.868 0 0)"
+      },
+      "dark": {
+        "--background": "oklch(0.145 0 0)",
+        "--foreground": "oklch(0.96 0 0)",
+        "--card": "oklch(0.195 0 0)",
+        "--card-foreground": "oklch(0.96 0 0)",
+        "--popover": "oklch(0.21 0 0)",
+        "--popover-foreground": "oklch(0.96 0 0)",
+        "--secondary": "oklch(0.25 0 0)",
+        "--secondary-foreground": "oklch(0.91 0 0)",
+        "--muted": "oklch(0.24 0 0)",
+        "--muted-foreground": "oklch(0.71 0 0)",
+        "--accent": "oklch(0.267 0 0)",
+        "--accent-foreground": "oklch(0.96 0 0)",
+        "--border": "oklch(0.32 0 0)",
+        "--input": "oklch(0.32 0 0)",
+        "--sidebar": "oklch(0.167 0 0)",
+        "--sidebar-foreground": "oklch(0.96 0 0)",
+        "--sidebar-accent": "oklch(0.25 0 0)",
+        "--sidebar-accent-foreground": "oklch(0.96 0 0)",
+        "--sidebar-border": "oklch(0.315 0 0)"
+      }
+    },
+    {
+      "name": "paper",
+      "title": "Paper",
+      "family": "warm",
+      "description": "Warm book-linen light canvas paired with roasted umber dark.",
+      "light": {
+        "--background": "oklch(0.975 0.015 84)",
+        "--foreground": "oklch(0.18 0.022 62)",
+        "--card": "oklch(0.992 0.008 84)",
+        "--card-foreground": "oklch(0.18 0.022 62)",
+        "--popover": "oklch(0.992 0.007 84)",
+        "--popover-foreground": "oklch(0.18 0.022 62)",
+        "--secondary": "oklch(0.936 0.024 84)",
+        "--secondary-foreground": "oklch(0.24 0.023 62)",
+        "--muted": "oklch(0.936 0.024 84)",
+        "--muted-foreground": "oklch(0.48 0.03 62)",
+        "--accent": "oklch(0.925 0.025 84)",
+        "--accent-foreground": "oklch(0.2 0.023 62)",
+        "--border": "oklch(0.862 0.026 84)",
+        "--input": "oklch(0.862 0.026 84)",
+        "--sidebar": "oklch(0.961 0.019 84)",
+        "--sidebar-foreground": "oklch(0.18 0.022 62)",
+        "--sidebar-accent": "oklch(0.922 0.025 84)",
+        "--sidebar-accent-foreground": "oklch(0.2 0.023 62)",
+        "--sidebar-border": "oklch(0.868 0.025 84)"
+      },
+      "dark": {
+        "--background": "oklch(0.165 0.022 62)",
+        "--foreground": "oklch(0.96 0.01 84)",
+        "--card": "oklch(0.215 0.025 62)",
+        "--card-foreground": "oklch(0.96 0.01 84)",
+        "--popover": "oklch(0.23 0.026 62)",
+        "--popover-foreground": "oklch(0.96 0.01 84)",
+        "--secondary": "oklch(0.27 0.028 62)",
+        "--secondary-foreground": "oklch(0.91 0.013 84)",
+        "--muted": "oklch(0.26 0.027 62)",
+        "--muted-foreground": "oklch(0.71 0.023 84)",
+        "--accent": "oklch(0.287 0.029 62)",
+        "--accent-foreground": "oklch(0.96 0.01 84)",
+        "--border": "oklch(0.34 0.028 62)",
+        "--input": "oklch(0.34 0.028 62)",
+        "--sidebar": "oklch(0.187 0.024 62)",
+        "--sidebar-foreground": "oklch(0.96 0.01 84)",
+        "--sidebar-accent": "oklch(0.27 0.027 62)",
+        "--sidebar-accent-foreground": "oklch(0.96 0.01 84)",
+        "--sidebar-border": "oklch(0.335 0.027 62)"
+      }
+    },
+    {
+      "name": "stone",
+      "title": "Stone",
+      "family": "warm",
+      "description": "Mineral limestone neutrals and grounded basalt dark surfaces.",
+      "light": {
+        "--background": "oklch(0.978 0.009 60)",
+        "--foreground": "oklch(0.18 0.014 52)",
+        "--card": "oklch(0.994 0.005 60)",
+        "--card-foreground": "oklch(0.18 0.014 52)",
+        "--popover": "oklch(0.994 0.004 60)",
+        "--popover-foreground": "oklch(0.18 0.014 52)",
+        "--secondary": "oklch(0.936 0.015 60)",
+        "--secondary-foreground": "oklch(0.24 0.014 52)",
+        "--muted": "oklch(0.936 0.015 60)",
+        "--muted-foreground": "oklch(0.48 0.018 52)",
+        "--accent": "oklch(0.925 0.016 60)",
+        "--accent-foreground": "oklch(0.2 0.014 52)",
+        "--border": "oklch(0.862 0.016 60)",
+        "--input": "oklch(0.862 0.016 60)",
+        "--sidebar": "oklch(0.964 0.012 60)",
+        "--sidebar-foreground": "oklch(0.18 0.014 52)",
+        "--sidebar-accent": "oklch(0.922 0.015 60)",
+        "--sidebar-accent-foreground": "oklch(0.2 0.014 52)",
+        "--sidebar-border": "oklch(0.868 0.016 60)"
+      },
+      "dark": {
+        "--background": "oklch(0.16 0.012 52)",
+        "--foreground": "oklch(0.96 0.006 60)",
+        "--card": "oklch(0.208 0.014 52)",
+        "--card-foreground": "oklch(0.96 0.006 60)",
+        "--popover": "oklch(0.223 0.015 52)",
+        "--popover-foreground": "oklch(0.96 0.006 60)",
+        "--secondary": "oklch(0.263 0.016 52)",
+        "--secondary-foreground": "oklch(0.91 0.008 60)",
+        "--muted": "oklch(0.253 0.015 52)",
+        "--muted-foreground": "oklch(0.71 0.013 60)",
+        "--accent": "oklch(0.28 0.017 52)",
+        "--accent-foreground": "oklch(0.96 0.006 60)",
+        "--border": "oklch(0.333 0.016 52)",
+        "--input": "oklch(0.333 0.016 52)",
+        "--sidebar": "oklch(0.182 0.013 52)",
+        "--sidebar-foreground": "oklch(0.96 0.006 60)",
+        "--sidebar-accent": "oklch(0.263 0.016 52)",
+        "--sidebar-accent-foreground": "oklch(0.96 0.006 60)",
+        "--sidebar-border": "oklch(0.328 0.015 52)"
+      }
+    },
+    {
+      "name": "taupe",
+      "title": "Taupe",
+      "family": "warm",
+      "description": "Soft architectural sand-gray with subtle clay warmth.",
+      "light": {
+        "--background": "oklch(0.976 0.012 72)",
+        "--foreground": "oklch(0.18 0.017 66)",
+        "--card": "oklch(0.993 0.006 72)",
+        "--card-foreground": "oklch(0.18 0.017 66)",
+        "--popover": "oklch(0.993 0.006 72)",
+        "--popover-foreground": "oklch(0.18 0.017 66)",
+        "--secondary": "oklch(0.936 0.018 72)",
+        "--secondary-foreground": "oklch(0.24 0.018 66)",
+        "--muted": "oklch(0.936 0.018 72)",
+        "--muted-foreground": "oklch(0.48 0.023 66)",
+        "--accent": "oklch(0.925 0.02 72)",
+        "--accent-foreground": "oklch(0.2 0.018 66)",
+        "--border": "oklch(0.862 0.02 72)",
+        "--input": "oklch(0.862 0.02 72)",
+        "--sidebar": "oklch(0.962 0.014 72)",
+        "--sidebar-foreground": "oklch(0.18 0.017 66)",
+        "--sidebar-accent": "oklch(0.922 0.019 72)",
+        "--sidebar-accent-foreground": "oklch(0.2 0.018 66)",
+        "--sidebar-border": "oklch(0.868 0.02 72)"
+      },
+      "dark": {
+        "--background": "oklch(0.162 0.017 66)",
+        "--foreground": "oklch(0.96 0.008 72)",
+        "--card": "oklch(0.212 0.02 66)",
+        "--card-foreground": "oklch(0.96 0.008 72)",
+        "--popover": "oklch(0.227 0.02 66)",
+        "--popover-foreground": "oklch(0.96 0.008 72)",
+        "--secondary": "oklch(0.267 0.022 66)",
+        "--secondary-foreground": "oklch(0.91 0.011 72)",
+        "--muted": "oklch(0.257 0.021 66)",
+        "--muted-foreground": "oklch(0.71 0.018 72)",
+        "--accent": "oklch(0.284 0.023 66)",
+        "--accent-foreground": "oklch(0.96 0.008 72)",
+        "--border": "oklch(0.337 0.022 66)",
+        "--input": "oklch(0.337 0.022 66)",
+        "--sidebar": "oklch(0.184 0.018 66)",
+        "--sidebar-foreground": "oklch(0.96 0.008 72)",
+        "--sidebar-accent": "oklch(0.267 0.022 66)",
+        "--sidebar-accent-foreground": "oklch(0.96 0.008 72)",
+        "--sidebar-border": "oklch(0.332 0.021 66)"
+      }
+    },
+    {
+      "name": "zinc",
+      "title": "Zinc",
+      "family": "cool",
+      "description": "Minimal cool-gray foundation for crisp SaaS workspaces.",
+      "light": {
+        "--background": "oklch(0.985 0.006 263)",
+        "--foreground": "oklch(0.18 0.009 263)",
+        "--card": "oklch(0.998 0.003 263)",
+        "--card-foreground": "oklch(0.18 0.009 263)",
+        "--popover": "oklch(0.998 0.003 263)",
+        "--popover-foreground": "oklch(0.18 0.009 263)",
+        "--secondary": "oklch(0.936 0.009 263)",
+        "--secondary-foreground": "oklch(0.24 0.009 263)",
+        "--muted": "oklch(0.936 0.009 263)",
+        "--muted-foreground": "oklch(0.48 0.012 263)",
+        "--accent": "oklch(0.925 0.01 263)",
+        "--accent-foreground": "oklch(0.2 0.009 263)",
+        "--border": "oklch(0.862 0.01 263)",
+        "--input": "oklch(0.862 0.01 263)",
+        "--sidebar": "oklch(0.971 0.007 263)",
+        "--sidebar-foreground": "oklch(0.18 0.009 263)",
+        "--sidebar-accent": "oklch(0.922 0.01 263)",
+        "--sidebar-accent-foreground": "oklch(0.2 0.009 263)",
+        "--sidebar-border": "oklch(0.868 0.01 263)"
+      },
+      "dark": {
+        "--background": "oklch(0.145 0.011 263)",
+        "--foreground": "oklch(0.96 0.005 263)",
+        "--card": "oklch(0.196 0.013 263)",
+        "--card-foreground": "oklch(0.96 0.005 263)",
+        "--popover": "oklch(0.211 0.013 263)",
+        "--popover-foreground": "oklch(0.96 0.005 263)",
+        "--secondary": "oklch(0.251 0.014 263)",
+        "--secondary-foreground": "oklch(0.91 0.007 263)",
+        "--muted": "oklch(0.241 0.013 263)",
+        "--muted-foreground": "oklch(0.71 0.011 263)",
+        "--accent": "oklch(0.268 0.015 263)",
+        "--accent-foreground": "oklch(0.96 0.005 263)",
+        "--border": "oklch(0.321 0.014 263)",
+        "--input": "oklch(0.321 0.014 263)",
+        "--sidebar": "oklch(0.167 0.012 263)",
+        "--sidebar-foreground": "oklch(0.96 0.005 263)",
+        "--sidebar-accent": "oklch(0.251 0.014 263)",
+        "--sidebar-accent-foreground": "oklch(0.96 0.005 263)",
+        "--sidebar-border": "oklch(0.316 0.013 263)"
+      }
+    },
+    {
+      "name": "gray",
+      "title": "Gray",
+      "family": "cool",
+      "description": "Balanced cool silver neutral suited to enterprise tools.",
+      "light": {
+        "--background": "oklch(0.984 0.008 235)",
+        "--foreground": "oklch(0.18 0.012 240)",
+        "--card": "oklch(0.997 0.004 235)",
+        "--card-foreground": "oklch(0.18 0.012 240)",
+        "--popover": "oklch(0.997 0.004 235)",
+        "--popover-foreground": "oklch(0.18 0.012 240)",
+        "--secondary": "oklch(0.936 0.013 235)",
+        "--secondary-foreground": "oklch(0.24 0.013 240)",
+        "--muted": "oklch(0.936 0.013 235)",
+        "--muted-foreground": "oklch(0.48 0.016 240)",
+        "--accent": "oklch(0.925 0.014 235)",
+        "--accent-foreground": "oklch(0.2 0.013 240)",
+        "--border": "oklch(0.862 0.014 235)",
+        "--input": "oklch(0.862 0.014 235)",
+        "--sidebar": "oklch(0.97 0.01 235)",
+        "--sidebar-foreground": "oklch(0.18 0.012 240)",
+        "--sidebar-accent": "oklch(0.922 0.013 235)",
+        "--sidebar-accent-foreground": "oklch(0.2 0.013 240)",
+        "--sidebar-border": "oklch(0.868 0.014 235)"
+      },
+      "dark": {
+        "--background": "oklch(0.15 0.014 240)",
+        "--foreground": "oklch(0.96 0.006 235)",
+        "--card": "oklch(0.202 0.016 240)",
+        "--card-foreground": "oklch(0.96 0.006 235)",
+        "--popover": "oklch(0.217 0.017 240)",
+        "--popover-foreground": "oklch(0.96 0.006 235)",
+        "--secondary": "oklch(0.257 0.018 240)",
+        "--secondary-foreground": "oklch(0.91 0.009 235)",
+        "--muted": "oklch(0.247 0.017 240)",
+        "--muted-foreground": "oklch(0.71 0.015 235)",
+        "--accent": "oklch(0.274 0.019 240)",
+        "--accent-foreground": "oklch(0.96 0.006 235)",
+        "--border": "oklch(0.327 0.018 240)",
+        "--input": "oklch(0.327 0.018 240)",
+        "--sidebar": "oklch(0.172 0.015 240)",
+        "--sidebar-foreground": "oklch(0.96 0.006 235)",
+        "--sidebar-accent": "oklch(0.257 0.018 240)",
+        "--sidebar-accent-foreground": "oklch(0.96 0.006 235)",
+        "--sidebar-border": "oklch(0.322 0.017 240)"
+      }
+    },
+    {
+      "name": "anthracite",
+      "title": "Anthracite",
+      "family": "cool",
+      "description": "Dark-first OLED graphite with crisp cool silver daylight.",
+      "light": {
+        "--background": "oklch(0.985 0.008 268)",
+        "--foreground": "oklch(0.18 0.012 268)",
+        "--card": "oklch(1 0.004 268)",
+        "--card-foreground": "oklch(0.18 0.012 268)",
+        "--popover": "oklch(1 0.004 268)",
+        "--popover-foreground": "oklch(0.18 0.012 268)",
+        "--secondary": "oklch(0.936 0.013 268)",
+        "--secondary-foreground": "oklch(0.24 0.013 268)",
+        "--muted": "oklch(0.936 0.013 268)",
+        "--muted-foreground": "oklch(0.48 0.016 268)",
+        "--accent": "oklch(0.925 0.014 268)",
+        "--accent-foreground": "oklch(0.2 0.013 268)",
+        "--border": "oklch(0.862 0.014 268)",
+        "--input": "oklch(0.862 0.014 268)",
+        "--sidebar": "oklch(0.971 0.01 268)",
+        "--sidebar-foreground": "oklch(0.18 0.012 268)",
+        "--sidebar-accent": "oklch(0.922 0.013 268)",
+        "--sidebar-accent-foreground": "oklch(0.2 0.013 268)",
+        "--sidebar-border": "oklch(0.868 0.014 268)"
+      },
+      "dark": {
+        "--background": "oklch(0.132 0.016 268)",
+        "--foreground": "oklch(0.96 0.007 268)",
+        "--card": "oklch(0.188 0.018 268)",
+        "--card-foreground": "oklch(0.96 0.007 268)",
+        "--popover": "oklch(0.203 0.018 268)",
+        "--popover-foreground": "oklch(0.96 0.007 268)",
+        "--secondary": "oklch(0.243 0.02 268)",
+        "--secondary-foreground": "oklch(0.91 0.01 268)",
+        "--muted": "oklch(0.233 0.019 268)",
+        "--muted-foreground": "oklch(0.71 0.016 268)",
+        "--accent": "oklch(0.26 0.021 268)",
+        "--accent-foreground": "oklch(0.96 0.007 268)",
+        "--border": "oklch(0.313 0.02 268)",
+        "--input": "oklch(0.313 0.02 268)",
+        "--sidebar": "oklch(0.154 0.017 268)",
+        "--sidebar-foreground": "oklch(0.96 0.007 268)",
+        "--sidebar-accent": "oklch(0.243 0.02 268)",
+        "--sidebar-accent-foreground": "oklch(0.96 0.007 268)",
+        "--sidebar-border": "oklch(0.308 0.019 268)"
+      }
+    },
+    {
+      "name": "slate",
+      "title": "Slate",
+      "family": "cool",
+      "description": "Technical steel blue-gray and deep midnight-slate dark mode.",
+      "light": {
+        "--background": "oklch(0.976 0.015 250)",
+        "--foreground": "oklch(0.18 0.022 260)",
+        "--card": "oklch(0.994 0.008 250)",
+        "--card-foreground": "oklch(0.18 0.022 260)",
+        "--popover": "oklch(0.994 0.007 250)",
+        "--popover-foreground": "oklch(0.18 0.022 260)",
+        "--secondary": "oklch(0.936 0.024 250)",
+        "--secondary-foreground": "oklch(0.24 0.023 260)",
+        "--muted": "oklch(0.936 0.024 250)",
+        "--muted-foreground": "oklch(0.48 0.03 260)",
+        "--accent": "oklch(0.925 0.025 250)",
+        "--accent-foreground": "oklch(0.2 0.023 260)",
+        "--border": "oklch(0.862 0.026 250)",
+        "--input": "oklch(0.862 0.026 250)",
+        "--sidebar": "oklch(0.962 0.019 250)",
+        "--sidebar-foreground": "oklch(0.18 0.022 260)",
+        "--sidebar-accent": "oklch(0.922 0.025 250)",
+        "--sidebar-accent-foreground": "oklch(0.2 0.023 260)",
+        "--sidebar-border": "oklch(0.868 0.025 250)"
+      },
+      "dark": {
+        "--background": "oklch(0.155 0.03 260)",
+        "--foreground": "oklch(0.96 0.014 250)",
+        "--card": "oklch(0.205 0.034 260)",
+        "--card-foreground": "oklch(0.96 0.014 250)",
+        "--popover": "oklch(0.22 0.035 260)",
+        "--popover-foreground": "oklch(0.96 0.014 250)",
+        "--secondary": "oklch(0.26 0.038 260)",
+        "--secondary-foreground": "oklch(0.91 0.018 250)",
+        "--muted": "oklch(0.25 0.036 260)",
+        "--muted-foreground": "oklch(0.71 0.031 250)",
+        "--accent": "oklch(0.277 0.04 260)",
+        "--accent-foreground": "oklch(0.96 0.014 250)",
+        "--border": "oklch(0.33 0.038 260)",
+        "--input": "oklch(0.33 0.038 260)",
+        "--sidebar": "oklch(0.177 0.032 260)",
+        "--sidebar-foreground": "oklch(0.96 0.014 250)",
+        "--sidebar-accent": "oklch(0.26 0.037 260)",
+        "--sidebar-accent-foreground": "oklch(0.96 0.014 250)",
+        "--sidebar-border": "oklch(0.325 0.036 260)"
+      }
+    },
+    {
+      "name": "mist",
+      "title": "Mist",
+      "family": "tinted",
+      "description": "Glacier aqua frost in daylight and deep fjord petrol at night.",
+      "light": {
+        "--background": "oklch(0.975 0.016 204)",
+        "--foreground": "oklch(0.18 0.024 214)",
+        "--card": "oklch(0.993 0.008 204)",
+        "--card-foreground": "oklch(0.18 0.024 214)",
+        "--popover": "oklch(0.993 0.008 204)",
+        "--popover-foreground": "oklch(0.18 0.024 214)",
+        "--secondary": "oklch(0.936 0.026 204)",
+        "--secondary-foreground": "oklch(0.24 0.025 214)",
+        "--muted": "oklch(0.936 0.026 204)",
+        "--muted-foreground": "oklch(0.48 0.032 214)",
+        "--accent": "oklch(0.925 0.027 204)",
+        "--accent-foreground": "oklch(0.2 0.025 214)",
+        "--border": "oklch(0.862 0.028 204)",
+        "--input": "oklch(0.862 0.028 204)",
+        "--sidebar": "oklch(0.961 0.02 204)",
+        "--sidebar-foreground": "oklch(0.18 0.024 214)",
+        "--sidebar-accent": "oklch(0.922 0.027 204)",
+        "--sidebar-accent-foreground": "oklch(0.2 0.025 214)",
+        "--sidebar-border": "oklch(0.868 0.027 204)"
+      },
+      "dark": {
+        "--background": "oklch(0.158 0.025 214)",
+        "--foreground": "oklch(0.96 0.012 204)",
+        "--card": "oklch(0.208 0.029 214)",
+        "--card-foreground": "oklch(0.96 0.012 204)",
+        "--popover": "oklch(0.223 0.029 214)",
+        "--popover-foreground": "oklch(0.96 0.012 204)",
+        "--secondary": "oklch(0.263 0.032 214)",
+        "--secondary-foreground": "oklch(0.91 0.015 204)",
+        "--muted": "oklch(0.253 0.031 214)",
+        "--muted-foreground": "oklch(0.71 0.026 204)",
+        "--accent": "oklch(0.28 0.033 214)",
+        "--accent-foreground": "oklch(0.96 0.012 204)",
+        "--border": "oklch(0.333 0.032 214)",
+        "--input": "oklch(0.333 0.032 214)",
+        "--sidebar": "oklch(0.18 0.027 214)",
+        "--sidebar-foreground": "oklch(0.96 0.012 204)",
+        "--sidebar-accent": "oklch(0.263 0.031 214)",
+        "--sidebar-accent-foreground": "oklch(0.96 0.012 204)",
+        "--sidebar-border": "oklch(0.328 0.031 214)"
+      }
+    },
+    {
+      "name": "olive",
+      "title": "Olive",
+      "family": "tinted",
+      "description": "Low-fatigue matcha wash paired with pine-shadow dark surfaces.",
+      "light": {
+        "--background": "oklch(0.975 0.016 130)",
+        "--foreground": "oklch(0.18 0.024 140)",
+        "--card": "oklch(0.993 0.008 130)",
+        "--card-foreground": "oklch(0.18 0.024 140)",
+        "--popover": "oklch(0.993 0.008 130)",
+        "--popover-foreground": "oklch(0.18 0.024 140)",
+        "--secondary": "oklch(0.936 0.026 130)",
+        "--secondary-foreground": "oklch(0.24 0.025 140)",
+        "--muted": "oklch(0.936 0.026 130)",
+        "--muted-foreground": "oklch(0.48 0.032 140)",
+        "--accent": "oklch(0.925 0.027 130)",
+        "--accent-foreground": "oklch(0.2 0.025 140)",
+        "--border": "oklch(0.862 0.028 130)",
+        "--input": "oklch(0.862 0.028 130)",
+        "--sidebar": "oklch(0.961 0.02 130)",
+        "--sidebar-foreground": "oklch(0.18 0.024 140)",
+        "--sidebar-accent": "oklch(0.922 0.027 130)",
+        "--sidebar-accent-foreground": "oklch(0.2 0.025 140)",
+        "--sidebar-border": "oklch(0.868 0.027 130)"
+      },
+      "dark": {
+        "--background": "oklch(0.16 0.023 140)",
+        "--foreground": "oklch(0.96 0.01 130)",
+        "--card": "oklch(0.21 0.026 140)",
+        "--card-foreground": "oklch(0.96 0.01 130)",
+        "--popover": "oklch(0.225 0.027 140)",
+        "--popover-foreground": "oklch(0.96 0.01 130)",
+        "--secondary": "oklch(0.265 0.029 140)",
+        "--secondary-foreground": "oklch(0.91 0.014 130)",
+        "--muted": "oklch(0.255 0.028 140)",
+        "--muted-foreground": "oklch(0.71 0.024 130)",
+        "--accent": "oklch(0.282 0.03 140)",
+        "--accent-foreground": "oklch(0.96 0.01 130)",
+        "--border": "oklch(0.335 0.029 140)",
+        "--input": "oklch(0.335 0.029 140)",
+        "--sidebar": "oklch(0.182 0.024 140)",
+        "--sidebar-foreground": "oklch(0.96 0.01 130)",
+        "--sidebar-accent": "oklch(0.265 0.028 140)",
+        "--sidebar-accent-foreground": "oklch(0.96 0.01 130)",
+        "--sidebar-border": "oklch(0.33 0.028 140)"
+      }
+    },
+    {
+      "name": "mauve",
+      "title": "Mauve",
+      "family": "tinted",
+      "description": "Dusty lilac studio chalk and velvet aubergine dark surfaces.",
+      "light": {
+        "--background": "oklch(0.975 0.015 328)",
+        "--foreground": "oklch(0.18 0.022 318)",
+        "--card": "oklch(0.993 0.008 328)",
+        "--card-foreground": "oklch(0.18 0.022 318)",
+        "--popover": "oklch(0.993 0.007 328)",
+        "--popover-foreground": "oklch(0.18 0.022 318)",
+        "--secondary": "oklch(0.936 0.024 328)",
+        "--secondary-foreground": "oklch(0.24 0.023 318)",
+        "--muted": "oklch(0.936 0.024 328)",
+        "--muted-foreground": "oklch(0.48 0.03 318)",
+        "--accent": "oklch(0.925 0.025 328)",
+        "--accent-foreground": "oklch(0.2 0.023 318)",
+        "--border": "oklch(0.862 0.026 328)",
+        "--input": "oklch(0.862 0.026 328)",
+        "--sidebar": "oklch(0.961 0.019 328)",
+        "--sidebar-foreground": "oklch(0.18 0.022 318)",
+        "--sidebar-accent": "oklch(0.922 0.025 328)",
+        "--sidebar-accent-foreground": "oklch(0.2 0.023 318)",
+        "--sidebar-border": "oklch(0.868 0.025 328)"
+      },
+      "dark": {
+        "--background": "oklch(0.16 0.025 318)",
+        "--foreground": "oklch(0.96 0.012 328)",
+        "--card": "oklch(0.21 0.029 318)",
+        "--card-foreground": "oklch(0.96 0.012 328)",
+        "--popover": "oklch(0.225 0.029 318)",
+        "--popover-foreground": "oklch(0.96 0.012 328)",
+        "--secondary": "oklch(0.265 0.032 318)",
+        "--secondary-foreground": "oklch(0.91 0.015 328)",
+        "--muted": "oklch(0.255 0.031 318)",
+        "--muted-foreground": "oklch(0.71 0.026 328)",
+        "--accent": "oklch(0.282 0.033 318)",
+        "--accent-foreground": "oklch(0.96 0.012 328)",
+        "--border": "oklch(0.335 0.032 318)",
+        "--input": "oklch(0.335 0.032 318)",
+        "--sidebar": "oklch(0.182 0.027 318)",
+        "--sidebar-foreground": "oklch(0.96 0.012 328)",
+        "--sidebar-accent": "oklch(0.265 0.031 318)",
+        "--sidebar-accent-foreground": "oklch(0.96 0.012 328)",
+        "--sidebar-border": "oklch(0.33 0.031 318)"
+      }
+    }
+  ],
+  "radiusPresets": [
+    {
+      "name": "sharp",
+      "title": "Sharp",
+      "value": "0rem",
+      "description": "Architectural 0px corners for dense consoles and editorial grids."
+    },
+    {
+      "name": "crisp",
+      "title": "Crisp",
+      "value": "0.375rem",
+      "description": "Tight 6px corners tuned for developer tools and precision workspaces."
+    },
+    {
+      "name": "balanced",
+      "title": "Balanced",
+      "value": "0.625rem",
+      "description": "Versatile 10px corners balancing clarity and approachability."
+    },
+    {
+      "name": "soft",
+      "title": "Soft",
+      "value": "0.875rem",
+      "description": "Generous 14px corners for calm consumer and studio products."
+    },
+    {
+      "name": "pill",
+      "title": "Pill",
+      "value": "1.25rem",
+      "description": "Expressive 20px geometry for tactile, friendly interfaces."
+    }
+  ],
+  "surfacePresets": [
+    {
+      "name": "hairline",
+      "title": "Hairline",
+      "description": "Flat 1px border discipline with minimal shadow for dense data clarity.",
+      "light": {
+        "--shadow-card": "0 0 transparent",
+        "--shadow-popover": "0 4px 12px oklch(0 0 0 / 8%)",
+        "--shadow-modal": "0 16px 40px oklch(0 0 0 / 16%)"
+      },
+      "dark": {
+        "--shadow-card": "0 0 transparent",
+        "--shadow-popover": "0 4px 16px oklch(0 0 0 / 40%)",
+        "--shadow-modal": "0 20px 48px oklch(0 0 0 / 60%)"
+      }
+    },
+    {
+      "name": "tactile",
+      "title": "Tactile",
+      "description": "Subtle top specular edge and crisp micro-depth inspired by precision hardware.",
+      "light": {
+        "--shadow-card": "inset 0 1px 0 oklch(1 0 0 / 70%), 0 1px 2px oklch(0 0 0 / 5%)",
+        "--shadow-popover": "inset 0 1px 0 oklch(1 0 0 / 75%), 0 8px 24px -4px oklch(0 0 0 / 10%), 0 2px 6px oklch(0 0 0 / 5%)",
+        "--shadow-modal": "inset 0 1px 0 oklch(1 0 0 / 80%), 0 24px 56px -12px oklch(0 0 0 / 20%)"
+      },
+      "dark": {
+        "--shadow-card": "inset 0 1px 0 oklch(1 0 0 / 8%), 0 1px 2px oklch(0 0 0 / 32%)",
+        "--shadow-popover": "inset 0 1px 0 oklch(1 0 0 / 10%), 0 12px 28px -4px oklch(0 0 0 / 48%)",
+        "--shadow-modal": "inset 0 1px 0 oklch(1 0 0 / 12%), 0 28px 64px -12px oklch(0 0 0 / 68%)"
+      }
+    },
+    {
+      "name": "elevated",
+      "title": "Elevated",
+      "description": "Soft layered ambient elevation for airy cards, popovers, and dialogs.",
+      "light": {
+        "--shadow-card": "0 2px 8px -2px oklch(0 0 0 / 7%), 0 1px 2px oklch(0 0 0 / 4%)",
+        "--shadow-popover": "0 12px 32px -6px oklch(0 0 0 / 12%), 0 4px 10px -2px oklch(0 0 0 / 5%)",
+        "--shadow-modal": "0 28px 64px -12px oklch(0 0 0 / 22%), 0 8px 20px -4px oklch(0 0 0 / 8%)"
+      },
+      "dark": {
+        "--shadow-card": "0 2px 10px -2px oklch(0 0 0 / 42%), 0 1px 2px oklch(0 0 0 / 30%)",
+        "--shadow-popover": "0 16px 36px -6px oklch(0 0 0 / 56%), 0 4px 12px oklch(0 0 0 / 36%)",
+        "--shadow-modal": "0 32px 72px -12px oklch(0 0 0 / 74%), 0 10px 24px oklch(0 0 0 / 48%)"
+      }
+    }
+  ],
+  "fonts": {
+    "sans": [
+      {
+        "name": "geist",
+        "family": "Geist Variable",
+        "stack": "\"Geist Variable\", ui-sans-serif, system-ui, sans-serif",
+        "category": "sans"
+      },
+      {
+        "name": "instrument-sans",
+        "family": "Instrument Sans Variable",
+        "stack": "\"Instrument Sans Variable\", ui-sans-serif, system-ui, sans-serif",
+        "category": "sans"
+      },
+      {
+        "name": "inter",
+        "family": "Inter Variable",
+        "stack": "\"Inter Variable\", ui-sans-serif, system-ui, sans-serif",
+        "category": "sans"
+      },
+      {
+        "name": "manrope",
+        "family": "Manrope Variable",
+        "stack": "\"Manrope Variable\", ui-sans-serif, system-ui, sans-serif",
+        "category": "sans"
+      },
+      {
+        "name": "plus-jakarta-sans",
+        "family": "Plus Jakarta Sans Variable",
+        "stack": "\"Plus Jakarta Sans Variable\", ui-sans-serif, system-ui, sans-serif",
+        "category": "sans"
+      },
+      {
+        "name": "space-grotesk",
+        "family": "Space Grotesk Variable",
+        "stack": "\"Space Grotesk Variable\", ui-sans-serif, system-ui, sans-serif",
+        "category": "sans"
+      },
+      {
+        "name": "dm-sans",
+        "family": "DM Sans Variable",
+        "stack": "\"DM Sans Variable\", ui-sans-serif, system-ui, sans-serif",
+        "category": "sans"
+      },
+      {
+        "name": "bricolage-grotesque",
+        "family": "Bricolage Grotesque Variable",
+        "stack": "\"Bricolage Grotesque Variable\", ui-sans-serif, system-ui, sans-serif",
+        "category": "sans"
+      },
+      {
+        "name": "sora",
+        "family": "Sora Variable",
+        "stack": "\"Sora Variable\", ui-sans-serif, system-ui, sans-serif",
+        "category": "sans"
+      },
+      {
+        "name": "outfit",
+        "family": "Outfit Variable",
+        "stack": "\"Outfit Variable\", ui-sans-serif, system-ui, sans-serif",
+        "category": "sans"
+      }
+    ],
+    "serif": [
+      {
+        "name": "newsreader",
+        "family": "Newsreader Variable",
+        "stack": "\"Newsreader Variable\", ui-serif, Georgia, serif",
+        "category": "serif"
+      },
+      {
+        "name": "fraunces",
+        "family": "Fraunces Variable",
+        "stack": "\"Fraunces Variable\", ui-serif, Georgia, serif",
+        "category": "serif"
+      }
+    ],
+    "mono": [
+      {
+        "name": "geist-mono",
+        "family": "Geist Mono Variable",
+        "stack": "\"Geist Mono Variable\", ui-monospace, monospace",
+        "category": "mono"
+      },
+      {
+        "name": "jetbrains-mono",
+        "family": "JetBrains Mono Variable",
+        "stack": "\"JetBrains Mono Variable\", ui-monospace, monospace",
+        "category": "mono"
+      },
+      {
+        "name": "fira-code",
+        "family": "Fira Code Variable",
+        "stack": "\"Fira Code Variable\", ui-monospace, monospace",
+        "category": "mono"
+      }
+    ]
+  },
+  "fontPresets": [
+    {
+      "name": "precision",
+      "title": "Precision Studio",
+      "description": "Crisp engineered neo-grotesque paired with matching monospace for dashboards and developer platforms.",
+      "badge": "Default",
+      "display": "geist",
+      "sans": "geist",
+      "mono": "geist-mono",
+      "headingTracking": "-0.025em"
+    },
+    {
+      "name": "editorial",
+      "title": "Editorial Press",
+      "description": "Optical-size transitional serif headlines anchored by clean Instrument Sans body copy and JetBrains Mono metadata.",
+      "badge": "Serif + Sans",
+      "display": "newsreader",
+      "sans": "instrument-sans",
+      "mono": "jetbrains-mono",
+      "headingTracking": "-0.02em"
+    },
+    {
+      "name": "atelier",
+      "title": "Atelier Craft",
+      "description": "Expressive soft-serif display paired with warm geometric-humanist Plus Jakarta Sans for boutique products.",
+      "badge": "Soft Serif",
+      "display": "fraunces",
+      "sans": "plus-jakarta-sans",
+      "mono": "geist-mono",
+      "headingTracking": "-0.02em"
+    },
+    {
+      "name": "terminal",
+      "title": "Blueprint Terminal",
+      "description": "Neutral technical sans paired with high-legibility JetBrains Mono for AI consoles, telemetry, and docs.",
+      "badge": "Dev / AI",
+      "display": "instrument-sans",
+      "sans": "instrument-sans",
+      "mono": "jetbrains-mono",
+      "headingTracking": "-0.02em"
+    },
+    {
+      "name": "expressive",
+      "title": "Expressive Lab",
+      "description": "Multi-axis Bricolage Grotesque headings balanced by quiet DM Sans UI text and ligature-rich Fira Code.",
+      "badge": "Grotesk",
+      "display": "bricolage-grotesque",
+      "sans": "dm-sans",
+      "mono": "fira-code",
+      "headingTracking": "-0.03em"
+    },
+    {
+      "name": "fintech",
+      "title": "Fintech Geometric",
+      "description": "Futuristic Sora headings paired with tabular-friendly Manrope body text and JetBrains Mono readouts.",
+      "badge": "Modern",
+      "display": "sora",
+      "sans": "manrope",
+      "mono": "jetbrains-mono",
+      "headingTracking": "-0.025em"
+    }
+  ],
+  "recipes": {
+    "theme-default": {
+      "baseColor": "neutral",
+      "fontPreset": "precision",
+      "surface": "tactile"
+    },
+    "theme-ember-press": {
+      "baseColor": "paper",
+      "fontPreset": "editorial",
+      "radius": "crisp",
+      "surface": "tactile"
+    },
+    "theme-oxblood-atelier": {
+      "baseColor": "stone",
+      "fontPreset": "atelier",
+      "radius": "balanced",
+      "surface": "elevated"
+    },
+    "theme-olive-ledger": {
+      "baseColor": "olive",
+      "fontPreset": "editorial",
+      "radius": "crisp",
+      "surface": "hairline"
+    },
+    "theme-laurel-study": {
+      "baseColor": "mist",
+      "fontPreset": "atelier",
+      "radius": "soft",
+      "surface": "elevated"
+    },
+    "theme-phase-line": {
+      "baseColor": "slate",
+      "fontPreset": "terminal",
+      "radius": "sharp",
+      "surface": "hairline"
+    },
+    "theme-cryostat": {
+      "baseColor": "mist",
+      "fontPreset": "terminal",
+      "radius": "crisp",
+      "surface": "tactile"
+    },
+    "theme-low-orbit": {
+      "baseColor": "slate",
+      "fontPreset": "precision",
+      "radius": "crisp",
+      "surface": "tactile"
+    },
+    "theme-cobalt-studio": {
+      "baseColor": "anthracite",
+      "fontPreset": "fintech",
+      "radius": "balanced",
+      "surface": "tactile"
+    },
+    "theme-coral-circuit": {
+      "baseColor": "paper",
+      "fontPreset": "expressive",
+      "radius": "soft",
+      "surface": "tactile"
+    },
+    "theme-magenta-riot": {
+      "baseColor": "mauve",
+      "fontPreset": "expressive",
+      "radius": "balanced",
+      "surface": "elevated"
+    }
+  }
+}

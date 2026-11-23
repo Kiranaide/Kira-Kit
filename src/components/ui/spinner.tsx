@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "cn";
-import { isNumberProp } from "@/lib/component-prop-guards";
+import { isNumberProp } from "@/lib/component-utils";
 
 const RADIUS = 10;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;

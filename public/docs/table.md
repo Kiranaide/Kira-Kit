@@ -17,8 +17,7 @@ kira-kit add @kira-kit/table
 ## Registry dependencies
 
 - @kira-kit/checkbox
-- @kira-kit/component-defaults
-- @kira-kit/component-prop-guards
+- @kira-kit/component-utils
 
 ## Usage
 

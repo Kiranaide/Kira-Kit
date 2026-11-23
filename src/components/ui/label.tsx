@@ -10,7 +10,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { IconInfoCircle } from "@tabler/icons-react";
-import { isNumberProp } from "@/components/ui/prop-guards";
+import { isNumberProp } from "@/lib/component-utils";
 
 interface LabelProps
   extends

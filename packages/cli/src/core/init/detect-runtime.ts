@@ -1,17 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import {
-  readConsumerPackage,
-  type ConsumerPackageJson,
-} from "../install/deps";
+import { readConsumerPackage, type ConsumerPackageJson } from "../install/deps";
 
 export type RuntimeKind =
-  | "vite"
-  | "astro"
-  | "turbopack"
-  | "nitro"
-  | "bun"
-  | "postcss";
+  "vite" | "astro" | "turbopack" | "nitro" | "bun" | "postcss";
 
 export interface DetectedRuntime {
   kind: RuntimeKind;
@@ -56,7 +48,7 @@ const NITRO_CONFIGS = [
   "nitro.config.cjs",
 ];
 
-const POSTCSS_CONFIGS = [
+export const POSTCSS_CONFIGS = [
   "postcss.config.mjs",
   "postcss.config.js",
   "postcss.config.cjs",
@@ -64,7 +56,13 @@ const POSTCSS_CONFIGS = [
 ];
 
 const VITE_TAILWIND_DEPS = ["tailwindcss", "@tailwindcss/vite"];
-const POSTCSS_TAILWIND_DEPS = ["tailwindcss", "@tailwindcss/postcss", "postcss"];
+
+const POSTCSS_TAILWIND_DEPS = [
+  "tailwindcss",
+  "@tailwindcss/postcss",
+  "postcss",
+];
+
 const BUN_TAILWIND_DEPS = ["tailwindcss", "bun-plugin-tailwind"];
 
 function findFirstExisting(cwd: string, candidates: string[]): string | null {

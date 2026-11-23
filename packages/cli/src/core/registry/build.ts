@@ -9,13 +9,13 @@ import {
   type SourceRegistry,
   type SourceRegistryItem,
 } from "../../lib/schemas";
-import { buildBaseCss } from "./css-assets";
+import { buildBaseCss } from "../css/stylesheet";
 import {
   deriveMotionCss,
   extractMotionAssets,
   type MotionAssets,
 } from "./motion-css";
-import type { LoadedRegistry } from "./loader";
+import { loadKitCss, type LoadedRegistry } from "./loader";
 
 export const REGISTRY_SCHEMA_URL =
   "https://kira-kit.vercel.app/schema/registry.json";
@@ -104,11 +104,7 @@ export function buildPayloads(
   repoRoot: string,
   loaded: LoadedRegistry,
 ): RegistryItemPayload[] {
-  const motion = extractMotionAssets(
-    readFileSync(join(repoRoot, "src/index.css"), "utf-8") +
-      "\n" +
-      readFileSync(join(repoRoot, "src/styles/kira-utilities.css"), "utf-8"),
-  );
+  const motion = extractMotionAssets(loadKitCss(repoRoot));
 
   const payloads = loaded.items.map((item) =>
     itemPayload(

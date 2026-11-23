@@ -1,8 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { omitComponentProps } from "@/lib/component-native-props";
-import { withOccurrenceKeys } from "@/lib/component-item-keys";
+import {
+  isNumberProp,
+  isObjectProp,
+  omitComponentProps,
+  resolveComponentDefaults,
+  withOccurrenceKeys,
+} from "@/lib/component-utils";
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { cva } from "class-variance-authority";
 import { useDefaultLayout, type LayoutStorage } from "react-resizable-panels";
@@ -16,8 +21,6 @@ import {
 } from "@/components/ui/resizable";
 import { cn } from "cn";
 import { Skeleton } from "@/components/ui/skeleton";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isObjectProp, isNumberProp } from "@/lib/component-prop-guards";
 
 type Orientation = "horizontal" | "vertical";
 
@@ -1101,7 +1104,7 @@ function renderSplitView({
           >
             <span
               data-slot="split-view-label"
-              className="min-w-0 break-words text-sm font-medium"
+              className="min-w-0 wrap-break-word text-sm font-medium"
             >
               {sidebarLabel}
             </span>
@@ -1162,9 +1165,9 @@ function renderSplitView({
         className={cn(
           "min-h-0 flex-1",
           pane !== "split" &&
-            "[&>[data-panel]]:basis-full! [&>[data-panel]]:grow! [&>[data-panel]]:shrink-0! [&>[data-slot=split-view-handle]]:hidden!",
-          pane === "main" && "[&>[data-slot=split-view-sidebar]]:hidden!",
-          pane === "sidebar" && "[&>[data-slot=split-view-main]]:hidden!",
+            "*:data-panel:basis-full! *:data-panel:grow! *:data-panel:shrink-0! *:data-[slot=split-view-handle]:hidden!",
+          pane === "main" && "*:data-[slot=split-view-sidebar]:hidden!",
+          pane === "sidebar" && "*:data-[slot=split-view-main]:hidden!",
         )}
         defaultLayout={
           (validSavedLayout ? savedLayout : undefined) ??

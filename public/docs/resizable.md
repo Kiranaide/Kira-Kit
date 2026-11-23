@@ -19,6 +19,7 @@ kira-kit add @kira-kit/resizable
 
 - @kira-kit/button
 - @kira-kit/use-reduced-motion
+- @kira-kit/component-utils
 
 ## Usage
 

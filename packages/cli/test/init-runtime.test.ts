@@ -359,9 +359,9 @@ export default defineConfig({
       'import tailwindcss from "@tailwindcss/vite";',
     );
     expect(res.content).toContain("plugins: [tailwindcss()]");
-    expect(
-      patchAstroConfigText(res.content, "astro.config.mjs").changed,
-    ).toBe(false);
+    expect(patchAstroConfigText(res.content, "astro.config.mjs").changed).toBe(
+      false,
+    );
   });
 
   it("patches existing postcss.config.mjs and bunfig.toml idempotently", () => {

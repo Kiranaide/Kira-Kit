@@ -2,10 +2,9 @@ import { readFileSync } from "node:fs";
 import { relative } from "node:path";
 import { createTwoFilesPatch } from "diff";
 import pc from "picocolors";
-import { fetchIndex } from "../core/install/client";
+import { createClientContext, fetchIndex } from "../core/install/client";
 import { installItems, planInstall } from "../core/install/engine";
 import type { PlannedWrite } from "../core/install/write";
-import { readConfig } from "../lib/config";
 import { toItemAddress } from "../lib/namespace";
 import { ValidationError, RegistryError } from "../lib/errors";
 import { success } from "../lib/logger";
@@ -19,10 +18,7 @@ const INSTALLABLE_TYPES = new Set([
 ]);
 
 async function allItemAddresses(cwd: string): Promise<string[]> {
-  const entries = await fetchIndex({
-    cwd,
-    registries: readConfig(cwd)?.registries,
-  });
+  const entries = await fetchIndex(createClientContext(cwd));
 
   const names = entries
     .filter((entry) => entry.type && INSTALLABLE_TYPES.has(entry.type))

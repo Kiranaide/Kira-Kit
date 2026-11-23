@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { ContextMenu as ContextMenuPrimitive } from "@base-ui/react/context-menu";
-import { cn } from "cn";
 import { useMenuAction, type MenuActionItem } from "@/hooks/use-menu-action";
 import {
   DropdownMenuArrow,
@@ -19,17 +18,8 @@ import {
   dropdownMenuContentVariants as contextMenuContentVariants,
   dropdownMenuItemVariants as contextMenuItemVariants,
 } from "@/components/ui/dropdown-menu";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
-
-function mergeClassName<S>(
-  base: string,
-  className: string | ((state: S) => string | undefined) | undefined,
-) {
-  return isCallbackProp(className)
-    ? (state: S) => cn(base, className(state))
-    : cn(base, className);
-}
+import { cn } from "cn";
+import { resolveComponentDefaults } from "@/lib/component-utils";
 
 export type ContextMenuProps = ContextMenuPrimitive.Root.Props;
 
@@ -39,7 +29,10 @@ function ContextMenu({ children, ...props }: ContextMenuProps) {
   );
 }
 
-export type ContextMenuTriggerProps = ContextMenuPrimitive.Trigger.Props;
+export type ContextMenuTriggerProps = Omit<
+  ContextMenuPrimitive.Trigger.Props,
+  "className"
+> & { className?: string };
 
 const ContextMenuTrigger = React.forwardRef<
   HTMLDivElement,
@@ -53,7 +46,7 @@ const ContextMenuTrigger = React.forwardRef<
       ref={ref}
       data-slot="context-menu-trigger"
       tabIndex={tabIndex}
-      className={mergeClassName<ContextMenuPrimitive.Trigger.State>(
+      className={cn(
         "outline-none focus-visible:ring-[3px] focus-visible:ring-ring",
         className,
       )}
@@ -88,7 +81,10 @@ const ContextMenuTrigger = React.forwardRef<
   );
 });
 
-export type ContextMenuBackdropProps = ContextMenuPrimitive.Backdrop.Props;
+export type ContextMenuBackdropProps = Omit<
+  ContextMenuPrimitive.Backdrop.Props,
+  "className"
+> & { className?: string };
 
 const ContextMenuBackdrop = React.forwardRef<
   HTMLDivElement,
@@ -98,17 +94,17 @@ const ContextMenuBackdrop = React.forwardRef<
     <ContextMenuPrimitive.Backdrop
       ref={ref}
       data-slot="context-menu-backdrop"
-      className={mergeClassName<ContextMenuPrimitive.Backdrop.State>(
-        "fixed inset-0 z-50 bg-foreground/50",
-        className,
-      )}
+      className={cn("fixed inset-0 z-50 bg-foreground/50", className)}
       {...props}
     />
   );
 });
 
-export interface ContextMenuContentProps
-  extends ContextMenuPrimitive.Popup.Props {
+export interface ContextMenuContentProps extends Omit<
+  ContextMenuPrimitive.Popup.Props,
+  "className"
+> {
+  className?: string;
   sideOffset?: number;
   alignOffset?: number;
   align?: "start" | "center" | "end";
@@ -121,8 +117,8 @@ export interface ContextMenuContentProps
   >;
   positionerProps?: Omit<
     ContextMenuPrimitive.Positioner.Props,
-    "children" | "side" | "align" | "sideOffset" | "alignOffset"
-  >;
+    "children" | "side" | "align" | "sideOffset" | "alignOffset" | "className"
+  > & { className?: string };
 }
 
 const ContextMenuContent = React.forwardRef<
@@ -153,18 +149,12 @@ const ContextMenuContent = React.forwardRef<
         align={align}
         side={side}
         collisionPadding={positionerProps?.collisionPadding ?? 8}
-        className={mergeClassName<ContextMenuPrimitive.Positioner.State>(
-          "z-50 isolate",
-          positionerProps?.className,
-        )}
+        className={cn("z-50 isolate", positionerProps?.className)}
       >
         <ContextMenuPrimitive.Popup
           ref={ref}
           data-slot="context-menu-content"
-          className={mergeClassName<ContextMenuPrimitive.Popup.State>(
-            contextMenuContentVariants(),
-            className,
-          )}
+          className={cn(contextMenuContentVariants(), className)}
           {...props}
         />
       </ContextMenuPrimitive.Positioner>
@@ -279,8 +269,11 @@ function ContextMenuSubTrigger(props: ContextMenuSubTriggerProps) {
   );
 }
 
-export interface ContextMenuSubContentProps
-  extends ContextMenuPrimitive.Popup.Props {
+export interface ContextMenuSubContentProps extends Omit<
+  ContextMenuPrimitive.Popup.Props,
+  "className"
+> {
+  className?: string;
   sideOffset?: number;
   alignOffset?: number;
   align?: "start" | "center" | "end";
@@ -308,10 +301,7 @@ const ContextMenuSubContent = React.forwardRef<
         <ContextMenuPrimitive.Popup
           ref={ref}
           data-slot="context-menu-sub-content"
-          className={mergeClassName<ContextMenuPrimitive.Popup.State>(
-            contextMenuContentVariants({ sub: true }),
-            className,
-          )}
+          className={cn(contextMenuContentVariants({ sub: true }), className)}
           {...props}
         />
       </ContextMenuPrimitive.Positioner>

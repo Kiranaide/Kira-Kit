@@ -58,7 +58,6 @@ import {
   dropdownMenuContentVariants,
   dropdownMenuItemVariants,
 } from "@/components/ui/dropdown-menu";
-import { isFunctionProp } from "@/components/ui/prop-guards";
 
 /*                                  Variants                                  */
 
@@ -97,7 +96,11 @@ export const menubarTriggerVariants = cva([
 /*                                    Types                                   */
 
 interface MenubarProps
-  extends MenubarPrimitive.Props, VariantProps<typeof menubarVariants> {}
+  extends
+    Omit<MenubarPrimitive.Props, "className">,
+    VariantProps<typeof menubarVariants> {
+  className?: string;
+}
 
 type MenubarMenuProps = DropdownMenuProps;
 
@@ -149,15 +152,6 @@ type MenubarEmptyProps = React.ComponentProps<typeof DropdownMenuEmpty>;
 
 type MenubarViewportProps = React.ComponentProps<typeof DropdownMenuViewport>;
 
-function mergeClassName<S>(
-  base: string,
-  className: string | ((state: S) => string | undefined) | undefined,
-) {
-  return isFunctionProp(className)
-    ? (state: S) => cn(base, className(state))
-    : cn(base, className);
-}
-
 /*                                Components                                  */
 
 /**
@@ -175,10 +169,7 @@ function Menubar({
     <MenubarPrimitive
       data-slot="menubar"
       data-density={density}
-      className={mergeClassName<MenubarPrimitive.State>(
-        menubarVariants({ variant, density }),
-        className,
-      )}
+      className={cn(menubarVariants({ variant, density }), className)}
       {...props}
     />
   );
@@ -197,7 +188,7 @@ function MenubarTrigger({ className, ...props }: MenubarTriggerProps) {
   return (
     <DropdownMenuTrigger
       data-slot="menubar-trigger"
-      className={mergeClassName(menubarTriggerVariants(), className)}
+      className={cn(menubarTriggerVariants(), className)}
       {...props}
     />
   );

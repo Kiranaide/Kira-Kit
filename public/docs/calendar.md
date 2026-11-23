@@ -17,6 +17,10 @@ kira-kit add @kira-kit/calendar
 - date-fns
 - react-day-picker
 
+## Registry dependencies
+
+- @kira-kit/component-utils
+
 ## Usage
 
 ```tsx
