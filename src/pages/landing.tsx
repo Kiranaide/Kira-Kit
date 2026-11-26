@@ -156,14 +156,9 @@ function SectionHeading({
   );
 }
 
-/**
- * The hero is the one permanently-dark surface on the site. Scoping `.dark` to
- * the section gives it the preset's dark tokens (background, card, primary)
- * while the rest of the page keeps the user's mode — no second set of colours.
- */
 function HeroSection() {
   return (
-    <section data-slot="hero" className="dark bg-background text-foreground">
+    <section data-slot="hero" className="bg-background text-foreground">
       <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-10 px-4 pt-12 pb-12 sm:px-8 lg:flex-row lg:items-center lg:gap-14 lg:px-12 lg:pt-20 lg:pb-16">
         <Reveal className="flex w-full max-w-[520px] shrink-0 flex-col gap-5">
           <p className="text-sm font-semibold tracking-wide docs-accent">
@@ -392,13 +387,13 @@ function SiteFooterSection() {
         <nav aria-label="Footer" className="flex flex-wrap items-center gap-1">
           <Link
             to="/docs/introduction"
-            className="docs-focus-ring min-h-11 rounded-[8px] px-2 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
+            className="docs-focus-ring inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
           >
             Documentation
           </Link>
           <Link
             to="/components/button"
-            className="docs-focus-ring min-h-11 rounded-[8px] px-2 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
+            className="docs-focus-ring inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
           >
             Components
           </Link>
@@ -406,7 +401,7 @@ function SiteFooterSection() {
             href={SITE_REPOSITORY_URL}
             target="_blank"
             rel="noreferrer"
-            className="docs-focus-ring inline-flex min-h-11 items-center gap-1.5 rounded-[8px] px-2 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
+            className="docs-focus-ring inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground transition-colors duration-150 ease-out hover:text-foreground"
           >
             <IconBrandGithub aria-hidden="true" className="h-4 w-4" />
             GitHub
