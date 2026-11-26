@@ -17,8 +17,8 @@ kira-kit add @kira-kit/breadcrumb
 
 ## Registry dependencies
 
-- @kira-kit/use-reduced-motion
 - @kira-kit/component-utils
+- @kira-kit/use-reduced-motion
 
 ## Usage
 

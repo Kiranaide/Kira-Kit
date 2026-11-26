@@ -19,9 +19,9 @@ kira-kit add @kira-kit/stats-card
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/drawer
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

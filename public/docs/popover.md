@@ -30,4 +30,3 @@ import { Popover } from "@/components/ui/popover";
 
 Built on Base UI primitives: keyboard navigation, focus management, and ARIA wiring
 come from the primitive layer. Animations are gated by `useReducedMotion`.
-ated by `useReducedMotion`.

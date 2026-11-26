@@ -16,8 +16,9 @@ kira-kit add @kira-kit/spinner
 
 ## Registry dependencies
 
-- @kira-kit/use-reduced-motion
 - @kira-kit/component-utils
+- @kira-kit/use-reduced-motion
+- @kira-kit/use-visibility-pause
 
 ## Usage
 

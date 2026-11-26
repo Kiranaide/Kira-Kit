@@ -20,9 +20,9 @@ kira-kit add @kira-kit/accordion
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/tooltip
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

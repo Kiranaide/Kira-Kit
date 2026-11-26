@@ -1,6 +1,6 @@
 # Input
 
-A Base UI text input with five sizes, prefix and suffix content, clear and clipboard actions, and an announced character counter. The module also provides scrub-enabled numeric and formatted decimal inputs, debounced search, OTP fields, half-star ratings, password strength feedback, and separator-driven tag entry.
+A Base UI text input with five sizes, prefix and suffix content, clear and clipboard actions, and an announced character counter. The module also provides scrub-enabled numeric and formatted decimal inputs, debounced search, password strength feedback, and separator-driven tag entry.
 
 ## Install
 
@@ -17,11 +17,6 @@ kira-kit add @kira-kit/input
 
 ## Registry dependencies
 
-- @kira-kit/button
-- @kira-kit/field
-- @kira-kit/select
-- @kira-kit/toast
-- @kira-kit/tooltip
 - @kira-kit/use-reduced-motion
 
 ## Usage

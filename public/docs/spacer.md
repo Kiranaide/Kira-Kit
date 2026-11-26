@@ -1,6 +1,6 @@
 # Spacer
 
-Responsive horizontal or vertical whitespace with spacing-token sizes, an auto flex-fill mode, and decorative semantics enforced through aria-hidden, presentation role, and inert. KiraSpacer adds clamp-based fluid gaps with safe-area insets and a reserve mode that preserves height while showing accessible loading placeholders.
+Responsive horizontal or vertical whitespace with spacing-token sizes, an auto flex-fill mode, and decorative semantics enforced through aria-hidden, presentation role, and inert. KiraSpacer adds clamp-based fluid gaps with safe-area insets and a reserve mode that preserves minimum height.
 
 ## Install
 
@@ -16,9 +16,8 @@ kira-kit add @kira-kit/spacer
 
 ## Registry dependencies
 
-- @kira-kit/layout-responsive
-- @kira-kit/skeleton
 - @kira-kit/component-utils
+- @kira-kit/layout-responsive
 
 ## Usage
 

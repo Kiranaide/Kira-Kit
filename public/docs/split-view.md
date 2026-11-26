@@ -18,9 +18,10 @@ kira-kit add @kira-kit/split-view
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
+- @kira-kit/layout-storage
 - @kira-kit/resizable
 - @kira-kit/skeleton
-- @kira-kit/component-utils
 
 ## Usage
 

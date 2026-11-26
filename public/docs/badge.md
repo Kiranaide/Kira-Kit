@@ -1,6 +1,6 @@
 # Badge
 
-Badge covers semantic, outline, ghost, link, and soft styles with status dots, trend arrows, loading, dismissal, and beta/new/version presets. CountBadge formats and animates changing counts, while the suite also provides status, tag, and group modes plus a Combobox-backed TagInput with suggestions and deduplication.
+Badge covers semantic, outline, ghost, link, and soft styles with status dots, trend arrows, loading, dismissal, and beta/new/version presets. CountBadge formats and animates changing counts, while the suite also provides status, tag, and group modes.
 
 ## Install
 

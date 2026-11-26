@@ -14,11 +14,11 @@ kira-kit add @kira-kit/stepper
 - @tabler/icons-react
 - class-variance-authority
 - cn
-- zod
 
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
 - @kira-kit/use-announce
 - @kira-kit/use-reduced-motion
 

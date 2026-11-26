@@ -17,8 +17,8 @@ kira-kit add @kira-kit/input-group
 ## Registry dependencies
 
 - @kira-kit/button
-- @kira-kit/textarea
 - @kira-kit/component-utils
+- @kira-kit/textarea
 
 ## Usage
 

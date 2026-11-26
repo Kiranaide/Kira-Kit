@@ -1,6 +1,6 @@
 # Button
 
-Base UI button with extensive semantic variants, icon sizes, full-width layout, press ripples, and pointer/keyboard hold-to-complete progress. Loading, tooltip, and expandable-icon helpers are included, and KiraButton supports optimistic asynchronous toggles with an error toast on rejection.
+Base UI button with extensive semantic variants, icon sizes, full-width layout, CSS press ripples, and pointer/keyboard hold-to-complete progress. Loading and expandable-icon helpers are included, and KiraButton supports optimistic asynchronous toggles backed by useOptimisticCommit.
 
 ## Install
 
@@ -11,17 +11,14 @@ kira-kit add @kira-kit/button
 ## Dependencies
 
 - @base-ui/react
-- @gsap/react
 - class-variance-authority
 - cn
-- gsap
 
 ## Registry dependencies
 
-- @kira-kit/toast
-- @kira-kit/tooltip
-- @kira-kit/use-reduced-motion
 - @kira-kit/component-utils
+- @kira-kit/use-optimistic-commit
+- @kira-kit/use-reduced-motion
 
 ## Usage
 

@@ -1,6 +1,6 @@
 # Responsive Layout
 
-Responsive class composition for layout primitives like stack and spacer, driven by the kit CSS safelists.
+Responsive class composition for layout primitives like box, flex, grid, stack, and spacer.
 
 ## Install
 

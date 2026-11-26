@@ -17,8 +17,8 @@ kira-kit add @kira-kit/switch
 
 ## Registry dependencies
 
-- @kira-kit/toast
 - @kira-kit/tooltip
+- @kira-kit/use-optimistic-commit
 - @kira-kit/use-reduced-motion
 
 ## Usage

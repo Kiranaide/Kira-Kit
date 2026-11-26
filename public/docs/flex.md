@@ -10,12 +10,13 @@ kira-kit add @kira-kit/flex
 
 ## Dependencies
 
+- @base-ui/react
 - class-variance-authority
 - cn
 
 ## Registry dependencies
 
-- @kira-kit/component-utils
+- @kira-kit/layout-responsive
 
 ## Usage
 

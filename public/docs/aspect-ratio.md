@@ -18,9 +18,9 @@ kira-kit add @kira-kit/aspect-ratio
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
 - @kira-kit/skeleton
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

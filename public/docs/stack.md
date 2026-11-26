@@ -1,6 +1,6 @@
 # Stack
 
-Polymorphic flex layout with responsive direction, wrapping, independent row and column gaps, alignment, justification, and list-safe automatic dividers. KiraStack adds a container-width switcher layout, child-count limits, and accessible loading placeholders.
+Polymorphic flex layout with responsive direction, wrapping, independent row and column gaps, alignment, justification, and list-safe automatic dividers. KiraStack adds a container-width switcher layout and child-count limits.
 
 ## Install
 
@@ -16,10 +16,9 @@ kira-kit add @kira-kit/stack
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/layout-responsive
 - @kira-kit/separator
-- @kira-kit/skeleton
-- @kira-kit/component-utils
 
 ## Usage
 
