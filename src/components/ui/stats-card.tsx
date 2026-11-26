@@ -219,9 +219,9 @@ const statsCardIconVariants = cva(
 const statsCardHeaderVariants = cva("flex items-start justify-between gap-2", {
   variants: {
     size: {
-      sm: "space-y-1",
-      default: "space-y-2",
-      lg: "space-y-3",
+      sm: "mb-1",
+      default: "mb-2",
+      lg: "mb-3",
     },
   },
   defaultVariants: {
@@ -229,21 +229,24 @@ const statsCardHeaderVariants = cva("flex items-start justify-between gap-2", {
   },
 });
 
-const statsCardValueVariants = cva("font-bold tracking-tight tabular-nums", {
-  variants: {
-    size: {
-      sm: "text-xl",
-      default: "text-2xl",
-      lg: "text-3xl",
+const statsCardValueVariants = cva(
+  "min-w-0 break-words font-bold tracking-tight tabular-nums",
+  {
+    variants: {
+      size: {
+        sm: "text-xl",
+        default: "text-2xl",
+        lg: "text-3xl",
+      },
+    },
+    defaultVariants: {
+      size: "default",
     },
   },
-  defaultVariants: {
-    size: "default",
-  },
-});
+);
 
 const statsCardTrendVariants = cva(
-  "inline-flex items-center gap-1 text-sm font-medium",
+  "inline-flex max-w-full flex-wrap items-center gap-x-1 gap-y-0.5 text-sm font-medium",
   {
     variants: {
       trend: {
@@ -513,7 +516,10 @@ const StatsCardTitle = React.forwardRef<
       ref={ref}
       id={`${id}-title`}
       data-slot="stats-card-title"
-      className={cn("text-sm font-medium text-muted-foreground", className)}
+      className={cn(
+        "min-w-0 text-sm font-medium text-muted-foreground",
+        className,
+      )}
       {...props}
     >
       {children}
@@ -669,8 +675,12 @@ const StatsCardTrend = React.forwardRef<HTMLDivElement, StatsCardTrendProps>(
         )}
         {...props}
       >
-        {showIcon && <TrendIcon className="h-4 w-4" aria-hidden="true" />}
-        <span aria-hidden="true">{trendValue}</span>
+        {showIcon && (
+          <TrendIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+        )}
+        <span className="whitespace-nowrap" aria-hidden="true">
+          {trendValue}
+        </span>
         {comparison && (
           <span
             className="text-muted-foreground font-normal"
@@ -1062,7 +1072,7 @@ function renderStatsCardSkeletonPart2({
       ref={ref}
       data-slot="stats-card-skeleton"
       className={cn(
-        "relative overflow-hidden rounded-lg border border-border bg-card shadow-sm animate-pulse",
+        "relative overflow-hidden rounded-lg border border-border bg-card shadow-sm motion-safe:animate-pulse",
         resolveClassName4(),
         className,
       )}
@@ -1071,11 +1081,17 @@ function renderStatsCardSkeletonPart2({
       {...props}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 space-y-2">
+        <div className="min-w-0 flex-1 space-y-2">
           {showIcon && <div className="h-10 w-10 rounded-lg bg-muted" />}
-          <div className={cn("rounded bg-muted", resolveClassName5())} />
-          <div className={cn("rounded bg-muted", resolveClassName6())} />
-          <div className={cn("rounded bg-muted", resolveClassName7())} />
+          <div
+            className={cn("max-w-full rounded bg-muted", resolveClassName5())}
+          />
+          <div
+            className={cn("max-w-full rounded bg-muted", resolveClassName6())}
+          />
+          <div
+            className={cn("max-w-full rounded bg-muted", resolveClassName7())}
+          />
         </div>
       </div>
       {showProgress && (

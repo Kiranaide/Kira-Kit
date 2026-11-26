@@ -231,7 +231,7 @@ export function InputCompositesDemo() {
         <InputGroupInput placeholder="Enter your email" />
         <InputGroupAddon align="inline-end">
           <InputGroupButton onClick={() => alert("Subscribed!")}>
-            <IconSend className="w-4 h-4" />
+            <IconSend className="w-4 h-4" aria-hidden="true" />
             Subscribe
           </InputGroupButton>
         </InputGroupAddon>
@@ -417,10 +417,9 @@ export function RatingDemo() {
 const usageCode = `import { 
   Input, 
   NumericInput,
-  OTPInput,
-  Rating,
-  RatingDisplay,
 } from "@/components/ui/input"
+import { OTPInput } from "@/components/ui/otp-input"
+import { Rating, RatingDisplay } from "@/components/ui/rating"
 
 // Basic
 <Input placeholder="Enter text..." />
@@ -471,7 +470,7 @@ function BasicDemo() {
           <Input size="xs" placeholder="Extra small input" />
           <Input
             size="xs"
-            prefix={<IconSearch className="h-3 w-3" />}
+            prefix={<IconSearch className="h-3 w-3" aria-hidden="true" />}
             placeholder="With prefix"
           />
         </div>
@@ -480,7 +479,7 @@ function BasicDemo() {
           <Input size="sm" placeholder="Small input" />
           <Input
             size="sm"
-            prefix={<IconAt className="h-4 w-4" />}
+            prefix={<IconAt className="h-4 w-4" aria-hidden="true" />}
             placeholder="With prefix"
           />
         </div>
@@ -488,7 +487,9 @@ function BasicDemo() {
           <Label>Default</Label>
           <Input placeholder="Default input" />
           <Input
-            prefix={<IconCurrencyDollar className="h-4 w-4" />}
+            prefix={
+              <IconCurrencyDollar className="h-4 w-4" aria-hidden="true" />
+            }
             placeholder="With prefix"
           />
         </div>
@@ -497,8 +498,10 @@ function BasicDemo() {
           <Input size="lg" placeholder="Large input" />
           <Input
             size="lg"
-            prefix={<IconCurrencyDollar className="h-4 w-4" />}
-            suffix={<IconPercentage className="h-4 w-4" />}
+            prefix={
+              <IconCurrencyDollar className="h-4 w-4" aria-hidden="true" />
+            }
+            suffix={<IconPercentage className="h-4 w-4" aria-hidden="true" />}
             placeholder="With prefix & suffix"
           />
         </div>
@@ -507,8 +510,10 @@ function BasicDemo() {
           <Input size="xl" placeholder="Extra large input" />
           <Input
             size="xl"
-            prefix={<IconCurrencyDollar className="h-4 w-4" />}
-            suffix={<IconPercentage className="h-4 w-4" />}
+            prefix={
+              <IconCurrencyDollar className="h-4 w-4" aria-hidden="true" />
+            }
+            suffix={<IconPercentage className="h-4 w-4" aria-hidden="true" />}
             placeholder="With prefix & suffix"
           />
         </div>
@@ -527,7 +532,7 @@ function NumericDemo() {
 
   return (
     <div className="space-y-4">
-      <div className="max-w-[150px] space-y-2">
+      <div className="max-w-40 space-y-2">
         <Label>With Buttons</Label>
         <NumericInput
           value={numericValue}
@@ -536,7 +541,7 @@ function NumericDemo() {
           max={10}
         />
       </div>
-      <div className="max-w-[150px] space-y-2">
+      <div className="max-w-40 space-y-2">
         <Label>Without Buttons</Label>
         <NumericInput
           value={numericValue}
@@ -544,7 +549,7 @@ function NumericDemo() {
           showButtons={false}
         />
       </div>
-      <div className="max-w-[150px] space-y-2">
+      <div className="max-w-40 space-y-2">
         <Label>Step = 0.1</Label>
         <NumericInput
           value={1.5}
@@ -554,11 +559,11 @@ function NumericDemo() {
           max={5}
         />
       </div>
-      <div className="max-w-[150px] space-y-2">
+      <div className="max-w-40 space-y-2">
         <Label>Disabled</Label>
         <NumericInput value={5} onValueChange={() => {}} disabled />
       </div>
-      <div className="max-w-[150px] space-y-2">
+      <div className="max-w-40 space-y-2">
         <Label>Scrub + out-of-range typing clamps on blur</Label>
         <NumericInput
           value={numericValue}
@@ -612,21 +617,21 @@ function PrefixSuffixDemo() {
       <div className="space-y-2">
         <Label>Currency Input</Label>
         <Input
-          prefix={<IconCurrencyDollar className="h-4 w-4" />}
+          prefix={<IconCurrencyDollar className="h-4 w-4" aria-hidden="true" />}
           placeholder="0.00"
         />
       </div>
       <div className="space-y-2">
         <Label>Percentage Input</Label>
         <Input
-          suffix={<IconPercentage className="h-4 w-4" />}
+          suffix={<IconPercentage className="h-4 w-4" aria-hidden="true" />}
           placeholder="0"
         />
       </div>
       <div className="space-y-2">
         <Label>Email Input</Label>
         <Input
-          prefix={<IconAt className="h-4 w-4" />}
+          prefix={<IconAt className="h-4 w-4" aria-hidden="true" />}
           type="email"
           placeholder="username"
           suffix="@example.com"
@@ -635,7 +640,7 @@ function PrefixSuffixDemo() {
       <div className="space-y-2">
         <Label>Search Input</Label>
         <Input
-          prefix={<IconSearch className="h-4 w-4" />}
+          prefix={<IconSearch className="h-4 w-4" aria-hidden="true" />}
           placeholder="Search..."
         />
       </div>
@@ -668,6 +673,7 @@ function CompositesDemo() {
         <Label>Loading State</Label>
         <InputWithSpinner placeholder="Searching..." isLoading={isLoading} />
         <button
+          type="button"
           onClick={() => setIsLoading(!isLoading)}
           className="text-sm text-muted-foreground hover:text-foreground"
         >
@@ -1034,12 +1040,13 @@ const counterCode = `import { Input } from "@/components/ui/input"
 // Live character counter (needs a controlled value + maxLength).
 <Input value={handle} onChange={...} maxLength={20} showCount />`;
 
-function ShowcaseDemo() {
+function StressDemo() {
   const [zero, setZero] = useState(0);
   const [zeroText, setZeroText] = useState("");
+  const [emptyTags, setEmptyTags] = useState<string[]>([]);
 
   return (
-    <div className="max-w-md space-y-6">
+    <div className="max-w-xs space-y-5">
       <div className="space-y-2">
         <Label>Controlled numeric zero (0 must count as a value)</Label>
         <NumericInput
@@ -1048,7 +1055,9 @@ function ShowcaseDemo() {
           min={0}
           max={10}
         />
-        <p className="text-xs text-muted-foreground">Value: {zero}</p>
+        <output className="block text-xs text-muted-foreground">
+          Value: {zero}
+        </output>
         <Input
           value={zeroText}
           onChange={(e) => setZeroText(e.target.value)}
@@ -1059,12 +1068,27 @@ function ShowcaseDemo() {
         />
       </div>
       <div className="space-y-2">
-        <Label>Very long placeholder</Label>
+        <Label className="wrap-break-word">
+          Organization-wide-deployment-environment-identifier-and-audit-key
+        </Label>
         <Input placeholder="An extremely long placeholder string that should not break the layout of the input or overflow its container in any direction" />
       </div>
       <div className="space-y-2">
         <Label>Very long value</Label>
         <Input defaultValue="A very long controlled value that overflows a narrow input container and must scroll rather than break the layout" />
+      </div>
+      <div className="space-y-2">
+        <Label>Empty tag collection</Label>
+        <TagInput
+          value={emptyTags}
+          onChange={setEmptyTags}
+          placeholder="No tags yet…"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Disabled controls</Label>
+        <Input defaultValue="Locked value" disabled />
+        <PasswordInput defaultValue="secret-value" disabled />
       </div>
       <div className="space-y-2">
         <Label>RTL</Label>
@@ -1077,6 +1101,30 @@ function ShowcaseDemo() {
     </div>
   );
 }
+
+const stressCode = `import { useState } from "react"
+import { Input, NumericInput, PasswordInput, TagInput } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
+// Long labels/values, controlled zero, empty tags, disabled states, and RTL in max-w-xs
+export function StressDemo() {
+  const [zero, setZero] = useState(0)
+  const [text, setText] = useState("")
+  const [tags, setTags] = useState<string[]>([])
+
+  return (
+    <div className="max-w-xs space-y-5">
+      <NumericInput value={zero} onValueChange={(v) => setZero(v ?? 0)} min={0} max={10} />
+      <Input value={text} onChange={(e) => setText(e.target.value)} showClear showCount maxLength={10} />
+      <Input placeholder="An extremely long placeholder string that truncates cleanly" />
+      <Input defaultValue="A very long value that scrolls inside a narrow input" />
+      <TagInput value={tags} onChange={setTags} placeholder="No tags yet…" />
+      <Input defaultValue="Locked value" disabled />
+      <PasswordInput defaultValue="secret-value" disabled />
+      <Input dir="rtl" placeholder="البريد الإلكتروني" defaultValue="مايكل جاكسون" />
+    </div>
+  )
+}`;
 
 function TagsDemo() {
   const [tags, setTags] = useState<string[]>(["design", "react"]);
@@ -1199,574 +1247,791 @@ export function FileInputDemo() {
   )
 }`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function InputPage() {
-  const features = [
-    {
-      title: "Accessible",
-      description:
-        "WAI-ARIA compliant with proper labels, keyboard navigation, and screen reader support across all input types.",
-    },
-    {
-      title: "Customizable",
-      description:
-        "Size variants, prefix/suffix support, formatted inputs, and composable patterns for any use case.",
-    },
-    {
-      title: "Composable",
-      description:
-        "Mix and match with labels, buttons, spinners, tooltips, dropdowns, and clusters for complex form layouts.",
-    },
-  ];
-
-  const shortcuts = [
-    { keys: "Tab", description: "Move focus to next input" },
-    { keys: "Shift + Tab", description: "Move focus to previous input" },
-    { keys: "Enter", description: "Submit form or trigger action" },
-    { keys: "Escape", description: "Clear input or close dropdown" },
-    { keys: "Arrow Left/Right", description: "Navigate OTP digits" },
-    { keys: "Backspace", description: "Delete and move to previous (OTP)" },
-    { keys: "Arrow Up/Down", description: "Increment/decrement numeric value" },
-    { keys: "Arrow Left/Right", description: "Adjust rating value" },
-  ];
-
-  const apiSections = [
-    {
-      title: "Input",
-      props: [
-        {
-          prop: "size",
-          type: '"xs" | "sm" | "default" | "lg"',
-          default: '"default"',
-          description: "Size variant of the input.",
-        },
-        {
-          prop: "prefix",
-          type: "ReactNode",
-          description: "Element displayed before the input.",
-        },
-        {
-          prop: "suffix",
-          type: "ReactNode",
-          description: "Element displayed after the input.",
-        },
-        {
-          prop: "showClear",
-          type: "boolean",
-          default: "false",
-          description: "Show clear button when input has value.",
-        },
-        {
-          prop: "onClear",
-          type: "() => void",
-          description: "Callback when clear button is clicked.",
-        },
-        {
-          prop: "showCopy",
-          type: "boolean",
-          default: "false",
-          description: "Show copy-to-clipboard button.",
-        },
-        {
-          prop: "onCopySuccess",
-          type: "() => void",
-          description: "Callback when content is copied.",
-        },
-      ],
-    },
-    {
-      title: "NumericInput",
-      props: [
-        {
-          prop: "value",
-          type: "number | null",
-          description: "Current numeric value; null renders an empty field.",
-        },
-        {
-          prop: "onValueChange",
-          type: "(value: number | null) => void",
-          description: "Callback when value changes; null when cleared.",
-        },
-        {
-          prop: "min",
-          type: "number",
-          description: "Minimum allowed value.",
-        },
-        {
-          prop: "max",
-          type: "number",
-          description: "Maximum allowed value.",
-        },
-        {
-          prop: "step",
-          type: 'number | "any"',
-          default: "1",
-          description: "Step for buttons and arrow keys.",
-        },
-        {
-          prop: "smallStep",
-          type: "number",
-          default: "0.1",
-          description: "Step while Alt is held.",
-        },
-        {
-          prop: "largeStep",
-          type: "number",
-          default: "10",
-          description: "Step while Shift is held.",
-        },
-        {
-          prop: "allowOutOfRange",
-          type: "boolean",
-          default: "false",
-          description:
-            "Allow typed values outside min/max; steppers still clamp.",
-        },
-        {
-          prop: "scrub",
-          type: "boolean",
-          default: "false",
-          description: "Drag the input text horizontally to scrub the value.",
-        },
-        {
-          prop: "showButtons",
-          type: "boolean",
-          default: "true",
-          description: "Show increment/decrement buttons.",
-        },
-      ],
-    },
-    {
-      title: "OTPInput",
-      props: [
-        {
-          prop: "length",
-          type: "number",
-          default: "6",
-          description: "Number of OTP digits (4-8).",
-        },
-        {
-          prop: "value",
-          type: "string",
-          description: "Current OTP value.",
-        },
-        {
-          prop: "onChange",
-          type: "(value: string) => void",
-          description: "Callback when OTP value changes.",
-        },
-        {
-          prop: "onComplete",
-          type: "(code: string) => void",
-          description: "Callback when all digits are entered.",
-        },
-        {
-          prop: "type",
-          type: '"numeric" | "alphanumeric" | "alpha"',
-          default: '"numeric"',
-          description:
-            'Allowed input type (maps to Base UI validationType; "alphabetic" renamed to "alpha").',
-        },
-        {
-          prop: "autoSubmit",
-          type: "boolean",
-          default: "false",
-          description: "Submit the owning form when the OTP completes.",
-        },
-        {
-          prop: "mask",
-          type: "boolean",
-          default: "false",
-          description: "Hide entered values like a password.",
-        },
-        {
-          prop: "size",
-          type: '"sm" | "default" | "lg"',
-          default: '"default"',
-          description: "Size variant.",
-        },
-        {
-          prop: "variant",
-          type: '"default" | "outline" | "filled"',
-          default: '"default"',
-          description: "Visual style variant.",
-        },
-        {
-          prop: "separatorAfter",
-          type: "number",
-          description: "Show separator after this digit index.",
-        },
-        {
-          prop: "invalid",
-          type: "boolean",
-          default: "false",
-          description: "Show error state styling.",
-        },
-      ],
-    },
-    {
-      title: "Rating",
-      props: [
-        {
-          prop: "value",
-          type: "number",
-          description: "Current rating value.",
-        },
-        {
-          prop: "defaultValue",
-          type: "number",
-          default: "0",
-          description: "Initial value for uncontrolled mode.",
-        },
-        {
-          prop: "onChange",
-          type: "(value: number) => void",
-          description: "Callback when rating changes.",
-        },
-        {
-          prop: "max",
-          type: "number",
-          default: "5",
-          description: "Maximum rating value.",
-        },
-        {
-          prop: "allowHalf",
-          type: "boolean",
-          default: "false",
-          description: "Allow half-star ratings.",
-        },
-        {
-          prop: "size",
-          type: '"sm" | "default" | "lg" | "xl"',
-          default: '"default"',
-          description: "Size of rating icons.",
-        },
-        {
-          prop: "color",
-          type: '"yellow" | "orange" | "red" | "pink" | "default"',
-          default: '"yellow"',
-          description: "Color of filled icons.",
-        },
-        {
-          prop: "filledIcon",
-          type: "ReactNode",
-          description: "Custom icon for filled state.",
-        },
-        {
-          prop: "emptyIcon",
-          type: "ReactNode",
-          description: "Custom icon for empty state.",
-        },
-        {
-          prop: "showValue",
-          type: "boolean",
-          default: "false",
-          description: "Display numeric value next to stars.",
-        },
-        {
-          prop: "readOnly",
-          type: "boolean",
-          default: "false",
-          description: "Disable interaction.",
-        },
-      ],
-    },
-    {
-      title: "RatingDisplay",
-      props: [
-        {
-          prop: "value",
-          type: "number",
-          description: "Rating value to display.",
-        },
-        {
-          prop: "reviewCount",
-          type: "number",
-          description: "Number of reviews to show.",
-        },
-        {
-          prop: "color",
-          type: '"yellow" | "orange" | "red" | "pink" | "default"',
-          default: '"yellow"',
-          description: "Color of the rating stars.",
-        },
-      ],
-    },
-    {
-      title: "SearchInput",
-      props: [
-        {
-          prop: "value",
-          type: "string",
-          description: "Current search value.",
-        },
-        {
-          prop: "onChange",
-          type: "(value: string) => void",
-          description: "Callback when input changes.",
-        },
-        {
-          prop: "onSearch",
-          type: "(value: string) => void",
-          description: "Callback when search is triggered (debounced).",
-        },
-        {
-          prop: "debounceMs",
-          type: "number",
-          default: "300",
-          description: "Debounce delay in milliseconds.",
-        },
-        {
-          prop: "isLoading",
-          type: "boolean",
-          default: "false",
-          description: "Show loading spinner.",
-        },
-        {
-          prop: "size",
-          type: '"sm" | "default" | "lg"',
-          default: '"default"',
-          description: "Size variant.",
-        },
-      ],
-    },
-    {
-      title: "CurrencyInput / PercentageInput / DecimalInput",
-      props: [
-        {
-          prop: "value",
-          type: "number | null",
-          description: "Current numeric value.",
-        },
-        {
-          prop: "onChange",
-          type: "(value: number | null) => void",
-          description: "Callback when value changes.",
-        },
-        {
-          prop: "currency",
-          type: "string",
-          default: '"USD"',
-          description: "Currency code (CurrencyInput only).",
-        },
-        {
-          prop: "fractionDigits",
-          type: "number",
-          default: "2",
-          description: "Number of decimal places (DecimalInput).",
-        },
-      ],
-    },
-  ];
-
-  const tabs = [
-    {
-      value: "basic",
-      label: "Basic",
-      demo: (
-        <DemoWrapper
-          title="Basic Input & Size Variants"
-          description="The foundational input component with multiple size variants. Supports all native HTML input types including text, email, password, and number."
-          code={basicCode}
-        >
-          <BasicDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "file",
-      label: "File",
-      demo: (
-        <DemoWrapper
-          title="Native File Input"
-          description="The compact native file selector: pick files, read the FileList, and submit real File entries through FormData. For validation, drag-and-drop, paste, previews, and upload transport see the separate FileUpload component."
-          code={fileInputCode}
-        >
-          <FileInputDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "numeric",
-      label: "Numeric",
-      demo: (
-        <DemoWrapper
-          title="Numeric Input"
-          description="Specialized input for numeric values with optional increment/decrement buttons. Supports min/max constraints and custom step values."
-          code={numericCode}
-        >
-          <NumericDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "formatted",
-      label: "Formatted",
-      demo: (
-        <DemoWrapper
-          title="Formatted Inputs"
-          description="Smart inputs that automatically format values as you type. Includes currency, percentage, and decimal inputs with locale-aware formatting."
-          code={formattedCode}
-        >
-          <FormattedDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "prefix-suffix",
-      label: "Prefix/Suffix",
-      demo: (
-        <DemoWrapper
-          title="Prefix & Suffix"
-          description="Inputs with decorative or informational elements at the start or end. Supports both icons and text as prefix/suffix."
-          code={prefixSuffixCode}
-        >
-          <PrefixSuffixDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "composites",
-      label: "Composites",
-      demo: (
-        <DemoWrapper
-          title="Input Composites"
-          description="Pre-built composite components combining inputs with labels, buttons, spinners, tooltips, dropdowns, and clusters."
-          code={compositesCode}
-        >
-          <CompositesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "search-actions",
-      label: "Search & Actions",
-      demo: (
-        <DemoWrapper
-          title="Search & Action Inputs"
-          description="Debounced search input with loading state, clearable inputs, and copy-to-clipboard functionality."
-          code={searchActionsCode}
-        >
-          <SearchActionsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "otp",
-      label: "OTP",
-      demo: (
-        <DemoWrapper
-          title="OTP Input"
-          description="One-time password input with separated digit boxes. Supports auto-focus advancement, paste handling, keyboard navigation, and numeric/alphanumeric modes."
-          code={otpCode}
-        >
-          <OTPDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "rating",
-      label: "Rating",
-      demo: (
-        <DemoWrapper
-          title="Rating"
-          description="Star rating component with hover preview, half-star support, keyboard navigation, and customizable icons/colors."
-          code={ratingCode}
-        >
-          <RatingDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "password",
-      label: "Password",
-      demo: (
-        <DemoWrapper
-          title="Password Input"
-          description="Masked by default with an accessible show/hide toggle, plus an optional live strength meter and requirement checklist. Lets you drop the 'confirm password' field."
-          code={passwordCode}
-        >
-          <PasswordDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "counter",
-      label: "Counter",
-      demo: (
-        <DemoWrapper
-          title="Character Counter"
-          description="A live n/max counter that announces politely and warns when the limit is reached. Works on Input and Textarea."
-          code={counterCode}
-        >
-          <CounterDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "tags",
-      label: "Tags",
-      demo: (
-        <DemoWrapper
-          title="Tag Input"
-          description="Type and press Enter or comma to add a tag; Backspace removes the last. Supports controlled and uncontrolled use, dedupe, and a max count."
-          code={tagsCode}
-        >
-          <TagsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "showcase",
-      label: "Showcase",
-      demo: (
-        <DemoWrapper
-          title="Stress cases"
-          description="Edge cases: very long placeholder and value, controlled zero value, and RTL text."
-          code={`// Controlled value={0} regression: hasValue must treat 0 as a value.
-<Input value={0} onChange={...} showClear showCount maxLength={10} />
-
-// Very long values scroll; long placeholders truncate.
-<Input placeholder="An extremely long placeholder string that should not break the layout" />
-<Input value="A very long controlled value that overflows a narrow input" />`}
-        >
-          <ShowcaseDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
-
   return (
     <ComponentPage>
       <PageHeader
         title="Input"
-        version="v2.2.1"
-        description="A comprehensive collection of input components for forms and data entry. Includes basic inputs, textareas, numeric inputs, formatted inputs, OTP, ratings, and composable patterns."
+        version="v3.0.0"
+        description="A comprehensive collection of input components for forms and data entry. Includes basic inputs, numeric inputs, formatted inputs, OTP, ratings, password fields, tag inputs, and composable patterns."
       />
 
-      <FeatureGrid features={features} />
+      <FeatureGrid
+        features={inputPageFeatures}
+        description="Accessible form controls and composable input patterns built on Base UI primitives."
+      />
 
-      <DemoTabs tabs={tabs} defaultValue="basic" />
+      <DemoTabs tabs={inputPageDemoTabs} defaultValue="basic" />
 
-      <KeyboardShortcuts shortcuts={shortcuts} />
+      <KeyboardShortcuts
+        shortcuts={inputPageShortcuts}
+        description="Keyboard navigation and editing bindings across Input, NumericInput, OTPInput, Rating, and TagInput."
+      />
 
       <UsageBlock
         code={usageCode}
-        description="Basic implementation examples for common input patterns"
+        title="Usage"
+        description="Basic implementation examples for common input patterns."
+        notes={inputPageUsageNotes}
       />
 
-      <APIReference sections={apiSections} />
+      <APIReference
+        sections={inputPageAPISections}
+        description="Props, types, and defaults for every exported Input component."
+      />
 
-      <Changelog entries={inputPageChangelogEntries} />
+      <Changelog
+        entries={inputPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Input."
+      />
     </ComponentPage>
   );
 }
 
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const inputPageFeatures = [
+  {
+    title: "Accessible",
+    description:
+      "WAI-ARIA compliant with proper labels, keyboard navigation, and screen reader support across all input types.",
+  },
+  {
+    title: "Customizable",
+    description:
+      "Size variants, prefix/suffix support, formatted inputs, and composable patterns for any use case.",
+  },
+  {
+    title: "Composable",
+    description:
+      "Mix and match with labels, buttons, spinners, tooltips, dropdowns, and clusters for complex form layouts.",
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const inputPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic Input & Size Variants"
+        description="The foundational input component with multiple size variants. Supports all native HTML input types including text, email, password, and number."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "file",
+    label: "File",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Native File Input"
+        description="The compact native file selector: pick files, read the FileList, and submit real File entries through FormData. For validation, drag-and-drop, paste, previews, and upload transport see the separate FileUpload component."
+        code={fileInputCode}
+      >
+        <FileInputDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "prefix-suffix",
+    label: "Prefix/Suffix",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Prefix & Suffix"
+        description="Inputs with decorative or informational elements at the start or end. Supports both icons and text as prefix/suffix."
+        code={prefixSuffixCode}
+      >
+        <PrefixSuffixDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "composites",
+    label: "Composites",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Input Composites"
+        description="Pre-built composite components combining inputs with labels, buttons, spinners, tooltips, dropdowns, and clusters."
+        code={compositesCode}
+      >
+        <CompositesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "search-actions",
+    label: "Search & Actions",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Search & Action Inputs"
+        description="Debounced search input with loading state, clearable inputs, and copy-to-clipboard functionality."
+        code={searchActionsCode}
+      >
+        <SearchActionsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "numeric",
+    label: "Numeric",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Numeric Input"
+        description="Specialized input for numeric values with optional increment/decrement buttons. Supports min/max constraints and custom step values."
+        code={numericCode}
+      >
+        <NumericDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "formatted",
+    label: "Formatted",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Formatted Inputs"
+        description="Smart inputs that automatically format values as you type. Includes currency, percentage, and decimal inputs with locale-aware formatting."
+        code={formattedCode}
+      >
+        <FormattedDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "otp",
+    label: "OTP",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="OTP Input"
+        description="One-time password input with separated digit boxes. Supports auto-focus advancement, paste handling, keyboard navigation, and numeric/alphanumeric modes."
+        code={otpCode}
+      >
+        <OTPDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "rating",
+    label: "Rating",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Rating"
+        description="Star rating component with hover preview, half-star support, keyboard navigation, and customizable icons/colors."
+        code={ratingCode}
+      >
+        <RatingDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "password",
+    label: "Password",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Password Input"
+        description="Masked by default with an accessible show/hide toggle, plus an optional live strength meter and requirement checklist. Lets you drop the 'confirm password' field."
+        code={passwordCode}
+      >
+        <PasswordDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "counter",
+    label: "Counter",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Character Counter"
+        description="A live n/max counter that announces politely and warns when the limit is reached. Works on Input and Textarea."
+        code={counterCode}
+      >
+        <CounterDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "tags",
+    label: "Tags",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Tag Input"
+        description="Type and press Enter or comma to add a tag; Backspace removes the last. Supports controlled and uncontrolled use, dedupe, and a max count."
+        code={tagsCode}
+      >
+        <TagsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, placeholders, and values, controlled zero, empty tags, disabled controls, and RTL text inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const inputPageShortcuts = [
+  { keys: "Tab", description: "Move focus to next input." },
+  { keys: "Shift + Tab", description: "Move focus to previous input." },
+  {
+    keys: "Enter",
+    description: "Submit form, trigger search, or commit a tag.",
+  },
+  { keys: "Escape", description: "Clear SearchInput or close dropdown." },
+  {
+    keys: "Arrow Left / Right",
+    description: "Navigate OTP digits, TagInput chips, or adjust Rating.",
+  },
+  {
+    keys: "Backspace",
+    description: "Delete and move to previous OTP digit or remove last tag.",
+  },
+  {
+    keys: "Arrow Up / Down",
+    description:
+      "Increment/decrement NumericInput (hold Alt for smallStep, Shift for largeStep).",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const inputPageUsageNotes = [
+  {
+    label: "Shared height ladder",
+    body: "Input, NumericInput, SearchInput, TagInput, and all composites share the xs through xl (h-7 to h-11) ladder so controls align cleanly with Button and Select.",
+  },
+  {
+    label: "Base UI primitives",
+    body: "NumericInput and TagInput use Base UI NumberField and Combobox. Import OTPInput and Rating from their own modules.",
+  },
+  {
+    label: "Native file inputs",
+    body: 'Use <Input type="file" /> for compact native file picking. For drag-and-drop, previews, and validation, use the separate FileUpload component.',
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const inputPageAPISections = [
+  {
+    title: "Input",
+    props: [
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Size variant of the input.",
+      },
+      {
+        prop: "prefix",
+        type: "ReactNode",
+        default: "-",
+        description: "Element displayed before the input.",
+      },
+      {
+        prop: "suffix",
+        type: "ReactNode",
+        default: "-",
+        description: "Element displayed after the input.",
+      },
+      {
+        prop: "showClear",
+        type: "boolean",
+        default: "false",
+        description: "Show clear button when input has value.",
+      },
+      {
+        prop: "onClear",
+        type: "() => void",
+        default: "-",
+        description: "Callback when clear button is clicked.",
+      },
+      {
+        prop: "showCopy",
+        type: "boolean",
+        default: "false",
+        description: "Show copy-to-clipboard button.",
+      },
+      {
+        prop: "onCopySuccess / onCopyError",
+        type: "(() => void) / ((error: Error) => void)",
+        default: "-",
+        description: "Callbacks when clipboard copy succeeds or fails.",
+      },
+      {
+        prop: "showCount",
+        type: "boolean",
+        default: "false",
+        description:
+          "Show a live character counter below the input (requires a controlled value).",
+      },
+    ],
+  },
+  {
+    title: "CharacterCounter",
+    props: [
+      {
+        prop: "currentLength",
+        type: "number",
+        default: "-",
+        description: "Current character count to display.",
+      },
+      {
+        prop: "maxLength",
+        type: "number",
+        default: "-",
+        description:
+          "Optional maximum length; warns at 90% and switches to destructive at the limit.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "NumericInput",
+    props: [
+      {
+        prop: "value",
+        type: "number | null",
+        default: "-",
+        description: "Current numeric value; null renders an empty field.",
+      },
+      {
+        prop: "onValueChange",
+        type: "(value: number | null) => void",
+        default: "-",
+        description: "Callback when value changes; null when cleared.",
+      },
+      {
+        prop: "min / max",
+        type: "number",
+        default: "-",
+        description: "Minimum and maximum allowed values.",
+      },
+      {
+        prop: "step",
+        type: 'number | "any"',
+        default: "1",
+        description: "Step for buttons and arrow keys.",
+      },
+      {
+        prop: "smallStep / largeStep",
+        type: "number",
+        default: "0.1 / 10",
+        description: "Step while Alt (smallStep) or Shift (largeStep) is held.",
+      },
+      {
+        prop: "allowOutOfRange",
+        type: "boolean",
+        default: "false",
+        description:
+          "Allow typed values outside min/max; steppers still clamp.",
+      },
+      {
+        prop: "scrub",
+        type: "boolean",
+        default: "false",
+        description: "Drag the input text horizontally to scrub the value.",
+      },
+      {
+        prop: "showButtons",
+        type: "boolean",
+        default: "true",
+        description: "Show increment/decrement buttons.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Control and stepper height variant.",
+      },
+    ],
+  },
+  {
+    title: "InputWithSpinner",
+    props: [
+      {
+        prop: "isLoading",
+        type: "boolean",
+        default: "false",
+        description: "Show an inline loading spinner in the suffix area.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Input size variant.",
+      },
+    ],
+  },
+  {
+    title: "PasswordInput",
+    props: [
+      {
+        prop: "showStrength",
+        type: "boolean",
+        default: "false",
+        description:
+          "Show a live strength meter and requirement checklist below the field.",
+      },
+      {
+        prop: "autoComplete",
+        type: "string",
+        default: '"new-password"',
+        description:
+          'HTML autocomplete hint; pass "current-password" on login forms.',
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Input size variant.",
+      },
+    ],
+  },
+  {
+    title: "TagInput",
+    props: [
+      {
+        prop: "value / defaultValue",
+        type: "string[]",
+        default: "[]",
+        description: "Controlled or initial array of tag strings.",
+      },
+      {
+        prop: "onChange",
+        type: "(tags: string[]) => void",
+        default: "-",
+        description: "Callback when tags are added or removed.",
+      },
+      {
+        prop: "separators",
+        type: "string[]",
+        default: '["Enter", ","]',
+        description: "Keys that commit the current draft as a tag.",
+      },
+      {
+        prop: "maxTags",
+        type: "number",
+        default: "-",
+        description: "Maximum number of tags allowed.",
+      },
+      {
+        prop: "allowDuplicates",
+        type: "boolean",
+        default: "false",
+        description: "Allow duplicate tag values.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Minimum container height variant.",
+      },
+    ],
+  },
+  {
+    title: "OTPInput",
+    props: [
+      {
+        prop: "length",
+        type: "4 | 5 | 6 | 7 | 8",
+        default: "6",
+        description: "Number of OTP digits (4-8).",
+      },
+      {
+        prop: "value",
+        type: "string",
+        default: '""',
+        description: "Current OTP value.",
+      },
+      {
+        prop: "onChange",
+        type: "(value: string) => void",
+        default: "-",
+        description: "Callback when OTP value changes.",
+      },
+      {
+        prop: "onComplete",
+        type: "(code: string) => void",
+        default: "-",
+        description: "Callback when all digits are entered.",
+      },
+      {
+        prop: "type",
+        type: '"numeric" | "alphanumeric" | "alpha"',
+        default: '"numeric"',
+        description:
+          'Allowed input type (maps to Base UI validationType; "alphabetic" renamed to "alpha").',
+      },
+      {
+        prop: "autoSubmit",
+        type: "boolean",
+        default: "false",
+        description: "Submit the owning form when the OTP completes.",
+      },
+      {
+        prop: "mask",
+        type: "boolean",
+        default: "false",
+        description: "Hide entered values like a password.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Size variant.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "outline" | "filled"',
+        default: '"default"',
+        description: "Visual style variant.",
+      },
+      {
+        prop: "gap",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Spacing between OTP slots.",
+      },
+      {
+        prop: "separatorAfter",
+        type: "number",
+        default: "-",
+        description: "Show separator after this 1-based digit index.",
+      },
+      {
+        prop: "invalid",
+        type: "boolean",
+        default: "false",
+        description: "Show error state styling.",
+      },
+    ],
+  },
+  {
+    title: "Rating",
+    props: [
+      {
+        prop: "value",
+        type: "number",
+        default: "-",
+        description: "Current controlled rating value.",
+      },
+      {
+        prop: "defaultValue",
+        type: "number",
+        default: "0",
+        description: "Initial value for uncontrolled mode.",
+      },
+      {
+        prop: "onChange",
+        type: "(value: number) => void",
+        default: "-",
+        description: "Callback when rating changes.",
+      },
+      {
+        prop: "max",
+        type: "number",
+        default: "5",
+        description: "Maximum rating value.",
+      },
+      {
+        prop: "allowHalf",
+        type: "boolean",
+        default: "false",
+        description: "Allow half-star ratings.",
+      },
+      {
+        prop: "allowClear",
+        type: "boolean",
+        default: "true",
+        description: "Allow clicking the current value to reset to 0.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Size of rating icons.",
+      },
+      {
+        prop: "color",
+        type: '"yellow" | "orange" | "red" | "pink" | "default"',
+        default: '"yellow"',
+        description: "Color of filled icons.",
+      },
+      {
+        prop: "filledIcon / emptyIcon / halfIcon",
+        type: "ReactNode",
+        default: "-",
+        description: "Custom icons for filled, empty, and half states.",
+      },
+      {
+        prop: "showValue",
+        type: "boolean",
+        default: "false",
+        description: "Display numeric value next to stars.",
+      },
+      {
+        prop: "readOnly",
+        type: "boolean",
+        default: "false",
+        description: "Disable interaction while keeping visual contrast.",
+      },
+    ],
+  },
+  {
+    title: "RatingDisplay",
+    props: [
+      {
+        prop: "value",
+        type: "number",
+        default: "0",
+        description: "Rating value to display.",
+      },
+      {
+        prop: "showFraction",
+        type: "boolean",
+        default: "true",
+        description: "Display the formatted decimal rating value.",
+      },
+      {
+        prop: "reviewCount",
+        type: "number",
+        default: "-",
+        description: "Number of reviews to show.",
+      },
+      {
+        prop: "color",
+        type: '"yellow" | "orange" | "red" | "pink" | "default"',
+        default: '"yellow"',
+        description: "Color of the rating stars.",
+      },
+    ],
+  },
+  {
+    title: "SearchInput",
+    props: [
+      {
+        prop: "value",
+        type: "string",
+        default: "-",
+        description: "Current controlled search value.",
+      },
+      {
+        prop: "onChange",
+        type: "(value: string) => void",
+        default: "-",
+        description: "Callback when input changes.",
+      },
+      {
+        prop: "onSearch",
+        type: "(value: string) => void",
+        default: "-",
+        description: "Callback when search is triggered (debounced).",
+      },
+      {
+        prop: "debounceMs",
+        type: "number",
+        default: "300",
+        description: "Debounce delay in milliseconds.",
+      },
+      {
+        prop: "isLoading",
+        type: "boolean",
+        default: "false",
+        description: "Show loading spinner.",
+      },
+      {
+        prop: "showClear",
+        type: "boolean",
+        default: "true",
+        description: "Show clear button when non-empty.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Size variant.",
+      },
+    ],
+  },
+  {
+    title: "CurrencyInput / PercentageInput / DecimalInput",
+    props: [
+      {
+        prop: "value",
+        type: "number | null",
+        default: "-",
+        description: "Current numeric value.",
+      },
+      {
+        prop: "onChange",
+        type: "(value: number | null) => void",
+        default: "-",
+        description: "Callback when value changes.",
+      },
+      {
+        prop: "currency",
+        type: "string",
+        default: '"USD"',
+        description: "ISO currency code (CurrencyInput only).",
+      },
+      {
+        prop: "locale",
+        type: "string",
+        default: "-",
+        description: "BCP 47 locale tag for Intl formatting.",
+      },
+      {
+        prop: "fractionDigits",
+        type: "number",
+        default: "2",
+        description: "Number of fractional digits.",
+      },
+      {
+        prop: "useGrouping",
+        type: "boolean",
+        default: "true",
+        description: "Use thousands separators (DecimalInput only).",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Input size variant.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
 // Static demo metadata stays co-located and follows its source constants.
 const inputPageChangelogEntries = [
   {
-    version: "Unreleased",
-    date: "In development",
+    version: "3.0.0",
+    date: "26 November 2026",
     changes: [
       {
         type: "breaking",
@@ -1802,7 +2067,7 @@ const inputPageChangelogEntries = [
         type: "changed",
         title: "Ladder-aligned heights and padding",
         description:
-          "xs h-6→h-7, sm h-7→h-8 (text-[0.8rem]→text-xs), default h-8→h-9 with px-4, lg h-9→h-10 with px-5. Inputs now render equal heights beside Buttons and Selects at every size. Prefix/suffix and clear/copy offsets recomputed from container px + affordance width + 4px gap (single action pr-9/10/11/12, double pr-16/17/18/19).",
+          "xs h-6→h-7, sm h-7→h-8 (0.8rem text→text-xs), default h-8→h-9 with px-4, lg h-9→h-10 with px-5. Inputs now render equal heights beside Buttons and Selects at every size. Prefix/suffix and clear/copy offsets recomputed from container px + affordance width + 4px gap (single action pr-9/10/11/12, double pr-16/17/18/19).",
       },
       {
         type: "changed",
@@ -1814,7 +2079,7 @@ const inputPageChangelogEntries = [
   },
   {
     version: "2.2.1",
-    date: "6 November 2026",
+    date: "06 November 2026",
     changes: [
       {
         type: "added",
@@ -2030,8 +2295,8 @@ function RatingControlsSection3() {
           <Rating
             defaultValue={3}
             color="pink"
-            filledIcon={<IconHeartFilled />}
-            emptyIcon={<IconHeart />}
+            filledIcon={<IconHeartFilled aria-hidden="true" />}
+            emptyIcon={<IconHeart aria-hidden="true" />}
           />
         </div>
         <div className="flex items-center gap-4">
@@ -2040,8 +2305,8 @@ function RatingControlsSection3() {
             defaultValue={4}
             color="orange"
             max={3}
-            filledIcon={<IconFlame />}
-            emptyIcon={<IconFlame className="opacity-30" />}
+            filledIcon={<IconFlame aria-hidden="true" />}
+            emptyIcon={<IconFlame className="opacity-30" aria-hidden="true" />}
           />
         </div>
         <div className="flex items-center gap-4">
@@ -2049,8 +2314,10 @@ function RatingControlsSection3() {
           <Rating
             defaultValue={4}
             color="yellow"
-            filledIcon={<IconMoodSmile />}
-            emptyIcon={<IconMoodSmile className="opacity-30" />}
+            filledIcon={<IconMoodSmile aria-hidden="true" />}
+            emptyIcon={
+              <IconMoodSmile className="opacity-30" aria-hidden="true" />
+            }
           />
         </div>
       </div>
@@ -2270,7 +2537,7 @@ function CompositeActionInputs() {
               variant="default"
               onClick={() => alert("Subscribed!")}
             >
-              <IconSend className="w-4 h-4" />
+              <IconSend className="w-4 h-4" aria-hidden="true" />
               Subscribe
             </InputGroupButton>
           </InputGroupAddon>
@@ -2284,7 +2551,7 @@ function CompositeActionInputs() {
               variant="outline"
               onClick={() => alert("Searching...")}
             >
-              <IconSearch className="w-4 h-4" />
+              <IconSearch className="w-4 h-4" aria-hidden="true" />
               Search
             </InputGroupButton>
           </InputGroupAddon>
@@ -2300,7 +2567,7 @@ function CompositeActionInputs() {
               variant="default"
               onClick={() => alert("Verified!")}
             >
-              <IconCheck className="w-4 h-4" />
+              <IconCheck className="w-4 h-4" aria-hidden="true" />
               Verify
             </InputGroupButton>
           </InputGroupAddon>

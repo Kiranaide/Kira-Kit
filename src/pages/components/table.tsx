@@ -64,7 +64,7 @@ function BasicDemo() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Invoice</TableHead>
+            <TableHead className="w-24">Invoice</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Method</TableHead>
             <TableHead className="text-right">Amount</TableHead>
@@ -115,99 +115,64 @@ const basicCode = `import {
   </TableBody>
 </Table>`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
+function InvoicePreviewTable({
+  caption,
+  showFooter = false,
+}: {
+  caption?: string;
+  showFooter?: boolean;
+}) {
+  return (
+    <div className="rounded-lg border border-border">
+      <Table>
+        {caption ? <TableCaption>{caption}</TableCaption> : null}
+        <TableHeader>
+          <TableRow>
+            <TableHead>Invoice</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Amount</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {invoices.slice(0, 2).map((invoice) => (
+            <TableRow key={invoice.invoice}>
+              <TableCell className="font-medium">{invoice.invoice}</TableCell>
+              <TableCell>{invoice.paymentStatus}</TableCell>
+              <TableCell className="text-right">
+                {invoice.totalAmount}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+        {showFooter ? (
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={2}>Total</TableCell>
+              <TableCell className="text-right">$400.00</TableCell>
+            </TableRow>
+          </TableFooter>
+        ) : null}
+      </Table>
+    </div>
+  );
+}
+
 function VariantsDemo() {
   return (
     <div className="space-y-6">
       <div>
         <p className="text-sm font-medium mb-2">Default</p>
-        <div className="rounded-lg border border-border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Invoice</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.slice(0, 2).map((invoice) => (
-                <TableRow key={invoice.invoice}>
-                  <TableCell className="font-medium">
-                    {invoice.invoice}
-                  </TableCell>
-                  <TableCell>{invoice.paymentStatus}</TableCell>
-                  <TableCell className="text-right">
-                    {invoice.totalAmount}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <InvoicePreviewTable />
       </div>
 
       <div>
         <p className="text-sm font-medium mb-2">With Caption</p>
-        <div className="rounded-lg border border-border">
-          <Table>
-            <TableCaption>A list of your recent invoices.</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Invoice</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.slice(0, 2).map((invoice) => (
-                <TableRow key={invoice.invoice}>
-                  <TableCell className="font-medium">
-                    {invoice.invoice}
-                  </TableCell>
-                  <TableCell>{invoice.paymentStatus}</TableCell>
-                  <TableCell className="text-right">
-                    {invoice.totalAmount}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <InvoicePreviewTable caption="A list of your recent invoices." />
       </div>
 
       <div>
         <p className="text-sm font-medium mb-2">With Footer</p>
-        <div className="rounded-lg border border-border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Invoice</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invoices.slice(0, 2).map((invoice) => (
-                <TableRow key={invoice.invoice}>
-                  <TableCell className="font-medium">
-                    {invoice.invoice}
-                  </TableCell>
-                  <TableCell>{invoice.paymentStatus}</TableCell>
-                  <TableCell className="text-right">
-                    {invoice.totalAmount}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={2}>Total</TableCell>
-                <TableCell className="text-right">$400.00</TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </div>
+        <InvoicePreviewTable showFooter />
       </div>
     </div>
   );
@@ -230,18 +195,20 @@ const variantsCode = `import {
     <TableRow>
       <TableHead>Invoice</TableHead>
       <TableHead>Status</TableHead>
+      <TableHead className="text-right">Amount</TableHead>
     </TableRow>
   </TableHeader>
   <TableBody>
     <TableRow>
       <TableCell>INV001</TableCell>
       <TableCell>Paid</TableCell>
+      <TableCell className="text-right">$250.00</TableCell>
     </TableRow>
   </TableBody>
   <TableFooter>
     <TableRow>
       <TableCell colSpan={2}>Total</TableCell>
-      <TableCell className="text-right">$750.00</TableCell>
+      <TableCell className="text-right">$400.00</TableCell>
     </TableRow>
   </TableFooter>
 </Table>`;
@@ -541,21 +508,79 @@ const statesCode = `{/* Skeleton shimmer while fetching */}
 {/* Centered empty state when data is [] */}
 <KiraTable columns={columns} data={[]} empty="No invoices yet." />`;
 
-export default function TablePage() {
+interface StressRow {
+  id: string;
+  account: string;
+  notes: string | null;
+  status: string;
+}
+
+const stressRows: StressRow[] = [
+  {
+    id: "ACC-001",
+    account: "Enterprise Global Infrastructure Billing & Compliance Division",
+    notes: "",
+    status: "Active",
+  },
+  {
+    id: "ACC-002",
+    account: "Regional Sandbox Account",
+    notes: null,
+    status: "Disabled",
+  },
+];
+
+const stressColumns: KiraTableColumn<StressRow>[] = [
+  { key: "id", header: "Account ID", stickyColumn: true, width: "7rem" },
+  { key: "account", header: "Organization Name", sortable: true },
+  { key: "notes", header: "Notes" },
+  { key: "status", header: "Status", align: "right" },
+];
+
+function StressDemo() {
   return (
-    <ComponentPage>
-      <PageHeader
-        title="Table"
-        description="A responsive, accessible table primitive with density, sticky header/columns, headless sort + selection, and the config-driven KiraTable."
-        version="2.2"
-      />
+    <div className="max-w-xs space-y-6">
+      <div className="rounded-lg border border-border">
+        <KiraTable
+          label="Narrow invoice stress table"
+          columns={stressColumns}
+          data={stressRows}
+          getRowId={(row) => row.id}
+          density="compact"
+        />
+      </div>
+      <div className="rounded-lg border border-border">
+        <KiraTable
+          label="Empty stress table"
+          columns={stressColumns}
+          data={[]}
+          empty="No matching records in this narrow viewport."
+        />
+      </div>
+    </div>
+  );
+}
 
-      <FeatureGrid features={tablePageFeatureGridFeatures} />
+const stressCode = `import { KiraTable, type KiraTableColumn } from "@/components/ui/table"
 
-      <DemoTabs tabs={tablePageDemoTabsTabs} />
+// Long labels, empty values (rendered as "—"), and horizontal scroll inside max-w-xs
+<div className="max-w-xs space-y-6">
+  <KiraTable
+    label="Narrow invoice stress table"
+    columns={stressColumns}
+    data={stressRows}
+    getRowId={(row) => row.id}
+    density="compact"
+  />
+  <KiraTable
+    label="Empty stress table"
+    columns={stressColumns}
+    data={[]}
+    empty="No matching records in this narrow viewport."
+  />
+</div>`;
 
-      <UsageBlock
-        code={`import {
+const usageCode = `import {
   Table,
   TableHeader,
   TableBody,
@@ -579,18 +604,42 @@ export default function TablePage() {
       <TableCell>Active</TableCell>
     </TableRow>
   </TableBody>
-</Table>`}
+</Table>`;
+
+export default function TablePage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Table"
+        description="A responsive, accessible table primitive with density, sticky header/columns, headless sort + selection, and the config-driven KiraTable."
+        version="v2.2.1"
       />
 
-      <APIReference sections={tablePageAPIReferenceSections} />
+      <FeatureGrid features={tablePageFeatureGridFeatures} />
 
-      <Changelog entries={tablePageChangelogEntries} />
+      <DemoTabs defaultValue="kira" tabs={tablePageDemoTabsTabs} />
 
       <KeyboardShortcuts
         title="Keyboard shortcuts"
         description="Table keyboard support. Data-table-specific keys (resize handles, grid navigation) are documented on the Data Table page."
         shortcuts={tablePageKeyboardShortcutsShortcuts}
       />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Compose the Table primitives directly, or use KiraTable for config-driven sorting, selection, and states."
+        notes={[
+          {
+            label: "KiraTable",
+            body: "Use KiraTable when you want sorting, tri-state row selection, sticky columns, density persistence, and loading/empty states from a columns + data config.",
+          },
+        ]}
+      />
+
+      <APIReference sections={tablePageAPIReferenceSections} />
+
+      <Changelog entries={tablePageChangelogEntries} />
     </ComponentPage>
   );
 }
@@ -618,6 +667,7 @@ const tablePageDemoTabsTabs = [
   {
     value: "kira",
     label: "KiraTable",
+    group: "KiraTable",
     demo: (
       <DemoWrapper
         title="KiraTable"
@@ -629,21 +679,9 @@ const tablePageDemoTabsTabs = [
     ),
   },
   {
-    value: "density",
-    label: "Density",
-    demo: (
-      <DemoWrapper
-        title="Density"
-        description="Three row heights via the density prop — comfortable, compact, and dense for data-heavy dashboards."
-        code={densityCode}
-      >
-        <DensityDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "states",
     label: "Loading & Empty",
+    group: "KiraTable",
     demo: (
       <DemoWrapper
         title="Loading & Empty States"
@@ -657,6 +695,7 @@ const tablePageDemoTabsTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Table"
@@ -670,6 +709,7 @@ const tablePageDemoTabsTabs = [
   {
     value: "variants",
     label: "Variants",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Table Variants"
@@ -681,8 +721,23 @@ const tablePageDemoTabsTabs = [
     ),
   },
   {
+    value: "density",
+    label: "Density",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Density"
+        description="Three row heights via the density prop — comfortable, compact, and dense for data-heavy dashboards."
+        code={densityCode}
+      >
+        <DensityDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "striped",
     label: "Striped",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Striped Table"
@@ -696,6 +751,7 @@ const tablePageDemoTabsTabs = [
   {
     value: "hover",
     label: "Hover",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Hover States"
@@ -709,6 +765,7 @@ const tablePageDemoTabsTabs = [
   {
     value: "borderless",
     label: "Borderless",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Borderless Table"
@@ -716,6 +773,20 @@ const tablePageDemoTabsTabs = [
         code={borderlessCode}
       >
         <BorderlessDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, empty cell values, sticky columns, and empty state inside a narrow max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
       </DemoWrapper>
     ),
   },
@@ -777,6 +848,24 @@ const tablePageAPIReferenceSections = [
         description: "For virtualized tables, indicate total row count.",
       },
       {
+        prop: "containerClassName",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the overflow scroll wrapper.",
+      },
+      {
+        prop: "containerRef",
+        type: "Ref<HTMLDivElement>",
+        default: "-",
+        description: "Ref forwarded to the overflow scroll wrapper.",
+      },
+      {
+        prop: "containerStyle",
+        type: "CSSProperties",
+        default: "-",
+        description: "Inline styles applied to the overflow scroll wrapper.",
+      },
+      {
         prop: "className",
         type: "string",
         default: "-",
@@ -786,11 +875,25 @@ const tablePageAPIReferenceSections = [
   },
   {
     title: "TableHeader",
-    props: [],
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the thead element.",
+      },
+    ],
   },
   {
     title: "TableBody",
-    props: [],
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the tbody element.",
+      },
+    ],
   },
   {
     title: "TableRow",
@@ -806,6 +909,18 @@ const tablePageAPIReferenceSections = [
         type: "boolean",
         default: "false",
         description: "For grid role tables.",
+      },
+      {
+        prop: "stripe",
+        type: "'even' | 'odd'",
+        default: "-",
+        description: "Explicit stripe parity override for virtualized rows.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the tr element.",
       },
     ],
   },
@@ -831,6 +946,32 @@ const tablePageAPIReferenceSections = [
         default: "false",
         description: "For grid role tables.",
       },
+      {
+        prop: "stickyColumn",
+        type: "boolean | 'start' | 'end'",
+        default: "-",
+        description: "Pin this header cell to the start or end edge.",
+      },
+      {
+        prop: "stickyOffset",
+        type: "string",
+        default: "-",
+        description:
+          "CSS offset from the pinned edge for stacked sticky columns.",
+      },
+      {
+        prop: "stickyEdge",
+        type: "boolean",
+        default: "true",
+        description:
+          "Draw the edge divider on the scrolling side of a pinned column.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the th element.",
+      },
     ],
   },
   {
@@ -842,6 +983,109 @@ const tablePageAPIReferenceSections = [
         default: "false",
         description: "For grid role tables.",
       },
+      {
+        prop: "stickyColumn",
+        type: "boolean | 'start' | 'end'",
+        default: "-",
+        description: "Pin this cell to the start or end edge.",
+      },
+      {
+        prop: "stickyOffset",
+        type: "string",
+        default: "-",
+        description:
+          "CSS offset from the pinned edge for stacked sticky columns.",
+      },
+      {
+        prop: "stickyEdge",
+        type: "boolean",
+        default: "true",
+        description:
+          "Draw the edge divider on the scrolling side of a pinned column.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the td element.",
+      },
+    ],
+  },
+  {
+    title: "SortableTableHead",
+    props: [
+      {
+        prop: "sortState",
+        type: "'asc' | 'desc' | 'none'",
+        default: "'none'",
+        description: "Current sort direction reflected in aria-sort and icon.",
+      },
+      {
+        prop: "onSort",
+        type: "() => void",
+        default: "-",
+        description: "Handler invoked when the sort button is activated.",
+      },
+      {
+        prop: "align",
+        type: "'left' | 'center' | 'right'",
+        default: "'left'",
+        description: "Horizontal alignment of the header button content.",
+      },
+      {
+        prop: "sortLabel",
+        type: "string",
+        default: "-",
+        description:
+          "Accessible column name when children is not a plain string.",
+      },
+    ],
+  },
+  {
+    title: "TableEmpty",
+    props: [
+      {
+        prop: "colSpan",
+        type: "number",
+        default: "-",
+        description: "Number of table columns the empty row should span.",
+      },
+      {
+        prop: "message",
+        type: "ReactNode",
+        default: "'No results.'",
+        description: "Empty state text or node.",
+      },
+      {
+        prop: "icon",
+        type: "ReactNode",
+        default: "IconInbox",
+        description: "Optional icon rendered above the message.",
+      },
+      {
+        prop: "action",
+        type: "ReactNode",
+        default: "-",
+        description:
+          "Optional call-to-action control rendered below the message.",
+      },
+    ],
+  },
+  {
+    title: "TableSkeleton",
+    props: [
+      {
+        prop: "columns",
+        type: "number",
+        default: "-",
+        description: "Number of skeleton cells per row.",
+      },
+      {
+        prop: "rows",
+        type: "number",
+        default: "5",
+        description: "Number of placeholder shimmer rows to render.",
+      },
     ],
   },
   {
@@ -852,13 +1096,49 @@ const tablePageAPIReferenceSections = [
         type: "KiraTableColumn<T>[]",
         default: "-",
         description:
-          "Column config: { key, header, align?, stickyColumn?, sortable?, cell? }.",
+          "Column config: { key, header, align?, stickyColumn?, width?, sortable?, cell? }.",
       },
       {
         prop: "data",
         type: "T[]",
         default: "-",
         description: "Row data; rendered via each column's key or cell().",
+      },
+      {
+        prop: "caption",
+        type: "ReactNode",
+        default: "-",
+        description: "Optional table caption.",
+      },
+      {
+        prop: "density",
+        type: "'comfortable' | 'compact' | 'dense'",
+        default: "'comfortable'",
+        description: "Row density preset.",
+      },
+      {
+        prop: "striped",
+        type: "boolean",
+        default: "false",
+        description: "Apply alternating row stripes.",
+      },
+      {
+        prop: "bordered",
+        type: "boolean",
+        default: "false",
+        description: "Add vertical and outer cell borders.",
+      },
+      {
+        prop: "stickyHeader",
+        type: "boolean",
+        default: "false",
+        description: "Keep the header fixed while scrolling vertically.",
+      },
+      {
+        prop: "label",
+        type: "string",
+        default: "-",
+        description: "Accessible name for the focusable scroll region.",
       },
       {
         prop: "selectable",
@@ -868,10 +1148,22 @@ const tablePageAPIReferenceSections = [
           "Add a leading checkbox column with a tri-state select-all header.",
       },
       {
+        prop: "getRowId",
+        type: "(row: T) => string",
+        default: "-",
+        description: "Derive a stable row identifier for keys and selection.",
+      },
+      {
         prop: "loading",
         type: "boolean",
         default: "false",
         description: "Render TableSkeleton shimmer rows instead of data.",
+      },
+      {
+        prop: "loadingRows",
+        type: "number",
+        default: "5",
+        description: "Number of skeleton rows shown while loading.",
       },
       {
         prop: "empty",
@@ -898,15 +1190,41 @@ const tablePageAPIReferenceSections = [
         default: "-",
         description: "Called with selected row ids (needs getRowId).",
       },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the table element.",
+      },
+      {
+        prop: "containerClassName",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the overflow scroll wrapper.",
+      },
     ],
   },
   {
     title: "TableFooter",
-    props: [],
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the tfoot element.",
+      },
+    ],
   },
   {
     title: "TableCaption",
-    props: [],
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the caption element.",
+      },
+    ],
   },
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
@@ -924,7 +1242,7 @@ const tablePageChangelogEntries = [
     ],
   },
   {
-    version: "2.2",
+    version: "2.2.0",
     date: "23 October 2026",
     changes: [
       {
@@ -966,7 +1284,7 @@ const tablePageChangelogEntries = [
     ],
   },
   {
-    version: "2.1",
+    version: "2.1.0",
     date: "22 October 2026",
     changes: [
       {
@@ -984,8 +1302,8 @@ const tablePageChangelogEntries = [
     ],
   },
   {
-    version: "2.0",
-    date: "2026-07-22",
+    version: "2.0.0",
+    date: "22 July 2026",
     changes: [
       {
         type: "added",

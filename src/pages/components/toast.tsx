@@ -194,7 +194,7 @@ function ActionsDemo() {
         variant="outline"
         onClick={() =>
           toast.success("Payment successful", {
-            description: "Your order #12345 has been confirmed.",
+            description: "Your Order 12345 has been confirmed.",
             action: {
               label: "View Order",
               onClick: () => toast.info("Navigating to order..."),
@@ -244,7 +244,7 @@ export function ToastActionsDemo() {
         variant="outline"
         onClick={() =>
           toast.success("Payment successful", {
-            description: "Your order #12345 has been confirmed.",
+            description: "Your Order 12345 has been confirmed.",
             action: {
               label: "View Order",
               onClick: () => toast.info("Navigating to order..."),
@@ -270,9 +270,8 @@ function PromiseDemo() {
             toast.promise(simulateAsync(), {
               loading: "Creating event...",
               success: (data) => `${data.name} has been created`,
-              // SAFETY: simulateAsync rejects with `new Error(...)` only —
-              // the rejection value is always an Error instance.
-              error: (err) => `Failed: ${(err as Error).message}`,
+              error: (err) =>
+                `Failed: ${err instanceof Error ? err.message : String(err)}`,
             })
           }
         >
@@ -324,7 +323,7 @@ import { toast } from "@/components/ui/toast"
 import { Button } from "@/components/ui/button"
 
 export function ToastPromiseDemo() {
-  const [loadingId, setLoadingId] = useState<string | number | null>(null)
+  const [loadingId, setLoadingId] = useState<string | null>(null)
 
   const simulateAsync = () =>
     new Promise<{ name: string }>((resolve, reject) => {
@@ -344,7 +343,8 @@ export function ToastPromiseDemo() {
           toast.promise(simulateAsync(), {
             loading: "Creating event...",
             success: (data) => \`\${data.name} has been created\`,
-            error: (err) => \`Failed: \${(err as Error).message}\`,
+            error: (err) =>
+              \`Failed: \${err instanceof Error ? err.message : String(err)}\`,
           })
         }
       >
@@ -563,7 +563,7 @@ toast.info("New update available")
 
 // With description
 toast.success("Payment processed", {
-  description: "Order #12345 confirmed"
+  description: "Order 12345 confirmed"
 })
 
 // With action
@@ -590,151 +590,6 @@ toast.promise(saveData(), {
   success: (data) => \`Saved \${data.name}\`,
   error: (err) => \`Error: \${err.message}\`
 })`;
-
-const apiSections = [
-  {
-    title: "toast()",
-    props: [
-      {
-        prop: "message",
-        type: "string | ReactNode",
-        description: "The message content to display in the toast",
-      },
-      {
-        prop: "options",
-        type: "ToastOptions",
-        description: "Optional configuration object",
-      },
-    ],
-  },
-  {
-    title: "ToastOptions",
-    props: [
-      {
-        prop: "description",
-        type: "string | ReactNode",
-        description: "Additional descriptive text below the main message",
-      },
-      {
-        prop: "duration",
-        type: "number",
-        default: "varies by variant",
-        description:
-          "Duration in ms before auto-dismiss. Use Infinity for persistent, 0 to disable. Defaults per variant via DURATION (default 5000, success 4000, error 8000, warning 6000, info 5000, loading 0)",
-      },
-      {
-        prop: "icon",
-        type: "ReactNode",
-        description: "Override the default variant icon",
-      },
-      {
-        prop: "action",
-        type: "{ label: string; onClick: () => void }",
-        description: "Action button configuration",
-      },
-      {
-        prop: "position",
-        type: '{ anchor: HTMLElement | null; align?: "start" | "center" | "end"; side?: "top" | "bottom" | "left" | "right"; sideOffset?: number }',
-        default: "sideOffset: 8",
-        description:
-          "Anchor the toast to an element (renders through the dedicated anchored toaster). A null anchor falls back to the bottom-right viewport stack",
-      },
-      {
-        prop: "onClose",
-        type: "() => void",
-        description:
-          "Called when the toast is closed (swipe, Esc, action, or timeout)",
-      },
-    ],
-  },
-  {
-    title: "Toast Methods",
-    props: [
-      {
-        prop: "toast()",
-        type: "(message, options?) => id",
-        description: "Show a default toast",
-      },
-      {
-        prop: "toast.success()",
-        type: "(message, options?) => id",
-        description: "Show a success toast with checkmark icon",
-      },
-      {
-        prop: "toast.error()",
-        type: "(message, options?) => id",
-        description: "Show an error toast with X icon",
-      },
-      {
-        prop: "toast.warning()",
-        type: "(message, options?) => id",
-        description: "Show a warning toast with alert icon",
-      },
-      {
-        prop: "toast.info()",
-        type: "(message, options?) => id",
-        description: "Show an info toast with info icon",
-      },
-      {
-        prop: "toast.loading()",
-        type: "(message, options?) => id",
-        description: "Show a loading toast with spinner",
-      },
-      {
-        prop: "toast.promise()",
-        type: "(promise, { loading, success, error }) => Promise",
-        description: "Show toast states based on promise resolution",
-      },
-      {
-        prop: "toast.update()",
-        type: "(id, { title?, description?, variant?, duration?, icon?, action? }) => void",
-        description:
-          "Update a toast in place. Variant change swaps type, timeout, and icon; unspecified fields keep their current values",
-      },
-      {
-        prop: "toast.dismiss()",
-        type: "(id?) => void",
-        description: "Dismiss a specific toast or all toasts if no ID",
-      },
-    ],
-  },
-  {
-    title: "Provider & Components",
-    props: [
-      {
-        prop: "KiraToastProvider",
-        type: "{ children, timeout?, limit? }",
-        default: "timeout: 5000, limit: 3",
-        description:
-          "Mount once around the app. timeout is the default auto-dismiss (0 disables); limit caps simultaneously visible toasts — excess toasts fade with data-limited",
-      },
-      {
-        prop: "KiraToaster",
-        type: "() => ReactNode",
-        description:
-          "Renders the stacked viewport. Mounted automatically inside KiraToastProvider; bottom-right fixed, max-w-sm (full-width inset on mobile)",
-      },
-      {
-        prop: "KiraAnchoredToaster",
-        type: "() => ReactNode",
-        description:
-          "Renders element-anchored toasts through Toast.Positioner. Mounted automatically inside KiraToastProvider alongside KiraToaster",
-      },
-      {
-        prop: "useToast()",
-        type: "() => ToastManager",
-        description:
-          "Hook returning the manager (add, close, update, promise, subscribe, toasts) for in-component custom rendering",
-      },
-      {
-        prop: "DURATION",
-        type: "Record<ToastType, number>",
-        description:
-          "Default auto-dismiss timeouts per variant. Exported for callers that mirror kit timings",
-      },
-    ],
-  },
-];
 
 function ProgressDemo() {
   return (
@@ -936,7 +791,145 @@ import { Button } from "@/components/ui/button"
 // Partial updates keep unspecified fields (description, action, icon):
 toast.update(id, { title: "Step 2 of 3: working…" })`;
 
-const features = [
+function StressDemo() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div className="max-w-xs space-y-4">
+      <div className="flex flex-col gap-2">
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast.warning(
+              "Deployment_Pipeline_Release_Candidate_2026_11_26_Requires_Approval",
+              {
+                description:
+                  "A very long description that wraps cleanly inside the max-w-sm viewport without overflowing horizontally or clipping the close control.",
+              },
+            )
+          }
+        >
+          Long title & description
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast("Title only (no icon, empty description)", {
+              description: "",
+              icon: null,
+            })
+          }
+        >
+          Empty description & no icon
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            const next = count + 1;
+            setCount(next);
+            toast.info(`Deduplicated sync update (${next})`, {
+              id: "sync-status",
+            });
+          }}
+        >
+          Deduplicate by stable ID
+        </Button>
+        <Button variant="outline" disabled>
+          Disabled trigger
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+const stressCode = `import { toast } from "@/components/ui/toast"
+import { Button } from "@/components/ui/button"
+
+// Long titles, empty description / icon: null, stable-ID dedupe, and disabled state in a max-w-xs column
+<div className="max-w-xs space-y-4">
+  <Button
+    variant="outline"
+    onClick={() =>
+      toast.warning("Deployment_Pipeline_Release_Candidate_2026_11_26_Requires_Approval", {
+        description: "Long description that wraps cleanly inside the viewport.",
+      })
+    }
+  >
+    Long title & description
+  </Button>
+  <Button
+    variant="outline"
+    onClick={() => toast("Title only", { description: "", icon: null })}
+  >
+    Empty description & no icon
+  </Button>
+  <Button
+    variant="outline"
+    onClick={() => toast.info("Deduplicated sync update", { id: "sync-status" })}
+  >
+    Deduplicate by stable ID
+  </Button>
+  <Button variant="outline" disabled>
+    Disabled trigger
+  </Button>
+</div>`;
+
+export default function ToastPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Toast"
+        version="v2.1.0"
+        description="A succinct message displayed temporarily. Built on Base UI Toast with a collapsed bottom-right stack, swipe-to-dismiss, anchored positioning, progress bars, and WCAG 2.2 AA accessibility."
+      />
+
+      <FeatureGrid
+        features={toastPageFeatures}
+        description="Capabilities built into Kira Kit's toast notification system."
+      />
+
+      <DemoTabs tabs={toastPageDemoTabs} defaultValue="basic" />
+
+      <ToastInstallationCard />
+
+      <KeyboardShortcuts
+        description="Provided by the Base UI Toast primitive. Action and close buttons are normal tab stops; toasts are announced via ARIA live regions."
+        shortcuts={toastPageShortcuts}
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Import the toast function and call it to display notifications."
+        notes={[
+          {
+            label: "KiraToastProvider",
+            body: "Mount once near your app root to render both the stacked and anchored viewports.",
+          },
+          {
+            label: "useToast()",
+            body: "Use the hook when you need reactive access to the live toast array for custom UI.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={toastPageAPISections}
+        title="API reference"
+        description="Complete API for the toast notification system."
+      />
+
+      <Changelog
+        entries={toastPageChangelogEntries}
+        title="Changelog"
+        description="Version history for the Toast component."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const toastPageFeatures = [
   {
     title: "Accessible",
     description:
@@ -955,12 +948,13 @@ const features = [
       "Anchor toasts to trigger elements, countdown progress bars that pause on hover, and update-in-place with variant morphing.",
     icon: <IconClick className="h-4 w-4" />,
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const demoTabs = [
+const toastPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Toast"
@@ -974,6 +968,7 @@ const demoTabs = [
   {
     value: "variants",
     label: "Variants",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Toast Variants"
@@ -987,6 +982,7 @@ const demoTabs = [
   {
     value: "actions",
     label: "Actions",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Toast with Actions"
@@ -1000,6 +996,7 @@ const demoTabs = [
   {
     value: "dismiss",
     label: "Dismiss",
+    group: "Lifecycle",
     demo: (
       <DemoWrapper
         title="Dismiss Control"
@@ -1013,6 +1010,7 @@ const demoTabs = [
   {
     value: "promise",
     label: "Promise",
+    group: "Lifecycle",
     demo: (
       <DemoWrapper
         title="Promise-based Toasts"
@@ -1024,8 +1022,23 @@ const demoTabs = [
     ),
   },
   {
+    value: "update",
+    label: "Update in Place",
+    group: "Lifecycle",
+    demo: (
+      <DemoWrapper
+        title="toast.update()"
+        description="Rewrite a toast's title, description, variant, and action without re-stacking."
+        code={updateCode}
+      >
+        <UpdateDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "stacking",
     label: "Stacking & Swipe",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Stacking & Swipe"
@@ -1039,6 +1052,7 @@ const demoTabs = [
   {
     value: "progress",
     label: "Progress",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Timeout Progress Bar"
@@ -1052,6 +1066,7 @@ const demoTabs = [
   {
     value: "anchored",
     label: "Anchored",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Anchored Toasts"
@@ -1063,59 +1078,22 @@ const demoTabs = [
     ),
   },
   {
-    value: "update",
-    label: "Update in Place",
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
     demo: (
       <DemoWrapper
-        title="toast.update()"
-        description="Rewrite a toast's title, description, variant, and action without re-stacking."
-        code={updateCode}
+        title="Stress Cases"
+        description="Long titles, empty descriptions, hidden icons, stable-ID deduplication, and disabled triggers in a max-w-xs column."
+        code={stressCode}
       >
-        <UpdateDemo />
+        <StressDemo />
       </DemoWrapper>
     ),
   },
-];
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-export default function ToastPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Toast"
-        version="v2.1.0"
-        description="A succinct message displayed temporarily. Built on Base UI Toast with a collapsed bottom-right stack, swipe-to-dismiss, anchored positioning, progress bars, and WCAG 2.2 AA accessibility."
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <ToastInstallationCard />
-
-      <KeyboardShortcuts
-        description="Provided by the Base UI Toast primitive. Action and close buttons are normal tab stops; toasts are announced via ARIA live regions."
-        shortcuts={toastPageKeyboardShortcutsShortcuts}
-      />
-
-      <UsageBlock
-        code={usageCode}
-        title="Usage"
-        description="Import the toast function and call it to display notifications."
-      />
-
-      <APIReference
-        sections={apiSections}
-        title="API reference"
-        description="Complete API for the toast notification system."
-      />
-
-      <Changelog entries={toastPageChangelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
-const toastPageKeyboardShortcutsShortcuts = [
+const toastPageShortcuts = [
   {
     keys: "Tab / Shift + Tab",
     description:
@@ -1140,6 +1118,172 @@ const toastPageKeyboardShortcutsShortcuts = [
       "Pointer gesture — swipe up, down, left, or right to dismiss a toast",
   },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const toastPageAPISections = [
+  {
+    title: "toast()",
+    props: [
+      {
+        prop: "title",
+        type: "ReactNode",
+        description: "The message content to display in the toast",
+      },
+      {
+        prop: "options",
+        type: "ToastOptions",
+        description: "Optional configuration object",
+      },
+    ],
+  },
+  {
+    title: "ToastOptions",
+    props: [
+      {
+        prop: "id",
+        type: "string",
+        description:
+          "Stable ID. Re-adding the same ID updates the toast in place (dedupe)",
+      },
+      {
+        prop: "description",
+        type: "ReactNode",
+        description: "Additional descriptive text below the main message",
+      },
+      {
+        prop: "duration",
+        type: "number",
+        default: "varies by variant",
+        description:
+          "Duration in ms before auto-dismiss. Use Infinity for persistent, 0 to disable. Defaults per variant via DURATION (default 5000, success 4000, error 8000, warning 6000, info 5000, loading 0)",
+      },
+      {
+        prop: "icon",
+        type: "ReactNode",
+        description:
+          "Override the default variant icon. Pass null to hide the default icon",
+      },
+      {
+        prop: "action",
+        type: "ToastAction",
+        description:
+          "Action button configuration ({ label: string; onClick: () => void })",
+      },
+      {
+        prop: "position",
+        type: "ToastPosition",
+        default: "sideOffset: 8",
+        description:
+          "Anchor the toast to an element ({ anchor, align?, side?, sideOffset? }). A null anchor falls back to the bottom-right viewport stack",
+      },
+      {
+        prop: "onClose",
+        type: "() => void",
+        description:
+          "Called when the toast is closed (swipe, Esc, action, or timeout)",
+      },
+      {
+        prop: "onRemove",
+        type: "() => void",
+        description:
+          "Called after the toast finishes its exit transition and is removed",
+      },
+    ],
+  },
+  {
+    title: "Toast Methods",
+    props: [
+      {
+        prop: "toast()",
+        type: "(title, options?) => string",
+        description: "Show a default toast",
+      },
+      {
+        prop: "toast.message()",
+        type: "(title, options?) => string",
+        description: "Alias for toast() showing a default toast",
+      },
+      {
+        prop: "toast.success()",
+        type: "(title, options?) => string",
+        description: "Show a success toast with checkmark icon",
+      },
+      {
+        prop: "toast.error()",
+        type: "(title, options?) => string",
+        description: "Show an error toast with X icon",
+      },
+      {
+        prop: "toast.warning()",
+        type: "(title, options?) => string",
+        description: "Show a warning toast with alert icon",
+      },
+      {
+        prop: "toast.info()",
+        type: "(title, options?) => string",
+        description: "Show an info toast with info icon",
+      },
+      {
+        prop: "toast.loading()",
+        type: "(title, options?) => string",
+        description: "Show a loading toast with spinner",
+      },
+      {
+        prop: "toast.promise()",
+        type: "(promise, PromiseToastOptions<T>) => Promise<T>",
+        description:
+          "Show loading, success, or error states based on promise resolution (accepts optional description)",
+      },
+      {
+        prop: "toast.update()",
+        type: "(id, options) => void",
+        description:
+          "Update a toast in place (title, description, variant, duration, icon, action, onClose, onRemove). Variant change swaps type, timeout, and icon; unspecified fields keep their current values",
+      },
+      {
+        prop: "toast.dismiss()",
+        type: "(id?) => void",
+        description:
+          "Dismiss a specific toast or all toasts across both viewports if no ID",
+      },
+    ],
+  },
+  {
+    title: "Provider & Components",
+    props: [
+      {
+        prop: "KiraToastProvider",
+        type: "{ children?, timeout?, limit? }",
+        default: "timeout: 5000, limit: 3",
+        description:
+          "Mount once around the app. timeout is the default auto-dismiss (0 disables); limit caps simultaneously visible toasts — excess toasts fade with data-limited",
+      },
+      {
+        prop: "KiraToaster",
+        type: "() => ReactNode",
+        description:
+          "Renders the stacked viewport. Mounted automatically inside KiraToastProvider; bottom-right fixed, max-w-sm (full-width inset on mobile)",
+      },
+      {
+        prop: "KiraAnchoredToaster",
+        type: "() => ReactNode",
+        description:
+          "Renders element-anchored toasts through Toast.Positioner. Mounted automatically inside KiraToastProvider alongside KiraToaster",
+      },
+      {
+        prop: "useToast()",
+        type: "() => ToastManager",
+        description:
+          "Hook returning the stacked manager (add, close, update, promise, subscribe, toasts) for in-component custom rendering",
+      },
+      {
+        prop: "DURATION",
+        type: "Record<ToastType, number>",
+        description:
+          "Default auto-dismiss timeouts per variant. Exported for callers that mirror kit timings",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const toastPageChangelogEntries = [
   {
@@ -1178,7 +1322,7 @@ const toastPageChangelogEntries = [
       },
       {
         type: "fixed",
-        title: "transition-all removed",
+        title: "Scoped transitions to transform, opacity, and height",
         description:
           "Toast transitions are limited to transform/opacity/height (transition-[transform,opacity,height]) with data-swiping disabling transitions entirely — layout properties no longer animate.",
       },

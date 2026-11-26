@@ -1,14 +1,5 @@
 import type { ComponentProps as ReactComponentProps } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CardSkeleton } from "@/components/ui/card";
+import * as React from "react";
 import {
   IconAccessible,
   IconKeyboard,
@@ -16,17 +7,27 @@ import {
   IconPalette,
   IconStack2,
 } from "@tabler/icons-react";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardSkeleton,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  APIReference,
+  Changelog,
   ComponentPage,
-  PageHeader,
-  FeatureGrid,
   DemoTabs,
   DemoWrapper,
-  UsageBlock,
-  APIReference,
+  FeatureGrid,
   KeyboardShortcuts,
-  Changelog,
+  PageHeader,
+  UsageBlock,
 } from "@/components/docs";
 
 function BasicDemo() {
@@ -37,6 +38,11 @@ function BasicDemo() {
         <CardDescription>
           Card description with additional context.
         </CardDescription>
+        <CardAction>
+          <Button variant="ghost" size="sm">
+            Edit
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <p>This is the main content area of the card.</p>
@@ -48,8 +54,10 @@ function BasicDemo() {
   );
 }
 
-const basicCode = `import {
+const basicCode = `import { Button } from "@/components/ui/button"
+import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -57,18 +65,27 @@ const basicCode = `import {
   CardTitle,
 } from "@/components/ui/card"
 
-<Card>
-  <CardHeader>
-    <CardTitle>Card Title</CardTitle>
-    <CardDescription>Description</CardDescription>
-  </CardHeader>
-  <CardContent>
-    <p>Content goes here</p>
-  </CardContent>
-  <CardFooter>
-    <Button>Action</Button>
-  </CardFooter>
-</Card>`;
+export function BasicDemo() {
+  return (
+    <Card className="max-w-md">
+      <CardHeader>
+        <CardTitle>Card Title</CardTitle>
+        <CardDescription>
+          Card description with additional context.
+        </CardDescription>
+        <CardAction>
+          <Button variant="ghost" size="sm">Edit</Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent>
+        <p>This is the main content area of the card.</p>
+      </CardContent>
+      <CardFooter>
+        <Button size="sm">Action</Button>
+      </CardFooter>
+    </Card>
+  )
+}`;
 
 function VariantsDemo() {
   return (
@@ -171,7 +188,7 @@ const variantsCode = `import { Card, CardHeader, CardTitle, CardContent } from "
 
 function GlassDemo() {
   return (
-    <div className="relative p-8 rounded-lg bg-gradient-to-br from-primary/20 via-secondary/20 to-primary/10">
+    <div className="relative rounded-lg bg-gradient-to-br from-primary/20 via-secondary/20 to-primary/10 p-8">
       <Card variant="glass" className="max-w-md">
         <CardHeader>
           <CardTitle>Glass Card</CardTitle>
@@ -191,8 +208,8 @@ function GlassDemo() {
 }
 
 const glassCode = `// Glass card works best over colorful backgrounds
-<div className="bg-gradient-to-br from-primary/20 to-secondary/20">
-  <Card variant="glass">
+<div className="bg-gradient-to-br from-primary/20 to-secondary/20 p-8 rounded-lg">
+  <Card variant="glass" className="max-w-md">
     <CardHeader>
       <CardTitle>Glass Card</CardTitle>
       <CardDescription>Glassmorphism effect</CardDescription>
@@ -239,10 +256,10 @@ const moreVariantsCode = `// Elevated 2 - stronger shadow
 <Card variant="flat">...</Card>`;
 
 function InteractiveCardDemo() {
-  const [activated, setActivated] = useState(0);
+  const [activated, setActivated] = React.useState(0);
 
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
+    <div className="flex min-h-48 items-center justify-center">
       <Card variant="interactive" className="relative max-w-md">
         <button
           type="button"
@@ -259,9 +276,9 @@ function InteractiveCardDemo() {
         <CardContent>
           <p className="text-sm text-muted-foreground">
             Tab to focus, then press Enter or Space. Activations:{" "}
-            <span className="font-medium text-foreground tabular-nums">
+            <output className="font-medium text-foreground tabular-nums">
               {activated}
-            </span>
+            </output>
           </p>
         </CardContent>
       </Card>
@@ -269,7 +286,7 @@ function InteractiveCardDemo() {
   );
 }
 
-const interactiveCode = `import { useState } from "react"
+const interactiveCode = `import * as React from "react"
 import {
   Card,
   CardContent,
@@ -279,27 +296,23 @@ import {
 } from "@/components/ui/card"
 
 export function InteractiveCardDemo() {
-  const [activated, setActivated] = useState(0)
+  const [activated, setActivated] = React.useState(0)
 
   return (
-    <Card
-      variant="interactive"
-      role="button"
-      tabIndex={0}
-      aria-label="Open project details"
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault()
-          setActivated((n) => n + 1)
-        }
-      }}
-      onClick={() => setActivated((n) => n + 1)}
-    >
+    <Card variant="interactive" className="relative max-w-md">
+      <button
+        type="button"
+        aria-label="Open project details"
+        onClick={() => setActivated((n) => n + 1)}
+        className="absolute inset-0 z-10 rounded-xl focus-visible:outline-2 focus-visible:outline-ring"
+      />
       <CardHeader>
         <CardTitle>Interactive Card</CardTitle>
         <CardDescription>Keyboard operable click target.</CardDescription>
       </CardHeader>
-      <CardContent>Activations: {activated}</CardContent>
+      <CardContent>
+        <output className="tabular-nums">Activations: {activated}</output>
+      </CardContent>
     </Card>
   )
 }`;
@@ -320,127 +333,53 @@ const skeletonCode = `import { CardSkeleton } from "@/components/ui/card"
   <CardSkeleton size="sm" />
 </div>`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function CardPage() {
-  const features = [
-    {
-      title: "Accessible",
-      description: "Semantic HTML structure with proper heading hierarchy.",
-      icon: <IconAccessible className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Multiple Variants",
-      description: "10 variants including glass, gradient, elevated, and more.",
-      icon: <IconPalette className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Keyboard Operable",
-      description:
-        "Click-target cards activate with Enter and Space when wired as buttons (see Interactive tab).",
-      icon: <IconKeyboard className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Skeleton Fallback",
-      description: "CardSkeleton reserves layout space while content loads.",
-      icon: <IconLoader className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Composable",
-      description:
-        "Header, Content, Footer, Title, and Description sub-components.",
-      icon: <IconStack2 className="w-4 h-4 text-primary" />,
-    },
-  ];
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>
+            Quarterly Regional Infrastructure Reliability and Incident Review
+            Summary
+          </CardTitle>
+          <CardDescription>
+            Long titles and descriptions wrap cleanly alongside a pinned header
+            action inside a narrow column.
+          </CardDescription>
+          <CardAction>
+            <Button variant="outline" size="sm" disabled>
+              Locked
+            </Button>
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            Compact size reduces card padding and footer spacing without
+            cramping controls.
+          </p>
+        </CardContent>
+        <CardFooter>
+          <Button size="sm" disabled>
+            Publish report
+          </Button>
+        </CardFooter>
+      </Card>
 
-  const demoTabs = [
-    {
-      value: "basic",
-      label: "Basic",
-      demo: (
-        <DemoWrapper
-          title="Basic Card"
-          description="Standard card with header, content, and footer"
-          code={basicCode}
-        >
-          <BasicDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "variants",
-      label: "Variants",
-      demo: (
-        <DemoWrapper
-          title="Card Variants"
-          description="Different visual styles for various contexts"
-          code={variantsCode}
-        >
-          <VariantsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "glass",
-      label: "Glass",
-      demo: (
-        <DemoWrapper
-          title="Glass Card"
-          description="Glassmorphism effect with backdrop blur"
-          code={glassCode}
-        >
-          <GlassDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "more",
-      label: "More Variants",
-      demo: (
-        <DemoWrapper
-          title="Additional Variants"
-          description="Elevated and flat card styles"
-          code={moreVariantsCode}
-        >
-          <MoreVariantsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "interactive",
-      label: "Interactive",
-      demo: (
-        <DemoWrapper
-          title="Interactive Card"
-          description="Click-target card with keyboard operability"
-          code={interactiveCode}
-        >
-          <InteractiveCardDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "skeleton",
-      label: "Skeleton",
-      demo: (
-        <DemoWrapper
-          title="Card Skeleton"
-          description="Loading placeholder in default and small sizes"
-          code={skeletonCode}
-        >
-          <SkeletonDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
+      <Card variant="outline" size="sm">
+        <CardHeader>
+          <CardTitle>Empty content card</CardTitle>
+          <CardDescription>No body or footer rendered.</CardDescription>
+        </CardHeader>
+        <CardContent />
+      </Card>
+    </div>
+  );
+}
 
-  const keyboardShortcuts = [
-    { keys: "Tab", description: "Focus the interactive card" },
-    { keys: "Enter", description: "Activate interactive card" },
-    { keys: "Space", description: "Activate interactive card" },
-  ];
-
-  const usageCode = `import {
+const stressCode = `import { Button } from "@/components/ui/button"
+import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
@@ -448,181 +387,422 @@ export default function CardPage() {
   CardTitle,
 } from "@/components/ui/card"
 
-// Basic card
+// Long titles, empty content, and disabled actions inside a narrow container
+<div className="max-w-xs space-y-4">
+  <Card size="sm">
+    <CardHeader>
+      <CardTitle>Quarterly Regional Infrastructure Reliability Summary</CardTitle>
+      <CardDescription>Wraps cleanly beside CardAction.</CardDescription>
+      <CardAction>
+        <Button variant="outline" size="sm" disabled>Locked</Button>
+      </CardAction>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm text-muted-foreground">Compact card body.</p>
+    </CardContent>
+    <CardFooter>
+      <Button size="sm" disabled>Publish report</Button>
+    </CardFooter>
+  </Card>
+
+  <Card variant="outline" size="sm">
+    <CardHeader>
+      <CardTitle>Empty content card</CardTitle>
+      <CardDescription>No body or footer rendered.</CardDescription>
+    </CardHeader>
+    <CardContent />
+  </Card>
+</div>`;
+
+const usageCode = `import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardSkeleton,
+  CardTitle,
+} from "@/components/ui/card"
+
+// Basic card with header action
 <Card>
   <CardHeader>
     <CardTitle>Title</CardTitle>
     <CardDescription>Description</CardDescription>
+    <CardAction>
+      <Button variant="ghost" size="sm">Edit</Button>
+    </CardAction>
   </CardHeader>
   <CardContent>Content</CardContent>
-  <CardFooter>Footer</CardFooter>
+  <CardFooter>
+    <Button size="sm">Save</Button>
+  </CardFooter>
 </Card>
 
-// With variant
+// Variants & loading skeleton
 <Card variant="interactive">...</Card>
-<Card variant="gradient">...</Card>
 <Card variant="glass">...</Card>
-<Card variant="elevated">...</Card>`;
+<CardSkeleton size="sm" />`;
 
-  const apiReference = [
-    {
-      title: "Card",
-      props: [
-        {
-          prop: "variant",
-          type: '"default" | "interactive" | "gradient" | "glass" | "outline" | "elevated" | "elevated2" | "bordered" | "soft" | "flat"',
-          default: '"default"',
-          description: "Visual style of the card",
-        },
-        {
-          prop: "size",
-          type: '"default" | "sm"',
-          default: '"default"',
-          description: "Density of the card; sm uses p-4 instead of p-6",
-        },
-        {
-          prop: "className",
-          type: "string",
-          default: "-",
-          description: "Additional CSS classes",
-        },
-        {
-          prop: "children",
-          type: "ReactNode",
-          default: "-",
-          description: "Card content (Header, Content, Footer)",
-        },
-      ],
-    },
-    {
-      title: "CardHeader",
-      props: [
-        {
-          prop: "className",
-          type: "string",
-          default: "-",
-          description: "Additional CSS classes",
-        },
-        {
-          prop: "children",
-          type: "ReactNode",
-          default: "-",
-          description: "Header content (Title, Description)",
-        },
-      ],
-    },
-    {
-      title: "CardTitle",
-      props: [
-        {
-          prop: "className",
-          type: "string",
-          default: "-",
-          description: "Additional CSS classes",
-        },
-        {
-          prop: "children",
-          type: "ReactNode",
-          default: "-",
-          description: "Title text",
-        },
-      ],
-    },
-    {
-      title: "CardDescription",
-      props: [
-        {
-          prop: "className",
-          type: "string",
-          default: "-",
-          description: "Additional CSS classes",
-        },
-        {
-          prop: "children",
-          type: "ReactNode",
-          default: "-",
-          description: "Description text",
-        },
-      ],
-    },
-    {
-      title: "CardContent",
-      props: [
-        {
-          prop: "className",
-          type: "string",
-          default: "-",
-          description: "Additional CSS classes",
-        },
-        {
-          prop: "children",
-          type: "ReactNode",
-          default: "-",
-          description: "Main content",
-        },
-      ],
-    },
-    {
-      title: "CardFooter",
-      props: [
-        {
-          prop: "className",
-          type: "string",
-          default: "-",
-          description: "Additional CSS classes",
-        },
-        {
-          prop: "children",
-          type: "ReactNode",
-          default: "-",
-          description: "Footer content (actions, buttons)",
-        },
-      ],
-    },
-    {
-      title: "CardSkeleton",
-      props: [
-        {
-          prop: "size",
-          type: '"default" | "sm"',
-          default: '"default"',
-          description:
-            "Matches Card sizing; scales padding and placeholder blocks",
-        },
-        {
-          prop: "className",
-          type: "string",
-          default: "-",
-          description: "Additional CSS classes",
-        },
-      ],
-    },
-  ];
-
+export default function CardPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Card"
         description="A flexible card component with multiple variants, composable sections, and keyboard-operable interactive cards."
-        version="v2.1"
+        version="v2.2.0"
       />
 
-      <FeatureGrid features={features} />
+      <FeatureGrid
+        features={cardPageFeatures}
+        description="Surface variants, composable sections, and loading placeholders built for Kira Kit."
+      />
 
-      <DemoTabs tabs={demoTabs} />
+      <DemoTabs defaultValue="basic" tabs={cardPageDemoTabs} />
 
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
+      <KeyboardShortcuts
+        shortcuts={cardPageShortcuts}
+        description="Keyboard navigation when wiring Card as an interactive click target."
+      />
 
-      <UsageBlock code={usageCode} />
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Compose Card with its header, action, content, and footer primitives."
+        notes={cardPageUsageNotes}
+      />
 
-      <APIReference sections={apiReference} />
+      <APIReference
+        sections={cardPageAPISections}
+        description="Props, variants, and defaults for every exported Card part."
+      />
 
-      <Changelog entries={cardPageChangelogEntries} />
+      <Changelog
+        entries={cardPageChangelogEntries}
+        title="Changelog"
+        description="Version history for the Card component."
+      />
     </ComponentPage>
   );
 }
 
-// Static demo metadata stays co-located and follows its source constants.
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const cardPageFeatures = [
+  {
+    title: "Accessible",
+    description: "Semantic HTML structure with proper heading hierarchy.",
+    icon: <IconAccessible aria-hidden="true" className="size-4 text-primary" />,
+  },
+  {
+    title: "Multiple Variants",
+    description: "10 variants including glass, gradient, elevated, and more.",
+    icon: <IconPalette aria-hidden="true" className="size-4 text-primary" />,
+  },
+  {
+    title: "Keyboard Operable",
+    description:
+      "Click-target cards activate with Enter and Space when paired with a native button overlay.",
+    icon: <IconKeyboard aria-hidden="true" className="size-4 text-primary" />,
+  },
+  {
+    title: "Skeleton Fallback",
+    description: "CardSkeleton reserves layout space while content loads.",
+    icon: <IconLoader aria-hidden="true" className="size-4 text-primary" />,
+  },
+  {
+    title: "Composable",
+    description:
+      "Header, Title, Description, Action, Content, and Footer sub-components.",
+    icon: <IconStack2 aria-hidden="true" className="size-4 text-primary" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const cardPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic Card"
+        description="Standard card with header, action, content, and footer."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "variants",
+    label: "Variants",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Card Variants"
+        description="Different visual styles for various contexts."
+        code={variantsCode}
+      >
+        <VariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "glass",
+    label: "Glass",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Glass Card"
+        description="Glassmorphism effect with backdrop blur."
+        code={glassCode}
+      >
+        <GlassDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "more",
+    label: "More Variants",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Additional Variants"
+        description="Elevated and flat card styles."
+        code={moreVariantsCode}
+      >
+        <MoreVariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "interactive",
+    label: "Interactive",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Interactive Card"
+        description="Click-target card with a stretched native button for full keyboard operability."
+        code={interactiveCode}
+      >
+        <InteractiveCardDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "skeleton",
+    label: "Skeleton",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Card Skeleton"
+        description="Loading placeholder in default and small sizes."
+        code={skeletonCode}
+      >
+        <SkeletonDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long titles, empty content, and disabled actions in a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const cardPageShortcuts = [
+  { keys: "Tab", description: "Focus the interactive card button." },
+  { keys: "Enter", description: "Activate the focused interactive card." },
+  { keys: "Space", description: "Activate the focused interactive card." },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const cardPageUsageNotes = [
+  {
+    label: "Composable primitives",
+    body: "Card is intentionally composable with no data-driven KiraCard wrapper. Combine CardHeader, CardTitle, CardDescription, CardAction, CardContent, and CardFooter directly.",
+  },
+  {
+    label: "CardAction & cardSurfaceVariants",
+    body: "Place top-right controls inside CardAction so CardHeader automatically switches to a two-column grid. Use cardSurfaceVariants when aligning custom containers with Card surfaces.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const cardPageAPISections = [
+  {
+    title: "Card",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "interactive" | "gradient" | "glass" | "outline" | "elevated" | "elevated2" | "bordered" | "soft" | "flat"',
+        default: '"default"',
+        description: "Visual surface style of the card.",
+      },
+      {
+        prop: "size",
+        type: '"default" | "sm"',
+        default: '"default"',
+        description: "Density of the card; sm uses p-4 instead of p-6.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description:
+          "Card sections (Header, Content, Footer, or bleed images).",
+      },
+    ],
+  },
+  {
+    title: "CardHeader",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Header content (CardTitle, CardDescription, CardAction).",
+      },
+    ],
+  },
+  {
+    title: "CardTitle",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Title text.",
+      },
+    ],
+  },
+  {
+    title: "CardDescription",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Description text.",
+      },
+    ],
+  },
+  {
+    title: "CardAction",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description:
+          "Action control pinned to the top-right column of CardHeader.",
+      },
+    ],
+  },
+  {
+    title: "CardContent",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Main content area.",
+      },
+    ],
+  },
+  {
+    title: "CardFooter",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Footer content (actions, buttons).",
+      },
+    ],
+  },
+  {
+    title: "CardSkeleton",
+    props: [
+      {
+        prop: "size",
+        type: '"default" | "sm"',
+        default: '"default"',
+        description:
+          "Matches Card sizing; scales padding and placeholder blocks.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "cardSurfaceVariants",
+    props: [
+      {
+        prop: "variant / size",
+        type: "VariantProps<typeof cardSurfaceVariants>",
+        default: '"default" / "default"',
+        description:
+          "Exported CVA helper for reusing Card surface styles on custom containers.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
 const cardPageChangelogEntries = [
   {
     version: "2.2.0",
@@ -674,7 +854,7 @@ const cardPageChangelogEntries = [
         type: "added",
         title: "Interactive Card a11y Guidance",
         description:
-          'Card stays presentational; click-target cards should opt in with role="button", tabIndex={0}, and Enter/Space handling (see the Interactive tab).',
+          'Card stays presentational; click-target cards should opt in with a stretched button overlay or role="button", tabIndex={0}, and Enter/Space handling (see the Interactive tab).',
       },
     ],
   },

@@ -333,14 +333,14 @@ export function DocumentExport() {
     defaultExpandedNodes={["product"]} defaultSelectedNodes={["interviews"]} />
 }`;
 
-function StatesDemo() {
+function StressDemo() {
   return (
     <div className="max-w-lg space-y-6">
       <div>
         <h2 className="mb-2 text-sm font-medium">
           Long names in a narrow container
         </h2>
-        <div className="w-full max-w-80">
+        <div className="w-full max-w-xs">
           <TreeView
             size="sm"
             data={[
@@ -385,16 +385,266 @@ function StatesDemo() {
   );
 }
 
-const statesCode = `import { TreeView } from "@/components/ui/tree-view"
-export function TreeStates() {
-  return <>
-    <TreeView size="sm" data={[{ id: "long", name: "customer-research-accessibility-and-internationalization-review-october-2026.md", isFile: true }]} />
-    <TreeView data={[]} loading />
-    <TreeView data={[]} emptyMessage="No documents yet. Add a document to get started." />
-    <TreeView data={[{ id: "saved", name: "Saved document.md", isFile: true }]} readOnly defaultSelectedNodes={["saved"]} />
-    <TreeView data={[{ id: "export", name: "Export in progress" }]} disabled />
-  </>
+const stressCode = `import { TreeView } from "@/components/ui/tree-view"
+
+export function StressDemo() {
+  return (
+    <div className="space-y-6">
+      <div className="max-w-xs">
+        <TreeView
+          size="sm"
+          data={[
+            {
+              id: "long",
+              name: "customer-research-accessibility-and-internationalization-review-october-2026.md",
+              isFile: true,
+            },
+          ]}
+        />
+      </div>
+      <TreeView data={[]} loading />
+      <TreeView
+        data={[]}
+        emptyMessage="No documents yet. Add a document to get started."
+      />
+      <TreeView
+        data={documents}
+        readOnly
+        defaultSelectedNodes={["roadmap"]}
+        defaultExpandedNodes={["product"]}
+      />
+      <TreeView data={documents} disabled />
+    </div>
+  )
 }`;
+
+const usageCode = `import { TreeView, KiraTreeView, type TreeNode } from "@/components/ui/tree-view"
+
+const documents: TreeNode[] = [
+  {
+    id: "product",
+    name: "Product",
+    children: [
+      { id: "roadmap", name: "October roadmap.md", isFile: true },
+    ],
+  },
+]
+
+// Primitive tree
+<TreeView
+  data={documents}
+  aria-label="Project documents"
+  defaultExpandedNodes={["product"]}
+/>
+
+// Data-driven wrapper with search and status
+<KiraTreeView
+  data={documents}
+  title="Prepare a document export"
+  searchLabel="Find documents"
+  selectionMode="multiple"
+  defaultExpandedNodes={["product"]}
+/>`;
+
+export default function TreeViewPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Tree View"
+        description="Browse nested documents, select complete branches, and find files in context."
+        version="v2.0.1"
+      />
+      <FeatureGrid
+        features={treeViewPageFeatureGridFeatures}
+        description="Capabilities built into TreeView and KiraTreeView."
+      />
+      <DemoTabs defaultValue="basic" tabs={treeViewPageDemoTabsTabs} />
+      <KeyboardShortcuts
+        shortcuts={treeViewPageKeyboardShortcutsShortcuts}
+        description="Keyboard navigation, disclosure, selection, and typeahead bindings."
+      />
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Use TreeView for custom layouts or KiraTreeView for built-in search and selection status."
+        notes={[
+          {
+            label: "KiraTreeView",
+            body: "Wraps TreeView with a visible heading, persistent search field, Clear action, and live selection summary.",
+          },
+        ]}
+      />
+      <APIReference
+        sections={treeViewPageAPIReferenceSections}
+        description="Props, types, and defaults for TreeView, KiraTreeView, TreeNode, and treeViewVariants."
+      />
+      <Changelog
+        entries={treeViewPageChangelogEntries}
+        title="Changelog"
+        description="Version history for TreeView."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located and follows its source constants.
+const treeViewPageFeatureGridFeatures = [
+  {
+    title: "Keyboard navigation",
+    description: "One tab stop with arrows, Home/End and typeahead.",
+    icon: <IconHierarchy className="size-5 text-muted-foreground" />,
+  },
+  {
+    title: "Branch selection",
+    description: "Mixed states and disabled-document exclusions.",
+    icon: <IconCheckbox className="size-5 text-muted-foreground" />,
+  },
+  {
+    title: "Find in context",
+    description: "Search nested names while retaining their ancestors.",
+    icon: <IconSearch className="size-5 text-muted-foreground" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const treeViewPageDemoTabsTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper title="Documents" code={basicCode}>
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "explorer",
+    label: "Explorer",
+    group: "Core",
+    demo: (
+      <DemoWrapper title="Explorer" code={explorerCode}>
+        <ExplorerDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "selection",
+    label: "Selection",
+    group: "Core",
+    demo: (
+      <DemoWrapper title="Export" code={selectionCode}>
+        <SelectionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "controlled",
+    label: "Controlled",
+    group: "Core",
+    demo: (
+      <DemoWrapper title="Controlled" code={controlledCode}>
+        <ControlledDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraTreeView",
+    group: "KiraTreeView",
+    demo: (
+      <DemoWrapper
+        title="Search"
+        description="Try “interviews”. Clear search to restore your previous expansion."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long names in a max-w-xs container, loading, empty, read-only, and disabled states."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const treeViewPageKeyboardShortcutsShortcuts = [
+  {
+    keys: "Tab / Shift+Tab",
+    description: "Enter or leave the tree using its single tab stop.",
+  },
+  {
+    keys: "↑ / ↓",
+    description: "Kira: focus previous or next visible row without selecting.",
+  },
+  {
+    keys: "→ / ←",
+    description: "Kira: expand or focus first child; collapse or focus parent.",
+  },
+  {
+    keys: "Home / End",
+    description: "Kira: focus the first or last visible row.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Kira: Enter opens folders or selects files; Space selects the row or enabled branch.",
+  },
+  {
+    keys: "Type letters",
+    description:
+      "Kira: find the next visible name. Repeated letters cycle matches.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const treeViewPageChangelogEntries = [
+  {
+    version: "2.0.1",
+    date: "10 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Accessibility verification fixes",
+        description:
+          "Stronger unchecked checkbox boundaries and focus rings; mixed selection exposed on selection buttons; read-only instructions use a supported accessible description; demo headings and manifest button contrast corrected.",
+      },
+    ],
+  },
+  {
+    version: "2.0.0",
+    date: "10 November 2026",
+    changes: [
+      {
+        type: "added",
+        title:
+          "Controlled state, keyboard navigation, mixed branch selection and KiraTreeView search",
+        description:
+          "Audited against Base UI 1.9.0 (October 9, 2026). Disclosure uses Base UI Collapsible; tree navigation belongs to Kira.",
+      },
+      {
+        type: "breaking",
+        title: "Selection and disclosure are separate actions",
+        description:
+          "Folder row click and Enter toggle expansion. Space selects; multiple mode also has separate selection boxes. Arrow keys navigate and disclose. onSelect fires once; onSelectionChange fires on user actions in both modes, no longer on mount. Disabled descendants are excluded and parent selection is derived.",
+      },
+      {
+        type: "changed",
+        title: "Long labels wrap and folders use semantic colors",
+        description:
+          "All existing exports remain. New slots, reduced-motion gating and applicable states replace the legacy checkbox tab stops.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
 
 const prop = (
   name: string,
@@ -486,174 +736,6 @@ const treeProps = [
   prop("className", "string", "—", "Classes on the outer wrapper."),
 ];
 
-export default function TreeViewPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Tree View"
-        description="Browse nested documents, select complete branches, and find files in context."
-        version="2.0.1"
-      />
-      <FeatureGrid features={treeViewPageFeatureGridFeatures} />
-      <DemoTabs defaultValue="basic" tabs={treeViewPageDemoTabsTabs} />
-      <KeyboardShortcuts shortcuts={treeViewPageKeyboardShortcutsShortcuts} />
-      <UsageBlock code={kiraCode} />
-      <UsageBlock title="Primitive usage" code={basicCode} />
-      <APIReference sections={treeViewPageAPIReferenceSections} />
-      <Changelog entries={treeViewPageChangelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
-const treeViewPageFeatureGridFeatures = [
-  {
-    title: "Keyboard navigation",
-    description: "One tab stop with arrows, Home/End and typeahead.",
-    icon: <IconHierarchy className="size-5 text-muted-foreground" />,
-  },
-  {
-    title: "Branch selection",
-    description: "Mixed states and disabled-document exclusions.",
-    icon: <IconCheckbox className="size-5 text-muted-foreground" />,
-  },
-  {
-    title: "Find in context",
-    description: "Search nested names while retaining their ancestors.",
-    icon: <IconSearch className="size-5 text-muted-foreground" />,
-  },
-] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
-
-const treeViewPageDemoTabsTabs = [
-  {
-    value: "explorer",
-    label: "Explorer",
-    demo: (
-      <DemoWrapper title="Explorer" code={explorerCode}>
-        <ExplorerDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "basic",
-    label: "Basic",
-    demo: (
-      <DemoWrapper title="Documents" code={basicCode}>
-        <BasicDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "selection",
-    label: "Selection",
-    demo: (
-      <DemoWrapper title="Export" code={selectionCode}>
-        <SelectionDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "controlled",
-    label: "Controlled",
-    demo: (
-      <DemoWrapper title="Controlled" code={controlledCode}>
-        <ControlledDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "kira",
-    label: "Kira",
-    demo: (
-      <DemoWrapper
-        title="Search"
-        description="Try “interviews”. Clear search to restore your previous expansion."
-        code={kiraCode}
-      >
-        <KiraDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "states",
-    label: "States",
-    demo: (
-      <DemoWrapper title="States" code={statesCode}>
-        <StatesDemo />
-      </DemoWrapper>
-    ),
-  },
-] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
-
-const treeViewPageKeyboardShortcutsShortcuts = [
-  {
-    keys: "Tab / Shift+Tab",
-    description: "Enter or leave the tree using its single tab stop.",
-  },
-  {
-    keys: "↑ / ↓",
-    description: "Kira: focus previous or next visible row without selecting.",
-  },
-  {
-    keys: "→ / ←",
-    description: "Kira: expand or focus first child; collapse or focus parent.",
-  },
-  {
-    keys: "Home / End",
-    description: "Kira: focus the first or last visible row.",
-  },
-  {
-    keys: "Enter / Space",
-    description:
-      "Kira: Enter opens folders or selects files; Space selects the row or enabled branch.",
-  },
-  {
-    keys: "Type letters",
-    description:
-      "Kira: find the next visible name. Repeated letters cycle matches.",
-  },
-] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
-
-const treeViewPageChangelogEntries = [
-  {
-    version: "2.0.1",
-    date: "10 November 2026",
-    changes: [
-      {
-        type: "fixed",
-        title: "Accessibility verification fixes",
-        description:
-          "Stronger unchecked checkbox boundaries and focus rings; mixed selection exposed on selection buttons; read-only instructions use a supported accessible description; demo headings and manifest button contrast corrected.",
-      },
-    ],
-  },
-  {
-    version: "2.0.0",
-    date: "10 November 2026",
-    changes: [
-      {
-        type: "added",
-        title:
-          "Controlled state, keyboard navigation, mixed branch selection and KiraTreeView search",
-        description:
-          "Audited against Base UI 1.9.0 (October 9, 2026). Disclosure uses Base UI Collapsible; tree navigation belongs to Kira.",
-      },
-      {
-        type: "breaking",
-        title: "Selection and disclosure are separate actions",
-        description:
-          "Folder row click and Enter toggle expansion. Space selects; multiple mode also has separate selection boxes. Arrow keys navigate and disclose. onSelect fires once; onSelectionChange fires on user actions in both modes, no longer on mount. Disabled descendants are excluded and parent selection is derived.",
-      },
-      {
-        type: "changed",
-        title: "Long labels wrap and folders use semantic colors",
-        description:
-          "All existing exports remain. New slots, reduced-motion gating and applicable states replace the legacy checkbox tab stops.",
-      },
-    ],
-  },
-] satisfies ReactComponentProps<typeof Changelog>["entries"];
-
 const treeViewPageAPIReferenceSections = [
   { title: "TreeView / TreeViewProps", props: treeProps },
   {
@@ -721,4 +803,4 @@ const treeViewPageAPIReferenceSections = [
       ),
     ],
   },
-] satisfies React.ComponentProps<typeof APIReference>["sections"];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];

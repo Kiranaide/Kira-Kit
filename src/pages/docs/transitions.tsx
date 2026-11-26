@@ -234,7 +234,7 @@ function MotionModelsSection() {
       <div className="grid gap-4 sm:grid-cols-3">
         {motionModels.map((model) => (
           <Card key={model.title}>
-            <CardContent className="flex flex-col gap-1.5 pt-6">
+            <CardContent className="flex flex-col gap-1.5">
               <p className="text-[15px] font-semibold text-card-foreground">
                 {model.title}
               </p>

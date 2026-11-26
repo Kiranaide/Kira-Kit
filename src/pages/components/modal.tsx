@@ -1,32 +1,35 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
+  DialogBody,
   DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  APIReference,
+  Changelog,
   ComponentPage,
-  PageHeader,
-  FeatureGrid,
   DemoTabs,
   DemoWrapper,
+  FeatureGrid,
   KeyboardShortcuts,
+  PageHeader,
   UsageBlock,
-  APIReference,
 } from "@/components/docs";
 
 function BasicDemo() {
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
+    <div className="flex min-h-48 items-center justify-center">
       <Dialog>
         <DialogTrigger render={<Button>Open Modal</Button>} />
         <DialogContent>
@@ -37,8 +40,8 @@ function BasicDemo() {
             </DialogDescription>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Modal content goes here. Modals are used to focus user attention on
-            a specific task or information.
+            Modal content goes here. Modals focus user attention on a single
+            task while trapping keyboard focus inside the surface.
           </p>
           <DialogFooter>
             <DialogClose render={<Button variant="outline">Cancel</Button>} />
@@ -50,17 +53,17 @@ function BasicDemo() {
   );
 }
 
-const basicCode = `import {
+const basicCode = `import { Button } from "@/components/ui/button"
+import {
   Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
   DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 
 export function BasicModalDemo() {
   return (
@@ -73,9 +76,7 @@ export function BasicModalDemo() {
             This is a basic modal with title and description.
           </DialogDescription>
         </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          Modal content goes here.
-        </p>
+        <p className="text-sm text-muted-foreground">Modal content goes here.</p>
         <DialogFooter>
           <DialogClose render={<Button variant="outline">Cancel</Button>} />
           <Button>Confirm</Button>
@@ -87,8 +88,8 @@ export function BasicModalDemo() {
 
 function SizesDemo() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-4 min-h-[200px]">
-      {(["sm", "default", "lg", "xl", "full"] as const).map((size) => (
+    <div className="flex min-h-48 flex-wrap items-center justify-center gap-4">
+      {modalSizes.map((size) => (
         <Dialog key={size}>
           <DialogTrigger
             render={
@@ -104,7 +105,7 @@ function SizesDemo() {
                 Modal with <code>size="{size}"</code>
               </DialogDescription>
             </DialogHeader>
-            <div className="h-32 flex items-center justify-center bg-muted/20 rounded-lg border border-dashed">
+            <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-border bg-muted/20 text-sm text-muted-foreground">
               Content area
             </div>
             <DialogFooter>
@@ -117,37 +118,18 @@ function SizesDemo() {
   );
 }
 
-const sizesCode = `import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+const sizesCode = `const sizes = ["sm", "default", "lg", "xl", "full"] as const
 
 export function ModalSizesDemo() {
   return (
     <div className="flex flex-wrap gap-4">
-      {(["sm", "default", "lg", "xl", "full"] as const).map((size) => (
+      {sizes.map((size) => (
         <Dialog key={size}>
-          <DialogTrigger
-            render={
-              <Button variant="outline" className="capitalize">
-                {size}
-              </Button>
-            }
-          />
+          <DialogTrigger render={<Button variant="outline">{size}</Button>} />
           <DialogContent size={size}>
             <DialogHeader>
-              <DialogTitle className="capitalize">{size} Modal</DialogTitle>
+              <DialogTitle>{size} Modal</DialogTitle>
             </DialogHeader>
-            <div className="h-32 flex items-center justify-center bg-muted/20 rounded-lg border border-dashed">
-              Content area
-            </div>
             <DialogFooter>
               <DialogClose render={<Button>Close</Button>} />
             </DialogFooter>
@@ -160,7 +142,7 @@ export function ModalSizesDemo() {
 
 function CenteredDemo() {
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
+    <div className="flex min-h-48 items-center justify-center">
       <Dialog>
         <DialogTrigger
           render={<Button variant="outline">Open Centered Modal</Button>}
@@ -169,12 +151,13 @@ function CenteredDemo() {
           <DialogHeader>
             <DialogTitle>Centered Modal</DialogTitle>
             <DialogDescription>
-              This modal is vertically and horizontally centered by default.
+              Vertically and horizontally centered inside the viewport with safe
+              padding.
             </DialogDescription>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            The modal is automatically centered in the viewport using CSS
-            transforms.
+            DialogContent centers itself in the viewport flex container and
+            clamps height to fit smaller mobile screens.
           </p>
           <DialogFooter>
             <DialogClose render={<Button>Close</Button>} />
@@ -185,45 +168,24 @@ function CenteredDemo() {
   );
 }
 
-const centeredCode = `import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-
-export function CenteredModalDemo() {
-  return (
-    <Dialog>
-      <DialogTrigger render={<Button variant="outline">Open Centered Modal</Button>} />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Centered Modal</DialogTitle>
-          <DialogDescription>
-            This modal is vertically and horizontally centered by default.
-          </DialogDescription>
-        </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          The modal is automatically centered in the viewport using CSS transforms.
-        </p>
-        <DialogFooter>
-          <DialogClose render={<Button>Close</Button>} />
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}`;
+const centeredCode = `<Dialog>
+  <DialogTrigger render={<Button variant="outline">Open Centered Modal</Button>} />
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Centered Modal</DialogTitle>
+      <DialogDescription>Centered inside the viewport.</DialogDescription>
+    </DialogHeader>
+    <DialogFooter>
+      <DialogClose render={<Button>Close</Button>} />
+    </DialogFooter>
+  </DialogContent>
+</Dialog>`;
 
 function ControlledDemo() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 min-h-[200px]">
+    <div className="flex min-h-48 flex-col items-center justify-center gap-4">
       <Button onClick={() => setOpen(true)}>Open Controlled Modal</Button>
       <p className="text-sm text-muted-foreground">
         Modal is currently: <code>{open ? "open" : "closed"}</code>
@@ -234,12 +196,12 @@ function ControlledDemo() {
           <DialogHeader>
             <DialogTitle>Controlled Modal</DialogTitle>
             <DialogDescription>
-              This modal's state is controlled by React state.
+              Visibility is controlled programmatically via React state.
             </DialogDescription>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Use the <code>open</code> and <code>onOpenChange</code> props to
-            control the modal's visibility programmatically.
+            Pass <code>open</code> and <code>onOpenChange</code> to coordinate
+            modal dismissal with form submissions or routing.
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
@@ -253,83 +215,47 @@ function ControlledDemo() {
   );
 }
 
-const controlledCode = `import { useState } from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+const controlledCode = `const [open, setOpen] = useState(false)
 
-export function ControlledModalDemo() {
-  const [open, setOpen] = useState(false)
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <Button onClick={() => setOpen(true)}>Open Controlled Modal</Button>
-      <p className="text-sm text-muted-foreground">
-        Modal is currently: {open ? "open" : "closed"}
-      </p>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Controlled Modal</DialogTitle>
-            <DialogDescription>
-              This modal's state is controlled by React state.
-            </DialogDescription>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Use the open and onOpenChange props to control the modal's visibility.
-          </p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
-              Close
-            </Button>
-            <Button onClick={() => setOpen(false)}>
-              Confirm
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  )
-}`;
+<Button onClick={() => setOpen(true)}>Open Controlled Modal</Button>
+<Dialog open={open} onOpenChange={setOpen}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Controlled Modal</DialogTitle>
+    </DialogHeader>
+    <DialogFooter>
+      <Button variant="outline" onClick={() => setOpen(false)}>Close</Button>
+      <Button onClick={() => setOpen(false)}>Confirm</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>`;
 
 function ScrollableDemo() {
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
+    <div className="flex min-h-48 items-center justify-center">
       <Dialog>
         <DialogTrigger render={<Button variant="outline">View Terms</Button>} />
-        <DialogContent size="lg">
+        <DialogContent size="lg" scrollable>
           <DialogHeader>
             <DialogTitle>Terms and Conditions</DialogTitle>
             <DialogDescription>
-              Please read and accept our terms to continue.
+              Scrollable body keeps the header and footer anchored while reading
+              long documents.
             </DialogDescription>
           </DialogHeader>
-          <div className="max-h-[300px] overflow-y-auto space-y-4 pr-2">
-            {Array.from({ length: 8 }, (_, i) => ({
-              id: "section-" + (i + 1),
-              number: i + 1,
-            })).map((section) => (
-              <div key={section.id} className="space-y-2">
-                <h4 className="font-medium text-sm">
-                  Section {section.number}
+          <DialogBody className="max-h-72 space-y-4 pr-2">
+            {termsSections.map((section) => (
+              <div key={section.id} className="space-y-1">
+                <h4 className="text-sm font-medium text-foreground">
+                  {section.heading}
                 </h4>
-                <p className="text-sm text-muted-foreground">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
+                <p className="text-sm text-muted-foreground">{section.body}</p>
               </div>
             ))}
-          </div>
+          </DialogBody>
           <DialogFooter>
             <DialogClose render={<Button variant="outline">Decline</Button>} />
-            <Button>Accept Terms</Button>
+            <DialogClose render={<Button>Accept Terms</Button>} />
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -339,49 +265,41 @@ function ScrollableDemo() {
 
 const scrollableCode = `import {
   Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
+  DialogBody,
   DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 
-export function ScrollableModalDemo() {
-  return (
-    <Dialog>
-      <DialogTrigger render={<Button variant="outline">View Terms</Button>} />
-      <DialogContent size="lg">
-        <DialogHeader>
-          <DialogTitle>Terms and Conditions</DialogTitle>
-          <DialogDescription>
-            Please read and accept our terms to continue.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="max-h-[300px] overflow-y-auto space-y-4 pr-2">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={section.id} className="space-y-2">
-              <h4 className="font-medium text-sm">Section {section.number}</h4>
-              <p className="text-sm text-muted-foreground">
-                Lorem ipsum dolor sit amet...
-              </p>
-            </div>
-          ))}
+<Dialog>
+  <DialogTrigger render={<Button variant="outline">View Terms</Button>} />
+  <DialogContent size="lg" scrollable>
+    <DialogHeader>
+      <DialogTitle>Terms and Conditions</DialogTitle>
+      <DialogDescription>Header and footer remain visible while scrolling.</DialogDescription>
+    </DialogHeader>
+    <DialogBody className="max-h-72 space-y-4 pr-2">
+      {sections.map((section) => (
+        <div key={section.id}>
+          <h4 className="text-sm font-medium">{section.heading}</h4>
+          <p className="text-sm text-muted-foreground">{section.body}</p>
         </div>
-        <DialogFooter>
-          <DialogClose render={<Button variant="outline">Decline</Button>} />
-          <Button>Accept Terms</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}`;
+      ))}
+    </DialogBody>
+    <DialogFooter>
+      <DialogClose render={<Button variant="outline">Decline</Button>} />
+      <DialogClose render={<Button>Accept Terms</Button>} />
+    </DialogFooter>
+  </DialogContent>
+</Dialog>`;
 
-function DialogDemo() {
+function DialogFormDemo() {
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
+    <div className="flex min-h-48 items-center justify-center">
       <Dialog>
         <DialogTrigger render={<Button>Create Project</Button>} />
         <DialogContent size="lg">
@@ -393,14 +311,14 @@ function DialogDemo() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="project-name">Project Name</Label>
-              <Input id="project-name" placeholder="My Awesome Project" />
+              <Label htmlFor="modal-project-name">Project Name</Label>
+              <Input id="modal-project-name" placeholder="Kira Dashboard" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="modal-project-description">Description</Label>
               <Textarea
-                id="description"
-                placeholder="Brief description of your project..."
+                id="modal-project-description"
+                placeholder="Brief summary of the project goals…"
                 rows={3}
               />
             </div>
@@ -415,66 +333,97 @@ function DialogDemo() {
   );
 }
 
-const dialogCode = `import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+const dialogFormCode = `import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
-export function DialogModalDemo() {
-  return (
-    <Dialog>
-      <DialogTrigger render={<Button>Create Project</Button>} />
-      <DialogContent size="lg">
-        <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
-          <DialogDescription>
-            Fill in the details below to create a new project.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="project-name">Project Name</Label>
-            <Input id="project-name" placeholder="My Awesome Project" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              placeholder="Brief description..."
-              rows={3}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <DialogClose render={<Button variant="outline">Cancel</Button>} />
-          <Button>Create Project</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}`;
+<Dialog>
+  <DialogTrigger render={<Button>Create Project</Button>} />
+  <DialogContent size="lg">
+    <DialogHeader>
+      <DialogTitle>Create New Project</DialogTitle>
+      <DialogDescription>Fill in the details below.</DialogDescription>
+    </DialogHeader>
+    <div className="space-y-4 py-4">
+      <div className="space-y-2">
+        <Label htmlFor="project-name">Project Name</Label>
+        <Input id="project-name" placeholder="Kira Dashboard" />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea id="description" rows={3} />
+      </div>
+    </div>
+    <DialogFooter>
+      <DialogClose render={<Button variant="outline">Cancel</Button>} />
+      <Button>Create Project</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>`;
 
-const usageCode = `import {
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-3">
+      <Dialog>
+        <DialogTrigger
+          render={
+            <Button variant="outline" className="w-full justify-start truncate">
+              Open Long Unbroken Title &amp; Empty Body Modal
+            </Button>
+          }
+        />
+        <DialogContent size="sm">
+          <DialogHeader>
+            <DialogTitle className="break-words">
+              WorkspaceBillingMigrationConfirmation_2026_EnterpriseTier
+            </DialogTitle>
+            <DialogDescription>
+              Verifies unbroken title wrapping, empty body spacing, and disabled
+              primary confirmation in narrow viewports.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline">Dismiss</Button>} />
+            <Button disabled>Confirm unavailable</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Button variant="secondary" className="w-full" disabled>
+        Disabled trigger state
+      </Button>
+    </div>
+  );
+}
+
+const stressCode = `// Narrow max-w-xs column: long unbroken title, empty body, disabled action & trigger
+<div className="max-w-xs space-y-3">
+  <Dialog>
+    <DialogTrigger render={<Button variant="outline" className="w-full truncate">Open Long Title Modal</Button>} />
+    <DialogContent size="sm">
+      <DialogHeader>
+        <DialogTitle className="break-words">
+          WorkspaceBillingMigrationConfirmation_2026_EnterpriseTier
+        </DialogTitle>
+      </DialogHeader>
+      <DialogFooter>
+        <DialogClose render={<Button variant="outline">Dismiss</Button>} />
+        <Button disabled>Confirm unavailable</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</div>`;
+
+const usageCode = `import { Button } from "@/components/ui/button"
+import {
   Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
   DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 
 <Dialog>
   <DialogTrigger render={<Button>Open Modal</Button>} />
@@ -491,48 +440,270 @@ import { Button } from "@/components/ui/button"
   </DialogContent>
 </Dialog>`;
 
-const apiSections = [
+export default function ModalPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Modal"
+        description="Modal overlay patterns composed from Base UI Dialog primitives with focus trapping, scrollable bodies, and controlled state."
+        version="v1.0.0"
+      />
+
+      <FeatureGrid
+        features={modalPageFeatures}
+        description="Accessible modal patterns powered by @/components/ui/dialog."
+      />
+
+      <DemoTabs defaultValue="basic" tabs={modalPageDemoTabs} />
+
+      <KeyboardShortcuts
+        shortcuts={modalPageShortcuts}
+        description="Focus trapping and dismissal bindings provided by Base UI Dialog."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Compose modal patterns using Dialog primitives from @/components/ui/dialog."
+        notes={modalPageUsageNotes}
+      />
+
+      <APIReference
+        sections={modalPageAPISections}
+        description="Props for the Dialog primitives used in these modal recipes."
+      />
+
+      <Changelog
+        entries={modalPageChangelogEntries}
+        title="Changelog"
+        description="Version history for modal pattern documentation."
+      />
+    </ComponentPage>
+  );
+}
+
+const modalSizes = ["sm", "default", "lg", "xl", "full"] as const;
+
+const termsSections = [
   {
-    title: "Dialog (Root)",
+    id: "terms-1",
+    heading: "1. Account & Workspace Access",
+    body: "Workspaces isolate billing, audit logs, and role permissions per organization.",
+  },
+  {
+    id: "terms-2",
+    heading: "2. Data Retention",
+    body: "Exported archives remain available for thirty days before automatic removal.",
+  },
+  {
+    id: "terms-3",
+    heading: "3. Security Controls",
+    body: "Single sign-on and hardware passkeys can be enforced by workspace administrators.",
+  },
+  {
+    id: "terms-4",
+    heading: "4. Service Availability",
+    body: "Planned maintenance windows are announced in advance with status updates.",
+  },
+  {
+    id: "terms-5",
+    heading: "5. Acceptable Use",
+    body: "Automated scraping or rate-limit evasion is prohibited across shared endpoints.",
+  },
+  {
+    id: "terms-6",
+    heading: "6. Support & Notices",
+    body: "Policy updates take effect after notification to designated billing contacts.",
+  },
+] as const;
+
+const modalPageFeatures = [
+  {
+    title: "Accessible Focus Trap",
+    description:
+      "WAI-ARIA dialog semantics with focus containment, Escape dismissal, and automatic focus return.",
+  },
+  {
+    title: "Responsive Sizes & Scrollable Body",
+    description:
+      "Five width presets (sm through full) plus DialogBody for sticky headers and footers.",
+  },
+  {
+    title: "Reduced-Motion Safe",
+    description:
+      "Scale and backdrop transitions automatically respect prefers-reduced-motion.",
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const modalPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic Modal"
+        description="A standard modal with title, description, and action buttons."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="Available in sm, default, lg, xl, and full-screen sizes."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "centered",
+    label: "Centered",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Centered Modal"
+        description="Vertically and horizontally centered with safe viewport padding."
+        code={centeredCode}
+      >
+        <CenteredDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "controlled",
+    label: "Controlled",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Controlled State"
+        description="Manage modal visibility programmatically with open and onOpenChange."
+        code={controlledCode}
+      >
+        <ControlledDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "scrollable",
+    label: "Scrollable",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Scrollable Content"
+        description="Keep header and footer anchored while DialogBody scrolls long content."
+        code={scrollableCode}
+      >
+        <ScrollableDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "dialog",
+    label: "Form Modal",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Form Modal"
+        description="Modal composed with labelled Input and Textarea fields."
+        code={dialogFormCode}
+      >
+        <DialogFormDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Unbroken title wrapping, empty body, and disabled action/trigger states in a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const modalPageShortcuts = [
+  {
+    keys: "Esc",
+    group: "Dismissal",
+    description: "Close the modal and restore focus to the trigger (Base UI).",
+  },
+  {
+    keys: "Tab / Shift + Tab",
+    group: "Focus trap",
+    description: "Cycle focus strictly within the modal surface (Base UI).",
+  },
+  {
+    keys: "Enter / Space",
+    group: "Activation",
+    description: "Activate the focused trigger or modal action button.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const modalPageUsageNotes = [
+  {
+    label: "Modal vs Dialog",
+    body: "Modal patterns in Kira Kit are built directly on @/components/ui/dialog (Base UI Dialog). Use the render prop on DialogTrigger and DialogClose instead of Radix asChild.",
+  },
+  {
+    label: "Destructive confirmations",
+    body: "Reach for AlertDialog when an action is irreversible and requires explicit confirmation without accidental backdrop dismissal.",
+  },
+] satisfies NonNullable<ReactComponentProps<typeof UsageBlock>["notes"]>;
+
+const modalPageAPISections = [
+  {
+    title: "Dialog",
     props: [
       {
         prop: "open",
         type: "boolean",
+        default: "-",
         description: "Controlled open state of the modal.",
-      },
-      {
-        prop: "onOpenChange",
-        type: "(open: boolean) => void",
-        description: "Callback when the open state changes.",
       },
       {
         prop: "defaultOpen",
         type: "boolean",
         default: "false",
-        description: "Initial open state for uncontrolled usage.",
+        description: "Initial open state when uncontrolled.",
+      },
+      {
+        prop: "onOpenChange",
+        type: "(open: boolean) => void",
+        default: "-",
+        description: "Callback fired when open state changes.",
       },
       {
         prop: "modal",
         type: "boolean",
         default: "true",
-        description:
-          "Whether the modal blocks interaction with the rest of the page.",
+        description: "Block background interaction while open.",
       },
     ],
   },
   {
-    title: "DialogTrigger",
+    title: "DialogTrigger & DialogClose",
     props: [
       {
         prop: "render",
         type: "ReactElement",
-        description: "The element to render as the trigger button.",
-      },
-      {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge props onto child element instead of wrapping.",
+        default: "-",
+        description:
+          "Base UI element composition prop (for example render={<Button>Open</Button>}).",
       },
     ],
   },
@@ -543,233 +714,59 @@ const apiSections = [
         prop: "size",
         type: '"sm" | "default" | "lg" | "xl" | "full"',
         default: '"default"',
-        description: "Size variant of the modal.",
+        description: "Maximum width preset for the modal surface.",
+      },
+      {
+        prop: "scrollable",
+        type: "boolean",
+        default: "false",
+        description: "Keep header and footer fixed while DialogBody scrolls.",
       },
       {
         prop: "showCloseButton",
         type: "boolean",
         default: "true",
-        description: "Whether to show the X close button in the corner.",
+        description: "Render the top-right dismiss icon button.",
       },
       {
         prop: "className",
         type: "string",
-        description: "Additional CSS classes for the content container.",
+        default: "-",
+        description: "Additional CSS classes.",
       },
     ],
   },
   {
-    title: "DialogHeader",
+    title: "DialogHeader / DialogBody / DialogFooter",
     props: [
       {
         prop: "className",
         type: "string",
-        description: "Additional CSS classes for the header container.",
+        default: "-",
+        description: "Additional CSS classes for structural layout slots.",
       },
       {
         prop: "children",
         type: "ReactNode",
+        default: "-",
         description:
-          "Header content, typically DialogTitle and DialogDescription.",
+          "Slot contents (DialogTitle/DialogDescription, scrollable body, or action buttons).",
       },
     ],
   },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const modalPageChangelogEntries = [
   {
-    title: "DialogTitle",
-    props: [
+    version: "1.0.0",
+    date: "26 November 2026",
+    changes: [
       {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes for the title.",
-      },
-      {
-        prop: "children",
-        type: "ReactNode",
-        description: "The title text content.",
+        type: "added",
+        title: "Modal pattern guide",
+        description:
+          "Documented Base UI Dialog modal recipes including sizes, controlled state, scrollable DialogBody, forms, and stress cases.",
       },
     ],
   },
-  {
-    title: "DialogDescription",
-    props: [
-      {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes for the description.",
-      },
-      {
-        prop: "children",
-        type: "ReactNode",
-        description: "The description text content.",
-      },
-    ],
-  },
-  {
-    title: "DialogFooter",
-    props: [
-      {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes for the footer container.",
-      },
-      {
-        prop: "children",
-        type: "ReactNode",
-        description: "Footer content, typically action buttons.",
-      },
-    ],
-  },
-  {
-    title: "DialogClose",
-    props: [
-      {
-        prop: "render",
-        type: "ReactElement",
-        description: "The element to render as the close button.",
-      },
-      {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge props onto child element instead of wrapping.",
-      },
-    ],
-  },
-];
-
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function ModalPage() {
-  const features = [
-    {
-      title: "Accessible",
-      description:
-        "WAI-ARIA compliant with proper focus trap, keyboard navigation, and screen reader support.",
-    },
-    {
-      title: "Responsive",
-      description:
-        "Multiple size variants from small popups to fullscreen modals, adapting to different screen sizes.",
-    },
-    {
-      title: "Animated",
-      description:
-        "Smooth backdrop blur and scale animations with respect for prefers-reduced-motion.",
-    },
-  ];
-
-  const shortcuts = [
-    { keys: "Esc", description: "Close the modal" },
-    { keys: "Tab", description: "Navigate between focusable elements" },
-    { keys: "Shift + Tab", description: "Navigate backwards" },
-    { keys: "Enter / Space", description: "Activate focused button" },
-  ];
-
-  const demoTabs = [
-    {
-      value: "basic",
-      label: "Basic",
-      demo: (
-        <DemoWrapper
-          title="Basic Modal"
-          description="A simple modal with title, description, and action buttons."
-          code={basicCode}
-        >
-          <BasicDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "sizes",
-      label: "Sizes",
-      demo: (
-        <DemoWrapper
-          title="Size Variants"
-          description="Available in sm, default, lg, xl, and full-screen sizes."
-          code={sizesCode}
-        >
-          <SizesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "centered",
-      label: "Centered",
-      demo: (
-        <DemoWrapper
-          title="Centered Modal"
-          description="Modal content centered vertically and horizontally within the viewport."
-          code={centeredCode}
-        >
-          <CenteredDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "controlled",
-      label: "Controlled",
-      demo: (
-        <DemoWrapper
-          title="Controlled State"
-          description="Modal visibility controlled programmatically with React state."
-          code={controlledCode}
-        >
-          <ControlledDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "scrollable",
-      label: "Scrollable",
-      demo: (
-        <DemoWrapper
-          title="Scrollable Content"
-          description="Modal with scrollable content area for long text or lists."
-          code={scrollableCode}
-        >
-          <ScrollableDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "dialog",
-      label: "Dialog",
-      demo: (
-        <DemoWrapper
-          title="Dialog Form"
-          description="Modal styled as a dialog with header and footer, ideal for forms."
-          code={dialogCode}
-        >
-          <DialogDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
-
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Modal"
-        version="v1.0"
-        description="A modal dialog that interrupts the user with important content and requires interaction."
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts shortcuts={shortcuts} />
-
-      <UsageBlock
-        code={usageCode}
-        title="Usage"
-        description="Import and compose modal components for your use case."
-      />
-
-      <APIReference
-        sections={apiSections}
-        title="API reference"
-        description="Props and configuration options for all modal components."
-      />
-    </ComponentPage>
-  );
-}
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

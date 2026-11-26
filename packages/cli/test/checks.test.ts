@@ -158,6 +158,11 @@ describe("data-slot-cva", () => {
     const content = `return React.createElement(Component, { "data-slot": "box" });`;
     expect(dataSlotAndCva(file(content), ctx())).toHaveLength(0);
   });
+
+  it("skips demo pages under pages/", () => {
+    const content = `export default function DemoPage() { return <div />; }`;
+    expect(dataSlotAndCva(file(content, "pages/demo"), ctx())).toHaveLength(0);
+  });
 });
 
 describe("dead-animate", () => {

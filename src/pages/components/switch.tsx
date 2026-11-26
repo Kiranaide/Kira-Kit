@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import { Switch, SwitchGroup } from "@/components/ui/switch";
 import {
@@ -660,155 +661,43 @@ export function SettingsPanelDemo() {
   )
 }`;
 
-const features = [
-  {
-    title: "Accessible",
-    description:
-      "Full WAI-ARIA support with keyboard toggling, screen reader labels, and ≥24px targets with an invisible hit-area extension.",
-    icon: <IconAccessible className="h-4 w-4" />,
-  },
-  {
-    title: "Customizable",
-    description:
-      "Three sizes, semantic color variants, custom thumb icons, and flexible label positioning.",
-    icon: <IconToggleRight className="h-4 w-4" />,
-  },
-  {
-    title: "Optimistic saving",
-    description:
-      "Flip instantly, commit async, revert with a toast on failure — the checkbox-card pattern, on a switch.",
-    icon: <IconRefresh className="h-4 w-4" />,
-  },
-  {
-    title: "Explainable",
-    description:
-      "Disabled switches carry a reason (tooltip + screen reader text), and loading states set aria-busy.",
-    icon: <IconLock className="h-4 w-4" />,
-  },
-];
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <Switch
+        defaultChecked
+        label="Automatically synchronize workspace audit trails across every connected regional cluster"
+        description="Long labels and descriptions wrap cleanly without shifting the switch track inside narrow columns."
+      />
+      <Switch aria-label="Empty label toggle" />
+      <Switch
+        disabled
+        disabledReason="Managed by your organization administrator"
+        label="Enforce hardware security keys for all workspace members"
+      />
+    </div>
+  );
+}
 
-const demoTabs = [
-  {
-    value: "basic",
-    label: "Basic",
-    demo: (
-      <DemoWrapper
-        title="Basic switch"
-        description="Default, checked, and disabled states."
-        code={basicCode}
-      >
-        <BasicDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "sizes",
-    label: "Sizes",
-    demo: (
-      <DemoWrapper
-        title="Sizes"
-        description="Small (40×24 track), default (44×24), large (52×28)."
-        code={sizesCode}
-      >
-        <SizesDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "labels",
-    label: "Labels",
-    demo: (
-      <DemoWrapper
-        title="Labels and icons"
-        description="Built-in label/description, label position, and thumb icons."
-        code={labelsCode}
-      >
-        <LabelsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "states",
-    label: "States",
-    demo: (
-      <DemoWrapper
-        title="States"
-        description="Loading, invalid, colors, read-only."
-        code={statesCode}
-      >
-        <StatesDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "controlled",
-    label: "Controlled",
-    demo: (
-      <DemoWrapper
-        title="Control patterns"
-        description="Controlled, uncontrolled form submission with uncheckedValue, and groups."
-        code={controlledCode}
-      >
-        <ControlledDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "optimistic",
-    label: "Optimistic",
-    demo: (
-      <DemoWrapper
-        title="Optimistic auto-save"
-        description="Flip instantly, commit async; rejection reverts with a toast. 'Maintenance mode' deliberately fails after ~1.2s (illustrative fixture)."
-        code={optimisticCode}
-      >
-        <OptimisticDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "disabled-reason",
-    label: "Disabled reason",
-    demo: (
-      <DemoWrapper
-        title="Disabled with reason"
-        description="Tooltip on hover and focus; reason text exposed to screen readers."
-        code={disabledReasonCode}
-      >
-        <DisabledReasonDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "settings",
-    label: "Settings panel",
-    demo: (
-      <DemoWrapper
-        title="Settings panel"
-        description="A realistic settings scene combining switches with thumb icons."
-        code={settingsPanelCode}
-      >
-        <SettingsPanelDemo />
-      </DemoWrapper>
-    ),
-  },
-];
+const stressCode = `import { Switch } from "@/components/ui/switch"
 
-const keyboardShortcuts = [
-  {
-    keys: "Space",
-    description: "Toggle the switch (inherited from Base UI)",
-  },
-  {
-    keys: "Enter",
-    description: "Toggle the switch (inherited from Base UI)",
-  },
-  {
-    keys: "Tab / Shift + Tab",
-    description:
-      "Move focus; a disabled switch with disabledReason shows its tooltip on focus",
-  },
-];
+export function SwitchStressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <Switch
+        defaultChecked
+        label="Automatically synchronize workspace audit trails across every connected regional cluster"
+        description="Long labels and descriptions wrap cleanly inside narrow columns."
+      />
+      <Switch aria-label="Empty label toggle" />
+      <Switch
+        disabled
+        disabledReason="Managed by your organization administrator"
+        label="Enforce hardware security keys for all workspace members"
+      />
+    </div>
+  )
+}`;
 
 const usageCode = `import { Switch, SwitchGroup } from "@/components/ui/switch"
 
@@ -877,13 +766,217 @@ const usageCode = `import { Switch, SwitchGroup } from "@/components/ui/switch"
 // Loading state (aria-busy + disabled)
 <Switch loading />`;
 
-const apiSections = [
+export default function SwitchPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Switch"
+        version="v2.0.2"
+        description="A two-state toggle switch: optimistic auto-save, explainable disabled states, Base UI 1.9 form parity, and full keyboard/screen reader support."
+      />
+
+      <FeatureGrid features={switchPageFeatures} />
+
+      <DemoTabs tabs={switchPageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts shortcuts={switchPageShortcuts} />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Common usage patterns for the Switch component."
+      />
+
+      <APIReference
+        sections={switchPageAPISections}
+        description="Props and configuration options for Switch components."
+      />
+
+      <Changelog entries={switchPageChangelogEntries} />
+    </ComponentPage>
+  );
+}
+
+const switchPageFeatures = [
+  {
+    title: "Accessible",
+    description:
+      "Full WAI-ARIA support with keyboard toggling, screen reader labels, and ≥24px targets with an invisible hit-area extension.",
+    icon: <IconAccessible className="h-4 w-4" />,
+  },
+  {
+    title: "Customizable",
+    description:
+      "Three sizes, semantic color variants, custom thumb icons, and flexible label positioning.",
+    icon: <IconToggleRight className="h-4 w-4" />,
+  },
+  {
+    title: "Optimistic saving",
+    description:
+      "Flip instantly, commit async, revert with a toast on failure — the checkbox-card pattern, on a switch.",
+    icon: <IconRefresh className="h-4 w-4" />,
+  },
+  {
+    title: "Explainable",
+    description:
+      "Disabled switches carry a reason (tooltip + screen reader text), and loading states set aria-busy.",
+    icon: <IconLock className="h-4 w-4" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const switchPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic switch"
+        description="Default, checked, and disabled states."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Sizes"
+        description="Small (40×24 track), default (44×24), large (52×28)."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "labels",
+    label: "Labels",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Labels and icons"
+        description="Built-in label/description, label position, and thumb icons."
+        code={labelsCode}
+      >
+        <LabelsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="States"
+        description="Loading, invalid, colors, read-only."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "controlled",
+    label: "Controlled",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Control patterns"
+        description="Controlled, uncontrolled form submission with uncheckedValue, and groups."
+        code={controlledCode}
+      >
+        <ControlledDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "optimistic",
+    label: "Optimistic",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Optimistic auto-save"
+        description="Flip instantly, commit async; rejection reverts with a toast. 'Maintenance mode' deliberately fails after ~1.2s (illustrative fixture)."
+        code={optimisticCode}
+      >
+        <OptimisticDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "disabled-reason",
+    label: "Disabled reason",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Disabled with reason"
+        description="Tooltip on hover and focus; reason text exposed to screen readers."
+        code={disabledReasonCode}
+      >
+        <DisabledReasonDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "settings",
+    label: "Settings panel",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Settings panel"
+        description="A realistic settings scene combining switches with thumb icons."
+        code={settingsPanelCode}
+      >
+        <SettingsPanelDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long wrapping labels, unlabeled switches, and disabled states inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const switchPageShortcuts = [
+  {
+    keys: "Space",
+    description: "Toggle the switch (inherited from Base UI)",
+  },
+  {
+    keys: "Enter",
+    description: "Toggle the switch (inherited from Base UI)",
+  },
+  {
+    keys: "Tab / Shift + Tab",
+    description:
+      "Move focus; a disabled switch with disabledReason shows its tooltip on focus",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const switchPageAPISections = [
   {
     title: "Switch",
     props: [
       {
         prop: "checked",
         type: "boolean",
+        default: "-",
         description: "Controlled checked state.",
       },
       {
@@ -895,6 +988,7 @@ const apiSections = [
       {
         prop: "onCheckedChange",
         type: "(checked: boolean) => void",
+        default: "-",
         description:
           "Called after the checked state changes (after a successful commit in optimistic mode).",
       },
@@ -914,11 +1008,13 @@ const apiSections = [
       {
         prop: "label",
         type: "string",
+        default: "-",
         description: "Label rendered next to the switch.",
       },
       {
         prop: "description",
         type: "string",
+        default: "-",
         description: "Description rendered below the label.",
       },
       {
@@ -930,11 +1026,13 @@ const apiSections = [
       {
         prop: "thumbIcon",
         type: "ReactNode",
+        default: "-",
         description: "Icon shown in the thumb when unchecked.",
       },
       {
         prop: "thumbIconChecked",
         type: "ReactNode",
+        default: "-",
         description: "Icon shown in the thumb when checked.",
       },
       {
@@ -954,6 +1052,7 @@ const apiSections = [
       {
         prop: "errorMessage",
         type: "string",
+        default: "-",
         description:
           "Error text rendered below the switch and linked via aria-errormessage.",
       },
@@ -966,6 +1065,7 @@ const apiSections = [
       {
         prop: "disabledReason",
         type: "ReactNode",
+        default: "-",
         description:
           "When disabled, shown as a tooltip on hover/focus and announced to screen readers.",
       },
@@ -992,49 +1092,64 @@ const apiSections = [
       {
         prop: "onCommit",
         type: "(checked: boolean) => Promise<void>",
+        default: "-",
         description:
           "Async commit run in optimistic mode; rejection reverts the flip.",
       },
       {
         prop: "commitErrorTitle",
         type: "ReactNode",
+        default: "-",
         description: "Toast title used when onCommit rejects.",
       },
       {
         prop: "checkedLabel",
         type: "string",
+        default: "-",
         description: "Live-region announcement when checked.",
       },
       {
         prop: "uncheckedLabel",
         type: "string",
+        default: "-",
         description: "Live-region announcement when unchecked.",
       },
       {
         prop: "name",
         type: "string",
+        default: "-",
         description: "Form field name for the hidden input.",
       },
       {
         prop: "value",
         type: "string",
+        default: "-",
         description: 'Submitted value when checked. Base UI default is "on".',
       },
       {
         prop: "uncheckedValue",
         type: "string",
+        default: "-",
         description:
           "Base UI 1.9: submitted value when unchecked (without it, unchecked switches submit nothing).",
       },
       {
         prop: "form",
         type: "string",
+        default: "-",
         description: "Base UI 1.9: id of the form the hidden input submits to.",
       },
       {
         prop: "inputRef",
         type: "Ref<HTMLInputElement>",
+        default: "-",
         description: "Ref forwarded to the hidden input element.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes applied to the field wrapper.",
       },
     ],
   },
@@ -1044,6 +1159,7 @@ const apiSections = [
       {
         prop: "label",
         type: "string",
+        default: "-",
         description: "Group label rendered as a native fieldset legend.",
       },
       {
@@ -1053,18 +1169,32 @@ const apiSections = [
         description: "Layout direction of the group.",
       },
       {
+        prop: "disabled",
+        type: "boolean",
+        default: "false",
+        description:
+          "Disables all switches in the group via fieldset and context.",
+      },
+      {
         prop: "children",
         type: "ReactNode",
+        default: "-",
         description: "Switch components in the group.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the fieldset.",
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const changelogEntries: React.ComponentProps<typeof Changelog>["entries"] = [
+const switchPageChangelogEntries = [
   {
-    version: "Unreleased",
-    date: "In development",
+    version: "2.0.2",
+    date: "26 November 2026",
     changes: [
       {
         type: "changed",
@@ -1159,34 +1289,4 @@ const changelogEntries: React.ComponentProps<typeof Changelog>["entries"] = [
       },
     ],
   },
-];
-
-export default function SwitchPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Switch"
-        version="v2.0.1"
-        description="A two-state toggle switch: optimistic auto-save, explainable disabled states, Base UI 1.9 form parity, and full keyboard/screen reader support."
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
-
-      <UsageBlock
-        code={usageCode}
-        description="Common usage patterns for the Switch component."
-      />
-
-      <APIReference
-        sections={apiSections}
-        description="Props and configuration options for Switch components."
-      />
-
-      <Changelog entries={changelogEntries} />
-    </ComponentPage>
-  );
-}
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

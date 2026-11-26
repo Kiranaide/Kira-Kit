@@ -19,6 +19,7 @@ import {
   KiraAccordion,
   type AccordionItemData,
 } from "@/components/ui/accordion";
+import { Kbd } from "@/components/ui/kbd";
 import {
   ComponentPage,
   PageHeader,
@@ -518,6 +519,7 @@ export function KiraAccordionNestedDemo() {
   return (
     <KiraAccordion
       multiple
+      nested
       items={[
         {
           value: "frontend",
@@ -783,26 +785,52 @@ function AsyncLoadingDemo() {
       title: "Error Item",
       content: "",
       error: new Error("Failed to load content"),
-      onRetry: () => alert("Retry clicked!"),
     },
   ]);
+
+  const handleRetry = (targetValue: string) => {
+    setItems((prev) =>
+      prev.map((entry) =>
+        entry.value === targetValue
+          ? { ...entry, error: null, loading: true }
+          : entry,
+      ),
+    );
+    setTimeout(() => {
+      setItems((prev) =>
+        prev.map((entry) =>
+          entry.value === targetValue
+            ? {
+                ...entry,
+                loading: false,
+                error: null,
+                content: "Content recovered after retry!",
+              }
+            : entry,
+        ),
+      );
+    }, 800);
+  };
+
+  const resolvedItems = items.map((entry) =>
+    entry.error ? { ...entry, onRetry: () => handleRetry(entry.value) } : entry,
+  );
 
   return (
     <KiraAccordion
       asyncLoading
-      items={items}
+      items={resolvedItems}
       onItemOpen={async (item) => {
+        if (!item.loading) return;
         await new Promise<void>((resolve) => {
           setTimeout(resolve, 1000);
         });
         setItems((prev) =>
-          prev.map((i) => {
-            if (i.value === item.value) {
-              return { ...i, loading: false, content: "Loaded content!" };
-            }
-
-            return i;
-          }),
+          prev.map((entry) =>
+            entry.value === item.value
+              ? { ...entry, loading: false, content: "Loaded content!" }
+              : entry,
+          ),
         );
       }}
     />
@@ -959,9 +987,9 @@ function FindInPageDemo() {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
-        Press <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>F</kbd> and search for{" "}
-        <strong>kudzu</strong> — the matching collapsed panel auto-expands and
-        scrolls into view.
+        Press <Kbd>Ctrl</Kbd> / <Kbd>⌘</Kbd> + <Kbd>F</Kbd> and search for{" "}
+        <strong className="font-semibold text-foreground">kudzu</strong> — the
+        matching collapsed panel auto-expands and scrolls into view.
       </p>
       <KiraAccordion hiddenUntilFound items={items} />
     </div>
@@ -1000,9 +1028,15 @@ function DeepLinkDemo() {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
-        Open an item — the URL hash becomes <code>#&lt;value&gt;</code>. Reload
-        with <code>#theming</code> in the address bar to see the item open and
-        scroll into view.
+        Open an item — the URL hash becomes{" "}
+        <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground">
+          #&lt;value&gt;
+        </code>
+        . Reload with{" "}
+        <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs text-foreground">
+          #theming
+        </code>{" "}
+        in the address bar to see the item open and scroll into view.
       </p>
       <KiraAccordion deepLink items={items} />
     </div>
@@ -1014,32 +1048,6 @@ const deepLinkCode = `import { KiraAccordion } from "@/components/ui/accordion"
 // deepLink syncs the open item with the URL hash using replaceState
 // (Back button is not spammed). Hash wins over persistKey on load.
 <KiraAccordion deepLink items={items} />`;
-
-export function VerticalAccordionDemo() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm text-muted-foreground mb-3">Nested Accordions</p>
-        <Accordion multiple>
-          <AccordionItem value="item-1">
-            <AccordionTrigger>Parent Item 1</AccordionTrigger>
-            <AccordionContent>
-              <p className="mb-2">This is parent content.</p>
-              <Accordion>
-                <AccordionItem value="child-1">
-                  <AccordionTrigger>Nested Child 1</AccordionTrigger>
-                  <AccordionContent inset>
-                    Nested content with inset padding.
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-    </div>
-  );
-}
 
 const usageCode = `import {
   Accordion,
@@ -1109,7 +1117,7 @@ export default function AccordionPage() {
     <ComponentPage>
       <PageHeader
         title="Accordion"
-        description="Collapsible content panels for organizing information. Supports icons, colors, sizes, nested accordions, and lazy loading."
+        description="Collapsible content panels for organizing information. Supports icons, semantic header variants, sizes, nested accordions, drag reorder, search, deep linking, and async loading."
         version="v2.3.0"
       />
 
@@ -1129,12 +1137,7 @@ export default function AccordionPage() {
         code={usageCode}
         title="Usage"
         description="Import the primitives, then compose an item, trigger, and panel."
-        notes={[
-          {
-            label: "KiraAccordion",
-            body: "Use the items prop for a data-driven accordion.",
-          },
-        ]}
+        notes={accordionPageUsageNotes}
       />
 
       <APIReference
@@ -1240,19 +1243,30 @@ const accordionPageFeatureGridFeatures = [
   {
     title: "Accessible",
     description:
-      "WAI-ARIA compliant with proper roles, keyboard navigation (Tab, Enter, Space; arrow keys reorder while dragging), and screen reader announcements.",
+      "WAI-ARIA compliant with Base UI semantics, keyboard navigation (Tab, Enter, Space; arrow keys reorder while dragging), and focus-reachable disabled reasons.",
   },
   {
     title: "Customizable",
     description:
-      "Supports icons, colors, sizes, custom chevrons, ghost/outline variants, and disabled states.",
+      "Supports icons, semantic variants, four sizes, custom chevrons, nested levels, search filtering, and URL hash deep linking.",
   },
   {
     title: "Performant",
     description:
-      "Lazy mount with skeleton loading, GSAP animations with prefers-reduced-motion support, and scroll-into-view.",
+      "Lazy mount with skeleton placeholders, CSS motion tokens (200ms enter / 150ms exit) gated by prefers-reduced-motion, and scroll-into-view.",
   },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const accordionPageUsageNotes = [
+  {
+    label: "KiraAccordion",
+    body: "Reach for KiraAccordion when you want data-driven items, drag-and-drop reordering, recursive search, URL hash deep linking, persistence, or disabled-reason tooltips.",
+  },
+  {
+    label: "Composable primitives",
+    body: "Use Accordion, AccordionItem, AccordionTrigger, and AccordionContent directly when you need custom trigger markup or bespoke layout wrappers.",
+  },
+] satisfies NonNullable<ReactComponentProps<typeof UsageBlock>["notes"]>;
 
 const accordionPageDemoTabsTabs = [
   {
@@ -1671,6 +1685,40 @@ const accordionPageAPIReferenceSections = [
         description: "Icon displayed before the trigger text.",
       },
       {
+        prop: "loading",
+        type: "boolean",
+        default: "false",
+        description:
+          "Shows a reduced-motion-safe spinner while async content loads, then briefly flashes a success checkmark.",
+      },
+      {
+        prop: "error",
+        type: "Error | null",
+        default: "null",
+        description:
+          "Error object paired with onRetry to render an inline retry action.",
+      },
+      {
+        prop: "onRetry",
+        type: "() => void",
+        default: "-",
+        description:
+          "Callback invoked when the inline retry button is clicked.",
+      },
+      {
+        prop: "dragHandle / dragHandlePosition",
+        type: 'ReactNode / "start" | "end"',
+        default: '- / "start"',
+        description: "Optional drag handle overlay and edge side alignment.",
+      },
+      {
+        prop: "disabled / disabledReason",
+        type: "boolean / string",
+        default: "false / -",
+        description:
+          "Disables toggling; when disabledReason is provided, wraps the trigger in a keyboard-focusable tooltip.",
+      },
+      {
         prop: "className",
         type: "string",
         default: "-",
@@ -1698,19 +1746,28 @@ const accordionPageAPIReferenceSections = [
         type: "boolean",
         default: "false",
         description:
-          "Defer rendering until first open. Ignored when hiddenUntilFound is set.",
+          "Defer rendering until first open. Ignored when hiddenUntilFound or forceMounted is set.",
       },
       {
-        prop: "showSkeleton",
+        prop: "forceMounted",
         type: "boolean",
         default: "false",
-        description: "Show skeleton loading state before mount.",
+        description:
+          "Always mount panel children even when lazyMount is enabled.",
       },
       {
-        prop: "skeletonLines",
-        type: "number",
-        default: "3",
-        description: "Number of skeleton lines to show.",
+        prop: "showSkeleton / skeletonLines",
+        type: "boolean / number",
+        default: "false / 3",
+        description:
+          "Show skeleton placeholder lines before mount or while loading.",
+      },
+      {
+        prop: "loading / error / onRetry",
+        type: "boolean / Error | null / () => void",
+        default: "false / null / -",
+        description:
+          "Async loading skeleton, error feedback panel, and retry callback.",
       },
       {
         prop: "className",
@@ -1727,7 +1784,8 @@ const accordionPageAPIReferenceSections = [
         prop: "items",
         type: "AccordionItemData[]",
         default: "-",
-        description: "Data-driven item list.",
+        description:
+          "Data-driven item list supporting nested children and per-item overrides.",
       },
       {
         prop: "items[].disabledReason",
@@ -1735,6 +1793,40 @@ const accordionPageAPIReferenceSections = [
         default: "-",
         description:
           "Tooltip on a disabled item; stays reachable by keyboard (focus) and touch.",
+      },
+      {
+        prop: "variant / size",
+        type: "AccordionTriggerProps['variant'] / AccordionTriggerProps['size']",
+        default: "'default' / 'default'",
+        description: "Default trigger variant and size applied across items.",
+      },
+      {
+        prop: "nested / showExpandAll",
+        type: "boolean / boolean",
+        default: "false / false",
+        description:
+          "Enable recursive child accordions or render bulk Expand all / Collapse all controls.",
+      },
+      {
+        prop: "draggable / onReorder / dragHandlePosition",
+        type: 'boolean / (items: AccordionItemData[]) => void / "start" | "end"',
+        default: 'false / - / "start"',
+        description:
+          "Enable keyboard- and pointer-accessible drag-and-drop reordering.",
+      },
+      {
+        prop: "asyncLoading / onItemOpen / onItemClose",
+        type: "boolean / (item: AccordionItemData) => void | Promise<void> / (item: AccordionItemData) => void",
+        default: "false / - / -",
+        description:
+          "Lifecycle callbacks for async fetching and item open/close transitions.",
+      },
+      {
+        prop: "searchable / searchPlaceholder",
+        type: "boolean / string",
+        default: 'false / "Search…"',
+        description:
+          "Render a recursive filter input; matched substrings are highlighted on string titles.",
       },
       {
         prop: "hiddenUntilFound",
@@ -1751,17 +1843,18 @@ const accordionPageAPIReferenceSections = [
           "Open state syncs with the URL hash (replaceState; hash wins over persistKey on load).",
       },
       {
-        prop: "searchable",
-        type: "boolean",
-        default: "false",
-        description:
-          "Render a filter input; matched substrings are highlighted on string titles.",
-      },
-      {
         prop: "persistKey",
         type: "string",
         default: "-",
-        description: "Persist open state to storage under this key.",
+        description:
+          "Persist open state (and item order) to storage under this key.",
+      },
+      {
+        prop: "scrollIntoView",
+        type: "boolean",
+        default: "false",
+        description:
+          "Scroll newly opened triggers smoothly into view (auto under reduced motion).",
       },
     ],
   },
@@ -1788,7 +1881,7 @@ const accordionPageChangelogEntries = [
         type: "changed",
         title: "Trigger and panel padding join the spacing ladder",
         description:
-          "xs horizontal padding px-3 → px-2 and sm px-3.5 → px-3 on both trigger and panel, matching the control ladder's px steps. Vertical py values are unchanged (optical text exception).",
+          "xs horizontal padding tightened to px-2 (8px) and sm horizontal padding tightened from 14px to px-3 (12px) on both trigger and panel, matching the control ladder's px steps. Vertical py values are unchanged (optical text exception).",
       },
     ],
   },

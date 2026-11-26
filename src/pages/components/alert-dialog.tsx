@@ -31,6 +31,162 @@ import {
   Changelog,
 } from "@/components/docs";
 
+const termsSections = Array.from({ length: 20 }, (_, index) => ({
+  id: `section-${index + 1}`,
+  number: index + 1,
+}));
+
+const deletionImpacts = [
+  "All project files and assets",
+  "Team member access and permissions",
+  "API keys and integrations",
+  "Custom domain configurations",
+];
+
+function BasicDemo() {
+  return (
+    <div className="flex justify-center py-8">
+      <AlertDialog>
+        <AlertDialogTrigger
+          render={<Button variant="outline">Show Dialog</Button>}
+        />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
+function DestructiveDemo() {
+  return (
+    <div className="flex justify-center py-8">
+      <AlertDialog>
+        <AlertDialogTrigger
+          render={<Button variant="destructive">Delete Account</Button>}
+        />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Account</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete your account? All of your data
+              will be permanently removed. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive">
+              Yes, delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
+function CustomDemo() {
+  return (
+    <div className="flex justify-center py-8">
+      <AlertDialog>
+        <AlertDialogTrigger
+          render={<Button variant="outline">Show Dialog</Button>}
+        />
+        <AlertDialogContent size="lg">
+          <AlertDialogHeader>
+            <AlertDialogMedia variant="warning">
+              <IconAlertTriangle aria-hidden="true" className="size-5" />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+            <AlertDialogDescription>
+              Before you proceed, please note the following warning.
+            </AlertDialogDescription>
+            <AlertDialogWarning variant="warning">
+              This action will permanently delete all associated data and cannot
+              be undone.
+            </AlertDialogWarning>
+            <AlertDialogList variant="bullet" items={deletionImpacts} />
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Go Back</AlertDialogCancel>
+            <AlertDialogAction variant="destructive">
+              Delete Anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
+function ScrollableFullDemo() {
+  return (
+    <div className="flex justify-center py-8">
+      <AlertDialog>
+        <AlertDialogTrigger
+          render={<Button variant="outline">Open full-screen terms</Button>}
+        />
+        <AlertDialogContent size="full">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Terms of Service</AlertDialogTitle>
+            <AlertDialogDescription>
+              Scroll to review the full terms.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            {termsSections.map((section) => (
+              <p key={section.id}>
+                {section.number}. Shared project access ends when a member
+                leaves the team. Review active invitations and exported research
+                before confirming. This is illustrative policy text for the
+                scrolling demo.
+              </p>
+            ))}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Decline</AlertDialogCancel>
+            <AlertDialogAction>Accept</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
+function CloseButtonDemo() {
+  return (
+    <div className="flex justify-center py-8">
+      <AlertDialog>
+        <AlertDialogTrigger
+          render={<Button variant="outline">Open with close button</Button>}
+        />
+        <AlertDialogContent showCloseButton>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Standalone close</AlertDialogTitle>
+            <AlertDialogDescription>
+              The X in the corner is an AlertDialogClose. showCloseButton adds
+              it automatically.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Dismiss</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
 function TypeToConfirmDemo() {
   const [open, setOpen] = useState(false);
 
@@ -97,71 +253,10 @@ function AsyncConfirmDemo() {
         shortcut="⌘↵"
         onConfirmAsync={() =>
           new Promise<void>((resolve) => {
-            setTimeout(resolve, 1200);
+            window.setTimeout(resolve, 1200);
           })
         }
       />
-    </div>
-  );
-}
-
-function ScrollableFullDemo() {
-  return (
-    <div className="flex justify-center py-8">
-      <AlertDialog>
-        <AlertDialogTrigger
-          render={<Button variant="outline">Open full-screen terms</Button>}
-        />
-        <AlertDialogContent size="full">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Terms of Service</AlertDialogTitle>
-            <AlertDialogDescription>
-              Scroll to review the full terms.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="space-y-3 text-sm text-muted-foreground">
-            {Array.from({ length: 20 }, (_, i) => ({
-              id: "section-" + (i + 1),
-              number: i + 1,
-            })).map((section) => (
-              <p key={section.id}>
-                {section.number}. Shared project access ends when a member
-                leaves the team. Review active invitations and exported research
-                before confirming. This is illustrative policy text for the
-                scrolling demo.
-              </p>
-            ))}
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Decline</AlertDialogCancel>
-            <AlertDialogAction>Accept</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
-}
-
-function CloseButtonDemo() {
-  return (
-    <div className="flex justify-center py-8">
-      <AlertDialog>
-        <AlertDialogTrigger
-          render={<Button variant="outline">Open with close button</Button>}
-        />
-        <AlertDialogContent showCloseButton>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Standalone close</AlertDialogTitle>
-            <AlertDialogDescription>
-              The X in the corner is an AlertDialogClose. showCloseButton adds
-              it automatically.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Dismiss</AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
@@ -195,40 +290,11 @@ function AsyncRecoveryDemo() {
   );
 }
 
-const recoveryCode = `import { useState } from "react"
-import { KiraAlertDialog } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-
-export function AsyncRecoveryDemo() {
-  const [attempts, setAttempts] = useState(0);
+function StressDemo() {
   return (
-    <div className="space-y-3">
-      <p className="text-sm text-muted-foreground">
-        Illustrative service: the first request fails; retry succeeds. Attempts:{" "}
-        {attempts}
-      </p>
+    <div className="w-full max-w-xs space-y-3">
       <KiraAlertDialog
-        trigger={<Button>Publish release</Button>}
-        title="Publish release?"
-        description="Notify everyone following the November release."
-        confirmLabel="Publish release"
-        shortcut="Ctrl/Cmd+Enter"
-        errorMessage="The publishing service is unavailable. Try publishing again."
-        onConfirmAsync={async () => {
-          setAttempts((value) => value + 1);
-          await new Promise<void>((resolve) => window.setTimeout(resolve, 900));
-          if (attempts === 0) throw new Error("Illustrative service failure");
-        }}
-      />
-    </div>
-  );
-}`;
-
-function ConfirmationStatesDemo() {
-  return (
-    <div className="w-full max-w-80 space-y-3">
-      <KiraAlertDialog
-        trigger={<Button variant="destructive">Review removal</Button>}
+        trigger={<Button variant="destructive">Review long removal</Button>}
         title="Remove the quarterly customer research project and all its shared findings?"
         description="Review the empty attachment list, then type REMOVE to enable the action."
         variant="destructive"
@@ -240,234 +306,17 @@ function ConfirmationStatesDemo() {
         </p>
       </KiraAlertDialog>
       <KiraAlertDialog
-        trigger={<Button variant="outline">Review information</Button>}
+        trigger={<Button variant="outline">Review empty description</Button>}
         title="Your export is ready"
         variant="success"
-        description="The export contains the current project findings."
         confirmLabel="Got it"
       />
+      <Button variant="outline" disabled>
+        Delete archived project (read-only)
+      </Button>
     </div>
   );
 }
-
-const statesCode = `import { KiraAlertDialog } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-
-export function ConfirmationStatesDemo() {
-  return (
-    <div className="w-full max-w-80 space-y-3">
-      <KiraAlertDialog
-        trigger={<Button variant="destructive">Review removal</Button>}
-        title="Remove the quarterly customer research project and all its shared findings?"
-        description="Review the empty attachment list, then type REMOVE to enable the action."
-        variant="destructive"
-        confirmText="REMOVE"
-        confirmLabel="Remove project and shared findings"
-      >
-        <p className="text-sm text-muted-foreground">
-          No attachments. Export the project first if you need a copy.
-        </p>
-      </KiraAlertDialog>
-      <KiraAlertDialog
-        trigger={<Button variant="outline">Review information</Button>}
-        title="Your export is ready"
-        variant="success"
-        description="The export contains the current project findings."
-        confirmLabel="Got it"
-      />
-    </div>
-  );
-}`;
-
-const alertUsageCode = `import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog"
-import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogClose, AlertDialogMedia, AlertDialogWarning, AlertDialogList, AlertDialogPortal, AlertDialogOverlay, KiraAlertDialog, alertDialogContentVariants, alertDialogMediaVariants } from "@/components/ui/alert-dialog"
-import { dialogContentVariants } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { IconAlertTriangle } from "@tabler/icons-react"
-import { cn } from "cn"
-
-export function ConfirmArchive({ archiveProject }: { archiveProject: () => Promise<void> }) {
-  return <KiraAlertDialog trigger={<Button variant="destructive">Archive project</Button>}
-    title="Archive this project?" description="Project members will lose editing access."
-    variant="destructive" confirmText="ARCHIVE" confirmLabel="Archive project"
-    shortcut="Ctrl/Cmd+Enter" onConfirmAsync={archiveProject}
-    errorMessage="Could not archive the project. Try again." />
-}
-
-export function DiscardDraft({ discardDraft }: { discardDraft: () => void }) {
-  return <AlertDialog><AlertDialogTrigger render={<Button variant="outline">Discard draft</Button>} />
-    <AlertDialogContent overlayProps={{ opacity: 50, blur: "xs" }}>
-      <AlertDialogHeader><AlertDialogMedia variant="warning"><IconAlertTriangle aria-hidden="true" /></AlertDialogMedia>
-        <AlertDialogTitle>Discard draft?</AlertDialogTitle><AlertDialogDescription>This removes your unsaved changes.</AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogWarning><AlertDialogList items={["Unsaved edits will be removed.", "Published findings remain available."]} /></AlertDialogWarning>
-      <AlertDialogFooter><AlertDialogCancel>Keep editing</AlertDialogCancel><AlertDialogAction variant="destructive" onClick={discardDraft}>Discard draft</AlertDialogAction></AlertDialogFooter>
-      <AlertDialogClose />
-    </AlertDialogContent>
-  </AlertDialog>
-}
-
-export function CustomConfirmation() {
-  return <AlertDialog><AlertDialogTrigger render={<Button>Review export</Button>} />
-    <AlertDialogPortal><AlertDialogOverlay /><AlertDialogPrimitive.Viewport className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
-      <AlertDialogPrimitive.Popup className={cn(dialogContentVariants(), alertDialogContentVariants({ size: "sm" }))}>
-        <div className={alertDialogMediaVariants({ variant: "info" })}><IconAlertTriangle aria-hidden="true" /></div>
-        <AlertDialogTitle>Export findings?</AlertDialogTitle><AlertDialogDescription>Export the current project findings.</AlertDialogDescription>
-        <AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction>Export</AlertDialogAction>
-      </AlertDialogPrimitive.Popup>
-    </AlertDialogPrimitive.Viewport></AlertDialogPortal>
-  </AlertDialog>
-}`;
-
-const typeConfirmCode = `import { useState } from "react"
-import { KiraAlertDialog } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/toast"
-
-export function TypeToConfirmDemo() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="flex justify-center py-8">
-      <Button variant="destructive" onClick={() => setOpen(true)}>
-        Delete project
-      </Button>
-      <KiraAlertDialog
-        open={open}
-        onOpenChange={setOpen}
-        variant="destructive"
-        title="Delete project"
-        description="This permanently deletes the project and all its data."
-        confirmText="DELETE"
-        confirmLabel="Delete project"
-        onConfirm={() => {
-          toast.success("Project deleted");
-        }}
-      />
-    </div>
-  );
-}`;
-
-const timedConfirmCode = `import { useState } from "react"
-import { KiraAlertDialog } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { toast } from "@/components/ui/toast"
-
-export function TimedConfirmDemo() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="flex justify-center py-8">
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        Wipe cache
-      </Button>
-      <KiraAlertDialog
-        open={open}
-        onOpenChange={setOpen}
-        variant="warning"
-        title="Wipe cache?"
-        description="The confirm button unlocks after a short cooldown."
-        confirmDelay={3}
-        confirmLabel="Wipe now"
-        onConfirm={() => {
-          toast.success("Cache wiped");
-        }}
-      />
-    </div>
-  );
-}`;
-
-const asyncConfirmCode = `import { useState } from "react"
-import { KiraAlertDialog } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-
-export function AsyncConfirmDemo() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="flex justify-center py-8">
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        Save changes
-      </Button>
-      <KiraAlertDialog
-        open={open}
-        onOpenChange={setOpen}
-        variant="info"
-        title="Save changes?"
-        description="Shows a pending state, then a checkmark before closing."
-        confirmLabel="Save"
-        shortcut="⌘↵"
-        onConfirmAsync={() =>
-          new Promise<void>((resolve) => setTimeout(resolve, 1200))
-        }
-      />
-    </div>
-  );
-}`;
-
-const scrollableCode = `import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-
-export function ScrollableFullDemo() {
-  return (
-    <div className="flex justify-center py-8">
-      <AlertDialog>
-        <AlertDialogTrigger
-          render={<Button variant="outline">Open full-screen terms</Button>}
-        />
-        <AlertDialogContent size="full">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Terms of Service</AlertDialogTitle>
-            <AlertDialogDescription>
-              Scroll to review the full terms.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="space-y-3 text-sm text-muted-foreground">
-            {Array.from({ length: 20 }, (_, index) => ({ id: "section-" + (index + 1), number: index + 1 })).map((section) => (
-              <p key={section.id}>
-                {section.number}. Shared project access ends when a member leaves the
-                team. Review active invitations and exported research before
-                confirming. This is illustrative policy text for the scrolling
-                demo.
-              </p>
-            ))}
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Decline</AlertDialogCancel>
-            <AlertDialogAction>Accept</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
-}`;
-
-const closeCode = `import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-
-export function CloseButtonDemo() {
-  return (
-    <div className="flex justify-center py-8">
-      <AlertDialog>
-        <AlertDialogTrigger
-          render={<Button variant="outline">Open with close button</Button>}
-        />
-        <AlertDialogContent showCloseButton>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Standalone close</AlertDialogTitle>
-            <AlertDialogDescription>
-              The X in the corner is an AlertDialogClose. showCloseButton adds
-              it automatically.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Dismiss</AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
-}`;
 
 const basicCode = `import { Button } from "@/components/ui/button"
 import {
@@ -482,7 +331,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog"
 
-export function BasicAlertDialog() {
+export function BasicDemo() {
   return (
     <AlertDialog>
       <AlertDialogTrigger render={<Button variant="outline">Show Dialog</Button>} />
@@ -516,7 +365,7 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog"
 
-export function DestructiveAlertDialog() {
+export function DestructiveDemo() {
   return (
     <AlertDialog>
       <AlertDialogTrigger render={<Button variant="destructive">Delete Account</Button>} />
@@ -539,7 +388,8 @@ export function DestructiveAlertDialog() {
   )
 }`;
 
-const customCode = `import { Button } from "@/components/ui/button"
+const customCode = `import { IconAlertTriangle } from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -554,16 +404,15 @@ import {
   AlertDialogWarning,
   AlertDialogList,
 } from "@/components/ui/alert-dialog"
-import { IconAlertTriangle, IconInfoCircle } from "@tabler/icons-react"
 
-export function CustomAlertDialog() {
+export function CustomDemo() {
   return (
     <AlertDialog>
       <AlertDialogTrigger render={<Button variant="outline">Show Dialog</Button>} />
       <AlertDialogContent size="lg">
         <AlertDialogHeader>
           <AlertDialogMedia variant="warning">
-            <IconAlertTriangle className="h-5 w-5" />
+            <IconAlertTriangle aria-hidden="true" className="size-5" />
           </AlertDialogMedia>
           <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
           <AlertDialogDescription>
@@ -579,6 +428,7 @@ export function CustomAlertDialog() {
               "All project files and assets",
               "Team member access and permissions",
               "API keys and integrations",
+              "Custom domain configurations",
             ]}
           />
         </AlertDialogHeader>
@@ -593,146 +443,347 @@ export function CustomAlertDialog() {
   )
 }`;
 
-// oxlint-disable-next-line eslint/max-lines-per-function -- This page is pure static documentation; its complete tab catalog stays readable together.
+const scrollableCode = `import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+
+export function ScrollableFullDemo() {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger
+        render={<Button variant="outline">Open full-screen terms</Button>}
+      />
+      <AlertDialogContent size="full">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Terms of Service</AlertDialogTitle>
+          <AlertDialogDescription>
+            Scroll to review the full terms.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="space-y-3 text-sm text-muted-foreground">
+          {/* Long scrollable terms content */}
+        </div>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Decline</AlertDialogCancel>
+          <AlertDialogAction>Accept</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}`;
+
+const closeCode = `import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+
+export function CloseButtonDemo() {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger
+        render={<Button variant="outline">Open with close button</Button>}
+      />
+      <AlertDialogContent showCloseButton>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Standalone close</AlertDialogTitle>
+          <AlertDialogDescription>
+            The X in the corner is an AlertDialogClose. showCloseButton adds
+            it automatically.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Dismiss</AlertDialogCancel>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}`;
+
+const typeConfirmCode = `import { useState } from "react"
+import { KiraAlertDialog } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/toast"
+
+export function TypeToConfirmDemo() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Button variant="destructive" onClick={() => setOpen(true)}>
+        Delete project
+      </Button>
+      <KiraAlertDialog
+        open={open}
+        onOpenChange={setOpen}
+        variant="destructive"
+        title="Delete project"
+        description="This permanently deletes the project and all its data."
+        confirmText="DELETE"
+        confirmLabel="Delete project"
+        onConfirm={() => {
+          toast.success("Project deleted")
+        }}
+      />
+    </>
+  )
+}`;
+
+const timedConfirmCode = `import { useState } from "react"
+import { KiraAlertDialog } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { toast } from "@/components/ui/toast"
+
+export function TimedConfirmDemo() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Button variant="outline" onClick={() => setOpen(true)}>
+        Wipe cache
+      </Button>
+      <KiraAlertDialog
+        open={open}
+        onOpenChange={setOpen}
+        variant="warning"
+        title="Wipe cache?"
+        description="The confirm button unlocks after a short cooldown."
+        confirmDelay={3}
+        confirmLabel="Wipe now"
+        onConfirm={() => {
+          toast.success("Cache wiped")
+        }}
+      />
+    </>
+  )
+}`;
+
+const asyncConfirmCode = `import { useState } from "react"
+import { KiraAlertDialog } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+
+export function AsyncConfirmDemo() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Button variant="outline" onClick={() => setOpen(true)}>
+        Save changes
+      </Button>
+      <KiraAlertDialog
+        open={open}
+        onOpenChange={setOpen}
+        variant="info"
+        title="Save changes?"
+        description="Shows a pending state, then a checkmark before closing."
+        confirmLabel="Save"
+        shortcut="⌘↵"
+        onConfirmAsync={() =>
+          new Promise<void>((resolve) => {
+            window.setTimeout(resolve, 1200)
+          })
+        }
+      />
+    </>
+  )
+}`;
+
+const recoveryCode = `import { useState } from "react"
+import { KiraAlertDialog } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+
+export function AsyncRecoveryDemo() {
+  const [attempts, setAttempts] = useState(0)
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        Illustrative service: the first request fails; retry succeeds. Attempts:{" "}
+        {attempts}
+      </p>
+      <KiraAlertDialog
+        trigger={<Button>Publish release</Button>}
+        title="Publish release?"
+        description="Notify everyone following the November release."
+        confirmLabel="Publish release"
+        shortcut="Ctrl/Cmd+Enter"
+        errorMessage="The publishing service is unavailable. Try publishing again."
+        onConfirmAsync={async () => {
+          setAttempts((value) => value + 1)
+          await new Promise<void>((resolve) => {
+            window.setTimeout(resolve, 900)
+          })
+          if (attempts === 0) throw new Error("Illustrative service failure")
+        }}
+      />
+    </div>
+  )
+}`;
+
+const stressCode = `import { KiraAlertDialog } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+
+export function StressDemo() {
+  return (
+    <div className="w-full max-w-xs space-y-3">
+      <KiraAlertDialog
+        trigger={<Button variant="destructive">Review long removal</Button>}
+        title="Remove the quarterly customer research project and all its shared findings?"
+        description="Review the empty attachment list, then type REMOVE to enable the action."
+        variant="destructive"
+        confirmText="REMOVE"
+        confirmLabel="Remove project and shared findings"
+      >
+        <p className="text-sm text-muted-foreground">
+          No attachments. Export the project first if you need a copy.
+        </p>
+      </KiraAlertDialog>
+      <KiraAlertDialog
+        trigger={<Button variant="outline">Review empty description</Button>}
+        title="Your export is ready"
+        variant="success"
+        confirmLabel="Got it"
+      />
+      <Button variant="outline" disabled>
+        Delete archived project (read-only)
+      </Button>
+    </div>
+  )
+}`;
+
+const alertUsageCode = `import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogClose,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogList,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  AlertDialogWarning,
+  KiraAlertDialog,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { IconAlertTriangle } from "@tabler/icons-react"
+
+export function ConfirmArchive({
+  archiveProject,
+}: {
+  archiveProject: () => Promise<void>
+}) {
+  return (
+    <KiraAlertDialog
+      trigger={<Button variant="destructive">Archive project</Button>}
+      title="Archive this project?"
+      description="Project members will lose editing access."
+      variant="destructive"
+      confirmText="ARCHIVE"
+      confirmLabel="Archive project"
+      shortcut="Ctrl/Cmd+Enter"
+      onConfirmAsync={archiveProject}
+      errorMessage="Could not archive the project. Try again."
+    />
+  )
+}
+
+export function DiscardDraft({ discardDraft }: { discardDraft: () => void }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger
+        render={<Button variant="outline">Discard draft</Button>}
+      />
+      <AlertDialogContent overlayProps={{ opacity: 50, blur: "xs" }}>
+        <AlertDialogHeader>
+          <AlertDialogMedia variant="warning">
+            <IconAlertTriangle aria-hidden="true" className="size-5" />
+          </AlertDialogMedia>
+          <AlertDialogTitle>Discard draft?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This removes your unsaved changes.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogWarning>
+          <AlertDialogList
+            items={[
+              "Unsaved edits will be removed.",
+              "Published findings remain available.",
+            ]}
+          />
+        </AlertDialogWarning>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Keep editing</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={discardDraft}>
+            Discard draft
+          </AlertDialogAction>
+        </AlertDialogFooter>
+        <AlertDialogClose />
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}`;
+
 export default function AlertDialogPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Alert Dialog"
         description="Modal dialog for important confirmations that require user action."
-        version="2.1.0"
+        version="v2.1.0"
       />
 
-      <FeatureGrid features={alertDialogPageFeatureGridFeatures} />
-
-      <DemoTabs
-        defaultValue="basic"
-        tabs={[
-          {
-            value: "recovery",
-            label: "Async recovery",
-            demo: (
-              <DemoWrapper
-                title="Retry a failed publish"
-                description="An illustrative service fails once. Duplicate confirmation and dismissal are blocked while work is pending."
-                code={recoveryCode}
-              >
-                <AsyncRecoveryDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "states",
-            label: "Kira & states",
-            demo: (
-              <DemoWrapper
-                title="Confirmation states"
-                description="Long content, an empty list, a disabled action with a visible reason, typed confirmation and a success variant."
-                code={statesCode}
-              >
-                <ConfirmationStatesDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "basic",
-            label: "Basic",
-            demo: <AlertDialogControlsSection basicCode={basicCode} />,
-          },
-          {
-            value: "destructive",
-            label: "Destructive",
-            demo: (
-              <AlertDialogControlsSection2 destructiveCode={destructiveCode} />
-            ),
-          },
-          {
-            value: "custom",
-            label: "Custom",
-            demo: <AlertDialogControlsSection3 customCode={customCode} />,
-          },
-          {
-            value: "type-to-confirm",
-            label: "Type to Confirm",
-            demo: (
-              <DemoWrapper
-                title="Type-to-Confirm"
-                description="Require typing an exact word before the destructive action unlocks."
-                code={typeConfirmCode}
-              >
-                <TypeToConfirmDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "timed",
-            label: "Timed Confirm",
-            demo: (
-              <DemoWrapper
-                title="Timed Confirm"
-                description="Confirm button stays disabled for a short cooldown."
-                code={timedConfirmCode}
-              >
-                <TimedConfirmDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "async",
-            label: "Async Confirm",
-            demo: (
-              <DemoWrapper
-                title="Async Confirm"
-                description="Awaits the handler, shows a checkmark, then closes. ⌘↵ confirms."
-                code={asyncConfirmCode}
-              >
-                <AsyncConfirmDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "scrollable",
-            label: "Scrollable Full",
-            demo: (
-              <DemoWrapper
-                title="Scrollable Full-Screen"
-                description="size='full' scrolls the body between a fixed header and footer."
-                code={scrollableCode}
-              >
-                <ScrollableFullDemo />
-              </DemoWrapper>
-            ),
-          },
-          {
-            value: "close",
-            label: "Close Button",
-            demo: (
-              <DemoWrapper
-                title="Close Button"
-                description="A standalone AlertDialogClose in the corner."
-                code={closeCode}
-              >
-                <CloseButtonDemo />
-              </DemoWrapper>
-            ),
-          },
-        ]}
+      <FeatureGrid
+        features={alertDialogPageFeatures}
+        description="Confirmation guardrails and modal composition built on Base UI."
       />
+
+      <DemoTabs defaultValue="basic" tabs={alertDialogPageDemoTabs} />
 
       <KeyboardShortcuts
-        shortcuts={alertDialogPageKeyboardShortcutsShortcuts}
+        shortcuts={alertDialogPageShortcuts}
+        description="Keyboard navigation and confirmation shortcuts."
       />
 
-      <UsageBlock code={alertUsageCode} />
+      <UsageBlock
+        code={alertUsageCode}
+        title="Usage"
+        description="Use KiraAlertDialog for guarded confirmations or compose primitives for custom layouts."
+        notes={alertDialogPageUsageNotes}
+      />
 
-      <APIReference sections={alertDialogPageAPIReferenceSections} />
-      <Changelog entries={alertDialogPageChangelogEntries} />
+      <APIReference
+        sections={alertDialogPageAPISections}
+        description="Props, types, and defaults for every exported part and variant helper."
+      />
+
+      <Changelog
+        entries={alertDialogPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Alert Dialog."
+      />
     </ComponentPage>
   );
 }
 
-// Static demo metadata stays co-located and follows its source constants.
-const alertDialogPageFeatureGridFeatures = [
+const alertDialogPageFeatures = [
   {
     title: "Accessible",
     description:
@@ -750,137 +801,193 @@ const alertDialogPageFeatureGridFeatures = [
   },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const alertDialogPageKeyboardShortcutsShortcuts = [
+const alertDialogPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic Alert Dialog"
+        description="Simple dialog with trigger, header, and action buttons."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "destructive",
+    label: "Destructive",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Destructive Action"
+        description="Dialog with destructive variant for dangerous actions like deletion."
+        code={destructiveCode}
+      >
+        <DestructiveDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "custom",
+    label: "Custom",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Custom Styled Dialog"
+        description="Dialog with media icons, warnings, lists, and custom sizing."
+        code={customCode}
+      >
+        <CustomDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "scrollable",
+    label: "Scrollable Full",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Scrollable Full-Screen"
+        description="size='full' scrolls the body between a fixed header and footer."
+        code={scrollableCode}
+      >
+        <ScrollableFullDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "close",
+    label: "Close Button",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Close Button"
+        description="A standalone AlertDialogClose in the corner."
+        code={closeCode}
+      >
+        <CloseButtonDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "type-to-confirm",
+    label: "Type to Confirm",
+    group: "KiraAlertDialog",
+    demo: (
+      <DemoWrapper
+        title="Type-to-Confirm"
+        description="Require typing an exact word before the destructive action unlocks."
+        code={typeConfirmCode}
+      >
+        <TypeToConfirmDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "timed",
+    label: "Timed Confirm",
+    group: "KiraAlertDialog",
+    demo: (
+      <DemoWrapper
+        title="Timed Confirm"
+        description="Confirm button stays disabled for a short cooldown."
+        code={timedConfirmCode}
+      >
+        <TimedConfirmDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "async",
+    label: "Async Confirm",
+    group: "KiraAlertDialog",
+    demo: (
+      <DemoWrapper
+        title="Async Confirm"
+        description="Awaits the handler, shows a checkmark, then closes. ⌘↵ confirms."
+        code={asyncConfirmCode}
+      >
+        <AsyncConfirmDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "recovery",
+    label: "Async Recovery",
+    group: "KiraAlertDialog",
+    demo: (
+      <DemoWrapper
+        title="Retry a failed publish"
+        description="An illustrative service fails once. Duplicate confirmation and dismissal are blocked while work is pending."
+        code={recoveryCode}
+      >
+        <AsyncRecoveryDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long titles, empty description, typed confirmation gate, and disabled trigger in a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const alertDialogPageShortcuts = [
   {
     keys: "Escape",
+    group: "Base UI",
     description:
       "Cancel when idle (inherited from Base UI); pending and success states block dismissal.",
   },
   {
     keys: "Enter / Space",
+    group: "Base UI",
     description: "Activate the focused action (inherited from Base UI).",
   },
   {
-    keys: "Cmd/Ctrl + Enter",
-    description:
-      "Kira confirmation when shortcut is set, focus is inside the popup, and all gates are satisfied.",
-  },
-  {
-    keys: "Space",
-    description: "Activate the focused action (inherited from Base UI)",
-  },
-  {
     keys: "Tab",
-    description: "Navigate inside the modal (inherited from Base UI)",
+    group: "Base UI",
+    description:
+      "Move focus forward inside the modal (inherited from Base UI).",
   },
   {
     keys: "Shift + Tab",
-    description: "Navigate backwards (inherited from Base UI)",
+    group: "Base UI",
+    description:
+      "Move focus backward inside the modal (inherited from Base UI).",
+  },
+  {
+    keys: "Cmd/Ctrl + Enter",
+    group: "KiraAlertDialog",
+    description:
+      "Confirm when shortcut is set, focus is inside the popup, and all confirmation gates are satisfied.",
   },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-const alertDialogPageAPIReferenceSections = [
+const alertDialogPageUsageNotes = [
   {
-    title: "alertDialogContentVariants",
-    props: [
-      {
-        prop: "size",
-        type: '"sm" | "default" | "lg" | "xl" | "full"',
-        default: '"default"',
-        description:
-          "Alert-specific sizing and spacing layered over dialogContentVariants.",
-      },
-    ],
+    label: "KiraAlertDialog",
+    body: "Use KiraAlertDialog for destructive or async confirmations that need type-to-confirm, cooldown delays, duplicate-click guards, or inline error recovery.",
   },
   {
-    title: "alertDialogMediaVariants",
-    props: [
-      {
-        prop: "variant",
-        type: '"default" | "info" | "success" | "warning" | "destructive"',
-        default: '"default"',
-        description:
-          "Shared semantic media styles used by the primitive parts and Kira wrapper.",
-      },
-    ],
+    label: "Composable primitives",
+    body: "Use AlertDialog, AlertDialogContent, AlertDialogWarning, and AlertDialogList when you need custom layouts, full-screen scrollable terms, or bespoke footer actions.",
   },
-  {
-    title: "AlertDialogPortal",
-    props: [
-      {
-        prop: "AlertDialogPrimitive.Portal.Props",
-        type: "Base UI Portal props",
-        description:
-          "Includes container and keepMounted; use through content portalProps for standard composition.",
-      },
-    ],
-  },
-  {
-    title: "AlertDialogOverlay",
-    props: [
-      {
-        prop: "opacity",
-        type: "20 | 30 | 40 | 50 | 60 | 70 | 80",
-        default: "50",
-        description: "Backdrop opacity.",
-      },
-      {
-        prop: "blur",
-        type: '"none" | "xs" | "sm" | "md" | "lg" | "xl"',
-        default: '"xs"',
-        description: "Backdrop blur.",
-      },
-      {
-        prop: "color",
-        type: '"black" | "white"',
-        default: '"black"',
-        description: "Backdrop color.",
-      },
-      {
-        prop: "blurless",
-        type: "boolean",
-        default: "false",
-        description: "Disable backdrop blur.",
-      },
-    ],
-  },
-  {
-    title: "AlertDialogClose",
-    props: [
-      {
-        prop: "variant",
-        type: '"outline" | "ghost" | "secondary"',
-        default: '"ghost"',
-        description: "Close button appearance.",
-      },
-      {
-        prop: "size",
-        type: '"icon-xs" | "icon-sm" | "icon" | "default" | "sm"',
-        default: '"icon-xs"',
-        description: "Close button size.",
-      },
-    ],
-  },
-  {
-    title: "AlertDialogTitle",
-    props: [
-      {
-        prop: "AlertDialogPrimitive.Title.Props",
-        type: "Base UI Title props",
-        description: "Accessible title and state-aware className.",
-      },
-    ],
-  },
-  {
-    title: "AlertDialogDescription",
-    props: [
-      {
-        prop: "AlertDialogPrimitive.Description.Props",
-        type: "Base UI Description props",
-        description: "Accessible description and state-aware className.",
-      },
-    ],
-  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const alertDialogPageAPISections = [
   {
     title: "AlertDialog",
     props: [
@@ -916,18 +1023,49 @@ const alertDialogPageAPIReferenceSections = [
     ],
   },
   {
-    title: "AlertDialogContent",
+    title: "AlertDialogPortal",
     props: [
       {
-        prop: "portalProps",
-        type: "Omit<AlertDialogPrimitive.Portal.Props, 'children'>",
-        description: "Portal destination and keepMounted.",
+        prop: "AlertDialogPrimitive.Portal.Props",
+        type: "Base UI Portal props",
+        default: "-",
+        description:
+          "Includes container and keepMounted; pass through content portalProps for standard composition.",
+      },
+    ],
+  },
+  {
+    title: "AlertDialogOverlay",
+    props: [
+      {
+        prop: "opacity",
+        type: "20 | 30 | 40 | 50 | 60 | 70 | 80",
+        default: "50",
+        description: "Backdrop opacity.",
       },
       {
-        prop: "overlayProps",
-        type: "AlertDialogOverlayProps",
-        description: "Backdrop opacity, color, blur and primitive props.",
+        prop: "blur",
+        type: '"none" | "xs" | "sm" | "md" | "lg" | "xl"',
+        default: '"xs"',
+        description: "Backdrop blur.",
       },
+      {
+        prop: "color",
+        type: '"black" | "white"',
+        default: '"black"',
+        description: "Backdrop color.",
+      },
+      {
+        prop: "blurless",
+        type: "boolean",
+        default: "false",
+        description: "Disable backdrop blur.",
+      },
+    ],
+  },
+  {
+    title: "AlertDialogContent",
+    props: [
       {
         prop: "size",
         type: '"sm" | "default" | "lg" | "xl" | "full"',
@@ -946,6 +1084,18 @@ const alertDialogPageAPIReferenceSections = [
         default: "200",
         description:
           "Entry and exit transition duration in milliseconds. Reduced motion overrides it.",
+      },
+      {
+        prop: "portalProps",
+        type: "Omit<AlertDialogPrimitive.Portal.Props, 'children'>",
+        default: "undefined",
+        description: "Portal destination and keepMounted.",
+      },
+      {
+        prop: "overlayProps",
+        type: "AlertDialogOverlayProps",
+        default: "undefined",
+        description: "Backdrop opacity, color, blur, and primitive props.",
       },
     ],
   },
@@ -978,49 +1128,24 @@ const alertDialogPageAPIReferenceSections = [
     ],
   },
   {
-    title: "AlertDialogAction",
+    title: "AlertDialogTitle",
     props: [
       {
-        prop: "closeOnClick",
-        type: "boolean",
-        default: "true",
-        description:
-          "Close through Base UI after activation. Set false for custom async ownership.",
-      },
-      {
-        prop: "variant",
-        type: "Button variant",
-        default: '"default"',
-        description: "Style variant of the action button.",
-      },
-      {
-        prop: "loading",
-        type: "boolean",
-        default: "false",
-        description: "Show a pending icon and disable the button.",
-      },
-      {
-        prop: "shortcut",
-        type: "string",
-        default: "undefined",
-        description: "Keyboard shortcut to display next to the button text.",
+        prop: "AlertDialogPrimitive.Title.Props",
+        type: "Base UI Title props",
+        default: "-",
+        description: "Accessible title and state-aware className.",
       },
     ],
   },
   {
-    title: "AlertDialogCancel",
+    title: "AlertDialogDescription",
     props: [
       {
-        prop: "variant",
-        type: "Button variant",
-        default: '"outline"',
-        description: "Style variant of the cancel button.",
-      },
-      {
-        prop: "shortcut",
-        type: "string",
-        default: "undefined",
-        description: "Keyboard shortcut to display next to the button text.",
+        prop: "AlertDialogPrimitive.Description.Props",
+        type: "Base UI Description props",
+        default: "-",
+        description: "Accessible description and state-aware className.",
       },
     ],
   },
@@ -1064,11 +1189,115 @@ const alertDialogPageAPIReferenceSections = [
     ],
   },
   {
+    title: "AlertDialogAction",
+    props: [
+      {
+        prop: "closeOnClick",
+        type: "boolean",
+        default: "true",
+        description:
+          "Close through Base UI after activation. Set false for custom async ownership.",
+      },
+      {
+        prop: "variant",
+        type: "Button variant",
+        default: '"default"',
+        description: "Style variant of the action button.",
+      },
+      {
+        prop: "size",
+        type: "Button size",
+        default: '"default"',
+        description: "Size variant of the action button.",
+      },
+      {
+        prop: "confirm",
+        type: "boolean",
+        default: "false",
+        description:
+          "Marks the button as primary confirm and applies default styling.",
+      },
+      {
+        prop: "loading",
+        type: "boolean",
+        default: "false",
+        description: "Show a pending icon and disable the button.",
+      },
+      {
+        prop: "shortcut",
+        type: "string",
+        default: "undefined",
+        description:
+          "Keyboard shortcut hint displayed next to the button text.",
+      },
+    ],
+  },
+  {
+    title: "AlertDialogCancel",
+    props: [
+      {
+        prop: "variant",
+        type: '"outline" | "secondary" | "ghost" | "link"',
+        default: '"outline"',
+        description: "Style variant of the cancel button.",
+      },
+      {
+        prop: "size",
+        type: '"default" | "sm" | "lg" | "icon" | "icon-sm" | "icon-xs"',
+        default: '"default"',
+        description: "Size variant of the cancel button.",
+      },
+      {
+        prop: "shortcut",
+        type: "string",
+        default: "undefined",
+        description:
+          "Keyboard shortcut hint displayed next to the button text.",
+      },
+    ],
+  },
+  {
+    title: "AlertDialogClose",
+    props: [
+      {
+        prop: "variant",
+        type: '"outline" | "ghost" | "secondary"',
+        default: '"ghost"',
+        description: "Close button appearance.",
+      },
+      {
+        prop: "size",
+        type: '"icon-xs" | "icon-sm" | "icon" | "default" | "sm"',
+        default: '"icon-xs"',
+        description: "Close button size.",
+      },
+    ],
+  },
+  {
     title: "KiraAlertDialog",
     props: [
       {
+        prop: "title",
+        type: "string",
+        default: "required",
+        description: "Title text for the dialog.",
+      },
+      {
+        prop: "description",
+        type: "string",
+        default: "undefined",
+        description: "Description text for the dialog.",
+      },
+      {
+        prop: "variant",
+        type: '"info" | "success" | "warning" | "destructive"',
+        default: '"info"',
+        description: "Variant that determines the icon and styling.",
+      },
+      {
         prop: "trigger",
         type: "ReactElement",
+        default: "undefined",
         description:
           "Optional Base UI trigger; focus returns here after dismissal.",
       },
@@ -1081,7 +1310,48 @@ const alertDialogPageAPIReferenceSections = [
       {
         prop: "onOpenChange",
         type: "(open: boolean) => void",
+        default: "undefined",
         description: "Visibility callback, including completion.",
+      },
+      {
+        prop: "confirmText",
+        type: "string",
+        default: "undefined",
+        description:
+          "Require typing this exact string to enable confirm (renders an input).",
+      },
+      {
+        prop: "confirmDelay",
+        type: "number",
+        default: "undefined",
+        description:
+          "Disable confirmation for N seconds of visible time; pause while the document is hidden.",
+      },
+      {
+        prop: "onConfirm",
+        type: "() => void | Promise<void>",
+        default: "undefined",
+        description:
+          "Sync or async confirmation; shows success and closes after fulfillment. Rejections show errorMessage.",
+      },
+      {
+        prop: "onConfirmAsync",
+        type: "() => Promise<void>",
+        default: "undefined",
+        description:
+          "Async confirm; shows a pending state then a checkmark before closing.",
+      },
+      {
+        prop: "onCancel",
+        type: "() => void",
+        default: "undefined",
+        description: "Called when the cancel button is activated.",
+      },
+      {
+        prop: "confirmLabel / cancelLabel",
+        type: "string",
+        default: '"Confirm" / "Cancel"',
+        description: "Button labels.",
       },
       {
         prop: "loading",
@@ -1107,70 +1377,15 @@ const alertDialogPageAPIReferenceSections = [
       {
         prop: "action",
         type: "ReactNode",
+        default: "undefined",
         description:
           "Custom action owns its gates and dismissal; the built-in shortcut is disabled.",
       },
       {
-        prop: "onCancel",
-        type: "() => void",
-        description: "Called when the cancel button is activated.",
-      },
-      {
         prop: "children",
         type: "ReactNode",
+        default: "undefined",
         description: "Additional confirmation content.",
-      },
-      {
-        prop: "variant",
-        type: '"info" | "success" | "warning" | "destructive"',
-        default: '"info"',
-        description: "Variant that determines the icon and styling.",
-      },
-      {
-        prop: "title",
-        type: "string",
-        default: "required",
-        description: "Title text for the dialog.",
-      },
-      {
-        prop: "description",
-        type: "string",
-        default: "undefined",
-        description: "Description text for the dialog.",
-      },
-      {
-        prop: "confirmText",
-        type: "string",
-        default: "undefined",
-        description:
-          "Require typing this exact string to enable confirm (renders an input).",
-      },
-      {
-        prop: "confirmDelay",
-        type: "number",
-        default: "undefined",
-        description:
-          "Disable confirmation for N seconds of visible time; pause while the document is hidden.",
-      },
-      {
-        prop: "onConfirmAsync",
-        type: "() => Promise<void>",
-        default: "undefined",
-        description:
-          "Async confirm; shows a pending state then a checkmark before closing.",
-      },
-      {
-        prop: "onConfirm",
-        type: "() => void | Promise<void>",
-        default: "undefined",
-        description:
-          "Sync or async confirmation; shows success and closes after fulfillment. Rejections show errorMessage.",
-      },
-      {
-        prop: "confirmLabel / cancelLabel",
-        type: "string",
-        default: '"Confirm" / "Cancel"',
-        description: "Button labels.",
       },
       {
         prop: "size",
@@ -1183,7 +1398,31 @@ const alertDialogPageAPIReferenceSections = [
         type: "string",
         default: "undefined",
         description:
-          "Confirm shortcut hint; ⌘/Ctrl+Enter also triggers confirm.",
+          "Confirm shortcut hint; Cmd/Ctrl+Enter also triggers confirm.",
+      },
+    ],
+  },
+  {
+    title: "alertDialogContentVariants",
+    props: [
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg" | "xl" | "full"',
+        default: '"default"',
+        description:
+          "Alert-specific sizing and spacing layered over dialogContentVariants.",
+      },
+    ],
+  },
+  {
+    title: "alertDialogMediaVariants",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "info" | "success" | "warning" | "destructive"',
+        default: '"default"',
+        description:
+          "Shared semantic media styles used by the primitive parts and Kira wrapper.",
       },
     ],
   },
@@ -1192,7 +1431,7 @@ const alertDialogPageAPIReferenceSections = [
 const alertDialogPageChangelogEntries = [
   {
     version: "2.1.0",
-    date: "5 November 2026",
+    date: "05 November 2026",
     changes: [
       {
         type: "fixed",
@@ -1209,127 +1448,3 @@ const alertDialogPageChangelogEntries = [
     ],
   },
 ] satisfies ReactComponentProps<typeof Changelog>["entries"];
-
-function AlertDialogControlsSection({
-  basicCode,
-}: {
-  basicCode: 'import { Button } from "@/components/ui/button"\nimport {\n  AlertDialog,\n  AlertDialogTrigger,\n  AlertDialogContent,\n  AlertDialogHeader,\n  AlertDialogTitle,\n  AlertDialogDescription,\n  AlertDialogFooter,\n  AlertDialogCancel,\n  AlertDialogAction,\n} from "@/components/ui/alert-dialog"\n\nexport function BasicAlertDialog() {\n  return (\n    <AlertDialog>\n      <AlertDialogTrigger render={<Button variant="outline">Show Dialog</Button>} />\n      <AlertDialogContent>\n        <AlertDialogHeader>\n          <AlertDialogTitle>Are you sure?</AlertDialogTitle>\n          <AlertDialogDescription>\n            This action cannot be undone. This will permanently delete your\n            account and remove your data from our servers.\n          </AlertDialogDescription>\n        </AlertDialogHeader>\n        <AlertDialogFooter>\n          <AlertDialogCancel>Cancel</AlertDialogCancel>\n          <AlertDialogAction>Continue</AlertDialogAction>\n        </AlertDialogFooter>\n      </AlertDialogContent>\n    </AlertDialog>\n  )\n}';
-}) {
-  return (
-    <DemoWrapper
-      title="Basic Alert Dialog"
-      description="Simple dialog with trigger, header, and action buttons."
-      code={basicCode}
-    >
-      <div className="flex justify-center py-8">
-        <AlertDialog>
-          <AlertDialogTrigger
-            render={<Button variant="outline">Show Dialog</Button>}
-          />
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction>Continue</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    </DemoWrapper>
-  );
-}
-
-function AlertDialogControlsSection2({
-  destructiveCode,
-}: {
-  destructiveCode: 'import { Button } from "@/components/ui/button"\nimport {\n  AlertDialog,\n  AlertDialogTrigger,\n  AlertDialogContent,\n  AlertDialogHeader,\n  AlertDialogTitle,\n  AlertDialogDescription,\n  AlertDialogFooter,\n  AlertDialogCancel,\n  AlertDialogAction,\n} from "@/components/ui/alert-dialog"\n\nexport function DestructiveAlertDialog() {\n  return (\n    <AlertDialog>\n      <AlertDialogTrigger render={<Button variant="destructive">Delete Account</Button>} />\n      <AlertDialogContent>\n        <AlertDialogHeader>\n          <AlertDialogTitle>Delete Account</AlertDialogTitle>\n          <AlertDialogDescription>\n            Are you sure you want to delete your account? All of your data\n            will be permanently removed. This action cannot be undone.\n          </AlertDialogDescription>\n        </AlertDialogHeader>\n        <AlertDialogFooter>\n          <AlertDialogCancel>Cancel</AlertDialogCancel>\n          <AlertDialogAction variant="destructive">\n            Yes, delete\n          </AlertDialogAction>\n        </AlertDialogFooter>\n      </AlertDialogContent>\n    </AlertDialog>\n  )\n}';
-}) {
-  return (
-    <DemoWrapper
-      title="Destructive Action"
-      description="Dialog with destructive variant for dangerous actions like deletion."
-      code={destructiveCode}
-    >
-      <div className="flex justify-center py-8">
-        <AlertDialog>
-          <AlertDialogTrigger
-            render={<Button variant="destructive">Delete Account</Button>}
-          />
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Account</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete your account? All of your data
-                will be permanently removed. This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction variant="destructive">
-                Yes, delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    </DemoWrapper>
-  );
-}
-
-function AlertDialogControlsSection3({
-  customCode,
-}: {
-  customCode: 'import { Button } from "@/components/ui/button"\nimport {\n  AlertDialog,\n  AlertDialogTrigger,\n  AlertDialogContent,\n  AlertDialogHeader,\n  AlertDialogTitle,\n  AlertDialogDescription,\n  AlertDialogFooter,\n  AlertDialogCancel,\n  AlertDialogAction,\n  AlertDialogMedia,\n  AlertDialogWarning,\n  AlertDialogList,\n} from "@/components/ui/alert-dialog"\nimport { IconAlertTriangle, IconInfoCircle } from "@tabler/icons-react"\n\nexport function CustomAlertDialog() {\n  return (\n    <AlertDialog>\n      <AlertDialogTrigger render={<Button variant="outline">Show Dialog</Button>} />\n      <AlertDialogContent size="lg">\n        <AlertDialogHeader>\n          <AlertDialogMedia variant="warning">\n            <IconAlertTriangle className="h-5 w-5" />\n          </AlertDialogMedia>\n          <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>\n          <AlertDialogDescription>\n            Before you proceed, please note the following warning.\n          </AlertDialogDescription>\n          <AlertDialogWarning variant="warning">\n            This action will permanently delete all associated data and\n            cannot be undone.\n          </AlertDialogWarning>\n          <AlertDialogList\n            variant="bullet"\n            items={[\n              "All project files and assets",\n              "Team member access and permissions",\n              "API keys and integrations",\n            ]}\n          />\n        </AlertDialogHeader>\n        <AlertDialogFooter>\n          <AlertDialogCancel>Go Back</AlertDialogCancel>\n          <AlertDialogAction variant="destructive">\n            Delete Anyway\n          </AlertDialogAction>\n        </AlertDialogFooter>\n      </AlertDialogContent>\n    </AlertDialog>\n  )\n}';
-}) {
-  return (
-    <DemoWrapper
-      title="Custom Styled Dialog"
-      description="Dialog with media icons, warnings, lists, and custom sizing."
-      code={customCode}
-    >
-      <div className="flex justify-center py-8">
-        <AlertDialog>
-          <AlertDialogTrigger
-            render={<Button variant="outline">Show Dialog</Button>}
-          />
-          <AlertDialogContent size="lg">
-            <AlertDialogHeader>
-              <AlertDialogMedia variant="warning">
-                <IconAlertTriangle className="h-5 w-5" />
-              </AlertDialogMedia>
-              <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
-              <AlertDialogDescription>
-                Before you proceed, please note the following warning.
-              </AlertDialogDescription>
-              <AlertDialogWarning variant="warning">
-                This action will permanently delete all associated data and
-                cannot be undone.
-              </AlertDialogWarning>
-              <AlertDialogList
-                variant="bullet"
-                items={[
-                  "All project files and assets",
-                  "Team member access and permissions",
-                  "API keys and integrations",
-                  "Custom domain configurations",
-                ]}
-              />
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Go Back</AlertDialogCancel>
-              <AlertDialogAction variant="destructive">
-                Delete Anyway
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    </DemoWrapper>
-  );
-}

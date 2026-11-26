@@ -1,28 +1,28 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
-
 import {
-  ComponentPage,
-  PageHeader,
-  FeatureGrid,
-  DemoTabs,
-  DemoWrapper,
-  KeyboardShortcuts,
-  UsageBlock,
   APIReference,
   Changelog,
+  ComponentPage,
+  DemoTabs,
+  DemoWrapper,
+  FeatureGrid,
+  KeyboardShortcuts,
+  PageHeader,
+  UsageBlock,
 } from "@/components/docs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Kanban,
-  KanbanColumn,
-  KanbanCard,
-  KanbanHeader,
   KanbanAddColumn,
+  KanbanCard,
+  KanbanColumn,
+  KanbanHeader,
   KiraKanban,
   useKanban,
   type KanbanColumnData,
 } from "@/components/ui/kanban";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 const releaseBoard: KanbanColumnData[] = [
   {
@@ -66,6 +66,29 @@ const releaseBoard: KanbanColumnData[] = [
   { id: "done", title: "Released", cards: [] },
 ];
 
+const stressColumns: KanbanColumnData[] = [
+  {
+    id: "stress-review",
+    title: "Review across engineering, customer success and localization",
+    limit: 0,
+    cards: [
+      {
+        id: "stress-long",
+        title:
+          "ReleaseReadinessForInternationalEnterpriseWorkspacesWithoutWhitespace",
+        tags: ["Localization", "Localization"],
+        assignee: { id: "long", name: "ณัฐชา 山田 — accessibility review" },
+        blockedReason: "Needs an owner before the release window.",
+      },
+    ],
+  },
+  {
+    id: "stress-empty",
+    title: "Empty queue",
+    cards: [],
+  },
+];
+
 const boardSource = `import type { KanbanColumnData } from "@/components/ui/kanban";\nconst releaseBoard: KanbanColumnData[] = ${JSON.stringify(releaseBoard, null, 2)};`;
 
 function BasicDemo() {
@@ -86,7 +109,9 @@ function MovementDemo() {
 
   return (
     <div className="space-y-3">
-      <output className="text-sm text-muted-foreground">{lastMove}</output>
+      <output className="block text-sm text-muted-foreground">
+        {lastMove}
+      </output>
       <Kanban
         columns={columns}
         onColumnsChange={setColumns}
@@ -104,7 +129,7 @@ function MovementDemo() {
   );
 }
 
-const movementCode = `import * as React from "react";\nimport { Kanban } from "@/components/ui/kanban";\n${boardSource}\n\nexport function MovementDemo() {\n  const [columns, setColumns] = React.useState(releaseBoard);\n  const [lastMove, setLastMove] = React.useState("No move yet.");\n  return <><p role="status">{lastMove}</p><Kanban columns={columns} onColumnsChange={setColumns} columnSize="sm" enableKeyboard={false} onCardMove={({ card, targetColumn }) => setLastMove(card.title + " moved to " + targetColumn.title)} /></>;\n}`;
+const movementCode = `import * as React from "react";\nimport { Kanban } from "@/components/ui/kanban";\n${boardSource}\n\nexport function MovementDemo() {\n  const [columns, setColumns] = React.useState(releaseBoard);\n  const [lastMove, setLastMove] = React.useState("No move yet.");\n  return <><output className="block text-sm text-muted-foreground">{lastMove}</output><Kanban columns={columns} onColumnsChange={setColumns} columnSize="sm" enableKeyboard={false} onCardMove={({ card, targetColumn }) => setLastMove(card.title + " moved to " + targetColumn.title)} /></>;\n}`;
 
 function CapacityDemo() {
   const [enforce, setEnforce] = React.useState(true);
@@ -164,7 +189,7 @@ function BlockedDemo() {
         onColumnsChange={setColumns}
         columnSize="sm"
         canMove={({ card, targetColumn }) =>
-          card.blockedReason && targetColumn.id === "done"
+          card.blockedReason !== undefined && targetColumn.id === "done"
             ? "Resolve the dependency before releasing this work."
             : undefined
         }
@@ -337,34 +362,16 @@ function KiraDemo() {
 const kiraCode = `import * as React from "react";\nimport { KiraKanban } from "@/components/ui/kanban";\nimport { Button } from "@/components/ui/button";\n${boardSource}\n\nexport function KiraDemo() {\n  const [loading, setLoading] = React.useState(false);\n  const [error, setError] = React.useState<string>();\n  return <><Button variant="outline" aria-pressed={loading} onClick={() => setLoading(!loading)}>Refresh fixture</Button><Button variant="outline" onClick={() => { setLoading(false); setError("Work could not be refreshed. Retry to restore the latest board."); }}>Fail refresh</Button><KiraKanban title="October release" defaultColumns={releaseBoard} columnSize="sm" loading={loading} error={error} onRetry={() => { setError(undefined); setLoading(false); }} /></>;\n}`;
 
 function StatesDemo() {
-  const controlId1 = React.useId();
+  const controlId = React.useId();
 
   const [state, setState] = React.useState<
-    "readonly" | "disabled" | "loading" | "empty" | "stress"
-  >("stress");
-
-  const stress: KanbanColumnData[] = [
-    {
-      id: "stress",
-      title: "Review across engineering, customer success and localization",
-      limit: 0,
-      cards: [
-        {
-          id: "long",
-          title:
-            "ReleaseReadinessForInternationalEnterpriseWorkspacesWithoutWhitespace",
-          tags: ["Localization", "Localization"],
-          assignee: { id: "long", name: "ณัฐชา 山田 — accessibility review" },
-          blockedReason: "Needs an owner before the release window.",
-        },
-      ],
-    },
-  ];
+    "readonly" | "disabled" | "loading" | "empty"
+  >("readonly");
 
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
-        {(["readonly", "disabled", "loading", "empty", "stress"] as const).map(
+        {(["readonly", "disabled", "loading", "empty"] as const).map(
           (value) => (
             <Button
               key={value}
@@ -381,9 +388,9 @@ function StatesDemo() {
       </div>
       <KiraKanban
         key={state}
-        columns={state === "empty" || state === "loading" ? [] : stress}
+        columns={state === "empty" || state === "loading" ? [] : releaseBoard}
         columnSize="sm"
-        readOnly={state === "readonly" || state === "stress"}
+        readOnly={state === "readonly"}
         disabled={state === "disabled"}
         disabledReason={
           state === "disabled"
@@ -392,87 +399,339 @@ function StatesDemo() {
         }
         loading={state === "loading"}
       />
-      <label htmlFor={controlId1} className="block space-y-1 text-sm">
+      <label htmlFor={controlId} className="block space-y-1 text-sm">
         Demo note
         <Input
-          id={controlId1}
-          placeholder="Check focus and text at narrow widths"
+          id={controlId}
+          placeholder="Check focus and keyboard navigation around board states"
         />
       </label>
     </div>
   );
 }
 
-const statesCode =
-  'import * as React from "react";\nimport { KiraKanban, type KanbanColumnData } from "@/components/ui/kanban";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function StatesDemo() {\n  const [state, setState] = React.useState<\n    "readonly" | "disabled" | "loading" | "empty" | "stress"\n  >("stress");\n  const stress: KanbanColumnData[] = [\n    {\n      id: "stress",\n      title: "Review across engineering, customer success and localization",\n      limit: 0,\n      cards: [\n        {\n          id: "long",\n          title:\n            "ReleaseReadinessForInternationalEnterpriseWorkspacesWithoutWhitespace",\n          tags: ["Localization", "Localization"],\n          assignee: { id: "long", name: "ณัฐชา 山田 — accessibility review" },\n          blockedReason: "Needs an owner before the release window.",\n        },\n      ],\n    },\n  ];\n  return (\n    <div className="space-y-3">\n      <div className="flex flex-wrap gap-2">\n        {(["readonly", "disabled", "loading", "empty", "stress"] as const).map(\n          (value) => (\n            <Button\n              key={value}\n              type="button"\n              size="sm"\n              variant="outline"\n              aria-pressed={state === value}\n              onClick={() => setState(value)}\n            >\n              {value}\n            </Button>\n          ),\n        )}\n      </div>\n      <KiraKanban\n        key={state}\n        columns={state === "empty" || state === "loading" ? [] : stress}\n        columnSize="sm"\n        readOnly={state === "readonly" || state === "stress"}\n        disabled={state === "disabled"}\n        disabledReason={\n          state === "disabled"\n            ? "This release is locked while publishing."\n            : undefined\n        }\n        loading={state === "loading"}\n      />\n      <label className="block space-y-1 text-sm">\n        Demo note\n        <Input placeholder="Check focus and text at narrow widths" />\n      </label>\n    </div>\n  );\n}';
+const statesCode = `import * as React from "react";
+import { KiraKanban } from "@/components/ui/kanban";
+import { Button } from "@/components/ui/button";
 
-const tabs = [
+export function StatesDemo() {
+  const [state, setState] = React.useState<"readonly" | "disabled" | "loading" | "empty">("readonly");
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {(["readonly", "disabled", "loading", "empty"] as const).map((value) => (
+          <Button
+            key={value}
+            type="button"
+            size="sm"
+            variant="outline"
+            aria-pressed={state === value}
+            onClick={() => setState(value)}
+          >
+            {value}
+          </Button>
+        ))}
+      </div>
+      <KiraKanban
+        key={state}
+        columns={state === "empty" || state === "loading" ? [] : releaseBoard}
+        columnSize="sm"
+        readOnly={state === "readonly"}
+        disabled={state === "disabled"}
+        disabledReason={state === "disabled" ? "This release is locked while publishing." : undefined}
+        loading={state === "loading"}
+      />
+    </div>
+  );
+}`;
+
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <KiraKanban
+        title="Narrow container with long titles, empty queue, and disabled lock"
+        columns={stressColumns}
+        columnSize="sm"
+        disabled
+        disabledReason="Board is locked while publishing the international release."
+      />
+    </div>
+  );
+}
+
+const stressCode = `import { KiraKanban, type KanbanColumnData } from "@/components/ui/kanban";
+
+const stressColumns: KanbanColumnData[] = [
+  {
+    id: "stress-review",
+    title: "Review across engineering, customer success and localization",
+    limit: 0,
+    cards: [
+      {
+        id: "stress-long",
+        title: "ReleaseReadinessForInternationalEnterpriseWorkspacesWithoutWhitespace",
+        tags: ["Localization", "Localization"],
+        assignee: { id: "long", name: "ณัฐชา 山田 — accessibility review" },
+        blockedReason: "Needs an owner before the release window.",
+      },
+    ],
+  },
+  { id: "stress-empty", title: "Empty queue", cards: [] },
+];
+
+<div className="max-w-xs">
+  <KiraKanban
+    title="Narrow container with long titles, empty queue, and disabled lock"
+    columns={stressColumns}
+    columnSize="sm"
+    disabled
+    disabledReason="Board is locked while publishing the international release."
+  />
+</div>`;
+
+export default function KanbanPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Kanban"
+        description="Review work with visible capacity, dependency context and a move action that works without dragging."
+        version="v3.0.0"
+      />
+
+      <FeatureGrid
+        features={kanbanPageFeatures}
+        description="Accessible drag-and-drop, native move dialogs, capacity rules, and retained-board refreshes."
+      />
+
+      <DemoTabs defaultValue="basic" tabs={kanbanPageDemoTabs} />
+
+      <KeyboardShortcuts
+        shortcuts={kanbanPageShortcuts}
+        description="Use these controls to verify each workflow."
+      />
+
+      <UsageBlock
+        code={compositionCode}
+        title="Usage"
+        description="Compose Kanban primitives or drop in KiraKanban for a toolbar, search, and retry flow."
+        notes={kanbanPageUsageNotes}
+      />
+
+      <APIReference
+        sections={kanbanPageAPISections}
+        description="Props, types, and defaults for Kanban, KiraKanban, and compound parts."
+      />
+
+      <Changelog
+        entries={kanbanPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Kanban."
+      />
+    </ComponentPage>
+  );
+}
+
+const kanbanPageFeatures = [
+  {
+    title: "Accessible moves",
+    description:
+      "Whole-card dragging plus a native dialog for column and position.",
+  },
+  {
+    title: "Capacity and dependencies",
+    description:
+      "Soft warnings, optional limits and caller-owned handoff rules.",
+  },
+  {
+    title: "Focused work",
+    description: "Search, blocked filtering and retained board refresh.",
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const kanbanPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
-    title: "Release work",
-    code: basicCode,
-    component: <BasicDemo />,
-  },
-  {
-    value: "movement",
-    label: "Move",
-    title: "Move without dragging",
-    code: movementCode,
-    component: <MovementDemo />,
-  },
-  {
-    value: "capacity",
-    label: "Capacity",
-    title: "Review queue capacity",
-    code: capacityCode,
-    component: <CapacityDemo />,
-  },
-  {
-    value: "blocked",
-    label: "Dependencies",
-    title: "Blocked handoffs",
-    code: blockedCode,
-    component: <BlockedDemo />,
-  },
-  {
-    value: "filters",
-    label: "Filters",
-    title: "Find work without changing counts",
-    code: filtersCode,
-    component: <FiltersDemo />,
-  },
-  {
-    value: "composition",
-    label: "Parts",
-    title: "Compose and clear a board",
-    code: compositionCode,
-    component: <CompositionDemo />,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Release work"
+        description="Uncontrolled board with priorities, checklists, and assignee metadata."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "variants",
     label: "Variants",
-    title: "Spacing and widths",
-    code: variantsCode,
-    component: <VariantsDemo />,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Spacing and widths"
+        description="Switch board spacing variants and column width presets."
+        code={variantsCode}
+      >
+        <VariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "composition",
+    label: "Parts",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Compose and clear a board"
+        description="Assemble KanbanHeader, KanbanColumn, KanbanCard, and KanbanAddColumn with useKanban."
+        code={compositionCode}
+      >
+        <CompositionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "movement",
+    label: "Move",
+    group: "Workflow",
+    demo: (
+      <DemoWrapper
+        title="Move without dragging"
+        description="Accessible Move card dialog works with keyboard, click, and tap even when keyboard dragging is off."
+        code={movementCode}
+      >
+        <MovementDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "capacity",
+    label: "Capacity",
+    group: "Workflow",
+    demo: (
+      <DemoWrapper
+        title="Review queue capacity"
+        description="Toggle between soft WIP warnings and strict capacity enforcement."
+        code={capacityCode}
+      >
+        <CapacityDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "blocked",
+    label: "Dependencies",
+    group: "Workflow",
+    demo: (
+      <DemoWrapper
+        title="Blocked handoffs"
+        description="Reject moves with a visible reason via canMove until dependencies are resolved."
+        code={blockedCode}
+      >
+        <BlockedDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "filters",
+    label: "Filters",
+    group: "KiraKanban",
+    demo: (
+      <DemoWrapper
+        title="Find work without changing counts"
+        description="KiraKanban provides labelled search and blocked-only filtering while keeping column counts accurate."
+        code={filtersCode}
+      >
+        <FiltersDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "kira",
-    label: "Kira",
-    title: "Retained board refresh",
-    code: kiraCode,
-    component: <KiraDemo />,
+    label: "Refresh & Retry",
+    group: "KiraKanban",
+    demo: (
+      <DemoWrapper
+        title="Retained board refresh"
+        description="Keep the current board visible during refresh locks and surface caller-owned retry recovery."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "states",
     label: "States",
-    title: "States and stress fixtures",
-    code: statesCode,
-    component: <StatesDemo />,
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Board states"
+        description="Inspect read-only, disabled with reason, initial loading skeletons, and empty states."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
   },
-];
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long unbroken titles, multilingual names, zero-limit column, empty queue, and disabled lock inside a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const commonProps = [
+const kanbanPageShortcuts = [
+  {
+    keys: "Tab / Shift+Tab",
+    description:
+      "Native action buttons; card titles open details only when a callback is supplied.",
+  },
+  {
+    keys: "Space / Enter, arrows, Space, Escape",
+    description:
+      "Focus a card for dnd-kit pickup, movement, drop or cancellation. Card buttons remain independent.",
+  },
+  {
+    keys: "Enter / Space on Move card",
+    description:
+      "Open the shared Dialog. Choose destination and position with Select (inherited from Base UI).",
+  },
+  {
+    keys: "Escape in Move dialog",
+    description:
+      "Dismiss and return focus (inherited from Base UI); no board mutation.",
+  },
+  {
+    keys: "Enter / Space on column disclosure",
+    description:
+      "Toggle retained column content (inherited from Base UI Collapsible).",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const kanbanPageUsageNotes = [
+  {
+    label: "KiraKanban",
+    body: "Use KiraKanban when you want the built-in toolbar, text search, blocked-only filter, and retained-board loading or error recovery out of the box.",
+  },
+  {
+    label: "Controlled vs. uncontrolled",
+    body: "Pass defaultColumns for local state, or pair columns with onColumnsChange for controlled updates. Every column and card ID must be non-empty and unique.",
+  },
+] satisfies NonNullable<ReactComponentProps<typeof UsageBlock>["notes"]>;
+
+const kanbanCommonProps = [
   {
     prop: "columns / defaultColumns",
     type: "KanbanColumnData[]",
@@ -483,25 +742,26 @@ const commonProps = [
   {
     prop: "onColumnsChange",
     type: "(columns: KanbanColumnData[]) => void",
+    default: "-",
     description:
       "Once per local mutation, outside React state updaters; controlled callers must adopt the new value.",
   },
   {
     prop: "variant",
     type: '"default" | "compact" | "minimal"',
-    default: "default",
+    default: '"default"',
     description: "Board spacing; uses exported kanbanVariants.",
   },
   {
     prop: "columnSize",
     type: '"sm" | "default" | "lg" | "auto"',
-    default: "default",
+    default: '"default"',
     description: "Column width; auto grows from the default width.",
   },
   {
     prop: "disabled / readOnly / disabledReason",
     type: "boolean / boolean / string",
-    default: "false / false",
+    default: "false / false / -",
     description:
       "Disable edits with a visible reason, or hide editing controls for reading. Disclosure remains available.",
   },
@@ -515,61 +775,67 @@ const commonProps = [
   {
     prop: "wipMode",
     type: '"warn" | "enforce"',
-    default: "warn",
+    default: '"warn"',
     description:
       "Capacity warning, or reject incoming cards at the target limit. Same-column reorder is allowed.",
   },
   {
     prop: "canMove / onCardMove",
     type: "(details: KanbanMoveDetails) => string | undefined / (details: KanbanMoveDetails) => void",
+    default: "-",
     description: "Pure rejection reason / notification after an accepted move.",
   },
   {
     prop: "cardFilter",
     type: "(card: KanbanCardData) => boolean",
+    default: "-",
     description:
       "Hide unmatched cards while retaining their DOM and full counts. Disables drag; Move uses full-board positions.",
   },
   {
     prop: "onCardClick / onCardAdd",
     type: "(card: KanbanCardData, columnId: string) => void / (columnId: string) => void",
+    default: "-",
     description:
       "Native title action / optional add control. Caller owns creation.",
   },
   {
     prop: "announcements",
     type: "{ onDragStart?: (card: KanbanCardData) => string; onDragOver?: (card: KanbanCardData, column: KanbanColumnData) => string; onDrop?: (card: KanbanCardData, column: KanbanColumnData) => string; onCancel?: () => string }",
+    default: "-",
     description: "Customize contextual drag status messages.",
   },
   {
     prop: "native div props / ref / children",
     type: 'React.ComponentProps<"div">',
+    default: "-",
     description:
       "Native board attributes/ref. Children compose parts but still require the columns model.",
   },
 ];
 
-const api: React.ComponentProps<typeof APIReference>["sections"] = [
-  { title: "Kanban", props: commonProps },
+const kanbanPageAPISections = [
+  { title: "Kanban", props: kanbanCommonProps },
   {
     title: "KiraKanban",
     props: [
       {
         prop: "inherited",
         type: 'Omit<KanbanProps, "children" | "cardFilter">',
+        default: "-",
         description: "All board props; Kira owns filtering and composition.",
       },
       {
         prop: "title / searchable / blockedFilter",
         type: "string / boolean / boolean",
-        default: "Work board / true / true",
+        default: '"Work board" / true / true',
         description:
           "Toolbar title, labelled text search and blocked-only toggle.",
       },
       {
         prop: "loading / error / onRetry",
         type: "boolean / string / () => void",
-        default: "false",
+        default: "false / - / -",
         description:
           "Retained board with edit lock, visible error and caller-owned recovery. Initial loading uses static skeletons.",
       },
@@ -581,24 +847,28 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "id / title / data",
         type: "string / string / KanbanColumnData",
+        default: "-",
         description:
           "Column identity/title; data defaults to the current context column.",
       },
       {
         prop: "color / limit",
         type: "string / number",
+        default: "-",
         description:
           "Optional CSS color and non-negative capacity; explicit props override data.",
       },
       {
         prop: "collapsed / onCollapsedChange",
         type: "boolean / (collapsed: boolean) => void",
+        default: "-",
         description:
           "Controlled disclosure; data.collapsed updates through the board, otherwise local state.",
       },
       {
         prop: "native props / ref / children",
         type: 'Omit<React.ComponentProps<"div">, "title">',
+        default: "-",
         description:
           "Root attributes/ref and optional card renderers. Uses kanbanColumnVariants.",
       },
@@ -610,12 +880,14 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "id / columnId / data / priority",
         type: 'string / string / KanbanCardData / "low" | "medium" | "high" | "critical"',
+        default: "-",
         description:
           "Identity and parent column; context resolves absent data. Data priority overrides the prop.",
       },
       {
         prop: "native props / ref / children",
         type: 'React.ComponentProps<"div">',
+        default: "-",
         description:
           "List item attributes/ref; children replace title/description while metadata and Move remain. Sortable transform/transition are reserved. Uses kanbanCardVariants.",
       },
@@ -627,6 +899,7 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "native props / ref / children",
         type: 'React.ComponentProps<"div">',
+        default: "-",
         description: "Wrapping toolbar; place outside the scrollable board.",
       },
     ],
@@ -637,6 +910,7 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "button props / ref / children",
         type: "React.ComponentProps<typeof Button>",
+        default: "-",
         description:
           "Native Button composing column width, context availability and caller onClick. Defaults to Add column.",
       },
@@ -648,29 +922,34 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "columns / setColumns",
         type: "KanbanColumnData[] / React.Dispatch<React.SetStateAction<KanbanColumnData[]>>",
+        default: "-",
         description:
           "Current model and guarded mutations; caller updater must be pure.",
       },
       {
         prop: "addCard / removeCard / moveCard",
         type: "(columnId: string, card: KanbanCardData) => void / (columnId: string, cardId: string) => void / (cardId: string, sourceColumnId: string, targetColumnId: string, targetIndex?: number) => boolean",
+        default: "-",
         description:
           "Card mutations; move returns acceptance; invalid destinations preserve the board.",
       },
       {
         prop: "addColumn / removeColumn",
         type: "(column: KanbanColumnData) => void / (columnId: string) => void",
+        default: "-",
         description:
           "Guarded column mutations; removing a column removes its cards.",
       },
       {
         prop: "openMove / announce / getMoveReason",
         type: "(cardId: string, trigger: HTMLElement) => void / (message: string) => void / (details: KanbanMoveDetails) => string | undefined",
+        default: "-",
         description: "Shared modal/status/policy integration.",
       },
       {
         prop: "configuration / callbacks",
         type: "variant, columnSize, disabled, readOnly, enableKeyboard, cardFilter, onCardClick, onCardAdd",
+        default: "-",
         description: "Same resolved values and callback types as KanbanProps.",
       },
     ],
@@ -681,17 +960,20 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "id / title / description",
         type: "string / string / string",
+        default: "-",
         description: "Required identity/title; optional full description.",
       },
       {
         prop: "priority / assignee / tags / dueDate",
         type: '"low" | "medium" | "high" | "critical" / { id: string; name: string; avatar?: string } / string[] / string',
+        default: "-",
         description:
           "Optional visible priority, full owner name, tags and caller-formatted deadline.",
       },
       {
         prop: "attachments / comments / checklist / cover / blockedReason",
         type: "number / number / { completed: number; total: number } / string / string",
+        default: "-",
         description:
           "Visible counts/checklist, decorative cover URL and actionable dependency reason.",
       },
@@ -703,124 +985,49 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "column fields",
         type: "{ id: string; title: string; cards: KanbanCardData[]; color?: string; limit?: number; collapsed?: boolean }",
+        default: "-",
         description: "Full model; zero limit is supported.",
       },
       {
         prop: "move details",
         type: "{ card: KanbanCardData; sourceColumn: KanbanColumnData; targetColumn: KanbanColumnData; targetIndex: number }",
+        default: "-",
         description:
           "Zero-based destination index after source removal; model objects before mutation.",
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function KanbanPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Kanban"
-        description="Review work with visible capacity, dependency context and a move action that works without dragging."
-        version="v3.0.0"
-      />
-      <FeatureGrid
-        features={[
-          {
-            title: "Accessible moves",
-            description:
-              "Whole-card dragging plus a native dialog for column and position.",
-          },
-          {
-            title: "Capacity and dependencies",
-            description:
-              "Soft warnings, optional limits and caller-owned handoff rules.",
-          },
-          {
-            title: "Focused work",
-            description:
-              "Search, blocked filtering and retained board refresh.",
-          },
-        ]}
-      />
-      <DemoTabs
-        defaultValue="basic"
-        tabs={tabs.map((tab) => ({
-          value: tab.value,
-          label: tab.label,
-          demo: (
-            <DemoWrapper title={tab.title} code={tab.code}>
-              {tab.component}
-            </DemoWrapper>
-          ),
-        }))}
-      />
-      <KeyboardShortcuts
-        description="Use these controls to verify each workflow."
-        shortcuts={[
-          {
-            keys: "Tab / Shift+Tab",
-            description:
-              "Native action buttons; card titles open details only when a callback is supplied.",
-          },
-          {
-            keys: "Space / Enter, arrows, Space, Escape",
-            description:
-              "Focus a card for dnd-kit pickup, movement, drop or cancellation. Card buttons remain independent.",
-          },
-          {
-            keys: "Enter / Space on Move card",
-            description:
-              "Open the shared Dialog. Choose destination and position with Select (inherited from Base UI).",
-          },
-          {
-            keys: "Escape in Move dialog",
-            description:
-              "Dismiss and return focus (inherited from Base UI); no board mutation.",
-          },
-          {
-            keys: "Enter / Space on column disclosure",
-            description:
-              "Toggle retained column content (inherited from Base UI Collapsible).",
-          },
-        ]}
-      />
-      <UsageBlock code={compositionCode} />
-      <APIReference sections={api} />
-      <Changelog
-        entries={[
-          {
-            version: "3.0.0",
-            date: "15 November 2026",
-            changes: [
-              {
-                type: "changed",
-                title: "Breaking: board state and interaction contract",
-                description:
-                  "columns is fully controlled; use defaultColumns for local state. Context drag/focus/dialog setter fields were removed; use openMove and the guarded mutation methods. The entire card is draggable; buttons, links and editable content keep their native actions. Title callbacks use native buttons. KanbanAddColumn uses shared Button props. IDs must be non-empty and unique. Audited against Base UI 1.9.0 and panels 4.16.0; research cutoff October 31.",
-              },
-              {
-                type: "added",
-                title: "Workflow controls",
-                description:
-                  "KiraKanban search, blocked filtering, retained loading/retry, complete metadata, capacity warnings/enforcement and caller move policies.",
-              },
-              {
-                type: "changed",
-                title: "Card hierarchy and interaction feedback",
-                description:
-                  "Compact titles, grouped metadata and owner/action footers. Whole-card dragging replaces the icon handle; focus the card for keyboard dragging. Fine-pointer hover lift and elevation, shared button press feedback and 200ms full-card drop continuity; keyboard dragging and reduced motion remain immediate. Added labels, footer, elevation and column-content slots. Column disclosure animates measured height and opacity over 200ms; reduced motion remains static. Use data-kanban-no-drag to exclude custom interactive content.",
-              },
-              {
-                type: "fixed",
-                title: "Core behavior",
-                description:
-                  "Empty controlled resets, invalid destination card loss, duplicate updater callbacks, conflicting keyboard handlers and custom modal focus trap repaired.",
-              },
-            ],
-          },
-        ]}
-      />
-    </ComponentPage>
-  );
-}
+const kanbanPageChangelogEntries = [
+  {
+    version: "3.0.0",
+    date: "15 November 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "Board state and interaction contract",
+        description:
+          "columns is fully controlled; use defaultColumns for local state. Context drag/focus/dialog setter fields were removed; use openMove and the guarded mutation methods. The entire card is draggable; buttons, links and editable content keep their native actions. Title callbacks use native buttons. KanbanAddColumn uses shared Button props. IDs must be non-empty and unique. Audited against Base UI 1.9.0 and panels 4.16.0; research cutoff October 31.",
+      },
+      {
+        type: "added",
+        title: "Workflow controls",
+        description:
+          "KiraKanban search, blocked filtering, retained loading/retry, complete metadata, capacity warnings/enforcement and caller move policies.",
+      },
+      {
+        type: "changed",
+        title: "Card hierarchy and interaction feedback",
+        description:
+          "Compact titles, grouped metadata and owner/action footers. Whole-card dragging replaces the icon handle; focus the card for keyboard dragging. Fine-pointer hover lift and elevation, shared button press feedback and 200ms full-card drop continuity; keyboard dragging and reduced motion remain immediate. Added labels, footer, elevation and column-content slots. Column disclosure animates measured height and opacity over 200ms; reduced motion remains static. Use data-kanban-no-drag to exclude custom interactive content.",
+      },
+      {
+        type: "fixed",
+        title: "Core behavior",
+        description:
+          "Empty controlled resets, invalid destination card loss, duplicate updater callbacks, conflicting keyboard handlers and custom modal focus trap repaired.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

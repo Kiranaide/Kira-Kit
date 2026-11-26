@@ -102,6 +102,50 @@ export function ThemeSwitcher() {
   );
 }`;
 
+function StressDemo() {
+  const { theme } = useTheme();
+
+  return (
+    <div className="max-w-xs space-y-4">
+      <div className="space-y-2">
+        <p className="text-sm font-medium">
+          Narrow sidebar container with full-width toggle and long descriptive
+          context copy
+        </p>
+        <ThemeToggle variant="outline" />
+      </div>
+      <div className="flex items-center justify-between gap-2 rounded-lg border border-border p-3">
+        <span className="truncate text-xs text-muted-foreground">
+          Disabled theme control (active: {theme || "none"})
+        </span>
+        <ThemeToggle variant="outline" showLabel={false} disabled />
+      </div>
+      <div className="space-y-2">
+        <ThemeToggle variant="secondary" disabled />
+      </div>
+    </div>
+  );
+}
+
+const stressCode = `import { ThemeToggle, useTheme } from "@/components/ui/theme-provider";
+
+export function StressDemo() {
+  const { theme } = useTheme();
+
+  return (
+    <div className="max-w-xs space-y-4">
+      <ThemeToggle variant="outline" />
+      <div className="flex items-center justify-between gap-2 rounded-lg border border-border p-3">
+        <span className="truncate text-xs text-muted-foreground">
+          Disabled theme control (active: {theme || "none"})
+        </span>
+        <ThemeToggle variant="outline" showLabel={false} disabled />
+      </div>
+      <ThemeToggle variant="secondary" disabled />
+    </div>
+  );
+}`;
+
 const usageCode = `import { ThemeProvider, ThemeToggle, useTheme } from "@/components/ui/theme-provider";
 
 export function App({ children }: { children: React.ReactNode }) {
@@ -120,27 +164,46 @@ export default function ThemeProviderPage() {
     <ComponentPage>
       <PageHeader
         title="Theme Provider"
-        version="1.0.0"
+        version="v1.0.0"
         description="Standalone light and dark theme context with localStorage persistence, prefers-color-scheme fallback, and an accessible ThemeToggle button."
       />
 
-      <FeatureGrid features={themeProviderFeatures} />
+      <FeatureGrid
+        features={themeProviderFeatures}
+        description="Capabilities built into Kira Kit."
+      />
 
       <DemoTabs defaultValue="toggle" tabs={themeProviderDemoTabs} />
 
       <ThemeProviderInstallationCard />
 
-      <KeyboardShortcuts shortcuts={themeProviderShortcuts} />
+      <KeyboardShortcuts
+        shortcuts={themeProviderShortcuts}
+        description="Keyboard navigation and activation bindings."
+      />
 
       <UsageBlock
         code={usageCode}
         title="Usage"
         description="Wrap your root route once and read or toggle the theme anywhere below."
+        notes={[
+          {
+            label: "ThemeToggle vs useTheme",
+            body: "Use ThemeToggle for ready-made sidebar rows or icon-only header buttons; call useTheme() when building custom segmented controls or settings panels.",
+          },
+        ]}
       />
 
-      <APIReference sections={themeProviderApi} />
+      <APIReference
+        sections={themeProviderApi}
+        description="Props, return values, and defaults for ThemeProvider, useTheme, and ThemeToggle."
+      />
 
-      <Changelog entries={themeProviderChangelog} />
+      <Changelog
+        entries={themeProviderChangelog}
+        title="Changelog"
+        description="Version history for Theme Provider."
+      />
     </ComponentPage>
   );
 }
@@ -187,6 +250,19 @@ const themeProviderDemoTabs = [
         code={customHookCode}
       >
         <CustomHookDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long context labels, disabled toggles, and narrow max-w-xs containers."
+        code={stressCode}
+      >
+        <StressDemo />
       </DemoWrapper>
     ),
   },
@@ -264,10 +340,23 @@ const themeProviderApi = [
           'Displays "Dark mode" / "Light mode" beside the icon; set false for an icon-only button.',
       },
       {
-        prop: "variant / size",
-        type: 'ButtonProps["variant"] / ButtonProps["size"]',
-        default: '"ghost" / "default" or "icon"',
-        description: "Forwarded directly to kit Button.",
+        prop: "variant",
+        type: 'ButtonProps["variant"]',
+        default: '"ghost"',
+        description: "Visual variant forwarded directly to kit Button.",
+      },
+      {
+        prop: "size",
+        type: 'ButtonProps["size"]',
+        default: '"default" | "icon"',
+        description:
+          'Button size; defaults to "default" when showLabel is true and "icon" when false.',
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes merged with the toggle button.",
       },
     ],
   },
@@ -276,7 +365,7 @@ const themeProviderApi = [
 const themeProviderChangelog = [
   {
     version: "1.0.0",
-    date: "In development",
+    date: "26 November 2026",
     changes: [
       {
         type: "added",

@@ -187,7 +187,7 @@ function LifecycleDemo({ active = true }: { active?: boolean }) {
 }
 
 const lifecycleCode =
-  'import * as React from "react";\nimport { KiraProgress, type ProgressStatus } from "@/components/ui/progress";\nimport { Button } from "@/components/ui/button";\n\nfunction useDemoClock(tick: () => void, active: boolean) {\n  React.useEffect(() => {\n    if (!active) return;\n\n    const timer = setInterval(() => {\n      if (!document.hidden) tick();\n    }, 800);\n\n    return () => clearInterval(timer);\n  }, [active, tick]);\n}\n\ninterface LifecycleDemoControlsProps {\n  status: ProgressStatus;\n  value: number | null;\n  setStatus: React.Dispatch<React.SetStateAction<ProgressStatus>>;\n  setValue: React.Dispatch<React.SetStateAction<number | null>>;\n}\n\nexport function LifecycleDemoControls({\n  status,\n  value,\n  setStatus,\n  setValue,\n}: LifecycleDemoControlsProps) {\n  return (\n    <div className="flex flex-wrap gap-2">\n      {status === "idle" && (\n        <Button onClick={() => setStatus("running")}>\n          Start unknown amount\n        </Button>\n      )}\n      {status === "running" && value === null && (\n        <Button onClick={() => setValue(20)}>Measure amount</Button>\n      )}\n      {status === "running" && (\n        <Button variant="outline" onClick={() => setStatus("error")}>\n          Simulate error\n        </Button>\n      )}\n      {status === "running" && value !== null && (\n        <Button variant="outline" onClick={() => setValue(100)}>\n          Measure 100%\n        </Button>\n      )}\n      {status === "running" && value === 100 && (\n        <Button onClick={() => setStatus("complete")}>\n          Confirm completion\n        </Button>\n      )}\n      {status === "complete" && (\n        <Button\n          variant="outline"\n          onClick={() => {\n            setStatus("idle");\n            setValue(null);\n          }}\n        >\n          Restart illustration\n        </Button>\n      )}\n    </div>\n  );\n}\n\nfunction LifecycleDemo({ active = true }: { active?: boolean }) {\n  const [status, setStatus] = React.useState<ProgressStatus>("idle");\n  const [value, setValue] = React.useState<number | null>(null);\n\n  const tick = React.useCallback(\n    () =>\n      setValue((amount) =>\n        amount === null ? null : Math.min(100, amount + 5),\n      ),\n    [],\n  );\n\n  useDemoClock(\n    tick,\n    active && status === "running" && value !== null && value < 100,\n  );\n\n  return (\n    <div className="w-full space-y-4">\n      <p className="text-sm text-muted-foreground">\n        Illustrative import. Reaching 100% remains Running until the caller\n        confirms completion.\n      </p>\n      <KiraProgress\n        label="Import customer records"\n        status={status}\n        value={value}\n        description="Paused, failed and canceled work keeps the measured amount."\n        onPause={() => setStatus("paused")}\n        onResume={() => setStatus("running")}\n        onCancel={() => setStatus("canceled")}\n        onRetry={() => {\n          if (status === "canceled") setValue(null);\n          setStatus("running");\n        }}\n      />\n      <LifecycleDemoControls\n        status={status}\n        value={value}\n        setStatus={setStatus}\n        setValue={setValue}\n      />\n    </div>\n  );\n}';
+  'import * as React from "react";\nimport { KiraProgress, type ProgressStatus } from "@/components/ui/progress";\nimport { Button } from "@/components/ui/button";\n\nfunction useDemoClock(tick: () => void, active: boolean) {\n  React.useEffect(() => {\n    if (!active) return;\n\n    const timer = setInterval(() => {\n      if (!document.hidden) tick();\n    }, 800);\n\n    return () => clearInterval(timer);\n  }, [active, tick]);\n}\n\ninterface LifecycleDemoControlsProps {\n  status: ProgressStatus;\n  value: number | null;\n  setStatus: React.Dispatch<React.SetStateAction<ProgressStatus>>;\n  setValue: React.Dispatch<React.SetStateAction<number | null>>;\n}\n\nfunction LifecycleDemoControls({\n  status,\n  value,\n  setStatus,\n  setValue,\n}: LifecycleDemoControlsProps) {\n  return (\n    <div className="flex flex-wrap gap-2">\n      {status === "idle" && (\n        <Button onClick={() => setStatus("running")}>\n          Start unknown amount\n        </Button>\n      )}\n      {status === "running" && value === null && (\n        <Button onClick={() => setValue(20)}>Measure amount</Button>\n      )}\n      {status === "running" && (\n        <Button variant="outline" onClick={() => setStatus("error")}>\n          Simulate error\n        </Button>\n      )}\n      {status === "running" && value !== null && (\n        <Button variant="outline" onClick={() => setValue(100)}>\n          Measure 100%\n        </Button>\n      )}\n      {status === "running" && value === 100 && (\n        <Button onClick={() => setStatus("complete")}>\n          Confirm completion\n        </Button>\n      )}\n      {status === "complete" && (\n        <Button\n          variant="outline"\n          onClick={() => {\n            setStatus("idle");\n            setValue(null);\n          }}\n        >\n          Restart illustration\n        </Button>\n      )}\n    </div>\n  );\n}\nexport function LifecycleDemo({ active = true }: { active?: boolean }) {\n  const [status, setStatus] = React.useState<ProgressStatus>("idle");\n  const [value, setValue] = React.useState<number | null>(null);\n\n  const tick = React.useCallback(\n    () =>\n      setValue((amount) =>\n        amount === null ? null : Math.min(100, amount + 5),\n      ),\n    [],\n  );\n\n  useDemoClock(\n    tick,\n    active && status === "running" && value !== null && value < 100,\n  );\n\n  return (\n    <div className="w-full space-y-4">\n      <p className="text-sm text-muted-foreground">\n        Illustrative import. Reaching 100% remains Running until the caller\n        confirms completion.\n      </p>\n      <KiraProgress\n        label="Import customer records"\n        status={status}\n        value={value}\n        description="Paused, failed and canceled work keeps the measured amount."\n        onPause={() => setStatus("paused")}\n        onResume={() => setStatus("running")}\n        onCancel={() => setStatus("canceled")}\n        onRetry={() => {\n          if (status === "canceled") setValue(null);\n          setStatus("running");\n        }}\n      />\n      <LifecycleDemoControls\n        status={status}\n        value={value}\n        setStatus={setStatus}\n        setValue={setValue}\n      />\n    </div>\n  );\n}';
 
 function PhasesDemo() {
   const [unknown, setUnknown] = React.useState(false);
@@ -373,48 +373,9 @@ const backgroundCode =
   // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import * as React from "react";\nimport { KiraProgress, type ProgressStatus } from "@/components/ui/progress";\nimport { KiraPopover } from "@/components/ui/popover";\nimport { Button } from "@/components/ui/button";\n\nfunction useDemoClock(tick: () => void, active: boolean) {\n  React.useEffect(() => {\n    if (!active) return;\n\n    const timer = setInterval(() => {\n      if (!document.hidden) tick();\n    }, 800);\n\n    return () => clearInterval(timer);\n  }, [active, tick]);\n}\n\ninterface DemoTask {\n  id: string;\n  label: string;\n  value: number;\n  status: ProgressStatus;\n}\n\ninterface BackgroundTaskListProps {\n  tasks: DemoTask[];\n  change: (id: string, status: ProgressStatus) => void;\n}\n\nfunction BackgroundTaskList({ tasks, change }: BackgroundTaskListProps) {\n  return (\n    <ul className="space-y-5">\n      {tasks.map((task) => (\n        <li key={task.id} className="space-y-2">\n          <KiraProgress\n            label={task.label}\n            status={task.status}\n            value={task.value}\n            onCancel={() => change(task.id, "canceled")}\n            onRetry={() => change(task.id, "running")}\n          />\n          {task.status === "running" && (\n            <Button\n              size="sm"\n              variant="outline"\n              onClick={() => change(task.id, "error")}\n            >\n              Simulate {task.id} failure\n            </Button>\n          )}\n          {task.status === "complete" && (\n            <a\n              className="text-sm text-primary underline"\n              href={`#result-${task.id}`}\n            >\n              View {task.label.toLowerCase()} result\n            </a>\n          )}\n        </li>\n      ))}\n    </ul>\n  );\n}\n\nexport function BackgroundTasksDemo({ active = true }: { active?: boolean }) {\n  const [tasks, setTasks] = React.useState<DemoTask[]>([\n    {\n      id: "export",\n      label: "Export customer report",\n      value: 20,\n      status: "running",\n    },\n    { id: "index", label: "Index project files", value: 40, status: "running" },\n    {\n      id: "archive",\n      label: "Archive previous release",\n      value: 100,\n      status: "complete",\n    },\n  ]);\n\n  const change = (id: string, status: ProgressStatus) =>\n    setTasks((previous) =>\n      previous.map((task) => (task.id === id ? { ...task, status } : task)),\n    );\n\n  const tick = React.useCallback(\n    () =>\n      setTasks((previous) =>\n        previous.map((task) => {\n          if (task.status !== "running") return task;\n          const next = Math.min(100, task.value + 5);\n\n          // Illustrative work result, not a rule inside KiraProgress.\n          return {\n            ...task,\n            value: next,\n            status: next === 100 ? "complete" : "running",\n          };\n        }),\n      ),\n    [],\n  );\n\n  useDemoClock(tick, active && tasks.some((task) => task.status === "running"));\n  const running = tasks.filter((task) => task.status === "running").length;\n\n  return (\n    <div className="space-y-3">\n      <p className="text-sm text-muted-foreground">\n        Illustrative background tasks continue while the popup is closed.\n        Simulation pauses in an inactive demo tab or hidden document.\n      </p>\n      <KiraPopover\n        title="Background tasks"\n        trigger={<Button variant="outline">{running} tasks running</Button>}\n        contentProps={{ size: "lg" }}\n      >\n        <BackgroundTaskList tasks={tasks} change={change} />\n      </KiraPopover>\n      <output className="text-sm">{running} background tasks running.</output>\n      {tasks\n        .filter((task) => task.status === "complete")\n        .map((task) => (\n          <p\n            tabIndex={-1}\n            id={`result-${task.id}`}\n            key={task.id}\n            className="text-sm"\n          >\n            {task.label}: illustrative result ready.\n          </p>\n        ))}\n      <Button\n        size="sm"\n        variant="outline"\n        onClick={() =>\n          setTasks((previous) =>\n            previous.map((task) => ({ ...task, status: "running", value: 0 })),\n          )\n        }\n      >\n        Restart tasks\n      </Button>\n    </div>\n  );\n}';
 
-function StatesDemo() {
-  const [value, setValue] = React.useState(150);
-  const [crossings, setCrossings] = React.useState(0);
-  const label = React.useId();
-
+function StressEdgeCases() {
   return (
-    <div className="w-80 max-w-full space-y-4" dir="rtl">
-      <ProgressLabel id={label}>
-        A very long release name that should wrap without obscuring the measured
-        progress value
-      </ProgressLabel>
-      <Progress
-        aria-labelledby={label}
-        min={50}
-        max={150}
-        value={value}
-        showLabel
-        locale="ar"
-      />
-      <CircularProgress
-        aria-label="Same custom range"
-        min={50}
-        max={150}
-        value={value}
-        showLabel
-        locale="ar"
-      />
-      <React.StrictMode>
-        <Progress
-          aria-label="Completion reentry"
-          value={value}
-          min={50}
-          max={150}
-          onComplete={() => setCrossings((count) => count + 1)}
-        />
-      </React.StrictMode>
-      <p className="text-sm">Completion crossings: {crossings}</p>
-      <div className="flex flex-wrap gap-2">
-        <Button onClick={() => setValue(75)}>Below complete</Button>
-        <Button onClick={() => setValue(200)}>Above max</Button>
-        <Button onClick={() => setValue(0)}>Below min</Button>
-      </div>
+    <>
       <Progress
         aria-label="Invalid bounds fall back to zero through one hundred"
         min={200}
@@ -449,12 +410,114 @@ function StatesDemo() {
         status="idle"
         value={null}
       />
+    </>
+  );
+}
+
+function StressDemo() {
+  const [value, setValue] = React.useState(150);
+  const [crossings, setCrossings] = React.useState(0);
+  const label = React.useId();
+
+  return (
+    <div className="max-w-xs space-y-4" dir="rtl">
+      <ProgressLabel id={label}>
+        A very long release name that should wrap without obscuring the measured
+        progress value
+      </ProgressLabel>
+      <Progress
+        aria-labelledby={label}
+        min={50}
+        max={150}
+        value={value}
+        showLabel
+        locale="ar"
+      />
+      <CircularProgress
+        aria-label="Same custom range"
+        min={50}
+        max={150}
+        value={value}
+        showLabel
+        locale="ar"
+      />
+      <React.StrictMode>
+        <Progress
+          aria-label="Completion reentry"
+          value={value}
+          min={50}
+          max={150}
+          onComplete={() => setCrossings((count) => count + 1)}
+        />
+      </React.StrictMode>
+      <p className="text-sm">Completion crossings: {crossings}</p>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => setValue(75)}>Below complete</Button>
+        <Button onClick={() => setValue(200)}>Above max</Button>
+        <Button onClick={() => setValue(0)}>Below min</Button>
+        <Button disabled variant="outline">
+          Export unavailable
+        </Button>
+      </div>
+      <StressEdgeCases />
     </div>
   );
 }
 
-const statesCode =
-  'import * as React from "react";\nimport { Progress, ProgressLabel, SegmentedProgress, CircularProgress, KiraProgress } from "@/components/ui/progress";\nimport { Button } from "@/components/ui/button";\n\nexport function StatesDemo() {\n  const [value, setValue] = React.useState(150);\n  const [crossings, setCrossings] = React.useState(0);\n  const label = React.useId();\n\n  return (\n    <div className="w-80 max-w-full space-y-4" dir="rtl">\n      <ProgressLabel id={label}>\n        A very long release name that should wrap without obscuring the measured\n        progress value\n      </ProgressLabel>\n      <Progress\n        aria-labelledby={label}\n        min={50}\n        max={150}\n        value={value}\n        showLabel\n        locale="ar"\n      />\n      <CircularProgress\n        aria-label="Same custom range"\n        min={50}\n        max={150}\n        value={value}\n        showLabel\n        locale="ar"\n      />\n      <React.StrictMode>\n        <Progress\n          aria-label="Completion reentry"\n          value={value}\n          min={50}\n          max={150}\n          onComplete={() => setCrossings((count) => count + 1)}\n        />\n      </React.StrictMode>\n      <p className="text-sm">Completion crossings: {crossings}</p>\n      <div className="flex flex-wrap gap-2">\n        <Button onClick={() => setValue(75)}>Below complete</Button>\n        <Button onClick={() => setValue(200)}>Above max</Button>\n        <Button onClick={() => setValue(0)}>Below min</Button>\n      </div>\n      <Progress\n        aria-label="Invalid bounds fall back to zero through one hundred"\n        min={200}\n        max={50}\n        value={50}\n        showLabel\n      />\n      <Progress\n        aria-label="Nonfinite amount is unknown"\n        value={Number.NaN}\n        showLabel\n      />\n      <Progress aria-label="Empty process" value={0} showLabel />\n      <SegmentedProgress\n        aria-label="Capped process segments"\n        segments={[\n          { value: 80, label: "Processed" },\n          { value: 90, label: "Verified" },\n          { value: -10, label: "Invalid" },\n        ]}\n        total={100}\n        showLabels\n      />\n      <SegmentedProgress\n        aria-label="Empty process segments"\n        segments={[]}\n        total={100}\n        showLabels\n      />\n      <KiraProgress\n        label="Empty task — choose a file to begin"\n        status="idle"\n        value={null}\n      />\n    </div>\n  );\n}';
+const stressCode = `import * as React from "react";
+import {
+  Progress,
+  ProgressLabel,
+  SegmentedProgress,
+  CircularProgress,
+  KiraProgress,
+} from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+
+export function StressDemo() {
+  const [value, setValue] = React.useState(150);
+  const [crossings, setCrossings] = React.useState(0);
+  const label = React.useId();
+
+  return (
+    <div className="max-w-xs space-y-4" dir="rtl">
+      <ProgressLabel id={label}>
+        A very long release name that should wrap without obscuring the measured progress value
+      </ProgressLabel>
+      <Progress aria-labelledby={label} min={50} max={150} value={value} showLabel locale="ar" />
+      <CircularProgress aria-label="Same custom range" min={50} max={150} value={value} showLabel locale="ar" />
+      <Progress
+        aria-label="Completion reentry"
+        value={value}
+        min={50}
+        max={150}
+        onComplete={() => setCrossings((count) => count + 1)}
+      />
+      <p className="text-sm">Completion crossings: {crossings}</p>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => setValue(75)}>Below complete</Button>
+        <Button onClick={() => setValue(200)}>Above max</Button>
+        <Button onClick={() => setValue(0)}>Below min</Button>
+        <Button disabled variant="outline">Export unavailable</Button>
+      </div>
+      <Progress aria-label="Invalid bounds" min={200} max={50} value={50} showLabel />
+      <Progress aria-label="Nonfinite amount" value={Number.NaN} showLabel />
+      <Progress aria-label="Empty process" value={0} showLabel />
+      <SegmentedProgress
+        aria-label="Capped process segments"
+        segments={[
+          { value: 80, label: "Processed" },
+          { value: 90, label: "Verified" },
+          { value: -10, label: "Invalid" },
+        ]}
+        total={100}
+        showLabels
+      />
+      <SegmentedProgress aria-label="Empty process segments" segments={[]} total={100} showLabels />
+      <KiraProgress label="Empty task — choose a file to begin" status="idle" value={null} />
+    </div>
+  );
+}`;
 
 function BasicDemo() {
   return (
@@ -567,7 +630,7 @@ function IndeterminateDemo() {
       <p className="text-sm text-muted-foreground">
         Use{" "}
         <code className="text-xs bg-muted px-1 py-0.5 rounded">
-          value=&#123;null&#125;
+          {"value={null}"}
         </code>{" "}
         for indeterminate state.
       </p>
@@ -580,8 +643,22 @@ function IndeterminateDemo() {
   );
 }
 
-const indeterminateCode =
-  'import { Progress } from "@/components/ui/progress";\n\nexport function IndeterminateDemo() {\n  return (\n    <div className="space-y-4">\n      <p className="text-sm text-muted-foreground">\n        Use{" "}\n        <code className="text-xs bg-muted px-1 py-0.5 rounded">\n          value=&#123;null&#125;\n        </code>{" "}\n        for indeterminate state.\n      </p>\n      <div className="space-y-3">\n        <Progress value={null} variant="default" />\n        <Progress value={null} variant="info" />\n        <Progress value={null} variant="success" />\n      </div>\n    </div>\n  );\n}';
+const indeterminateCode = `import { Progress } from "@/components/ui/progress";
+
+export function IndeterminateDemo() {
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Use <code className="text-xs bg-muted px-1 py-0.5 rounded">{"value={null}"}</code> for indeterminate state.
+      </p>
+      <div className="space-y-3">
+        <Progress value={null} variant="default" />
+        <Progress value={null} variant="info" />
+        <Progress value={null} variant="success" />
+      </div>
+    </div>
+  );
+}`;
 
 function StripedDemo() {
   return (
@@ -747,7 +824,7 @@ function SegmentedDemo() {
 }
 
 const segmentedCode =
-  'import { Progress, SegmentedProgress } from "@/components/ui/progress";\n\nexport function SegmentedDemo() {\n  return (\n    <div className="space-y-8">\n      <div>\n        <p className="text-sm text-muted-foreground mb-3">Task Status</p>\n        <SegmentedProgress\n          segments={[\n            { value: 45, variant: "success", label: "Completed" },\n            { value: 25, variant: "info", label: "In Progress" },\n            { value: 15, variant: "warning", label: "Pending" },\n          ]}\n          total={100}\n          showLabels\n          size="lg"\n        />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-3">Storage Usage</p>\n        <SegmentedProgress\n          kind="meter"\n          aria-label="Storage usage"\n          segments={[\n            { value: 30, variant: "info", label: "Documents" },\n            { value: 25, variant: "success", label: "Photos" },\n            { value: 15, variant: "warning", label: "Videos" },\n            { value: 10, variant: "destructive", label: "Others" },\n          ]}\n          total={100}\n          showLabels\n        />\n      </div>\n    </div>\n  );\n}';
+  'import { SegmentedProgress } from "@/components/ui/progress";\n\nexport function SegmentedDemo() {\n  return (\n    <div className="space-y-8">\n      <div>\n        <p className="text-sm text-muted-foreground mb-3">Task Status</p>\n        <SegmentedProgress\n          segments={[\n            { value: 45, variant: "success", label: "Completed" },\n            { value: 25, variant: "info", label: "In Progress" },\n            { value: 15, variant: "warning", label: "Pending" },\n          ]}\n          total={100}\n          showLabels\n          size="lg"\n        />\n      </div>\n      <div>\n        <p className="text-sm text-muted-foreground mb-3">Storage Usage</p>\n        <SegmentedProgress\n          kind="meter"\n          aria-label="Storage usage"\n          segments={[\n            { value: 30, variant: "info", label: "Documents" },\n            { value: 25, variant: "success", label: "Photos" },\n            { value: 15, variant: "warning", label: "Videos" },\n            { value: 10, variant: "destructive", label: "Others" },\n          ]}\n          total={100}\n          showLabels\n        />\n      </div>\n    </div>\n  );\n}';
 
 function CircularDemo() {
   return (
@@ -849,7 +926,45 @@ const loadingExampleCode =
 const usageCode =
   'import { Progress, ProgressLabel, ProgressValue, CircularProgress, SegmentedProgress, KiraProgress } from "@/components/ui/progress";\n\nexport function Usage() {\n  return <div className="space-y-4">\n    <ProgressLabel id="import-label">Process imported rows</ProgressLabel>\n    <Progress value={75} min={50} max={150} bufferValue={120} aria-labelledby="import-label" showLabel />\n    <ProgressValue value={75} min={50} max={150} />\n    <CircularProgress value={75} min={50} max={150} aria-label="Process imported rows" showLabel />\n    <SegmentedProgress segments={[{ id: "documents", label: "Documents", value: 40 }]} total={100} kind="meter" aria-label="Storage used" showLabels />\n    <KiraProgress label="Prepare report" status="running" currentPhaseId="write" phases={[\n      { id: "receive", label: "Receive", weight: 1, value: 100 },\n      { id: "write", label: "Write report", weight: 3, value: 25 },\n    ]} />\n  </div>;\n}';
 
-const apiSections = [
+export default function ProgressPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Progress"
+        description="Displays an indicator showing completion progress with linear, circular, and segmented variants."
+        version="v2.0.1"
+      />
+
+      <FeatureGrid features={progressPageFeatures} />
+
+      <DemoTabs tabs={progressPageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts shortcuts={progressPageShortcuts} />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Import and use the progress components in your application."
+        notes={[
+          {
+            label: "KiraProgress",
+            body: "Use KiraProgress for caller-owned task lifecycles (idle, running, paused, error, complete, canceled), optional action buttons, and weighted multi-phase measurements.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={progressPageAPISections}
+        title="API reference"
+        description="Props and configuration options for all progress components."
+      />
+      <Changelog entries={progressPageChangelogEntries} />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const progressPageAPISections = [
   {
     title: "Progress",
     props: [
@@ -1155,9 +1270,9 @@ const apiSections = [
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const features = [
+const progressPageFeatures = [
   {
     title: "Measured variants",
     description:
@@ -1176,77 +1291,13 @@ const features = [
       "Received and processed layers plus a local background-task popup; see Buffer and Background Tasks.",
     icon: <IconPalette className="h-4 w-4" />,
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const demoTabs = [
-  {
-    value: "buffer",
-    label: "Buffer",
-    demo: (
-      <DemoWrapper
-        title="Received and processed"
-        description="A decorative buffer layer shares the primary range."
-        code={bufferCode}
-      >
-        <BufferDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "kira",
-    label: "Kira / Lifecycle",
-    demo: (active: boolean) => (
-      <DemoWrapper
-        title="Caller-owned lifecycle"
-        description="Unknown, measured, pause/resume, error/retry, cancel/restart and explicit completion."
-        code={lifecycleCode}
-      >
-        <LifecycleDemo active={active} />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "phases",
-    label: "Weighted Phases",
-    demo: (
-      <DemoWrapper
-        title="Weighted measurements"
-        description="Stable phase IDs and measured amounts; unknown phases keep overall amount unknown."
-        code={phasesCode}
-      >
-        <PhasesDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "background",
-    label: "Background Tasks",
-    demo: (active: boolean) => (
-      <DemoWrapper
-        title="Progress inside a Popover"
-        description="Local demo composition; closing the popup does not stop work."
-        code={backgroundCode}
-      >
-        <BackgroundTasksDemo active={active} />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "states",
-    label: "States / Stress",
-    demo: (
-      <DemoWrapper
-        title="Ranges and edge cases"
-        description="RTL, long names, empty/nonfinite values, invalid ranges, clamps and StrictMode completion reentry."
-        code={statesCode}
-      >
-        <StatesDemo />
-      </DemoWrapper>
-    ),
-  },
+const progressPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Progress"
@@ -1260,6 +1311,7 @@ const demoTabs = [
   {
     value: "sizes",
     label: "Sizes",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Size Variants"
@@ -1273,6 +1325,7 @@ const demoTabs = [
   {
     value: "colors",
     label: "Colors",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Color Variants"
@@ -1284,47 +1337,9 @@ const demoTabs = [
     ),
   },
   {
-    value: "animated",
-    label: "Animated",
-    demo: (active: boolean) => (
-      <DemoWrapper
-        title="Animated Progress"
-        description="Progress bar with smooth value transitions."
-        code={animatedCode}
-      >
-        <AnimatedDemo active={active} />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "indeterminate",
-    label: "Indeterminate",
-    demo: (
-      <DemoWrapper
-        title="Indeterminate State"
-        description="Progress bars showing loading without a specific value."
-        code={indeterminateCode}
-      >
-        <IndeterminateDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "striped",
-    label: "Striped",
-    demo: (
-      <DemoWrapper
-        title="Striped Variants"
-        description="Progress bars with striped patterns and animations."
-        code={stripedCode}
-      >
-        <StripedDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "labels",
     label: "Labels",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="With Labels"
@@ -1336,47 +1351,9 @@ const demoTabs = [
     ),
   },
   {
-    value: "locale",
-    label: "Locale",
-    demo: (
-      <DemoWrapper
-        title="Locale Formatting"
-        description="Progress labels formatted according to different locales."
-        code={localeCode}
-      >
-        <LocaleDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "accessibility",
-    label: "Accessibility",
-    demo: (
-      <DemoWrapper
-        title="Accessibility Features"
-        description="Custom ARIA attributes for better screen reader support."
-        code={accessibilityCode}
-      >
-        <AccessibilityDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "oncomplete",
-    label: "onComplete",
-    demo: (
-      <DemoWrapper
-        title="onComplete Callback"
-        description="Callback fires when progress reaches 100%."
-        code={onCompleteCode}
-      >
-        <OnCompleteDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "segmented",
     label: "Segmented",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Segmented Progress"
@@ -1390,6 +1367,7 @@ const demoTabs = [
   {
     value: "circular",
     label: "Circular",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Circular Progress"
@@ -1401,8 +1379,149 @@ const demoTabs = [
     ),
   },
   {
+    value: "kira",
+    label: "Kira / Lifecycle",
+    group: "KiraProgress",
+    demo: (active: boolean) => (
+      <DemoWrapper
+        title="Caller-owned lifecycle"
+        description="Unknown, measured, pause/resume, error/retry, cancel/restart and explicit completion."
+        code={lifecycleCode}
+      >
+        <LifecycleDemo active={active} />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "phases",
+    label: "Weighted Phases",
+    group: "KiraProgress",
+    demo: (
+      <DemoWrapper
+        title="Weighted measurements"
+        description="Stable phase IDs and measured amounts; unknown phases keep overall amount unknown."
+        code={phasesCode}
+      >
+        <PhasesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "background",
+    label: "Background Tasks",
+    group: "KiraProgress",
+    demo: (active: boolean) => (
+      <DemoWrapper
+        title="Progress inside a Popover"
+        description="Local demo composition; closing the popup does not stop work."
+        code={backgroundCode}
+      >
+        <BackgroundTasksDemo active={active} />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "buffer",
+    label: "Buffer",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Received and processed"
+        description="A decorative buffer layer shares the primary range."
+        code={bufferCode}
+      >
+        <BufferDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "animated",
+    label: "Animated",
+    group: "Behavior",
+    demo: (active: boolean) => (
+      <DemoWrapper
+        title="Animated Progress"
+        description="Progress bar with smooth value transitions."
+        code={animatedCode}
+      >
+        <AnimatedDemo active={active} />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "indeterminate",
+    label: "Indeterminate",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Indeterminate State"
+        description="Progress bars showing loading without a specific value."
+        code={indeterminateCode}
+      >
+        <IndeterminateDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "striped",
+    label: "Striped",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Striped Variants"
+        description="Progress bars with striped patterns and animations."
+        code={stripedCode}
+      >
+        <StripedDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "locale",
+    label: "Locale",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Locale Formatting"
+        description="Progress labels formatted according to different locales."
+        code={localeCode}
+      >
+        <LocaleDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "accessibility",
+    label: "Accessibility",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Accessibility Features"
+        description="Custom ARIA attributes for better screen reader support."
+        code={accessibilityCode}
+      >
+        <AccessibilityDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "oncomplete",
+    label: "onComplete",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="onComplete Callback"
+        description="Callback fires when progress reaches 100%."
+        code={onCompleteCode}
+      >
+        <OnCompleteDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "loading",
     label: "Loading Example",
+    group: "Behavior",
     demo: (active: boolean) => (
       <DemoWrapper
         title="Loading Example"
@@ -1413,12 +1532,44 @@ const demoTabs = [
       </DemoWrapper>
     ),
   },
-];
-
-const changelogEntries = [
   {
-    version: "Unreleased",
-    date: "In development",
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="RTL, long labels, empty/nonfinite values, disabled states, invalid ranges, clamps, and StrictMode completion reentry in a narrow max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const progressPageShortcuts = [
+  {
+    keys: "Tab / Shift + Tab",
+    description:
+      "Move among lifecycle controls. Progress indicators themselves are read-only and have no keyboard commands.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Activate Pause, Resume, Cancel or Retry. The caller owns work and status; 100% does not confirm success.",
+  },
+  {
+    keys: "Escape",
+    description:
+      "In Background Tasks: inherited from Base UI Popover, closes the popup and returns focus to its trigger. Tasks continue.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const progressPageChangelogEntries = [
+  {
+    version: "2.0.1",
+    date: "26 November 2026",
     changes: [
       {
         type: "changed",
@@ -1452,54 +1603,4 @@ const changelogEntries = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof Changelog>["entries"];
-
-export default function ProgressPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Progress"
-        description="Displays an indicator showing completion progress with linear, circular, and segmented variants."
-        version="v2.0.0"
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts shortcuts={progressPageKeyboardShortcutsShortcuts} />
-
-      <UsageBlock
-        code={usageCode}
-        title="Usage"
-        description="Import and use the progress components in your application."
-      />
-
-      <APIReference
-        sections={apiSections}
-        title="API reference"
-        description="Props and configuration options for all progress components."
-      />
-      <Changelog entries={changelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
-const progressPageKeyboardShortcutsShortcuts = [
-  {
-    keys: "Tab / Shift + Tab",
-    description:
-      "Move among lifecycle controls. Progress indicators themselves are read-only and have no keyboard commands.",
-  },
-  {
-    keys: "Enter / Space",
-    description:
-      "Activate Pause, Resume, Cancel or Retry. The caller owns work and status; 100% does not confirm success.",
-  },
-  {
-    keys: "Escape",
-    description:
-      "In Background Tasks: inherited from Base UI Popover, closes the popup and returns focus to its trigger. Tasks continue.",
-  },
-] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
