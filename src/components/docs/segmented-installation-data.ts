@@ -2,6 +2,7 @@ export const moduleSegments = [
   "theme-provider",
   "sidebar",
   "toast",
+  "route-transition",
   "full-stack",
 ] as const;
 
@@ -15,6 +16,14 @@ export const routerAdapters = [
 ] as const;
 
 export type RouterAdapter = (typeof routerAdapters)[number];
+
+export const routeTransitionRouters = [
+  "tanstack",
+  "nextjs",
+  "react-router",
+] as const;
+
+export type RouteTransitionRouter = (typeof routeTransitionRouters)[number];
 
 export interface ModuleSegmentMeta {
   id: ModuleSegment;
@@ -57,13 +66,24 @@ export const moduleMeta: Record<ModuleSegment, ModuleSegmentMeta> = {
     depsLabel: "Base UI Toast · 0 Sonner",
     scope: "App root",
   },
+  "route-transition": {
+    id: "route-transition",
+    label: "Route Transition",
+    shortLabel: "Routes",
+    tagline:
+      "Composite-only route entrances, a 120ms-debounced 2px navigation progress bar, and a reduced-motion-aware View Transitions helper.",
+    command: "{runner} kira-kit add route-transition",
+    depsLabel: "Zero router lock-in",
+    scope: "App shell",
+  },
   "full-stack": {
     id: "full-stack",
     label: "Full Stack",
-    shortLabel: "All 3",
+    shortLabel: "All 4",
     tagline:
-      "Combine ThemeProvider, KiraToastProvider, OptimisticFeedbackProvider, and Sidebar in the recommended root-to-shell nesting order.",
-    command: "{runner} kira-kit add theme-provider sidebar toast",
+      "Combine ThemeProvider, KiraToastProvider, OptimisticFeedbackProvider, Sidebar, and RouteTransition in the recommended root-to-shell nesting order.",
+    command:
+      "{runner} kira-kit add theme-provider sidebar toast route-transition",
     depsLabel: "Complete shell",
     scope: "Root + Shell",
   },
@@ -363,9 +383,133 @@ export const toastChecklist = [
   },
 ] as const;
 
+export const routeTransitionRouterMeta: Record<
+  RouteTransitionRouter,
+  { label: string; summary: string; code: string }
+> = {
+  tanstack: {
+    label: "TanStack Router",
+    summary:
+      "Key RouteTransition by pathname (ignoring search/hash filter updates), pair with native View Transitions when supported, and bind NavigationProgress to router isLoading.",
+    code: `import { Outlet, useRouterState } from "@tanstack/react-router";
+import {
+  NavigationProgress,
+  RouteTransition,
+} from "@/components/ui/route-transition";
+import { supportsViewTransitions } from "@/lib/view-transition";
+
+export function RouteOutlet() {
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
+  const isLoading = useRouterState({ select: (state) => state.isLoading });
+
+  return (
+    <>
+      <NavigationProgress active={isLoading} />
+      <RouteTransition
+        transitionKey={pathname}
+        variant={supportsViewTransitions() ? "none" : "fade"}
+      >
+        <Outlet />
+      </RouteTransition>
+    </>
+  );
+}`,
+  },
+  nextjs: {
+    label: "Next.js App Router",
+    summary:
+      "Wrap route children in a client layout shell keyed by usePathname() so route segment swaps animate cleanly while keeping server components intact.",
+    code: `"use client";
+
+import { usePathname } from "next/navigation";
+import {
+  NavigationProgress,
+  RouteTransition,
+} from "@/components/ui/route-transition";
+
+export function RouteOutlet({
+  children,
+  isPending = false,
+}: {
+  children: React.ReactNode;
+  isPending?: boolean;
+}) {
+  const pathname = usePathname();
+
+  return (
+    <>
+      <NavigationProgress active={isPending} />
+      <RouteTransition transitionKey={pathname} variant="fade">
+        {children}
+      </RouteTransition>
+    </>
+  );
+}`,
+  },
+  "react-router": {
+    label: "React Router",
+    summary:
+      "Bind useLocation().pathname to RouteTransition and useNavigation().state to NavigationProgress so slow loaders surface the 2px top bar automatically.",
+    code: `import { Outlet, useLocation, useNavigation } from "react-router";
+import {
+  NavigationProgress,
+  RouteTransition,
+} from "@/components/ui/route-transition";
+
+export function RouteOutlet() {
+  const { pathname } = useLocation();
+  const navigation = useNavigation();
+
+  return (
+    <>
+      <NavigationProgress active={navigation.state === "loading"} />
+      <RouteTransition transitionKey={pathname} variant="fade">
+        <Outlet />
+      </RouteTransition>
+    </>
+  );
+}`,
+  },
+};
+
+export const routeTransitionViewTransitionCode = `import { startViewTransition } from "@/lib/view-transition";
+
+// Crossfade in-page layout swaps (e.g. grid <-> list) where supported.
+// Falls back to an instant state update under prefers-reduced-motion or older browsers.
+function handleToggleView() {
+  startViewTransition(() => {
+    setView((current) => (current === "grid" ? "list" : "grid"));
+  });
+}`;
+
+export const routeTransitionChecklist = [
+  {
+    title: "Never double-animate",
+    description:
+      "When enabling native View Transitions in your router, pass variant={supportsViewTransitions() ? 'none' : 'fade'} so browsers never blink twice.",
+  },
+  {
+    title: "120ms anti-flash grace period",
+    description:
+      "NavigationProgress stays invisible during fast preloaded transitions and only mounts when a navigation outlives 120ms.",
+  },
+  {
+    title: "Reduced-motion & composite-only",
+    description:
+      "All entrance variants animate opacity/transform only, settle within 250ms, and disable automatically under prefers-reduced-motion.",
+  },
+] as const;
+
 export const fullStackCode = `import { ThemeProvider, ThemeToggle } from "@/components/ui/theme-provider";
 import { KiraToastProvider, toast } from "@/components/ui/toast";
 import { OptimisticFeedbackProvider } from "@/hooks/use-optimistic-commit";
+import {
+  NavigationProgress,
+  RouteTransition,
+} from "@/components/ui/route-transition";
+import { supportsViewTransitions } from "@/lib/view-transition";
 import {
   Sidebar,
   SidebarContent,
@@ -391,10 +535,19 @@ export function RootProviders({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  pathname,
+  isLoading,
+  children,
+}: {
+  pathname: string;
+  isLoading: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <SidebarRouterProvider adapter={yourRouterAdapter}>
       <SidebarProvider>
+        <NavigationProgress active={isLoading} />
         <div className="flex h-screen overflow-hidden">
           <Sidebar>
             <SidebarHeader />
@@ -405,7 +558,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <ThemeToggle />
             </SidebarFooter>
           </Sidebar>
-          <main className="flex-1 overflow-y-auto">{children}</main>
+          <main className="flex-1 overflow-y-auto">
+            <RouteTransition
+              transitionKey={pathname}
+              variant={supportsViewTransitions() ? "none" : "fade"}
+            >
+              {children}
+            </RouteTransition>
+          </main>
         </div>
       </SidebarProvider>
     </SidebarRouterProvider>
@@ -437,5 +597,10 @@ export const providerStackLayers = [
     name: "SidebarProvider",
     layer: "Shell · Layout",
     role: "Manages desktop collapse state, mobile drawer, and keyboard toggle.",
+  },
+  {
+    name: "RouteTransition + NavigationProgress",
+    layer: "Shell · Outlet",
+    role: "Animates pathname changes inside <main> and shows a 2px progress bar on loads over 120ms.",
   },
 ] as const;

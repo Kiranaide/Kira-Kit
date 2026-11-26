@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react";
 import { Link } from "@tanstack/react-router";
 import {
   IconArrowUpRight,
+  IconArrowsExchange,
   IconBell,
   IconCheck,
   IconLayersLinked,
@@ -10,6 +11,7 @@ import {
   IconLoader2,
   IconPalette,
   IconPin,
+  IconPlayerPlay,
   IconSparkles,
   IconX,
 } from "@tabler/icons-react";
@@ -19,6 +21,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CodeBlock } from "@/components/ui/code-block";
+import {
+  NavigationProgress,
+  RouteTransition,
+} from "@/components/ui/route-transition";
 import { ThemeToggle, useTheme } from "@/components/ui/theme-provider";
 import { toast } from "@/components/ui/toast";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -35,6 +41,10 @@ import {
   providerStackLayers,
   routerAdapterMeta,
   routerAdapters,
+  routeTransitionChecklist,
+  routeTransitionRouterMeta,
+  routeTransitionRouters,
+  routeTransitionViewTransitionCode,
   sidebarChecklist,
   themeChecklist,
   themeFoucScriptCode,
@@ -46,6 +56,7 @@ import {
   toastUsageCode,
   type ModuleSegment,
   type RouterAdapter,
+  type RouteTransitionRouter,
 } from "@/components/docs/segmented-installation-data";
 import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
 
@@ -66,6 +77,9 @@ const segmentIcons: Record<ModuleSegment, React.ReactNode> = {
   "theme-provider": <IconPalette className="size-4 shrink-0" aria-hidden />,
   sidebar: <IconLayoutSidebar className="size-4 shrink-0" aria-hidden />,
   toast: <IconBell className="size-4 shrink-0" aria-hidden />,
+  "route-transition": (
+    <IconArrowsExchange className="size-4 shrink-0" aria-hidden />
+  ),
   "full-stack": <IconLayersLinked className="size-4 shrink-0" aria-hidden />,
 };
 
@@ -73,6 +87,7 @@ const segmentRoutes: Partial<Record<ModuleSegment, string>> = {
   "theme-provider": "/components/theme-provider",
   sidebar: "/components/sidebar",
   toast: "/components/toast",
+  "route-transition": "/components/route-transition",
 };
 
 function CliCommand({ command, cli }: { command: string; cli: string }) {
@@ -452,6 +467,173 @@ function ToastPanel({ cli }: { cli: string }) {
   );
 }
 
+function RouteTransitionLivePreview() {
+  const [step, setStep] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
+
+  const triggerLoad = () => {
+    setLoading(true);
+    window.setTimeout(() => {
+      setLoading(false);
+      setStep((current) => current + 1);
+    }, 650);
+  };
+
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/35 p-4">
+      <NavigationProgress active={loading} />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="text-xs font-medium text-foreground">
+          Live Route Transition Preview
+        </span>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setStep((current) => current + 1)}
+          >
+            <IconPlayerPlay className="size-3.5" aria-hidden />
+            Replay entrance
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={loading}
+            onClick={triggerLoad}
+          >
+            <IconLoader2
+              className={cn("size-3.5", loading && "motion-safe:animate-spin")}
+              aria-hidden
+            />
+            {loading ? "Loading…" : "Simulate slow route"}
+          </Button>
+        </div>
+      </div>
+      <div className="overflow-hidden rounded-lg border border-border bg-background">
+        <RouteTransition
+          transitionKey={step}
+          variant="fade-up"
+          className="flex items-center justify-between gap-2 px-3.5 py-2.5 text-xs"
+        >
+          <span className="font-mono text-foreground">
+            /workspace/view-{step + 1}
+          </span>
+          <span className="text-muted-foreground">
+            variant=&quot;fade-up&quot; · 250ms
+          </span>
+        </RouteTransition>
+      </div>
+    </div>
+  );
+}
+
+function RouteTransitionRouterPicker() {
+  const [router, setRouter] = React.useState<RouteTransitionRouter>("tanstack");
+  const codeWrapRef = React.useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion() || !codeWrapRef.current) return;
+
+      gsap.fromTo(
+        codeWrapRef.current,
+        { opacity: 0, y: 6 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.22,
+          ease: "power2.out",
+          clearProps: "transform",
+        },
+      );
+    },
+    { dependencies: [router], scope: codeWrapRef },
+  );
+
+  const activeRouter = routeTransitionRouterMeta[router];
+
+  return (
+    <div className="flex flex-col gap-3">
+      <ToggleGroup
+        aria-label="Route transition router"
+        variant="segment"
+        radius="pill"
+        size="sm"
+        slidingIndicator
+        semantics="current"
+        value={[router]}
+        onValueChange={(next) => {
+          const picked = pickedValue(next, routeTransitionRouters);
+
+          if (picked) setRouter(picked);
+        }}
+      >
+        {routeTransitionRouters.map((key) => (
+          <ToggleGroupItem key={key} value={key}>
+            {routeTransitionRouterMeta[key].label}
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
+
+      <div ref={codeWrapRef} className="flex flex-col gap-3">
+        <p className="text-xs leading-5 text-muted-foreground">
+          {activeRouter.summary}
+        </p>
+        <CodeBlock code={activeRouter.code} language="tsx" showLineNumbers />
+      </div>
+    </div>
+  );
+}
+
+function RouteTransitionPanel({ cli }: { cli: string }) {
+  return (
+    <div className="flex flex-col gap-6">
+      <DocSteps
+        steps={[
+          {
+            number: 1,
+            title: "Add route-transition",
+            description:
+              "Installs RouteTransition, NavigationProgress, and the reduced-motion-aware view-transition helper.",
+            children: (
+              <CliCommand
+                command={moduleMeta["route-transition"].command}
+                cli={cli}
+              />
+            ),
+          },
+          {
+            number: 2,
+            title: "Wire your router pathname & loading state",
+            description:
+              "Key RouteTransition by pathname inside your shell outlet and pass your router's loading flag to NavigationProgress.",
+            children: <RouteTransitionRouterPicker />,
+          },
+          {
+            number: 3,
+            title: "Test live & crossfade local UI swaps",
+            description:
+              "Try the top progress bar and keyed entrance below, or call startViewTransition() for in-page view switches.",
+            children: (
+              <div className="flex flex-col gap-3">
+                <RouteTransitionLivePreview />
+                <CodeBlock
+                  code={routeTransitionViewTransitionCode}
+                  language="tsx"
+                  showLineNumbers
+                />
+              </div>
+            ),
+          },
+        ]}
+      />
+      <DocChecklist items={[...routeTransitionChecklist]} />
+    </div>
+  );
+}
+
 function ProviderArchitectureStack() {
   const [focused, setFocused] = React.useState<string>(
     providerStackLayers[0].name,
@@ -518,9 +700,9 @@ function FullStackPanel({ cli }: { cli: string }) {
         steps={[
           {
             number: 1,
-            title: "Install all three modules in one command",
+            title: "Install all four modules in one command",
             description:
-              "Adds theme-provider, sidebar, and toast along with their shared hooks.",
+              "Adds theme-provider, sidebar, toast, and route-transition along with their shared hooks.",
             children: (
               <CliCommand
                 command={moduleMeta["full-stack"].command}
@@ -532,7 +714,7 @@ function FullStackPanel({ cli }: { cli: string }) {
             number: 2,
             title: "Compose RootProviders and AppShell",
             description:
-              "Keep ThemeProvider and KiraToastProvider at your root route, and mount Sidebar only inside authenticated or app-shell layouts.",
+              "Keep ThemeProvider and KiraToastProvider at your root route, and mount Sidebar, NavigationProgress, and RouteTransition inside your app shell.",
             children: (
               <div className="flex flex-col gap-4">
                 <ProviderArchitectureStack />
@@ -549,7 +731,8 @@ function FullStackPanel({ cli }: { cli: string }) {
       <DocCallout title="Why split RootProviders and AppShell?">
         Keeping ThemeProvider, OptimisticFeedbackProvider, and KiraToastProvider
         on the root route ensures marketing, login, and error pages still get
-        theming and notifications without loading Sidebar chrome.
+        theming and notifications without loading Sidebar chrome or shell route
+        transitions.
       </DocCallout>
     </div>
   );
@@ -640,6 +823,17 @@ export function ToastInstallationCard() {
       title="Installation & optimistic wiring"
     >
       {(cli) => <ToastPanel cli={cli} />}
+    </StandaloneInstallationCard>
+  );
+}
+
+export function RouteTransitionInstallationCard() {
+  return (
+    <StandaloneInstallationCard
+      moduleId="route-transition"
+      title="Installation & router wiring"
+    >
+      {(cli) => <RouteTransitionPanel cli={cli} />}
     </StandaloneInstallationCard>
   );
 }
@@ -742,6 +936,7 @@ export function SegmentedInstallationGuide({ cli }: { cli: string }) {
           {segment === "theme-provider" && <ThemeProviderPanel cli={cli} />}
           {segment === "sidebar" && <SidebarPanel cli={cli} />}
           {segment === "toast" && <ToastPanel cli={cli} />}
+          {segment === "route-transition" && <RouteTransitionPanel cli={cli} />}
           {segment === "full-stack" && <FullStackPanel cli={cli} />}
         </div>
       </CardContent>

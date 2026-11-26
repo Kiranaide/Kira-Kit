@@ -435,8 +435,8 @@ function AppShellGuideSection({ cli }: { cli: string }) {
   return (
     <DocSection
       id="core-modules"
-      title="ThemeProvider, Sidebar & Toast"
-      description="Install and configure each app-level module independently — or wire all three together in one root-to-shell stack."
+      title="ThemeProvider, Sidebar, Toast & RouteTransition"
+      description="Install and configure each app-level module independently — or wire all four together in one root-to-shell stack."
     >
       <SegmentedInstallationGuide cli={cli} />
     </DocSection>

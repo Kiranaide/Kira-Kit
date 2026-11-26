@@ -1,5 +1,5 @@
-import * as React from "react";
 import type { ComponentProps as ReactComponentProps } from "react";
+import * as React from "react";
 import {
   RouteTransition,
   NavigationProgress,
@@ -15,10 +15,12 @@ import {
   FeatureGrid,
   DemoWrapper,
   DemoTabs,
+  KeyboardShortcuts,
   UsageBlock,
   APIReference,
   Changelog,
 } from "@/components/docs";
+import { RouteTransitionInstallationCard } from "@/components/docs/segmented-installation-guide";
 
 const fadeCode = `import { RouteTransition } from "@/components/ui/route-transition"
 import { useLocation, Outlet } from "@tanstack/react-router"
@@ -34,6 +36,43 @@ export function AppShell() {
         <Outlet />
       </RouteTransition>
     </main>
+  )
+}`;
+
+const galleryCode = `import * as React from "react"
+import { RouteTransition } from "@/components/ui/route-transition"
+import { Button } from "@/components/ui/button"
+
+const variants = [
+  "fade",
+  "fade-up",
+  "fade-down",
+  "slide-left",
+  "slide-right",
+  "zoom",
+] as const
+
+export function VariantGalleryDemo() {
+  const [run, setRun] = React.useState(0)
+
+  return (
+    <div className="space-y-4">
+      <Button size="sm" onClick={() => setRun((current) => current + 1)}>
+        Replay all
+      </Button>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {variants.map((variant) => (
+          <RouteTransition
+            key={variant}
+            transitionKey={\`\${variant}-\${run}\`}
+            variant={variant}
+            className="rounded-lg border border-border p-4"
+          >
+            {variant}
+          </RouteTransition>
+        ))}
+      </div>
+    </div>
   )
 }`;
 
@@ -64,27 +103,73 @@ function toggleView() {
   })
 }`;
 
+const stressCode = `import * as React from "react"
+import {
+  RouteTransition,
+  NavigationProgress,
+} from "@/components/ui/route-transition"
+import { Button } from "@/components/ui/button"
+
+export function StressDemo() {
+  const [step, setStep] = React.useState<"long" | "empty">("long")
+
+  return (
+    <div className="max-w-xs space-y-3">
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" variant="outline" onClick={() => setStep("long")}>
+          Long route title
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => setStep("empty")}>
+          Empty state
+        </Button>
+        <Button size="sm" disabled>
+          Disabled navigation
+        </Button>
+      </div>
+      <div className="overflow-hidden rounded-lg border border-border">
+        <RouteTransition
+          transitionKey={step}
+          variant="fade-up"
+          className="p-4"
+        >
+          {step === "long" ? (
+            <p className="break-words text-sm font-medium">
+              Enterprise_Workspace_Deployment_Pipeline_Configuration_Overview_v2
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">No content.</p>
+          )}
+        </RouteTransition>
+      </div>
+      <NavigationProgress active={false} />
+    </div>
+  )
+}`;
+
 const usageCode = `import { createRouter } from "@tanstack/react-router"
+import {
+  RouteTransition,
+  NavigationProgress,
+} from "@/components/ui/route-transition"
+import { supportsViewTransitions } from "@/lib/view-transition"
 
 export const router = createRouter({
   routeTree,
-  // Preload lazy route chunks on hover/touch intent so most navigations
-  // commit before the progress bar's grace period ends.
   defaultPreload: "intent",
-  // Native crossfade for real path changes only; search/hash updates
-  // stay instant. Browsers without the API navigate normally.
   defaultViewTransition: {
     types: ({ pathChanged }) => (pathChanged ? ["route-change"] : false),
   },
 })
 
-// Pick one entrance mechanism per browser: the native crossfade where the
-// View Transitions API exists, the CSS fade everywhere else. Never both —
-// stacking them (or restarting the fade when the crossfade ends) blinks twice.
-//   <RouteTransition
-//     transitionKey={pathname}
-//     variant={supportsViewTransitions() ? "none" : "fade"}
-//   >`;
+// Pick one entrance mechanism per browser: native crossfade where supported,
+// CSS RouteTransition everywhere else — never stack both.
+<RouteTransition
+  transitionKey={pathname}
+  variant={supportsViewTransitions() ? "none" : "fade"}
+>
+  <Outlet />
+</RouteTransition>
+<NavigationProgress active={isLoading} />`;
 
 const demoPages = {
   overview: {
@@ -301,6 +386,58 @@ function ViewTransitionDemo() {
   );
 }
 
+function StressDemo() {
+  const [step, setStep] = React.useState<"long" | "empty">("long");
+
+  return (
+    <div className="max-w-xs space-y-3">
+      <div className="flex flex-wrap gap-2">
+        <Button
+          size="sm"
+          variant={step === "long" ? "default" : "outline"}
+          onClick={() => setStep("long")}
+        >
+          Long route title
+        </Button>
+        <Button
+          size="sm"
+          variant={step === "empty" ? "default" : "outline"}
+          onClick={() => setStep("empty")}
+        >
+          Empty state
+        </Button>
+        <Button size="sm" variant="outline" disabled>
+          Disabled navigation
+        </Button>
+      </div>
+      <div className="overflow-hidden rounded-lg border border-border">
+        <RouteTransition
+          transitionKey={step}
+          variant="fade-up"
+          className="space-y-1 p-4"
+        >
+          {step === "long" ? (
+            <>
+              <p className="break-words text-sm font-medium">
+                Enterprise_Workspace_Deployment_Pipeline_Configuration_Overview_v2
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Long unbroken route headings wrap inside narrow containers
+                without clipping the entrance animation.
+              </p>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No route content loaded.
+            </p>
+          )}
+        </RouteTransition>
+      </div>
+      <NavigationProgress active={false} />
+    </div>
+  );
+}
+
 export default function RouteTransitionPage() {
   return (
     <ComponentPage>
@@ -310,18 +447,46 @@ export default function RouteTransitionPage() {
         version="v2.0.0"
       />
 
-      <FeatureGrid features={routeTransitionPageFeatureGridFeatures} />
+      <FeatureGrid
+        features={routeTransitionPageFeatureGridFeatures}
+        description="Composite-only route entrances and progress feedback."
+      />
 
       <DemoTabs defaultValue="fade" tabs={routeTransitionPageDemoTabsTabs} />
 
-      <UsageBlock
-        code={usageCode}
-        description="How this docs app combines native view transitions, intent preloading, the entrance fade, and the progress bar."
+      <RouteTransitionInstallationCard />
+
+      <KeyboardShortcuts
+        shortcuts={routeTransitionPageShortcuts}
+        description="RouteTransition and NavigationProgress are non-interactive wrappers that preserve native keyboard focus order."
       />
 
-      <APIReference sections={routeTransitionPageAPIReferenceSections} />
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="How this docs app combines native view transitions, intent preloading, the entrance fade, and the progress bar."
+        notes={[
+          {
+            label: "Avoid double animations",
+            body: "Use native View Transitions where supported and pass variant='none' to RouteTransition so route changes never blink twice.",
+          },
+          {
+            label: "120ms grace period",
+            body: "NavigationProgress stays hidden during fast preloaded transitions and only renders when a load outlives 120ms.",
+          },
+        ]}
+      />
 
-      <Changelog entries={routeTransitionPageChangelogEntries} />
+      <APIReference
+        sections={routeTransitionPageAPIReferenceSections}
+        description="Props, return values, and exported variants for route transitions."
+      />
+
+      <Changelog
+        entries={routeTransitionPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Route Transition."
+      />
     </ComponentPage>
   );
 }
@@ -365,7 +530,7 @@ const routeTransitionPageDemoTabsTabs = [
       <DemoWrapper
         title="All variants"
         description="Replay every entrance side by side and pick the one that fits your navigation."
-        code={fadeCode}
+        code={galleryCode}
       >
         <VariantGalleryDemo />
       </DemoWrapper>
@@ -397,7 +562,38 @@ const routeTransitionPageDemoTabsTabs = [
       </DemoWrapper>
     ),
   },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long unbroken titles, empty content, and disabled navigation controls inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
 ] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const routeTransitionPageShortcuts = [
+  {
+    keys: "Tab / Shift + Tab",
+    description:
+      "Move focus through route content normally; RouteTransition and NavigationProgress never trap or intercept focus.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Activate focused links or controls that update transitionKey or invoke startViewTransition.",
+  },
+  {
+    keys: "Reduced Motion",
+    description:
+      "OS prefers-reduced-motion: reduce flattens CSS entrances and skips document.startViewTransition for instant updates.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
 const routeTransitionPageAPIReferenceSections = [
   {
@@ -440,12 +636,24 @@ const routeTransitionPageAPIReferenceSections = [
         type: "string",
         default: "-",
         description:
-          "Additional classes on the fixed bar (defaults: inset-x-0 top-0 z-50 h-0.5 bg-primary).",
+          "Additional classes on the fixed 2px top progress bar (defaults: inset-x-0 top-0 z-50 bg-primary).",
       },
     ],
   },
   {
-    title: "startViewTransition",
+    title: "routeTransitionVariants",
+    props: [
+      {
+        prop: "variant",
+        type: '"fade" | "fade-up" | "fade-down" | "slide-left" | "slide-right" | "zoom" | "none"',
+        default: '"fade"',
+        description:
+          "Exported CVA helper for applying reduced-motion-gated entrance classes directly.",
+      },
+    ],
+  },
+  {
+    title: "startViewTransition / supportsViewTransitions",
     props: [
       {
         prop: "update",
@@ -461,14 +669,21 @@ const routeTransitionPageAPIReferenceSections = [
         description:
           "The native ViewTransition handle (ready/finished/updateCallbackDone promises), or undefined when the update ran without a transition.",
       },
+      {
+        prop: "supportsViewTransitions()",
+        type: "() => boolean",
+        default: "-",
+        description:
+          "Returns true when document.startViewTransition is available and prefers-reduced-motion is not enabled.",
+      },
     ],
   },
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const routeTransitionPageChangelogEntries = [
   {
-    version: "Unreleased",
-    date: "In development",
+    version: "2.0.0",
+    date: "26 November 2026",
     changes: [
       {
         type: "added",
