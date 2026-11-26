@@ -1,3 +1,5 @@
+/* kira-kit-ignore-file raw-colors: color-picker demo fixtures intentionally demonstrate hex color values */
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   IconPalette,
@@ -203,7 +205,7 @@ function ContrastDemo() {
   return (
     <div className="w-full max-w-md space-y-4">
       <div className="grid gap-3 sm:grid-cols-3">
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label
             htmlFor={id + "-surface"}
             className="block text-xs font-medium"
@@ -223,7 +225,7 @@ function ContrastDemo() {
             }}
           />
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label htmlFor={id + "-size"} className="block text-xs font-medium">
             Text category
           </label>
@@ -239,7 +241,7 @@ function ContrastDemo() {
             }}
           />
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label htmlFor={id + "-level"} className="block text-xs font-medium">
             Contrast target
           </label>
@@ -294,7 +296,7 @@ function TokensDemo() {
 
   return (
     <div className="w-full max-w-md space-y-4">
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         <label htmlFor={id} className="block text-sm font-medium">
           Token name
         </label>
@@ -467,7 +469,7 @@ function FormDemo() {
           Reset
         </Button>
       </div>
-      <output className="min-h-5 wrap-anywhere text-xs text-muted-foreground">
+      <output className="block min-h-5 wrap-anywhere text-xs text-muted-foreground">
         {saved
           ? "Saved in this form: " + saved
           : "Choose a color, then save. Reset returns to the empty default."}
@@ -491,7 +493,7 @@ export function FormDemo() {
       <ColorPicker name="accent" defaultValue="" required label="Invoice accent" showAlpha hideContrastRatio />
       <Button type="submit">Save color</Button>
       <Button type="reset" variant="outline">Reset</Button>
-      <p role="status">{saved}</p>
+      <output>{saved}</output>
     </form>
   );
 }`;
@@ -598,102 +600,110 @@ export function StatesDemo() {
   );
 }`;
 
-const demoTabs = [
-  {
-    value: "basic",
-    label: "Basic",
-    title: "Simple color picker",
-    description: "The compact original design with shared kit controls.",
-    code: basicCode,
-    content: <BasicDemo />,
-  },
-  {
-    value: "formats",
-    label: "Formats",
-    title: "Validated color formats",
-    description:
-      "HEX, HEXA, RGB, HSL and OKLCH drafts with commit and recovery.",
-    code: formatsCode,
-    content: <FormatsDemo />,
-  },
-  {
-    value: "alpha",
-    label: "Opacity",
-    title: "One color, one opacity",
-    description: "Translucent previews and consistent alpha in every output.",
-    code: alphaCode,
-    content: <AlphaDemo />,
-  },
-  {
-    value: "palette",
-    label: "Palette",
-    title: "Campaign colors and harmonies",
-    description: "Immutable swatches, harmonies and session-only history.",
-    code: paletteCode,
-    content: <PaletteDemo />,
-  },
-  {
-    value: "contrast",
-    label: "Contrast",
-    title: "Contrast on the real surface",
-    description:
-      "Explicit backgrounds and text categories with opt-in suggestions.",
-    code: contrastCode,
-    content: <ContrastDemo />,
-  },
-  {
-    value: "tokens",
-    label: "Tokens",
-    title: "Portable color tokens",
-    description: "Named CSS variables and DTCG 2025.10 color-token JSON.",
-    code: tokensCode,
-    content: <TokensDemo />,
-  },
-  {
-    value: "copy",
-    label: "Copy workflow",
-    title: "Pending, cancel and retry",
-    description:
-      "A labelled delay/failure fixture followed by real clipboard writes.",
-    code: asyncCopyCode,
-    content: <AsyncCopyDemo />,
-  },
-  {
-    value: "form",
-    label: "Form",
-    title: "Required form color",
-    description: "Native validation, canonical form data and reset.",
-    code: formCode,
-    content: <FormDemo />,
-  },
-  {
-    value: "kira",
-    label: "Kira",
-    title: "Brand color handoff",
-    description:
-      "The simple picker, actual-background contrast and token exports together.",
-    code: kiraCode,
-    content: <KiraDemo />,
-  },
-  {
-    value: "states",
-    label: "States",
-    title: "States and narrow layouts",
-    description:
-      "Sizes, read-only, disabled reasons, invalid input and empty values.",
-    code: statesCode,
-    content: <StatesDemo />,
-  },
-].map(({ content, title, description, code, ...tab }) => ({
-  ...tab,
-  demo: (
-    <DemoWrapper title={title} description={description} code={code}>
-      {content}
-    </DemoWrapper>
-  ),
-}));
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <div className="space-y-2">
+        <p className="wrap-anywhere text-sm font-medium">
+          International regional brand accent color for quarterly financial
+          reports
+        </p>
+        <ColorPicker
+          defaultValue=""
+          label="International regional brand accent color for quarterly financial reports"
+          hideDefaultSwatches
+        />
+      </div>
+      <ColorPicker
+        defaultValue="#64748b"
+        disabled
+        disabledReason="Only workspace administrators can modify organization brand colors."
+        label="Locked organization brand color"
+      />
+      <KiraColorPicker
+        background="#ffffff"
+        defaultValue="#4338ca"
+        tokenName="theme.brand.accent.interactive.foreground"
+        showTokenPreview
+        label="Long token name handoff"
+      />
+    </div>
+  );
+}
 
-const features = [
+const stressCode = `import { ColorPicker, KiraColorPicker } from "@/components/ui/color-picker";
+
+export function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <ColorPicker
+        defaultValue=""
+        label="International regional brand accent color for quarterly financial reports"
+        hideDefaultSwatches
+      />
+      <ColorPicker
+        defaultValue="#64748b"
+        disabled
+        disabledReason="Only workspace administrators can modify organization brand colors."
+      />
+      <KiraColorPicker
+        background="#ffffff"
+        defaultValue="#4338ca"
+        tokenName="theme.brand.accent.interactive.foreground"
+        showTokenPreview
+        label="Long token name handoff"
+      />
+    </div>
+  );
+}`;
+
+const usageCode =
+  `import { useState } from "react";
+import { ColorPicker, KiraColorPicker, type ColorInput } from "@/components/ui/color-picker";
+import { Button } from "@/components/ui/button";` +
+  "\n\n" +
+  [basicCode, kiraCode, formCode]
+    .map((code) => code.replace(/^import[\s\S]*?;\s*\n/gm, ""))
+    .join("\n\n");
+
+export default function ColorPickerPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Color Picker"
+        version="v2.0.0"
+        description="A compact color picker with shared controls, accurate color formats and optional contrast and token workflows."
+      />
+      <FeatureGrid
+        features={colorPickerPageFeatures}
+        description="Compact color controls with validated formats, WCAG contrast checks and design token handoff."
+      />
+      <DemoTabs tabs={colorPickerPageDemoTabs} defaultValue="basic" />
+      <KeyboardShortcuts
+        shortcuts={colorPickerPageShortcuts}
+        description="Keyboard navigation across the trigger, sliders, format selector and color draft field."
+      />
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Use ColorPicker for compact color input and form fields, or KiraColorPicker for contrast verification and token export."
+        notes={colorPickerPageUsageNotes}
+      />
+      <APIReference
+        sections={colorPickerPageAPISections}
+        description="Props, types and exported color utilities for ColorPicker and KiraColorPicker."
+      />
+      <Changelog
+        entries={colorPickerPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Color Picker."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const colorPickerPageFeatures = [
   {
     title: "Compact controls",
     description:
@@ -718,9 +728,166 @@ const features = [
       "Copy CSS variables or DTCG tokens with pending, cancellation and recovery.",
     icon: <IconClipboard aria-hidden="true" className="size-4" />,
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const shortcuts = [
+const colorPickerPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Simple color picker"
+        description="The compact original design with shared kit controls."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "formats",
+    label: "Formats",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Validated color formats"
+        description="HEX, HEXA, RGB, HSL and OKLCH drafts with commit and recovery."
+        code={formatsCode}
+      >
+        <FormatsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "alpha",
+    label: "Opacity",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="One color, one opacity"
+        description="Translucent previews and consistent alpha in every output."
+        code={alphaCode}
+      >
+        <AlphaDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "palette",
+    label: "Palette",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Campaign colors and harmonies"
+        description="Immutable swatches, harmonies and session-only history."
+        code={paletteCode}
+      >
+        <PaletteDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "contrast",
+    label: "Contrast",
+    group: "KiraColorPicker",
+    demo: (
+      <DemoWrapper
+        title="Contrast on the real surface"
+        description="Explicit backgrounds and text categories with opt-in suggestions."
+        code={contrastCode}
+      >
+        <ContrastDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "tokens",
+    label: "Tokens",
+    group: "KiraColorPicker",
+    demo: (
+      <DemoWrapper
+        title="Portable color tokens"
+        description="Named CSS variables and DTCG 2025.10 color-token JSON."
+        code={tokensCode}
+      >
+        <TokensDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "copy",
+    label: "Copy workflow",
+    group: "KiraColorPicker",
+    demo: (
+      <DemoWrapper
+        title="Pending, cancel and retry"
+        description="A labelled delay/failure fixture followed by real clipboard writes."
+        code={asyncCopyCode}
+      >
+        <AsyncCopyDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    group: "KiraColorPicker",
+    demo: (
+      <DemoWrapper
+        title="Brand color handoff"
+        description="The simple picker, actual-background contrast and token exports together."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "form",
+    label: "Form",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Required form color"
+        description="Native validation, canonical form data and reset."
+        code={formCode}
+      >
+        <FormDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="States and narrow layouts"
+        description="Sizes, read-only, disabled reasons, invalid input and empty values."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, empty values, disabled reasons and long token names inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const colorPickerPageShortcuts = [
   {
     keys: "Tab / Shift+Tab",
     description:
@@ -755,18 +922,20 @@ const shortcuts = [
     description:
       "Restore an edited draft first; otherwise close the popup and return focus through Base UI. Also cancels a native EyeDropper selection.",
   },
-];
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-const usageCode =
-  `import { useState } from "react";
-import { ColorPicker, KiraColorPicker, type ColorInput } from "@/components/ui/color-picker";
-import { Button } from "@/components/ui/button";` +
-  "\n\n" +
-  [basicCode, kiraCode, formCode]
-    .map((code) => code.replace(/^import[\s\S]*?;\s*\n/gm, ""))
-    .join("\n\n");
+const colorPickerPageUsageNotes = [
+  {
+    label: "Preserving opacity",
+    body: "When controlling ColorPicker via onValueChange, store next.hsv or next.hexa so alpha is preserved across edits.",
+  },
+  {
+    label: "KiraColorPicker",
+    body: "Pass an opaque background color to evaluate WCAG AA/AAA contrast, offer opt-in lightness suggestions, and copy CSS or DTCG tokens.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
 
-const apiSections = [
+const colorPickerPageAPISections = [
   {
     title: "ColorPicker",
     props: [
@@ -983,12 +1152,12 @@ const apiSections = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof APIReference>["sections"];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const changelog = [
+const colorPickerPageChangelogEntries = [
   {
-    version: "v2.0.0",
-    date: "November 14, 2026",
+    version: "2.0.0",
+    date: "14 November 2026",
     changes: [
       {
         type: "added",
@@ -1029,8 +1198,8 @@ const changelog = [
     ],
   },
   {
-    version: "v1.0.0",
-    date: "Previous release",
+    version: "1.0.0",
+    date: "1 November 2026",
     changes: [
       {
         type: "added",
@@ -1039,22 +1208,4 @@ const changelog = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof Changelog>["entries"];
-
-export default function ColorPickerPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Color Picker"
-        version="v2.0.0"
-        description="A compact color picker with shared controls, accurate color formats and optional contrast and token workflows."
-      />
-      <FeatureGrid features={features} />
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-      <KeyboardShortcuts shortcuts={shortcuts} />
-      <UsageBlock code={usageCode} />
-      <APIReference sections={apiSections} />
-      <Changelog entries={changelog} />
-    </ComponentPage>
-  );
-}
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

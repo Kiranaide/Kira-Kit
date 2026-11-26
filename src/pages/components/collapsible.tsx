@@ -25,7 +25,9 @@ function BasicDemo() {
   return (
     <div className="max-w-xl">
       <Collapsible defaultOpen>
-        <CollapsibleTrigger icon={<IconFileText className="size-4" />}>
+        <CollapsibleTrigger
+          icon={<IconFileText aria-hidden="true" className="size-4" />}
+        >
           Release notes
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -108,7 +110,9 @@ function NestedDemo() {
   return (
     <div className="max-w-xl">
       <Collapsible defaultOpen>
-        <CollapsibleTrigger icon={<IconSettings className="size-4" />}>
+        <CollapsibleTrigger
+          icon={<IconSettings aria-hidden="true" className="size-4" />}
+        >
           Export preferences
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -188,21 +192,27 @@ export function ExportNote() {
   </Collapsible>
 }`;
 
+const triggerVariantList: ReactComponentProps<
+  typeof CollapsibleTrigger
+>["variant"][] = [
+  "default",
+  "outline",
+  "ghost",
+  "link",
+  "info",
+  "success",
+  "warning",
+  "destructive",
+];
+
+const triggerSizeList: ReactComponentProps<
+  typeof CollapsibleTrigger
+>["size"][] = ["xs", "sm", "default", "lg"];
+
 function VariantsDemo() {
   return (
     <div className="max-w-xl space-y-3">
-      {(
-        [
-          "default",
-          "outline",
-          "ghost",
-          "link",
-          "info",
-          "success",
-          "warning",
-          "destructive",
-        ] as const
-      ).map((variant) => (
+      {triggerVariantList.map((variant) => (
         <Collapsible key={variant}>
           <CollapsibleTrigger variant={variant}>
             {variant} disclosure
@@ -213,7 +223,7 @@ function VariantsDemo() {
         </Collapsible>
       ))}
       <div className="border-t pt-3">
-        {(["xs", "sm", "default", "lg"] as const).map((size) => (
+        {triggerSizeList.map((size) => (
           <Collapsible key={size}>
             <CollapsibleTrigger size={size}>{size} size</CollapsibleTrigger>
             <CollapsibleContent size={size}>
@@ -239,7 +249,7 @@ function KiraDemo() {
       <KiraCollapsible
         title="Review requirements"
         description="Complete these checks before sharing outside the workspace."
-        icon={<IconFileText className="size-4" />}
+        icon={<IconFileText aria-hidden="true" className="size-4" />}
         defaultOpen
       >
         <ul className="list-inside list-disc space-y-2 text-sm">
@@ -250,7 +260,7 @@ function KiraDemo() {
       </KiraCollapsible>
       <KiraCollapsible
         title="External sharing"
-        icon={<IconLock className="size-4" />}
+        icon={<IconLock aria-hidden="true" className="size-4" />}
         disabled
         disabledReason="Only workspace owners can change external sharing."
       >
@@ -278,7 +288,7 @@ function StatesDemo() {
         </p>
       </KiraCollapsible>
       <KiraCollapsible title="Unable to load review notes" defaultOpen>
-        <p className="text-sm text-[color-mix(in_oklab,var(--destructive)_75%,var(--foreground))]">
+        <p className="text-sm text-destructive">
           The document is unavailable. Check access with its owner.
         </p>
       </KiraCollapsible>
@@ -300,12 +310,84 @@ export function LoadingMetadata() {
   return <KiraCollapsible title="Loading document metadata" defaultOpen loading />
 }`;
 
-const prop = (
-  name: string,
-  type: string,
-  value: string,
-  description: string,
-) => ({ prop: name, type, default: value, description });
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <Collapsible defaultOpen>
+        <CollapsibleTrigger variant="outline">
+          Quarterly-accessibility-and-localization-audit-summary-2026-final-approved.pdf
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <p className="text-sm text-muted-foreground">
+            Long unbroken filenames wrap cleanly inside narrow disclosure
+            headers without clipping the chevron.
+          </p>
+        </CollapsibleContent>
+      </Collapsible>
+      <KiraCollapsible title="Empty panel" defaultOpen />
+      <KiraCollapsible
+        title="Locked retention policy"
+        icon={<IconLock aria-hidden="true" className="size-4" />}
+        disabled
+        disabledReason="Only organization administrators can modify retention policies."
+      >
+        Policy controls
+      </KiraCollapsible>
+    </div>
+  );
+}
+
+const stressCode = `import { Collapsible, CollapsibleTrigger, CollapsibleContent, KiraCollapsible } from "@/components/ui/collapsible"
+
+export function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <Collapsible defaultOpen>
+        <CollapsibleTrigger variant="outline">
+          Quarterly-accessibility-and-localization-audit-summary-2026-final-approved.pdf
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          Long unbroken filenames wrap cleanly inside narrow disclosure headers.
+        </CollapsibleContent>
+      </Collapsible>
+      <KiraCollapsible title="Empty panel" defaultOpen />
+      <KiraCollapsible
+        title="Locked retention policy"
+        disabled
+        disabledReason="Only organization administrators can modify retention policies."
+      >
+        Policy controls
+      </KiraCollapsible>
+    </div>
+  )
+}`;
+
+const usageCode = `import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+  KiraCollapsible,
+} from "@/components/ui/collapsible";
+
+export function ReleaseDisclosure() {
+  return (
+    <div className="space-y-4">
+      <Collapsible defaultOpen>
+        <CollapsibleTrigger>Release notes</CollapsibleTrigger>
+        <CollapsibleContent>
+          October release: exports preserve folder structure.
+        </CollapsibleContent>
+      </Collapsible>
+      <KiraCollapsible
+        title="Review requirements"
+        description="Complete these checks before sharing outside the workspace."
+        defaultOpen
+      >
+        <p>Confirm owner approval and remove personal data.</p>
+      </KiraCollapsible>
+    </div>
+  );
+}`;
 
 export default function CollapsiblePage() {
   return (
@@ -313,27 +395,32 @@ export default function CollapsiblePage() {
       <PageHeader
         title="Collapsible"
         description="Reveal supporting details with native disclosure semantics and quiet, reversible motion."
-        version="2.0.1"
+        version="v2.0.1"
       />
-      <FeatureGrid features={collapsiblePageFeatureGridFeatures} />
+      <FeatureGrid
+        features={collapsiblePageFeatureGridFeatures}
+        description="Native Base UI disclosure primitives with draft retention and visible disabled explanations."
+      />
       <DemoTabs defaultValue="basic" tabs={collapsiblePageDemoTabsTabs} />
       <KeyboardShortcuts
-        shortcuts={[
-          {
-            keys: "Tab / Shift+Tab",
-            description:
-              "Inherited from Base UI: focus the trigger and visible panel controls.",
-          },
-          {
-            keys: "Enter / Space",
-            description: "Inherited from Base UI: toggle the focused trigger.",
-          },
-        ]}
+        shortcuts={collapsiblePageShortcuts}
+        description="Standard keyboard navigation and toggle bindings inherited from Base UI."
       />
-      <UsageBlock code={basicCode} />
-      <UsageBlock title="Kira usage" code={kiraCode} />
-      <APIReference sections={collapsiblePageAPIReferenceSections} />
-      <Changelog entries={collapsiblePageChangelogEntries} />
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Compose the primitive parts for custom layouts, or use KiraCollapsible for titled sections with descriptions and loading states."
+        notes={collapsiblePageUsageNotes}
+      />
+      <APIReference
+        sections={collapsiblePageAPIReferenceSections}
+        description="Props, types and defaults for Collapsible primitives and KiraCollapsible."
+      />
+      <Changelog
+        entries={collapsiblePageChangelogEntries}
+        title="Changelog"
+        description="Version history for Collapsible."
+      />
     </ComponentPage>
   );
 }
@@ -343,17 +430,17 @@ const collapsiblePageFeatureGridFeatures = [
   {
     title: "Native disclosure",
     description: "Base UI owns semantics, focus and panel lifecycle.",
-    icon: <IconFileText className="size-5" />,
+    icon: <IconFileText aria-hidden="true" className="size-5" />,
   },
   {
     title: "Draft retention",
     description: "Keep edits when a panel closes and reopens.",
-    icon: <IconSettings className="size-5" />,
+    icon: <IconSettings aria-hidden="true" className="size-5" />,
   },
   {
     title: "Visible reasons",
     description: "Explain unavailable controls beside their trigger.",
-    icon: <IconLock className="size-5" />,
+    icon: <IconLock aria-hidden="true" className="size-5" />,
   },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
@@ -361,6 +448,7 @@ const collapsiblePageDemoTabsTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper title="Release notes" code={basicCode}>
         <BasicDemo />
@@ -370,6 +458,7 @@ const collapsiblePageDemoTabsTabs = [
   {
     value: "details",
     label: "Details",
+    group: "Core",
     demo: (
       <DemoWrapper title="Details" code={detailsCode}>
         <DetailsDemo />
@@ -379,6 +468,7 @@ const collapsiblePageDemoTabsTabs = [
   {
     value: "nested",
     label: "Nested",
+    group: "Core",
     demo: (
       <DemoWrapper title="Nested" code={nestedCode}>
         <NestedDemo />
@@ -386,17 +476,9 @@ const collapsiblePageDemoTabsTabs = [
     ),
   },
   {
-    value: "draft",
-    label: "Draft",
-    demo: (
-      <DemoWrapper title="Draft" code={draftCode}>
-        <DraftDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "variants",
     label: "Variants",
+    group: "Core",
     demo: (
       <DemoWrapper title="Variants" code={variantsCode}>
         <VariantsDemo />
@@ -406,6 +488,7 @@ const collapsiblePageDemoTabsTabs = [
   {
     value: "kira",
     label: "Kira",
+    group: "KiraCollapsible",
     demo: (
       <DemoWrapper title="Kira" code={kiraCode}>
         <KiraDemo />
@@ -413,15 +496,63 @@ const collapsiblePageDemoTabsTabs = [
     ),
   },
   {
+    value: "draft",
+    label: "Draft",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper title="Draft" code={draftCode}>
+        <DraftDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "states",
     label: "States",
+    group: "Behavior",
     demo: (
       <DemoWrapper title="States" code={statesCode}>
         <StatesDemo />
       </DemoWrapper>
     ),
   },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long unbroken titles, empty content and disabled explanations inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
 ] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const collapsiblePageShortcuts = [
+  {
+    keys: "Tab / Shift+Tab",
+    description:
+      "Inherited from Base UI: focus the trigger and visible panel controls.",
+  },
+  {
+    keys: "Enter / Space",
+    description: "Inherited from Base UI: toggle the focused trigger.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const collapsiblePageUsageNotes = [
+  {
+    label: "KiraCollapsible",
+    body: "Use the wrapper when a disclosure needs a linked description, disabledReason, or built-in loading skeleton.",
+  },
+  {
+    label: "Retaining form drafts",
+    body: "Panels unmount when closed by default; pass lazyMount or keepMounted on CollapsibleContent to preserve input state.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
 
 const collapsiblePageChangelogEntries = [
   {
@@ -467,161 +598,182 @@ const collapsiblePageAPIReferenceSections = [
   {
     title: "Collapsible / CollapsibleRootProps",
     props: [
-      prop(
-        "open / defaultOpen",
-        "boolean",
-        "false",
-        "Controlled or initial open state.",
-      ),
-      prop(
-        "onOpenChange",
-        "(open, details) => void",
-        "—",
-        "Native Base UI event details; cancellation is honored.",
-      ),
-      prop("disabled", "boolean", "false", "Disable trigger interaction."),
-      prop(
-        "motion",
-        "boolean",
-        "true",
-        "Allow panel and chevron transitions; reduced motion always wins.",
-      ),
-      prop(
-        "render / ref / className / children",
-        "Base UI Root props",
-        "—",
-        "Native composition and root props forwarded.",
-      ),
+      {
+        prop: "open / defaultOpen",
+        type: "boolean",
+        default: "false",
+        description: "Controlled or initial open state.",
+      },
+      {
+        prop: "onOpenChange",
+        type: "(open, details) => void",
+        default: "-",
+        description: "Native Base UI event details; cancellation is honored.",
+      },
+      {
+        prop: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disable trigger interaction.",
+      },
+      {
+        prop: "motion",
+        type: "boolean",
+        default: "true",
+        description:
+          "Allow panel and chevron transitions; reduced motion always wins.",
+      },
+      {
+        prop: "render / ref / className / children",
+        type: "Base UI Root props",
+        default: "-",
+        description: "Native composition and root props forwarded.",
+      },
     ],
   },
   {
     title: "CollapsibleTrigger / CollapsibleTriggerProps",
     props: [
-      prop(
-        "variant",
-        '"default" | "info" | "success" | "warning" | "destructive" | "ghost" | "outline" | "link"',
-        '"default"',
-        "Semantic trigger styling.",
-      ),
-      prop(
-        "size",
-        '"xs" | "sm" | "default" | "lg"',
-        '"default"',
-        "Trigger density.",
-      ),
-      prop(
-        "showArrow",
-        "boolean",
-        "true",
-        "Show the rotating chevron, including custom chevrons.",
-      ),
-      prop(
-        "chevronIcon / icon",
-        "ReactNode",
-        "—",
-        "Decorative custom chevron or leading icon.",
-      ),
-      prop("chevronPosition", '"start" | "end"', '"end"', "Chevron placement."),
-      prop(
-        "render / ref / children / className",
-        "Base UI Trigger props",
-        "—",
-        "Native trigger composition and handlers forwarded.",
-      ),
+      {
+        prop: "variant",
+        type: '"default" | "info" | "success" | "warning" | "destructive" | "ghost" | "outline" | "link"',
+        default: '"default"',
+        description: "Semantic trigger styling.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Trigger density.",
+      },
+      {
+        prop: "showArrow",
+        type: "boolean",
+        default: "true",
+        description: "Show the rotating chevron, including custom chevrons.",
+      },
+      {
+        prop: "chevronIcon / icon",
+        type: "ReactNode",
+        default: "-",
+        description: "Decorative custom chevron or leading icon.",
+      },
+      {
+        prop: "chevronPosition",
+        type: '"start" | "end"',
+        default: '"end"',
+        description: "Chevron placement.",
+      },
+      {
+        prop: "render / ref / children / className",
+        type: "Base UI Trigger props",
+        default: "-",
+        description: "Native trigger composition and handlers forwarded.",
+      },
     ],
   },
   {
     title: "CollapsibleContent / CollapsibleContentProps",
     props: [
-      prop(
-        "size",
-        '"none" | "xs" | "sm" | "default" | "lg"',
-        '"default"',
-        "Content spacing; none supports tree groups.",
-      ),
-      prop("inset", "boolean", "false", "Logical-start content inset."),
-      prop(
-        "keepMounted",
-        "boolean",
-        "false",
-        "Keep content in the DOM while hidden; explicit value wins over lazyMount.",
-      ),
-      prop(
-        "lazyMount",
-        "boolean",
-        "false",
-        "Retain after first opening; defaultOpen counts as opened.",
-      ),
-      prop(
-        "hiddenUntilFound",
-        "boolean",
-        "false",
-        "Native browser find-in-page disclosure; support varies by browser.",
-      ),
-      prop(
-        "loading / skeletonLines",
-        "boolean / number",
-        "false / 3",
-        "Actual busy state with 1–8 static placeholder lines.",
-      ),
-      prop(
-        "render / ref / children / className / style",
-        "Base UI Panel props",
-        "—",
-        "Native panel props forwarded.",
-      ),
+      {
+        prop: "size",
+        type: '"none" | "xs" | "sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Content spacing; none supports tree groups.",
+      },
+      {
+        prop: "inset",
+        type: "boolean",
+        default: "false",
+        description: "Logical-start content inset.",
+      },
+      {
+        prop: "keepMounted",
+        type: "boolean",
+        default: "false",
+        description:
+          "Keep content in the DOM while hidden; explicit value wins over lazyMount.",
+      },
+      {
+        prop: "lazyMount",
+        type: "boolean",
+        default: "false",
+        description:
+          "Retain after first opening; defaultOpen counts as opened.",
+      },
+      {
+        prop: "hiddenUntilFound",
+        type: "boolean",
+        default: "false",
+        description:
+          "Native browser find-in-page disclosure; support varies by browser.",
+      },
+      {
+        prop: "loading / skeletonLines",
+        type: "boolean / number",
+        default: "false / 3",
+        description: "Actual busy state with 1–8 static placeholder lines.",
+      },
+      {
+        prop: "render / ref / children / className / style",
+        type: "Base UI Panel props",
+        default: "-",
+        description: "Native panel props forwarded.",
+      },
     ],
   },
   {
     title: "KiraCollapsible / KiraCollapsibleProps",
     props: [
-      prop(
-        "title / children",
-        "ReactNode",
-        "required / —",
-        "Visible trigger and panel content.",
-      ),
-      prop(
-        "description / disabledReason",
-        "string",
-        "—",
-        "Visible summary or disabled explanation linked to the trigger.",
-      ),
-      prop(
-        "icon / variant / size",
-        "CollapsibleTrigger props",
-        "—",
-        "Shared trigger styling.",
-      ),
-      prop(
-        "loading / keepMounted",
-        "boolean",
-        "false",
-        "Busy content or state retention.",
-      ),
-      prop(
-        "open / defaultOpen / onOpenChange / disabled / motion",
-        "CollapsibleRootProps",
-        "native defaults",
-        "Root controls forwarded.",
-      ),
-      prop(
-        "ref / className / render",
-        "Base UI Root props",
-        "—",
-        "Root composition and styling.",
-      ),
+      {
+        prop: "title / children",
+        type: "ReactNode",
+        default: "required / -",
+        description: "Visible trigger and panel content.",
+      },
+      {
+        prop: "description / disabledReason",
+        type: "string",
+        default: "-",
+        description:
+          "Visible summary or disabled explanation linked to the trigger.",
+      },
+      {
+        prop: "icon / variant / size",
+        type: "CollapsibleTrigger props",
+        default: "-",
+        description: "Shared trigger styling.",
+      },
+      {
+        prop: "loading / keepMounted",
+        type: "boolean",
+        default: "false",
+        description: "Busy content or state retention.",
+      },
+      {
+        prop: "open / defaultOpen / onOpenChange / disabled / motion",
+        type: "CollapsibleRootProps",
+        default: "native defaults",
+        description: "Root controls forwarded.",
+      },
+      {
+        prop: "ref / className / render",
+        type: "Base UI Root props",
+        default: "-",
+        description: "Root composition and styling.",
+      },
     ],
   },
   {
     title: "collapsibleTriggerVariants / collapsibleContentVariants",
     props: [
-      prop(
-        "variant / size",
-        "cva arguments",
-        "default",
-        "Exported class recipes used by the components; content also supports size none.",
-      ),
+      {
+        prop: "variant / size",
+        type: "cva arguments",
+        default: "default",
+        description:
+          "Exported class recipes used by the components; content also supports size none.",
+      },
     ],
   },
-] satisfies React.ComponentProps<typeof APIReference>["sections"];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];

@@ -1,44 +1,44 @@
 import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
-  Button,
-  ExpandableIconButton,
-  LoadingButton,
-  KiraButton,
-} from "@/components/ui/button";
-import { SimpleTooltip } from "@/components/ui/tooltip";
-import {
-  IconPlus,
+  IconAccessible,
+  IconAlertCircle,
+  IconArrowLeft,
+  IconArrowRight,
+  IconCircleCheck,
   IconDownload,
-  IconTrash,
+  IconHeart,
+  IconInfoCircle,
   IconMail,
+  IconPalette,
+  IconPlayerPlay,
+  IconPlus,
+  IconRefresh,
   IconSend,
   IconSettings,
-  IconHeart,
-  IconStar,
-  IconPlayerPlay,
-  IconInfoCircle,
-  IconCircleCheck,
-  IconAccessible,
-  IconPalette,
   IconStack2,
-  IconArrowRight,
-  IconArrowLeft,
-  IconRefresh,
+  IconStar,
+  IconTrash,
   IconUpload,
-  IconAlertCircle,
 } from "@tabler/icons-react";
 import {
-  ComponentPage,
-  PageHeader,
-  FeatureGrid,
-  DemoTabs,
-  DemoWrapper,
-  KeyboardShortcuts,
-  UsageBlock,
   APIReference,
   Changelog,
+  ComponentPage,
+  DemoTabs,
+  DemoWrapper,
+  FeatureGrid,
+  KeyboardShortcuts,
+  PageHeader,
+  UsageBlock,
 } from "@/components/docs";
+import {
+  Button,
+  ExpandableIconButton,
+  KiraButton,
+  LoadingButton,
+} from "@/components/ui/button";
+import { SimpleTooltip } from "@/components/ui/tooltip";
 
 function VariantsDemo() {
   return (
@@ -94,20 +94,17 @@ function VariantsDemo() {
 
 const variantsCode = `import { Button } from "@/components/ui/button"
 
-// Basic variants
 <Button variant="default">Default</Button>
 <Button variant="secondary">Secondary</Button>
 <Button variant="outline">Outline</Button>
 <Button variant="ghost">Ghost</Button>
 <Button variant="link">Link</Button>
 
-// Semantic variants
 <Button variant="destructive">Destructive</Button>
 <Button variant="info">Info</Button>
 <Button variant="success">Success</Button>
 <Button variant="warning">Warning</Button>
 
-// Outline and ghost variants
 <Button variant="destructive-outline">Destructive</Button>
 <Button variant="info-ghost">Info</Button>`;
 
@@ -122,20 +119,28 @@ function SizesDemo() {
         <Button size="xl">Extra Large</Button>
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <Button size="icon-xs" variant="outline">
-          <IconPlus className="w-3 h-3" />
+        <Button
+          size="icon-xs"
+          variant="outline"
+          aria-label="Add item (extra small)"
+        >
+          <IconPlus className="w-3 h-3" aria-hidden="true" />
         </Button>
-        <Button size="icon-sm" variant="outline">
-          <IconPlus className="w-4 h-4" />
+        <Button size="icon-sm" variant="outline" aria-label="Add item (small)">
+          <IconPlus className="w-4 h-4" aria-hidden="true" />
         </Button>
-        <Button size="icon" variant="outline">
-          <IconPlus className="w-4 h-4" />
+        <Button size="icon" variant="outline" aria-label="Add item">
+          <IconPlus className="w-4 h-4" aria-hidden="true" />
         </Button>
-        <Button size="icon-lg" variant="outline">
-          <IconPlus className="w-5 h-5" />
+        <Button size="icon-lg" variant="outline" aria-label="Add item (large)">
+          <IconPlus className="w-5 h-5" aria-hidden="true" />
         </Button>
-        <Button size="icon-xl" variant="outline">
-          <IconPlus className="w-5 h-5" />
+        <Button
+          size="icon-xl"
+          variant="outline"
+          aria-label="Add item (extra large)"
+        >
+          <IconPlus className="w-5 h-5" aria-hidden="true" />
         </Button>
       </div>
     </div>
@@ -143,42 +148,61 @@ function SizesDemo() {
 }
 
 const sizesCode = `import { Button } from "@/components/ui/button"
+import { IconPlus } from "@tabler/icons-react"
 
-// Text button sizes
 <Button size="xs">Extra Small</Button>
 <Button size="sm">Small</Button>
 <Button size="default">Default</Button>
 <Button size="lg">Large</Button>
 <Button size="xl">Extra Large</Button>
 
-// Icon button sizes
-<Button size="icon-xs"><IconPlus /></Button>
-<Button size="icon-sm"><IconPlus /></Button>
-<Button size="icon"><IconPlus /></Button>
-<Button size="icon-lg"><IconPlus /></Button>
-<Button size="icon-xl"><IconPlus /></Button>`;
+<Button size="icon-xs" aria-label="Add item"><IconPlus aria-hidden="true" /></Button>
+<Button size="icon-sm" aria-label="Add item"><IconPlus aria-hidden="true" /></Button>
+<Button size="icon" aria-label="Add item"><IconPlus aria-hidden="true" /></Button>
+<Button size="icon-lg" aria-label="Add item"><IconPlus aria-hidden="true" /></Button>
+<Button size="icon-xl" aria-label="Add item"><IconPlus aria-hidden="true" /></Button>`;
 
 function WithIconsDemo() {
   return (
     <div className="flex flex-wrap gap-3">
       <Button variant="default">
-        <IconMail data-icon="inline-start" className="w-4 h-4" />
+        <IconMail
+          data-icon="inline-start"
+          className="w-4 h-4"
+          aria-hidden="true"
+        />
         Send Email
       </Button>
       <Button variant="secondary">
-        <IconDownload data-icon="inline-start" className="w-4 h-4" />
+        <IconDownload
+          data-icon="inline-start"
+          className="w-4 h-4"
+          aria-hidden="true"
+        />
         Download
       </Button>
       <Button variant="outline">
-        <IconSettings data-icon="inline-start" className="w-4 h-4" />
+        <IconSettings
+          data-icon="inline-start"
+          className="w-4 h-4"
+          aria-hidden="true"
+        />
         Settings
       </Button>
       <Button variant="success">
-        <IconCircleCheck data-icon="inline-start" className="w-4 h-4" />
+        <IconCircleCheck
+          data-icon="inline-start"
+          className="w-4 h-4"
+          aria-hidden="true"
+        />
         Confirm
       </Button>
       <Button variant="destructive">
-        <IconTrash data-icon="inline-start" className="w-4 h-4" />
+        <IconTrash
+          data-icon="inline-start"
+          className="w-4 h-4"
+          aria-hidden="true"
+        />
         Delete
       </Button>
     </div>
@@ -186,18 +210,44 @@ function WithIconsDemo() {
 }
 
 const withIconsCode = `import { Button } from "@/components/ui/button"
-import { IconMail, IconDownload, IconSettings } from "@tabler/icons-react"
+import { IconMail, IconDownload } from "@tabler/icons-react"
 
-// Use data-icon="inline-start" for proper icon spacing
 <Button variant="default">
-  <IconMail data-icon="inline-start" className="w-4 h-4" />
+  <IconMail data-icon="inline-start" className="w-4 h-4" aria-hidden="true" />
   Send Email
 </Button>
 
 <Button variant="secondary">
-  <IconDownload data-icon="inline-start" className="w-4 h-4" />
+  <IconDownload data-icon="inline-start" className="w-4 h-4" aria-hidden="true" />
   Download
 </Button>`;
+
+function FlexibleChildrenSection() {
+  return (
+    <div>
+      <h3 className="text-sm font-medium text-muted-foreground mb-3">
+        Flexible Children (Still Supported)
+      </h3>
+      <div className="flex flex-wrap gap-3">
+        <Button variant="outline">
+          <span className="flex items-center gap-2">
+            <IconSettings className="w-4 h-4" aria-hidden="true" />
+            <span>Custom Layout</span>
+          </span>
+        </Button>
+        <Button variant="success">
+          <span className="flex items-center gap-2">
+            <IconCircleCheck className="w-4 h-4" aria-hidden="true" />
+            <span>Success with Badge</span>
+            <span className="bg-success-foreground/20 text-success-foreground text-xs px-2 py-0.5 rounded">
+              3
+            </span>
+          </span>
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 function IconPropsDemo() {
   return (
@@ -207,24 +257,29 @@ function IconPropsDemo() {
           Using leftIcon and rightIcon Props (Recommended)
         </h3>
         <div className="flex flex-wrap gap-3">
-          <Button variant="default" leftIcon={<IconMail className="w-4 h-4" />}>
+          <Button
+            variant="default"
+            leftIcon={<IconMail className="w-4 h-4" aria-hidden="true" />}
+          >
             Send Email
           </Button>
           <Button
             variant="secondary"
-            leftIcon={<IconDownload className="w-4 h-4" />}
+            leftIcon={<IconDownload className="w-4 h-4" aria-hidden="true" />}
           >
             Download
           </Button>
           <Button
             variant="outline"
-            rightIcon={<IconArrowRight className="w-4 h-4" />}
+            rightIcon={
+              <IconArrowRight className="w-4 h-4" aria-hidden="true" />
+            }
           >
             Continue
           </Button>
           <Button
             variant="ghost"
-            leftIcon={<IconArrowLeft className="w-4 h-4" />}
+            leftIcon={<IconArrowLeft className="w-4 h-4" aria-hidden="true" />}
           >
             Back
           </Button>
@@ -237,141 +292,119 @@ function IconPropsDemo() {
         <div className="flex flex-wrap gap-3">
           <Button
             variant="default"
-            leftIcon={<IconRefresh className="w-4 h-4" />}
-            rightIcon={<IconArrowRight className="w-4 h-4" />}
+            leftIcon={<IconRefresh className="w-4 h-4" aria-hidden="true" />}
+            rightIcon={
+              <IconArrowRight className="w-4 h-4" aria-hidden="true" />
+            }
           >
-            Sync & Continue
+            Sync &amp; Continue
           </Button>
           <Button
             variant="secondary"
-            leftIcon={<IconUpload className="w-4 h-4" />}
-            rightIcon={<IconArrowRight className="w-4 h-4" />}
+            leftIcon={<IconUpload className="w-4 h-4" aria-hidden="true" />}
+            rightIcon={
+              <IconArrowRight className="w-4 h-4" aria-hidden="true" />
+            }
           >
             Upload Files
           </Button>
         </div>
       </div>
-      <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">
-          Flexible Children (Still Supported)
-        </h3>
-        <div className="flex flex-wrap gap-3">
-          <Button variant="outline">
-            <span className="flex items-center gap-2">
-              <IconSettings className="w-4 h-4" />
-              <span>Custom Layout</span>
-            </span>
-          </Button>
-          <Button variant="success">
-            <span className="flex items-center gap-2">
-              <IconCircleCheck className="w-4 h-4" />
-              <span>Success with Badge</span>
-              <span className="bg-white/20 text-white text-xs px-1.5 py-0.5 rounded">
-                3
-              </span>
-            </span>
-          </Button>
-        </div>
-      </div>
+      <FlexibleChildrenSection />
     </div>
   );
 }
 
 const iconPropsCode = `import { Button } from "@/components/ui/button"
-import { IconMail, IconArrowRight } from "@tabler/icons-react"
+import { IconMail, IconArrowRight, IconRefresh } from "@tabler/icons-react"
 
-// Using leftIcon prop (recommended)
-<Button 
-  variant="default" 
-  leftIcon={<IconMail className="w-4 h-4" />}
+<Button
+  variant="default"
+  leftIcon={<IconMail className="w-4 h-4" aria-hidden="true" />}
 >
   Send Email
 </Button>
 
-// Using rightIcon prop
-<Button 
-  variant="outline" 
-  rightIcon={<IconArrowRight className="w-4 h-4" />}
+<Button
+  variant="outline"
+  rightIcon={<IconArrowRight className="w-4 h-4" aria-hidden="true" />}
 >
   Continue
 </Button>
 
-// Using both icons
-<Button 
-  leftIcon={<IconRefresh className="w-4 h-4" />}
-  rightIcon={<IconArrowRight className="w-4 h-4" />}
+<Button
+  leftIcon={<IconRefresh className="w-4 h-4" aria-hidden="true" />}
+  rightIcon={<IconArrowRight className="w-4 h-4" aria-hidden="true" />}
 >
   Sync & Continue
-</Button>
-
-// Flexible children for custom layouts
-<Button variant="outline">
-  <span className="flex items-center gap-2">
-    <IconSettings className="w-4 h-4" />
-    <span>Custom Layout</span>
-    <Badge>3</Badge>
-  </span>
 </Button>`;
 
 function HoldToConfirmDemo() {
+  const [status, setStatus] = React.useState("Ready");
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Hold the button to execute the action. Release early to cancel.
+        Hold the button (pointer or Enter/Space) to execute the action. Release
+        early to cancel.
       </p>
       <div className="flex flex-wrap gap-3">
         <Button
           variant="default"
           holdDuration={1000}
-          onHoldComplete={() => alert("Sent!")}
-          leftIcon={<IconSend className="w-4 h-4" />}
+          onHoldComplete={() => setStatus("Sent!")}
+          leftIcon={<IconSend className="w-4 h-4" aria-hidden="true" />}
         >
           Hold to Send
         </Button>
         <Button
           variant="success"
           holdDuration={1000}
-          onHoldComplete={() => alert("Approved!")}
-          leftIcon={<IconCircleCheck className="w-4 h-4" />}
+          onHoldComplete={() => setStatus("Approved!")}
+          leftIcon={<IconCircleCheck className="w-4 h-4" aria-hidden="true" />}
         >
           Hold to Approve
         </Button>
         <Button
           variant="destructive"
           holdDuration={1500}
-          onHoldComplete={() => alert("Deleted!")}
-          leftIcon={<IconTrash className="w-4 h-4" />}
+          onHoldComplete={() => setStatus("Deleted!")}
+          leftIcon={<IconTrash className="w-4 h-4" aria-hidden="true" />}
         >
           Hold to Delete
         </Button>
       </div>
+      <output className="block text-xs text-muted-foreground">
+        Status: {status}
+      </output>
     </div>
   );
 }
 
 const holdToConfirmCode = `import { Button } from "@/components/ui/button"
+import { IconTrash, IconCircleCheck } from "@tabler/icons-react"
 
-// Hold duration in milliseconds
 <Button
   variant="destructive"
   holdDuration={1500}
   onHoldComplete={() => handleDelete()}
-  leftIcon={<IconTrash className="w-4 h-4" />}
+  leftIcon={<IconTrash className="w-4 h-4" aria-hidden="true" />}
 >
   Hold to Delete
 </Button>
 
-// With icon using leftIcon prop
 <Button
   variant="success"
   holdDuration={1000}
   onHoldComplete={() => handleApprove()}
-  leftIcon={<IconCircleCheck className="w-4 h-4" />}
+  leftIcon={<IconCircleCheck className="w-4 h-4" aria-hidden="true" />}
 >
   Hold to Approve
 </Button>`;
 
 function ExpandableDemo() {
+  const [status, setStatus] = React.useState("Hover an icon to expand");
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
@@ -379,22 +412,22 @@ function ExpandableDemo() {
       </p>
       <div className="flex flex-wrap gap-3">
         <ExpandableIconButton
-          icon={<IconSettings className="w-4 h-4" />}
+          icon={<IconSettings className="w-4 h-4" aria-hidden="true" />}
           label="Settings"
           variant="outline"
         />
         <ExpandableIconButton
-          icon={<IconHeart className="w-4 h-4" />}
+          icon={<IconHeart className="w-4 h-4" aria-hidden="true" />}
           label="Like"
           variant="secondary"
         />
         <ExpandableIconButton
-          icon={<IconPlayerPlay className="w-4 h-4" />}
+          icon={<IconPlayerPlay className="w-4 h-4" aria-hidden="true" />}
           label="Play Video"
           variant="default"
         />
         <ExpandableIconButton
-          icon={<IconTrash className="w-4 h-4" />}
+          icon={<IconTrash className="w-4 h-4" aria-hidden="true" />}
           label="Delete"
           variant="destructive"
         />
@@ -405,37 +438,37 @@ function ExpandableDemo() {
         </h4>
         <div className="flex flex-wrap gap-3">
           <ExpandableIconButton
-            icon={<IconSend className="w-4 h-4" />}
+            icon={<IconSend className="w-4 h-4" aria-hidden="true" />}
             label="Send"
             variant="default"
             holdDuration={1000}
-            onHoldComplete={() => alert("Sent!")}
+            onHoldComplete={() => setStatus("Sent via expandable button")}
           />
           <ExpandableIconButton
-            icon={<IconTrash className="w-4 h-4" />}
+            icon={<IconTrash className="w-4 h-4" aria-hidden="true" />}
             label="Delete"
             variant="destructive"
             holdDuration={1500}
-            onHoldComplete={() => alert("Deleted!")}
+            onHoldComplete={() => setStatus("Deleted via expandable button")}
           />
         </div>
       </div>
+      <output className="block text-xs text-muted-foreground">{status}</output>
     </div>
   );
 }
 
 const expandableCode = `import { ExpandableIconButton } from "@/components/ui/button"
+import { IconSettings, IconTrash } from "@tabler/icons-react"
 
-// Basic expandable
 <ExpandableIconButton
-  icon={<IconSettings className="w-4 h-4" />}
+  icon={<IconSettings className="w-4 h-4" aria-hidden="true" />}
   label="Settings"
   variant="outline"
 />
 
-// With hold to confirm
 <ExpandableIconButton
-  icon={<IconTrash className="w-4 h-4" />}
+  icon={<IconTrash className="w-4 h-4" aria-hidden="true" />}
   label="Delete"
   variant="destructive"
   holdDuration={1500}
@@ -464,7 +497,7 @@ function LoadingButtonDemo() {
         <LoadingButton
           isLoading={loadingStates["default"]}
           onClick={() => handleClick("default")}
-          leftIcon={<IconSend className="w-4 h-4" />}
+          leftIcon={<IconSend className="w-4 h-4" aria-hidden="true" />}
         >
           Submit
         </LoadingButton>
@@ -472,7 +505,7 @@ function LoadingButtonDemo() {
           variant="secondary"
           isLoading={loadingStates["secondary"]}
           onClick={() => handleClick("secondary")}
-          leftIcon={<IconDownload className="w-4 h-4" />}
+          leftIcon={<IconDownload className="w-4 h-4" aria-hidden="true" />}
         >
           Save
         </LoadingButton>
@@ -488,7 +521,7 @@ function LoadingButtonDemo() {
           variant="destructive"
           isLoading={loadingStates["destructive"]}
           onClick={() => handleClick("destructive")}
-          leftIcon={<IconTrash className="w-4 h-4" />}
+          leftIcon={<IconTrash className="w-4 h-4" aria-hidden="true" />}
         >
           Delete
         </LoadingButton>
@@ -499,89 +532,75 @@ function LoadingButtonDemo() {
 
 const loadingButtonCode = `import { LoadingButton } from "@/components/ui/button"
 
-const [isLoading, setIsLoading] = useState(false)
-
-<LoadingButton
-  isLoading={isLoading}
-  onClick={() => handleSubmit()}
->
+<LoadingButton isLoading={isLoading} onClick={() => handleSubmit()}>
   Submit
 </LoadingButton>
 
-// With custom loading text
-<LoadingButton
-  isLoading={isLoading}
-  loadingText="Processing..."
->
+<LoadingButton isLoading={isLoading} loadingText="Processing...">
   Process
 </LoadingButton>`;
 
-function IconButtonWithTooltipDemo() {
+function IconButtonTooltipDemo() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Icon-only buttons composed with SimpleTooltip for accessible labels.
+        Icon-only buttons with descriptive tooltips for accessibility.
       </p>
       <div className="flex flex-wrap gap-3">
         <SimpleTooltip content="Settings">
           <Button variant="outline" size="icon" aria-label="Settings">
-            <IconSettings className="w-4 h-4" />
+            <IconSettings className="w-4 h-4" aria-hidden="true" />
           </Button>
         </SimpleTooltip>
         <SimpleTooltip content="Add to favorites">
           <Button variant="secondary" size="icon" aria-label="Add to favorites">
-            <IconHeart className="w-4 h-4" />
+            <IconHeart className="w-4 h-4" aria-hidden="true" />
           </Button>
         </SimpleTooltip>
         <SimpleTooltip content="Download file">
           <Button variant="default" size="icon" aria-label="Download file">
-            <IconDownload className="w-4 h-4" />
+            <IconDownload className="w-4 h-4" aria-hidden="true" />
           </Button>
         </SimpleTooltip>
         <SimpleTooltip content="Delete item">
           <Button variant="destructive" size="icon" aria-label="Delete item">
-            <IconTrash className="w-4 h-4" />
+            <IconTrash className="w-4 h-4" aria-hidden="true" />
           </Button>
         </SimpleTooltip>
         <SimpleTooltip content="More information">
           <Button variant="info" size="icon" aria-label="More information">
-            <IconInfoCircle className="w-4 h-4" />
+            <IconInfoCircle className="w-4 h-4" aria-hidden="true" />
           </Button>
         </SimpleTooltip>
         <SimpleTooltip content="Complete all required fields before submitting.">
-          <span className="inline-flex">
-            <Button disabled size="icon" aria-label="Submit">
-              <IconSend className="w-4 h-4" />
-            </Button>
-          </span>
+          <Button
+            disabled
+            focusableWhenDisabled
+            size="icon"
+            aria-label="Submit"
+          >
+            <IconSend className="w-4 h-4" aria-hidden="true" />
+          </Button>
         </SimpleTooltip>
       </div>
     </div>
   );
 }
 
-const iconButtonWithTooltipCode = `import { Button } from "@/components/ui/button"
+const iconButtonTooltipCode = `import { Button } from "@/components/ui/button"
 import { SimpleTooltip } from "@/components/ui/tooltip"
+import { IconSettings, IconTrash, IconSend } from "@tabler/icons-react"
 
 <SimpleTooltip content="Settings">
   <Button variant="outline" size="icon" aria-label="Settings">
-    <IconSettings className="w-4 h-4" />
+    <IconSettings className="w-4 h-4" aria-hidden="true" />
   </Button>
 </SimpleTooltip>
 
-<SimpleTooltip content="Delete item">
-  <Button variant="destructive" size="icon" aria-label="Delete item">
-    <IconTrash className="w-4 h-4" />
-  </Button>
-</SimpleTooltip>
-
-// Disabled with an explanation on hover.
 <SimpleTooltip content="Complete all required fields before submitting.">
-  <span className="inline-flex">
-    <Button disabled size="icon" aria-label="Submit">
-      <IconSend className="w-4 h-4" />
-    </Button>
-  </span>
+  <Button disabled focusableWhenDisabled size="icon" aria-label="Submit">
+    <IconSend className="w-4 h-4" aria-hidden="true" />
+  </Button>
 </SimpleTooltip>`;
 
 function DisabledDemo() {
@@ -613,6 +632,112 @@ function DisabledDemo() {
   );
 }
 
+const disabledCode = `import { Button } from "@/components/ui/button"
+
+<Button disabled>Disabled Default</Button>
+<Button variant="secondary" disabled>Disabled Secondary</Button>
+<Button variant="outline" disabled>Disabled Outline</Button>
+
+// Stays keyboard-focusable while disabled (WCAG 2.2)
+<Button disabled focusableWhenDisabled>Reachable by Tab</Button>`;
+
+function KiraButtonIconsSection() {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-semibold mb-2">Icons</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Icons via leftIcon and rightIcon, consistent across Button and
+          KiraButton.
+        </p>
+      </div>
+      <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/30 rounded-lg border">
+        <KiraButton
+          leftIcon={<IconMail className="w-4 h-4" aria-hidden="true" />}
+        >
+          Send Email
+        </KiraButton>
+        <KiraButton
+          variant="outline"
+          rightIcon={<IconArrowRight className="w-4 h-4" aria-hidden="true" />}
+        >
+          Continue
+        </KiraButton>
+      </div>
+    </div>
+  );
+}
+
+function KiraButtonAllVariantsSection() {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-semibold mb-2">All Variants</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          KiraButton supports all button variants with consistent behavior.
+        </p>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-muted/30 rounded-lg border">
+        <KiraButton
+          leftIcon={<IconMail className="w-4 h-4" aria-hidden="true" />}
+          size="sm"
+        >
+          Default
+        </KiraButton>
+        <KiraButton
+          leftIcon={<IconMail className="w-4 h-4" aria-hidden="true" />}
+          variant="secondary"
+          size="sm"
+        >
+          Secondary
+        </KiraButton>
+        <KiraButton
+          leftIcon={<IconMail className="w-4 h-4" aria-hidden="true" />}
+          variant="outline"
+          size="sm"
+        >
+          Outline
+        </KiraButton>
+        <KiraButton
+          leftIcon={<IconMail className="w-4 h-4" aria-hidden="true" />}
+          variant="ghost"
+          size="sm"
+        >
+          Ghost
+        </KiraButton>
+        <KiraButton
+          leftIcon={<IconTrash className="w-4 h-4" aria-hidden="true" />}
+          variant="destructive"
+          size="sm"
+        >
+          Destructive
+        </KiraButton>
+        <KiraButton
+          leftIcon={<IconInfoCircle className="w-4 h-4" aria-hidden="true" />}
+          variant="info"
+          size="sm"
+        >
+          Info
+        </KiraButton>
+        <KiraButton
+          leftIcon={<IconCircleCheck className="w-4 h-4" aria-hidden="true" />}
+          variant="success"
+          size="sm"
+        >
+          Success
+        </KiraButton>
+        <KiraButton
+          leftIcon={<IconAlertCircle className="w-4 h-4" aria-hidden="true" />}
+          variant="warning"
+          size="sm"
+        >
+          Warning
+        </KiraButton>
+      </div>
+    </div>
+  );
+}
+
 function KiraButtonDemo() {
   const [loading, setLoading] = React.useState(false);
 
@@ -626,16 +751,13 @@ function KiraButtonDemo() {
 
   return (
     <div className="space-y-8">
-      {/* Section 1: Icons */}
       <KiraButtonIconsSection />
 
-      {/* Section 2: Loading */}
       <div className="space-y-4">
         <div>
           <h3 className="text-base font-semibold mb-2">Loading</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            KiraButton disables itself and shows a spinner while `loading` is
-            set.
+            KiraButton disables itself and shows a spinner while loading is set.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/30 rounded-lg border">
@@ -648,78 +770,49 @@ function KiraButtonDemo() {
         </div>
       </div>
 
-      {/* Section 3: Variants */}
       <KiraButtonAllVariantsSection />
     </div>
   );
 }
 
 const kiraButtonCode = `import { KiraButton } from "@/components/ui/button"
+import { IconMail, IconHeart } from "@tabler/icons-react"
 
-// Basic usage with icons
-<KiraButton leftIcon={<IconMail className="w-4 h-4" />}>
+<KiraButton leftIcon={<IconMail className="w-4 h-4" aria-hidden="true" />}>
   Send Email
 </KiraButton>
 
-// Loading state (disables + shows spinner)
 <KiraButton loading={isLoading} onClick={handleRun}>
   Run Action
 </KiraButton>
 
-// Optimistic toggle: flips instantly, rolls back + toasts if onToggle rejects.
 <KiraButton
   toggle
   variant="outline"
-  pressedIcon={<IconHeartFilled className="w-4 h-4 text-red-500" />}
-  unpressedIcon={<IconHeart className="w-4 h-4" />}
+  pressedIcon={<IconHeart className="w-4 h-4 text-destructive fill-destructive" aria-hidden="true" />}
+  unpressedIcon={<IconHeart className="w-4 h-4" aria-hidden="true" />}
   onToggle={async (pressed) => {
-    await likePost(pressed) // may throw → auto-revert
+    await likePost(pressed)
   }}
 >
   Like
 </KiraButton>`;
 
-const disabledCode = `import { Button } from "@/components/ui/button"
-
-<Button disabled>Disabled Default</Button>
-<Button variant="secondary" disabled>Disabled Secondary</Button>
-<Button variant="outline" disabled>Disabled Outline</Button>
-
-// Stays keyboard-focusable while disabled (WCAG 2.2).
-<Button disabled focusableWhenDisabled>Reachable by Tab</Button>`;
-
-const toggleCode = `import { Button, KiraButton } from "@/components/ui/button"
-import { SimpleTooltip } from "@/components/ui/tooltip"
-import { IconHeart, IconHeartFilled, IconSend } from "@tabler/icons-react"
-
-// Optimistic toggle: flips instantly, rolls back if onToggle rejects.
-<KiraButton
-  toggle
-  variant="outline"
-  defaultPressed={false}
-  pressedIcon={<IconHeartFilled className="w-4 h-4 text-red-500" />}
-  unpressedIcon={<IconHeart className="w-4 h-4" />}
-  onToggle={async (pressed) => {
-    await likePost(pressed) // may throw → auto-revert
-  }}
->
-  Like
-</KiraButton>
-
-// Disabled with an explanation on hover.
-<SimpleTooltip content="Complete the form first">
-  <span className="inline-flex">
-    <Button disabled size="icon" aria-label="Submit">
-      <IconSend />
-    </Button>
-  </span>
-</SimpleTooltip>`;
+const flaky = (setter: (v: boolean) => void, next: boolean) =>
+  new Promise<void>((resolve, reject) => {
+    setTimeout(() => {
+      if (Math.random() < 0.33) {
+        reject(new Error("network"));
+      } else {
+        setter(next);
+        resolve();
+      }
+    }, 600);
+  });
 
 function ToggleDemo() {
   const [liked, setLiked] = React.useState(false);
   const [bookmarked, setBookmarked] = React.useState(false);
-
-  // Simulated async that fails ~1 in 3 to show optimistic rollback.
 
   return (
     <div className="space-y-6">
@@ -733,9 +826,12 @@ function ToggleDemo() {
             variant="outline"
             pressed={liked}
             pressedIcon={
-              <IconHeart className="w-4 h-4 text-red-500 fill-red-500" />
+              <IconHeart
+                className="w-4 h-4 text-destructive fill-destructive"
+                aria-hidden="true"
+              />
             }
-            unpressedIcon={<IconHeart className="w-4 h-4" />}
+            unpressedIcon={<IconHeart className="w-4 h-4" aria-hidden="true" />}
             onToggle={(next) => flaky(setLiked, next)}
           >
             {liked ? "Liked" : "Like"}
@@ -745,9 +841,12 @@ function ToggleDemo() {
             variant="outline"
             pressed={bookmarked}
             pressedIcon={
-              <IconStar className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <IconStar
+                className="w-4 h-4 text-warning fill-warning"
+                aria-hidden="true"
+              />
             }
-            unpressedIcon={<IconStar className="w-4 h-4" />}
+            unpressedIcon={<IconStar className="w-4 h-4" aria-hidden="true" />}
             onToggle={(next) => flaky(setBookmarked, next)}
           >
             {bookmarked ? "Saved" : "Save"}
@@ -763,472 +862,595 @@ function ToggleDemo() {
           Disabled with a reason (hover the button)
         </h3>
         <SimpleTooltip content="Complete all required fields before submitting.">
-          <span className="inline-flex">
-            <Button size="icon" disabled aria-label="Submit">
-              <IconSend className="w-4 h-4" />
-            </Button>
-          </span>
+          <Button disabled focusableWhenDisabled aria-label="Submit">
+            <IconSend className="w-4 h-4" aria-hidden="true" />
+          </Button>
         </SimpleTooltip>
       </div>
     </div>
   );
 }
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function ButtonPage() {
-  const features = [
-    {
-      title: "Accessible",
-      description:
-        "Full keyboard navigation and ARIA support for screen readers.",
-      icon: <IconAccessible className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Multiple Variants",
-      description:
-        "20+ variants including semantic colors and outline/ghost styles.",
-      icon: <IconPalette className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Composable",
-      description:
-        "LoadingButton, ExpandableIconButton, and IconButtonWithTooltip components.",
-      icon: <IconStack2 className="w-4 h-4 text-primary" />,
-    },
-  ];
+const toggleCode = `import { KiraButton } from "@/components/ui/button"
+import { SimpleTooltip } from "@/components/ui/tooltip"
+import { IconHeart, IconSend } from "@tabler/icons-react"
 
-  const demoTabs = [
-    {
-      value: "variants",
-      label: "Variants",
-      demo: (
-        <DemoWrapper
-          title="Button Variants"
-          description="All available button variants including semantic colors"
-          code={variantsCode}
-        >
-          <VariantsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "sizes",
-      label: "Sizes",
-      demo: (
-        <DemoWrapper
-          title="Size Variants"
-          description="Text and icon button sizes from extra small to large"
-          code={sizesCode}
-        >
-          <SizesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "icons",
-      label: "With Icons",
-      demo: (
-        <DemoWrapper
-          title="Buttons with Icons"
-          description="Combine icons with text using data-icon attribute"
-          code={withIconsCode}
-        >
-          <WithIconsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "icon-props",
-      label: "Icon Props",
-      demo: (
-        <DemoWrapper
-          title="Icon Props API"
-          description="Use leftIcon and rightIcon props for cleaner code, or flexible children for custom layouts"
-          code={iconPropsCode}
-        >
-          <IconPropsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "hold",
-      label: "Hold to Confirm",
-      demo: (
-        <DemoWrapper
-          title="Hold to Confirm"
-          description="Prevent accidental clicks with hold-to-confirm pattern"
-          code={holdToConfirmCode}
-        >
-          <HoldToConfirmDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "expandable",
-      label: "Expandable",
-      demo: (
-        <DemoWrapper
-          title="Expandable Icon Button"
-          description="Icon buttons that expand to show labels on hover"
-          code={expandableCode}
-        >
-          <ExpandableDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "loading",
-      label: "Loading",
-      demo: (
-        <DemoWrapper
-          title="Loading Button"
-          description="Buttons with loading state for async operations"
-          code={loadingButtonCode}
-        >
-          <LoadingButtonDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "tooltip",
-      label: "With Tooltip",
-      demo: (
-        <DemoWrapper
-          title="Icon Button with Tooltip"
-          description="Icon buttons with descriptive tooltips"
-          code={iconButtonWithTooltipCode}
-        >
-          <IconButtonWithTooltipDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "kira-button",
-      label: "KiraButton",
-      demo: (
-        <DemoWrapper
-          title="KiraButton - Unified Component"
-          description="All button features combined into one powerful component"
-          code={kiraButtonCode}
-        >
-          <KiraButtonDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "toggle",
-      label: "Optimistic Toggle",
-      demo: (
-        <DemoWrapper
-          title="Optimistic Toggle & Disabled Reason"
-          description="Toggle buttons update instantly and roll back automatically if the async handler rejects. Disabled buttons can explain themselves on hover."
-          code={toggleCode}
-        >
-          <ToggleDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "disabled",
-      label: "Disabled",
-      demo: (
-        <DemoWrapper
-          title="Disabled State"
-          description="Buttons in disabled state"
-          code={disabledCode}
-        >
-          <DisabledDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
+<KiraButton
+  toggle
+  variant="outline"
+  defaultPressed={false}
+  pressedIcon={<IconHeart className="w-4 h-4 text-destructive fill-destructive" aria-hidden="true" />}
+  unpressedIcon={<IconHeart className="w-4 h-4" aria-hidden="true" />}
+  onToggle={async (pressed) => {
+    await likePost(pressed)
+  }}
+>
+  Like
+</KiraButton>
 
-  const keyboardShortcuts = [
-    { keys: "Enter", description: "Activate button" },
-    { keys: "Space", description: "Activate button" },
-    { keys: "Tab", description: "Move focus to next element" },
-    { keys: "Shift + Tab", description: "Move focus to previous element" },
-  ];
+<SimpleTooltip content="Complete the form first">
+  <Button disabled focusableWhenDisabled aria-label="Submit">
+    <IconSend className="w-4 h-4" aria-hidden="true" />
+  </Button>
+</SimpleTooltip>`;
 
-  const usageCode = `import { 
-  Button, 
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4 rounded-lg border border-border p-4">
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">
+          Long labels &amp; fullWidth in narrow container
+        </p>
+        <Button fullWidth className="whitespace-normal h-auto py-2 text-left">
+          Export Quarterly Compliance Audit Report (PDF + CSV Archive)
+        </Button>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">
+          Disabled, focusable-when-disabled, and loading states
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Button disabled>Disabled</Button>
+          <Button disabled focusableWhenDisabled variant="outline">
+            Tabbable Disabled
+          </Button>
+          <KiraButton loading loadingText="Syncing..." variant="secondary">
+            Sync
+          </KiraButton>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">
+          Icon-only &amp; disabled reason tooltip
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Button size="icon" variant="outline" aria-label="Empty text action">
+            <IconPlus className="w-4 h-4" aria-hidden="true" />
+          </Button>
+          <SimpleTooltip content="You do not have permission to delete this record.">
+            <Button
+              disabled
+              focusableWhenDisabled
+              size="icon"
+              variant="destructive-outline"
+              aria-label="Delete"
+            >
+              <IconTrash className="w-4 h-4" aria-hidden="true" />
+            </Button>
+          </SimpleTooltip>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const stressCode = `import { Button, KiraButton } from "@/components/ui/button"
+import { SimpleTooltip } from "@/components/ui/tooltip"
+
+<div className="max-w-xs space-y-4">
+  <Button fullWidth className="whitespace-normal h-auto py-2 text-left">
+    Export Quarterly Compliance Audit Report (PDF + CSV Archive)
+  </Button>
+  <Button disabled focusableWhenDisabled variant="outline">
+    Tabbable Disabled
+  </Button>
+  <KiraButton loading loadingText="Syncing..." variant="secondary">
+    Sync
+  </KiraButton>
+  <SimpleTooltip content="You do not have permission to delete this record.">
+    <Button disabled focusableWhenDisabled size="icon" aria-label="Delete">
+      <IconTrash className="w-4 h-4" aria-hidden="true" />
+    </Button>
+  </SimpleTooltip>
+</div>`;
+
+const usageCode = `import {
+  Button,
+  KiraButton,
   LoadingButton,
   ExpandableIconButton,
-  IconButtonWithTooltip 
 } from "@/components/ui/button"
+import { SimpleTooltip } from "@/components/ui/tooltip"
+import { IconMail, IconTrash } from "@tabler/icons-react"
 
-// Basic button
-<Button>Click me</Button>
-<Button variant="secondary">Secondary</Button>
-<Button variant="destructive">Delete</Button>
-
-// With icon using leftIcon prop (recommended)
-<Button leftIcon={<IconMail className="w-4 h-4" />}>
+<Button leftIcon={<IconMail className="w-4 h-4" aria-hidden="true" />}>
   Send Email
 </Button>
 
-// With icon using rightIcon prop
-<Button rightIcon={<IconArrowRight className="w-4 h-4" />}>
-  Continue
-</Button>
-
-// Hold to confirm
 <Button
   holdDuration={1500}
   onHoldComplete={() => handleDelete()}
   variant="destructive"
-  leftIcon={<IconTrash className="w-4 h-4" />}
+  leftIcon={<IconTrash className="w-4 h-4" aria-hidden="true" />}
 >
   Hold to Delete
 </Button>
 
-// Loading state
-<LoadingButton isLoading={isLoading}>
+<KiraButton loading={isLoading} onClick={handleSubmit}>
   Submit
-</LoadingButton>
+</KiraButton>
 
-// Expandable icon button
-<ExpandableIconButton
-  icon={<IconSettings />}
-  label="Settings"
-/>
+<SimpleTooltip content="Delete item">
+  <Button variant="destructive" size="icon" aria-label="Delete item">
+    <IconTrash className="w-4 h-4" aria-hidden="true" />
+  </Button>
+</SimpleTooltip>`;
 
-// Icon with tooltip
-<IconButtonWithTooltip
-  icon={<IconTrash />}
-  tooltip="Delete item"
-  variant="destructive"
-  aria-label="Delete item"
-/>`;
-
-  const apiReference = [
-    {
-      title: "Button",
-      props: [
-        {
-          prop: "variant",
-          type: '"default" | "secondary" | "outline" | "ghost" | "link" | "destructive" | "info" | "success" | "warning" | ...',
-          default: '"default"',
-          description: "Visual style of the button",
-        },
-        {
-          prop: "size",
-          type: '"default" | "xs" | "sm" | "lg" | "xl" | "icon" | "icon-xs" | "icon-sm" | "icon-lg" | "icon-xl"',
-          default: '"default"',
-          description: "Size of the button",
-        },
-        {
-          prop: "leftIcon",
-          type: "ReactNode",
-          default: "-",
-          description: "Icon displayed on the left side of the button",
-        },
-        {
-          prop: "rightIcon",
-          type: "ReactNode",
-          default: "-",
-          description: "Icon displayed on the right side of the button",
-        },
-        {
-          prop: "holdDuration",
-          type: "number",
-          default: "-",
-          description:
-            "Duration in ms to hold before triggering onHoldComplete",
-        },
-        {
-          prop: "onHoldComplete",
-          type: "() => void",
-          default: "-",
-          description: "Callback when hold duration is completed",
-        },
-        {
-          prop: "disabled",
-          type: "boolean",
-          default: "false",
-          description: "Disable the button",
-        },
-        {
-          prop: "focusableWhenDisabled",
-          type: "boolean",
-          default: "false",
-          description:
-            "Keep a disabled button keyboard-focusable (Base UI primitive, WCAG 2.2)",
-        },
-        {
-          prop: "leftIcon / rightIcon",
-          type: "ReactNode",
-          default: "-",
-          description: "Icons on the left / right side of the label",
-        },
-      ],
-    },
-    {
-      title: "LoadingButton",
-      props: [
-        {
-          prop: "isLoading",
-          type: "boolean",
-          default: "false",
-          description: "Show loading spinner and disable button",
-        },
-        {
-          prop: "loadingText",
-          type: "string",
-          default: "-",
-          description: "Text to show while loading",
-        },
-        {
-          prop: "...props",
-          type: "ButtonProps",
-          default: "-",
-          description: "All Button props are supported",
-        },
-      ],
-    },
-    {
-      title: "ExpandableIconButton",
-      props: [
-        {
-          prop: "icon",
-          type: "ReactNode",
-          default: "-",
-          description: "Icon element to display",
-        },
-        {
-          prop: "label",
-          type: "string",
-          default: "-",
-          description: "Text label shown on hover",
-        },
-        {
-          prop: "...props",
-          type: "ButtonProps",
-          default: "-",
-          description: "All Button props are supported",
-        },
-      ],
-    },
-    {
-      title: "IconButtonWithTooltip",
-      props: [
-        {
-          prop: "icon",
-          type: "ReactNode",
-          default: "-",
-          description: "Icon element to display",
-        },
-        {
-          prop: "tooltip",
-          type: "string",
-          default: "-",
-          description: "Tooltip text on hover",
-        },
-        {
-          prop: "aria-label",
-          type: "string",
-          default: "-",
-          description: "Accessible label (falls back to tooltip text)",
-        },
-        {
-          prop: "disabledReason",
-          type: "string",
-          default: "-",
-          description:
-            "Shown in the tooltip while the button is disabled (overrides tooltip)",
-        },
-        {
-          prop: "...props",
-          type: "ButtonProps",
-          default: "-",
-          description: "All Button props are supported",
-        },
-      ],
-    },
-    {
-      title: "KiraButton",
-      props: [
-        {
-          prop: "loading",
-          type: "boolean",
-          default: "false",
-          description: "Show spinner, disable the button",
-        },
-        {
-          prop: "loadingText",
-          type: "string",
-          default: "-",
-          description: "Text to show while loading",
-        },
-        {
-          prop: "toggle",
-          type: "boolean",
-          default: "false",
-          description: "Enable optimistic toggle mode",
-        },
-        {
-          prop: "pressed / defaultPressed",
-          type: "boolean",
-          default: "-",
-          description: "Controlled / uncontrolled pressed state",
-        },
-        {
-          prop: "onToggle",
-          type: "(pressed: boolean) => void | Promise<void>",
-          default: "-",
-          description:
-            "Async toggle handler; flips instantly, reverts + toasts on reject",
-        },
-        {
-          prop: "pressedIcon / unpressedIcon",
-          type: "ReactNode",
-          default: "-",
-          description: "Icons for the pressed / unpressed states",
-        },
-        {
-          prop: "toggleErrorMessage",
-          type: "string",
-          default: '"Couldn\'t update"',
-          description: "Toast message when onToggle rejects",
-        },
-        {
-          prop: "...props",
-          type: "ButtonProps",
-          default: "-",
-          description: "All Button props are supported",
-        },
-      ],
-    },
-  ];
-
+export default function ButtonPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Button"
-        description="A versatile button component with multiple variants, sizes, and interactive features like hold-to-confirm and loading states."
-        version="v2.3"
+        description="A versatile Base UI button family with semantic variants, five height tiers, hold-to-confirm, loading spinners, and optimistic toggles."
+        version="v3.0.0"
       />
 
-      <FeatureGrid features={features} />
+      <FeatureGrid
+        features={buttonPageFeatures}
+        description="Built on Base UI Button with reduced-motion-gated GSAP feedback."
+      />
 
-      <DemoTabs tabs={demoTabs} />
+      <DemoTabs defaultValue="variants" tabs={buttonPageDemoTabs} />
 
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
+      <KeyboardShortcuts
+        shortcuts={buttonPageShortcuts}
+        description="Keyboard activation, focus, and hold-to-confirm bindings."
+      />
 
-      <UsageBlock code={usageCode} />
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Import Button for standard actions or KiraButton for loading and optimistic toggle flows."
+        notes={buttonPageUsageNotes}
+      />
 
-      <APIReference sections={apiReference} />
+      <APIReference
+        sections={buttonPageAPISections}
+        description="Props, types, and defaults for every exported button component."
+      />
 
-      <Changelog entries={buttonPageChangelogEntries} />
+      <Changelog
+        entries={buttonPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Button."
+      />
     </ComponentPage>
   );
 }
 
-// Static demo metadata stays co-located and follows its source constants.
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const buttonPageFeatures = [
+  {
+    title: "Accessible",
+    description:
+      "Full keyboard navigation, focusableWhenDisabled support, and ARIA attributes for screen readers.",
+    icon: (
+      <IconAccessible className="w-4 h-4 text-primary" aria-hidden="true" />
+    ),
+  },
+  {
+    title: "Multiple Variants",
+    description:
+      "17 variants including solid, outline, and ghost styles for semantic states.",
+    icon: <IconPalette className="w-4 h-4 text-primary" aria-hidden="true" />,
+  },
+  {
+    title: "Composable",
+    description:
+      "KiraButton, LoadingButton, and ExpandableIconButton built on Button.",
+    icon: <IconStack2 className="w-4 h-4 text-primary" aria-hidden="true" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const buttonPageDemoTabs = [
+  {
+    value: "variants",
+    label: "Variants",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Button Variants"
+        description="All available button variants including semantic colors."
+        code={variantsCode}
+      >
+        <VariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="Text and icon button sizes from extra small (xs) to extra large (xl)."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "icons",
+    label: "With Icons",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Buttons with Icons"
+        description="Combine icons with text using inline children."
+        code={withIconsCode}
+      >
+        <WithIconsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "icon-props",
+    label: "Icon Props",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Icon Props API"
+        description="Use leftIcon and rightIcon props for consistent spacing, or flexible children for custom layouts."
+        code={iconPropsCode}
+      >
+        <IconPropsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "disabled",
+    label: "Disabled",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Disabled State"
+        description="Standard disabled buttons and keyboard-focusable disabled buttons."
+        code={disabledCode}
+      >
+        <DisabledDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira-button",
+    label: "KiraButton",
+    group: "KiraButton",
+    demo: (
+      <DemoWrapper
+        title="KiraButton"
+        description="Unified wrapper adding loading state and optimistic toggle support on top of Button."
+        code={kiraButtonCode}
+      >
+        <KiraButtonDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "toggle",
+    label: "Optimistic Toggle",
+    group: "KiraButton",
+    demo: (
+      <DemoWrapper
+        title="Optimistic Toggle & Disabled Reason"
+        description="Toggle buttons update instantly and roll back automatically if the async handler rejects."
+        code={toggleCode}
+      >
+        <ToggleDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "hold",
+    label: "Hold to Confirm",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Hold to Confirm"
+        description="Prevent accidental clicks with a pointer and keyboard hold-to-confirm progress fill."
+        code={holdToConfirmCode}
+      >
+        <HoldToConfirmDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "expandable",
+    label: "Expandable",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Expandable Icon Button"
+        description="Icon buttons that smoothly expand to reveal labels on hover."
+        code={expandableCode}
+      >
+        <ExpandableDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "loading",
+    label: "Loading",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Loading Button"
+        description="Buttons with loading spinners and aria-busy for async operations."
+        code={loadingButtonCode}
+      >
+        <LoadingButtonDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "tooltip",
+    label: "With Tooltip",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Icon Button with Tooltip"
+        description="Icon buttons with descriptive tooltips and optional disabledReason explanations."
+        code={iconButtonTooltipCode}
+      >
+        <IconButtonTooltipDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, disabled and loading states, and icon-only controls in a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const buttonPageShortcuts = [
+  {
+    keys: "Tab / Shift + Tab",
+    description:
+      "Move focus to the next or previous control (includes disabled buttons when focusableWhenDisabled is true).",
+  },
+  {
+    keys: "Enter / Space",
+    description: "Activate the focused button (provided by Base UI Button).",
+  },
+  {
+    keys: "Hold Enter / Space",
+    description:
+      "Fill and complete a hold-to-confirm button when onHoldComplete is set; releasing early cancels.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const buttonPageUsageNotes = [
+  {
+    label: "Button",
+    body: "Use Button directly for standard actions, icon buttons, fullWidth layouts, and hold-to-confirm destructive actions.",
+  },
+  {
+    label: "KiraButton",
+    body: "Use KiraButton when you need built-in loading spinners or optimistic toggle buttons with automatic rollback and error feedback.",
+  },
+  {
+    label: "Specialized wrappers",
+    body: "Compose SimpleTooltip with Button to explain an icon-only action. Use LoadingButton for explicit loading control and ExpandableIconButton for labels revealed on hover.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const buttonPageAPISections = [
+  {
+    title: "Button",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "secondary" | "outline" | "ghost" | "link" | "destructive" | "destructive-outline" | "destructive-ghost" | "info" | "info-outline" | "info-ghost" | "success" | "success-outline" | "success-ghost" | "warning" | "warning-outline" | "warning-ghost"',
+        default: '"default"',
+        description: "Visual style of the button.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl" | "icon-xs" | "icon-sm" | "icon" | "icon-lg" | "icon-xl"',
+        default: '"default"',
+        description: "Height tier or square icon size of the button.",
+      },
+      {
+        prop: "fullWidth",
+        type: "boolean",
+        default: "false",
+        description: "Stretch the button to fill its container width.",
+      },
+      {
+        prop: "leftIcon",
+        type: "ReactNode",
+        default: "-",
+        description: "Icon rendered before the label.",
+      },
+      {
+        prop: "rightIcon",
+        type: "ReactNode",
+        default: "-",
+        description: "Icon rendered after the label.",
+      },
+      {
+        prop: "holdDuration",
+        type: "number",
+        default: "1000",
+        description:
+          "Duration in milliseconds to hold before triggering onHoldComplete.",
+      },
+      {
+        prop: "onHoldComplete",
+        type: "() => void",
+        default: "-",
+        description:
+          "Callback invoked when the hold-to-confirm progress reaches 100%.",
+      },
+      {
+        prop: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disable pointer and activation interactions.",
+      },
+      {
+        prop: "focusableWhenDisabled",
+        type: "boolean",
+        default: "false",
+        description:
+          "Keep a disabled button keyboard-focusable (Base UI primitive, WCAG 2.2).",
+      },
+    ],
+  },
+  {
+    title: "LoadingButton",
+    props: [
+      {
+        prop: "isLoading",
+        type: "boolean",
+        default: "false",
+        description: "Show loading spinner, set aria-busy, and disable button.",
+      },
+      {
+        prop: "loadingText",
+        type: "string",
+        default: "-",
+        description: "Optional replacement text shown while loading.",
+      },
+      {
+        prop: "...props",
+        type: "ButtonProps",
+        default: "-",
+        description: "All Button props are supported.",
+      },
+    ],
+  },
+  {
+    title: "ExpandableIconButton",
+    props: [
+      {
+        prop: "icon",
+        type: "ReactNode",
+        default: "-",
+        description: "Icon element always visible in the button.",
+      },
+      {
+        prop: "label",
+        type: "string",
+        default: "-",
+        description:
+          "Accessible aria-label and text label revealed smoothly on hover.",
+      },
+      {
+        prop: "expandDirection",
+        type: '"left" | "right"',
+        default: '"right"',
+        description: "Direction in which the label expands on hover.",
+      },
+      {
+        prop: "...props",
+        type: "Omit<ButtonProps, 'children'>",
+        default: "-",
+        description: "All Button props except children are supported.",
+      },
+    ],
+  },
+  {
+    title: "KiraButton",
+    props: [
+      {
+        prop: "loading",
+        type: "boolean",
+        default: "false",
+        description: "Show spinner, set aria-busy, and disable the button.",
+      },
+      {
+        prop: "loadingText",
+        type: "string",
+        default: "-",
+        description: "Optional text displayed while loading.",
+      },
+      {
+        prop: "toggle",
+        type: "boolean",
+        default: "false",
+        description: "Enable optimistic toggle mode with aria-pressed.",
+      },
+      {
+        prop: "pressed / defaultPressed",
+        type: "boolean",
+        default: "false",
+        description: "Controlled or uncontrolled pressed state.",
+      },
+      {
+        prop: "onToggle",
+        type: "(pressed: boolean) => void | Promise<void>",
+        default: "-",
+        description:
+          "Async toggle handler. Rejection rolls back the optimistic pressed state.",
+      },
+      {
+        prop: "pressedIcon / unpressedIcon",
+        type: "ReactNode",
+        default: "-",
+        description: "Icons rendered for the pressed and unpressed states.",
+      },
+      {
+        prop: "toggleErrorMessage",
+        type: "string",
+        default: '"Couldn\'t update"',
+        description:
+          "Error title sent to the app feedback provider when onToggle rejects.",
+      },
+      {
+        prop: "onToggleError",
+        type: "(error: Error) => void",
+        default: "-",
+        description:
+          "Handles a rejected toggle in place of the app feedback provider.",
+      },
+      {
+        prop: "...props",
+        type: "Omit<ButtonProps, 'onToggle'>",
+        default: "-",
+        description: "All Button props are supported.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
 const buttonPageChangelogEntries = [
   {
-    version: "Unreleased",
-    date: "In development",
+    version: "3.0.0",
+    date: "26 November 2026",
     changes: [
       {
         type: "breaking",
@@ -1253,7 +1475,7 @@ const buttonPageChangelogEntries = [
         type: "added",
         title: "xl and icon-xl Sizes",
         description:
-          "New h-11 (44px) xl size with text-base and size-5 icons, plus the matching icon-xl square. Completes the shared control-height ladder (h-7/8/9/10/11) and the 44px touch minimum for auth, marketing, and touch surfaces. Existing sizes are unchanged.",
+          "New h-11 (44px) xl size with text-base and size-5 icons, plus the matching icon-xl square. Completes the shared control-height ladder (h-7/8/9/10/11) and the 44px touch minimum for auth, marketing, and touch surfaces.",
       },
     ],
   },
@@ -1271,13 +1493,13 @@ const buttonPageChangelogEntries = [
         type: "breaking",
         title: "KiraButton Slimmed to Toggle + Loading",
         description:
-          "Removed icon/iconPosition (use leftIcon/rightIcon), tooltip/disabledReason (use IconButtonWithTooltip), expandable, onAsyncClick + async props, copyText + copy props, formLabel + form props, quickAction, and compound code paths. Keep toggle, loading, and the optimistic onToggle behavior.",
+          "Removed icon/iconPosition (use leftIcon/rightIcon), tooltip/disabledReason (use IconButtonWithTooltip), expandable, onAsyncClick + async props, copyText + copy props, formLabel + form props, quickAction, and compound code paths. Kept toggle, loading, and the optimistic onToggle behavior.",
       },
       {
         type: "breaking",
         title: "Removed rippleColor and progressColor Props",
         description:
-          "Ripple and hold-progress visuals now use currentColor (the button's text color), which always contrasts with the variant background. The per-variant rgba color maps are gone.",
+          "Ripple and hold-progress visuals now use currentColor (the button's text color), which always contrasts with the variant background.",
       },
       {
         type: "changed",
@@ -1289,7 +1511,7 @@ const buttonPageChangelogEntries = [
         type: "changed",
         title: "LG Spinner Size",
         description:
-          "The loading spinner at size lg is now h-5 w-5 (was h-4.5 w-4.5), matching getButtonIconSize.",
+          "The loading spinner at size lg is now 20px (h-5 w-5, up from 18px), matching getButtonIconSize.",
       },
       {
         type: "added",
@@ -1319,19 +1541,19 @@ const buttonPageChangelogEntries = [
         type: "added",
         title: "Optimistic Toggle Buttons",
         description:
-          "KiraButton gained a `toggle` mode built on React 19's useOptimistic: the pressed state flips instantly and rolls back with a toast if the async onToggle handler rejects. Pairs with aria-pressed and pressed/unpressed icons.",
+          "KiraButton gained a toggle mode built on React 19's useOptimistic: the pressed state flips instantly and rolls back with a toast if the async onToggle handler rejects.",
       },
       {
         type: "added",
         title: "Disabled Reason Tooltips",
         description:
-          "KiraButton now accepts `disabledReason` — a tooltip shown only while the button is disabled that explains why, so disabled controls are never a dead end.",
+          "Added disabledReason tooltip support for explaining why a disabled action is unavailable.",
       },
       {
         type: "changed",
         title: "Reduced-Motion Gating",
         description:
-          "Every GSAP animation (ripple, press-scale, spinner, expandable width, quick-action press) now respects prefers-reduced-motion via the shared useReducedMotion hook. The loading spinner falls back to a CSS spin.",
+          "Every GSAP animation (ripple, press-scale, spinner, expandable width) now respects prefers-reduced-motion via the shared useReducedMotion hook.",
       },
       {
         type: "changed",
@@ -1349,7 +1571,7 @@ const buttonPageChangelogEntries = [
         type: "added",
         title: "Unified KiraButton Component",
         description:
-          "Added KiraButton - a powerful unified component that combines all button features (icons, loading, tooltips, expandable, async actions, copy, form integration, quick actions, compound layouts) into a single, easy-to-use API.",
+          "Added KiraButton as a unified high-level button API combining common interaction patterns.",
       },
       {
         type: "fixed",
@@ -1361,7 +1583,7 @@ const buttonPageChangelogEntries = [
         type: "changed",
         title: "Demo Page Enhancement",
         description:
-          "Enhanced KiraButton demo tab with improved layout, better organization, and comprehensive examples showcasing all features.",
+          "Enhanced KiraButton demo tab with improved layout, better organization, and comprehensive examples.",
       },
     ],
   },
@@ -1379,7 +1601,7 @@ const buttonPageChangelogEntries = [
         type: "added",
         title: "Icon Props API",
         description:
-          "Added leftIcon and rightIcon props as the standard way to add icons to buttons, while maintaining flexible children support for custom layouts.",
+          "Added leftIcon and rightIcon props as the standard way to add icons to buttons, while maintaining flexible children support.",
       },
       {
         type: "changed",
@@ -1391,7 +1613,7 @@ const buttonPageChangelogEntries = [
         type: "fixed",
         title: "Accessibility Improvements",
         description:
-          "Added aria-busy support for LoadingButton, improved aria-label handling for IconButtonWithTooltip, and added aria-live regions for AsyncButton status changes.",
+          "Added aria-busy support for LoadingButton and improved aria-label handling for IconButtonWithTooltip.",
       },
       {
         type: "added",
@@ -1402,107 +1624,3 @@ const buttonPageChangelogEntries = [
     ],
   },
 ] satisfies ReactComponentProps<typeof Changelog>["entries"];
-
-const flaky = (setter: (v: boolean) => void, next: boolean) =>
-  new Promise<void>((resolve, reject) => {
-    setTimeout(() => {
-      if (Math.random() < 0.33) {
-        reject(new Error("network"));
-      } else {
-        setter(next);
-        resolve();
-      }
-    }, 600);
-  });
-
-function KiraButtonIconsSection() {
-  return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="text-base font-semibold mb-2">Icons</h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          Icons via leftIcon and rightIcon, consistent across Button and
-          KiraButton.
-        </p>
-      </div>
-      <div className="flex flex-wrap items-center gap-3 p-4 bg-muted/30 rounded-lg border">
-        <KiraButton leftIcon={<IconMail className="w-4 h-4" />}>
-          Send Email
-        </KiraButton>
-        <KiraButton
-          variant="outline"
-          rightIcon={<IconArrowRight className="w-4 h-4" />}
-        >
-          Continue
-        </KiraButton>
-      </div>
-    </div>
-  );
-}
-
-function KiraButtonAllVariantsSection() {
-  return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="text-base font-semibold mb-2">All Variants</h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          KiraButton supports all button variants with consistent behavior.
-        </p>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-muted/30 rounded-lg border">
-        <KiraButton leftIcon={<IconMail className="w-4 h-4" />} size="sm">
-          Default
-        </KiraButton>
-        <KiraButton
-          leftIcon={<IconMail className="w-4 h-4" />}
-          variant="secondary"
-          size="sm"
-        >
-          Secondary
-        </KiraButton>
-        <KiraButton
-          leftIcon={<IconMail className="w-4 h-4" />}
-          variant="outline"
-          size="sm"
-        >
-          Outline
-        </KiraButton>
-        <KiraButton
-          leftIcon={<IconMail className="w-4 h-4" />}
-          variant="ghost"
-          size="sm"
-        >
-          Ghost
-        </KiraButton>
-        <KiraButton
-          leftIcon={<IconTrash className="w-4 h-4" />}
-          variant="destructive"
-          size="sm"
-        >
-          Destructive
-        </KiraButton>
-        <KiraButton
-          leftIcon={<IconInfoCircle className="w-4 h-4" />}
-          variant="info"
-          size="sm"
-        >
-          Info
-        </KiraButton>
-        <KiraButton
-          leftIcon={<IconCircleCheck className="w-4 h-4" />}
-          variant="success"
-          size="sm"
-        >
-          Success
-        </KiraButton>
-        <KiraButton
-          leftIcon={<IconAlertCircle className="w-4 h-4" />}
-          variant="warning"
-          size="sm"
-        >
-          Warning
-        </KiraButton>
-      </div>
-    </div>
-  );
-}

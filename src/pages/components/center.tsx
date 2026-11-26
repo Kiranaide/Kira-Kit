@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   IconCheck,
@@ -349,68 +350,317 @@ function StatesDemo() {
 const StatesDemoCode =
   'import * as React from "react";\nimport { KiraCenter } from "@/components/ui/center";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\nimport { Spinner } from "@/components/ui/spinner";\n\nexport function StatesDemo() {\n  const [state, setState] = React.useState<"empty" | "loading" | "error" | "ready">("empty");\n  return <div className="w-full max-w-80 space-y-4">\n    <div className="flex flex-wrap gap-2">{(["empty", "loading", "error", "ready"] as const).map((value) => <Button key={value} variant="outline" aria-pressed={state === value} onClick={() => setState(value)}>{value}</Button>)}</div>\n    <KiraCenter width="full" padding="sm" className="min-h-64 rounded-lg border">\n      {state === "empty" && <div className="space-y-3"><h3 className="font-semibold">No reviewers yet</h3><p className="text-sm text-muted-foreground">Add a reviewer to start this local queue.</p><Button variant="outline" onClick={() => setState("ready")}>Add reviewer</Button></div>}\n      {state === "loading" && <div className="space-y-3"><Spinner label="Loading reviewer details…" /><p className="text-sm text-muted-foreground">Loading reviewer details…</p></div>}\n      {state === "error" && <div className="space-y-3"><p role="alert" className="text-sm text-destructive">Reviewer details could not be loaded. Try again.</p><Button variant="outline" onClick={() => setState("ready")}>Try again</Button></div>}\n      {state === "ready" && <div className="space-y-3"><output className="text-sm">Reviewer added.</output><p className="wrap-anywhere text-sm">reviewer-with-a-very-long-workspace-address@example-platform-infrastructure.com</p><Input aria-label="Read-only reviewer role" readOnly defaultValue="Release owner" /><Button variant="outline" disabled>Remove owner</Button><p className="text-sm text-muted-foreground">The release needs an owner before this reviewer can be removed.</p></div>}\n    </KiraCenter>\n  </div>;\n}';
 
-const demos = [
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <KiraCenter
+        width="full"
+        padding="sm"
+        className="min-h-32 rounded-lg border"
+      >
+        <div className="space-y-2">
+          <p className="text-sm font-medium wrap-anywhere">
+            release-approval-pipeline-with-extended-unbreakable-identifier-2026@example.com
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Long unbreakable tokens wrap cleanly inside a max-w-xs container.
+          </p>
+          <Button variant="outline" disabled>
+            Disabled action
+          </Button>
+        </div>
+      </KiraCenter>
+      <Center
+        aria-label="Empty centered region"
+        className="min-h-24 rounded-lg border border-dashed"
+      />
+    </div>
+  );
+}
+
+const stressCode = `import { Center, KiraCenter } from "@/components/ui/center"
+import { Button } from "@/components/ui/button"
+
+export function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <KiraCenter width="full" padding="sm" className="min-h-32 rounded-lg border">
+        <div className="space-y-2">
+          <p className="text-sm font-medium wrap-anywhere">
+            release-approval-pipeline-with-extended-unbreakable-identifier-2026@example.com
+          </p>
+          <Button variant="outline" disabled>
+            Disabled action
+          </Button>
+        </div>
+      </KiraCenter>
+      <Center
+        aria-label="Empty centered region"
+        className="min-h-24 rounded-lg border border-dashed"
+      />
+    </div>
+  )
+}`;
+
+const usageCode = `import {
+  Center,
+  KiraCenter,
+  centerVariants,
+  centerContentVariants,
+  kiraCenterVariants,
+} from "@/components/ui/center"
+
+export function CenterPatterns() {
+  return (
+    <>
+      <Center className="min-h-48">
+        <p>Review summary</p>
+      </Center>
+      <Center as="span" inline className="size-6">
+        <span aria-hidden="true">•</span>
+      </Center>
+      <KiraCenter as="main" viewport="dynamic" offset="4rem" safeArea width="md">
+        <h1>Workspace invitation</h1>
+        <p>Review the access request.</p>
+      </KiraCenter>
+      <div className={centerVariants({ type: "grid", safe: true })}>
+        <p>Safe grid</p>
+      </div>
+      <div className={kiraCenterVariants({ padding: "sm" })}>
+        <div className={centerContentVariants({ width: "prose" })}>
+          Readable content
+        </div>
+      </div>
+    </>
+  )
+}`;
+
+export default function CenterPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Center"
+        description="Reachable centering for review panels, inline content and forms in changing mobile viewports."
+        version="v2.0.0"
+      />
+
+      <FeatureGrid
+        features={centerPageFeatures}
+        description="Overflow-safe centering primitives and viewport-aware layout frames."
+      />
+
+      <DemoTabs defaultValue="basic" tabs={centerPageDemoTabs} />
+
+      <KeyboardShortcuts
+        description="Center controls placement; child controls retain their native keyboard behavior."
+        shortcuts={centerPageShortcuts}
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Import Center or KiraCenter and compose with native elements."
+        notes={[
+          {
+            label: "Center",
+            body: "Use Center for low-level flex, grid, inline, or absolute centering with overflow-safe alignment enabled by default.",
+          },
+          {
+            label: "KiraCenter",
+            body: "Use KiraCenter for full-viewport forms, empty states, and focused views that need bounded reading widths, app-chrome offsets, and device safe-area gutters.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={centerPageAPISections}
+        description="Props, types, and defaults for Center and KiraCenter."
+      />
+
+      <Changelog
+        entries={centerPageChangelogEntries}
+        title="Changelog"
+        description="Version history and migration notes for Center."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const centerPageFeatures = [
+  {
+    title: "Safe centering",
+    description: "Oversized flex/grid content stays aligned to the start.",
+    icon: <IconLayoutAlignMiddle className="size-5" aria-hidden="true" />,
+  },
+  {
+    title: "Viewport-aware",
+    description: "Dynamic/small viewport height and safe-area gutters.",
+    icon: <IconDeviceMobile className="size-5" aria-hidden="true" />,
+  },
+  {
+    title: "Bounded content",
+    description: "KiraCenter provides a quiet, readable content frame.",
+    icon: <IconArrowsMaximize className="size-5" aria-hidden="true" />,
+  },
+  {
+    title: "Native composition",
+    description: "Typed tags, refs and Base UI render adapters.",
+    icon: <IconCode className="size-5" aria-hidden="true" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const centerPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
-    description: "Flex and grid centering for bounded panels.",
-    Demo: BasicDemo,
-    code: BasicDemoCode,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic"
+        description="Flex and grid centering for bounded panels."
+        code={BasicDemoCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "inline",
     label: "Inline",
-    description:
-      "Inline content uses a semantic span; interactive actions use the shared Button.",
-    Demo: InlineDemo,
-    code: InlineDemoCode,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Inline"
+        description="Inline content uses a semantic span; interactive actions use the shared Button."
+        code={InlineDemoCode}
+      >
+        <InlineDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "absolute",
     label: "Absolute",
-    description:
-      "An explicit absolute technique inside a positioned preview frame.",
-    Demo: AbsoluteDemo,
-    code: AbsoluteDemoCode,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Absolute"
+        description="An explicit absolute technique inside a positioned preview frame."
+        code={AbsoluteDemoCode}
+      >
+        <AbsoluteDemo />
+      </DemoWrapper>
+    ),
   },
   {
-    value: "safe",
-    label: "Safe overflow",
-    description: "Compare safe and unsafe alignment in an overflowing panel.",
-    Demo: SafeDemo,
-    code: SafeDemoCode,
+    value: "kira",
+    label: "KiraCenter",
+    group: "KiraCenter",
+    demo: (
+      <DemoWrapper
+        title="KiraCenter"
+        description="A local contact form with a bounded content width."
+        code={KiraDemoCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "viewport",
     label: "Viewport",
-    description:
-      "Small/dynamic viewport height, app-chrome offset and safe-area gutters.",
-    Demo: ViewportDemo,
-    code: ViewportDemoCode,
+    group: "KiraCenter",
+    demo: (
+      <DemoWrapper
+        title="Viewport"
+        description="Small/dynamic viewport height, app-chrome offset and safe-area gutters."
+        code={ViewportDemoCode}
+      >
+        <ViewportDemo />
+      </DemoWrapper>
+    ),
   },
   {
-    value: "kira",
-    label: "Kira",
-    description: "A local contact form with a bounded content width.",
-    Demo: KiraDemo,
-    code: KiraDemoCode,
+    value: "safe",
+    label: "Safe overflow",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Safe overflow"
+        description="Compare safe and unsafe alignment in an overflowing panel."
+        code={SafeDemoCode}
+      >
+        <SafeDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "native",
     label: "Native",
-    description: "Render composition and a native section ref.",
-    Demo: NativeDemo,
-    code: NativeDemoCode,
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Native"
+        description="Render composition and a native section ref."
+        code={NativeDemoCode}
+      >
+        <NativeDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "states",
     label: "States",
-    description:
-      "Actionable empty/error fixtures, shared Spinner, read-only state and long values.",
-    Demo: StatesDemo,
-    code: StatesDemoCode,
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="States"
+        description="Actionable empty/error fixtures, shared Spinner, read-only state and long values."
+        code={StatesDemoCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
   },
-];
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long unbreakable text, disabled controls, and empty centered content inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const centerPageShortcuts = [
+  {
+    keys: "Tab / Shift + Tab",
+    description:
+      "Reach child controls in document order. Center itself adds no tab stop.",
+  },
+  {
+    keys: "Enter",
+    description:
+      "Submit the local contact form; native email validation still applies.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Activate mode, recovery and ref buttons through the shared Base UI Button.",
+  },
+  {
+    keys: "Tab through long content",
+    description:
+      "With Safe overflow enabled, the first and last checklist controls remain reachable by scrolling.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
 const nativeApi = [
   {
@@ -430,183 +680,103 @@ const nativeApi = [
   {
     prop: "className / style / children",
     type: "string / React.CSSProperties / React.ReactNode",
+    default: "-",
     description:
       "Caller layout and native content; Center adds no widget roles or focus behavior.",
   },
 ];
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function CenterPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Center"
-        description="Reachable centering for review panels, inline content and forms in changing mobile viewports."
-        version="2.0.0"
-      />
-      <FeatureGrid
-        features={[
-          {
-            title: "Safe centering",
-            description:
-              "Oversized flex/grid content stays aligned to the start.",
-            icon: <IconLayoutAlignMiddle className="size-5" />,
-          },
-          {
-            title: "Viewport-aware",
-            description: "Dynamic/small viewport height and safe-area gutters.",
-            icon: <IconDeviceMobile className="size-5" />,
-          },
-          {
-            title: "Bounded content",
-            description: "KiraCenter provides a quiet, readable content frame.",
-            icon: <IconArrowsMaximize className="size-5" />,
-          },
-          {
-            title: "Native composition",
-            description: "Typed tags, refs and Base UI render adapters.",
-            icon: <IconCode className="size-5" />,
-          },
-        ]}
-      />
-      <DemoTabs
-        defaultValue="basic"
-        tabs={demos.map(({ value, label, description, Demo, code }) => ({
-          value,
-          label,
-          demo: (
-            <DemoWrapper title={label} description={description} code={code}>
-              <Demo />
-            </DemoWrapper>
-          ),
-        }))}
-      />
-      <KeyboardShortcuts
-        description="Center controls placement; child controls retain their native keyboard behavior."
-        shortcuts={[
-          {
-            keys: "Tab / Shift + Tab",
-            description:
-              "Reach child controls in document order. Center itself adds no tab stop.",
-          },
-          {
-            keys: "Enter",
-            description:
-              "Submit the local contact form; native email validation still applies.",
-          },
-          {
-            keys: "Enter / Space",
-            description:
-              "Activate mode, recovery and ref buttons through the shared Base UI Button.",
-          },
-          {
-            keys: "Tab through long content",
-            description:
-              "With Safe overflow enabled, the first and last checklist controls remain reachable by scrolling.",
-          },
-        ]}
-      />
-      <UsageBlock
-        code={
-          'import { Center, KiraCenter, centerVariants, centerContentVariants, kiraCenterVariants } from "@/components/ui/center";\n\nexport function CenterPatterns() {\n  return <>\n    <Center className="min-h-48"><p>Review summary</p></Center>\n    <Center as="span" inline className="size-6"><span aria-hidden="true">•</span></Center>\n    <KiraCenter as="main" viewport="dynamic" offset="4rem" safeArea width="md"><h1>Workspace invitation</h1><p>Review the access request.</p></KiraCenter>\n    <div className={centerVariants({ type: "grid", safe: true })}><p>Safe grid</p></div>\n    <div className={kiraCenterVariants({ padding: "sm" })}><div className={centerContentVariants({ width: "prose" })}>Readable content</div></div>\n  </>;\n}'
-        }
-      />
-      <APIReference
-        sections={[
-          {
-            title: "Center",
-            props: [
-              ...nativeApi,
-              {
-                prop: "type",
-                type: '"flex" | "grid" | "absolute"',
-                default: '"flex"',
-                description:
-                  "Absolute mode requires a positioned ancestor and does not reserve flow space.",
-              },
-              {
-                prop: "inline",
-                type: "boolean",
-                default: "false",
-                description:
-                  "Inline-flex or inline-grid display. Has no effect in absolute mode.",
-              },
-            ],
-          },
-          {
-            title: "KiraCenter",
-            props: [
-              ...nativeApi,
-              {
-                prop: "viewport",
-                type: '"none" | "small" | "dynamic"',
-                default: '"none"',
-                description:
-                  "Minimum height from 100svh or 100dvh; content may grow beyond it.",
-              },
-              {
-                prop: "offset",
-                type: "string",
-                default: '"0px"',
-                description:
-                  "CSS length of app chrome to subtract from viewport height; negative computed heights clamp to zero.",
-              },
-              {
-                prop: "width",
-                type: '"sm" | "md" | "prose" | "full"',
-                default: '"md"',
-                description: "Content wrapper maximum width; prose uses 65ch.",
-              },
-              {
-                prop: "padding",
-                type: '"none" | "sm" | "default" | "lg"',
-                default: '"default"',
-                description: "Existing zero, 3, 6 and 8 spacing tokens.",
-              },
-              {
-                prop: "safeArea",
-                type: "boolean",
-                default: "false",
-                description:
-                  "Each physical gutter is the larger of padding and its device safe-area inset. The host controls viewport-fit.",
-              },
-              {
-                prop: "contentClassName",
-                type: "string",
-                description: "Styles the bounded center-content wrapper.",
-              },
-            ],
-          },
-        ]}
-      />
-      <Changelog
-        entries={[
-          {
-            version: "2.0.0",
-            date: "15 November 2026",
-            changes: [
-              {
-                type: "fixed",
-                title: "Native composition and honest examples",
-                description:
-                  "Typed refs/render adapters, shared display classes, compiling snippets and accessible shared controls replace faux dialog/icon-button examples. Audited against Base UI 1.9.0.",
-              },
-              {
-                type: "added",
-                title: "Safe and viewport-aware Center",
-                description:
-                  "Safe flex/grid overflow alignment and KiraCenter content widths, viewport heights, offsets and safe-area gutters. Research cutoff October 31, 2026.",
-              },
-              {
-                type: "breaking",
-                title: "Overflow defaults to safe alignment",
-                description:
-                  "Oversized flex/grid content now aligns toward the start instead of extending behind the scroll origin. Use safe={false} for the previous alignment. Absolute behavior is retained.",
-              },
-            ],
-          },
-        ]}
-      />
-    </ComponentPage>
-  );
-}
+const centerPageAPISections = [
+  {
+    title: "Center",
+    props: [
+      ...nativeApi,
+      {
+        prop: "type",
+        type: '"flex" | "grid" | "absolute"',
+        default: '"flex"',
+        description:
+          "Absolute mode requires a positioned ancestor and does not reserve flow space.",
+      },
+      {
+        prop: "inline",
+        type: "boolean",
+        default: "false",
+        description:
+          "Inline-flex or inline-grid display. Has no effect in absolute mode.",
+      },
+    ],
+  },
+  {
+    title: "KiraCenter",
+    props: [
+      ...nativeApi,
+      {
+        prop: "viewport",
+        type: '"none" | "small" | "dynamic"',
+        default: '"none"',
+        description:
+          "Minimum height from 100svh or 100dvh; content may grow beyond it.",
+      },
+      {
+        prop: "offset",
+        type: "string",
+        default: '"0px"',
+        description:
+          "CSS length of app chrome to subtract from viewport height; negative computed heights clamp to zero.",
+      },
+      {
+        prop: "width",
+        type: '"sm" | "md" | "prose" | "full"',
+        default: '"md"',
+        description: "Content wrapper maximum width; prose uses 65ch.",
+      },
+      {
+        prop: "padding",
+        type: '"none" | "sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Existing zero, 3, 6 and 8 spacing tokens.",
+      },
+      {
+        prop: "safeArea",
+        type: "boolean",
+        default: "false",
+        description:
+          "Each physical gutter is the larger of padding and its device safe-area inset. The host controls viewport-fit.",
+      },
+      {
+        prop: "contentClassName",
+        type: "string",
+        default: "-",
+        description: "Styles the bounded center-content wrapper.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const centerPageChangelogEntries = [
+  {
+    version: "2.0.0",
+    date: "15 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Native composition and honest examples",
+        description:
+          "Typed refs/render adapters, shared display classes, compiling snippets and accessible shared controls replace faux dialog/icon-button examples. Audited against Base UI 1.9.0.",
+      },
+      {
+        type: "added",
+        title: "Safe and viewport-aware Center",
+        description:
+          "Safe flex/grid overflow alignment and KiraCenter content widths, viewport heights, offsets and safe-area gutters. Research cutoff October 31, 2026.",
+      },
+      {
+        type: "breaking",
+        title: "Overflow defaults to safe alignment",
+        description:
+          "Oversized flex/grid content now aligns toward the start instead of extending behind the scroll origin. Use safe={false} for the previous alignment. Absolute behavior is retained.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

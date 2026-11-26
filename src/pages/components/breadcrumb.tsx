@@ -1,39 +1,37 @@
-"use client";
-
 import type { ComponentProps as ReactComponentProps } from "react";
 import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbEllipsis,
-  BreadcrumbSeparator,
-  BreadcrumbHome,
-  BreadcrumbCollapsible,
-  KiraBreadcrumb,
-} from "@/components/ui/breadcrumb";
-import { Badge } from "@/components/ui/badge";
-import {
-  IconFolder,
-  IconFile,
-  IconShoppingCart,
-  IconCode,
   IconAccessible,
+  IconCode,
+  IconFile,
+  IconFolder,
   IconPalette,
+  IconShoppingCart,
   IconStar,
 } from "@tabler/icons-react";
 import {
-  ComponentPage,
-  PageHeader,
-  FeatureGrid,
-  DemoTabs,
-  DemoWrapper,
-  UsageBlock,
   APIReference,
   Changelog,
+  ComponentPage,
+  DemoTabs,
+  DemoWrapper,
+  FeatureGrid,
   KeyboardShortcuts,
+  PageHeader,
+  UsageBlock,
 } from "@/components/docs";
+import { Badge } from "@/components/ui/badge";
+import {
+  Breadcrumb,
+  BreadcrumbCollapsible,
+  BreadcrumbEllipsis,
+  BreadcrumbHome,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+  KiraBreadcrumb,
+} from "@/components/ui/breadcrumb";
 
 function BasicDemo() {
   return (
@@ -123,7 +121,6 @@ export function BasicBreadcrumb() {
   )
 }
 
-// With home icon
 export function BreadcrumbWithHomeIcon() {
   return (
     <Breadcrumb>
@@ -144,93 +141,55 @@ export function BreadcrumbWithHomeIcon() {
   )
 }`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
+function SeparatorVariantRow({
+  label,
+  variant,
+  customSeparator,
+}: {
+  label: string;
+  variant?: "chevron" | "slash" | "dot";
+  customSeparator?: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <h3 className="font-medium text-sm text-muted-foreground">{label}</h3>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator variant={variant}>
+            {customSeparator}
+          </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/components">Components</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator variant={variant}>
+            {customSeparator}
+          </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    </div>
+  );
+}
+
 function SeparatorsDemo() {
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h3 className="font-medium text-sm text-muted-foreground">
-          Chevron (Default)
-        </h3>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator variant="chevron" />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/components">Components</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator variant="chevron" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-
-      <div className="space-y-2">
-        <h3 className="font-medium text-sm text-muted-foreground">Slash</h3>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator variant="slash" />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/components">Components</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator variant="slash" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-
-      <div className="space-y-2">
-        <h3 className="font-medium text-sm text-muted-foreground">Dot</h3>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator variant="dot" />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/components">Components</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator variant="dot" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
-
-      <div className="space-y-2">
-        <h3 className="font-medium text-sm text-muted-foreground">
-          Arrow (Custom)
-        </h3>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator>
-              <span className="text-muted-foreground/50">→</span>
-            </BreadcrumbSeparator>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/components">Components</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator>
-              <span className="text-muted-foreground/50">→</span>
-            </BreadcrumbSeparator>
-            <BreadcrumbItem>
-              <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
+      <SeparatorVariantRow label="Chevron (Default)" variant="chevron" />
+      <SeparatorVariantRow label="Slash" variant="slash" />
+      <SeparatorVariantRow label="Dot" variant="dot" />
+      <SeparatorVariantRow
+        label="Arrow (Custom)"
+        customSeparator={
+          <span className="text-muted-foreground/50" aria-hidden="true">
+            →
+          </span>
+        }
+      />
     </div>
   );
 }
@@ -244,35 +203,14 @@ const separatorsCode = `import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-// Chevron separator (default)
 <BreadcrumbSeparator variant="chevron" />
-
-// Slash separator
 <BreadcrumbSeparator variant="slash" />
-
-// Dot separator
 <BreadcrumbSeparator variant="dot" />
-
-// Custom separator (arrow)
 <BreadcrumbSeparator>
-  <span className="text-muted-foreground/50">→</span>
+  <span className="text-muted-foreground/50" aria-hidden="true">→</span>
 </BreadcrumbSeparator>`;
 
 function EllipsisDemo() {
-  const longPath = [
-    { href: "/", label: "Home" },
-    { href: "/documents", label: "Documents" },
-    { href: "/documents/work", label: "Work" },
-    { href: "/documents/work/projects", label: "Projects" },
-    { href: "/documents/work/projects/2024", label: "2024" },
-    { href: "/documents/work/projects/2024/q4", label: "Q4" },
-    {
-      href: "/documents/work/projects/2024/q4/report.pdf",
-      label: "report.pdf",
-      current: true,
-    },
-  ];
-
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -286,13 +224,7 @@ function EllipsisDemo() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbEllipsis
-                items={[
-                  { href: "/documents", label: "Documents" },
-                  { href: "/documents/work", label: "Work" },
-                  { href: "/documents/work/projects", label: "Projects" },
-                ]}
-              />
+              <BreadcrumbEllipsis items={ellipsisHiddenItems} />
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -312,7 +244,11 @@ function EllipsisDemo() {
         <h3 className="font-medium text-sm text-muted-foreground">
           Auto-Collapsible (maxItems=4)
         </h3>
-        <BreadcrumbCollapsible items={longPath} maxItems={4} homeIcon />
+        <BreadcrumbCollapsible
+          items={collapsibleLongPath}
+          maxItems={4}
+          homeIcon
+        />
       </div>
 
       <div className="space-y-2">
@@ -320,7 +256,7 @@ function EllipsisDemo() {
           Auto-Collapsible (maxItems=3)
         </h3>
         <BreadcrumbCollapsible
-          items={longPath}
+          items={collapsibleLongPath}
           maxItems={3}
           itemsBeforeCollapse={1}
           itemsAfterCollapse={1}
@@ -341,7 +277,6 @@ const ellipsisCode = `import {
   BreadcrumbCollapsible,
 } from "@/components/ui/breadcrumb"
 
-// Manual ellipsis with dropdown menu
 <Breadcrumb>
   <BreadcrumbList>
     <BreadcrumbItem>
@@ -364,19 +299,7 @@ const ellipsisCode = `import {
   </BreadcrumbList>
 </Breadcrumb>
 
-// Auto-collapsible breadcrumbs
-const longPath = [
-  { href: "/", label: "Home" },
-  { href: "/documents", label: "Documents" },
-  { href: "/documents/work", label: "Work" },
-  { href: "/documents/work/projects/2024/q4/report.pdf", label: "report.pdf", current: true },
-]
-
-<BreadcrumbCollapsible 
-  items={longPath} 
-  maxItems={4}
-  homeIcon
-/>`;
+<BreadcrumbCollapsible items={longPath} maxItems={4} homeIcon />`;
 
 function DropdownDemo() {
   return (
@@ -392,14 +315,7 @@ function DropdownDemo() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbEllipsis
-                items={[
-                  { href: "/shop", label: "Shop" },
-                  { href: "/shop/clothing", label: "Clothing" },
-                  { href: "/shop/clothing/mens", label: "Men's" },
-                  { href: "/shop/clothing/mens/jackets", label: "Jackets" },
-                ]}
-              />
+              <BreadcrumbEllipsis items={shopHiddenItems} />
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -428,26 +344,20 @@ function DropdownDemo() {
             <BreadcrumbItem>
               <BreadcrumbLink
                 href="/documents"
-                className="flex items-center gap-1.5"
+                className="flex items-center gap-2"
               >
-                <IconFolder className="h-4 w-4" />
+                <IconFolder className="h-4 w-4" aria-hidden="true" />
                 Documents
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbEllipsis
-                items={[
-                  { href: "/documents/work", label: "Work" },
-                  { href: "/documents/work/projects", label: "Projects" },
-                  { href: "/documents/work/projects/2024", label: "2024" },
-                ]}
-              />
+              <BreadcrumbEllipsis items={fileBrowserHiddenItems} />
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage className="flex items-center gap-1.5">
-                <IconFile className="h-4 w-4" />
+              <BreadcrumbPage className="flex items-center gap-2">
+                <IconFile className="h-4 w-4" aria-hidden="true" />
                 report.pdf
               </BreadcrumbPage>
             </BreadcrumbItem>
@@ -470,7 +380,6 @@ const dropdownCode = `import {
 } from "@/components/ui/breadcrumb"
 import { IconFolder, IconFile } from "@tabler/icons-react"
 
-// Dropdown with hidden navigation items
 <Breadcrumb>
   <BreadcrumbList>
     <BreadcrumbItem>
@@ -493,31 +402,29 @@ import { IconFolder, IconFile } from "@tabler/icons-react"
   </BreadcrumbList>
 </Breadcrumb>
 
-// With icons
-<BreadcrumbLink href="/documents" className="flex items-center gap-1.5">
-  <IconFolder className="h-4 w-4" />
+<BreadcrumbLink href="/documents" className="flex items-center gap-2">
+  <IconFolder className="h-4 w-4" aria-hidden="true" />
   Documents
 </BreadcrumbLink>`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-function CustomDemo() {
+function LinkVariantsSection() {
   return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <h3 className="font-medium text-sm text-muted-foreground">
-          Link Variants
-        </h3>
-        <div className="space-y-4">
-          <Breadcrumb>
+    <div className="space-y-2">
+      <h3 className="font-medium text-sm text-muted-foreground">
+        Link Variants
+      </h3>
+      <div className="space-y-4">
+        {breadcrumbLinkVariantOptions.map((variant) => (
+          <Breadcrumb key={variant}>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/" variant="default">
+                <BreadcrumbLink href="/" variant={variant}>
                   Home
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/components" variant="default">
+                <BreadcrumbLink href="/components" variant={variant}>
                   Components
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -527,81 +434,49 @@ function CustomDemo() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/" variant="underline">
-                  Home
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/components" variant="underline">
-                  Components
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/" variant="ghost">
-                  Home
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/components" variant="ghost">
-                  Components
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
+        ))}
       </div>
+    </div>
+  );
+}
 
-      <div className="space-y-2">
-        <h3 className="font-medium text-sm text-muted-foreground">
-          Size Variants
-        </h3>
-        <div className="space-y-4">
-          {(["sm", "default", "lg"] as const).map((size) => (
-            <div key={size} className="space-y-1">
-              <Badge variant="outline" className="mb-2">
-                {size.toUpperCase()}
-              </Badge>
-              <Breadcrumb>
-                <BreadcrumbList size={size}>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/">Home</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator size={size} />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/components">
-                      Components
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator size={size} />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
-          ))}
-        </div>
+function SizeVariantsSection() {
+  return (
+    <div className="space-y-2">
+      <h3 className="font-medium text-sm text-muted-foreground">
+        Size Variants
+      </h3>
+      <div className="space-y-4">
+        {breadcrumbSizeOptions.map((size) => (
+          <div key={size} className="space-y-1">
+            <Badge variant="outline" className="mb-2">
+              {size.toUpperCase()}
+            </Badge>
+            <Breadcrumb>
+              <BreadcrumbList size={size}>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator size={size} />
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/components">Components</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator size={size} />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Breadcrumb</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        ))}
       </div>
+    </div>
+  );
+}
 
+function BadgesAndIconsSection() {
+  return (
+    <div className="space-y-6">
       <div className="space-y-2">
         <h3 className="font-medium text-sm text-muted-foreground">
           With Badges
@@ -647,11 +522,8 @@ function CustomDemo() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink
-                href="/shop"
-                className="flex items-center gap-1.5"
-              >
-                <IconShoppingCart className="h-4 w-4" />
+              <BreadcrumbLink href="/shop" className="flex items-center gap-2">
+                <IconShoppingCart className="h-4 w-4" aria-hidden="true" />
                 Shop
               </BreadcrumbLink>
             </BreadcrumbItem>
@@ -661,11 +533,21 @@ function CustomDemo() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Men's Jackets</BreadcrumbPage>
+              <BreadcrumbPage>Men&apos;s Jackets</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
+    </div>
+  );
+}
+
+function CustomDemo() {
+  return (
+    <div className="space-y-8">
+      <LinkVariantsSection />
+      <SizeVariantsSection />
+      <BadgesAndIconsSection />
     </div>
   );
 }
@@ -681,34 +563,22 @@ const customCode = `import {
 import { Badge } from "@/components/ui/badge"
 import { IconShoppingCart } from "@tabler/icons-react"
 
-// Link variants: default, underline, ghost
 <BreadcrumbLink href="/" variant="underline">Home</BreadcrumbLink>
 <BreadcrumbLink href="/" variant="ghost">Home</BreadcrumbLink>
 
-// Size variants: sm, default, lg
 <BreadcrumbList size="lg">
   ...
 </BreadcrumbList>
 
-// With badges
 <BreadcrumbLink href="/components" className="flex items-center gap-2">
   Components
   <Badge variant="secondary" className="text-xs">24</Badge>
 </BreadcrumbLink>
 
-// With icons
-<BreadcrumbLink href="/shop" className="flex items-center gap-1.5">
-  <IconShoppingCart className="h-4 w-4" />
+<BreadcrumbLink href="/shop" className="flex items-center gap-2">
+  <IconShoppingCart className="h-4 w-4" aria-hidden="true" />
   Shop
 </BreadcrumbLink>`;
-
-const kiraItems = [
-  { href: "/", label: "Home" },
-  { href: "/shop", label: "Shop" },
-  { href: "/shop/clothing", label: "Clothing" },
-  { href: "/shop/clothing/mens", label: "Men's" },
-  { href: "/shop/clothing/mens/jackets", label: "Jackets", current: true },
-];
 
 function KiraDemo() {
   return (
@@ -749,29 +619,9 @@ const items = [
   { href: "/shop/clothing/mens/jackets", label: "Jackets", current: true },
 ]
 
-// One prop-driven API over the whole family (emits SEO JSON-LD by default)
 <KiraBreadcrumb items={items} homeIcon />
-
-// Collapse the middle of a long trail behind an ellipsis
 <KiraBreadcrumb items={items} collapse maxItems={3} homeIcon />
-
-// Mobile-first: hide all but the last crumbs
-<KiraBreadcrumb items={responsiveItems} responsive />`;
-
-const truncationItems = [
-  { href: "/", label: "Home" },
-  { href: "/workspace", label: "Workspace" },
-  { href: "/workspace/engineering", label: "Engineering" },
-  {
-    href: "/workspace/engineering/frontend-platform-infrastructure",
-    label: "frontend-platform-infrastructure",
-  },
-  {
-    href: "/workspace/engineering/frontend-platform-infrastructure/design-system/packages/ui",
-    label: "design-system-packages-monorepo",
-    current: true,
-  },
-];
+<KiraBreadcrumb items={items} responsive homeIcon linkVariant="underline" />`;
 
 function TruncationDemo() {
   return (
@@ -829,40 +679,18 @@ const mobileMenuCode = `import { KiraBreadcrumb } from "@/components/ui/breadcru
 <KiraBreadcrumb items={items} homeIcon mobileMenu />`;
 
 function ScrollDemo() {
-  const deepItems = [
-    { href: "/", label: "Home" },
-    { href: "/workspace", label: "Workspace" },
-    { href: "/workspace/engineering", label: "Engineering" },
-    { href: "/workspace/engineering/frontend", label: "Frontend" },
-    {
-      href: "/workspace/engineering/frontend/design-system",
-      label: "Design System",
-    },
-    {
-      href: "/workspace/engineering/frontend/design-system/components",
-      label: "Components",
-    },
-    {
-      href: "/workspace/engineering/frontend/design-system/components/breadcrumb",
-      label: "Breadcrumb",
-      current: true,
-    },
-  ];
-
   return (
     <div className="max-w-md space-y-2">
       <h3 className="font-medium text-sm text-muted-foreground">
         Horizontally scrollable with edge fade masks
       </h3>
-      <KiraBreadcrumb items={deepItems} overflow="scroll" homeIcon />
+      <KiraBreadcrumb items={scrollDeepItems} overflow="scroll" homeIcon />
     </div>
   );
 }
 
 const scrollCode = `import { KiraBreadcrumb } from "@/components/ui/breadcrumb"
 
-// "scroll" keeps every crumb in a horizontally scrollable row
-// with edge fade masks — mobile-friendly alternative to collapsing
 <KiraBreadcrumb items={deepItems} overflow="scroll" homeIcon />`;
 
 function CopyActionsDemo() {
@@ -888,7 +716,7 @@ function CopyActionsDemo() {
               aria-label="Star this page"
               className="grid size-8 place-items-center rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <IconStar className="h-4 w-4" />
+              <IconStar className="h-4 w-4" aria-hidden="true" />
             </button>
           }
         />
@@ -900,19 +728,85 @@ function CopyActionsDemo() {
 const copyActionsCode = `import { KiraBreadcrumb } from "@/components/ui/breadcrumb"
 import { IconStar } from "@tabler/icons-react"
 
-// Copy the current path to the clipboard (flashes a check for ~1.5s)
 <KiraBreadcrumb items={items} homeIcon copyPath />
 
-// Drop page-level actions inline with the trail
 <KiraBreadcrumb
   items={items}
   copyPath
   actions={
     <button type="button" aria-label="Star this page">
-      <IconStar className="h-4 w-4" />
+      <IconStar className="h-4 w-4" aria-hidden="true" />
     </button>
   }
 />`;
+
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-6 rounded-lg border border-border p-4">
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">
+          Long labels + collapsed middle in narrow container
+        </p>
+        <KiraBreadcrumb
+          items={stressLongItems}
+          collapse
+          maxItems={3}
+          homeIcon
+          copyPath
+          actions={
+            <button
+              type="button"
+              disabled
+              aria-label="Locked page action"
+              className="grid size-8 place-items-center rounded-md text-muted-foreground opacity-50"
+            >
+              <IconStar className="h-4 w-4" aria-hidden="true" />
+            </button>
+          }
+        />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">
+          Horizontal scroll overflow in narrow container
+        </p>
+        <KiraBreadcrumb
+          items={stressLongItems}
+          overflow="scroll"
+          homeIcon
+          size="sm"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-medium text-muted-foreground">
+          Empty items array &amp; single-item root
+        </p>
+        <KiraBreadcrumb items={[]} />
+        <KiraBreadcrumb items={[{ href: "/", label: "Root", current: true }]} />
+      </div>
+    </div>
+  );
+}
+
+const stressCode = `import { KiraBreadcrumb } from "@/components/ui/breadcrumb"
+
+<div className="max-w-xs space-y-6">
+  <KiraBreadcrumb
+    items={longItems}
+    collapse
+    maxItems={3}
+    homeIcon
+    copyPath
+    actions={
+      <button type="button" disabled aria-label="Locked page action">
+        <IconStar className="h-4 w-4" aria-hidden="true" />
+      </button>
+    }
+  />
+  <KiraBreadcrumb items={longItems} overflow="scroll" homeIcon size="sm" />
+  <KiraBreadcrumb items={[]} />
+</div>`;
 
 const usageCode = `import {
   Breadcrumb,
@@ -921,21 +815,15 @@ const usageCode = `import {
   BreadcrumbLink,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  BreadcrumbHome,
-  BreadcrumbEllipsis,
-  BreadcrumbCollapsible,
+  KiraBreadcrumb,
   useBreadcrumbs,
 } from "@/components/ui/breadcrumb"
 
-// Basic usage
+// Composable primitives
 <Breadcrumb>
   <BreadcrumbList>
     <BreadcrumbItem>
       <BreadcrumbLink href="/">Home</BreadcrumbLink>
-    </BreadcrumbItem>
-    <BreadcrumbSeparator />
-    <BreadcrumbItem>
-      <BreadcrumbLink href="/products">Products</BreadcrumbLink>
     </BreadcrumbItem>
     <BreadcrumbSeparator />
     <BreadcrumbItem>
@@ -944,364 +832,186 @@ const usageCode = `import {
   </BreadcrumbList>
 </Breadcrumb>
 
-// With useBreadcrumbs hook for auto-generation
-const breadcrumbs = useBreadcrumbs("/products/electronics/phones", {
-  labels: {
-    products: "All Products",
-    electronics: "Electronics",
-    phones: "Phones",
-  },
-})`;
+// Data-driven KiraBreadcrumb with useBreadcrumbs
+const items = useBreadcrumbs("/products/electronics/phones", {
+  labels: { products: "All Products" },
+})
+<KiraBreadcrumb items={items} collapse maxItems={4} homeIcon copyPath />`;
 
-const apiSections = [
-  {
-    title: "Breadcrumb",
-    props: [
-      {
-        prop: "children",
-        type: "ReactNode",
-        description: "BreadcrumbList and other content",
-      },
-      {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes",
-      },
-      {
-        prop: "separator",
-        type: "ReactNode",
-        description: "Default separator for all items",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbList",
-    props: [
-      {
-        prop: "children",
-        type: "ReactNode",
-        description: "BreadcrumbItem components",
-      },
-      {
-        prop: "size",
-        type: '"sm" | "default" | "lg"',
-        default: '"default"',
-        description: "Size variant",
-      },
-      {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbItem",
-    props: [
-      {
-        prop: "children",
-        type: "ReactNode",
-        description: "Link or page content",
-      },
-      {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbLink",
-    props: [
-      { prop: "href", type: "string", description: "Navigation URL" },
-      {
-        prop: "variant",
-        type: '"default" | "underline" | "ghost"',
-        default: '"default"',
-        description: "Link styling variant",
-      },
-      {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Render as child element for router Links",
-      },
-      {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbPage",
-    props: [
-      { prop: "children", type: "ReactNode", description: "Current page text" },
-      {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbSeparator",
-    props: [
-      {
-        prop: "variant",
-        type: '"chevron" | "slash" | "dot"',
-        default: '"chevron"',
-        description: "Separator style",
-      },
-      {
-        prop: "size",
-        type: '"sm" | "default" | "lg"',
-        default: '"default"',
-        description: "Size variant",
-      },
-      {
-        prop: "children",
-        type: "ReactNode",
-        description: "Custom separator content",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbEllipsis",
-    props: [
-      {
-        prop: "items",
-        type: "{ href: string; label: string }[]",
-        description: "Hidden items to show in dropdown",
-      },
-      {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbHome",
-    props: [
-      { prop: "href", type: "string", description: "Home URL" },
-      {
-        prop: "showLabel",
-        type: "boolean",
-        default: "false",
-        description: "Show the label text next to the home icon",
-      },
-      {
-        prop: "label",
-        type: "string",
-        default: '"Home"',
-        description: "Accessible label (and visible text when showLabel)",
-      },
-      {
-        prop: "render",
-        type: "RenderProp",
-        description: "Render as a custom element for router Links",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbJsonLd",
-    props: [
-      {
-        prop: "items",
-        type: "{ name: string; href: string }[]",
-        description:
-          "Trail items serialized to schema.org BreadcrumbList JSON-LD",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbCollapsible",
-    props: [
-      {
-        prop: "items",
-        type: "{ href; label; current?; icon? }[]",
-        description: "Trail items",
-      },
-      {
-        prop: "maxItems",
-        type: "number",
-        default: "4",
-        description: "Trail length above which the middle collapses",
-      },
-      {
-        prop: "itemsBeforeCollapse",
-        type: "number",
-        default: "1",
-        description: "Items kept before the ellipsis",
-      },
-      {
-        prop: "itemsAfterCollapse",
-        type: "number",
-        default: "2",
-        description: "Items kept after the ellipsis",
-      },
-      {
-        prop: "separator / size / linkVariant / homeIcon",
-        type: "ReactNode | enum",
-        description: "Shared trail styling props",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbResponsive",
-    props: [
-      {
-        prop: "items",
-        type: "{ href; label; current?; icon? }[]",
-        description: "Trail items",
-      },
-      {
-        prop: "mobileItems",
-        type: "number",
-        default: "2",
-        description:
-          "Items kept visible on mobile; the rest hide behind the ellipsis",
-      },
-      {
-        prop: "separator / size / linkVariant / homeIcon",
-        type: "ReactNode | enum",
-        description: "Shared trail styling props",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbActions",
-    props: [
-      {
-        prop: "children",
-        type: "ReactNode",
-        description: "Right-aligned trailing action buttons",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbCopy",
-    props: [
-      {
-        prop: "value",
-        type: "string",
-        description: "Path/URL to copy; defaults to window.location.href",
-      },
-      {
-        prop: "label",
-        type: "string",
-        default: '"Copy path"',
-        description: "Accessible label; also the sr-only status text",
-      },
-      {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes",
-      },
-    ],
-  },
-  {
-    title: "BreadcrumbMobileMenu",
-    props: [
-      {
-        prop: "items",
-        type: "{ href; label; current?; icon? }[]",
-        description:
-          "Full trail; the last item becomes the trigger, ancestors fill the menu",
-      },
-      {
-        prop: "className",
-        type: "string",
-        description: "Additional CSS classes on the md:hidden wrapper",
-      },
-    ],
-  },
-  {
-    title: "KiraBreadcrumb",
-    props: [
-      {
-        prop: "items",
-        type: "KiraBreadcrumbItem[]",
-        description: "Trail items with optional icon",
-      },
-      {
-        prop: "collapse / maxItems / itemsBeforeCollapse / itemsAfterCollapse",
-        type: "boolean | number",
-        description: "Delegate to BreadcrumbCollapsible",
-      },
-      {
-        prop: "responsive / mobileItems",
-        type: "boolean | number",
-        description: "Delegate to BreadcrumbResponsive",
-      },
-      {
-        prop: "mobileMenu",
-        type: "boolean",
-        default: "false",
-        description:
-          "Below md: current page + chevron trigger listing ancestors",
-      },
-      {
-        prop: "overflow",
-        type: '"collapse" | "scroll"',
-        default: '"collapse"',
-        description: "Scrollable row with edge fades instead of collapsing",
-      },
-      {
-        prop: "jsonLd",
-        type: "boolean",
-        default: "true",
-        description: "Emit SEO JSON-LD",
-      },
-      {
-        prop: "actions / copyPath",
-        type: "ReactNode | boolean",
-        description: "Trailing BreadcrumbActions region; copy-path affordance",
-      },
-      {
-        prop: "separator / size / linkVariant / homeIcon",
-        type: "ReactNode | enum",
-        description: "Shared trail styling props",
-      },
-    ],
-  },
-];
+export default function BreadcrumbDemoPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Breadcrumb"
+        description="Accessible breadcrumb navigation with Schema.org structured data for SEO, responsive collapse, Base UI render prop integration, and pathname auto-generation."
+        version="v2.1.0"
+        badge={<Badge variant="outline">Enhanced</Badge>}
+      />
 
-// Hooks: useBreadcrumbs(pathname, { labels, includeHome, homeLabel, basePath }) and
-// useBreadcrumbsFromMatches(matches) build the items[] array from a router path or matches.
+      <FeatureGrid
+        features={breadcrumbPageFeatures}
+        description="Built-in SEO, overflow, and accessibility capabilities."
+      />
 
-const features = [
+      <DemoTabs tabs={breadcrumbPageDemoTabs} defaultValue="kira" />
+
+      <KeyboardShortcuts
+        shortcuts={breadcrumbPageShortcuts}
+        description="Keyboard navigation and menu bindings."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Compose primitives manually or pass an items array to KiraBreadcrumb."
+        notes={breadcrumbPageUsageNotes}
+      />
+
+      <APIReference
+        sections={breadcrumbPageAPISections}
+        title="API reference"
+        description="Props, types, and defaults for every exported breadcrumb part."
+      />
+
+      <Changelog
+        entries={breadcrumbPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Breadcrumb."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const breadcrumbLinkVariantOptions = ["default", "underline", "ghost"] as const;
+
+const breadcrumbSizeOptions = ["sm", "default", "lg"] as const;
+
+const ellipsisHiddenItems = [
+  { href: "/documents", label: "Documents" },
+  { href: "/documents/work", label: "Work" },
+  { href: "/documents/work/projects", label: "Projects" },
+] satisfies ReactComponentProps<typeof BreadcrumbEllipsis>["items"];
+
+const shopHiddenItems = [
+  { href: "/shop", label: "Shop" },
+  { href: "/shop/clothing", label: "Clothing" },
+  { href: "/shop/clothing/mens", label: "Men's" },
+  { href: "/shop/clothing/mens/jackets", label: "Jackets" },
+] satisfies ReactComponentProps<typeof BreadcrumbEllipsis>["items"];
+
+const fileBrowserHiddenItems = [
+  { href: "/documents/work", label: "Work" },
+  { href: "/documents/work/projects", label: "Projects" },
+  { href: "/documents/work/projects/2024", label: "2024" },
+] satisfies ReactComponentProps<typeof BreadcrumbEllipsis>["items"];
+
+const collapsibleLongPath = [
+  { href: "/", label: "Home" },
+  { href: "/documents", label: "Documents" },
+  { href: "/documents/work", label: "Work" },
+  { href: "/documents/work/projects", label: "Projects" },
+  { href: "/documents/work/projects/2024", label: "2024" },
+  { href: "/documents/work/projects/2024/q4", label: "Q4" },
+  {
+    href: "/documents/work/projects/2024/q4/report.pdf",
+    label: "report.pdf",
+    current: true,
+  },
+] satisfies ReactComponentProps<typeof BreadcrumbCollapsible>["items"];
+
+const kiraItems = [
+  { href: "/", label: "Home" },
+  { href: "/shop", label: "Shop" },
+  { href: "/shop/clothing", label: "Clothing" },
+  { href: "/shop/clothing/mens", label: "Men's" },
+  { href: "/shop/clothing/mens/jackets", label: "Jackets", current: true },
+] satisfies ReactComponentProps<typeof KiraBreadcrumb>["items"];
+
+const truncationItems = [
+  { href: "/", label: "Home" },
+  { href: "/workspace", label: "Workspace" },
+  { href: "/workspace/engineering", label: "Engineering" },
+  {
+    href: "/workspace/engineering/frontend-platform-infrastructure",
+    label: "frontend-platform-infrastructure",
+  },
+  {
+    href: "/workspace/engineering/frontend-platform-infrastructure/design-system/packages/ui",
+    label: "design-system-packages-monorepo",
+    current: true,
+  },
+] satisfies ReactComponentProps<typeof KiraBreadcrumb>["items"];
+
+const scrollDeepItems = [
+  { href: "/", label: "Home" },
+  { href: "/workspace", label: "Workspace" },
+  { href: "/workspace/engineering", label: "Engineering" },
+  { href: "/workspace/engineering/frontend", label: "Frontend" },
+  {
+    href: "/workspace/engineering/frontend/design-system",
+    label: "Design System",
+  },
+  {
+    href: "/workspace/engineering/frontend/design-system/components",
+    label: "Components",
+  },
+  {
+    href: "/workspace/engineering/frontend/design-system/components/breadcrumb",
+    label: "Breadcrumb",
+    current: true,
+  },
+] satisfies ReactComponentProps<typeof KiraBreadcrumb>["items"];
+
+const stressLongItems = [
+  { href: "/", label: "Home" },
+  {
+    href: "/enterprise-organization-workspace",
+    label: "enterprise-organization-workspace-north-america",
+  },
+  {
+    href: "/enterprise-organization-workspace/infrastructure",
+    label: "platform-engineering-shared-infrastructure",
+  },
+  {
+    href: "/enterprise-organization-workspace/infrastructure/release-checklist",
+    label: "Q4 Production Release Readiness Checklist",
+    current: true,
+  },
+] satisfies ReactComponentProps<typeof KiraBreadcrumb>["items"];
+
+const breadcrumbPageFeatures = [
   {
     title: "SEO Optimized",
     description:
       "Schema.org BreadcrumbList microdata, JSON-LD structured data component, and semantic HTML with proper ARIA.",
-    icon: <IconCode className="h-4 w-4" />,
+    icon: <IconCode className="h-4 w-4" aria-hidden="true" />,
   },
   {
     title: "Accessible",
     description:
       'nav landmark with aria-label, aria-current="page" on current item, hidden separators from screen readers.',
-    icon: <IconAccessible className="h-4 w-4" />,
+    icon: <IconAccessible className="h-4 w-4" aria-hidden="true" />,
   },
   {
     title: "Customizable",
     description:
-      "asChild for router integration, useBreadcrumbs hook for auto-generation, auto-collapsing for long paths.",
-    icon: <IconPalette className="h-4 w-4" />,
+      "Base UI render prop for router integration, useBreadcrumbs hooks for auto-generation, and auto-collapsing for long paths.",
+    icon: <IconPalette className="h-4 w-4" aria-hidden="true" />,
   },
   {
     title: "Long-path ready",
     description:
-      "Middle truncation on long links (start…end, full label on hover), mobile ancestor menu below md, icons in every trail mode.",
-    icon: <IconFolder className="h-4 w-4" />,
+      "Middle truncation on long links (start…end, full label on hover), mobile ancestor menu below md, and icons in every trail mode.",
+    icon: <IconFolder className="h-4 w-4" aria-hidden="true" />,
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const demoTabs = [
+const breadcrumbPageDemoTabs = [
   {
     value: "kira",
-    label: "Kira",
+    label: "KiraBreadcrumb",
+    group: "KiraBreadcrumb",
     demo: (
       <DemoWrapper
         title="KiraBreadcrumb"
@@ -1315,6 +1025,7 @@ const demoTabs = [
   {
     value: "truncation",
     label: "Truncation",
+    group: "KiraBreadcrumb",
     demo: (
       <DemoWrapper
         title="Middle Truncation"
@@ -1327,11 +1038,12 @@ const demoTabs = [
   },
   {
     value: "mobile-menu",
-    label: "Mobile menu",
+    label: "Mobile Menu",
+    group: "KiraBreadcrumb",
     demo: (
       <DemoWrapper
         title="Mobile Ancestor Menu"
-        description="Below md, the trail collapses to the current page with a chevron trigger listing all ancestors (Base UI Menu). Instruct: view at 375px."
+        description="Below md, the trail collapses to the current page with a chevron trigger listing all ancestors via Base UI Menu."
         code={mobileMenuCode}
       >
         <MobileMenuDemo />
@@ -1340,11 +1052,12 @@ const demoTabs = [
   },
   {
     value: "scroll",
-    label: "Scroll overflow",
+    label: "Scroll Overflow",
+    group: "KiraBreadcrumb",
     demo: (
       <DemoWrapper
         title="Scroll Overflow"
-        description="A horizontally scrollable trail with edge fade masks — a mobile-friendly alternative to ellipsis-collapsing."
+        description="A horizontally scrollable trail with edge fade masks — a mobile-friendly alternative to ellipsis collapsing."
         code={scrollCode}
       >
         <ScrollDemo />
@@ -1354,6 +1067,7 @@ const demoTabs = [
   {
     value: "copy-actions",
     label: "Copy + Actions",
+    group: "KiraBreadcrumb",
     demo: (
       <DemoWrapper
         title="Copy Path & Actions"
@@ -1367,6 +1081,7 @@ const demoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Breadcrumb"
@@ -1380,6 +1095,7 @@ const demoTabs = [
   {
     value: "separators",
     label: "Separators",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Separator Variants"
@@ -1393,6 +1109,7 @@ const demoTabs = [
   {
     value: "ellipsis",
     label: "Ellipsis",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Collapsed Breadcrumbs"
@@ -1406,6 +1123,7 @@ const demoTabs = [
   {
     value: "dropdown",
     label: "Dropdown",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Dropdown Menu"
@@ -1419,6 +1137,7 @@ const demoTabs = [
   {
     value: "custom",
     label: "Custom",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Custom Styling"
@@ -1429,83 +1148,485 @@ const demoTabs = [
       </DemoWrapper>
     ),
   },
-];
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, collapsed and scrollable trails, disabled actions, and empty states inside a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-export default function BreadcrumbExamplePage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Breadcrumb"
-        description="Accessible breadcrumb navigation with Schema.org structured data for SEO, responsive collapse, router integration via asChild, and auto-generation from pathname. WCAG 2.1 AA compliant."
-        version="v2.1"
-        badge={<Badge variant="outline">Enhanced</Badge>}
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="kira" />
-
-      <KeyboardShortcuts
-        shortcuts={breadcrumbExamplePageKeyboardShortcutsShortcuts}
-      />
-
-      <UsageBlock
-        code={usageCode}
-        title="Usage"
-        description="Import and use breadcrumb components for navigation paths."
-      />
-
-      <APIReference
-        sections={apiSections}
-        title="API reference"
-        description="Props and configuration options for all breadcrumb components."
-      />
-
-      <Changelog entries={breadcrumbExamplePageChangelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
-const breadcrumbExamplePageKeyboardShortcutsShortcuts = [
+const breadcrumbPageShortcuts = [
   {
     keys: "Tab",
     description:
-      "links and the ellipsis/mobile menu triggers are normal tab stops",
+      "Move focus across breadcrumb links, copy button, and ellipsis/mobile menu triggers.",
   },
   {
     keys: "Enter / Space",
     description:
-      "activate the focused link, or open the focused ellipsis/mobile menu trigger",
+      "Activate the focused link or open the focused ellipsis/mobile menu trigger.",
   },
   {
     keys: "Escape",
     description:
-      "close the open menu and return focus to its trigger (inherited from Base UI Menu)",
+      "Close the open menu and return focus to its trigger (provided by Base UI Menu).",
   },
   {
     keys: "ArrowDown / ArrowUp",
     description:
-      "walk items inside the open menu (inherited from Base UI Menu)",
+      "Navigate items inside the open ellipsis or mobile ancestor menu (provided by Base UI Menu).",
   },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-const breadcrumbExamplePageChangelogEntries = [
+const breadcrumbPageUsageNotes = [
   {
-    version: "v2.1",
-    date: "2026-11-03",
+    label: "KiraBreadcrumb",
+    body: "Use KiraBreadcrumb for data-driven trails: pass items[] to get SEO JSON-LD, middle truncation, collapse/scroll/mobileMenu overflow modes, copyPath, and trailing actions in one component.",
+  },
+  {
+    label: "Composable primitives",
+    body: "Compose Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink (with Base UI render prop for router links), BreadcrumbPage, and BreadcrumbSeparator when you need custom markup per crumb.",
+  },
+  {
+    label: "Router hooks",
+    body: "Use useBreadcrumbs(pathname, options) or useBreadcrumbsFromMatches(matches) to generate items[] directly from router state.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const breadcrumbPageAPISections = [
+  {
+    title: "Breadcrumb",
+    props: [
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "BreadcrumbList and other content.",
+      },
+      {
+        prop: "separator",
+        type: "ReactNode",
+        default: "-",
+        description: "Default separator inherited via context.",
+      },
+      {
+        prop: "maxItems",
+        type: "number",
+        default: "-",
+        description: "Optional max items hint on nav props.",
+      },
+      {
+        prop: "itemsBeforeCollapse",
+        type: "number",
+        default: "-",
+        description: "Optional leading items hint on nav props.",
+      },
+      {
+        prop: "itemsAfterCollapse",
+        type: "number",
+        default: "-",
+        description: "Optional trailing items hint on nav props.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbList",
+    props: [
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Typography and gap size variant.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "BreadcrumbItem and BreadcrumbSeparator elements.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbItem",
+    props: [
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Link, home link, ellipsis, or page content.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbLink",
+    props: [
+      {
+        prop: "href",
+        type: "string",
+        default: "-",
+        description: "Navigation URL.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "underline" | "ghost"',
+        default: '"default"',
+        description: "Visual styling variant for the link.",
+      },
+      {
+        prop: "render",
+        type: "useRender.RenderProp",
+        default: "-",
+        description:
+          "Custom element or render function for router Link integration (Base UI useRender).",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbPage",
+    props: [
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Current page label.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbSeparator",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "chevron" | "slash" | "dot"',
+        default: '"default"',
+        description: "Separator icon or dot style.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Separator icon size.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Custom separator content overriding variant.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbEllipsis",
+    props: [
+      {
+        prop: "items",
+        type: "{ href: string; label: string }[]",
+        default: "-",
+        description:
+          "Hidden items rendered in a Base UI Menu dropdown when provided.",
+      },
+      {
+        prop: "onExpand",
+        type: "() => void",
+        default: "-",
+        description: "Optional expansion callback.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbHome",
+    props: [
+      {
+        prop: "href",
+        type: "string",
+        default: "-",
+        description: "Home URL.",
+      },
+      {
+        prop: "showLabel",
+        type: "boolean",
+        default: "false",
+        description: "Render visible label text next to the home icon.",
+      },
+      {
+        prop: "label",
+        type: "string",
+        default: '"Home"',
+        description: "Accessible label (and visible text when showLabel).",
+      },
+      {
+        prop: "render",
+        type: "useRender.RenderProp",
+        default: "-",
+        description: "Render as a custom element for router Links.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbJsonLd",
+    props: [
+      {
+        prop: "items",
+        type: "{ name: string; href: string }[]",
+        default: "-",
+        description:
+          "Trail items serialized to schema.org BreadcrumbList JSON-LD.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbCollapsible",
+    props: [
+      {
+        prop: "items",
+        type: "{ href: string; label: string; current?: boolean; icon?: ReactNode }[]",
+        default: "-",
+        description: "Trail items.",
+      },
+      {
+        prop: "maxItems",
+        type: "number",
+        default: "4",
+        description: "Trail length above which the middle collapses.",
+      },
+      {
+        prop: "itemsBeforeCollapse",
+        type: "number",
+        default: "1",
+        description: "Items kept before the ellipsis.",
+      },
+      {
+        prop: "itemsAfterCollapse",
+        type: "number",
+        default: "2",
+        description: "Items kept after the ellipsis.",
+      },
+      {
+        prop: "separator / size / linkVariant / homeIcon",
+        type: "ReactNode | enum | boolean",
+        default: "-",
+        description: "Shared trail styling props.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbResponsive",
+    props: [
+      {
+        prop: "items",
+        type: "{ href: string; label: string; current?: boolean; icon?: ReactNode }[]",
+        default: "-",
+        description: "Trail items.",
+      },
+      {
+        prop: "mobileItems",
+        type: "number",
+        default: "2",
+        description:
+          "Items kept visible on mobile; earlier items move into the ellipsis menu.",
+      },
+      {
+        prop: "separator / size / linkVariant / homeIcon",
+        type: "ReactNode | enum | boolean",
+        default: "-",
+        description: "Shared trail styling props.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbActions",
+    props: [
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Right-aligned trailing action controls.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbCopy",
+    props: [
+      {
+        prop: "value",
+        type: "string",
+        default: "-",
+        description: "Path/URL to copy; defaults to window.location.href.",
+      },
+      {
+        prop: "label",
+        type: "string",
+        default: '"Copy path"',
+        description: "Accessible label and status output text.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "BreadcrumbMobileMenu",
+    props: [
+      {
+        prop: "items",
+        type: "{ href: string; label: string; current?: boolean; icon?: ReactNode }[]",
+        default: "-",
+        description:
+          "Full trail; the last item becomes the trigger and ancestors populate the menu.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes on the md:hidden wrapper.",
+      },
+    ],
+  },
+  {
+    title: "KiraBreadcrumb",
+    props: [
+      {
+        prop: "items",
+        type: "KiraBreadcrumbItem[]",
+        default: "-",
+        description: "Trail items with optional current flag and icon.",
+      },
+      {
+        prop: "collapse / maxItems / itemsBeforeCollapse / itemsAfterCollapse",
+        type: "boolean | number",
+        default: "false",
+        description: "Delegate to BreadcrumbCollapsible.",
+      },
+      {
+        prop: "responsive",
+        type: "boolean",
+        default: "false",
+        description: "Delegate to BreadcrumbResponsive.",
+      },
+      {
+        prop: "mobileMenu",
+        type: "boolean",
+        default: "false",
+        description:
+          "Below md: current page + chevron trigger listing ancestors.",
+      },
+      {
+        prop: "overflow",
+        type: '"collapse" | "scroll"',
+        default: '"collapse"',
+        description:
+          "Scrollable horizontal row with edge fade masks instead of collapsing.",
+      },
+      {
+        prop: "jsonLd",
+        type: "boolean",
+        default: "true",
+        description: "Emit schema.org BreadcrumbList JSON-LD.",
+      },
+      {
+        prop: "actions / copyPath",
+        type: "ReactNode | boolean",
+        default: "false",
+        description: "Trailing BreadcrumbActions region and copy-path button.",
+      },
+      {
+        prop: "separator / size / linkVariant / homeIcon",
+        type: "ReactNode | enum | boolean",
+        default: "-",
+        description: "Shared trail styling props.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const breadcrumbPageChangelogEntries = [
+  {
+    version: "2.1.0",
+    date: "3 November 2026",
     changes: [
       {
         type: "changed",
         title: "Base UI Menu ellipsis",
         description:
-          "BreadcrumbEllipsis now builds on @base-ui/react/menu: Escape to close with focus return, arrow-key walking, focus trap, and data-highlighted styling. DOM note: the hidden-items popup changed from a hand-rolled div[role=menu] to the Base UI Menu.Popup.",
+          "BreadcrumbEllipsis now builds on @base-ui/react/menu: Escape to close with focus return, arrow-key walking, focus trap, and data-highlighted styling.",
       },
       {
         type: "added",
         title: "Middle truncation",
         description:
-          "Links longer than 24 characters render fixed-width start…end with the full label on hover (title attr); the current page is never truncated. Available on KiraBreadcrumb, BreadcrumbCollapsible, and BreadcrumbResponsive.",
+          "Links longer than 24 characters render fixed-width start…end with the full label on hover (title attr); the current page is never truncated.",
       },
       {
         type: "added",
@@ -1528,8 +1649,8 @@ const breadcrumbExamplePageChangelogEntries = [
     ],
   },
   {
-    version: "v2.0",
-    date: "2026-07-22",
+    version: "2.0.0",
+    date: "22 July 2026",
     changes: [
       {
         type: "added",
