@@ -7,6 +7,7 @@ import {
 import { Grid, GridItem, KiraGrid } from "@/components/ui/grid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ComponentPage,
   PageHeader,
@@ -443,38 +444,44 @@ function KiraDemo() {
           {loading ? "Finish local refresh" : "Refresh fixture"}
         </Button>
       </div>
-      <KiraGrid
-        as="ul"
-        items={visible}
-        getKey={(project) => project.id}
-        loading={loading}
-        loadingLabel="Refreshing the local project fixture…"
-        minItemWidth="14rem"
-        emptyContent={
-          <div className="space-y-3">
-            <p>No projects match this search.</p>
-            <Button variant="outline" size="sm" onClick={() => setQuery("")}>
-              Clear search
-            </Button>
-          </div>
-        }
-        renderItem={(project) => (
-          <article className="flex h-48 flex-col gap-3 rounded-lg border p-4">
-            <h3 className="font-medium">{project.name}</h3>
-            <p className="text-sm text-muted-foreground">
-              Owner: {project.owner}
-            </p>
-            <Button
-              variant="outline"
-              className="mt-auto"
-              aria-pressed={selected === project.id}
-              onClick={() => setSelected(project.id)}
-            >
-              Inspect {project.name}
-            </Button>
-          </article>
-        )}
-      />
+      {loading ? (
+        <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>
+          {Array.from({ length: 3 }, (_, index) => (
+            <Skeleton key={index} className="h-48 w-full" />
+          ))}
+        </Grid>
+      ) : (
+        <KiraGrid
+          as="ul"
+          items={visible}
+          getKey={(project) => project.id}
+          minItemWidth="14rem"
+          emptyContent={
+            <div className="space-y-3">
+              <p>No projects match this search.</p>
+              <Button variant="outline" size="sm" onClick={() => setQuery("")}>
+                Clear search
+              </Button>
+            </div>
+          }
+          renderItem={(project) => (
+            <article className="flex h-48 flex-col gap-3 rounded-lg border p-4">
+              <h3 className="font-medium">{project.name}</h3>
+              <p className="text-sm text-muted-foreground">
+                Owner: {project.owner}
+              </p>
+              <Button
+                variant="outline"
+                className="mt-auto"
+                aria-pressed={selected === project.id}
+                onClick={() => setSelected(project.id)}
+              >
+                Inspect {project.name}
+              </Button>
+            </article>
+          )}
+        />
+      )}
       <p className="text-sm text-muted-foreground">
         Selected project:{" "}
         {projects.find((project) => project.id === selected)?.name ?? "None"}.
@@ -484,9 +491,10 @@ function KiraDemo() {
 }
 
 const kiraDemoCode = `import * as React from "react";
-import { KiraGrid } from "@/components/ui/grid";
+import { Grid, KiraGrid } from "@/components/ui/grid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const projects = [
   { id: "access", name: "Access rules", owner: "Maya Chen" },
@@ -505,13 +513,18 @@ export function KiraDemo() {
       <div className="min-w-0 flex-1 space-y-2"><label htmlFor={id} className="text-sm font-medium">Find a project</label><Input id={id} value={query} onChange={(event) => setQuery(event.target.value)} /></div>
       <Button variant="outline" onClick={() => setLoading((value) => !value)}>{loading ? "Finish local refresh" : "Refresh fixture"}</Button>
     </div>
-    <KiraGrid as="ul" items={visible} getKey={(project) => project.id} loading={loading}
-      loadingLabel="Refreshing the local project fixture…" minItemWidth="14rem"
-      emptyContent={<div className="space-y-3"><p>No projects match this search.</p><Button variant="outline" size="sm" onClick={() => setQuery("")}>Clear search</Button></div>}
-      renderItem={(project) => <article className="flex h-48 flex-col gap-3 rounded-lg border p-4">
-        <h3 className="font-medium">{project.name}</h3><p className="text-sm text-muted-foreground">Owner: {project.owner}</p>
-        <Button variant="outline" className="mt-auto" aria-pressed={selected === project.id} onClick={() => setSelected(project.id)}>Inspect {project.name}</Button>
-      </article>} />
+    {loading ? (
+      <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>
+        {Array.from({ length: 3 }, (_, index) => <Skeleton key={index} className="h-48 w-full" />)}
+      </Grid>
+    ) : (
+      <KiraGrid as="ul" items={visible} getKey={(project) => project.id} minItemWidth="14rem"
+        emptyContent={<div className="space-y-3"><p>No projects match this search.</p><Button variant="outline" size="sm" onClick={() => setQuery("")}>Clear search</Button></div>}
+        renderItem={(project) => <article className="flex h-48 flex-col gap-3 rounded-lg border p-4">
+          <h3 className="font-medium">{project.name}</h3><p className="text-sm text-muted-foreground">Owner: {project.owner}</p>
+          <Button variant="outline" className="mt-auto" aria-pressed={selected === project.id} onClick={() => setSelected(project.id)}>Inspect {project.name}</Button>
+        </article>} />
+    )}
     <p className="text-sm text-muted-foreground">Selected project: {projects.find((project) => project.id === selected)?.name ?? "None"}.</p>
   </div>;
 }`;
@@ -547,47 +560,59 @@ function StatesDemo() {
           </Button>
         ))}
       </div>
-      <KiraGrid
-        items={items}
-        getKey={(item) => item.id}
-        minItemWidth="14rem"
-        loading={state === "loading"}
-        loadingCount={3}
-        error={
-          state === "error"
-            ? "Projects could not be loaded. Try the local fixture again."
-            : undefined
-        }
-        onRetry={() => setState("ready")}
-        emptyContent={
-          <div className="space-y-3">
-            <p>No projects yet.</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setState("ready")}
-            >
-              Create local project
-            </Button>
-          </div>
-        }
-        renderItem={(item) => (
-          <article className="h-48 space-y-3 rounded-lg border p-4">
-            <h3 className="font-medium">{item.name}</h3>
-            <p className="text-sm text-muted-foreground">{item.owner}</p>
-            <p className="text-sm text-muted-foreground">
-              Read-only snapshot. Editing requires owner access.
-            </p>
-          </article>
-        )}
-      />
+      {state === "loading" && (
+        <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>
+          {Array.from({ length: 3 }, (_, index) => (
+            <Skeleton key={index} className="h-48 w-full" />
+          ))}
+        </Grid>
+      )}
+      {state === "error" && (
+        <div className="space-y-3 rounded-lg border border-destructive/30 p-4">
+          <p role="alert" className="text-sm text-destructive">
+            Projects could not be loaded. Try the local fixture again.
+          </p>
+          <Button variant="outline" size="sm" onClick={() => setState("ready")}>
+            Try again
+          </Button>
+        </div>
+      )}
+      {(state === "ready" || state === "empty") && (
+        <KiraGrid
+          items={items}
+          getKey={(item) => item.id}
+          minItemWidth="14rem"
+          emptyContent={
+            <div className="space-y-3">
+              <p>No projects yet.</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setState("ready")}
+              >
+                Create local project
+              </Button>
+            </div>
+          }
+          renderItem={(item) => (
+            <article className="h-48 space-y-3 rounded-lg border p-4">
+              <h3 className="font-medium">{item.name}</h3>
+              <p className="text-sm text-muted-foreground">{item.owner}</p>
+              <p className="text-sm text-muted-foreground">
+                Read-only snapshot. Editing requires owner access.
+              </p>
+            </article>
+          )}
+        />
+      )}
     </div>
   );
 }
 
 const statesDemoCode = `import * as React from "react";
-import { KiraGrid } from "@/components/ui/grid";
+import { Grid, KiraGrid } from "@/components/ui/grid";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function StatesDemo() {
   const [state, setState] = React.useState<"ready" | "loading" | "empty" | "error">("ready");
@@ -595,15 +620,14 @@ export function StatesDemo() {
   return <div className="space-y-4">
     <div className="flex flex-wrap gap-2">{(["ready", "loading", "empty", "error"] as const).map((value) =>
       <Button key={value} variant="outline" size="sm" aria-pressed={state === value} onClick={() => setState(value)}>{value}</Button>)}</div>
-    <KiraGrid items={items} getKey={(item) => item.id} minItemWidth="14rem"
-      loading={state === "loading"} loadingCount={3}
-      error={state === "error" ? "Projects could not be loaded. Try the local fixture again." : undefined}
-      onRetry={() => setState("ready")}
+    {state === "loading" && <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>{Array.from({ length: 3 }, (_, index) => <Skeleton key={index} className="h-48 w-full" />)}</Grid>}
+    {state === "error" && <div className="space-y-3 rounded-lg border border-destructive/30 p-4"><p role="alert" className="text-sm text-destructive">Projects could not be loaded. Try the local fixture again.</p><Button variant="outline" size="sm" onClick={() => setState("ready")}>Try again</Button></div>}
+    {(state === "ready" || state === "empty") && <KiraGrid items={items} getKey={(item) => item.id} minItemWidth="14rem"
       emptyContent={<div className="space-y-3"><p>No projects yet.</p><Button variant="outline" size="sm" onClick={() => setState("ready")}>Create local project</Button></div>}
       renderItem={(item) => <article className="h-48 space-y-3 rounded-lg border p-4">
         <h3 className="font-medium">{item.name}</h3><p className="text-sm text-muted-foreground">{item.owner}</p>
         <p className="text-sm text-muted-foreground">Read-only snapshot. Editing requires owner access.</p>
-      </article>} />
+      </article>} />}
   </div>;
 }`;
 
@@ -840,37 +864,10 @@ const gridApi = [
           "Cell content. Native ul/ol roots receive li wrappers. For render callbacks or custom components that return a list, set matching as.",
       },
       {
-        prop: "loading / loadingLabel",
-        type: "boolean / string",
-        default: 'false / "Loading items…"',
-        description: "Caller-controlled busy state and one contextual status.",
-      },
-      {
-        prop: "loadingCount",
-        type: "number",
-        default: "6",
-        description:
-          "Initial placeholder count, truncated and clamped to 1–100. Non-finite values use 6.",
-      },
-      {
-        prop: "loadingContent",
-        type: "React.ReactNode",
-        default: "-",
-        description:
-          "Custom cell skeleton. Match its dimensions to loaded cells.",
-      },
-      {
         prop: "emptyContent",
         type: "React.ReactNode",
         default: '"No items yet."',
         description: "Empty feedback and optional caller-owned action.",
-      },
-      {
-        prop: "error / onRetry",
-        type: "React.ReactNode / (() => void)",
-        default: "-",
-        description:
-          "Recovery feedback. Existing items can remain below an error.",
       },
       {
         prop: "Grid props",
@@ -993,6 +990,24 @@ export function VariantClasses() {
       <APIReference sections={gridApi} />
       <Changelog
         entries={[
+          {
+            version: "Unreleased",
+            date: "In development",
+            changes: [
+              {
+                type: "breaking",
+                title: "Stripped loading/error/onRetry from KiraGrid",
+                description:
+                  "Removed loading, error, and onRetry props (and Skeleton/Button imports) from KiraGrid so grid stays a zero-dependency layout leaf. Compose Skeleton or error UI directly inside your layout.",
+              },
+              {
+                type: "changed",
+                title: "Unified responsive resolution on lib/layout-responsive",
+                description:
+                  "Replaced the 135-line gridResponsiveCandidates Set with literal responsive tuples from @/lib/layout-responsive.",
+              },
+            ],
+          },
           {
             version: "2.0.1",
             date: "14 November 2026",

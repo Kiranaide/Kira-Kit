@@ -247,11 +247,11 @@ function NotificationBoxDemo() {
           <div className="size-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
             <IconCheck className="size-5 text-primary" />
           </div>
-          <div className="flex-1 space-y-1">
-            <span className="font-medium">Success!</span>
-            <span className="text-sm text-muted-foreground">
+          <div className="flex flex-1 flex-col gap-0.5">
+            <p className="font-medium leading-snug">Success!</p>
+            <p className="text-sm text-muted-foreground">
               Your changes have been saved successfully.
-            </span>
+            </p>
           </div>
         </div>
       </Box>
@@ -267,11 +267,11 @@ function NotificationBoxDemo() {
           <div className="size-10 rounded-full bg-destructive/20 flex items-center justify-center shrink-0">
             <IconX className="size-5 text-destructive" />
           </div>
-          <div className="flex-1 space-y-1">
-            <span className="font-medium">Error!</span>
-            <span className="text-sm text-muted-foreground">
+          <div className="flex flex-1 flex-col gap-0.5">
+            <p className="font-medium leading-snug">Error!</p>
+            <p className="text-sm text-muted-foreground">
               Something went wrong. Please try again.
-            </span>
+            </p>
           </div>
         </div>
       </Box>
@@ -288,9 +288,9 @@ import { IconCheck, IconX } from "@tabler/icons-react"
     <div className="size-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
       <IconCheck className="size-5 text-primary" />
     </div>
-    <div className="flex-1 space-y-1">
-      <span className="font-medium">Success!</span>
-      <span className="text-sm text-muted-foreground">Your changes have been saved.</span>
+    <div className="flex flex-1 flex-col gap-0.5">
+      <p className="font-medium leading-snug">Success!</p>
+      <p className="text-sm text-muted-foreground">Your changes have been saved successfully.</p>
     </div>
   </div>
 </Box>
@@ -301,33 +301,43 @@ import { IconCheck, IconX } from "@tabler/icons-react"
     <div className="size-10 rounded-full bg-destructive/20 flex items-center justify-center shrink-0">
       <IconX className="size-5 text-destructive" />
     </div>
-    <div className="flex-1 space-y-1">
-      <span className="font-medium">Error!</span>
-      <span className="text-sm text-muted-foreground">Something went wrong.</span>
+    <div className="flex flex-1 flex-col gap-0.5">
+      <p className="font-medium leading-snug">Error!</p>
+      <p className="text-sm text-muted-foreground">Something went wrong. Please try again.</p>
     </div>
   </div>
 </Box>`;
 
 function SizingBoxDemo() {
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Box p={4} bg="muted" rounded="lg" w="full" h={24}>
-          w="full" h={24}
-        </Box>
-        <Box p={4} bg="muted" rounded="lg" w={64} h={24}>
-          w={64} h={24}
+    <div className="w-full space-y-4">
+      <Box p={4} bg="muted" rounded="lg" w="full" h={20}>
+        w=&quot;full&quot; h=&#123;20&#125;
+      </Box>
+      <div className="flex flex-wrap gap-4">
+        <Box p={4} bg="muted" rounded="lg" w={64} h={24} className="max-w-full">
+          w=&#123;64&#125; h=&#123;24&#125;
         </Box>
         <Box p={4} bg="muted" rounded="lg" minW={32} minH={24}>
-          minW={32} minH={24}
+          minW=&#123;32&#125; minH=&#123;24&#125;
         </Box>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Box p={4} bg="muted" rounded="lg" maxW="md" h={24}>
-          maxW="md"
+          maxW=&quot;md&quot;
         </Box>
-        <Box p={4} bg="muted" rounded="lg" maxH={24}>
-          maxH={24} (overflow hidden)
+        <Box
+          p={4}
+          bg="muted"
+          rounded="lg"
+          maxH={24}
+          className="overflow-auto text-sm"
+        >
+          <p className="font-medium">maxH=&#123;24&#125; (overflow-auto)</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Long content scrolls cleanly inside the 96px height cap instead of
+            spilling into neighboring boxes.
+          </p>
         </Box>
       </div>
     </div>
@@ -968,6 +978,18 @@ const boxPageAPIReferenceSections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const boxPageChangelogEntries = [
+  {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "changed",
+        title: "Shared layout-responsive engine and Base UI useRender",
+        description:
+          "Moved responsive resolution onto @/lib/layout-responsive (eliminating the inverted box → flex dependency) and adopted Base UI useRender + mergeProps so Box supports the render prop alongside as.",
+      },
+    ],
+  },
   {
     version: "2.0.0",
     date: "22 October 2026",

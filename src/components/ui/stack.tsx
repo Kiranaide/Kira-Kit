@@ -13,7 +13,6 @@ import {
   type LayoutSpacing,
 } from "@/lib/layout-responsive";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import { isObjectProp, isStringProp } from "@/lib/component-utils";
 
 const alignClasses = {
@@ -572,32 +571,17 @@ type KiraStackProps<Tag extends StackElement = "div"> = Omit<
   threshold?: string;
   /** More children than this limit always use one column. */
   limit?: number;
-  loading?: boolean;
-  loadingLabel?: string;
-  loadingContent?: React.ReactNode;
 };
 
 function KiraStack<Tag extends StackElement = "div">({
-  layout: layoutInput,
-  threshold: thresholdInput,
-  limit: limitInput,
-  loading: loadingInput,
-  loadingLabel: loadingLabelInput,
-  loadingContent,
+  layout = "switcher",
+  threshold = "32rem",
+  limit = 4,
   children,
   className,
   style,
   ...props
 }: KiraStackProps<Tag>) {
-  const { layout, threshold, limit, loading, loadingLabel } =
-    useKiraStackOptions({
-      layout: layoutInput,
-      threshold: thresholdInput,
-      limit: limitInput,
-      loading: loadingInput,
-      loadingLabel: loadingLabelInput,
-    });
-
   // SAFETY: composition-only props were removed; native props retain the same Tag.
   const stackProps = props as StackProps<Tag>;
   const items = React.Children.toArray(children);
@@ -608,19 +592,16 @@ function KiraStack<Tag extends StackElement = "div">({
 
   const switcher = layout === "switcher" && items.length <= horizontalLimit;
 
-  const list = isStackList(props.as, props.render);
-
   return (
     <Stack<Tag>
       {...stackProps}
       data-slot="kira-stack"
-      aria-busy={loading}
       direction="vertical"
       wrap={switcher}
       className={cn(
         "relative",
         {
-          "flex-row [&>:not([data-slot=stack-status])]:grow [&>:not([data-slot=stack-status])]:shrink [&>:not([data-slot=stack-status])]:min-w-0 [&>:not([data-slot=stack-status])]:basis-[calc((var(--stack-threshold)-100%)*999)]":
+          "flex-row [&>*]:grow [&>*]:shrink [&>*]:min-w-0 [&>*]:basis-[calc((var(--stack-threshold)-100%)*999)]":
             switcher,
         },
         className,
@@ -630,56 +611,8 @@ function KiraStack<Tag extends StackElement = "div">({
         { "--stack-threshold": threshold, ...style } as React.CSSProperties
       }
     >
-      {loading && items.length === 0 ? (
-        <StackLoadingPlaceholder list={list} content={loadingContent} />
-      ) : (
-        items
-      )}
-      <StackLoadingStatus list={list} message={loading ? loadingLabel : ""} />
+      {items}
     </Stack>
-  );
-}
-
-function StackLoadingPlaceholder({
-  list,
-  content,
-}: {
-  list: boolean;
-  content: React.ReactNode;
-}) {
-  const Element = list ? "li" : "div";
-
-  return (
-    <Element
-      data-slot="stack-placeholder"
-      aria-hidden="true"
-      inert
-      className={list ? undefined : "w-full"}
-    >
-      {content ?? <Skeleton className="h-24 w-full" />}
-    </Element>
-  );
-}
-
-function StackLoadingStatus({
-  list,
-  message,
-}: {
-  list: boolean;
-  message: string;
-}) {
-  const Element = list ? "li" : "span";
-
-  return (
-    <Element
-      data-slot="stack-status"
-      role={list ? "presentation" : undefined}
-      className="sr-only absolute"
-    >
-      <output data-slot="stack-status-message" aria-live="polite">
-        {message}
-      </output>
-    </Element>
   );
 }
 
@@ -694,39 +627,3 @@ export type {
   StackJustify,
   StackGap,
 };
-
-function resolveKiraStackOptions({
-  layout = "switcher",
-  threshold = "32rem",
-  limit = 4,
-  loading = false,
-  loadingLabel = "Refreshing content…",
-}: {
-  layout?: KiraStackProps["layout"];
-  threshold?: KiraStackProps["threshold"];
-  limit?: KiraStackProps["limit"];
-  loading?: KiraStackProps["loading"];
-  loadingLabel?: KiraStackProps["loadingLabel"];
-}) {
-  return { layout, threshold, limit, loading, loadingLabel };
-}
-
-function useKiraStackOptions({
-  layout: layoutInput,
-  threshold: thresholdInput,
-  limit: limitInput,
-  loading: loadingInput,
-  loadingLabel: loadingLabelInput,
-}: Parameters<typeof resolveKiraStackOptions>[0]) {
-  return React.useMemo(
-    () =>
-      resolveKiraStackOptions({
-        layout: layoutInput,
-        threshold: thresholdInput,
-        limit: limitInput,
-        loading: loadingInput,
-        loadingLabel: loadingLabelInput,
-      }),
-    [layoutInput, thresholdInput, limitInput, loadingInput, loadingLabelInput],
-  );
-}

@@ -11,7 +11,6 @@ import {
   type LayoutResponsiveValue,
   type LayoutSpacing,
 } from "@/lib/layout-responsive";
-import { Skeleton } from "@/components/ui/skeleton";
 import { isObjectProp } from "@/lib/component-utils";
 
 const sizeClasses = {
@@ -248,9 +247,6 @@ type FluidSpacerOwnProps = {
 type ReservedSpacerOwnProps = {
   mode: "reserve";
   minHeight?: string;
-  loading?: boolean;
-  loadingLabel?: string;
-  loadingContent?: React.ReactNode;
   contentClassName?: string;
   children?: React.ReactNode;
 };
@@ -272,9 +268,6 @@ function ReservedSpacer<Tag extends SpacerElement = "div">({
   render,
   ref,
   minHeight = "6rem",
-  loading = false,
-  loadingLabel = "Loading content…",
-  loadingContent,
   contentClassName,
   children,
   className,
@@ -291,7 +284,6 @@ function ReservedSpacer<Tag extends SpacerElement = "div">({
       {
         "data-slot": "kira-spacer",
         "data-mode": "reserve",
-        "aria-busy": loading,
         className: cn(spacerReserveVariants(), className),
         style: {
           "--spacer-reserve-height": minHeight,
@@ -301,37 +293,12 @@ function ReservedSpacer<Tag extends SpacerElement = "div">({
       props,
       {
         children: (
-          <>
-            <output
-              data-slot="spacer-status"
-              className="sr-only absolute"
-              aria-live="polite"
-            >
-              {loading ? loadingLabel : ""}
-            </output>
-            <div
-              data-slot="spacer-reserve-content"
-              className={cn(
-                "min-w-0",
-                loading && "opacity-0",
-                contentClassName,
-              )}
-              aria-hidden={loading || undefined}
-              inert={loading}
-            >
-              {children}
-            </div>
-            {loading && (
-              <div
-                data-slot="spacer-placeholder"
-                aria-hidden="true"
-                inert
-                className="absolute inset-0"
-              >
-                {loadingContent ?? <Skeleton className="h-full w-full" />}
-              </div>
-            )}
-          </>
+          <div
+            data-slot="spacer-reserve-content"
+            className={cn("min-w-0", contentClassName)}
+          >
+            {children}
+          </div>
         ),
       },
     ),
