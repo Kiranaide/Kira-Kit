@@ -818,6 +818,18 @@ export default function SplitViewPage() {
       <Changelog
         entries={[
           {
+            version: "Unreleased",
+            date: "In development",
+            changes: [
+              {
+                type: "changed",
+                title: "Shared validated layout storage helper",
+                description:
+                  "Adopted createValidatedLayoutStorage and unsavedLayoutStorage from @/lib/layout-storage, sharing persistence validation with Resizable.",
+              },
+            ],
+          },
+          {
             version: "2.0.0",
             date: "15 November 2026",
             changes: [

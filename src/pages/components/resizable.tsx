@@ -726,6 +726,18 @@ export default function ResizablePage() {
       <Changelog
         entries={[
           {
+            version: "Unreleased",
+            date: "In development",
+            changes: [
+              {
+                type: "changed",
+                title: "Shared validated layout storage helper",
+                description:
+                  "Adopted createValidatedLayoutStorage from @/lib/layout-storage instead of duplicating localStorage persistence parsing inline.",
+              },
+            ],
+          },
+          {
             version: "2.0.0",
             date: "13 November 2026",
             changes: [
