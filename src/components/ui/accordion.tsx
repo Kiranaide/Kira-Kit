@@ -465,11 +465,10 @@ function TriggerDragHandleSlot({
 
   return (
     <span
-      role="presentation"
-      className={cn("absolute top-1/2 -translate-y-1/2", edge)}
-      onClick={(e) => e.stopPropagation()}
-      onKeyDown={(e) => e.stopPropagation()}
-      onPointerDown={(e) => e.stopPropagation()}
+      className={cn(
+        "absolute top-1/2 z-10 flex -translate-y-1/2 items-center",
+        edge,
+      )}
     >
       {handle}
     </span>
@@ -611,9 +610,9 @@ function dragHandlePadding(
 ): string {
   if (!hasHandle) return "";
 
-  if (position === "start") return "pl-8";
+  if (position === "start") return "pl-10";
 
-  return "pr-8";
+  return "pr-10";
 }
 
 function AccordionTrigger(input: AccordionTriggerProps) {
@@ -895,14 +894,16 @@ function useSortableAccordionDrag(item: AccordionItemData) {
   }
 
   const dragHandle = (
-    <span
+    <button
+      type="button"
       {...attributes}
       {...listeners}
-      className="shrink-0 p-1 rounded hover:bg-muted cursor-grab active:cursor-grabbing touch-none"
+      disabled={item.disabled}
+      className="inline-flex size-7 shrink-0 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40 cursor-grab active:cursor-grabbing touch-none"
       aria-label="Drag to reorder"
     >
-      <IconGripVertical className="h-4 w-4 text-muted-foreground" />
-    </span>
+      <IconGripVertical className="h-4 w-4" aria-hidden="true" />
+    </button>
   );
 
   return { setNodeRef, style, dragHandle };
@@ -1092,7 +1093,6 @@ function useHashDeepLink(
 /** dnd-kit wiring for the draggable accordion mode. */
 function useAccordionDrag(
   setItems: (updater: React.SetStateAction<AccordionItemData[]>) => void,
-  onReorder?: (items: AccordionItemData[]) => void,
 ) {
   const [activeId, setActiveId] = React.useState<string | null>(null);
 
@@ -1132,15 +1132,11 @@ function useAccordionDrag(
 
           if (oldIndex === -1 || newIndex === -1) return items;
 
-          const newFlatItems = arrayMove(flatItems, oldIndex, newIndex);
-
-          onReorder?.(newFlatItems);
-
-          return newFlatItems;
+          return arrayMove(flatItems, oldIndex, newIndex);
         });
       }
     },
-    [onReorder, setItems],
+    [setItems],
   );
 
   return { activeId, sensors, handleDragStart, handleDragEnd };
@@ -1511,10 +1507,9 @@ function useExpandedButtonClasses(reducedMotion: boolean): string {
 /** Drag wiring bundle consumed by AccordionItemsRoot. */
 function useAccordionDragWiring(
   setItems: (updater: React.SetStateAction<AccordionItemData[]>) => void,
-  onReorder?: (items: AccordionItemData[]) => void,
 ): AccordionDragWiring {
   const { activeId, sensors, handleDragStart, handleDragEnd } =
-    useAccordionDrag(setItems, onReorder);
+    useAccordionDrag(setItems);
 
   return { activeId, sensors, handleDragStart, handleDragEnd };
 }
@@ -1584,7 +1579,7 @@ function KiraAccordionCore({
   // what the browser is looking for, so it is ignored while the feature is on.
   const forceMounted = hiddenUntilFound;
 
-  const drag = useAccordionDragWiring(setItems, onReorder);
+  const drag = useAccordionDragWiring(setItems);
 
   const { handleExpandAll, handleCollapseAll } = useExpandCollapseAll(
     items,
@@ -1673,18 +1668,25 @@ function DragOverlayItem({
   size: VariantProps<typeof accordionTriggerVariants>["size"];
 }) {
   return (
-    <AccordionItem value={item.value} disabled={item.disabled}>
-      <AccordionTrigger
-        variant={item.variant ?? variant}
-        size={item.size ?? size}
-        icon={item.icon}
-        showArrow={item.showArrow ?? true}
-        chevronIcon={item.chevronIcon}
-        chevronPosition={item.chevronPosition ?? "end"}
-      >
-        {item.title}
-      </AccordionTrigger>
-    </AccordionItem>
+    <div
+      data-slot="accordion-drag-overlay"
+      className={cn(
+        accordionTriggerVariants({
+          variant: item.variant ?? variant,
+          size: item.size ?? size,
+        }),
+        "cursor-grabbing rounded-lg border border-primary/40 bg-background shadow-lg ring-1 ring-primary/15",
+      )}
+    >
+      <span className="flex flex-1 min-w-0 items-center gap-2">
+        <IconGripVertical
+          className="h-4 w-4 shrink-0 text-muted-foreground"
+          aria-hidden="true"
+        />
+        <TriggerIcon icon={item.icon} />
+        <span className="flex-1 min-w-0 truncate">{item.title}</span>
+      </span>
+    </div>
   );
 }
 
@@ -1720,11 +1722,7 @@ function DragOverlayContent({
 
   if (!item) return null;
 
-  return (
-    <div className="opacity-50">
-      <DragOverlayItem item={item} variant={variant} size={size} />
-    </div>
-  );
+  return <DragOverlayItem item={item} variant={variant} size={size} />;
 }
 
 function renderAccordionItem({
@@ -1935,7 +1933,15 @@ function renderAccordionHeaderPart1({
   onRetry,
 }: renderAccordionHeaderPart1Args) {
   return (
-    <AccordionPrimitive.Header data-slot="accordion-header">
+    <AccordionPrimitive.Header
+      data-slot="accordion-header"
+      className="relative flex items-center"
+    >
+      <TriggerDragHandleSlot
+        handle={dragHandle}
+        position={dragHandlePosition}
+        side="start"
+      />
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
@@ -1945,11 +1951,6 @@ function renderAccordionHeaderPart1({
         {...props}
       >
         <span className="flex items-center gap-2 flex-1 min-w-0">
-          <TriggerDragHandleSlot
-            handle={dragHandle}
-            position={dragHandlePosition}
-            side="start"
-          />
           <TriggerChevron
             icon={chevronIcon}
             position={chevronPosition}
@@ -1969,13 +1970,13 @@ function renderAccordionHeaderPart1({
             show={showArrow}
             reducedMotion={reducedMotion}
           />
-          <TriggerDragHandleSlot
-            handle={dragHandle}
-            position={dragHandlePosition}
-            side="end"
-          />
         </span>
       </AccordionPrimitive.Trigger>
+      <TriggerDragHandleSlot
+        handle={dragHandle}
+        position={dragHandlePosition}
+        side="end"
+      />
     </AccordionPrimitive.Header>
   );
 }

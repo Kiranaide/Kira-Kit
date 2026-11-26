@@ -1110,7 +1110,7 @@ export default function AccordionPage() {
       <PageHeader
         title="Accordion"
         description="Collapsible content panels for organizing information. Supports icons, colors, sizes, nested accordions, and lazy loading."
-        version="v2.1.2"
+        version="v2.3.0"
       />
 
       <FeatureGrid
@@ -1768,6 +1768,18 @@ const accordionPageAPIReferenceSections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const accordionPageChangelogEntries = [
+  {
+    version: "2.3.0",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Draggable Reorder Handle and Drag Overlay",
+        description:
+          "Moved the sortable drag handle out of AccordionPrimitive.Trigger into a sibling button inside AccordionPrimitive.Header so pointer and keyboard drag events are no longer swallowed by the trigger button, rendered DragOverlay as a standalone trigger shell instead of an unmounted AccordionItem, and removed the duplicate onReorder call inside useAccordionDrag.",
+      },
+    ],
+  },
   {
     version: "2.2.0",
     date: "18 November 2026",
