@@ -7,6 +7,7 @@ export interface ThemePreset {
   title: string;
   description: string;
   primary: string;
+  lightPrimaryForegroundLightness?: number;
   baseColor: BaseColorName;
   chartHues: [number, number, number, number];
   /** Recommended October 2026 pairing defaults for full-stack starter recipes. */
@@ -124,6 +125,7 @@ export const PRESETS: ThemePreset[] = [
     description:
       "A hot coral accent on warm paper that makes collaborative canvases and campaign workspaces feel quick, tactile, and optimistic.",
     primary: "#E04A4F",
+    lightPrimaryForegroundLightness: 0.2,
     baseColor: "paper",
     chartHues: [38, 128, 198, 272],
     radius: "soft",

@@ -193,7 +193,7 @@ describe("presets", () => {
   it("generates every preset through the same engine, all passing AA", () => {
     const { items, adjustments } = generatePresetItems();
     expect(items).toHaveLength(PRESETS.length);
-    expect(adjustments.length).toBeGreaterThan(0);
+    expect(adjustments).toEqual([]);
 
     for (const item of items) {
       expect(item.type).toBe("registry:theme");

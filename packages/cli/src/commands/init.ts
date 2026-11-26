@@ -285,12 +285,8 @@ async function applyPreset(
 
   if (preset) {
     const generated = generateTheme({
-      name: preset.name,
-      title: preset.title,
-      description: preset.description,
-      primary: preset.primary,
+      ...preset,
       baseColor: selection.baseColor ?? preset.baseColor,
-      chartHues: preset.chartHues,
       radius: selection.radius?.name ?? preset.radius,
       surface: selection.surface?.name ?? preset.surface,
     });
