@@ -3,22 +3,30 @@ import { useState } from "react";
 import {
   Input,
   NumericInput,
-  InputWithLabel,
-  InputWithButton,
   InputWithSpinner,
-  InputWithTooltip,
-  InputWithDropdown,
-  InputCluster,
   CurrencyInput,
   PercentageInput,
   DecimalInput,
   SearchInput,
-  OTPInput,
-  Rating,
-  RatingDisplay,
   PasswordInput,
   TagInput,
 } from "@/components/ui/input";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { OTPInput } from "@/components/ui/otp-input";
+import { Rating, RatingDisplay } from "@/components/ui/rating";
+import { KiraSelect } from "@/components/ui/select";
+import { SimpleTooltip } from "@/components/ui/tooltip";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
@@ -198,38 +206,36 @@ export function PrefixSuffixDemo() {
   )
 }`;
 
-const compositesCode = `import {
-  InputWithLabel,
-  InputWithButton,
-  InputWithSpinner,
-  InputWithTooltip,
-  InputWithDropdown,
-  InputCluster,
-  Input,
-} from "@/components/ui/input"
+const compositesCode = `import { Input, InputWithSpinner } from "@/components/ui/input"
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group"
+import { KiraSelect } from "@/components/ui/select"
+import { SimpleTooltip } from "@/components/ui/tooltip"
 import { Label } from "@/components/ui/label"
-import { IconSend, IconSearch, IconCheck } from "@tabler/icons-react"
+import { IconSend } from "@tabler/icons-react"
 
 export function InputCompositesDemo() {
   const [isLoading, setIsLoading] = useState(false)
   
   return (
     <div className="space-y-6">
-      {/* Input with Label */}
-      <InputWithLabel
-        label="Email Address"
-        description="We'll never share your email."
-        placeholder="name@example.com"
-        type="email"
-      />
+      {/* Field + Input */}
+      <Field>
+        <FieldLabel>Email Address</FieldLabel>
+        <Input placeholder="name@example.com" type="email" />
+        <FieldDescription>We'll never share your email.</FieldDescription>
+      </Field>
       
-      {/* Input with Button */}
-      <InputWithButton
-        placeholder="Enter your email"
-        buttonText="Subscribe"
-        buttonIcon={<IconSend className="w-4 h-4" />}
-        onButtonClick={() => alert("Subscribed!")}
-      />
+      {/* InputGroup with Button */}
+      <InputGroup>
+        <InputGroupInput placeholder="Enter your email" />
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton onClick={() => alert("Subscribed!")}>
+            <IconSend className="w-4 h-4" />
+            Subscribe
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
       
       {/* Input with Spinner */}
       <InputWithSpinner
@@ -238,28 +244,32 @@ export function InputCompositesDemo() {
       />
       
       {/* Input with Tooltip */}
-      <InputWithTooltip
-        placeholder="Hover for help"
-        tooltip="This field is required"
-      />
+      <SimpleTooltip content="This field is required">
+        <Input placeholder="Hover for help" />
+      </SimpleTooltip>
       
-      {/* Input with Dropdown */}
-      <InputWithDropdown
-        options={[
-          { value: "+1", label: "+1" },
-          { value: "+44", label: "+44" },
-        ]}
-        placeholder="Phone number"
-        onOptionSelect={(value) => console.log(value)}
-      />
+      {/* Input with Select */}
+      <div className="flex">
+        <KiraSelect
+          options={[
+            { value: "+1", label: "+1" },
+            { value: "+44", label: "+44" },
+          ]}
+          defaultValue="+1"
+          variant="ghost"
+          className="rounded-l-lg rounded-r-none border-input"
+          aria-label="Country code"
+        />
+        <Input className="flex-1 rounded-l-none" placeholder="Phone number" />
+      </div>
       
       {/* Input Cluster */}
       <div className="space-y-2">
         <Label>Date Range</Label>
-        <InputCluster>
-          <Input type="date" placeholder="Start date" />
-          <Input type="date" placeholder="End date" />
-        </InputCluster>
+        <div className="flex">
+          <Input type="date" placeholder="Start date" className="rounded-r-none" />
+          <Input type="date" placeholder="End date" className="rounded-l-none border-l-0" />
+        </div>
       </div>
     </div>
   )
@@ -317,7 +327,7 @@ export function SearchActionsDemo() {
   )
 }`;
 
-const otpCode = `import { OTPInput } from "@/components/ui/input"
+const otpCode = `import { OTPInput } from "@/components/ui/otp-input"
 import { Label } from "@/components/ui/label"
 
 export function OTPInputDemo() {
@@ -356,7 +366,7 @@ export function OTPInputDemo() {
   )
 }`;
 
-const ratingCode = `import { Rating, RatingDisplay } from "@/components/ui/input"
+const ratingCode = `import { Rating, RatingDisplay } from "@/components/ui/rating"
 import { Label } from "@/components/ui/label"
 import { IconHeartFilled, IconHeart } from "@tabler/icons-react"
 
@@ -665,42 +675,50 @@ function CompositesDemo() {
         </button>
       </div>
 
-      <InputWithTooltip
-        placeholder="Hover for help"
-        tooltip="This field is required and must be unique"
-      />
-      <InputWithTooltip
-        placeholder="API Key"
-        tooltip="Keep this secret! Never share your API key publicly."
-        type="password"
-      />
+      <SimpleTooltip content="This field is required and must be unique">
+        <Input placeholder="Hover for help" />
+      </SimpleTooltip>
+      <SimpleTooltip content="Keep this secret! Never share your API key publicly.">
+        <Input placeholder="API Key" type="password" />
+      </SimpleTooltip>
 
       <div className="space-y-2">
         <Label>Country Code</Label>
-        <InputWithDropdown
-          options={[
-            { value: "+1", label: "+1" },
-            { value: "+44", label: "+44" },
-            { value: "+33", label: "+33" },
-            { value: "+49", label: "+49" },
-            { value: "+81", label: "+81" },
-          ]}
-          placeholder="Phone number"
-          onOptionSelect={(value) => console.log("Selected:", value)}
-        />
+        <div className="flex">
+          <KiraSelect
+            options={[
+              { value: "+1", label: "+1" },
+              { value: "+44", label: "+44" },
+              { value: "+33", label: "+33" },
+              { value: "+49", label: "+49" },
+              { value: "+81", label: "+81" },
+            ]}
+            defaultValue="+1"
+            variant="ghost"
+            className="rounded-l-lg rounded-r-none border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50"
+            aria-label="Country code"
+            onChange={(value) => console.log("Selected:", value)}
+          />
+          <Input placeholder="Phone number" className="flex-1 rounded-l-none" />
+        </div>
       </div>
       <div className="space-y-2">
         <Label>Domain</Label>
-        <InputWithDropdown
-          options={[
-            { value: "gmail.com", label: "@gmail.com" },
-            { value: "yahoo.com", label: "@yahoo.com" },
-            { value: "outlook.com", label: "@outlook.com" },
-          ]}
-          placeholder="Username"
-          dropdownPosition="right"
-          onOptionSelect={(value) => console.log("Selected:", value)}
-        />
+        <div className="flex">
+          <Input placeholder="Username" className="flex-1 rounded-r-none" />
+          <KiraSelect
+            options={[
+              { value: "gmail.com", label: "@gmail.com" },
+              { value: "yahoo.com", label: "@yahoo.com" },
+              { value: "outlook.com", label: "@outlook.com" },
+            ]}
+            defaultValue="gmail.com"
+            variant="ghost"
+            className="rounded-l-none rounded-r-lg border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50"
+            aria-label="Email domain"
+            onChange={(value) => console.log("Selected:", value)}
+          />
+        </div>
       </div>
 
       <CompositeRangeInputs />
@@ -1747,6 +1765,18 @@ export default function InputPage() {
 // Static demo metadata stays co-located and follows its source constants.
 const inputPageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "breaking",
+        title: "Extracted otp-input & rating; removed compound wrappers",
+        description:
+          "Extracted OTPInput to @/components/ui/otp-input and Rating/RatingDisplay to @/components/ui/rating. Removed InputWithLabel, InputWithButton, InputWithTooltip, InputWithDropdown, InputCluster, and direct toast calls from input.tsx (use Field and InputGroup instead), breaking the input ↔ field circular dependency and reducing transitive registry dependencies from 10 to 1.",
+      },
+    ],
+  },
+  {
     version: "2.3.1",
     date: "18 November 2026",
     changes: [
@@ -2153,23 +2183,23 @@ function FileInputDesktopBrowsersIgnoreSection() {
 function CompositeLabelInputs() {
   return (
     <>
-      <InputWithLabel
-        label="Email Address"
-        description="We'll never share your email with anyone else."
-        placeholder="name@example.com"
-        type="email"
-      />
-      <InputWithLabel
-        label="Password"
-        description="Must be at least 8 characters"
-        type="password"
-        placeholder="Enter password"
-      />
-      <InputWithLabel
-        label="Username"
-        error="Username is already taken"
-        placeholder="username"
-      />
+      <Field>
+        <FieldLabel>Email Address</FieldLabel>
+        <Input placeholder="name@example.com" type="email" />
+        <FieldDescription>
+          We&apos;ll never share your email with anyone else.
+        </FieldDescription>
+      </Field>
+      <Field>
+        <FieldLabel>Password</FieldLabel>
+        <Input type="password" placeholder="Enter password" />
+        <FieldDescription>Must be at least 8 characters</FieldDescription>
+      </Field>
+      <Field invalid>
+        <FieldLabel>Username</FieldLabel>
+        <Input placeholder="username" />
+        <FieldError>Username is already taken</FieldError>
+      </Field>
     </>
   );
 }
@@ -2179,24 +2209,50 @@ function CompositeRangeInputs() {
     <>
       <div className="space-y-2">
         <Label>Date Range</Label>
-        <InputCluster>
-          <Input type="date" placeholder="Start date" />
-          <Input type="date" placeholder="End date" />
-        </InputCluster>
+        <div className="flex">
+          <Input
+            type="date"
+            placeholder="Start date"
+            className="rounded-r-none"
+          />
+          <Input
+            type="date"
+            placeholder="End date"
+            className="rounded-l-none border-l-0"
+          />
+        </div>
       </div>
       <div className="space-y-2">
         <Label>Time Range</Label>
-        <InputCluster>
-          <Input type="time" placeholder="Start time" />
-          <Input type="time" placeholder="End time" />
-        </InputCluster>
+        <div className="flex">
+          <Input
+            type="time"
+            placeholder="Start time"
+            className="rounded-r-none"
+          />
+          <Input
+            type="time"
+            placeholder="End time"
+            className="rounded-l-none border-l-0"
+          />
+        </div>
       </div>
       <div className="space-y-2">
         <Label>Price Range</Label>
-        <InputCluster>
-          <Input prefix="$" type="number" placeholder="Min" />
-          <Input prefix="$" type="number" placeholder="Max" />
-        </InputCluster>
+        <div className="flex">
+          <Input
+            prefix="$"
+            type="number"
+            placeholder="Min"
+            className="rounded-r-none"
+          />
+          <Input
+            prefix="$"
+            type="number"
+            placeholder="Max"
+            className="rounded-l-none border-l-0"
+          />
+        </div>
       </div>
     </>
   );
@@ -2207,35 +2263,48 @@ function CompositeActionInputs() {
     <>
       <div className="space-y-2">
         <Label>Subscribe</Label>
-        <InputWithButton
-          placeholder="Enter your email"
-          buttonText="Subscribe"
-          buttonIcon={<IconSend className="w-4 h-4" />}
-          buttonPosition="right"
-          onButtonClick={() => alert("Subscribed!")}
-        />
+        <InputGroup>
+          <InputGroupInput placeholder="Enter your email" />
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton
+              variant="default"
+              onClick={() => alert("Subscribed!")}
+            >
+              <IconSend className="w-4 h-4" />
+              Subscribe
+            </InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
       </div>
       <div className="space-y-2">
         <Label>Search</Label>
-        <InputWithButton
-          placeholder="Search..."
-          buttonText="Search"
-          buttonIcon={<IconSearch className="w-4 h-4" />}
-          buttonPosition="left"
-          buttonVariant="outline"
-          onButtonClick={() => alert("Searching...")}
-        />
+        <InputGroup>
+          <InputGroupAddon align="inline-start">
+            <InputGroupButton
+              variant="outline"
+              onClick={() => alert("Searching...")}
+            >
+              <IconSearch className="w-4 h-4" />
+              Search
+            </InputGroupButton>
+          </InputGroupAddon>
+          <InputGroupInput placeholder="Search..." />
+        </InputGroup>
       </div>
       <div className="space-y-2">
         <Label>Verify</Label>
-        <InputWithButton
-          placeholder="Enter code"
-          buttonText="Verify"
-          buttonIcon={<IconCheck className="w-4 h-4" />}
-          buttonPosition="right"
-          buttonVariant="success"
-          onButtonClick={() => alert("Verified!")}
-        />
+        <InputGroup>
+          <InputGroupInput placeholder="Enter code" />
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton
+              variant="default"
+              onClick={() => alert("Verified!")}
+            >
+              <IconCheck className="w-4 h-4" />
+              Verify
+            </InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
       </div>
     </>
   );

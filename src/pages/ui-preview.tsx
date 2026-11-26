@@ -63,9 +63,6 @@ import {
 } from "@/components/ui/field";
 import {
   Input,
-  InputCluster,
-  InputWithButton,
-  InputWithDropdown,
   InputWithSpinner,
   NumericInput,
   PasswordInput,
@@ -74,6 +71,7 @@ import {
 import {
   InputGroup,
   InputGroupAddon,
+  InputGroupButton,
   InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group";
@@ -1060,23 +1058,32 @@ function CombinationSpecimens({ size }: { size: PreviewSize }) {
   return (
     <div className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
       <CombinationRow label="Input with button">
-        <InputWithButton
-          size={size}
-          buttonText="Apply"
-          placeholder="Coupon code"
-          aria-label="Coupon code"
-        />
+        <InputGroup className={INPUT_GROUP_HEIGHT[size]}>
+          <InputGroupInput placeholder="Coupon code" aria-label="Coupon code" />
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton variant="default">Apply</InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
       </CombinationRow>
 
       <CombinationRow label="Input with dropdown">
-        <InputWithDropdown
-          size={size}
-          options={DROPDOWN_OPTIONS}
-          dropdownValue="https"
-          defaultValue="example.com"
-          placeholder="example.com"
-          aria-label="Domain"
-        />
+        <div className="flex">
+          <KiraSelect
+            options={DROPDOWN_OPTIONS}
+            defaultValue="https"
+            variant="ghost"
+            size={size}
+            className="rounded-l-lg rounded-r-none border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50"
+            aria-label="Protocol"
+          />
+          <Input
+            size={size}
+            defaultValue="example.com"
+            placeholder="example.com"
+            aria-label="Domain"
+            className="flex-1 rounded-l-none"
+          />
+        </div>
       </CombinationRow>
 
       <CombinationRow label="InputGroup addon">
@@ -1106,10 +1113,20 @@ function CombinationSpecimens({ size }: { size: PreviewSize }) {
       </CombinationRow>
 
       <CombinationRow label="Input cluster">
-        <InputCluster>
-          <Input size={size} placeholder="First name" aria-label="First name" />
-          <Input size={size} placeholder="Last name" aria-label="Last name" />
-        </InputCluster>
+        <div className="flex">
+          <Input
+            size={size}
+            placeholder="First name"
+            aria-label="First name"
+            className="rounded-r-none"
+          />
+          <Input
+            size={size}
+            placeholder="Last name"
+            aria-label="Last name"
+            className="rounded-l-none border-l-0"
+          />
+        </div>
       </CombinationRow>
     </div>
   );
