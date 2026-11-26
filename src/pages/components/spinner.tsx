@@ -1,6 +1,5 @@
 import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
-import { IconLoader, IconCheck } from "@tabler/icons-react";
 
 import {
   Spinner,
@@ -116,14 +115,15 @@ function FeaturesDemo() {
   </div>;
 }`;
 
-function ShowcaseDemo() {
+function StressDemo() {
   return (
-    <div className="w-full max-w-64 space-y-4">
+    <div className="w-full max-w-xs space-y-4">
       <KiraProgressSpinner
         label="Very long multilingual upload label 年次レポート 🌍 unbreakable_identifier_abcdefghijklmnopqrstuvwxyz"
         value={0}
         showPercent
       />
+      <KiraProgressSpinner label="" value={undefined} />
       <KiraProgressSpinner label="Full progress" value={100} showPercent />
       <KiraProgressSpinner
         label="Failed at 45 percent"
@@ -133,19 +133,41 @@ function ShowcaseDemo() {
         variant="destructive"
       />
       <Spinner value={Number.NaN} label="Invalid progress safely reads zero" />
+      <Button disabled className="gap-2">
+        <Spinner size="sm" />
+        Disabled loading action
+      </Button>
     </div>
   );
 }
 
-const showcaseCode = `import { Spinner, KiraProgressSpinner } from "@/components/ui/spinner"
+const stressCode = `import { Spinner, KiraProgressSpinner } from "@/components/ui/spinner"
+import { Button } from "@/components/ui/button"
 
-function ShowcaseDemo() {
-  return <div className="w-full max-w-64 space-y-4">
-    <KiraProgressSpinner label="Very long multilingual upload label 年次レポート 🌍 unbreakable_identifier_abcdefghijklmnopqrstuvwxyz" value={0} showPercent />
-    <KiraProgressSpinner label="Full progress" value={100} showPercent />
-    <KiraProgressSpinner label="Failed at 45 percent" value={45} state="error" showPercent variant="destructive" />
-    <Spinner value={Number.NaN} label="Invalid progress safely reads zero" />
-  </div>;
+function StressDemo() {
+  return (
+    <div className="w-full max-w-xs space-y-4">
+      <KiraProgressSpinner
+        label="Very long multilingual upload label 年次レポート 🌍 unbreakable_identifier_abcdefghijklmnopqrstuvwxyz"
+        value={0}
+        showPercent
+      />
+      <KiraProgressSpinner label="" value={undefined} />
+      <KiraProgressSpinner label="Full progress" value={100} showPercent />
+      <KiraProgressSpinner
+        label="Failed at 45 percent"
+        value={45}
+        state="error"
+        showPercent
+        variant="destructive"
+      />
+      <Spinner value={Number.NaN} label="Invalid progress safely reads zero" />
+      <Button disabled className="gap-2">
+        <Spinner size="sm" />
+        Disabled loading action
+      </Button>
+    </div>
+  );
 }`;
 
 function BasicDemo() {
@@ -161,10 +183,10 @@ const basicCode = `import { Spinner } from "@/components/ui/spinner"
 
 export function BasicDemo() {
   return (
-    <div role="status" className="flex items-center gap-4">
+    <output className="flex items-center gap-4">
       <Spinner />
       <span className="text-sm text-muted-foreground">Loading...</span>
-    </div>
+    </output>
   );
 }`;
 
@@ -449,7 +471,224 @@ export function SpinnerUsage() {
   );
 }`;
 
-const apiSections = [
+export default function SpinnerPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Spinner"
+        description="Animated loading indicator with size and color variants, designed for accessibility and seamless integration with other components."
+        version="v2.0.2"
+      />
+
+      <FeatureGrid
+        features={spinnerPageFeatures}
+        description="Capabilities built into Kira Kit."
+      />
+
+      <DemoTabs tabs={spinnerPageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        shortcuts={spinnerPageShortcuts}
+        description="Keyboard navigation and focus behavior."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Import and use the Spinner in your application."
+        notes={[
+          {
+            label: "KiraProgressSpinner",
+            body: "Use KiraProgressSpinner when you need a visible task label, optional percentage readout, and controlled loading/success/error transitions.",
+          },
+          {
+            label: "Decorative vs. announced",
+            body: "A bare Spinner without label is aria-hidden so a parent status region or button conveys the busy state. Provide label when the spinner announces progress on its own.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={spinnerPageAPIReferenceSections}
+        title="API reference"
+        description="Props and configuration options for the Spinner component."
+      />
+
+      <Changelog entries={spinnerPageChangelogEntries} />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const spinnerPageFeatures = [
+  {
+    title: "Responsive",
+    description:
+      "Six size variants from extra-small to extra-large for any use case.",
+  },
+  {
+    title: "Themed",
+    description: "Six color variants matching the design system palette.",
+  },
+  {
+    title: "Accessible",
+    description:
+      "Built with proper ARIA status and progressbar roles, plus reduced-motion and hidden-document pause.",
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const spinnerPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic Spinner"
+        description="Simple loading indicator with text label."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="Six size options from xs to xl."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "colors",
+    label: "Colors",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Color Variants"
+        description="Six color variants for different contexts."
+        code={colorsCode}
+      >
+        <ColorsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "indeterminate",
+    label: "Indeterminate",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Unknown duration"
+        description="A visible task label and HTML status; rotation pauses with reduced motion or a hidden document."
+        code={indeterminateCode}
+      >
+        <IndeterminateDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "button",
+    label: "Button Loading",
+    group: "Patterns",
+    demo: (
+      <DemoWrapper
+        title="Button with Spinner"
+        description="Combine spinner with buttons for loading states."
+        code={buttonLoadingCode}
+      >
+        <ButtonLoadingDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "labels",
+    label: "With Labels",
+    group: "Patterns",
+    demo: (
+      <DemoWrapper
+        title="Spinner with Labels"
+        description="Contextual loading messages with matching spinner colors."
+        code={withLabelCode}
+      >
+        <WithLabelDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "overlay",
+    label: "Card Overlay",
+    group: "Patterns",
+    demo: (
+      <DemoWrapper
+        title="Card Loading Overlay"
+        description="Full card loading state with centered spinner."
+        code={cardOverlayCode}
+      >
+        <CardOverlayDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "inline",
+    label: "Inline Text",
+    group: "Patterns",
+    demo: (
+      <DemoWrapper
+        title="Inline in Text"
+        description="Small inline spinners within text content."
+        code={inlineTextCode}
+      >
+        <InlineTextDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "features",
+    label: "Kira Progress",
+    group: "KiraProgressSpinner",
+    demo: (
+      <DemoWrapper
+        title="Controlled progress lifecycle"
+        description="Measured progress and explicit success/error; terminal states never display a stale percent."
+        code={featuresCode}
+      >
+        <FeaturesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long multilingual labels, empty label/value, disabled button state, zero/full/NaN progress, and terminal state inside a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const spinnerPageShortcuts = [
+  {
+    keys: "None",
+    description:
+      "Spinner is non-interactive; feature demo controls use standard Tab, arrow keys, and Enter.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const spinnerPageAPIReferenceSections = [
   {
     title: "Spinner",
     props: [
@@ -468,12 +707,14 @@ const apiSections = [
       {
         prop: "label",
         type: "string",
-        default: "undefined",
-        description: "Accessible label for screen readers.",
+        default: "-",
+        description:
+          "Accessible label for screen readers. When omitted, the spinner is decorative (aria-hidden).",
       },
       {
         prop: "value",
         type: "number",
+        default: "-",
         description: "Clamped 0–100 progress; undefined is indeterminate.",
       },
       {
@@ -490,222 +731,20 @@ const apiSections = [
       },
     ],
   },
-];
-
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function SpinnerPage() {
-  const features = [
-    {
-      title: "Responsive",
-      description:
-        "Six size variants from extra-small to extra-large for any use case.",
-      icon: <IconLoader className="h-4 w-4" />,
-    },
-    {
-      title: "Themed",
-      description: "Six color variants matching the design system palette.",
-      icon: <IconCheck className="h-4 w-4" />,
-    },
-    {
-      title: "Accessible",
-      description: "Built with proper ARIA labels for screen readers.",
-      icon: <IconLoader className="h-4 w-4" />,
-    },
-  ];
-
-  const demoTabs = [
-    {
-      value: "basic",
-      label: "Basic",
-      demo: (
-        <DemoWrapper
-          title="Basic Spinner"
-          description="Simple loading indicator with text label."
-          code={basicCode}
-        >
-          <BasicDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "sizes",
-      label: "Sizes",
-      demo: (
-        <DemoWrapper
-          title="Size Variants"
-          description="Six size options from xs to xl."
-          code={sizesCode}
-        >
-          <SizesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "colors",
-      label: "Colors",
-      demo: (
-        <DemoWrapper
-          title="Color Variants"
-          description="Six color variants for different contexts."
-          code={colorsCode}
-        >
-          <ColorsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "button",
-      label: "Button Loading",
-      demo: (
-        <DemoWrapper
-          title="Button with Spinner"
-          description="Combine spinner with buttons for loading states."
-          code={buttonLoadingCode}
-        >
-          <ButtonLoadingDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "labels",
-      label: "With Labels",
-      demo: (
-        <DemoWrapper
-          title="Spinner with Labels"
-          description="Contextual loading messages with matching spinner colors."
-          code={withLabelCode}
-        >
-          <WithLabelDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "overlay",
-      label: "Card Overlay",
-      demo: (
-        <DemoWrapper
-          title="Card Loading Overlay"
-          description="Full card loading state with centered spinner."
-          code={cardOverlayCode}
-        >
-          <CardOverlayDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "inline",
-      label: "Inline Text",
-      demo: (
-        <DemoWrapper
-          title="Inline in Text"
-          description="Small inline spinners within text content."
-          code={inlineTextCode}
-        >
-          <InlineTextDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "indeterminate",
-      label: "Indeterminate",
-      demo: (
-        <DemoWrapper
-          title="Unknown duration"
-          description="A visible task label and HTML status; rotation pauses with reduced motion or a hidden document."
-          code={indeterminateCode}
-        >
-          <IndeterminateDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "features",
-      label: "Kira Progress",
-      demo: (
-        <DemoWrapper
-          title="Controlled progress lifecycle"
-          description="Measured progress and explicit success/error; terminal states never display a stale percent."
-          code={featuresCode}
-        >
-          <FeaturesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "showcase",
-      label: "States",
-      demo: (
-        <DemoWrapper
-          title="Progress boundaries"
-          description="Long labels, zero/full progress, invalid input and no stale terminal percentage."
-          code={showcaseCode}
-        >
-          <ShowcaseDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
-
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Spinner"
-        description="Animated loading indicator with size and color variants, designed for accessibility and seamless integration with other components."
-        version="v2.0.1"
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts
-        shortcuts={[
-          {
-            keys: "None",
-            description:
-              "Spinner is non-interactive; feature demo controls use normal Tab, arrows and Enter.",
-          },
-        ]}
-      />
-
-      <UsageBlock
-        code={usageCode}
-        title="Usage"
-        description="Import and use the Spinner in your application."
-      />
-
-      <APIReference
-        sections={spinnerPageAPIReferenceSections}
-        title="API reference"
-        description="Props and configuration options for the Spinner component."
-      />
-
-      <Changelog entries={spinnerPageChangelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
-const spinnerPageAPIReferenceSections = [
-  ...apiSections,
   {
     title: "KiraProgressSpinner",
     props: [
       {
         prop: "label",
         type: "string",
+        default: "Required",
         description: "Required visible and accessible task label.",
       },
       {
         prop: "value",
         type: "number",
+        default: "-",
         description: "Clamped 0–100 progress; undefined is indeterminate.",
-      },
-      {
-        prop: "state",
-        type: '"loading" | "success" | "error"',
-        default: '"loading"',
-        description: "Controlled loading, success or error state.",
       },
       {
         prop: "showPercent",
@@ -713,14 +752,38 @@ const spinnerPageAPIReferenceSections = [
         default: "false",
         description: "Numeric percent only while determinate loading.",
       },
+      {
+        prop: "state",
+        type: '"loading" | "success" | "error"',
+        default: '"loading"',
+        description: "Controlled loading, success, or error state.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "md" | "lg" | "xl"',
+        default: '"default"',
+        description: "Size of the inner spinner.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "muted" | "destructive" | "warning" | "success" | "info"',
+        default: '"default"',
+        description: "Color variant of the inner spinner.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the outer wrapper.",
+      },
     ],
   },
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const spinnerPageChangelogEntries = [
   {
-    version: "Unreleased",
-    date: "In development",
+    version: "2.0.2",
+    date: "26 November 2026",
     changes: [
       {
         type: "changed",
@@ -731,7 +794,7 @@ const spinnerPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.0.1",
+    version: "2.0.1",
     date: "11 November 2026",
     changes: [
       {
@@ -743,7 +806,7 @@ const spinnerPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.0.0",
+    version: "2.0.0",
     date: "31 October 2026",
     changes: [
       {

@@ -96,9 +96,7 @@ function SidebarPreview({
       <PreviewToolbar />
       <div
         className={
-          props.side === "right"
-            ? "flex h-[32rem] flex-row-reverse"
-            : "flex h-[32rem]"
+          props.side === "right" ? "flex h-128 flex-row-reverse" : "flex h-128"
         }
       >
         {children}
@@ -132,7 +130,7 @@ function PreviewToolbar() {
 function SidebarPreview({ children, detail, ...props }: SidebarProviderProps & { detail?: React.ReactNode }) {
   return <SidebarProvider persistState={false} mobile={false} width="min(16rem, 100cqw)" {...props} className="@container min-w-0 overflow-hidden rounded-xl border border-border">
     <PreviewToolbar />
-    <div className={props.side === "right" ? "flex h-[32rem] flex-row-reverse" : "flex h-[32rem]"}>
+    <div className={props.side === "right" ? "flex h-128 flex-row-reverse" : "flex h-128"}>
       {children}
       <div className="hidden min-w-0 flex-1 space-y-3 bg-background p-6 md:block">
         <p className="text-sm font-medium">Workspace preview</p>
@@ -505,7 +503,7 @@ function GroupsDemo() {
           >
             {Array.from({ length: count }, (_, index) => (
               <SidebarItemGroup
-                key={index}
+                key={`collection-${index + 1}`}
                 label={
                   index === 0 ? "Product guides" : `Collection ${index + 1}`
                 }
@@ -561,7 +559,7 @@ export function GroupsDemo() {
   const [selected, setSelected] = React.useState("No document selected");
   return <SidebarPreview detail={selected}><Sidebar><SidebarHeader title="Team library" /><SidebarContent>
     <SidebarGroup label="Collections" action={<button type="button" aria-label="Add collection" onClick={() => setCount((previous) => previous + 1)}><IconPlus aria-hidden="true" /></button>}>
-      {Array.from({ length: count }, (_, index) => <SidebarItemGroup key={index} label={index === 0 ? "Product guides" : \`Collection \${index + 1}\`} icon={<IconFolder />} defaultOpen={index === 0} badge={2}>
+      {Array.from({ length: count }, (_, index) => <SidebarItemGroup key={\`collection-\${index + 1}\`} label={index === 0 ? "Product guides" : \`Collection \${index + 1}\`} icon={<IconFolder />} defaultOpen={index === 0} badge={2}>
         <SidebarMenuItem><SidebarMenuButton icon={<IconFile />} onClick={() => setSelected("Getting started")}>Getting started</SidebarMenuButton></SidebarMenuItem>
         <SidebarMenuItem><SidebarMenuButton icon={<IconFile />} onClick={() => setSelected("Release process")}>Release process</SidebarMenuButton></SidebarMenuItem>
       </SidebarItemGroup>)}
@@ -627,7 +625,7 @@ import { ThemeToggle } from "@/components/ui/theme-provider";
 // The application wraps this example in ThemeProvider.
 export function AccountDemo() {
   const [view, setView] = React.useState("Account overview");
-  return <SidebarPreview defaultCollapsed detail={<p role="status">{view}</p>}>
+  return <SidebarPreview defaultCollapsed detail={<output className="block">{view}</output>}>
     <Sidebar><SidebarHeader title="Acme" /><SidebarContent><SidebarMenuButton icon={<IconHome />} onClick={() => setView("Account overview")}>Overview</SidebarMenuButton></SidebarContent><SidebarFooter>
       <ThemeToggle />
       <SidebarUser name="Alex Morgan" email="alex@acme.example" menuItems={[
@@ -900,7 +898,7 @@ export function StatesDemo() {
 
 function StressDemo() {
   const resolveFixture2 = () => {
-    if (data === "worst") {
+    if (data === "worst" || data === "narrow") {
       return stressSections;
     }
 
@@ -944,6 +942,13 @@ function StressDemo() {
           label: "CustomerExperienceInfrastructureReview",
           icon: <IconChartBar />,
         },
+        {
+          id: "restricted",
+          label: "Restricted compliance audit logs",
+          icon: <IconSettings />,
+          disabled: true,
+          disabledReason: "Requires compliance administrator access.",
+        },
       ],
     },
   ];
@@ -973,18 +978,19 @@ function StressDemo() {
 const stressCode =
   previewCode +
   `
-import { IconUsers, IconFolder, IconFile, IconChartBar } from "@tabler/icons-react";
+import { IconUsers, IconFolder, IconFile, IconChartBar, IconSettings } from "@tabler/icons-react";
 import { KiraSidebar, type SidebarSection } from "@/components/ui/sidebar";
 const stressSections: SidebarSection[] = [{ id: "international", label: "International operations and customer experience", items: [
   { id: "long", label: "North America enterprise customer onboarding and renewals", icon: <IconUsers />, badge: "1,284" },
   { id: "thai", label: "โครงการปรับปรุงประสบการณ์ลูกค้า", icon: <IconFolder />, badge: 0 },
   { id: "short", label: "Q", icon: <IconFile />, badge: 1 },
   { id: "identifier", label: "CustomerExperienceInfrastructureReview", icon: <IconChartBar /> },
+  { id: "restricted", label: "Restricted compliance audit logs", icon: <IconSettings />, disabled: true, disabledReason: "Requires compliance administrator access." },
 ] }];
 export function StressDemo() {
-  return <SidebarPreview>
+  return <div className="max-w-xs"><SidebarPreview>
     <KiraSidebar title="Customer experience infrastructure" sections={stressSections} favorites={false} user={{ name: "Aleksandra Wiśniewska-Kowalczyk", email: "alexandra@northwind-industries-holdings.example.com" }} />
-  </SidebarPreview>;
+  </SidebarPreview></div>;
 }`;
 
 function PartsDemo() {
@@ -1056,7 +1062,24 @@ export function PartsDemo() {
   </SidebarContent><SidebarFooter><div className="flex flex-wrap gap-2 p-2"><SidebarBadge variant="success">Synced</SidebarBadge><SidebarBadge variant="warning">Read only</SidebarBadge><SidebarBadge variant="outline">0</SidebarBadge></div></SidebarFooter></Sidebar></SidebarPreview>;
 }`;
 
-const apiSections: React.ComponentProps<typeof APIReference>["sections"] = [
+const sidebarPageAPISections = [
+  {
+    title: "SidebarRouterProvider",
+    props: [
+      {
+        prop: "adapter",
+        type: "{ Link?: React.ComponentType<SidebarLinkProps>; useIsActive?: (to: string) => boolean }",
+        default: "native <a> / pathname match",
+        description:
+          "Optional router seam for TanStack Router, Next.js, or React Router. Without it, SidebarItem renders native links.",
+      },
+      {
+        prop: "children",
+        type: "React.ReactNode",
+        description: "Application subtree that uses SidebarItem links.",
+      },
+    ],
+  },
   {
     title: "SidebarProvider",
     props: [
@@ -1301,7 +1324,7 @@ const apiSections: React.ComponentProps<typeof APIReference>["sections"] = [
         prop: "to",
         type: "string",
         description:
-          "TanStack Router destination. Requires the application router; matching is exact.",
+          "Destination path. Defaults to native <a href> with exact pathname matching, or delegates to the SidebarRouterProvider adapter.",
       },
       {
         prop: "children / icon / badge / shortcut",
@@ -1590,17 +1613,19 @@ const apiSections: React.ComponentProps<typeof APIReference>["sections"] = [
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const usageCode = `// 1. Install both standalone modules:
 //    npx kira-kit add theme-provider sidebar
 import * as React from "react";
-import { IconInbox, IconCalendar } from "@tabler/icons-react";
+import { IconInbox, IconCalendar, IconFolder, IconFile } from "@tabler/icons-react";
 import { ThemeProvider, ThemeToggle, useTheme } from "@/components/ui/theme-provider";
 import {
   SidebarRouterProvider, SidebarProvider, useSidebar, SidebarTrigger,
   KiraSidebar, Sidebar, SidebarHeader, SidebarSearch, SidebarContent,
-  SidebarFooter, type SidebarLinkProps,
+  SidebarGroup, SidebarMenu, SidebarMenuItem, SidebarItem, SidebarMenuButton,
+  SidebarMenuSub, SidebarItemGroup, SidebarDivider, SidebarSkeleton,
+  SidebarEmpty, SidebarBadge, SidebarUser, SidebarFooter, type SidebarLinkProps,
 } from "@/components/ui/sidebar";
 
 // 2. Optional: wire your router (TanStack Router, Next.js, React Router).
@@ -1673,19 +1698,32 @@ export default function SidebarPage() {
     <ComponentPage>
       <PageHeader
         title="Sidebar"
-        version="3.1.2"
+        version="v4.0.0"
         description="Navigation that stays close to your work. Search views, keep personal favorites, and move between a compact rail and a mobile drawer."
       />
-      <FeatureGrid features={sidebarPageFeatureGridFeatures} />
+      <FeatureGrid
+        features={sidebarPageFeatureGridFeatures}
+        description="Capabilities built into Kira Kit."
+      />
       <DemoTabs defaultValue="basic" tabs={sidebarPageDemoTabsTabs} />
       <SidebarInstallationCard />
-      <KeyboardShortcuts shortcuts={sidebarPageKeyboardShortcutsShortcuts} />
+      <KeyboardShortcuts
+        shortcuts={sidebarPageKeyboardShortcutsShortcuts}
+        description="Keyboard navigation, search, and shortcut bindings."
+      />
       <UsageBlock
         code={usageCode}
         description="A responsive application shell. Each feature tab includes a standalone composition example."
+        notes={sidebarPageUsageNotes}
       />
-      <APIReference sections={apiSections} />
-      <Changelog entries={sidebarPageChangelogEntries} />
+      <APIReference
+        sections={sidebarPageAPISections}
+        description="Props, types, and defaults for each exported part."
+      />
+      <Changelog
+        entries={sidebarPageChangelogEntries}
+        description="Version history for this component."
+      />
     </ComponentPage>
   );
 }
@@ -1718,6 +1756,7 @@ const sidebarPageDemoTabsTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Your everyday views"
@@ -1731,6 +1770,7 @@ const sidebarPageDemoTabsTabs = [
   {
     value: "modes",
     label: "Modes",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Fit the workspace"
@@ -1742,8 +1782,51 @@ const sidebarPageDemoTabsTabs = [
     ),
   },
   {
+    value: "groups",
+    label: "Groups",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="A growing team library"
+        description="Add collections, open nested documents, and keep closed content out of the tab order."
+        code={groupsCode}
+      >
+        <GroupsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "parts",
+    label: "Parts",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Build your own composition"
+        description="Search, empty state, animated loading skeleton, nested lists and status badges."
+        code={partsCode}
+      >
+        <PartsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    group: "KiraSidebar",
+    demo: (
+      <DemoWrapper
+        title="A product workspace"
+        description="The data-driven composition, with search, favorites and account actions."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "search",
     label: "Search",
+    group: "KiraSidebar",
     demo: (
       <DemoWrapper
         title="Find a view from the rail"
@@ -1757,6 +1840,7 @@ const sidebarPageDemoTabsTabs = [
   {
     value: "favorites",
     label: "Favorites",
+    group: "KiraSidebar",
     demo: (
       <DemoWrapper
         title="A personal order"
@@ -1768,8 +1852,23 @@ const sidebarPageDemoTabsTabs = [
     ),
   },
   {
+    value: "states",
+    label: "States",
+    group: "KiraSidebar",
+    demo: (
+      <DemoWrapper
+        title="Ready, waiting, unavailable"
+        description="Local loading/error fixtures, empty navigation and managed favorites."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "motion",
     label: "Motion",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Continuity, without the wait"
@@ -1781,21 +1880,9 @@ const sidebarPageDemoTabsTabs = [
     ),
   },
   {
-    value: "groups",
-    label: "Groups",
-    demo: (
-      <DemoWrapper
-        title="A growing team library"
-        description="Add collections, open nested documents, and keep closed content out of the tab order."
-        code={groupsCode}
-      >
-        <GroupsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "account",
     label: "Account",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Account actions in either width"
@@ -1809,6 +1896,7 @@ const sidebarPageDemoTabsTabs = [
   {
     value: "controlled",
     label: "Controlled",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Preferences belong to a workspace"
@@ -1822,6 +1910,7 @@ const sidebarPageDemoTabsTabs = [
   {
     value: "mobile",
     label: "Mobile",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Navigation on a smaller screen"
@@ -1833,54 +1922,16 @@ const sidebarPageDemoTabsTabs = [
     ),
   },
   {
-    value: "kira",
-    label: "Kira",
-    demo: (
-      <DemoWrapper
-        title="A product workspace"
-        description="The data-driven composition, with search, favorites and account actions."
-        code={kiraCode}
-      >
-        <KiraDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "states",
-    label: "States",
-    demo: (
-      <DemoWrapper
-        title="Ready, waiting, unavailable"
-        description="Local loading/error fixtures, empty navigation and managed favorites."
-        code={statesCode}
-      >
-        <StatesDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "stress",
-    label: "Stress",
+    label: "Stress Cases",
+    group: "Behavior",
     demo: (
       <DemoWrapper
-        title="When names get longer"
-        description="Switch between ordinary data, long multilingual labels, zero, one and many views."
+        title="Stress Cases"
+        description="Switch between ordinary data, long multilingual labels, disabled items, empty state, 40 views, and a narrow max-w-xs container."
         code={stressCode}
       >
         <StressDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "parts",
-    label: "Parts",
-    demo: (
-      <DemoWrapper
-        title="Build your own composition"
-        description="Search, empty state, animated loading skeleton, nested lists and status badges."
-        code={partsCode}
-      >
-        <PartsDemo />
       </DemoWrapper>
     ),
   },
@@ -1924,10 +1975,21 @@ const sidebarPageKeyboardShortcutsShortcuts = [
   },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
+const sidebarPageUsageNotes = [
+  {
+    label: "KiraSidebar",
+    body: "Use KiraSidebar inside SidebarProvider for data-driven sections, keyword search, pinnable/reorderable favorites, and built-in loading/error states.",
+  },
+  {
+    label: "SidebarRouterProvider",
+    body: "Wrap your app in SidebarRouterProvider to bind TanStack Router, Next.js, or React Router links; without it, SidebarItem uses native anchors.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
 const sidebarPageChangelogEntries = [
   {
-    version: "Unreleased",
-    date: "In development",
+    version: "4.0.0",
+    date: "26 November 2026",
     changes: [
       {
         type: "breaking",
@@ -1945,11 +2007,11 @@ const sidebarPageChangelogEntries = [
   },
   {
     version: "3.2.0",
-    date: "2026-11-18",
+    date: "18 November 2026",
     changes: [
       {
         type: "changed",
-        title: "MenuButton horizontal padding px-2.5 → px-3",
+        title: "MenuButton horizontal padding aligned to px-3",
         description:
           "Nav rows move to the sanctioned px-3 step (nav tier, slightly roomier than menu items). min-h-9 and the coarse-pointer min-h-11 touch target are unchanged.",
       },
@@ -1957,7 +2019,7 @@ const sidebarPageChangelogEntries = [
   },
   {
     version: "3.1.2",
-    date: "2026-11-18",
+    date: "18 November 2026",
     changes: [
       {
         type: "fixed",
@@ -1969,7 +2031,7 @@ const sidebarPageChangelogEntries = [
   },
   {
     version: "3.1.1",
-    date: "2026-11-11",
+    date: "11 November 2026",
     changes: [
       {
         type: "added",
@@ -1981,7 +2043,7 @@ const sidebarPageChangelogEntries = [
   },
   {
     version: "3.1.0",
-    date: "2026-11-11",
+    date: "11 November 2026",
     changes: [
       {
         type: "changed",
@@ -2005,7 +2067,7 @@ const sidebarPageChangelogEntries = [
   },
   {
     version: "3.0.0",
-    date: "2026-11-11",
+    date: "11 November 2026",
     changes: [
       {
         type: "added",
@@ -2062,7 +2124,7 @@ function ModesControlsSection({
 }) {
   return (
     <div className="flex flex-wrap items-end gap-3">
-      <label className="grid gap-1.5 text-sm">
+      <label className="grid gap-2 text-sm">
         Collapse mode
         <select
           className={controlClass}
@@ -2079,7 +2141,7 @@ function ModesControlsSection({
           <option value="none">Fixed</option>
         </select>
       </label>
-      <label className="grid gap-1.5 text-sm">
+      <label className="grid gap-2 text-sm">
         Surface
         <select
           className={controlClass}
@@ -2100,7 +2162,7 @@ function ModesControlsSection({
           <option value="inset">Inset</option>
         </select>
       </label>
-      <label className="grid gap-1.5 text-sm">
+      <label className="grid gap-2 text-sm">
         Side
         <select
           className={controlClass}
@@ -2168,6 +2230,7 @@ function StressControlsSection({
       {[
         ["demo", "Demo data"],
         ["worst", "Worst case"],
+        ["narrow", "Narrow (max-w-xs)"],
         ["empty", "Empty"],
         ["one", "One view"],
         ["many", "40 views"],
@@ -2193,27 +2256,25 @@ function StressControlsSection2({
   data: string;
   fixture: SidebarSection[];
 }) {
+  const isWorst = data === "worst" || data === "narrow";
+
   return (
-    <SidebarPreview detail="Long labels wrap. Zero counts stay visible. The footer remains reachable while the view list scrolls.">
-      <KiraSidebar
-        key={data}
-        title={
-          data === "worst" ? "Customer experience infrastructure" : "Product"
-        }
-        sections={fixture}
-        favorites={false}
-        user={{
-          name:
-            data === "worst"
-              ? "Aleksandra Wiśniewska-Kowalczyk"
-              : "Alex Morgan",
-          email:
-            data === "worst"
+    <div className={data === "narrow" ? "max-w-xs" : undefined}>
+      <SidebarPreview detail="Long labels wrap. Zero counts stay visible. The footer remains reachable while the view list scrolls.">
+        <KiraSidebar
+          key={data}
+          title={isWorst ? "Customer experience infrastructure" : "Product"}
+          sections={fixture}
+          favorites={false}
+          user={{
+            name: isWorst ? "Aleksandra Wiśniewska-Kowalczyk" : "Alex Morgan",
+            email: isWorst
               ? "alexandra@northwind-industries-holdings.example.com"
               : "Product team",
-        }}
-      />
-    </SidebarPreview>
+          }}
+        />
+      </SidebarPreview>
+    </div>
   );
 }
 

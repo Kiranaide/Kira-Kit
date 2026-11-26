@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import { useState } from "react";
 import { IconFile, IconFolder, IconUser } from "@tabler/icons-react";
 import {
@@ -84,7 +85,7 @@ function BasicDemo() {
 }
 
 const basicCode =
-  'import { useState } from "react";\nimport { Spotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\n\nexport function BasicDemo() {\n  const [destination, setDestination] = useState("Nothing opened yet.");\n  return <div className="space-y-4">\n    <Spotlight items={resources} trigger={<SpotlightTrigger />} onSelect={item => setDestination("Opened " + item.label)} />\n    <p role="status" className="text-sm text-muted-foreground">{destination}</p>\n  </div>;\n}';
+  'import { useState } from "react";\nimport { Spotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\n\nexport function BasicDemo() {\n  const [destination, setDestination] = useState("Nothing opened yet.");\n  return <div className="space-y-4">\n    <Spotlight items={resources} trigger={<SpotlightTrigger />} onSelect={item => setDestination("Opened " + item.label)} />\n    <output className="block text-sm text-muted-foreground">{destination}</output>\n  </div>;\n}';
 
 function GroupsDemo() {
   return (
@@ -260,7 +261,7 @@ function CompositionDemo() {
 }
 
 const compositionCode =
-  'import { useState } from "react";\nimport { Spotlight, SpotlightGroup, SpotlightItem, SpotlightTrigger, SpotlightSearch, SpotlightResults, SpotlightRecent, SpotlightSuggestions } from "@/components/ui/spotlight";\n\nexport function CompositionDemo() {\n  const [query, setQuery] = useState("");\n  const [selection, setSelection] = useState("Nothing selected.");\n  return <div className="space-y-4">\n    <Spotlight trigger={<SpotlightTrigger>Open composed search</SpotlightTrigger>}>\n      <SpotlightGroup label="Actions"><SpotlightItem item={{ id: "create", label: "Create a project" }} onSelect={() => setSelection("Created a project.")} /></SpotlightGroup>\n    </Spotlight>\n    <SpotlightSearch onSearch={setQuery}><SpotlightItem item={{ id: "inline-guide", label: "Onboarding guide" }} onSelect={() => setSelection("Opened the guide.")} /></SpotlightSearch>\n    <SpotlightResults><p className="text-sm">Typed: {query || "Nothing yet."}</p></SpotlightResults>\n    <SpotlightRecent items={["Product roadmap"]} onItemClick={item => setSelection("Opened " + item)} />\n    <SpotlightSuggestions items={["Create a project", "Import work"]} onItemClick={setSelection} />\n    <p role="status" className="text-sm text-muted-foreground">{selection}</p>\n  </div>;\n}';
+  'import { useState } from "react";\nimport { Spotlight, SpotlightGroup, SpotlightItem, SpotlightTrigger, SpotlightSearch, SpotlightResults, SpotlightRecent, SpotlightSuggestions } from "@/components/ui/spotlight";\n\nexport function CompositionDemo() {\n  const [query, setQuery] = useState("");\n  const [selection, setSelection] = useState("Nothing selected.");\n  return <div className="space-y-4">\n    <Spotlight trigger={<SpotlightTrigger>Open composed search</SpotlightTrigger>}>\n      <SpotlightGroup label="Actions"><SpotlightItem item={{ id: "create", label: "Create a project" }} onSelect={() => setSelection("Created a project.")} /></SpotlightGroup>\n    </Spotlight>\n    <SpotlightSearch onSearch={setQuery}><SpotlightItem item={{ id: "inline-guide", label: "Onboarding guide" }} onSelect={() => setSelection("Opened the guide.")} /></SpotlightSearch>\n    <SpotlightResults><p className="text-sm">Typed: {query || "Nothing yet."}</p></SpotlightResults>\n    <SpotlightRecent items={["Product roadmap"]} onItemClick={item => setSelection("Opened " + item)} />\n    <SpotlightSuggestions items={["Create a project", "Import work"]} onItemClick={setSelection} />\n    <output className="block text-sm text-muted-foreground">{selection}</output>\n  </div>;\n}';
 
 function KiraDemo() {
   const [destination, setDestination] = useState(
@@ -286,11 +287,11 @@ function KiraDemo() {
 }
 
 const kiraCode =
-  'import { useState } from "react";\nimport { KiraSpotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\nconst scopes = [\n  { id: "projects", label: "Projects" },\n  { id: "documents", label: "Documents" },\n  { id: "people", label: "People" },\n];\n\nexport function KiraDemo() {\n  const [destination, setDestination] = useState("Choose a workspace resource.");\n  return <div className="space-y-4">\n    <KiraSpotlight items={resources} scopes={scopes} enableShortcut rememberRecent renderPreview={item => <p>{item.description}</p>} trigger={<SpotlightTrigger showShortcut />} onSelect={item => setDestination("Opened " + item.label)} />\n    <p role="status" className="text-sm text-muted-foreground">{destination}</p>\n  </div>;\n}';
+  'import { useState } from "react";\nimport { KiraSpotlight, SpotlightTrigger, type SpotlightItemType } from "@/components/ui/spotlight";\nimport { IconFile, IconFolder, IconUser } from "@tabler/icons-react";\n\nconst resources: SpotlightItemType[] = [\n  { id: "roadmap", label: "Q4 product roadmap", description: "Projects · Product team", icon: <IconFolder />, scope: "projects", keywords: ["planning", "launch"] },\n  { id: "guide", label: "Customer onboarding guide", description: "Documents · Updated today", icon: <IconFile />, scope: "documents", keywords: ["help", "support"] },\n  { id: "maya", label: "Maya Chen", description: "People · Workspace owner", icon: <IconUser />, scope: "people", keywords: ["admin", "owner"] },\n  { id: "archive", label: "Archived financial report", description: "Documents · Restricted", icon: <IconFile />, scope: "documents", disabled: true, disabledReason: "Ask Finance for access." },\n];\nconst scopes = [\n  { id: "projects", label: "Projects" },\n  { id: "documents", label: "Documents" },\n  { id: "people", label: "People" },\n];\n\nexport function KiraDemo() {\n  const [destination, setDestination] = useState("Choose a workspace resource.");\n  return <div className="space-y-4">\n    <KiraSpotlight items={resources} scopes={scopes} enableShortcut rememberRecent renderPreview={item => <p>{item.description}</p>} trigger={<SpotlightTrigger showShortcut />} onSelect={item => setDestination("Opened " + item.label)} />\n    <output className="block text-sm text-muted-foreground">{destination}</output>\n  </div>;\n}';
 
-function StatesDemo() {
+function StressDemo() {
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex max-w-xs flex-col gap-3">
       <Spotlight
         loading
         trigger={<SpotlightTrigger>Loading search</SpotlightTrigger>}
@@ -319,17 +320,52 @@ function StatesDemo() {
           <SpotlightTrigger>Stress and disabled results</SpotlightTrigger>
         }
       />
+      <SpotlightTrigger disabled>Disabled trigger</SpotlightTrigger>
     </div>
   );
 }
 
-const statesCode =
-  'import { Spotlight, SpotlightTrigger } from "@/components/ui/spotlight";\n\nexport function StatesDemo() {\n  return <div className="flex flex-wrap gap-3">\n    <Spotlight loading trigger={<SpotlightTrigger>Loading search</SpotlightTrigger>} />\n    <Spotlight items={[]} trigger={<SpotlightTrigger>Empty catalog</SpotlightTrigger>} />\n    <Spotlight items={[{ id: "restricted", label: "Financial report", disabled: true, disabledReason: "Ask Finance for access." }, { id: "long", label: "Release readiness and international customer onboarding — 日本語 العربية ไทย", description: "A_very_long_unbroken_resource_identifier_012345678901234567890123456789" }]} trigger={<SpotlightTrigger>Stress and disabled results</SpotlightTrigger>} />\n  </div>;\n}';
+const stressCode = `import { Spotlight, SpotlightTrigger } from "@/components/ui/spotlight";
+
+export function StressDemo() {
+  return (
+    <div className="flex max-w-xs flex-col gap-3">
+      <Spotlight
+        loading
+        trigger={<SpotlightTrigger>Loading search</SpotlightTrigger>}
+      />
+      <Spotlight
+        items={[]}
+        trigger={<SpotlightTrigger>Empty catalog</SpotlightTrigger>}
+      />
+      <Spotlight
+        items={[
+          {
+            id: "restricted",
+            label: "Financial report",
+            disabled: true,
+            disabledReason: "Ask Finance for access.",
+          },
+          {
+            id: "long",
+            label:
+              "Release readiness and international customer onboarding — 日本語 العربية ไทย",
+            description:
+              "A_very_long_unbroken_resource_identifier_012345678901234567890123456789",
+          },
+        ]}
+        trigger={
+          <SpotlightTrigger>Stress and disabled results</SpotlightTrigger>
+        }
+      />
+      <SpotlightTrigger disabled>Disabled trigger</SpotlightTrigger>
+    </div>
+  );
+}`;
 
 const usageCode =
-  'import { useState } from "react";\nimport { Spotlight, SpotlightRoot, KiraSpotlight, SpotlightTrigger, SpotlightGroup, SpotlightItem, SpotlightSearch, SpotlightRecent, SpotlightSuggestions, SpotlightResults } from "@/components/ui/spotlight";\n\nexport function SpotlightUsage() {\n  const [selection, setSelection] = useState("Choose a resource.");\n  const items = [{ id: "guide", label: "Customer onboarding guide" }];\n  return <div>\n    <Spotlight items={items} trigger={<SpotlightTrigger>Search resources</SpotlightTrigger>} onSelect={item => setSelection(item.label)} />\n    <SpotlightRoot trigger={<SpotlightTrigger>Composed search</SpotlightTrigger>}><SpotlightGroup label="Resources"><SpotlightItem item={items[0]} /></SpotlightGroup></SpotlightRoot>\n    <KiraSpotlight items={items} rememberRecent trigger={<SpotlightTrigger>Search with recents</SpotlightTrigger>} />\n    <SpotlightSearch><SpotlightItem item={items[0]} onSelect={() => setSelection(items[0].label)} /></SpotlightSearch>\n    <SpotlightRecent items={["Product roadmap"]} onItemClick={setSelection} />\n    <SpotlightSuggestions items={["Create project"]} onItemClick={setSelection} />\n    <SpotlightResults><p role="status">{selection}</p></SpotlightResults>\n  </div>;\n}';
+  'import { useState } from "react";\nimport { Spotlight, SpotlightRoot, KiraSpotlight, SpotlightTrigger, SpotlightGroup, SpotlightItem, SpotlightSearch, SpotlightRecent, SpotlightSuggestions, SpotlightResults } from "@/components/ui/spotlight";\n\nexport function SpotlightUsage() {\n  const [selection, setSelection] = useState("Choose a resource.");\n  const items = [{ id: "guide", label: "Customer onboarding guide" }];\n  return <div>\n    <Spotlight items={items} trigger={<SpotlightTrigger>Search resources</SpotlightTrigger>} onSelect={item => setSelection(item.label)} />\n    <SpotlightRoot trigger={<SpotlightTrigger>Composed search</SpotlightTrigger>}><SpotlightGroup label="Resources"><SpotlightItem item={items[0]} /></SpotlightGroup></SpotlightRoot>\n    <KiraSpotlight items={items} rememberRecent trigger={<SpotlightTrigger>Search with recents</SpotlightTrigger>} />\n    <SpotlightSearch><SpotlightItem item={items[0]} onSelect={() => setSelection(items[0].label)} /></SpotlightSearch>\n    <SpotlightRecent items={["Product roadmap"]} onItemClick={setSelection} />\n    <SpotlightSuggestions items={["Create project"]} onItemClick={setSelection} />\n    <SpotlightResults><output>{selection}</output></SpotlightResults>\n  </div>;\n}';
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function SpotlightPage() {
   return (
     <ComponentPage>
@@ -338,85 +374,40 @@ export default function SpotlightPage() {
         description="Find workspace resources, narrow your search, and recover from delayed or unavailable results."
         version="v2.0.0"
       />
-      <FeatureGrid features={spotlightPageFeatureGridFeatures} />
+      <FeatureGrid
+        features={spotlightPageFeatureGridFeatures}
+        description="Capabilities built into Kira Kit."
+      />
       <DemoTabs defaultValue="basic" tabs={spotlightPageDemoTabsTabs} />
       <KeyboardShortcuts
-        shortcuts={[
-          {
-            keys: "↑ / ↓",
-            description:
-              "Choose an enabled result; wrapping is inherited from cmdk through Kira Command.",
-          },
-          {
-            keys: "Home / End",
-            description:
-              "First/last result when the search input is focused; inherited from cmdk.",
-          },
-          {
-            keys: "Enter",
-            description:
-              "Open the highlighted resource; inherited from cmdk. Composing text does not select.",
-          },
-          {
-            keys: "Tab / Shift+Tab",
-            description:
-              "Move through dialog controls; focus trapping and restoration are inherited from Base UI Dialog.",
-          },
-          {
-            keys: "Esc",
-            description:
-              "Close and return focus to the trigger; inherited from Base UI Dialog.",
-          },
-          {
-            keys: "Ctrl / K",
-            description:
-              "Kira addition: optional global shortcut (⌘K on Mac), inactive in editable fields by default.",
-          },
-        ]}
+        shortcuts={spotlightPageShortcuts}
+        description="Keyboard navigation and shortcut bindings."
       />
       <UsageBlock
         code={usageCode}
+        title="Usage"
         description="All exported Spotlight controls and inline parts. See each feature's focused example for remote search."
-      />
-      <APIReference sections={spotlightPageAPIReferenceSections} />
-      <Changelog
-        entries={[
+        notes={[
           {
-            version: "v2.0.0",
-            date: "2026-11-13",
-            changes: [
-              {
-                type: "added",
-                title: "KiraSpotlight",
-                description:
-                  "Scoped local/remote search, AbortSignal cancellation, retry, previews, deduplicated recents and an opt-in shortcut. Audited against Base UI 1.9.0.",
-              },
-              {
-                type: "fixed",
-                title: "Shared keyboard and dialog behavior",
-                description:
-                  "Reuses Kira Command and CommandDialog; removes fixed IDs, modulo navigation, stale selectable results, callback render loops and overlapping GSAP effects.",
-              },
-              {
-                type: "breaking",
-                title: "Trigger and presentation contracts",
-                description:
-                  "Use trigger={<SpotlightTrigger />} with a React element; asChild is removed in favor of Button.render. spotlightOverlayVariants is removed because the shared dialog owns the overlay. Root onSearch receives query events; remote search returns items through KiraSpotlight.search.",
-              },
-              {
-                type: "changed",
-                title: "Recents and previews",
-                description:
-                  "Recents precede the full catalog. Disabled reasons remain visible. Preview content is descriptive and should contain no interactive controls. Shortcut badges are hints; only enableShortcut registers Ctrl+K or ⌘K.",
-              },
-            ],
+            label: "KiraSpotlight",
+            body: "Use KiraSpotlight for scoped local/remote search, AbortSignal cancellation, retry recovery, in-memory recents, and opt-in Ctrl+K / ⌘K.",
+          },
+          {
+            label: "Spotlight & inline parts",
+            body: "Use Spotlight for static catalogs or compose SpotlightSearch, SpotlightRecent, SpotlightSuggestions, and SpotlightResults inline.",
           },
         ]}
       />
+      <APIReference
+        sections={spotlightPageAPIReferenceSections}
+        description="Props, types, and defaults for each exported part."
+      />
+      <Changelog entries={spotlightPageChangelogEntries} />
     </ComponentPage>
   );
 }
 
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
 const spotlightPageFeatureGridFeatures = [
   {
     title: "Scoped search",
@@ -435,12 +426,13 @@ const spotlightPageFeatureGridFeatures = [
     title: "Result previews",
     description: "Review a resource before opening it.",
   },
-] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
 const spotlightPageDemoTabsTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Workspace search"
@@ -454,6 +446,7 @@ const spotlightPageDemoTabsTabs = [
   {
     value: "groups",
     label: "Groups",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Groups and other results"
@@ -467,6 +460,7 @@ const spotlightPageDemoTabsTabs = [
   {
     value: "filter",
     label: "Filtering",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Caller filtering"
@@ -478,8 +472,23 @@ const spotlightPageDemoTabsTabs = [
     ),
   },
   {
+    value: "composition",
+    label: "Composition",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Composable and inline controls"
+        description="Shared Command owns selection; legacy recent/suggestion parts use native buttons."
+        code={compositionCode}
+      >
+        <CompositionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "scopes",
     label: "Scopes",
+    group: "KiraSpotlight",
     demo: (
       <DemoWrapper
         title="Scoped search"
@@ -493,6 +502,7 @@ const spotlightPageDemoTabsTabs = [
   {
     value: "remote",
     label: "Remote",
+    group: "KiraSpotlight",
     demo: (
       <DemoWrapper
         title="Remote search and retry"
@@ -506,6 +516,7 @@ const spotlightPageDemoTabsTabs = [
   {
     value: "recents",
     label: "Recents",
+    group: "KiraSpotlight",
     demo: (
       <DemoWrapper
         title="Recent resources"
@@ -519,6 +530,7 @@ const spotlightPageDemoTabsTabs = [
   {
     value: "preview",
     label: "Preview",
+    group: "KiraSpotlight",
     demo: (
       <DemoWrapper
         title="Result previews"
@@ -530,21 +542,9 @@ const spotlightPageDemoTabsTabs = [
     ),
   },
   {
-    value: "composition",
-    label: "Composition",
-    demo: (
-      <DemoWrapper
-        title="Composable and inline controls"
-        description="Shared Command owns selection; legacy recent/suggestion parts use native buttons."
-        code={compositionCode}
-      >
-        <CompositionDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "kira",
     label: "Kira",
+    group: "KiraSpotlight",
     demo: (
       <DemoWrapper
         title="Kira workspace search"
@@ -556,19 +556,53 @@ const spotlightPageDemoTabsTabs = [
     ),
   },
   {
-    value: "states",
-    label: "States",
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
     demo: (
       <DemoWrapper
-        title="Loading, disabled, empty, and long results"
-        description="Open each fixture. Loading is separate from no results; disabled resources explain how to get access."
-        code={statesCode}
+        title="Stress Cases"
+        description="Loading, empty catalog, disabled trigger/items, and long multilingual results inside a max-w-xs column."
+        code={stressCode}
       >
-        <StatesDemo />
+        <StressDemo />
       </DemoWrapper>
     ),
   },
-] satisfies React.ComponentProps<typeof DemoTabs>["tabs"];
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const spotlightPageShortcuts = [
+  {
+    keys: "↑ / ↓",
+    description:
+      "Choose an enabled result; wrapping is inherited from cmdk through Kira Command.",
+  },
+  {
+    keys: "Home / End",
+    description:
+      "First/last result when the search input is focused; inherited from cmdk.",
+  },
+  {
+    keys: "Enter",
+    description:
+      "Open the highlighted resource; inherited from cmdk. Composing text does not select.",
+  },
+  {
+    keys: "Tab / Shift+Tab",
+    description:
+      "Move through dialog controls; focus trapping and restoration are inherited from Base UI Dialog.",
+  },
+  {
+    keys: "Esc",
+    description:
+      "Close and return focus to the trigger; inherited from Base UI Dialog.",
+  },
+  {
+    keys: "Ctrl / K",
+    description:
+      "Kira addition: optional global shortcut (⌘K on Mac), inactive in editable fields by default.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
 const spotlightPageAPIReferenceSections = [
   {
@@ -626,14 +660,14 @@ const spotlightPageAPIReferenceSections = [
       },
       {
         prop: "trigger / children / header / renderPreview",
-        type: '"sm" | "default" | "lg" | "full" / string',
+        type: "ReactElement / ReactNode / ReactNode / (item: SpotlightItemType<T>) => ReactNode",
         default: "—",
         description:
           "Trigger element, composed result content, header, and noninteractive selected-result preview.",
       },
       {
         prop: "size / className",
-        type: '"sm" | "default" | "lg" | "full" / string",',
+        type: '"sm" | "default" | "lg" | "full" / string',
         default: '"default"',
         description: "Popup width and classes.",
       },
@@ -781,4 +815,37 @@ const spotlightPageAPIReferenceSections = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof APIReference>["sections"];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const spotlightPageChangelogEntries = [
+  {
+    version: "2.0.0",
+    date: "13 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "KiraSpotlight",
+        description:
+          "Scoped local/remote search, AbortSignal cancellation, retry, previews, deduplicated recents and an opt-in shortcut. Audited against Base UI 1.9.0.",
+      },
+      {
+        type: "fixed",
+        title: "Shared keyboard and dialog behavior",
+        description:
+          "Reuses Kira Command and CommandDialog; removes fixed IDs, modulo navigation, stale selectable results, callback render loops and overlapping GSAP effects.",
+      },
+      {
+        type: "breaking",
+        title: "Trigger and presentation contracts",
+        description:
+          "Use trigger={<SpotlightTrigger />} with a React element; asChild is removed in favor of Button.render. spotlightOverlayVariants is removed because the shared dialog owns the overlay. Root onSearch receives query events; remote search returns items through KiraSpotlight.search.",
+      },
+      {
+        type: "changed",
+        title: "Recents and previews",
+        description:
+          "Recents precede the full catalog. Disabled reasons remain visible. Preview content is descriptive and should contain no interactive controls. Shortcut badges are hints; only enableShortcut registers Ctrl+K or ⌘K.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
