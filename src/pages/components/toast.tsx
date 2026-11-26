@@ -15,6 +15,7 @@ import {
   KeyboardShortcuts,
   Changelog,
 } from "@/components/docs";
+import { ToastInstallationCard } from "@/components/docs/segmented-installation-guide";
 
 function BasicDemo() {
   return (
@@ -1088,6 +1089,8 @@ export default function ToastPage() {
       <FeatureGrid features={features} />
 
       <DemoTabs tabs={demoTabs} defaultValue="basic" />
+
+      <ToastInstallationCard />
 
       <KeyboardShortcuts
         description="Provided by the Base UI Toast primitive. Action and close buttons are normal tab stops; toasts are announced via ARIA live regions."

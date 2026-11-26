@@ -1,0 +1,441 @@
+export const moduleSegments = [
+  "theme-provider",
+  "sidebar",
+  "toast",
+  "full-stack",
+] as const;
+
+export type ModuleSegment = (typeof moduleSegments)[number];
+
+export const routerAdapters = [
+  "native",
+  "tanstack",
+  "nextjs",
+  "react-router",
+] as const;
+
+export type RouterAdapter = (typeof routerAdapters)[number];
+
+export interface ModuleSegmentMeta {
+  id: ModuleSegment;
+  label: string;
+  shortLabel: string;
+  tagline: string;
+  command: string;
+  depsLabel: string;
+  scope: string;
+}
+
+export const moduleMeta: Record<ModuleSegment, ModuleSegmentMeta> = {
+  "theme-provider": {
+    id: "theme-provider",
+    label: "Theme Provider",
+    shortLabel: "Theme",
+    tagline:
+      "Standalone light/dark theme context with localStorage persistence, OS preference fallback, and a ready-to-use ThemeToggle button.",
+    command: "{runner} kira-kit add theme-provider",
+    depsLabel: "1 UI dep · button",
+    scope: "App root",
+  },
+  sidebar: {
+    id: "sidebar",
+    label: "Sidebar",
+    shortLabel: "Sidebar",
+    tagline:
+      "Responsive navigation shell with collapsible icon rail, mobile Base UI drawer, keyboard shortcut, and a router-agnostic adapter seam.",
+    command: "{runner} kira-kit add sidebar",
+    depsLabel: "Zero router lock-in",
+    scope: "App shell",
+  },
+  toast: {
+    id: "toast",
+    label: "Toast",
+    shortLabel: "Toast",
+    tagline:
+      "Base UI stacked and trigger-anchored notifications with swipe-to-dismiss, promise tracking, and optional optimistic-commit error wiring.",
+    command: "{runner} kira-kit add toast",
+    depsLabel: "Base UI Toast · 0 Sonner",
+    scope: "App root",
+  },
+  "full-stack": {
+    id: "full-stack",
+    label: "Full Stack",
+    shortLabel: "All 3",
+    tagline:
+      "Combine ThemeProvider, KiraToastProvider, OptimisticFeedbackProvider, and Sidebar in the recommended root-to-shell nesting order.",
+    command: "{runner} kira-kit add theme-provider sidebar toast",
+    depsLabel: "Complete shell",
+    scope: "Root + Shell",
+  },
+};
+
+export const themeProviderRootCode = `import { ThemeProvider } from "@/components/ui/theme-provider";
+
+export function Root({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider
+      // Optional: omit to follow prefers-color-scheme on first visit
+      defaultTheme="dark"
+      // Optional: defaults to "kira-theme"
+      storageKey="kira-theme"
+    >
+      {children}
+    </ThemeProvider>
+  );
+}`;
+
+export const themeProviderUsageCode = `import { ThemeToggle, useTheme } from "@/components/ui/theme-provider";
+
+export function HeaderActions() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <div className="flex items-center gap-2">
+      {/* Compact icon-only toggle or full-width sidebar button (showLabel={true}) */}
+      <ThemeToggle showLabel={false} />
+      <button type="button" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+        Active: {theme}
+      </button>
+    </div>
+  );
+}`;
+
+export const themeFoucScriptCode = `<!-- Optional: place in index.html <head> to prevent light/dark flash before React hydrates -->
+<script>
+  (function () {
+    try {
+      var key = "kira-theme";
+      var stored = localStorage.getItem(key);
+      var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      var theme = stored === "light" || stored === "dark" ? stored : (prefersDark ? "dark" : "light");
+      document.documentElement.classList.add(theme);
+    } catch (e) {}
+  })();
+</script>`;
+
+export const themeChecklist = [
+  {
+    title: "Decoupled from Sidebar",
+    description:
+      "Mount ThemeProvider at the root route so auth, landing, and marketing pages without a sidebar still receive theming.",
+  },
+  {
+    title: "Sandboxed storage safe",
+    description:
+      "localStorage reads and writes are wrapped in try/catch so embedded iframes or strict privacy modes never throw.",
+  },
+  {
+    title: "Tailwind dark variant ready",
+    description:
+      "Applies .light or .dark directly to document.documentElement, matching Kira Kit's CSS token cascade.",
+  },
+] as const;
+
+export const routerAdapterMeta: Record<
+  RouterAdapter,
+  { label: string; summary: string; code: string }
+> = {
+  native: {
+    label: "Native <a>",
+    summary:
+      "Zero router setup required. SidebarItem renders a native <a href={to}> and matches window.location.pathname automatically.",
+    code: `import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarHeader,
+  SidebarItem,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarProvider>
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar>
+          <SidebarHeader />
+          <SidebarContent>
+            <SidebarGroup label="Workspace">
+              <SidebarItem to="/overview">Overview</SidebarItem>
+              <SidebarItem to="/settings">Settings</SidebarItem>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+        <main className="flex-1 overflow-y-auto">
+          <SidebarTrigger className="md:hidden" />
+          {children}
+        </main>
+      </div>
+    </SidebarProvider>
+  );
+}`,
+  },
+  tanstack: {
+    label: "TanStack Router",
+    summary:
+      "Bind TanStack Router's Link and useMatchRoute once at your layout shell — Sidebar itself stays 100% router-agnostic.",
+    code: `import { Link, useMatchRoute } from "@tanstack/react-router";
+import {
+  SidebarProvider,
+  SidebarRouterProvider,
+  type SidebarLinkProps,
+  type SidebarRouterAdapter,
+} from "@/components/ui/sidebar";
+
+function TanStackLink({ to, disabled, ...props }: SidebarLinkProps) {
+  return <Link {...props} to={to} disabled={disabled} />;
+}
+
+function useTanStackActive(to: string) {
+  const matchRoute = useMatchRoute();
+
+  return Boolean(matchRoute({ to, fuzzy: false }));
+}
+
+const adapter: SidebarRouterAdapter = {
+  Link: TanStackLink,
+  useIsActive: useTanStackActive,
+};
+
+export function Shell({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarRouterProvider adapter={adapter}>
+      <SidebarProvider>{children}</SidebarProvider>
+    </SidebarRouterProvider>
+  );
+}`,
+  },
+  nextjs: {
+    label: "Next.js App Router",
+    summary:
+      "Adapt next/link and usePathname() inside a client shell component for instant App Router prefetching and active highlighting.",
+    code: `"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  SidebarProvider,
+  SidebarRouterProvider,
+  type SidebarLinkProps,
+  type SidebarRouterAdapter,
+} from "@/components/ui/sidebar";
+
+function NextLink({ to, disabled, ...props }: SidebarLinkProps) {
+  if (disabled) return <span {...props} aria-disabled="true" />;
+
+  return <Link {...props} href={to} />;
+}
+
+function useNextActive(to: string) {
+  const pathname = usePathname();
+
+  return pathname === to;
+}
+
+const adapter: SidebarRouterAdapter = {
+  Link: NextLink,
+  useIsActive: useNextActive,
+};
+
+export function Shell({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarRouterProvider adapter={adapter}>
+      <SidebarProvider>{children}</SidebarProvider>
+    </SidebarRouterProvider>
+  );
+}`,
+  },
+  "react-router": {
+    label: "React Router",
+    summary:
+      "Connect react-router's Link and useMatch() so SidebarItem preserves SPA navigation and exact route matching.",
+    code: `import { Link, useMatch } from "react-router";
+import {
+  SidebarProvider,
+  SidebarRouterProvider,
+  type SidebarLinkProps,
+  type SidebarRouterAdapter,
+} from "@/components/ui/sidebar";
+
+function ReactRouterLink({ to, disabled, ...props }: SidebarLinkProps) {
+  if (disabled) return <span {...props} aria-disabled="true" />;
+
+  return <Link {...props} to={to} />;
+}
+
+function useReactRouterActive(to: string) {
+  return Boolean(useMatch({ path: to, end: true }));
+}
+
+const adapter: SidebarRouterAdapter = {
+  Link: ReactRouterLink,
+  useIsActive: useReactRouterActive,
+};
+
+export function Shell({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarRouterProvider adapter={adapter}>
+      <SidebarProvider>{children}</SidebarProvider>
+    </SidebarRouterProvider>
+  );
+}`,
+  },
+};
+
+export const sidebarChecklist = [
+  {
+    title: "Mobile drawer built in",
+    description:
+      "Below md, SidebarTrigger opens an accessible Base UI drawer with focus management and Escape dismissal.",
+  },
+  {
+    title: "Zero router dependency in source",
+    description:
+      "Switching routers only touches your adapter — no edits inside src/components/ui/sidebar.tsx.",
+  },
+  {
+    title: "Scoped badge export",
+    description:
+      "Navigation count pills export sidebarBadgeVariants so they never collide with Badge's badgeVariants.",
+  },
+] as const;
+
+export const toastRootCode = `import { KiraToastProvider } from "@/components/ui/toast";
+
+export function Root({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      {/* Mount once at root: renders both the stacked viewport and anchored toaster */}
+      <KiraToastProvider />
+      {children}
+    </>
+  );
+}`;
+
+export const toastOptimisticCode = `import { KiraToastProvider, toast } from "@/components/ui/toast";
+import { OptimisticFeedbackProvider } from "@/hooks/use-optimistic-commit";
+
+export function Root({ children }: { children: React.ReactNode }) {
+  return (
+    <OptimisticFeedbackProvider
+      onError={({ title, description }) => {
+        toast.error(title, description ? { description } : undefined);
+      }}
+    >
+      <KiraToastProvider />
+      {children}
+    </OptimisticFeedbackProvider>
+  );
+}`;
+
+export const toastUsageCode = `import { toast } from "@/components/ui/toast";
+
+// Imperative calls from anywhere — event handlers, mutations, or utilities
+toast.success("Changes saved", { description: "Synced across all sessions." });
+toast.error("Couldn't save", { description: "Check your connection and retry." });
+
+// Track an async task with automatic loading -> success/error transitions
+toast.promise(saveDraft(), {
+  loading: "Saving draft…",
+  success: "Draft published",
+  error: "Failed to publish draft",
+});
+
+// Anchor a toast directly beside the triggering button
+toast.info("Copied link", { position: { anchor: buttonEl, side: "top" } });`;
+
+export const toastChecklist = [
+  {
+    title: "Stacked & anchored viewports",
+    description:
+      "KiraToastProvider mounts both the bottom-right stacked deck and the anchored positioner automatically.",
+  },
+  {
+    title: "Decoupled optimistic rollback",
+    description:
+      "Wiring OptimisticFeedbackProvider once connects KiraButton, CheckboxCard, Switch, Toggle, and ToggleGroup error rollbacks to toast.error.",
+  },
+  {
+    title: "Reduced-motion & pause aware",
+    description:
+      "Hovering or focusing pauses the countdown bar; prefers-reduced-motion disables motion and progress animation.",
+  },
+] as const;
+
+export const fullStackCode = `import { ThemeProvider, ThemeToggle } from "@/components/ui/theme-provider";
+import { KiraToastProvider, toast } from "@/components/ui/toast";
+import { OptimisticFeedbackProvider } from "@/hooks/use-optimistic-commit";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarItem,
+  SidebarProvider,
+  SidebarRouterProvider,
+} from "@/components/ui/sidebar";
+
+export function RootProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider>
+      <OptimisticFeedbackProvider
+        onError={({ title, description }) => {
+          toast.error(title, description ? { description } : undefined);
+        }}
+      >
+        <KiraToastProvider />
+        {children}
+      </OptimisticFeedbackProvider>
+    </ThemeProvider>
+  );
+}
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarRouterProvider adapter={yourRouterAdapter}>
+      <SidebarProvider>
+        <div className="flex h-screen overflow-hidden">
+          <Sidebar>
+            <SidebarHeader />
+            <SidebarContent>
+              <SidebarItem to="/overview">Overview</SidebarItem>
+            </SidebarContent>
+            <SidebarFooter>
+              <ThemeToggle />
+            </SidebarFooter>
+          </Sidebar>
+          <main className="flex-1 overflow-y-auto">{children}</main>
+        </div>
+      </SidebarProvider>
+    </SidebarRouterProvider>
+  );
+}`;
+
+export const providerStackLayers = [
+  {
+    name: "ThemeProvider",
+    layer: "Root · Outer",
+    role: "Owns .light / .dark class on <html> and persists kira-theme.",
+  },
+  {
+    name: "OptimisticFeedbackProvider",
+    layer: "Root · Feedback Seam",
+    role: "Routes rejected optimistic commits from controls to toast.error.",
+  },
+  {
+    name: "KiraToastProvider",
+    layer: "Root · Portals",
+    role: "Mounts Base UI stacked and anchored toast viewports once.",
+  },
+  {
+    name: "SidebarRouterProvider",
+    layer: "Shell · Adapter",
+    role: "Optional router seam for TanStack, Next.js, or React Router links.",
+  },
+  {
+    name: "SidebarProvider",
+    layer: "Shell · Layout",
+    role: "Manages desktop collapse state, mobile drawer, and keyboard toggle.",
+  },
+] as const;

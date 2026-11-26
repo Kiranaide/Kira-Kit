@@ -7,7 +7,7 @@ import { DemoTabs } from "@/components/docs/playground";
 import { FeatureGrid } from "@/components/docs/features";
 import { KeyboardShortcuts } from "@/components/docs/shortcuts";
 import { UsageBlock } from "@/components/docs/usage";
-import { PageTopBar } from "@/components/site-chrome";
+import { PageTopBar } from "@/components/site/site-chrome";
 
 interface PageHeaderProps {
   title: string;

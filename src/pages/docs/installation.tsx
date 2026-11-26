@@ -1,4 +1,14 @@
 import * as React from "react";
+import { useGSAP } from "@gsap/react";
+import {
+  IconCheck,
+  IconFolderCode,
+  IconRocket,
+  IconTerminal2,
+} from "@tabler/icons-react";
+import { cn } from "cn";
+import gsap from "gsap";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CodeBlock } from "@/components/ui/code-block";
@@ -13,6 +23,10 @@ import {
   DocTable,
   pickedValue,
 } from "@/components/docs/doc-page";
+import { SegmentedInstallationGuide } from "@/components/docs/segmented-installation-guide";
+import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
+
+gsap.registerPlugin(useGSAP);
 
 const packageManagers = ["npm", "bun", "pnpm", "yarn"] as const;
 
@@ -38,15 +52,21 @@ const setupPaths = ["new", "existing"] as const;
 
 type SetupPath = (typeof setupPaths)[number];
 
-const pathCopy: Record<SetupPath, { label: string; description: string }> = {
+const pathCopy: Record<
+  SetupPath,
+  { label: string; badge: string; description: string }
+> = {
   new: {
     label: "Create new project",
+    badge: "Fastest",
     description:
-      "Use this path for a fresh React + TypeScript app. The Vite template comes ready to run.",
+      "Fresh React 19.2+ & Vite starter with Tailwind v4, tokens, and registry pre-configured.",
   },
   existing: {
     label: "Existing project",
-    description: "Use this path from the root of a React 19.2+ app.",
+    badge: "Auto-patched",
+    description:
+      "Run from any React 19.2+ app root. Detects Vite or Next.js and patches tsconfig & Tailwind v4.",
   },
 };
 
@@ -142,6 +162,78 @@ function CommandBlock({
   );
 }
 
+const pathIcons: Record<SetupPath, React.ReactNode> = {
+  new: <IconRocket className="size-4 shrink-0" aria-hidden />,
+  existing: <IconFolderCode className="size-4 shrink-0" aria-hidden />,
+};
+
+function SetupPathOptionCard({
+  option,
+  selected,
+  onSelect,
+}: {
+  option: SetupPath;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const copy = pathCopy[option];
+
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={onSelect}
+      className={cn(
+        "group relative flex flex-col gap-2 rounded-xl border p-4 text-left transition-[background-color,border-color,box-shadow,transform] duration-150 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none motion-reduce:active:scale-100",
+        selected
+          ? "border-primary/60 bg-primary/[0.06] shadow-xs"
+          : "border-border/80 bg-background/60 hover:border-border hover:bg-muted/35",
+      )}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <span
+            className={cn(
+              "flex size-7 items-center justify-center rounded-lg border transition-colors duration-150",
+              selected
+                ? "border-primary/40 bg-primary/12 text-primary"
+                : "border-border/80 bg-muted/60 text-muted-foreground group-hover:text-foreground",
+            )}
+          >
+            {pathIcons[option]}
+          </span>
+          {copy.label}
+        </span>
+
+        <span className="flex items-center gap-1.5">
+          <Badge
+            variant={selected ? "secondary" : "outline"}
+            size="sm"
+            className="text-[11px]"
+          >
+            {copy.badge}
+          </Badge>
+          <span
+            aria-hidden
+            className={cn(
+              "flex size-4 items-center justify-center rounded-full border transition-colors duration-150",
+              selected
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-transparent",
+            )}
+          >
+            {selected && <IconCheck className="size-3" />}
+          </span>
+        </span>
+      </div>
+
+      <p className="text-xs leading-5 text-muted-foreground">
+        {copy.description}
+      </p>
+    </button>
+  );
+}
+
 function SetupPathPicker({
   path,
   onPathChange,
@@ -154,57 +246,57 @@ function SetupPathPicker({
   onPmChange: (next: PackageManager) => void;
 }) {
   return (
-    <Card>
+    <Card className="overflow-hidden border-border/80">
       <CardContent className="flex flex-col gap-5 pt-6">
-        <ToggleGroup
+        <fieldset
           aria-label="Setup path"
-          variant="segment"
-          radius="pill"
-          size="sm"
-          semantics="current"
-          value={[path]}
-          onValueChange={(next) => {
-            const picked = pickedValue(next, setupPaths);
-
-            if (picked) onPathChange(picked);
-          }}
+          className="grid grid-cols-1 gap-3 border-0 p-0 sm:grid-cols-2"
         >
           {setupPaths.map((option) => (
-            <ToggleGroupItem key={option} value={option}>
-              {pathCopy[option].label}
-            </ToggleGroupItem>
+            <SetupPathOptionCard
+              key={option}
+              option={option}
+              selected={path === option}
+              onSelect={() => onPathChange(option)}
+            />
           ))}
-        </ToggleGroup>
+        </fieldset>
 
-        <p className="max-w-[560px] text-sm leading-6 text-muted-foreground">
-          {pathCopy[path].description}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-xs font-medium text-muted-foreground">
+              Package manager
+            </span>
+            <ToggleGroup
+              aria-label="Package manager"
+              variant="segment"
+              radius="pill"
+              size="sm"
+              slidingIndicator
+              semantics="current"
+              className="w-fit"
+              value={[pm]}
+              onValueChange={(next) => {
+                const picked = pickedValue(next, packageManagers);
 
-        <div className="flex flex-col gap-2">
-          <span className="text-[13px] text-muted-foreground">
-            Package manager
-          </span>
-          <ToggleGroup
-            aria-label="Package manager"
-            variant="segment"
-            size="sm"
-            semantics="current"
-            value={[pm]}
-            onValueChange={(next) => {
-              const picked = pickedValue(next, packageManagers);
+                if (picked) onPmChange(picked);
+              }}
+            >
+              {packageManagers.map((option) => (
+                <ToggleGroupItem key={option} value={option}>
+                  {option}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
 
-              if (picked) onPmChange(picked);
-            }}
+          <Badge
+            variant="outline"
+            icon={<IconTerminal2 className="size-3" aria-hidden />}
+            className="font-mono text-[11px] text-muted-foreground"
           >
-            {packageManagers.map((option) => (
-              <ToggleGroupItem key={option} value={option}>
-                {option}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-          <p className="text-[13px] leading-5 text-muted-foreground">
-            CLI runtime: Node.js 22+ or Bun 1.x.
-          </p>
+            Node.js 22+ · Bun 1.x
+          </Badge>
         </div>
       </CardContent>
     </Card>
@@ -286,7 +378,7 @@ function ExistingProjectSections({ cli }: { cli: string }) {
               number: 1,
               title: "Run init from your project root",
               description:
-                "Initializes the registry, installs missing base packages, and applies Phase Line.",
+                "Detects Vite, Next.js, or PostCSS, configures Tailwind v4 and @/* aliases, installs missing base packages, and applies Phase Line.",
               children: (
                 <CommandBlock
                   command="{runner} kira-kit init --preset phase-line"
@@ -296,18 +388,23 @@ function ExistingProjectSections({ cli }: { cli: string }) {
             },
           ]}
         />
-        <DocCallout title="Existing-project automation is proposed">
-          Today, init installs base dependencies and handles Kira CSS and
-          components.json. In an existing Vite app, configure the Tailwind
-          plugin and matching <Code>@</Code> alias in TypeScript and Vite before
-          adding components.
+        <DocCallout
+          variant="info"
+          title="Automatic runtime detection & safe patching"
+        >
+          <Code>kira-kit init</Code> automatically detects Vite, Next.js, or
+          PostCSS, inserts <Code>@/*</Code> into your active{" "}
+          <Code>tsconfig.json</Code> (preserving comments), and AST-patches{" "}
+          <Code>vite.config.*</Code> or PostCSS for Tailwind CSS v4. If a custom
+          config cannot be safely auto-edited, the CLI prints a targeted warning
+          instead of overwriting it.
         </DocCallout>
       </DocSection>
 
       <DocSection
-        id="what-init-would-configure"
-        title="What init would configure"
-        description="Proposed for existing Vite + TypeScript projects. The CLI would check each item, reuse compatible settings, and flag conflicting configuration."
+        id="what-init-configures"
+        title="What init configures"
+        description="Checked and patched automatically on existing React 19.2+ projects while preserving compatible settings."
       >
         <DocChecklist items={configuredRows.existing} />
       </DocSection>
@@ -334,6 +431,18 @@ function OtherTemplatesSection() {
   );
 }
 
+function AppShellGuideSection({ cli }: { cli: string }) {
+  return (
+    <DocSection
+      id="core-modules"
+      title="ThemeProvider, Sidebar & Toast"
+      description="Install and configure each app-level module independently — or wire all three together in one root-to-shell stack."
+    >
+      <SegmentedInstallationGuide cli={cli} />
+    </DocSection>
+  );
+}
+
 function TroubleshootingSection() {
   return (
     <DocSection
@@ -349,6 +458,26 @@ function TroubleshootingSection() {
 export default function InstallationPage() {
   const [path, setPath] = React.useState<SetupPath>("new");
   const [pm, setPm] = React.useState<PackageManager>("npm");
+  const pathBodyRef = React.useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion() || !pathBodyRef.current) return;
+
+      gsap.fromTo(
+        pathBodyRef.current,
+        { opacity: 0, y: 8 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.24,
+          ease: "power2.out",
+          clearProps: "transform",
+        },
+      );
+    },
+    { dependencies: [path], scope: pathBodyRef },
+  );
 
   const cli = runner[pm];
 
@@ -368,11 +497,13 @@ export default function InstallationPage() {
         />
       </DocSection>
 
-      {path === "new" ? (
-        <NewProjectSections cli={cli} />
-      ) : (
-        <ExistingProjectSections cli={cli} />
-      )}
+      <div ref={pathBodyRef} className="flex flex-col gap-12">
+        {path === "new" ? (
+          <NewProjectSections cli={cli} />
+        ) : (
+          <ExistingProjectSections cli={cli} />
+        )}
+      </div>
 
       <DocSection id="add-a-component" title="Add a component">
         <DocSteps
@@ -396,6 +527,8 @@ export default function InstallationPage() {
       <DocSection id="verify-the-setup" title="Verify the setup">
         <VerifySetup pm={pm} />
       </DocSection>
+
+      <AppShellGuideSection cli={cli} />
 
       {path === "new" ? <OtherTemplatesSection /> : <TroubleshootingSection />}
     </DocPage>
