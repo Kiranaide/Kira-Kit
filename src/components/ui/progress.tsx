@@ -10,6 +10,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { useVisibilityPause } from "@/hooks/use-visibility-pause";
 import { cn } from "cn";
 import { Button } from "@/components/ui/button";
 
@@ -134,35 +135,16 @@ function useCompletion(complete: boolean, onComplete?: () => void) {
   }, [complete, onComplete]);
 }
 
-// Pause looped visuals without rerendering or starting work. IntersectionObserver
-// also observes a component initially mounted in a hidden demo tab when revealed.
 function useProgressActivity() {
   const ref = React.useRef<HTMLDivElement>(null);
+  const paused = useVisibilityPause(ref);
+
   React.useEffect(() => {
-    const element = ref.current;
-
-    if (!element) return;
-    let intersecting = false;
-
-    const update = () =>
-      element.style.setProperty(
-        "--progress-play-state",
-        intersecting && !document.hidden ? "running" : "paused",
-      );
-
-    const observer = new IntersectionObserver(([entry]) => {
-      intersecting = entry.isIntersecting;
-      update();
-    });
-
-    observer.observe(element);
-    document.addEventListener("visibilitychange", update);
-
-    return () => {
-      observer.disconnect();
-      document.removeEventListener("visibilitychange", update);
-    };
-  }, []);
+    ref.current?.style.setProperty(
+      "--progress-play-state",
+      paused ? "paused" : "running",
+    );
+  }, [paused]);
 
   return ref;
 }
