@@ -1268,6 +1268,18 @@ export default function HoverCardPage() {
 // Static demo metadata stays co-located and follows its source constants.
 const hoverCardPageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "fixed",
+        title: "HoverCardContent viewport now wraps children",
+        description:
+          "Fixed a bug where viewport={true} rendered an empty <PreviewCardPrimitive.Viewport /> sibling above children instead of wrapping props.children inside the viewport.",
+      },
+    ],
+  },
+  {
     version: "2.0.0",
     date: "3 November 2026",
     changes: [
