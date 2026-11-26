@@ -151,13 +151,15 @@ import {
   RouteTransition,
   NavigationProgress,
 } from "@/components/ui/route-transition"
-import { supportsViewTransitions } from "@/lib/view-transition"
+import { prefersReducedMotion } from "@/hooks/use-reduced-motion"
+import { supportsViewTransitionTypes } from "@/lib/view-transition"
 
 export const router = createRouter({
   routeTree,
   defaultPreload: "intent",
-  defaultViewTransition: {
-    types: ({ pathChanged }) => (pathChanged ? ["route-change"] : false),
+  defaultViewTransition: supportsViewTransitionTypes() && {
+    types: ({ pathChanged }) =>
+      pathChanged && !prefersReducedMotion() ? ["route-change"] : false,
   },
 })
 
@@ -165,7 +167,7 @@ export const router = createRouter({
 // CSS RouteTransition everywhere else — never stack both.
 <RouteTransition
   transitionKey={pathname}
-  variant={supportsViewTransitions() ? "none" : "fade"}
+  variant={supportsViewTransitionTypes() ? "none" : "fade"}
 >
   <Outlet />
 </RouteTransition>
@@ -444,7 +446,7 @@ export default function RouteTransitionPage() {
       <PageHeader
         title="Route Transition"
         description="Route-change motion utilities: a keyed entrance fade, a 2px top navigation progress bar, and a reduced-motion-aware View Transitions helper. Composite-only, interruptible, and quiet enough for everyday navigation."
-        version="v2.0.0"
+        version="v2.0.1"
       />
 
       <FeatureGrid
@@ -495,7 +497,7 @@ const routeTransitionPageFeatureGridFeatures = [
   {
     title: "Native crossfade first",
     description:
-      "TanStack Router's defaultViewTransition wraps path changes in document.startViewTransition, tuned to a 150ms ease-out crossfade. Unsupported browsers navigate normally.",
+      "TanStack Router uses a 150ms crossfade for path changes when transition types are supported and motion is allowed.",
   },
   {
     title: "Composite-only motion",
@@ -653,7 +655,7 @@ const routeTransitionPageAPIReferenceSections = [
     ],
   },
   {
-    title: "startViewTransition / supportsViewTransitions",
+    title: "View Transition helpers",
     props: [
       {
         prop: "update",
@@ -674,13 +676,32 @@ const routeTransitionPageAPIReferenceSections = [
         type: "() => boolean",
         default: "-",
         description:
-          "Returns true when document.startViewTransition is available and prefers-reduced-motion is not enabled.",
+          "Returns true when document.startViewTransition is available.",
+      },
+      {
+        prop: "supportsViewTransitionTypes()",
+        type: "() => boolean",
+        default: "-",
+        description:
+          "Returns true when the browser supports native transitions and their types. The router uses this to decide whether it can gate each navigation.",
       },
     ],
   },
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const routeTransitionPageChangelogEntries = [
+  {
+    version: "2.0.1",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Skip native route transitions when motion is reduced",
+        description:
+          "Updated the router integration to check the current motion preference before starting each native transition.",
+      },
+    ],
+  },
   {
     version: "2.0.0",
     date: "26 November 2026",

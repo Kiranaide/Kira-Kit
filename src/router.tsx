@@ -9,6 +9,8 @@ import { AppLayout } from "@/components/site/app-layout";
 import { RootProviders } from "@/components/site/root-providers";
 import { RoutePending } from "@/components/route/route-pending";
 import { RouteError } from "@/components/route/route-error";
+import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
+import { supportsViewTransitionTypes } from "@/lib/view-transition";
 
 // Root route: providers only, so the landing page can own the full viewport.
 const rootRoute = createRootRoute({
@@ -702,8 +704,9 @@ export const router = createRouter({
   routeTree,
   defaultPreload: "intent",
   // Crossfade only real path changes; search/hash updates stay instant.
-  defaultViewTransition: {
-    types: ({ pathChanged }) => (pathChanged ? ["route-change"] : false),
+  defaultViewTransition: supportsViewTransitionTypes() && {
+    types: ({ pathChanged }) =>
+      pathChanged && !prefersReducedMotion() ? ["route-change"] : false,
   },
 });
 

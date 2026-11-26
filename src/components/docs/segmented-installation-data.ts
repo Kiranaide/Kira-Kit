@@ -396,7 +396,7 @@ import {
   NavigationProgress,
   RouteTransition,
 } from "@/components/ui/route-transition";
-import { supportsViewTransitions } from "@/lib/view-transition";
+import { supportsViewTransitionTypes } from "@/lib/view-transition";
 
 export function RouteOutlet() {
   const pathname = useRouterState({
@@ -409,7 +409,7 @@ export function RouteOutlet() {
       <NavigationProgress active={isLoading} />
       <RouteTransition
         transitionKey={pathname}
-        variant={supportsViewTransitions() ? "none" : "fade"}
+        variant={supportsViewTransitionTypes() ? "none" : "fade"}
       >
         <Outlet />
       </RouteTransition>
@@ -488,7 +488,7 @@ export const routeTransitionChecklist = [
   {
     title: "Never double-animate",
     description:
-      "When enabling native View Transitions in your router, pass variant={supportsViewTransitions() ? 'none' : 'fade'} so browsers never blink twice.",
+      "When enabling native View Transitions in your router, pass variant={supportsViewTransitionTypes() ? 'none' : 'fade'} so browsers never blink twice.",
   },
   {
     title: "120ms anti-flash grace period",
@@ -509,7 +509,7 @@ import {
   NavigationProgress,
   RouteTransition,
 } from "@/components/ui/route-transition";
-import { supportsViewTransitions } from "@/lib/view-transition";
+import { supportsViewTransitionTypes } from "@/lib/view-transition";
 import {
   Sidebar,
   SidebarContent,
@@ -561,7 +561,7 @@ export function AppShell({
           <main className="flex-1 overflow-y-auto">
             <RouteTransition
               transitionKey={pathname}
-              variant={supportsViewTransitions() ? "none" : "fade"}
+              variant={supportsViewTransitionTypes() ? "none" : "fade"}
             >
               {children}
             </RouteTransition>
