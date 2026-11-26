@@ -1,41 +1,44 @@
 import type { ComponentProps as ReactComponentProps } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
+  IconCheck,
+  IconCopy,
+  IconCurrencyDollar,
+  IconEye,
+  IconEyeOff,
+  IconMail,
+  IconSearch,
+  IconX,
+} from "@tabler/icons-react";
+import {
+  APIReference,
+  Changelog,
+  ComponentPage,
+  DemoTabs,
+  DemoWrapper,
+  FeatureGrid,
+  KeyboardShortcuts,
+  PageHeader,
+  UsageBlock,
+} from "@/components/docs";
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
   InputGroupText,
+  InputGroupTextarea,
 } from "@/components/ui/input-group";
 import { KiraSelect } from "@/components/ui/select";
-import {
-  IconSearch,
-  IconEye,
-  IconCopy,
-  IconMail,
-  IconCurrencyDollar,
-  IconX,
-} from "@tabler/icons-react";
-import {
-  ComponentPage,
-  PageHeader,
-  FeatureGrid,
-  DemoWrapper,
-  DemoTabs,
-  UsageBlock,
-  APIReference,
-  Changelog,
-  KeyboardShortcuts,
-} from "@/components/docs";
 
 function IconDemo() {
   return (
     <div className="max-w-sm">
       <InputGroup>
         <InputGroupAddon align="inline-start">
-          <IconSearch className="w-4 h-4" />
+          <IconSearch className="size-4" aria-hidden="true" />
         </InputGroupAddon>
-        <InputGroupInput placeholder="Search..." />
+        <InputGroupInput placeholder="Search..." aria-label="Search" />
       </InputGroup>
     </div>
   );
@@ -50,9 +53,9 @@ import { IconSearch } from "@tabler/icons-react"
 
 <InputGroup>
   <InputGroupAddon align="inline-start">
-    <IconSearch className="w-4 h-4" />
+    <IconSearch className="size-4" aria-hidden="true" />
   </InputGroupAddon>
-  <InputGroupInput placeholder="Search..." />
+  <InputGroupInput placeholder="Search..." aria-label="Search" />
 </InputGroup>`;
 
 function TextDemo() {
@@ -62,13 +65,13 @@ function TextDemo() {
         <InputGroupAddon align="inline-start">
           <InputGroupText>https://</InputGroupText>
         </InputGroupAddon>
-        <InputGroupInput placeholder="example.com" />
+        <InputGroupInput placeholder="example.com" aria-label="Website URL" />
       </InputGroup>
       <InputGroup>
         <InputGroupAddon align="inline-start">
-          <IconMail className="w-4 h-4" />
+          <IconMail className="size-4" aria-hidden="true" />
         </InputGroupAddon>
-        <InputGroupInput placeholder="you" />
+        <InputGroupInput placeholder="you" aria-label="Email username" />
         <InputGroupAddon align="inline-end">
           <InputGroupText>@company.com</InputGroupText>
         </InputGroupAddon>
@@ -89,36 +92,65 @@ import { IconMail } from "@tabler/icons-react"
   <InputGroupAddon align="inline-start">
     <InputGroupText>https://</InputGroupText>
   </InputGroupAddon>
-  <InputGroupInput placeholder="example.com" />
+  <InputGroupInput placeholder="example.com" aria-label="Website URL" />
 </InputGroup>
 
 <InputGroup>
   <InputGroupAddon align="inline-start">
-    <IconMail className="w-4 h-4" />
+    <IconMail className="size-4" aria-hidden="true" />
   </InputGroupAddon>
-  <InputGroupInput placeholder="you" />
+  <InputGroupInput placeholder="you" aria-label="Email username" />
   <InputGroupAddon align="inline-end">
     <InputGroupText>@company.com</InputGroupText>
   </InputGroupAddon>
 </InputGroup>`;
 
 function ButtonDemo() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
+  };
+
   return (
     <div className="max-w-sm space-y-3">
       <InputGroup>
-        <InputGroupInput placeholder="Enter password" type="password" />
+        <InputGroupInput
+          placeholder="Enter password"
+          type={showPassword ? "text" : "password"}
+          aria-label="Password"
+        />
         <InputGroupAddon align="inline-end">
-          <InputGroupButton>
-            <IconEye className="w-4 h-4" />
+          <InputGroupButton
+            size="icon-xs"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-pressed={showPassword}
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? (
+              <IconEyeOff className="size-4" aria-hidden="true" />
+            ) : (
+              <IconEye className="size-4" aria-hidden="true" />
+            )}
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
       <InputGroup>
-        <InputGroupInput placeholder="Copy this text" />
+        <InputGroupInput
+          defaultValue="https://kira-kit.dev/r/input-group.json"
+          readOnly
+          aria-label="Registry URL"
+        />
         <InputGroupAddon align="inline-end">
-          <InputGroupButton>
-            <IconCopy className="w-4 h-4" />
-            Copy
+          <InputGroupButton onClick={handleCopy}>
+            {copied ? (
+              <IconCheck className="size-4" aria-hidden="true" />
+            ) : (
+              <IconCopy className="size-4" aria-hidden="true" />
+            )}
+            {copied ? "Copied" : "Copy"}
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
@@ -126,64 +158,57 @@ function ButtonDemo() {
   );
 }
 
-const buttonCode = `import {
+const buttonCode = `import { useState } from "react"
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group"
-import { IconEye, IconCopy } from "@tabler/icons-react"
+import { IconCheck, IconCopy, IconEye, IconEyeOff } from "@tabler/icons-react"
 
-<InputGroup>
-  <InputGroupInput placeholder="Enter password" type="password" />
-  <InputGroupAddon align="inline-end">
-    <InputGroupButton>
-      <IconEye className="w-4 h-4" />
-    </InputGroupButton>
-  </InputGroupAddon>
-</InputGroup>
+export function ButtonDemo() {
+  const [showPassword, setShowPassword] = useState(false)
+  const [copied, setCopied] = useState(false)
 
-<InputGroup>
-  <InputGroupInput placeholder="Copy this text" />
-  <InputGroupAddon align="inline-end">
-    <InputGroupButton>
-      <IconCopy className="w-4 h-4" />
-      Copy
-    </InputGroupButton>
-  </InputGroupAddon>
-</InputGroup>`;
-
-const usageCode = `import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-  InputGroupText,
-} from "@/components/ui/input-group"
-import { IconSearch } from "@tabler/icons-react"
-
-export function MyInputGroup() {
   return (
-    <div className="space-y-4">
+    <div className="max-w-sm space-y-3">
       <InputGroup>
-        <InputGroupAddon align="inline-start">
-          <IconSearch className="w-4 h-4" />
-        </InputGroupAddon>
-        <InputGroupInput placeholder="Search..." />
-      </InputGroup>
-
-      <InputGroup>
-        <InputGroupAddon align="inline-start">
-          <InputGroupText>https://</InputGroupText>
-        </InputGroupAddon>
-        <InputGroupInput placeholder="example.com" />
-      </InputGroup>
-
-      <InputGroup>
-        <InputGroupInput placeholder="Password" type="password" />
+        <InputGroupInput
+          placeholder="Enter password"
+          type={showPassword ? "text" : "password"}
+          aria-label="Password"
+        />
         <InputGroupAddon align="inline-end">
-          <InputGroupButton>
-            <IconEye className="w-4 h-4" />
+          <InputGroupButton
+            size="icon-xs"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-pressed={showPassword}
+            onClick={() => setShowPassword((prev) => !prev)}
+          >
+            {showPassword ? (
+              <IconEyeOff className="size-4" aria-hidden="true" />
+            ) : (
+              <IconEye className="size-4" aria-hidden="true" />
+            )}
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
+
+      <InputGroup>
+        <InputGroupInput
+          defaultValue="https://kira-kit.dev/r/input-group.json"
+          readOnly
+          aria-label="Registry URL"
+        />
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton onClick={() => setCopied(true)}>
+            {copied ? (
+              <IconCheck className="size-4" aria-hidden="true" />
+            ) : (
+              <IconCopy className="size-4" aria-hidden="true" />
+            )}
+            {copied ? "Copied" : "Copy"}
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
@@ -202,9 +227,6 @@ function RecipesDemo() {
   const [note, setNote] = useState("");
   const [unit, setUnit] = useState("usd");
   const [undoValue, setUndoValue] = useState("");
-
-  // Clear-with-undo recipe: stash the previous value, expire after 5s,
-  // pause the countdown while the strip is hovered or focused.
   const [clearedValue, setClearedValue] = useState<string | null>(null);
   const undoTimerRef = useRef<number | null>(null);
   const undoRemainingRef = useRef(0);
@@ -306,13 +328,13 @@ import { IconSearch, IconX, IconCurrencyDollar } from "@tabler/icons-react"
 // Leading icon + clearable
 <InputGroup>
   <InputGroupAddon align="inline-start">
-    <IconSearch className="w-4 h-4" />
+    <IconSearch className="size-4" aria-hidden="true" />
   </InputGroupAddon>
   <InputGroupInput value={q} onChange={(e) => setQ(e.target.value)} />
   {q.length > 0 && (
     <InputGroupAddon align="inline-end">
       <InputGroupButton size="icon-xs" aria-label="Clear input" onClick={() => setQ("")}>
-        <IconX className="size-3.5" />
+        <IconX className="size-3" aria-hidden="true" />
       </InputGroupButton>
     </InputGroupAddon>
   )}
@@ -321,7 +343,7 @@ import { IconSearch, IconX, IconCurrencyDollar } from "@tabler/icons-react"
 // Amount with inline unit selector
 <InputGroup>
   <InputGroupAddon align="inline-start">
-    <IconCurrencyDollar className="w-4 h-4" />
+    <IconCurrencyDollar className="size-4" aria-hidden="true" />
   </InputGroupAddon>
   <InputGroupInput placeholder="0.00" inputMode="decimal" />
   <InputGroupAddon align="inline-end">
@@ -332,7 +354,7 @@ import { IconSearch, IconX, IconCurrencyDollar } from "@tabler/icons-react"
       size="sm"
       variant="ghost"
       aria-label="Select unit"
-      className="h-6 px-1.5 text-xs"
+      className="h-6 px-2 text-xs"
     />
   </InputGroupAddon>
 </InputGroup>
@@ -350,36 +372,218 @@ import { IconSearch, IconX, IconCurrencyDollar } from "@tabler/icons-react"
   </InputGroupAddon>
 </InputGroup>`;
 
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <div className="space-y-1">
+        <p className="text-xs font-medium text-muted-foreground">
+          Long prefix, suffix, and unbroken value
+        </p>
+        <InputGroup>
+          <InputGroupAddon align="inline-start">
+            <InputGroupText>https://workspace.</InputGroupText>
+          </InputGroupAddon>
+          <InputGroupInput
+            defaultValue="enterprise-international-deployment-subpath"
+            aria-label="Workspace endpoint"
+          />
+          <InputGroupAddon align="inline-end">
+            <InputGroupText>.internal</InputGroupText>
+          </InputGroupAddon>
+        </InputGroup>
+      </div>
+
+      <div className="space-y-1">
+        <p className="text-xs font-medium text-muted-foreground">
+          Empty value with placeholder
+        </p>
+        <InputGroup>
+          <InputGroupAddon align="inline-start">
+            <IconSearch className="size-4" aria-hidden="true" />
+          </InputGroupAddon>
+          <InputGroupInput
+            defaultValue=""
+            placeholder="No filter applied"
+            aria-label="Empty filter"
+          />
+        </InputGroup>
+      </div>
+
+      <div className="space-y-1">
+        <p className="text-xs font-medium text-muted-foreground">
+          Disabled state
+        </p>
+        <InputGroup data-disabled="true">
+          <InputGroupAddon align="inline-start">
+            <IconMail className="size-4" aria-hidden="true" />
+          </InputGroupAddon>
+          <InputGroupInput
+            disabled
+            defaultValue="locked@company.com"
+            aria-label="Locked email"
+          />
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton disabled size="xs">
+              Verify
+            </InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+      </div>
+
+      <div className="space-y-1">
+        <p className="text-xs font-medium text-muted-foreground">
+          Textarea with block-end bar
+        </p>
+        <InputGroup>
+          <InputGroupTextarea
+            rows={2}
+            placeholder="Add deployment notes..."
+            aria-label="Deployment notes"
+          />
+          <InputGroupAddon
+            align="block-end"
+            className="justify-between border-t"
+          >
+            <InputGroupText className="text-xs">Markdown</InputGroupText>
+            <InputGroupButton size="xs">Save</InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+      </div>
+    </div>
+  );
+}
+
+const stressCode = `import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+  InputGroupTextarea,
+} from "@/components/ui/input-group"
+import { IconMail, IconSearch } from "@tabler/icons-react"
+
+<div className="max-w-xs space-y-4">
+  <InputGroup>
+    <InputGroupAddon align="inline-start">
+      <InputGroupText>https://workspace.</InputGroupText>
+    </InputGroupAddon>
+    <InputGroupInput
+      defaultValue="enterprise-international-deployment-subpath"
+      aria-label="Workspace endpoint"
+    />
+    <InputGroupAddon align="inline-end">
+      <InputGroupText>.internal</InputGroupText>
+    </InputGroupAddon>
+  </InputGroup>
+
+  <InputGroup>
+    <InputGroupAddon align="inline-start">
+      <IconSearch className="size-4" aria-hidden="true" />
+    </InputGroupAddon>
+    <InputGroupInput defaultValue="" placeholder="No filter applied" aria-label="Empty filter" />
+  </InputGroup>
+
+  <InputGroup data-disabled="true">
+    <InputGroupAddon align="inline-start">
+      <IconMail className="size-4" aria-hidden="true" />
+    </InputGroupAddon>
+    <InputGroupInput disabled defaultValue="locked@company.com" aria-label="Locked email" />
+    <InputGroupAddon align="inline-end">
+      <InputGroupButton disabled size="xs">Verify</InputGroupButton>
+    </InputGroupAddon>
+  </InputGroup>
+
+  <InputGroup>
+    <InputGroupTextarea rows={2} placeholder="Add deployment notes..." aria-label="Deployment notes" />
+    <InputGroupAddon align="block-end" className="justify-between border-t">
+      <InputGroupText className="text-xs">Markdown</InputGroupText>
+      <InputGroupButton size="xs">Save</InputGroupButton>
+    </InputGroupAddon>
+  </InputGroup>
+</div>`;
+
+const usageCode = `import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group"
+import { IconEye, IconSearch } from "@tabler/icons-react"
+
+export function MyInputGroup() {
+  return (
+    <div className="space-y-4">
+      <InputGroup>
+        <InputGroupAddon align="inline-start">
+          <IconSearch className="size-4" aria-hidden="true" />
+        </InputGroupAddon>
+        <InputGroupInput placeholder="Search..." aria-label="Search" />
+      </InputGroup>
+
+      <InputGroup>
+        <InputGroupAddon align="inline-start">
+          <InputGroupText>https://</InputGroupText>
+        </InputGroupAddon>
+        <InputGroupInput placeholder="example.com" aria-label="Website" />
+      </InputGroup>
+
+      <InputGroup>
+        <InputGroupInput placeholder="Password" type="password" aria-label="Password" />
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton size="icon-xs" aria-label="Toggle password visibility">
+            <IconEye className="size-4" aria-hidden="true" />
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
+    </div>
+  )
+}`;
+
 export default function InputGroupPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Input Group"
         description="Input with addons, icons, and buttons attached."
-        version="v2.2"
+        version="v2.3.0"
       />
 
-      <FeatureGrid features={inputGroupPageFeatureGridFeatures} />
+      <FeatureGrid
+        features={inputGroupPageFeatures}
+        description="Compound primitives for icons, static affixes, inline actions, and textarea toolbars."
+      />
 
-      <DemoTabs tabs={inputGroupPageDemoTabsTabs} />
+      <DemoTabs defaultValue="icon" tabs={inputGroupPageDemoTabs} />
+
+      <KeyboardShortcuts
+        shortcuts={inputGroupPageShortcuts}
+        description="Keyboard navigation across inputs, addon buttons, and inline selects."
+      />
 
       <UsageBlock
         code={usageCode}
         title="Usage"
-        description="Import and use the Input Group components together."
+        description="Import and compose the Input Group primitives together."
+        notes={inputGroupPageUsageNotes}
       />
 
-      <KeyboardShortcuts shortcuts={inputGroupPageKeyboardShortcutsShortcuts} />
+      <APIReference
+        sections={inputGroupPageAPISections}
+        description="Props, types, and defaults for every exported Input Group part."
+      />
 
-      <APIReference sections={inputGroupPageAPIReferenceSections} />
-
-      <Changelog entries={inputGroupPageChangelogEntries} />
+      <Changelog
+        entries={inputGroupPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Input Group."
+      />
     </ComponentPage>
   );
 }
 
-// Static demo metadata stays co-located and follows its source constants.
-const inputGroupPageFeatureGridFeatures = [
+const inputGroupPageFeatures = [
   {
     title: "Flexible Alignment",
     description:
@@ -397,7 +601,7 @@ const inputGroupPageFeatureGridFeatures = [
   },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const inputGroupPageDemoTabsTabs = [
+const inputGroupPageDemoTabs = [
   {
     value: "icon",
     label: "Icon",
@@ -450,23 +654,54 @@ const inputGroupPageDemoTabsTabs = [
       </DemoWrapper>
     ),
   },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long affixes and values, empty state, disabled controls, and block-end textarea bars in a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
 ] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const inputGroupPageKeyboardShortcutsShortcuts = [
-  { keys: "Tab", description: "Move focus into the group's input" },
+const inputGroupPageShortcuts = [
+  {
+    keys: "Tab",
+    description: "Move focus into the group's input or addon button.",
+  },
   {
     keys: "Shift + Tab",
-    description: "Move focus to the previous control",
+    description: "Move focus to the previous control.",
   },
-  { keys: "Enter", description: "Open or confirm the unit Select" },
+  {
+    keys: "Enter",
+    description: "Activate focused addon button or open inline Select.",
+  },
   {
     keys: "Arrow Up/Down",
-    description: "Navigate unit Select options",
+    description:
+      "Navigate inline Select options when an addon renders KiraSelect.",
   },
-  { keys: "Escape", description: "Close the unit Select popup" },
+  { keys: "Escape", description: "Close an open inline Select popup." },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-const inputGroupPageAPIReferenceSections = [
+const inputGroupPageUsageNotes = [
+  {
+    label: "Addon alignment",
+    body: 'Use "inline-start" and "inline-end" for single-line inputs, or "block-start" and "block-end" to stack header and footer bars around InputGroupTextarea.',
+  },
+  {
+    label: "Click-to-focus",
+    body: "Clicking non-interactive text or icon areas inside InputGroupAddon automatically focuses the sibling input or textarea without interfering with addon buttons.",
+  },
+] satisfies NonNullable<ReactComponentProps<typeof UsageBlock>["notes"]>;
+
+const inputGroupPageAPISections = [
   {
     title: "InputGroup",
     props: [
@@ -523,9 +758,10 @@ const inputGroupPageAPIReferenceSections = [
     props: [
       {
         prop: "...props",
-        type: "React.ComponentProps<'input'>",
+        type: "Omit<React.ComponentProps<'input'>, 'size'>",
         default: "-",
-        description: "All standard HTML input attributes.",
+        description:
+          "Standard HTML input attributes forwarded to Base UI Input.",
       },
       {
         prop: "className",
@@ -580,7 +816,7 @@ const inputGroupPageChangelogEntries = [
         type: "changed",
         title: "Shell height matches the default control",
         description:
-          "InputGroup shell h-8 → h-9 so it sits flush beside default Button/Input/Select; inner input padding px-2.5 → px-3. Compact addon buttons keep their in-control affordance sizing.",
+          "InputGroup shell height increased from h-8 to h-9 so it sits flush beside default Button/Input/Select, and inner input horizontal padding increased to px-3. Compact addon buttons keep their in-control affordance sizing.",
       },
     ],
   },
@@ -666,10 +902,11 @@ function RecipesLeadingIconClearableSection({
       </p>
       <InputGroup>
         <InputGroupAddon align="inline-start">
-          <IconSearch className="w-4 h-4" />
+          <IconSearch className="size-4" aria-hidden="true" />
         </InputGroupAddon>
         <InputGroupInput
           placeholder="Search..."
+          aria-label="Clearable search"
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
@@ -680,7 +917,7 @@ function RecipesLeadingIconClearableSection({
               aria-label="Clear input"
               onClick={() => setNote("")}
             >
-              <IconX className="size-3.5" />
+              <IconX className="size-3" aria-hidden="true" />
             </InputGroupButton>
           </InputGroupAddon>
         )}
@@ -709,11 +946,12 @@ function RecipesAmountWithInlineUnitSelectorSection({
       </p>
       <InputGroup>
         <InputGroupAddon align="inline-start">
-          <IconCurrencyDollar className="w-4 h-4" />
+          <IconCurrencyDollar className="size-4" aria-hidden="true" />
         </InputGroupAddon>
         <InputGroupInput
           placeholder="0.00"
           inputMode="decimal"
+          aria-label="Amount"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
@@ -725,7 +963,7 @@ function RecipesAmountWithInlineUnitSelectorSection({
             size="sm"
             variant="ghost"
             aria-label="Select unit"
-            className="h-6 px-1.5 text-xs"
+            className="h-6 px-2 text-xs"
           />
         </InputGroupAddon>
       </InputGroup>
@@ -751,6 +989,7 @@ function RecipesLeadingTextCharacterCounterSection({
         </InputGroupAddon>
         <InputGroupInput
           maxLength={15}
+          aria-label="Handle"
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
@@ -788,10 +1027,11 @@ function RecipesClearWithUndo5sHoverSection({
       </p>
       <InputGroup>
         <InputGroupAddon align="inline-start">
-          <IconSearch className="w-4 h-4" />
+          <IconSearch className="size-4" aria-hidden="true" />
         </InputGroupAddon>
         <InputGroupInput
           placeholder="Type, then clear…"
+          aria-label="Clearable input with undo"
           value={undoValue}
           onChange={(e) => setUndoValue(e.target.value)}
         />
@@ -802,7 +1042,7 @@ function RecipesClearWithUndo5sHoverSection({
               aria-label="Clear input"
               onClick={handleUndoClear}
             >
-              <IconX className="size-3.5" />
+              <IconX className="size-3" aria-hidden="true" />
             </InputGroupButton>
           </InputGroupAddon>
         )}
@@ -813,7 +1053,7 @@ function RecipesClearWithUndo5sHoverSection({
           onMouseLeave={scheduleUndoExpiry}
           onFocus={pauseUndoTimer}
           onBlur={scheduleUndoExpiry}
-          className="block flex items-center justify-between gap-2 rounded-md border bg-muted/50 px-2 py-1 text-xs text-muted-foreground"
+          className="flex items-center justify-between gap-2 rounded-md border bg-muted/50 px-2 py-1 text-xs text-muted-foreground"
         >
           <output>Cleared</output>
           <button

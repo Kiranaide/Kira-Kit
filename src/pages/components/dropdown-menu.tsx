@@ -1,5 +1,3 @@
-"use client";
-
 import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
@@ -20,7 +18,6 @@ import {
   IconDotsVertical,
   IconRocket,
 } from "@tabler/icons-react";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,14 +61,20 @@ function BasicDemo() {
           <DropdownMenuGroup>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem icon={<IconUser className="w-4 h-4" />}>
+            <DropdownMenuItem
+              icon={<IconUser aria-hidden="true" className="h-4 w-4" />}
+            >
               Profile
             </DropdownMenuItem>
-            <DropdownMenuItem icon={<IconSettings className="w-4 h-4" />}>
+            <DropdownMenuItem
+              icon={<IconSettings aria-hidden="true" className="h-4 w-4" />}
+            >
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem icon={<IconLogout className="w-4 h-4" />}>
+            <DropdownMenuItem
+              icon={<IconLogout aria-hidden="true" className="h-4 w-4" />}
+            >
               Logout
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -103,14 +106,14 @@ export function BasicDropdownDemo() {
         <DropdownMenuGroup>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem icon={<IconUser className="w-4 h-4" />}>
+          <DropdownMenuItem icon={<IconUser aria-hidden="true" className="h-4 w-4" />}>
             Profile
           </DropdownMenuItem>
-          <DropdownMenuItem icon={<IconSettings className="w-4 h-4" />}>
+          <DropdownMenuItem icon={<IconSettings aria-hidden="true" className="h-4 w-4" />}>
             Settings
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem icon={<IconLogout className="w-4 h-4" />}>
+          <DropdownMenuItem icon={<IconLogout aria-hidden="true" className="h-4 w-4" />}>
             Logout
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -127,7 +130,7 @@ function IconTriggerDemo() {
           aria-label="Open actions"
           render={<Button variant="ghost" size="icon" />}
         >
-          <IconDotsVertical className="w-4 h-4" />
+          <IconDotsVertical aria-hidden="true" className="h-4 w-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem>Edit</DropdownMenuItem>
@@ -136,7 +139,7 @@ function IconTriggerDemo() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
-            icon={<IconTrash className="w-4 h-4" />}
+            icon={<IconTrash aria-hidden="true" className="h-4 w-4" />}
           >
             Delete
           </DropdownMenuItem>
@@ -163,7 +166,7 @@ export function IconTriggerDemo() {
         aria-label="Open actions"
         render={<Button variant="ghost" size="icon" />}
       >
-        <IconDotsVertical className="w-4 h-4" />
+        <IconDotsVertical aria-hidden="true" className="h-4 w-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem>Edit</DropdownMenuItem>
@@ -172,7 +175,7 @@ export function IconTriggerDemo() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           variant="destructive"
-          icon={<IconTrash className="w-4 h-4" />}
+          icon={<IconTrash aria-hidden="true" className="h-4 w-4" />}
         >
           Delete
         </DropdownMenuItem>
@@ -190,14 +193,23 @@ function ShortcutsDemo() {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           <DropdownMenuGroup>
-            <DropdownMenuItem icon={<IconPlus />} shortcut="⌘N">
+            <DropdownMenuItem
+              icon={<IconPlus aria-hidden="true" />}
+              shortcut="⌘N"
+            >
               New File
             </DropdownMenuItem>
-            <DropdownMenuItem icon={<IconCopy />} shortcut="⌘D">
+            <DropdownMenuItem
+              icon={<IconCopy aria-hidden="true" />}
+              shortcut="⌘D"
+            >
               Duplicate
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem icon={<IconDownload />} shortcut="⌘S">
+            <DropdownMenuItem
+              icon={<IconDownload aria-hidden="true" />}
+              shortcut="⌘S"
+            >
               Save
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -226,14 +238,14 @@ export function ShortcutsDemo() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuGroup>
-          <DropdownMenuItem icon={<IconPlus />} shortcut="⌘N">
+          <DropdownMenuItem icon={<IconPlus aria-hidden="true" />} shortcut="⌘N">
             New File
           </DropdownMenuItem>
-          <DropdownMenuItem icon={<IconCopy />} shortcut="⌘D">
+          <DropdownMenuItem icon={<IconCopy aria-hidden="true" />} shortcut="⌘D">
             Duplicate
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem icon={<IconDownload />} shortcut="⌘S">
+          <DropdownMenuItem icon={<IconDownload aria-hidden="true" />} shortcut="⌘S">
             Save
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -258,21 +270,21 @@ function CheckboxDemo() {
             <DropdownMenuCheckboxItem
               checked={checkbox1}
               onCheckedChange={setCheckbox1}
-              icon={<IconCheck />}
+              icon={<IconCheck aria-hidden="true" />}
             >
               Show Toolbar
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={checkbox2}
               onCheckedChange={setCheckbox2}
-              icon={<IconCheck />}
+              icon={<IconCheck aria-hidden="true" />}
             >
               Show Sidebar
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={true}
               onCheckedChange={() => {}}
-              icon={<IconCheck />}
+              icon={<IconCheck aria-hidden="true" />}
               disabled
             >
               Disabled Option
@@ -290,7 +302,6 @@ import {
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
@@ -309,26 +320,24 @@ export function CheckboxDemo() {
       <DropdownMenuContent className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel>View Options</DropdownMenuLabel>
-          <DropdownMenuSeparator />
           <DropdownMenuCheckboxItem
             checked={checkbox1}
             onCheckedChange={setCheckbox1}
-            icon={<IconCheck />}
+            icon={<IconCheck aria-hidden="true" />}
           >
             Show Toolbar
           </DropdownMenuCheckboxItem>
           <DropdownMenuCheckboxItem
             checked={checkbox2}
             onCheckedChange={setCheckbox2}
-            icon={<IconCheck />}
+            icon={<IconCheck aria-hidden="true" />}
           >
             Show Sidebar
           </DropdownMenuCheckboxItem>
-          <DropdownMenuSeparator />
           <DropdownMenuCheckboxItem
             checked={true}
             onCheckedChange={() => {}}
-            icon={<IconCheck />}
+            icon={<IconCheck aria-hidden="true" />}
             disabled
           >
             Disabled Option
@@ -357,19 +366,21 @@ function RadioDemo() {
             >
               <DropdownMenuRadioItem
                 value="light"
-                icon={<IconSun className="w-4 h-4" />}
+                icon={<IconSun aria-hidden="true" className="h-4 w-4" />}
               >
                 Light
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem
                 value="dark"
-                icon={<IconMoon className="w-4 h-4" />}
+                icon={<IconMoon aria-hidden="true" className="h-4 w-4" />}
               >
                 Dark
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem
                 value="system"
-                icon={<IconDeviceDesktop className="w-4 h-4" />}
+                icon={
+                  <IconDeviceDesktop aria-hidden="true" className="h-4 w-4" />
+                }
               >
                 System
               </DropdownMenuRadioItem>
@@ -388,7 +399,6 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
@@ -406,27 +416,17 @@ export function RadioDemo() {
       <DropdownMenuContent className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Appearance</DropdownMenuLabel>
-          <DropdownMenuSeparator />
           <DropdownMenuRadioGroup
             value={radioValue}
             onValueChange={setRadioValue}
           >
-            <DropdownMenuRadioItem
-              value="light"
-              icon={<IconSun className="w-4 h-4" />}
-            >
+            <DropdownMenuRadioItem value="light" icon={<IconSun aria-hidden="true" className="h-4 w-4" />}>
               Light
             </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem
-              value="dark"
-              icon={<IconMoon className="w-4 h-4" />}
-            >
+            <DropdownMenuRadioItem value="dark" icon={<IconMoon aria-hidden="true" className="h-4 w-4" />}>
               Dark
             </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem
-              value="system"
-              icon={<IconDeviceDesktop className="w-4 h-4" />}
-            >
+            <DropdownMenuRadioItem value="system" icon={<IconDeviceDesktop aria-hidden="true" className="h-4 w-4" />}>
               System
             </DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
@@ -448,7 +448,9 @@ function SubmenuDemo() {
           <DropdownMenuItem>Analytics</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger icon={<IconSettings className="w-4 h-4" />}>
+            <DropdownMenuSubTrigger
+              icon={<IconSettings aria-hidden="true" className="h-4 w-4" />}
+            >
               Settings
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
@@ -468,7 +470,7 @@ function SubmenuDemo() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
-            icon={<IconLogout className="w-4 h-4" />}
+            icon={<IconLogout aria-hidden="true" className="h-4 w-4" />}
           >
             Logout
           </DropdownMenuItem>
@@ -479,11 +481,10 @@ function SubmenuDemo() {
 }
 
 const submenuCode = `import {
-  DropdownMenuGroup,
-  DropdownMenuPortal,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -501,34 +502,34 @@ export function SubmenuDemo() {
         More Options
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64">
-        <DropdownMenuGroup>
-          <DropdownMenuItem>Dashboard</DropdownMenuItem>
-          <DropdownMenuItem>Analytics</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger icon={<IconSettings className="w-4 h-4" />}>
-              Settings
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuLabel>Account</DropdownMenuLabel>
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Billing</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel>Security</DropdownMenuLabel>
-                <DropdownMenuItem>Password</DropdownMenuItem>
-                <DropdownMenuItem>2FA</DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            variant="destructive"
-            icon={<IconLogout className="w-4 h-4" />}
-          >
-            Logout
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+        <DropdownMenuItem>Dashboard</DropdownMenuItem>
+        <DropdownMenuItem>Analytics</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger icon={<IconSettings aria-hidden="true" className="h-4 w-4" />}>
+            Settings
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Account</DropdownMenuLabel>
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Billing</DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>Security</DropdownMenuLabel>
+              <DropdownMenuItem>Password</DropdownMenuItem>
+              <DropdownMenuItem>2FA</DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          variant="destructive"
+          icon={<IconLogout aria-hidden="true" className="h-4 w-4" />}
+        >
+          Logout
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -578,9 +579,7 @@ export function LoadingDemo() {
 
   const handleAsyncAction = () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
+    setTimeout(() => setIsLoading(false), 2000);
   };
 
   return (
@@ -628,9 +627,9 @@ function BackdropDemo() {
 }
 
 const backdropCode = `import {
-  DropdownMenuGroup,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -647,18 +646,15 @@ export function BackdropDemo() {
       <DropdownMenuContent showBackdrop className="w-72">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Confirm Action</DropdownMenuLabel>
-          <DropdownMenuSeparator />
           <DropdownMenuItem>
             This menu has a backdrop overlay. Click outside to close.
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <div className="flex justify-end gap-2 p-1">
-            <Button variant="ghost" size="sm">
-              Cancel
-            </Button>
-            <Button size="sm">Confirm</Button>
-          </div>
         </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <div className="flex justify-end gap-2 p-1">
+          <Button variant="ghost" size="sm">Cancel</Button>
+          <Button size="sm">Confirm</Button>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -719,16 +715,20 @@ function WrapperDemo() {
         trigger={<Button variant="outline">Quick Actions</Button>}
         contentProps={{ className: "w-56" }}
       >
-        <DropdownMenuItem icon={<IconUser className="w-4 h-4" />}>
+        <DropdownMenuItem
+          icon={<IconUser aria-hidden="true" className="h-4 w-4" />}
+        >
           Profile
         </DropdownMenuItem>
-        <DropdownMenuItem icon={<IconSettings className="w-4 h-4" />}>
+        <DropdownMenuItem
+          icon={<IconSettings aria-hidden="true" className="h-4 w-4" />}
+        >
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           variant="destructive"
-          icon={<IconLogout className="w-4 h-4" />}
+          icon={<IconLogout aria-hidden="true" className="h-4 w-4" />}
         >
           Logout
         </DropdownMenuItem>
@@ -751,16 +751,16 @@ export function WrapperDemo() {
       trigger={<Button variant="outline">Quick Actions</Button>}
       contentProps={{ className: "w-56" }}
     >
-      <DropdownMenuItem icon={<IconUser className="w-4 h-4" />}>
+      <DropdownMenuItem icon={<IconUser aria-hidden="true" className="h-4 w-4" />}>
         Profile
       </DropdownMenuItem>
-      <DropdownMenuItem icon={<IconSettings className="w-4 h-4" />}>
+      <DropdownMenuItem icon={<IconSettings aria-hidden="true" className="h-4 w-4" />}>
         Settings
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem
         variant="destructive"
-        icon={<IconLogout className="w-4 h-4" />}
+        icon={<IconLogout aria-hidden="true" className="h-4 w-4" />}
       >
         Logout
       </DropdownMenuItem>
@@ -835,11 +835,13 @@ import { Button } from "@/components/ui/button";
 
 export function SearchDemo() {
   const [selected, setSelected] = useState("No action selected.");
+
   return (
     <>
       <KiraDropdownMenu
         trigger={<Button variant="outline">Search actions</Button>}
         searchable
+        searchLabel="Filter actions"
         items={[
           {
             type: "action",
@@ -855,7 +857,7 @@ export function SearchDemo() {
           },
         ]}
       />
-      <p role="status">{selected}</p>
+      <output className="block text-xs text-muted-foreground">{selected}</output>
     </>
   );
 }`;
@@ -869,8 +871,6 @@ function SharedRowsDemo() {
   ]);
 
   const [resolved, setResolved] = React.useState("none");
-
-  // One stable handle: one shared popup, N triggers with per-row payloads.
   const [handle] = React.useState(() => createDropdownMenuHandle<Row>());
 
   const items = React.useCallback(
@@ -881,17 +881,7 @@ function SharedRowsDemo() {
         label: `Archive ${row.name}`,
         variant: "destructive",
         onSelect: async ({ signal }) => {
-          await new Promise<void>((resolve) => {
-            const timer = setTimeout(resolve, 2000);
-            signal.addEventListener(
-              "abort",
-              () => {
-                clearTimeout(timer);
-                resolve();
-              },
-              { once: true },
-            );
-          });
+          await waitForDemoAction(signal, 2000);
 
           if (signal.aborted) return;
           setRows((current) => current.filter((item) => item.id !== row.id));
@@ -910,18 +900,17 @@ function SharedRowsDemo() {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <p className="text-xs text-muted-foreground" aria-live="polite">
+      <output className="block text-xs text-muted-foreground">
         Last resolved: {resolved}
-      </p>
+      </output>
       <div className="flex items-center justify-center gap-2">
         {rows.map((row) => (
-          <React.Fragment key={row.id}>
-            <DropdownMenuTrigger
-              handle={handle}
-              payload={row}
-              render={<Button variant="outline">{row.name}</Button>}
-            />
-          </React.Fragment>
+          <DropdownMenuTrigger
+            key={row.id}
+            handle={handle}
+            payload={row}
+            render={<Button variant="outline">{row.name}</Button>}
+          />
         ))}
       </div>
       <KiraDropdownMenu
@@ -948,8 +937,6 @@ export function SharedRowsDemo() {
     { id: "atlas", name: "Atlas" },
     { id: "boreal", name: "Boreal" },
   ]);
-
-  // One stable handle: one shared popup, N triggers with payloads.
   const [handle] = useState(() => createDropdownMenuHandle<Row>());
 
   return (
@@ -981,7 +968,6 @@ export function SharedRowsDemo() {
 
 function AsyncActionsDemo() {
   const [log, setLog] = React.useState<AsyncDemoLogEntry[]>([]);
-
   const publishAttempts = React.useRef(0);
 
   const items = React.useMemo<readonly MenuItemData[]>(
@@ -990,9 +976,8 @@ function AsyncActionsDemo() {
         type: "action",
         id: "export",
         label: "Export report",
-        icon: <IconDownload className="size-4" />,
+        icon: <IconDownload aria-hidden="true" className="size-4" />,
         shortcut: "⌘E",
-        // Delayed fixture (labelled): 1.5s then success.
         onSelect: ({ signal }) => exportDemoReport(signal, setLog),
         successMessage: "Report exported.",
       },
@@ -1000,7 +985,7 @@ function AsyncActionsDemo() {
         type: "action",
         id: "publish",
         label: "Publish (fails first)",
-        icon: <IconRocket className="size-4" />,
+        icon: <IconRocket aria-hidden="true" className="size-4" />,
         closeOnSuccess: false,
         onSelect: ({ signal }) =>
           publishDemoReport(signal, publishAttempts, setLog),
@@ -1024,7 +1009,7 @@ function AsyncActionsDemo() {
         id: "delete",
         label: "Delete project",
         variant: "destructive",
-        icon: <IconTrash className="size-4" />,
+        icon: <IconTrash aria-hidden="true" className="size-4" />,
         disabled: true,
         disabledReason: "Deleting is disabled in the demo workspace.",
         onSelect: () => {},
@@ -1040,11 +1025,9 @@ function AsyncActionsDemo() {
         items={items}
         searchable
       />
-      <ul className="text-xs text-muted-foreground" aria-live="polite">
-        {log.map((entry) => (
-          <li key={entry.id}>{entry.message}</li>
-        ))}
-      </ul>
+      <output className="block text-xs text-muted-foreground">
+        {log.length > 0 ? log[log.length - 1]?.message : "No actions run yet."}
+      </output>
     </div>
   );
 }
@@ -1076,84 +1059,428 @@ export function AsyncActionsDemo() {
       errorMessage: "Could not publish. Try again.",
     },
   ];
+
   return (
     <>
       <KiraDropdownMenu
         trigger={<Button variant="outline">Project actions</Button>}
         items={items}
       />
-      <p role="status">{message}</p>
+      <output className="block text-xs text-muted-foreground">{message}</output>
     </>
   );
 }`;
 
-const features = [
+function StressDemo() {
+  return (
+    <div className="flex w-full max-w-xs flex-col gap-3">
+      <KiraDropdownMenu
+        trigger={
+          <Button variant="outline" className="w-full whitespace-normal">
+            Long labels, disabled reasons, and narrow container
+          </Button>
+        }
+        contentProps={{ className: "max-w-xs" }}
+        items={stressMenuItems}
+      />
+      <KiraDropdownMenu
+        trigger={
+          <Button variant="outline" className="w-full">
+            Empty actions menu
+          </Button>
+        }
+        items={emptyMenuItems}
+      />
+    </div>
+  );
+}
+
+const stressCode = `import { KiraDropdownMenu, type MenuItemData } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+
+const items: MenuItemData[] = [
   {
-    title: "Accessible",
-    description:
-      "Full WAI-ARIA menu pattern with keyboard navigation, focus management, and screen reader support.",
-    icon: <IconKeyboard className="h-4 w-4" />,
+    type: "action",
+    id: "long",
+    label: "Synchronize workspace_billing_ledger_2026_q4_archive across all regions",
+    shortcut: "⇧⌘S",
+    onSelect: () => {},
   },
   {
-    title: "Composable",
-    description:
-      "Build complex menus with checkboxes, radio groups, submenus, icons, and keyboard shortcuts.",
-    icon: <IconComponents className="h-4 w-4" />,
-  },
-  {
-    title: "Flexible",
-    description:
-      "Support for loading states, backdrop overlays, arrows, and a convenience wrapper component.",
-    icon: <IconMenu2 className="h-4 w-4" />,
+    type: "action",
+    id: "disabled",
+    label: "Delete organization",
+    variant: "destructive",
+    disabled: true,
+    disabledReason: "Transfer active subscriptions before deleting.",
+    onSelect: () => {},
   },
 ];
 
-const keyboardShortcuts = [
-  { keys: "Enter / Space", description: "Open menu or activate item" },
-  { keys: "Arrow Down", description: "Move to next item" },
-  { keys: "Arrow Up", description: "Move to previous item" },
-  { keys: "Arrow Right", description: "Open submenu" },
-  { keys: "Arrow Left", description: "Close submenu" },
-  { keys: "Escape", description: "Close menu" },
-  { keys: "Home", description: "Move to first item" },
-  { keys: "End", description: "Move to last item" },
-];
+export function StressDemo() {
+  return (
+    <div className="flex w-full max-w-xs flex-col gap-3">
+      <KiraDropdownMenu
+        trigger={<Button variant="outline" className="w-full">Long labels & disabled</Button>}
+        contentProps={{ className: "max-w-xs" }}
+        items={items}
+      />
+      <KiraDropdownMenu
+        trigger={<Button variant="outline" className="w-full">Empty actions menu</Button>}
+        items={[]}
+      />
+    </div>
+  );
+}`;
 
 const usageCode = `import {
-  DropdownMenuGroup,
   DropdownMenu,
+  DropdownMenuGroup,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  KiraDropdownMenu,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { IconSettings } from "@tabler/icons-react";
 
 <DropdownMenu>
-  <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+  <DropdownMenuTrigger render={<Button variant="outline" />}>
+    Open
+  </DropdownMenuTrigger>
   <DropdownMenuContent>
     <DropdownMenuGroup>
       <DropdownMenuLabel>Label</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuItem>Item 1</DropdownMenuItem>
-      <DropdownMenuItem icon={<IconSettings />}>With Icon</DropdownMenuItem>
+      <DropdownMenuItem icon={<IconSettings aria-hidden="true" />}>
+        With Icon
+      </DropdownMenuItem>
       <DropdownMenuItem loading>Async Action</DropdownMenuItem>
     </DropdownMenuGroup>
   </DropdownMenuContent>
 </DropdownMenu>;`;
 
-const apiSections = [
+export default function DropdownMenuPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Dropdown Menu"
+        description="A contextual menu component that displays a list of actions or options triggered by a button. Built on Base UI primitives with full keyboard navigation and WAI-ARIA support."
+        version="v2.1.0"
+      />
+
+      <FeatureGrid
+        features={dropdownMenuPageFeatures}
+        description="Built on Base UI Menu with searchable filtering, shared detached triggers, and async action lifecycles."
+      />
+
+      <DemoTabs tabs={dropdownMenuPageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        shortcuts={dropdownMenuPageShortcuts}
+        description="Keyboard navigation and menu activation bindings provided by Base UI Menu."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Import and compose the dropdown menu components to build your menu structure."
+        notes={[
+          {
+            label: "KiraDropdownMenu",
+            body: "Use KiraDropdownMenu for data-driven MenuItemData trees, searchable filtering, async action lifecycles, or detached triggers sharing one popup via createDropdownMenuHandle.",
+          },
+          {
+            label: "Group labels",
+            body: "DropdownMenuLabel renders Base UI's Menu.GroupLabel and must be placed inside a DropdownMenuGroup so aria-labelledby associates correctly.",
+          },
+          {
+            label: "Filter parts",
+            body: "When building custom searchable menus, wrap the menu in DropdownMenuFilterProvider and place items inside DropdownMenuList alongside DropdownMenuInput, DropdownMenuClear, and DropdownMenuEmpty.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={dropdownMenuPageAPISections}
+        description="Props, types, and defaults for every exported Dropdown Menu part and helper."
+      />
+
+      <Changelog
+        entries={dropdownMenuPageChangelogEntries}
+        title="Changelog"
+        description="Version history for the Dropdown Menu component."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const emptyMenuItems: readonly MenuItemData[] = [];
+
+const stressMenuItems: readonly MenuItemData[] = [
+  {
+    type: "action",
+    id: "long-label",
+    label:
+      "Synchronize workspace_billing_ledger_2026_q4_archive across all regions",
+    shortcut: "⇧⌘S",
+    onSelect: () => {},
+  },
+  {
+    type: "action",
+    id: "disabled-reason",
+    label: "Delete organization",
+    variant: "destructive",
+    disabled: true,
+    disabledReason: "Transfer active subscriptions before deleting.",
+    onSelect: () => {},
+  },
+];
+
+const dropdownMenuPageFeatures = [
+  {
+    title: "Accessible",
+    description:
+      "Full WAI-ARIA menu pattern with keyboard navigation, focus management, and screen reader support.",
+    icon: <IconKeyboard aria-hidden="true" className="h-4 w-4" />,
+  },
+  {
+    title: "Composable",
+    description:
+      "Build complex menus with checkboxes, radio groups, submenus, native links, icons, and shortcuts.",
+    icon: <IconComponents aria-hidden="true" className="h-4 w-4" />,
+  },
+  {
+    title: "Flexible",
+    description:
+      "Supports searchable filtering, shared detached triggers, loading states, backdrops, and arrows.",
+    icon: <IconMenu2 aria-hidden="true" className="h-4 w-4" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const dropdownMenuPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic Dropdown"
+        description="Simple dropdown menu with labels, groups, and icons."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "icon-trigger",
+    label: "Icon Trigger",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Icon Trigger"
+        description="Compact icon button trigger for contextual menus."
+        code={iconTriggerCode}
+      >
+        <IconTriggerDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "shortcuts",
+    label: "Shortcuts",
+    group: "Items & Structure",
+    demo: (
+      <DemoWrapper
+        title="Icons & Shortcuts"
+        description="Menu items with icons and keyboard shortcut hints."
+        code={shortcutsCode}
+      >
+        <ShortcutsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "checkbox",
+    label: "Checkbox",
+    group: "Items & Structure",
+    demo: (
+      <DemoWrapper
+        title="Checkbox Items"
+        description="Toggle options with checkbox menu items."
+        code={checkboxCode}
+      >
+        <CheckboxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "radio",
+    label: "Radio",
+    group: "Items & Structure",
+    demo: (
+      <DemoWrapper
+        title="Radio Items"
+        description="Single-select options with radio menu items."
+        code={radioCode}
+      >
+        <RadioDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "submenu",
+    label: "Submenu",
+    group: "Items & Structure",
+    demo: (
+      <DemoWrapper
+        title="Submenus"
+        description="Nested menus for complex navigation hierarchies."
+        code={submenuCode}
+      >
+        <SubmenuDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "arrow",
+    label: "Arrow",
+    group: "Items & Structure",
+    demo: (
+      <DemoWrapper
+        title="With Arrow"
+        description="Menu with an arrow pointing to the trigger."
+        code={arrowCode}
+      >
+        <ArrowDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "wrapper",
+    label: "Kira",
+    group: "KiraDropdownMenu",
+    demo: (
+      <DemoWrapper
+        title="KiraDropdownMenu"
+        description="Data-driven composition: static items, searchable actions, or detached shared triggers."
+        code={wrapperCode}
+      >
+        <WrapperDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "search",
+    label: "Search",
+    group: "KiraDropdownMenu",
+    demo: (
+      <DemoWrapper
+        title="Searchable Actions"
+        description="Opt-in Base UI 1.9 preview filtering: type to narrow, Enter activates the first match, Clear resets, query resets on close."
+        code={searchCode}
+      >
+        <SearchDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "shared-rows",
+    label: "Shared Rows",
+    group: "KiraDropdownMenu",
+    demo: (
+      <DemoWrapper
+        title="Shared-Popup Row Actions"
+        description="One stable handle shares one popup across row triggers; each trigger passes its row payload. Dismissal or switching triggers cancels pending actions."
+        code={sharedRowsCode}
+      >
+        <SharedRowsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "async-actions",
+    label: "Async Actions",
+    group: "KiraDropdownMenu",
+    demo: (
+      <DemoWrapper
+        title="Async Action Lifecycle"
+        description="Single-flight pending rows with aria-busy, recoverable failure with Retry, and sync actions without spinner."
+        code={asyncCode}
+      >
+        <AsyncActionsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "loading",
+    label: "Loading",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Loading State"
+        description="Async actions with loading indicator on menu items."
+        code={loadingCode}
+      >
+        <LoadingDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "backdrop",
+    label: "Backdrop",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Modal with Backdrop"
+        description="Menu with backdrop overlay for modal-like behavior."
+        code={backdropCode}
+      >
+        <BackdropDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long wrapping labels, disabled reasons, and empty item lists in a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const dropdownMenuPageShortcuts = [
+  { keys: "Enter / Space", description: "Open menu or activate focused item." },
+  { keys: "Arrow Down", description: "Move highlight to the next item." },
+  { keys: "Arrow Up", description: "Move highlight to the previous item." },
+  { keys: "Arrow Right", description: "Open the focused submenu." },
+  { keys: "Arrow Left", description: "Close the current submenu." },
+  {
+    keys: "Home / End",
+    description: "Move highlight to the first or last item.",
+  },
+  { keys: "Escape", description: "Close the menu and restore trigger focus." },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const dropdownMenuPageAPISections = [
   {
     title: "DropdownMenu",
     props: [
       {
         prop: "open",
         type: "boolean",
+        default: "-",
         description: "Controlled open state of the dropdown menu.",
       },
       {
@@ -1164,14 +1491,40 @@ const apiSections = [
       },
       {
         prop: "onOpenChange",
-        type: "(open: boolean) => void",
+        type: "(open: boolean, details: Menu.Root.ChangeEventDetails) => void",
+        default: "-",
         description: "Callback when the open state changes.",
       },
       {
         prop: "modal",
         type: "boolean",
         default: "true",
-        description: "Whether the menu should trap focus when open.",
+        description:
+          "Whether the menu traps focus and blocks outside interaction.",
+      },
+      {
+        prop: "handle",
+        type: "Menu.Handle<Payload>",
+        default: "-",
+        description:
+          "Detached handle from createDropdownMenuHandle for shared popups.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuPortal",
+    props: [
+      {
+        prop: "keepMounted",
+        type: "boolean",
+        default: "false",
+        description: "Keep the portal mounted in the DOM while closed.",
+      },
+      {
+        prop: "container",
+        type: "HTMLElement | ShadowRoot | RefObject<HTMLElement | ShadowRoot | null> | null",
+        default: "-",
+        description: "Target container for the portal.",
       },
     ],
   },
@@ -1180,14 +1533,28 @@ const apiSections = [
     props: [
       {
         prop: "render",
-        type: "ReactElement",
+        type: "Menu.Trigger.Props<Payload>['render']",
+        default: "-",
         description: "Element to render as the trigger (e.g., Button).",
       },
       {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge props onto the child element.",
+        prop: "handle",
+        type: "Menu.Handle<Payload>",
+        default: "-",
+        description:
+          "Detached menu handle connecting this trigger to a shared popup.",
+      },
+      {
+        prop: "payload",
+        type: "Payload",
+        default: "-",
+        description: "Per-trigger payload passed to a detached menu popup.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
       },
     ],
   },
@@ -1195,16 +1562,16 @@ const apiSections = [
     title: "DropdownMenuContent",
     props: [
       {
-        prop: "align",
-        type: '"start" | "center" | "end"',
-        default: '"start"',
-        description: "Alignment of the menu relative to the trigger.",
-      },
-      {
         prop: "side",
-        type: '"top" | "right" | "bottom" | "left"',
+        type: 'Menu.Positioner.Props["side"]',
         default: '"bottom"',
         description: "Side of the trigger to render the menu.",
+      },
+      {
+        prop: "align",
+        type: 'Menu.Positioner.Props["align"]',
+        default: '"start"',
+        description: "Alignment of the menu relative to the trigger.",
       },
       {
         prop: "sideOffset",
@@ -1213,10 +1580,91 @@ const apiSections = [
         description: "Distance from the trigger in pixels.",
       },
       {
+        prop: "alignOffset",
+        type: "number",
+        default: "0",
+        description: "Offset along the alignment axis in pixels.",
+      },
+      {
+        prop: "keepMounted",
+        type: "boolean",
+        default: "false",
+        description: "Keep the popup mounted when closed.",
+      },
+      {
         prop: "showBackdrop",
         type: "boolean",
         default: "false",
-        description: "Show a backdrop overlay behind the menu.",
+        description: "Render DropdownMenuBackdrop behind the menu.",
+      },
+      {
+        prop: "portalProps",
+        type: "Omit<Menu.Portal.Props, 'children' | 'keepMounted'>",
+        default: "-",
+        description: "Props forwarded to the internal Menu.Portal.",
+      },
+      {
+        prop: "positionerProps",
+        type: "Omit<Menu.Positioner.Props, 'children' | 'side' | 'align' | 'sideOffset' | 'alignOffset' | 'className'> & { className?: string }",
+        default: "-",
+        description: "Props forwarded to the internal Menu.Positioner.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes applied to the popup.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuBackdrop",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the backdrop overlay.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuArrow",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the arrow element.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuGroup",
+    props: [
+      {
+        prop: "children",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Grouped menu items and optional DropdownMenuLabel.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuLabel",
+    props: [
+      {
+        prop: "inset",
+        type: "boolean",
+        default: "false",
+        description:
+          "Indent label to align with rows that have leading indicators.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
       },
     ],
   },
@@ -1230,26 +1678,88 @@ const apiSections = [
         description: "Visual variant of the menu item.",
       },
       {
+        prop: "inset",
+        type: "boolean",
+        default: "false",
+        description: "Indent item to align with indicator rows.",
+      },
+      {
         prop: "icon",
-        type: "ReactNode",
-        description: "Icon to display before the item text.",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Decorative icon displayed before the item label.",
       },
       {
         prop: "shortcut",
         type: "string",
+        default: "-",
         description: "Keyboard shortcut hint (e.g., '⌘K').",
       },
       {
         prop: "loading",
         type: "boolean",
         default: "false",
-        description: "Show loading spinner and disable item.",
+        description: "Show loading spinner, set aria-busy, and disable item.",
       },
       {
         prop: "disabled",
         type: "boolean",
         default: "false",
         description: "Disable the menu item.",
+      },
+      {
+        prop: "disabledReason",
+        type: "string",
+        default: "-",
+        description:
+          "Visible explanation rendered inside the disabled row and linked via aria-describedby.",
+      },
+      {
+        prop: "closeOnClick",
+        type: "boolean",
+        default: "true",
+        description: "Whether clicking the item closes the menu.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuLinkItem",
+    props: [
+      {
+        prop: "href",
+        type: "string",
+        default: "-",
+        description: "Destination URL rendered on a native anchor element.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "destructive"',
+        default: '"default"',
+        description: "Visual variant of the link row.",
+      },
+      {
+        prop: "inset",
+        type: "boolean",
+        default: "false",
+        description: "Indent link row to align with indicator rows.",
+      },
+      {
+        prop: "icon",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Decorative leading icon.",
+      },
+      {
+        prop: "shortcut",
+        type: "string",
+        default: "-",
+        description: "Keyboard shortcut hint.",
+      },
+      {
+        prop: "closeOnClick",
+        type: "boolean",
+        default: "true",
+        description: "Whether activating the link closes the menu.",
       },
     ],
   },
@@ -1259,23 +1769,50 @@ const apiSections = [
       {
         prop: "checked",
         type: "boolean",
+        default: "-",
         description: "Controlled checked state.",
       },
       {
         prop: "onCheckedChange",
-        type: "(checked: boolean) => void",
+        type: "(checked: boolean, details: Menu.CheckboxItem.ChangeEventDetails) => void",
+        default: "-",
         description: "Callback when checked state changes.",
       },
       {
         prop: "icon",
-        type: "ReactNode",
-        description: "Custom check icon.",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Leading decorative icon next to the check indicator.",
+      },
+      {
+        prop: "iconChecked",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Custom check indicator glyph.",
+      },
+      {
+        prop: "inset",
+        type: "boolean",
+        default: "false",
+        description: "Apply inset start padding.",
       },
       {
         prop: "disabled",
         type: "boolean",
         default: "false",
         description: "Disable the checkbox item.",
+      },
+      {
+        prop: "disabledReason",
+        type: "string",
+        default: "-",
+        description: "Visible explanation linked via aria-describedby.",
+      },
+      {
+        prop: "closeOnClick",
+        type: "boolean",
+        default: "false",
+        description: "Whether toggling closes the menu.",
       },
     ],
   },
@@ -1285,11 +1822,13 @@ const apiSections = [
       {
         prop: "value",
         type: "string",
+        default: "-",
         description: "Currently selected value.",
       },
       {
         prop: "onValueChange",
-        type: "(value: string) => void",
+        type: "(value: string, details: Menu.RadioGroup.ChangeEventDetails) => void",
+        default: "-",
         description: "Callback when selection changes.",
       },
     ],
@@ -1300,18 +1839,260 @@ const apiSections = [
       {
         prop: "value",
         type: "string",
+        default: "-",
         description: "Value of this radio item.",
       },
       {
         prop: "icon",
-        type: "ReactNode",
-        description: "Icon to display before the item text.",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Decorative icon displayed before the item text.",
+      },
+      {
+        prop: "inset",
+        type: "boolean",
+        default: "false",
+        description: "Apply inset start padding.",
       },
       {
         prop: "disabled",
         type: "boolean",
         default: "false",
         description: "Disable the radio item.",
+      },
+      {
+        prop: "disabledReason",
+        type: "string",
+        default: "-",
+        description: "Visible explanation linked via aria-describedby.",
+      },
+      {
+        prop: "closeOnClick",
+        type: "boolean",
+        default: "false",
+        description: "Whether selecting closes the menu.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuSeparator",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the separator line.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuShortcut",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the shortcut hint span.",
+      },
+      {
+        prop: "children",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Shortcut text (rendered aria-hidden).",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuSub",
+    props: [
+      {
+        prop: "open",
+        type: "boolean",
+        default: "-",
+        description: "Controlled open state of the submenu.",
+      },
+      {
+        prop: "defaultOpen",
+        type: "boolean",
+        default: "false",
+        description: "Initial uncontrolled open state of the submenu.",
+      },
+      {
+        prop: "onOpenChange",
+        type: "(open: boolean, details: Menu.SubmenuRoot.ChangeEventDetails) => void",
+        default: "-",
+        description: "Callback when the submenu opens or closes.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuSubTrigger",
+    props: [
+      {
+        prop: "inset",
+        type: "boolean",
+        default: "false",
+        description: "Indent trigger to align with indicator rows.",
+      },
+      {
+        prop: "icon",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Decorative icon displayed before the label.",
+      },
+      {
+        prop: "disabledReason",
+        type: "string",
+        default: "-",
+        description: "Visible explanation linked via aria-describedby.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuSubContent",
+    props: [
+      {
+        prop: "align",
+        type: 'Menu.Positioner.Props["align"]',
+        default: '"start"',
+        description: "Alignment of the submenu relative to the sub-trigger.",
+      },
+      {
+        prop: "sideOffset",
+        type: "number",
+        default: "4",
+        description: "Distance from the sub-trigger in pixels.",
+      },
+      {
+        prop: "alignOffset",
+        type: "number",
+        default: "0",
+        description: "Offset along the alignment axis in pixels.",
+      },
+      {
+        prop: "keepMounted",
+        type: "boolean",
+        default: "false",
+        description: "Keep the submenu mounted when closed.",
+      },
+      {
+        prop: "portalProps",
+        type: "Omit<Menu.Portal.Props, 'children' | 'keepMounted'>",
+        default: "-",
+        description: "Props forwarded to the internal Menu.Portal.",
+      },
+      {
+        prop: "positionerProps",
+        type: "Omit<Menu.Positioner.Props, 'children' | 'side' | 'align' | 'sideOffset' | 'alignOffset' | 'className'> & { className?: string }",
+        default: "-",
+        description: "Props forwarded to the internal Menu.Positioner.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuFilterProvider",
+    props: [
+      {
+        prop: "autoHighlight",
+        type: "boolean",
+        default: "false",
+        description:
+          "Automatically highlight the first matching item while filtering.",
+      },
+      {
+        prop: "Menu.FilterProvider.Props",
+        type: "Menu.FilterProvider.Props",
+        default: "-",
+        description:
+          "Base UI 1.9 preview filter scope wrapper (renders no DOM).",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuInput",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the filter input.",
+      },
+      {
+        prop: "Menu.Input.Props",
+        type: "Omit<Menu.Input.Props, 'className'>",
+        default: "-",
+        description: "Input attributes such as placeholder and aria-label.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuList",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the filterable item list.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuClear",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the filter clear button.",
+      },
+      {
+        prop: "aria-label",
+        type: "string",
+        default: "-",
+        description: "Accessible name for the clear button.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuEmpty",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description:
+          "Additional CSS classes for the zero-match status message.",
+      },
+      {
+        prop: "children",
+        type: "React.ReactNode",
+        default: "-",
+        description:
+          "Empty state text rendered with polite live-region semantics.",
+      },
+    ],
+  },
+  {
+    title: "DropdownMenuViewport",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description:
+          "Additional CSS classes for the detached-trigger content transition viewport.",
       },
     ],
   },
@@ -1320,263 +2101,94 @@ const apiSections = [
     props: [
       {
         prop: "trigger",
-        type: "ReactNode",
-        description: "Element to use as the menu trigger.",
+        type: "React.ReactElement",
+        default: "-",
+        description:
+          "Colocated trigger element (omit in detached handle mode).",
       },
       {
-        prop: "contentProps",
-        type: "DropdownMenuContentProps",
-        description: "Props to pass to DropdownMenuContent.",
+        prop: "items",
+        type: "readonly MenuItemData[] | ((payload: Payload) => readonly MenuItemData[])",
+        default: "-",
+        description:
+          "Static item tree or payload-driven factory in detached handle mode.",
+      },
+      {
+        prop: "handle",
+        type: "Menu.Handle<Payload>",
+        default: "-",
+        description:
+          "Detached handle from createDropdownMenuHandle for shared popups.",
       },
       {
         prop: "children",
-        type: "ReactNode",
-        description: "Menu items to render inside the content.",
+        type: "React.ReactNode",
+        default: "-",
+        description:
+          "Custom menu items when not using the data-driven items prop.",
+      },
+      {
+        prop: "searchable",
+        type: "boolean",
+        default: "false",
+        description: "Enable Base UI 1.9 preview filtering inside the popup.",
+      },
+      {
+        prop: "searchLabel",
+        type: "string",
+        default: '"Filter actions"',
+        description: "Accessible label and placeholder for the filter input.",
+      },
+      {
+        prop: "emptyMessage",
+        type: "React.ReactNode",
+        default: '"No matching actions."',
+        description: "Zero-match message rendered inside DropdownMenuEmpty.",
+      },
+      {
+        prop: "onActionError",
+        type: "(error: unknown, item: MenuActionItem) => void",
+        default: "-",
+        description: "Error callback when an async MenuActionItem rejects.",
+      },
+      {
+        prop: "rootProps / triggerProps / contentProps",
+        type: "Partial root, trigger, and content props",
+        default: "-",
+        description:
+          "Pass-through options for DropdownMenu, DropdownMenuTrigger, and DropdownMenuContent.",
       },
     ],
   },
-];
+  {
+    title: "createDropdownMenuHandle",
+    props: [
+      {
+        prop: "Payload (generic)",
+        type: "<Payload = unknown>() => Menu.Handle<Payload>",
+        default: "unknown",
+        description:
+          "Factory that creates a typed detached handle shared across triggers and one popup.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const demoTabs = [
-  {
-    value: "basic",
-    label: "Basic",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Basic Dropdown"
-        description="Simple dropdown menu with labels, groups, and icons."
-        code={basicCode}
-      >
-        <BasicDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "icon-trigger",
-    label: "Icon Trigger",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Icon Trigger"
-        description="Compact icon button trigger for contextual menus."
-        code={iconTriggerCode}
-      >
-        <IconTriggerDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "shortcuts",
-    label: "Shortcuts",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Icons & Shortcuts"
-        description="Menu items with icons and keyboard shortcut hints."
-        code={shortcutsCode}
-      >
-        <ShortcutsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "checkbox",
-    label: "Checkbox",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Checkbox Items"
-        description="Toggle options with checkbox menu items."
-        code={checkboxCode}
-      >
-        <CheckboxDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "radio",
-    label: "Radio",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Radio Items"
-        description="Single-select options with radio menu items."
-        code={radioCode}
-      >
-        <RadioDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "submenu",
-    label: "Submenu",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Submenus"
-        description="Nested menus for complex navigation hierarchies."
-        code={submenuCode}
-      >
-        <SubmenuDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "loading",
-    label: "Loading",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Loading State"
-        description="Async actions with loading indicator on menu items."
-        code={loadingCode}
-      >
-        <LoadingDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "backdrop",
-    label: "Backdrop",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Modal with Backdrop"
-        description="Menu with backdrop overlay for modal-like behavior."
-        code={backdropCode}
-      >
-        <BackdropDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "arrow",
-    label: "Arrow",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="With Arrow"
-        description="Menu with an arrow pointing to the trigger."
-        code={arrowCode}
-      >
-        <ArrowDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "wrapper",
-    label: "Kira",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="KiraDropdownMenu"
-        description="Data-driven composition: static items, searchable actions, or detached shared triggers."
-        code={wrapperCode}
-      >
-        <WrapperDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "search",
-    label: "Search",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Searchable Actions"
-        description="Opt-in Base UI 1.9 preview filtering: type to narrow, Enter activates the first match, Clear resets, query resets on close."
-        code={searchCode}
-      >
-        <SearchDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "shared-rows",
-    label: "Shared Rows",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Shared-Popup Row Actions"
-        description="One stable handle shares one popup across row triggers; each trigger passes its row payload. The labelled two-second fixture archives its row; dismissal or switching triggers cancels it."
-        code={sharedRowsCode}
-      >
-        <SharedRowsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "async-actions",
-    label: "Async Actions",
-    demo: (
-      <DemoWrapper
-        className="[&_[data-slot=card-header]>div]:flex-col [&_[data-slot=card-header]>div]:items-start [&_[data-slot=card-header]>div]:gap-4 sm:[&_[data-slot=card-header]>div]:flex-row sm:[&_[data-slot=card-header]>div]:items-center"
-        title="Async Action Lifecycle"
-        description="Single-flight pending rows with aria-busy, recoverable failure with Retry, sync actions without spinner. Delayed/fail-once controls are labelled fixtures."
-        code={asyncCode}
-      >
-        <AsyncActionsDemo />
-      </DemoWrapper>
-    ),
-  },
-];
-
-export default function DropdownMenuPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Dropdown Menu"
-        description="A contextual menu component that displays a list of actions or options triggered by a button. Built on Base UI primitives with full keyboard navigation and WAI-ARIA support."
-        version="v2.0.3"
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
-
-      <UsageBlock
-        code={usageCode}
-        description="Import and compose the dropdown menu components to build your menu structure."
-      />
-
-      <APIReference sections={apiSections} />
-
-      <Changelog entries={dropdownMenuPageChangelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
 const dropdownMenuPageChangelogEntries = [
   {
-    version: "v2.1.0",
+    version: "2.1.0",
     date: "18 November 2026",
     changes: [
       {
         type: "changed",
         title: "Unified menu metrics",
         description:
-          "Popup padding p-1.5→p-1 and rows min-h-9 px-2.5 py-2 gap-2.5→min-h-8 px-2 py-1.5 gap-2 — the same item metric as Select and Combobox (menubar wrappers share the row variants). Labels align to px-2 py-1.5. The search header becomes an sm-tier h-8 field with a recomputed clear offset (pe-8, inset-e-1 top-1).",
+          "Popup padding tightened from 6px to p-1 and rows from 36px height with 10px horizontal padding/gap to min-h-8 px-2 py-1.5 gap-2 — the same item metric as Select and Combobox (menubar wrappers share the row variants). Labels align to px-2 py-1.5. The search header becomes an sm-tier h-8 field with a recomputed clear offset (pe-8, inset-e-1 top-1).",
       },
     ],
   },
   {
-    version: "v2.0.2",
-    date: "7 November 2026",
-    changes: [
-      {
-        type: "fixed",
-        title: "Balanced popup spacing",
-        description:
-          "Removed the permanently reserved scrollbar gutter, separated search from its results, and aligned row and group-label padding. Search and preference rows have more room to breathe. Audited on Base UI 1.9.0; no public API changes.",
-      },
-    ],
-  },
-  {
-    version: "v2.0.3",
+    version: "2.0.3",
     date: "8 November 2026",
     changes: [
       {
@@ -1588,7 +2200,19 @@ const dropdownMenuPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.0.1",
+    version: "2.0.2",
+    date: "7 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Balanced popup spacing",
+        description:
+          "Removed the permanently reserved scrollbar gutter, separated search from its results, and aligned row and group-label padding. Search and preference rows have more room to breathe. Audited on Base UI 1.9.0; no public API changes.",
+      },
+    ],
+  },
+  {
+    version: "2.0.1",
     date: "7 November 2026",
     changes: [
       {
@@ -1600,7 +2224,7 @@ const dropdownMenuPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.0.0",
+    version: "2.0.0",
     date: "6 November 2026",
     changes: [
       {

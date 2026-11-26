@@ -1,6 +1,14 @@
 import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
+  IconTrash,
+  IconDownload,
+  IconFileExport,
+  IconLayoutGrid,
+  IconSearch,
+  IconFileText,
+} from "@tabler/icons-react";
+import {
   DataTableRoot,
   DataTableContent,
   DataTablePagination,
@@ -13,25 +21,15 @@ import {
   useDataTable,
   useTableStatePersistence,
   createSelectColumn,
-} from "@/components/ui/data-table";
-import {
   StatusCell,
   DateCell,
   CurrencyCell,
   AvatarCell,
   ActionsCell,
+  type DTColumnDef as ColumnDef,
 } from "@/components/ui/data-table";
 import { exportToCSV, exportToJSON } from "@/lib/data-table-helpers";
-import type { DTColumnDef as ColumnDef } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import {
-  IconTrash,
-  IconDownload,
-  IconFileExport,
-  IconLayoutGrid,
-  IconSearch,
-  IconFileText,
-} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -375,14 +373,14 @@ function StickyBulkDemo() {
           size="sm"
           onClick={() => console.log("Delete selected")}
         >
-          <IconTrash className="h-4 w-4" /> Delete
+          <IconTrash aria-hidden="true" className="h-4 w-4" /> Delete
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => console.log("Export")}
         >
-          <IconDownload className="h-4 w-4" /> Export
+          <IconDownload aria-hidden="true" className="h-4 w-4" /> Export
         </Button>
       </DataTableBulkActions>
       <DataTableContent />
@@ -755,24 +753,29 @@ export default function DataTablePage() {
       <PageHeader
         title="Data Table"
         description="A powerful, modular table with sorting, filtering, pagination, and more using TanStack Table. Includes cell renderers, bulk actions, density controls, and comprehensive accessibility features."
-        version="3.0.0"
+        version="v3.2.1"
       />
 
       <FeatureGrid features={dataTablePageFeatureGridFeatures} />
 
-      <DataTableDemos />
-
-      <DataTableControlsSection5 />
-
-      <APIReference
-        sections={dataTablePageAPIReferenceSections}
-        description="Complete API reference for all DataTable components"
-      />
+      <DemoTabs defaultValue="cell-renderers" tabs={dataTablePageDemoTabs} />
 
       <KeyboardShortcuts
         title="Keyboard shortcuts"
         description="Spreadsheet-grade grid flow when enableKeyboardNavigation is set (non-virtualized mode)."
         shortcuts={dataTablePageKeyboardShortcutsShortcuts}
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Basic implementation with cell renderers, bulk actions, and pagination."
+        notes={dataTablePageUsageNotes}
+      />
+
+      <APIReference
+        sections={dataTablePageAPIReferenceSections}
+        description="Complete API reference for all DataTable components"
       />
 
       <Changelog entries={dataTablePageChangelogEntries} />
@@ -786,19 +789,19 @@ const dataTablePageFeatureGridFeatures = [
     title: "Modular Components",
     description:
       "Build tables with pre-built cell renderers, bulk actions, skeleton loading, and empty states. Mix and match components for your needs.",
-    icon: <IconLayoutGrid className="h-5 w-5" />,
+    icon: <IconLayoutGrid aria-hidden="true" className="h-5 w-5" />,
   },
   {
     title: "Rich Interactions",
     description:
       "Three-way sorting, column pinning, row selection, density controls, and virtual scrolling for large datasets.",
-    icon: <IconSearch className="h-5 w-5" />,
+    icon: <IconSearch aria-hidden="true" className="h-5 w-5" />,
   },
   {
     title: "Accessibility First",
     description:
       "Full keyboard navigation, ARIA announcements, screen reader support, and focus management included by default.",
-    icon: <IconFileText className="h-5 w-5" />,
+    icon: <IconFileText aria-hidden="true" className="h-5 w-5" />,
   },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
@@ -1050,7 +1053,7 @@ const dataTablePageAPIReferenceSections = [
       {
         prop: "showPreviousNextText",
         type: "boolean",
-        default: "true",
+        default: "false",
         description: "Show Previous/Next text labels beside the arrows",
       },
       {
@@ -1338,7 +1341,7 @@ const dataTablePageAPIReferenceSections = [
       {
         prop: "opts.version",
         type: "number",
-        default: "1",
+        default: "2",
         description:
           "Bump to invalidate saved views after a state-shape change.",
       },
@@ -1404,6 +1407,270 @@ const dataTablePageAPIReferenceSections = [
     ],
   },
   {
+    title: "DataTableColumnHeader",
+    props: [
+      {
+        prop: "column",
+        type: "DTColumn<TData, TValue>",
+        default: "-",
+        description: "TanStack column instance from header render context.",
+      },
+      {
+        prop: "title",
+        type: "string",
+        default: "-",
+        description: "Visible column heading label.",
+      },
+      {
+        prop: "showPinning",
+        type: "boolean",
+        default: "false",
+        description: "Show the pin-left / pin-right / unpin dropdown menu.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the header wrapper.",
+      },
+    ],
+  },
+  {
+    title: "DataTableSearch",
+    props: [
+      {
+        prop: "columnKey",
+        type: "string",
+        default: "-",
+        description: "Column id to filter when globalSearch is false.",
+      },
+      {
+        prop: "placeholder",
+        type: "string",
+        default: '"Search..."',
+        description: "Input placeholder and accessible label.",
+      },
+      {
+        prop: "globalSearch",
+        type: "boolean",
+        default: "false",
+        description: "Bind to table globalFilter instead of a single column.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the search input.",
+      },
+    ],
+  },
+  {
+    title: "DataTablePageCount",
+    props: [
+      {
+        prop: "(context)",
+        type: "Reads DataTableRoot context",
+        default: "-",
+        description:
+          "Renders 'Page X of Y' synced to the root table's pagination state.",
+      },
+    ],
+  },
+  {
+    title: "DataTableRowCount",
+    props: [
+      {
+        prop: "(context)",
+        type: "Reads DataTableRoot context",
+        default: "-",
+        description:
+          "Renders total row count or 'X of Y row(s) selected' using server rowCount when set.",
+      },
+    ],
+  },
+  {
+    title: "DataTableColumnVisibility",
+    props: [
+      {
+        prop: "(context)",
+        type: "Reads DataTableRoot context",
+        default: "-",
+        description:
+          "Renders toggle checkboxes for all hideable columns with humanized labels.",
+      },
+    ],
+  },
+  {
+    title: "DataTablePinningControls",
+    props: [
+      {
+        prop: "(context)",
+        type: "Reads DataTableRoot context",
+        default: "-",
+        description:
+          "Displays active left/right pinned column counts when any column is pinned.",
+      },
+    ],
+  },
+  {
+    title: "DataTableEditableCell",
+    props: [
+      {
+        prop: "value",
+        type: "string | number",
+        default: "-",
+        description: "Current cell value.",
+      },
+      {
+        prop: "onSave",
+        type: "(value: string | number) => void",
+        default: "-",
+        description: "Called on Enter or blur when the value changes.",
+      },
+      {
+        prop: "type",
+        type: '"text" | "number" | "select"',
+        default: '"text"',
+        description: "Inline editor control type.",
+      },
+      {
+        prop: "options",
+        type: "{ value: string; label: string }[]",
+        default: "-",
+        description: 'Options list when type="select".',
+      },
+      {
+        prop: "label",
+        type: "string",
+        default: '"Edit value"',
+        description: "Accessible name for the inline edit control.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the cell or editor.",
+      },
+    ],
+  },
+  {
+    title: "DataTableRowActions",
+    props: [
+      {
+        prop: "row",
+        type: "TData",
+        default: "-",
+        description: "Row data object passed to each action's onClick handler.",
+      },
+      {
+        prop: "actions",
+        type: "RowAction<TData>[]",
+        default: "-",
+        description: "Menu items with label, icon, variant, and onClick.",
+      },
+      {
+        prop: "label",
+        type: "string",
+        default: '"Row actions"',
+        description: "Accessible name for the trigger button.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the trigger button.",
+      },
+    ],
+  },
+  {
+    title: "NumberRangeFilter",
+    props: [
+      {
+        prop: "columnId",
+        type: "string",
+        default: "-",
+        description:
+          'Column id to filter (pair with filterFn: "inNumberRange").',
+      },
+      {
+        prop: "minPlaceholder",
+        type: "string",
+        default: '"Min"',
+        description: "Placeholder for the lower bound input.",
+      },
+      {
+        prop: "maxPlaceholder",
+        type: "string",
+        default: '"Max"',
+        description: "Placeholder for the upper bound input.",
+      },
+      {
+        prop: "step",
+        type: "number",
+        default: "1",
+        description: "Step increment for the number inputs.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the filter group.",
+      },
+    ],
+  },
+  {
+    title: "MultiSelectFilter",
+    props: [
+      {
+        prop: "columnId",
+        type: "string",
+        default: "-",
+        description: "Column id to filter (pair with facetedFilterFn).",
+      },
+      {
+        prop: "options",
+        type: "{ value: string; label: string }[]",
+        default: "-",
+        description: "Selectable filter options.",
+      },
+      {
+        prop: "placeholder",
+        type: "string",
+        default: '"Select..."',
+        description: "Trigger label when no options are selected.",
+      },
+      {
+        prop: "searchable",
+        type: "boolean",
+        default: "true",
+        description: "Show a search input inside the filter popover.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the trigger button.",
+      },
+    ],
+  },
+  {
+    title: "DateRangeFilter",
+    props: [
+      {
+        prop: "columnId",
+        type: "string",
+        default: "-",
+        description: "Column id to filter (pair with dateRangeFilterFn).",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the date range inputs.",
+      },
+    ],
+  },
+  {
     title: "Other exports",
     props: [
       {
@@ -1426,27 +1693,6 @@ const dataTablePageAPIReferenceSections = [
         default: "-",
         description:
           "Column factories: checkbox select, expander chevron, and drag handle (enableReordering).",
-      },
-      {
-        prop: "DataTableEditableCell",
-        type: "Component",
-        default: "-",
-        description:
-          "Cell that swaps to an input/select on Enter, F2 or double-click; Escape reverts, blur/Enter commits.",
-      },
-      {
-        prop: "DataTableColumnVisibility / DataTablePinningControls / DataTableRowActions / DataTableSearch / DataTablePageCount / DataTableRowCount",
-        type: "Component",
-        default: "-",
-        description:
-          "Toolbar/status parts sharing the root's table via context.",
-      },
-      {
-        prop: "NumberRangeFilter / MultiSelectFilter / DateRangeFilter",
-        type: "Component",
-        default: "-",
-        description:
-          "Standalone filter controls (pair with the matching built-in filterFns).",
       },
     ],
   },
@@ -1677,24 +1923,14 @@ const dataTablePageChangelogEntries = [
   },
 ] satisfies ReactComponentProps<typeof Changelog>["entries"];
 
-function DataTableControlsSection({
-  densityCode,
-  density,
-  setDensity,
-}: {
-  densityCode: 'const [density, setDensity] = React.useState<"compact" | "default" | "comfortable">("default");\n\n<DataTableDensityToggle\n  value={density}\n  onValueChange={setDensity}\n/>\n\n<DataTableRoot\n  columns={rendererColumns}\n  data={data}\n  density={density}\n>\n  <DataTableContent />\n  <DataTablePagination />\n</DataTableRoot>';
-  density: "default" | "compact" | "comfortable";
-  setDensity: React.Dispatch<
-    React.SetStateAction<"default" | "compact" | "comfortable">
-  >;
-}) {
+function DensityDemo() {
+  const [density, setDensity] = React.useState<
+    "compact" | "default" | "comfortable"
+  >("default");
+
   return (
-    <DemoWrapper
-      title="Row Density Control"
-      description="Switch between compact, default, and comfortable row spacing to optimize for your content."
-      code={densityCode}
-    >
-      <div className="flex items-center gap-4 mb-4">
+    <>
+      <div className="mb-4 flex items-center gap-4">
         <DataTableDensityToggle value={density} onValueChange={setDensity} />
         <span className="text-sm text-muted-foreground">
           Current: {density}
@@ -1704,163 +1940,219 @@ function DataTableControlsSection({
         <DataTableContent />
         <DataTablePagination />
       </DataTableRoot>
-    </DemoWrapper>
+    </>
   );
 }
 
-function DataTableControlsSection2({
-  selectionCode,
-}: {
-  selectionCode: 'const selectionColumns: ColumnDef<User, unknown>[] = [\n  createSelectColumn<User>(),\n  ...rendererColumns,\n];\n\n<DataTableRoot\n  columns={selectionColumns}\n  data={data}\n  enableRowSelection\n>\n  <DataTableContent />\n  <div className="flex items-center justify-between">\n    <DataTableBulkActions>\n      <Button variant="destructive" size="sm">\n        Delete Selected\n      </Button>\n      <Button variant="outline" size="sm">\n        Export Selected\n      </Button>\n    </DataTableBulkActions>\n    <DataTablePagination />\n  </div>\n</DataTableRoot>';
-}) {
+function SelectionDemo() {
   return (
-    <DemoWrapper
-      title="Row Selection & Bulk Actions"
-      description="Enable checkbox selection with createSelectColumn and perform bulk actions on selected rows."
-      code={selectionCode}
+    <DataTableRoot
+      columns={selectionColumns}
+      data={data}
+      enableRowSelection
+      density="default"
     >
+      <DataTableContent />
+      <div className="flex items-center justify-between">
+        <DataTableBulkActions>
+          <Button variant="destructive" size="sm">
+            <IconTrash aria-hidden="true" className="mr-2 h-4 w-4" />
+            Delete Selected
+          </Button>
+          <Button variant="outline" size="sm">
+            <IconFileExport aria-hidden="true" className="mr-2 h-4 w-4" />
+            Export Selected
+          </Button>
+        </DataTableBulkActions>
+        <DataTablePagination />
+      </div>
+    </DataTableRoot>
+  );
+}
+
+function StatesDemo() {
+  const [showSkeleton, setShowSkeleton] = React.useState(false);
+  const [showEmpty, setShowEmpty] = React.useState(false);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="mb-2 text-sm text-muted-foreground">Loading State</p>
+        <div className="mb-4 flex gap-2">
+          <Button size="sm" onClick={() => setShowSkeleton(!showSkeleton)}>
+            {showSkeleton ? "Show Table" : "Show Skeleton"}
+          </Button>
+        </div>
+        {showSkeleton ? (
+          <DataTableSkeleton rows={5} columns={5} showHeader />
+        ) : (
+          <DataTableRoot columns={rendererColumns} data={data}>
+            <DataTableContent />
+          </DataTableRoot>
+        )}
+      </div>
+      <div>
+        <p className="mb-2 text-sm text-muted-foreground">Empty State</p>
+        <div className="mb-4 flex gap-2">
+          <Button size="sm" onClick={() => setShowEmpty(!showEmpty)}>
+            {showEmpty ? "Show Data" : "Show Empty"}
+          </Button>
+        </div>
+        <DataTableRoot columns={rendererColumns} data={showEmpty ? [] : data}>
+          {showEmpty ? (
+            <DataTableEmptyState
+              title="No users found"
+              description="Try adjusting your search or filters"
+              action={<Button>Add New User</Button>}
+            />
+          ) : (
+            <DataTableContent />
+          )}
+        </DataTableRoot>
+      </div>
+    </div>
+  );
+}
+
+function ExportDemo() {
+  return (
+    <div className="flex gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() =>
+          exportToCSV(
+            data,
+            ["name", "email", "status", "balance", "createdAt"],
+            "users.csv",
+          )
+        }
+      >
+        <IconDownload aria-hidden="true" className="mr-2 h-4 w-4" />
+        Export CSV
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => exportToJSON(data, "users.json")}
+      >
+        <IconFileExport aria-hidden="true" className="mr-2 h-4 w-4" />
+        Export JSON
+      </Button>
+    </div>
+  );
+}
+
+type StressUser = {
+  id: string;
+  name: string;
+  status: string;
+  balance: number | null;
+  createdAt: string | null;
+  disabled?: boolean;
+};
+
+const stressData: StressUser[] = [
+  {
+    id: "s1",
+    name: "Alexandria Bartholomew-Montgomery III (Principal Infrastructure Architect)",
+    status: "active",
+    balance: 9_876_543.21,
+    createdAt: "2026-02-14",
+  },
+  {
+    id: "s2",
+    name: "",
+    status: "pending",
+    balance: null,
+    createdAt: null,
+  },
+  {
+    id: "s3",
+    name: "Suspended Account (Row selection disabled)",
+    status: "suspended",
+    balance: -420.5,
+    createdAt: "2025-11-01",
+    disabled: true,
+  },
+];
+
+const stressColumns: ColumnDef<StressUser, unknown>[] = [
+  createSelectColumn<StressUser>(),
+  {
+    accessorKey: "name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="User" />
+    ),
+    cell: ({ row }) => (
+      <AvatarCell name={row.original.name || "—"} showName={true} />
+    ),
+  },
+  {
+    accessorKey: "balance",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Balance" />
+    ),
+    cell: ({ row }) => (
+      <CurrencyCell value={row.original.balance} currency="USD" colorCode />
+    ),
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Joined" />
+    ),
+    cell: ({ row }) => <DateCell value={row.original.createdAt} />,
+  },
+];
+
+function StressDemo() {
+  return (
+    <div className="max-w-xs">
       <DataTableRoot
-        columns={selectionColumns}
-        data={data}
-        enableRowSelection
-        density="default"
+        columns={stressColumns}
+        data={stressData}
+        density="compact"
+        enableRowSelection={(row) => !row.original.disabled}
       >
         <DataTableContent />
-        <div className="flex items-center justify-between">
-          <DataTableBulkActions>
-            <Button variant="destructive" size="sm">
-              <IconTrash className="mr-2 h-4 w-4" />
-              Delete Selected
-            </Button>
-            <Button variant="outline" size="sm">
-              <IconFileExport className="mr-2 h-4 w-4" />
-              Export Selected
-            </Button>
-          </DataTableBulkActions>
-          <DataTablePagination />
-        </div>
+        <DataTablePagination />
       </DataTableRoot>
-    </DemoWrapper>
+    </div>
   );
 }
 
-function DataTableLoadingStateSection({
-  statesCode,
-  setShowSkeleton,
-  showSkeleton,
-  setShowEmpty,
-  showEmpty,
-}: {
-  statesCode: 'const [showSkeleton, setShowSkeleton] = React.useState(false);\nconst [showEmpty, setShowEmpty] = React.useState(false);\n\n{showSkeleton ? (\n  <DataTableSkeleton rows={5} columns={5} showHeader />\n) : (\n  <DataTableRoot columns={rendererColumns} data={data}>\n    <DataTableContent />\n  </DataTableRoot>\n)}\n\n<DataTableRoot columns={rendererColumns} data={showEmpty ? [] : data}>\n  {showEmpty ? (\n    <DataTableEmptyState\n      title="No users found"\n      description="Try adjusting your search or filters"\n      action={<Button>Add New User</Button>}\n    />\n  ) : (\n    <DataTableContent />\n  )}\n</DataTableRoot>';
-  setShowSkeleton: React.Dispatch<React.SetStateAction<boolean>>;
-  showSkeleton: boolean;
-  setShowEmpty: React.Dispatch<React.SetStateAction<boolean>>;
-  showEmpty: boolean;
-}) {
-  return (
-    <DemoWrapper
-      title="Loading & Empty States"
-      description="Show skeleton loaders while data is fetching and friendly empty states when no data is available."
-      code={statesCode}
-    >
-      <div className="space-y-6">
-        <div>
-          <p className="text-sm text-muted-foreground mb-2">Loading State</p>
-          <div className="flex gap-2 mb-4">
-            <Button size="sm" onClick={() => setShowSkeleton(!showSkeleton)}>
-              {showSkeleton ? "Show Table" : "Show Skeleton"}
-            </Button>
-          </div>
-          {showSkeleton ? (
-            <DataTableSkeleton rows={5} columns={5} showHeader />
-          ) : (
-            <DataTableRoot columns={rendererColumns} data={data}>
-              <DataTableContent />
-            </DataTableRoot>
-          )}
-        </div>
-        <div>
-          <p className="text-sm text-muted-foreground mb-2">Empty State</p>
-          <div className="flex gap-2 mb-4">
-            <Button size="sm" onClick={() => setShowEmpty(!showEmpty)}>
-              {showEmpty ? "Show Data" : "Show Empty"}
-            </Button>
-          </div>
-          <DataTableRoot columns={rendererColumns} data={showEmpty ? [] : data}>
-            {showEmpty ? (
-              <DataTableEmptyState
-                title="No users found"
-                description="Try adjusting your search or filters"
-                action={<Button>Add New User</Button>}
-              />
-            ) : (
-              <DataTableContent />
-            )}
-          </DataTableRoot>
-        </div>
-      </div>
-    </DemoWrapper>
-  );
-}
-
-function DataTableControlsSection4({
-  exportCode,
-}: {
-  exportCode: 'import { exportToCSV, exportToJSON } from "@/lib/data-table-helpers";\n\n<Button onClick={() => exportToCSV(data, ["name", "email", "status"], "users.csv")}>\n  Export CSV\n</Button>\n\n<Button onClick={() => exportToJSON(data, "users.json")}>\n  Export JSON\n</Button>';
-}) {
-  return (
-    <DemoWrapper
-      title="Export to CSV or JSON"
-      description="Utility functions to export table data to CSV or JSON format for further processing."
-      code={exportCode}
-    >
-      <div className="flex gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() =>
-            exportToCSV(
-              data,
-              ["name", "email", "status", "balance", "createdAt"],
-              "users.csv",
-            )
-          }
-        >
-          <IconDownload className="mr-2 h-4 w-4" />
-          Export CSV
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => exportToJSON(data, "users.json")}
-        >
-          <IconFileExport className="mr-2 h-4 w-4" />
-          Export JSON
-        </Button>
-      </div>
-    </DemoWrapper>
-  );
-}
-
-function DataTableControlsSection5() {
-  return (
-    <UsageBlock
-      code={`import {
+const stressCode = `import {
   DataTableRoot,
   DataTableContent,
   DataTablePagination,
-  DataTableDensityToggle,
+  createSelectColumn,
+} from "@/components/ui/data-table"
+
+// Long labels, null/empty values, and disabled row selection inside max-w-xs
+<div className="max-w-xs">
+  <DataTableRoot
+    columns={stressColumns}
+    data={stressData}
+    density="compact"
+    enableRowSelection={(row) => !row.original.disabled}
+  >
+    <DataTableContent />
+    <DataTablePagination />
+  </DataTableRoot>
+</div>`;
+
+const usageCode = `import {
+  DataTableRoot,
+  DataTableContent,
+  DataTablePagination,
   DataTableBulkActions,
   DataTableColumnHeader,
-} from "@/components/ui/data-table"
-import {
   StatusCell,
-  DateCell,
-  CurrencyCell,
   AvatarCell,
-  ActionsCell,
+  type DTColumnDef as ColumnDef,
 } from "@/components/ui/data-table"
-import type { DTColumnDef as ColumnDef } from "@/components/ui/data-table"
+import { Button } from "@/components/ui/button"
 
 const columns: ColumnDef<User, unknown>[] = [
   {
@@ -1903,17 +2195,29 @@ const columns: ColumnDef<User, unknown>[] = [
   </DataTableBulkActions>
   <DataTableContent />
   <DataTablePagination />
-</DataTableRoot>`}
-      description="Basic implementation with cell renderers and row selection"
-    />
-  );
-}
+</DataTableRoot>`;
 
-const dataTableCellRenderersTab = {
-  value: "cell-renderers",
-  label: "Cell Renderers",
-  demo: (
-    <>
+const dataTablePageUsageNotes = [
+  {
+    label: "TanStack Table v9",
+    body: "Type your column definitions with DTColumnDef<TData, TValue> from @/components/ui/data-table so every v9 feature (pinning, resizing, faceting, grouping) stays typed.",
+  },
+  {
+    label: "Cell Renderers",
+    body: "Use StatusCell, DateCell, CurrencyCell, AvatarCell, and ActionsCell for consistent formatting, fallbacks, and accessible markup across tables.",
+  },
+  {
+    label: "State Persistence",
+    body: "Pass persistStateKey to DataTableRoot to persist density, sorting, visibility, sizing, order, and pinning in localStorage (selection and filters stay ephemeral).",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const dataTablePageDemoTabs = [
+  {
+    value: "cell-renderers",
+    label: "Cell Renderers",
+    group: "Core",
+    demo: (
       <DemoWrapper
         title="Pre-built Cell Renderers"
         description="StatusCell, DateCell, CurrencyCell, AvatarCell, and ActionsCell provide common UI patterns out of the box."
@@ -1930,179 +2234,174 @@ const dataTableCellRenderersTab = {
           <DataTablePagination />
         </DataTableRoot>
       </DemoWrapper>
-    </>
-  ),
-} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
-
-const dataTableSelectionTab = {
-  value: "selection",
-  label: "Selection",
-  demo: (
-    <>
-      <DataTableControlsSection2 selectionCode={selectionCode} />
-    </>
-  ),
-} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
-
-const dataTableExportTab = {
-  value: "export",
-  label: "Export",
-  demo: (
-    <>
-      <DataTableControlsSection4 exportCode={exportCode} />
-    </>
-  ),
-} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
-
-const dataTableVirtualizationTab = {
-  value: "virtualization",
-  label: "Virtualization",
-  demo: (
-    <DemoWrapper
-      title="Virtual Scrolling"
-      description="500 rows with only the visible window (+10 overscan) mounted. Sticky header included; grid keyboard navigation switches to viewport scrolling in this mode. Pair with onLoadMore/hasNextPage for infinite loading."
-      code={virtualCode}
-    >
-      <VirtualDemo />
-    </DemoWrapper>
-  ),
-} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
-
-const dataTableServerPaginationTab = {
-  value: "server-pagination",
-  label: "Server Pagination",
-  demo: (
-    <DemoWrapper
-      title="Server-side Pagination"
-      description="The table holds only the current page; rowCount is the server total. Changing page size resets to page 1 and fires both callbacks atomically. A simulated 400ms fetch shows the loading state."
-      code={serverPaginationCode}
-    >
-      <ServerPaginationDemo />
-    </DemoWrapper>
-  ),
-} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
-
-const dataTableResizingTab = {
-  value: "resizing",
-  label: "Resizing",
-  demo: (
-    <DemoWrapper
-      title="Column Resizing"
-      description="Drag the handle at a column's right edge, or focus it and use ArrowLeft/ArrowRight (±5px), Home/End (min/max). Double-click resets to the default size."
-      code={resizeCode}
-    >
-      <ResizeDemo />
-    </DemoWrapper>
-  ),
-} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
-
-const dataTableFacetedTab = {
-  value: "faceted",
-  label: "Faceted Filters",
-  demo: (
-    <DemoWrapper
-      title="Faceted Filters"
-      description='DataTableFacetedFilter shows per-option counts from getFacetedUniqueValues. The column def sets filterFn: "arrIncludesSome" so multiple selections OR together.'
-      code={facetedCode}
-    >
-      <FacetedFilterDemo />
-    </DemoWrapper>
-  ),
-} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
-
-const dataTableKeyboardNavTab = {
-  value: "keyboard-nav",
-  label: "Keyboard Nav",
-  demo: (
-    <DemoWrapper
-      title="Grid Keyboard Navigation"
-      description="WAI-ARIA APG roving tabindex: Tab enters the first cell, arrows move focus, Home/End hit row bounds, Ctrl+Home/End jump to table corners. Interactive cells keep their native keys."
-      code={keyboardNavCode}
-    >
-      <KeyboardNavDemo />
-    </DemoWrapper>
-  ),
-} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
-
-const dataTablePersistenceTab = {
-  value: "persistence",
-  label: "Persistence",
-  demo: (
-    <DemoWrapper
-      title="Saved Table View"
-      description="persistStateKey stores density, column visibility, sizing, order and sorting in localStorage. Selection and filters are deliberately not persisted."
-      code={persistCode}
-    >
-      <PersistDemo />
-    </DemoWrapper>
-  ),
-} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
-
-const dataTableStickyBulkTab = {
-  value: "sticky-bulk",
-  label: "Sticky Bulk Bar",
-  demo: (
-    <DemoWrapper
-      title="Sticky Bulk Actions"
-      description="With the sticky prop the bulk-action bar floats above content while you scroll a long selection; deselect and it slides out (200ms translate+fade, reduced-motion aware)."
-      code={stickyBulkCode}
-    >
-      <StickyBulkDemo />
-    </DemoWrapper>
-  ),
-} satisfies React.ComponentProps<typeof DemoTabs>["tabs"][number];
-
-function DataTableDemos() {
-  const [showSkeleton, setShowSkeleton] = React.useState(false);
-  const [showEmpty, setShowEmpty] = React.useState(false);
-
-  const [density, setDensity] = React.useState<
-    "compact" | "default" | "comfortable"
-  >("default");
-
-  return (
-    <DemoTabs
-      defaultValue="cell-renderers"
-      tabs={[
-        dataTableCellRenderersTab,
-        {
-          value: "density",
-          label: "Density",
-          demo: (
-            <>
-              <DataTableControlsSection
-                densityCode={densityCode}
-                density={density}
-                setDensity={setDensity}
-              />
-            </>
-          ),
-        },
-        dataTableSelectionTab,
-        {
-          value: "states",
-          label: "States",
-          demo: (
-            <>
-              <DataTableLoadingStateSection
-                statesCode={statesCode}
-                setShowSkeleton={setShowSkeleton}
-                showSkeleton={showSkeleton}
-                setShowEmpty={setShowEmpty}
-                showEmpty={showEmpty}
-              />
-            </>
-          ),
-        },
-        dataTableExportTab,
-        dataTableVirtualizationTab,
-        dataTableServerPaginationTab,
-        dataTableResizingTab,
-        dataTableFacetedTab,
-        dataTableKeyboardNavTab,
-        dataTablePersistenceTab,
-        dataTableStickyBulkTab,
-      ]}
-    />
-  );
-}
+    ),
+  },
+  {
+    value: "density",
+    label: "Density",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Row Density Control"
+        description="Switch between compact, default, and comfortable row spacing to optimize for your content."
+        code={densityCode}
+      >
+        <DensityDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "selection",
+    label: "Selection",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Row Selection & Bulk Actions"
+        description="Enable checkbox selection with createSelectColumn and perform bulk actions on selected rows."
+        code={selectionCode}
+      >
+        <SelectionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Loading & Empty States"
+        description="Show skeleton loaders while data is fetching and friendly empty states when no data is available."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "export",
+    label: "Export",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Export to CSV or JSON"
+        description="Utility functions to export table data to CSV or JSON format for further processing."
+        code={exportCode}
+      >
+        <ExportDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "virtualization",
+    label: "Virtualization",
+    group: "Data & Scale",
+    demo: (
+      <DemoWrapper
+        title="Virtual Scrolling"
+        description="500 rows with only the visible window (+10 overscan) mounted. Sticky header included; grid keyboard navigation switches to viewport scrolling in this mode. Pair with onLoadMore/hasNextPage for infinite loading."
+        code={virtualCode}
+      >
+        <VirtualDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "server-pagination",
+    label: "Server Pagination",
+    group: "Data & Scale",
+    demo: (
+      <DemoWrapper
+        title="Server-side Pagination"
+        description="The table holds only the current page; rowCount is the server total. Changing page size resets to page 1 and fires both callbacks atomically. A simulated 400ms fetch shows the loading state."
+        code={serverPaginationCode}
+      >
+        <ServerPaginationDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "faceted",
+    label: "Faceted Filters",
+    group: "Data & Scale",
+    demo: (
+      <DemoWrapper
+        title="Faceted Filters"
+        description='DataTableFacetedFilter shows per-option counts from getFacetedUniqueValues. The column def sets filterFn: "arrIncludesSome" so multiple selections OR together.'
+        code={facetedCode}
+      >
+        <FacetedFilterDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "resizing",
+    label: "Resizing",
+    group: "Data & Scale",
+    demo: (
+      <DemoWrapper
+        title="Column Resizing"
+        description="Drag the handle at a column's right edge, or focus it and use ArrowLeft/ArrowRight (±5px), Home/End (min/max). Double-click resets to the default size."
+        code={resizeCode}
+      >
+        <ResizeDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "keyboard-nav",
+    label: "Keyboard Nav",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Grid Keyboard Navigation"
+        description="WAI-ARIA APG roving tabindex: Tab enters the first cell, arrows move focus, Home/End hit row bounds, Ctrl+Home/End jump to table corners. Interactive cells keep their native keys."
+        code={keyboardNavCode}
+      >
+        <KeyboardNavDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "persistence",
+    label: "Persistence",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Saved Table View"
+        description="persistStateKey stores density, column visibility, sizing, order and sorting in localStorage. Selection and filters are deliberately not persisted."
+        code={persistCode}
+      >
+        <PersistDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sticky-bulk",
+    label: "Sticky Bulk Bar",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Sticky Bulk Actions"
+        description="With the sticky prop the bulk-action bar floats above content while you scroll a long selection; deselect and it slides out (200ms translate+fade, reduced-motion aware)."
+        code={stickyBulkCode}
+      >
+        <StickyBulkDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long user labels, empty/null cell values, and disabled row selection inside a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];

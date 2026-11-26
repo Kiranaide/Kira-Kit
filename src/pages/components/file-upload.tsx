@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   IconCheck,
@@ -17,7 +18,6 @@ import {
   UsageBlock,
   APIReference,
   Changelog,
-  Section,
 } from "@/components/docs";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -215,11 +215,11 @@ function BasicTabDemo() {
         onFilesChange={setQueue}
         name="demo-basic"
       />
-      <p className="text-xs text-muted-foreground">
+      <output className="block text-xs text-muted-foreground">
         {queue.length === 0
           ? "Queue is empty. Pick or drop files to populate it."
           : `${queue.length} file(s) queued.`}
-      </p>
+      </output>
     </div>
   );
 }
@@ -255,10 +255,10 @@ function ValidationTabDemo() {
         duplicate, an oversized image, a text file, and a third valid file.
       </p>
       {rejected.length > 0 && (
-        <p className="text-xs text-destructive">
+        <output className="block text-xs text-destructive">
           onFilesRejected received {rejected.length} entr
           {rejected.length === 1 ? "y" : "ies"}.
-        </p>
+        </output>
       )}
     </div>
   );
@@ -366,8 +366,8 @@ function PasteTabDemo() {
   return (
     <div className="space-y-3">
       <FileUpload paste multiple name="demo-paste" />
-      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-        <IconClipboard className="h-3.5 w-3.5" aria-hidden="true" />
+      <p className="flex items-center gap-2 text-xs text-muted-foreground">
+        <IconClipboard className="size-4 shrink-0" aria-hidden="true" />
         Click the dropzone, then press Ctrl+V with an image copied to the
         clipboard. Pasting inside a text field is left untouched.
       </p>
@@ -383,6 +383,7 @@ export function PasteDemo() {
 
 function ControlledTabDemo() {
   const [value, setValue] = React.useState<File[]>([]);
+  const [submitStatus, setSubmitStatus] = React.useState("");
   const formRef = React.useRef<HTMLFormElement>(null);
 
   return (
@@ -392,7 +393,10 @@ function ControlledTabDemo() {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => setValue([])}
+          onClick={() => {
+            setValue([]);
+            setSubmitStatus("");
+          }}
         >
           Clear from parent
         </Button>
@@ -404,9 +408,9 @@ function ControlledTabDemo() {
         >
           Submit FormData
         </Button>
-        <p className="text-xs text-muted-foreground self-center">
+        <output className="self-center text-xs text-muted-foreground">
           {value.length} file(s) held by the parent.
-        </p>
+        </output>
       </div>
       <form
         ref={formRef}
@@ -423,7 +427,7 @@ function ControlledTabDemo() {
             .filter((entry): entry is File => entry instanceof File)
             .map((file) => file.name);
 
-          window.alert(
+          setSubmitStatus(
             names.length > 0
               ? `FormData entries: ${names.join(", ")}`
               : "FormData has no attachments.",
@@ -441,11 +445,19 @@ function ControlledTabDemo() {
           variant="ghost"
           size="sm"
           className="mt-2"
-          onClick={() => setValue([])}
+          onClick={() => {
+            setValue([]);
+            setSubmitStatus("");
+          }}
         >
           Reset form (restores defaults; parent clears)
         </Button>
       </form>
+      {submitStatus && (
+        <output className="block text-xs text-muted-foreground">
+          {submitStatus}
+        </output>
+      )}
     </div>
   );
 }
@@ -602,7 +614,59 @@ export function StatesDemo() {
   )
 }`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
+function MediaKindPreviews() {
+  return (
+    <div className="grid w-full max-w-2xl grid-cols-2 gap-3 sm:grid-cols-3">
+      <FilePreview
+        file={{
+          id: "media-image",
+          file: makeFile("photo.png", 20_480, "image/png"),
+          status: "idle",
+        }}
+        onRemove={() => {}}
+      />
+      <FilePreview
+        file={{
+          id: "media-video",
+          file: makeFile("clip.mp4", 5_242_880, "video/mp4"),
+          status: "uploading",
+          progress: 35,
+        }}
+        onRemove={() => {}}
+      />
+      <FilePreview
+        file={{
+          id: "media-audio",
+          file: makeFile("voice-memo.m4a", 8192, "audio/mp4"),
+          status: "success",
+        }}
+        onRemove={() => {}}
+      />
+      <FilePreview
+        file={{
+          id: "media-error",
+          file: makeFile("broken.jpg", 4096, "image/jpeg"),
+          status: "error",
+          error: "Upload failed. Try again.",
+        }}
+        onRemove={() => {}}
+      />
+      <FilePreview
+        file={{
+          id: "media-canceled",
+          file: makeFile(
+            "draft.docx",
+            12_288,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          ),
+          status: "canceled",
+        }}
+        onRemove={() => {}}
+      />
+    </div>
+  );
+}
+
 function ShowcaseTabDemo() {
   const standalone: UploadedFile = {
     id: "showcase-1",
@@ -617,8 +681,8 @@ function ShowcaseTabDemo() {
   return (
     <div className="space-y-6">
       <div className="space-y-3">
-        <Label>Long filenames + narrow 320px container</Label>
-        <div className="w-[320px]">
+        <Label>Long filenames + narrow container</Label>
+        <div className="max-w-xs">
           <FileUpload
             multiple
             accept="image/*,.pdf"
@@ -635,7 +699,7 @@ function ShowcaseTabDemo() {
       </div>
       <div className="space-y-3">
         <Label>Standalone FilePreview (exported contract)</Label>
-        <div className="w-[320px]">
+        <div className="max-w-xs">
           <FilePreview
             file={standalone}
             onRemove={() => {}}
@@ -649,54 +713,7 @@ function ShowcaseTabDemo() {
       </div>
       <div className="space-y-3">
         <Label>Media kinds</Label>
-        <div className="grid w-full max-w-2xl grid-cols-2 gap-3 sm:grid-cols-3">
-          <FilePreview
-            file={{
-              id: "media-image",
-              file: makeFile("photo.png", 20_480, "image/png"),
-              status: "idle",
-            }}
-            onRemove={() => {}}
-          />
-          <FilePreview
-            file={{
-              id: "media-video",
-              file: makeFile("clip.mp4", 5_242_880, "video/mp4"),
-              status: "uploading",
-              progress: 35,
-            }}
-            onRemove={() => {}}
-          />
-          <FilePreview
-            file={{
-              id: "media-audio",
-              file: makeFile("voice-memo.m4a", 8192, "audio/mp4"),
-              status: "success",
-            }}
-            onRemove={() => {}}
-          />
-          <FilePreview
-            file={{
-              id: "media-error",
-              file: makeFile("broken.jpg", 4096, "image/jpeg"),
-              status: "error",
-              error: "Upload failed. Try again.",
-            }}
-            onRemove={() => {}}
-          />
-          <FilePreview
-            file={{
-              id: "media-canceled",
-              file: makeFile(
-                "draft.docx",
-                12_288,
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-              ),
-              status: "canceled",
-            }}
-            onRemove={() => {}}
-          />
-        </div>
+        <MediaKindPreviews />
       </div>
     </div>
   );
@@ -717,48 +734,330 @@ export function ShowcaseDemo() {
   return <FilePreview file={file} onRemove={(id) => console.log(id)} />
 }`;
 
-/* Page                                                                */
+function StressTabDemo() {
+  return (
+    <div className="max-w-xs space-y-6">
+      <KiraFileUpload
+        label="Quarterly compliance documentation and international localization review attachments"
+        description="PDF or image files up to 10 MB each. Filenames without spaces must truncate cleanly."
+        accept="image/*,.pdf"
+        multiple
+        defaultValue={[
+          makeFile(
+            "quarterly_compliance_audit_report_2026_international_accessibility_review_final_v2.pdf",
+            512_000,
+            "application/pdf",
+          ),
+        ]}
+        name="demo-stress-long"
+      />
+      <FileUpload multiple name="demo-stress-empty" size="sm" />
+      <FileUpload disabled name="demo-stress-disabled" size="sm" />
+    </div>
+  );
+}
 
-const features = [
+const stressTabCode = `import { FileUpload, KiraFileUpload } from "@/components/ui/file-upload"
+
+export function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-6">
+      <KiraFileUpload
+        label="Quarterly compliance documentation and international localization review attachments"
+        description="PDF or image files up to 10 MB each. Filenames without spaces must truncate cleanly."
+        accept="image/*,.pdf"
+        multiple
+        defaultValue={[
+          new File([new Uint8Array(512_000)], "quarterly_compliance_audit_report_2026_final_v2.pdf", {
+            type: "application/pdf",
+          }),
+        ]}
+        name="stress-long"
+      />
+      <FileUpload multiple name="stress-empty" size="sm" />
+      <FileUpload disabled name="stress-disabled" size="sm" />
+    </div>
+  )
+}`;
+
+const usageCode = `import { FileUpload, type FileUploadHandler } from "@/components/ui/file-upload"
+
+// Minimal selection-only usage
+export function BasicUploader() {
+  return <FileUpload multiple name="attachments" />
+}
+
+// Per-file XHR + FormData transport with progress, AbortSignal, and status check
+const uploadFile: FileUploadHandler = async (file, context) => {
+  const body = new FormData()
+  body.append("file", file)
+
+  const xhr = new XMLHttpRequest()
+  xhr.open("POST", "https://your-endpoint.example/upload")
+  context.signal.addEventListener("abort", () => xhr.abort())
+
+  const finished = new Promise<void>((resolve, reject) => {
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) resolve()
+      else reject(new Error(\`Upload failed (\${xhr.status}). Try again.\`))
+    }
+    xhr.onerror = () => reject(new Error("Network error. Try again."))
+    xhr.onabort = () => reject(new DOMException("Aborted", "AbortError"))
+  })
+
+  xhr.upload.onprogress = (event) => {
+    if (event.lengthComputable) {
+      context.onProgress((event.loaded / event.total) * 100)
+    }
+  }
+
+  xhr.send(body)
+  await finished
+}
+
+export function TransportUploader() {
+  return <FileUpload multiple uploadFile={uploadFile} name="file" />
+}`;
+
+export default function FileUploadPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="File Upload"
+        version="v2.1.0"
+        description='Reliable file attachments with one admission pipeline, honest upload outcomes, and media previews. Built on Base UI Dialog and Progress; the compact native picker remains <Input type="file" /> on the Input page.'
+      />
+
+      <FeatureGrid
+        features={fileUploadFeatures}
+        description="Capabilities built into Kira Kit."
+      />
+
+      <DemoTabs tabs={fileUploadDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        shortcuts={fileUploadShortcuts}
+        description="Only Kira-implemented shortcuts are listed. OS file-dialog shortcuts belong to the browser, not this component."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Start with selection-only mode or attach a per-file uploadFile transport."
+        notes={fileUploadUsageNotes}
+      />
+
+      <APIReference
+        sections={fileUploadAPISections}
+        description="All exported components and types, including exclusive transport modes and controlled reset policy."
+      />
+
+      <Changelog
+        entries={fileUploadChangelogEntries}
+        title="Changelog"
+        description="Breaking changes and migration notes. Latest matches the PageHeader version."
+      />
+    </ComponentPage>
+  );
+}
+
+const fileUploadFeatures = [
   {
     title: "One admission pipeline",
     description:
       "Picker, drop, and paste share the same accept/size/duplicate/capacity validation with named rejections.",
-    icon: <IconUpload className="h-5 w-5" />,
+    icon: <IconUpload className="size-5" aria-hidden="true" />,
   },
   {
     title: "Honest progress",
     description:
       "Per-file transport shows real reported progress; a 100% report shows Finishing until the promise settles.",
-    icon: <IconEye className="h-5 w-5" />,
+    icon: <IconEye className="size-5" aria-hidden="true" />,
   },
   {
     title: "Media previews",
     description:
       "Images, video, and audio get object-URL previews with a dialog that owns zoom, rotation, and playback.",
-    icon: <IconPhoto className="h-5 w-5" />,
+    icon: <IconPhoto className="size-5" aria-hidden="true" />,
   },
   {
     title: "Controlled or uncontrolled",
     description:
       "Pass value to own the File[] selection; form reset restores defaults through one pipeline.",
-    icon: <IconCheck className="h-5 w-5" />,
+    icon: <IconCheck className="size-5" aria-hidden="true" />,
   },
   {
     title: "Paste intake",
     description:
       "Opt-in clipboard file intake while focus is inside the uploader; text paste is never stolen.",
-    icon: <IconClipboard className="h-5 w-5" />,
+    icon: <IconClipboard className="size-5" aria-hidden="true" />,
   },
   {
     title: "Two exclusive transports",
     description:
       "Batch onUpload(files) keeps the legacy contract; per-file uploadFile(file, context) adds progress, cancel, and retry.",
-    icon: <IconVideo className="h-5 w-5" />,
+    icon: <IconVideo className="size-5" aria-hidden="true" />,
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const shortcuts = [
+const fileUploadDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Drag, drop, pick"
+        description="Selection queue with always-visible remove controls and per-file status."
+        code={basicTabCode}
+      >
+        <BasicTabDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "validation",
+    label: "Validation",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Admission rules"
+        description="Type, size, duplicate, and capacity rejections with dismissible messages and one polite status region."
+        code={validationTabCode}
+      >
+        <ValidationTabDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "media",
+    label: "Media",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Image / video / audio previews"
+        description="Thumbnails, dialog playback without autoplay, zoom/rotation for images, download for unsupported formats."
+        code={mediaTabCode}
+      >
+        <MediaTabDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "paste",
+    label: "Paste",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Clipboard intake"
+        description="Focused paste ingests clipboard files only; text paste elsewhere is untouched."
+        code={pasteTabCode}
+      >
+        <PasteTabDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraFileUpload",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Labelled composition"
+        description="KiraFileUpload adds a visible label and description over the same implementation."
+        code={kiraTabCode}
+      >
+        <KiraTabDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "attachments",
+    label: "Per-file transport",
+    group: "Transport & State",
+    demo: (
+      <DemoWrapper
+        title="Per-file transport"
+        description="uploadFile(file, context) with real AbortSignal handling and a manual settlement harness."
+        code={attachmentsTabCode}
+      >
+        <AttachmentsTabDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "batch",
+    label: "Batch transport",
+    group: "Transport & State",
+    demo: (
+      <DemoWrapper
+        title="Legacy batch callback"
+        description="onUpload(files) snapshot with pending lock and Retry upload; no fake per-file progress."
+        code={batchTabCode}
+      >
+        <BatchTabDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "controlled",
+    label: "Controlled",
+    group: "Transport & State",
+    demo: (
+      <DemoWrapper
+        title="Parent-owned selection"
+        description="value/onValueChange with explicit FormData append and form reset restoring defaults."
+        code={controlledTabCode}
+      >
+        <ControlledTabDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    group: "Transport & State",
+    demo: (
+      <DemoWrapper
+        title="Sizes, disabled, selection-only"
+        description="Token-scale sizes, disabled with helper text, and selection-only mode."
+        code={statesTabCode}
+      >
+        <StatesTabDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "showcase",
+    label: "Showcase",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Standalone FilePreview and media kinds"
+        description="Standalone FilePreview contract and every queue status."
+        code={showcaseTabCode}
+      >
+        <ShowcaseTabDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, unbroken filenames, empty selection, and disabled state inside a max-w-xs column."
+        code={stressTabCode}
+      >
+        <StressTabDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const fileUploadShortcuts = [
   {
     keys: "Tab / Shift+Tab",
     description:
@@ -793,15 +1092,24 @@ const shortcuts = [
     description:
       "Paste clipboard files while focus is inside the uploader (paste prop).",
   },
-];
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-const usageCode = `import { FileUpload } from "@/components/ui/file-upload"
+const fileUploadUsageNotes = [
+  {
+    label: "KiraFileUpload",
+    body: "Use KiraFileUpload when you want a visible label and description wired automatically to the picker input via htmlFor and aria-describedby.",
+  },
+  {
+    label: "Exclusive transports",
+    body: "Pass either uploadFile (per-file progress, AbortSignal cancel, retry) or onUpload (legacy batch snapshot), never both. Omit both for selection-only mode.",
+  },
+  {
+    label: "FormData submission",
+    body: "The staging file input is cleared after ingest so repeat picks work. Append accepted File[] entries from controlled value or onFilesChange to your FormData.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
 
-export function Example() {
-  return <FileUpload multiple name="attachments" />
-}`;
-
-const apiSections = [
+const fileUploadAPISections = [
   {
     title: "FileUpload",
     props: [
@@ -1065,9 +1373,9 @@ const apiSections = [
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const changelogEntries = [
+const fileUploadChangelogEntries = [
   {
     version: "2.1.0",
     date: "6 November 2026",
@@ -1127,216 +1435,7 @@ const changelogEntries = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof Changelog>["entries"];
-
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function FileUploadPage() {
-  const tabs = [
-    {
-      value: "basic",
-      label: "Basic",
-      demo: (
-        <DemoWrapper
-          title="Drag, drop, pick"
-          description="Selection queue with always-visible remove controls and per-file status."
-          code={basicTabCode}
-        >
-          <BasicTabDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "validation",
-      label: "Validation",
-      demo: (
-        <DemoWrapper
-          title="Admission rules"
-          description="Type, size, duplicate, and capacity rejections with dismissible messages and one polite status region."
-          code={validationTabCode}
-        >
-          <ValidationTabDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "attachments",
-      label: "Attachments",
-      demo: (
-        <DemoWrapper
-          title="Per-file transport"
-          description="uploadFile(file, context) with real AbortSignal handling and a manual settlement harness."
-          code={attachmentsTabCode}
-        >
-          <AttachmentsTabDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "media",
-      label: "Media",
-      demo: (
-        <DemoWrapper
-          title="Image / video / audio previews"
-          description="Thumbnails, dialog playback without autoplay, zoom/rotation for images, download for unsupported formats."
-          code={mediaTabCode}
-        >
-          <MediaTabDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "paste",
-      label: "Paste",
-      demo: (
-        <DemoWrapper
-          title="Clipboard intake"
-          description="Focused paste ingests clipboard files only; text paste elsewhere is untouched."
-          code={pasteTabCode}
-        >
-          <PasteTabDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "controlled",
-      label: "Controlled",
-      demo: (
-        <DemoWrapper
-          title="Parent-owned selection"
-          description="value/onValueChange with explicit FormData append and form reset restoring defaults."
-          code={controlledTabCode}
-        >
-          <ControlledTabDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "batch",
-      label: "Batch",
-      demo: (
-        <DemoWrapper
-          title="Legacy batch callback"
-          description="onUpload(files) snapshot with pending lock and Retry upload; no fake per-file progress."
-          code={batchTabCode}
-        >
-          <BatchTabDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "kira",
-      label: "Kira",
-      demo: (
-        <DemoWrapper
-          title="Labelled composition"
-          description="KiraFileUpload adds a visible label and description over the same implementation."
-          code={kiraTabCode}
-        >
-          <KiraTabDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "states",
-      label: "States",
-      demo: (
-        <DemoWrapper
-          title="Sizes, disabled, selection-only"
-          description="Token-scale sizes, disabled with helper text, and selection-only mode."
-          code={statesTabCode}
-        >
-          <StatesTabDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "showcase",
-      label: "Showcase",
-      demo: (
-        <DemoWrapper
-          title="Stress cases"
-          description="Long filenames, 320px container, standalone FilePreview, and every queue status."
-          code={showcaseTabCode}
-        >
-          <ShowcaseTabDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
-
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="File Upload"
-        version="v2.1.0"
-        description='Reliable file attachments with one admission pipeline, honest upload outcomes, and media previews. Built on Base UI Dialog and Progress; the compact native picker remains <Input type="file" /> on the Input page.'
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={tabs} defaultValue="basic" />
-
-      <Section
-        title="Application transport example"
-        description="Complete copy-paste XHR + FormData adapter with progress, abort, and response-status checking. Wire your own endpoint; the library ships no HTTP client."
-      >
-        <UsageBlock
-          title="XMLHttpRequest adapter"
-          description="Real upload transport with upload.onprogress, AbortSignal, and status check."
-          code={`import { FileUpload, type FileUploadHandler } from "@/components/ui/file-upload"
-
-const uploadFile: FileUploadHandler = async (file, context) => {
-  const body = new FormData()
-  body.append("file", file)
-
-  const xhr = new XMLHttpRequest()
-  xhr.open("POST", "https://your-endpoint.example/upload")
-  context.signal.addEventListener("abort", () => xhr.abort())
-
-  const finished = new Promise<void>((resolve, reject) => {
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) resolve()
-      else reject(new Error(\`Upload failed (\${xhr.status}). Try again.\`))
-    }
-    xhr.onerror = () => reject(new Error("Network error. Try again."))
-    xhr.onabort = () => reject(new DOMException("Aborted", "AbortError"))
-  })
-
-  xhr.upload.onprogress = (event) => {
-    if (event.lengthComputable) {
-      context.onProgress((event.loaded / event.total) * 100)
-    }
-  }
-
-  xhr.send(body)
-  await finished
-}
-
-export function Uploader() {
-  return <FileUpload multiple uploadFile={uploadFile} name="file" />
-}`}
-        />
-      </Section>
-
-      <KeyboardShortcuts
-        shortcuts={shortcuts}
-        description="Only Kira-implemented shortcuts are listed. OS file-dialog shortcuts belong to the browser, not this component."
-      />
-
-      <UsageBlock code={usageCode} description="Minimal selection-only usage" />
-
-      <APIReference
-        sections={apiSections}
-        description="All exported components and types, including exclusive transport modes and controlled reset policy."
-      />
-
-      <Changelog
-        entries={changelogEntries}
-        description="Breaking changes and migration notes. Latest matches the PageHeader version."
-      />
-    </ComponentPage>
-  );
-}
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
 
 function PerFileHarnessLocalDemonstrationFilesAreNotSection({
   pendingCount,

@@ -1,17 +1,18 @@
 import type { ComponentProps as ReactComponentProps } from "react";
-import { Kbd, KbdGroup, KbdShortcut } from "@/components/ui/kbd";
-import { usePlatform } from "@/hooks/use-platform";
 import {
-  ComponentPage,
-  PageHeader,
-  FeatureGrid,
-  DemoWrapper,
-  DemoTabs,
-  KeyboardShortcuts,
-  UsageBlock,
   APIReference,
   Changelog,
+  ComponentPage,
+  DemoTabs,
+  DemoWrapper,
+  FeatureGrid,
+  KeyboardShortcuts,
+  PageHeader,
+  UsageBlock,
 } from "@/components/docs";
+import { Button } from "@/components/ui/button";
+import { Kbd, KbdGroup, KbdShortcut } from "@/components/ui/kbd";
+import { usePlatform } from "@/hooks/use-platform";
 
 const basicCode = `import { Kbd, KbdGroup } from "@/components/ui/kbd"
 
@@ -76,19 +77,19 @@ const shortcutsCode = `import { KbdShortcut } from "@/components/ui/kbd"
 export function ShortcutsKbdDemo() {
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+      <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2">
         <span className="text-sm">Save</span>
         <KbdShortcut shortcut="mod+s" />
       </div>
-      <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+      <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2">
         <span className="text-sm">Command palette</span>
         <KbdShortcut shortcut="mod+shift+p" />
       </div>
-      <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+      <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2">
         <span className="text-sm">Delete word</span>
         <KbdShortcut shortcut="alt+backspace" />
       </div>
-      <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+      <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2">
         <span className="text-sm">Force quit</span>
         <KbdShortcut shortcut="mod+alt+esc" separator="+" />
       </div>
@@ -105,21 +106,19 @@ export function PlatformKbdDemo() {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
-        Detected: <code>{platform}</code>
+        Detected: <code className="rounded bg-muted px-2 py-1 font-mono text-xs">{platform}</code>
       </p>
       <div className="flex flex-wrap items-center gap-6">
-        {/* forced */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground w-12">win</span>
+          <span className="w-12 text-xs text-muted-foreground">win</span>
           <KbdShortcut shortcut="mod+k" platform="windows" />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground w-12">mac</span>
+          <span className="w-12 text-xs text-muted-foreground">mac</span>
           <KbdShortcut shortcut="mod+k" platform="mac" />
         </div>
-        {/* live */}
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground w-12">live</span>
+          <span className="w-12 text-xs text-muted-foreground">live</span>
           <KbdShortcut shortcut="mod+k" />
         </div>
       </div>
@@ -127,17 +126,29 @@ export function PlatformKbdDemo() {
   )
 }`;
 
-const stressCode = `import { KbdShortcut } from "@/components/ui/kbd"
+const stressCode = `import { Button } from "@/components/ui/button"
+import { Kbd, KbdShortcut } from "@/components/ui/kbd"
 
 export function StressKbdDemo() {
   return (
-    <div className="space-y-2">
-      <div className="max-w-[320px] p-2 rounded-lg border">
-        <KbdShortcut shortcut="ctrl+shift+alt+mod+delete" />
+    <div className="max-w-xs space-y-3">
+      <div className="rounded-lg border p-2">
+        <KbdShortcut shortcut="ctrl+shift+alt+mod+delete" className="flex-wrap" />
       </div>
-      <div className="max-w-[320px] p-2 rounded-lg border">
+      <div className="flex items-center justify-between gap-2 rounded-lg border p-2">
+        <span className="min-w-0 truncate text-sm">
+          Open enterprise workspace command switcher
+        </span>
         <KbdShortcut shortcut="mod+k" size="lg" />
       </div>
+      <div className="flex items-center justify-between gap-2 rounded-lg border bg-muted/40 p-2">
+        <span className="text-sm text-muted-foreground">Unassigned</span>
+        <Kbd aria-label="No shortcut assigned">—</Kbd>
+      </div>
+      <Button type="button" variant="outline" disabled className="w-full justify-between">
+        <span>Locked action</span>
+        <KbdShortcut shortcut="mod+s" />
+      </Button>
     </div>
   )
 }`;
@@ -200,21 +211,21 @@ function PlatformDemo() {
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
         Detected:{" "}
-        <code className="font-mono text-xs rounded bg-muted px-1.5 py-0.5">
+        <code className="rounded bg-muted px-2 py-1 font-mono text-xs">
           {platform}
         </code>
       </p>
       <div className="flex flex-wrap items-center gap-6">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground w-12">win</span>
+          <span className="w-12 text-xs text-muted-foreground">win</span>
           <KbdShortcut shortcut="mod+k" platform="windows" />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground w-12">mac</span>
+          <span className="w-12 text-xs text-muted-foreground">mac</span>
           <KbdShortcut shortcut="mod+k" platform="mac" />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground w-12">live</span>
+          <span className="w-12 text-xs text-muted-foreground">live</span>
           <KbdShortcut shortcut="mod+k" />
         </div>
       </div>
@@ -245,19 +256,19 @@ function SizesDemo() {
 function ShortcutsDemo() {
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+      <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2">
         <span className="text-sm">Save</span>
         <KbdShortcut shortcut="mod+s" />
       </div>
-      <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+      <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2">
         <span className="text-sm">Command palette</span>
         <KbdShortcut shortcut="mod+shift+p" />
       </div>
-      <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+      <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2">
         <span className="text-sm">Delete word</span>
         <KbdShortcut shortcut="alt+backspace" />
       </div>
-      <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+      <div className="flex items-center justify-between rounded-lg bg-muted/50 p-2">
         <span className="text-sm">Force quit</span>
         <KbdShortcut shortcut="mod+alt+esc" separator="+" />
       </div>
@@ -267,16 +278,32 @@ function ShortcutsDemo() {
 
 function StressDemo() {
   return (
-    <div className="space-y-2">
-      <div className="max-w-[320px] p-2 rounded-lg border">
-        <KbdShortcut shortcut="ctrl+shift+alt+mod+delete" />
+    <div className="max-w-xs space-y-3">
+      <div className="rounded-lg border p-2">
+        <KbdShortcut
+          shortcut="ctrl+shift+alt+mod+delete"
+          className="flex-wrap"
+        />
       </div>
-      <div className="max-w-[320px] p-2 rounded-lg border">
+      <div className="flex items-center justify-between gap-2 rounded-lg border p-2">
+        <span className="min-w-0 truncate text-sm">
+          Open enterprise workspace command switcher
+        </span>
         <KbdShortcut shortcut="mod+k" size="lg" />
       </div>
-      <div className="max-w-[320px] p-2 rounded-lg border dark:bg-white/5">
-        <KbdShortcut shortcut="mod+k" />
+      <div className="flex items-center justify-between gap-2 rounded-lg border bg-muted/40 p-2">
+        <span className="text-sm text-muted-foreground">Unassigned</span>
+        <Kbd aria-label="No shortcut assigned">—</Kbd>
       </div>
+      <Button
+        type="button"
+        variant="outline"
+        disabled
+        className="w-full justify-between"
+      >
+        <span>Locked action</span>
+        <KbdShortcut shortcut="mod+s" />
+      </Button>
     </div>
   );
 }
@@ -290,31 +317,41 @@ export default function KbdPage() {
         version="v2.0.0"
       />
 
-      <FeatureGrid features={kbdPageFeatureGridFeatures} />
+      <FeatureGrid
+        features={kbdPageFeatures}
+        description="Platform-aware shortcut grammar, tactile keycap depth, and accessible screen-reader labels."
+      />
 
-      <DemoTabs defaultValue="basic" tabs={kbdPageDemoTabsTabs} />
+      <DemoTabs defaultValue="basic" tabs={kbdPageDemoTabs} />
 
       <KeyboardShortcuts
         title="Keyboard shortcuts"
         description="Kbd is display-only — it renders shortcut hints, not interactive controls."
-        shortcuts={kbdPageKeyboardShortcutsShortcuts}
+        shortcuts={kbdPageShortcuts}
       />
 
       <UsageBlock
         code={usageCode}
         title="Usage"
         description="Every export: Kbd (grammar or manual), KbdGroup, and KbdShortcut."
+        notes={kbdPageUsageNotes}
       />
 
-      <APIReference sections={kbdPageAPIReferenceSections} />
+      <APIReference
+        sections={kbdPageAPISections}
+        description="Props, types, and defaults for Kbd, KbdGroup, and KbdShortcut."
+      />
 
-      <Changelog entries={kbdPageChangelogEntries} />
+      <Changelog
+        entries={kbdPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Kbd."
+      />
     </ComponentPage>
   );
 }
 
-// Static demo metadata stays co-located and follows its source constants.
-const kbdPageFeatureGridFeatures = [
+const kbdPageFeatures = [
   {
     title: "Platform-aware",
     description:
@@ -332,10 +369,11 @@ const kbdPageFeatureGridFeatures = [
   },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const kbdPageDemoTabsTabs = [
+const kbdPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Kbd"
@@ -347,34 +385,9 @@ const kbdPageDemoTabsTabs = [
     ),
   },
   {
-    value: "grammar",
-    label: "Grammar",
-    demo: (
-      <DemoWrapper
-        title="Shortcut Grammar"
-        description="keys=\'mod+shift+k\' style strings. If both keys and children are passed, keys wins."
-        code={grammarCode}
-      >
-        <GrammarDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "platform",
-    label: "Platform",
-    demo: (
-      <DemoWrapper
-        title="Platform Resolution"
-        description="Windows and macOS render side-by-side via platform, plus the live usePlatform() readout for this machine."
-        code={platformCode}
-      >
-        <PlatformDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "variants",
     label: "Variants",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Kbd Variants"
@@ -388,6 +401,7 @@ const kbdPageDemoTabsTabs = [
   {
     value: "sizes",
     label: "Sizes",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Kbd Sizes"
@@ -399,12 +413,27 @@ const kbdPageDemoTabsTabs = [
     ),
   },
   {
+    value: "grammar",
+    label: "Grammar",
+    group: "Shortcuts",
+    demo: (
+      <DemoWrapper
+        title="Shortcut Grammar"
+        description="keys='mod+shift+k' style strings. If both keys and children are passed, keys wins."
+        code={grammarCode}
+      >
+        <GrammarDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "shortcuts",
     label: "Shortcuts",
+    group: "Shortcuts",
     demo: (
       <DemoWrapper
         title="KbdShortcut"
-        description="Composed shortcut with a screen-reader label (\'Mod plus S\') and aria-keyshortcuts on the root span."
+        description="Composed shortcut with a screen-reader label ('Mod plus S') and aria-keyshortcuts on the root span."
         code={shortcutsCode}
       >
         <ShortcutsDemo />
@@ -412,12 +441,27 @@ const kbdPageDemoTabsTabs = [
     ),
   },
   {
+    value: "platform",
+    label: "Platform",
+    group: "Shortcuts",
+    demo: (
+      <DemoWrapper
+        title="Platform Resolution"
+        description="Windows and macOS render side-by-side via platform, plus the live usePlatform() readout for this machine."
+        code={platformCode}
+      >
+        <PlatformDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "stress",
-    label: "States/Stress",
+    label: "Stress Cases",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Stress Cases"
-        description="Long modifier chains in a 320px container, large size, and dark-theme rendering."
+        description="Long modifier chains, truncated labels, unassigned fallback, and disabled controls in a max-w-xs container."
         code={stressCode}
       >
         <StressDemo />
@@ -426,7 +470,7 @@ const kbdPageDemoTabsTabs = [
   },
 ] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const kbdPageKeyboardShortcutsShortcuts = [
+const kbdPageShortcuts = [
   {
     keys: "Tab",
     description:
@@ -444,7 +488,18 @@ const kbdPageKeyboardShortcutsShortcuts = [
   },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-const kbdPageAPIReferenceSections = [
+const kbdPageUsageNotes = [
+  {
+    label: "Kbd vs. KbdShortcut",
+    body: 'Use Kbd for standalone keycaps or quick grammar strings (keys="mod+k"). Use KbdShortcut when you want composed screen-reader labels (aria-label) and aria-keyshortcuts.',
+  },
+  {
+    label: "Platform resolution",
+    body: 'The "mod" token resolves to ⌘ on macOS and Ctrl on Windows/Linux via usePlatform(). Pass platform to KbdShortcut to force a specific OS.',
+  },
+] satisfies NonNullable<ReactComponentProps<typeof UsageBlock>["notes"]>;
+
+const kbdPageAPISections = [
   {
     title: "Kbd",
     props: [
@@ -530,7 +585,7 @@ const kbdPageAPIReferenceSections = [
 
 const kbdPageChangelogEntries = [
   {
-    version: "v2.0.0",
+    version: "2.0.0",
     date: "4 November 2026",
     changes: [
       {

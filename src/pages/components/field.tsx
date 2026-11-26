@@ -1,5 +1,3 @@
-"use client";
-
 import type { ComponentProps as ReactComponentProps } from "react";
 import { useState } from "react";
 import { CheckboxGroup as CheckboxGroupPrimitive } from "@base-ui/react/checkbox-group";
@@ -222,10 +220,9 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 // Text-only convenience props cannot be combined with control.
 // For TanStack custom controls, bind checked/value and blur explicitly.`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-function NativeInputsDemo() {
+function NativeTextInputs() {
   return (
-    <div className="grid max-w-3xl min-w-0 gap-6 sm:grid-cols-2">
+    <>
       <KiraField
         name="email"
         label="Contact email"
@@ -276,6 +273,13 @@ function NativeInputsDemo() {
         label="Start date"
         inputProps={{ type: "date" }}
       />
+    </>
+  );
+}
+
+function NativeDateAndFileInputs() {
+  return (
+    <>
       <KiraField
         name="startTime"
         label="Start time"
@@ -328,6 +332,15 @@ function NativeInputsDemo() {
           </FieldControl>
         )}
       />
+    </>
+  );
+}
+
+function NativeInputsDemo() {
+  return (
+    <div className="grid max-w-3xl min-w-0 gap-6 sm:grid-cols-2">
+      <NativeTextInputs />
+      <NativeDateAndFileInputs />
     </div>
   );
 }
@@ -904,22 +917,65 @@ const keyboardCode = `import { Field, FieldLabel, FieldInput, KiraField } from "
 <KiraField label="Read-only workspace ID" defaultValue="wrk_2048" readOnly />
 <KiraField label="Restricted setting" disabled disabledReason="Your role has view access only." />`;
 
-export default function FieldPage() {
+function StressDemo() {
   return (
-    <ComponentPage>
-      <PageHeader
-        title="Field"
-        description="Visible labels, useful feedback, and form layouts that stay readable while people edit. Built on Base UI Field and Fieldset."
-        version="v3.1.1"
+    <div className="max-w-xs space-y-5">
+      <KiraField
+        label="Customer-facing workspace name for the international design, accessibility, and localization review team"
+        defaultValue="InternationalDesignAndAccessibilityReviewWorkspaceWithoutSpaces"
+        description="Long labels and unbroken values wrap cleanly inside a narrow column."
+        required
       />
-      <FeatureGrid features={fieldPageFeatureGridFeatures} />
-      <DemoTabs defaultValue="basic" tabs={fieldPageDemoTabsTabs} />
-      <KeyboardShortcuts
-        shortcuts={fieldPageKeyboardShortcutsShortcuts}
-        description="Use the Keyboard and Error summary demos as the walkthrough. Field adds no arrow-key navigation."
+      <KiraField
+        label="Empty optional notes"
+        inputProps={{ placeholder: "Leave blank to test empty content" }}
       />
-      <UsageBlock
-        code={`import { KiraField } from "@/components/ui/field"
+      <KiraField
+        label="Billing region"
+        defaultValue="Asia Pacific"
+        disabled
+        disabledReason="Only workspace owners can change the billing region."
+      />
+      <KiraField
+        label="Imported reference"
+        defaultValue="ref_expired_2048"
+        error="This reference is no longer valid. Request a new one from your administrator."
+      />
+    </div>
+  );
+}
+
+const stressCode = `import { KiraField } from "@/components/ui/field"
+
+export function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-5">
+      <KiraField
+        label="Customer-facing workspace name for the international design, accessibility, and localization review team"
+        defaultValue="InternationalDesignAndAccessibilityReviewWorkspaceWithoutSpaces"
+        description="Long labels and unbroken values wrap cleanly inside a narrow column."
+        required
+      />
+      <KiraField
+        label="Empty optional notes"
+        inputProps={{ placeholder: "Leave blank to test empty content" }}
+      />
+      <KiraField
+        label="Billing region"
+        defaultValue="Asia Pacific"
+        disabled
+        disabledReason="Only workspace owners can change the billing region."
+      />
+      <KiraField
+        label="Imported reference"
+        defaultValue="ref_expired_2048"
+        error="This reference is no longer valid. Request a new one from your administrator."
+      />
+    </div>
+  )
+}`;
+
+const usageCode = `import { KiraField } from "@/components/ui/field"
 
 export function ReleaseNoteField() {
   return (
@@ -933,10 +989,40 @@ export function ReleaseNoteField() {
       inputProps={{ placeholder: "What changed?" }}
     />
   )
-}`}
+}`;
+
+export default function FieldPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Field"
+        description="Visible labels, useful feedback, and form layouts that stay readable while people edit. Built on Base UI Field and Fieldset."
+        version="v3.2.1"
       />
-      <APIReference sections={fieldPageAPIReferenceSections} />
-      <Changelog entries={fieldPageChangelogEntries} />
+      <FeatureGrid
+        features={fieldPageFeatureGridFeatures}
+        description="Capabilities built into Kira Kit."
+      />
+      <DemoTabs defaultValue="basic" tabs={fieldPageDemoTabsTabs} />
+      <KeyboardShortcuts
+        shortcuts={fieldPageKeyboardShortcutsShortcuts}
+        description="Use the Keyboard and Error summary demos as the walkthrough. Field adds no arrow-key navigation."
+      />
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Use KiraField for common fields, or compose Field primitives directly."
+        notes={fieldPageUsageNotes}
+      />
+      <APIReference
+        sections={fieldPageAPIReferenceSections}
+        description="Props, types, and defaults for each exported part."
+      />
+      <Changelog
+        entries={fieldPageChangelogEntries}
+        title="Changelog"
+        description="Version history for this component."
+      />
     </ComponentPage>
   );
 }
@@ -965,10 +1051,26 @@ const fieldPageFeatureGridFeatures = [
   },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
+const fieldPageUsageNotes = [
+  {
+    label: "KiraField",
+    body: "Default entry point for labelled text, textarea, or custom controls. Defaults to validationMode='onBlur' and wires character counts, descriptions, and errors automatically.",
+  },
+  {
+    label: "Composable primitives",
+    body: "Compose Field, FieldLabel, FieldInput, FieldDescription, and FieldError directly when you need custom markup, FieldItem option groups, or FieldSet legends.",
+  },
+  {
+    label: "Error recovery",
+    body: "Pair FieldErrorSummary with KiraField.controlId and a submission attempt counter (focusKey) so failed submits move focus once without interrupting typing.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
 const fieldPageDemoTabsTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Billing details"
@@ -982,6 +1084,7 @@ const fieldPageDemoTabsTabs = [
   {
     value: "controls",
     label: "Controls",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Workspace control gallery"
@@ -995,6 +1098,7 @@ const fieldPageDemoTabsTabs = [
   {
     value: "native-inputs",
     label: "Native inputs",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Native input types"
@@ -1006,8 +1110,23 @@ const fieldPageDemoTabsTabs = [
     ),
   },
   {
+    value: "layout",
+    label: "Layouts",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Notification settings"
+        description="Responsive rows, a fieldset legend, checkbox labeling, and restricted settings."
+        code={layoutCode}
+      >
+        <LayoutDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "validation",
     label: "Validation",
+    group: "Validation",
     demo: (
       <DemoWrapper
         title="Validate after editing"
@@ -1021,6 +1140,7 @@ const fieldPageDemoTabsTabs = [
   {
     value: "counter",
     label: "Character limit",
+    group: "Validation",
     demo: (
       <DemoWrapper
         title="Write a release note"
@@ -1034,6 +1154,7 @@ const fieldPageDemoTabsTabs = [
   {
     value: "tanstack",
     label: "Async validation",
+    group: "Validation",
     demo: (
       <DemoWrapper
         title="Reserve a workspace URL"
@@ -1047,6 +1168,7 @@ const fieldPageDemoTabsTabs = [
   {
     value: "summary",
     label: "Error summary",
+    group: "Validation",
     demo: (
       <DemoWrapper
         title="Recover from a failed submission"
@@ -1058,21 +1180,9 @@ const fieldPageDemoTabsTabs = [
     ),
   },
   {
-    value: "layout",
-    label: "Layouts",
-    demo: (
-      <DemoWrapper
-        title="Notification settings"
-        description="Responsive rows, a fieldset legend, checkbox labeling, and restricted settings."
-        code={layoutCode}
-      >
-        <LayoutDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "showcase",
     label: "Showcase",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="States and difficult content"
@@ -1086,6 +1196,7 @@ const fieldPageDemoTabsTabs = [
   {
     value: "keyboard",
     label: "Keyboard",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Follow the focus"
@@ -1093,6 +1204,20 @@ const fieldPageDemoTabsTabs = [
         code={keyboardCode}
       >
         <KeyboardDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, empty values, disabled reasons, and inline errors inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
       </DemoWrapper>
     ),
   },
@@ -1542,8 +1667,8 @@ const fieldPageAPIReferenceSections = [
 
 const fieldPageChangelogEntries = [
   {
-    version: "Unreleased",
-    date: "In development",
+    version: "3.2.1",
+    date: "26 November 2026",
     changes: [
       {
         type: "changed" as const,
@@ -1555,22 +1680,22 @@ const fieldPageChangelogEntries = [
   },
   {
     version: "3.2.0",
-    date: "November 18, 2026",
+    date: "18 November 2026",
     changes: [
       {
-        type: "changed" as const,
+        type: "changed",
         title: "Contract gaps and FieldControl metrics",
         description:
-          "FieldSet and FieldGroup move gap-5→gap-6 (form-field tier); FieldError and FieldStatus icon gaps move gap-1.5→gap-2. FieldControl now matches the default control: min-h-9 px-4 py-1 rounded-lg (was min-h-10 px-3 py-2 rounded-md), so it renders equal-height beside a plain Input. Outline and ErrorSummary keep the inline-alert p-4 rounded-lg tier.",
+          "FieldSet and FieldGroup move gap-5→gap-6 (form-field tier); FieldError and FieldStatus icon gaps move from a half-step gap to gap-2. FieldControl now matches the default control: min-h-9 px-4 py-1 rounded-lg (was min-h-10 px-3 py-2 rounded-md), so it renders equal-height beside a plain Input. Outline and ErrorSummary keep the inline-alert p-4 rounded-lg tier.",
       },
     ],
   },
   {
     version: "3.1.1",
-    date: "November 13, 2026",
+    date: "13 November 2026",
     changes: [
       {
-        type: "changed" as const,
+        type: "changed",
         title: "Reuse shared kit controls",
         description:
           "FieldInput now uses the shared Input styling and actions, and KiraField multiline uses Textarea. Input sizes use the kit xs/sm/default/lg variants. The Controls demo reuses NumericInput and searchable KiraSelect with field IDs, form names, and read-only state preserved.",
@@ -1579,7 +1704,7 @@ const fieldPageChangelogEntries = [
   },
   {
     version: "3.1.0",
-    date: "November 12, 2026",
+    date: "12 November 2026",
     changes: [
       {
         type: "added",
@@ -1603,7 +1728,7 @@ const fieldPageChangelogEntries = [
   },
   {
     version: "3.0.1",
-    date: "November 12, 2026",
+    date: "12 November 2026",
     changes: [
       {
         type: "fixed",
@@ -1621,7 +1746,7 @@ const fieldPageChangelogEntries = [
   },
   {
     version: "3.0.0",
-    date: "November 11, 2026",
+    date: "11 November 2026",
     changes: [
       {
         type: "added",

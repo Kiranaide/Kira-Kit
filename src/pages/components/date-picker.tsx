@@ -433,23 +433,74 @@ const dateTimeFormCode = `// name emits a hidden ISO "yyyy-MM-dd'T'HH:mm:ss" inp
   onChange={setStartsAt}
 />`;
 
-export default function DatePickerPage() {
+function StressDemo() {
+  const [editableDate, setEditableDate] = React.useState<Date | undefined>();
+  const [presetDate, setPresetDate] = React.useState<Date | undefined>();
+  const [fixedDate] = React.useState<Date>(() => new Date(2026, 10, 26));
+
   return (
-    <ComponentPage>
-      <PageHeader
-        title="Date Picker"
-        description="A date picker built on the enhanced Calendar: native Popover API popup with CSS anchor positioning, typed entry, form integration, booking rules and responsive presets."
-        version="v2.1.0"
-      />
+    <div className="max-w-xs space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="stress-long-label" className="text-sm font-medium">
+          Quarterly executive financial audit closing window date
+        </Label>
+        <DatePicker
+          id="stress-long-label"
+          mode="single"
+          value={presetDate}
+          onChange={setPresetDate}
+          placeholder="Select the quarterly executive financial audit date"
+          ariaLabel="Quarterly executive financial audit closing window date"
+          presets={stressPresets}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="stress-empty-editable" className="text-sm font-medium">
+          Empty typed entry (invalid state)
+        </Label>
+        <DatePicker
+          id="stress-empty-editable"
+          mode="single"
+          editable
+          invalid
+          value={editableDate}
+          onChange={setEditableDate}
+          ariaLabel="Empty typed entry"
+          showPresets={false}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="stress-disabled" className="text-sm font-medium">
+          Disabled with prefilled date
+        </Label>
+        <DatePicker
+          id="stress-disabled"
+          mode="single"
+          value={fixedDate}
+          disabled
+          ariaLabel="Disabled with prefilled date"
+        />
+      </div>
+    </div>
+  );
+}
 
-      <FeatureGrid features={datePickerPageFeatureGridFeatures} />
+const stressCode = `import { DatePicker } from "@/components/ui/date-picker"
 
-      <DemoTabs defaultValue="single" tabs={datePickerPageDemoTabsTabs} />
+// Long labels, empty/invalid typed entry, and disabled state in a max-w-xs container
+<div className="max-w-xs space-y-4">
+  <DatePicker
+    mode="single"
+    placeholder="Select the quarterly executive financial audit date"
+    presets={[
+      { label: "Quarterly executive financial review cutoff", getValue: (t) => t },
+    ]}
+  />
+  <DatePicker mode="single" editable invalid showPresets={false} />
+  <DatePicker mode="single" value={new Date(2026, 10, 26)} disabled />
+</div>`;
 
-      <KeyboardShortcuts shortcuts={datePickerPageKeyboardShortcutsShortcuts} />
-
-      <UsageBlock
-        code={`import { DatePicker, singlePresets, rangePresets } from "@/components/ui/date-picker"
+const usageCode = `import { DatePicker, singlePresets, rangePresets } from "@/components/ui/date-picker"
 import { getToday, formatDateValue } from "@/components/ui/calendar"
 import { addDays, subDays } from "date-fns"
 
@@ -506,7 +557,28 @@ const today = getToday("America/New_York")
 <DatePicker locale={enUS} weekStartsOn={1} />
 
 {/* Custom display format (date-fns pattern) */}
-<DatePicker displayFormat="yyyy/MM/dd" />`}
+<DatePicker displayFormat="yyyy/MM/dd" />`;
+
+export default function DatePickerPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Date Picker"
+        description="A date picker built on the enhanced Calendar: native Popover API popup with CSS anchor positioning, typed entry, form integration, booking rules and responsive presets."
+        version="v2.1.3"
+      />
+
+      <FeatureGrid features={datePickerPageFeatureGridFeatures} />
+
+      <DemoTabs defaultValue="single" tabs={datePickerPageDemoTabsTabs} />
+
+      <KeyboardShortcuts shortcuts={datePickerPageKeyboardShortcutsShortcuts} />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Import DatePicker and choose single, range, or datetime mode."
+        notes={datePickerPageUsageNotes}
       />
 
       <APIReference sections={datePickerPageAPIReferenceSections} />
@@ -517,30 +589,56 @@ const today = getToday("America/New_York")
 }
 
 // Static demo metadata stays co-located and follows its source constants.
+const stressPresets = [
+  {
+    label: "Quarterly executive financial review cutoff",
+    getValue: (today: Date) => today,
+  },
+  {
+    label: "Next fiscal week",
+    getValue: (today: Date) => addDays(today, 7),
+  },
+] satisfies NonNullable<ReactComponentProps<typeof DatePicker>["presets"]>;
+
+const datePickerPageUsageNotes = [
+  {
+    label: 'mode="datetime"',
+    body: "Pairs the calendar with an inline TimePicker comb in one popover. Day clicks keep the popover open so time can be adjusted; range + time is not supported.",
+  },
+  {
+    label: "Form Integration",
+    body: "Pass name to emit hidden ISO inputs (yyyy-MM-dd for single, name_from/name_to for range, yyyy-MM-dd'T'HH:mm:ss for datetime) compatible with React 19 form actions.",
+  },
+  {
+    label: "Time Zones",
+    body: 'Pass an IANA timeZone (such as "America/New_York") so Today, custom presets, and typed-entry parsing evaluate consistently across user locales.',
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
 const datePickerPageFeatureGridFeatures = [
   {
     title: "Date & Time",
     description:
       'mode="datetime" embeds an inline TimePicker comb next to the calendar — one popover picks both parts.',
-    icon: <IconClock className="h-5 w-5" />,
+    icon: <IconClock aria-hidden="true" className="h-5 w-5" />,
   },
   {
     title: "Typed Entry",
     description:
       "editable parses locale formats and ISO dates, validates bounds and shows inline errors.",
-    icon: <IconCalendar className="h-5 w-5" />,
+    icon: <IconCalendar aria-hidden="true" className="h-5 w-5" />,
   },
   {
     title: "Form-Ready",
     description:
       "name emits hidden yyyy-MM-dd inputs (from/to in range mode) for form actions.",
-    icon: <IconForms className="h-5 w-5" />,
+    icon: <IconForms aria-hidden="true" className="h-5 w-5" />,
   },
   {
     title: "Responsive",
     description:
       "Anchored popover on desktop that flips instead of overflowing; bottom sheet with preset chips on mobile.",
-    icon: <IconClock className="h-5 w-5" />,
+    icon: <IconClock aria-hidden="true" className="h-5 w-5" />,
   },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
@@ -548,6 +646,7 @@ const datePickerPageDemoTabsTabs = [
   {
     value: "single",
     label: "Single Date",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Single Date Selection"
@@ -561,6 +660,7 @@ const datePickerPageDemoTabsTabs = [
   {
     value: "range",
     label: "Date Range",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Date Range Selection"
@@ -574,6 +674,7 @@ const datePickerPageDemoTabsTabs = [
   {
     value: "datetime",
     label: "Date & Time",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Date & Time Selection"
@@ -589,6 +690,7 @@ const datePickerPageDemoTabsTabs = [
   {
     value: "datetime-form",
     label: "Date & Time (form)",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Datetime Form Integration"
@@ -602,6 +704,7 @@ const datePickerPageDemoTabsTabs = [
   {
     value: "form",
     label: "Form",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Form Integration"
@@ -613,47 +716,9 @@ const datePickerPageDemoTabsTabs = [
     ),
   },
   {
-    value: "without-presets",
-    label: "No Presets",
-    demo: (
-      <DemoWrapper
-        title="Without Presets"
-        description="A plain single-date picker with no preset sidebar."
-        code={withoutPresetsCode}
-      >
-        <WithoutPresetsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "disabled",
-    label: "Disabled",
-    demo: (
-      <DemoWrapper
-        title="Disabled Picker"
-        description="The whole picker is disabled and non-interactive."
-        code={disabledCode}
-      >
-        <DisabledDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "constraints",
-    label: "Constraints",
-    demo: (
-      <DemoWrapper
-        title="Date Constraints"
-        description="Restrict selection to future or past dates."
-        code={dateConstraintsCode}
-      >
-        <DateConstraintsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "sizes",
     label: "Sizes",
+    group: "Appearance",
     demo: (
       <DemoWrapper
         title="Size Variants"
@@ -667,6 +732,7 @@ const datePickerPageDemoTabsTabs = [
   {
     value: "styles",
     label: "Styles",
+    group: "Appearance",
     demo: (
       <DemoWrapper
         title="Style Variants"
@@ -678,8 +744,37 @@ const datePickerPageDemoTabsTabs = [
     ),
   },
   {
+    value: "without-presets",
+    label: "No Presets",
+    group: "Appearance",
+    demo: (
+      <DemoWrapper
+        title="Without Presets"
+        description="A plain single-date picker with no preset sidebar."
+        code={withoutPresetsCode}
+      >
+        <WithoutPresetsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "constraints",
+    label: "Constraints",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Date Constraints"
+        description="Restrict selection to future or past dates."
+        code={dateConstraintsCode}
+      >
+        <DateConstraintsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "apply-mode",
     label: "Apply Mode",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Apply Mode Variants"
@@ -687,6 +782,34 @@ const datePickerPageDemoTabsTabs = [
         code={applyModeCode}
       >
         <ApplyModeDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "disabled",
+    label: "Disabled",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Disabled Picker"
+        description="The whole picker is disabled and non-interactive."
+        code={disabledCode}
+      >
+        <DisabledDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long placeholders and preset labels, empty invalid typed entry, and disabled prefilled pickers inside a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
       </DemoWrapper>
     ),
   },
@@ -729,7 +852,7 @@ const datePickerPageAPIReferenceSections = [
     props: [
       {
         prop: "mode",
-        type: "'single' | 'range'",
+        type: "'single' | 'range' | 'datetime'",
         default: "'single'",
         description: "Selection mode for the date picker.",
       },
@@ -953,8 +1076,8 @@ const datePickerPageAPIReferenceSections = [
 
 const datePickerPageChangelogEntries = [
   {
-    version: "Unreleased",
-    date: "In development",
+    version: "2.1.3",
+    date: "26 November 2026",
     changes: [
       {
         type: "changed",
@@ -965,7 +1088,7 @@ const datePickerPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.1.2",
+    version: "2.1.2",
     date: "20 November 2026",
     changes: [
       {
@@ -977,7 +1100,7 @@ const datePickerPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.1.1",
+    version: "2.1.1",
     date: "20 November 2026",
     changes: [
       {
@@ -995,7 +1118,7 @@ const datePickerPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.1.0",
+    version: "2.1.0",
     date: "26 October 2026",
     changes: [
       {
@@ -1013,7 +1136,7 @@ const datePickerPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.0.0",
+    version: "2.0.0",
     date: "24 October 2026",
     changes: [
       {
