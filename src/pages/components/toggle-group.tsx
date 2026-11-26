@@ -895,7 +895,7 @@ function OverflowDemo() {
           <code>overflowMode="scroll"</code> — segments never wrap; the row
           scrolls instead
         </p>
-        <div className="max-w-[260px]">
+        <div className="max-w-64">
           <ToggleGroup
             aria-label="Workspace"
             variant="segment"
@@ -1107,7 +1107,7 @@ function GroupStatesStressSection() {
         Stress — narrow container with overflowMode="scroll" and a very long
         label.
       </p>
-      <div className="w-[320px]">
+      <div className="max-w-xs">
         <ToggleGroup
           aria-label="Overflow states"
           variant="segment"
@@ -1353,7 +1353,226 @@ const kiraGroupCode = `import { KiraToggleGroup } from "@/components/ui/toggle-g
   ]}
 />`;
 
-const features = [
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-6">
+      <div className="space-y-2">
+        <p className="text-xs text-muted-foreground">
+          Long labels in a max-w-xs container with horizontal scroll overflow
+        </p>
+        <ToggleGroup
+          aria-label="Workspace views"
+          variant="segment"
+          overflowMode="scroll"
+          defaultValue={["analytics"]}
+        >
+          <ToggleGroupItem value="analytics">
+            Quarterly Revenue Analytics
+          </ToggleGroupItem>
+          <ToggleGroupItem value="retention">
+            Customer Retention Cohorts
+          </ToggleGroupItem>
+          <ToggleGroupItem value="forecasting">
+            Enterprise Pipeline Forecasting
+          </ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs text-muted-foreground">
+          Empty initial selection with allowEmpty
+        </p>
+        <ToggleGroup
+          aria-label="Optional filter"
+          variant="outline"
+          allowEmpty
+          defaultValue={[]}
+        >
+          <ToggleGroupItem value="open">Open</ToggleGroupItem>
+          <ToggleGroupItem value="closed">Closed</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs text-muted-foreground">
+          Disabled group and item with disabledReason
+        </p>
+        <KiraToggleGroup
+          aria-label="Policy status"
+          variant="segment"
+          defaultValue={["active"]}
+          items={stressKiraItems}
+        />
+        <ToggleGroup
+          aria-label="Disabled entire group"
+          variant="outline"
+          disabled
+          defaultValue={["read"]}
+        >
+          <ToggleGroupItem value="read">Read</ToggleGroupItem>
+          <ToggleGroupItem value="write">Write</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+    </div>
+  );
+}
+
+const stressCode = `import {
+  ToggleGroup,
+  ToggleGroupItem,
+  KiraToggleGroup,
+} from "@/components/ui/toggle-group"
+
+export function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-6">
+      <ToggleGroup
+        aria-label="Workspace views"
+        variant="segment"
+        overflowMode="scroll"
+        defaultValue={["analytics"]}
+      >
+        <ToggleGroupItem value="analytics">Quarterly Revenue Analytics</ToggleGroupItem>
+        <ToggleGroupItem value="retention">Customer Retention Cohorts</ToggleGroupItem>
+        <ToggleGroupItem value="forecasting">Enterprise Pipeline Forecasting</ToggleGroupItem>
+      </ToggleGroup>
+
+      <ToggleGroup aria-label="Optional filter" variant="outline" allowEmpty defaultValue={[]}>
+        <ToggleGroupItem value="open">Open</ToggleGroupItem>
+        <ToggleGroupItem value="closed">Closed</ToggleGroupItem>
+      </ToggleGroup>
+
+      <KiraToggleGroup
+        aria-label="Policy status"
+        variant="segment"
+        defaultValue={["active"]}
+        items={[
+          { value: "active", label: "Active" },
+          {
+            value: "locked",
+            label: "Locked",
+            disabled: true,
+            disabledReason: "Managed by your organization.",
+          },
+        ]}
+      />
+    </div>
+  )
+}`;
+
+const usageCode = `import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
+{/* Single selection (default) */}
+<ToggleGroup aria-label="Text alignment" defaultValue={["left"]}>
+  <ToggleGroupItem value="left">Left</ToggleGroupItem>
+  <ToggleGroupItem value="center">Center</ToggleGroupItem>
+  <ToggleGroupItem value="right">Right</ToggleGroupItem>
+</ToggleGroup>
+
+{/* Multiple selection */}
+<ToggleGroup aria-label="Text formatting" multiple defaultValue={["bold"]}>
+  <ToggleGroupItem value="bold" aria-label="Bold">
+    <IconBold className="h-4 w-4" />
+  </ToggleGroupItem>
+  <ToggleGroupItem value="italic" aria-label="Italic">
+    <IconItalic className="h-4 w-4" />
+  </ToggleGroupItem>
+</ToggleGroup>
+
+{/* Segment variant (iOS style) */}
+<ToggleGroup aria-label="View mode" variant="segment">
+  <ToggleGroupItem value="grid">Grid</ToggleGroupItem>
+  <ToggleGroupItem value="list">List</ToggleGroupItem>
+</ToggleGroup>
+
+{/* Controlled mode */}
+const [value, setValue] = useState<string[]>([])
+<ToggleGroup
+  aria-label="Filters"
+  value={value}
+  onValueChange={setValue}
+>
+  <ToggleGroupItem value="all">All</ToggleGroupItem>
+  <ToggleGroupItem value="active">Active</ToggleGroupItem>
+</ToggleGroup>`;
+
+export default function ToggleGroupPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Toggle Group"
+        description="A group of toggle buttons where one or multiple items can be selected. Three ARIA models (aria-current, radiogroup, aria-pressed), a sliding indicator, one-selected-always, form-field semantics, and full keyboard accessibility."
+        version="v2.2.1"
+      />
+
+      <FeatureGrid
+        features={toggleGroupPageFeatures}
+        description="Capabilities built into ToggleGroup and KiraToggleGroup."
+      />
+
+      <DemoTabs tabs={toggleGroupPageDemoTabs} defaultValue="multiple" />
+
+      <KeyboardShortcuts
+        shortcuts={toggleGroupPageShortcuts}
+        description="Keyboard navigation and selection bindings across toggle and radio modes."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Basic implementation examples for ToggleGroup including single/multiple selection, variants, and controlled mode."
+        notes={[
+          {
+            label: "KiraToggleGroup",
+            body: "Use the data-driven wrapper for item arrays, dense icon-only toolbars with tooltips, ARIA-wired label/description, and optimistic async updates.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={toggleGroupPageAPISections}
+        description="Props, types, and defaults for ToggleGroup, KiraToggleGroup, and ToggleGroupItem."
+      />
+
+      <Changelog
+        entries={toggleGroupPageChangelogEntries}
+        title="Changelog"
+        description="Version history and changes for ToggleGroup."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located and follows its source constants.
+const denseSectionKiraToggleGroupItems = [
+  {
+    value: "left",
+    label: "Align left",
+    icon: <IconAlignLeft className="h-4 w-4" />,
+  },
+  {
+    value: "center",
+    label: "Align center",
+    icon: <IconAlignCenter className="h-4 w-4" />,
+  },
+  {
+    value: "right",
+    label: "Align right",
+    icon: <IconAlignRight className="h-4 w-4" />,
+  },
+] satisfies ReactComponentProps<typeof KiraToggleGroup>["items"];
+
+const stressKiraItems = [
+  { value: "active", label: "Active" },
+  {
+    value: "locked",
+    label: "Locked",
+    disabled: true,
+    disabledReason: "Managed by your organization.",
+  },
+] satisfies ReactComponentProps<typeof KiraToggleGroup>["items"];
+
+const toggleGroupPageFeatures = [
   {
     title: "Accessible",
     description:
@@ -1372,9 +1591,292 @@ const features = [
       "Default, outline, segment (iOS-style), and pills variants with sm, default, and lg sizes for both horizontal and vertical orientations.",
     icon: <IconStack2 className="h-4 w-4" />,
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const keyboardShortcuts = [
+const toggleGroupPageDemoTabs = [
+  {
+    value: "multiple",
+    label: "Multiple Selection",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Multiple Selection"
+        description="Multiple items can be selected simultaneously. Uses checkbox behavior with the multiple prop."
+        code={multipleSelectionCode}
+      >
+        <MultipleSelectionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "single",
+    label: "Single Selection",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Single Selection"
+        description="Only one item can be selected at a time. Uses radio behavior (default)."
+        code={singleSelectionCode}
+      >
+        <SingleSelectionDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "variants",
+    label: "Variants",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Visual Variants"
+        description="Outline, segment (iOS-style), and pills variants for different use cases."
+        code={variantsCode}
+      >
+        <VariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="Small, default, and large sizes for different contexts."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "vertical",
+    label: "Vertical",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Vertical Orientation"
+        description="Toggle group with vertical layout using orientation prop."
+        code={verticalCode}
+      >
+        <VerticalDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "controlled",
+    label: "Controlled",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Controlled Mode"
+        description="Full control over selection with value and onValueChange props."
+        code={controlledCode}
+      >
+        <ControlledDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "colors",
+    label: "Color Variants",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Semantic Color Variants"
+        description="Individual items can have success, warning, or destructive colors when pressed."
+        code={colorVariantsCode}
+      >
+        <ColorVariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "disabled",
+    label: "Disabled",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Disabled States"
+        description="Disable the entire group or individual items."
+        code={disabledCode}
+      >
+        <DisabledDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "mixed",
+    label: "Mixed Content",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Icons and Text"
+        description="Combine icons and text for rich toggle items."
+        code={mixedContentCode}
+      >
+        <MixedContentDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraToggleGroup",
+    group: "KiraToggleGroup",
+    demo: (
+      <DemoWrapper
+        title="KiraToggleGroup"
+        description="One prop-driven entry point over the group family: items as data, label/description wired to ARIA, dense icon-only mode with tooltips, and optimistic async selection that rolls back with a toast when the handler rejects."
+        code={kiraGroupCode}
+      >
+        <KiraGroupDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "one-selected",
+    label: "One Selected Always",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="One Selected Always"
+        description="Single-select segmented controls never allow an empty selection — pressing the active segment can't clear it. Material 3, Apple HIG, eBay and the VA design system all agree. Pass allowEmpty to opt out for filter-style groups."
+        code={oneSelectedAlwaysCode}
+      >
+        <OneSelectedAlwaysDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "semantics",
+    label: "ARIA Semantics",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="ARIA Semantics"
+        description='Single-select groups default to aria-current="true" on the active segment (the Primer/eBay model), conveying "one of a set is active". Pass semantics="toggle" for aria-pressed on/off buttons. Multi-select groups are always aria-pressed, per the APG.'
+        code={semanticsCode}
+      >
+        <SemanticsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "radio-mode",
+    label: "Radio Mode",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title='semantics="radio"'
+        description='The ARIA17-normative model for a mutually-exclusive set: role="radiogroup" on the container, role="radio" + aria-checked on each segment, one tab stop, and arrow keys that move focus and selection together. Use it when the group is a real form field. allowEmpty is ignored — a radio group has no "none" state.'
+        code={radioModeCode}
+      >
+        <RadioModeDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "form-field",
+    label: "Form Field",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Form Field Semantics"
+        description="required forwards aria-required; invalid forwards aria-invalid and links errorMessage via aria-describedby. Per ARIA21, set invalid only after validation runs — never on mount."
+        code={formFieldCode}
+      >
+        <FormFieldDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "selected-icon",
+    label: "Selected Icon",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Selected Checkmark"
+        description="showSelectedIcon renders a checkmark on the active segment — Material 3's default affordance, so selection isn't signalled by background colour alone."
+        code={selectedIconCode}
+      >
+        <SelectedIconDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sliding",
+    label: "Sliding Indicator",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Sliding Pill Indicator"
+        description="The defining 2026 segmented-control affordance: a pill that slides behind the active segment. Position is measured from the pressed item rather than guessed from an index, so it survives uneven widths. Single-select only, and reduced-motion gated — with the OS setting on it jumps instead of sliding."
+        code={slidingIndicatorCode}
+      >
+        <SlidingIndicatorDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "shape-morph",
+    label: "Shape Morph",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Shape Morph (M3 Expressive)"
+        description='Selecting a segment grows its radius and springs the item — the Material 3 Expressive button-group behavior. Guarded off under variant="outline" / "segment" and when a sliding indicator owns the fill.'
+        code={shapeMorphCode}
+      >
+        <ShapeMorphDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "overflow",
+    label: "Overflow",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Responsive Overflow"
+        description="Segments must never wrap. overflowMode='scroll' keeps them on one line and scrolls; 'hideLabels' collapses to icon-only while keeping the label as the accessible name and tooltip."
+        code={overflowCode}
+      >
+        <OverflowDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="State Matrix"
+        description="Every state the group can render: interactive, disabled (with a keyboard-reachable reason), loading per item, and narrow overflow. All sizes keep ≥ 24×24 targets (sm = 28px) per WCAG 2.5.8."
+        code={statesCode}
+      >
+        <GroupStatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, empty selection, and disabled states inside a narrow max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const toggleGroupPageShortcuts = [
   {
     keys: "Space / Enter",
     description:
@@ -1393,9 +1895,9 @@ const keyboardShortcuts = [
   { keys: "Home", description: "Focus first item" },
   { keys: "End", description: "Focus last item" },
   { keys: "Tab", description: "Move focus out of group" },
-];
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-const apiSections = [
+const toggleGroupPageAPISections = [
   {
     title: "ToggleGroup",
     props: [
@@ -1444,6 +1946,12 @@ const apiSections = [
         type: '"horizontal" | "vertical"',
         default: '"horizontal"',
         description: "Layout orientation of the toggle group.",
+      },
+      {
+        prop: "radius",
+        type: '"default" | "pill"',
+        default: '"default"',
+        description: "Corner radius preset for the group and its items.",
       },
       {
         prop: "loopFocus",
@@ -1597,10 +2105,28 @@ const apiSections = [
         description: "Override the group size for this specific item.",
       },
       {
+        prop: "tooltip",
+        type: "React.ReactNode",
+        description:
+          "Tooltip content shown on hover/focus; ideal for icon-only dense items.",
+      },
+      {
+        prop: "tooltipSide",
+        type: '"top" | "right" | "bottom" | "left"',
+        default: '"top"',
+        description: "Preferred side for the item tooltip.",
+      },
+      {
         prop: "disabled",
         type: "boolean",
         default: "false",
         description: "Disables this specific toggle item.",
+      },
+      {
+        prop: "disabledReason",
+        type: "React.ReactNode",
+        description:
+          "Keyboard-reachable tooltip explaining why the item is disabled.",
       },
       {
         prop: "aria-label",
@@ -1610,298 +2136,12 @@ const apiSections = [
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const demoTabs = [
+const toggleGroupPageChangelogEntries = [
   {
-    value: "multiple",
-    label: "Multiple Selection",
-    demo: (
-      <DemoWrapper
-        title="Multiple Selection"
-        description="Multiple items can be selected simultaneously. Uses checkbox behavior with the multiple prop."
-        code={multipleSelectionCode}
-      >
-        <MultipleSelectionDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "single",
-    label: "Single Selection",
-    demo: (
-      <DemoWrapper
-        title="Single Selection"
-        description="Only one item can be selected at a time. Uses radio behavior (default)."
-        code={singleSelectionCode}
-      >
-        <SingleSelectionDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "variants",
-    label: "Variants",
-    demo: (
-      <DemoWrapper
-        title="Visual Variants"
-        description="Outline, segment (iOS-style), and pills variants for different use cases."
-        code={variantsCode}
-      >
-        <VariantsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "sizes",
-    label: "Sizes",
-    demo: (
-      <DemoWrapper
-        title="Size Variants"
-        description="Small, default, and large sizes for different contexts."
-        code={sizesCode}
-      >
-        <SizesDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "vertical",
-    label: "Vertical",
-    demo: (
-      <DemoWrapper
-        title="Vertical Orientation"
-        description="Toggle group with vertical layout using orientation prop."
-        code={verticalCode}
-      >
-        <VerticalDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "controlled",
-    label: "Controlled",
-    demo: (
-      <DemoWrapper
-        title="Controlled Mode"
-        description="Full control over selection with value and onValueChange props."
-        code={controlledCode}
-      >
-        <ControlledDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "colors",
-    label: "Color Variants",
-    demo: (
-      <DemoWrapper
-        title="Semantic Color Variants"
-        description="Individual items can have success, warning, or destructive colors when pressed."
-        code={colorVariantsCode}
-      >
-        <ColorVariantsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "disabled",
-    label: "Disabled",
-    demo: (
-      <DemoWrapper
-        title="Disabled States"
-        description="Disable the entire group or individual items."
-        code={disabledCode}
-      >
-        <DisabledDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "mixed",
-    label: "Mixed Content",
-    demo: (
-      <DemoWrapper
-        title="Icons and Text"
-        description="Combine icons and text for rich toggle items."
-        code={mixedContentCode}
-      >
-        <MixedContentDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "one-selected",
-    label: "One Selected Always",
-    demo: (
-      <DemoWrapper
-        title="One Selected Always"
-        description="Single-select segmented controls never allow an empty selection — pressing the active segment can't clear it. Material 3, Apple HIG, eBay and the VA design system all agree. Pass allowEmpty to opt out for filter-style groups."
-        code={oneSelectedAlwaysCode}
-      >
-        <OneSelectedAlwaysDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "semantics",
-    label: "ARIA Semantics",
-    demo: (
-      <DemoWrapper
-        title="ARIA Semantics"
-        description='Single-select groups default to aria-current="true" on the active segment (the Primer/eBay model), conveying "one of a set is active". Pass semantics="toggle" for aria-pressed on/off buttons. Multi-select groups are always aria-pressed, per the APG.'
-        code={semanticsCode}
-      >
-        <SemanticsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "radio-mode",
-    label: "Radio Mode",
-    demo: (
-      <DemoWrapper
-        title='semantics="radio"'
-        description='The ARIA17-normative model for a mutually-exclusive set: role="radiogroup" on the container, role="radio" + aria-checked on each segment, one tab stop, and arrow keys that move focus and selection together. Use it when the group is a real form field. allowEmpty is ignored — a radio group has no "none" state.'
-        code={radioModeCode}
-      >
-        <RadioModeDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "form-field",
-    label: "Form Field",
-    demo: (
-      <DemoWrapper
-        title="Form Field Semantics"
-        description="required forwards aria-required; invalid forwards aria-invalid and links errorMessage via aria-describedby. Per ARIA21, set invalid only after validation runs — never on mount."
-        code={formFieldCode}
-      >
-        <FormFieldDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "selected-icon",
-    label: "Selected Icon",
-    demo: (
-      <DemoWrapper
-        title="Selected Checkmark"
-        description="showSelectedIcon renders a checkmark on the active segment — Material 3's default affordance, so selection isn't signalled by background colour alone."
-        code={selectedIconCode}
-      >
-        <SelectedIconDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "states",
-    label: "States",
-    demo: (
-      <DemoWrapper
-        title="State Matrix"
-        description="Every state the group can render: interactive, disabled (with a keyboard-reachable reason), loading per item, and stress cases. All sizes keep ≥ 24×24 targets (sm = 28px) per WCAG 2.5.8."
-        code={statesCode}
-      >
-        <GroupStatesDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "sliding",
-    label: "Sliding Indicator",
-    demo: (
-      <DemoWrapper
-        title="Sliding Pill Indicator"
-        description="The defining 2026 segmented-control affordance: a pill that slides behind the active segment. Position is measured from the pressed item rather than guessed from an index, so it survives uneven widths. Single-select only, and reduced-motion gated — with the OS setting on it jumps instead of sliding."
-        code={slidingIndicatorCode}
-      >
-        <SlidingIndicatorDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "shape-morph",
-    label: "Shape Morph",
-    demo: (
-      <DemoWrapper
-        title="Shape Morph (M3 Expressive)"
-        description='Selecting a segment grows its radius and springs the item — the Material 3 Expressive button-group behavior. Guarded off under variant="outline" / "segment" and when a sliding indicator owns the fill.'
-        code={shapeMorphCode}
-      >
-        <ShapeMorphDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "kira",
-    label: "KiraToggleGroup",
-    demo: (
-      <DemoWrapper
-        title="KiraToggleGroup"
-        description="One prop-driven entry point over the group family: items as data, label/description wired to ARIA, dense icon-only mode with tooltips, and optimistic async selection that rolls back with a toast when the handler rejects."
-        code={kiraGroupCode}
-      >
-        <KiraGroupDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "overflow",
-    label: "Overflow",
-    demo: (
-      <DemoWrapper
-        title="Responsive Overflow"
-        description="Segments must never wrap. overflowMode='scroll' keeps them on one line and scrolls; 'hideLabels' collapses to icon-only while keeping the label as the accessible name and tooltip."
-        code={overflowCode}
-      >
-        <OverflowDemo />
-      </DemoWrapper>
-    ),
-  },
-];
-
-const usageCode = `import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-
-{/* Single selection (default) */}
-<ToggleGroup aria-label="Text alignment" defaultValue={["left"]}>
-<ToggleGroupItem value="left">Left</ToggleGroupItem>
-<ToggleGroupItem value="center">Center</ToggleGroupItem>
-<ToggleGroupItem value="right">Right</ToggleGroupItem>
-</ToggleGroup>
-
-{/* Multiple selection */}
-<ToggleGroup aria-label="Text formatting" multiple defaultValue={["bold"]}>
-<ToggleGroupItem value="bold" aria-label="Bold">
-  <IconBold className="h-4 w-4" />
-</ToggleGroupItem>
-<ToggleGroupItem value="italic" aria-label="Italic">
-  <IconItalic className="h-4 w-4" />
-</ToggleGroupItem>
-</ToggleGroup>
-
-{/* Segment variant (iOS style) */}
-<ToggleGroup aria-label="View mode" variant="segment">
-<ToggleGroupItem value="grid">Grid</ToggleGroupItem>
-<ToggleGroupItem value="list">List</ToggleGroupItem>
-</ToggleGroup>
-
-{/* Controlled mode */}
-const [value, setValue] = useState<string[]>([])
-<ToggleGroup
-aria-label="Filters"
-value={value}
-onValueChange={setValue}
->
-<ToggleGroupItem value="all">All</ToggleGroupItem>
-<ToggleGroupItem value="active">Active</ToggleGroupItem>
-</ToggleGroup>`;
-
-const changelogEntries = [
-  {
-    version: "Unreleased",
-    date: "In development",
+    version: "2.2.1",
+    date: "26 November 2026",
     changes: [
       {
         type: "changed",
@@ -2001,50 +2241,4 @@ const changelogEntries = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof Changelog>["entries"];
-
-export default function ToggleGroupPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Toggle Group"
-        description="A group of toggle buttons where one or multiple items can be selected. Three ARIA models (aria-current, radiogroup, aria-pressed), a sliding indicator, one-selected-always, form-field semantics, and full keyboard accessibility."
-        version="v2.2"
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="multiple" />
-
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
-
-      <UsageBlock
-        code={usageCode}
-        description="Basic implementation examples for ToggleGroup including single/multiple selection, variants, and controlled mode."
-      />
-
-      <APIReference sections={apiSections} />
-
-      <Changelog entries={changelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
-const denseSectionKiraToggleGroupItems = [
-  {
-    value: "left",
-    label: "Align left",
-    icon: <IconAlignLeft className="h-4 w-4" />,
-  },
-  {
-    value: "center",
-    label: "Align center",
-    icon: <IconAlignCenter className="h-4 w-4" />,
-  },
-  {
-    value: "right",
-    label: "Align right",
-    icon: <IconAlignRight className="h-4 w-4" />,
-  },
-] satisfies ReactComponentProps<typeof KiraToggleGroup>["items"];
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

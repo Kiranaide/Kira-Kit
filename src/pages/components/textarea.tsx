@@ -1,27 +1,26 @@
 import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
-  IconTextResize,
-  IconLetterCase,
   IconAccessible,
+  IconLetterCase,
+  IconTextResize,
 } from "@tabler/icons-react";
-
-import {
-  Textarea,
-  TextareaWithCounter,
-  KiraTextarea,
-} from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
-  ComponentPage,
-  PageHeader,
-  FeatureGrid,
-  DemoTabs,
-  DemoWrapper,
-  KeyboardShortcuts,
-  UsageBlock,
+  KiraTextarea,
+  Textarea,
+  TextareaWithCounter,
+} from "@/components/ui/textarea";
+import {
   APIReference,
   Changelog,
+  ComponentPage,
+  DemoTabs,
+  DemoWrapper,
+  FeatureGrid,
+  KeyboardShortcuts,
+  PageHeader,
+  UsageBlock,
 } from "@/components/docs";
 
 const basicCode = `import { Textarea } from "@/components/ui/textarea"
@@ -48,6 +47,10 @@ export function SizeVariantsDemo() {
       <div className="space-y-2">
         <label className="text-sm font-medium">Large</label>
         <Textarea size="lg" placeholder="Large textarea..." />
+      </div>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Extra Large</label>
+        <Textarea size="xl" placeholder="Extra large textarea..." />
       </div>
     </div>
   )
@@ -224,7 +227,7 @@ const kiraCode = `import { useState } from "react"
 import { KiraTextarea } from "@/components/ui/textarea"
 
 export function KiraTextareaDemo() {
-  const [messages, setMessages] = useState<string[]>([])
+  const [messages, setMessages] = useState<{ id: string; text: string }[]>([])
 
   return (
     <KiraTextarea
@@ -234,10 +237,9 @@ export function KiraTextareaDemo() {
       showCount
       clearable
       submitOn="mod-enter"
-      onSubmit={(text) => {
-          const message = { id: crypto.randomUUID(), text };
-          setMessages((current) => [...current, message]);
-        }}
+      onSubmit={(text) =>
+        setMessages((current) => [...current, { id: crypto.randomUUID(), text }])
+      }
       placeholder="Share your thoughts..."
     />
   )
@@ -273,6 +275,35 @@ export function ValidationDemo() {
   )
 }`;
 
+const stressCode = `import { KiraTextarea } from "@/components/ui/textarea"
+
+export function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <KiraTextarea
+        label="Incident post-mortem summary and cross-functional remediation timeline"
+        description="Long label, over-limit text, clear button, and counter inside a narrow container."
+        maxLength={60}
+        showCount
+        clearable
+        defaultValue="This prefilled summary intentionally exceeds the sixty-character soft limit to verify wrapping, clear button offset, and error styling."
+      />
+      <KiraTextarea
+        label="Empty optional notes"
+        placeholder=""
+        maxLength={120}
+        showCount
+      />
+      <KiraTextarea
+        label="Disabled narrow field"
+        disabled
+        clearable
+        defaultValue="Disabled content cannot be edited or cleared."
+      />
+    </div>
+  )
+}`;
+
 const usageCode = `import { Textarea, TextareaWithCounter, KiraTextarea } from "@/components/ui/textarea"
 
 // Basic textarea
@@ -300,13 +331,6 @@ const usageCode = `import { Textarea, TextareaWithCounter, KiraTextarea } from "
   showRemaining
 />
 
-// Accessibility
-<Textarea
-  aria-describedby="helper-text"
-  aria-required
-  aria-invalid={hasError}
-/>
-
 // KiraTextarea — label + counter + clear + keyboard submit in one API
 <KiraTextarea
   label="Comment"
@@ -330,7 +354,7 @@ function SizesDemo() {
   const textareaLabelsId = React.useId();
 
   return (
-    <div className="flex flex-col gap-4 max-w-md">
+    <div className="flex max-w-md flex-col gap-4">
       <div className="space-y-2">
         <label
           htmlFor={`${textareaLabelsId}-1`}
@@ -396,7 +420,7 @@ function ResizeDemo() {
   const [useMaxRows, setUseMaxRows] = React.useState(false);
 
   return (
-    <div className="space-y-4 max-w-md">
+    <div className="max-w-md space-y-4">
       <div className="flex flex-wrap gap-2">
         <Button
           variant={resize === "none" ? "secondary" : "outline"}
@@ -433,7 +457,7 @@ function ResizeDemo() {
         minRows={useMinRows ? 3 : undefined}
         maxRows={useMaxRows ? 10 : undefined}
       />
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -457,7 +481,6 @@ function ResizeDemo() {
 
 function CounterDemo() {
   const textareaLabelsId = React.useId();
-
   const [counterValue, setCounterValue] = React.useState("");
 
   return (
@@ -503,7 +526,7 @@ function AutoSizeDemo() {
   const textareaLabelsId = React.useId();
 
   return (
-    <div className="space-y-4 max-w-md">
+    <div className="max-w-md space-y-4">
       <div className="space-y-2">
         <label
           htmlFor={`${textareaLabelsId}-6`}
@@ -553,7 +576,7 @@ function DisabledDemo() {
   const textareaLabelsId = React.useId();
 
   return (
-    <div className="space-y-4 max-w-md">
+    <div className="max-w-md space-y-4">
       <div className="space-y-2">
         <label
           htmlFor={`${textareaLabelsId}-9`}
@@ -626,8 +649,8 @@ function KiraDemo() {
         clearable
         submitOn="mod-enter"
         onSubmit={(text) =>
-          setMessages((messages) => [
-            ...messages,
+          setMessages((current) => [
+            ...current,
             { id: crypto.randomUUID(), text },
           ])
         }
@@ -668,7 +691,7 @@ function SubmitDemo() {
         onSubmit={setSent}
         placeholder="Type a message and press Enter..."
       />
-      {sent && (
+      {sent !== null && sent.length > 0 && (
         <p className="text-sm text-muted-foreground">
           Last submitted: <span className="text-foreground">{sent}</span>
         </p>
@@ -710,184 +733,111 @@ function ValidationDemoLive() {
   );
 }
 
-const features = [
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <KiraTextarea
+        label="Incident post-mortem summary and cross-functional remediation timeline"
+        description="Long label, over-limit text, clear button, and counter inside a narrow container."
+        maxLength={60}
+        showCount
+        clearable
+        defaultValue="This prefilled summary intentionally exceeds the sixty-character soft limit to verify wrapping, clear button offset, and error styling."
+      />
+      <KiraTextarea
+        label="Empty optional notes"
+        placeholder=""
+        maxLength={120}
+        showCount
+      />
+      <KiraTextarea
+        label="Disabled narrow field"
+        disabled
+        clearable
+        defaultValue="Disabled content cannot be edited or cleared."
+      />
+    </div>
+  );
+}
+
+export default function TextareaPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Textarea"
+        version="v2.3.0"
+        description="Multi-line text input with auto-resize, an accessible character counter, keyboard submit, a clear button, and the unified KiraTextarea API."
+      />
+
+      <FeatureGrid
+        features={textareaPageFeatures}
+        description="Capabilities built into Kira Kit."
+      />
+
+      <DemoTabs tabs={textareaPageDemoTabs} defaultValue="kira" />
+
+      <KeyboardShortcuts
+        shortcuts={textareaPageShortcuts}
+        description="Native editing shortcuts plus KiraTextarea submit bindings."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Common usage patterns and configuration options."
+        notes={[
+          {
+            label: "KiraTextarea",
+            body: "Prefer KiraTextarea when you need a wired label, helper description, accessible counter, clear button, inline validation, or keyboard submit.",
+          },
+          {
+            label: "Textarea vs TextareaWithCounter",
+            body: "Use Textarea for bare form controls and TextareaWithCounter when you only need the GOV.UK/USWDS accessible counter without field chrome.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={textareaPageAPISections}
+        title="API reference"
+        description="Props for Textarea, TextareaWithCounter, and KiraTextarea."
+      />
+
+      <Changelog
+        entries={textareaPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Textarea."
+      />
+    </ComponentPage>
+  );
+}
+
+const textareaPageFeatures = [
   {
     title: "Auto-resize",
     description:
       "Automatically adjusts height based on content using CSS field-sizing. Configure min/max rows for constraints.",
-    icon: <IconTextResize className="h-4 w-4" />,
+    icon: <IconTextResize className="size-4" />,
   },
   {
     title: "Character Counter",
     description:
       "Real-time character counter with warning at 80% and error at 100%. Shows current/max or remaining characters.",
-    icon: <IconLetterCase className="h-4 w-4" />,
+    icon: <IconLetterCase className="size-4" />,
   },
   {
     title: "Accessible",
     description:
-      "WCAG 2.2 AA compliant with aria-describedby, aria-invalid, aria-live regions, and 3:1 contrast focus indicators.",
-    icon: <IconAccessible className="h-4 w-4" />,
+      "WCAG 2.2 AA compliant with aria-describedby, aria-invalid, debounced aria-live regions, and 3:1 contrast focus indicators.",
+    icon: <IconAccessible className="size-4" />,
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const keyboardShortcuts = [
-  { keys: "Tab", description: "Move focus to/from textarea" },
-  { keys: "Shift + Tab", description: "Move focus backwards" },
-  { keys: "Enter", description: "Insert new line" },
-  { keys: "Ctrl + A", description: "Select all text" },
-  { keys: "Ctrl + C", description: "Copy selected text" },
-  { keys: "Ctrl + V", description: "Paste from clipboard" },
-];
-
-const apiSections = [
-  {
-    title: "Textarea",
-    props: [
-      {
-        prop: "size",
-        type: '"sm" | "default" | "lg"',
-        default: '"default"',
-        description: "Size variant affecting padding and font size",
-      },
-      {
-        prop: "resize",
-        type: '"none" | "vertical" | "horizontal" | "both"',
-        default: '"none"',
-        description: "Controls resize behavior of the textarea",
-      },
-      {
-        prop: "minRows",
-        type: "number",
-        description: "Minimum number of visible rows (affects min-height)",
-      },
-      {
-        prop: "maxRows",
-        type: "number",
-        description:
-          "Maximum number of visible rows (affects max-height, enables scroll)",
-      },
-      {
-        prop: "autoSize",
-        type: "boolean",
-        default: "true",
-        description:
-          "Enable auto-sizing based on content using CSS field-sizing",
-      },
-    ],
-  },
-  {
-    title: "TextareaWithCounter",
-    props: [
-      {
-        prop: "maxLength",
-        type: "number",
-        description: "Maximum character count (required)",
-      },
-      {
-        prop: "warningThreshold",
-        type: "number",
-        default: "0.8",
-        description: "Threshold (0-1) at which to show warning color",
-      },
-      {
-        prop: "showRemaining",
-        type: "boolean",
-        default: "false",
-        description: "Show remaining characters instead of current/max",
-      },
-      {
-        prop: "renderCounter",
-        type: "(props) => ReactNode",
-        description: "Custom counter render function",
-      },
-      {
-        prop: "wrapperClassName",
-        type: "string",
-        description: "Additional class for the wrapper element",
-      },
-    ],
-  },
-  {
-    title: "KiraTextarea",
-    props: [
-      {
-        prop: "label",
-        type: "string",
-        description: "Visible label rendered above the textarea",
-      },
-      {
-        prop: "description",
-        type: "string",
-        description: "Helper text linked via aria-describedby",
-      },
-      {
-        prop: "error",
-        type: "string",
-        description: "Error message; sets aria-invalid and role=alert",
-      },
-      {
-        prop: "maxLength",
-        type: "number",
-        description: "Enables the accessible character counter",
-      },
-      {
-        prop: "showCount",
-        type: "boolean",
-        default: "false",
-        description: "Show current/max counter (requires maxLength)",
-      },
-      {
-        prop: "showRemaining",
-        type: "boolean",
-        default: "false",
-        description: "Show remaining count instead of current/max",
-      },
-      {
-        prop: "hardLimit",
-        type: "boolean",
-        default: "false",
-        description:
-          "Enforce native maxLength truncation instead of soft over-limit",
-      },
-      {
-        prop: "clearable",
-        type: "boolean",
-        default: "false",
-        description: "Show a clear button when the field has content",
-      },
-      {
-        prop: "onSubmit",
-        type: "(value: string) => void",
-        description: "Fires on the submit combo with the trimmed value",
-      },
-      {
-        prop: "submitOn",
-        type: '"enter" | "mod-enter"',
-        default: '"mod-enter"',
-        description: "Which key combo triggers onSubmit",
-      },
-      {
-        prop: "validate",
-        type: "(value: string) => string | null",
-        description:
-          "Inline validation; the returned message renders as the error text, null clears it",
-      },
-      {
-        prop: "validationMode",
-        type: '"onBlur" | "onChange"',
-        default: '"onBlur"',
-        description:
-          "When validation runs; onChange revalidates after the first run",
-      },
-    ],
-  },
-];
-
-const demoTabs = [
+const textareaPageDemoTabs = [
   {
     value: "kira",
     label: "Kira",
+    group: "KiraTextarea",
     demo: (
       <DemoWrapper
         title="KiraTextarea"
@@ -901,6 +851,7 @@ const demoTabs = [
   {
     value: "submit",
     label: "Submit",
+    group: "KiraTextarea",
     demo: (
       <DemoWrapper
         title="Keyboard Submit"
@@ -914,6 +865,7 @@ const demoTabs = [
   {
     value: "clear",
     label: "Clear",
+    group: "KiraTextarea",
     demo: (
       <DemoWrapper
         title="Clear Button"
@@ -927,6 +879,7 @@ const demoTabs = [
   {
     value: "validation",
     label: "Validation",
+    group: "KiraTextarea",
     demo: (
       <DemoWrapper
         title="Inline validation"
@@ -940,6 +893,7 @@ const demoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Textarea"
@@ -953,6 +907,7 @@ const demoTabs = [
   {
     value: "sizes",
     label: "Sizes",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Size Variants"
@@ -966,6 +921,7 @@ const demoTabs = [
   {
     value: "resize",
     label: "Resize",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Resize Control"
@@ -979,6 +935,7 @@ const demoTabs = [
   {
     value: "counter",
     label: "Character Count",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Character Counter"
@@ -992,6 +949,7 @@ const demoTabs = [
   {
     value: "autosize",
     label: "Auto-size",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Auto-size"
@@ -1005,6 +963,7 @@ const demoTabs = [
   {
     value: "disabled",
     label: "Disabled",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Disabled & Read-only"
@@ -1018,6 +977,7 @@ const demoTabs = [
   {
     value: "accessibility",
     label: "Accessibility",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Accessibility Features"
@@ -1028,44 +988,236 @@ const demoTabs = [
       </DemoWrapper>
     ),
   },
-];
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, over-limit text, empty values, and disabled states inside a narrow max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-export default function TextareaPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Textarea"
-        version="v2.2"
-        description="Multi-line text input with auto-resize, an accessible character counter, keyboard submit, a clear button, and the unified KiraTextarea API."
-      />
+const textareaPageShortcuts = [
+  {
+    keys: "Tab",
+    group: "Native Textarea",
+    description: "Move focus to or from the textarea.",
+  },
+  {
+    keys: "Shift + Tab",
+    group: "Native Textarea",
+    description: "Move focus backwards.",
+  },
+  {
+    keys: "Enter",
+    group: "Native Textarea",
+    description: "Insert a new line (or submit when submitOn='enter').",
+  },
+  {
+    keys: "Cmd/Ctrl + Enter",
+    group: "KiraTextarea",
+    description:
+      "Trigger onSubmit with the trimmed value when submitOn='mod-enter' (default).",
+  },
+  {
+    keys: "Shift + Enter",
+    group: "KiraTextarea",
+    description: "Insert a new line when submitOn='enter'.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-      <FeatureGrid features={features} />
+const textareaPageAPISections = [
+  {
+    title: "Textarea",
+    props: [
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description:
+          "Size variant affecting padding, min-height, and font size.",
+      },
+      {
+        prop: "resize",
+        type: '"none" | "vertical" | "horizontal" | "both"',
+        default: '"none"',
+        description: "Controls resize behavior of the textarea.",
+      },
+      {
+        prop: "minRows",
+        type: "number",
+        default: "-",
+        description: "Minimum number of visible rows (affects min-height).",
+      },
+      {
+        prop: "maxRows",
+        type: "number",
+        default: "-",
+        description:
+          "Maximum number of visible rows (affects max-height, enables scroll).",
+      },
+      {
+        prop: "autoSize",
+        type: "boolean",
+        default: "true",
+        description:
+          "Enable auto-sizing based on content using CSS field-sizing.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes applied to the textarea element.",
+      },
+    ],
+  },
+  {
+    title: "TextareaWithCounter",
+    props: [
+      {
+        prop: "maxLength",
+        type: "number",
+        default: "-",
+        description: "Maximum character count (required).",
+      },
+      {
+        prop: "warningThreshold",
+        type: "number",
+        default: "0.8",
+        description: "Threshold (0-1) at which to show warning color.",
+      },
+      {
+        prop: "showRemaining",
+        type: "boolean",
+        default: "false",
+        description: "Show remaining characters instead of current/max.",
+      },
+      {
+        prop: "hardLimit",
+        type: "boolean",
+        default: "false",
+        description:
+          "Enforce native maxLength truncation instead of allowing soft over-limit.",
+      },
+      {
+        prop: "renderCounter",
+        type: "(props: { current: number; max: number; remaining: number; isWarning: boolean; isError: boolean }) => React.ReactNode",
+        default: "-",
+        description: "Custom counter render function.",
+      },
+      {
+        prop: "wrapperClassName",
+        type: "string",
+        default: "-",
+        description: "Additional class for the wrapper element.",
+      },
+    ],
+  },
+  {
+    title: "KiraTextarea",
+    props: [
+      {
+        prop: "label",
+        type: "string",
+        default: "-",
+        description: "Visible label rendered above the textarea.",
+      },
+      {
+        prop: "description",
+        type: "string",
+        default: "-",
+        description: "Helper text linked via aria-describedby.",
+      },
+      {
+        prop: "error",
+        type: "string",
+        default: "-",
+        description: "Error message; sets aria-invalid and role=alert.",
+      },
+      {
+        prop: "maxLength",
+        type: "number",
+        default: "-",
+        description: "Enables the accessible character counter.",
+      },
+      {
+        prop: "showCount",
+        type: "boolean",
+        default: "false",
+        description: "Show current/max counter (requires maxLength).",
+      },
+      {
+        prop: "showRemaining",
+        type: "boolean",
+        default: "false",
+        description: "Show remaining count instead of current/max.",
+      },
+      {
+        prop: "warningThreshold",
+        type: "number",
+        default: "0.8",
+        description:
+          "Threshold (0-1) at which the counter switches to warning.",
+      },
+      {
+        prop: "hardLimit",
+        type: "boolean",
+        default: "false",
+        description:
+          "Enforce native maxLength truncation instead of soft over-limit.",
+      },
+      {
+        prop: "clearable",
+        type: "boolean",
+        default: "false",
+        description: "Show a clear button when the field has content.",
+      },
+      {
+        prop: "onSubmit",
+        type: "(value: string) => void",
+        default: "-",
+        description: "Fires on the submit combo with the trimmed value.",
+      },
+      {
+        prop: "submitOn",
+        type: '"enter" | "mod-enter"',
+        default: '"mod-enter"',
+        description: "Which key combo triggers onSubmit.",
+      },
+      {
+        prop: "validate",
+        type: "(value: string) => string | null",
+        default: "-",
+        description:
+          "Inline validation; the returned message renders as the error text, null clears it.",
+      },
+      {
+        prop: "validationMode",
+        type: '"onBlur" | "onChange"',
+        default: '"onBlur"',
+        description:
+          "When validation runs; onChange revalidates after the first run.",
+      },
+      {
+        prop: "wrapperClassName",
+        type: "string",
+        default: "-",
+        description: "Additional class for the outer field wrapper.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-      <DemoTabs tabs={demoTabs} defaultValue="kira" />
-
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
-
-      <UsageBlock
-        code={usageCode}
-        title="Usage"
-        description="Common usage patterns and configuration options"
-      />
-
-      <APIReference
-        sections={apiSections}
-        title="API reference"
-        description="Props for Textarea, TextareaWithCounter, and KiraTextarea"
-      />
-
-      <Changelog entries={textareaPageChangelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
 const textareaPageChangelogEntries = [
   {
-    version: "v2.3",
+    version: "2.3.0",
     date: "18 November 2026",
     changes: [
       {
@@ -1083,7 +1235,7 @@ const textareaPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.2",
+    version: "2.2.0",
     date: "22 October 2026",
     changes: [
       {
@@ -1096,12 +1248,12 @@ const textareaPageChangelogEntries = [
         type: "changed",
         title: "Re-audited against Base UI 1.9.0",
         description:
-          "the stock Base UI textarea remains a bare styled textarea; parity reconfirmed, no primitive changes required.",
+          "The stock Base UI textarea remains a bare styled textarea; parity reconfirmed, no primitive changes required.",
       },
     ],
   },
   {
-    version: "v2.0",
+    version: "2.0.0",
     date: "22 July 2026",
     changes: [
       {

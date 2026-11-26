@@ -2,23 +2,19 @@ import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import { IconClock, IconGauge, IconLayout2 } from "@tabler/icons-react";
 import { format } from "date-fns";
+import { Label } from "@/components/ui/label";
+import { TimePicker } from "@/components/ui/time-picker";
 import {
-  TimePicker,
-  timePickerTriggerVariants,
-  type TimeGranularity,
-} from "@/components/ui/time-picker";
-import {
-  ComponentPage,
-  PageHeader,
-  FeatureGrid,
-  DemoTabs,
-  DemoWrapper,
-  KeyboardShortcuts,
-  UsageBlock,
   APIReference,
   Changelog,
+  ComponentPage,
+  DemoTabs,
+  DemoWrapper,
+  FeatureGrid,
+  KeyboardShortcuts,
+  PageHeader,
+  UsageBlock,
 } from "@/components/docs";
-import { Label } from "@/components/ui/label";
 
 function LiveDemo() {
   const [time, setTime] = React.useState<Date | undefined>();
@@ -31,7 +27,7 @@ function LiveDemo() {
         ariaLabel="Appointment time"
       />
       {time && (
-        <p className="text-sm text-muted-foreground mt-2">
+        <p className="mt-2 text-sm text-muted-foreground">
           Selected:{" "}
           <span data-testid="selected-time">{format(time, "HH:mm")}</span>
         </p>
@@ -59,7 +55,7 @@ function InlineDemo() {
   return (
     <div className="max-w-sm">
       <TimePicker popover={false} value={time} onChange={setTime} />
-      <p className="text-sm text-muted-foreground mt-2">
+      <p className="mt-2 text-sm text-muted-foreground">
         Selected: {time ? format(time, "HH:mm") : "none"}
       </p>
     </div>
@@ -71,7 +67,7 @@ const inlineCode = `import { TimePicker } from "@/components/ui/time-picker"
 // Bare panel, no popover chrome — for embedding in your own surfaces.
 <TimePicker popover={false} value={time} onChange={setTime} />
 
-// Variants: "full" (default) | "stepper" | "grid"
+// Variants: "stepper" (default) | "grid" | "full"
 <TimePicker popover={false} variant="stepper" value={time} onChange={setTime} />`;
 
 function VariantsDemo() {
@@ -112,9 +108,9 @@ function VariantsDemo() {
   );
 }
 
-const variantsCode = `<TimePicker value={time} onChange={setTime} /> {/* default: stepper */}
-<TimePicker variant="grid" value={time} onChange={setTime} />
-<TimePicker variant="full" /> {/* stepper stacked above grid */}`;
+const variantsCode = `<TimePicker popover={false} variant="stepper" value={time} onChange={setTime} /> {/* default */}
+<TimePicker popover={false} variant="grid" value={time} onChange={setTime} />
+<TimePicker popover={false} variant="full" value={time} onChange={setTime} /> {/* stepper stacked above grid */}`;
 
 function GranularityDemo() {
   const [minute, setMinute] = React.useState<Date | undefined>();
@@ -175,8 +171,8 @@ function HourCycleDemo() {
   );
 }
 
-const hourCycleCode = `<TimePicker hourCycle={24} />
-<TimePicker hourCycle={12} />`;
+const hourCycleCode = `<TimePicker hourCycle={24} value={time} onChange={setTime} />
+<TimePicker hourCycle={12} value={time} onChange={setTime} />`;
 
 function StepsDemo() {
   const [time, setTime] = React.useState<Date | undefined>();
@@ -202,6 +198,8 @@ function StepsDemo() {
 }
 
 const stepsCode = `<TimePicker
+  value={time}
+  onChange={setTime}
   hourStep={2}
   minuteStep={15}
   minTime="09:00"
@@ -228,9 +226,9 @@ function SizesDemo() {
   );
 }
 
-const sizesCode = `<TimePicker size="sm" />
-<TimePicker size="default" />
-<TimePicker size="lg" />`;
+const sizesCode = `<TimePicker size="sm" placeholder="Small" />
+<TimePicker size="default" placeholder="Default" />
+<TimePicker size="lg" placeholder="Large" />`;
 
 function StatesDemo() {
   const [empty, setEmpty] = React.useState<Date | undefined>();
@@ -269,28 +267,76 @@ function StatesDemo() {
   );
 }
 
-const statesCode = `<TimePicker disabled />
-<TimePicker invalid />
-<TimePicker required />
+const statesCode = `<TimePicker value={time} onChange={setTime} disabled />
+<TimePicker value={time} onChange={setTime} invalid />
+<TimePicker value={empty} onChange={setEmpty} required />
 <TimePicker value={time} onChange={setTime} /> {/* X to clear */}`;
 
-export default function TimePickerPage() {
+function StressDemo() {
+  const [narrowTime, setNarrowTime] = React.useState<Date | undefined>();
+
   return (
-    <ComponentPage>
-      <PageHeader
-        title="Time Picker"
-        description="A time-of-day picker with quick-pick presets, tappable hour/minute cell grids and typeable stepper fields — in one anchored popover or as an embeddable inline panel. Hand-rolled on the native Popover API (no Base UI time primitive exists)."
-        version="v1.0.0"
-      />
+    <div className="max-w-xs space-y-4">
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">
+          Long placeholder inside narrow container
+        </Label>
+        <TimePicker
+          value={narrowTime}
+          onChange={setNarrowTime}
+          placeholder="Select preferred quarterly maintenance window start time"
+          ariaLabel="Quarterly maintenance window start time"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">
+          Empty inline panel with empty presets
+        </Label>
+        <TimePicker
+          popover={false}
+          variant="grid"
+          presets={[]}
+          value={narrowTime}
+          onChange={setNarrowTime}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">Disabled inline stepper</Label>
+        <TimePicker
+          popover={false}
+          variant="stepper"
+          value={new Date(2026, 0, 1, 16, 45)}
+          disabled
+        />
+      </div>
+    </div>
+  );
+}
 
-      <FeatureGrid features={timePickerPageFeatureGridFeatures} />
+const stressCode = `import { TimePicker } from "@/components/ui/time-picker"
 
-      <DemoTabs defaultValue="live" tabs={timePickerPageDemoTabsTabs} />
+<div className="max-w-xs space-y-4">
+  <TimePicker
+    value={time}
+    onChange={setTime}
+    placeholder="Select preferred quarterly maintenance window start time"
+  />
+  <TimePicker
+    popover={false}
+    variant="grid"
+    presets={[]}
+    value={time}
+    onChange={setTime}
+  />
+  <TimePicker
+    popover={false}
+    variant="stepper"
+    value={new Date(2026, 0, 1, 16, 45)}
+    disabled
+  />
+</div>`;
 
-      <KeyboardShortcuts shortcuts={timePickerPageKeyboardShortcutsShortcuts} />
-
-      <UsageBlock
-        code={`import { TimePicker } from "@/components/ui/time-picker"
+const usageCode = `import { TimePicker } from "@/components/ui/time-picker"
 
 {/* Popover (default) */}
 <TimePicker value={time} onChange={setTime} />
@@ -299,53 +345,93 @@ export default function TimePickerPage() {
 <TimePicker granularity="second" hourCycle={12} value={time} onChange={setTime} />
 
 {/* Steps, window, blocked slots */}
-<TimePicker hourStep={2} minuteStep={15} minTime="09:00" maxTime="18:00"
-  disabledTimes={["12:00"]} />
+<TimePicker
+  hourStep={2}
+  minuteStep={15}
+  minTime="09:00"
+  maxTime="18:00"
+  disabledTimes={["12:00"]}
+/>
 
 {/* Inline for embedding */}
 <TimePicker popover={false} value={time} onChange={setTime} />
 
 {/* Custom display format (date-fns pattern) */}
-<TimePicker displayFormat="HH:mm" />`}
+<TimePicker displayFormat="HH:mm" />`;
+
+export default function TimePickerPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Time Picker"
+        description="A time-of-day picker with quick-pick presets, tappable hour/minute cell grids, and typeable stepper fields — anchored in the kit Popover or rendered inline as an embeddable panel."
+        version="v1.0.2"
       />
 
-      <APIReference sections={timePickerPageAPIReferenceSections} />
+      <FeatureGrid
+        features={timePickerPageFeatures}
+        description="Capabilities built into Kira Kit."
+      />
 
-      <Changelog entries={timePickerPageChangelogEntries} />
+      <DemoTabs defaultValue="live" tabs={timePickerPageDemoTabs} />
+
+      <KeyboardShortcuts
+        shortcuts={timePickerPageShortcuts}
+        description="Keyboard navigation and activation bindings."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Use TimePicker in a popover by default or set popover={false} for embedded panels."
+        notes={[
+          {
+            label: "Panel vs Trigger variants",
+            body: 'Use variant ("stepper" | "grid" | "full") for the picker panel layout and triggerVariant ("default" | "outline" | "ghost") for the popover trigger.',
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={timePickerPageAPISections}
+        description="Props, types, and defaults for TimePicker."
+      />
+
+      <Changelog
+        entries={timePickerPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Time Picker."
+      />
     </ComponentPage>
   );
 }
 
-export { timePickerTriggerVariants };
-
-export type { TimeGranularity };
-
-// Static demo metadata stays co-located and follows its source constants.
-const timePickerPageFeatureGridFeatures = [
+const timePickerPageFeatures = [
   {
     title: "Quick Presets",
     description:
       "Common times as one-tap chips; hour and minute tappable cell grids — no typing needed.",
-    icon: <IconClock className="h-5 w-5" />,
+    icon: <IconClock className="size-4" />,
   },
   {
     title: "Typeable Steppers",
     description:
       "Large +/- fields accept raw digits, ArrowUp/Down and Enter; seconds column via granularity.",
-    icon: <IconGauge className="h-5 w-5" />,
+    icon: <IconGauge className="size-4" />,
   },
   {
     title: "Inline + Popover",
     description:
-      "Anchored popover on a trigger by default, or popover={false} for a bare panel (DatePicker uses it).",
-    icon: <IconLayout2 className="h-5 w-5" />,
+      "Anchored in the kit Popover on a trigger by default, or popover={false} for a bare panel (DatePicker uses it).",
+    icon: <IconLayout2 className="size-4" />,
   },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const timePickerPageDemoTabsTabs = [
+const timePickerPageDemoTabs = [
   {
     value: "live",
     label: "Live Demo",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Popover Time Picker"
@@ -359,6 +445,7 @@ const timePickerPageDemoTabsTabs = [
   {
     value: "inline",
     label: "Inline",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Inline Panel"
@@ -372,6 +459,7 @@ const timePickerPageDemoTabsTabs = [
   {
     value: "variants",
     label: "Variants",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Panel Variants"
@@ -383,8 +471,23 @@ const timePickerPageDemoTabsTabs = [
     ),
   },
   {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="sm, default and lg trigger sizing."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "granularity",
     label: "Granularity",
+    group: "Configuration",
     demo: (
       <DemoWrapper
         title="Minute vs Second"
@@ -398,6 +501,7 @@ const timePickerPageDemoTabsTabs = [
   {
     value: "hour-cycle",
     label: "Hour Cycle",
+    group: "Configuration",
     demo: (
       <DemoWrapper
         title="24-hour vs 12-hour"
@@ -411,6 +515,7 @@ const timePickerPageDemoTabsTabs = [
   {
     value: "steps",
     label: "Steps & Constraints",
+    group: "Configuration",
     demo: (
       <DemoWrapper
         title="Steps, Window and Disabled Times"
@@ -422,21 +527,9 @@ const timePickerPageDemoTabsTabs = [
     ),
   },
   {
-    value: "sizes",
-    label: "Sizes",
-    demo: (
-      <DemoWrapper
-        title="Size Variants"
-        description="sm, default and lg trigger and comb sizing."
-        code={sizesCode}
-      >
-        <SizesDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "states",
     label: "States",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Component States"
@@ -447,83 +540,127 @@ const timePickerPageDemoTabsTabs = [
       </DemoWrapper>
     ),
   },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long placeholders, empty presets, disabled inline panels, and narrow max-w-xs containers."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
 ] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const timePickerPageKeyboardShortcutsShortcuts = [
+const timePickerPageShortcuts = [
   {
     keys: "ArrowUp / ArrowDown",
-    description: "Step the focused stepper field ±step",
+    description: "Step the focused stepper field by +/- step.",
   },
   {
     keys: "Enter",
-    description: "Commit a typed value",
+    description: "Commit a typed value in a stepper field.",
   },
-  { keys: "Tab", description: "Move between fields and cells" },
   {
-    keys: "Click",
-    description: "Tap chips, hour/minute cells, +/- steppers",
+    keys: "Tab",
+    description: "Move between stepper fields, preset chips, and grid cells.",
   },
   {
     keys: "Escape",
-    description: "Close the popover, focus the trigger",
+    description: "Close the popover and return focus to the trigger.",
   },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-const timePickerPageAPIReferenceSections = [
+const timePickerPageAPISections = [
   {
     title: "TimePicker",
     props: [
       {
         prop: "value",
         type: "Date",
-        default: "undefined",
+        default: "-",
         description:
           "Controlled value; time-of-day is taken from hours/minutes/seconds.",
       },
       {
         prop: "onChange",
         type: "(value: Date | undefined) => void",
-        default: "undefined",
+        default: "-",
         description:
           "Called with a new Date on any chip/cell/stepper change, or undefined on clear.",
       },
       {
         prop: "variant",
-        type: "'stepper' | 'grid' | 'full'",
-        default: "'stepper'",
+        type: '"stepper" | "grid" | "full"',
+        default: '"stepper"',
         description:
-          "Panel content: stepper fields ('stepper', default), presets + cell grids ('grid'), or stepper stacked above grids ('full').",
+          'Panel content: stepper fields ("stepper", default), presets + cell grids ("grid"), or stepper stacked above grids ("full").',
+      },
+      {
+        prop: "triggerVariant",
+        type: '"default" | "outline" | "ghost"',
+        default: '"default"',
+        description: "Visual style variant for the popover trigger.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Trigger sizing variant.",
       },
       {
         prop: "granularity",
-        type: "'minute' | 'second'",
-        default: "'minute'",
-        description: "Adds a seconds stepper field when 'second'.",
+        type: '"minute" | "second"',
+        default: '"minute"',
+        description: 'Adds a seconds stepper field when "second".',
       },
       {
-        prop: "hourStep / minuteStep / secondStep",
+        prop: "hourStep",
         type: "number",
         default: "1",
-        description: "Value step per field and cell grid.",
+        description: "Step interval for hours.",
+      },
+      {
+        prop: "minuteStep",
+        type: "number",
+        default: "1",
+        description: "Step interval for minutes (also applied to the grid).",
+      },
+      {
+        prop: "secondStep",
+        type: "number",
+        default: "1",
+        description:
+          'Step interval for seconds (used when granularity is "second").',
       },
       {
         prop: "hourCycle",
         type: "12 | 24",
         default: "24",
         description:
-          "12 swaps the hour cells for an AM/PM toggle to the right of the fields.",
+          "12 shows an AM/PM toggle on the right of the stepper fields.",
       },
       {
-        prop: "minTime / maxTime",
+        prop: "minTime",
         type: "string",
-        default: "undefined",
-        description: 'Inclusive bounds, "HH:mm" or "HH:mm:ss".',
+        default: "-",
+        description: 'Inclusive lower bound, "HH:mm" or "HH:mm:ss".',
+      },
+      {
+        prop: "maxTime",
+        type: "string",
+        default: "-",
+        description: 'Inclusive upper bound, "HH:mm" or "HH:mm:ss".',
       },
       {
         prop: "disabledTimes",
         type: "string[]",
-        default: "undefined",
-        description: 'Exact "HH:mm"(:ss) matches that can\'t be picked.',
+        default: "-",
+        description: 'Exact "HH:mm"(:ss) matches that cannot be picked.',
       },
       {
         prop: "presets",
@@ -545,9 +682,10 @@ const timePickerPageAPIReferenceSections = [
       },
       {
         prop: "displayFormat",
-        type: "string (date-fns)",
-        default: '"HH:mm" / "HH:mm:ss"',
-        description: "Trigger label pattern.",
+        type: "string",
+        default: '"HH:mm" | "HH:mm:ss"',
+        description:
+          'date-fns format pattern for the trigger label; defaults to "HH:mm:ss" for second granularity.',
       },
       {
         prop: "popover",
@@ -556,22 +694,22 @@ const timePickerPageAPIReferenceSections = [
         description: "false renders the bare panel without trigger/popover.",
       },
       {
-        prop: "required / invalid",
+        prop: "required",
         type: "boolean",
         default: "false",
-        description: "Form semantics and error styling.",
+        description: "Marks the trigger as aria-required.",
+      },
+      {
+        prop: "invalid",
+        type: "boolean",
+        default: "false",
+        description: "Marks the trigger as aria-invalid with error styling.",
       },
       {
         prop: "ariaLabel",
         type: "string",
         default: '"Time"',
-        description: "Accessible name prefix for the trigger.",
-      },
-      {
-        prop: "size / variant",
-        type: "'sm' | 'default' | 'lg' / 'default' | 'outline' | 'ghost'",
-        default: "'default'",
-        description: "Trigger sizing and style variants.",
+        description: "Accessible name prefix for the trigger or inline group.",
       },
       {
         prop: "id",
@@ -582,8 +720,8 @@ const timePickerPageAPIReferenceSections = [
       {
         prop: "className",
         type: "string",
-        default: "undefined",
-        description: "Root (or comb grid, when inline) class.",
+        default: "-",
+        description: "Root (or inline panel) class.",
       },
     ],
   },
@@ -591,8 +729,8 @@ const timePickerPageAPIReferenceSections = [
 
 const timePickerPageChangelogEntries = [
   {
-    version: "Unreleased",
-    date: "In development",
+    version: "1.0.2",
+    date: "26 November 2026",
     changes: [
       {
         type: "changed",
@@ -603,7 +741,7 @@ const timePickerPageChangelogEntries = [
     ],
   },
   {
-    version: "v1.0.1",
+    version: "1.0.1",
     date: "20 November 2026",
     changes: [
       {
@@ -615,14 +753,14 @@ const timePickerPageChangelogEntries = [
     ],
   },
   {
-    version: "v1.0.0",
+    version: "1.0.0",
     date: "26 October 2026",
     changes: [
       {
         type: "added",
         title: "TimePicker component",
         description:
-          "Comb-style time-of-day picker: listbox columns with keyboard roving, digit typeahead, granularity/step control, 12/24-hour cycles, inclusive min/max windows, disabled times, inline mode, native Popover API with CSS anchor positioning.",
+          "Comb-style time-of-day picker: listbox columns with keyboard roving, digit typeahead, granularity/step control, 12/24-hour cycles, inclusive min/max windows, disabled times, inline mode, and anchored popover.",
       },
     ],
   },
