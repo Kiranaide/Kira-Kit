@@ -4,9 +4,9 @@ import {
   Button,
   ExpandableIconButton,
   LoadingButton,
-  IconButtonWithTooltip,
   KiraButton,
 } from "@/components/ui/button";
+import { SimpleTooltip } from "@/components/ui/tooltip";
 import {
   IconPlus,
   IconDownload,
@@ -520,84 +520,69 @@ function IconButtonWithTooltipDemo() {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Icon-only buttons with descriptive tooltips for accessibility.
+        Icon-only buttons composed with SimpleTooltip for accessible labels.
       </p>
       <div className="flex flex-wrap gap-3">
-        <IconButtonWithTooltip
-          icon={<IconSettings className="w-4 h-4" />}
-          tooltip="Settings"
-          variant="outline"
-          size="icon"
-          aria-label="Settings"
-        />
-        <IconButtonWithTooltip
-          icon={<IconHeart className="w-4 h-4" />}
-          tooltip="Add to favorites"
-          variant="secondary"
-          size="icon"
-          aria-label="Add to favorites"
-        />
-        <IconButtonWithTooltip
-          icon={<IconDownload className="w-4 h-4" />}
-          tooltip="Download file"
-          variant="default"
-          size="icon"
-          aria-label="Download file"
-        />
-        <IconButtonWithTooltip
-          icon={<IconTrash className="w-4 h-4" />}
-          tooltip="Delete item"
-          variant="destructive"
-          size="icon"
-          aria-label="Delete item"
-        />
-        <IconButtonWithTooltip
-          icon={<IconInfoCircle className="w-4 h-4" />}
-          tooltip="More information"
-          variant="info"
-          size="icon"
-          aria-label="More information"
-        />
-        <IconButtonWithTooltip
-          icon={<IconSend className="w-4 h-4" />}
-          tooltip="Submit"
-          disabled
-          disabledReason="Complete all required fields before submitting."
-          size="icon"
-          aria-label="Submit"
-        />
+        <SimpleTooltip content="Settings">
+          <Button variant="outline" size="icon" aria-label="Settings">
+            <IconSettings className="w-4 h-4" />
+          </Button>
+        </SimpleTooltip>
+        <SimpleTooltip content="Add to favorites">
+          <Button variant="secondary" size="icon" aria-label="Add to favorites">
+            <IconHeart className="w-4 h-4" />
+          </Button>
+        </SimpleTooltip>
+        <SimpleTooltip content="Download file">
+          <Button variant="default" size="icon" aria-label="Download file">
+            <IconDownload className="w-4 h-4" />
+          </Button>
+        </SimpleTooltip>
+        <SimpleTooltip content="Delete item">
+          <Button variant="destructive" size="icon" aria-label="Delete item">
+            <IconTrash className="w-4 h-4" />
+          </Button>
+        </SimpleTooltip>
+        <SimpleTooltip content="More information">
+          <Button variant="info" size="icon" aria-label="More information">
+            <IconInfoCircle className="w-4 h-4" />
+          </Button>
+        </SimpleTooltip>
+        <SimpleTooltip content="Complete all required fields before submitting.">
+          <span className="inline-flex">
+            <Button disabled size="icon" aria-label="Submit">
+              <IconSend className="w-4 h-4" />
+            </Button>
+          </span>
+        </SimpleTooltip>
       </div>
     </div>
   );
 }
 
-const iconButtonWithTooltipCode = `import { IconButtonWithTooltip } from "@/components/ui/button"
+const iconButtonWithTooltipCode = `import { Button } from "@/components/ui/button"
+import { SimpleTooltip } from "@/components/ui/tooltip"
 
-<IconButtonWithTooltip
-  icon={<IconSettings className="w-4 h-4" />}
-  tooltip="Settings"
-  variant="outline"
-  size="icon"
-  aria-label="Settings"
-/>
+<SimpleTooltip content="Settings">
+  <Button variant="outline" size="icon" aria-label="Settings">
+    <IconSettings className="w-4 h-4" />
+  </Button>
+</SimpleTooltip>
 
-<IconButtonWithTooltip
-  icon={<IconTrash className="w-4 h-4" />}
-  tooltip="Delete item"
-  variant="destructive"
-  size="icon"
-  aria-label="Delete item"
-/>
+<SimpleTooltip content="Delete item">
+  <Button variant="destructive" size="icon" aria-label="Delete item">
+    <IconTrash className="w-4 h-4" />
+  </Button>
+</SimpleTooltip>
 
-// Disabled with an explanation on hover (disabledReason overrides tooltip).
-<IconButtonWithTooltip
-  icon={<IconSend className="w-4 h-4" />}
-  tooltip="Submit"
-  disabled
-  disabledReason="Complete all required fields before submitting."
-  size="icon"
-  aria-label="Submit"
-/>`;
+// Disabled with an explanation on hover.
+<SimpleTooltip content="Complete all required fields before submitting.">
+  <span className="inline-flex">
+    <Button disabled size="icon" aria-label="Submit">
+      <IconSend className="w-4 h-4" />
+    </Button>
+  </span>
+</SimpleTooltip>`;
 
 function DisabledDemo() {
   return (
@@ -703,10 +688,11 @@ const disabledCode = `import { Button } from "@/components/ui/button"
 // Stays keyboard-focusable while disabled (WCAG 2.2).
 <Button disabled focusableWhenDisabled>Reachable by Tab</Button>`;
 
-const toggleCode = `import { KiraButton, IconButtonWithTooltip } from "@/components/ui/button"
+const toggleCode = `import { Button, KiraButton } from "@/components/ui/button"
+import { SimpleTooltip } from "@/components/ui/tooltip"
 import { IconHeart, IconHeartFilled, IconSend } from "@tabler/icons-react"
 
-// Optimistic toggle: flips instantly, rolls back + toasts if onToggle rejects.
+// Optimistic toggle: flips instantly, rolls back if onToggle rejects.
 <KiraButton
   toggle
   variant="outline"
@@ -721,13 +707,13 @@ import { IconHeart, IconHeartFilled, IconSend } from "@tabler/icons-react"
 </KiraButton>
 
 // Disabled with an explanation on hover.
-<IconButtonWithTooltip
-  icon={<IconSend />}
-  tooltip="Submit"
-  disabled
-  disabledReason="Complete the form first"
-  aria-label="Submit"
-/>`;
+<SimpleTooltip content="Complete the form first">
+  <span className="inline-flex">
+    <Button disabled size="icon" aria-label="Submit">
+      <IconSend />
+    </Button>
+  </span>
+</SimpleTooltip>`;
 
 function ToggleDemo() {
   const [liked, setLiked] = React.useState(false);
@@ -776,13 +762,13 @@ function ToggleDemo() {
         <h3 className="text-sm font-medium text-muted-foreground mb-3">
           Disabled with a reason (hover the button)
         </h3>
-        <IconButtonWithTooltip
-          icon={<IconSend className="w-4 h-4" />}
-          tooltip="Submit"
-          disabled
-          disabledReason="Complete all required fields before submitting."
-          aria-label="Submit"
-        />
+        <SimpleTooltip content="Complete all required fields before submitting.">
+          <span className="inline-flex">
+            <Button size="icon" disabled aria-label="Submit">
+              <IconSend className="w-4 h-4" />
+            </Button>
+          </span>
+        </SimpleTooltip>
       </div>
     </div>
   );
@@ -1240,6 +1226,25 @@ export default function ButtonPage() {
 
 // Static demo metadata stays co-located and follows its source constants.
 const buttonPageChangelogEntries = [
+  {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "breaking",
+        title:
+          "Removed IconButtonWithTooltip and direct toast/tooltip dependencies",
+        description:
+          "Deleted IconButtonWithTooltip (compose Tooltip around Button directly). Removed direct tooltip and toast imports so Button has 0 UI component dependencies; KiraButton optimistic failures now route through useOptimisticCommit.",
+      },
+      {
+        type: "changed",
+        title: "CSS micro-motion and Base UI render/nativeButton support",
+        description:
+          "Migrated press, ripple, hold-to-confirm, and expand animations from GSAP onto Tailwind CSS keyframes/WAAPI (removing gsap and @gsap/react), and exposed Base UI render and nativeButton props on ButtonProps.",
+      },
+    ],
+  },
   {
     version: "2.4.0",
     date: "18 November 2026",

@@ -4,6 +4,7 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { useDocumentVisible } from "@/hooks/use-visibility-pause";
 import { cn } from "cn";
 import { isNumberProp } from "@/lib/component-utils";
 
@@ -67,20 +68,6 @@ function clampPercent(value: number): number {
   if (!Number.isFinite(value)) return 0;
 
   return Math.min(100, Math.max(0, value));
-}
-
-function subscribeVisibility(onChange: () => void) {
-  document.addEventListener("visibilitychange", onChange);
-
-  return () => document.removeEventListener("visibilitychange", onChange);
-}
-
-function getVisibilitySnapshot() {
-  return document.visibilityState !== "hidden";
-}
-
-function getVisibilityServerSnapshot() {
-  return true;
 }
 
 function Spinner({
@@ -147,12 +134,7 @@ function Spinner({
   };
 
   const reducedMotion = useReducedMotion();
-
-  const visible = React.useSyncExternalStore(
-    subscribeVisibility,
-    getVisibilitySnapshot,
-    getVisibilityServerSnapshot,
-  );
+  const visible = useDocumentVisible();
 
   const determinate =
     state === "loading" && isNumberProp(value) ? clampPercent(value) : null;

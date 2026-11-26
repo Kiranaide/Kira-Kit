@@ -32,7 +32,6 @@ import {
   SidebarSkeleton,
   SidebarTrigger,
   SidebarUser,
-  ThemeToggle,
   useSidebar,
   type SidebarProviderProps,
   type SidebarSection,
@@ -40,6 +39,7 @@ import {
   type CollapsibleMode,
   type SidebarSide,
 } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/ui/theme-provider";
 import { Button } from "@/components/ui/button";
 import {
   APIReference,
@@ -52,6 +52,7 @@ import {
   PageHeader,
   UsageBlock,
 } from "@/components/docs";
+import { SidebarInstallationCard } from "@/components/docs/segmented-installation-guide";
 
 const controlClass =
   "min-h-9 rounded-lg border border-input bg-background px-3 py-1.5 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring";
@@ -621,7 +622,8 @@ const accountCode =
   previewCode +
   `
 import { IconHome, IconUsers, IconSettings, IconFile } from "@tabler/icons-react";
-import { Sidebar, SidebarHeader, SidebarContent, SidebarMenuButton, SidebarFooter, SidebarUser, ThemeToggle } from "@/components/ui/sidebar";
+import { Sidebar, SidebarHeader, SidebarContent, SidebarMenuButton, SidebarFooter, SidebarUser } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/ui/theme-provider";
 // The application wraps this example in ThemeProvider.
 export function AccountDemo() {
   const [view, setView] = React.useState("Account overview");
@@ -1581,7 +1583,7 @@ const apiSections: React.ComponentProps<typeof APIReference>["sections"] = [
     title: "Variant recipes",
     props: [
       {
-        prop: "sidebarVariants / sidebarMenuButtonVariants / sidebarActionVariants / badgeVariants",
+        prop: "sidebarVariants / sidebarMenuButtonVariants / sidebarActionVariants / sidebarBadgeVariants",
         type: "cva functions",
         description:
           "Surface (variant/side), row (isActive/compact), icon action, and badge (variant/size) class recipes.",
@@ -1590,34 +1592,46 @@ const apiSections: React.ComponentProps<typeof APIReference>["sections"] = [
   },
 ];
 
-const usageCode = `import * as React from "react";
-import { IconInbox, IconCalendar, IconFolder, IconFile } from "@tabler/icons-react";
+const usageCode = `// 1. Install both standalone modules:
+//    npx kira-kit add theme-provider sidebar
+import * as React from "react";
+import { IconInbox, IconCalendar } from "@tabler/icons-react";
+import { ThemeProvider, ThemeToggle, useTheme } from "@/components/ui/theme-provider";
 import {
-  ThemeProvider, useTheme, SidebarProvider, useSidebar, SidebarTrigger,
+  SidebarRouterProvider, SidebarProvider, useSidebar, SidebarTrigger,
   KiraSidebar, Sidebar, SidebarHeader, SidebarSearch, SidebarContent,
-  SidebarGroup, SidebarItemGroup, SidebarMenu, SidebarMenuItem,
-  SidebarMenuButton, SidebarMenuSub, SidebarItem, SidebarDivider,
-  SidebarFooter, SidebarUser, ThemeToggle, SidebarBadge,
-  SidebarSkeleton, SidebarEmpty,
+  SidebarFooter, type SidebarLinkProps,
 } from "@/components/ui/sidebar";
+
+// 2. Optional: wire your router (TanStack Router, Next.js, React Router).
+//    Without SidebarRouterProvider, SidebarItem renders native <a href>.
+// function AppLink({ to, disabled, ...props }: SidebarLinkProps) {
+//   return <Link {...props} to={to} disabled={disabled} />;
+// }
 
 export function WorkspaceLayout() {
   const [view, setView] = React.useState("inbox");
-  return <ThemeProvider><SidebarProvider storageKey="acme-product-navigation" shortcutScope="global" className="flex h-dvh flex-col">
-    <header className="flex items-center gap-2 border-b p-3"><SidebarTrigger showOnDesktop />Product workspace</header>
-    <div className="flex min-h-0 flex-1">
-      <KiraSidebar title="Product" activeId={view} onNavigate={(item) => setView(item.id)} defaultPinnedIds={["cycle"]} sections={[
-        { id: "work", label: "Your work", items: [
-          { id: "inbox", label: "Inbox", icon: <IconInbox />, badge: 3 },
-          { id: "cycle", label: "Current cycle", icon: <IconCalendar />, keywords: ["sprint"] },
-        ] },
-      ]} />
-      <main className="min-w-0 flex-1 overflow-auto p-6">Current view: {view}</main>
-    </div>
-  </SidebarProvider></ThemeProvider>;
+  return (
+    <ThemeProvider>
+      <SidebarRouterProvider>
+        <SidebarProvider storageKey="acme-product-navigation" shortcutScope="global" className="flex h-dvh flex-col">
+          <header className="flex items-center gap-2 border-b p-3"><SidebarTrigger showOnDesktop />Product workspace</header>
+          <div className="flex min-h-0 flex-1">
+            <KiraSidebar title="Product" activeId={view} onNavigate={(item) => setView(item.id)} defaultPinnedIds={["cycle"]} sections={[
+              { id: "work", label: "Your work", items: [
+                { id: "inbox", label: "Inbox", icon: <IconInbox />, badge: 3 },
+                { id: "cycle", label: "Current cycle", icon: <IconCalendar />, keywords: ["sprint"] },
+              ] },
+            ]} />
+            <main className="min-w-0 flex-1 overflow-auto p-6">Current view: {view}</main>
+          </div>
+        </SidebarProvider>
+      </SidebarRouterProvider>
+    </ThemeProvider>
+  );
 }
 
-// Alternative: compose the parts inside the same providers and TanStack Router.
+// Alternative: compose the parts inside the same providers.
 // Loading is caller-owned; this example's button toggles a local fixture.
 export function CustomNavigation() {
   const [loading, setLoading] = React.useState(false);
@@ -1628,6 +1642,7 @@ export function CustomNavigation() {
     <SidebarHeader title="Library" />
     <SidebarSearch value={query} onChange={setQuery} />
     <SidebarContent aria-busy={loading || undefined}>
+      <SidebarFooter><ThemeToggle /></SidebarFooter>
       <SidebarMenuButton icon={<IconCalendar />} onClick={() => setLoading((previous) => !previous)}>
         {loading ? "Show loaded views" : "Preview loading"}
       </SidebarMenuButton>
@@ -1663,6 +1678,7 @@ export default function SidebarPage() {
       />
       <FeatureGrid features={sidebarPageFeatureGridFeatures} />
       <DemoTabs defaultValue="basic" tabs={sidebarPageDemoTabsTabs} />
+      <SidebarInstallationCard />
       <KeyboardShortcuts shortcuts={sidebarPageKeyboardShortcutsShortcuts} />
       <UsageBlock
         code={usageCode}
@@ -1909,6 +1925,24 @@ const sidebarPageKeyboardShortcutsShortcuts = [
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
 const sidebarPageChangelogEntries = [
+  {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "breaking",
+        title: "Extracted ThemeProvider and renamed badgeVariants",
+        description:
+          "Extracted ThemeProvider, useTheme, and ThemeToggle into standalone @/components/ui/theme-provider, and renamed badgeVariants → sidebarBadgeVariants to avoid colliding with Badge's export.",
+      },
+      {
+        type: "changed",
+        title: "Router-agnostic SidebarRouterProvider seam",
+        description:
+          "Removed the hard @tanstack/react-router dependency from sidebar.tsx. Navigation now defaults to native <a href> with pathname matching and accepts any router via SidebarRouterProvider.",
+      },
+    ],
+  },
   {
     version: "3.2.0",
     date: "2026-11-18",

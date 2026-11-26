@@ -953,6 +953,18 @@ const datePickerPageAPIReferenceSections = [
 
 const datePickerPageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "changed",
+        title: "Aligned popup onto kit Popover seam",
+        description:
+          "Migrated DatePicker's desktop popup from raw @base-ui/react/popover onto kit Popover, PopoverTrigger, and PopoverContent from @/components/ui/popover.",
+      },
+    ],
+  },
+  {
     version: "v2.1.2",
     date: "20 November 2026",
     changes: [

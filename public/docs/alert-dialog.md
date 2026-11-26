@@ -18,9 +18,9 @@ kira-kit add @kira-kit/alert-dialog
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
 - @kira-kit/dialog
 - @kira-kit/input
-- @kira-kit/component-utils
 
 ## Usage
 

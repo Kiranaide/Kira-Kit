@@ -10,7 +10,6 @@ kira-kit add @kira-kit/date-picker
 
 ## Dependencies
 
-- @base-ui/react
 - @date-fns/tz
 - @tabler/icons-react
 - class-variance-authority
@@ -22,8 +21,9 @@ kira-kit add @kira-kit/date-picker
 
 - @kira-kit/button
 - @kira-kit/calendar
-- @kira-kit/time-picker
 - @kira-kit/component-utils
+- @kira-kit/popover
+- @kira-kit/time-picker
 
 ## Usage
 

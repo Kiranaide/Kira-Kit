@@ -17,11 +17,11 @@ kira-kit add @kira-kit/pagination
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/select
 - @kira-kit/spinner
 - @kira-kit/use-pagination
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

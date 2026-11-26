@@ -981,6 +981,18 @@ const apiReference = [
 
 const changelogEntries: React.ComponentProps<typeof Changelog>["entries"] = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "changed",
+        title: "Dropped zod dependency",
+        description:
+          "Replaced the 3-line zod storage schema with a pure TypeScript parseSavedStepperJson guard so Stepper has no runtime zod dependency.",
+      },
+    ],
+  },
+  {
     version: "2.1.0",
     date: "9 November 2026",
     changes: [

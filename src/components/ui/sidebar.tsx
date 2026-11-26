@@ -2,7 +2,6 @@ import * as React from "react";
 import type { BaseUIEvent } from "@base-ui/react/types";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
-import { Link, useMatchRoute } from "@tanstack/react-router";
 import {
   IconArrowDown,
   IconArrowUp,
@@ -11,10 +10,8 @@ import {
   IconGripVertical,
   IconLayoutSidebar,
   IconMenu2,
-  IconMoon,
   IconSearch,
   IconStar,
-  IconSun,
   IconUser,
   IconX,
 } from "@tabler/icons-react";
@@ -50,8 +47,6 @@ import { SkeletonBone } from "@/components/ui/skeleton";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "cn";
 import { isFunctionProp, isStringProp } from "@/lib/component-utils";
-
-type Theme = "light" | "dark";
 
 type CollapsibleMode = "offcanvas" | "icon" | "none";
 
@@ -213,41 +208,66 @@ function desktopSnapshot() {
   return false;
 }
 
-interface ThemeContextValue {
-  theme: Theme;
-  toggleTheme: () => void;
+interface SidebarLinkProps extends Omit<React.ComponentProps<"a">, "href"> {
+  to: string;
+  disabled?: boolean;
 }
 
-const ThemeContext = React.createContext<ThemeContextValue | null>(null);
+interface SidebarRouterAdapter {
+  /** Custom router Link component (e.g. TanStack Router, Next.js, React Router). Defaults to native `<a>`. */
+  Link?: React.ComponentType<SidebarLinkProps>;
+  /** Custom active-route hook. Defaults to exact `window.location.pathname` matching. */
+  useIsActive?: (to: string) => boolean;
+}
 
-function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = React.useState<Theme>(() => sidebarUseState());
-
-  React.useEffect(() => {
-    document.documentElement.classList.remove("light", "dark");
-    document.documentElement.classList.add(theme);
-    writeStorage("kira-theme", theme);
-  }, [theme]);
-
+function DefaultSidebarLink({
+  to,
+  disabled,
+  children,
+  ...props
+}: SidebarLinkProps) {
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        toggleTheme: () =>
-          setTheme((previous) => (previous === "light" ? "dark" : "light")),
-      }}
-    >
+    <a {...props} href={disabled ? undefined : to}>
       {children}
-    </ThemeContext.Provider>
+    </a>
   );
 }
 
-function useTheme() {
-  const context = React.useContext(ThemeContext);
+function useDefaultIsActive(to: string): boolean {
+  return typeof window !== "undefined" && window.location.pathname === to;
+}
 
-  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+const defaultSidebarRouterAdapter: Required<SidebarRouterAdapter> = {
+  Link: DefaultSidebarLink,
+  useIsActive: useDefaultIsActive,
+};
 
-  return context;
+const SidebarRouterContext = React.createContext<
+  Required<SidebarRouterAdapter>
+>(defaultSidebarRouterAdapter);
+
+interface SidebarRouterProviderProps {
+  adapter?: SidebarRouterAdapter;
+  children: React.ReactNode;
+}
+
+function SidebarRouterProvider({
+  adapter,
+  children,
+}: SidebarRouterProviderProps) {
+  const value = React.useMemo<Required<SidebarRouterAdapter>>(
+    () => ({
+      Link: adapter?.Link ?? DefaultSidebarLink,
+      useIsActive: adapter?.useIsActive ?? useDefaultIsActive,
+    }),
+    [adapter?.Link, adapter?.useIsActive],
+  );
+
+  return (
+    <SidebarRouterContext.Provider value={value}>
+      {children}
+    </SidebarRouterContext.Provider>
+  );
 }
 
 interface SidebarContextValue {
@@ -954,7 +974,7 @@ function SidebarGroup({
   );
 }
 
-const badgeVariants = cva(
+const sidebarBadgeVariants = cva(
   "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-md text-xs font-medium tabular-nums",
   {
     variants: {
@@ -978,7 +998,9 @@ const badgeVariants = cva(
 );
 
 interface SidebarBadgeProps
-  extends React.ComponentProps<"span">, VariantProps<typeof badgeVariants> {}
+  extends
+    React.ComponentProps<"span">,
+    VariantProps<typeof sidebarBadgeVariants> {}
 
 function SidebarBadge({
   children,
@@ -991,7 +1013,7 @@ function SidebarBadge({
     <span
       {...props}
       data-slot="sidebar-badge"
-      className={cn(badgeVariants({ variant, size }), className)}
+      className={cn(sidebarBadgeVariants({ variant, size }), className)}
     >
       {size !== "dot" && children}
     </span>
@@ -1361,29 +1383,6 @@ function SidebarUser({
   );
 }
 
-type ThemeToggleProps = Omit<
-  SidebarMenuButtonProps,
-  "icon" | "children" | "onClick"
->;
-
-function ThemeToggle(props: ThemeToggleProps) {
-  const { theme, toggleTheme } = useTheme();
-
-  return (
-    <SidebarMenuButton
-      {...props}
-      data-slot="sidebar-theme-toggle"
-      icon={theme === "light" ? <IconMoon /> : <IconSun />}
-      aria-label={
-        theme === "light" ? "Switch to dark mode" : "Switch to light mode"
-      }
-      onClick={toggleTheme}
-    >
-      {theme === "light" ? "Dark mode" : "Light mode"}
-    </SidebarMenuButton>
-  );
-}
-
 interface SidebarSkeletonProps extends React.ComponentProps<"div"> {
   items?: number;
 }
@@ -1563,8 +1562,7 @@ function KiraSidebar(arg0: KiraSidebarProps) {
 }
 
 export {
-  ThemeProvider,
-  useTheme,
+  SidebarRouterProvider,
   SidebarProvider,
   useSidebar,
   Sidebar,
@@ -1582,7 +1580,6 @@ export {
   SidebarDivider,
   SidebarFooter,
   SidebarUser,
-  ThemeToggle,
   SidebarSkeleton,
   SidebarBadge,
   SidebarEmpty,
@@ -1590,11 +1587,13 @@ export {
   sidebarVariants,
   sidebarMenuButtonVariants,
   sidebarActionVariants,
-  badgeVariants,
+  sidebarBadgeVariants,
 };
 
 export type {
-  Theme,
+  SidebarLinkProps,
+  SidebarRouterAdapter,
+  SidebarRouterProviderProps,
   SidebarVariant,
   CollapsibleMode,
   SidebarSide,
@@ -1615,7 +1614,6 @@ export type {
   SidebarDividerProps,
   SidebarFooterProps,
   SidebarUserProps,
-  ThemeToggleProps,
   SidebarBadgeProps,
   SidebarSkeletonProps,
   SidebarEmptyProps,
@@ -2561,11 +2559,15 @@ function useSidebarItemModel({
     });
 
   const { expanded, isMobile, setOpenMobile } = useSidebar();
-  const matchRoute = useMatchRoute();
-  const isActive = activeProp ?? !!matchRoute({ to, fuzzy: false });
+
+  const { Link: LinkComponent, useIsActive } =
+    React.useContext(SidebarRouterContext);
+
+  const routeMatched = useIsActive(to);
+  const isActive = activeProp ?? routeMatched;
 
   const link = (
-    <Link
+    <LinkComponent
       {...props}
       to={to}
       disabled={disabled}
@@ -2605,7 +2607,7 @@ function useSidebarItemModel({
       >
         {children}
       </SidebarRowContent>
-    </Link>
+    </LinkComponent>
   );
 
   return { children, disabled, disabledReason, link };
@@ -3250,17 +3252,6 @@ function sidebarContext(
       0,
     );
   }
-}
-
-function sidebarUseState() {
-  const stored = readStorage("kira-theme");
-
-  if (stored === "light" || stored === "dark") return stored;
-
-  return typeof window !== "undefined" &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
 }
 
 function sidebarUseCallback(

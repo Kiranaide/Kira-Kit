@@ -19,10 +19,10 @@ kira-kit add @kira-kit/field
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/input
 - @kira-kit/separator
 - @kira-kit/textarea
-- @kira-kit/component-utils
 
 ## Usage
 

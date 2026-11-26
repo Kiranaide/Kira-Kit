@@ -18,6 +18,7 @@ kira-kit add @kira-kit/camera
 
 - @kira-kit/button
 - @kira-kit/camera-lib
+- @kira-kit/component-utils
 - @kira-kit/dialog
 - @kira-kit/drawer
 - @kira-kit/select
@@ -25,7 +26,6 @@ kira-kit add @kira-kit/camera
 - @kira-kit/tabs
 - @kira-kit/use-camera
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

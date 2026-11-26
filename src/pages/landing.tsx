@@ -22,7 +22,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CodeBlock } from "@/components/ui/code-block";
 import { Reveal, SectionRule } from "@/components/docs/layout";
-import { SITE_REPOSITORY_URL, SiteHeader } from "@/components/site-chrome";
+import { SITE_REPOSITORY_URL, SiteHeader } from "@/components/site/site-chrome";
 import { HeroShowcase } from "@/components/landing/hero-showcase";
 
 const TECH_STACK = ["React", "Base UI", "Tailwind CSS", "TypeScript"] as const;

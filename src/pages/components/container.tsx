@@ -7,6 +7,7 @@ import {
 import { Container, KiraContainer } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ComponentPage,
   PageHeader,
@@ -361,8 +362,6 @@ function KiraDemo() {
       <KiraContainer
         as="article"
         size="prose"
-        loading={loading}
-        loadingLabel="Reloading the local access brief…"
         header={
           <div className="space-y-2">
             <h3 className="text-lg font-semibold">Access policy brief</h3>
@@ -377,17 +376,31 @@ function KiraDemo() {
           </p>
         }
       >
-        <div className="min-h-48 space-y-4">
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            Review the permissions, migration notes, and audit summary before
-            the rollout.
-          </p>
-          <div className="space-y-2">
-            <label htmlFor={id} className="text-sm font-medium">
-              Personal review note
-            </label>
-            <Input id={id} defaultValue="Check the owner permissions" />
+        <div className="relative">
+          <div
+            aria-hidden={loading || undefined}
+            inert={loading || undefined}
+            className={
+              loading ? "invisible min-h-48 space-y-4" : "min-h-48 space-y-4"
+            }
+          >
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Review the permissions, migration notes, and audit summary before
+              the rollout.
+            </p>
+            <div className="space-y-2">
+              <label htmlFor={id} className="text-sm font-medium">
+                Personal review note
+              </label>
+              <Input id={id} defaultValue="Check the owner permissions" />
+            </div>
           </div>
+          {loading && (
+            <Skeleton
+              aria-label="Reloading local document…"
+              className="absolute inset-0 h-full w-full"
+            />
+          )}
         </div>
       </KiraContainer>
     </div>
@@ -398,18 +411,22 @@ const kiraDemoCode = `import * as React from "react";
 import { KiraContainer } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function KiraDemo() {
   const id = React.useId();
   const [loading, setLoading] = React.useState(false);
   return <div className="space-y-4">
     <Button variant="outline" onClick={() => setLoading((value) => !value)}>{loading ? "Finish local reload" : "Reload local document"}</Button>
-    <KiraContainer as="article" size="prose" loading={loading} loadingLabel="Reloading the local access brief…"
+    <KiraContainer as="article" size="prose"
       header={<div className="space-y-2"><h3 className="text-lg font-semibold">Access policy brief</h3><p className="text-sm text-muted-foreground">Release owner: Maya Chen</p></div>}
       footer={<p className="text-sm text-muted-foreground">Local fixture · no network request</p>}>
-      <div className="min-h-48 space-y-4">
-        <p className="text-sm leading-relaxed text-muted-foreground">Review the permissions, migration notes, and audit summary before the rollout.</p>
-        <div className="space-y-2"><label htmlFor={id} className="text-sm font-medium">Personal review note</label><Input id={id} defaultValue="Check the owner permissions" /></div>
+      <div className="relative">
+        <div aria-hidden={loading || undefined} inert={loading || undefined} className={loading ? "invisible min-h-48 space-y-4" : "min-h-48 space-y-4"}>
+          <p className="text-sm leading-relaxed text-muted-foreground">Review the permissions, migration notes, and audit summary before the rollout.</p>
+          <div className="space-y-2"><label htmlFor={id} className="text-sm font-medium">Personal review note</label><Input id={id} defaultValue="Check the owner permissions" /></div>
+        </div>
+        {loading && <Skeleton aria-label="Reloading local document…" className="absolute inset-0 h-full w-full" />}
       </div>
     </KiraContainer>
   </div>;
@@ -440,20 +457,28 @@ function StatesDemo() {
         padding="sm"
         query
         queryName="brief"
-        loading={state === "loading"}
-        error={
-          state === "error"
-            ? "The latest brief is unavailable. Try the local fixture again."
-            : undefined
-        }
-        onRetry={() => setState("ready")}
         header={
           <h3 className="font-semibold">
             release-permissions-audit-history-and-migration-notes
           </h3>
         }
       >
-        {state === "empty" ? (
+        {state === "loading" && <Skeleton className="h-48 w-full" />}
+        {state === "error" && (
+          <div className="min-h-48 space-y-3 rounded-lg border border-destructive/30 p-4">
+            <p role="alert" className="text-sm text-destructive">
+              The latest brief is unavailable. Try the local fixture again.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setState("ready")}
+            >
+              Try again
+            </Button>
+          </div>
+        )}
+        {state === "empty" && (
           <div className="min-h-48 space-y-3">
             <p className="text-sm text-muted-foreground">No document yet.</p>
             <Button
@@ -464,7 +489,8 @@ function StatesDemo() {
               Create local brief
             </Button>
           </div>
-        ) : (
+        )}
+        {state === "ready" && (
           <div className="min-h-48 space-y-3">
             <p className="text-sm">
               owner-with-a-very-long-address@example.test
@@ -482,18 +508,19 @@ function StatesDemo() {
 const statesDemoCode = `import * as React from "react";
 import { KiraContainer } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function StatesDemo() {
   const [state, setState] = React.useState<"ready" | "loading" | "empty" | "error">("ready");
   return <div className="space-y-4">
     <div className="flex flex-wrap gap-2">{(["ready", "loading", "empty", "error"] as const).map((value) =>
       <Button key={value} variant="outline" size="sm" aria-pressed={state === value} onClick={() => setState(value)}>{value}</Button>)}</div>
-    <KiraContainer size="sm" padding="sm" query queryName="brief" loading={state === "loading"}
-      error={state === "error" ? "The latest brief is unavailable. Try the local fixture again." : undefined}
-      onRetry={() => setState("ready")}
+    <KiraContainer size="sm" padding="sm" query queryName="brief"
       header={<h3 className="font-semibold">release-permissions-audit-history-and-migration-notes</h3>}>
-      {state === "empty" ? <div className="min-h-48 space-y-3"><p className="text-sm text-muted-foreground">No document yet.</p><Button variant="outline" size="sm" onClick={() => setState("ready")}>Create local brief</Button></div> :
-        <div className="min-h-48 space-y-3"><p className="text-sm">owner-with-a-very-long-address@example.test</p><p className="text-sm text-muted-foreground">Read-only snapshot. Request edit access from the release owner.</p></div>}
+      {state === "loading" && <Skeleton className="h-48 w-full" />}
+      {state === "error" && <div className="min-h-48 space-y-3 rounded-lg border border-destructive/30 p-4"><p role="alert" className="text-sm text-destructive">The latest brief is unavailable. Try the local fixture again.</p><Button variant="outline" size="sm" onClick={() => setState("ready")}>Try again</Button></div>}
+      {state === "empty" && <div className="min-h-48 space-y-3"><p className="text-sm text-muted-foreground">No document yet.</p><Button variant="outline" size="sm" onClick={() => setState("ready")}>Create local brief</Button></div>}
+      {state === "ready" && <div className="min-h-48 space-y-3"><p className="text-sm">owner-with-a-very-long-address@example.test</p><p className="text-sm text-muted-foreground">Read-only snapshot. Request edit access from the release owner.</p></div>}
     </KiraContainer>
   </div>;
 }`;
@@ -657,33 +684,13 @@ const containerApi = [
         type: "React.ReactNode",
         default: "-",
         description:
-          "Mounted body content. Loading masks it with an inert, hidden-from-AT layer.",
+          "Mounted body content. Compose Skeleton or error UI directly inside when loading or recovering.",
       },
       {
         prop: "header / footer",
         type: "React.ReactNode",
         default: "-",
         description: "Optional document header and footer.",
-      },
-      {
-        prop: "loading / loadingLabel",
-        type: "boolean / string",
-        default: 'false / "Loading content…"',
-        description: "Caller-owned busy state and one contextual status.",
-      },
-      {
-        prop: "loadingContent",
-        type: "React.ReactNode",
-        default: "-",
-        description:
-          "Custom skeleton in the reserved body region. Loaded body height is retained; the region has a 12rem minimum.",
-      },
-      {
-        prop: "error / onRetry",
-        type: "React.ReactNode / (() => void)",
-        default: "-",
-        description:
-          "Visible recovery message and optional native retry action. Existing body content can remain.",
       },
       {
         prop: "Container props",
@@ -787,9 +794,9 @@ export function EmbeddedRecord() {
 }
 
 export function DeferredDocument({ loading }: { loading: boolean }) {
-  return <KiraContainer size="prose" loading={loading}
+  return <KiraContainer size="prose"
     header={<h2>Release brief</h2>} footer={<p>Local document</p>}>
-    <div className="min-h-48">The document stays mounted during a loading mask.</div>
+    {loading ? <div className="min-h-48">Loading…</div> : <div className="min-h-48">Document content.</div>}
   </KiraContainer>;
 }
 
@@ -807,6 +814,18 @@ export function VariantClasses() {
       <APIReference sections={containerApi} />
       <Changelog
         entries={[
+          {
+            version: "Unreleased",
+            date: "In development",
+            changes: [
+              {
+                type: "breaking",
+                title: "Stripped loading/error/onRetry from KiraContainer",
+                description:
+                  "Removed loading, error, and onRetry props (and Skeleton/Button imports) from KiraContainer so container remains a zero-dependency layout leaf. Compose Skeleton or error UI directly inside your layout.",
+              },
+            ],
+          },
           {
             version: "2.0.0",
             date: "13 November 2026",

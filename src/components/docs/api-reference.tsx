@@ -1,6 +1,7 @@
 import * as React from "react";
 import { IconChevronDown, IconHash } from "@tabler/icons-react";
 import { cn } from "cn";
+import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { DocsSection } from "@/components/docs/layout";
 
 interface APIProp {
@@ -95,9 +96,7 @@ function useActiveSection(titles: string[]) {
 
     if (!element) return;
 
-    const reduced = window.matchMedia?.(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reduced = prefersReducedMotion();
 
     element.scrollIntoView({
       behavior: reduced ? "auto" : "smooth",

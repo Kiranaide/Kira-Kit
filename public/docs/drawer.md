@@ -26,4 +26,3 @@ import { Drawer } from "@/components/ui/drawer";
 
 Built on Base UI primitives: keyboard navigation, focus management, and ARIA wiring
 come from the primitive layer. Animations are gated by `useReducedMotion`.
-ive layer. Animations are gated by `useReducedMotion`.

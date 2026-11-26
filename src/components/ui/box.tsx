@@ -1,7 +1,12 @@
 import * as React from "react";
+import { mergeProps } from "@base-ui/react/merge-props";
+import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { resolveResponsive, type ResponsiveValue } from "@/components/ui/flex";
+import {
+  resolveSafelistedResponsive,
+  type LayoutResponsiveValue,
+} from "@/lib/layout-responsive";
 import { cn } from "cn";
 
 /*                                 Scales                                     */
@@ -264,29 +269,32 @@ type BoxElement =
   | "address";
 
 interface BoxOwnProps extends VariantProps<typeof boxVariants> {
-  bg?: ResponsiveValue<BoxBg>;
-  color?: ResponsiveValue<BoxTextColor>;
-  w?: ResponsiveValue<BoxWidth>;
-  h?: ResponsiveValue<BoxHeight>;
-  minW?: ResponsiveValue<BoxMinWidth>;
-  minH?: ResponsiveValue<BoxMinHeight>;
-  maxW?: ResponsiveValue<BoxMaxWidth>;
-  maxH?: ResponsiveValue<BoxMaxHeight>;
-  border?: ResponsiveValue<BoxBorder>;
-  p?: ResponsiveValue<BoxSpace>;
-  px?: ResponsiveValue<BoxSpace>;
-  py?: ResponsiveValue<BoxSpace>;
-  m?: ResponsiveValue<BoxMargin>;
-  mx?: ResponsiveValue<BoxMargin>;
-  my?: ResponsiveValue<BoxMargin>;
+  bg?: LayoutResponsiveValue<BoxBg>;
+  color?: LayoutResponsiveValue<BoxTextColor>;
+  w?: LayoutResponsiveValue<BoxWidth>;
+  h?: LayoutResponsiveValue<BoxHeight>;
+  minW?: LayoutResponsiveValue<BoxMinWidth>;
+  minH?: LayoutResponsiveValue<BoxMinHeight>;
+  maxW?: LayoutResponsiveValue<BoxMaxWidth>;
+  maxH?: LayoutResponsiveValue<BoxMaxHeight>;
+  border?: LayoutResponsiveValue<BoxBorder>;
+  p?: LayoutResponsiveValue<BoxSpace>;
+  px?: LayoutResponsiveValue<BoxSpace>;
+  py?: LayoutResponsiveValue<BoxSpace>;
+  m?: LayoutResponsiveValue<BoxMargin>;
+  mx?: LayoutResponsiveValue<BoxMargin>;
+  my?: LayoutResponsiveValue<BoxMargin>;
 }
 
 type BoxProps<T extends BoxElement = "div"> = BoxOwnProps & {
   as?: T;
-} & Omit<React.ComponentPropsWithRef<T>, keyof BoxOwnProps | "as">;
+  render?: useRender.RenderProp;
+} & Omit<React.ComponentPropsWithRef<T>, keyof BoxOwnProps | "as" | "render">;
 
 function Box<T extends BoxElement = "div">({
   as,
+  render,
+  ref,
   className,
   rounded,
   shadow,
@@ -309,30 +317,37 @@ function Box<T extends BoxElement = "div">({
   my,
   ...props
 }: BoxProps<T>) {
-  const Component = as ?? "div";
-
-  return React.createElement(Component, {
-    "data-slot": "box",
-    className: cn(
-      boxVariants({ rounded, shadow, display, position }),
-      resolveResponsive(p, spacingMaps.p),
-      resolveResponsive(px, spacingMaps.px),
-      resolveResponsive(py, spacingMaps.py),
-      resolveResponsive(m, spacingMaps.m),
-      resolveResponsive(mx, spacingMaps.mx),
-      resolveResponsive(my, spacingMaps.my),
-      resolveResponsive(bg, bgMap),
-      resolveResponsive(color, textColorMap),
-      resolveResponsive(w, wMap),
-      resolveResponsive(h, hMap),
-      resolveResponsive(minW, minWMap),
-      resolveResponsive(minH, minHMap),
-      resolveResponsive(maxW, maxWMap),
-      resolveResponsive(maxH, maxHMap),
-      resolveResponsive(border, borderMap),
-      className,
+  return useRender({
+    defaultTagName: as ?? "div",
+    render,
+    // SAFETY: the ref's element type follows the selected native tag.
+    ref: ref as React.Ref<HTMLElement>,
+    props: mergeProps(
+      // SAFETY: data-slot is a native data attribute absent from HTMLAttributes.
+      {
+        "data-slot": "box",
+        className: cn(
+          boxVariants({ rounded, shadow, display, position }),
+          resolveSafelistedResponsive(p, spacingMaps.p),
+          resolveSafelistedResponsive(px, spacingMaps.px),
+          resolveSafelistedResponsive(py, spacingMaps.py),
+          resolveSafelistedResponsive(m, spacingMaps.m),
+          resolveSafelistedResponsive(mx, spacingMaps.mx),
+          resolveSafelistedResponsive(my, spacingMaps.my),
+          resolveSafelistedResponsive(bg, bgMap),
+          resolveSafelistedResponsive(color, textColorMap),
+          resolveSafelistedResponsive(w, wMap),
+          resolveSafelistedResponsive(h, hMap),
+          resolveSafelistedResponsive(minW, minWMap),
+          resolveSafelistedResponsive(minH, minHMap),
+          resolveSafelistedResponsive(maxW, maxWMap),
+          resolveSafelistedResponsive(maxH, maxHMap),
+          resolveSafelistedResponsive(border, borderMap),
+          className,
+        ),
+      } as React.HTMLAttributes<HTMLElement>,
+      props,
     ),
-    ...props,
   });
 }
 

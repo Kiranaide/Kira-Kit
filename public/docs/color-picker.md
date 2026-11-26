@@ -20,13 +20,13 @@ kira-kit add @kira-kit/color-picker
 
 - @kira-kit/button
 - @kira-kit/color-picker-lib
+- @kira-kit/component-utils
 - @kira-kit/input
 - @kira-kit/popover
 - @kira-kit/select
 - @kira-kit/slider
 - @kira-kit/use-color-picker
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

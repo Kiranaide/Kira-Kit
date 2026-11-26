@@ -738,55 +738,67 @@ export default function SkeletonPage() {
       />
       <UsageBlock code={usageCode} />
       <APIReference sections={apiSections} />
-      <Changelog
-        entries={[
-          {
-            version: "v2.1.0",
-            date: "2026-11-18",
-            changes: [
-              {
-                type: "added",
-                title: "SkeletonButton size prop",
-                description:
-                  'size="xs" | "sm" | "default" | "lg" | "xl" maps the button bone to the control-height ladder (h-7/8/9/10/11), so placeholders match every button size.',
-              },
-            ],
-          },
-          {
-            version: "v2.0.0",
-            date: "2026-11-13",
-            changes: [
-              {
-                type: "changed",
-                title: "Audited against Base UI 1.9.0",
-                description:
-                  "No Skeleton primitive exists. Existing exports extend the stock placeholder model.",
-              },
-              {
-                type: "fixed",
-                title: "Motion and attribute ownership",
-                description:
-                  "animated=false stops shimmer; delay/duration reach the moving layer. Groups pause offscreen or when the tab is hidden. IDs, refs, styles and events stay on their preset wrapper.",
-              },
-              {
-                type: "added",
-                title: "KiraSkeleton",
-                description:
-                  "Delayed placeholders, optional minimum display, retained refresh content, preset/custom fallbacks and explicit space reservation.",
-              },
-              {
-                type: "breaking",
-                title: "Loading semantics and preset DOM",
-                description:
-                  "Root no longer makes its entire subtree role=status; one sibling status owns announcements. loading=false stops descendant animation. Preset props no longer repeat on child bones, slots identify each part, counts clamp to 0–100, automatic per-line stagger is removed, and decorative content is inert.",
-              },
-            ],
-          },
-        ]}
-      />
+      <Changelog entries={skeletonPageChangelogEntries} />
     </ComponentPage>
   );
 }
+
+const skeletonPageChangelogEntries = [
+  {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "changed",
+        title: "Shared useVisibilityPause hook",
+        description:
+          "Adopted useVisibilityPause from @/hooks/use-visibility-pause for offscreen and hidden-tab animation pausing.",
+      },
+    ],
+  },
+  {
+    version: "v2.1.0",
+    date: "2026-11-18",
+    changes: [
+      {
+        type: "added",
+        title: "SkeletonButton size prop",
+        description:
+          'size="xs" | "sm" | "default" | "lg" | "xl" maps the button bone to the control-height ladder (h-7/8/9/10/11), so placeholders match every button size.',
+      },
+    ],
+  },
+  {
+    version: "v2.0.0",
+    date: "2026-11-13",
+    changes: [
+      {
+        type: "changed",
+        title: "Audited against Base UI 1.9.0",
+        description:
+          "No Skeleton primitive exists. Existing exports extend the stock placeholder model.",
+      },
+      {
+        type: "fixed",
+        title: "Motion and attribute ownership",
+        description:
+          "animated=false stops shimmer; delay/duration reach the moving layer. Groups pause offscreen or when the tab is hidden. IDs, refs, styles and events stay on their preset wrapper.",
+      },
+      {
+        type: "added",
+        title: "KiraSkeleton",
+        description:
+          "Delayed placeholders, optional minimum display, retained refresh content, preset/custom fallbacks and explicit space reservation.",
+      },
+      {
+        type: "breaking",
+        title: "Loading semantics and preset DOM",
+        description:
+          "Root no longer makes its entire subtree role=status; one sibling status owns announcements. loading=false stops descendant animation. Preset props no longer repeat on child bones, slots identify each part, counts clamp to 0–100, automatic per-line stagger is removed, and decorative content is inert.",
+      },
+    ],
+  },
+] satisfies React.ComponentProps<typeof Changelog>["entries"];
 
 const skeletonPageFeatureGridFeatures = [
   {

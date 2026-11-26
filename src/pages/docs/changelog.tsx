@@ -37,6 +37,45 @@ const RELEASES: readonly Release[] = [
     date: "In development",
     changes: [
       {
+        type: "fixed",
+        title: "KiraAccordion draggable reorder",
+        description:
+          "Moved the sortable drag handle out of AccordionPrimitive.Trigger into a sibling button inside AccordionPrimitive.Header so pointer and keyboard drag events are no longer swallowed by the trigger, rendered DragOverlay as a standalone trigger shell instead of an unmounted AccordionItem, and removed the duplicate onReorder call inside useAccordionDrag.",
+      },
+      {
+        type: "breaking",
+        title: "Input, Badge, Layout, and Sidebar architectural realignments",
+        description:
+          "Extracted otp-input, rating, and theme-provider into standalone registry items; removed InputWithLabel, InputWithButton, InputWithTooltip, InputWithDropdown, InputCluster, OTPInput, Rating, and RatingDisplay from input.tsx (breaking the input ↔ field cycle; 10 → 1 transitive dep); removed duplicate TagInput from badge.tsx and IconButtonWithTooltip from button.tsx; stripped loading/error/onRetry (Skeleton + Button) from KiraContainer, KiraGrid, KiraStack, and KiraSpacer so layout primitives remain pure leaves; and renamed badgeVariants → sidebarBadgeVariants in sidebar.tsx.",
+      },
+      {
+        type: "changed",
+        title:
+          "Shared optimistic commit seam, CSS micro-motion, unified layout responsive engine, router-agnostic Sidebar, and header Preset Studio popover",
+        description:
+          "Added use-optimistic-commit (OptimisticFeedbackProvider + useOptimisticCommit) and Tailwind --animate-* CSS motion across button, checkbox, switch, toggle, and toggle-group (removing direct toast and GSAP micro-motion deps); unified responsive resolution in lib/layout-responsive.ts and upgraded Box and Flex onto Base UI useRender + mergeProps; added SidebarRouterProvider so Sidebar works without @tanstack/react-router; aligned command, announcement-bar, field, date-picker, and time-picker onto kit seams; dropped zod from stepper; extracted use-visibility-pause and lib/layout-storage; organized site chrome under src/components/site/ with a top-bar Preset Studio popover and appearance toggle; and adopted prefersReducedMotion() in doc pages.",
+      },
+      {
+        type: "added",
+        title:
+          "Whole-graph registry cycle detection in CLI and ThemeProvider / Sidebar / Toast setup guides",
+        description:
+          "Added packages/cli/src/core/checks/registry-graph.ts (wired into kira-kit check and kira-kit build with unit tests) to catch circular registry dependencies before build, plus segmented setup guides for ThemeProvider, Sidebar router adapters, and Toast across Installation and component docs.",
+      },
+      {
+        type: "fixed",
+        title:
+          "HoverCard viewport children wrapping and RouteError nested button",
+        description:
+          "Fixed HoverCardContent so PreviewCardPrimitive.Viewport wraps props.children when viewport={true} instead of rendering empty as a sibling, and replaced the nested <DialogTrigger><Button> in RouteError with <DialogTrigger render={<Button />} />.",
+      },
+      {
+        type: "removed",
+        title: "Unreferenced orphan hooks/libs and unused sonner dependency",
+        description:
+          "Deleted five unreferenced modules (use-spotlight, use-async-data-table, use-focus-manager, lib/live-region, lib/camera/variants) with their stale registry payloads, and removed unused sonner from package.json.",
+      },
+      {
         type: "changed",
         title:
           "DatePicker and TimePicker migrated onto Base UI Popover; overlay wrappers narrowed to static className/style",

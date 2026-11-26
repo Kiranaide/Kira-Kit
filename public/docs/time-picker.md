@@ -10,11 +10,14 @@ kira-kit add @kira-kit/time-picker
 
 ## Dependencies
 
-- @base-ui/react
 - @tabler/icons-react
 - class-variance-authority
 - cn
 - date-fns
+
+## Registry dependencies
+
+- @kira-kit/popover
 
 ## Usage
 
@@ -27,4 +30,3 @@ import { TimePicker } from "@/components/ui/time-picker";
 
 Built on Base UI primitives: keyboard navigation, focus management, and ARIA wiring
 come from the primitive layer. Animations are gated by `useReducedMotion`.
-ions are gated by `useReducedMotion`.

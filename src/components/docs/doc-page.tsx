@@ -18,7 +18,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useReveal } from "@/components/docs/layout";
-import { PageTopBar } from "@/components/site-chrome";
+import { PageTopBar } from "@/components/site/site-chrome";
+import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
 
 export interface TocEntry {
   id: string;
@@ -37,7 +38,7 @@ export function scrollToSection(id: string) {
 
   if (!target) return;
 
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduce = prefersReducedMotion();
 
   target.scrollIntoView({
     behavior: reduce ? "auto" : "smooth",

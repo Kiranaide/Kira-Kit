@@ -3,6 +3,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { useVisibilityPause } from "@/hooks/use-visibility-pause";
 import { cn } from "cn";
 import {
   isFunctionProp,
@@ -93,37 +94,22 @@ function useSkeletonActivity(
   ref: React.RefObject<HTMLDivElement | null>,
   enabled: boolean,
 ) {
+  const paused = useVisibilityPause(ref, enabled);
+
   React.useEffect(() => {
     const node = ref.current;
 
     if (!node || !enabled) return;
 
-    let visible = typeof IntersectionObserver === "undefined";
-
-    const update = () =>
-      node.style.setProperty(
-        "--skeleton-play-state",
-        visible && !document.hidden ? "running" : "paused",
-      );
-
-    const observer =
-      typeof IntersectionObserver === "undefined"
-        ? undefined
-        : new IntersectionObserver(([entry]) => {
-            visible = entry.isIntersecting;
-            update();
-          });
-
-    observer?.observe(node);
-    document.addEventListener("visibilitychange", update);
-    update();
+    node.style.setProperty(
+      "--skeleton-play-state",
+      paused ? "paused" : "running",
+    );
 
     return () => {
-      observer?.disconnect();
-      document.removeEventListener("visibilitychange", update);
       node.style.setProperty("--skeleton-play-state", "paused");
     };
-  }, [enabled, ref]);
+  }, [enabled, paused, ref]);
 }
 
 function finiteTime(value: number, fallback: number) {

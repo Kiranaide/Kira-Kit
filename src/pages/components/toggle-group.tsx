@@ -1904,6 +1904,12 @@ const changelogEntries = [
     date: "In development",
     changes: [
       {
+        type: "changed",
+        title: "Shared useOptimisticCommit seam",
+        description:
+          "Removed the direct toast dependency; optimistic group updates now route through useOptimisticCommit while retaining the GSAP sliding pill indicator.",
+      },
+      {
         type: "fixed",
         title: "Focus ring at full strength",
         description:

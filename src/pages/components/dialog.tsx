@@ -1120,6 +1120,18 @@ import { Button } from "@/components/ui/button"
 // Static demo metadata stays co-located and follows its source constants.
 const dialogPageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "added",
+        title: "Exported DialogPopup and root/portal prop types",
+        description:
+          "Exported DialogPopup along with DialogRootProps, DialogPopupProps, DialogPortalProps, and DialogRootActions so downstream dialog composites (such as CommandDialog) compose cleanly without importing @base-ui/react/dialog directly.",
+      },
+    ],
+  },
+  {
     version: "2.3.0",
     date: "5 November 2026",
     changes: [

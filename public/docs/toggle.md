@@ -14,12 +14,11 @@ kira-kit add @kira-kit/toggle
 - @tabler/icons-react
 - class-variance-authority
 - cn
-- gsap
 
 ## Registry dependencies
 
-- @kira-kit/toast
 - @kira-kit/tooltip
+- @kira-kit/use-optimistic-commit
 - @kira-kit/use-reduced-motion
 
 ## Usage

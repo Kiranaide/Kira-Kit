@@ -17,9 +17,9 @@ kira-kit add @kira-kit/dropdown-menu
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/use-menu-action
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

@@ -963,6 +963,18 @@ export default function AnnouncementBarPage() {
       <Changelog
         entries={[
           {
+            version: "Unreleased",
+            date: "In development",
+            changes: [
+              {
+                type: "changed",
+                title: "Aligned action controls onto kit Button",
+                description:
+                  "Replaced direct @base-ui/react/button imports with kit Button using Base UI render/nativeButton props, eliminating dual raw-primitive and kit imports.",
+              },
+            ],
+          },
+          {
             version: "3.0.1",
             date: "November 15, 2026",
             changes: [

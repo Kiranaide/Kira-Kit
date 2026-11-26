@@ -1610,6 +1610,12 @@ const changelogEntries = [
     date: "In development",
     changes: [
       {
+        type: "changed",
+        title: "CSS toggle motion and shared useOptimisticCommit seam",
+        description:
+          "Removed gsap and direct toast imports; press/pop motion now uses Tailwind CSS (animate-toggle-pop) + WAAPI and optimistic toggle commits route through useOptimisticCommit.",
+      },
+      {
         type: "fixed",
         title: "Focus ring at full strength",
         description:

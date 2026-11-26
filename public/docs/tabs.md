@@ -20,10 +20,10 @@ kira-kit add @kira-kit/tabs
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/dropdown-menu
 - @kira-kit/use-announce
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

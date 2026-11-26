@@ -719,6 +719,18 @@ const spinnerPageAPIReferenceSections = [
 
 const spinnerPageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "changed",
+        title: "Shared useDocumentVisible hook",
+        description:
+          "Adopted useDocumentVisible from @/hooks/use-visibility-pause instead of managing a local visibilitychange listener.",
+      },
+    ],
+  },
+  {
     version: "v2.0.1",
     date: "11 November 2026",
     changes: [

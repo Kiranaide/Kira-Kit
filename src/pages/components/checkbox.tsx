@@ -1344,6 +1344,12 @@ const checkboxPageChangelogEntries = [
     date: "In development",
     changes: [
       {
+        type: "changed",
+        title: "CSS toggle motion and shared useOptimisticCommit seam",
+        description:
+          "Removed gsap/@gsap/react and direct toast imports; toggle feedback now uses CSS/WAAPI (animate-checkbox-ripple) and CheckboxCard optimistic commits route through useOptimisticCommit.",
+      },
+      {
         type: "fixed",
         title: "Focus ring at full strength",
         description:

@@ -147,21 +147,23 @@ function RouteErrorErrorDetailsSection({
 }) {
   return (
     <Dialog open={showDetails} onOpenChange={setShowDetails}>
-      <DialogTrigger>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full text-muted-foreground"
-        >
-          View Error Details
-          <span className="ml-auto" aria-hidden="true">
-            {showDetails ? (
-              <IconChevronDown className="w-4 h-4" />
-            ) : (
-              <IconChevronRight className="w-4 h-4" />
-            )}
-          </span>
-        </Button>
+      <DialogTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-muted-foreground"
+          />
+        }
+      >
+        View Error Details
+        <span className="ml-auto" aria-hidden="true">
+          {showDetails ? (
+            <IconChevronDown className="w-4 h-4" />
+          ) : (
+            <IconChevronRight className="w-4 h-4" />
+          )}
+        </span>
       </DialogTrigger>
       <DialogContent>
         <div className="space-y-2">

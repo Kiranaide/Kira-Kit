@@ -7,8 +7,8 @@ import {
   IconSun,
 } from "@tabler/icons-react";
 import { cn } from "cn";
-import { useTheme } from "@/components/ui/sidebar";
-import { PresetField } from "@/components/theme-customizer";
+import { useTheme } from "@/components/ui/theme-provider";
+import { PresetStudioPopover } from "@/components/site/theme-customizer";
 
 export const SITE_REPOSITORY_URL = "https://github.com/Kiranaide/kira-kit";
 
@@ -154,8 +154,8 @@ export function SiteHeader({ after, className }: SiteHeaderProps) {
             <IconArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
           </Link>
           <GitHubLink />
-          <PresetField showLabel={false} className="lg:hidden" />
-          <PresetField className="hidden lg:inline-flex" />
+          <PresetStudioPopover showLabel={false} className="lg:hidden" />
+          <PresetStudioPopover className="hidden lg:inline-flex" />
           {after}
           <ThemeModeToggle />
         </div>
@@ -245,8 +245,8 @@ export function PageTopBar({ crumb }: { crumb: string }) {
 
       <div className="flex shrink-0 items-center gap-1">
         <GitHubLink iconOnly />
-        <PresetField showLabel={false} className="lg:hidden" />
-        <PresetField className="hidden lg:inline-flex" />
+        <PresetStudioPopover showLabel={false} className="lg:hidden" />
+        <PresetStudioPopover className="hidden lg:inline-flex" />
         <ThemeModeToggle />
       </div>
     </div>

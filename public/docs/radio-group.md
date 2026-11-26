@@ -18,8 +18,8 @@ kira-kit add @kira-kit/radio-group
 
 ## Registry dependencies
 
-- @kira-kit/use-reduced-motion
 - @kira-kit/component-utils
+- @kira-kit/use-reduced-motion
 
 ## Usage
 

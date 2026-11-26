@@ -10,7 +10,6 @@ kira-kit add @kira-kit/command
 
 ## Dependencies
 
-- @base-ui/react
 - @tabler/icons-react
 - class-variance-authority
 - cmdk
@@ -19,10 +18,10 @@ kira-kit add @kira-kit/command
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
 - @kira-kit/dialog
 - @kira-kit/kbd
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

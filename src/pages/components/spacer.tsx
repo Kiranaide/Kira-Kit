@@ -10,6 +10,7 @@ import { Stack, HStack, VStack } from "@/components/ui/stack";
 import { Spacer, KiraSpacer } from "@/components/ui/spacer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ComponentPage,
   PageHeader,
@@ -207,15 +208,17 @@ function ReserveDemo() {
       <KiraSpacer
         mode="reserve"
         minHeight="12rem"
-        loading={loading}
-        loadingLabel="Reloading release brief…"
-        className="rounded-lg border p-4"
+        className="relative rounded-lg border p-4"
       >
-        <div className="space-y-4">
+        <div
+          aria-hidden={loading || undefined}
+          inert={loading || undefined}
+          className={loading ? "invisible space-y-4" : "space-y-4"}
+        >
           <h3 className="font-semibold">Release brief</h3>
           <p className="text-sm text-muted-foreground">
-            A minimum footprint reserves space; supplied content stays mounted
-            under the loading mask.
+            A minimum footprint reserves space; compose a Skeleton overlay when
+            loading so the draft stays mounted.
           </p>
           <label
             htmlFor="spacer-reserve-note"
@@ -228,6 +231,12 @@ function ReserveDemo() {
             defaultValue="Confirm the external collaborator policy."
           />
         </div>
+        {loading && (
+          <Skeleton
+            aria-label="Reloading release brief…"
+            className="absolute inset-4 h-auto w-auto"
+          />
+        )}
       </KiraSpacer>
       <p className="text-sm text-muted-foreground">
         Type a note, start reload, then finish. The draft returns without a
@@ -238,7 +247,7 @@ function ReserveDemo() {
 }
 
 const ReserveDemoCode =
-  'import * as React from "react";\nimport { HStack, VStack } from "@/components/ui/stack";\nimport { KiraSpacer } from "@/components/ui/spacer";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function ReserveDemo() {\n  const [loading, setLoading] = React.useState(false);\n  return <VStack gap={4} className="w-full max-w-lg">\n    <HStack wrap gap={2}><Button variant="outline" disabled={loading} onClick={() => setLoading(true)}>Start reload</Button><Button variant="outline" disabled={!loading} onClick={() => setLoading(false)}>Finish reload</Button></HStack>\n    <KiraSpacer mode="reserve" minHeight="12rem" loading={loading} loadingLabel="Reloading release brief…" className="rounded-lg border p-4">\n      <div className="space-y-4"><h3 className="font-semibold">Release brief</h3><p className="text-sm text-muted-foreground">A minimum footprint reserves space; supplied content stays mounted under the loading mask.</p><label htmlFor="spacer-reserve-note" className="block text-sm font-medium">Draft note</label><Input id="spacer-reserve-note" defaultValue="Confirm the external collaborator policy." /></div>\n    </KiraSpacer>\n    <p className="text-sm text-muted-foreground">Type a note, start reload, then finish. The draft returns without a remount.</p>\n  </VStack>;\n}';
+  'import * as React from "react";\nimport { HStack, VStack } from "@/components/ui/stack";\nimport { KiraSpacer } from "@/components/ui/spacer";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\nimport { Skeleton } from "@/components/ui/skeleton";\n\nexport function ReserveDemo() {\n  const [loading, setLoading] = React.useState(false);\n  return <VStack gap={4} className="w-full max-w-lg">\n    <HStack wrap gap={2}><Button variant="outline" disabled={loading} onClick={() => setLoading(true)}>Start reload</Button><Button variant="outline" disabled={!loading} onClick={() => setLoading(false)}>Finish reload</Button></HStack>\n    <KiraSpacer mode="reserve" minHeight="12rem" className="relative rounded-lg border p-4">\n      <div aria-hidden={loading || undefined} inert={loading || undefined} className={loading ? "invisible space-y-4" : "space-y-4"}><h3 className="font-semibold">Release brief</h3><p className="text-sm text-muted-foreground">A minimum footprint reserves space; compose a Skeleton overlay when loading so the draft stays mounted.</p><label htmlFor="spacer-reserve-note" className="block text-sm font-medium">Draft note</label><Input id="spacer-reserve-note" defaultValue="Confirm the external collaborator policy." /></div>\n      {loading && <Skeleton aria-label="Reloading release brief…" className="absolute inset-4 h-auto w-auto" />}\n    </KiraSpacer>\n    <p className="text-sm text-muted-foreground">Type a note, start reload, then finish. The draft returns without a remount.</p>\n  </VStack>;\n}';
 
 function NativeDemo() {
   const spacerRef = React.useRef<HTMLSpanElement>(null);
@@ -287,18 +296,15 @@ function StatesDemo() {
         <Spacer axis="vertical" />
         <p className="text-sm">Footer follows free space</p>
       </VStack>
-      <KiraSpacer
-        mode="reserve"
-        minHeight="6rem"
-        loading
-        loadingLabel="Loading preview…"
-      />
+      <KiraSpacer mode="reserve" minHeight="6rem">
+        <Skeleton className="h-24 w-full" />
+      </KiraSpacer>
     </VStack>
   );
 }
 
 const StatesDemoCode =
-  'import { HStack, VStack } from "@/components/ui/stack";\nimport { Spacer, KiraSpacer } from "@/components/ui/spacer";\n\nexport function StatesDemo() {\n  return <VStack gap={4} className="w-full max-w-80">\n    <HStack gap={0} align="center"><span className="text-sm">Zero</span><Spacer size={0} /><span className="text-sm">gap</span></HStack>\n    <HStack gap={0} align="center" className="max-w-full"><span className="min-w-0 text-sm">A-long-release-label-that-must-wrap-in-a-narrow-footer</span><Spacer size={6} /><span className="shrink-0 text-sm">Ready</span></HStack>\n    <VStack gap={0} className="h-40 rounded-lg border p-3"><p className="text-sm">Review summary</p><Spacer axis="vertical" /><p className="text-sm">Footer follows free space</p></VStack>\n    <KiraSpacer mode="reserve" minHeight="6rem" loading loadingLabel="Loading preview…" />\n  </VStack>;\n}';
+  'import { HStack, VStack } from "@/components/ui/stack";\nimport { Spacer, KiraSpacer } from "@/components/ui/spacer";\nimport { Skeleton } from "@/components/ui/skeleton";\n\nexport function StatesDemo() {\n  return <VStack gap={4} className="w-full max-w-80">\n    <HStack gap={0} align="center"><span className="text-sm">Zero</span><Spacer size={0} /><span className="text-sm">gap</span></HStack>\n    <HStack gap={0} align="center" className="max-w-full"><span className="min-w-0 text-sm">A-long-release-label-that-must-wrap-in-a-narrow-footer</span><Spacer size={6} /><span className="shrink-0 text-sm">Ready</span></HStack>\n    <VStack gap={0} className="h-40 rounded-lg border p-3"><p className="text-sm">Review summary</p><Spacer axis="vertical" /><p className="text-sm">Footer follows free space</p></VStack>\n    <KiraSpacer mode="reserve" minHeight="6rem"><Skeleton className="h-24 w-full" /></KiraSpacer>\n  </VStack>;\n}';
 
 const demos = [
   {
@@ -451,7 +457,7 @@ export default function SpacerPage() {
       />
       <UsageBlock
         code={
-          'import { HStack, VStack } from "@/components/ui/stack";\nimport { Spacer, KiraSpacer, spacerVariants, spacerReserveVariants } from "@/components/ui/spacer";\n\nexport function SpacingPatterns() {\n  return <VStack gap={6}>\n    <HStack gap={0}><span>Owner</span><Spacer /><span>Reviewer</span></HStack>\n    <Spacer size={{ base: 4, md: 8 }} axis="vertical" />\n    <KiraSpacer axis="vertical" min={4} max={24} preferred="5vw" safeArea="bottom" />\n    <KiraSpacer mode="reserve" minHeight="12rem" loading={false}><p>Deferred release brief</p></KiraSpacer>\n    <div aria-hidden="true" className={spacerVariants({ axis: "horizontal", flexible: true })} />\n    <div className={spacerReserveVariants()} style={{ minHeight: "12rem" }}>Reserved frame</div>\n  </VStack>;\n}'
+          'import { HStack, VStack } from "@/components/ui/stack";\nimport { Spacer, KiraSpacer, spacerVariants, spacerReserveVariants } from "@/components/ui/spacer";\n\nexport function SpacingPatterns() {\n  return <VStack gap={6}>\n    <HStack gap={0}><span>Owner</span><Spacer /><span>Reviewer</span></HStack>\n    <Spacer size={{ base: 4, md: 8 }} axis="vertical" />\n    <KiraSpacer axis="vertical" min={4} max={24} preferred="5vw" safeArea="bottom" />\n    <KiraSpacer mode="reserve" minHeight="12rem"><p>Deferred release brief</p></KiraSpacer>\n    <div aria-hidden="true" className={spacerVariants({ axis: "horizontal", flexible: true })} />\n    <div className={spacerReserveVariants()} style={{ minHeight: "12rem" }}>Reserved frame</div>\n  </VStack>;\n}'
         }
       />
       <APIReference
@@ -539,17 +545,10 @@ export default function SpacerPage() {
                   "Minimum block footprint. Reserve enough for final content; taller content can still grow.",
               },
               {
-                prop: "loading / loadingLabel / loadingContent",
-                type: "boolean / string / React.ReactNode",
-                default: 'false / "Loading content…" / shared Skeleton',
-                description:
-                  "Retained content is hidden and inert while a decorative loading mask fills the footprint.",
-              },
-              {
                 prop: "children / contentClassName",
                 type: "React.ReactNode / string",
                 description:
-                  "Supplied content stays mounted beneath the mask; style the spacer-reserve-content wrapper.",
+                  "Content inside the reserved footprint; compose Skeleton directly when loading. Style the spacer-reserve-content wrapper via contentClassName.",
               },
             ],
           },
@@ -557,6 +556,18 @@ export default function SpacerPage() {
       />
       <Changelog
         entries={[
+          {
+            version: "Unreleased",
+            date: "In development",
+            changes: [
+              {
+                type: "breaking",
+                title: "Stripped loading props from KiraSpacer",
+                description:
+                  'Removed loading, loadingLabel, and loadingContent (and the Skeleton import) from KiraSpacer mode="reserve" so spacer remains a zero-dependency layout leaf. Compose Skeleton directly inside children when needed.',
+              },
+            ],
+          },
           {
             version: "2.0.0",
             date: "15 November 2026",

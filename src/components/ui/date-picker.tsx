@@ -1,8 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import { isStringProp, resolveComponentDefaults } from "@/lib/component-utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   dateMatchModifiers,
   type DateRange,
@@ -366,7 +370,7 @@ function renderDatePickerSectionPart1({
         }}
         className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
       />
-      <PopoverPrimitive.Trigger
+      <PopoverTrigger
         ref={triggerRef}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
@@ -376,7 +380,7 @@ function renderDatePickerSectionPart1({
         className="-mr-1 rounded p-1 text-muted-foreground outline-none hover:bg-muted"
       >
         <IconCalendar aria-hidden className={iconSize[resolvedSize]} />
-      </PopoverPrimitive.Trigger>
+      </PopoverTrigger>
     </>
   );
 }
@@ -413,7 +417,7 @@ function renderDatePickerSectionPart2({
   resolvedSize,
 }: renderDatePickerSectionPart2Args) {
   return (
-    <PopoverPrimitive.Trigger
+    <PopoverTrigger
       ref={triggerRef}
       id={baseId}
       // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- The button is the APG date-picker combobox invoker for a calendar dialog, rather than a text input or select.
@@ -435,7 +439,7 @@ function renderDatePickerSectionPart2({
       <span className={cn("truncate", !hasValue && "text-muted-foreground")}>
         {label}
       </span>
-    </PopoverPrimitive.Trigger>
+    </PopoverTrigger>
   );
 }
 
@@ -1321,7 +1325,7 @@ function renderDatePicker({
 }: ReturnType<typeof useDatePickerActions>) {
   return (
     <div data-slot="date-picker" className={cn("relative w-full", className)}>
-      <PopoverPrimitive.Root open={isOpen} onOpenChange={handleOpenChange}>
+      <Popover open={isOpen} onOpenChange={handleOpenChange}>
         <div
           ref={anchorRef}
           className={datePickerTriggerVariants({ variant, size })}
@@ -1392,93 +1396,83 @@ function renderDatePicker({
         )}
         {rangeNames && renderDatePickerSectionPart3({ rangeNames, value })}
 
-        <PopoverPrimitive.Portal>
-          <PopoverPrimitive.Positioner
-            anchor={anchorRef}
-            side="bottom"
-            align="start"
-            sideOffset={8}
-            collisionPadding={8}
-            className="z-50"
-          >
-            <PopoverPrimitive.Popup
-              id={popoverId}
-              // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Base UI Popover.Popup owns visibility and focus; ARIA dialog provides the date-picker popup semantics.
-              role="dialog"
-              aria-label={isRange ? "Choose date range" : "Choose date"}
-              className={cn(
-                "origin-(--transform-origin) max-h-[calc(100dvh-1rem)] overflow-auto rounded-xl border border-border bg-popover text-popover-foreground shadow-xl outline-none",
-                "transition-[opacity,scale] duration-150 ease-out data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 motion-reduce:transition-none",
+        <PopoverContent
+          id={popoverId}
+          // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Base UI Popover.Popup owns visibility and focus; ARIA dialog provides the date-picker popup semantics.
+          role="dialog"
+          aria-label={isRange ? "Choose date range" : "Choose date"}
+          size="auto"
+          side="bottom"
+          align="start"
+          sideOffset={8}
+          collisionPadding={8}
+          positionerProps={{ anchor: anchorRef }}
+          className="max-h-[calc(100dvh-1rem)] overflow-auto rounded-xl p-0 shadow-xl"
+        >
+          <div className="flex flex-col">
+            <div className="flex flex-col max-sm:items-center sm:flex-row">
+              {showPresets &&
+                presets.length > 0 &&
+                renderDatePickerSectionPart4({
+                  presets,
+                  today,
+                  currentValue,
+                  isPresetBlocked,
+                  handlePreset,
+                  resolvedSize,
+                })}
+
+              {props.mode === "range" ? (
+                <Calendar
+                  {...calendarShared}
+                  mode="range"
+                  selected={
+                    isDateRange(currentValue) ? currentValue : undefined
+                  }
+                  onSelect={handleSelect}
+                  minNights={props.minNights}
+                  maxNights={props.maxNights}
+                  excludeDisabled={props.excludeDisabled}
+                  resetOnSelect={props.resetOnSelect ?? true}
+                />
+              ) : (
+                <Calendar
+                  {...calendarShared}
+                  mode="single"
+                  selected={
+                    currentValue instanceof Date ? currentValue : undefined
+                  }
+                  onSelect={isDatetime ? handleDatetimeSelect : handleSelect}
+                />
               )}
-            >
-              <div className="flex flex-col">
-                <div className="flex flex-col max-sm:items-center sm:flex-row">
-                  {showPresets &&
-                    presets.length > 0 &&
-                    renderDatePickerSectionPart4({
-                      presets,
-                      today,
-                      currentValue,
-                      isPresetBlocked,
-                      handlePreset,
-                      resolvedSize,
-                    })}
 
-                  {props.mode === "range" ? (
-                    <Calendar
-                      {...calendarShared}
-                      mode="range"
-                      selected={
-                        isDateRange(currentValue) ? currentValue : undefined
-                      }
-                      onSelect={handleSelect}
-                      minNights={props.minNights}
-                      maxNights={props.maxNights}
-                      excludeDisabled={props.excludeDisabled}
-                      resetOnSelect={props.resetOnSelect ?? true}
-                    />
-                  ) : (
-                    <Calendar
-                      {...calendarShared}
-                      mode="single"
-                      selected={
-                        currentValue instanceof Date ? currentValue : undefined
-                      }
-                      onSelect={
-                        isDatetime ? handleDatetimeSelect : handleSelect
-                      }
-                    />
-                  )}
+              {isDatetime &&
+                renderDatePickerSectionPart5({
+                  currentValue,
+                  handleDatetimeTimeChange,
+                  timeGranularity,
+                  timeCycle,
+                  resolvedSize,
+                })}
+            </div>
 
-                  {isDatetime &&
-                    renderDatePickerSectionPart5({
-                      currentValue,
-                      handleDatetimeTimeChange,
-                      timeGranularity,
-                      timeCycle,
-                      resolvedSize,
-                    })}
-                </div>
-
-                {applyMode === "confirm" &&
-                  renderDatePickerSectionPart6({
-                    resolvedSize,
-                    isDatetime,
-                    pendingValue,
-                    locale,
-                    timeZone,
-                    displayFormat,
-                    timePattern,
-                    placeholder,
-                    closePopover,
-                    handleApply,
-                    canApply,
-                  })}
-              </div>
-            </PopoverPrimitive.Popup>
-          </PopoverPrimitive.Positioner>
-        </PopoverPrimitive.Portal>
-      </PopoverPrimitive.Root>
+            {applyMode === "confirm" &&
+              renderDatePickerSectionPart6({
+                resolvedSize,
+                isDatetime,
+                pendingValue,
+                locale,
+                timeZone,
+                displayFormat,
+                timePattern,
+                placeholder,
+                closePopover,
+                handleApply,
+                canApply,
+              })}
+          </div>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

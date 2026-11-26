@@ -1417,6 +1417,18 @@ const demoTabs = [
 
 const changelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "changed",
+        title: "Shared useVisibilityPause hook",
+        description:
+          "Adopted useVisibilityPause from @/hooks/use-visibility-pause instead of duplicating document visibility and IntersectionObserver pause logic inline.",
+      },
+    ],
+  },
+  {
     version: "2.0.0",
     date: "9 November 2026",
     changes: [

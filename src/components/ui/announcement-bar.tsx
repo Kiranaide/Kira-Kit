@@ -8,7 +8,6 @@ import {
   reactContentKey,
   withOccurrenceKeys,
 } from "@/lib/component-utils";
-import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import {
@@ -23,7 +22,11 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Button,
+  buttonVariants,
+  type ButtonProps,
+} from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "cn";
@@ -106,8 +109,8 @@ interface AnnouncementBarContentProps extends React.ComponentProps<"div"> {
 }
 
 interface AnnouncementBarActionProps extends Omit<
-  ButtonPrimitive.Props,
-  "className" | "onClick"
+  ButtonProps,
+  "className" | "onClick" | "variant" | "size"
 > {
   onClick?: React.MouseEventHandler<HTMLElement>;
   href?: string;
@@ -464,8 +467,9 @@ function AnnouncementBarAction({
   if (href) return link;
 
   return (
-    <ButtonPrimitive
+    <Button
       data-slot="announcement-bar-action"
+      variant="ghost"
       nativeButton={nativeButton ?? !render}
       render={render}
       ref={ref}

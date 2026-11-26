@@ -9,6 +9,7 @@ import {
 import { Stack, HStack, VStack, KiraStack } from "@/components/ui/stack";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ComponentPage,
   PageHeader,
@@ -244,12 +245,16 @@ function RefreshingDemo() {
           Finish refresh
         </Button>
       </HStack>
-      <KiraStack
-        layout="vertical"
-        loading={loading}
-        loadingLabel="Refreshing reviewer details…"
-        gap={3}
-      >
+      <KiraStack layout="vertical" gap={3}>
+        {loading && (
+          <output
+            key="status"
+            className="flex items-center gap-2 text-xs text-muted-foreground"
+          >
+            <Skeleton className="h-2 w-24" />
+            <span>Refreshing reviewer details…</span>
+          </output>
+        )}
         <label
           key="label"
           htmlFor="stack-refresh-note"
@@ -273,7 +278,7 @@ function RefreshingDemo() {
 }
 
 const RefreshingDemoCode =
-  'import * as React from "react";\nimport { HStack, VStack, KiraStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function RefreshingDemo() {\n  const [loading, setLoading] = React.useState(false);\n  return <VStack gap={4} className="w-full max-w-lg">\n    <HStack wrap gap={2}><Button variant="outline" disabled={loading} onClick={() => setLoading(true)}>Start refresh</Button><Button variant="outline" disabled={!loading} onClick={() => setLoading(false)}>Finish refresh</Button></HStack>\n    <KiraStack layout="vertical" loading={loading} loadingLabel="Refreshing reviewer details…" gap={3}>\n      <label key="label" htmlFor="stack-refresh-note" className="text-sm font-medium">Draft review note</label>\n      <Input key="note" id="stack-refresh-note" defaultValue="Keep external invite expiry at seven days." />\n      <p key="hint" className="text-sm text-muted-foreground">{loading ? "Refreshing details. You can keep editing." : "Reviewer details are current."}</p>\n    </KiraStack>\n  </VStack>;\n}';
+  'import * as React from "react";\nimport { HStack, VStack, KiraStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\nimport { Skeleton } from "@/components/ui/skeleton";\n\nexport function RefreshingDemo() {\n  const [loading, setLoading] = React.useState(false);\n  return <VStack gap={4} className="w-full max-w-lg">\n    <HStack wrap gap={2}><Button variant="outline" disabled={loading} onClick={() => setLoading(true)}>Start refresh</Button><Button variant="outline" disabled={!loading} onClick={() => setLoading(false)}>Finish refresh</Button></HStack>\n    <KiraStack layout="vertical" gap={3}>\n      {loading && <output key="status" className="flex items-center gap-2 text-xs text-muted-foreground"><Skeleton className="h-2 w-24" /><span>Refreshing reviewer details…</span></output>}\n      <label key="label" htmlFor="stack-refresh-note" className="text-sm font-medium">Draft review note</label>\n      <Input key="note" id="stack-refresh-note" defaultValue="Keep external invite expiry at seven days." />\n      <p key="hint" className="text-sm text-muted-foreground">{loading ? "Refreshing details. You can keep editing." : "Reviewer details are current."}</p>\n    </KiraStack>\n  </VStack>;\n}';
 
 function NativeDemo() {
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -338,12 +343,10 @@ function StatesDemo() {
       <Button variant="outline" onClick={() => setLoading((value) => !value)}>
         {loading ? "Show empty state" : "Show initial loading"}
       </Button>
-      <KiraStack
-        layout="vertical"
-        loading={loading}
-        loadingLabel="Loading review queue…"
-      >
-        {loading ? null : (
+      <KiraStack layout="vertical">
+        {loading ? (
+          <Skeleton className="h-24 w-full" />
+        ) : (
           <p className="text-sm text-muted-foreground">
             No reviews in this queue.
           </p>
@@ -360,7 +363,7 @@ function StatesDemo() {
 }
 
 const StatesDemoCode =
-  'import * as React from "react";\nimport { Stack, HStack, VStack, KiraStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\n\nexport function StatesDemo() {\n  const [loading, setLoading] = React.useState(true);\n  return <VStack gap={4} className="w-full max-w-80">\n    <Stack as="fieldset" disabled gap={2}><legend className="text-sm font-medium">Approval settings</legend><Input aria-label="Approval owner" defaultValue="Owner permission required" /><p className="text-sm text-muted-foreground">Only release owners can change these settings.</p></Stack>\n    <VStack as="ul" aria-label="Empty review queue" gap={0} />\n    <Button variant="outline" onClick={() => setLoading((value) => !value)}>{loading ? "Show empty state" : "Show initial loading"}</Button>\n    <KiraStack layout="vertical" loading={loading} loadingLabel="Loading review queue…">{loading ? null : <p className="text-sm text-muted-foreground">No reviews in this queue.</p>}</KiraStack>\n    <HStack gap={2} align="start"><span className="min-w-0">release-platform-external-collaborators-with-a-very-long-unbroken-identifier</span><span className="shrink-0 text-sm">Ready</span></HStack>\n  </VStack>;\n}';
+  'import * as React from "react";\nimport { Stack, HStack, VStack, KiraStack } from "@/components/ui/stack";\nimport { Button } from "@/components/ui/button";\nimport { Input } from "@/components/ui/input";\nimport { Skeleton } from "@/components/ui/skeleton";\n\nexport function StatesDemo() {\n  const [loading, setLoading] = React.useState(true);\n  return <VStack gap={4} className="w-full max-w-80">\n    <Stack as="fieldset" disabled gap={2}><legend className="text-sm font-medium">Approval settings</legend><Input aria-label="Approval owner" defaultValue="Owner permission required" /><p className="text-sm text-muted-foreground">Only release owners can change these settings.</p></Stack>\n    <VStack as="ul" aria-label="Empty review queue" gap={0} />\n    <Button variant="outline" onClick={() => setLoading((value) => !value)}>{loading ? "Show empty state" : "Show initial loading"}</Button>\n    <KiraStack layout="vertical">{loading ? <Skeleton className="h-24 w-full" /> : <p className="text-sm text-muted-foreground">No reviews in this queue.</p>}</KiraStack>\n    <HStack gap={2} align="start"><span className="min-w-0">release-platform-external-collaborators-with-a-very-long-unbroken-identifier</span><span className="shrink-0 text-sm">Ready</span></HStack>\n  </VStack>;\n}';
 
 const demos = [
   {
@@ -589,19 +592,24 @@ export default function StackPage() {
                 description:
                   "CSS length threshold and maximum horizontal child-group count. Nonfinite limits fall back to four; positive whole limits are enforced.",
               },
-              {
-                prop: "loading / loadingLabel / loadingContent",
-                type: "boolean / string / React.ReactNode",
-                default: 'false / "Refreshing content…" / shared Skeleton',
-                description:
-                  "Busy status keeps supplied children mounted and interactive. Only an empty initial load uses the placeholder; the caller supplies and retains data.",
-              },
             ],
           },
         ]}
       />
       <Changelog
         entries={[
+          {
+            version: "Unreleased",
+            date: "In development",
+            changes: [
+              {
+                type: "breaking",
+                title: "Stripped loading props from KiraStack",
+                description:
+                  "Removed loading, loadingLabel, and loadingContent (and the Skeleton import) from KiraStack so stack stays a zero-dependency layout leaf. Compose Skeleton directly inside your stack when loading.",
+              },
+            ],
+          },
           {
             version: "2.0.0",
             date: "15 November 2026",

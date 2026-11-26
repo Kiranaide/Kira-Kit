@@ -22,6 +22,7 @@ import { registryMetadata } from "./registry-metadata";
 import { baseUiOnly } from "./base-ui-only";
 import { cnSource } from "./cn-source";
 import { libResolution } from "./lib-resolution";
+import { checkRegistryGraph } from "./registry-graph";
 
 const CHECKS = [
   importsMatchDeps,
@@ -202,6 +203,10 @@ export function runChecks(options: CheckRunOptions): CheckRunResult {
 
     suppressed += result.suppressed;
     allFindings.push(...result.findings);
+  }
+
+  if (options.paths.length === 0) {
+    allFindings.push(...checkRegistryGraph(ctx.items));
   }
 
   const failing = options.ci

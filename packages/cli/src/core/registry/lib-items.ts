@@ -6,6 +6,7 @@
 export const LIB_ITEM_MAP = {
   "component-utils": "component-utils",
   "layout-responsive": "layout-responsive",
+  "layout-storage": "layout-storage",
   "code-presentation": "code-presentation",
   "color-picker": "color-picker-lib",
   "camera/types": "camera-lib",

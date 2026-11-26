@@ -31,7 +31,7 @@
   },
   "badge": {
     "title": "Badge",
-    "description": "Badge covers semantic, outline, ghost, link, and soft styles with status dots, trend arrows, loading, dismissal, and beta/new/version presets. CountBadge formats and animates changing counts, while the suite also provides status, tag, and group modes plus a Combobox-backed TagInput with suggestions and deduplication.",
+    "description": "Badge covers semantic, outline, ghost, link, and soft styles with status dots, trend arrows, loading, dismissal, and beta/new/version presets. CountBadge formats and animates changing counts, while the suite also provides status, tag, and group modes.",
     "categories": ["data-display", "form"]
   },
   "box": {
@@ -46,7 +46,7 @@
   },
   "button": {
     "title": "Button",
-    "description": "Base UI button with extensive semantic variants, icon sizes, full-width layout, press ripples, and pointer/keyboard hold-to-complete progress. Loading, tooltip, and expandable-icon helpers are included, and KiraButton supports optimistic asynchronous toggles with an error toast on rejection.",
+    "description": "Base UI button with extensive semantic variants, icon sizes, full-width layout, CSS press ripples, and pointer/keyboard hold-to-complete progress. Loading and expandable-icon helpers are included, and KiraButton supports optimistic asynchronous toggles backed by useOptimisticCommit.",
     "categories": ["form"]
   },
   "button-group": {
@@ -106,7 +106,7 @@
   },
   "container": {
     "title": "Container",
-    "description": "A polymorphic, centered layout wrapper with responsive max-widths including prose, adjustable padding, optional flex centering, and named CSS container queries. KiraContainer adds header and footer slots plus inert loading skeletons and error content with retry handling.",
+    "description": "A polymorphic, centered layout wrapper with responsive max-widths including prose, adjustable padding, optional flex centering, and named CSS container queries. KiraContainer adds header and footer slots.",
     "categories": ["layout"]
   },
   "context-menu": {
@@ -161,7 +161,7 @@
   },
   "grid": {
     "title": "Grid",
-    "description": "A responsive CSS Grid system with breakpoint-aware columns, rows, gaps, alignment, item spans, and placement, including auto-fit and auto-fill tracks controlled by minItemWidth. KiraGrid renders keyed collections with semantic list handling, skeleton loading, empty content, and full-span error states with retry.",
+    "description": "A responsive CSS Grid system with breakpoint-aware columns, rows, gaps, alignment, item spans, and placement, including auto-fit and auto-fill tracks controlled by minItemWidth. KiraGrid renders keyed collections with semantic list handling and empty content.",
     "categories": ["layout"]
   },
   "hover-card": {
@@ -171,7 +171,7 @@
   },
   "input": {
     "title": "Input",
-    "description": "A Base UI text input with five sizes, prefix and suffix content, clear and clipboard actions, and an announced character counter. The module also provides scrub-enabled numeric and formatted decimal inputs, debounced search, OTP fields, half-star ratings, password strength feedback, and separator-driven tag entry.",
+    "description": "A Base UI text input with five sizes, prefix and suffix content, clear and clipboard actions, and an announced character counter. The module also provides scrub-enabled numeric and formatted decimal inputs, debounced search, password strength feedback, and separator-driven tag entry.",
     "categories": ["form"]
   },
   "input-group": {
@@ -204,6 +204,11 @@
     "description": "Website navigation with native links, shared popup/viewport composition, active-link underlines, direction-aware transitions, and mega-menu section, header, and footer helpers. KiraNavigationMenu accepts recursive grouped data and custom router links, switching at 768px to a right-side mobile Drawer with collapsible groups unless mobileMode=\"inline\" is used.",
     "categories": ["navigation", "overlay"]
   },
+  "otp-input": {
+    "title": "OTP Input",
+    "description": "Base UI OTPField input for 4-to-8-character numeric, alphanumeric, or alphabetic one-time codes. Supports masking, optional separators, auto-submit on completion, invalid styling, three sizes, and three surface variants.",
+    "categories": ["form"]
+  },
   "pagination": {
     "title": "Pagination",
     "description": "Accessible numbered and cursor pagination with five visual variants, localized formatting, link rendering, responsive page ranges, ellipsis page-jump popovers, item ranges, and page-size controls. KiraPagination includes loading, error/retry, disabled-reason, and live status feedback, while cursor mode uses hasPreviousPage and hasNextPage without requiring a total.",
@@ -228,6 +233,11 @@
     "title": "Radio Group",
     "description": "Base UI radio groups with labeled options, rich RadioCard metadata, and a RadioButtonGroup whose GSAP indicator slides between selections. KiraRadioGroup provides data-driven list, cards, and segmented layouts with selected-option details, loading skeletons, empty states, and field validation.",
     "categories": ["form"]
+  },
+  "rating": {
+    "title": "Rating",
+    "description": "Accessible star rating control with hover preview, half-star increments, clear-on-reclick, keyboard arrow/Home/End navigation, custom icons and colors, and a read-only RatingDisplay helper with fraction and review-count labels.",
+    "categories": ["form", "data-display"]
   },
   "resizable": {
     "title": "Resizable",
@@ -261,7 +271,7 @@
   },
   "sidebar": {
     "title": "Sidebar",
-    "description": "An application navigation shell with offcanvas/icon/none collapse modes, floating and inset variants, custom widths, persisted collapse state, hover expansion, pointer-only GSAP layout motion, and a mobile Drawer below 768px. KiraSidebar adds searchable data-driven sections, router navigation, badges, favorites with drag or arrow-button reordering, user and theme controls, and loading, error, and empty states.",
+    "description": "An application navigation shell with offcanvas/icon/none collapse modes, floating and inset variants, custom widths, persisted collapse state, hover expansion, pointer-only GSAP layout motion, and a mobile Drawer below 768px. KiraSidebar adds searchable data-driven sections, router-agnostic navigation via SidebarRouterProvider, badges, favorites with drag or arrow-button reordering, user controls, and loading, error, and empty states.",
     "categories": ["navigation", "layout"]
   },
   "skeleton": {
@@ -276,7 +286,7 @@
   },
   "spacer": {
     "title": "Spacer",
-    "description": "Responsive horizontal or vertical whitespace with spacing-token sizes, an auto flex-fill mode, and decorative semantics enforced through aria-hidden, presentation role, and inert. KiraSpacer adds clamp-based fluid gaps with safe-area insets and a reserve mode that preserves height while showing accessible loading placeholders.",
+    "description": "Responsive horizontal or vertical whitespace with spacing-token sizes, an auto flex-fill mode, and decorative semantics enforced through aria-hidden, presentation role, and inert. KiraSpacer adds clamp-based fluid gaps with safe-area insets and a reserve mode that preserves minimum height.",
     "categories": ["layout", "utility"]
   },
   "spinner": {
@@ -296,7 +306,7 @@
   },
   "stack": {
     "title": "Stack",
-    "description": "Polymorphic flex layout with responsive direction, wrapping, independent row and column gaps, alignment, justification, and list-safe automatic dividers. KiraStack adds a container-width switcher layout, child-count limits, and accessible loading placeholders.",
+    "description": "Polymorphic flex layout with responsive direction, wrapping, independent row and column gaps, alignment, justification, and list-safe automatic dividers. KiraStack adds a container-width switcher layout and child-count limits.",
     "categories": ["layout"]
   },
   "stats-card": {
@@ -328,6 +338,11 @@
     "title": "Textarea",
     "description": "Auto-sizing native textarea with size and resize variants plus minRows and maxRows height limits. Counter variants add warning thresholds, optional hard limits, and debounced announcements, while KiraTextarea provides inline validation, clearing, and Enter or Ctrl/Cmd+Enter submission.",
     "categories": ["form"]
+  },
+  "theme-provider": {
+    "title": "Theme Provider",
+    "description": "Lightweight light/dark theme context with localStorage persistence, system preference detection, useTheme hook, and a composable ThemeToggle button decoupled from any navigation shell.",
+    "categories": ["theme", "utility"]
   },
   "time-picker": {
     "title": "Time Picker",
@@ -369,11 +384,6 @@
     "description": "Creates provider-free polite and assertive ARIA live regions and returns announce, announcePolite, announceAssertive, and clear functions for screen-reader updates. Use it for dynamic status messages, with defaultPoliteness and debounceMs options to control announcement urgency and rapid updates.",
     "categories": ["hooks", "feedback"]
   },
-  "use-async-data-table": {
-    "title": "useAsyncDataTable",
-    "description": "Coordinates server-side table pagination, sorting, column filters, and global search through a fetchFn that returns rows and totalCount. It returns fetched data, loading and error states, table state setters, pageCount, refetch, and page-navigation flags, while debouncing filters and resetting to the first page when queries change.",
-    "categories": ["hooks", "data-display"]
-  },
   "use-camera": {
     "title": "useCamera",
     "description": "Controls browser camera previews, photo capture, video recording, device switching, zoom, focus, flash, timers, and optional keyboard, gesture, and voice input. It returns videoRef and gestureContainerRef plus stream, permission, device, and capture state and actions, with options for facingMode, media constraints, autoStart, capture format and quality, and lifecycle callbacks.",
@@ -384,15 +394,15 @@
     "description": "Manages controlled or uncontrolled HSVA color and alpha state and returns setters, recent colors, generated harmonies, contrast ratios, formatting, and clipboard-copy helpers. Use it to build color-picker interfaces with value/defaultValue, onValueChange, showAlpha, maxRecentColors, disabled, and readOnly options.",
     "categories": ["hooks", "form"]
   },
-  "use-focus-manager": {
-    "title": "useFocusManager",
-    "description": "Implements roving-tabindex keyboard navigation for grids using rowCount and colCount, with optional wrapping, initial positioning, and enable/disable control. It returns the current position, directional and boundary movement methods, getTabIndex, handleKeyDown, and a containerRef that focuses cells marked with data-row and data-col.",
-    "categories": ["hooks", "navigation"]
-  },
   "use-menu-action": {
     "title": "useMenuAction",
     "description": "Runs dropdown or menubar actions as single-flight, abortable operations, passing an AbortSignal to each item's onSelect callback. Given a sessionKey and optional success/error callbacks, it returns run and reset plus state, activeId, message, and animatePending for rendering pending, success, and error feedback without stale sessions overwriting newer state.",
     "categories": ["hooks", "overlay"]
+  },
+  "use-optimistic-commit": {
+    "title": "useOptimisticCommit",
+    "description": "Manages optimistic async value commits with automatic rollback, optional single-flight locking, and configurable error feedback via a local callback or OptimisticFeedbackProvider context adapter without coupling primitives to a toast module.",
+    "categories": ["hooks", "feedback"]
   },
   "use-pagination": {
     "title": "usePagination",
@@ -414,9 +424,9 @@
     "description": "Returns a live boolean for the user's prefers-reduced-motion: reduce media query and updates when the operating-system setting changes. Use it to gate JavaScript-driven animation, smooth scrolling, and timers; it returns false during SSR and hydration, with prefersReducedMotion also available for non-React reads.",
     "categories": ["hooks", "animation"]
   },
-  "use-spotlight": {
-    "title": "useSpotlight",
-    "description": "Reads spotlight state from SpotlightProvider and returns open, query, setQuery, and openSpotlight, closeSpotlight, and toggleSpotlight controls. Use it inside command-palette interfaces whose provider supplies a global Cmd+K/Ctrl+K-style shortcut with customizable shortcut and disableShortcut options.",
-    "categories": ["hooks", "overlay"]
+  "use-visibility-pause": {
+    "title": "useVisibilityPause",
+    "description": "Provides useDocumentVisible and useVisibilityPause hooks to pause looped animations and timers automatically when the document tab is hidden or the target element is scrolled offscreen.",
+    "categories": ["hooks", "animation"]
   }
 }

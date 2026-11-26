@@ -18,6 +18,7 @@ import { registryMetadata } from "../src/core/checks/registry-metadata";
 import { baseUiOnly } from "../src/core/checks/base-ui-only";
 import { cnSource } from "../src/core/checks/cn-source";
 import { libResolution } from "../src/core/checks/lib-resolution";
+import { checkRegistryGraph } from "../src/core/checks/registry-graph";
 import {
   isSuppressed,
   parseSuppressions,
@@ -834,5 +835,47 @@ describe("runChecks", () => {
     expect(github).toContain(
       "::error file=src/components/ui/button,line=3,title=raw-colors::bad",
     );
+  });
+});
+
+describe("registry-graph", () => {
+  it("passes on an acyclic dependency graph", () => {
+    const items = new Map<string, ItemMeta>([
+      ["ui/button", depsMeta({ registryDependencies: [] })],
+      ["ui/input", depsMeta({ registryDependencies: [] })],
+      [
+        "ui/field",
+        depsMeta({
+          registryDependencies: ["@kira-kit/input", "@kira-kit/button"],
+        }),
+      ],
+    ]);
+
+    expect(checkRegistryGraph(items)).toHaveLength(0);
+  });
+
+  it("errors on a 2-node circular dependency", () => {
+    const items = new Map<string, ItemMeta>([
+      ["ui/input", depsMeta({ registryDependencies: ["@kira-kit/field"] })],
+      ["ui/field", depsMeta({ registryDependencies: ["@kira-kit/input"] })],
+    ]);
+
+    const findings = checkRegistryGraph(items);
+    expect(findings).toHaveLength(1);
+    expect(findings[0].checkId).toBe("registry-graph");
+    expect(findings[0].severity).toBe("error");
+    expect(findings[0].message).toContain("input -> field -> input");
+  });
+
+  it("errors on a 3-node circular dependency", () => {
+    const items = new Map<string, ItemMeta>([
+      ["ui/a", depsMeta({ registryDependencies: ["@kira-kit/b"] })],
+      ["ui/b", depsMeta({ registryDependencies: ["@kira-kit/c"] })],
+      ["ui/c", depsMeta({ registryDependencies: ["@kira-kit/a"] })],
+    ]);
+
+    const findings = checkRegistryGraph(items);
+    expect(findings).toHaveLength(1);
+    expect(findings[0].message).toContain("a -> b -> c -> a");
   });
 });

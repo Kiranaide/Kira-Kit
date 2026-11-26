@@ -18,8 +18,8 @@ kira-kit add @kira-kit/empty
 ## Registry dependencies
 
 - @kira-kit/button
-- @kira-kit/spinner
 - @kira-kit/component-utils
+- @kira-kit/spinner
 
 ## Usage
 

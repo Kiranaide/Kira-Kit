@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import {
   IconArrowLeft,
   IconCheck,
@@ -19,10 +18,15 @@ import {
   DialogClose,
   DialogDescription,
   DialogOverlay,
+  DialogPopup,
   DialogPortal,
   DialogTitle,
   DialogTrigger,
   dialogContentVariants,
+  type DialogPopupProps,
+  type DialogPortalProps,
+  type DialogRootActions,
+  type DialogRootProps,
 } from "@/components/ui/dialog";
 import { Kbd } from "@/components/ui/kbd";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -389,10 +393,7 @@ function CommandBusyIndicator({
   );
 }
 
-interface CommandDialogProps extends Omit<
-  DialogPrimitive.Root.Props,
-  "children"
-> {
+interface CommandDialogProps extends Omit<DialogRootProps, "children"> {
   title?: React.ReactNode;
   description?: React.ReactNode;
   trigger?: React.ReactElement;
@@ -400,10 +401,10 @@ interface CommandDialogProps extends Omit<
   children: React.ReactNode;
   className?: string;
   showCloseButton?: boolean;
-  contentProps?: Omit<DialogPrimitive.Popup.Props, "children" | "className"> & {
+  contentProps?: Omit<DialogPopupProps, "children" | "className"> & {
     className?: string;
   };
-  portalProps?: Omit<DialogPrimitive.Portal.Props, "children">;
+  portalProps?: Omit<DialogPortalProps, "children">;
 }
 
 function CommandDialog(input: CommandDialogProps) {
@@ -1060,7 +1061,7 @@ function renderCommandDialogSectionPart1({
           data-slot="command-dialog-viewport"
           className="pointer-events-none fixed inset-0 z-50 flex items-start justify-center px-4 py-8 sm:pt-24"
         >
-          <DialogPrimitive.Popup
+          <DialogPopup
             {...popupProps}
             data-slot="command-dialog"
             className={cn(
@@ -1088,7 +1089,7 @@ function renderCommandDialogSectionPart1({
                 <IconX aria-hidden="true" className="size-4" />
               </DialogClose>
             )}
-          </DialogPrimitive.Popup>
+          </DialogPopup>
         </div>
       </DialogPortal>
     </Dialog>
@@ -1115,7 +1116,7 @@ type renderKiraCommandDialogSectionPart2Args = {
   setSession: React.Dispatch<
     React.SetStateAction<{ mounted: boolean; key: number }>
   >;
-  dialogActions: React.RefObject<DialogPrimitive.Root.Actions | null>;
+  dialogActions: React.RefObject<DialogRootActions | null>;
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   buildTrigger: () => React.JSX.Element;
   session: { mounted: boolean; key: number };
@@ -1420,7 +1421,7 @@ function useCommandDialogSetup(inputProps: KiraCommandDialogProps) {
 
   const triggerRef = React.useRef<HTMLButtonElement>(null);
 
-  const dialogActions = React.useRef<DialogPrimitive.Root.Actions | null>(null);
+  const dialogActions = React.useRef<DialogRootActions | null>(null);
 
   const [localOpen, setLocalOpen] = React.useState(defaultOpen);
 
@@ -1454,7 +1455,7 @@ function useCommandDialogShortcut(
   shortcut: boolean,
   isOpen: boolean,
   triggerRef: React.RefObject<HTMLButtonElement | null>,
-  dialogActions: React.RefObject<DialogPrimitive.Root.Actions | null>,
+  dialogActions: React.RefObject<DialogRootActions | null>,
 ) {
   React.useEffect(() => {
     if (!shortcut) return;
@@ -1472,7 +1473,7 @@ function handleCommandDialogShortcut(
   event: KeyboardEvent,
   isOpen: boolean,
   triggerRef: React.RefObject<HTMLButtonElement | null>,
-  dialogActions: React.RefObject<DialogPrimitive.Root.Actions | null>,
+  dialogActions: React.RefObject<DialogRootActions | null>,
 ) {
   if (ignoresCommandShortcut({ event })) return;
   const button = triggerRef.current;

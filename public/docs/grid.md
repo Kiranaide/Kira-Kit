@@ -1,6 +1,6 @@
 # Grid
 
-A responsive CSS Grid system with breakpoint-aware columns, rows, gaps, alignment, item spans, and placement, including auto-fit and auto-fill tracks controlled by minItemWidth. KiraGrid renders keyed collections with semantic list handling, skeleton loading, empty content, and full-span error states with retry.
+A responsive CSS Grid system with breakpoint-aware columns, rows, gaps, alignment, item spans, and placement, including auto-fit and auto-fill tracks controlled by minItemWidth. KiraGrid renders keyed collections with semantic list handling and empty content.
 
 ## Install
 
@@ -16,9 +16,8 @@ kira-kit add @kira-kit/grid
 
 ## Registry dependencies
 
-- @kira-kit/button
-- @kira-kit/skeleton
 - @kira-kit/component-utils
+- @kira-kit/layout-responsive
 
 ## Usage
 

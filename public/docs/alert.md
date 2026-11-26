@@ -18,8 +18,8 @@ kira-kit add @kira-kit/alert
 ## Registry dependencies
 
 - @kira-kit/button
-- @kira-kit/use-reduced-motion
 - @kira-kit/component-utils
+- @kira-kit/use-reduced-motion
 
 ## Usage
 

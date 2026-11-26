@@ -6,7 +6,6 @@ import {
   CountBadge,
   TagBadge,
   BadgeGroup,
-  TagInput,
   KiraBadge,
 } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -656,56 +655,6 @@ const statesCode = `import { Badge, StatusBadge, CountBadge } from "@/components
 // CountBadge ticker + format switch (no stale tween origin)
 <CountBadge count={count} animateCount format={format} />`;
 
-function TagInputDemo() {
-  const [tags, setTags] = useState<string[]>(["design", "frontend"]);
-  const [capped, setCapped] = useState<string[]>([]);
-
-  return (
-    <div className="max-w-md space-y-6">
-      <div className="space-y-2">
-        <TagInput
-          value={tags}
-          onValueChange={setTags}
-          suggestions={["design", "frontend", "a11y", "react", "motion"]}
-          ariaLabel="Project tags"
-        />
-        <p className="text-xs text-muted-foreground">
-          Type to filter or create · Enter commits · Backspace removes the last
-          chip · Arrow keys navigate suggestions · Esc closes the popup.
-        </p>
-      </div>
-      <div className="space-y-2">
-        <TagInput
-          value={capped}
-          onValueChange={setCapped}
-          suggestions={["one", "two", "three"]}
-          maxTags={3}
-          size="sm"
-          placeholder="Max 3 tags…"
-          ariaLabel="Capped tags"
-        />
-        <p className="text-xs text-muted-foreground">
-          <code>maxTags=3</code> enforced — extra tags are ignored.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-const tagInputCode = `import { TagInput } from "@/components/ui/badge"
-
-const [tags, setTags] = useState(["design", "frontend"])
-
-<TagInput
-  value={tags}
-  onValueChange={setTags}
-  suggestions={["design", "frontend", "a11y", "react"]}
-  maxTags={5}
-  ariaLabel="Project tags"
-/>
-// Combobox.Chips chips · Enter commits · Backspace removes last
-// comma input splits into multiple tags · dedupe case-insensitive`;
-
 function KiraBadgeDemo() {
   return (
     <div className="space-y-6">
@@ -925,19 +874,6 @@ export default function BadgePage() {
           code={statesCode}
         >
           <StatesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "tag-input",
-      label: "Tag Input",
-      demo: (
-        <DemoWrapper
-          title="Tag Input"
-          description="Combobox-powered tag collection: suggestions, maxTags, Enter commits, Backspace removes the last chip"
-          code={tagInputCode}
-        >
-          <TagInputDemo />
         </DemoWrapper>
       ),
     },
@@ -1205,67 +1141,6 @@ export default function BadgePage() {
       ],
     },
     {
-      title: "TagInput",
-      props: [
-        {
-          prop: "value",
-          type: "string[]",
-          default: "-",
-          description: "Current tags (controlled)",
-        },
-        {
-          prop: "defaultValue",
-          type: "string[]",
-          default: "[]",
-          description: "Initial tags (uncontrolled)",
-        },
-        {
-          prop: "onValueChange",
-          type: "(tags: string[]) => void",
-          default: "-",
-          description:
-            "Fired on add / remove (deduped, comma-split, maxTags-capped)",
-        },
-        {
-          prop: "suggestions",
-          type: "string[]",
-          default: "[]",
-          description:
-            "Suggested tags in the popup; typed text is appended dynamically",
-        },
-        {
-          prop: "maxTags",
-          type: "number",
-          default: "-",
-          description: "Maximum number of tags",
-        },
-        {
-          prop: "disabled",
-          type: "boolean",
-          default: "false",
-          description: "Disable the input and chips",
-        },
-        {
-          prop: "size",
-          type: 'Badge size ("sm" default)',
-          default: '"sm"',
-          description: "Chip size",
-        },
-        {
-          prop: "placeholder",
-          type: "string",
-          default: '"Add tag…"',
-          description: "Empty-state input placeholder",
-        },
-        {
-          prop: "ariaLabel",
-          type: "string",
-          default: '"Tags"',
-          description: "Accessible name for the group",
-        },
-      ],
-    },
-    {
       title: "KiraBadge",
       props: [
         {
@@ -1339,6 +1214,12 @@ const badgePageChangelogEntries = [
     version: "Unreleased",
     date: "In development",
     changes: [
+      {
+        type: "breaking",
+        title: "Removed duplicate TagInput export and Combobox dependency",
+        description:
+          "Removed TagInput and its @base-ui/react/combobox dependency from badge.tsx. Use TagInput from input.tsx or KiraSelect with multiple + creatable instead.",
+      },
       {
         type: "fixed",
         title: "Dismiss focus ring at full strength",

@@ -18,9 +18,9 @@ kira-kit add @kira-kit/announcement-bar
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
 - @kira-kit/spinner
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

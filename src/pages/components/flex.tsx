@@ -144,14 +144,14 @@ const alignCode = `import { Flex } from "@/components/ui/flex"
 
 export function AlignDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
       {(["start", "center", "end", "stretch", "baseline"] as const).map((align) => (
-        <div key={align}>
+        <div key={align} className="min-w-0">
           <p className="text-sm text-muted-foreground mb-2">{align}</p>
-          <Flex align={align} gap={4} className="p-4 border rounded-lg bg-muted/30 h-32">
-            <div className="p-2 bg-primary/20 rounded text-sm">Short</div>
-            <div className="p-4 bg-primary/20 rounded">Medium</div>
-            <div className="p-6 bg-primary/20 rounded text-lg">Tall</div>
+          <Flex align={align} gap={3} className="h-32 w-full rounded-lg border bg-muted/30 p-3">
+            <div className="rounded bg-primary/20 px-2.5 py-1.5 text-xs">Short</div>
+            <div className="rounded bg-primary/20 px-3 py-3 text-sm">Medium</div>
+            <div className="rounded bg-primary/20 px-3.5 py-5 text-base">Tall</div>
           </Flex>
         </div>
       ))}
@@ -161,19 +161,25 @@ export function AlignDemo() {
 
 function AlignDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
       {(["start", "center", "end", "stretch", "baseline"] as const).map(
         (align) => (
-          <div key={align}>
+          <div key={align} className="min-w-0">
             <p className="text-sm text-muted-foreground mb-2">{align}</p>
             <Flex
               align={align}
-              gap={4}
-              className="p-4 border rounded-lg bg-muted/30 h-32"
+              gap={3}
+              className="h-32 w-full rounded-lg border bg-muted/30 p-3"
             >
-              <div className="p-2 bg-primary/20 rounded text-sm">Short</div>
-              <div className="p-4 bg-primary/20 rounded">Medium</div>
-              <div className="p-6 bg-primary/20 rounded text-lg">Tall</div>
+              <div className="rounded bg-primary/20 px-2.5 py-1.5 text-xs">
+                Short
+              </div>
+              <div className="rounded bg-primary/20 px-3 py-3 text-sm">
+                Medium
+              </div>
+              <div className="rounded bg-primary/20 px-3.5 py-5 text-base">
+                Tall
+              </div>
             </Flex>
           </div>
         ),
@@ -607,6 +613,18 @@ export default function FlexPage() {
 }
 
 const flexPageChangelogEntries = [
+  {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "changed",
+        title: "Literal responsive maps and Base UI useRender",
+        description:
+          "Migrated responsive props onto @/lib/layout-responsive literal per-breakpoint class maps (zero global CSS safelist required) and adopted Base UI useRender + mergeProps so Flex supports the render prop alongside as.",
+      },
+    ],
+  },
   {
     version: "1.0",
     date: "20 November 2026",

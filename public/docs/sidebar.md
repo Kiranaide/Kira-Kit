@@ -1,6 +1,6 @@
 # Sidebar
 
-An application navigation shell with offcanvas/icon/none collapse modes, floating and inset variants, custom widths, persisted collapse state, hover expansion, pointer-only GSAP layout motion, and a mobile Drawer below 768px. KiraSidebar adds searchable data-driven sections, router navigation, badges, favorites with drag or arrow-button reordering, user and theme controls, and loading, error, and empty states.
+An application navigation shell with offcanvas/icon/none collapse modes, floating and inset variants, custom widths, persisted collapse state, hover expansion, pointer-only GSAP layout motion, and a mobile Drawer below 768px. KiraSidebar adds searchable data-driven sections, router-agnostic navigation via SidebarRouterProvider, badges, favorites with drag or arrow-button reordering, user controls, and loading, error, and empty states.
 
 ## Install
 
@@ -12,7 +12,6 @@ kira-kit add @kira-kit/sidebar
 
 - @base-ui/react
 - @tabler/icons-react
-- @tanstack/react-router
 - class-variance-authority
 - cn
 - gsap
@@ -21,12 +20,12 @@ kira-kit add @kira-kit/sidebar
 
 - @kira-kit/avatar
 - @kira-kit/collapsible
+- @kira-kit/component-utils
 - @kira-kit/drawer
 - @kira-kit/dropdown-menu
 - @kira-kit/skeleton
 - @kira-kit/tooltip
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

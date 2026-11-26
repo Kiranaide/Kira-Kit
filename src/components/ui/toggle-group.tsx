@@ -10,6 +10,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { IconCheck, IconLoader2 } from "@tabler/icons-react";
 
 import { cn } from "cn";
+import { useOptimisticCommit } from "@/hooks/use-optimistic-commit";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { usePressBounce } from "@/hooks/use-press-bounce";
 import {
@@ -17,7 +18,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/toast";
 
 // oxlint-disable anti-slop/no-shape-in-symbol-names -- `shapeMorph` is the Material 3 Expressive term of art for the selected-item radius morph; the prop name matches the spec language (m3.material.io "button groups") users search for.
 // oxlint-disable anti-slop/no-runtime-typeof -- ReactNode → string is the I/O boundary: React guarantees string children/labels; anything else has no text label.
@@ -1546,7 +1546,7 @@ interface KiraToggleGroupProps extends Omit<
   description?: React.ReactNode;
 }
 
-/** Optimistic async group value: flips instantly, commits on resolve, toasts on reject. */
+/** Optimistic async group value: flips instantly, commits on resolve, notifies on reject. */
 function useOptimisticGroupValue({
   value,
   defaultValue,
@@ -1567,46 +1567,30 @@ function useOptimisticGroupValue({
   );
 
   const committed = isControlled ? value : valueState;
-
-  const [optimistic, setOptimistic] = React.useOptimistic(
-    committed,
-    (_prev: readonly string[], next: readonly string[]) => next,
-  );
-
   const [pending, setPending] = React.useState<string[]>([]);
 
-  const runAsync = React.useCallback(
-    async (next: string[]) => {
-      if (!onValueChangeAsync) return;
-      setOptimistic(next);
-      // Mark newly-selected values busy so each item can show its spinner.
-      setPending(next.filter((v) => !committed.includes(v)));
-
-      try {
-        await onValueChangeAsync(next);
-
-        if (!isControlled) setValueState(next);
-      } catch {
-        // The optimistic value reverts to `committed` on the next render, but a
-        // silent revert reads as "nothing happened" — say why, as KiraToggle does.
-        toast.error(asyncErrorMessage);
-      } finally {
-        setPending([]);
-      }
+  const { optimisticValue: optimistic, runCommit } = useOptimisticCommit({
+    value: committed,
+    onCommit: onValueChangeAsync
+      ? async (next) => {
+          await onValueChangeAsync([...next]);
+        }
+      : undefined,
+    onCommitted: (next) => {
+      if (!isControlled) setValueState([...next]);
     },
-    [
-      onValueChangeAsync,
-      committed,
-      isControlled,
-      setOptimistic,
-      asyncErrorMessage,
-    ],
-  );
+    errorTitle: asyncErrorMessage,
+  });
 
   const handleValueChange = (next: string[]) => {
     if (onValueChangeAsync) {
-      React.startTransition(() => {
-        runAsync(next);
+      setPending(next.filter((v) => !committed.includes(v)));
+      React.startTransition(async () => {
+        try {
+          await runCommit(next);
+        } finally {
+          setPending([]);
+        }
       });
     } else if (!isControlled) {
       setValueState(next);

@@ -18,8 +18,8 @@ kira-kit add @kira-kit/resizable
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/layout-storage
 - @kira-kit/use-reduced-motion
-- @kira-kit/component-utils
 
 ## Usage
 

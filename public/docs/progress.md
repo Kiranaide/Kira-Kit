@@ -19,6 +19,7 @@ kira-kit add @kira-kit/progress
 
 - @kira-kit/button
 - @kira-kit/use-reduced-motion
+- @kira-kit/use-visibility-pause
 
 ## Usage
 

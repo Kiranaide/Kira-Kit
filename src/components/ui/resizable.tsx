@@ -23,8 +23,8 @@ import {
 
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { Button } from "@/components/ui/button";
+import { createValidatedLayoutStorage } from "@/lib/layout-storage";
 import { cn } from "cn";
-import { isNumberProp, isObjectProp } from "@/lib/component-utils";
 
 type Orientation = "horizontal" | "vertical";
 
@@ -49,47 +49,7 @@ const ResizableContext = React.createContext<ResizableContextValue>({
   disabled: false,
 });
 
-// The upstream persistence hook parses storage during render. Untrusted or
-// unavailable browser storage must fall back to the supplied default layout.
-const layoutStorage: LayoutStorage = {
-  getItem(key) {
-    if (typeof window === "undefined") return null;
-
-    try {
-      const raw = window.localStorage.getItem(key);
-
-      if (!raw) return null;
-      const value: unknown = JSON.parse(raw);
-
-      if (!value || !isObjectProp(value) || Array.isArray(value)) return null;
-      const sizes: unknown[] = Object.values(value);
-
-      if (
-        !sizes.length ||
-        !sizes.every(
-          (size) =>
-            isNumberProp(size) &&
-            Number.isFinite(size) &&
-            size >= 0 &&
-            size <= 100,
-        )
-      )
-        return null;
-      const total = sizes.reduce<number>((sum, size) => sum + Number(size), 0);
-
-      return Math.abs(total - 100) < 0.1 ? raw : null;
-    } catch {
-      return null;
-    }
-  },
-  setItem(key, value) {
-    try {
-      window.localStorage.setItem(key, value);
-    } catch {
-      // Resizing remains available when storage is blocked or full.
-    }
-  },
-};
+const layoutStorage = createValidatedLayoutStorage();
 
 function ResizableGroup({
   className,

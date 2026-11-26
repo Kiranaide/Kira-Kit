@@ -1308,6 +1308,18 @@ const commandPageKeyboardShortcutsShortcuts = [
 
 const commandPageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "changed",
+        title: "Aligned CommandDialog onto kit Dialog exports",
+        description:
+          "Switched CommandDialog and KiraCommandDialog to compose DialogPopup and types from @/components/ui/dialog instead of importing @base-ui/react/dialog directly.",
+      },
+    ],
+  },
+  {
     version: "2.0.0",
     date: "2026-11-10",
     changes: [
