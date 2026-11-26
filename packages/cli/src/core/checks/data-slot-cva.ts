@@ -5,6 +5,10 @@ import type { Check, Finding } from "./types";
  * their `*Variants`.
  */
 export const dataSlotAndCva: Check = (file) => {
+  // Demo pages are route views, not registry UI components — they render
+  // examples rather than owning component root slots or named *Variants exports.
+  if (file.name.startsWith("pages/")) return [];
+
   const findings: Finding[] = [];
   const content = file.content;
 
