@@ -1067,6 +1067,12 @@ const changelogEntries: React.ComponentProps<typeof Changelog>["entries"] = [
     date: "In development",
     changes: [
       {
+        type: "changed",
+        title: "Shared useOptimisticCommit seam",
+        description:
+          "Removed the direct toast dependency; optimistic switch commits now route through useOptimisticCommit (singleFlight: true).",
+      },
+      {
         type: "fixed",
         title: "Focus ring at full strength",
         description:

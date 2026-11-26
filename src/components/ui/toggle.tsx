@@ -1,19 +1,18 @@
 "use client";
 
 import * as React from "react";
-import gsap from "gsap";
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IconCheck, IconLoader2 } from "@tabler/icons-react";
 
 import { cn } from "cn";
+import { useOptimisticCommit } from "@/hooks/use-optimistic-commit";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/toast";
 
 // oxlint-disable anti-slop/no-runtime-typeof -- ReactNode → string is the I/O boundary (React guarantees string children/labels; anything else has no text label); mergeRefs dispatches on the documented React ref forms.
 function asText(node: React.ReactNode): string | undefined {
@@ -242,13 +241,13 @@ function useSelectionPop(
   const reducedMotion = useReducedMotion();
 
   React.useEffect(() => {
-    if (!justPressed || !enabled || reducedMotion || !ref.current) return;
+    const node = ref.current;
 
-    gsap.fromTo(
-      ref.current,
-      { scale: 1.25 },
-      { scale: 1, duration: 0.3, ease: "back.out(2.5)", overwrite: "auto" },
-    );
+    if (!justPressed || !enabled || reducedMotion || !node) return;
+
+    node.classList.remove("animate-toggle-pop");
+    void node.offsetWidth;
+    node.classList.add("animate-toggle-pop");
   }, [justPressed, enabled, reducedMotion, ref]);
 }
 
@@ -272,23 +271,23 @@ type ToggleRenderProps = Omit<
   | "ref"
 >;
 
-/** Press micro-interaction: <150ms, transform only, reduced-motion gated,
- * interruptible (§5 — `overwrite: "auto"` cancels any in-flight tween). */
+/** Press micro-interaction: <150ms, transform only, reduced-motion gated. */
 function pressTween(
   node: HTMLElement | null,
   loading: boolean,
   reducedMotion: boolean,
 ) {
-  if (!node || loading || reducedMotion) return;
+  if (!node || loading || reducedMotion || typeof node.animate !== "function")
+    return;
 
-  gsap.to(node, {
-    scale: 0.95,
-    duration: 0.075,
-    ease: "power2.out",
-    yoyo: true,
-    repeat: 1,
-    overwrite: "auto",
-  });
+  node.animate(
+    [
+      { transform: "scale(1)" },
+      { transform: "scale(0.95)" },
+      { transform: "scale(1)" },
+    ],
+    { duration: 150, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+  );
 }
 
 /** Dev-only nudges for the plain `Toggle`: aria-label, label stability, icon pop. */
@@ -674,7 +673,7 @@ function useToggleShortcut({
 
 /**
  * Optimistic async toggle state for KiraToggle: flips instantly via
- * `useOptimistic`, commits on resolve, reverts with a toast on reject.
+ * `useOptimisticCommit`, commits on resolve, reverts and notifies on reject.
  */
 function useOptimisticToggle({
   committedPressed,
@@ -697,9 +696,15 @@ function useOptimisticToggle({
     "idle",
   );
 
-  const [optimisticPressed, setOptimisticPressed] = React.useOptimistic(
-    committedPressed,
-    (_prev: boolean, next: boolean) => next,
+  const { optimisticValue: optimisticPressed, runCommit } = useOptimisticCommit(
+    {
+      value: committedPressed,
+      onCommit: onToggleAsync,
+      onCommitted: (next) => {
+        if (!isControlled) setPressedState(next);
+      },
+      errorTitle: errorMessage,
+    },
   );
 
   React.useEffect(() => {
@@ -712,28 +717,11 @@ function useOptimisticToggle({
   const runToggle = React.useCallback(
     async (next: boolean) => {
       if (!onToggleAsync) return;
-      setOptimisticPressed(next); // flips the UI instantly
       setStatus("loading");
-
-      try {
-        await onToggleAsync(next);
-
-        if (!isControlled) setPressedState(next); // commit truth
-        setStatus(showSuccess ? "success" : "idle");
-      } catch {
-        // the optimistic value reverts to committedPressed on the next render
-        setStatus("idle");
-        toast.error(errorMessage);
-      }
+      const ok = await runCommit(next);
+      setStatus(ok && showSuccess ? "success" : "idle");
     },
-    [
-      onToggleAsync,
-      isControlled,
-      setPressedState,
-      showSuccess,
-      errorMessage,
-      setOptimisticPressed,
-    ],
+    [onToggleAsync, runCommit, showSuccess],
   );
 
   return { status, optimisticPressed, runToggle };

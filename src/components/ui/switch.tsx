@@ -6,13 +6,13 @@ import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
 import { cva } from "class-variance-authority";
 import { IconLoader } from "@tabler/icons-react";
 import { cn } from "cn";
+import { useOptimisticCommit } from "@/hooks/use-optimistic-commit";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/toast";
 
 const switchTrackVariants = cva(
   [
@@ -99,39 +99,34 @@ interface SwitchProps extends Omit<
 }
 
 function useSwitchCommit(props: SwitchProps) {
-  const [pending, setPending] = React.useState<boolean | null>(null);
-  const inFlight = React.useRef(false);
+  const { optimistic, onCommit, onCheckedChange, commitErrorTitle } = props;
 
-  const commit = async (checked: boolean) => {
-    const { optimistic, onCommit, onCheckedChange } = props;
+  const {
+    optimisticValue,
+    pending,
+    commit: runOptimistic,
+  } = useOptimisticCommit({
+    value: Boolean(props.checked),
+    onCommit,
+    onCommitted: (next) => onCheckedChange?.(next),
+    errorTitle: commitErrorTitle ?? "Couldn't save that",
+    errorDescription: "The change was reverted.",
+    singleFlight: true,
+  });
 
-    if (inFlight.current) return;
-
+  const commit = (checked: boolean) => {
     if (!optimistic || !onCommit || props.checked === undefined) {
       onCheckedChange?.(checked);
 
       return;
     }
 
-    inFlight.current = true;
-    setPending(checked);
-
-    try {
-      await onCommit(checked);
-      onCheckedChange?.(checked);
-    } catch {
-      toast.error(props.commitErrorTitle ?? "Couldn't save that", {
-        description: "The change was reverted.",
-      });
-    } finally {
-      inFlight.current = false;
-      setPending(null);
-    }
+    runOptimistic(checked);
   };
 
   return {
-    checked: pending ?? props.checked,
-    pending: pending !== null,
+    checked: props.checked === undefined ? undefined : optimisticValue,
+    pending,
     commit,
   };
 }
