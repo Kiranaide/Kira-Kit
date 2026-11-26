@@ -49,6 +49,12 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { NativeFormDemo } from "@/components/docs/native-form-demo";
+import nativeFormCode from "@/components/docs/native-form-demo.tsx?raw";
+import { ReactHookFormDemo } from "@/components/docs/react-hook-form-demo";
+import reactHookFormCode from "@/components/docs/react-hook-form-demo.tsx?raw";
+import { TanStackFormDemo } from "@/components/docs/tanstack-form-demo";
+import tanStackFormCode from "@/components/docs/tanstack-form-demo.tsx?raw";
 import {
   ComponentPage,
   PageHeader,
@@ -997,7 +1003,7 @@ export default function FieldPage() {
       <PageHeader
         title="Field"
         description="Visible labels, useful feedback, and form layouts that stay readable while people edit. Built on Base UI Field and Fieldset."
-        version="v3.2.1"
+        version="v3.2.3"
       />
       <FeatureGrid
         features={fieldPageFeatureGridFeatures}
@@ -1049,6 +1055,11 @@ const fieldPageFeatureGridFeatures = [
     description:
       "Jump from a focused error summary to each field that needs attention.",
   },
+  {
+    title: "Form integration",
+    description:
+      "Use Field with native FormData, React Hook Form, or TanStack Form.",
+  },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
 const fieldPageUsageNotes = [
@@ -1063,6 +1074,10 @@ const fieldPageUsageNotes = [
   {
     label: "Error recovery",
     body: "Pair FieldErrorSummary with KiraField.controlId and a submission attempt counter (focusKey) so failed submits move focus once without interrupting typing.",
+  },
+  {
+    label: "React Hook Form",
+    body: "Install react-hook-form in your app. Register text controls with register and connect Select with Controller. Pass field.ref to SelectTrigger so invalid submissions can focus it.",
   },
 ] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
 
@@ -1162,6 +1177,48 @@ const fieldPageDemoTabsTabs = [
         code={tanStackCode}
       >
         <TanStackDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "tanstack-form",
+    label: "TanStack Form",
+    group: "Forms",
+    demo: (
+      <DemoWrapper
+        title="Review an email with TanStack Form"
+        description="TanStack Form validates the email, handles submission, and resets the field. KiraField displays the validation message."
+        code={tanStackFormCode}
+      >
+        <TanStackFormDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "react-hook-form",
+    label: "React Hook Form",
+    group: "Forms",
+    demo: (
+      <DemoWrapper
+        title="Review a team request"
+        description="Submit the empty form to move focus to the first invalid field. Fill it in, choose a team, then review or reset the request."
+        code={reactHookFormCode}
+      >
+        <ReactHookFormDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "native-form",
+    label: "Native form",
+    group: "Forms",
+    demo: (
+      <DemoWrapper
+        title="Review an email address"
+        description="The browser validates the email. A successful submission reads the named control with FormData."
+        code={nativeFormCode}
+      >
+        <NativeFormDemo />
       </DemoWrapper>
     ),
   },
@@ -1666,6 +1723,30 @@ const fieldPageAPIReferenceSections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const fieldPageChangelogEntries = [
+  {
+    version: "3.2.3",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "TanStack Form integration example",
+        description:
+          "Added a working form that connects KiraField to TanStack Form for validation, submission, and reset.",
+      },
+    ],
+  },
+  {
+    version: "3.2.2",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "React Hook Form and native form examples",
+        description:
+          "Added runnable examples for registered inputs, controlled selection, validation focus, reset, and native FormData submission.",
+      },
+    ],
+  },
   {
     version: "3.2.1",
     date: "26 November 2026",

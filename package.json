@@ -67,6 +67,7 @@
     "react": "^19.3.1",
     "react-day-picker": "^10.0.2",
     "react-dom": "^19.3.1",
+    "react-hook-form": "^7",
     "react-resizable-panels": "4.16.0",
     "recharts": "^3.10.1",
     "rehype-sanitize": "6.0.0",
