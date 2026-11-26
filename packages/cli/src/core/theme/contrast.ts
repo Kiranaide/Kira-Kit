@@ -1,4 +1,4 @@
-import { apcaLc, wcagRatio, type OklchColor } from "./color";
+import { apcaLc, parseToOklch, wcagRatio, type OklchColor } from "./color";
 import type { TokenMap } from "./palette";
 
 /** Text pairs: WCAG 2.2 AA requires >= 4.5:1. Blocking. */
@@ -78,6 +78,21 @@ export function verifyScheme(
   }
 
   return failures;
+}
+
+export function verifyCssScheme(
+  scheme: "light" | "dark",
+  cssVars: Record<string, string>,
+): PairFailure[] {
+  const tokens: TokenMap = {};
+
+  for (const token of new Set([...TEXT_PAIRS, ...UI_PAIRS].flat())) {
+    const value = cssVars[`--${token}`];
+
+    if (value) tokens[token] = parseToOklch(value);
+  }
+
+  return verifyScheme(scheme, tokens);
 }
 
 const SCAN_STEP = 0.02;

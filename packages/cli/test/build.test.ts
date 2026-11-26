@@ -21,6 +21,7 @@ import { extractThemeTokens } from "../src/core/css/stylesheet";
 import { loadSourceRegistry } from "../src/core/registry/loader";
 import { validateRegistry } from "../src/core/registry/validate";
 import type { RegistryIndex, SourceRegistry } from "../src/lib/schemas";
+import { EXIT_CHECKS } from "../src/lib/errors";
 
 const FIXTURE = fileURLToPath(new URL("./fixtures/mini-repo", import.meta.url));
 
@@ -142,6 +143,20 @@ describe("buildPayloads", () => {
 });
 
 describe("buildRegistry (integration)", () => {
+  it("rejects low-contrast default theme colors before publishing", () => {
+    const dir = copyFixture();
+
+    writeFileSync(
+      join(dir, "src/index.css"),
+      ":root { --background: white; --foreground: #aaa; }",
+      "utf-8",
+    );
+
+    expect(buildRegistry({ cwd: dir, skipChecks: true })).toBe(EXIT_CHECKS);
+    expect(existsSync(join(dir, "src/themes/registry.json"))).toBe(false);
+    expect(existsSync(join(dir, "public/r/registry.json"))).toBe(false);
+  });
+
   it("builds payloads, index, schemas, docs and prunes stale outputs", () => {
     const dir = copyFixture();
 

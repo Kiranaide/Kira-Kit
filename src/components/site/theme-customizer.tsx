@@ -99,12 +99,6 @@ export function PresetField({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectItem value={DEFAULT_PRESET}>
-            <span className="flex items-center gap-2">
-              <Swatch color="var(--primary)" />
-              Default
-            </span>
-          </SelectItem>
           {presets.map((preset) => (
             <SelectItem key={preset.name} value={preset.name}>
               <span className="flex items-center gap-2">

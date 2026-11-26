@@ -73,7 +73,7 @@ describe("init (offline defaults)", () => {
 
     const css = readFileSync(join(dir, "src/index.css"), "utf-8");
 
-    expect(css).toContain("oklch(0.59 0.22 1)");
+    expect(css).toContain("--primary: oklch(0.49 0.22 1)");
     expect(css).toContain("--radius: 0.45rem");
     expect(css).toContain('@import "./kira-utilities.css";');
     expect(css).toContain("@source inline(");
@@ -140,7 +140,7 @@ describe("init (themes and gates)", () => {
 
     const css = readFileSync(join(dir, "src/index.css"), "utf-8");
 
-    expect(css).not.toContain("oklch(0.59 0.22 1)");
+    expect(css).not.toContain("--primary: oklch(0.49 0.22 1)");
     expect(existsSync(join(dir, "kira-theme.json"))).toBe(true);
   });
 

@@ -30,7 +30,7 @@ export const themePresets = (themesRegistry.items as ThemePreset[]).filter(
   (item) => item.type === "registry:theme",
 );
 
-export const DEFAULT_PRESET = "default";
+export const DEFAULT_PRESET = "theme-default";
 
 export const AUTO_VALUE = "auto" as const;
 
@@ -118,7 +118,11 @@ function useSyncPresetStyles(
   surface: SurfaceSelection,
 ): void {
   React.useEffect(() => {
-    const preset = themePresets.find((item) => item.name === presetName);
+    const preset =
+      presetName === DEFAULT_PRESET
+        ? undefined
+        : themePresets.find((item) => item.name === presetName);
+
     const css = composedCss(preset, baseColor, radius, surface);
     const existing = document.getElementById(STYLE_ID);
 
@@ -144,10 +148,13 @@ function useSyncPresetStyles(
 }
 
 export function PresetProvider({ children }: { children: React.ReactNode }) {
-  const [presetName, setPresetName] = useStoredString<string>(
+  const [storedPresetName, setPresetName] = useStoredString<string>(
     STORAGE_KEYS.preset,
     DEFAULT_PRESET,
   );
+
+  const presetName =
+    storedPresetName === "default" ? DEFAULT_PRESET : storedPresetName;
 
   const [baseColor, setBaseColor] = useStoredString<BaseColorSelection>(
     STORAGE_KEYS.baseColor,
