@@ -1,5 +1,17 @@
-import { IconRotateClockwise } from "@tabler/icons-react";
+import {
+  IconAdjustmentsHorizontal,
+  IconChevronDown,
+  IconMoon,
+  IconPalette,
+  IconRotateClockwise,
+  IconSun,
+} from "@tabler/icons-react";
 import { cn } from "cn";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -8,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTheme } from "@/components/ui/theme-provider";
 import {
   DOC_BASE_COLORS,
   DOC_FONT_PRESETS,
@@ -297,10 +310,174 @@ function GeometryRow() {
   );
 }
 
+function StudioAppearanceBar() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <div className="flex items-center justify-between gap-2 border-t border-border/70 bg-muted/30 px-4 py-2.5">
+      <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+        Appearance
+      </span>
+      <div className="inline-flex rounded-full border border-border/80 bg-background p-0.5">
+        <button
+          type="button"
+          aria-pressed={theme === "light"}
+          onClick={() => setTheme("light")}
+          className={cn(
+            "docs-focus-ring inline-flex h-7 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium transition-colors duration-150",
+            theme === "light"
+              ? "bg-primary text-primary-foreground shadow-2xs"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          <IconSun aria-hidden="true" className="size-3.5" />
+          Light
+        </button>
+        <button
+          type="button"
+          aria-pressed={theme === "dark"}
+          onClick={() => setTheme("dark")}
+          className={cn(
+            "docs-focus-ring inline-flex h-7 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium transition-colors duration-150",
+            theme === "dark"
+              ? "bg-primary text-primary-foreground shadow-2xs"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          <IconMoon aria-hidden="true" className="size-3.5" />
+          Dark
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PresetStudioBody() {
+  const { isCustomized, resetAll } = usePreset();
+
+  return (
+    <>
+      <div className="flex items-center justify-between gap-2 border-b border-border/70 px-4 py-3">
+        <div className="flex items-center gap-2">
+          <span className="flex size-7 items-center justify-center rounded-lg border border-border/80 bg-muted/60 text-primary">
+            <IconPalette aria-hidden="true" className="size-4" />
+          </span>
+          <div>
+            <p className="text-xs font-semibold leading-none text-foreground">
+              Preset studio
+            </p>
+            <p className="mt-1 text-[11px] leading-none text-muted-foreground">
+              Theme, typography &amp; geometry
+            </p>
+          </div>
+        </div>
+
+        {isCustomized && (
+          <button
+            type="button"
+            onClick={resetAll}
+            className="docs-focus-ring inline-flex h-7 items-center gap-1 rounded-md border border-border/70 bg-background px-2 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <IconRotateClockwise aria-hidden="true" className="size-3" />
+            Reset
+          </button>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-3.5 p-4" data-slot="theme-customizer">
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            Color &amp; base
+          </span>
+          <PresetField className="w-full" />
+          <BaseColorField />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            Typography
+          </span>
+          <FontPresetField />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            Radius &amp; surface
+          </span>
+          <GeometryRow />
+        </div>
+      </div>
+
+      <StudioAppearanceBar />
+    </>
+  );
+}
+
 /**
- * Site-wide composable theme preset controls for the docs sidebar. Mixing
- * accent theme, base color, font pairing, radius, and surface re-skins every
- * page live while the adjacent ThemeToggle governs light/dark.
+ * Header-mounted Preset Studio popover: keeps the sidebar purely for
+ * navigation while putting accent theme, neutral base, typography, radius,
+ * surface, and light/dark mode one click away in the top bar.
+ */
+export function PresetStudioPopover({
+  className,
+  showLabel = true,
+}: {
+  className?: string;
+  showLabel?: boolean;
+}) {
+  const { presetName, presets, isCustomized } = usePreset();
+  const selected = presets.find((preset) => preset.name === presetName);
+  const label = selected?.title ?? "Default";
+
+  return (
+    <Popover>
+      <PopoverTrigger
+        aria-label={`Preset studio: ${label}`}
+        data-slot="preset-studio-trigger"
+        className={cn(
+          "docs-focus-ring inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full border border-border/80 bg-background/80 px-2.5 text-xs font-medium text-foreground shadow-2xs transition-[background-color,border-color,color] duration-150 ease-out hover:border-border hover:bg-accent lg:h-9 lg:px-3",
+          className,
+        )}
+      >
+        <span className="relative flex items-center">
+          <Swatch
+            color={selected ? presetSwatch(selected) : "var(--primary)"}
+          />
+          {isCustomized && (
+            <span
+              aria-hidden="true"
+              className="absolute -right-0.5 -top-0.5 size-2 rounded-full border border-background bg-primary"
+            />
+          )}
+        </span>
+        {showLabel ? (
+          <span className="max-w-32 truncate">{label}</span>
+        ) : (
+          <span className="sr-only">{label}</span>
+        )}
+        <IconAdjustmentsHorizontal
+          aria-hidden="true"
+          className="size-3.5 text-muted-foreground"
+        />
+        <IconChevronDown
+          aria-hidden="true"
+          className="hidden size-3 text-muted-foreground sm:inline"
+        />
+      </PopoverTrigger>
+
+      <PopoverContent
+        align="end"
+        sideOffset={8}
+        className="w-[320px] overflow-hidden p-0"
+      >
+        <PresetStudioBody />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/**
+ * Site-wide composable theme preset controls.
  */
 export function ThemeCustomizer({ className }: { className?: string }) {
   const { isCustomized, resetAll } = usePreset();

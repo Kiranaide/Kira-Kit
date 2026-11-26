@@ -5,8 +5,8 @@ import {
   lazyRouteComponent,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { AppLayout } from "@/components/app-layout";
-import { RootProviders } from "@/components/root-providers";
+import { AppLayout } from "@/components/site/app-layout";
+import { RootProviders } from "@/components/site/root-providers";
 import { RoutePending } from "@/components/route/route-pending";
 import { RouteError } from "@/components/route/route-error";
 
@@ -593,6 +593,14 @@ const routeTransitionRoute = createRoute({
   ),
 });
 
+const themeProviderRoute = createRoute({
+  getParentRoute: () => appRoute,
+  path: "/components/theme-provider",
+  component: lazyRouteComponent(
+    () => import("@/pages/components/theme-provider"),
+  ),
+});
+
 // Build route tree
 const routeTree = rootRoute.addChildren([
   landingRoute,
@@ -686,6 +694,7 @@ const routeTree = rootRoute.addChildren([
     videoPlayerRoute,
     cameraRoute,
     routeTransitionRoute,
+    themeProviderRoute,
   ]),
 ]);
 
