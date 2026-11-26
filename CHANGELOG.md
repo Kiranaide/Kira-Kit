@@ -15,6 +15,7 @@ with Changesets; per-component history lives on each component's docs page.
 
 ### Added
 
+- **TanStack Form integration example.** The Field page adds a runnable example with copyable source for email validation, submission, and reset using `KiraField`.
 - **Whole-graph registry cycle detection in CLI and ThemeProvider / Sidebar / Toast setup guides.** Added `packages/cli/src/core/checks/registry-graph.ts` (wired into `kira-kit check` and `kira-kit build` with unit tests) to catch circular registry dependencies before build, plus segmented setup guides for `ThemeProvider`, `Sidebar` router adapters, and `Toast` across Installation and component docs.
 - **A complete CLI reference.** `docs/cli-reference.md` documents all ten commands flag by flag — defaults, prompts, exactly which files each command writes, the registry address grammar, the thirteen checks with their severities, the suppression grammar, and the exit-code contract — verified against `packages/cli/src` rather than against `--help`, and `/docs/cli` now links to it. The six places where the help text and the code disagree are listed as their own table instead of being repeated as features.
 - **Changelog coverage on every component page.** Flex gained the Changelog section it was missing, so each of the 73 pages that documents an installable component now records its own version history alongside this page. The six pattern pages (color-usage, image, layout-utilities, modal, typography, video-player) teach with existing primitives and have nothing of their own to version.
@@ -46,6 +47,8 @@ with Changesets; per-component history lives on each component's docs page.
 
 ### Fixed
 
+- **Reduced-motion route navigation.** The docs router checks the current motion preference before starting its native crossfade. The outlet supplies the CSS fade when native transition types are unavailable.
+- **Kira Default contrast and homepage theme.** Corrected status and sidebar colors in light and dark mode, added a registry build contrast check for Kira Default, and removed repeated corrections for curated presets. The homepage hero follows the selected mode and footer labels align with the GitHub link.
 - **`KiraAccordion` draggable reorder.** Moved the sortable drag handle out of `AccordionPrimitive.Trigger` into a sibling `<button type="button">` inside `AccordionPrimitive.Header` so pointer and keyboard drag events are no longer swallowed by the trigger button, rendered `DragOverlay` as a standalone trigger shell instead of an unmounted `AccordionItem`, and removed the duplicate `onReorder` invocation inside `useAccordionDrag`.
 - **HoverCard viewport children wrapping and RouteError nested button.** Fixed `HoverCardContent` so `PreviewCardPrimitive.Viewport` wraps `props.children` when `viewport={true}` instead of rendering empty as a sibling, and replaced the nested `<DialogTrigger><Button>` in `RouteError` with `<DialogTrigger render={<Button />} />`.
 - **Consistent npm dependency installation via `ensureNpmDeps`.** `init`, `icons`, `apply-fonts`, and `migrate` now route package installs through one `ensureNpmDeps` helper in `core/install/deps.ts`, preserving pinned version ranges (including `lucide-react`) and checking `devDependencies` and `peerDependencies` alongside `dependencies`.

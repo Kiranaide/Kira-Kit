@@ -246,7 +246,7 @@ const statsCardValueVariants = cva(
 );
 
 const statsCardTrendVariants = cva(
-  "inline-flex max-w-full flex-wrap items-center gap-x-1 gap-y-0.5 text-sm font-medium",
+  "inline-flex max-w-full flex-wrap items-center gap-x-1 gap-y-1 text-sm font-medium",
   {
     variants: {
       trend: {

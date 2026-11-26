@@ -35,13 +35,14 @@
 @custom-variant marked (&:is([data-checked], [data-indeterminate]));
 
 :root {
+  color-scheme: light;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.57 0.22 1);
+  --primary: oklch(0.49 0.22 1);
   --primary-foreground: oklch(0.97 0.01 343);
   --secondary: oklch(0.75 0.1 10);
   --secondary-foreground: oklch(0.2 0.03 15);
@@ -49,33 +50,31 @@
   --muted-foreground: oklch(0.5 0.03 25);
   --accent: oklch(0.92 0.04 15);
   --accent-foreground: oklch(0.3 0.04 20);
-  --destructive: oklch(0.6 0.22 20);
+  --destructive: oklch(0.48 0.2 20);
   --destructive-foreground: oklch(0.98 0.01 20);
-  --info: oklch(0.75 0.16 225);
+  --info: oklch(0.47 0.13 225);
   --info-foreground: oklch(0.98 0.01 225);
-  --success: oklch(0.75 0.18 150);
+  --success: oklch(0.46 0.13 150);
   --success-foreground: oklch(0.98 0.01 150);
-  --warning: oklch(0.8 0.16 80);
-  --warning-foreground: oklch(0.2 0.03 80);
+  --warning: oklch(0.46 0.1 80);
+  --warning-foreground: oklch(0.98 0.01 80);
   --border: oklch(0.9 0.01 20);
-  --input: oklch(0.9 0.01 20);
-  /* Focus indicators must clear 3:1 against the page (WCAG 1.4.11); L 0.63 is the
-     floor that holds it on both background and muted in light mode. */
-  --ring: oklch(0.63 0.12 350);
-  --chart-1: oklch(0.75 0.14 185);
-  --chart-2: oklch(0.75 0.18 35);
-  --chart-3: oklch(0.78 0.14 95);
-  --chart-4: oklch(0.7 0.12 280);
-  --chart-5: oklch(0.65 0.1 160);
+  --input: oklch(0.6 0.01 20);
+  --ring: oklch(0.58 0.12 350);
+  --chart-1: oklch(0.61 0.12 185);
+  --chart-2: oklch(0.64 0.16 35);
+  --chart-3: oklch(0.61 0.13 95);
+  --chart-4: oklch(0.61 0.12 280);
+  --chart-5: oklch(0.6 0.1 160);
   --radius: 0.45rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.59 0.22 1);
+  --sidebar-primary: oklch(0.54 0.22 1);
   --sidebar-primary-foreground: oklch(0.97 0.01 343);
   --sidebar-accent: oklch(0.9 0.04 15);
   --sidebar-accent-foreground: oklch(0.25 0.04 15);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.63 0.12 350);
+  --sidebar-ring: oklch(0.58 0.12 350);
   --shadow-card: inset 0 1px 0 oklch(1 0 0 / 70%), 0 1px 2px oklch(0 0 0 / 5%);
   --shadow-popover:
     inset 0 1px 0 oklch(1 0 0 / 75%), 0 8px 24px -4px oklch(0 0 0 / 10%),
@@ -85,32 +84,33 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.66 0.21 354);
+  --primary: oklch(0.76 0.19 354);
   /* The dark primary is a light pink, so its foreground is dark ink — the pair
      needs 4.5:1 like every other preset's does. */
   --primary-foreground: oklch(0.16 0.05 354);
-  --secondary: oklch(0.6 0.08 10);
-  --secondary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.69 0.08 10);
+  --secondary-foreground: oklch(0.13 0.02 10);
   --muted: oklch(0.25 0.02 15);
   --muted-foreground: oklch(0.65 0.03 20);
   --accent: oklch(0.4 0.08 10);
   --accent-foreground: oklch(0.98 0.01 10);
-  --destructive: oklch(0.65 0.2 15);
-  --destructive-foreground: oklch(0.98 0.01 15);
-  --info: oklch(0.65 0.14 220);
-  --info-foreground: oklch(0.98 0.01 220);
-  --success: oklch(0.65 0.16 145);
-  --success-foreground: oklch(0.98 0.01 145);
-  --warning: oklch(0.7 0.14 75);
+  --destructive: oklch(0.78 0.18 15);
+  --destructive-foreground: oklch(0.16 0.03 15);
+  --info: oklch(0.72 0.14 220);
+  --info-foreground: oklch(0.16 0.03 220);
+  --success: oklch(0.72 0.15 145);
+  --success-foreground: oklch(0.16 0.03 145);
+  --warning: oklch(0.74 0.14 75);
   --warning-foreground: oklch(0.15 0.03 75);
   --border: oklch(1 0 0 / 15%);
-  --input: oklch(1 0 0 / 20%);
+  --input: oklch(1 0 0 / 48%);
   --ring: oklch(0.65 0.14 350);
   --chart-1: oklch(0.7 0.12 185);
   --chart-2: oklch(0.7 0.16 35);
@@ -120,7 +120,7 @@
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.73 0.18 350);
-  --sidebar-primary-foreground: oklch(0.97 0.01 343);
+  --sidebar-primary-foreground: oklch(0.16 0.05 350);
   --sidebar-accent: oklch(0.45 0.08 10);
   --sidebar-accent-foreground: oklch(0.98 0.01 10);
   --sidebar-border: oklch(1 0 0 / 10%);

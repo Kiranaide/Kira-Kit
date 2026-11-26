@@ -1177,7 +1177,7 @@ export default function StatsCardPage() {
       <PageHeader
         title="Stats Card"
         description="Display metrics with trends, sparklines, icons, and interactive features. WCAG 2.1 AA compliant with ARIA live regions, Base UI Meter progress, and size-aware skeletons."
-        version="v2.1.2"
+        version="v2.1.3"
       />
 
       <FeatureGrid
@@ -1886,6 +1886,17 @@ const statsCardPageAPIReferenceSections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const statsCardPageChangelogEntries = [
+  {
+    version: "2.1.3",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Space wrapped trend labels on the 4px scale",
+        description: "Wrapped values and comparison labels use a 4px row gap.",
+      },
+    ],
+  },
   {
     version: "2.1.2",
     date: "26 November 2026",

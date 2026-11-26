@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { format } from "prettier";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, "..");
@@ -8,6 +9,7 @@ const rootDir = resolve(__dirname, "..");
 const registry = JSON.parse(
   readFileSync(resolve(rootDir, "src/themes/registry.json"), "utf8"),
 );
+
 const catalog = JSON.parse(
   readFileSync(resolve(rootDir, "src/themes/catalog.json"), "utf8"),
 );
@@ -23,25 +25,35 @@ function parseOklch(str) {
     .match(
       /^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+)(%?))?\s*\)$/,
     );
+
   if (!match) return null;
   const l = Number(match[1]);
   const c = Number(match[2]);
   const h = Number(match[3]);
   let alpha = 1;
+
   if (match[4] !== undefined) {
     alpha = match[5] === "%" ? Number(match[4]) / 100 : Number(match[4]);
   }
+
   return { l, c, h, alpha };
 }
 
 function linearToSrgb(channel) {
   const clamped = Math.min(1, Math.max(0, channel));
+
   if (clamped <= 0.0031308) return 12.92 * clamped;
+
   return 1.055 * Math.pow(clamped, 1 / 2.4) - 0.055;
+}
+
+function hex2(value) {
+  return value.toString(16).padStart(2, "0").toUpperCase();
 }
 
 function oklchToColor(oklchStr) {
   const parsed = parseOklch(oklchStr);
+
   if (!parsed) return null;
 
   const { l, c, h, alpha } = parsed;
@@ -66,7 +78,6 @@ function oklchToColor(oklchStr) {
   const bl = Math.round(linearToSrgb(bLin) * 255);
   const al = Math.round(Math.min(1, Math.max(0, alpha)) * 255);
 
-  const hex2 = (n) => n.toString(16).padStart(2, "0").toUpperCase();
   const rr = hex2(r);
   const gg = hex2(g);
   const bb = hex2(bl);
@@ -81,24 +92,32 @@ function oklchToColor(oklchStr) {
 }
 
 function remToDp(remStr) {
-  const match = String(remStr).trim().match(/^([\d.]+)rem$/);
+  const match = String(remStr)
+    .trim()
+    .match(/^([\d.]+)rem$/);
+
   if (!match) return 0;
+
   return Number((Number(match[1]) * 16).toFixed(2));
+}
+
+function clampDp(value) {
+  return Number(Math.max(0, value).toFixed(2));
 }
 
 function buildRadiusScale(baseRem) {
   const baseDp = remToDp(baseRem);
-  const clamp = (v) => Number(Math.max(0, v).toFixed(2));
+
   return {
     baseRem,
     baseDp,
-    smDp: clamp(baseDp - 4),
-    mdDp: clamp(baseDp - 2),
-    lgDp: clamp(baseDp),
-    xlDp: clamp(baseDp + 4),
-    xxlDp: clamp(baseDp + 8),
-    xxxlDp: clamp(baseDp + 12),
-    xxxxlDp: clamp(baseDp + 16),
+    smDp: clampDp(baseDp - 4),
+    mdDp: clampDp(baseDp - 2),
+    lgDp: clampDp(baseDp),
+    xlDp: clampDp(baseDp + 4),
+    xxlDp: clampDp(baseDp + 8),
+    xxxlDp: clampDp(baseDp + 12),
+    xxxxlDp: clampDp(baseDp + 16),
   };
 }
 
@@ -112,6 +131,7 @@ function toCamelCase(kebab) {
 
 function toPascalCase(kebab) {
   const camel = toCamelCase(kebab);
+
   return camel.charAt(0).toUpperCase() + camel.slice(1);
 }
 
@@ -122,12 +142,14 @@ function convertColorBlock(varsObj) {
 
   for (const [key, value] of Object.entries(varsObj)) {
     const cleanKey = stripPrefix(key);
+
     if (cleanKey.startsWith("shadow-")) {
       shadows[cleanKey.replace(/^shadow-/, "")] = value;
     } else if (cleanKey === "radius") {
       other.radius = value;
     } else {
       const converted = oklchToColor(value);
+
       if (converted) {
         colors[cleanKey] = converted;
       } else {
@@ -135,15 +157,18 @@ function convertColorBlock(varsObj) {
       }
     }
   }
+
   return { colors, shadows, other };
 }
 
 const themes = registry.items.map((item) => {
   const recipe = catalog.recipes[item.name] ?? {};
+
   const baseRadius =
     item.cssVars.theme?.["--radius"] ??
     item.cssVars.light?.["--radius"] ??
     "0.45rem";
+
   const light = convertColorBlock(item.cssVars.light);
   const dark = convertColorBlock(item.cssVars.dark);
 
@@ -210,11 +235,14 @@ const colorKeys = Object.keys(themes[0].light.colors);
 
 function formatKtColorScheme(themeObj, mode) {
   const modeColors = themeObj[mode].colors;
+
   const lines = colorKeys.map((key) => {
     const prop = toCamelCase(key);
     const entry = modeColors[key];
+
     return `    ${prop} = Color(${entry.argb}L),`;
   });
+
   return `KiraColorScheme(\n${lines.join("\n")}\n)`;
 }
 
@@ -293,49 +321,84 @@ for (const t of themes) {
 kotlinLines.push(
   `    val All: List<KiraThemeDefinition> = listOf(${themes.map((t) => toPascalCase(t.slug)).join(", ")})`,
 );
+
 kotlinLines.push("}");
+
 kotlinLines.push("");
+
 kotlinLines.push(
   "val LocalKiraColors = staticCompositionLocalOf { KiraThemes.Default.light }",
 );
+
 kotlinLines.push(
   "val LocalKiraRadius = staticCompositionLocalOf { KiraThemes.Default.radius }",
 );
+
 kotlinLines.push("");
+
 kotlinLines.push("object KiraTheme {");
+
 kotlinLines.push("    val colors: KiraColorScheme");
+
 kotlinLines.push("        @Composable get() = LocalKiraColors.current");
+
 kotlinLines.push("");
+
 kotlinLines.push("    val radius: KiraRadiusScale");
+
 kotlinLines.push("        @Composable get() = LocalKiraRadius.current");
+
 kotlinLines.push("}");
+
 kotlinLines.push("");
+
 kotlinLines.push("@Composable");
+
 kotlinLines.push("fun KiraTheme(");
+
 kotlinLines.push("    theme: KiraThemeDefinition = KiraThemes.Default,");
+
 kotlinLines.push("    darkTheme: Boolean = isSystemInDarkTheme(),");
+
 kotlinLines.push("    content: @Composable () -> Unit,");
+
 kotlinLines.push(") {");
+
 kotlinLines.push("    val colors = if (darkTheme) theme.dark else theme.light");
+
 kotlinLines.push("    CompositionLocalProvider(");
+
 kotlinLines.push("        LocalKiraColors provides colors,");
+
 kotlinLines.push("        LocalKiraRadius provides theme.radius,");
+
 kotlinLines.push("        content = content,");
+
 kotlinLines.push("    )");
+
 kotlinLines.push("}");
+
 kotlinLines.push("");
 
 const outDir = resolve(rootDir, "exports/kmp");
+
 mkdirSync(outDir, { recursive: true });
 
 const jsonPath = resolve(outDir, "kira-tokens.json");
 const ktPath = resolve(outDir, "KiraTheme.kt");
 
-writeFileSync(jsonPath, `${JSON.stringify(tokensPayload, null, 2)}\n`, "utf8");
+const tokensJson = await format(JSON.stringify(tokensPayload), {
+  parser: "json",
+});
+
+writeFileSync(jsonPath, tokensJson, "utf8");
+
 writeFileSync(ktPath, kotlinLines.join("\n"), "utf8");
 
 console.log(
   `Exported ${themes.length} themes (${colorKeys.length} semantic colors each):`,
 );
+
 console.log(`  - ${jsonPath}`);
+
 console.log(`  - ${ktPath}`);

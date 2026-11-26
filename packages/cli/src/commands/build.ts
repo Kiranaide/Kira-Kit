@@ -12,6 +12,7 @@ import {
   generatePresetItems,
   generateThemeCatalog,
 } from "../core/theme/generate-presets";
+import { verifyCssScheme } from "../core/theme/contrast";
 import { loadSourceRegistry } from "../core/registry/loader";
 import { buildPayloads, writeRegistryOutputs } from "../core/registry/build";
 import { defaultThemeItem } from "../core/css/stylesheet";
@@ -43,19 +44,17 @@ function qualityGate(repoRoot: string): number {
   return 0;
 }
 
-function writeThemePresets(repoRoot: string): void {
+function writeThemePresets(
+  repoRoot: string,
+  defaultTheme: SourceRegistryItem,
+): void {
   const { items: themeItems, adjustments } = generatePresetItems();
   const themesPath = join(repoRoot, "src/themes/registry.json");
-  const indexCss = readFileSync(join(repoRoot, "src/index.css"), "utf-8");
 
   mkdirSync(join(repoRoot, "src/themes"), { recursive: true });
   writeFileSync(
     themesPath,
-    JSON.stringify(
-      { items: [defaultThemeItem(indexCss), ...themeItems] },
-      null,
-      2,
-    ) + "\n",
+    JSON.stringify({ items: [defaultTheme, ...themeItems] }, null, 2) + "\n",
     "utf-8",
   );
   writeFileSync(
@@ -73,6 +72,20 @@ function writeThemePresets(repoRoot: string): void {
   success(
     `Generated ${themeItems.length + 1} themes (incl. theme-default) into src/themes/registry.json.`,
   );
+}
+
+function defaultThemeContrastPasses(theme: SourceRegistryItem): boolean {
+  const failures = (["light", "dark"] as const).flatMap((scheme) =>
+    verifyCssScheme(scheme, theme.cssVars?.[scheme] ?? {}),
+  );
+
+  for (const { scheme, fg, bg, ratio, threshold } of failures) {
+    warning(
+      `theme-default ${scheme} ${fg} on ${bg}: ${ratio.toFixed(2)}:1 (needs ${threshold}:1). Edit src/index.css.`,
+    );
+  }
+
+  return failures.length === 0;
 }
 
 function pruneStaleOutputs(repoRoot: string, names: string[]): void {
@@ -135,7 +148,12 @@ export function buildRegistry(options: {
     if (gate !== 0) return gate;
   }
 
-  writeThemePresets(repoRoot);
+  const indexCss = readFileSync(join(repoRoot, "src/index.css"), "utf-8");
+  const defaultTheme = defaultThemeItem(indexCss);
+
+  if (!defaultThemeContrastPasses(defaultTheme)) return EXIT_CHECKS;
+
+  writeThemePresets(repoRoot, defaultTheme);
 
   const loaded = loadSourceRegistry(repoRoot);
   const issues = validateRegistry(repoRoot, loaded);

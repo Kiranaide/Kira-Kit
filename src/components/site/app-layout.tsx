@@ -22,7 +22,7 @@ import {
   RouteTransition,
   NavigationProgress,
 } from "@/components/ui/route-transition";
-import { supportsViewTransitions } from "@/lib/view-transition";
+import { supportsViewTransitionTypes } from "@/lib/view-transition";
 import {
   IconHome,
   IconClick,
@@ -204,7 +204,7 @@ function RouteOutlet() {
       // The native crossfade owns the entrance where supported; running the
       // CSS fade on top of it (or restarting it when the crossfade ends)
       // reads as a double blink.
-      variant={supportsViewTransitions() ? "none" : "fade"}
+      variant={supportsViewTransitionTypes() ? "none" : "fade"}
     >
       <Outlet />
     </RouteTransition>

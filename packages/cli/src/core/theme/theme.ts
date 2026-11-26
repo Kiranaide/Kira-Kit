@@ -29,6 +29,7 @@ export interface ThemeDefinition {
   description: string;
   primary: string;
   baseColor: BaseColorName;
+  lightPrimaryForegroundLightness?: number;
   chartHues?: number[];
   radius?: string;
   surface?: SurfacePresetName;
@@ -119,6 +120,7 @@ export function generateTheme(definition: ThemeDefinition): GeneratedTheme {
     primary,
     baseColor,
     chartHues: definition.chartHues,
+    lightPrimaryForegroundLightness: definition.lightPrimaryForegroundLightness,
   });
 
   const adjustments: Adjustment[] = [];

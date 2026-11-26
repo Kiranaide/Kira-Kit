@@ -8,6 +8,13 @@ function supportsViewTransitions(): boolean {
   );
 }
 
+function supportsViewTransitionTypes(): boolean {
+  return (
+    supportsViewTransitions() &&
+    CSS.supports("selector(:active-view-transition-type(route-change))")
+  );
+}
+
 /**
  * Runs a DOM update inside a native view transition when the browser supports
  * it and the user has not asked for reduced motion; otherwise runs it directly.
@@ -30,6 +37,7 @@ function startViewTransition(
 
 export {
   startViewTransition,
+  supportsViewTransitionTypes,
   supportsViewTransitions,
   type ViewTransitionUpdate,
 };

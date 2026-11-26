@@ -172,7 +172,7 @@ describe("buildBaseCss", () => {
     expect(css).toContain(
       '--font-mono: "JetBrains Mono Variable", ui-monospace, monospace;',
     );
-    expect(css).toContain("oklch(0.59 0.22 1)");
+    expect(css).toContain("--primary: oklch(0.49 0.22 1)");
   });
 });
 

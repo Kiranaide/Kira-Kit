@@ -33,13 +33,15 @@ const badgeVariants = cva(
           "bg-muted text-muted-foreground hover:bg-muted/80 dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",
         "primary-soft": "bg-primary/10 text-primary",
-        "secondary-soft": "bg-secondary/50 text-secondary-foreground",
+        "secondary-soft":
+          "bg-secondary/50 text-secondary-foreground dark:text-foreground",
         "destructive-soft": "bg-destructive/10 text-destructive",
         "success-soft":
-          "bg-success/10 text-success-foreground dark:text-success",
+          "bg-success/10 text-[color-mix(in_oklab,var(--success)_65%,var(--foreground))] dark:text-success",
         "warning-soft":
-          "bg-warning/10 text-warning-foreground dark:text-warning",
-        "info-soft": "bg-info/10 text-info-foreground dark:text-info",
+          "bg-warning/10 text-[color-mix(in_oklab,var(--warning)_55%,var(--foreground))] dark:text-warning",
+        "info-soft":
+          "bg-info/10 text-[color-mix(in_oklab,var(--info)_65%,var(--foreground))] dark:text-info",
       },
 
       size: {

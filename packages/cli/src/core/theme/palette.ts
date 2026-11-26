@@ -227,6 +227,7 @@ export interface TokenMap {
 export interface PaletteInput {
   primary: OklchColor;
   baseColor: BaseColorName;
+  lightPrimaryForegroundLightness?: number;
   /** 4 hue offsets (degrees) after the primary for chart series 2-5. */
   chartHues?: number[];
 }
@@ -307,7 +308,7 @@ function lightSemanticTokens(): TokenMap {
 function darkSemanticTokens(): TokenMap {
   return {
     destructive: { l: 0.62, c: 0.2, h: 24 },
-    "destructive-foreground": { l: 0.985, c: 0.01, h: 24 },
+    "destructive-foreground": { l: 0.2, c: 0.01, h: 24 },
     info: { l: 0.7, c: 0.15, h: 236 },
     "info-foreground": { l: 0.16, c: 0.04, h: 236 },
     success: { l: 0.7, c: 0.16, h: 152 },
@@ -321,11 +322,14 @@ function lightScheme(
   base: BaseColorSpec,
   primary: OklchColor,
   hueOffsets: number[],
+  foregroundLightness = 0.99,
 ): TokenMap {
+  const primaryForeground = { l: foregroundLightness, c: 0.01, h: primary.h };
+
   return {
     ...lightBaseTokens(base),
     primary,
-    "primary-foreground": { l: 0.99, c: 0.01, h: primary.h },
+    "primary-foreground": primaryForeground,
     ...lightSemanticTokens(),
     ring: { ...primary },
     "chart-1": { l: 0.58, c: Math.min(primary.c, 0.16), h: primary.h },
@@ -350,7 +354,7 @@ function lightScheme(
       h: wrapHue(primary.h + hueOffsets[3]),
     },
     "sidebar-primary": { ...primary },
-    "sidebar-primary-foreground": { l: 0.99, c: 0.01, h: primary.h },
+    "sidebar-primary-foreground": primaryForeground,
     "sidebar-ring": { ...primary },
   };
 }
@@ -423,7 +427,12 @@ export function buildSchemes(input: PaletteInput): ThemeSchemes {
   const hueOffsets = input.chartHues ?? DEFAULT_CHART_HUES;
 
   return {
-    light: lightScheme(base, primary, hueOffsets),
+    light: lightScheme(
+      base,
+      primary,
+      hueOffsets,
+      input.lightPrimaryForegroundLightness,
+    ),
     dark: darkScheme(base, primary, hueOffsets),
   };
 }

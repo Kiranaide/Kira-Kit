@@ -80,9 +80,18 @@ const motionModels = [
   },
 ];
 
-const wireUpCode = `import { Outlet, useRouterState } from "@tanstack/react-router";
+const wireUpCode = `import { createRouter, Outlet, useRouterState } from "@tanstack/react-router";
 import { RouteTransition } from "@/components/ui/route-transition";
-import { supportsViewTransitions } from "@/lib/view-transition";
+import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
+import { supportsViewTransitionTypes } from "@/lib/view-transition";
+
+export const router = createRouter({
+  routeTree,
+  defaultViewTransition: supportsViewTransitionTypes() && {
+    types: ({ pathChanged }) =>
+      pathChanged && !prefersReducedMotion() ? ["route-change"] : false,
+  },
+});
 
 export function RouteOutlet() {
   const pathname = useRouterState({
@@ -92,7 +101,7 @@ export function RouteOutlet() {
   return (
     <RouteTransition
       transitionKey={pathname}
-      variant={supportsViewTransitions() ? "none" : "fade"}
+      variant={supportsViewTransitionTypes() ? "none" : "fade"}
     >
       <Outlet />
     </RouteTransition>
@@ -282,7 +291,7 @@ function WiringSection() {
       description="Key the outlet by pathname in TanStack Router. Apply one entrance mechanism per navigation."
     >
       <CodeBlock
-        code="npx kira-kit add route-transition"
+        code="npx kira-kit add route-transition view-transition use-reduced-motion"
         language="bash"
         copyFormat="shell"
         showLineNumbers

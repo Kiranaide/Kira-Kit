@@ -34,16 +34,7 @@ export function generatePresetItems(): PresetGenerationResult {
   const adjustments: PresetAdjustment[] = [];
 
   for (const preset of PRESETS) {
-    const generated = generateTheme({
-      name: preset.name,
-      title: preset.title,
-      description: preset.description,
-      primary: preset.primary,
-      baseColor: preset.baseColor,
-      chartHues: preset.chartHues,
-      radius: preset.radius,
-      surface: preset.surface,
-    });
+    const generated = generateTheme(preset);
 
     for (const adjustment of generated.adjustments) {
       adjustments.push({

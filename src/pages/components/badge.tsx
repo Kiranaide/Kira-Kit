@@ -773,7 +773,7 @@ export default function BadgePage() {
       <PageHeader
         title="Badge"
         description="Small status indicators and labels to highlight information, display counts, and show user status."
-        version="v4.0.0"
+        version="v4.0.1"
       />
 
       <FeatureGrid
@@ -1381,6 +1381,18 @@ const badgePageAPISections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const badgePageChangelogEntries = [
+  {
+    version: "4.0.1",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Improve soft badge label contrast",
+        description:
+          "Secondary, info, success, and warning labels stay readable on tinted surfaces.",
+      },
+    ],
+  },
   {
     version: "4.0.0",
     date: "26 November 2026",

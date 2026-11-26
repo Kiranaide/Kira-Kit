@@ -151,7 +151,8 @@ function PreviewSection() {
       description="Use a dry run for the install plan. Use a diff to compare your local files with the registry version."
     >
       <CodeBlock
-        code="npx kira-kit add button --dry-run\nnpx kira-kit add button --diff"
+        code={`npx kira-kit add button --dry-run
+npx kira-kit add button --diff`}
         language="bash"
         copyFormat="shell"
         showLineNumbers
@@ -169,7 +170,8 @@ function ChecksSection() {
       description="Check the whole component surface or pass a path to focus the report."
     >
       <CodeBlock
-        code="npx kira-kit check\nnpx kira-kit check src/components/ui"
+        code={`npx kira-kit check
+npx kira-kit check src/components/ui`}
         language="bash"
         copyFormat="shell"
         showLineNumbers

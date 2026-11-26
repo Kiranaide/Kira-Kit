@@ -37,6 +37,12 @@ const RELEASES: readonly Release[] = [
     date: "In development",
     changes: [
       {
+        type: "added",
+        title: "TanStack Form integration example",
+        description:
+          "The Field page adds a runnable example with copyable source for email validation, submission, and reset using KiraField.",
+      },
+      {
         type: "fixed",
         title: "KiraAccordion draggable reorder",
         description:
@@ -148,6 +154,18 @@ const RELEASES: readonly Release[] = [
         title: "Single source of truth for the theme and font studio catalog",
         description:
           "kira-kit build now emits src/themes/catalog.json directly from the CLI's WCAG-verified base colors, radius/surface presets, fonts, font pairings, and recipe defaults. The docs app consolidates presets-catalog.ts, fonts.ts, font-preview.ts, and its duplicated token cascade into one src/lib/theme-studio.ts module, removing ~600 lines of hand-mirrored definitions.",
+      },
+      {
+        type: "fixed",
+        title: "Reduced-motion route navigation",
+        description:
+          "The router checks the current motion preference before starting a native crossfade. The outlet supplies the CSS fade when native transition types are unavailable.",
+      },
+      {
+        type: "fixed",
+        title: "Kira Default contrast and homepage theme",
+        description:
+          "Corrected light and dark status and sidebar colors, added a registry build contrast check for Kira Default, and removed repeated corrections for curated presets. The homepage hero follows the selected mode and footer links align.",
       },
       {
         type: "fixed",

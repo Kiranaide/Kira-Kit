@@ -26,6 +26,7 @@ import {
 
 const SECTIONS: readonly TocEntry[] = [
   { id: "live-example", label: "Live example" },
+  { id: "form-integrations", label: "Form integrations" },
   { id: "field-anatomy", label: "Field anatomy" },
   { id: "validation-timing", label: "Validation timing" },
   { id: "error-summaries", label: "Error summaries" },
@@ -512,6 +513,20 @@ export default function FormPage() {
       next={{ to: "/docs/changelog", label: "Changelog" }}
     >
       <LiveExampleSection />
+      <DocSection id="form-integrations" title="Form integrations">
+        <p className="text-sm leading-6 text-muted-foreground">
+          Open the{" "}
+          <Link
+            to="/components/field"
+            className="font-medium underline underline-offset-4"
+          >
+            Field demos
+          </Link>{" "}
+          for a compact TanStack Form example, React Hook Form with registered
+          text inputs and a controlled Select, or a native form that reads
+          values with <Code>FormData</Code>.
+        </p>
+      </DocSection>
       <FieldAnatomySection />
       <ValidationTimingSection />
       <ErrorSummariesSection />

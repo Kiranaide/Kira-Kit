@@ -38,7 +38,7 @@ describe("embedded assets drift guard", () => {
 
   it("keeps the responsive safelists and the pink primary", () => {
     expect(BASE_CSS).toContain("@source inline(");
-    expect(BASE_CSS).toContain("oklch(0.59 0.22 1)");
+    expect(BASE_CSS).toContain("--primary: oklch(0.49 0.22 1)");
     expect(BASE_CSS).toContain("--radius: 0.45rem");
   });
 
