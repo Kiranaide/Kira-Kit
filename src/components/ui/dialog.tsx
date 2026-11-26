@@ -256,10 +256,21 @@ function KiraDialog({
   );
 }
 
+const DialogPopup = DialogPrimitive.Popup;
+
+type DialogRootProps = DialogPrimitive.Root.Props;
+
+type DialogPopupProps = DialogPrimitive.Popup.Props;
+
+type DialogPortalProps = DialogPrimitive.Portal.Props;
+
+type DialogRootActions = DialogPrimitive.Root.Actions;
+
 export {
   Dialog,
   DialogPortal,
   DialogOverlay,
+  DialogPopup,
   DialogClose,
   DialogTrigger,
   DialogContent,
@@ -272,4 +283,11 @@ export {
   DialogDescription,
 };
 
-export type { DialogContentProps, KiraDialogProps };
+export type {
+  DialogRootProps,
+  DialogPopupProps,
+  DialogPortalProps,
+  DialogRootActions,
+  DialogContentProps,
+  KiraDialogProps,
+};

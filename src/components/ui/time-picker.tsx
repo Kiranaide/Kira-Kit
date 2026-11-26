@@ -1,11 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import { cva, type VariantProps } from "class-variance-authority";
 import { format, isValid, set } from "date-fns";
 import { IconClock, IconMinus, IconPlus, IconX } from "@tabler/icons-react";
 import { cn } from "cn";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 /*                                   Trigger                                  */
 
@@ -1018,7 +1022,7 @@ function TimePickerPopoverView({
 }: TimePickerPopoverViewProps) {
   return (
     <div data-slot="time-picker" className={cn("relative w-full", className)}>
-      <PopoverPrimitive.Root open={isOpen} onOpenChange={onOpenChange}>
+      <Popover open={isOpen} onOpenChange={onOpenChange}>
         <div
           ref={anchorRef}
           className={timePickerTriggerVariants({
@@ -1028,7 +1032,7 @@ function TimePickerPopoverView({
           data-disabled={disabled || undefined}
           data-invalid={invalid || undefined}
         >
-          <PopoverPrimitive.Trigger
+          <PopoverTrigger
             ref={triggerRef}
             id={baseId}
             // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This button opens the custom time-selection popup; a native input would change the public interaction.
@@ -1054,7 +1058,7 @@ function TimePickerPopoverView({
             >
               {label}
             </span>
-          </PopoverPrimitive.Trigger>
+          </PopoverTrigger>
           {hasValue && !disabled && (
             <button
               type="button"
@@ -1070,30 +1074,22 @@ function TimePickerPopoverView({
           )}
         </div>
 
-        <PopoverPrimitive.Portal>
-          <PopoverPrimitive.Positioner
-            anchor={anchorRef}
-            side="bottom"
-            align="start"
-            sideOffset={8}
-            collisionPadding={8}
-            className="z-50"
-          >
-            <PopoverPrimitive.Popup
-              id={popoverId}
-              // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Base UI Popover.Popup owns visibility and focus; ARIA dialog provides the time-picker popup semantics.
-              role="dialog"
-              aria-label="Choose time"
-              className={cn(
-                "origin-(--transform-origin) max-h-[calc(100dvh-1rem)] overflow-auto rounded-xl border border-border bg-popover text-popover-foreground shadow-xl outline-none",
-                "transition-[opacity,scale] duration-150 ease-out data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 motion-reduce:transition-none",
-              )}
-            >
-              {panel}
-            </PopoverPrimitive.Popup>
-          </PopoverPrimitive.Positioner>
-        </PopoverPrimitive.Portal>
-      </PopoverPrimitive.Root>
+        <PopoverContent
+          id={popoverId}
+          // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Base UI Popover.Popup owns visibility and focus; ARIA dialog provides the time-picker popup semantics.
+          role="dialog"
+          aria-label="Choose time"
+          size="auto"
+          side="bottom"
+          align="start"
+          sideOffset={8}
+          collisionPadding={8}
+          positionerProps={{ anchor: anchorRef }}
+          className="max-h-[calc(100dvh-1rem)] overflow-auto rounded-xl p-0 shadow-xl"
+        >
+          {panel}
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

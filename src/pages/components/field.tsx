@@ -1542,6 +1542,18 @@ const fieldPageAPIReferenceSections = [
 
 const fieldPageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "changed" as const,
+        title: "Use FieldPrimitive.Control and break input ↔ field cycle",
+        description:
+          "Replaced the direct @base-ui/react/input import with FieldPrimitive.Control and eliminated the circular dependency between field and input.",
+      },
+    ],
+  },
+  {
     version: "3.2.0",
     date: "November 18, 2026",
     changes: [

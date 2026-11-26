@@ -591,6 +591,18 @@ const timePickerPageAPIReferenceSections = [
 
 const timePickerPageChangelogEntries = [
   {
+    version: "Unreleased",
+    date: "In development",
+    changes: [
+      {
+        type: "changed",
+        title: "Aligned popup onto kit Popover seam",
+        description:
+          "Migrated TimePicker's desktop popup from raw @base-ui/react/popover onto kit Popover, PopoverTrigger, and PopoverContent from @/components/ui/popover.",
+      },
+    ],
+  },
+  {
     version: "v1.0.1",
     date: "20 November 2026",
     changes: [
