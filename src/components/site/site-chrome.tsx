@@ -1,14 +1,104 @@
+import * as React from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
+  IconAdjustmentsHorizontal,
   IconArrowUpRight,
   IconBrandGithub,
+  IconChevronDown,
   IconChevronRight,
   IconMoon,
   IconSun,
 } from "@tabler/icons-react";
 import { cn } from "cn";
 import { useTheme } from "@/components/ui/theme-provider";
-import { PresetStudioPopover } from "@/components/site/theme-customizer";
+
+const LazyPresetStudioPopover = React.lazy(() =>
+  import("@/components/site/theme-customizer").then((module) => ({
+    default: module.PresetStudioPopover,
+  })),
+);
+
+function PresetStudioShell({
+  className,
+  showLabel = true,
+  onActivate,
+}: {
+  className?: string;
+  showLabel?: boolean;
+  onActivate?: (openImmediately: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label="Preset studio: Default"
+      data-slot="preset-studio-trigger"
+      onClick={() => onActivate?.(true)}
+      onPointerEnter={() => onActivate?.(false)}
+      onFocus={() => onActivate?.(false)}
+      className={cn(
+        "docs-focus-ring inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full border border-border/80 bg-background/80 px-2.5 text-xs font-medium text-foreground shadow-2xs transition-[background-color,border-color,color] duration-150 ease-out hover:border-border hover:bg-accent lg:h-9 lg:px-3",
+        className,
+      )}
+    >
+      <span
+        aria-hidden="true"
+        className="size-3.5 shrink-0 rounded-full border border-black/15 dark:border-white/20"
+        style={{ background: "var(--primary)" }}
+      />
+      {showLabel ? (
+        <span className="max-w-32 truncate">Default</span>
+      ) : (
+        <span className="sr-only">Default</span>
+      )}
+      <IconAdjustmentsHorizontal
+        aria-hidden="true"
+        className="size-3.5 text-muted-foreground"
+      />
+      <IconChevronDown
+        aria-hidden="true"
+        className="hidden size-3 text-muted-foreground sm:inline"
+      />
+    </button>
+  );
+}
+
+function DeferredPresetStudioPopover({
+  className,
+  showLabel = true,
+}: {
+  className?: string;
+  showLabel?: boolean;
+}) {
+  const [state, setState] = React.useState<"idle" | "preloaded" | "open">(
+    "idle",
+  );
+
+  if (state === "idle") {
+    return (
+      <PresetStudioShell
+        className={className}
+        showLabel={showLabel}
+        onActivate={(openImmediately) =>
+          setState(openImmediately ? "open" : "preloaded")
+        }
+      />
+    );
+  }
+
+  return (
+    <React.Suspense
+      fallback={
+        <PresetStudioShell className={className} showLabel={showLabel} />
+      }
+    >
+      <LazyPresetStudioPopover
+        className={className}
+        showLabel={showLabel}
+        defaultOpen={state === "open"}
+      />
+    </React.Suspense>
+  );
+}
 
 export const SITE_REPOSITORY_URL = "https://github.com/Kiranaide/kira-kit";
 
@@ -154,8 +244,11 @@ export function SiteHeader({ after, className }: SiteHeaderProps) {
             <IconArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
           </Link>
           <GitHubLink />
-          <PresetStudioPopover showLabel={false} className="lg:hidden" />
-          <PresetStudioPopover className="hidden lg:inline-flex" />
+          <DeferredPresetStudioPopover
+            showLabel={false}
+            className="lg:hidden"
+          />
+          <DeferredPresetStudioPopover className="hidden lg:inline-flex" />
           {after}
           <ThemeModeToggle />
         </div>
@@ -245,8 +338,8 @@ export function PageTopBar({ crumb }: { crumb: string }) {
 
       <div className="flex shrink-0 items-center gap-1">
         <GitHubLink iconOnly />
-        <PresetStudioPopover showLabel={false} className="lg:hidden" />
-        <PresetStudioPopover className="hidden lg:inline-flex" />
+        <DeferredPresetStudioPopover showLabel={false} className="lg:hidden" />
+        <DeferredPresetStudioPopover className="hidden lg:inline-flex" />
         <ThemeModeToggle />
       </div>
     </div>

@@ -5,7 +5,6 @@ import {
   lazyRouteComponent,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { AppLayout } from "@/components/site/app-layout";
 import { RootProviders } from "@/components/site/root-providers";
 import { RoutePending } from "@/components/route/route-pending";
 import { RouteError } from "@/components/route/route-error";
@@ -30,7 +29,10 @@ const landingRoute = createRoute({
 const appRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "_app",
-  component: AppLayout,
+  component: lazyRouteComponent(
+    () => import("@/components/site/app-layout"),
+    "AppLayout",
+  ),
 });
 
 const overviewRoute = createRoute({
