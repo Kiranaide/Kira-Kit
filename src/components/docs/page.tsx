@@ -174,11 +174,21 @@ export function ComponentPage({ children, className }: ComponentPageProps) {
           </div>
 
           {flow.extra}
-          {flow.features}
-          {flow.shortcuts}
-          {flow.usage}
-          {flow.api}
-          {flow.changelog}
+          {flow.features.length > 0 && (
+            <div className="docs-deferred-section">{flow.features}</div>
+          )}
+          {flow.shortcuts.length > 0 && (
+            <div className="docs-deferred-section">{flow.shortcuts}</div>
+          )}
+          {flow.usage.length > 0 && (
+            <div className="docs-deferred-section">{flow.usage}</div>
+          )}
+          {flow.api.length > 0 && (
+            <div className="docs-deferred-section">{flow.api}</div>
+          )}
+          {flow.changelog.length > 0 && (
+            <div className="docs-deferred-section">{flow.changelog}</div>
+          )}
         </div>
       </div>
     </div>

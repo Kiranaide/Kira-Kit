@@ -1,5 +1,11 @@
 /* Docs "Preview Page" frame — imported only by src/main.tsx, never shipped to consumers. */
 
+/* Below-the-fold docs sections skip off-screen layout/paint until scrolled near. */
+.docs-deferred-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+
 /* Scroll reveal: opacity + a 12px rise, driven by a data attribute the
    IntersectionObserver sets. Composited properties only. */
 .docs-reveal {

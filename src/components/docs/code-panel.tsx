@@ -8,9 +8,10 @@ import {
   type CodeTokenCache,
 } from "@/lib/code-presentation";
 
-/** Grammar loading is async, so the panel paints plain text first and only the
- *  colours arrive later — no layout shift, no spinner for a code block. */
-function useHighlightedCode(code: string, language: string) {
+/** Grammar loading is async and deferred until near the viewport, so the panel
+ *  paints plain text first and only the colours arrive when visible — no layout
+ *  shift, no main-thread tokenization for off-screen code blocks. */
+function useHighlightedCode(code: string, language: string, enabled: boolean) {
   const [lines, setLines] = React.useState<CodeToken[][] | null>(null);
 
   const cache = React.useRef<CodeTokenCache>({
@@ -20,6 +21,8 @@ function useHighlightedCode(code: string, language: string) {
   });
 
   React.useEffect(() => {
+    if (!enabled) return;
+
     let active = true;
 
     const highlight = async () => {
@@ -31,7 +34,16 @@ function useHighlightedCode(code: string, language: string) {
         const instance = await loading;
 
         if (active) {
-          setLines(tokenizeCode(instance, code, language, cache.current));
+          const tokenized = tokenizeCode(
+            instance,
+            code,
+            language,
+            cache.current,
+          );
+
+          React.startTransition(() => {
+            setLines(tokenized);
+          });
         }
       } catch {
         setLines(null);
@@ -43,9 +55,39 @@ function useHighlightedCode(code: string, language: string) {
     return () => {
       active = false;
     };
-  }, [code, language]);
+  }, [code, language, enabled]);
 
   return lines;
+}
+
+function useNearViewport<T extends HTMLElement>() {
+  const ref = React.useRef<T>(null);
+
+  const [visible, setVisible] = React.useState(
+    () => typeof window !== "undefined" && !("IntersectionObserver" in window),
+  );
+
+  React.useEffect(() => {
+    const element = ref.current;
+
+    if (!element || visible || !("IntersectionObserver" in window)) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px 0px" },
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [visible]);
+
+  return { ref, visible };
 }
 
 function Token({ token }: { token: CodeToken }) {
@@ -154,13 +196,15 @@ export function CodePanel({
   className,
 }: CodePanelProps) {
   const source = code.replace(/\n+$/, "");
-  const lines = useHighlightedCode(source, language);
+  const { ref, visible } = useNearViewport<HTMLDivElement>();
+  const lines = useHighlightedCode(source, language, visible);
   const { copied, copy } = useCopy(source);
   const plain = React.useMemo(() => source.split("\n"), [source]);
   const rows = lines ?? plain;
 
   return (
     <div
+      ref={ref}
       data-slot="code-panel"
       className={cn(
         "flex min-h-0 flex-col overflow-hidden rounded-[10px] border border-border/70 bg-card",
