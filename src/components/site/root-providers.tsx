@@ -2,6 +2,7 @@ import * as React from "react";
 import { Outlet } from "@tanstack/react-router";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SiteSpotlightProvider } from "@/components/site/site-spotlight-context";
 import { OptimisticFeedbackProvider } from "@/hooks/use-optimistic-commit";
 import { PresetProvider } from "@/lib/theme-presets";
 
@@ -48,8 +49,10 @@ export function RootProviders() {
           }}
         >
           <TooltipProvider>
-            <DeferredToastViewport />
-            <Outlet />
+            <SiteSpotlightProvider>
+              <DeferredToastViewport />
+              <Outlet />
+            </SiteSpotlightProvider>
           </TooltipProvider>
         </OptimisticFeedbackProvider>
       </PresetProvider>
