@@ -34,7 +34,7 @@ the flags supported by the installed CLI. See the
 
 Set up a project for Kira Kit:
 
-1. Writes or repairs `components.json` (`style: "kira"`, standard aliases, the
+1. Writes or repairs `kira-kit.json` (`css`, `theme`, standard aliases, the
    `@kira-kit` registry — existing entries are never overwritten)
 2. Enforces the React 19.2+ floor
 3. Installs the kit's base CSS (tokens, safelists, keyframes, `@theme inline`)
@@ -162,7 +162,7 @@ Or for a whole file — the reason is mandatory in both forms:
 
 ### `kira-kit create [dir]`
 
-Scaffold a new project pre-wired for Kira Kit — `components.json` with the
+Scaffold a new project pre-wired for Kira Kit — `kira-kit.json` with the
 `@kira-kit` registry, the kit's base CSS and theme tokens, the `cn` package,
 and a welcome component.
 
@@ -178,11 +178,13 @@ Options: `-t/--template`, `--install` / `--no-install`, `--git` / `--no-git`,
 
 ### `kira-kit migrate`
 
-Migrate a legacy project: converts the legacy `registryUrl` field to the
-`registries` map, normalizes legacy `$schema`/`style` values, rewrites
-`clsx`/`tailwind-merge`/`@/lib/cn` imports to the `cn` package (including
-`twMerge(clsx(…))` → `cn(…)`), and reports components that have diverged from
-the published registry. Your component files are never overwritten.
+Migrate a legacy project: converts legacy `components.json` configs to the
+`kira-kit.json` schema (mapping `tailwind.css` → `css`, grouping theme/font
+options under `theme`, converting `registryUrl` → `registries["@kira-kit"]`,
+dropping obsolete keys), rewrites `clsx`/`tailwind-merge`/`@/lib/cn` imports to
+the `cn` package (including `twMerge(clsx(…))` → `cn(…)`), and reports
+components that have diverged from the published registry. Your component files
+are never overwritten.
 
 ```bash
 kira-kit migrate
@@ -209,7 +211,7 @@ kira-kit build --skip-checks
 
 ## Registry configuration
 
-Items resolve through the `registries` map in `components.json`. The `{name}`
+Items resolve through the `registries` map in `kira-kit.json`. The `{name}`
 placeholder is literal; URLs, `file://` paths, and local paths all work:
 
 ```json
@@ -222,7 +224,7 @@ placeholder is literal; URLs, `file://` paths, and local paths all work:
 
 The index lives at `/r/registry.json`; JSON schemas are published at
 `/schema/registry.json`, `/schema/registry-item.json`, and
-`/schema/components.json`.
+`/schema/kira-kit.json`.
 
 ## Deliberately not supported
 

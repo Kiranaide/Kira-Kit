@@ -92,7 +92,7 @@ const configuredRows: Record<
     {
       title: "Kira registry & styles",
       description:
-        "components.json, base CSS, and Kira utility styles are in place.",
+        "kira-kit.json, base CSS, and Kira utility styles are in place.",
     },
   ],
   existing: [
@@ -114,7 +114,7 @@ const configuredRows: Record<
     {
       title: "Kira registry & styles",
       description:
-        "Update components.json and add Kira’s base styles while preserving existing theme CSS where possible.",
+        "Update kira-kit.json and add Kira’s base styles while preserving existing theme CSS where possible.",
     },
   ],
 };

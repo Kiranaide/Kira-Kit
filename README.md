@@ -26,7 +26,7 @@ Requires React 19.2+ and Tailwind CSS v4. Register the registry once (the
 default theme):
 
 ```json
-// components.json
+// kira-kit.json
 {
   "registries": {
     "@kira-kit": "https://kira-kit.vercel.app/r/{name}.json"
