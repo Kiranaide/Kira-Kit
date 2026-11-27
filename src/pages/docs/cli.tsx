@@ -8,8 +8,7 @@ import {
   GuideLink,
 } from "@/components/docs/doc-page";
 
-const CLI_REFERENCE_URL =
-  "https://github.com/Kiranaide/kira-kit-v2/blob/development/docs/cli-reference.md";
+const CLI_REFERENCE_URL = "https://www.npmjs.com/package/kira-kit";
 
 const commands = [
   {
@@ -236,7 +235,7 @@ export default function CliPage() {
       <DocSection
         id="run-the-cli"
         title="Run the CLI"
-        description="Use Node.js 22+ or Bun. Run the command from your project root."
+        description="Use Node.js 22.12.0 or later, or Bun. Run the command from your project root."
       >
         <CodeBlock
           code="npx kira-kit --help"
@@ -252,11 +251,9 @@ export default function CliPage() {
             rel="noreferrer"
             className="font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground"
           >
-            docs/cli-reference.md
+            The npm package README
           </a>{" "}
-          is the complete reference: every flag and its default, what each
-          command writes, the thirteen checks with their severities, and the
-          places where the help text and the code disagree.
+          includes command examples and describes what the CLI writes.
         </p>
       </DocSection>
 

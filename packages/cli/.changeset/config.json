@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
   "changelog": [
     "@changesets/changelog-github",
-    { "repo": "Kiranaide/kira-kit-v2" }
+    { "repo": "Kiranaide/Kira-Kit" }
   ],
   "commit": false,
   "fixed": [],

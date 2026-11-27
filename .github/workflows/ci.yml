@@ -5,33 +5,43 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   check:
-    name: Lint, typecheck, and test
+    name: Verify release artifacts
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          bun-version: latest
+          persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
-          node-version: 22
+          bun-version: 1.4.4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
 
       - name: Install root dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
 
       - name: Install CLI dependencies
         working-directory: packages/cli
-        run: bun install
+        run: bun install --frozen-lockfile
 
-      - name: Lint (root)
-        run: bunx oxlint
+      - name: Check repository
+        run: bun run check
 
-      - name: Typecheck (root)
-        run: bunx tsc -b
+      - name: Check component demos
+        run: bun run check:pages
 
       - name: Typecheck (cli)
         working-directory: packages/cli
@@ -48,5 +58,31 @@ jobs:
       - name: Quality checks (kira-kit check, errors gate, warnings annotate)
         run: node packages/cli/dist/index.mjs check --format github
 
-      - name: Registry build (kira-kit build)
-        run: node packages/cli/dist/index.mjs build
+      - name: Build registry and production site
+        run: |
+          node packages/cli/dist/index.mjs build --skip-checks
+          bunx vite build
+          git diff --exit-code -- public src/themes packages/cli/templates packages/cli/src/generated
+
+      - name: Pack CLI and registry snapshot
+        run: |
+          mkdir -p release-artifacts
+          npm pack ./packages/cli --pack-destination release-artifacts
+          tar -czf release-artifacts/registry.tar.gz -C dist r schema docs
+          (cd release-artifacts && sha256sum *.tgz *.tar.gz > SHA256SUMS)
+
+      - name: Smoke-test packed CLI on Node 24
+        run: bun scripts/smoke-release.ts release-artifacts/kira-kit-*.tgz
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.12.0
+
+      - name: Smoke-test packed CLI at the Node minimum
+        run: bun scripts/smoke-release.ts release-artifacts/kira-kit-*.tgz
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-artifacts
+          path: release-artifacts
+          if-no-files-found: error
