@@ -19,6 +19,7 @@ import {
   DocTable,
   GuideLink,
 } from "@/components/docs/doc-page";
+import { loadAllDocsFonts } from "@/lib/docs-fonts";
 import {
   DEFAULT_DOC_FONT_PRESET,
   DOC_BASE_COLORS,
@@ -941,6 +942,10 @@ function RadiusAndDarkModeSection() {
 }
 
 export default function ThemingPage() {
+  React.useEffect(() => {
+    loadAllDocsFonts();
+  }, []);
+
   return (
     <DocPage
       title="Theming"

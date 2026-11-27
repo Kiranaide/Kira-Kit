@@ -4,7 +4,6 @@ import { RouterProvider } from "@tanstack/react-router";
 
 import "./index.css";
 import "./styles/docs.css";
-import "./lib/docs-fonts";
 import { initFontPreview } from "./lib/theme-studio";
 import { router } from "./router";
 
