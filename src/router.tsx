@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   createRouter,
   createRoute,
@@ -7,15 +8,28 @@ import {
 } from "@tanstack/react-router";
 import { RootProviders } from "@/components/site/root-providers";
 import { RoutePending } from "@/components/route/route-pending";
-import { RouteError } from "@/components/route/route-error";
 import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
 import { supportsViewTransitionTypes } from "@/lib/view-transition";
+
+const LazyRouteError = React.lazy(() =>
+  import("@/components/route/route-error").then((module) => ({
+    default: module.RouteError,
+  })),
+);
+
+function RouteErrorBoundary(props: ErrorComponentProps) {
+  return (
+    <React.Suspense fallback={null}>
+      <LazyRouteError {...props} />
+    </React.Suspense>
+  );
+}
 
 // Root route: providers only, so the landing page can own the full viewport.
 const rootRoute = createRootRoute({
   component: RootProviders,
   pendingComponent: RoutePending,
-  errorComponent: (props: ErrorComponentProps) => <RouteError {...props} />,
+  errorComponent: RouteErrorBoundary,
 });
 
 // Marketing landing page (lazy loaded)
