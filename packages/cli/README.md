@@ -13,7 +13,7 @@ theme tokens into your global CSS. No other CLI is involved.
 - **Font & icon options** — six sans and three mono variable fonts, Tabler or
   Lucide icons (install-time import rewrite)
 - **Quality checks** over component sources (13 parser-based checks)
-- **Project scaffolding** with four embedded templates
+- **Project scaffolding** via official framework CLIs (`create-vite`, `create-next-app`, `create-astro`, `@tanstack/cli`) followed by `kira-kit init`
 - **`migrate`** from legacy `registryUrl` / `clsx` / `tailwind-merge` setups
 - **`build`** for maintainers: the full registry → validate → JSON → docs
   pipeline
@@ -162,16 +162,17 @@ Or for a whole file — the reason is mandatory in both forms:
 
 ### `kira-kit create [dir]`
 
-Scaffold a new project pre-wired for Kira Kit — `kira-kit.json` with the
-`@kira-kit` registry, the kit's base CSS and theme tokens, the `cn` package,
-and a welcome component.
+Scaffold a new project via the framework's official upstream CLI (`create-vite`,
+`create-next-app`, `create-astro`, or `@tanstack/cli`), then run `kira-kit init`
+to wire `kira-kit.json`, Tailwind CSS v4, `@/*` path aliases, and the kit's
+base styles and tokens.
 
 ```bash
 kira-kit create my-app
 kira-kit create my-app --template next --install --git
 ```
 
-Templates: `vite`, `next`, `tanstack-start`, `monorepo` (app + ui packages).
+Templates: `vite`, `next`, `astro`, `tanstack-start`.
 
 Options: `-t/--template`, `--install` / `--no-install`, `--git` / `--no-git`,
 `-y/--yes`.
@@ -258,9 +259,8 @@ bun run build       # embed-assets + tsdown → dist/index.mjs
 
 `bun run build` first runs `scripts/embed-assets.ts`, which embeds the kit's
 base CSS, vendored utilities, and default theme tokens into
-`src/generated/assets.ts` and syncs the same CSS into the bundled templates.
-A drift-guard test fails if the embedded assets fall out of sync with
-`src/index.css`.
+`src/generated/assets.ts`. A drift-guard test fails if the embedded assets fall
+out of sync with `src/index.css`.
 
 When source registries change, refresh dependency/file facts with
 `bun run scripts/scaffold-sources.ts` (curated titles/descriptions/categories

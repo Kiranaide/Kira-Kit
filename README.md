@@ -45,7 +45,7 @@ npx kira-kit add theme-ember-press    # a theme
 Or start a brand-new project pre-wired for Kira Kit:
 
 ```bash
-npx kira-kit create my-app --template vite   # vite | next | tanstack-start | monorepo
+npx kira-kit create my-app --template vite   # vite | next | astro | tanstack-start
 ```
 
 Agent-friendly docs are published at [`/llms.txt`](https://kira-kit.vercel.app/llms.txt)
