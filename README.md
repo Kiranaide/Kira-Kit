@@ -123,8 +123,6 @@ inline:
 
 See the [CLI README](packages/cli/README.md) for its check catalog and the
 [CLI documentation](https://kira-kit.vercel.app/docs/cli) for command examples.
-Follow the [0.5 upgrade guide](docs/upgrade-0.5.md) when updating a project
-with installed Kira Kit source.
 
 ## Deployment
 

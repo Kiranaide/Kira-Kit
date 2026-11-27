@@ -5,9 +5,7 @@
 ### Breaking changes
 
 - Node.js 22.12.0 is the minimum supported Node version. The native installer
-  uses the 0.5 registry format. See the
-  [upgrade guide](https://github.com/Kiranaide/Kira-Kit/blob/main/docs/upgrade-0.5.md)
-  for registry routing and component changes.
+  uses the 0.5 registry format.
 
 ### Minor Changes
 
