@@ -712,6 +712,63 @@ export const router = createRouter({
   },
 });
 
+function formatSegmentTitle(segment: string): string {
+  return segment
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function syncDocumentMeta(pathname: string): void {
+  if (typeof document === "undefined") return;
+
+  const cleanPath = pathname === "/" ? "/" : pathname.replace(/\/+$/, "");
+  let title = "Kira Kit — Accessible React Component Registry";
+
+  let description =
+    "Accessible React components built on Base UI, Tailwind CSS v4, and TypeScript. Install the source into your repo with OKLCH theme presets and WCAG AA contrast.";
+
+  if (cleanPath === "/overview") {
+    title = "Overview — Kira Kit";
+    description =
+      "Explore the Kira Kit component catalog, architecture pillars, 4px spacing contract, and quickstart CLI commands.";
+  } else if (cleanPath === "/ui-preview") {
+    title = "UI Preview — Kira Kit";
+    description =
+      "Interactive playground comparing the 4px control ladder, inputs, overlays, and live light/dark OKLCH theme presets.";
+  } else if (cleanPath.startsWith("/components/")) {
+    const name = formatSegmentTitle(cleanPath.slice("/components/".length));
+    title = `${name} — Kira Kit`;
+    description = `${name} React component built on Base UI with accessible keyboard support, Tailwind CSS v4 variants, and copy-ready source.`;
+  } else if (cleanPath.startsWith("/docs/")) {
+    const name = formatSegmentTitle(cleanPath.slice("/docs/".length));
+    title = `${name} — Kira Kit Docs`;
+    description = `Kira Kit documentation for ${name.toLowerCase()}: setup, configuration, and best practices.`;
+  }
+
+  document.title = title;
+
+  const metaDescription = document.querySelector<HTMLMetaElement>(
+    'meta[name="description"]',
+  );
+
+  if (metaDescription) {
+    metaDescription.content = description;
+  }
+
+  const canonical = document.querySelector<HTMLLinkElement>(
+    'link[rel="canonical"]',
+  );
+
+  if (canonical) {
+    canonical.href = `${window.location.origin}${cleanPath}`;
+  }
+}
+
+router.subscribe("onResolved", ({ toLocation }) => {
+  syncDocumentMeta(toLocation.pathname);
+});
+
 // Type declaration for router
 declare module "@tanstack/react-router" {
   interface Register {
