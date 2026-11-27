@@ -869,7 +869,7 @@ export default function PaginationPage() {
       <PageHeader
         title="Pagination"
         description="Keep results in sync, preserve useful URLs, and move through pages or cursor batches with clear recovery states."
-        version="v3.2.1"
+        version="v3.2.2"
       />
       <FeatureGrid features={paginationPageFeatureGridFeatures} />
       <DemoTabs defaultValue="basic" tabs={paginationPageDemoTabsTabs} />
@@ -1622,6 +1622,24 @@ const paginationPageAPIReferenceSections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const paginationPageChangelogEntries = [
+  {
+    version: "3.2.2",
+    date: "27 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Stable Rows per page trigger width when opening",
+        description:
+          "PaginationSizeSelector now mirrors the selected page size in placeholder with tabular numerals and a 3ch minimum width so opening the selector never flashes 'Select...' or shifts adjacent pagination buttons.",
+      },
+      {
+        type: "fixed",
+        title: "Stopped forwarding pagination option props to <nav>",
+        description:
+          "Pagination now omits onPaginationChange and other hook/configuration props before spreading native attributes onto <nav>, eliminating React unknown event handler warnings.",
+      },
+    ],
+  },
   {
     version: "3.2.1",
     date: "20 November 2026",

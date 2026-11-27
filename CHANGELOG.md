@@ -6,6 +6,22 @@ components are source files you own, so entries describe the registry surface
 you install, not a published package's dependency tree. The CLI is versioned
 with Changesets; per-component history lives on each component's docs page.
 
+## 0.7.0 — November 27, 2026
+
+### Added
+
+- **Site-wide Spotlight search (`Cmd/Ctrl+K`).** Added a lazy-loaded global `KiraSpotlight` command palette across the docs site and landing header, backed by a shared `src/components/site/site-navigation.ts` index covering Docs, Layout, Components, and quick actions (theme toggle, GitHub) with scoped filtering and keyboard shortcut triggers.
+- **Sidebar workspace shell, print, and scroll-restoration guidance.** Updated the Sidebar usage example and notes (`src/pages/components/sidebar.tsx`) along with the docs app shell (`src/components/site/app-layout.tsx`, `src/router.tsx`) to document and apply `h-dvh overflow-hidden`, `print:h-auto print:overflow-visible`, `#app-main`, and TanStack Router `scrollRestoration` with `scrollToTopSelectors: ["#app-main"]`.
+
+### Fixed
+
+- **`DataTable` column labels, sticky bulk-action dock, and single-line footer counts.** `columnLabel` now resolves `columnDef.meta.label`, string headers, and titles registered by `DataTableColumnHeader` before falling back to Title-Cased column IDs across `DataTableColumnVisibility`, sort announcements, resize handles, pinning menus, and range filters; `DataTableBulkActions` with `sticky` unmounts cleanly when 0 rows are selected (eliminating vertical dead space) and floats as a centered frosted bottom dock with GPU-only spring-out enter/exit motion, preserved exiting count, `inert`, and reduced-motion gating; and `DataTableRowCount` / `DataTablePageCount` stay single-line (`shrink-0 whitespace-nowrap tabular-nums`) beside `DataTablePagination` (`w-auto flex-1`).
+- **`Pagination` prop forwarding and stable page-size selector width.** `Pagination` / `KiraPagination` now strips `onPaginationChange` and other hook/configuration props before spreading native attributes onto `<nav>` (eliminating React unknown event handler warnings), and `PaginationSizeSelector` mirrors the selected page size in `placeholder` with `tabular-nums` and `min-w-[3ch]` to avoid trigger width jumps when opened.
+- **`KiraSelect` placeholder stability when opening.** Single-select `KiraSelect` now keeps the currently selected option's label as its input `placeholder` while open instead of flashing `"Select..."`, keeping content-sized triggers steady while preserving type-to-filter.
+- **`Spotlight` close-button layout and OS-aware shortcut hints.** Moved `Spotlight`'s close button into a dedicated flex header row beside the visible title label so initial input focus never overlaps it, honored custom `title` props in both label and `aria-label`, declared `@kira-kit/dialog` in `spotlight`'s registry dependencies, resolved `SpotlightItem` and footer keycaps through `Kbd` `keys` grammar, and exposed `aria-keyshortcuts` on `SpotlightTrigger`.
+- **`CommandDialog` breadcrumb close-button clearance.** Reserved trailing space on `command-breadcrumb` when nested pages are active in `CommandDialog` and applied end padding to `command-input-wrapper` only when no breadcrumb sits above it.
+- **`usePlatform` Client Hints detection and OS-aware `Kbd` demos.** `usePlatform` now prefers `navigator.userAgentData.platform` before falling back to `navigator.userAgent` (with `iOS` and `CrOS` support), and `Kbd` Variants and Sizes demos now use `<Kbd keys="mod+k" />` instead of hardcoded macOS `⌘K`.
+
 ## 0.6.0 — November 27, 2026
 
 ### Breaking

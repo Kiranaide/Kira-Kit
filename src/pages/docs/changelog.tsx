@@ -32,6 +32,62 @@ const COMMIT_HISTORY_URL = "https://github.com/Kiranaide/Kira-Kit/commits/main";
 
 const RELEASES: readonly Release[] = [
   {
+    version: "0.7.0",
+    date: "November 27, 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Site-wide Spotlight search (Cmd/Ctrl+K)",
+        description:
+          "Added a lazy-loaded global KiraSpotlight command palette across the docs site and landing header, backed by a shared site navigation index covering Docs, Layout, Components, and quick actions (theme toggle, GitHub) with scoped filtering and keyboard shortcut triggers.",
+      },
+      {
+        type: "added",
+        title:
+          "Sidebar workspace shell, print, and scroll-restoration guidance",
+        description:
+          "Updated the Sidebar usage example, usage notes, docs app layout, and router with h-dvh overflow-hidden, print:h-auto print:overflow-visible, #app-main, and TanStack Router scrollRestoration with scrollToTopSelectors: ['#app-main'].",
+      },
+      {
+        type: "fixed",
+        title:
+          "DataTable column labels, sticky bulk-action dock, and single-line footer counts",
+        description:
+          "columnLabel now resolves columnDef.meta.label, string headers, and titles registered by DataTableColumnHeader before falling back to Title-Cased IDs across DataTableColumnVisibility, announcements, resize handles, pinning menus, and range filters. DataTableBulkActions with sticky unmounts at 0 selected rows (0px dead space) and animates as a centered frosted bottom dock with reduced-motion gating, while DataTableRowCount and DataTablePageCount stay single-line beside DataTablePagination.",
+      },
+      {
+        type: "fixed",
+        title: "Pagination prop forwarding and stable page-size selector width",
+        description:
+          "Pagination and KiraPagination now omit onPaginationChange and other hook/configuration props before spreading native attributes onto <nav>, and PaginationSizeSelector mirrors the selected page size in placeholder with tabular numerals and min-w-[3ch].",
+      },
+      {
+        type: "fixed",
+        title: "KiraSelect placeholder stability on open",
+        description:
+          "Single-select KiraSelect now keeps the currently selected option's label as its input placeholder while open instead of flashing 'Select...', preventing trigger width shifts in content-sized controls.",
+      },
+      {
+        type: "fixed",
+        title: "Spotlight close-button layout and OS-aware shortcut hints",
+        description:
+          "Moved the Spotlight close button into a dedicated flex header row beside the visible title label, honored custom title props, declared @kira-kit/dialog in spotlight's registry dependencies, resolved SpotlightItem and footer keycaps through Kbd keys grammar, and exposed aria-keyshortcuts on SpotlightTrigger.",
+      },
+      {
+        type: "fixed",
+        title: "CommandDialog breadcrumb close-button clearance",
+        description:
+          "Reserved trailing space on command-breadcrumb when nested pages are active in CommandDialog and padded command-input-wrapper only when no breadcrumb sits above it.",
+      },
+      {
+        type: "fixed",
+        title: "usePlatform Client Hints detection and OS-aware Kbd demos",
+        description:
+          "usePlatform now prefers navigator.userAgentData.platform before falling back to navigator.userAgent, and Kbd Variants and Sizes demos now render keys='mod+k' instead of hardcoded macOS ⌘K.",
+      },
+    ],
+  },
+  {
     version: "0.6.0",
     date: "November 27, 2026",
     changes: [

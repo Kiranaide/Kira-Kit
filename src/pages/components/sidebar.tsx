@@ -1639,8 +1639,15 @@ export function WorkspaceLayout() {
   return (
     <ThemeProvider>
       <SidebarRouterProvider>
-        <SidebarProvider storageKey="acme-product-navigation" shortcutScope="global" className="flex h-dvh flex-col">
-          <header className="flex items-center gap-2 border-b p-3"><SidebarTrigger showOnDesktop />Product workspace</header>
+        <SidebarProvider
+          storageKey="acme-product-navigation"
+          shortcutScope="global"
+          className="flex h-dvh flex-col overflow-hidden print:h-auto print:overflow-visible"
+        >
+          <header className="flex shrink-0 items-center gap-2 border-b p-3">
+            <SidebarTrigger showOnDesktop />
+            Product workspace
+          </header>
           <div className="flex min-h-0 flex-1">
             <KiraSidebar title="Product" activeId={view} onNavigate={(item) => setView(item.id)} defaultPinnedIds={["cycle"]} sections={[
               { id: "work", label: "Your work", items: [
@@ -1648,7 +1655,9 @@ export function WorkspaceLayout() {
                 { id: "cycle", label: "Current cycle", icon: <IconCalendar />, keywords: ["sprint"] },
               ] },
             ]} />
-            <main className="min-w-0 flex-1 overflow-auto p-6">Current view: {view}</main>
+            <main id="app-main" className="min-w-0 flex-1 overflow-y-auto p-6 print:overflow-visible">
+              Current view: {view}
+            </main>
           </div>
         </SidebarProvider>
       </SidebarRouterProvider>
@@ -1983,6 +1992,14 @@ const sidebarPageUsageNotes = [
   {
     label: "SidebarRouterProvider",
     body: "Wrap your app in SidebarRouterProvider to bind TanStack Router, Next.js, or React Router links; without it, SidebarItem uses native anchors.",
+  },
+  {
+    label: "Workspace shell & printing",
+    body: "Give the outer layout h-dvh overflow-hidden and min-h-0 on flex wrappers so SidebarContent and <main> scroll independently while header and footer stay pinned. Add print:h-auto print:overflow-visible on the shell and print:overflow-visible on <main> so Ctrl+P prints all pages instead of clipping to the viewport.",
+  },
+  {
+    label: "Route scroll restoration",
+    body: "Because <main> scrolls instead of window, configure your router to reset it on navigation (for example, TanStack Router scrollRestoration: true with scrollToTopSelectors: ['#app-main']).",
   },
 ] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
 

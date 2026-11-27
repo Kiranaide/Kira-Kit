@@ -705,6 +705,8 @@ const routeTree = rootRoute.addChildren([
 export const router = createRouter({
   routeTree,
   defaultPreload: "intent",
+  scrollRestoration: true,
+  scrollToTopSelectors: ["#app-main"],
   // Crossfade only real client navigations; never trigger on initial load.
   defaultViewTransition: supportsViewTransitionTypes() && {
     types: ({ fromLocation, pathChanged }) =>

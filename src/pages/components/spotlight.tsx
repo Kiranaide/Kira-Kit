@@ -372,7 +372,7 @@ export default function SpotlightPage() {
       <PageHeader
         title="Spotlight"
         description="Find workspace resources, narrow your search, and recover from delayed or unavailable results."
-        version="v2.0.0"
+        version="v2.0.1"
       />
       <FeatureGrid
         features={spotlightPageFeatureGridFeatures}
@@ -818,6 +818,24 @@ const spotlightPageAPIReferenceSections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const spotlightPageChangelogEntries = [
+  {
+    version: "2.0.1",
+    date: "27 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Close button alignment and input focus ring overlap",
+        description:
+          "Moved the Spotlight close button into a dedicated flex header row alongside the visible title label so initial input focus never overlaps the close button, and honored custom title props in both the label and aria-label.",
+      },
+      {
+        type: "fixed",
+        title: "OS-aware shortcut hints",
+        description:
+          "Resolved SpotlightItem shortcut tokens and footer Enter keycap through Kbd keys grammar so modifier badges adapt to Windows, Linux, and macOS, and exposed aria-keyshortcuts on SpotlightTrigger when showShortcut is enabled.",
+      },
+    ],
+  },
   {
     version: "2.0.0",
     date: "13 November 2026",

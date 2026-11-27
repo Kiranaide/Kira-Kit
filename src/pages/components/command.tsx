@@ -1392,7 +1392,7 @@ export default function CommandPage() {
       <PageHeader
         title="Command"
         description="Searchable actions for the current task, with clear execution and recovery."
-        version="v2.0.1"
+        version="v2.0.2"
       />
 
       <FeatureGrid
@@ -2060,6 +2060,18 @@ const commandPageAPISections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const commandPageChangelogEntries = [
+  {
+    version: "2.0.2",
+    date: "27 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Breadcrumb close-button clearance in CommandDialog",
+        description:
+          "Reserved trailing space on command-breadcrumb when nested pages are active in CommandDialog and only padded command-input-wrapper when no breadcrumb sits above it.",
+      },
+    ],
+  },
   {
     version: "2.0.1",
     date: "26 November 2026",

@@ -26,7 +26,7 @@ import {
 } from "@/hooks/use-pagination";
 import { KiraSelect } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import { isStringProp } from "@/lib/component-utils";
+import { isStringProp, omitComponentProps } from "@/lib/component-utils";
 
 const paginationNavigationIcons = {
   first: IconChevronsLeft,
@@ -571,7 +571,10 @@ function PaginationSizeSelector({
   const selectId = id ?? generatedId;
   const suffixId = `${selectId}-suffix`;
 
-  const { sizes, selected } = paginationSizeChoices(options, context);
+  const { sizes, selected, selectedLabel } = paginationSizeChoices(
+    options,
+    context,
+  );
 
   return (
     <div
@@ -591,11 +594,9 @@ function PaginationSizeSelector({
         id={selectId}
         name={name}
         data-slot="pagination-size-control"
-        options={sizes.map((value) => ({
-          value: String(value),
-          label: context?.formatNumber(value) ?? String(value),
-        }))}
+        options={sizes}
         value={String(selected)}
+        placeholder={selectedLabel}
         disabled={paginationUnavailable(disabled, context)}
         aria-label={ariaLabel ?? label}
         aria-describedby={paginationDescription(
@@ -606,8 +607,8 @@ function PaginationSizeSelector({
         size="xs"
         className={cn(
           "w-fit max-w-full motion-reduce:transition-none pointer-coarse:min-h-11",
-          "**:data-[slot=select-field-input]:w-[5ch] **:data-[slot=select-field-input]:flex-none",
-          "supports-[field-sizing:content]:**:data-[slot=select-field-input]:w-auto supports-[field-sizing:content]:[&_[data-slot=select-field-input]]:field-sizing-content",
+          "**:data-[slot=select-field-input]:w-[5ch] **:data-[slot=select-field-input]:flex-none **:data-[slot=select-field-input]:tabular-nums",
+          "supports-[field-sizing:content]:**:data-[slot=select-field-input]:w-auto supports-[field-sizing:content]:**:data-[slot=select-field-input]:min-w-[3ch] supports-[field-sizing:content]:[&_[data-slot=select-field-input]]:field-sizing-content",
           "**:data-[slot=select-field-clear]:hidden",
         )}
         onChange={(value) => {
@@ -646,7 +647,10 @@ function paginationSizeChoices(
   options: readonly number[],
   context: PaginationContextValue | null,
 ) {
-  const sizes = Array.from(
+  const format = (value: number) =>
+    context?.formatNumber(value) ?? String(value);
+
+  const values = Array.from(
     new Set(
       [...options, context?.pageSize ?? 10].filter(
         (value) => Number.isSafeInteger(value) && value > 0,
@@ -654,7 +658,16 @@ function paginationSizeChoices(
     ),
   );
 
-  return { sizes, selected: context?.pageSize ?? sizes[0] ?? 10 };
+  const selected = context?.pageSize ?? values[0] ?? 10;
+
+  return {
+    sizes: values.map((value) => ({
+      value: String(value),
+      label: format(value),
+    })),
+    selected,
+    selectedLabel: format(selected),
+  };
 }
 
 interface PaginationJumpProps extends Omit<
@@ -1278,17 +1291,42 @@ function PaginationErrorView2({
   );
 }
 
+// SAFETY: Lists non-DOM pagination options omitted before spreading onto <nav>.
+const PAGINATION_DOM_OMIT_KEYS = [
+  "className",
+  "children",
+  "id",
+  "error",
+  "onRetry",
+  "disabledReason",
+  "disabled",
+  "loading",
+  "loadingText",
+  "controlsId",
+  "locale",
+  "size",
+  "variant",
+  "color",
+  "total",
+  "defaultTotal",
+  "pageSize",
+  "defaultPageSize",
+  "defaultPage",
+  "page",
+  "onPageChange",
+  "onPageSizeChange",
+  "onTotalChange",
+  "onPaginationChange",
+  "maxPages",
+  "keepInBounds",
+  "aria-label",
+] as const;
+
 function usePaginationModel(input: PaginationProps) {
-  const {
-    className,
-    children,
-    id,
-    error,
-    onRetry,
-    disabledReason,
-    pageSize,
-    ...props
-  } = input;
+  const { className, children, id, error, onRetry, disabledReason, pageSize } =
+    input;
+
+  const props = omitComponentProps(input, PAGINATION_DOM_OMIT_KEYS);
 
   const presentation = usePaginationPresentation(input);
   const generatedId = React.useId();
