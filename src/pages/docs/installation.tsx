@@ -295,7 +295,7 @@ function SetupPathPicker({
             icon={<IconTerminal2 className="size-3" aria-hidden />}
             className="font-mono text-[11px] text-muted-foreground"
           >
-            Node.js 22+ · Bun 1.x
+            Node.js 22.12.0+ · Bun 1.x
           </Badge>
         </div>
       </CardContent>

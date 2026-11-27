@@ -10,6 +10,7 @@ with Changesets; per-component history lives on each component's docs page.
 
 ### Breaking
 
+- **CLI runtime floor.** The next CLI release declares Node.js 22.12.0 as the minimum.
 - **Input, Badge, Layout, and Sidebar architectural realignments.** Extracted `otp-input`, `rating`, and `theme-provider` into standalone registry items; removed `InputWithLabel`, `InputWithButton`, `InputWithTooltip`, `InputWithDropdown`, `InputCluster`, `OTPInput`, `Rating`, and `RatingDisplay` from `input.tsx` (breaking the `input ↔ field` cycle; 10 → 1 transitive dep); removed duplicate `TagInput` from `badge.tsx` and `IconButtonWithTooltip` from `button.tsx`; stripped `loading`/`error`/`onRetry` (`Skeleton` + `Button`) from `KiraContainer`, `KiraGrid`, `KiraStack`, and `KiraSpacer` so layout primitives remain pure leaves; and renamed `badgeVariants` → `sidebarBadgeVariants` in `sidebar.tsx`.
 - **Native install engine — no external CLI.** init, add, build, list, view, search, theme, and migrate now run on a self-contained registry client. init installs the kit's own base CSS and default theme with no base-theme picker; add --all installs components, hooks, and lib modules (themes and styles are excluded). React 19.2+ is required and enforced by init.
 

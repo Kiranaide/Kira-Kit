@@ -85,10 +85,13 @@ public/docs/         Generated per-item agent docs + llms.txt
 
 ## Development
 
-Requires [Bun](https://bun.sh). The CLI additionally targets Node 22+.
+Use [Bun](https://bun.sh) 1.4.4 for development and Node 24 LTS for the
+build tooling. The published CLI supports Node.js 22.12.0 and later.
 
 ```bash
-bun install && bun run dev      # Dev server (showcase site)
+bun install --frozen-lockfile
+(cd packages/cli && bun install --frozen-lockfile)
+bun run dev                     # Dev server (showcase site)
 bun run build                   # Full: registry build → checks → vite build
 bun run registry:build          # Rebuild public/r + themes + docs only
 bun run check                   # oxlint + tsc + prettier
@@ -99,7 +102,7 @@ CLI development (tests live in `packages/cli`):
 
 ```bash
 cd packages/cli
-bun install
+bun install --frozen-lockfile
 bun run test       # vitest
 bun run typecheck
 bun run build      # tsdown → dist/index.mjs
@@ -118,10 +121,8 @@ inline:
 // kira-kit-ignore target-size: decorative icon, no pointer target needed
 ```
 
-See `COMPONENT-UPGRADE-PLAYBOOK.md` §8 for the full check catalog,
-`packages/cli/README.md` for CLI usage, and `docs/cli-reference.md` for the
-complete flag-by-flag reference — the same file the site's `/docs/cli` page
-links to.
+See the [CLI README](packages/cli/README.md) for its check catalog and the
+[CLI documentation](https://kira-kit.vercel.app/docs/cli) for command examples.
 
 ## Deployment
 

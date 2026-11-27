@@ -20,16 +20,15 @@ theme tokens into your global CSS. No other CLI is involved.
 
 ## Requirements
 
-- Node.js 22+ (or Bun 1.x)
+- Node.js 22.12.0 or later (or Bun 1.x)
 - Consumer projects: React 19.2+ (components use `useEffectEvent`), Tailwind
   CSS v4, TypeScript path aliases (`@/*`)
 
 ## Usage
 
-The per-command notes below cover the common calls. For every flag, its
-default, what each command writes, and where `--help` disagrees with the code,
-see the full reference at [`docs/cli-reference.md`](../../docs/cli-reference.md)
-in the repository.
+The notes below cover common commands. Run `kira-kit <command> --help` for
+the flags supported by the installed CLI. See the
+[CLI documentation](https://kira-kit.vercel.app/docs/cli) for more examples.
 
 ### `kira-kit init`
 

@@ -37,6 +37,12 @@ const RELEASES: readonly Release[] = [
     date: "In development",
     changes: [
       {
+        type: "breaking",
+        title: "CLI runtime floor",
+        description:
+          "The next CLI release declares Node.js 22.12.0 as the minimum supported Node version.",
+      },
+      {
         type: "added",
         title: "TanStack Form integration example",
         description:
