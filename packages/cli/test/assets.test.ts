@@ -8,7 +8,6 @@ import {
   UTILITIES_CSS,
 } from "../src/generated/assets";
 import { buildBaseCss, defaultThemeItem } from "../src/core/css/stylesheet";
-import { TEMPLATE_CSS_TARGETS } from "../src/core/css/assets-sync";
 
 const REPO_ROOT = fileURLToPath(new URL("../../..", import.meta.url));
 
@@ -49,28 +48,4 @@ describe("embedded assets drift guard", () => {
       '--font-mono: "Geist Mono Variable", ui-monospace, monospace;',
     );
   });
-});
-
-const TEMPLATES_ROOT = join(REPO_ROOT, "packages/cli/templates");
-
-function readNormalized(path: string): string {
-  return readFileSync(path, "utf-8").replaceAll("\r\n", "\n");
-}
-
-describe("template CSS drift guard", () => {
-  it.each(TEMPLATE_CSS_TARGETS)(
-    "$css ships the kit base CSS + clean consumer utilities",
-    (target) => {
-      expect(readNormalized(join(TEMPLATES_ROOT, target.css))).toBe(
-        buildBaseCss(indexCss, target.utilitiesImport),
-      );
-
-      const templateUtilities = readNormalized(
-        join(TEMPLATES_ROOT, target.utilities),
-      );
-
-      expect(templateUtilities).toBe(utilities);
-      expect(templateUtilities).not.toMatch(/\.docs-/);
-    },
-  );
 });

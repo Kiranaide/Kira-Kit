@@ -462,11 +462,14 @@ export async function init(options: InitOptions): Promise<number> {
   ensureKiraConfig(cwd, selection, runtime);
   writeBaseCss(cwd, options, selection, selection.hasRequestedFonts);
   applyProjectSetup(cwd, runtime);
-  await installBaseDeps(cwd, options, selection, runtime);
-  await applyIconLibrary(cwd, selection.iconLibrary, {
-    yes: options.yes,
-    installer: options.installer,
-  });
+
+  if (!options.skipDeps) {
+    await installBaseDeps(cwd, options, selection, runtime);
+    await applyIconLibrary(cwd, selection.iconLibrary, {
+      yes: options.yes,
+      installer: options.installer,
+    });
+  }
 
   if (options.preset) return applyPreset(cwd, options, selection);
 

@@ -32,6 +32,30 @@ const COMMIT_HISTORY_URL = "https://github.com/Kiranaide/Kira-Kit/commits/main";
 
 const RELEASES: readonly Release[] = [
   {
+    version: "0.7.1",
+    date: "November 27, 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "kira-kit create delegates to official upstream scaffolders",
+        description:
+          "Replaced the bundled static starter templates (vite, next, tanstack-start, monorepo) with create-vite, create-next-app, create-astro, and @tanstack/cli followed by kira-kit init. Dropped the monorepo template and added astro.",
+      },
+      {
+        type: "fixed",
+        title: "Cleared Socket.dev tarball alerts on kira-kit",
+        description:
+          "Removed bundled template package.json manifests from the published CLI tarball (3 files total: README.md, dist/index.mjs, package.json) so scanners no longer attribute Next.js template postcss CVEs or caniuse-lite alerts to kira-kit.",
+      },
+      {
+        type: "fixed",
+        title: "TanStack Start stylesheet detection and --no-install create",
+        description:
+          "Added src/styles.css to CSS path auto-detection and added skipDeps support to init so kira-kit create --no-install wires config, CSS, and bundler setup without invoking a package manager.",
+      },
+    ],
+  },
+  {
     version: "0.7.0",
     date: "November 27, 2026",
     changes: [

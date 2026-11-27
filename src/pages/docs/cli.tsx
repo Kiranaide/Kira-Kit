@@ -13,7 +13,7 @@ const CLI_REFERENCE_URL = "https://www.npmjs.com/package/kira-kit";
 const commands = [
   {
     command: "create [dir]",
-    purpose: "Scaffold Vite, Next.js, TanStack Start, or a monorepo.",
+    purpose: "Scaffold Vite, Next.js, Astro, or TanStack Start.",
   },
   {
     command: "init",
