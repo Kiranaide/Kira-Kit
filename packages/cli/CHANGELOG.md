@@ -1,5 +1,13 @@
 # kira-kit
 
+## 0.7.1
+
+### Patch Changes
+
+- Removed bundled starter templates (`packages/cli/templates/`) from the published npm tarball (`files: ["dist"]`) so package scanners (such as Socket.dev) no longer attribute template `package.json` manifests (`next@15.5.x` / `postcss@8.4.31` CVEs and `caniuse-lite` alerts) to `kira-kit`.
+- Rewrote `kira-kit create` to delegate scaffolding to the official upstream framework CLIs (`create-vite`, `create-next-app`, `create-astro`, and `@tanstack/cli`) and run `kira-kit init` on top (supporting `vite`, `next`, `astro`, and `tanstack-start`, and dropping the static `monorepo` template).
+- Added `skipDeps` support to `kira-kit init` for `--no-install` create runs and added `src/styles.css` to CSS path detection for TanStack Start projects.
+
 ## 0.7.0
 
 ### Patch Changes

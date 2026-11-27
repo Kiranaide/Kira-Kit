@@ -195,9 +195,7 @@ export function buildRegistry(options: {
   const synced = syncEmbeddedAssets(repoRoot);
 
   if (synced.assetsWritten) {
-    success(
-      `Synced embedded CLI CSS assets and ${synced.templatesSynced} template(s).`,
-    );
+    success("Synced embedded CLI CSS assets.");
   }
 
   return 0;

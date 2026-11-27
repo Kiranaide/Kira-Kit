@@ -120,12 +120,15 @@ const configuredRows: Record<
 };
 
 const templates = [
-  { name: "next", description: "Next.js App Router" },
+  { name: "next", description: "Next.js App Router (create-next-app)" },
+  {
+    name: "astro",
+    description: "Astro with React & Tailwind v4 (create-astro)",
+  },
   {
     name: "tanstack-start",
-    description: "Full-stack TanStack Start with route transitions",
+    description: "Full-stack TanStack Start (@tanstack/cli)",
   },
-  { name: "monorepo", description: "Separate app and shared UI packages" },
 ];
 
 const troubleshooting = [

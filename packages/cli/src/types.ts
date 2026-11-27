@@ -64,6 +64,8 @@ export interface InitOptions {
   icon?: string;
   force: boolean;
   yes: boolean;
+  /** Skip installing npm packages (used by `create --no-install`). */
+  skipDeps?: boolean;
   /** Injectable package installer (tests); defaults to the detected PM. */
   installer?: DepInstaller;
 }
@@ -93,6 +95,14 @@ export interface CheckOptions {
   cwd?: string;
 }
 
+export interface ScaffoldInvocation {
+  command: string;
+  args: string[];
+  cwd: string;
+  /** True when the upstream scaffolder already ran dependency installation. */
+  installedDeps: boolean;
+}
+
 export interface CreateOptions {
   dir?: string;
   cwd?: string;
@@ -100,6 +110,10 @@ export interface CreateOptions {
   install: boolean;
   git: boolean;
   yes: boolean;
+  /** Injectable upstream scaffolder runner (tests); defaults to spawning the PM execute command. */
+  scaffolder?: (invocation: ScaffoldInvocation) => Promise<void>;
+  /** Injectable post-scaffold Kira Kit initializer (tests); defaults to `init`. */
+  initProject?: (options: InitOptions) => Promise<number>;
   /** Injectable package installer (tests); defaults to the detected PM. */
   installer?: DepInstaller;
   /** Injectable git initializer (tests); defaults to `git init`. */
