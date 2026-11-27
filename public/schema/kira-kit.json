@@ -5,58 +5,52 @@
     "$schema": {
       "type": "string"
     },
-    "style": {
+    "css": {
       "type": "string"
     },
     "rsc": {
       "type": "boolean"
     },
-    "tsx": {
-      "type": "boolean"
+    "iconLibrary": {
+      "type": "string"
     },
-    "tailwind": {
+    "theme": {
       "type": "object",
       "properties": {
-        "css": {
+        "preset": {
+          "type": "string"
+        },
+        "primary": {
           "type": "string"
         },
         "baseColor": {
           "type": "string"
         },
-        "cssVariables": {
-          "type": "boolean"
+        "font": {
+          "type": "string"
+        },
+        "fontDisplay": {
+          "type": "string"
+        },
+        "fontMono": {
+          "type": "string"
+        },
+        "fontPreset": {
+          "type": "string"
+        },
+        "radius": {
+          "type": "string"
+        },
+        "surface": {
+          "type": "string"
         }
       },
       "additionalProperties": {}
-    },
-    "iconLibrary": {
-      "type": "string"
-    },
-    "font": {
-      "type": "string"
-    },
-    "fontDisplay": {
-      "type": "string"
-    },
-    "fontMono": {
-      "type": "string"
-    },
-    "fontPreset": {
-      "type": "string"
-    },
-    "radius": {
-      "type": "string"
-    },
-    "surface": {
-      "type": "string"
     },
     "aliases": {
       "type": "object",
       "properties": {
         "components": {
-          "type": "string"
-        },
-        "utils": {
           "type": "string"
         },
         "ui": {

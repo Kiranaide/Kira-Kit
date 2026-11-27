@@ -1,0 +1,21 @@
+{
+  "$schema": "https://kira-kit.vercel.app/schema/kira-kit.json",
+  "css": "src/index.css",
+  "rsc": false,
+  "iconLibrary": "tabler",
+  "theme": {
+    "preset": "default",
+    "baseColor": "neutral",
+    "font": "geist",
+    "fontMono": "geist-mono"
+  },
+  "aliases": {
+    "components": "@/components",
+    "ui": "@/components/ui",
+    "hooks": "@/hooks",
+    "lib": "@/lib"
+  },
+  "registries": {
+    "@kira-kit": "https://kira-kit.vercel.app/r/{name}.json"
+  }
+}
