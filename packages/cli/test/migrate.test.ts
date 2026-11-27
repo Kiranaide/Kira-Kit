@@ -1,4 +1,5 @@
 import {
+  existsSync,
   mkdtempSync,
   mkdirSync,
   readFileSync,
@@ -34,6 +35,13 @@ function writeLegacyProjectFixture(dir: string): void {
       {
         $schema: "https://ui.shadcn.com/schema.json",
         style: "default",
+        tsx: true,
+        tailwind: {
+          config: "",
+          css: "src/app.css",
+          baseColor: "stone",
+          cssVariables: true,
+        },
         registryUrl: "https://example.com/r",
         aliases: {
           components: "@/components",
@@ -78,7 +86,7 @@ afterEach(() => {
 });
 
 describe("migrateProject config & codemod", () => {
-  it("throws ValidationError when components.json is missing", async () => {
+  it("throws ValidationError when neither kira-kit.json nor components.json exists", async () => {
     const dir = makeTempProject();
 
     await expect(
@@ -86,7 +94,7 @@ describe("migrateProject config & codemod", () => {
     ).rejects.toThrow(ValidationError);
   });
 
-  it("rewrites legacy cn imports, aliases.lib, registryUrl, and $schema when cwd !== process.cwd()", async () => {
+  it("converts legacy components.json to flat kira-kit.json and rewrites cn imports", async () => {
     const dir = makeTempProject();
     writeLegacyProjectFixture(dir);
 
@@ -106,21 +114,31 @@ describe("migrateProject config & codemod", () => {
     });
 
     expect(outcome.configUpdated).toBe(true);
+    expect(outcome.removedLegacyConfig).toBe(true);
     expect(outcome.rewrittenFiles).toBe(2);
     expect(outcome.installedCn).toBe(true);
     expect(installed).toEqual([{ cwd: dir, deps: ["cn"] }]);
+    expect(existsSync(join(dir, "components.json"))).toBe(false);
+    expect(existsSync(join(dir, "kira-kit.json"))).toBe(true);
 
     const updatedConfig = JSON.parse(
-      readFileSync(join(dir, "components.json"), "utf-8"),
+      readFileSync(join(dir, "kira-kit.json"), "utf-8"),
     );
 
+    expect(updatedConfig.$schema).toBe(
+      "https://kira-kit.vercel.app/schema/kira-kit.json",
+    );
+    expect(updatedConfig.css).toBe("src/app.css");
+    expect(updatedConfig.theme.baseColor).toBe("stone");
+    expect(updatedConfig.tailwind).toBeUndefined();
+    expect(updatedConfig.style).toBeUndefined();
+    expect(updatedConfig.tsx).toBeUndefined();
     expect(updatedConfig.registryUrl).toBeUndefined();
     expect(updatedConfig.registries["@kira-kit"]).toBe(
       "https://example.com/r/{name}.json",
     );
     expect(updatedConfig.aliases.lib).toBe("@/lib");
-    expect(updatedConfig.style).toBe("kira");
-    expect(updatedConfig.$schema).toContain("kira");
+    expect(updatedConfig.aliases.utils).toBeUndefined();
 
     const button = readFileSync(join(dir, "src", "button.tsx"), "utf-8");
 
@@ -135,6 +153,32 @@ describe("migrateProject config & codemod", () => {
     expect(card).toContain('import { cn } from "cn";');
     expect(card).toContain('const a = cn("x", { y: true });');
   });
+
+  it("keeps a non-Kira components.json intact while creating kira-kit.json", async () => {
+    const dir = makeTempProject();
+
+    writeFileSync(
+      join(dir, "components.json"),
+      JSON.stringify({
+        style: "new-york",
+        tailwind: { css: "src/globals.css", baseColor: "zinc" },
+      }),
+    );
+
+    const outcome = await runMigration({ cwd: dir, dryRun: false, yes: true });
+
+    expect(outcome.configUpdated).toBe(true);
+    expect(outcome.removedLegacyConfig).toBe(false);
+    expect(existsSync(join(dir, "components.json"))).toBe(true);
+    expect(existsSync(join(dir, "kira-kit.json"))).toBe(true);
+
+    const migrated = JSON.parse(
+      readFileSync(join(dir, "kira-kit.json"), "utf-8"),
+    );
+
+    expect(migrated.css).toBe("src/globals.css");
+    expect(migrated.theme.baseColor).toBe("zinc");
+  });
 });
 
 describe("migrateProject dry-run & divergence", () => {
@@ -143,8 +187,9 @@ describe("migrateProject dry-run & divergence", () => {
 
     const initialConfig = JSON.stringify(
       {
-        style: "kira",
-        aliases: { lib: "@/lib", utils: "@/lib/utils" },
+        $schema: "https://kira-kit.vercel.app/schema/kira-kit.json",
+        css: "src/index.css",
+        aliases: { lib: "@/lib" },
         registries: {
           "@kira-kit": "https://kira-kit.vercel.app/r/{name}.json",
         },
@@ -153,7 +198,7 @@ describe("migrateProject dry-run & divergence", () => {
       2,
     );
 
-    writeFileSync(join(dir, "components.json"), initialConfig);
+    writeFileSync(join(dir, "kira-kit.json"), initialConfig);
     writeFileSync(
       join(dir, "src", "helper.ts"),
       'import clsx from "clsx";\nexport const x = clsx("a");\n',
@@ -165,13 +210,14 @@ describe("migrateProject dry-run & divergence", () => {
       yes: true,
     });
 
+    expect(outcome.plan.facts.fromLegacyConfigFile).toBe(false);
     expect(outcome.plan.facts.legacyAlias).toBe(false);
     expect(outcome.plan.cnRewrites).toHaveLength(1);
     expect(outcome.rewrittenFiles).toBe(0);
     expect(readFileSync(join(dir, "src", "helper.ts"), "utf-8")).toContain(
       'from "clsx"',
     );
-    expect(readFileSync(join(dir, "components.json"), "utf-8")).toBe(
+    expect(readFileSync(join(dir, "kira-kit.json"), "utf-8")).toBe(
       initialConfig,
     );
   });
@@ -180,9 +226,10 @@ describe("migrateProject dry-run & divergence", () => {
     const dir = makeTempProject();
 
     writeFileSync(
-      join(dir, "components.json"),
+      join(dir, "kira-kit.json"),
       JSON.stringify({
-        style: "kira",
+        $schema: "https://kira-kit.vercel.app/schema/kira-kit.json",
+        css: "src/index.css",
         registries: {
           "@kira-kit": "https://kira-kit.vercel.app/r/{name}.json",
         },
