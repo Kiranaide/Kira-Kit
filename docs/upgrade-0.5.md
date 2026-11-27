@@ -20,6 +20,9 @@ published `0.5.0` commands below once that version is available.
   in a separate Git branch and reapply your edits to the new sources.
   Remove legacy files only after checking that your app no longer imports
   them. A mixed tree of old and new components can fail to compile.
+- For example, some 0.4 installs pulled in `toast` alongside `button`.
+  If you still use both items, include both in the reviewed update, then
+  reapply your local changes and run the consumer build.
 - Update scripts that fetch `/r/index.json` to fetch `/r/registry.json`.
   If your config uses the legacy `registryUrl` field, review
   `npx kira-kit@0.5.0 migrate --dry-run` before applying it.

@@ -85,7 +85,7 @@ async function verifyConsumer(
   assert.equal(await readFile(componentPath, "utf8"), original);
 
   if (legacyRegistry !== undefined) {
-    await $`node ${cli} add ${item} --cwd ${project} --overwrite --yes`;
+    await $`node ${cli} add ${item} toast --cwd ${project} --overwrite --yes`;
     assert.ok(!(await readFile(componentPath, "utf8")).includes(customSource));
     await appendFile(componentPath, customSource);
     await $`node ${cli} add color-picker --cwd ${project} --yes`;
