@@ -86,7 +86,7 @@ async function applyPrimaryTheme(
     { items: [themePayload(generated.item)] },
     { cwd, yes: true, overwrite: true, skipDeps: true },
   );
-  persistThemeConfig(cwd, selection, "neutral");
+  persistThemeConfig(cwd, selection, { primary, defaultBaseColor: "neutral" });
   await applyTypography(cwd, selection, options.installer);
   success("Theme applied.");
 

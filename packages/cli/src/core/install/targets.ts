@@ -1,7 +1,7 @@
 import { dirname, join, resolve } from "node:path";
 import ts from "typescript";
 import { warning } from "../../lib/logger";
-import type { ComponentsConfig } from "../../types";
+import type { KiraConfig } from "../../types";
 import type { ImportAliases } from "./transform";
 
 export const DEFAULT_ALIASES = {
@@ -9,7 +9,6 @@ export const DEFAULT_ALIASES = {
   ui: "@/components/ui",
   hooks: "@/hooks",
   lib: "@/lib",
-  utils: "@/lib/utils",
 } satisfies ImportAliases;
 
 /** Absolute consumer directories for each alias root. */
@@ -89,7 +88,7 @@ function aliasToDir(
   return resolve(cwd, "src", alias.replace(/^@\/?/, ""));
 }
 
-export function importAliases(config: ComponentsConfig | null): ImportAliases {
+export function importAliases(config: KiraConfig | null): ImportAliases {
   const configured = config?.aliases ?? {};
 
   return {
@@ -97,14 +96,13 @@ export function importAliases(config: ComponentsConfig | null): ImportAliases {
     ui: configured.ui ?? DEFAULT_ALIASES.ui,
     hooks: configured.hooks ?? DEFAULT_ALIASES.hooks,
     lib: configured.lib ?? DEFAULT_ALIASES.lib,
-    utils: configured.utils ?? DEFAULT_ALIASES.utils,
   };
 }
 
 /** Resolve alias roots from tsconfig paths; fall back to @/ → src/. */
 export function resolveAliasRoots(
   cwd: string,
-  config: ComponentsConfig | null,
+  config: KiraConfig | null,
 ): AliasRoots {
   const paths = readPaths(cwd);
 

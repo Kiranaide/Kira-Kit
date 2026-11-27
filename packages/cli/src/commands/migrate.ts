@@ -10,27 +10,31 @@ import type { MigrateOptions } from "../types";
 function printDryRun(facts: MigrationFacts, cnRewrites: ImportRewrite[]): void {
   console.log("Dry run — no files will be modified:\n");
 
+  if (facts.fromLegacyConfigFile) {
+    console.log("  components.json → kira-kit.json: convert legacy config");
+  }
+
   if (facts.hadLegacyRegistryUrl) {
     console.log(
-      `  components.json: remove "registryUrl" (legacy), add "registries['@kira-kit']"`,
+      `  kira-kit.json: remove "registryUrl" (legacy), add "registries['@kira-kit']"`,
     );
-  } else if (facts.alreadyHasNamespace) {
-    console.log("  components.json: already up to date");
-  } else {
-    console.log(`  components.json: add "registries['@kira-kit']"`);
+  } else if (facts.alreadyHasNamespace && !facts.fromLegacyConfigFile) {
+    console.log("  kira-kit.json: already up to date");
+  } else if (!facts.alreadyHasNamespace) {
+    console.log(`  kira-kit.json: add "registries['@kira-kit']"`);
   }
 
   if (facts.legacyAlias) {
-    console.log(`  components.json: update aliases.lib to "@/lib"`);
+    console.log(`  kira-kit.json: update aliases.lib to "@/lib"`);
   }
 
-  if (facts.legacySchema) {
+  if (facts.legacySchema || facts.legacyFields) {
     console.log(
-      `  components.json: replace the legacy $schema/style with kira values`,
+      "  kira-kit.json: normalize to the kira-kit schema (flatten css/baseColor, remove legacy keys)",
     );
   }
 
-  console.log(`  rewrite cn imports and calls to the \`cn\` npm package`);
+  console.log("  rewrite cn imports and calls to the `cn` npm package");
 
   for (const rewrite of cnRewrites) {
     console.log(`  ${rewrite.file}: "${rewrite.from}" → "${rewrite.to}"`);
@@ -72,9 +76,13 @@ export async function migrateProject(options: MigrateOptions): Promise<number> {
   }
 
   if (outcome.configUpdated) {
-    success("components.json updated (@kira-kit registry namespace)");
+    const suffix = outcome.removedLegacyConfig
+      ? " (migrated from components.json)"
+      : " (@kira-kit registry namespace)";
+
+    success(`kira-kit.json updated${suffix}`);
   } else {
-    info("components.json already has the @kira-kit registry (nothing to do)");
+    info("kira-kit.json is already up to date (nothing to do)");
   }
 
   if (outcome.rewrittenFiles > 0) {

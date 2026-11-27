@@ -2,8 +2,9 @@ import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   readRawConfig,
-  updateRawConfig,
-  type RawComponentsConfig,
+  updateThemeConfig,
+  type RawKiraConfig,
+  type RawKiraThemeConfig,
 } from "../../lib/config";
 import { ValidationError } from "../../lib/errors";
 import type { RegistryItemPayload } from "../../lib/schemas";
@@ -86,28 +87,27 @@ export function resolveBaseColorOption(
   return trimmed;
 }
 
-function pickFontSlots(flags: ThemeFlags, config: RawComponentsConfig) {
+function pickFontSlots(flags: ThemeFlags, theme: RawKiraThemeConfig) {
   const preset = flags.fontPreset
     ? resolveFontPreset(flags.fontPreset)
     : undefined;
 
   return {
-    sans: firstDefined([flags.font, preset?.sans, config.font]) ?? DEFAULT_SANS,
+    sans: firstDefined([flags.font, preset?.sans, theme.font]) ?? DEFAULT_SANS,
     mono:
-      firstDefined([flags.fontMono, preset?.mono, config.fontMono]) ??
+      firstDefined([flags.fontMono, preset?.mono, theme.fontMono]) ??
       DEFAULT_MONO,
-    display:
-      flags.fontDisplay ?? (preset ? preset.display : config.fontDisplay),
-    fontPreset: preset ? preset.name : config.fontPreset,
+    display: flags.fontDisplay ?? (preset ? preset.display : theme.fontDisplay),
+    fontPreset: preset ? preset.name : theme.fontPreset,
   };
 }
 
 function resolveTypographySelection(
   flags: ThemeFlags,
-  raw: RawComponentsConfig | null,
+  raw: RawKiraConfig | null,
 ) {
-  const config: RawComponentsConfig = raw ?? {};
-  const slots = pickFontSlots(flags, config);
+  const theme: RawKiraThemeConfig = raw?.theme ?? {};
+  const slots = pickFontSlots(flags, theme);
 
   const headingTracking = Object.values(FONT_PRESETS).find(
     (item) => item.name === slots.fontPreset,
@@ -120,7 +120,7 @@ function resolveTypographySelection(
     flags.fontMono,
   ];
 
-  const configFonts = [config.font, config.fontDisplay, config.fontMono];
+  const configFonts = [theme.font, theme.fontDisplay, theme.fontMono];
 
   return {
     sans: resolveFont("sans", slots.sans),
@@ -134,7 +134,7 @@ function resolveTypographySelection(
 }
 
 /**
- * Resolve theme, typography, geometry, and icon flags against `components.json`
+ * Resolve theme, typography, geometry, and icon flags against `kira-kit.json`
  * with one precedence contract shared by `init` and `theme`.
  */
 export function resolveThemeSelection(
@@ -160,7 +160,7 @@ export function resolveThemeSelection(
 }
 
 export function attachThemeConfigFields(
-  target: RawComponentsConfig,
+  target: RawKiraThemeConfig,
   selection: ResolvedThemeSelection,
 ): void {
   if (selection.display) target.fontDisplay = selection.display.name;
@@ -172,28 +172,40 @@ export function attachThemeConfigFields(
   if (selection.surface) target.surface = selection.surface.name;
 }
 
+export interface PersistThemeOptions {
+  defaultBaseColor?: BaseColorName;
+  preset?: string;
+  primary?: string;
+}
+
 export function persistThemeConfig(
   cwd: string,
   selection: ResolvedThemeSelection,
-  defaultBaseColor?: BaseColorName,
+  options: PersistThemeOptions = {},
 ): void {
   const raw = readRawConfig(cwd);
 
   if (!raw) return;
 
-  const patch: Partial<RawComponentsConfig> = {};
-  const nextBase = selection.baseColor ?? defaultBaseColor;
+  const patch: Partial<RawKiraThemeConfig> = {};
+  const nextBase = selection.baseColor ?? options.defaultBaseColor;
 
-  if (nextBase) {
-    patch.tailwind = { ...raw.tailwind, baseColor: nextBase };
+  if (options.preset) {
+    patch.preset = options.preset;
+    patch.primary = undefined;
+  } else if (options.primary) {
+    patch.primary = options.primary;
+    patch.preset = undefined;
   }
+
+  if (nextBase) patch.baseColor = nextBase;
 
   if (selection.radius) patch.radius = selection.radius.name;
 
   if (selection.surface) patch.surface = selection.surface.name;
 
   if (Object.keys(patch).length > 0) {
-    updateRawConfig(cwd, patch);
+    updateThemeConfig(cwd, patch);
   }
 }
 

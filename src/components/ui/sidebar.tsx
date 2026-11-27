@@ -3414,7 +3414,7 @@ function sidebarCallback(
 }
 
 function sidebarSetTimeout(
-  hoverTimer: React.RefObject<number | null>,
+  hoverTimer: React.RefObject<ReturnType<typeof setTimeout> | null>,
   navRef: React.RefObject<HTMLElement | null>,
   captureLayout: () => void,
   setIsHoverExpanded: React.Dispatch<React.SetStateAction<boolean>>,

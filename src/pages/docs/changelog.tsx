@@ -32,6 +32,24 @@ const COMMIT_HISTORY_URL = "https://github.com/Kiranaide/Kira-Kit/commits/main";
 
 const RELEASES: readonly Release[] = [
   {
+    version: "0.6.0",
+    date: "November 27, 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "Dedicated kira-kit.json config and Kira-native schema",
+        description:
+          "Replaced components.json and /schema/components.json with kira-kit.json and /schema/kira-kit.json, moving css to the top level, grouping theme settings (preset, primary, baseColor, font, fontDisplay, fontMono, fontPreset, radius, surface) under theme, and dropping obsolete keys (style, tsx, tailwind.*, aliases.utils). Run kira-kit migrate to convert existing projects automatically.",
+      },
+      {
+        type: "fixed",
+        title: "Full-stack @types/node timer ref compatibility",
+        description:
+          "Widened internal timer-ref annotations to ReturnType<typeof setTimeout> / ReturnType<typeof setInterval> across input, sidebar, announcement-bar, camera, and use-camera, and added a @types/node registry typecheck project to tsc -b.",
+      },
+    ],
+  },
+  {
     version: "0.5.0",
     date: "November 27, 2026",
     changes: [

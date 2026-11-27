@@ -31,16 +31,14 @@ function tempConsumer(extraConfig: { rsc?: boolean } = {}): string {
   tempDirs.push(dir);
 
   writeFileSync(
-    join(dir, "components.json"),
+    join(dir, "kira-kit.json"),
     JSON.stringify({
-      style: "kira",
-      tailwind: { css: "src/index.css" },
+      css: "src/index.css",
       aliases: {
         components: "@/components",
         ui: "@/components/ui",
         hooks: "@/hooks",
         lib: "@/lib",
-        utils: "@/lib/utils",
       },
       ...extraConfig,
     }),
@@ -253,7 +251,7 @@ describe("installItems (css and config)", () => {
     expect(css).toContain("--primary: oklch(0.8 0.1 22.3);");
   });
 
-  it("requires components.json", async () => {
+  it("requires kira-kit.json and guides legacy components.json users to migrate", async () => {
     const dir = mkdtempSync(join(tmpdir(), "kira-bare-"));
     tempDirs.push(dir);
 
@@ -262,7 +260,19 @@ describe("installItems (css and config)", () => {
         { items: [buttonPayload()] },
         { cwd: dir, yes: true, installer: fakeInstaller },
       ),
-    ).rejects.toThrow("No components.json");
+    ).rejects.toThrow("No kira-kit.json");
+
+    writeFileSync(
+      join(dir, "components.json"),
+      JSON.stringify({ style: "kira" }),
+    );
+
+    await expect(
+      installItems(
+        { items: [buttonPayload()] },
+        { cwd: dir, yes: true, installer: fakeInstaller },
+      ),
+    ).rejects.toThrow(/legacy components\.json/);
   });
 });
 

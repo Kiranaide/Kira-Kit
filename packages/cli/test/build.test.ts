@@ -182,7 +182,8 @@ describe("buildRegistry (integration)", () => {
 
     expect(widget.files[0]?.content).toContain("helperLabel");
     expect(existsSync(join(dir, "public/schema/registry.json"))).toBe(true);
-    expect(existsSync(join(dir, "public/schema/components.json"))).toBe(true);
+    expect(existsSync(join(dir, "public/schema/kira-kit.json"))).toBe(true);
+    expect(existsSync(join(dir, "public/schema/components.json"))).toBe(false);
     expect(readFileSync(join(dir, "public/llms.txt"), "utf-8")).toContain(
       "kira-kit add @kira-kit/",
     );

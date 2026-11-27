@@ -255,7 +255,7 @@ async function enumerateCameraDevices({
 }
 
 interface CancelCameraTimerContext {
-  timerRef: React.RefObject<number | null>;
+  timerRef: React.RefObject<ReturnType<typeof setInterval> | null>;
   mountedRef: React.RefObject<boolean>;
   setTimerRemaining: React.Dispatch<React.SetStateAction<number>>;
   setIsTimerActive: React.Dispatch<React.SetStateAction<boolean>>;
@@ -322,8 +322,8 @@ interface StopCameraStreamContext {
   startupRef: React.RefObject<Promise<void> | null>;
   cancelTimer: () => void;
   stopVoiceListening: () => void;
-  focusTimerRef: React.RefObject<number | null>;
-  captureFeedbackRef: React.RefObject<number | null>;
+  focusTimerRef: React.RefObject<ReturnType<typeof setTimeout> | null>;
+  captureFeedbackRef: React.RefObject<ReturnType<typeof setTimeout> | null>;
   streamRef: React.RefObject<MediaStream | null>;
   stopRecording: () => Promise<Blob | null>;
   videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -737,7 +737,7 @@ interface CaptureCameraFrameContext {
   captureQuality: number;
   enableHaptics: boolean;
   setStatus: React.Dispatch<React.SetStateAction<CameraStatus>>;
-  captureFeedbackRef: React.RefObject<number | null>;
+  captureFeedbackRef: React.RefObject<ReturnType<typeof setTimeout> | null>;
   requestRef: React.RefObject<number>;
   mountedRef: React.RefObject<boolean>;
   onCapture: ((result: CaptureResult) => void) | undefined;
@@ -1139,7 +1139,7 @@ function updateCameraZoom(
 }
 
 interface UnlockCameraFocusContext {
-  focusTimerRef: React.RefObject<number | null>;
+  focusTimerRef: React.RefObject<ReturnType<typeof setTimeout> | null>;
   setFocusPoint: React.Dispatch<React.SetStateAction<Point | null>>;
   setIsFocusing: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -1162,7 +1162,7 @@ interface FocusCameraAtContext {
   mountedRef: React.RefObject<boolean>;
   setFocusPoint: React.Dispatch<React.SetStateAction<Point | null>>;
   setIsFocusing: React.Dispatch<React.SetStateAction<boolean>>;
-  focusTimerRef: React.RefObject<number | null>;
+  focusTimerRef: React.RefObject<ReturnType<typeof setTimeout> | null>;
   setIsFocusSupported: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -1224,7 +1224,7 @@ function focusCameraAt(
 
 interface StartCameraTimerContext {
   streamRef: React.RefObject<MediaStream | null>;
-  timerRef: React.RefObject<number | null>;
+  timerRef: React.RefObject<ReturnType<typeof setInterval> | null>;
   timerDuration: CameraTimerDuration;
   capture: () => CaptureResult | null;
   setTimerRemaining: React.Dispatch<React.SetStateAction<number>>;
@@ -2061,7 +2061,7 @@ interface CameraSessionActionsContext {
   setError: React.Dispatch<React.SetStateAction<CameraError | null>>;
   onError: ((error: CameraError) => void) | undefined;
   setDevices: React.Dispatch<React.SetStateAction<MediaDeviceInfo[]>>;
-  timerRef: React.RefObject<number | null>;
+  timerRef: React.RefObject<ReturnType<typeof setInterval> | null>;
   setTimerRemaining: React.Dispatch<React.SetStateAction<number>>;
   setIsTimerActive: React.Dispatch<React.SetStateAction<boolean>>;
   recognitionRef: React.RefObject<CameraSpeechRecognition | null>;
@@ -2154,8 +2154,8 @@ interface CameraStopActionContext {
   startupRef: React.RefObject<Promise<void> | null>;
   cancelTimer: () => void;
   stopVoiceListening: () => void;
-  focusTimerRef: React.RefObject<number | null>;
-  captureFeedbackRef: React.RefObject<number | null>;
+  focusTimerRef: React.RefObject<ReturnType<typeof setTimeout> | null>;
+  captureFeedbackRef: React.RefObject<ReturnType<typeof setTimeout> | null>;
   streamRef: React.RefObject<MediaStream | null>;
   stopRecording: () => Promise<Blob | null>;
   videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -2340,7 +2340,7 @@ interface CameraCaptureActionsContext {
   captureQuality: number;
   enableHaptics: boolean;
   setStatus: React.Dispatch<React.SetStateAction<CameraStatus>>;
-  captureFeedbackRef: React.RefObject<number | null>;
+  captureFeedbackRef: React.RefObject<ReturnType<typeof setTimeout> | null>;
   requestRef: React.RefObject<number>;
   mountedRef: React.RefObject<boolean>;
   onCapture: ((result: CaptureResult) => void) | undefined;
@@ -2536,7 +2536,7 @@ function useCameraDeviceActions(context: CameraDeviceActionsContext) {
 interface CameraFocusAndTimerActionsContext {
   setZoom: (next: number) => void;
   zoomRef: React.RefObject<number>;
-  focusTimerRef: React.RefObject<number | null>;
+  focusTimerRef: React.RefObject<ReturnType<typeof setTimeout> | null>;
   setFocusPoint: React.Dispatch<React.SetStateAction<Point | null>>;
   setIsFocusing: React.Dispatch<React.SetStateAction<boolean>>;
   streamRef: React.RefObject<MediaStream | null>;
@@ -2544,7 +2544,7 @@ interface CameraFocusAndTimerActionsContext {
   requestRef: React.RefObject<number>;
   mountedRef: React.RefObject<boolean>;
   setIsFocusSupported: React.Dispatch<React.SetStateAction<boolean>>;
-  timerRef: React.RefObject<number | null>;
+  timerRef: React.RefObject<ReturnType<typeof setInterval> | null>;
   timerDuration: CameraTimerDuration;
   capture: () => CaptureResult | null;
   setTimerRemaining: React.Dispatch<React.SetStateAction<number>>;

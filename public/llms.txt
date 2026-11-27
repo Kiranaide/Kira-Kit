@@ -2,8 +2,8 @@
 
 > Enterprise UI kit built on Base UI primitives, 106 components and hooks.
 
-Kira Kit is a component registry. Install items with the kira-kit CLI:
-`kira-kit add @kira-kit/<name>`.
+Kira Kit is a standalone component registry with its own CLI (`kira-kit`) and `kira-kit.json` config.
+Install items with `npx kira-kit add <name>` or `bunx kira-kit add <name>` (or `kira-kit add @kira-kit/<name>`).
 
 Conventions:
 - Primitives: @base-ui/react (Base UI only — no Radix, no React Aria)

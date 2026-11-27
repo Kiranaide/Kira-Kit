@@ -40,7 +40,7 @@ async function verifyConsumer(
 
   const project = join(scratch, "consumer");
   await $`node ${cli} create ${project} --template vite --no-install --no-git --yes`;
-  const configPath = join(project, "components.json");
+  const configPath = join(project, "kira-kit.json");
   const config = await readFile(configPath, "utf8");
   const defaultRegistry = "https://kira-kit.vercel.app/r/{name}.json";
   assert.ok(config.includes(defaultRegistry));

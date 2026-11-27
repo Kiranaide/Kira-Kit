@@ -42,7 +42,7 @@ const steps: readonly {
   {
     title: "Connect the registry",
     description:
-      "Kira Kit stores the registry address, aliases, and theme settings in components.json.",
+      "Kira Kit stores the registry address, aliases, and theme settings in kira-kit.json.",
   },
   {
     title: "Add the pieces you need",

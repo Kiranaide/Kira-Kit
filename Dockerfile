@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
 
-# CLI dependencies (own node_modules; shadcn is pinned here)
+# CLI dependencies (own node_modules)
 COPY packages/cli/package.json packages/cli/bun.lock packages/cli/
 RUN cd packages/cli && bun install --frozen-lockfile
 

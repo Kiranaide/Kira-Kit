@@ -1,13 +1,15 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import {
-  KIRA_NAMESPACE,
+  CONFIG_FILENAME,
   DEFAULT_REGISTRY_URL,
+  KIRA_NAMESPACE,
   readRawConfig,
   upsertKiraRegistry,
-  type RawComponentsConfig,
+  type RawKiraConfig,
+  type RawKiraThemeConfig,
 } from "../lib/config";
-import { COMPONENTS_SCHEMA_URL } from "../core/registry/build";
+import { KIRA_CONFIG_SCHEMA_URL } from "../core/registry/build";
 import { BASE_CSS, UTILITIES_CSS } from "../generated/assets";
 import { ensureNpmDeps, readConsumerPackage } from "../core/install/deps";
 import { installItems } from "../core/install/engine";
@@ -26,6 +28,7 @@ import {
   applyThemePayload,
   attachThemeConfigFields,
   buildCustomTheme,
+  persistThemeConfig,
   resolveThemeSelection,
   type ResolvedThemeSelection,
 } from "../core/theme/apply";
@@ -70,58 +73,62 @@ function writeFreshConfig(
   selection: ResolvedThemeSelection,
   runtime: DetectedRuntime,
 ): void {
-  const config: RawComponentsConfig & { rsc: boolean; tsx: boolean } = {
-    $schema: COMPONENTS_SCHEMA_URL,
-    style: "kira",
-    rsc: runtime.isNext,
-    tsx: true,
-    tailwind: {
-      css,
-      baseColor: selection.baseColor ?? "neutral",
-      cssVariables: true,
-    },
-    iconLibrary: selection.iconLibrary,
+  const theme: RawKiraThemeConfig = {
+    preset: "default",
+    baseColor: selection.baseColor ?? "neutral",
     font: selection.sans.name,
     fontMono: selection.mono.name,
+  };
+
+  attachThemeConfigFields(theme, selection);
+
+  const config: RawKiraConfig = {
+    $schema: KIRA_CONFIG_SCHEMA_URL,
+    css,
+    rsc: runtime.isNext,
+    iconLibrary: selection.iconLibrary,
+    theme,
     aliases: { ...DEFAULT_ALIASES },
     registries: { [KIRA_NAMESPACE]: DEFAULT_REGISTRY_URL },
   };
 
-  attachThemeConfigFields(config, selection);
-
   writeFileSync(
-    join(cwd, "components.json"),
+    join(cwd, CONFIG_FILENAME),
     JSON.stringify(config, null, 2) + "\n",
     "utf-8",
   );
-  success("Created components.json (kira style, Base UI).");
+  success("Created kira-kit.json (Base UI).");
 }
 
 function fillExistingConfig(
   cwd: string,
-  raw: RawComponentsConfig,
+  raw: RawKiraConfig,
   css: string,
   selection: ResolvedThemeSelection,
 ): void {
-  const tailwind = { ...raw.tailwind, css: raw.tailwind?.css ?? css };
-
-  if (selection.baseColor) {
-    tailwind.baseColor = selection.baseColor;
-  }
-
-  const next: RawComponentsConfig = {
-    ...raw,
-    iconLibrary: selection.iconLibrary,
+  const theme: RawKiraThemeConfig = {
+    ...raw.theme,
     font: selection.sans.name,
     fontMono: selection.mono.name,
-    aliases: { ...DEFAULT_ALIASES, ...raw.aliases },
-    tailwind,
   };
 
-  attachThemeConfigFields(next, selection);
+  if (selection.baseColor) {
+    theme.baseColor = selection.baseColor;
+  }
+
+  attachThemeConfigFields(theme, selection);
+
+  const next: RawKiraConfig = {
+    ...raw,
+    $schema: raw.$schema ?? KIRA_CONFIG_SCHEMA_URL,
+    css: raw.css ?? css,
+    iconLibrary: selection.iconLibrary,
+    theme,
+    aliases: { ...DEFAULT_ALIASES, ...raw.aliases },
+  };
 
   writeFileSync(
-    join(cwd, "components.json"),
+    join(cwd, CONFIG_FILENAME),
     JSON.stringify(next, null, 2) + "\n",
     "utf-8",
   );
@@ -142,7 +149,7 @@ function ensureKiraConfig(
   }
 
   if (upsertKiraRegistry(cwd)) {
-    success("Registered the @kira-kit registry in components.json.");
+    success("Registered the @kira-kit registry in kira-kit.json.");
   }
 }
 
@@ -271,6 +278,7 @@ async function applyCustomTheme(
   if (!generated) return 1;
 
   await applyThemePayload(cwd, themePayload(generated.item), force);
+  persistThemeConfig(cwd, selection, { primary, defaultBaseColor: "neutral" });
   success("Custom theme applied.");
 
   return 0;
@@ -292,6 +300,10 @@ async function applyPreset(
     });
 
     await applyThemePayload(cwd, themePayload(generated.item), options.force);
+    persistThemeConfig(cwd, selection, {
+      preset: preset.name,
+      defaultBaseColor: preset.baseColor,
+    });
     success(`Theme preset "${preset.name}" applied.`);
 
     return 0;
@@ -301,6 +313,7 @@ async function applyPreset(
     { addresses: [`@kira-kit/theme-${options.preset}`] },
     { cwd, yes: true, overwrite: options.force, skipDeps: true },
   );
+  persistThemeConfig(cwd, selection, { preset: options.preset });
   success(`Theme preset "${options.preset}" applied.`);
 
   return 0;
@@ -309,9 +322,11 @@ async function applyPreset(
 async function promptFonts(
   ctx: PromptContext,
   options: InitOptions,
-  raw: RawComponentsConfig | null,
+  raw: RawKiraConfig | null,
 ): Promise<void> {
   if (options.font && options.fontMono) return;
+
+  const theme = raw?.theme;
 
   if (!options.font) {
     options.font = await select(
@@ -321,7 +336,7 @@ async function promptFonts(
         value: font.name,
         label: font.family,
       })),
-      raw?.font ?? DEFAULT_SANS,
+      theme?.font ?? DEFAULT_SANS,
     );
   }
 
@@ -333,7 +348,7 @@ async function promptFonts(
         value: font.name,
         label: font.family,
       })),
-      raw?.fontMono ?? DEFAULT_MONO,
+      theme?.fontMono ?? DEFAULT_MONO,
     );
   }
 }
@@ -341,7 +356,7 @@ async function promptFonts(
 async function promptIcon(
   ctx: PromptContext,
   options: InitOptions,
-  raw: RawComponentsConfig | null,
+  raw: RawKiraConfig | null,
 ): Promise<void> {
   if (options.icon) return;
 
