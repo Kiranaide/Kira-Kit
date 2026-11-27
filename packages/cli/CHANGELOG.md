@@ -1,5 +1,37 @@
 # kira-kit
 
+## 0.6.0
+
+### Breaking changes
+
+- Replaced `components.json` and `/schema/components.json` with a dedicated
+  `kira-kit.json` config file and `/schema/kira-kit.json` schema.
+  - Moved `tailwind.css` to top-level `css`.
+  - Grouped theme and typography settings (`preset`, `primary`, `baseColor`,
+    `font`, `fontDisplay`, `fontMono`, `fontPreset`, `radius`, `surface`) under
+    `theme`.
+  - Removed obsolete legacy keys (`style`, `tsx`, `tailwind.*`,
+    `aliases.utils`, `menuColor`, `menuAccent`).
+  - `kira-kit add` / `theme` now require `kira-kit.json` and point repos with
+    legacy `components.json` to `kira-kit migrate`.
+
+### Minor Changes
+
+- `kira-kit migrate` converts legacy `components.json` configs into
+  `kira-kit.json` (flattening `css`, grouping `theme` fields, dropping dead
+  keys, and removing legacy Kira `components.json` while leaving foreign configs
+  untouched).
+- `kira-kit init` and `kira-kit theme --apply` persist `theme.preset` and
+  `theme.primary` alongside typography, radius, surface, and base-color options
+  in `kira-kit.json`.
+- Updated all four starter templates (`vite`, `next`, `tanstack-start`,
+  `monorepo`) and generated `llms.txt` to ship `kira-kit.json`.
+
+### Patch Changes
+
+- Fixed full-stack `@types/node` timer ref compatibility across `input`,
+  `sidebar`, `announcement-bar`, `camera`, and `use-camera`.
+
 ## 0.5.0
 
 ### Breaking changes
