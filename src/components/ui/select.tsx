@@ -1038,17 +1038,21 @@ function useComboboxFieldState8<T extends SelectOption = SelectOption>(
     );
   }
 
+  const closedLabel = state.multiple
+    ? ""
+    : (state.selectedOptions[0]?.label ?? "");
+
   const inputPlaceholder = (() => {
     if (state.multiple && state.selectedOptions.length > 0) {
       return "";
     }
 
+    if (!state.multiple && closedLabel) {
+      return closedLabel;
+    }
+
     return state.placeholder;
   })();
-
-  const closedLabel = state.multiple
-    ? ""
-    : (state.selectedOptions[0]?.label ?? "");
 
   const displayInputValue = state.isOpen ? state.inputValue : closedLabel;
 
