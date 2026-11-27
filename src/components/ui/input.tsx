@@ -1844,7 +1844,9 @@ function inputUseCallback(
   onChange?.(num);
 }
 
-function cancelSearchDebounce(timer: React.RefObject<number | null>) {
+function cancelSearchDebounce(
+  timer: React.RefObject<ReturnType<typeof setTimeout> | null>,
+) {
   if (timer.current !== null) clearTimeout(timer.current);
   timer.current = null;
 }
@@ -1854,7 +1856,7 @@ function inputHandleChange(
   value: string | undefined,
   setInternalValue: React.Dispatch<React.SetStateAction<string>>,
   onChange: ((value: string) => void) | undefined,
-  debounceRef: React.RefObject<number | null>,
+  debounceRef: React.RefObject<ReturnType<typeof setTimeout> | null>,
   onSearch: ((value: string) => void) | undefined,
   debounceMs: number,
 ) {
@@ -1877,7 +1879,7 @@ function inputHandleChange(
 
 function inputHandleKeyDown(
   e: React.KeyboardEvent<HTMLInputElement>,
-  debounceRef: React.RefObject<number | null>,
+  debounceRef: React.RefObject<ReturnType<typeof setTimeout> | null>,
   onSearch: ((value: string) => void) | undefined,
   effectiveValue: string,
   handleClear: () => void,

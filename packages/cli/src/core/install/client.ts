@@ -89,7 +89,7 @@ export function resolveAddress(
   if (!template) {
     throw new ValidationError(
       `Unknown registry namespace "${ns}".`,
-      `Add registries["${ns}"] to components.json, or pass a full URL.`,
+      `Add registries["${ns}"] to kira-kit.json, or pass a full URL.`,
     );
   }
 
@@ -144,14 +144,14 @@ async function loadText(address: ResolvedAddress): Promise<string> {
   } catch {
     throw new RegistryError(
       `Could not reach ${address.location}`,
-      "Check your internet connection and the registry URL in components.json.",
+      "Check your internet connection and the registry URL in kira-kit.json.",
     );
   }
 
   if (!response.ok) {
     throw new RegistryError(
       `Registry request failed (HTTP ${response.status}) for ${address.location}`,
-      "Verify the item name and your components.json registry URL.",
+      "Verify the item name and your kira-kit.json registry URL.",
     );
   }
 
@@ -162,7 +162,7 @@ function loadLocalText(location: string): string {
   if (!existsSync(location)) {
     throw new RegistryError(
       `Registry item not found at ${location}`,
-      "Check the item name or the registry URL in components.json.",
+      "Check the item name or the registry URL in kira-kit.json.",
     );
   }
 

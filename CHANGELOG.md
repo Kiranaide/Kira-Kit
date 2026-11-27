@@ -6,6 +6,16 @@ components are source files you own, so entries describe the registry surface
 you install, not a published package's dependency tree. The CLI is versioned
 with Changesets; per-component history lives on each component's docs page.
 
+## 0.6.0 — November 27, 2026
+
+### Breaking
+
+- **Dedicated `kira-kit.json` configuration and Kira-native schema.** Replaced `components.json` and `/schema/components.json` with `kira-kit.json` and `/schema/kira-kit.json`, moving `css` to the top level, grouping theme settings (`preset`, `primary`, `baseColor`, `font`, `fontDisplay`, `fontMono`, `fontPreset`, `radius`, `surface`) under `theme`, and dropping obsolete keys (`style`, `tsx`, `tailwind.*`, `aliases.utils`). Existing projects can convert automatically with `kira-kit migrate`.
+
+### Fixed
+
+- **Full-stack `@types/node` timer ref compatibility.** Widened internal timer-ref helper/interface annotations from `number` to `ReturnType<typeof setTimeout>` / `ReturnType<typeof setInterval>` in `input`, `sidebar`, `announcement-bar`, `camera`, and `use-camera`, and added `tsconfig.registry-node.json` to `tsc -b` to guard against regressions.
+
 ## 0.5.0 — November 27, 2026
 
 ### Breaking

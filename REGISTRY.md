@@ -4,7 +4,7 @@ Kira Kit components are installed with the `kira-kit` CLI from our registry.
 
 ## Setup
 
-Add the Kira Kit registry to your project's `components.json` (or run
+Add the Kira Kit registry to your project's `kira-kit.json` (or run
 `kira-kit init`, which also installs the kit's base CSS and default theme):
 
 ```json
@@ -89,4 +89,4 @@ npx kira-kit add --all
 
 - **Index (metadata for all items)**: `/r/registry.json`
 - **Individual items**: `/r/{item-name}.json`
-- **JSON schemas**: `/schema/registry.json`, `/schema/registry-item.json`, `/schema/components.json`
+- **JSON schemas**: `/schema/registry.json`, `/schema/registry-item.json`, `/schema/kira-kit.json`

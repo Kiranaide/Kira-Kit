@@ -12,7 +12,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { init } from "../src/commands/init";
 import type { DepInstaller } from "../src/core/install/deps";
 import { DEFAULT_REGISTRY_URL } from "../src/lib/schemas";
-import type { ComponentsConfig } from "../src/types";
+import type { KiraConfig } from "../src/types";
 
 const temps: string[] = [];
 
@@ -64,12 +64,16 @@ describe("init (offline defaults)", () => {
 
     expect(code).toBe(0);
 
-    const config = readJson<ComponentsConfig>(join(dir, "components.json"));
+    const config = readJson<KiraConfig>(join(dir, "kira-kit.json"));
 
-    expect(config.style).toBe("kira");
+    expect(config.$schema).toBe(
+      "https://kira-kit.vercel.app/schema/kira-kit.json",
+    );
     expect(config.registries?.["@kira-kit"]).toBe(DEFAULT_REGISTRY_URL);
     expect(config.aliases?.ui).toBe("@/components/ui");
-    expect(config.tailwind?.css).toBe("src/index.css");
+    expect(config.css).toBe("src/index.css");
+    expect(config.theme?.preset).toBe("default");
+    expect(config.theme?.baseColor).toBe("neutral");
 
     const css = readFileSync(join(dir, "src/index.css"), "utf-8");
 
@@ -92,7 +96,7 @@ describe("init (offline defaults)", () => {
       installer: fakeInstaller([]),
     });
 
-    const config = readJson<ComponentsConfig>(join(dir, "components.json"));
+    const config = readJson<KiraConfig>(join(dir, "kira-kit.json"));
 
     expect(config.rsc).toBe(true);
   });
@@ -142,6 +146,10 @@ describe("init (themes and gates)", () => {
 
     expect(css).not.toContain("--primary: oklch(0.49 0.22 1)");
     expect(existsSync(join(dir, "kira-theme.json"))).toBe(true);
+
+    const config = readJson<KiraConfig>(join(dir, "kira-kit.json"));
+
+    expect(config.theme?.preset).toBe("ember-press");
   });
 
   it("applies a custom primary color", async () => {
@@ -164,5 +172,10 @@ describe("init (themes and gates)", () => {
 
     expect(theme.name).toBe("theme-custom");
     expect(theme.cssVars.light["--primary"]).toMatch(/^oklch\(/);
+
+    const config = readJson<KiraConfig>(join(dir, "kira-kit.json"));
+
+    expect(config.theme?.primary).toBe("#e2694a");
+    expect(config.theme?.preset).toBeUndefined();
   });
 });

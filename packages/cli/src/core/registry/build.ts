@@ -1,8 +1,14 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { z } from "zod";
 import {
-  componentsConfigSchema,
+  kiraConfigSchema,
   registryItemPayloadSchema,
   sourceRegistrySchema,
   type RegistryItemPayload,
@@ -23,8 +29,8 @@ export const REGISTRY_SCHEMA_URL =
 export const REGISTRY_ITEM_SCHEMA_URL =
   "https://kira-kit.vercel.app/schema/registry-item.json";
 
-export const COMPONENTS_SCHEMA_URL =
-  "https://kira-kit.vercel.app/schema/components.json";
+export const KIRA_CONFIG_SCHEMA_URL =
+  "https://kira-kit.vercel.app/schema/kira-kit.json";
 
 function itemPayload(
   repoRoot: string,
@@ -171,8 +177,9 @@ export function writeRegistryOutputs(
     join(schemaDir, "registry-item.json"),
     z.toJSONSchema(registryItemPayloadSchema),
   );
-  writeJson(
-    join(schemaDir, "components.json"),
-    z.toJSONSchema(componentsConfigSchema),
-  );
+  writeJson(join(schemaDir, "kira-kit.json"), z.toJSONSchema(kiraConfigSchema));
+
+  const legacySchemaPath = join(schemaDir, "components.json");
+
+  if (existsSync(legacySchemaPath)) rmSync(legacySchemaPath);
 }

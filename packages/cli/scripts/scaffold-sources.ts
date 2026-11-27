@@ -122,7 +122,7 @@ function buildItem(
     .map((imp) => imp.specifier.replace(/.*\//, "").replace(/\.(tsx|ts)?$/, ""))
     .filter((dep) => SUPPORT_FILES.has(dep));
 
-  // shadcn registry schema requires file entries as objects with a path
+  // Registry schema requires file entries as objects with a path
   // (relative to the declaring registry.json) and a per-file item type.
   const files: Array<{ path: string; type: "registry:ui" | "registry:hook" }> =
     [{ path: filesGlob(name, ext), type }];

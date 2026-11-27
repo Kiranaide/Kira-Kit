@@ -6791,7 +6791,7 @@ function cameraReceiveCommand(
       confidence: number;
     } | null>
   >,
-  feedbackTimer: React.RefObject<number | null>,
+  feedbackTimer: React.RefObject<ReturnType<typeof setTimeout> | null>,
   feedbackDuration: number,
 ) {
   onCommand?.(command, phrase, confidence);
