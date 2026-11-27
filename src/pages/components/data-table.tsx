@@ -753,7 +753,7 @@ export default function DataTablePage() {
       <PageHeader
         title="Data Table"
         description="A powerful, modular table with sorting, filtering, pagination, and more using TanStack Table. Includes cell renderers, bulk actions, density controls, and comprehensive accessibility features."
-        version="v3.2.1"
+        version="v3.2.2"
       />
 
       <FeatureGrid features={dataTablePageFeatureGridFeatures} />
@@ -1741,6 +1741,31 @@ const dataTablePageKeyboardShortcutsShortcuts = [
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
 const dataTablePageChangelogEntries = [
+  {
+    version: "3.2.2",
+    date: "27 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title:
+          "Column visibility and labels use header titles instead of raw IDs",
+        description:
+          "columnLabel now resolves columnDef.meta.label, string headers, and titles registered by DataTableColumnHeader before falling back to a Title-Cased column ID—so the Columns popover, sort announcements, resize handles, pinning menus, and range filters display human-readable labels.",
+      },
+      {
+        type: "fixed",
+        title: "Zero dead space and spring dock motion for sticky bulk actions",
+        description:
+          "DataTableBulkActions with sticky now unmounts completely when 0 rows are selected and floats as a centered frosted bottom dock with spring-out transform/opacity enter/exit transitions, animated count pill, and inert/reduced-motion handling.",
+      },
+      {
+        type: "fixed",
+        title: "Single-line row/page counts beside DataTablePagination",
+        description:
+          "DataTableRowCount and DataTablePageCount now use shrink-0 whitespace-nowrap tabular-nums and accept className, while DataTablePagination defaults to w-auto flex-1 so composed footer rows never squeeze counts onto two lines.",
+      },
+    ],
+  },
   {
     version: "3.2.1",
     date: "20 November 2026",
