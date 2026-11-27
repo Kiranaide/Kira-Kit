@@ -616,7 +616,6 @@ function SidebarMobileShell({ model }: { model: SidebarShellModel }) {
           width: `min(${width}, calc(100vw - 2rem))`,
           transitionTimingFunction: sidebarDrawerEase,
         }}
-        portalProps={{ keepMounted: true }}
         initialFocus={() => sidebarCallback(searchPendingRef, searchRef)}
         finalFocus={() => mobileTriggerRef.current ?? true}
       >
