@@ -5,7 +5,7 @@ Base UI toast system with an imperative API for six variants, stable-ID updates 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/toast
+kira-kit add @kira-kit/toast
 ```
 
 ## Dependencies
@@ -14,6 +14,10 @@ npx shadcn add @kira-kit/toast
 - @tabler/icons-react
 - class-variance-authority
 - cn
+
+## Registry dependencies
+
+- @kira-kit/component-utils
 
 ## Usage
 

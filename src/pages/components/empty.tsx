@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import { useState, useRef, useId } from "react";
 import { IconFolder } from "@tabler/icons-react";
 import {
@@ -44,8 +45,25 @@ function BasicDemo() {
   );
 }
 
-const basicCode =
-  'import { useState } from "react";\nimport { Empty } from "@/components/ui/empty";\nimport { Button } from "@/components/ui/button";\n\nexport function BasicDemo() {\n  const [created, setCreated] = useState(false);\n  return created ? <p role="status" className="text-sm">Project created. Your workspace is ready.</p> : <Empty title="No projects yet" description="Create your first project to organize your team\'s work." action={<Button onClick={() => setCreated(true)}>Create a project</Button>} />;\n}';
+const basicCode = `import { useState } from "react";
+import { Empty } from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
+
+export function BasicDemo() {
+  const [created, setCreated] = useState(false);
+
+  return created ? (
+    <output className="block text-sm">
+      Project created. Your workspace is ready.
+    </output>
+  ) : (
+    <Empty
+      title="No projects yet"
+      description="Create your first project to organize your team's work."
+      action={<Button onClick={() => setCreated(true)}>Create a project</Button>}
+    />
+  );
+}`;
 
 function PartsDemo() {
   const [imported, setImported] = useState(false);
@@ -53,7 +71,7 @@ function PartsDemo() {
   return (
     <Empty variant="outline">
       <EmptyMedia variant="icon" aria-hidden="true">
-        <IconFolder />
+        <IconFolder aria-hidden="true" />
       </EmptyMedia>
       <EmptyHeader>
         <EmptyTitle render={<h2>Bring your work together</h2>}>
@@ -73,8 +91,41 @@ function PartsDemo() {
   );
 }
 
-const partsCode =
-  'import { IconFolder } from "@tabler/icons-react";\nimport { Empty, EmptyMedia, EmptyHeader, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";\nimport { Button } from "@/components/ui/button";\nimport { useState } from "react";\n\nexport function PartsDemo() {\n  const [imported, setImported] = useState(false);\n  return <Empty variant="outline">\n    <EmptyMedia variant="icon" aria-hidden="true"><IconFolder /></EmptyMedia>\n    <EmptyHeader><EmptyTitle render={<h2 />}>Bring your work together</EmptyTitle><EmptyDescription>Import an existing project or start with an empty workspace.</EmptyDescription></EmptyHeader>\n    <EmptyContent><Button onClick={() => setImported(true)}>Import a project</Button></EmptyContent>\n    {imported && <p role="status" className="text-sm">Sample project imported.</p>}\n  </Empty>;\n}';
+const partsCode = `import { useState } from "react";
+import { IconFolder } from "@tabler/icons-react";
+import {
+  Empty,
+  EmptyMedia,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+} from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
+
+export function PartsDemo() {
+  const [imported, setImported] = useState(false);
+
+  return (
+    <Empty variant="outline">
+      <EmptyMedia variant="icon" aria-hidden="true">
+        <IconFolder aria-hidden="true" />
+      </EmptyMedia>
+      <EmptyHeader>
+        <EmptyTitle render={<h2 />}>Bring your work together</EmptyTitle>
+        <EmptyDescription>
+          Import an existing project or start with an empty workspace.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button onClick={() => setImported(true)}>Import a project</Button>
+      </EmptyContent>
+      {imported && (
+        <output className="block text-sm">Sample project imported.</output>
+      )}
+    </Empty>
+  );
+}`;
 
 function LayoutsDemo() {
   return (
@@ -95,8 +146,26 @@ function LayoutsDemo() {
   );
 }
 
-const layoutsCode =
-  'import { Empty } from "@/components/ui/empty";\n\nexport function LayoutsDemo() {\n  return <div className="space-y-4"><Empty layout="inline" size="sm" variant="muted" title="No unread messages" description="New conversations will appear here." /><Empty variant="outline" title="Nothing scheduled" description="Upcoming project milestones will appear in this calendar." /></div>;\n}';
+const layoutsCode = `import { Empty } from "@/components/ui/empty";
+
+export function LayoutsDemo() {
+  return (
+    <div className="space-y-4">
+      <Empty
+        layout="inline"
+        size="sm"
+        variant="muted"
+        title="No unread messages"
+        description="New conversations will appear here."
+      />
+      <Empty
+        variant="outline"
+        title="Nothing scheduled"
+        description="Upcoming project milestones will appear in this calendar."
+      />
+    </div>
+  );
+}`;
 
 function SizesDemo() {
   return (
@@ -112,8 +181,17 @@ function SizesDemo() {
   );
 }
 
-const sizesCode =
-  'import { Empty } from "@/components/ui/empty";\n\nexport function SizesDemo() {\n  return <div className="grid gap-4 md:grid-cols-3"><Empty size="sm" title="No notes" description="Compact panel." /><Empty title="No projects" description="Workspace panel." /><Empty size="lg" title="No milestones" description="Prominent page state." /></div>;\n}';
+const sizesCode = `import { Empty } from "@/components/ui/empty";
+
+export function SizesDemo() {
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      <Empty size="sm" title="No notes" description="Compact panel." />
+      <Empty title="No projects" description="Workspace panel." />
+      <Empty size="lg" title="No milestones" description="Prominent page state." />
+    </div>
+  );
+}`;
 
 function PresetsDemo() {
   return (
@@ -125,8 +203,17 @@ function PresetsDemo() {
   );
 }
 
-const presetsCode =
-  'import { EmptyInbox, EmptySearch, EmptyFile } from "@/components/ui/empty";\n\nexport function PresetsDemo() {\n  return <div className="grid gap-4 md:grid-cols-3"><EmptyInbox description="New messages will appear here." /><EmptySearch description="Try another phrase." /><EmptyFile description="Imported files will appear here." /></div>;\n}';
+const presetsCode = `import { EmptyInbox, EmptySearch, EmptyFile } from "@/components/ui/empty";
+
+export function PresetsDemo() {
+  return (
+    <div className="grid gap-4 md:grid-cols-3">
+      <EmptyInbox description="New messages will appear here." />
+      <EmptySearch description="Try another phrase." />
+      <EmptyFile description="Imported files will appear here." />
+    </div>
+  );
+}`;
 
 function FirstUseDemo() {
   const [created, setCreated] = useState(false);
@@ -144,8 +231,24 @@ function FirstUseDemo() {
   );
 }
 
-const firstuseCode =
-  'import { useState } from "react";\nimport { KiraEmpty } from "@/components/ui/empty";\n\nexport function FirstUseDemo() {\n  const [created, setCreated] = useState(false);\n  return created ? <p role="status" className="text-sm">Atlas project created.</p> : <KiraEmpty state="first-use" primaryAction={{ label: "Create Atlas project", onClick: () => setCreated(true) }} />;\n}';
+const firstuseCode = `import { useState } from "react";
+import { KiraEmpty } from "@/components/ui/empty";
+
+export function FirstUseDemo() {
+  const [created, setCreated] = useState(false);
+
+  return created ? (
+    <output className="block text-sm">Atlas project created.</output>
+  ) : (
+    <KiraEmpty
+      state="first-use"
+      primaryAction={{
+        label: "Create Atlas project",
+        onClick: () => setCreated(true),
+      }}
+    />
+  );
+}`;
 
 function NoResultsDemo() {
   const searchId = useId();
@@ -165,7 +268,7 @@ function NoResultsDemo() {
           onChange={(event) => setQuery(event.target.value)}
         />
       </label>
-      {results.length ? (
+      {results.length > 0 ? (
         <ul className="list-inside list-disc text-sm">
           {results.map((value) => (
             <li key={value}>{value}</li>
@@ -182,8 +285,43 @@ function NoResultsDemo() {
   );
 }
 
-const noresultsCode =
-  'import { useState } from "react";\nimport { KiraEmpty } from "@/components/ui/empty";\nimport { Input } from "@/components/ui/input";\n\nexport function NoResultsDemo() {\n  const [query, setQuery] = useState("Archived launch");\n  const results = ["Q4 product roadmap", "Customer onboarding guide"].filter(value => value.toLowerCase().includes(query.toLowerCase()));\n  return <div className="space-y-4"><label className="block space-y-2"><span className="text-sm font-medium">Search documents</span><Input value={query} onChange={event => setQuery(event.target.value)} /></label>{results.length ? <ul className="list-inside list-disc text-sm">{results.map(value => <li key={value}>{value}</li>)}</ul> : <KiraEmpty state="no-results" query={query} primaryAction={{ label: "Clear search", onClick: () => setQuery("") }} />}</div>;\n}';
+const noresultsCode = `import { useId, useState } from "react";
+import { KiraEmpty } from "@/components/ui/empty";
+import { Input } from "@/components/ui/input";
+
+export function NoResultsDemo() {
+  const searchId = useId();
+  const [query, setQuery] = useState("Archived launch");
+  const results = ["Q4 product roadmap", "Customer onboarding guide"].filter(
+    (value) => value.toLowerCase().includes(query.toLowerCase()),
+  );
+
+  return (
+    <div className="space-y-4">
+      <label htmlFor={searchId} className="block space-y-2">
+        <span className="text-sm font-medium">Search documents</span>
+        <Input
+          id={searchId}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+      </label>
+      {results.length > 0 ? (
+        <ul className="list-inside list-disc text-sm">
+          {results.map((value) => (
+            <li key={value}>{value}</li>
+          ))}
+        </ul>
+      ) : (
+        <KiraEmpty
+          state="no-results"
+          query={query}
+          primaryAction={{ label: "Clear search", onClick: () => setQuery("") }}
+        />
+      )}
+    </div>
+  );
+}`;
 
 function RecoveryDemo() {
   const attempts = useRef(0);
@@ -209,13 +347,15 @@ function RecoveryDemo() {
             const timer = window.setTimeout(() => {
               signal.removeEventListener("abort", abort);
 
-              if (attempt === 1)
+              if (attempt === 1) {
                 reject(
                   new Error(
                     "Still offline. Check your connection and try Reconnect again.",
                   ),
                 );
-              else resolve();
+              } else {
+                resolve();
+              }
             }, 700);
 
             signal.addEventListener("abort", abort, { once: true });
@@ -225,8 +365,41 @@ function RecoveryDemo() {
   );
 }
 
-const recoveryCode =
-  'import { useRef } from "react";\nimport { KiraEmpty } from "@/components/ui/empty";\n\nexport function RecoveryDemo() {\n  const attempts = useRef(0);\n  return <KiraEmpty state="offline" primaryAction={{ label: "Reconnect", pendingLabel: "Reconnecting…", successMessage: "Connection restored. Your content can be loaded again.", onClick: ({ signal }) => new Promise((resolve, reject) => {\n    attempts.current += 1;\n    const attempt = attempts.current;\n    const abort = () => { window.clearTimeout(timer); reject(new DOMException("Cancelled", "AbortError")); };\n    const timer = window.setTimeout(() => {\n      signal.removeEventListener("abort", abort);\n      if (attempt === 1) reject(new Error("Still offline. Check your connection and try Reconnect again."));\n      else resolve();\n    }, 700);\n    signal.addEventListener("abort", abort, { once: true });\n  }) }} />;\n}';
+const recoveryCode = `import { useRef } from "react";
+import { KiraEmpty } from "@/components/ui/empty";
+
+export function RecoveryDemo() {
+  const attempts = useRef(0);
+
+  return (
+    <KiraEmpty
+      state="offline"
+      primaryAction={{
+        label: "Reconnect",
+        pendingLabel: "Reconnecting…",
+        successMessage: "Connection restored. Your content can be loaded again.",
+        onClick: ({ signal }) =>
+          new Promise((resolve, reject) => {
+            attempts.current += 1;
+            const attempt = attempts.current;
+            const abort = () => {
+              window.clearTimeout(timer);
+              reject(new DOMException("Cancelled", "AbortError"));
+            };
+            const timer = window.setTimeout(() => {
+              signal.removeEventListener("abort", abort);
+              if (attempt === 1) {
+                reject(new Error("Still offline. Try Reconnect again."));
+              } else {
+                resolve();
+              }
+            }, 700);
+            signal.addEventListener("abort", abort, { once: true });
+          }),
+      }}
+    />
+  );
+}`;
 
 function KiraDemo() {
   return (
@@ -264,8 +437,41 @@ function KiraDemo() {
   );
 }
 
-const kiraCode =
-  'import { KiraEmpty } from "@/components/ui/empty";\n\nexport function KiraDemo() {\n  return <KiraEmpty state="forbidden" layout="inline" variant="outline" primaryAction={{ label: "Request access", pendingLabel: "Sending request…", successMessage: "Access requested. A workspace owner will review it.", onClick: ({ signal }) => new Promise((resolve, reject) => {\n    const abort = () => { window.clearTimeout(timer); reject(new DOMException("Cancelled", "AbortError")); };\n    const timer = window.setTimeout(() => { signal.removeEventListener("abort", abort); resolve(); }, 600);\n    signal.addEventListener("abort", abort, { once: true });\n  }) }} secondaryAction={{ label: "Copy owner email", successMessage: "Owner email copied.", onClick: async () => { await navigator.clipboard.writeText("owner@example.com"); } }} />;\n}';
+const kiraCode = `import { KiraEmpty } from "@/components/ui/empty";
+
+export function KiraDemo() {
+  return (
+    <KiraEmpty
+      state="forbidden"
+      layout="inline"
+      variant="outline"
+      primaryAction={{
+        label: "Request access",
+        pendingLabel: "Sending request…",
+        successMessage: "Access requested. A workspace owner will review it.",
+        onClick: ({ signal }) =>
+          new Promise((resolve, reject) => {
+            const abort = () => {
+              window.clearTimeout(timer);
+              reject(new DOMException("Cancelled", "AbortError"));
+            };
+            const timer = window.setTimeout(() => {
+              signal.removeEventListener("abort", abort);
+              resolve();
+            }, 600);
+            signal.addEventListener("abort", abort, { once: true });
+          }),
+      }}
+      secondaryAction={{
+        label: "Copy owner email",
+        successMessage: "Owner email copied.",
+        onClick: async () => {
+          await navigator.clipboard.writeText("owner@example.com");
+        },
+      }}
+    />
+  );
+}`;
 
 function StatesDemo() {
   return (
@@ -282,6 +488,34 @@ function StatesDemo() {
           onClick: () => {},
         }}
       />
+    </div>
+  );
+}
+
+const statesCode = `import { KiraEmpty } from "@/components/ui/empty";
+
+export function StatesDemo() {
+  return (
+    <div className="space-y-4">
+      <KiraEmpty state="loading" size="sm" />
+      <KiraEmpty state="complete" size="sm" />
+      <KiraEmpty
+        state="error"
+        size="sm"
+        primaryAction={{
+          label: "Retry import",
+          disabled: true,
+          disabledReason: "Connect an import source before trying again.",
+          onClick: () => {},
+        }}
+      />
+    </div>
+  );
+}`;
+
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
       <Empty
         size="sm"
         variant="outline"
@@ -289,15 +523,111 @@ function StatesDemo() {
         title="Release readiness — 日本語 العربية ไทย"
         description="A_very_long_unbroken_workspace_identifier_0123456789012345678901234567890123456789"
       />
+      <Empty
+        size="sm"
+        variant="muted"
+        icon={null}
+        title=""
+        description="Empty title with null media removes the icon gap cleanly."
+      />
+      <KiraEmpty
+        state="error"
+        size="sm"
+        variant="outline"
+        primaryAction={{
+          label: "Retry synchronization for production cluster",
+          disabled: true,
+          disabledReason: "Reconnect your credentials before retrying.",
+          onClick: () => {},
+        }}
+      />
     </div>
   );
 }
 
-const statesCode =
-  'import { Empty, KiraEmpty } from "@/components/ui/empty";\n\nexport function StatesDemo() {\n  return <div className="space-y-4">\n    <KiraEmpty state="loading" size="sm" />\n    <KiraEmpty state="complete" size="sm" />\n    <KiraEmpty state="error" size="sm" primaryAction={{ label: "Retry import", disabled: true, disabledReason: "Connect an import source before trying again.", onClick: () => {} }} />\n    <Empty size="sm" variant="outline" icon={null} title="Release readiness — 日本語 العربية ไทย" description="A_very_long_unbroken_workspace_identifier_0123456789012345678901234567890123456789" />\n  </div>;\n}';
+const stressCode = `import { Empty, KiraEmpty } from "@/components/ui/empty";
 
-const usageCode =
-  'import { useState } from "react";\nimport { IconFolder } from "@tabler/icons-react";\nimport { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent, EmptyInbox, EmptySearch, EmptyFile, KiraEmpty } from "@/components/ui/empty";\nimport { Button } from "@/components/ui/button";\n\nexport function EmptyUsage() {\n  const [created, setCreated] = useState(false);\n  return <div>\n    <Empty variant="outline"><EmptyMedia variant="icon" aria-hidden="true"><IconFolder /></EmptyMedia><EmptyHeader><EmptyTitle render={<h2 />}>No projects yet</EmptyTitle><EmptyDescription>Create your first project.</EmptyDescription></EmptyHeader><EmptyContent><Button onClick={() => setCreated(true)}>Create a project</Button></EmptyContent></Empty>\n    <KiraEmpty state={created ? "complete" : "first-use"} primaryAction={created ? undefined : { label: "Create a project", onClick: () => setCreated(true) }} />\n    <EmptyInbox /><EmptySearch /><EmptyFile />\n  </div>;\n}';
+export function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <Empty
+        size="sm"
+        variant="outline"
+        icon={null}
+        title="Release readiness — 日本語 العربية ไทย"
+        description="A_very_long_unbroken_workspace_identifier_0123456789012345678901234567890123456789"
+      />
+      <Empty
+        size="sm"
+        variant="muted"
+        icon={null}
+        title=""
+        description="Empty title with null media removes the icon gap cleanly."
+      />
+      <KiraEmpty
+        state="error"
+        size="sm"
+        variant="outline"
+        primaryAction={{
+          label: "Retry synchronization for production cluster",
+          disabled: true,
+          disabledReason: "Reconnect your credentials before retrying.",
+          onClick: () => {},
+        }}
+      />
+    </div>
+  );
+}`;
+
+const usageCode = `import { useState } from "react";
+import { IconFolder } from "@tabler/icons-react";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+  EmptyInbox,
+  EmptySearch,
+  EmptyFile,
+  KiraEmpty,
+} from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
+
+export function EmptyUsage() {
+  const [created, setCreated] = useState(false);
+
+  return (
+    <div className="space-y-4">
+      <Empty variant="outline">
+        <EmptyMedia variant="icon" aria-hidden="true">
+          <IconFolder aria-hidden="true" />
+        </EmptyMedia>
+        <EmptyHeader>
+          <EmptyTitle render={<h2 />}>No projects yet</EmptyTitle>
+          <EmptyDescription>Create your first project.</EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <Button onClick={() => setCreated(true)}>Create a project</Button>
+        </EmptyContent>
+      </Empty>
+
+      <KiraEmpty
+        state={created ? "complete" : "first-use"}
+        primaryAction={
+          created
+            ? undefined
+            : { label: "Create a project", onClick: () => setCreated(true) }
+        }
+      />
+
+      <EmptyInbox />
+      <EmptySearch />
+      <EmptyFile />
+    </div>
+  );
+}`;
 
 export default function EmptyPage() {
   return (
@@ -307,94 +637,79 @@ export default function EmptyPage() {
         description="Composable empty states that explain the situation and give people a useful next action."
         version="v2.0.0"
       />
-      <FeatureGrid features={emptyPageFeatureGridFeatures} />
-      <DemoTabs defaultValue="basic" lazyMount tabs={emptyPageDemoTabsTabs} />
-      <KeyboardShortcuts
-        shortcuts={[
-          {
-            keys: "Tab / Shift+Tab",
-            description:
-              "Move between the caller's actions; button behavior is inherited from Base UI Button.",
-          },
-          {
-            keys: "Enter / Space",
-            description:
-              "Run a focused action; inherited from Base UI Button. Pending actions reject duplicate submissions.",
-          },
-          {
-            keys: "Ctrl / V",
-            description:
-              "Paste a search phrase in the No results demo; the input remains a native editing control.",
-          },
-        ]}
+
+      <FeatureGrid
+        features={emptyPageFeatures}
+        description="Composable primitives, shorthand presets, and contextual recovery states built on Base UI render adapters."
       />
+
+      <DemoTabs defaultValue="basic" tabs={emptyPageDemoTabs} />
+
+      <KeyboardShortcuts
+        shortcuts={emptyPageShortcuts}
+        description="Keyboard activation and navigation bindings inherited from Base UI Button and native form controls."
+      />
+
       <UsageBlock
         code={usageCode}
-        description="All exported Empty parts, presets and the Kira recovery component."
-      />
-      <APIReference sections={emptyPageAPIReferenceSections} />
-      <Changelog
-        entries={[
+        title="Usage"
+        description="All exported Empty parts, presets, and the KiraEmpty recovery component."
+        notes={[
           {
-            version: "v2.0.0",
-            date: "2026-11-13",
-            changes: [
-              {
-                type: "added",
-                title: "Composable Empty parts",
-                description:
-                  "EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription and EmptyContent match the stock shadcn shape with native refs and Base UI render composition. Audited against Base UI 1.9.0.",
-              },
-              {
-                type: "added",
-                title: "KiraEmpty recovery",
-                description:
-                  "First use, no matches, errors, offline, access, completion and loading states with caller actions, cancellation, pending/error/success feedback and a single status region.",
-              },
-              {
-                type: "breaking",
-                title: "Children are composition",
-                description:
-                  "Empty.children now replaces the shorthand icon/title/description/action layout. Use EmptyContent to place custom actions. Native title attributes move to the render element because title now accepts ReactNode.",
-              },
-              {
-                type: "fixed",
-                title: "Honest actions and layout",
-                description:
-                  "Null media no longer leaves a gap. Labels wrap, presets forward refs, centered/inline layouts share parts, and all demo actions have local behavior.",
-              },
-            ],
+            label: "Composed children vs shorthand",
+            body: "Passing children to Empty replaces the shorthand icon/title/description/action layout. Compose EmptyMedia, EmptyHeader, EmptyTitle, EmptyDescription, and EmptyContent for full control.",
+          },
+          {
+            label: "KiraEmpty",
+            body: "Use KiraEmpty for contextual states (first-use, no-results, error, offline, forbidden, complete, loading) with caller-owned async actions, AbortSignal cancellation, and polite status announcements.",
+          },
+          {
+            label: "Presets",
+            body: "EmptyInbox, EmptySearch, and EmptyFile provide quick defaults while accepting all Empty layout, size, variant, and render props.",
           },
         ]}
+      />
+
+      <APIReference
+        sections={emptyPageAPISections}
+        description="Props, types, and defaults for every exported Empty part, preset, and KiraEmpty."
+      />
+
+      <Changelog
+        entries={emptyPageChangelogEntries}
+        title="Changelog"
+        description="Version history for the Empty component."
       />
     </ComponentPage>
   );
 }
 
-const emptyPageFeatureGridFeatures = [
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const emptyPageFeatures = [
   {
     title: "Composable parts",
     description:
-      "Custom media, heading levels, content and native render adapters.",
+      "Custom media, heading levels, content, and native render adapters.",
   },
   {
     title: "Contextual recovery",
-    description: "Clear first-use, no-results, offline and access states.",
+    description: "Clear first-use, no-results, offline, and access states.",
   },
   {
     title: "Async actions",
-    description: "Pending, failure and success feedback with cancellation.",
+    description: "Pending, failure, and success feedback with cancellation.",
   },
   {
     title: "Flexible layouts",
     description: "Centered and compact inline layouts on shared scales.",
   },
-] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const emptyPageDemoTabsTabs = [
+const emptyPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="An empty project"
@@ -408,6 +723,7 @@ const emptyPageDemoTabsTabs = [
   {
     value: "parts",
     label: "Parts",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Composable parts"
@@ -421,6 +737,7 @@ const emptyPageDemoTabsTabs = [
   {
     value: "layouts",
     label: "Layouts",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Centered and inline layouts"
@@ -434,6 +751,7 @@ const emptyPageDemoTabsTabs = [
   {
     value: "sizes",
     label: "Sizes",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Size variants"
@@ -447,10 +765,11 @@ const emptyPageDemoTabsTabs = [
   {
     value: "presets",
     label: "Presets",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Existing presets"
-        description="Inbox, search, and file shorthand now compose the same underlying parts."
+        description="Inbox, search, and file shorthand compose the same underlying parts."
         code={presetsCode}
       >
         <PresetsDemo />
@@ -460,6 +779,7 @@ const emptyPageDemoTabsTabs = [
   {
     value: "first-use",
     label: "First use",
+    group: "KiraEmpty",
     demo: (
       <DemoWrapper
         title="First use"
@@ -473,6 +793,7 @@ const emptyPageDemoTabsTabs = [
   {
     value: "no-results",
     label: "No results",
+    group: "KiraEmpty",
     demo: (
       <DemoWrapper
         title="No matches"
@@ -486,6 +807,7 @@ const emptyPageDemoTabsTabs = [
   {
     value: "recovery",
     label: "Recovery",
+    group: "KiraEmpty",
     demo: (
       <DemoWrapper
         title="Failure and retry"
@@ -498,7 +820,8 @@ const emptyPageDemoTabsTabs = [
   },
   {
     value: "kira",
-    label: "Kira",
+    label: "Contextual",
+    group: "KiraEmpty",
     demo: (
       <DemoWrapper
         title="Contextual recovery"
@@ -512,19 +835,47 @@ const emptyPageDemoTabsTabs = [
   {
     value: "states",
     label: "States",
+    group: "Behavior",
     demo: (
       <DemoWrapper
-        title="Loading, completion, disability and stress cases"
-        description="Loading reserves space. Long multilingual and unbroken labels wrap without hiding the next action."
+        title="Loading, completion, and disabled actions"
+        description="Loading reserves space and disabled actions render a visible explanation."
         code={statesCode}
       >
         <StatesDemo />
       </DemoWrapper>
     ),
   },
-] satisfies React.ComponentProps<typeof DemoTabs>["tabs"];
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Multilingual and unbroken identifiers, empty titles with null media, and disabled actions inside a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const emptyPageAPIReferenceSections = [
+const emptyPageShortcuts = [
+  {
+    keys: "Tab / Shift + Tab",
+    description:
+      "Move between the caller's actions; button behavior is inherited from Base UI Button.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Run a focused action; inherited from Base UI Button. Pending actions reject duplicate submissions.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const emptyPageAPISections = [
   {
     title: "Empty",
     props: [
@@ -538,28 +889,28 @@ const emptyPageAPIReferenceSections = [
       {
         prop: "title / description / action",
         type: "ReactNode / ReactNode / ReactNode",
-        default: '"No data" / — / —',
+        default: '"No data" / - / -',
         description:
-          "Shorthand heading, text and content. Native title attributes belong on a render element.",
+          "Shorthand heading, text, and content. Native title attributes belong on a render element.",
       },
       {
         prop: "children",
         type: "ReactNode",
-        default: "—",
+        default: "-",
         description: "Composed children replace the shorthand presentation.",
       },
       {
         prop: "size / layout / variant",
         type: '"sm" | "default" | "lg" / "center" | "inline" / "default" | "outline" | "muted"',
         default: '"default" / "center" / "default"',
-        description: "Spacing, alignment and surface variants.",
+        description: "Spacing, alignment, and surface variants.",
       },
       {
         prop: "render / ref / native props",
         type: 'useRender.ComponentProps<"div">',
-        default: "—",
+        default: "-",
         description:
-          "Base UI composition, DOM ref and attributes; event handlers merge.",
+          "Base UI composition, DOM ref, and attributes; event handlers merge.",
       },
     ],
   },
@@ -569,7 +920,7 @@ const emptyPageAPIReferenceSections = [
       {
         prop: "children / className / render / ref / native props",
         type: 'useRender.ComponentProps<"div">',
-        default: "—",
+        default: "-",
         description: "Header grouping or wrapping action content.",
       },
     ],
@@ -586,7 +937,7 @@ const emptyPageAPIReferenceSections = [
       {
         prop: "children / render / ref / native props",
         type: 'useRender.ComponentProps<"div">',
-        default: "—",
+        default: "-",
         description:
           "Provide an accessible name for meaningful media; mark decorative media aria-hidden.",
       },
@@ -598,7 +949,7 @@ const emptyPageAPIReferenceSections = [
       {
         prop: "children / render / ref / native props",
         type: 'useRender.ComponentProps<"h3">',
-        default: "—",
+        default: "-",
         description: "Default h3; render={<h2 />} changes the heading level.",
       },
     ],
@@ -609,7 +960,7 @@ const emptyPageAPIReferenceSections = [
       {
         prop: "children / render / ref / native props",
         type: 'useRender.ComponentProps<"p">',
-        default: "—",
+        default: "-",
         description: "Wrapping supporting text.",
       },
     ],
@@ -639,13 +990,13 @@ const emptyPageAPIReferenceSections = [
       {
         prop: "query",
         type: "string",
-        default: "—",
+        default: "-",
         description: "Included in the no-results description.",
       },
       {
         prop: "primaryAction / secondaryAction",
         type: "KiraEmptyAction",
-        default: "—",
+        default: "-",
         description:
           "One main action and an optional outline secondary action.",
       },
@@ -654,19 +1005,19 @@ const emptyPageAPIReferenceSections = [
         type: "string / (context: { signal: AbortSignal }) => void | Promise<void>",
         default: "Required",
         description:
-          "Caller-owned action with cancellation on state/action-label change or unmount, duplicate protection and visible failure feedback.",
+          "Caller-owned action with cancellation on state/action-label change or unmount, duplicate protection, and visible failure feedback.",
       },
       {
         prop: "action.pendingLabel / successMessage",
         type: "string / string",
-        default: "Working… / Done.",
+        default: '"Working…" / "Done."',
         description:
           "Pending button text and the single contextual status message.",
       },
       {
         prop: "action.disabled / disabledReason",
         type: "boolean / string",
-        default: "false / —",
+        default: "false / -",
         description: "Disabled control with a visible explanation.",
       },
       {
@@ -678,4 +1029,37 @@ const emptyPageAPIReferenceSections = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof APIReference>["sections"];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const emptyPageChangelogEntries = [
+  {
+    version: "2.0.0",
+    date: "13 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Composable Empty parts",
+        description:
+          "EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription and EmptyContent match the stock registry shape with native refs and Base UI render composition. Audited against Base UI 1.9.0.",
+      },
+      {
+        type: "added",
+        title: "KiraEmpty recovery",
+        description:
+          "First use, no matches, errors, offline, access, completion and loading states with caller actions, cancellation, pending/error/success feedback and a single status region.",
+      },
+      {
+        type: "breaking",
+        title: "Children are composition",
+        description:
+          "Empty.children now replaces the shorthand icon/title/description/action layout. Use EmptyContent to place custom actions. Native title attributes move to the render element because title now accepts ReactNode.",
+      },
+      {
+        type: "fixed",
+        title: "Honest actions and layout",
+        description:
+          "Null media no longer leaves a gap. Labels wrap, presets forward refs, centered/inline layouts share parts, and all demo actions have local behavior.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

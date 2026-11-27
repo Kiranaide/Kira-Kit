@@ -12,5 +12,5 @@ npm run dev
 Add Kira Kit components from the project root:
 
 ```sh
-npx shadcn@latest add @kira-kit/button
+kira-kit add @kira-kit/button
 ```

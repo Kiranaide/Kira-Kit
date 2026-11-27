@@ -2,8 +2,12 @@
 "use client";
 
 import * as React from "react";
-import { reactContentKey, withContentKeys } from "@/components/ui/content-keys";
-import { Button as ButtonPrimitive } from "@base-ui/react/button";
+import {
+  isNumberProp,
+  isStringProp,
+  reactContentKey,
+  withOccurrenceKeys,
+} from "@/lib/component-utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import {
@@ -18,11 +22,14 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Button,
+  buttonVariants,
+  type ButtonProps,
+} from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "cn";
-import { isNumberProp, isStringProp } from "@/components/ui/prop-guards";
 
 const announcementBarVariants = cva(
   "relative flex w-full min-w-0 flex-wrap items-center gap-3 px-4 py-3 text-sm",
@@ -102,8 +109,8 @@ interface AnnouncementBarContentProps extends React.ComponentProps<"div"> {
 }
 
 interface AnnouncementBarActionProps extends Omit<
-  ButtonPrimitive.Props,
-  "className" | "onClick"
+  ButtonProps,
+  "className" | "onClick" | "variant" | "size"
 > {
   onClick?: React.MouseEventHandler<HTMLElement>;
   href?: string;
@@ -460,8 +467,9 @@ function AnnouncementBarAction({
   if (href) return link;
 
   return (
-    <ButtonPrimitive
+    <Button
       data-slot="announcement-bar-action"
+      variant="ghost"
       nativeButton={nativeButton ?? !render}
       render={render}
       ref={ref}
@@ -1350,7 +1358,7 @@ function AnnouncementRotatorMessagesView({
       aria-atomic="true"
     >
       {messages.length ? (
-        withContentKeys(messages, reactContentKey).map(
+        withOccurrenceKeys(messages, reactContentKey).map(
           ({ item: message, key }, messageIndex) => (
             <div
               data-slot="announcement-rotator-message"

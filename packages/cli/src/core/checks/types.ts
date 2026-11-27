@@ -1,9 +1,18 @@
+import { extractImports, type ExtractedImports } from "../registry/extract";
+
 export interface SourceFile {
   /** Display name, e.g. "ui/button" or "hooks/use-reduced-motion". */
   name: string;
   /** Absolute or repo-relative path. */
   path: string;
   content: string;
+  /** Memoized AST imports populated once per file by the runner. */
+  imports?: ExtractedImports;
+}
+
+/** Return memoized imports when populated by the runner, else parse on demand. */
+export function getImports(file: SourceFile): ExtractedImports {
+  return file.imports ?? extractImports(file.content, file.path);
 }
 
 export interface CheckContext {
@@ -11,6 +20,8 @@ export interface CheckContext {
   indexCss: string;
   /** Registry metadata by item name (for checks 1 and 10). */
   items: Map<string, ItemMeta>;
+  /** Consumer icon library; lucide imports count as tabler declarations. */
+  iconLibrary?: string;
 }
 
 export interface ItemMeta {

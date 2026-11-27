@@ -1,19 +1,18 @@
 "use client";
 
 import * as React from "react";
-import gsap from "gsap";
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IconCheck, IconLoader2 } from "@tabler/icons-react";
 
 import { cn } from "cn";
+import { useOptimisticCommit } from "@/hooks/use-optimistic-commit";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/toast";
 
 // oxlint-disable anti-slop/no-runtime-typeof -- ReactNode → string is the I/O boundary (React guarantees string children/labels; anything else has no text label); mergeRefs dispatches on the documented React ref forms.
 function asText(node: React.ReactNode): string | undefined {
@@ -41,7 +40,7 @@ function mergeRefs<T>(
 const toggleVariants = cva(
   [
     "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-[color,background-color,border-color,box-shadow]",
-    "focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+    "focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px]",
     "disabled:pointer-events-none disabled:opacity-50",
     "hover:bg-muted hover:text-muted-foreground",
     "[&_svg]:pointer-events-none [&_svg]:shrink-0",
@@ -129,17 +128,10 @@ function useAriaLabelWarning(
 }
 
 /**
- * Dev-only nudge for the rule people get wrong most often. The APG calls it
- * critical that "the label on a toggle does not change when its state changes":
- * a button labelled "Mute" stays "Mute" when pressed, because `aria-pressed`
- * already carries the state. Swapping the text to "Unmute" double-announces it
- * and breaks voice control, which targets the visible name.
- *
- * If the label genuinely must swap (Play → Pause), that's the text-carries-state
- * pattern — drop `aria-pressed` entirely rather than shipping both.
- *
- * Only labels observed at *different* pressed states are compared, so a label
- * that changes for unrelated reasons while the state holds isn't flagged.
+ * Dev-only nudge for the APG rule that a toggle's label must not change
+ * with its state: `aria-pressed` already carries it, so swapping "Mute"
+ * for "Unmute" double-announces and breaks voice control. When a label
+ * genuinely must swap, drop `aria-pressed` rather than shipping both.
  */
 function useLabelStabilityWarning({
   pressed,
@@ -249,13 +241,13 @@ function useSelectionPop(
   const reducedMotion = useReducedMotion();
 
   React.useEffect(() => {
-    if (!justPressed || !enabled || reducedMotion || !ref.current) return;
+    const node = ref.current;
 
-    gsap.fromTo(
-      ref.current,
-      { scale: 1.25 },
-      { scale: 1, duration: 0.3, ease: "back.out(2.5)", overwrite: "auto" },
-    );
+    if (!justPressed || !enabled || reducedMotion || !node) return;
+
+    node.classList.remove("animate-toggle-pop");
+    void node.offsetWidth;
+    node.classList.add("animate-toggle-pop");
   }, [justPressed, enabled, reducedMotion, ref]);
 }
 
@@ -279,23 +271,23 @@ type ToggleRenderProps = Omit<
   | "ref"
 >;
 
-/** Press micro-interaction: <150ms, transform only, reduced-motion gated,
- * interruptible (§5 — `overwrite: "auto"` cancels any in-flight tween). */
+/** Press micro-interaction: <150ms, transform only, reduced-motion gated. */
 function pressTween(
   node: HTMLElement | null,
   loading: boolean,
   reducedMotion: boolean,
 ) {
-  if (!node || loading || reducedMotion) return;
+  if (!node || loading || reducedMotion || typeof node.animate !== "function")
+    return;
 
-  gsap.to(node, {
-    scale: 0.95,
-    duration: 0.075,
-    ease: "power2.out",
-    yoyo: true,
-    repeat: 1,
-    overwrite: "auto",
-  });
+  node.animate(
+    [
+      { transform: "scale(1)" },
+      { transform: "scale(0.95)" },
+      { transform: "scale(1)" },
+    ],
+    { duration: 150, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+  );
 }
 
 /** Dev-only nudges for the plain `Toggle`: aria-label, label stability, icon pop. */
@@ -555,10 +547,6 @@ function withFormInput({
   );
 }
 
-// =============================================================================
-// KiraToggle — one prop-driven entry point over every toggle mode
-// =============================================================================
-
 interface KiraToggleProps extends Omit<
   ToggleProps,
   "onPressedChange" | "children"
@@ -603,11 +591,10 @@ function DisabledReasonWrapper({
   reason: React.ReactNode;
   children: React.ReactNode;
 }) {
-  // Focus proxy for a native-disabled trigger (Base UI's documented pattern for
-  // tooltips on disabled controls): the span is hit-tested where the disabled
-  // button is not, and Tab reaches it so keyboard users can read the reason.
-  // role="button" is deliberately avoided — the accessible "disabled button" is
-  // already announced via aria-disabled; the label carries the reason.
+  // Focus proxy for a native-disabled trigger (Base UI's documented pattern
+  // for tooltips on disabled controls): the span is hit-tested where the
+  // disabled button is not, and Tab reaches it so keyboard users can read the
+  // reason. `role="button"` is avoided — aria-disabled already announces it.
   const anchorProps = {
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus proxy required for disabled-control tooltip reachability (WCAG 2.2 §9)
     tabIndex: 0,
@@ -622,7 +609,7 @@ function DisabledReasonWrapper({
           <span
             data-slot="toggle-reason-anchor"
             {...anchorProps}
-            className="inline-flex cursor-not-allowed rounded-md outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+            className="inline-flex cursor-not-allowed rounded-md outline-none focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px]"
           />
         }
       >
@@ -686,7 +673,7 @@ function useToggleShortcut({
 
 /**
  * Optimistic async toggle state for KiraToggle: flips instantly via
- * `useOptimistic`, commits on resolve, reverts with a toast on reject.
+ * `useOptimisticCommit`, commits on resolve, reverts and notifies on reject.
  */
 function useOptimisticToggle({
   committedPressed,
@@ -709,9 +696,15 @@ function useOptimisticToggle({
     "idle",
   );
 
-  const [optimisticPressed, setOptimisticPressed] = React.useOptimistic(
-    committedPressed,
-    (_prev: boolean, next: boolean) => next,
+  const { optimisticValue: optimisticPressed, runCommit } = useOptimisticCommit(
+    {
+      value: committedPressed,
+      onCommit: onToggleAsync,
+      onCommitted: (next) => {
+        if (!isControlled) setPressedState(next);
+      },
+      errorTitle: errorMessage,
+    },
   );
 
   React.useEffect(() => {
@@ -724,28 +717,11 @@ function useOptimisticToggle({
   const runToggle = React.useCallback(
     async (next: boolean) => {
       if (!onToggleAsync) return;
-      setOptimisticPressed(next); // flips the UI instantly
       setStatus("loading");
-
-      try {
-        await onToggleAsync(next);
-
-        if (!isControlled) setPressedState(next); // commit truth
-        setStatus(showSuccess ? "success" : "idle");
-      } catch {
-        // the optimistic value reverts to committedPressed on the next render
-        setStatus("idle");
-        toast.error(errorMessage);
-      }
+      const ok = await runCommit(next);
+      setStatus(ok && showSuccess ? "success" : "idle");
     },
-    [
-      onToggleAsync,
-      isControlled,
-      setPressedState,
-      showSuccess,
-      errorMessage,
-      setOptimisticPressed,
-    ],
+    [onToggleAsync, runCommit, showSuccess],
   );
 
   return { status, optimisticPressed, runToggle };

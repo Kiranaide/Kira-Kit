@@ -25,10 +25,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Data
-// =============================================================================
-
 const fruits: SelectOption[] = [
   { value: "apple", label: "Apple" },
   { value: "banana", label: "Banana" },
@@ -41,7 +37,9 @@ const fruits: SelectOption[] = [
 ];
 
 const searchUsers = async (query: string): Promise<SelectOption[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => {
+    setTimeout(resolve, 500);
+  });
 
   const allUsers = [
     { value: "1", label: "John Doe" },
@@ -136,10 +134,6 @@ const LONG_LABEL_OPTIONS: SelectOption[] = [
   },
 ];
 
-// =============================================================================
-// Demo Components
-// =============================================================================
-
 function BasicSelectDemo() {
   const [basicValue, setBasicValue] = React.useState<string>("");
 
@@ -170,7 +164,8 @@ function BasicSelectDemo() {
   );
 }
 
-const basicSelectCode = `import {
+const basicSelectCode = `import * as React from "react"
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -180,10 +175,10 @@ const basicSelectCode = `import {
 } from "@/components/ui/select"
 
 export function BasicSelectDemo() {
-  const [value, setValue] = useState("")
+  const [value, setValue] = React.useState("")
 
   return (
-    <Select value={value} onValueChange={setValue}>
+    <Select value={value} onValueChange={(val) => setValue(val ?? "")}>
       <SelectTrigger>
         <SelectValue>{value || "Select a fruit"}</SelectValue>
       </SelectTrigger>
@@ -199,13 +194,11 @@ export function BasicSelectDemo() {
   )
 }`;
 
-// KiraSelect is the single prop-driven API — the demos below all use it.
-
 function KiraBasicDemo() {
   const [value, setValue] = React.useState<string>("");
 
   return (
-    <div className="space-y-4 max-w-sm">
+    <div className="max-w-sm space-y-4">
       <KiraSelect
         options={fruits}
         value={value}
@@ -326,7 +319,6 @@ function AutocompleteDemo() {
 
 const autocompleteCode = `import { KiraSelect } from "@/components/ui/select"
 
-// searchable makes the single-select filter as you type
 <KiraSelect
   options={options}
   searchable
@@ -348,14 +340,13 @@ function VirtualizedSelectDemo() {
           searchable
           virtualized
           value={value}
-          onChange={(v) => setValue(String(v))}
+          onChange={(v) => setValue(Array.isArray(v) ? "" : (v ?? ""))}
           placeholder="Search 5,000 cities..."
         />
       </div>
       <p className="text-sm text-muted-foreground">
         5,000 options, windowed rendering.{" "}
-        {selected && `Selected: ${selected.label}`}
-        {!selected && "Nothing selected yet."}
+        {selected ? `Selected: ${selected.label}` : "Nothing selected yet."}
       </p>
     </div>
   );
@@ -363,13 +354,13 @@ function VirtualizedSelectDemo() {
 
 const virtualizedCode = `import { KiraSelect } from "@/components/ui/select"
 
-// virtualized renders a flat window for very long lists (grouping is ignored)
 <KiraSelect
   options={bigOptions}
   searchable
   virtualized
   value={value}
   onChange={(v) => setValue(Array.isArray(v) ? "" : v ?? "")}
+  placeholder="Search 5,000 cities..."
 />`;
 
 function GroupedSearchableDemo() {
@@ -382,7 +373,7 @@ function GroupedSearchableDemo() {
           options={groupedFruits}
           searchable
           value={value}
-          onChange={(v) => setValue(String(v))}
+          onChange={(v) => setValue(Array.isArray(v) ? "" : (v ?? ""))}
           placeholder="Filter grouped options..."
         />
       </div>
@@ -402,37 +393,40 @@ const grouped = [
   { label: "Berries", options: [{ value: "kiwi", label: "Kiwi" }] },
 ]
 
-// groups survive filtering in the rich path
-<KiraSelect options={grouped} searchable />`;
+<KiraSelect
+  options={grouped}
+  searchable
+  value={value}
+  onChange={(v) => setValue(Array.isArray(v) ? "" : v ?? "")}
+  placeholder="Filter grouped options..."
+/>`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-function ShowcaseDemo() {
+function StressLayoutCases() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6">
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">
           Very long label (truncation)
         </p>
-        <div className="max-w-sm">
+        <div className="max-w-xs">
           <KiraSelect options={LONG_LABEL_OPTIONS} searchable />
         </div>
       </div>
 
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">
-          Narrow container (320px)
+          Narrow container (max-w-xs)
         </p>
-        <div className="max-w-[320px]">
+        <div className="max-w-xs">
           <KiraSelect options={fruits} searchable placeholder="Narrow..." />
         </div>
       </div>
 
       <div className="space-y-2">
         <p className="text-sm text-muted-foreground">
-          String shorthand — `options={["Data1", "Data2"]}` (searchable, rich
-          path)
+          String shorthand — options={[`"Data1"`, `"Data2"`].join(", ")}
         </p>
-        <div className="max-w-sm">
+        <div className="max-w-xs">
           <KiraSelect
             options={["Data1", "Data2", "Data3"]}
             searchable
@@ -446,7 +440,7 @@ function ShowcaseDemo() {
           Popup escapes overflow-hidden (portaled)
         </p>
         <div className="overflow-hidden rounded-xl border p-4">
-          <div className="max-w-sm">
+          <div className="max-w-xs">
             <KiraSelect
               options={fruits}
               searchable
@@ -455,57 +449,71 @@ function ShowcaseDemo() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+function StressStateCases() {
+  return (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Disabled (read-only dataset)
+        </p>
+        <KiraSelect
+          options={fruits}
+          disabled
+          placeholder="Disabled — archive view"
+        />
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">Invalid</p>
+        <KiraSelect options={fruits} searchable invalid placeholder="Invalid" />
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">Empty options</p>
+        <KiraSelect options={[]} placeholder="No options" />
+      </div>
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Size ladder: xs / sm / default / lg / xl
+        </p>
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">
-            Disabled (reason: read-only dataset)
-          </p>
-          <KiraSelect
-            options={fruits}
-            disabled
-            placeholder="Disabled — archive view"
-          />
-        </div>
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Invalid</p>
-          <KiraSelect
-            options={fruits}
-            searchable
-            invalid
-            placeholder="Invalid"
-          />
-        </div>
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Empty options</p>
-          <KiraSelect options={[]} placeholder="No options" />
-        </div>
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">
-            Size ladder: xs / sm / default / lg / xl
-          </p>
-          <div className="space-y-2">
-            <KiraSelect options={fruits} size="xs" placeholder="Extra small" />
-            <KiraSelect options={fruits} size="sm" placeholder="Small" />
-            <KiraSelect options={fruits} placeholder="Default" />
-            <KiraSelect options={fruits} size="lg" placeholder="Large" />
-            <KiraSelect options={fruits} size="xl" placeholder="Extra large" />
-          </div>
+          <KiraSelect options={fruits} size="xs" placeholder="Extra small" />
+          <KiraSelect options={fruits} size="sm" placeholder="Small" />
+          <KiraSelect options={fruits} placeholder="Default" />
+          <KiraSelect options={fruits} size="lg" placeholder="Large" />
+          <KiraSelect options={fruits} size="xl" placeholder="Extra large" />
         </div>
       </div>
     </div>
   );
 }
 
-const showcaseCode = `import { KiraSelect } from "@/components/ui/select"
+function StressDemo() {
+  return (
+    <div className="flex flex-col gap-8">
+      <StressLayoutCases />
+      <StressStateCases />
+    </div>
+  );
+}
+
+const stressCode = `import { KiraSelect } from "@/components/ui/select"
+
+// Narrow column (max-w-xs) with long labels, empty options, and disabled/invalid states
+<div className="max-w-xs space-y-4">
+  <KiraSelect options={longLabelOptions} searchable />
+  <KiraSelect options={["Data1", "Data2", "Data3"]} searchable />
+  <KiraSelect options={[]} placeholder="No options" />
+  <KiraSelect options={fruits} disabled placeholder="Disabled" />
+  <KiraSelect options={fruits} searchable invalid placeholder="Invalid" />
+</div>
 
 // Portal keeps the popup out of overflow-hidden ancestors:
 <div className="overflow-hidden rounded-xl border p-4">
-  <KiraSelect options={options} searchable />
-</div>
-
-// Windowed rendering for thousands of options:
-<KiraSelect options={bigOptions} searchable virtualized />`;
+  <KiraSelect options={fruits} searchable />
+</div>`;
 
 function CreatableSelectDemo() {
   const [creatableOptions, setCreatableOptions] =
@@ -520,7 +528,9 @@ function CreatableSelectDemo() {
           options={creatableOptions}
           creatable
           value={creatableValue}
-          onChange={(val) => setCreatableValue(String(val))}
+          onChange={(val) =>
+            setCreatableValue(Array.isArray(val) ? "" : (val ?? ""))
+          }
           onCreateOption={(inputValue) => {
             const newOption = {
               value: inputValue.toLowerCase(),
@@ -560,7 +570,7 @@ const creatableSelectCode = `import { KiraSelect } from "@/components/ui/select"
 function VariantsDemo() {
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">Default</p>
           <KiraSelect options={fruits} searchable placeholder="Default" />
@@ -584,13 +594,13 @@ function VariantsDemo() {
           />
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">With Left Icon</p>
           <KiraSelect
             options={fruits}
             searchable
-            leftIcon={<IconUser className="w-4 h-4" />}
+            leftIcon={<IconUser className="size-4" />}
             placeholder="Select user..."
           />
         </div>
@@ -663,18 +673,14 @@ export function DisabledDemo() {
   )
 }`;
 
-// =============================================================================
-// Code Examples
-// =============================================================================
-
 const usageCode = `import { KiraSelect } from "@/components/ui/select"
 
 // One component, behaviour chosen by props:
-<KiraSelect options={options} />                       // basic
-<KiraSelect options={options} multiple />              // multi
-<KiraSelect options={[]} async onSearch={loadOptions} /> // async
+<KiraSelect options={options} />                           // basic
+<KiraSelect options={options} multiple />                  // multi
+<KiraSelect options={[]} async onSearch={loadOptions} />   // async
 <KiraSelect options={options} creatable onCreateOption={create} /> // creatable
-<KiraSelect options={options} searchable />            // autocomplete
+<KiraSelect options={options} searchable />                // autocomplete
 <KiraSelect options={bigOptions} searchable virtualized /> // long lists
 
 // Low-level primitives are still available for full control:
@@ -682,11 +688,58 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"`;
 
-// =============================================================================
-// Features
-// =============================================================================
+export default function SelectPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Select"
+        version="v3.4.0"
+        description="Dropdown selection with a single prop-driven API (KiraSelect) covering multi-select, async loading, autocomplete, and creatable options."
+      />
 
-const features = [
+      <FeatureGrid
+        features={selectPageFeatures}
+        description="Unified combobox selection built on Base UI primitives."
+      />
+
+      <DemoTabs tabs={selectPageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        shortcuts={selectPageShortcuts}
+        description="Base UI combobox and select keyboard bindings plus Kira creatable shortcuts."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Common usage patterns for select components."
+        notes={[
+          {
+            label: "KiraSelect",
+            body: "Recommended entry point for data-driven selects, multi-select tags, async search, creatable items, and virtualized lists.",
+          },
+          {
+            label: "Select primitives",
+            body: "Use Select, SelectTrigger, SelectContent, and SelectItem when you need full control over custom item markup.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={selectPageAPISections}
+        description="Props, types, and defaults for KiraSelect and the low-level Select primitives."
+      />
+
+      <Changelog
+        entries={selectPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Select."
+      />
+    </ComponentPage>
+  );
+}
+
+const selectPageFeatures = [
   {
     title: "One API",
     description:
@@ -707,13 +760,166 @@ const features = [
     description:
       "Windowed rendering for very long lists (5,000+ options) with scroll position, End/Home, and selection verified.",
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-// =============================================================================
-// Keyboard Shortcuts
-// =============================================================================
+const selectPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic (primitive)",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic Select"
+        description="Low-level primitives for full control over the markup."
+        code={basicSelectCode}
+      >
+        <BasicSelectDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "variants",
+    label: "Variants",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Trigger Variants"
+        description="Ghost, outline, left icon, invalid, and no-chevron — all via KiraSelect props."
+        code={variantsCode}
+      >
+        <VariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "disabled",
+    label: "Disabled",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Disabled State"
+        description="Select in disabled state, preventing user interaction."
+        code={disabledCode}
+      >
+        <DisabledDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraSelect",
+    group: "KiraSelect",
+    demo: (
+      <DemoWrapper
+        title="KiraSelect (single API)"
+        description="Prop-driven select from an options array — the recommended entry point."
+        code={kiraBasicCode}
+      >
+        <KiraBasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "multi",
+    label: "Multi",
+    group: "KiraSelect",
+    demo: (
+      <DemoWrapper
+        title="Multi Select"
+        description="Tag-style multi-select with search and animated list items."
+        code={multiSelectCode}
+      >
+        <MultiSelectDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "async",
+    label: "Async",
+    group: "KiraSelect",
+    demo: (
+      <DemoWrapper
+        title="Async Select"
+        description="Search with debounced API calls, loading state, and animated results."
+        code={asyncSelectCode}
+      >
+        <AsyncSelectDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "autocomplete",
+    label: "Autocomplete",
+    group: "KiraSelect",
+    demo: (
+      <DemoWrapper
+        title="Autocomplete"
+        description="A searchable single-select with fuzzy matching and keyboard navigation."
+        code={autocompleteCode}
+      >
+        <AutocompleteDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "creatable",
+    label: "Creatable",
+    group: "KiraSelect",
+    demo: (
+      <DemoWrapper
+        title="Creatable Select"
+        description="Type to search or create new options. Press Enter to create when no match is found."
+        code={creatableSelectCode}
+      >
+        <CreatableSelectDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "grouped",
+    label: "Grouped + search",
+    group: "KiraSelect",
+    demo: (
+      <DemoWrapper
+        title="Grouped Options with Search"
+        description="Group labels survive filtering in every mode."
+        code={groupedCode}
+      >
+        <GroupedSearchableDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "virtualized",
+    label: "Virtualized",
+    group: "KiraSelect",
+    demo: (
+      <DemoWrapper
+        title="Virtualized Long List"
+        description="5,000 options rendered as a flat window (grouping is ignored while virtualized)."
+        code={virtualizedCode}
+      >
+        <VirtualizedSelectDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, narrow max-w-xs containers, overflow escape, disabled/invalid/empty states, and the full size ladder."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const keyboardShortcuts = [
+const selectPageShortcuts = [
   { keys: "↓ / ↑", description: "Navigate options — inherited from Base UI" },
   {
     keys: "Home / End",
@@ -741,298 +947,143 @@ const keyboardShortcuts = [
     keys: "Enter",
     description: "Kira: create item flow when 'Create \"…\"' is highlighted",
   },
-];
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-// =============================================================================
-// API Reference
-// =============================================================================
-
-const apiSections = [
+const selectPageAPISections = [
   {
     title: "KiraSelect",
     props: [
       {
         prop: "options",
-        type: "SelectOption[] | GroupedSelectOption[]",
-        description: "Options to display (flat or grouped)",
+        type: "T[] | GroupedSelectOption<T>[] | readonly string[]",
+        default: "-",
+        description:
+          "Options to display (flat, grouped, or plain string shorthand).",
       },
       {
         prop: "value / defaultValue",
         type: "string | string[]",
-        description: "Selected value(s); array when multiple",
+        default: "-",
+        description: "Selected value(s); array when multiple is enabled.",
       },
       {
         prop: "onChange",
-        type: "(value, option) => void",
-        description: "Called with the new value and matching option(s)",
+        type: "(value: string | string[], option: T | T[] | null) => void",
+        default: "-",
+        description: "Called with the new value and matching option(s).",
       },
       {
         prop: "multiple",
         type: "boolean",
         default: "false",
-        description: "Tag-style multi-select",
+        description: "Tag-style multi-select.",
       },
       {
         prop: "searchable",
         type: "boolean",
         default: "false",
-        description: "Filter options as you type (autocomplete)",
+        description: "Filter options as you type (autocomplete).",
       },
       {
         prop: "async",
         type: "boolean",
         default: "false",
-        description: "Load options via onSearch with debouncing",
+        description: "Load options via onSearch with debouncing.",
+      },
+      {
+        prop: "onSearch",
+        type: "(query: string) => Promise<T[]>",
+        default: "-",
+        description: "Async loader (required when async is true).",
       },
       {
         prop: "virtualized",
         type: "boolean",
         default: "false",
         description:
-          "Windowed rendering for very long lists (renders a flat window; grouping is ignored)",
+          "Windowed rendering for very long lists (renders a flat window; grouping is ignored).",
       },
       {
-        prop: "onSearch",
-        type: "(query) => Promise<SelectOption[]>",
-        description: "Async loader (required when async)",
+        prop: "creatable / onCreateOption / createLabel",
+        type: "boolean / (inputValue: string) => void / string",
+        default: "false / - / -",
+        description: "Offer to create an option from the current search query.",
       },
       {
-        prop: "creatable",
-        type: "boolean",
-        default: "false",
-        description: "Offer to create an option from the query",
+        prop: "size / variant",
+        type: '"xs" | "sm" | "default" | "lg" | "xl" / "default" | "ghost" | "outline"',
+        default: '"default" / "default"',
+        description: "Control height ladder and trigger visual style.",
       },
       {
-        prop: "onCreateOption",
-        type: "(input: string) => void",
-        description: "Called when a new option is created",
-      },
-      {
-        prop: "variant",
-        type: "'default' | 'ghost' | 'outline'",
-        default: "'default'",
-        description: "Trigger style (rich path)",
-      },
-      {
-        prop: "invalid",
-        type: "boolean",
-        default: "false",
-        description: "Sets aria-invalid + destructive ring",
+        prop: "placeholder / disabled / readOnly / required / invalid",
+        type: "string / boolean",
+        default: "-",
+        description:
+          "Standard field states; invalid sets aria-invalid and destructive ring.",
       },
       {
         prop: "leftIcon / hideChevron / maxDisplayedTags",
-        type: "ReactNode / boolean / number",
-        description: "Trigger adornments and tag overflow cap",
+        type: "React.ReactNode / boolean / number",
+        default: "- / false / -",
+        description: "Trigger adornments and multi-select tag overflow cap.",
+      },
+      {
+        prop: "emptyMessage / loadingMessage / searchingMessage",
+        type: "string | React.ReactNode",
+        default: "-",
+        description: "Custom copy for empty and async loading states.",
       },
     ],
   },
   {
     title: "Select (primitive)",
     props: [
-      { prop: "value", type: "string", description: "Controlled value" },
       {
-        prop: "defaultValue",
+        prop: "value / defaultValue",
         type: "string",
-        description: "Initial value for uncontrolled mode",
+        default: "-",
+        description: "Controlled or initial uncontrolled value.",
       },
       {
         prop: "onValueChange",
-        type: "(value: string) => void",
-        description: "Called when value changes",
+        type: "(value: string | null) => void",
+        default: "-",
+        description: "Called when the selected value changes.",
       },
       {
         prop: "disabled",
         type: "boolean",
         default: "false",
-        description: "Disable the select",
+        description: "Disable the select.",
       },
     ],
   },
-];
-
-// =============================================================================
-// Demo Tabs Configuration
-// =============================================================================
-
-const demoTabs = [
   {
-    value: "basic",
-    label: "Basic (primitive)",
-    demo: (
-      <DemoWrapper
-        title="Basic Select"
-        description="Low-level primitives for full control over the markup."
-        code={basicSelectCode}
-      >
-        <BasicSelectDemo />
-      </DemoWrapper>
-    ),
+    title: "SelectTrigger / SelectContent / SelectItem",
+    props: [
+      {
+        prop: "SelectTrigger.size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Control height matching Button and Input.",
+      },
+      {
+        prop: "SelectContent.side / sideOffset / align / alignOffset / alignItemWithTrigger",
+        type: "Base UI Positioner props",
+        default: '"bottom" / 4 / "start" / 0 / false',
+        description: "Popup placement relative to the trigger.",
+      },
+      {
+        prop: "SelectItem.value / disabled",
+        type: "string / boolean",
+        default: "- / false",
+        description: "Option value and disabled state.",
+      },
+    ],
   },
-  {
-    value: "kira",
-    label: "KiraSelect",
-    demo: (
-      <DemoWrapper
-        title="KiraSelect (single API)"
-        description="Prop-driven select from an options array — the recommended entry point."
-        code={kiraBasicCode}
-      >
-        <KiraBasicDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "multi",
-    label: "Multi",
-    demo: (
-      <DemoWrapper
-        title="Multi Select"
-        description="Tag-style multi-select with search and animated list items."
-        code={multiSelectCode}
-      >
-        <MultiSelectDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "async",
-    label: "Async",
-    demo: (
-      <DemoWrapper
-        title="Async Select"
-        description="Search with debounced API calls, loading state, and animated results."
-        code={asyncSelectCode}
-      >
-        <AsyncSelectDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "autocomplete",
-    label: "Autocomplete",
-    demo: (
-      <DemoWrapper
-        title="Autocomplete"
-        description="A searchable single-select with fuzzy matching and keyboard navigation."
-        code={autocompleteCode}
-      >
-        <AutocompleteDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "creatable",
-    label: "Creatable",
-    demo: (
-      <DemoWrapper
-        title="Creatable Select"
-        description="Type to search or create new options. Press Enter to create when no match is found."
-        code={creatableSelectCode}
-      >
-        <CreatableSelectDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "variants",
-    label: "Variants",
-    demo: (
-      <DemoWrapper
-        title="Trigger Variants"
-        description="Ghost, outline, left icon, invalid, and no-chevron — all via KiraSelect props."
-        code={variantsCode}
-      >
-        <VariantsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "disabled",
-    label: "Disabled",
-    demo: (
-      <DemoWrapper
-        title="Disabled State"
-        description="Select in disabled state, preventing user interaction."
-        code={disabledCode}
-      >
-        <DisabledDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "virtualized",
-    label: "Virtualized",
-    demo: (
-      <DemoWrapper
-        title="Virtualized Long List"
-        description="5,000 options rendered as a flat window (grouping is ignored while virtualized)."
-        code={virtualizedCode}
-      >
-        <VirtualizedSelectDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "grouped",
-    label: "Grouped + search",
-    demo: (
-      <DemoWrapper
-        title="Grouped Options with Search"
-        description="Group labels survive filtering in every mode."
-        code={groupedCode}
-      >
-        <GroupedSearchableDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "showcase",
-    label: "Showcase",
-    demo: (
-      <DemoWrapper
-        title="Stress Cases"
-        description="Long labels, narrow containers, overflow escape, disabled/invalid/empty states, sizes."
-        code={showcaseCode}
-      >
-        <ShowcaseDemo />
-      </DemoWrapper>
-    ),
-  },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-// =============================================================================
-// Page Component
-// =============================================================================
-
-export default function SelectPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Select"
-        version="v3.2"
-        description="Dropdown selection with a single prop-driven API (KiraSelect) covering multi-select, async loading, autocomplete, and creatable options."
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
-
-      <UsageBlock
-        code={usageCode}
-        title="Usage"
-        description="Common usage patterns for select components"
-      />
-
-      <APIReference sections={apiSections} />
-
-      <Changelog entries={selectPageChangelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
 const selectPageChangelogEntries = [
   {
     version: "3.4.0",
@@ -1072,7 +1123,7 @@ const selectPageChangelogEntries = [
         type: "changed",
         title: "One Menu-Item Metric",
         description:
-          "SelectItem and combobox items share px-2 py-1.5 min-h-8 gap-2 (select keeps pr-8 for the check indicator); SelectLabel aligns to px-2 py-1.5. The sm-only rounded-[min(...)] radius hack is gone — every size uses rounded-lg. Virtualized row estimate updated 36→32px to match.",
+          "SelectItem and combobox items share px-2 py-1.5 min-h-8 gap-2 (select keeps pr-8 for the check indicator); SelectLabel aligns to px-2 py-1.5. The sm-only custom radius calculation is gone — every size uses rounded-lg. Virtualized row estimate updated 36→32px to match.",
       },
     ],
   },

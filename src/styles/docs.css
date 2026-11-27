@@ -1,0 +1,138 @@
+/* Docs "Preview Page" frame — imported only by src/main.tsx, never shipped to consumers. */
+
+/* Below-the-fold docs sections skip off-screen layout/paint until scrolled near. */
+.docs-deferred-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 420px;
+}
+
+/* Scroll reveal: opacity + a 12px rise, driven by a data attribute the
+   IntersectionObserver sets. Composited properties only. */
+.docs-reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.35s var(--ease-out-strong),
+    transform 0.35s var(--ease-out-strong);
+}
+
+.docs-reveal[data-revealed="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Example swap: the panel content is keyed, so it enters rather than teleports.
+   Transitions retarget, which matters when the list is arrow-keyed quickly. */
+.docs-example-panel {
+  animation: docs-example-in 0.18s var(--ease-out-strong) both;
+}
+
+@keyframes docs-example-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Sliding selection pill behind the example list — transform only, so it stays
+   on the compositor while the list scrolls. */
+.docs-nav-indicator {
+  transition: transform 0.22s var(--ease-out-strong);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .docs-nav-item:not([aria-selected="true"]):hover {
+    background-color: color-mix(in oklch, var(--primary) 8%, transparent);
+  }
+}
+
+/* Shiki hands back one hex per mode; the theme axis is a class on <html>, so
+   both land on the element and CSS picks. */
+.docs-code-token {
+  color: var(--docs-token-light);
+}
+
+.dark .docs-code-token {
+  color: var(--docs-token-dark);
+}
+
+/* Thin, low-contrast scrollbars inside the playground chrome: the panels clip,
+   and the default bar reads as a layout border. */
+.docs-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* Accent ink: the theme's primary pulled toward the foreground. Some presets
+   ship a primary too light to read as 12–13px text on its own tint, so the ink is
+   derived instead of used raw — it still follows whichever preset is active. */
+.docs-accent,
+.docs-accent-fill,
+.docs-focus-ring {
+  --_docs-ink: color-mix(in oklch, var(--primary) 70%, var(--foreground));
+}
+
+.docs-accent {
+  color: var(--_docs-ink);
+}
+
+.docs-accent-fill {
+  background-color: var(--_docs-ink);
+}
+
+/* 2px perimeter, the outline treatment the kit's own components use. */
+.docs-focus-ring:focus-visible {
+  outline: 2px solid var(--_docs-ink);
+  outline-offset: 2px;
+}
+
+/* Release chips: one semantic hue per category. The surface is that hue tinted
+   into the page, the label is the same hue pulled toward the foreground, so the
+   pair stays readable in light and dark and follows whichever preset is active. */
+.docs-chip-added {
+  background-color: color-mix(in oklch, var(--success) 12%, var(--background));
+  color: color-mix(in oklch, var(--success) 45%, var(--foreground));
+}
+
+.docs-chip-fixed {
+  background-color: color-mix(in oklch, var(--info) 12%, var(--background));
+  color: color-mix(in oklch, var(--info) 45%, var(--foreground));
+}
+
+.docs-chip-changed {
+  background-color: color-mix(in oklch, var(--primary) 12%, var(--background));
+  color: color-mix(in oklch, var(--primary) 45%, var(--foreground));
+}
+
+.docs-chip-deprecated {
+  background-color: color-mix(in oklch, var(--warning) 12%, var(--background));
+  color: color-mix(in oklch, var(--warning) 45%, var(--foreground));
+}
+
+.docs-chip-breaking {
+  background-color: color-mix(
+    in oklch,
+    var(--destructive) 12%,
+    var(--background)
+  );
+  color: color-mix(in oklch, var(--destructive) 45%, var(--foreground));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-reveal {
+    transform: none;
+    transition-duration: 0.15s;
+  }
+
+  .docs-example-panel {
+    animation: none;
+  }
+
+  .docs-nav-indicator {
+    transition: none;
+  }
+}

@@ -5,7 +5,7 @@ A form-field system with vertical, horizontal, and container-responsive orientat
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/field
+kira-kit add @kira-kit/field
 ```
 
 ## Dependencies
@@ -19,6 +19,7 @@ npx shadcn add @kira-kit/field
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/input
 - @kira-kit/separator
 - @kira-kit/textarea

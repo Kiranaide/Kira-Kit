@@ -35,7 +35,7 @@ import {
   IconChevronUp,
 } from "@tabler/icons-react";
 import { cn } from "cn";
-import { isObjectProp } from "@/components/ui/prop-guards";
+import { isObjectProp } from "@/lib/component-utils";
 
 const calendarNavigationIcons = {
   left: IconChevronLeft,
@@ -44,9 +44,7 @@ const calendarNavigationIcons = {
   down: IconChevronDown,
 };
 
-/* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
 
 type CalendarSize = "sm" | "default" | "lg";
 
@@ -78,7 +76,7 @@ interface CalendarBaseProps {
   showOutsideDays?: boolean;
   locale?: Locale;
   weekStartsOn?: WeekStartsOn;
-  /** IANA time zone, e.g. "Asia/Jakarta". */
+  /** IANA time zone, e.g. "America/New_York". */
   timeZone?: string;
   markers?: CalendarMarker[];
   /** Defaults to `true` when markers are provided. */
@@ -88,7 +86,7 @@ interface CalendarBaseProps {
   showWeekNumber?: boolean;
   fixedWeeks?: boolean;
   autoFocus?: boolean;
-  /** Month transition animation. Requires DayPicker's style.css keyframes. */
+  /** Month transition animation. The keyframes ship with the calendar registry item's CSS. */
   animate?: boolean;
   "aria-label"?: string;
   /** Live-region content announced politely by DayPicker. Defaults to an sr-only selection summary. */
@@ -131,9 +129,7 @@ interface CalendarRangeProps extends CalendarBaseProps {
 type CalendarProps =
   CalendarSingleProps | CalendarMultipleProps | CalendarRangeProps;
 
-/* -------------------------------------------------------------------------- */
 /*                                 Size tokens                                */
-/* -------------------------------------------------------------------------- */
 
 const calendarSizeConfig = {
   sm: {
@@ -178,9 +174,7 @@ const markerToneClass: Record<NonNullable<CalendarMarker["tone"]>, string> = {
   destructive: "bg-destructive",
 };
 
-/* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
 
 const calendarButtonVariants = cva(
   "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
@@ -231,9 +225,7 @@ const gridCellVariants = cva(
   },
 );
 
-/* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
-/* -------------------------------------------------------------------------- */
 
 /** Start of "today", in the given IANA time zone when provided. */
 function getToday(timeZone?: string): Date {
@@ -321,9 +313,7 @@ function trapFocus(event: React.KeyboardEvent<HTMLElement>) {
   }
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                   Context                                  */
-/* -------------------------------------------------------------------------- */
 
 interface ResolvedMarker extends CalendarMarker {
   key: string;
@@ -353,10 +343,8 @@ function useCalendarContext() {
   return ctx;
 }
 
-/* -------------------------------------------------------------------------- */
 /*                         DayPicker custom components                        */
 /* (module-level so their identity is stable — no remounts on every render)   */
-/* -------------------------------------------------------------------------- */
 
 function CalendarChevron({
   orientation = "down",
@@ -391,9 +379,7 @@ function CalendarMonthCaption(arg0: MonthCaptionProps) {
   return <CalendarMonthCaptionView {...model} />;
 }
 
-/* -------------------------------------------------------------------------- */
 /*                               MonthYearPicker                              */
-/* -------------------------------------------------------------------------- */
 
 interface MonthYearPickerProps {
   value?: Date;
@@ -488,9 +474,7 @@ function MonthYearPicker(arg0: MonthYearPickerProps) {
   return <MonthYearPickerView {...model} />;
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Calendar                                  */
-/* -------------------------------------------------------------------------- */
 
 function Calendar(arg0: CalendarProps) {
   const model = useCalendarModel(arg0);
@@ -1040,7 +1024,6 @@ function useCalendarModel(props: CalendarProps) {
   const { month, handleMonthChange, disabledMatchers, pendingFrom } =
     useCalendarNavigation(props);
 
-  /* --------------------------------- Markers -------------------------------- */
   const { resolvedMarkers, markerModifiers } = React.useMemo(
     () => calendarUseMemo4(markers),
     [markers],
@@ -1054,7 +1037,6 @@ function useCalendarModel(props: CalendarProps) {
   const shouldShowLegend =
     (showLegend ?? legendItems.length > 0) && legendItems.length > 0;
 
-  /* ------------------------------ Hover preview ----------------------------- */
   const { hoveredDay, rootRefCallback } = useCalendarHover();
 
   const contextValue = useCalendarContextValue({
@@ -1068,10 +1050,8 @@ function useCalendarModel(props: CalendarProps) {
     hoveredDay,
   });
 
-  /* ------------------------- Selection announcement ------------------------- */
   const selectionSummary = resolveSelectionSummary3();
 
-  /* -------------------------------- Styling --------------------------------- */
   const { classNames } = getCalendarClasses({ sizeConfig, classNamesProp });
 
   const dayPickerProps = calendarDayPickerProps(
@@ -1084,7 +1064,6 @@ function useCalendarModel(props: CalendarProps) {
     selectionSummary,
   );
 
-  /* ---------------------------------- Today --------------------------------- */
   const today = getToday(timeZone);
 
   const todayDisabled = disabledMatchers
@@ -1499,6 +1478,16 @@ function getCalendarClasses({
     range_middle: "bg-primary/10",
     range_end: "rounded-r-md bg-primary/10",
     hidden: "invisible",
+    // Month transition classes — styled by the calendar item's registry CSS,
+    // so `animate` works without importing react-day-picker/style.css.
+    weeks_before_enter: "kira-calendar-weeks-before-enter",
+    weeks_before_exit: "kira-calendar-weeks-before-exit",
+    weeks_after_enter: "kira-calendar-weeks-after-enter",
+    weeks_after_exit: "kira-calendar-weeks-after-exit",
+    caption_before_enter: "kira-calendar-caption-before-enter",
+    caption_before_exit: "kira-calendar-caption-before-exit",
+    caption_after_enter: "kira-calendar-caption-after-enter",
+    caption_after_exit: "kira-calendar-caption-after-exit",
     ...classNamesProp,
   };
 
@@ -1537,10 +1526,8 @@ function useCalendarHover() {
 
   // Native delegation on the calendar root: day cells carry data-day
   // (YYYY-MM-DD). Synthetic mouseenter needs React's over/out pairing,
-  // which is fragile under automated pointers; raw listeners are not.
-  // A ref callback (not an effect) re-attaches whenever the wrapper node
-  // is replaced, and the listeners read only refs + setState, so they
-  // stay valid for the lifetime of the node.
+  // which is fragile under automated pointers; raw listeners are not. A
+  // ref callback re-attaches them whenever the wrapper node is replaced.
   const hoveredRef = React.useRef<Date | undefined>(undefined);
 
   const rootRefCallback = React.useCallback((el: HTMLDivElement | null) => {
@@ -1743,7 +1730,6 @@ function useCalendarNavigation(props: CalendarProps) {
     disabled,
   } = props;
 
-  /* ---------------------------- Month (nav) state --------------------------- */
   const [uncontrolledMonth, setUncontrolledMonth] = React.useState<Date>(() =>
     startOfMonth(
       defaultMonth ?? getSelectionAnchor(props) ?? getToday(timeZone),
@@ -1757,7 +1743,6 @@ function useCalendarNavigation(props: CalendarProps) {
     onMonthChange?.(next);
   };
 
-  /* ------------------------------ Disabled days ----------------------------- */
   const baseDisabledMatchers = React.useMemo(
     () => calendarUseMemo(minDate, maxDate, disabled),
     [minDate, maxDate, disabled],

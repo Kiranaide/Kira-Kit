@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   IconLayoutGrid,
@@ -7,6 +8,7 @@ import {
 import { Grid, GridItem, KiraGrid } from "@/components/ui/grid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ComponentPage,
   PageHeader,
@@ -270,7 +272,7 @@ export function PlacementDemo() {
       </GridItem>
       <GridItem colSpan="full" className="rounded-lg border p-4 text-sm text-muted-foreground">DOM order stays overview, owners, notes, then this summary.</GridItem>
     </Grid>
-    <p role="status" className="text-sm text-muted-foreground">Last action: {selected}</p>
+    <output className="block text-sm text-muted-foreground">Last action: {selected}</output>
   </div>;
 }`;
 
@@ -412,7 +414,7 @@ export function SemanticsDemo() {
       <GridItem className="space-y-2"><label htmlFor={\`\${id}-owner\`} className="text-sm font-medium">Owner</label><Input id={\`\${id}-owner\`} name="owner" defaultValue="Maya Chen" /></GridItem>
       <GridItem colSpan="full"><Button variant="outline" type="button" onClick={() => ref.current?.requestSubmit()}>Save local assignment</Button></GridItem>
     </Grid>
-    <p role="status" className="text-sm text-muted-foreground">{saved ? \`Saved assignment: \${saved}.\` : "No local assignment saved."}</p>
+    <output className="block text-sm text-muted-foreground">{saved ? \`Saved assignment: \${saved}.\` : "No local assignment saved."}</output>
   </div>;
 }`;
 
@@ -443,38 +445,48 @@ function KiraDemo() {
           {loading ? "Finish local refresh" : "Refresh fixture"}
         </Button>
       </div>
-      <KiraGrid
-        as="ul"
-        items={visible}
-        getKey={(project) => project.id}
-        loading={loading}
-        loadingLabel="Refreshing the local project fixture…"
-        minItemWidth="14rem"
-        emptyContent={
-          <div className="space-y-3">
-            <p>No projects match this search.</p>
-            <Button variant="outline" size="sm" onClick={() => setQuery("")}>
-              Clear search
-            </Button>
-          </div>
-        }
-        renderItem={(project) => (
-          <article className="flex h-48 flex-col gap-3 rounded-lg border p-4">
-            <h3 className="font-medium">{project.name}</h3>
-            <p className="text-sm text-muted-foreground">
-              Owner: {project.owner}
-            </p>
-            <Button
-              variant="outline"
-              className="mt-auto"
-              aria-pressed={selected === project.id}
-              onClick={() => setSelected(project.id)}
-            >
-              Inspect {project.name}
-            </Button>
-          </article>
-        )}
-      />
+      <output className="sr-only">
+        {loading ? "Refreshing the local project fixture..." : ""}
+      </output>
+      {loading && visible.length === 0 ? (
+        <Grid cols="auto-fit" minItemWidth="14rem" gap={4} aria-hidden="true">
+          {["first", "second", "third"].map((slot) => (
+            <Skeleton key={slot} className="h-48 w-full" />
+          ))}
+        </Grid>
+      ) : (
+        <KiraGrid
+          as="ul"
+          items={visible}
+          getKey={(project) => project.id}
+          minItemWidth="14rem"
+          aria-busy={loading}
+          emptyContent={
+            <div className="space-y-3">
+              <p>No projects match this search.</p>
+              <Button variant="outline" size="sm" onClick={() => setQuery("")}>
+                Clear search
+              </Button>
+            </div>
+          }
+          renderItem={(project) => (
+            <article className="flex h-48 flex-col gap-3 rounded-lg border p-4">
+              <h3 className="font-medium">{project.name}</h3>
+              <p className="text-sm text-muted-foreground">
+                Owner: {project.owner}
+              </p>
+              <Button
+                variant="outline"
+                className="mt-auto"
+                aria-pressed={selected === project.id}
+                onClick={() => setSelected(project.id)}
+              >
+                Inspect {project.name}
+              </Button>
+            </article>
+          )}
+        />
+      )}
       <p className="text-sm text-muted-foreground">
         Selected project:{" "}
         {projects.find((project) => project.id === selected)?.name ?? "None"}.
@@ -484,9 +496,10 @@ function KiraDemo() {
 }
 
 const kiraDemoCode = `import * as React from "react";
-import { KiraGrid } from "@/components/ui/grid";
+import { Grid, KiraGrid } from "@/components/ui/grid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const projects = [
   { id: "access", name: "Access rules", owner: "Maya Chen" },
@@ -505,13 +518,19 @@ export function KiraDemo() {
       <div className="min-w-0 flex-1 space-y-2"><label htmlFor={id} className="text-sm font-medium">Find a project</label><Input id={id} value={query} onChange={(event) => setQuery(event.target.value)} /></div>
       <Button variant="outline" onClick={() => setLoading((value) => !value)}>{loading ? "Finish local refresh" : "Refresh fixture"}</Button>
     </div>
-    <KiraGrid as="ul" items={visible} getKey={(project) => project.id} loading={loading}
-      loadingLabel="Refreshing the local project fixture…" minItemWidth="14rem"
-      emptyContent={<div className="space-y-3"><p>No projects match this search.</p><Button variant="outline" size="sm" onClick={() => setQuery("")}>Clear search</Button></div>}
-      renderItem={(project) => <article className="flex h-48 flex-col gap-3 rounded-lg border p-4">
-        <h3 className="font-medium">{project.name}</h3><p className="text-sm text-muted-foreground">Owner: {project.owner}</p>
-        <Button variant="outline" className="mt-auto" aria-pressed={selected === project.id} onClick={() => setSelected(project.id)}>Inspect {project.name}</Button>
-      </article>} />
+    <output className="sr-only">{loading ? "Refreshing the local project fixture..." : ""}</output>
+    {loading && visible.length === 0 ? (
+      <Grid cols="auto-fit" minItemWidth="14rem" gap={4} aria-hidden="true">
+        {["first", "second", "third"].map((slot) => <Skeleton key={slot} className="h-48 w-full" />)}
+      </Grid>
+    ) : (
+      <KiraGrid as="ul" items={visible} getKey={(project) => project.id} minItemWidth="14rem" aria-busy={loading}
+        emptyContent={<div className="space-y-3"><p>No projects match this search.</p><Button variant="outline" size="sm" onClick={() => setQuery("")}>Clear search</Button></div>}
+        renderItem={(project) => <article className="flex h-48 flex-col gap-3 rounded-lg border p-4">
+          <h3 className="font-medium">{project.name}</h3><p className="text-sm text-muted-foreground">Owner: {project.owner}</p>
+          <Button variant="outline" className="mt-auto" aria-pressed={selected === project.id} onClick={() => setSelected(project.id)}>Inspect {project.name}</Button>
+        </article>} />
+    )}
     <p className="text-sm text-muted-foreground">Selected project: {projects.find((project) => project.id === selected)?.name ?? "None"}.</p>
   </div>;
 }`;
@@ -547,47 +566,59 @@ function StatesDemo() {
           </Button>
         ))}
       </div>
-      <KiraGrid
-        items={items}
-        getKey={(item) => item.id}
-        minItemWidth="14rem"
-        loading={state === "loading"}
-        loadingCount={3}
-        error={
-          state === "error"
-            ? "Projects could not be loaded. Try the local fixture again."
-            : undefined
-        }
-        onRetry={() => setState("ready")}
-        emptyContent={
-          <div className="space-y-3">
-            <p>No projects yet.</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setState("ready")}
-            >
-              Create local project
-            </Button>
-          </div>
-        }
-        renderItem={(item) => (
-          <article className="h-48 space-y-3 rounded-lg border p-4">
-            <h3 className="font-medium">{item.name}</h3>
-            <p className="text-sm text-muted-foreground">{item.owner}</p>
-            <p className="text-sm text-muted-foreground">
-              Read-only snapshot. Editing requires owner access.
-            </p>
-          </article>
-        )}
-      />
+      {state === "loading" && (
+        <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>
+          {["first", "second", "third"].map((slot) => (
+            <Skeleton key={slot} className="h-48 w-full" />
+          ))}
+        </Grid>
+      )}
+      {state === "error" && (
+        <div className="space-y-3 rounded-lg border border-destructive/30 p-4">
+          <p role="alert" className="text-sm text-destructive">
+            Projects could not be loaded. Try the local fixture again.
+          </p>
+          <Button variant="outline" size="sm" onClick={() => setState("ready")}>
+            Try again
+          </Button>
+        </div>
+      )}
+      {(state === "ready" || state === "empty") && (
+        <KiraGrid
+          items={items}
+          getKey={(item) => item.id}
+          minItemWidth="14rem"
+          emptyContent={
+            <div className="space-y-3">
+              <p>No projects yet.</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setState("ready")}
+              >
+                Create local project
+              </Button>
+            </div>
+          }
+          renderItem={(item) => (
+            <article className="h-48 space-y-3 rounded-lg border p-4">
+              <h3 className="font-medium">{item.name}</h3>
+              <p className="text-sm text-muted-foreground">{item.owner}</p>
+              <p className="text-sm text-muted-foreground">
+                Read-only snapshot. Editing requires owner access.
+              </p>
+            </article>
+          )}
+        />
+      )}
     </div>
   );
 }
 
 const statesDemoCode = `import * as React from "react";
-import { KiraGrid } from "@/components/ui/grid";
+import { Grid, KiraGrid } from "@/components/ui/grid";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function StatesDemo() {
   const [state, setState] = React.useState<"ready" | "loading" | "empty" | "error">("ready");
@@ -595,92 +626,347 @@ export function StatesDemo() {
   return <div className="space-y-4">
     <div className="flex flex-wrap gap-2">{(["ready", "loading", "empty", "error"] as const).map((value) =>
       <Button key={value} variant="outline" size="sm" aria-pressed={state === value} onClick={() => setState(value)}>{value}</Button>)}</div>
-    <KiraGrid items={items} getKey={(item) => item.id} minItemWidth="14rem"
-      loading={state === "loading"} loadingCount={3}
-      error={state === "error" ? "Projects could not be loaded. Try the local fixture again." : undefined}
-      onRetry={() => setState("ready")}
+    {state === "loading" && <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>{["first", "second", "third"].map((slot) => <Skeleton key={slot} className="h-48 w-full" />)}</Grid>}
+    {state === "error" && <div className="space-y-3 rounded-lg border border-destructive/30 p-4"><p role="alert" className="text-sm text-destructive">Projects could not be loaded. Try the local fixture again.</p><Button variant="outline" size="sm" onClick={() => setState("ready")}>Try again</Button></div>}
+    {(state === "ready" || state === "empty") && <KiraGrid items={items} getKey={(item) => item.id} minItemWidth="14rem"
       emptyContent={<div className="space-y-3"><p>No projects yet.</p><Button variant="outline" size="sm" onClick={() => setState("ready")}>Create local project</Button></div>}
       renderItem={(item) => <article className="h-48 space-y-3 rounded-lg border p-4">
         <h3 className="font-medium">{item.name}</h3><p className="text-sm text-muted-foreground">{item.owner}</p>
         <p className="text-sm text-muted-foreground">Read-only snapshot. Editing requires owner access.</p>
-      </article>} />
+      </article>} />}
   </div>;
 }`;
 
-const gridDemos = [
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <KiraGrid
+        as="ul"
+        items={stressItems}
+        getKey={(item) => item.id}
+        minItemWidth="12rem"
+        gap={3}
+        renderItem={(item) => (
+          <article className="flex flex-col gap-2 rounded-lg border p-3">
+            <h3 className="text-sm font-medium">{item.name}</h3>
+            <p className="text-xs text-muted-foreground">
+              {item.summary || "No summary provided."}
+            </p>
+            <Button variant="outline" size="sm" disabled={item.disabled}>
+              {item.disabled ? "Locked" : "Inspect"}
+            </Button>
+          </article>
+        )}
+      />
+      <KiraGrid
+        items={emptyStressItems}
+        getKey={(item) => item.id}
+        emptyContent="No archived snapshots available."
+        renderItem={() => null}
+      />
+    </div>
+  );
+}
+
+const stressDemoCode = `import { KiraGrid } from "@/components/ui/grid";
+import { Button } from "@/components/ui/button";
+
+// Long unbroken titles, empty descriptions, disabled actions, and empty state in max-w-xs
+<div className="max-w-xs space-y-4">
+  <KiraGrid
+    as="ul"
+    items={stressItems}
+    getKey={(item) => item.id}
+    minItemWidth="12rem"
+    gap={3}
+    renderItem={(item) => (
+      <article className="flex flex-col gap-2 rounded-lg border p-3">
+        <h3 className="text-sm font-medium">{item.name}</h3>
+        <p className="text-xs text-muted-foreground">
+          {item.summary || "No summary provided."}
+        </p>
+        <Button variant="outline" size="sm" disabled={item.disabled}>
+          {item.disabled ? "Locked" : "Inspect"}
+        </Button>
+      </article>
+    )}
+  />
+  <KiraGrid
+    items={[]}
+    getKey={(item) => item.id}
+    emptyContent="No archived snapshots available."
+    renderItem={() => null}
+  />
+</div>`;
+
+const gridUsageCode = `import * as React from "react";
+import { Grid, GridItem, KiraGrid, gridVariants, gridItemVariants } from "@/components/ui/grid";
+
+const projects = [{ id: "access", name: "Access rules" }, { id: "history", name: "Audit history" }];
+
+export function ResponsiveList() {
+  return <Grid as="ul" cols={{ base: 1, md: 3 }} gap={4}>
+    <GridItem as="li" colSpan={{ base: 1, md: 2 }}>Featured release</GridItem>
+    <GridItem as="li">Owner notes</GridItem>
+  </Grid>;
+}
+
+export function IntrinsicList() {
+  return <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>
+    {projects.map((project) => <GridItem key={project.id}>{project.name}</GridItem>)}
+  </Grid>;
+}
+
+export function DeferredList() {
+  return <KiraGrid as="ul" items={projects} getKey={(project) => project.id}
+    renderItem={(project) => <article>{project.name}</article>}
+    emptyContent="No projects yet." />;
+}
+
+export function RenderAdapter() {
+  const ref = React.useRef<HTMLElement>(null);
+  return <Grid as="section" ref={ref} render={<section aria-label="Release summary" />} cols={2}>
+    <GridItem>Access rules</GridItem><GridItem>Audit history</GridItem>
+  </Grid>;
+}
+
+export function VariantClasses() {
+  return <div className={gridVariants({ inline: true })}><div className={gridItemVariants()}>Inline grid content</div></div>;
+}`;
+
+export default function GridPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Grid"
+        description="Native CSS Grid layouts that fit pages and embedded panels. Typed composition, intrinsic tracks, subgrid, and deferred collections."
+        version="v3.0.0"
+      />
+      <FeatureGrid
+        features={gridPageFeatures}
+        description="Native CSS Grid primitives and deferred collection helpers built into Kira Kit."
+      />
+      <DemoTabs defaultValue="basic" tabs={gridPageDemoTabs} />
+      <KeyboardShortcuts
+        shortcuts={gridPageShortcuts}
+        description="Grid preserves native DOM focus order and delegates keyboard interaction to child controls."
+      />
+      <UsageBlock
+        code={gridUsageCode}
+        title="Usage"
+        description="Compose responsive CSS Grid layouts or render data-driven collections."
+        notes={gridPageUsageNotes}
+      />
+      <APIReference
+        sections={gridPageAPISections}
+        description="Props, types, and defaults for Grid, GridItem, KiraGrid, and variant helpers."
+      />
+      <Changelog
+        entries={gridPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Grid."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const stressItems = [
+  {
+    id: "unbroken",
+    name: "organization-wide-release-permissions-and-audit-migration-policy-v2",
+    summary: "",
+    disabled: false,
+  },
+  {
+    id: "locked",
+    name: "Archived production snapshot (read-only)",
+    summary: "Editing is disabled for locked release milestones.",
+    disabled: true,
+  },
+] as const;
+
+const emptyStressItems: readonly { id: string }[] = [];
+
+const gridPageFeatures = [
+  {
+    title: "Local width",
+    description: "Auto-fit and auto-fill adapt to their available panel width.",
+    icon: <IconArrowsHorizontal className="size-4" aria-hidden="true" />,
+  },
+  {
+    title: "Shared tracks",
+    description:
+      "Subgrid aligns unequal copy and actions without fixed text heights.",
+    icon: <IconLayoutGrid className="size-4" aria-hidden="true" />,
+  },
+  {
+    title: "Deferred collections",
+    description:
+      "Stable keyed items, retained refreshes, skeleton cells, empty states and recovery.",
+    icon: <IconListDetails className="size-4" aria-hidden="true" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const gridPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
-    title: "A semantic project list",
-    description: "Responsive columns, stable keys, and native list items.",
-    Demo: BasicDemo,
-    code: basicDemoCode,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="A semantic project list"
+        description="Responsive columns, stable keys, and native list items."
+        code={basicDemoCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "responsive",
     label: "Responsive",
-    title: "Columns, rows, and separate gaps",
-    description: "All breakpoint candidates ship in the component source.",
-    Demo: ResponsiveDemo,
-    code: responsiveDemoCode,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Columns, rows, and separate gaps"
+        description="All breakpoint candidates ship in the component source."
+        code={responsiveDemoCode}
+      >
+        <ResponsiveDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "intrinsic",
     label: "Intrinsic",
-    title: "Fit the panel, not the page",
-    description:
-      "Switch panel width and compare auto-fit with auto-fill. Both fit narrow containers.",
-    Demo: IntrinsicDemo,
-    code: intrinsicDemoCode,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Fit the panel, not the page"
+        description="Switch panel width and compare auto-fit with auto-fill. Both fit narrow containers."
+        code={intrinsicDemoCode}
+      >
+        <IntrinsicDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "placement",
     label: "Placement",
-    title: "Responsive item placement",
-    description:
-      "Spans, starting lines, and self alignment are responsive. Keyboard order follows the DOM.",
-    Demo: PlacementDemo,
-    code: placementDemoCode,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Responsive item placement"
+        description="Spans, starting lines, and self alignment are responsive. Keyboard order follows the DOM."
+        code={placementDemoCode}
+      >
+        <PlacementDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "subgrid",
     label: "Subgrid",
-    title: "Align unequal plan content",
-    description:
-      "Four shared row tracks align descriptions, prices, and actions without fixed text heights.",
-    Demo: SubgridDemo,
-    code: subgridDemoCode,
+    group: "Layout",
+    demo: (
+      <DemoWrapper
+        title="Align unequal plan content"
+        description="Four shared row tracks align descriptions, prices, and actions without fixed text heights."
+        code={subgridDemoCode}
+      >
+        <SubgridDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "semantics",
     label: "Semantics",
-    title: "A native form and ref",
-    description:
-      "The as prop provides form-specific props, event types, and an HTMLFormElement ref.",
-    Demo: SemanticsDemo,
-    code: semanticsDemoCode,
+    group: "Layout",
+    demo: (
+      <DemoWrapper
+        title="A native form and ref"
+        description="The as prop provides form-specific props, event types, and an HTMLFormElement ref."
+        code={semanticsDemoCode}
+      >
+        <SemanticsDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "kira",
-    label: "Kira",
-    title: "A deferred project collection",
-    description:
-      "Filtering, empty feedback, and a manual refresh fixture. Existing items remain mounted during refresh.",
-    Demo: KiraDemo,
-    code: kiraDemoCode,
+    label: "KiraGrid",
+    group: "KiraGrid",
+    demo: (
+      <DemoWrapper
+        title="A deferred project collection"
+        description="Filtering, empty feedback, and a manual refresh fixture. Existing items remain mounted during refresh."
+        code={kiraDemoCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "states",
     label: "States",
-    title: "Loading, empty, recovery, and long values",
-    description:
-      "Buttons drive local states. Every placeholder occupies the same 12rem card height.",
-    Demo: StatesDemo,
-    code: statesDemoCode,
+    group: "KiraGrid",
+    demo: (
+      <DemoWrapper
+        title="Loading, empty, recovery, and long values"
+        description="Buttons drive local states. Every placeholder occupies the same 12rem card height."
+        code={statesDemoCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
   },
-];
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "KiraGrid",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long unbroken titles, empty descriptions, disabled controls, and empty states inside a max-w-xs column."
+        code={stressDemoCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const gridApi = [
+const gridPageShortcuts = [
+  {
+    keys: "Tab / Shift + Tab",
+    description:
+      "Follow the DOM order through native child controls. CSS placement does not reorder keyboard focus.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Activate child buttons with native semantics. Grid adds no roving focus or arrow-key interception.",
+  },
+  {
+    keys: "Enter in the form",
+    description:
+      "Submit the native form. The form-ref example uses requestSubmit() and browser validation.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const gridPageUsageNotes = [
+  {
+    label: "Grid & GridItem",
+    body: "Use for responsive CSS Grid layouts, subgrid row alignment, and typed native tag or Base UI render composition.",
+  },
+  {
+    label: "KiraGrid",
+    body: "Use for data-driven collections with stable keys and empty feedback. Compose loading and recovery states alongside KiraGrid.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const gridPageAPISections = [
   {
     title: "Grid",
     props: [
@@ -840,37 +1126,10 @@ const gridApi = [
           "Cell content. Native ul/ol roots receive li wrappers. For render callbacks or custom components that return a list, set matching as.",
       },
       {
-        prop: "loading / loadingLabel",
-        type: "boolean / string",
-        default: 'false / "Loading items…"',
-        description: "Caller-controlled busy state and one contextual status.",
-      },
-      {
-        prop: "loadingCount",
-        type: "number",
-        default: "6",
-        description:
-          "Initial placeholder count, truncated and clamped to 1–100. Non-finite values use 6.",
-      },
-      {
-        prop: "loadingContent",
-        type: "React.ReactNode",
-        default: "-",
-        description:
-          "Custom cell skeleton. Match its dimensions to loaded cells.",
-      },
-      {
         prop: "emptyContent",
         type: "React.ReactNode",
         default: '"No items yet."',
         description: "Empty feedback and optional caller-owned action.",
-      },
-      {
-        prop: "error / onRetry",
-        type: "React.ReactNode / (() => void)",
-        default: "-",
-        description:
-          "Recovery feedback. Existing items can remain below an error.",
       },
       {
         prop: "Grid props",
@@ -909,154 +1168,67 @@ const gridApi = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof APIReference>["sections"];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function GridPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Grid"
-        description="Native CSS Grid layouts that fit pages and embedded panels. Typed composition, intrinsic tracks, subgrid, and deferred collections."
-        version="2.0.1"
-      />
-      <FeatureGrid features={gridPageFeatureGridFeatures} />
-      <DemoTabs
-        defaultValue="basic"
-        tabs={gridDemos.map(
-          ({ value, label, title, description, Demo, code }) => ({
-            value,
-            label,
-            demo: (
-              <DemoWrapper title={title} description={description} code={code}>
-                <Demo />
-              </DemoWrapper>
-            ),
-          }),
-        )}
-      />
-      <KeyboardShortcuts
-        shortcuts={[
-          {
-            keys: "Tab / Shift + Tab",
-            description:
-              "Follow the DOM order through native child controls. CSS placement does not reorder keyboard focus.",
-          },
-          {
-            keys: "Enter / Space",
-            description:
-              "Activate child buttons with native semantics. Grid adds no roving focus or arrow-key interception.",
-          },
-          {
-            keys: "Enter in the form",
-            description:
-              "Submit the native form. The form-ref example uses requestSubmit() and browser validation.",
-          },
-        ]}
-      />
-      <UsageBlock
-        code={`import * as React from "react";
-import { Grid, GridItem, KiraGrid, gridVariants, gridItemVariants } from "@/components/ui/grid";
-
-const projects = [{ id: "access", name: "Access rules" }, { id: "history", name: "Audit history" }];
-
-export function ResponsiveList() {
-  return <Grid as="ul" cols={{ base: 1, md: 3 }} gap={4}>
-    <GridItem as="li" colSpan={{ base: 1, md: 2 }}>Featured release</GridItem>
-    <GridItem as="li">Owner notes</GridItem>
-  </Grid>;
-}
-
-export function IntrinsicList() {
-  return <Grid cols="auto-fit" minItemWidth="14rem" gap={4}>
-    {projects.map((project) => <GridItem key={project.id}>{project.name}</GridItem>)}
-  </Grid>;
-}
-
-export function DeferredList() {
-  return <KiraGrid as="ul" items={projects} getKey={(project) => project.id}
-    renderItem={(project) => <article>{project.name}</article>}
-    emptyContent="No projects yet." />;
-}
-
-export function RenderAdapter() {
-  const ref = React.useRef<HTMLElement>(null);
-  return <Grid as="section" ref={ref} render={<section aria-label="Release summary" />} cols={2}>
-    <GridItem>Access rules</GridItem><GridItem>Audit history</GridItem>
-  </Grid>;
-}
-
-export function VariantClasses() {
-  return <div className={gridVariants({ inline: true })}><div className={gridItemVariants()}>Inline grid content</div></div>;
-}`}
-      />
-      <APIReference sections={gridApi} />
-      <Changelog
-        entries={[
-          {
-            version: "2.0.1",
-            date: "14 November 2026",
-            changes: [
-              {
-                type: "fixed",
-                title: "Native list render adapters",
-                description:
-                  "KiraGrid now uses li wrappers when render supplies a native ul or ol, including loading, empty and error states. Render callbacks and custom components that return lists require matching as. Compatibility audited on Base UI 1.9.0.",
-              },
-            ],
-          },
-          {
-            version: "2.0.0",
-            date: "13 November 2026",
-            changes: [
-              {
-                type: "fixed",
-                title: "Responsive classes and honest types",
-                description:
-                  "Repaired 17 dictionary errors. Literal breakpoint candidates travel with the registry source; positions and alignment are responsive. Compatibility audited on Base UI 1.9.0; Grid has no native Base UI layout primitive.",
-              },
-              {
-                type: "added",
-                title: "Intrinsic columns and KiraGrid",
-                description:
-                  "Auto-fit/auto-fill with a clamped minimum, typed native tags and refs, semantic items, retained refreshes and collection recovery. Research cutoff October 31, 2026.",
-              },
-              {
-                type: "breaking",
-                title: "Responsive layouts now take effect",
-                description:
-                  "Consumers that relied on missing responsive CSS will see corrected layouts. Native props and ref types follow as; invalid tag-specific attributes are rejected. Items now shrink and wrap long values.",
-              },
-              {
-                type: "fixed",
-                title: "Focused demos and API",
-                description:
-                  "Added Basic, Kira, States, keyboard, subgrid and native-form examples. Removed the inaccurate masonry claim and undefined snippet references.",
-              },
-            ],
-          },
-        ]}
-      />
-    </ComponentPage>
-  );
-}
-
-const gridPageFeatureGridFeatures = [
+const gridPageChangelogEntries = [
   {
-    title: "Local width",
-    description: "Auto-fit and auto-fill adapt to their available panel width.",
-    icon: <IconArrowsHorizontal className="size-4" />,
+    version: "3.0.0",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "Stripped loading/error/onRetry from KiraGrid",
+        description:
+          "Removed loading, error, and onRetry props (and Skeleton/Button imports) from KiraGrid so grid stays a zero-dependency layout leaf. Compose Skeleton or error UI directly inside your layout.",
+      },
+      {
+        type: "changed",
+        title: "Unified responsive resolution on lib/layout-responsive",
+        description:
+          "Replaced the 135-line gridResponsiveCandidates Set with literal responsive tuples from @/lib/layout-responsive.",
+      },
+    ],
   },
   {
-    title: "Shared tracks",
-    description:
-      "Subgrid aligns unequal copy and actions without fixed text heights.",
-    icon: <IconLayoutGrid className="size-4" />,
+    version: "2.0.1",
+    date: "14 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Native list render adapters",
+        description:
+          "KiraGrid now uses li wrappers when render supplies a native ul or ol, including loading, empty and error states. Render callbacks and custom components that return lists require matching as. Compatibility audited on Base UI 1.9.0.",
+      },
+    ],
   },
   {
-    title: "Deferred collections",
-    description:
-      "Stable keyed items, retained refreshes, skeleton cells, empty states and recovery.",
-    icon: <IconListDetails className="size-4" />,
+    version: "2.0.0",
+    date: "13 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Responsive classes and honest types",
+        description:
+          "Repaired 17 dictionary errors. Literal breakpoint candidates travel with the registry source; positions and alignment are responsive. Compatibility audited on Base UI 1.9.0; Grid has no native Base UI layout primitive.",
+      },
+      {
+        type: "added",
+        title: "Intrinsic columns and KiraGrid",
+        description:
+          "Auto-fit/auto-fill with a clamped minimum, typed native tags and refs, semantic items, retained refreshes and collection recovery. Research cutoff October 31, 2026.",
+      },
+      {
+        type: "breaking",
+        title: "Responsive layouts now take effect",
+        description:
+          "Consumers that relied on missing responsive CSS will see corrected layouts. Native props and ref types follow as; invalid tag-specific attributes are rejected. Items now shrink and wrap long values.",
+      },
+      {
+        type: "fixed",
+        title: "Focused demos and API",
+        description:
+          "Added Basic, Kira, States, keyboard, subgrid and native-form examples. Removed the inaccurate masonry claim and undefined snippet references.",
+      },
+    ],
   },
-] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

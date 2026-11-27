@@ -1,11 +1,5 @@
 import * as React from "react";
 
-// ============================================
-// USE ANNOUNCE HOOK
-// ============================================
-// A standalone hook for screen reader announcements
-// that doesn't require a provider (creates its own live region)
-
 interface UseAnnounceOptions {
   /** Default politeness level */
   defaultPoliteness?: "polite" | "assertive";

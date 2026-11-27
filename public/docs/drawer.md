@@ -5,7 +5,7 @@ A swipe-enabled Base UI drawer that opens from any side with size variants, scro
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/drawer
+kira-kit add @kira-kit/drawer
 ```
 
 ## Dependencies

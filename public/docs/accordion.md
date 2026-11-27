@@ -5,7 +5,7 @@ Compound disclosure component whose data-driven KiraAccordion supports recursive
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/accordion
+kira-kit add @kira-kit/accordion
 ```
 
 ## Dependencies
@@ -20,6 +20,7 @@ npx shadcn add @kira-kit/accordion
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/tooltip
 - @kira-kit/use-reduced-motion
 

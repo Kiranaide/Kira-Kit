@@ -1,7 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import "./styles/kira-utilities.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 
 /* Flex */
 @source inline("{sm:,md:,lg:,xl:,2xl:,}flex-{row,row-reverse,col,col-reverse,nowrap,wrap,wrap-reverse}");
@@ -34,13 +35,14 @@
 @custom-variant marked (&:is([data-checked], [data-indeterminate]));
 
 :root {
+  color-scheme: light;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.59 0.22 1);
+  --primary: oklch(0.49 0.22 1);
   --primary-foreground: oklch(0.97 0.01 343);
   --secondary: oklch(0.75 0.1 10);
   --secondary-foreground: oklch(0.2 0.03 15);
@@ -48,58 +50,67 @@
   --muted-foreground: oklch(0.5 0.03 25);
   --accent: oklch(0.92 0.04 15);
   --accent-foreground: oklch(0.3 0.04 20);
-  --destructive: oklch(0.6 0.22 20);
+  --destructive: oklch(0.48 0.2 20);
   --destructive-foreground: oklch(0.98 0.01 20);
-  --info: oklch(0.75 0.16 225);
+  --info: oklch(0.47 0.13 225);
   --info-foreground: oklch(0.98 0.01 225);
-  --success: oklch(0.75 0.18 150);
+  --success: oklch(0.46 0.13 150);
   --success-foreground: oklch(0.98 0.01 150);
-  --warning: oklch(0.8 0.16 80);
-  --warning-foreground: oklch(0.2 0.03 80);
+  --warning: oklch(0.46 0.1 80);
+  --warning-foreground: oklch(0.98 0.01 80);
   --border: oklch(0.9 0.01 20);
-  --input: oklch(0.9 0.01 20);
-  --ring: oklch(0.7 0.12 350);
-  --chart-1: oklch(0.75 0.14 185);
-  --chart-2: oklch(0.75 0.18 35);
-  --chart-3: oklch(0.78 0.14 95);
-  --chart-4: oklch(0.7 0.12 280);
-  --chart-5: oklch(0.65 0.1 160);
+  --input: oklch(0.6 0.01 20);
+  --ring: oklch(0.58 0.12 350);
+  --chart-1: oklch(0.61 0.12 185);
+  --chart-2: oklch(0.64 0.16 35);
+  --chart-3: oklch(0.61 0.13 95);
+  --chart-4: oklch(0.61 0.12 280);
+  --chart-5: oklch(0.6 0.1 160);
   --radius: 0.45rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.59 0.22 1);
+  --sidebar-primary: oklch(0.54 0.22 1);
   --sidebar-primary-foreground: oklch(0.97 0.01 343);
   --sidebar-accent: oklch(0.9 0.04 15);
   --sidebar-accent-foreground: oklch(0.25 0.04 15);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.7 0.12 350);
+  --sidebar-ring: oklch(0.58 0.12 350);
+  --shadow-card: inset 0 1px 0 oklch(1 0 0 / 70%), 0 1px 2px oklch(0 0 0 / 5%);
+  --shadow-popover:
+    inset 0 1px 0 oklch(1 0 0 / 75%), 0 8px 24px -4px oklch(0 0 0 / 10%),
+    0 2px 6px oklch(0 0 0 / 5%);
+  --shadow-modal:
+    inset 0 1px 0 oklch(1 0 0 / 80%), 0 24px 56px -12px oklch(0 0 0 / 20%);
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.66 0.21 354);
-  --primary-foreground: oklch(0.97 0.01 343);
-  --secondary: oklch(0.6 0.08 10);
-  --secondary-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.76 0.19 354);
+  /* The dark primary is a light pink, so its foreground is dark ink — the pair
+     needs 4.5:1 like every other preset's does. */
+  --primary-foreground: oklch(0.16 0.05 354);
+  --secondary: oklch(0.69 0.08 10);
+  --secondary-foreground: oklch(0.13 0.02 10);
   --muted: oklch(0.25 0.02 15);
   --muted-foreground: oklch(0.65 0.03 20);
   --accent: oklch(0.4 0.08 10);
   --accent-foreground: oklch(0.98 0.01 10);
-  --destructive: oklch(0.65 0.2 15);
-  --destructive-foreground: oklch(0.98 0.01 15);
-  --info: oklch(0.65 0.14 220);
-  --info-foreground: oklch(0.98 0.01 220);
-  --success: oklch(0.65 0.16 145);
-  --success-foreground: oklch(0.98 0.01 145);
-  --warning: oklch(0.7 0.14 75);
+  --destructive: oklch(0.78 0.18 15);
+  --destructive-foreground: oklch(0.16 0.03 15);
+  --info: oklch(0.72 0.14 220);
+  --info-foreground: oklch(0.16 0.03 220);
+  --success: oklch(0.72 0.15 145);
+  --success-foreground: oklch(0.16 0.03 145);
+  --warning: oklch(0.74 0.14 75);
   --warning-foreground: oklch(0.15 0.03 75);
   --border: oklch(1 0 0 / 15%);
-  --input: oklch(1 0 0 / 20%);
+  --input: oklch(1 0 0 / 48%);
   --ring: oklch(0.65 0.14 350);
   --chart-1: oklch(0.7 0.12 185);
   --chart-2: oklch(0.7 0.16 35);
@@ -109,15 +120,88 @@
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.73 0.18 350);
-  --sidebar-primary-foreground: oklch(0.97 0.01 343);
+  --sidebar-primary-foreground: oklch(0.16 0.05 350);
   --sidebar-accent: oklch(0.45 0.08 10);
   --sidebar-accent-foreground: oklch(0.98 0.01 10);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.65 0.14 350);
+  --shadow-card: inset 0 1px 0 oklch(1 0 0 / 8%), 0 1px 2px oklch(0 0 0 / 32%);
+  --shadow-popover:
+    inset 0 1px 0 oklch(1 0 0 / 10%), 0 12px 28px -4px oklch(0 0 0 / 48%);
+  --shadow-modal:
+    inset 0 1px 0 oklch(1 0 0 / 12%), 0 28px 64px -12px oklch(0 0 0 / 68%);
+}
+
+/* Strong ease-out: the built-in ease-out is too weak to read as deliberate
+   motion at the 150–350ms durations the docs frame uses. */
+:root {
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Spring curve (damping 0.65, ~7% overshoot) sampled into linear() so route
+   entrances get spring physics while staying composite-only CSS. Lives on
+   :root, not @theme, so it is always emitted for the tokens' var() lookup. */
+:root {
+  --ease-spring: linear(
+    0,
+    0.015,
+    0.0552,
+    0.1142,
+    0.1865,
+    0.2671,
+    0.352,
+    0.4379,
+    0.522,
+    0.6024,
+    0.6774,
+    0.7461,
+    0.8078,
+    0.8621,
+    0.9091,
+    0.9489,
+    0.9819,
+    1.0085,
+    1.0293,
+    1.0449,
+    1.056,
+    1.0631,
+    1.067,
+    1.0681,
+    1.067,
+    1.0642,
+    1.0601,
+    1.0552,
+    1.0497,
+    1.0439,
+    1.0381,
+    1.0324,
+    1.0269,
+    1.0218,
+    1.0171,
+    1.013,
+    1.0093,
+    1.0061,
+    1.0034,
+    1.0012,
+    0.9994,
+    0.998,
+    0.9969,
+    0.9962,
+    0.9957,
+    0.9954,
+    0.9954,
+    0.9954,
+    0.9956,
+    0.9959,
+    1
+  );
 }
 
 @theme inline {
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-sans);
+  --tracking-kira-heading: -0.025em;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
 
   /* Animation tokens for consistent motion */
   --animate-shimmer: shimmer 2s infinite;
@@ -128,7 +212,18 @@
   --animate-marquee: marquee 18s linear infinite;
   --animate-shake: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
   --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-route-fade: route-fade 0.15s cubic-bezier(0.23, 1, 0.32, 1) both;
+  --animate-route-fade-up: route-fade-up 0.25s var(--ease-spring) both;
+  --animate-route-fade-down: route-fade-down 0.25s var(--ease-spring) both;
+  --animate-route-slide-left: route-slide-left 0.25s var(--ease-spring) both;
+  --animate-route-slide-right: route-slide-right 0.25s var(--ease-spring) both;
+  --animate-route-zoom: route-zoom 0.25s var(--ease-spring) both;
+  --animate-nav-progress: nav-progress 10s ease-out forwards;
   --animate-toast-progress: toast-progress linear forwards;
+  --animate-button-ripple: button-ripple 0.6s cubic-bezier(0.22, 1, 0.36, 1)
+    forwards;
+  --animate-checkbox-ripple: checkbox-ripple 0.3s ease-out forwards;
+  --animate-toggle-pop: toggle-pop 0.3s var(--ease-spring);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -179,13 +274,19 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
   }
   body {
     @apply font-sans bg-background text-foreground;
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display, var(--font-sans));
+    letter-spacing: var(--tracking-kira-heading, inherit);
   }
 }
 
@@ -370,19 +471,44 @@
   }
 }
 
-/* Toast auto-dismiss countdown — width is the semantically correct axis for a
-   progress bar (transform scaleX would work but is documented as a permitted
-   exception only if the width variant is rejected). */
-@theme {
-  --animate-toast-progress: toast-progress linear forwards;
+/* Toast auto-dismiss countdown — composite-only scaleX bar at the bottom edge. */
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
 
-  @keyframes toast-progress {
-    from {
-      transform: scaleX(1);
-    }
-    to {
-      transform: scaleX(0);
-    }
+@keyframes button-ripple {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.3;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes checkbox-ripple {
+  from {
+    transform: scale(0.5);
+    opacity: 0.3;
+  }
+  to {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes toggle-pop {
+  from {
+    transform: scale(1.25);
+  }
+  to {
+    transform: scale(1);
   }
 }
 
@@ -405,6 +531,116 @@
   }
 }
 
+/* Route entrances — short enough for tens-of-times-a-day sidebar navigation.
+   Movement variants ride the spring curve for a hint of overshoot; plain fade
+   stays ease-out. The native view transition crossfade replaces these while
+   it is active (see below), so the two never stack. */
+@keyframes route-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes route-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes route-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slides travel 24px, not the full viewport — route content is read dozens of
+   times a day, so direction is hinted, not performed. slide-left enters from
+   the right (forward navigation); slide-right enters from the left (back). */
+@keyframes route-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes route-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes route-zoom {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Navigation trickle — asymptotic scaleX so the bar keeps moving while route
+   chunks load, without ever claiming completion. Composite-only: it runs off
+   the main thread exactly when navigation makes the main thread busy. */
+@keyframes nav-progress {
+  0% {
+    transform: scaleX(0);
+  }
+  15% {
+    transform: scaleX(0.4);
+  }
+  40% {
+    transform: scaleX(0.65);
+  }
+  70% {
+    transform: scaleX(0.8);
+  }
+  100% {
+    transform: scaleX(0.9);
+  }
+}
+
+/* Native route crossfade (router defaultViewTransition) tuned to the kit's
+   motion scale instead of the UA default 0.25s. Apps should render the
+   RouteTransition entrance with variant="none" while this API is available —
+   suppressing it with :active-view-transition would restart the fade when the
+   crossfade ends and read as a second blink. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 150ms;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01ms;
+  }
+}
+
 /* Camera Scan Overlay animations */
 @keyframes scan-line {
   0% {
@@ -412,18 +648,6 @@
   }
   100% {
     transform: translateY(100%);
-  }
-}
-
-@keyframes scan-overlay-pulse-glow {
-  0%,
-  100% {
-    opacity: 1;
-    filter: drop-shadow(0 0 4px currentColor);
-  }
-  50% {
-    opacity: 0.7;
-    filter: drop-shadow(0 0 8px currentColor);
   }
 }
 
@@ -437,149 +661,112 @@
   }
 }
 
-@layer components {
-  .date-picker-popover {
-    /* reset UA [popover] styles */
-    inset: auto;
-    margin: 0;
-    padding: 0;
-    max-height: calc(100dvh - 1rem);
-    overflow: auto;
+/* Calendar month transition (`animate` prop) — adapted from react-day-picker
+   (MIT, https://github.com/gpbl/react-day-picker) style.css and namespaced so
+   the kit never needs the rdp-* stylesheet. */
+@keyframes kira-calendar-slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
 
+@keyframes kira-calendar-slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes kira-calendar-slide-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes kira-calendar-slide-out-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes kira-calendar-fade-in {
+  from {
     opacity: 0;
-    translate: 0 -4px;
-    transition:
-      opacity 150ms ease-out,
-      translate 150ms ease-out,
-      overlay 150ms allow-discrete,
-      display 150ms allow-discrete;
   }
-
-  .date-picker-popover:popover-open {
+  to {
     opacity: 1;
-    translate: 0 0;
   }
+}
 
-  @starting-style {
-    .date-picker-popover:popover-open {
-      opacity: 0;
-      translate: 0 -4px;
-    }
+@keyframes kira-calendar-fade-out {
+  from {
+    opacity: 1;
   }
-
-  /* Tether to the trigger (anchor-name / position-anchor are set inline per instance) */
-  @supports (position-area: bottom) {
-    .date-picker-popover {
-      position-area: bottom span-right;
-      margin-block: 0.5rem;
-      position-try-fallbacks:
-        flip-block,
-        flip-inline,
-        flip-block flip-inline;
-    }
-  }
-
-  /* Fallback: centered when anchor positioning is unavailable */
-  @supports not (position-area: bottom) {
-    .date-picker-popover {
-      inset: 0;
-      margin: auto;
-      width: fit-content;
-      height: fit-content;
-    }
-  }
-
-  /* Small screens: bottom sheet */
-  @media (max-width: 639px) {
-    .date-picker-popover {
-      position-area: none;
-      inset: auto 0 0 0;
-      margin: 0;
-      width: 100%;
-      max-height: 85dvh;
-    }
-    .date-picker-popover::backdrop {
-      background: rgb(0 0 0 / 0.4);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .date-picker-popover {
-      transition: none;
-    }
-  }
-
-  /* ------------------------------------------------------------------------ */
-  /* TimePicker popover — same native-popover contract as .date-picker-popover */
-  /* ------------------------------------------------------------------------ */
-  .time-picker-popover {
-    /* reset UA [popover] styles */
-    inset: auto;
-    margin: 0;
-    padding: 0;
-    max-height: calc(100dvh - 1rem);
-    overflow: auto;
-
+  to {
     opacity: 0;
-    translate: 0 -4px;
-    transition:
-      opacity 150ms ease-out,
-      translate 150ms ease-out,
-      overlay 150ms allow-discrete,
-      display 150ms allow-discrete;
   }
+}
 
-  .time-picker-popover:popover-open {
-    opacity: 1;
-    translate: 0 0;
-  }
+.kira-calendar-weeks-before-enter {
+  animation: kira-calendar-slide-in-left
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
 
-  @starting-style {
-    .time-picker-popover:popover-open {
-      opacity: 0;
-      translate: 0 -4px;
-    }
-  }
+.kira-calendar-weeks-before-exit {
+  animation: kira-calendar-slide-out-left
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
 
-  /* Tether to the trigger (anchor-name / position-anchor are set inline per instance) */
-  @supports (position-area: bottom) {
-    .time-picker-popover {
-      position-area: bottom span-right;
-      margin-block: 0.5rem;
-      position-try-fallbacks:
-        flip-block,
-        flip-inline,
-        flip-block flip-inline;
-    }
-  }
+.kira-calendar-weeks-after-enter {
+  animation: kira-calendar-slide-in-right
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
 
-  /* Fallback: centered when anchor positioning is unavailable */
-  @supports not (position-area: bottom) {
-    .time-picker-popover {
-      inset: 0;
-      margin: auto;
-      width: fit-content;
-      height: fit-content;
-    }
-  }
+.kira-calendar-weeks-after-exit {
+  animation: kira-calendar-slide-out-right
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
 
-  /* Small screens: bottom sheet */
-  @media (max-width: 639px) {
-    .time-picker-popover {
-      position-area: none;
-      inset: auto 0 0 0;
-      margin: 0;
-      width: 100%;
-      max-height: 85dvh;
-    }
-    .time-picker-popover::backdrop {
-      background: rgb(0 0 0 / 0.4);
-    }
-  }
+[dir="rtl"] .kira-calendar-weeks-after-enter {
+  animation-name: kira-calendar-slide-in-left;
+}
 
-  @media (prefers-reduced-motion: reduce) {
-    .time-picker-popover {
-      transition: none;
-    }
-  }
+[dir="rtl"] .kira-calendar-weeks-before-exit {
+  animation-name: kira-calendar-slide-out-right;
+}
+
+[dir="rtl"] .kira-calendar-weeks-before-enter {
+  animation-name: kira-calendar-slide-in-right;
+}
+
+[dir="rtl"] .kira-calendar-weeks-after-exit {
+  animation-name: kira-calendar-slide-out-left;
+}
+
+.kira-calendar-caption-before-enter,
+.kira-calendar-caption-after-enter {
+  animation: kira-calendar-fade-in var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
+}
+
+.kira-calendar-caption-before-exit,
+.kira-calendar-caption-after-exit {
+  animation: kira-calendar-fade-out
+    var(--kira-calendar-animation-duration, 0.3s)
+    var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;
 }

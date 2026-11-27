@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { withContentKeys } from "@/components/ui/content-keys";
+import { withOccurrenceKeys } from "@/lib/component-utils";
 import { IconClock, IconSearch, IconX } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
@@ -373,7 +373,7 @@ function SpotlightItem<T>({
           aria-label="Shortcut hint"
           className="hidden shrink-0 items-center gap-1 sm:flex"
         >
-          {withContentKeys(item.shortcut, (label) => label).map(
+          {withOccurrenceKeys(item.shortcut, (label) => label).map(
             ({ item: label, key }) => (
               <Kbd key={key}>{label}</Kbd>
             ),
@@ -468,7 +468,7 @@ function SpotlightRecent({
       className={cn("p-2", className)}
     >
       <p className="px-2 py-2 text-xs text-muted-foreground">Recent searches</p>
-      {withContentKeys(items, (label) => label).map(({ item, key }) => (
+      {withOccurrenceKeys(items, (label) => label).map(({ item, key }) => (
         <Button
           key={key}
           variant="ghost"
@@ -500,7 +500,7 @@ function SpotlightSuggestions({
       data-slot="spotlight-suggestions"
       className={cn("flex flex-wrap gap-2 p-2", className)}
     >
-      {withContentKeys(items, (label) => label).map(({ item, key }) => (
+      {withOccurrenceKeys(items, (label) => label).map(({ item, key }) => (
         <Button
           key={key}
           variant="outline"

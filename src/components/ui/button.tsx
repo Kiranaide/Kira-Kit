@@ -1,23 +1,15 @@
-/* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 
 import * as React from "react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
 import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
+import { useOptimisticCommit } from "@/hooks/use-optimistic-commit";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/toast";
-import { isFunctionProp, isObjectProp } from "@/components/ui/prop-guards";
+import { isFunctionProp, isObjectProp } from "@/lib/component-utils";
 
 const buttonVariants = cva(
-  "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-lg border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-[color,background-color,border-color,box-shadow,opacity] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none cursor-pointer",
+  "focus-visible:border-ring focus-visible:ring-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-lg border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-[color,background-color,border-color,box-shadow,opacity,transform] duration-150 active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none cursor-pointer",
   {
     variants: {
       variant: {
@@ -81,6 +73,9 @@ interface ButtonProps
   extends
     VariantProps<typeof buttonVariants>,
     Omit<React.ComponentPropsWithoutRef<"button">, "size"> {
+  ref?: React.Ref<HTMLButtonElement>;
+  render?: ButtonPrimitive.Props["render"];
+  nativeButton?: ButtonPrimitive.Props["nativeButton"];
   holdDuration?: number;
   onHoldComplete?: () => void;
   /** Keeps a disabled button focusable so keyboard users can reach and inspect it. */
@@ -120,10 +115,264 @@ const getButtonIconSize = (size: ButtonSize | null | undefined): string => {
   return sizes[size || "default"] || "h-4 w-4";
 };
 
-function Button(arg0: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
-  const model = useButtonModel(arg0);
+function spawnRipple(
+  e: React.PointerEvent<HTMLButtonElement>,
+  disabled: boolean | undefined,
+  reducedMotion: boolean,
+  buttonRef: React.RefObject<HTMLButtonElement | null>,
+) {
+  if (disabled || reducedMotion) return;
 
-  return <ButtonView {...model} />;
+  const host = buttonRef.current;
+  const rect = host?.getBoundingClientRect();
+
+  if (!host || !rect) return;
+
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const diameter = Math.max(rect.width, rect.height) * 2;
+
+  const ripple = document.createElement("span");
+  ripple.className =
+    "pointer-events-none absolute rounded-full bg-current animate-button-ripple motion-reduce:hidden";
+  ripple.style.left = `${x}px`;
+  ripple.style.top = `${y}px`;
+  ripple.style.width = `${diameter}px`;
+  ripple.style.height = `${diameter}px`;
+  host.appendChild(ripple);
+
+  const cleanup = () => ripple.remove();
+  ripple.addEventListener("animationend", cleanup, { once: true });
+  window.setTimeout(cleanup, 700);
+}
+
+function assignButtonRef(
+  node: HTMLElement | null,
+  buttonRef: React.RefObject<HTMLButtonElement | null>,
+  ref: React.Ref<HTMLButtonElement> | undefined,
+) {
+  // SAFETY: ButtonPrimitive renders a <button>, so the node is always an HTMLButtonElement when mounted.
+  const el = node as HTMLButtonElement | null;
+
+  buttonRef.current = el;
+
+  if (isFunctionProp(ref)) ref(el);
+  else if (ref && isObjectProp(ref)) ref.current = el;
+}
+
+function useButtonHoldProgress({
+  disabled,
+  onHoldComplete,
+  holdDuration = 1000,
+}: {
+  disabled: boolean | undefined;
+  onHoldComplete: ButtonProps["onHoldComplete"];
+  holdDuration?: number;
+}) {
+  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const timerRef = React.useRef<number | null>(null);
+  const [holding, setHolding] = React.useState(false);
+
+  const clearTimer = React.useCallback(() => {
+    if (timerRef.current !== null) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const resetProgress = React.useCallback(() => {
+    clearTimer();
+    setHolding(false);
+  }, [clearTimer]);
+
+  React.useEffect(() => clearTimer, [clearTimer]);
+
+  const startHold = React.useCallback(() => {
+    if (disabled || !onHoldComplete) return;
+
+    clearTimer();
+    setHolding(true);
+    timerRef.current = window.setTimeout(() => {
+      timerRef.current = null;
+      setHolding(false);
+      onHoldComplete();
+    }, holdDuration);
+  }, [disabled, onHoldComplete, holdDuration, clearTimer]);
+
+  return { buttonRef, holding, holdDuration, startHold, resetProgress };
+}
+
+function ButtonIconContent({
+  leftIcon,
+  rightIcon,
+  children,
+}: Pick<ButtonProps, "leftIcon" | "rightIcon" | "children">) {
+  if (!leftIcon && !rightIcon) return children;
+
+  return (
+    <>
+      {leftIcon && <span className="shrink-0">{leftIcon}</span>}
+      {children}
+      {rightIcon && <span className="shrink-0">{rightIcon}</span>}
+    </>
+  );
+}
+
+function ButtonHoldOverlay({
+  holding,
+  holdDuration,
+  reducedMotion,
+}: {
+  holding: boolean;
+  holdDuration: number;
+  reducedMotion: boolean;
+}) {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 origin-left bg-current opacity-50 motion-reduce:transition-none"
+      style={{
+        transform: holding ? "scaleX(1)" : "scaleX(0)",
+        transition: reducedMotion
+          ? "none"
+          : `transform ${holding ? holdDuration : 150}ms ${holding ? "linear" : "ease-out"}`,
+      }}
+    />
+  );
+}
+
+function useButtonInteractionHandlers({
+  disabled,
+  reducedMotion,
+  buttonRef,
+  isHoldButton,
+  startHold,
+  resetProgress,
+  onPointerDown,
+  onPointerUp,
+  onPointerLeave,
+  onKeyDown,
+  onKeyUp,
+}: {
+  disabled?: boolean;
+  reducedMotion: boolean;
+  buttonRef: React.RefObject<HTMLButtonElement | null>;
+  isHoldButton: boolean;
+  startHold: () => void;
+  resetProgress: () => void;
+  onPointerDown?: ButtonProps["onPointerDown"];
+  onPointerUp?: ButtonProps["onPointerUp"];
+  onPointerLeave?: ButtonProps["onPointerLeave"];
+  onKeyDown?: ButtonProps["onKeyDown"];
+  onKeyUp?: ButtonProps["onKeyUp"];
+}) {
+  return {
+    onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (!disabled) {
+        spawnRipple(e, disabled, reducedMotion, buttonRef);
+
+        if (isHoldButton) startHold();
+      }
+
+      onPointerDown?.(e);
+    },
+    onPointerUp: (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (isHoldButton) resetProgress();
+      onPointerUp?.(e);
+    },
+    onPointerLeave: (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (isHoldButton) resetProgress();
+      onPointerLeave?.(e);
+    },
+    onKeyDown: (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (isHoldButton && !e.repeat && (e.key === "Enter" || e.key === " ")) {
+        e.preventDefault();
+        startHold();
+      }
+
+      onKeyDown?.(e);
+    },
+    onKeyUp: (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (isHoldButton && (e.key === "Enter" || e.key === " ")) {
+        resetProgress();
+      }
+
+      onKeyUp?.(e);
+    },
+  };
+}
+
+function Button({
+  className,
+  variant = "default",
+  size = "default",
+  fullWidth,
+  holdDuration = 1000,
+  onHoldComplete,
+  disabled,
+  leftIcon,
+  rightIcon,
+  children,
+  onPointerDown,
+  onPointerUp,
+  onPointerLeave,
+  onKeyDown,
+  onKeyUp,
+  ref,
+  ...props
+}: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
+  const reducedMotion = useReducedMotion();
+
+  const { buttonRef, holding, startHold, resetProgress } =
+    useButtonHoldProgress({
+      disabled,
+      onHoldComplete,
+      holdDuration,
+    });
+
+  const isHoldButton = Boolean(onHoldComplete);
+
+  const handlers = useButtonInteractionHandlers({
+    disabled,
+    reducedMotion,
+    buttonRef,
+    isHoldButton,
+    startHold,
+    resetProgress,
+    onPointerDown,
+    onPointerUp,
+    onPointerLeave,
+    onKeyDown,
+    onKeyUp,
+  });
+
+  return (
+    <ButtonPrimitive
+      ref={(node) => assignButtonRef(node, buttonRef, ref)}
+      data-slot="button"
+      className={cn(
+        buttonVariants({ variant, size, fullWidth, className }),
+        "relative overflow-hidden",
+        { "cursor-not-allowed": disabled },
+      )}
+      disabled={disabled}
+      {...handlers}
+      {...props}
+    >
+      {isHoldButton && (
+        <ButtonHoldOverlay
+          holding={holding}
+          holdDuration={holdDuration}
+          reducedMotion={reducedMotion}
+        />
+      )}
+      <span className="relative z-10 flex items-center gap-2">
+        <ButtonIconContent leftIcon={leftIcon} rightIcon={rightIcon}>
+          {children}
+        </ButtonIconContent>
+      </span>
+    </ButtonPrimitive>
+  );
 }
 
 interface ExpandableIconButtonProps extends Omit<ButtonProps, "children"> {
@@ -133,26 +382,63 @@ interface ExpandableIconButtonProps extends Omit<ButtonProps, "children"> {
   className?: string;
 }
 
-function ExpandableIconButton(
-  arg0: ExpandableIconButtonProps & { ref?: React.Ref<HTMLButtonElement> },
-) {
-  const model = useExpandableIconButtonModel(arg0);
+function ExpandableIconButton({
+  icon,
+  label,
+  expandDirection = "right",
+  className,
+  variant,
+  ref,
+  ...props
+}: ExpandableIconButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
+  const isHoldButton = Boolean(props.onHoldComplete);
 
-  return <ExpandableIconButtonView {...model} />;
+  return (
+    <Button
+      ref={ref}
+      variant={variant}
+      className={cn(
+        "group/expandable h-8 min-w-8 w-auto px-2 gap-0 [&>span]:gap-0",
+        { "flex-row-reverse": expandDirection === "left" },
+        className,
+      )}
+      aria-label={label}
+      {...props}
+    >
+      <span
+        className={cn("flex size-4 shrink-0 items-center justify-center", {
+          "relative z-10": isHoldButton,
+        })}
+      >
+        {icon}
+      </span>
+      <span
+        aria-hidden="true"
+        className={cn(
+          "grid grid-cols-[0fr] opacity-0 transition-[grid-template-columns,opacity,margin] duration-200 ease-out motion-reduce:transition-none group-hover/expandable:grid-cols-[1fr] group-hover/expandable:opacity-100 group-focus-visible/expandable:grid-cols-[1fr] group-focus-visible/expandable:opacity-100",
+          expandDirection === "right"
+            ? "group-hover/expandable:ml-2 group-focus-visible/expandable:ml-2"
+            : "group-hover/expandable:mr-2 group-focus-visible/expandable:mr-2",
+          { "relative z-10": isHoldButton },
+        )}
+      >
+        <span className="overflow-hidden whitespace-nowrap text-sm">
+          {label}
+        </span>
+      </span>
+    </Button>
+  );
 }
 
 function LoadingSpinner({ size }: { size: ButtonSize | null | undefined }) {
-  const spinnerRef = React.useRef<SVGSVGElement>(null);
-  const reducedMotion = useReducedMotion();
-
-  useGSAP(() => buttonUseGSAP(spinnerRef, reducedMotion), [reducedMotion]);
-
   const spinnerSize = getButtonIconSize(size);
 
   return (
     <svg
-      ref={spinnerRef}
-      className={cn(spinnerSize, "shrink-0")}
+      className={cn(
+        spinnerSize,
+        "shrink-0 animate-spin motion-reduce:animate-none",
+      )}
       viewBox="0 0 24 24"
       fill="none"
       aria-hidden="true"
@@ -188,9 +474,7 @@ function LoadingButtonContent({
   loadingText?: string;
   children: React.ReactNode;
 }) {
-  if (!isLoading) {
-    return children;
-  }
+  if (!isLoading) return children;
 
   if (loadingText || children) {
     return (
@@ -215,13 +499,13 @@ function LoadingButton({
   rightIcon,
   ...props
 }: LoadingButtonProps) {
-  let effectiveLeftIcon = leftIcon;
-  let effectiveRightIcon = rightIcon;
+  const effectiveLeftIcon = isLoading ? (
+    <LoadingSpinner size={size} />
+  ) : (
+    leftIcon
+  );
 
-  if (isLoading) {
-    effectiveLeftIcon = <LoadingSpinner size={size} />;
-    effectiveRightIcon = undefined;
-  }
+  const effectiveRightIcon = isLoading ? undefined : rightIcon;
 
   return (
     <Button
@@ -241,57 +525,6 @@ function LoadingButton({
   );
 }
 
-interface IconButtonWithTooltipProps extends Omit<ButtonProps, "children"> {
-  icon: React.ReactNode;
-  tooltip: string;
-  tooltipSide?: "top" | "right" | "bottom" | "left";
-  disabledReason?: string;
-}
-
-function IconButtonWithTooltip({
-  icon,
-  tooltip,
-  tooltipSide = "top",
-  disabledReason,
-  className,
-  disabled,
-  "aria-label": ariaLabel,
-  ...props
-}: IconButtonWithTooltipProps) {
-  // While disabled, a disabledReason takes precedence and explains why.
-  let tooltipContent = tooltip;
-
-  if (disabled && disabledReason) {
-    tooltipContent = disabledReason;
-  }
-
-  const button = (
-    <Button
-      className={className}
-      aria-label={ariaLabel || tooltip}
-      disabled={disabled}
-      {...props}
-    >
-      {icon}
-    </Button>
-  );
-
-  // A disabled button emits no pointer events, so wrap it in a span that
-  // carries the hover target when we need the disabled-reason tooltip.
-  let trigger = button;
-
-  if (disabled && disabledReason) {
-    trigger = <span className="inline-flex">{button}</span>;
-  }
-
-  return (
-    <Tooltip>
-      <TooltipTrigger render={trigger} />
-      <TooltipContent side={tooltipSide}>{tooltipContent}</TooltipContent>
-    </Tooltip>
-  );
-}
-
 interface KiraButtonProps extends Omit<ButtonProps, "onToggle"> {
   loading?: boolean;
   loadingText?: string;
@@ -301,46 +534,11 @@ interface KiraButtonProps extends Omit<ButtonProps, "onToggle"> {
   defaultPressed?: boolean;
   /** Async toggle handler; the pressed state flips instantly and rolls back if this rejects. */
   onToggle?: (pressed: boolean) => void | Promise<void>;
+  /** Optional local error handler invoked when onToggle rejects. */
+  onToggleError?: (error: Error) => void;
   pressedIcon?: React.ReactNode;
   unpressedIcon?: React.ReactNode;
   toggleErrorMessage?: string;
-}
-
-function useKiraButtonToggle({
-  pressed,
-  defaultPressed,
-  onToggle,
-  toggleErrorMessage,
-}: {
-  pressed: boolean | undefined;
-  defaultPressed: boolean;
-  onToggle: ((pressed: boolean) => void | Promise<void>) | undefined;
-  toggleErrorMessage: string;
-}) {
-  const isToggleControlled = pressed !== undefined;
-  const [pressedState, setPressedState] = React.useState(defaultPressed);
-  let committedPressed = pressedState;
-
-  if (isToggleControlled) {
-    committedPressed = pressed ?? false;
-  }
-
-  const [optimisticPressed, setOptimisticPressed] = React.useOptimistic(
-    committedPressed,
-    (_prev: boolean, next: boolean) => next,
-  );
-
-  const handleToggle = () =>
-    buttonHandleToggle(
-      committedPressed,
-      setOptimisticPressed,
-      onToggle,
-      isToggleControlled,
-      setPressedState,
-      toggleErrorMessage,
-    );
-
-  return { optimisticPressed, handleToggle };
 }
 
 function KiraButtonContent({
@@ -364,103 +562,58 @@ function KiraButtonContent({
   return children;
 }
 
-function getKiraButtonLeftIcon({
-  isLoading,
-  toggle,
-  optimisticPressed,
-  size,
-  leftIcon,
-  pressedIcon,
-  unpressedIcon,
-}: {
-  isLoading: boolean;
-  toggle: boolean | undefined;
-  optimisticPressed: boolean;
-  size: ButtonProps["size"];
-  leftIcon: React.ReactNode;
-  pressedIcon: React.ReactNode;
-  unpressedIcon: React.ReactNode;
-}) {
-  if (isLoading) {
-    return <LoadingSpinner size={size} />;
-  }
-
-  if (toggle) {
-    if (optimisticPressed) {
-      return pressedIcon;
-    }
-
-    return unpressedIcon;
-  }
-
-  return leftIcon;
-}
-
+// oxlint-disable-next-line complexity -- count is prop-destructure defaults (idiomatic React), not branching
 function KiraButton({
   loading,
   loadingText,
   toggle,
   pressed,
-  defaultPressed: defaultPressedInput,
+  defaultPressed = false,
   onToggle,
+  onToggleError,
   pressedIcon,
   unpressedIcon,
-  toggleErrorMessage: toggleErrorMessageInput,
+  toggleErrorMessage = "Couldn't update",
   leftIcon,
   rightIcon,
   children,
   className,
-  size: sizeInput,
-  variant: variantInput,
+  size = "default",
+  variant = "default",
   disabled,
   onClick,
   ...props
 }: KiraButtonProps) {
-  const { defaultPressed, toggleErrorMessage, size, variant } =
-    useKiraButtonOptions({
-      defaultPressed: defaultPressedInput,
-      toggleErrorMessage: toggleErrorMessageInput,
-      size: sizeInput,
-      variant: variantInput,
-    });
+  const isToggleControlled = pressed !== undefined;
+  const [pressedState, setPressedState] = React.useState(defaultPressed);
+  const committedPressed = isToggleControlled ? Boolean(pressed) : pressedState;
 
-  const { optimisticPressed, handleToggle } = useKiraButtonToggle({
-    pressed,
-    defaultPressed,
-    onToggle,
-    toggleErrorMessage,
+  const { optimisticValue: optimisticPressed, commit } = useOptimisticCommit({
+    value: committedPressed,
+    onCommit: onToggle,
+    onCommitted: (next) => {
+      if (!isToggleControlled) setPressedState(next);
+    },
+    onError: onToggleError,
+    errorTitle: toggleErrorMessage,
   });
 
-  const isLoading = !!loading;
+  const isLoading = Boolean(loading);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (toggle) {
-      React.startTransition(handleToggle);
+      commit(!committedPressed);
     }
 
     onClick?.(e);
   };
 
-  const effectiveLeftIcon = getKiraButtonLeftIcon({
-    isLoading,
-    toggle,
-    optimisticPressed,
-    size,
-    leftIcon,
-    pressedIcon,
-    unpressedIcon,
-  });
-
-  let effectiveRightIcon = rightIcon;
+  let effectiveLeftIcon = leftIcon;
 
   if (isLoading) {
-    effectiveRightIcon = undefined;
-  }
-
-  let ariaPressed: boolean | undefined;
-
-  if (toggle) {
-    ariaPressed = optimisticPressed;
+    effectiveLeftIcon = <LoadingSpinner size={size} />;
+  } else if (toggle) {
+    effectiveLeftIcon = optimisticPressed ? pressedIcon : unpressedIcon;
   }
 
   return (
@@ -470,10 +623,10 @@ function KiraButton({
       variant={variant}
       disabled={disabled || isLoading}
       leftIcon={effectiveLeftIcon}
-      rightIcon={effectiveRightIcon}
+      rightIcon={isLoading ? undefined : rightIcon}
       onClick={handleClick}
       aria-busy={isLoading || undefined}
-      aria-pressed={ariaPressed}
+      aria-pressed={toggle ? optimisticPressed : undefined}
       {...props}
     >
       <KiraButtonContent isLoading={isLoading} loadingText={loadingText}>
@@ -483,13 +636,11 @@ function KiraButton({
   );
 }
 
-export { buttonVariants };
-
 export {
+  buttonVariants,
   Button,
   ExpandableIconButton,
   LoadingButton,
-  IconButtonWithTooltip,
   KiraButton,
 };
 
@@ -498,648 +649,5 @@ export type {
   ButtonSize,
   ExpandableIconButtonProps,
   LoadingButtonProps,
-  IconButtonWithTooltipProps,
   KiraButtonProps,
 };
-
-function resolveKiraButtonOptions({
-  defaultPressed = false,
-  toggleErrorMessage = "Couldn't update",
-  size = "default",
-  variant = "default",
-}: {
-  defaultPressed?: KiraButtonProps["defaultPressed"];
-  toggleErrorMessage?: KiraButtonProps["toggleErrorMessage"];
-  size?: KiraButtonProps["size"];
-  variant?: KiraButtonProps["variant"];
-}) {
-  return { defaultPressed, toggleErrorMessage, size, variant };
-}
-
-function useButtonModel({
-  className,
-  variant = "default",
-  size = "default",
-  holdDuration,
-  onHoldComplete,
-  disabled,
-  leftIcon,
-  rightIcon,
-  children,
-  onPointerDown,
-  onPointerUp,
-  onPointerLeave,
-  ref,
-  ...props
-}: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
-  const hold = useButtonHoldProgress({
-    disabled,
-    onHoldComplete,
-    holdDuration,
-  });
-
-  const {
-    handlePressAnimation,
-    handleRipple,
-    startHold,
-    resetProgress,
-    isHolding,
-    isKeyboardHolding,
-    buttonRef,
-    progressRef,
-  } = hold;
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) =>
-    buttonHandlePointerDown(
-      e,
-      disabled,
-      onPointerDown,
-      handlePressAnimation,
-      handleRipple,
-      onHoldComplete,
-      startHold,
-    );
-
-  const handlePointerUp = (e: React.PointerEvent<HTMLButtonElement>) =>
-    buttonReleaseHold(e, onHoldComplete, resetProgress, onPointerUp);
-
-  const handlePointerLeave = (e: React.PointerEvent<HTMLButtonElement>) => {
-    if (onHoldComplete && (isHolding || isKeyboardHolding)) {
-      resetProgress();
-    }
-
-    onPointerLeave?.(e);
-  };
-
-  const { handleKeyDown, handleKeyUp } = buttonKeyboardHandlers(
-    onHoldComplete,
-    hold,
-    props.onKeyDown,
-    props.onKeyUp,
-  );
-
-  const isHoldButton = !!onHoldComplete;
-
-  const renderContent = () => (
-    <ButtonIconContent leftIcon={leftIcon} rightIcon={rightIcon}>
-      {children}
-    </ButtonIconContent>
-  );
-
-  return {
-    buttonRef,
-    ref,
-    variant,
-    size,
-    className,
-    disabled,
-    handlePointerDown,
-    handlePointerUp,
-    handlePointerLeave,
-    handleKeyDown,
-    handleKeyUp,
-    props,
-    isHoldButton,
-    progressRef,
-    renderContent,
-  };
-}
-
-function buttonKeyboardHandlers(
-  onHoldComplete: ButtonProps["onHoldComplete"],
-  hold: ReturnType<typeof useButtonHoldProgress>,
-  onKeyDown: ButtonProps["onKeyDown"],
-  onKeyUp: ButtonProps["onKeyUp"],
-) {
-  return {
-    handleKeyDown: (event: React.KeyboardEvent<HTMLButtonElement>) =>
-      buttonKeyboardStart(event, onHoldComplete, hold, onKeyDown),
-    handleKeyUp: (event: React.KeyboardEvent<HTMLButtonElement>) =>
-      buttonKeyboardRelease(
-        event,
-        onHoldComplete,
-        hold.setIsKeyboardHolding,
-        hold.resetProgress,
-        onKeyUp,
-      ),
-  };
-}
-
-function ButtonView({
-  buttonRef,
-  ref,
-  variant,
-  size,
-  className,
-  disabled,
-  handlePointerDown,
-  handlePointerUp,
-  handlePointerLeave,
-  handleKeyDown,
-  handleKeyUp,
-  props,
-  isHoldButton,
-  progressRef,
-  renderContent,
-}: ReturnType<typeof useButtonModel>) {
-  return (
-    <ButtonPrimitive
-      ref={(node) => buttonCallback(node, buttonRef, ref)}
-      data-slot="button"
-      className={cn(
-        buttonVariants({ variant, size, className }),
-        "relative overflow-hidden",
-        { "cursor-not-allowed": disabled },
-      )}
-      disabled={disabled}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerLeave}
-      onKeyDown={handleKeyDown}
-      onKeyUp={handleKeyUp}
-      {...props}
-    >
-      {isHoldButton && (
-        <>
-          <div
-            ref={progressRef}
-            className="absolute left-0 top-0 h-full pointer-events-none bg-current opacity-50"
-            style={{ width: 0 }}
-          />
-          <span className="relative z-10 flex items-center gap-2">
-            {renderContent()}
-          </span>
-        </>
-      )}
-      {!isHoldButton && (
-        <span className="relative z-10 flex items-center gap-2">
-          {renderContent()}
-        </span>
-      )}
-    </ButtonPrimitive>
-  );
-}
-
-function useExpandableIconButtonModel({
-  icon,
-  label,
-  expandDirection = "right",
-  className,
-  onMouseEnter,
-  onMouseLeave,
-  variant,
-  ref,
-  ...props
-}: ExpandableIconButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
-  const textRef = React.useRef<HTMLSpanElement>(null);
-  const reducedMotion = useReducedMotion();
-
-  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) =>
-    buttonHandleMouseEnter(
-      e,
-      textRef,
-      expandDirection,
-      reducedMotion,
-      onMouseEnter,
-    );
-
-  const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) =>
-    buttonHandleMouseLeave(e, textRef, reducedMotion, onMouseLeave);
-
-  const isHoldButton = !!props.onHoldComplete;
-
-  return {
-    ref,
-    variant,
-    expandDirection,
-    isHoldButton,
-    className,
-    handleMouseEnter,
-    handleMouseLeave,
-    label,
-    props,
-    icon,
-    textRef,
-  };
-}
-
-function ExpandableIconButtonView({
-  ref,
-  variant,
-  expandDirection,
-  isHoldButton,
-  className,
-  handleMouseEnter,
-  handleMouseLeave,
-  label,
-  props,
-  icon,
-  textRef,
-}: ReturnType<typeof useExpandableIconButtonModel>) {
-  return (
-    <Button
-      ref={ref}
-      variant={variant}
-      className={cn(
-        "h-8 min-w-8 w-auto px-2 gap-0 [&>span]:gap-0",
-        { "flex-row-reverse": expandDirection === "left" },
-        { "[&>span.relative.z-10.flex.items-center]:gap-0": isHoldButton },
-        className,
-      )}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      aria-label={label}
-      {...props}
-    >
-      <span
-        className={cn("shrink-0 flex items-center justify-center size-4", {
-          "relative z-10": isHoldButton,
-        })}
-      >
-        {icon}
-      </span>
-      <span
-        ref={textRef}
-        className={cn("overflow-hidden whitespace-nowrap text-sm", {
-          "relative z-10": isHoldButton,
-        })}
-        style={{ width: 0, opacity: 0 }}
-        aria-hidden="true"
-      >
-        {label}
-      </span>
-    </Button>
-  );
-}
-
-function useKiraButtonOptions({
-  defaultPressed: defaultPressedInput,
-  toggleErrorMessage: toggleErrorMessageInput,
-  size: sizeInput,
-  variant: variantInput,
-}: Parameters<typeof resolveKiraButtonOptions>[0]) {
-  return React.useMemo(
-    () =>
-      resolveKiraButtonOptions({
-        defaultPressed: defaultPressedInput,
-        toggleErrorMessage: toggleErrorMessageInput,
-        size: sizeInput,
-        variant: variantInput,
-      }),
-    [defaultPressedInput, toggleErrorMessageInput, sizeInput, variantInput],
-  );
-}
-
-function buttonUseGSAP(
-  spinnerRef: React.RefObject<SVGSVGElement | null>,
-  reducedMotion: boolean,
-) {
-  if (spinnerRef.current && !reducedMotion) {
-    gsap.to(spinnerRef.current, {
-      rotation: 360,
-      duration: 1,
-      ease: "none",
-      repeat: -1,
-    });
-  }
-}
-
-async function buttonHandleToggle(
-  committedPressed: boolean,
-  setOptimisticPressed: (action: boolean) => void,
-  onToggle: ((pressed: boolean) => void | Promise<void>) | undefined,
-  isToggleControlled: boolean,
-  setPressedState: React.Dispatch<React.SetStateAction<boolean>>,
-  toggleErrorMessage: string,
-) {
-  const next = !committedPressed;
-  setOptimisticPressed(next);
-
-  try {
-    await onToggle?.(next);
-
-    if (!isToggleControlled) setPressedState(next);
-  } catch {
-    toast.error(toggleErrorMessage);
-  }
-}
-
-function buttonHandlePressAnimation(
-  disabled: boolean | undefined,
-  reducedMotion: boolean,
-  buttonRef: React.RefObject<HTMLButtonElement | null>,
-) {
-  if (disabled || reducedMotion || !buttonRef.current) return;
-
-  gsap.to(buttonRef.current, {
-    scale: 0.96,
-    duration: 0.1,
-    ease: "power2.out",
-    yoyo: true,
-    repeat: 1,
-    overwrite: "auto",
-  });
-}
-
-function buttonHandleRipple(
-  e: React.PointerEvent<HTMLButtonElement>,
-  disabled: boolean | undefined,
-  reducedMotion: boolean,
-  buttonRef: React.RefObject<HTMLButtonElement | null>,
-) {
-  if (disabled || reducedMotion) return;
-
-  const host = buttonRef.current;
-  const rect = host?.getBoundingClientRect();
-
-  if (!host || !rect) return;
-
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  const diameter = Math.max(rect.width, rect.height) * 2;
-
-  const ripple = document.createElement("span");
-  ripple.className = "pointer-events-none absolute rounded-full bg-current";
-  ripple.style.left = `${x}px`;
-  ripple.style.top = `${y}px`;
-  ripple.style.width = `${diameter}px`;
-  ripple.style.height = `${diameter}px`;
-  ripple.style.transform = "translate(-50%, -50%)";
-  host.appendChild(ripple);
-
-  gsap.fromTo(
-    ripple,
-    { scale: 0, opacity: 0.3 },
-    {
-      scale: 1,
-      opacity: 0,
-      duration: 0.6,
-      ease: "power2.out",
-      onComplete: () => ripple.remove(),
-    },
-  );
-}
-
-function buttonResetProgress(
-  setIsHolding: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsKeyboardHolding: React.Dispatch<React.SetStateAction<boolean>>,
-  holdTweenRef: React.RefObject<gsap.core.Tween | null>,
-  progressRef: React.RefObject<HTMLDivElement | null>,
-) {
-  setIsHolding(false);
-  setIsKeyboardHolding(false);
-
-  if (holdTweenRef.current) {
-    holdTweenRef.current.kill();
-    holdTweenRef.current = null;
-  }
-
-  if (progressRef.current) {
-    gsap.to(progressRef.current, {
-      width: "0%",
-      duration: 0.15,
-      ease: "power2.out",
-    });
-  }
-}
-
-function buttonHandlePointerDown(
-  e: React.PointerEvent<HTMLButtonElement>,
-  disabled: boolean | undefined,
-  onPointerDown: React.PointerEventHandler<HTMLButtonElement> | undefined,
-  handlePressAnimation: () => void,
-  handleRipple: (e: React.PointerEvent<HTMLButtonElement>) => void,
-  onHoldComplete: (() => void) | undefined,
-  startHold: () => void,
-) {
-  if (disabled) {
-    onPointerDown?.(e);
-
-    return;
-  }
-
-  handlePressAnimation();
-  handleRipple(e);
-
-  if (onHoldComplete) {
-    startHold();
-  }
-
-  onPointerDown?.(e);
-}
-
-function buttonCallback(
-  node: HTMLElement | null,
-  buttonRef: React.RefObject<HTMLButtonElement | null>,
-  ref: React.Ref<HTMLButtonElement> | undefined,
-) {
-  // SAFETY: ButtonPrimitive renders a <button>, so the node is always
-  // an HTMLButtonElement when mounted.
-  const el = node as HTMLButtonElement | null;
-
-  buttonRef.current = el;
-
-  // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
-  if (isFunctionProp(ref)) ref(el);
-  // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
-  else if (ref && isObjectProp(ref)) ref.current = el;
-}
-
-function buttonHandleMouseEnter(
-  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  textRef: React.RefObject<HTMLSpanElement | null>,
-  expandDirection: "left" | "right",
-  reducedMotion: boolean,
-  onMouseEnter: React.MouseEventHandler<HTMLButtonElement> | undefined,
-) {
-  if (textRef.current) {
-    const textWidth = textRef.current.scrollWidth;
-
-    let marginLeft = 0;
-
-    if (expandDirection === "right") {
-      marginLeft = 8;
-    }
-
-    let marginRight = 0;
-
-    if (expandDirection === "left") {
-      marginRight = 8;
-    }
-
-    let duration = 0.2;
-
-    if (reducedMotion) {
-      duration = 0;
-    }
-
-    gsap.to(textRef.current, {
-      width: textWidth,
-      opacity: 1,
-      marginLeft,
-      marginRight,
-      duration,
-      ease: "power2.out",
-      overwrite: "auto",
-    });
-  }
-
-  onMouseEnter?.(e);
-}
-
-function buttonHandleMouseLeave(
-  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  textRef: React.RefObject<HTMLSpanElement | null>,
-  reducedMotion: boolean,
-  onMouseLeave: React.MouseEventHandler<HTMLButtonElement> | undefined,
-) {
-  if (textRef.current) {
-    let duration = 0.15;
-
-    if (reducedMotion) {
-      duration = 0;
-    }
-
-    gsap.to(textRef.current, {
-      width: 0,
-      opacity: 0,
-      marginLeft: 0,
-      marginRight: 0,
-      duration,
-      ease: "power2.in",
-      overwrite: "auto",
-    });
-  }
-
-  onMouseLeave?.(e);
-}
-
-function useButtonHoldProgress({
-  disabled,
-  onHoldComplete,
-  holdDuration,
-}: {
-  disabled: boolean | undefined;
-  onHoldComplete: ButtonProps["onHoldComplete"];
-  holdDuration: number | undefined;
-}) {
-  const progressRef = React.useRef<HTMLDivElement>(null);
-  const buttonRef = React.useRef<HTMLButtonElement>(null);
-  const [isHolding, setIsHolding] = React.useState(false);
-  const [isKeyboardHolding, setIsKeyboardHolding] = React.useState(false);
-  const holdTweenRef = React.useRef<gsap.core.Tween | null>(null);
-  const reducedMotion = useReducedMotion();
-
-  const handlePressAnimation = () =>
-    buttonHandlePressAnimation(disabled, reducedMotion, buttonRef);
-
-  const handleRipple = (e: React.PointerEvent<HTMLButtonElement>) =>
-    buttonHandleRipple(e, disabled, reducedMotion, buttonRef);
-
-  const resetProgress = () =>
-    buttonResetProgress(
-      setIsHolding,
-      setIsKeyboardHolding,
-      holdTweenRef,
-      progressRef,
-    );
-
-  const startHold = (): void => {
-    if (disabled || !onHoldComplete) return;
-
-    setIsHolding(true);
-
-    if (progressRef.current) {
-      gsap.set(progressRef.current, { width: "0%" });
-      holdTweenRef.current = gsap.to(progressRef.current, {
-        width: "100%",
-        duration: (holdDuration || 1000) / 1000,
-        ease: "none",
-        onComplete: () => {
-          onHoldComplete?.();
-          resetProgress();
-        },
-      });
-    }
-  };
-
-  return {
-    handlePressAnimation,
-    handleRipple,
-    startHold,
-    resetProgress,
-    isHolding,
-    isKeyboardHolding,
-    setIsKeyboardHolding,
-    buttonRef,
-    progressRef,
-  } satisfies {
-    handlePressAnimation: typeof handlePressAnimation;
-    handleRipple: typeof handleRipple;
-    startHold: typeof startHold;
-    resetProgress: typeof resetProgress;
-    isHolding: typeof isHolding;
-    isKeyboardHolding: typeof isKeyboardHolding;
-    setIsKeyboardHolding: typeof setIsKeyboardHolding;
-    buttonRef: typeof buttonRef;
-    progressRef: typeof progressRef;
-  };
-}
-
-function ButtonIconContent({
-  leftIcon,
-  rightIcon,
-  children,
-}: Pick<ButtonProps, "leftIcon" | "rightIcon" | "children">) {
-  if (leftIcon || rightIcon) {
-    return (
-      <>
-        {leftIcon && <span className="shrink-0">{leftIcon}</span>}
-        {children}
-        {rightIcon && <span className="shrink-0">{rightIcon}</span>}
-      </>
-    );
-  }
-
-  return children;
-}
-
-function buttonReleaseHold(
-  e: React.PointerEvent<HTMLButtonElement>,
-  onHoldComplete: ButtonProps["onHoldComplete"],
-  resetProgress: () => void,
-  onPointerUp: ButtonProps["onPointerUp"],
-) {
-  if (onHoldComplete) resetProgress();
-  onPointerUp?.(e);
-}
-
-function buttonKeyboardRelease(
-  e: React.KeyboardEvent<HTMLButtonElement>,
-  onHoldComplete: ButtonProps["onHoldComplete"],
-  setIsKeyboardHolding: React.Dispatch<React.SetStateAction<boolean>>,
-  resetProgress: () => void,
-  onKeyUp: ButtonProps["onKeyUp"],
-) {
-  if (onHoldComplete && (e.key === "Enter" || e.key === " ")) {
-    setIsKeyboardHolding(false);
-    resetProgress();
-  }
-
-  onKeyUp?.(e);
-}
-
-function buttonKeyboardStart(
-  e: React.KeyboardEvent<HTMLButtonElement>,
-  onHoldComplete: ButtonProps["onHoldComplete"],
-  { setIsKeyboardHolding, startHold }: ReturnType<typeof useButtonHoldProgress>,
-  onKeyDown: ButtonProps["onKeyDown"],
-) {
-  if (onHoldComplete && (e.key === "Enter" || e.key === " ")) {
-    e.preventDefault();
-    setIsKeyboardHolding(true);
-    startHold();
-  }
-
-  onKeyDown?.(e);
-}

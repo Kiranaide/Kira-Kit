@@ -21,36 +21,12 @@ import {
   IconX,
   IconSearch,
 } from "@tabler/icons-react";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
+import {
+  isFunctionProp,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
-/* -------------------------------------------------------------------------- */
 /*                                  Helpers                                   */
-/* -------------------------------------------------------------------------- */
-
-type StateClassName<S> =
-  string | ((state: S) => string | undefined) | undefined;
-
-type StateStyle<S> =
-  | React.CSSProperties
-  | ((state: S) => React.CSSProperties | undefined)
-  | undefined;
-
-/**
- * Preserves Base UI's function-valued `className`/`style` props instead of
- * feeding functions to `cn` (copied from tooltip.tsx convention).
- */
-function mergeClassName<S>(base: string, className: StateClassName<S>) {
-  return isCallbackProp(className)
-    ? (state: S) => cn(base, className(state))
-    : cn(base, className);
-}
-
-function mergeStyle<S>(base: React.CSSProperties, style: StateStyle<S>) {
-  return isCallbackProp(style)
-    ? (state: S) => ({ ...base, ...style(state) })
-    : { ...base, ...style };
-}
 
 function subscribeVisibility(onChange: () => void): () => void {
   document.addEventListener("visibilitychange", onChange);
@@ -71,9 +47,7 @@ function useDocumentVisible(): boolean {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Semantic surface + motion for menu popups (shared by Content and
@@ -142,8 +116,6 @@ const reasonClassName = "text-xs font-normal text-muted-foreground";
 const spinnerPauseStyle = {
   animationPlayState: "paused",
 } as React.CSSProperties;
-
-const emptyStyle: React.CSSProperties = {};
 
 /**
  * Pending spinners freeze while reduced motion is preferred or the document
@@ -231,17 +203,19 @@ function describedWithReason(
     : describedBy;
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
 
 type DropdownMenuProps<Payload = unknown> = Menu.Root.Props<Payload>;
 
 type DropdownMenuPortalProps = Menu.Portal.Props;
 
-type DropdownMenuTriggerProps<Payload = unknown> = Menu.Trigger.Props<Payload>;
+type DropdownMenuTriggerProps<Payload = unknown> = Omit<
+  Menu.Trigger.Props<Payload>,
+  "className"
+> & { className?: string };
 
-interface DropdownMenuContentProps extends Menu.Popup.Props {
+interface DropdownMenuContentProps extends Omit<Menu.Popup.Props, "className"> {
+  className?: string;
   side?: Menu.Positioner.Props["side"];
   align?: Menu.Positioner.Props["align"];
   sideOffset?: Menu.Positioner.Props["sideOffset"];
@@ -251,17 +225,26 @@ interface DropdownMenuContentProps extends Menu.Popup.Props {
   portalProps?: Omit<Menu.Portal.Props, "children" | "keepMounted">;
   positionerProps?: Omit<
     Menu.Positioner.Props,
-    "children" | "side" | "align" | "sideOffset" | "alignOffset"
-  >;
+    "children" | "side" | "align" | "sideOffset" | "alignOffset" | "className"
+  > & { className?: string };
 }
 
 type DropdownMenuGroupProps = Menu.Group.Props;
 
-interface DropdownMenuLabelProps extends Menu.GroupLabel.Props {
+interface DropdownMenuLabelProps extends Omit<
+  Menu.GroupLabel.Props,
+  "className"
+> {
+  className?: string;
   inset?: boolean;
 }
 
-interface DropdownMenuItemProps extends Menu.Item.Props {
+interface DropdownMenuItemProps extends Omit<
+  Menu.Item.Props,
+  "className" | "style"
+> {
+  className?: string;
+  style?: React.CSSProperties;
   inset?: boolean;
   variant?: "default" | "destructive";
   icon?: React.ReactNode;
@@ -272,7 +255,11 @@ interface DropdownMenuItemProps extends Menu.Item.Props {
   closeOnClick?: boolean;
 }
 
-interface DropdownMenuLinkItemProps extends Menu.LinkItem.Props {
+interface DropdownMenuLinkItemProps extends Omit<
+  Menu.LinkItem.Props,
+  "className"
+> {
+  className?: string;
   inset?: boolean;
   variant?: "default" | "destructive";
   icon?: React.ReactNode;
@@ -281,13 +268,21 @@ interface DropdownMenuLinkItemProps extends Menu.LinkItem.Props {
 
 type DropdownMenuSubProps = Menu.SubmenuRoot.Props;
 
-interface DropdownMenuSubTriggerProps extends Menu.SubmenuTrigger.Props {
+interface DropdownMenuSubTriggerProps extends Omit<
+  Menu.SubmenuTrigger.Props,
+  "className"
+> {
+  className?: string;
   inset?: boolean;
   icon?: React.ReactNode;
   disabledReason?: string;
 }
 
-interface DropdownMenuSubContentProps extends Menu.Popup.Props {
+interface DropdownMenuSubContentProps extends Omit<
+  Menu.Popup.Props,
+  "className"
+> {
+  className?: string;
   align?: Menu.Positioner.Props["align"];
   sideOffset?: Menu.Positioner.Props["sideOffset"];
   alignOffset?: Menu.Positioner.Props["alignOffset"];
@@ -295,11 +290,15 @@ interface DropdownMenuSubContentProps extends Menu.Popup.Props {
   portalProps?: Omit<Menu.Portal.Props, "children" | "keepMounted">;
   positionerProps?: Omit<
     Menu.Positioner.Props,
-    "children" | "side" | "align" | "sideOffset" | "alignOffset"
-  >;
+    "children" | "side" | "align" | "sideOffset" | "alignOffset" | "className"
+  > & { className?: string };
 }
 
-interface DropdownMenuCheckboxItemProps extends Menu.CheckboxItem.Props {
+interface DropdownMenuCheckboxItemProps extends Omit<
+  Menu.CheckboxItem.Props,
+  "className"
+> {
+  className?: string;
   icon?: React.ReactNode;
   iconChecked?: React.ReactNode;
   inset?: boolean;
@@ -309,24 +308,32 @@ interface DropdownMenuCheckboxItemProps extends Menu.CheckboxItem.Props {
 
 type DropdownMenuRadioGroupProps = Menu.RadioGroup.Props;
 
-interface DropdownMenuRadioItemProps extends Menu.RadioItem.Props {
+interface DropdownMenuRadioItemProps extends Omit<
+  Menu.RadioItem.Props,
+  "className"
+> {
+  className?: string;
   inset?: boolean;
   icon?: React.ReactNode;
   disabledReason?: string;
   closeOnClick?: boolean;
 }
 
-type DropdownMenuSeparatorProps = Menu.Separator.Props;
+type DropdownMenuSeparatorProps = Omit<Menu.Separator.Props, "className"> & {
+  className?: string;
+};
 
 type DropdownMenuShortcutProps = React.HTMLAttributes<HTMLSpanElement>;
 
-type DropdownMenuBackdropProps = Menu.Backdrop.Props;
+type DropdownMenuBackdropProps = Omit<Menu.Backdrop.Props, "className"> & {
+  className?: string;
+};
 
-type DropdownMenuArrowProps = Menu.Arrow.Props;
+type DropdownMenuArrowProps = Omit<Menu.Arrow.Props, "className"> & {
+  className?: string;
+};
 
-/* -------------------------------------------------------------------------- */
 /*                                Components                                  */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Typed factory for a detached-menu handle: multiple triggers can share one
@@ -355,8 +362,8 @@ function DropdownMenuTrigger<Payload = unknown>({
   return (
     <Menu.Trigger
       data-slot="dropdown-menu-trigger"
-      className={mergeClassName<Menu.Trigger.State>(
-        "focus-visible:outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+      className={cn(
+        "focus-visible:outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
         className,
       )}
       {...props}
@@ -373,10 +380,7 @@ function DropdownMenuBackdrop({
   return (
     <Menu.Backdrop
       data-slot="dropdown-menu-backdrop"
-      className={mergeClassName<Menu.Backdrop.State>(
-        "fixed inset-0 z-50 bg-foreground/50",
-        className,
-      )}
+      className={cn("fixed inset-0 z-50 bg-foreground/50", className)}
       {...props}
     />
   );
@@ -414,17 +418,11 @@ function DropdownMenuContent(input: DropdownMenuContentProps) {
         sideOffset={sideOffset}
         alignOffset={alignOffset}
         collisionPadding={collisionPadding}
-        className={mergeClassName<Menu.Positioner.State>(
-          "z-50 isolate",
-          positionerClassName,
-        )}
+        className={cn("z-50 isolate", positionerClassName)}
       >
         <Menu.Popup
           data-slot="dropdown-menu-content"
-          className={mergeClassName<Menu.Popup.State>(
-            dropdownMenuContentVariants(),
-            className,
-          )}
+          className={cn(dropdownMenuContentVariants(), className)}
           style={style}
           {...props}
         />
@@ -437,11 +435,9 @@ function DropdownMenuArrow({ className, ...props }: DropdownMenuArrowProps) {
   return (
     <Menu.Arrow
       data-slot="dropdown-menu-arrow"
-      className={mergeClassName<Menu.Arrow.State>(
-        cn(
-          "z-50 h-2 w-4",
-          "[&>polygon]:fill-popover [&>polygon]:stroke-border",
-        ),
+      className={cn(
+        "z-50 h-2 w-4",
+        "[&>polygon]:fill-popover [&>polygon]:stroke-border",
         className,
       )}
       {...props}
@@ -467,11 +463,9 @@ function DropdownMenuLabel({
     <Menu.GroupLabel
       data-slot="dropdown-menu-label"
       data-inset={inset || undefined}
-      className={mergeClassName<Menu.GroupLabel.State>(
-        cn(
-          "px-2 py-1.5 text-xs font-medium text-muted-foreground",
-          inset && "ps-8",
-        ),
+      className={cn(
+        "px-2 py-1.5 text-xs font-medium text-muted-foreground",
+        inset && "ps-8",
         className,
       )}
       {...props}
@@ -519,17 +513,12 @@ function DropdownMenuItem({
       )}
       disabled={disabled || loading}
       closeOnClick={closeOnClick}
-      className={mergeClassName<Menu.Item.State>(
-        cn(
-          dropdownMenuItemVariants({ variant, inset }),
-          !disabledReason && "data-disabled:pointer-events-none",
-        ),
+      className={cn(
+        dropdownMenuItemVariants({ variant, inset }),
+        !disabledReason && "data-disabled:pointer-events-none",
         className,
       )}
-      style={mergeStyle<Menu.Item.State>(
-        spinnerPaused ? spinnerPauseStyle : emptyStyle,
-        style,
-      )}
+      style={spinnerPaused ? { ...spinnerPauseStyle, ...style } : style}
       {...props}
     >
       {menuItemIcon(loading, icon, spinnerPaused)}
@@ -563,10 +552,7 @@ function DropdownMenuLinkItem({
       data-inset={inset || undefined}
       data-variant={variant}
       closeOnClick={closeOnClick}
-      className={mergeClassName<Menu.LinkItem.State>(
-        dropdownMenuItemVariants({ variant, inset }),
-        className,
-      )}
+      className={cn(dropdownMenuItemVariants({ variant, inset }), className)}
       {...props}
     >
       {icon && (
@@ -612,11 +598,9 @@ function DropdownMenuSubTrigger({
           ? [describedBy, reasonId].filter(Boolean).join(" ")
           : describedBy
       }
-      className={mergeClassName<Menu.SubmenuTrigger.State>(
-        cn(
-          dropdownMenuItemVariants({ inset }),
-          !disabledReason && "data-disabled:pointer-events-none",
-        ),
+      className={cn(
+        dropdownMenuItemVariants({ inset }),
+        !disabledReason && "data-disabled:pointer-events-none",
         className,
       )}
       {...props}
@@ -669,17 +653,11 @@ function DropdownMenuSubContent(input: DropdownMenuSubContentProps) {
         sideOffset={sideOffset}
         alignOffset={alignOffset}
         collisionPadding={collisionPadding}
-        className={mergeClassName<Menu.Positioner.State>(
-          "z-50 isolate",
-          positionerClassName,
-        )}
+        className={cn("z-50 isolate", positionerClassName)}
       >
         <Menu.Popup
           data-slot="dropdown-menu-sub-content"
-          className={mergeClassName<Menu.Popup.State>(
-            dropdownMenuContentVariants({ sub: true }),
-            className,
-          )}
+          className={cn(dropdownMenuContentVariants({ sub: true }), className)}
           style={style}
           {...props}
         />
@@ -713,11 +691,9 @@ function DropdownMenuCheckboxItem({
       }
       disabled={disabled}
       closeOnClick={closeOnClick}
-      className={mergeClassName<Menu.CheckboxItem.State>(
-        cn(
-          dropdownMenuItemVariants({ inset, indicator: true }),
-          !disabledReason && "data-disabled:pointer-events-none",
-        ),
+      className={cn(
+        dropdownMenuItemVariants({ inset, indicator: true }),
+        !disabledReason && "data-disabled:pointer-events-none",
         className,
       )}
       {...props}
@@ -773,11 +749,9 @@ function DropdownMenuRadioItem({
       }
       disabled={disabled}
       closeOnClick={closeOnClick}
-      className={mergeClassName<Menu.RadioItem.State>(
-        cn(
-          dropdownMenuItemVariants({ inset, indicator: true }),
-          !disabledReason && "data-disabled:pointer-events-none",
-        ),
+      className={cn(
+        dropdownMenuItemVariants({ inset, indicator: true }),
+        !disabledReason && "data-disabled:pointer-events-none",
         className,
       )}
       {...props}
@@ -812,10 +786,7 @@ function DropdownMenuSeparator({
   return (
     <Menu.Separator
       data-slot="dropdown-menu-separator"
-      className={mergeClassName<Menu.Separator.State>(
-        "bg-border -mx-1 my-1 h-px",
-        className,
-      )}
+      className={cn("bg-border -mx-1 my-1 h-px", className)}
       {...props}
     />
   );
@@ -838,9 +809,7 @@ function DropdownMenuShortcut({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                        KiraDropdownMenu (data-driven)                      */
-/* -------------------------------------------------------------------------- */
 
 const kiraNoActions = "No actions available.";
 const kiraNoItem = "No item selected";
@@ -1094,20 +1063,10 @@ function kiraItemNode(
 }
 
 /**
- * Data tree → live menu. Three modes:
- *
- * 1. `trigger` + `items` (static data): colocated trigger via the primitive
- *    `render` composition, one popup.
- * 2. `trigger` + `children`: low-level composition; children manage their
- *    own actions (Kira claims no async ownership here).
- * 3. `handle` + `items(payload)`: detached triggers share one popup; each
- *    trigger passes its own payload. Undefined payload shows a
- *    noninteractive "No item selected" empty state and never calls the
- *    factory.
- *
- * The shared async lifecycle (useMenuAction) applies to rendered data items;
- * the polite live status region lives OUTSIDE the Portal so a success
- * announcement survives closing.
+ * Data tree → live menu, in three modes: `trigger` + `items` renders static
+ * data through the primitive `render` composition; `trigger` + `children`
+ * leaves actions to the caller; `handle` + `items(payload)` shares one popup
+ * across detached triggers, empty state included when payload is undefined.
  */
 export function KiraDropdownMenu<Payload = unknown>(
   props: KiraDropdownMenuProps<Payload>,
@@ -1124,7 +1083,7 @@ export function KiraDropdownMenu<Payload = unknown>(
 export interface KiraDropdownCommonProps<Payload = unknown> {
   rootProps?: Omit<Menu.Root.Props<Payload>, "children" | "handle">;
   triggerProps?: Omit<
-    Menu.Trigger.Props<Payload>,
+    DropdownMenuTriggerProps<Payload>,
     "children" | "render" | "handle"
   >;
   contentProps?: Omit<DropdownMenuContentProps, "children">;
@@ -1164,7 +1123,7 @@ function resolveKiraMode<Payload>(props: KiraDropdownMenuProps<Payload>) {
   return {
     handle: "handle" in props ? props.handle : undefined,
     detachedItems:
-      "items" in props && isCallbackProp(props.items) ? props.items : undefined,
+      "items" in props && isFunctionProp(props.items) ? props.items : undefined,
     staticItems:
       "items" in props && Array.isArray(props.items) ? props.items : undefined,
     childrenProp: "children" in props ? props.children : undefined,
@@ -1424,9 +1383,7 @@ function resolveKiraDropdownSessionProps<Payload>(
   return { ...defaults, ...mode };
 }
 
-/* -------------------------------------------------------------------------- */
 /*                        Filtering parts (Base UI 1.9)                       */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Enables filtering for the menu or submenu it wraps (Base UI preview
@@ -1438,16 +1395,17 @@ function DropdownMenuFilterProvider(props: Menu.FilterProvider.Props) {
 }
 
 /** Search field that filters the wrapped menu's items. */
-function DropdownMenuInput({ className, ...props }: Menu.Input.Props) {
+function DropdownMenuInput({
+  className,
+  ...props
+}: Omit<Menu.Input.Props, "className"> & { className?: string }) {
   return (
     <Menu.Input
       data-slot="dropdown-menu-input"
-      className={mergeClassName<Menu.Input.State>(
-        cn(
-          "flex h-8 w-full items-center rounded-md border border-border bg-background ps-3 pe-8 text-sm outline-none",
-          "placeholder:text-muted-foreground",
-          "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-        ),
+      className={cn(
+        "flex h-8 w-full items-center rounded-md border border-border bg-background ps-3 pe-8 text-sm outline-none",
+        "placeholder:text-muted-foreground",
+        "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
         className,
       )}
       {...props}
@@ -1459,27 +1417,31 @@ function DropdownMenuInput({ className, ...props }: Menu.Input.Props) {
  * Groups items so other content (a filter input) can share the popup.
  * Items and groups must live inside this list when a FilterProvider is used.
  */
-function DropdownMenuList({ className, ...props }: Menu.List.Props) {
+function DropdownMenuList({
+  className,
+  ...props
+}: Omit<Menu.List.Props, "className"> & { className?: string }) {
   return (
     <Menu.List
       data-slot="dropdown-menu-list"
-      className={mergeClassName<Menu.List.State>("min-w-0", className)}
+      className={cn("min-w-0", className)}
       {...props}
     />
   );
 }
 
 /** Button that clears the filter input; renders only when the input has text. */
-function DropdownMenuClear({ className, ...props }: Menu.Clear.Props) {
+function DropdownMenuClear({
+  className,
+  ...props
+}: Omit<Menu.Clear.Props, "className"> & { className?: string }) {
   return (
     <Menu.Clear
       data-slot="dropdown-menu-clear"
-      className={mergeClassName<Menu.Clear.State>(
-        cn(
-          "absolute inset-e-1 top-1 flex size-6 items-center justify-center rounded-md text-muted-foreground outline-none",
-          "hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50",
-          "disabled:pointer-events-none disabled:opacity-50",
-        ),
+      className={cn(
+        "absolute inset-e-1 top-1 flex size-6 items-center justify-center rounded-md text-muted-foreground outline-none",
+        "hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring",
+        "disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
       {...props}
@@ -1491,12 +1453,15 @@ function DropdownMenuClear({ className, ...props }: Menu.Clear.Props) {
  * Zero-match message. The primitive already renders it with role=status and
  * aria-live=polite — never add a second live region around it.
  */
-function DropdownMenuEmpty({ className, ...props }: Menu.Empty.Props) {
+function DropdownMenuEmpty({
+  className,
+  ...props
+}: Omit<Menu.Empty.Props, "className"> & { className?: string }) {
   return (
     <Menu.Empty
       data-slot="dropdown-menu-empty"
-      className={mergeClassName<Menu.Empty.State>(
-        cn("px-2 py-6 text-center text-sm text-muted-foreground"),
+      className={cn(
+        "px-2 py-6 text-center text-sm text-muted-foreground",
         className,
       )}
       {...props}
@@ -1509,14 +1474,15 @@ function DropdownMenuEmpty({ className, ...props }: Menu.Empty.Props) {
  * (detached-trigger pattern). Only needed when one popup's content changes
  * per trigger and that switch is animated.
  */
-function DropdownMenuViewport({ className, ...props }: Menu.Viewport.Props) {
+function DropdownMenuViewport({
+  className,
+  ...props
+}: Omit<Menu.Viewport.Props, "className"> & { className?: string }) {
   return (
     <Menu.Viewport
       data-slot="dropdown-menu-viewport"
-      className={mergeClassName<Menu.Viewport.State>(
-        cn(
-          "relative h-(--popup-height) w-(--popup-width) origin-(--transform-origin) overflow-hidden outline-none",
-        ),
+      className={cn(
+        "relative h-(--popup-height) w-(--popup-width) origin-(--transform-origin) overflow-hidden outline-none",
         className,
       )}
       {...props}
@@ -1524,9 +1490,7 @@ function DropdownMenuViewport({ className, ...props }: Menu.Viewport.Props) {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Exports                                   */
-/* -------------------------------------------------------------------------- */
 
 export {
   DropdownMenu,

@@ -1,9 +1,116 @@
+import fs from "node:fs";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import { visualizer } from "rollup-plugin-visualizer";
+
+type LlmsMiddlewareServer = {
+  use: (
+    fn: (
+      req: {
+        url?: string;
+        headers: Record<string, string | string[] | undefined>;
+      },
+      res: {
+        setHeader: (name: string, value: string) => void;
+        end: (body: string) => void;
+      },
+      next: () => void,
+    ) => void,
+  ) => void;
+};
+
+function attachLlmsOriginMiddleware(
+  middlewares: LlmsMiddlewareServer,
+  filePath: string,
+) {
+  middlewares.use((req, res, next) => {
+    const pathname = req.url?.split("?")[0];
+
+    if (pathname !== "/llms.txt" || !fs.existsSync(filePath)) {
+      next();
+
+      return;
+    }
+
+    const rawHost = req.headers.host;
+    const host = Array.isArray(rawHost) ? rawHost[0] : rawHost;
+    const rawProto = req.headers["x-forwarded-proto"];
+
+    const proto =
+      (Array.isArray(rawProto) ? rawProto[0] : rawProto)
+        ?.split(",")[0]
+        ?.trim() || "http";
+
+    const content = fs.readFileSync(filePath, "utf-8");
+
+    const body = host
+      ? content.replaceAll("](/docs/", `](${proto}://${host}/docs/`)
+      : content;
+
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Cache-Control", "no-cache");
+    res.end(body);
+  });
+}
+
+// Qualify root-relative /docs/ links in llms.txt with the live request origin
+// during local `vite` dev and `vite preview` runs.
+function llmsOriginPlugin(): Plugin {
+  return {
+    name: "kira-llms-origin",
+    configureServer(server) {
+      attachLlmsOriginMiddleware(
+        server.middlewares,
+        path.resolve(import.meta.dirname, "public/llms.txt"),
+      );
+    },
+    configurePreviewServer(server) {
+      attachLlmsOriginMiddleware(
+        server.middlewares,
+        path.resolve(import.meta.dirname, "dist/llms.txt"),
+      );
+    },
+  };
+}
+
+function preloadGeistFontPlugin(): Plugin {
+  return {
+    name: "kira-preload-geist-font",
+    transformIndexHtml: {
+      order: "post",
+      handler(html, ctx) {
+        const bundle = ctx.bundle;
+
+        if (!bundle) return html;
+
+        const fontFile = Object.keys(bundle).find(
+          (file) =>
+            file.startsWith("assets/geist-latin-wght-normal-") &&
+            file.endsWith(".woff2"),
+        );
+
+        if (!fontFile) return html;
+
+        return [
+          {
+            tag: "link",
+            attrs: {
+              rel: "preload",
+              href: `/${fontFile}`,
+              as: "font",
+              type: "font/woff2",
+              crossorigin: "",
+            },
+            injectTo: "head-prepend",
+          },
+        ];
+      },
+    },
+  };
+}
 
 // Bundle analysis is opt-in (`ANALYZE=1 bun run build`) so normal and CI builds
 // don't pay the visualizer's generateBundle cost or try to open a browser.
@@ -12,6 +119,8 @@ const analyze = process.env.ANALYZE === "1" || process.env.ANALYZE === "true";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    llmsOriginPlugin(),
+    preloadGeistFontPlugin(),
     react(),
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
@@ -32,14 +141,10 @@ export default defineConfig({
     },
   },
   build: {
-    // This showcase intentionally ships heavy code tooling as lazy bundles: the
-    // Monaco editor (~1.5 MB), the Markdown editor (~1.1 MB) and Shiki grammars
-    // (~0.9 MB). Each loads on demand via dynamic import / lazy routes, so none
-    // affect first paint (the entry chunk is ~490 kB). Rolldown's automatic
-    // splitting isolates them per dynamic import; manual maxSize chunk groups
-    // were tried but produced circular-chunk init errors at runtime, so we keep
-    // the default splitting and set the advisory limit above the largest lazy
-    // bundle rather than force-splitting tightly-coupled editor internals.
+    // This showcase ships heavy code tooling (Monaco, the Markdown editor,
+    // Shiki grammars) as lazy bundles that load on demand, so none affect
+    // first paint. Rolldown's automatic splitting isolates each dynamic import;
+    // manual maxSize groups were tried and caused circular-chunk init errors.
     chunkSizeWarningLimit: 1600,
     rolldownOptions: {
       onwarn(warning, defaultHandler) {

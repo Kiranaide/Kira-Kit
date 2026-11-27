@@ -1,0 +1,12 @@
+{
+  "items": [
+    {
+      "name": "layout-responsive",
+      "type": "registry:lib",
+      "title": "Responsive Layout",
+      "description": "Shared responsive layout helpers consumed by the mini repo components.",
+      "categories": ["lib"],
+      "files": [{ "path": "layout-responsive.ts", "type": "registry:lib" }]
+    }
+  ]
+}

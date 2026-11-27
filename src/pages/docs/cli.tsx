@@ -1,471 +1,266 @@
-import { Link } from "@tanstack/react-router";
-import { IconArrowRight } from "@tabler/icons-react";
-import { cn } from "cn";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { CodeBlock } from "@/components/ui/code-block";
-import { ComponentPage, PageHeader, Section } from "@/components/docs";
+import {
+  Code,
+  DocChecklist,
+  DocPage,
+  DocSection,
+  DocTable,
+  GuideLink,
+} from "@/components/docs/doc-page";
 
-interface CommandDoc {
-  name: string;
-  summary: string;
-  example: string;
-  options: { flag: string; description: string }[];
-}
+const CLI_REFERENCE_URL = "https://www.npmjs.com/package/kira-kit";
 
-const commands: CommandDoc[] = [
+const commands = [
   {
-    name: "init",
-    summary:
-      "Set up a project: delegates base setup to the pinned shadcn CLI (4.22.1), registers the @kira-kit namespace in components.json without overwriting existing entries, and optionally applies a theme.",
-    example: `kira-kit init
-kira-kit init --preset ember-press
-kira-kit init --primary "#0B7F79"
-kira-kit init --base-color stone --yes`,
-    options: [
-      {
-        flag: "--preset <name>",
-        description: "Apply one of the 9 curated theme presets.",
-      },
-      {
-        flag: "--primary <hex>",
-        description: "Generate and apply a custom OKLCH theme.",
-      },
-      {
-        flag: "--base-color <name>",
-        description: "Neutral family for shadcn base setup.",
-      },
-      { flag: "--base <name>", description: "shadcn base library selection." },
-      {
-        flag: "--force",
-        description: "Overwrite existing files where shadcn allows it.",
-      },
-      { flag: "-y, --yes", description: "Skip confirmation prompts." },
-      {
-        flag: "-c, --cwd <path>",
-        description: "Run against a different project directory.",
-      },
-    ],
+    command: "create [dir]",
+    purpose: "Scaffold Vite, Next.js, TanStack Start, or a monorepo.",
   },
   {
-    name: "add [items...]",
-    summary:
-      "Add components, hooks, or themes via the pinned shadcn CLI. Transitive registry dependencies are resolved automatically.",
-    example: `kira-kit add button
-kira-kit add button card dialog --overwrite
-kira-kit add --all`,
-    options: [
-      {
-        flag: "-o, --overwrite",
-        description: "Overwrite existing local files.",
-      },
-      { flag: "-a, --all", description: "Add every item in the registry." },
-      {
-        flag: "-p, --path <path>",
-        description: "Target directory for the added files.",
-      },
-      {
-        flag: "--dry-run",
-        description: "Show what would be added without writing.",
-      },
-      { flag: "--diff", description: "Preview changes against local files." },
-      {
-        flag: "--view",
-        description: "Print item contents instead of installing.",
-      },
-      { flag: "-y, --yes", description: "Skip confirmation prompts." },
-    ],
+    command: "init",
+    purpose: "Set up the registry, base styles, and kit dependencies.",
   },
   {
-    name: "list / view / search",
-    summary:
-      "Registry inspection, all delegating to shadcn. list enumerates items, view prints one item's contents, search filters by keyword.",
-    example: `kira-kit list
-kira-kit list --json
-kira-kit view button
-kira-kit search table --json`,
-    options: [
-      {
-        flag: "--json",
-        description: "Machine-readable output for scripting and agents.",
-      },
-    ],
+    command: "add [items...]",
+    purpose:
+      "Install source files, transitive registry items, and missing packages.",
   },
   {
-    name: "theme",
-    summary:
-      "Generate an OKLCH palette from a primary color: light/dark schemes, chart hues, and APCA-verified contrast. Every token lands in the 4.5:1 (text) / 3:1 (UI) range.",
-    example: `kira-kit theme --primary "#0B7F79"
-kira-kit theme --primary "#0B7F79" --apply
-kira-kit theme --primary "#0B7F79" --out my-theme.json`,
-    options: [
-      {
-        flag: "--primary <hex>",
-        description: "The seed color for the whole palette.",
-      },
-      {
-        flag: "--base-color <name>",
-        description:
-          "neutral, stone, zinc, slate, gray, mauve, olive, mist, taupe.",
-      },
-      {
-        flag: "--out <file>",
-        description: "Write the registry:theme JSON to a file.",
-      },
-      {
-        flag: "--apply",
-        description: "Install the generated theme into the project.",
-      },
-      {
-        flag: "-c, --cwd <path>",
-        description: "Run against a different project directory.",
-      },
-    ],
+    command: "list / view / search",
+    purpose: "Browse the registry, read an item, or filter by keyword.",
   },
   {
-    name: "check [paths...]",
-    summary:
-      "Run the 12 parser-based quality checks over component sources (defaults to src/components/ui + src/hooks). Errors fail the run; warnings are advisory unless --ci is passed.",
-    example: `kira-kit check
-kira-kit check --format github
-kira-kit check --ci
-kira-kit check src/components/ui/button.tsx`,
-    options: [
-      {
-        flag: "--ci",
-        description: "Strict mode: every finding, including warnings, fails.",
-      },
-      {
-        flag: "--format <fmt>",
-        description: "Output format: github (Actions annotations) or json.",
-      },
-    ],
+    command: "theme",
+    purpose: "Generate and apply a palette, fonts, or icon options.",
   },
   {
-    name: "create [dir]",
-    summary:
-      "Scaffold a new project pre-wired for Kira Kit: components.json with the @kira-kit registry, OKLCH theme tokens, the cn package, and a welcome component.",
-    example: `kira-kit create my-app
-kira-kit create my-app --template next --install --git`,
-    options: [
-      {
-        flag: "--template <name>",
-        description: "vite, next, tanstack-start, or monorepo.",
-      },
-      {
-        flag: "--install",
-        description: "Install dependencies after scaffolding.",
-      },
-      { flag: "--git", description: "Initialize a git repository." },
-    ],
+    command: "check [paths...]",
+    purpose: "Run source checks for component and registry quality.",
   },
   {
-    name: "migrate",
-    summary:
-      "Migrate a pre-1.0 project: converts the legacy registryUrl field to the registries map, runs shadcn migrate cn to switch clsx/tailwind-merge imports to the cn package, and reports diverged components. Read-only — it never overwrites your work.",
-    example: `kira-kit migrate
-kira-kit migrate --dry-run`,
-    options: [
-      {
-        flag: "--dry-run",
-        description: "Report what would change without writing.",
-      },
-    ],
+    command: "migrate",
+    purpose: "Update legacy config and imports. Review a dry run first.",
   },
   {
-    name: "build",
-    summary:
-      "Maintainers only: the full registry pipeline — quality checks, regenerate the 9 theme presets, shadcn registry validate + build into public/r/*.json, prune stale outputs, and generate llms.txt plus per-item markdown docs.",
-    example: `kira-kit build
-kira-kit build --skip-checks`,
-    options: [
-      {
-        flag: "--skip-checks",
-        description: "Skip the quality-check stage (not recommended).",
-      },
-    ],
+    command: "build",
+    purpose:
+      "Validate and generate registry payloads and docs. For maintainers.",
   },
 ];
 
-const checks = [
+const addOptions = [
   {
-    name: "imports-deps",
-    catches:
-      "Imports that are not declared in the item's registry dependencies.",
+    option: "--dry-run",
+    behavior: "List the proposed install without writing files.",
+  },
+  { option: "--diff", behavior: "Compare your files with the registry." },
+  { option: "--view", behavior: "Print the registry item." },
+  {
+    option: "--all",
+    behavior: "Install components, hooks, and support modules.",
+  },
+  { option: "--path <path>", behavior: "Choose a target directory." },
+];
+
+const addFlags = [
+  {
+    title: "--overwrite",
+    description: "Replace local copies when you choose to reinstall.",
   },
   {
-    name: "dead-animate",
-    catches: "Animation utilities defined but never used.",
+    title: "--cwd <path>",
+    description: "Target another workspace or project root.",
   },
   {
-    name: "data-slot-cva",
-    catches: "Missing data-slot attributes or unexported cva variants.",
-  },
-  {
-    name: "reduced-motion",
-    catches: "Motion that is not gated behind prefers-reduced-motion.",
-  },
-  { name: "target-size", catches: "Pointer targets smaller than 24×24px." },
-  {
-    name: "raw-colors",
-    catches: "Raw hex/rgb colors instead of semantic tokens.",
-  },
-  {
-    name: "layout-transitions",
-    catches: "Transitions on layout properties (width, height, top, ...).",
-  },
-  {
-    name: "arbitrary-values",
-    catches: "Arbitrary Tailwind values outside the sanctioned exceptions.",
-  },
-  {
-    name: "spacing-scale",
-    catches:
-      "Half-step spacing on heights, widths, gaps, and horizontal padding.",
-  },
-  {
-    name: "registry-metadata",
-    catches: "Registry items with missing or malformed metadata.",
-  },
-  {
-    name: "base-ui-only",
-    catches: "Radix or other non-Base-UI primitive imports.",
-  },
-  {
-    name: "cn-source",
-    catches: "clsx/tailwind-merge imports instead of the cn package.",
+    title: "--yes",
+    description: "Skip confirmation prompts. Review changes first.",
   },
 ];
 
-const suppressionCode = `// Line-level, with a required reason:
-// kira-kit-ignore target-size: decorative icon, no pointer target needed
-
-// Whole file:
-/* kira-kit-ignore-file */`;
-
-const ciCode = `# .github/workflows/ci.yml
-- name: Quality checks
-  run: npx kira-kit check --ci --format github`;
+const checkGroups = [
+  {
+    title: "Imports and dependencies",
+    description:
+      "Find missing registry dependencies and unresolved local support modules.",
+  },
+  {
+    title: "Component contracts",
+    description: "Check data-slot, variants, metadata, and spacing.",
+  },
+  {
+    title: "Motion",
+    description: "Find dead utilities and missing reduced-motion gates.",
+  },
+];
 
 const exitCodes = [
   { code: "0", meaning: "Success" },
-  { code: "1", meaning: "User error (bad input, validation failure)" },
-  {
-    code: "2",
-    meaning: "Registry problem (invalid or malformed registry data)",
-  },
+  { code: "1", meaning: "Invalid input or validation failure" },
+  { code: "2", meaning: "Invalid registry data" },
   { code: "3", meaning: "Quality checks failed" },
 ];
 
-function RunItSection() {
+function CommandCell({ children }: { children: string }) {
   return (
-    <Section
-      title="Run it"
-      description="No global install needed. The shadcn CLI is bundled as a pinned dependency (4.22.1) — there is nothing else to install."
+    <span className="inline-block whitespace-nowrap">
+      <Code>{children}</Code>
+    </span>
+  );
+}
+
+function CommandsSection() {
+  return (
+    <DocSection id="command-reference" title="Command reference">
+      <DocTable
+        columns={["Command", "Purpose"]}
+        rows={commands.map((entry) => [
+          <CommandCell
+            key={entry.command}
+          >{`kira-kit ${entry.command}`}</CommandCell>,
+          entry.purpose,
+        ])}
+        caption="Commands"
+      />
+
+      <p className="text-sm leading-6 text-muted-foreground">
+        Use the options below to preview changes or control what gets installed.
+      </p>
+
+      <div className="flex flex-col gap-2">
+        <p className="text-[15px] font-semibold text-foreground">
+          <Code>kira-kit add</Code>
+        </p>
+        <DocTable
+          columns={["Option", "Behavior"]}
+          rows={addOptions.map((entry) => [
+            <CommandCell key={entry.option}>{entry.option}</CommandCell>,
+            entry.behavior,
+          ])}
+          caption="kira-kit add options"
+        />
+      </div>
+    </DocSection>
+  );
+}
+
+function PreviewSection() {
+  return (
+    <DocSection
+      id="preview-a-change"
+      title="Preview a change"
+      description="Use a dry run for the install plan. Use a diff to compare your local files with the registry version."
     >
       <CodeBlock
-        code={`npx kira-kit --help\nnpx kira-kit init\nnpx kira-kit check`}
+        code={`npx kira-kit add button --dry-run
+npx kira-kit add button --diff`}
         language="bash"
         copyFormat="shell"
+        showLineNumbers
       />
-    </Section>
+      <DocChecklist items={addFlags} />
+    </DocSection>
   );
 }
 
-function CommandReferenceSection() {
+function ChecksSection() {
   return (
-    <Section
-      title="Command reference"
-      description="Eight command groups. Every example is copy-ready; options tables list the flags each command accepts."
-    >
-      <div className="space-y-6">
-        {commands.map((command) => (
-          <Card key={command.name}>
-            <CardHeader>
-              <CardTitle className="font-mono text-base">
-                kira-kit {command.name}
-              </CardTitle>
-              <CardDescription>{command.summary}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <CodeBlock
-                code={command.example}
-                language="bash"
-                copyFormat="shell"
-              />
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="py-2 text-left font-medium">Option</th>
-                      <th className="py-2 text-left font-medium">
-                        Description
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y">
-                    {command.options.map((option) => (
-                      <tr key={option.flag}>
-                        <td className="py-2 font-mono text-xs">
-                          {option.flag}
-                        </td>
-                        <td className="py-2 text-muted-foreground">
-                          {option.description}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function QualityChecksSection() {
-  return (
-    <Section
+    <DocSection
+      id="quality-checks"
       title="Quality checks"
-      description="Twelve parser-based checks run over component sources. They encode the kit's constraints — Base UI only, cn package, spacing contract, reduced motion — so drift is caught before review."
+      description="Check the whole component surface or pass a path to focus the report."
     >
-      <Card>
-        <CardContent className="pt-6">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2 text-left font-medium">Check</th>
-                  <th className="py-2 text-left font-medium">
-                    What it catches
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {checks.map((check) => (
-                  <tr key={check.name}>
-                    <td className="py-2 font-mono text-xs">{check.name}</td>
-                    <td className="py-2 text-muted-foreground">
-                      {check.catches}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-    </Section>
-  );
-}
-
-function SuppressionSection() {
-  return (
-    <Section
-      title="Suppressing a false positive"
-      description="Suppressions require a reason — an unexplained suppression is itself an error, and unused suppressions are flagged. Keep them surgical."
-    >
-      <Card>
-        <CardContent className="pt-6">
-          <CodeBlock code={suppressionCode} language="tsx" />
-        </CardContent>
-      </Card>
-    </Section>
-  );
-}
-
-function ContinuousIntegrationSection() {
-  return (
-    <Section
-      title="Continuous integration"
-      description="--format github emits Actions annotations inline on the PR; --ci turns warnings into failures so nothing drifts silently."
-    >
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">GitHub Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CodeBlock code={ciCode} language="yaml" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Exit codes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2 text-left font-medium">Code</th>
-                  <th className="py-2 text-left font-medium">Meaning</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {exitCodes.map((entry) => (
-                  <tr key={entry.code}>
-                    <td className="py-2 font-mono text-xs">{entry.code}</td>
-                    <td className="py-2 text-muted-foreground">
-                      {entry.meaning}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      </div>
-    </Section>
-  );
-}
-
-function InstallationBanner() {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
-      <p className="text-sm text-muted-foreground">
-        New project? Start with the installation quickstart.
+      <CodeBlock
+        code={`npx kira-kit check
+npx kira-kit check src/components/ui`}
+        language="bash"
+        copyFormat="shell"
+        showLineNumbers
+      />
+      <DocChecklist items={checkGroups} />
+      <p className="text-sm leading-6 text-muted-foreground">
+        Thirteen checks run on every <Code>kira-kit build</Code>, so what fails
+        locally is what would fail in release. See{" "}
+        <GuideLink to="/docs/installation">Installation</GuideLink> for how a
+        project gets its config first.
       </p>
-      <Link
-        to="/docs/installation"
-        className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-      >
-        Installation
-        <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-      </Link>
-    </div>
+    </DocSection>
+  );
+}
+
+function CiSection() {
+  return (
+    <DocSection
+      id="continuous-integration"
+      title="Continuous integration"
+      description="Strict mode fails on warnings. GitHub output formats findings as annotations."
+    >
+      <CodeBlock
+        code="npx kira-kit check --ci --format github"
+        language="bash"
+        copyFormat="shell"
+        showLineNumbers
+      />
+
+      <div className="flex flex-col gap-2">
+        <p className="text-[17px] font-semibold text-foreground">Exit codes</p>
+        <DocTable
+          columns={["Code", "Meaning"]}
+          rows={exitCodes.map((entry) => [
+            <CommandCell key={entry.code}>{entry.code}</CommandCell>,
+            entry.meaning,
+          ])}
+          caption="Exit codes"
+        />
+      </div>
+
+      <p className="text-sm leading-6 text-muted-foreground">
+        <Code>--ci</Code> is opt-in — the <Code>CI</Code> environment variable
+        only silences prompts, it does not enable strict mode.{" "}
+        <Code>--format</Code> also accepts <Code>pretty</Code> and{" "}
+        <Code>json</Code>, with <Code>--json</Code> as the shorthand.{" "}
+        <Code>kira-kit build</Code> runs the same checks in non-strict mode and
+        takes neither flag; it has <Code>--skip-checks</Code> instead.
+      </p>
+    </DocSection>
   );
 }
 
 export default function CliPage() {
   return (
-    <ComponentPage>
-      <PageHeader
-        title="CLI"
-        description="The kira-kit CLI covers what shadcn doesn't: OKLCH theme generation, quality checks, scaffolding, and migration. Installation itself is delegated to a pinned shadcn CLI, so what you add is exactly what shadcn would add."
-        version="v0.4.0"
-        badge={<Badge variant="secondary">Node 22+</Badge>}
-      />
+    <DocPage
+      title="CLI"
+      description="Create projects, install source files, inspect the registry, and run quality checks."
+      previous={{ to: "/docs/transitions", label: "Transitions" }}
+      next={{ to: "/docs/typeset", label: "Typeset" }}
+    >
+      <DocSection
+        id="run-the-cli"
+        title="Run the CLI"
+        description="Use Node.js 22.12.0 or later, or Bun. Run the command from your project root."
+      >
+        <CodeBlock
+          code="npx kira-kit --help"
+          language="bash"
+          copyFormat="shell"
+          showLineNumbers
+        />
+        <p className="text-sm leading-6 text-muted-foreground">
+          <Code>--help</Code> lists the commands and their flags.{" "}
+          <a
+            href={CLI_REFERENCE_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-foreground"
+          >
+            The npm package README
+          </a>{" "}
+          includes command examples and describes what the CLI writes.
+        </p>
+      </DocSection>
 
-      <RunItSection />
-
-      <CommandReferenceSection />
-
-      <QualityChecksSection />
-
-      <SuppressionSection />
-
-      <ContinuousIntegrationSection />
-
-      <InstallationBanner />
-    </ComponentPage>
+      <CommandsSection />
+      <PreviewSection />
+      <ChecksSection />
+      <CiSection />
+    </DocPage>
   );
 }

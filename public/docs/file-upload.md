@@ -5,7 +5,7 @@ A drag-and-drop file selector with optional paste input, controlled values, and 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/file-upload
+kira-kit add @kira-kit/file-upload
 ```
 
 ## Dependencies
@@ -20,6 +20,7 @@ npx shadcn add @kira-kit/file-upload
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
 - @kira-kit/dialog
 - @kira-kit/use-reduced-motion
 

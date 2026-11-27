@@ -1,4 +1,3 @@
-/* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 
 import * as React from "react";
@@ -16,8 +15,7 @@ import {
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isStringProp } from "@/lib/component-prop-guards";
+import { isStringProp, resolveComponentDefaults } from "@/lib/component-utils";
 
 const breadcrumbListVariants = cva(
   // kira-kit-ignore spacing-scale: compact optical gap below the 8px tier; pre-contract density metric kept
@@ -745,11 +743,6 @@ function BreadcrumbResponsive({
   );
 }
 
-// =============================================================================
-// BreadcrumbMobileMenu — mobile-first ancestor picker: current page as the
-// trigger, all ancestors listed in a Base UI Menu on <md viewports.
-// =============================================================================
-
 interface BreadcrumbMobileMenuProps {
   items: {
     href: string;
@@ -816,10 +809,6 @@ function BreadcrumbMobileMenu({ items, className }: BreadcrumbMobileMenuProps) {
   );
 }
 
-// =============================================================================
-// BreadcrumbActions — right-aligned trailing region for page-level actions
-// =============================================================================
-
 type BreadcrumbActionsProps = React.ComponentPropsWithoutRef<"div">;
 
 function BreadcrumbActions({
@@ -837,10 +826,6 @@ function BreadcrumbActions({
     </div>
   );
 }
-
-// =============================================================================
-// BreadcrumbCopy — copy-the-current-path affordance with a copied-check flash
-// =============================================================================
 
 interface BreadcrumbCopyProps extends Omit<
   React.ComponentPropsWithoutRef<"button">,
@@ -929,10 +914,6 @@ function BreadcrumbCopy({
     </button>
   );
 }
-
-// =============================================================================
-// KiraBreadcrumb — one prop-driven entry point over the breadcrumb family
-// =============================================================================
 
 interface KiraBreadcrumbItem {
   href: string;

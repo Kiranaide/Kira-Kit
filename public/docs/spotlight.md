@@ -5,7 +5,7 @@ Command-palette dialog for grouped, keyboard-navigable results with keywords, sh
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/spotlight
+kira-kit add @kira-kit/spotlight
 ```
 
 ## Dependencies
@@ -18,6 +18,7 @@ npx shadcn add @kira-kit/spotlight
 
 - @kira-kit/button
 - @kira-kit/command
+- @kira-kit/component-utils
 - @kira-kit/empty
 - @kira-kit/kbd
 - @kira-kit/use-reduced-motion

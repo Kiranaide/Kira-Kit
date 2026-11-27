@@ -1,7 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
+import { isStringProp, resolveComponentDefaults } from "@/lib/component-utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   dateMatchModifiers,
   type DateRange,
@@ -35,11 +40,8 @@ import {
   toISODate,
   type CalendarMarker,
 } from "@/components/ui/calendar";
-import { isStringProp } from "@/lib/component-prop-guards";
 
-/* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
 
 type ApplyMode = "immediate" | "confirm";
 
@@ -92,7 +94,7 @@ interface DatePickerBaseProps extends VariantProps<
   /** Close after a complete selection in "immediate" mode. Default: true. */
   closeOnSelect?: boolean;
   locale?: Locale;
-  /** IANA time zone, e.g. "Asia/Jakarta". */
+  /** IANA time zone, e.g. "America/New_York". */
   timeZone?: string;
   weekStartsOn?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   /** date-fns pattern for the trigger. Defaults to Intl medium date style. */
@@ -153,9 +155,7 @@ interface DatePickerRangeProps extends DatePickerBaseProps {
 type DatePickerProps =
   DatePickerSingleProps | DatePickerDateTimeProps | DatePickerRangeProps;
 
-/* -------------------------------------------------------------------------- */
 /*                                   Presets                                  */
-/* -------------------------------------------------------------------------- */
 
 const singlePresets: DatePreset[] = [
   { label: "Today", getValue: (t) => t },
@@ -181,9 +181,7 @@ const rangePresets: DatePreset[] = [
   { label: "Year to date", getValue: (t) => ({ from: startOfYear(t), to: t }) },
 ];
 
-/* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
-/* -------------------------------------------------------------------------- */
 
 // kira-kit-ignore spacing-scale: date/time-picker trigger ladder is a documented non-change (PR follow-up)
 const iconSize = { sm: "size-3.5", default: "size-4", lg: "size-5" } as const;
@@ -272,9 +270,7 @@ function dateInputPatterns(
     : [inputPattern, "P", "PP", "PPP", "yyyy-MM-dd"];
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                 DatePicker                                 */
-/* -------------------------------------------------------------------------- */
 
 function DatePicker(input0: DatePickerProps) {
   const state0 = useDatePickerSetup(input0);
@@ -374,10 +370,8 @@ function renderDatePickerSectionPart1({
         }}
         className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
       />
-      <button
+      <PopoverTrigger
         ref={triggerRef}
-        type="button"
-        popoverTarget={popoverId}
         aria-haspopup="dialog"
         aria-expanded={isOpen}
         aria-controls={popoverId}
@@ -386,7 +380,7 @@ function renderDatePickerSectionPart1({
         className="-mr-1 rounded p-1 text-muted-foreground outline-none hover:bg-muted"
       >
         <IconCalendar aria-hidden className={iconSize[resolvedSize]} />
-      </button>
+      </PopoverTrigger>
     </>
   );
 }
@@ -423,11 +417,9 @@ function renderDatePickerSectionPart2({
   resolvedSize,
 }: renderDatePickerSectionPart2Args) {
   return (
-    <button
+    <PopoverTrigger
       ref={triggerRef}
       id={baseId}
-      type="button"
-      popoverTarget={popoverId}
       // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- The button is the APG date-picker combobox invoker for a calendar dialog, rather than a text input or select.
       role="combobox"
       aria-haspopup="dialog"
@@ -447,7 +439,7 @@ function renderDatePickerSectionPart2({
       <span className={cn("truncate", !hasValue && "text-muted-foreground")}>
         {label}
       </span>
-    </button>
+    </PopoverTrigger>
   );
 }
 
@@ -499,7 +491,7 @@ function renderDatePickerSectionPart4({
       // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This composite div groups controls or content without introducing fieldset form behavior, default styling, or a different public ref element.
       role="group"
       aria-label="Quick select"
-      className="flex gap-1 overflow-x-auto border-b border-border p-2 sm:min-w-37.5 sm:flex-col sm:overflow-visible sm:border-r sm:border-b-0 sm:p-3"
+      className="flex gap-1 overflow-x-auto border-b border-border p-2 max-sm:w-full max-sm:scrollbar-hide sm:min-w-37.5 sm:flex-col sm:overflow-visible sm:border-r sm:border-b-0 sm:p-3"
     >
       <p
         aria-hidden
@@ -519,7 +511,7 @@ function renderDatePickerSectionPart4({
             disabled={isPresetBlocked(presetValue)}
             onClick={() => handlePreset(presetValue)}
             className={cn(
-              "shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-left font-medium transition-colors",
+              "shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-left font-medium transition-colors max-sm:min-h-11",
               "hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               "disabled:pointer-events-none disabled:opacity-40",
               active && "bg-primary/10 text-primary",
@@ -730,7 +722,6 @@ function useDatePickerState2(state: ReturnType<typeof useDatePickerSetup>) {
     isDatetime,
   } = state;
 
-  /* ---------------------------------- Ids ---------------------------------- */
   const reactId = React.useId();
 
   const baseId = id ?? `date-picker-${reactId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
@@ -739,9 +730,7 @@ function useDatePickerState2(state: ReturnType<typeof useDatePickerSetup>) {
 
   const errorId = `${baseId}-error`;
 
-  const anchorName = `--${baseId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
-
-  const popoverRef = React.useRef<HTMLDivElement>(null);
+  const anchorRef = React.useRef<HTMLDivElement>(null);
 
   const triggerRef = React.useRef<HTMLButtonElement>(null);
 
@@ -753,7 +742,6 @@ function useDatePickerState2(state: ReturnType<typeof useDatePickerSetup>) {
     ? 1 // popover width budget: calendar + time comb side by side
     : (numberOfMonthsProp ?? (isRange && isDesktop ? 2 : 1));
 
-  /* ------------------------------- Open state ------------------------------ */
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false);
 
   const isOpen = openProp ?? uncontrolledOpen;
@@ -778,36 +766,12 @@ function useDatePickerState2(state: ReturnType<typeof useDatePickerSetup>) {
   const focusTrigger = () =>
     (editable ? inputRef : triggerRef).current?.focus();
 
-  const closePopover = () => {
-    const el = popoverRef.current;
-
-    if (!el?.matches(":popover-open")) return;
-
-    try {
-      el.hidePopover();
-    } catch {
-      // SAFETY: a popover hide/show operation was still in flight (re-entrant
-      // effect during beforetoggle, or Fast-Refresh remount). Retry once the
-      // operation settles; light dismiss may have closed it meanwhile.
-      queueMicrotask(() => {
-        if (el.matches(":popover-open")) {
-          try {
-            el.hidePopover();
-          } catch {
-            /* still blocked — native state governs */
-          }
-        }
-      });
-    }
-  };
-
   return {
     ...state,
     baseId,
     popoverId,
     errorId,
-    anchorName,
-    popoverRef,
+    anchorRef,
     triggerRef,
     inputRef,
     numberOfMonths,
@@ -821,7 +785,6 @@ function useDatePickerState2(state: ReturnType<typeof useDatePickerSetup>) {
     currentValue,
     emitChange,
     focusTrigger,
-    closePopover,
   };
 }
 
@@ -830,77 +793,29 @@ function useDatePickerState3(state: ReturnType<typeof useDatePickerState2>) {
     openProp,
     onOpenChange,
     value,
-    popoverRef,
     setUncontrolledOpen,
     setPendingValue,
     setMonth,
     today,
-    focusTrigger,
   } = state;
 
-  const openPopover = () => {
-    const el = popoverRef.current;
-
-    if (!el || el.matches(":popover-open")) return;
-
-    try {
-      el.showPopover();
-    } catch {
-      // SAFETY: a popover show/hide operation was still in flight (re-entrant
-      // effect during beforetoggle, or Fast-Refresh remount). Retrying from a
-      // microtask runs outside the in-flight operation; if it can't open, the
-      // native state governs. An uncaught throw here would abort the React
-      // commit and kill all event handling on the page.
-      queueMicrotask(() => {
-        if (!el.matches(":popover-open")) {
-          try {
-            el.showPopover();
-          } catch {
-            /* still blocked — native state governs */
-          }
-        }
-      });
-    }
-  };
-
-  // Native popover → React state (light dismiss, Escape, invoker clicks all land here).
-  const onPopoverToggle = React.useEffectEvent((event: ToggleEvent) => {
-    const opened = event.newState === "open";
-
+  const handleOpenChange = (opened: boolean) => {
     if (opened) {
       setPendingValue(value);
       const anchor = isDateRange(value) ? value.from : value;
       setMonth(startOfMonth(anchor ?? today));
     } else {
       setPendingValue(undefined); // discards un-applied confirm-mode changes
-      requestAnimationFrame(() => {
-        if (!document.activeElement || document.activeElement === document.body)
-          focusTrigger();
-      });
     }
 
     if (openProp === undefined) setUncontrolledOpen(opened);
     onOpenChange?.(opened);
-  });
+  };
 
-  React.useEffect(() => {
-    const el = popoverRef.current;
+  const openPopover = () => handleOpenChange(true);
+  const closePopover = () => handleOpenChange(false);
 
-    if (!el) return;
-    // SAFETY: "toggle" on popover elements is a ToggleEvent per spec; it fires
-    // only after the show/hide operation completes, so syncing state here never
-    // re-enters showPopover() mid-operation (beforetoggle would — it fires
-    // synchronously at the state flip, and a setState from it re-renders into
-    // the controlled-open effect while the operation is in flight).
-    const listener = (event: Event) => onPopoverToggle(event as ToggleEvent);
-    el.addEventListener("toggle", listener);
-
-    return () => {
-      el.removeEventListener("toggle", listener);
-    };
-  }, [popoverRef]);
-
-  return { ...state, openPopover };
+  return { ...state, handleOpenChange, openPopover, closePopover };
 }
 
 function useDatePickerState4(state: ReturnType<typeof useDatePickerState3>) {
@@ -910,20 +825,11 @@ function useDatePickerState4(state: ReturnType<typeof useDatePickerState3>) {
     maxDate,
     applyMode,
     effectiveCloseOnSelect,
-    isOpen,
     setPendingValue,
     emitChange,
     closePopover,
-    openPopover,
   } = state;
 
-  // React state → native popover (controlled `open`).
-  React.useEffect(() => {
-    if (isOpen) openPopover();
-    else closePopover();
-  }, [isOpen, openPopover, closePopover]);
-
-  /* ------------------------------ Blocked days ----------------------------- */
   const blockedMatchers = React.useMemo(() => {
     const list: Matcher[] = [];
 
@@ -947,14 +853,7 @@ function useDatePickerState4(state: ReturnType<typeof useDatePickerState3>) {
       ? isBlocked(v)
       : (!!v.from && isBlocked(v.from)) || (!!v.to && isBlocked(v.to));
 
-  /* -------------------------------- Selection ------------------------------ */
   const handleSelect = (next: DateValue) => {
-    // eslint-disable-next-line no-console
-    console.log(
-      "DP.handleSelect",
-      JSON.stringify(next instanceof Date ? "Date" : next),
-    );
-
     if (applyMode === "confirm") {
       setPendingValue(next);
 
@@ -1319,7 +1218,6 @@ function useDatePickerActions(state: ReturnType<typeof useDatePickerState7>) {
     value,
     resolvedSize,
     errorId,
-    anchorName,
     numberOfMonths,
     month,
     setMonth,
@@ -1328,7 +1226,6 @@ function useDatePickerActions(state: ReturnType<typeof useDatePickerState7>) {
     resolveRangeNames2,
   } = state;
 
-  /* --------------------------------- Labels -------------------------------- */
   const hasValue = isDateRange(value) ? !!value.from : !!value;
 
   const label = resolveLabel1();
@@ -1342,15 +1239,6 @@ function useDatePickerActions(state: ReturnType<typeof useDatePickerState7>) {
 
   const rangeNames = resolveRangeNames2();
 
-  // SAFETY: anchorName is a `--name` custom-property string; the CSSProperties
-  // assertion only widens the literal key for the inline style object.
-  const anchorStyle = { anchorName } as React.CSSProperties;
-
-  // SAFETY: positionAnchor is a valid csstype anchor property; the assertion
-  // only widens the literal key for the inline style object.
-  const popoverStyle = { positionAnchor: anchorName } as React.CSSProperties;
-
-  /* --------------------------------- Calendar ------------------------------ */
   const calendarShared = {
     size: resolvedSize,
     minDate,
@@ -1373,8 +1261,6 @@ function useDatePickerActions(state: ReturnType<typeof useDatePickerState7>) {
     describedBy,
     isInvalid,
     rangeNames,
-    anchorStyle,
-    popoverStyle,
     calendarShared,
   };
 }
@@ -1406,10 +1292,11 @@ function renderDatePicker({
   baseId,
   popoverId,
   errorId,
-  popoverRef,
+  anchorRef,
   triggerRef,
   inputRef,
   isOpen,
+  handleOpenChange,
   pendingValue,
   today,
   currentValue,
@@ -1434,98 +1321,96 @@ function renderDatePicker({
   describedBy,
   isInvalid,
   rangeNames,
-  anchorStyle,
-  popoverStyle,
   calendarShared,
 }: ReturnType<typeof useDatePickerActions>) {
   return (
     <div data-slot="date-picker" className={cn("relative w-full", className)}>
-      <div
-        className={datePickerTriggerVariants({ variant, size })}
-        style={anchorStyle}
-        data-disabled={disabled || undefined}
-        data-invalid={isInvalid || undefined}
-      >
-        {editable
-          ? renderDatePickerSectionPart1({
-              inputRef,
-              baseId,
-              inputText,
-              today,
-              locale,
-              inputPattern,
-              disabled,
-              required,
-              ariaLabel,
-              isInvalid,
-              describedBy,
-              setInputText,
-              commitInput,
-              openPopover,
-              triggerRef,
-              popoverId,
-              isOpen,
-              resolvedSize,
-            })
-          : renderDatePickerSectionPart2({
-              triggerRef,
-              baseId,
-              popoverId,
-              isOpen,
-              ariaLabel,
-              isRange,
-              hasValue,
-              label,
-              describedBy,
-              isInvalid,
-              required,
-              disabled,
-              resolvedSize,
-            })}
-
-        {hasValue && !disabled && (
-          <button
-            type="button"
-            onClick={handleClear}
-            aria-label={isRange ? "Clear dates" : "Clear date"}
-            className="rounded p-0.5 text-muted-foreground outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <IconX aria-hidden className={iconSize[resolvedSize]} />
-          </button>
-        )}
-      </div>
-
-      {inputError && (
-        <p
-          id={errorId}
-          role="alert"
-          className="mt-1.5 text-xs text-destructive"
+      <Popover open={isOpen} onOpenChange={handleOpenChange}>
+        <div
+          ref={anchorRef}
+          className={datePickerTriggerVariants({ variant, size })}
+          data-disabled={disabled || undefined}
+          data-invalid={isInvalid || undefined}
         >
-          {inputError}
-        </p>
-      )}
+          {editable
+            ? renderDatePickerSectionPart1({
+                inputRef,
+                baseId,
+                inputText,
+                today,
+                locale,
+                inputPattern,
+                disabled,
+                required,
+                ariaLabel,
+                isInvalid,
+                describedBy,
+                setInputText,
+                commitInput,
+                openPopover,
+                triggerRef,
+                popoverId,
+                isOpen,
+                resolvedSize,
+              })
+            : renderDatePickerSectionPart2({
+                triggerRef,
+                baseId,
+                popoverId,
+                isOpen,
+                ariaLabel,
+                isRange,
+                hasValue,
+                label,
+                describedBy,
+                isInvalid,
+                required,
+                disabled,
+                resolvedSize,
+              })}
 
-      {props.mode !== "range" && props.name && (
-        <input type="hidden" name={props.name} value={resolveValue3()} />
-      )}
-      {rangeNames && renderDatePickerSectionPart3({ rangeNames, value })}
+          {hasValue && !disabled && (
+            <button
+              type="button"
+              onClick={handleClear}
+              aria-label={isRange ? "Clear dates" : "Clear date"}
+              className="rounded p-0.5 text-muted-foreground outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <IconX aria-hidden className={iconSize[resolvedSize]} />
+            </button>
+          )}
+        </div>
 
-      <div
-        ref={popoverRef}
-        id={popoverId}
-        popover="auto"
-        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- The native popover owns light-dismiss and focus behavior; a dialog element would introduce a second dialog lifecycle.
-        role="dialog"
-        aria-label={isRange ? "Choose date range" : "Choose date"}
-        style={popoverStyle}
-        className={cn(
-          "date-picker-popover rounded-xl border border-border bg-popover text-popover-foreground shadow-xl",
-          "max-sm:w-full max-sm:rounded-b-none max-sm:border-x-0 max-sm:border-b-0",
+        {inputError && (
+          <p
+            id={errorId}
+            role="alert"
+            className="mt-1.5 text-xs text-destructive"
+          >
+            {inputError}
+          </p>
         )}
-      >
-        {isOpen && (
+
+        {props.mode !== "range" && props.name && (
+          <input type="hidden" name={props.name} value={resolveValue3()} />
+        )}
+        {rangeNames && renderDatePickerSectionPart3({ rangeNames, value })}
+
+        <PopoverContent
+          id={popoverId}
+          // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Base UI Popover.Popup owns visibility and focus; ARIA dialog provides the date-picker popup semantics.
+          role="dialog"
+          aria-label={isRange ? "Choose date range" : "Choose date"}
+          size="auto"
+          side="bottom"
+          align="start"
+          sideOffset={8}
+          collisionPadding={8}
+          positionerProps={{ anchor: anchorRef }}
+          className="max-h-[calc(100dvh-1rem)] overflow-auto rounded-xl p-0 shadow-xl"
+        >
           <div className="flex flex-col">
-            <div className="flex flex-col sm:flex-row">
+            <div className="flex flex-col max-sm:items-center sm:flex-row">
               {showPresets &&
                 presets.length > 0 &&
                 renderDatePickerSectionPart4({
@@ -1586,8 +1471,8 @@ function renderDatePicker({
                 canApply,
               })}
           </div>
-        )}
-      </div>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }

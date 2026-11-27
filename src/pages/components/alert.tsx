@@ -1,37 +1,35 @@
 import type { ComponentProps as ReactComponentProps } from "react";
 import { useState } from "react";
 import {
+  IconBell,
   IconDownload,
-  IconTrash,
   IconRefresh,
   IconRocket,
   IconSparkles,
-  IconBell,
+  IconTrash,
 } from "@tabler/icons-react";
 
 import {
   Alert,
-  AlertTitle,
+  AlertActions,
   AlertDescription,
+  AlertTitle,
   KiraAlert,
+  type AlertVariant,
 } from "@/components/ui/alert";
-import { toast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast";
 import {
+  APIReference,
+  Changelog,
   ComponentPage,
-  PageHeader,
-  FeatureGrid,
   DemoTabs,
   DemoWrapper,
-  UsageBlock,
-  APIReference,
+  FeatureGrid,
   KeyboardShortcuts,
-  Changelog,
+  PageHeader,
+  UsageBlock,
 } from "@/components/docs";
-
-// =============================================================================
-// Code Examples
-// =============================================================================
 
 const basicCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
@@ -40,13 +38,13 @@ export function Example() {
     <Alert>
       <AlertTitle>Heads up!</AlertTitle>
       <AlertDescription>
-        You can add components to your app using the cli.
+        You can add components to your app using the CLI.
       </AlertDescription>
     </Alert>
   )
 }`;
 
-const variantsCode = `import { Alert } from "@/components/ui/alert"
+const variantsCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 
 <Alert variant="info">…</Alert>
 <Alert variant="success">…</Alert>
@@ -55,16 +53,25 @@ const variantsCode = `import { Alert } from "@/components/ui/alert"
 <Alert variant="info-soft">…</Alert>
 <Alert variant="outline-info">…</Alert>`;
 
+const sizesCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+
+<Alert variant="info" size="xs">…</Alert>
+<Alert variant="info" size="sm">…</Alert>
+<Alert variant="info" size="default">…</Alert>
+<Alert variant="info" size="lg">…</Alert>`;
+
 const iconsCode = `import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { IconRocket } from "@tabler/icons-react"
 
 // Icon comes from the variant; pass \`icon={null}\` to hide it,
-// or any node to replace it.
+// or any React node to replace it.
 <Alert variant="success">
   <AlertTitle>Saved</AlertTitle>
   <AlertDescription>Your changes are live.</AlertDescription>
 </Alert>
 
-<Alert variant="warning" icon={null}>…</Alert>`;
+<Alert variant="warning" icon={null}>…</Alert>
+<Alert variant="default" icon={<IconRocket aria-hidden="true" className="h-full w-full" />}>…</Alert>`;
 
 const dismissibleCode = `import { Alert } from "@/components/ui/alert"
 
@@ -83,15 +90,28 @@ const softBannerCode = `import { Alert } from "@/components/ui/alert"
 // Left accent border
 <Alert variant="info" leftAccent>…</Alert>`;
 
-const actionsCode = `import { KiraAlert } from "@/components/ui/alert"
+const actionsCode = `import { Alert, AlertTitle, AlertDescription, AlertActions, KiraAlert } from "@/components/ui/alert"
 
+// Composable with AlertActions
+<Alert variant="info">
+  <AlertTitle>Review pending changes</AlertTitle>
+  <AlertDescription>Two configuration updates await approval.</AlertDescription>
+  <AlertActions
+    actions={[
+      { id: "approve", label: "Approve", onClick: () => {} },
+      { id: "dismiss", label: "Later", variant: "outline" },
+    ]}
+  />
+</Alert>
+
+// Or prop-driven with KiraAlert
 <KiraAlert
   variant="info"
   title="New update available"
   description="A new version is ready to install."
   actions={[
-    { label: "Update", onClick: () => {} },
-    { label: "Later", variant: "outline" },
+    { id: "update", label: "Update", onClick: () => {} },
+    { id: "later", label: "Later", variant: "outline" },
   ]}
 />`;
 
@@ -132,34 +152,56 @@ const undoDismissCode = `import { KiraAlert } from "@/components/ui/alert"
 const kiraCode = `import { KiraAlert } from "@/components/ui/alert"
 
 <KiraAlert
-  variant="info"
-  title="Update available"
-  description="A new version is ready."
-  actions={[{ label: "Update", onClick: () => {} }]}
+  variant="success"
+  title="Payment successful"
+  description="Your payment of $29.99 has been processed."
+  actions={[
+    { id: "receipt", label: "View receipt", onClick: () => {} },
+    { id: "download", label: "Download", variant: "outline", onClick: () => {} },
+  ]}
   copyable
+  copyText="Receipt KR-004821"
   timestamp={new Date()}
   dismissible
+  undoDismiss
 />`;
 
-const showcaseCode = `import { Alert, AlertTitle, AlertDescription, KiraAlert } from "@/components/ui/alert"
+const stressCode = `import { Alert, AlertTitle, AlertDescription, KiraAlert } from "@/components/ui/alert"
 
-// Every variant, size, banner, and left accent — plus stress cases:
-// long content, empty description, narrow containers, and 200% text.
-<Alert variant="info" size="sm">…</Alert>
-<KiraAlert variant="destructive" title="…" description="…" dismissible />`;
+// Long titles wrap, unbroken IDs break cleanly, empty descriptions omit body gap,
+// and copy/timestamp/dismiss/expand coexist inside max-w-xs.
+<div className="max-w-xs space-y-4">
+  <Alert variant="destructive">
+    <AlertTitle>Long wrapping title…</AlertTitle>
+    <AlertDescription>…</AlertDescription>
+  </Alert>
+  <Alert variant="success">
+    <AlertTitle>Empty description</AlertTitle>
+    <AlertDescription>{""}</AlertDescription>
+  </Alert>
+  <KiraAlert
+    variant="info"
+    title="Everything at once"
+    description="…"
+    copyable
+    timestamp={timestamp}
+    dismissible
+    expandable
+    expandedContent="Extra detail stays reachable behind Show more."
+  />
+</div>`;
 
-const usageCode = `import { Alert, AlertTitle, AlertDescription, KiraAlert } from "@/components/ui/alert"
+const usageCode = `import { Alert, AlertTitle, AlertDescription, AlertActions, KiraAlert } from "@/components/ui/alert"
 
 // Composable
 <Alert variant="info">
   <AlertTitle>Title</AlertTitle>
   <AlertDescription>Description</AlertDescription>
+  <AlertActions actions={[{ id: "review", label: "Review", onClick: () => {} }]} />
 </Alert>
 
-// Closable
+// Closable / soft / banner / left accent
 <Alert variant="warning" closable onClose={() => {}}>…</Alert>
-
-// Soft / banner / left accent
 <Alert variant="success-soft">…</Alert>
 <Alert variant="warning" banner>…</Alert>
 <Alert variant="info" leftAccent>…</Alert>
@@ -169,19 +211,11 @@ const usageCode = `import { Alert, AlertTitle, AlertDescription, KiraAlert } fro
   variant="info"
   title="Update available"
   description="A new version is ready."
-  actions={[{ label: "Update", onClick: () => {} }]}
+  actions={[{ id: "update", label: "Update", onClick: () => {} }]}
   copyable
   timestamp={new Date()}
   dismissible
-/>
-
-// For transient notifications, use the toast() API instead
-import { toast } from "@/components/ui/toast"
-toast.success("Saved")`;
-
-// =============================================================================
-// Demo Components
-// =============================================================================
+/>`;
 
 // Fixture timestamps — fixed at module scope so demo renders stay pure
 // (react-hooks/purity) and relative labels don't drift between re-renders.
@@ -195,85 +229,59 @@ function BasicDemo() {
     <Alert>
       <AlertTitle>Heads up!</AlertTitle>
       <AlertDescription>
-        You can add components to your app using the cli.
+        You can add components to your app using the CLI.
       </AlertDescription>
     </Alert>
   );
 }
 
+function VariantSection({
+  heading,
+  items,
+}: {
+  heading?: string;
+  items: ReadonlyArray<{
+    variant: AlertVariant;
+    title: string;
+    description: string;
+  }>;
+}) {
+  return (
+    <div className="space-y-3">
+      {heading !== undefined && (
+        <p className="pt-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          {heading}
+        </p>
+      )}
+      {items.map((item) => (
+        <Alert key={item.variant} variant={item.variant}>
+          <AlertTitle>{item.title}</AlertTitle>
+          <AlertDescription>{item.description}</AlertDescription>
+        </Alert>
+      ))}
+    </div>
+  );
+}
+
 function VariantsDemo() {
   return (
+    <div className="space-y-5">
+      <VariantSection items={filledVariantItems} />
+      <VariantSection heading="Soft" items={softVariantItems} />
+      <VariantSection heading="Outline" items={outlineVariantItems} />
+    </div>
+  );
+}
+
+function SizesDemo() {
+  return (
     <div className="space-y-4">
-      <Alert variant="default">
-        <AlertTitle>Default</AlertTitle>
-        <AlertDescription>
-          This is a default alert with neutral styling.
-        </AlertDescription>
-      </Alert>
-      <Alert variant="info">
-        <AlertTitle>Information</AlertTitle>
-        <AlertDescription>
-          This is an informational alert with helpful context.
-        </AlertDescription>
-      </Alert>
-      <Alert variant="success">
-        <AlertTitle>Success</AlertTitle>
-        <AlertDescription>
-          Your action was completed successfully.
-        </AlertDescription>
-      </Alert>
-      <Alert variant="warning">
-        <AlertTitle>Warning</AlertTitle>
-        <AlertDescription>
-          Please review this information carefully before proceeding.
-        </AlertDescription>
-      </Alert>
-      <Alert variant="destructive">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>
-          Something went wrong. Please try again later.
-        </AlertDescription>
-      </Alert>
-
-      <h4 className="pt-2 text-sm font-medium">Soft</h4>
-      <Alert variant="info-soft">
-        <AlertTitle>Information</AlertTitle>
-        <AlertDescription>Softer, tinted background.</AlertDescription>
-      </Alert>
-      <Alert variant="success-soft">
-        <AlertTitle>Saved</AlertTitle>
-        <AlertDescription>Your changes were saved.</AlertDescription>
-      </Alert>
-      <Alert variant="warning-soft">
-        <AlertTitle>Heads up</AlertTitle>
-        <AlertDescription>Something needs attention.</AlertDescription>
-      </Alert>
-      <Alert variant="destructive-soft">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>Something went wrong.</AlertDescription>
-      </Alert>
-
-      <h4 className="pt-2 text-sm font-medium">Outline</h4>
-      <Alert variant="outline-default">
-        <AlertTitle>Default</AlertTitle>
-        <AlertDescription>Outlined, no fill.</AlertDescription>
-      </Alert>
-      <Alert variant="outline-info">
-        <AlertTitle>Information</AlertTitle>
-        <AlertDescription>Outlined informational alert.</AlertDescription>
-      </Alert>
-      <Alert variant="outline-success">
-        <AlertTitle>Success</AlertTitle>
-        <AlertDescription>Outlined success alert.</AlertDescription>
-      </Alert>
-      <Alert variant="outline-warning">
-        <AlertTitle>Warning</AlertTitle>
-        <AlertDescription>Outlined warning alert.</AlertDescription>
-      </Alert>
-      <Alert variant="outline-destructive">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>Outlined error alert.</AlertDescription>
-      </Alert>
+      {alertSizeItems.map((item) => (
+        <Alert key={item.size} variant="info" size={item.size}>
+          <AlertTitle>{item.label}</AlertTitle>
+          <AlertDescription>{item.description}</AlertDescription>
+        </Alert>
+      ))}
     </div>
   );
 }
@@ -291,10 +299,17 @@ function IconsDemo() {
       <Alert variant="warning" icon={null}>
         <AlertTitle>No icon</AlertTitle>
         <AlertDescription>
-          Pass <code>icon=&#123;null&#125;</code> to hide it entirely.
+          Pass{" "}
+          <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
+            {"icon={null}"}
+          </code>{" "}
+          to hide it entirely.
         </AlertDescription>
       </Alert>
-      <Alert variant="default" icon={<IconRocket className="h-full w-full" />}>
+      <Alert
+        variant="default"
+        icon={<IconRocket aria-hidden="true" className="h-full w-full" />}
+      >
         <AlertTitle>Custom icon</AlertTitle>
         <AlertDescription>
           Any React node replaces the variant default.
@@ -311,12 +326,13 @@ function DismissibleDemo() {
   });
 
   const resetAlerts = () => setAlerts({ closable1: true, closable2: true });
+  const noneVisible = !alerts.closable1 && !alerts.closable2;
 
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
         <Button variant="outline" size="sm" onClick={resetAlerts}>
-          <IconRefresh className="w-4 h-4 mr-2" />
+          <IconRefresh aria-hidden="true" className="mr-2 size-4" />
           Reset Alerts
         </Button>
       </div>
@@ -342,52 +358,53 @@ function DismissibleDemo() {
           <AlertDescription>This one is also dismissible.</AlertDescription>
         </Alert>
       )}
+      {noneVisible && (
+        <div className="rounded-lg border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
+          All alerts dismissed. Click Reset Alerts to restore them.
+        </div>
+      )}
     </div>
   );
 }
 
 function SoftBannerDemo() {
   return (
-    <div className="space-y-4">
-      <h4 className="text-sm font-medium">Soft palette</h4>
-      <Alert variant="info-soft">
-        <AlertTitle>Information</AlertTitle>
-        <AlertDescription>Softer, tinted background.</AlertDescription>
-      </Alert>
-      <Alert variant="success-soft">
-        <AlertTitle>Saved</AlertTitle>
-        <AlertDescription>Your changes were saved.</AlertDescription>
-      </Alert>
-      <Alert variant="warning-soft">
-        <AlertTitle>Heads up</AlertTitle>
-        <AlertDescription>Something needs attention.</AlertDescription>
-      </Alert>
-      <Alert variant="destructive-soft">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>Something went wrong.</AlertDescription>
-      </Alert>
+    <div className="space-y-5">
+      <VariantSection heading="Soft palette" items={softVariantItems} />
 
-      <h4 className="pt-2 text-sm font-medium">Banner (edge-to-edge)</h4>
-      <Alert variant="warning" banner>
-        <AlertDescription>
-          Scheduled maintenance: Sunday 02:00–03:00 UTC.
-        </AlertDescription>
-      </Alert>
-      <Alert variant="info" banner>
-        <AlertDescription>
-          New in this release: dark mode and saved filters.
-        </AlertDescription>
-      </Alert>
+      <div className="space-y-3">
+        <p className="pt-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          Banner (edge-to-edge)
+        </p>
+        <Alert variant="warning" banner>
+          <AlertDescription>
+            Scheduled maintenance: Sunday 02:00–03:00 UTC.
+          </AlertDescription>
+        </Alert>
+        <Alert variant="info" banner>
+          <AlertDescription>
+            New in this release: dark mode and saved filters.
+          </AlertDescription>
+        </Alert>
+      </div>
 
-      <h4 className="pt-2 text-sm font-medium">Left accent</h4>
-      <Alert variant="info" leftAccent>
-        <AlertTitle>Information</AlertTitle>
-        <AlertDescription>With a coloured left accent border.</AlertDescription>
-      </Alert>
-      <Alert variant="destructive" leftAccent>
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>With a coloured left accent border.</AlertDescription>
-      </Alert>
+      <div className="space-y-3">
+        <p className="pt-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          Left accent
+        </p>
+        <Alert variant="info" leftAccent>
+          <AlertTitle>Information</AlertTitle>
+          <AlertDescription>
+            With a coloured left accent border.
+          </AlertDescription>
+        </Alert>
+        <Alert variant="destructive" leftAccent>
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            With a coloured left accent border.
+          </AlertDescription>
+        </Alert>
+      </div>
     </div>
   );
 }
@@ -395,21 +412,42 @@ function SoftBannerDemo() {
 function ActionsDemo() {
   return (
     <div className="space-y-4">
+      <Alert variant="info">
+        <AlertTitle>Review pending changes</AlertTitle>
+        <AlertDescription>
+          Two configuration updates await approval via AlertActions.
+        </AlertDescription>
+        <AlertActions
+          actions={[
+            {
+              id: "approve",
+              label: "Approve",
+              onClick: () => toast.success("Changes approved"),
+            },
+            {
+              id: "later-composable",
+              label: "Later",
+              variant: "outline",
+            },
+          ]}
+        />
+      </Alert>
       <KiraAlert
         variant="info"
         title="New update available"
         description="A new version of the application is ready to install."
         actions={[
           {
+            id: "update",
             label: (
               <>
-                <IconDownload className="w-4 h-4 mr-1" />
+                <IconDownload aria-hidden="true" className="mr-1 size-4" />
                 Update
               </>
             ),
             onClick: () => toast.success("Updating…"),
           },
-          { label: "Later", variant: "outline" },
+          { id: "later", label: "Later", variant: "outline" },
         ]}
       />
       <KiraAlert
@@ -418,16 +456,17 @@ function ActionsDemo() {
         description="Are you sure? This action cannot be undone."
         actions={[
           {
+            id: "delete",
             label: (
               <>
-                <IconTrash className="w-4 h-4 mr-1" />
+                <IconTrash aria-hidden="true" className="mr-1 size-4" />
                 Delete
               </>
             ),
             variant: "destructive",
             onClick: () => toast.error("Deleted"),
           },
-          { label: "Cancel", variant: "outline" },
+          { id: "cancel", label: "Cancel", variant: "outline" },
         ]}
       />
     </div>
@@ -443,7 +482,7 @@ function ExpandableDemo() {
         description="Build step exited with code 1."
         expandable
         expandedContent={
-          <pre className="whitespace-pre-wrap rounded bg-black/5 p-2 text-xs dark:bg-white/10">
+          <pre className="whitespace-pre-wrap rounded-md border border-border/60 bg-muted/60 p-2 font-mono text-xs text-foreground">
             {`Error: missing env var DATABASE_URL
   at loadConfig (config.ts:42)
   at bootstrap (index.ts:11)`}
@@ -456,10 +495,10 @@ function ExpandableDemo() {
         description="Open the review queue to approve or reject pending changes."
         expandable
         expandedContent={
-          <ul className="list-disc pl-4 text-sm">
-            <li>#482 — migration on users table (Maria)</li>
-            <li>#483 — copy change on pricing page (Sam)</li>
-            <li>#487 — dependency bump: react 19.3.1 (Priya)</li>
+          <ul className="list-disc space-y-1 pl-4 text-sm">
+            <li>PR 482 — migration on users table (Maria)</li>
+            <li>PR 483 — copy change on pricing page (Sam)</li>
+            <li>PR 487 — dependency bump: react 19.3.1 (Priya)</li>
           </ul>
         }
       />
@@ -479,7 +518,9 @@ function CopyTimestampDemo() {
       />
       <KiraAlert
         variant="info"
-        icon={<IconBell className="text-info" />}
+        icon={
+          <IconBell aria-hidden="true" className="h-full w-full text-info" />
+        }
         title="New sign-in detected"
         description="Chrome on macOS · San Francisco, CA"
         copyable
@@ -491,19 +532,41 @@ function CopyTimestampDemo() {
 }
 
 function KiraDemo() {
+  const [resetKey, setResetKey] = useState(0);
+
   return (
     <div className="space-y-4">
+      <div className="flex justify-end">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setResetKey((prev) => prev + 1)}
+        >
+          <IconRefresh aria-hidden="true" className="mr-2 size-4" />
+          Reset Alert
+        </Button>
+      </div>
       <KiraAlert
+        key={resetKey}
         variant="success"
-        icon={<IconSparkles className="h-full w-full" />}
+        icon={<IconSparkles aria-hidden="true" className="h-full w-full" />}
         title="Payment successful"
         description="Your payment of $29.99 has been processed. A receipt has been sent to your email address."
         actions={[
-          { label: "View receipt", onClick: () => {} },
-          { label: "Download", variant: "outline", onClick: () => {} },
+          {
+            id: "view-receipt",
+            label: "View receipt",
+            onClick: () => toast.info("Opening receipt KR-004821…"),
+          },
+          {
+            id: "download-receipt",
+            label: "Download",
+            variant: "outline",
+            onClick: () => toast.success("Receipt PDF downloaded"),
+          },
         ]}
         copyable
-        copyText="Receipt #KR-004821"
+        copyText="Receipt KR-004821"
         timestamp={T_NOW}
         dismissible
         undoDismiss
@@ -513,9 +576,22 @@ function KiraDemo() {
 }
 
 function UndoDismissDemo() {
+  const [resetKey, setResetKey] = useState(0);
+
   return (
     <div className="space-y-4">
+      <div className="flex justify-end">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setResetKey((prev) => prev + 1)}
+        >
+          <IconRefresh aria-hidden="true" className="mr-2 size-4" />
+          Reset Demo
+        </Button>
+      </div>
       <KiraAlert
+        key={resetKey}
         variant="warning"
         title="3 items archived"
         description="Archive completed. You can undo this for a few seconds after dismissing."
@@ -531,13 +607,9 @@ function UndoDismissDemo() {
   );
 }
 
-// =============================================================================
-// Showcase — every variant, size, banner, accent + stress cases (§7)
-// =============================================================================
-
 function StressDemo() {
   return (
-    <div className="max-w-[320px] space-y-4">
+    <div className="max-w-xs space-y-4">
       <Alert variant="destructive">
         <AlertTitle>
           Record-breaking monsoon rainfall disrupts metropolitan transit
@@ -545,9 +617,11 @@ function StressDemo() {
         </AlertTitle>
         <AlertDescription>
           Transport authorities reported platform flooding at twelve stations
-          during Tuesday evening&apos;s commute, with service restored
-          incrementally overnight and residual delays expected through Thursday.
-          Long content wraps instead of overflowing the narrow column.
+          during Tuesday evening&apos;s commute, with reference token{" "}
+          <code className="break-all rounded bg-muted px-1 py-0.5 font-mono text-xs">
+            INCIDENT_2026_METRO_COASTAL_GRID_OVERFLOW_ALPHA_9948271
+          </code>{" "}
+          wrapping cleanly inside a narrow column.
         </AlertDescription>
       </Alert>
       <Alert variant="success">
@@ -568,175 +642,176 @@ function StressDemo() {
   );
 }
 
-// =============================================================================
-// API
-// =============================================================================
+export default function AlertPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Alert"
+        version="v2.2.0"
+        description="Displays a callout for user attention with semantic variants, soft/banner styles, and a prop-driven KiraAlert. For transient notifications, use the toast() API."
+      />
 
-const apiSections = [
+      <FeatureGrid
+        features={alertPageFeatures}
+        description="Inline callout capabilities built into Kira Kit."
+      />
+
+      <DemoTabs tabs={alertPageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        title="Keyboard shortcuts"
+        description="Alert is a static region with standard button controls (no Base UI primitive underneath; follows WAI-ARIA alert guidance)."
+        shortcuts={alertPageShortcuts}
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Compose Alert primitives or pass props to KiraAlert."
+        notes={alertPageUsageNotes}
+      />
+
+      <APIReference
+        sections={alertPageAPISections}
+        title="API reference"
+        description="Props, types, and defaults for every exported Alert part."
+      />
+
+      <Changelog
+        entries={alertPageChangelogEntries}
+        title="Changelog"
+        description="Version history for the alert component."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const filledVariantItems = [
   {
-    title: "Alert",
-    props: [
-      {
-        prop: "variant",
-        type: '"default" | "info" | "success" | "warning" | "destructive" | "*-soft" | "outline-*"',
-        default: '"default"',
-        description: "Visual style variant of the alert",
-      },
-      {
-        prop: "size",
-        type: '"xs" | "sm" | "default" | "lg"',
-        default: '"default"',
-        description: "Size of the alert padding",
-      },
-      {
-        prop: "banner",
-        type: "boolean",
-        default: "false",
-        description: "Full-width, edge-to-edge (no rounding)",
-      },
-      {
-        prop: "leftAccent",
-        type: "boolean",
-        default: "false",
-        description: "Add a colored left accent border",
-      },
-      {
-        prop: "closable",
-        type: "boolean",
-        default: "false",
-        description: "Show close button to dismiss the alert",
-      },
-      {
-        prop: "showIcon",
-        type: "boolean",
-        default: "true",
-        description: "Show the variant-specific icon",
-      },
-      {
-        prop: "onClose",
-        type: "() => void",
-        default: "-",
-        description: "Callback when alert is dismissed",
-      },
-      {
-        prop: "meta",
-        type: "ReactNode",
-        default: "-",
-        description:
-          "Extra header-row content (timestamp, copy) rendered left of the close button on one flex row",
-      },
-    ],
+    variant: "default",
+    title: "Default",
+    description: "This is a default alert with neutral styling.",
   },
   {
-    title: "KiraAlert",
-    props: [
-      {
-        prop: "title / description",
-        type: "ReactNode",
-        default: "-",
-        description: "Alert heading and body",
-      },
-      {
-        prop: "icon",
-        type: "ReactNode",
-        default: "-",
-        description: "Override the auto icon",
-      },
-      {
-        prop: "actions",
-        type: "{ label; onClick?; variant? }[]",
-        default: "-",
-        description: "Action button row under the body",
-      },
-      {
-        prop: "expandable / expandedContent",
-        type: "boolean / ReactNode",
-        default: "false",
-        description: "Collapsible extra content behind Show more / less",
-      },
-      {
-        prop: "copyable / copyText",
-        type: "boolean / string",
-        default: "false",
-        description: "Copy-to-clipboard affordance",
-      },
-      {
-        prop: "timestamp",
-        type: "Date",
-        default: "-",
-        description: "Self-updating relative time (e.g. '2m ago')",
-      },
-      {
-        prop: "dismissible",
-        type: "boolean",
-        default: "false",
-        description: "Show a close button",
-      },
-      {
-        prop: "undoDismiss",
-        type: "boolean",
-        default: "false",
-        description:
-          "Dismiss shows a 'Dismissed — Undo' strip for a short window instead of unmounting immediately",
-      },
-      {
-        prop: "undoDuration",
-        type: "number",
-        default: "5000",
-        description:
-          "How long the undo strip stays visible (ms); pauses on strip hover/focus",
-      },
-    ],
+    variant: "info",
+    title: "Information",
+    description: "This is an informational alert with helpful context.",
   },
   {
-    title: "AlertTitle / AlertDescription",
-    props: [
-      {
-        prop: "className",
-        type: "string",
-        default: "-",
-        description: "Additional CSS classes",
-      },
-      {
-        prop: "children",
-        type: "ReactNode",
-        default: "-",
-        description: "Content",
-      },
-    ],
+    variant: "success",
+    title: "Success",
+    description: "Your action was completed successfully.",
   },
-];
+  {
+    variant: "warning",
+    title: "Warning",
+    description: "Please review this information carefully before proceeding.",
+  },
+  {
+    variant: "destructive",
+    title: "Error",
+    description: "Something went wrong. Please try again later.",
+  },
+] as const;
 
-// =============================================================================
-// Features
-// =============================================================================
+const softVariantItems = [
+  {
+    variant: "info-soft",
+    title: "Information",
+    description: "Softer, tinted background.",
+  },
+  {
+    variant: "success-soft",
+    title: "Saved",
+    description: "Your changes were saved.",
+  },
+  {
+    variant: "warning-soft",
+    title: "Heads up",
+    description: "Something needs attention.",
+  },
+  {
+    variant: "destructive-soft",
+    title: "Error",
+    description: "Something went wrong.",
+  },
+] as const;
 
-const features = [
+const outlineVariantItems = [
+  {
+    variant: "outline-default",
+    title: "Default",
+    description: "Outlined, no fill.",
+  },
+  {
+    variant: "outline-info",
+    title: "Information",
+    description: "Outlined informational alert.",
+  },
+  {
+    variant: "outline-success",
+    title: "Success",
+    description: "Outlined success alert.",
+  },
+  {
+    variant: "outline-warning",
+    title: "Warning",
+    description: "Outlined warning alert.",
+  },
+  {
+    variant: "outline-destructive",
+    title: "Error",
+    description: "Outlined error alert.",
+  },
+] as const;
+
+const alertSizeItems = [
+  {
+    size: "xs",
+    label: "Extra Small (xs)",
+    description: "Compact padding (p-2) and 12px icon for tight panels.",
+  },
+  {
+    size: "sm",
+    label: "Small (sm)",
+    description: "Compact padding (p-3) for sidebars and inline notices.",
+  },
+  {
+    size: "default",
+    label: "Default (default)",
+    description: "Standard padding (p-4) for page-level alerts.",
+  },
+  {
+    size: "lg",
+    label: "Large (lg)",
+    description: "Generous padding (p-5) and base text for prominent banners.",
+  },
+] as const;
+
+const alertPageFeatures = [
   {
     title: "Accessible",
     description:
-      'Uses role="alert" with proper ARIA attributes for screen reader announcements.',
+      'Uses role="alert" with proper ARIA attributes, polite copy live regions, and keyboard-pausable undo timers.',
   },
   {
     title: "Semantic Variants",
     description:
-      "Filled, soft, outline, banner, and left-accent styles with matching icons.",
+      "Filled, soft, outline, banner, left-accent, and four size scales with matching icons.",
   },
   {
     title: "KiraAlert",
     description:
-      "One prop-driven component: title, actions, expandable, copy, and timestamp.",
+      "One prop-driven component: title, actions, expandable details, copy, timestamp, and undoable dismissal.",
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-// =============================================================================
-// Demo Tabs Configuration
-// =============================================================================
-
-const demoTabs = [
+const alertPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Alert"
@@ -750,10 +825,11 @@ const demoTabs = [
   {
     value: "variants",
     label: "Variants",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Semantic Variants"
-        description="Filled and outline styles for every variant."
+        description="Filled, soft, and outline styles for every semantic tone."
         code={variantsCode}
       >
         <VariantsDemo />
@@ -761,12 +837,27 @@ const demoTabs = [
     ),
   },
   {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Alert Sizes"
+        description="Four size steps (xs, sm, default, lg) scaling padding, icon size, and typography."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "icons",
     label: "Icons",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="With Icons"
-        description="Alerts with automatic variant-based icons."
+        description="Automatic variant icons, hidden icons via icon={null}, and custom icon nodes."
         code={iconsCode}
       >
         <IconsDemo />
@@ -776,10 +867,11 @@ const demoTabs = [
   {
     value: "soft-banner",
     label: "Soft & Banner",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Soft, Banner & Left Accent"
-        description="Tinted, edge-to-edge, and accented styles."
+        description="Tinted soft surfaces, edge-to-edge banners, and left-accent borders."
         code={softBannerCode}
       >
         <SoftBannerDemo />
@@ -787,25 +879,13 @@ const demoTabs = [
     ),
   },
   {
-    value: "dismissible",
-    label: "Dismissible",
-    demo: (
-      <DemoWrapper
-        title="Dismissible Alerts"
-        description="Close with animation; instant under reduced motion."
-        code={dismissibleCode}
-      >
-        <DismissibleDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "actions",
     label: "Action Row",
+    group: "KiraAlert",
     demo: (
       <DemoWrapper
         title="Alerts with Actions"
-        description="KiraAlert renders a button row from an actions array."
+        description="Use AlertActions directly or pass an actions array to KiraAlert."
         code={actionsCode}
       >
         <ActionsDemo />
@@ -813,21 +893,9 @@ const demoTabs = [
     ),
   },
   {
-    value: "undo-dismiss",
-    label: "Undo Dismiss",
-    demo: (
-      <DemoWrapper
-        title="Undo-dismiss"
-        description="Dismissal shows a 'Dismissed — Undo' strip instead of dead-ending; hovering or focusing the strip pauses the 5s timer."
-        code={undoDismissCode}
-      >
-        <UndoDismissDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "expandable",
     label: "Expandable",
+    group: "KiraAlert",
     demo: (
       <DemoWrapper
         title="Expandable Alerts"
@@ -841,10 +909,11 @@ const demoTabs = [
   {
     value: "copy-timestamp",
     label: "Copy & Timestamp",
+    group: "KiraAlert",
     demo: (
       <DemoWrapper
         title="Copy & Timestamp"
-        description="Copy-to-clipboard and a self-updating relative time."
+        description="Copy-to-clipboard with polite live-region feedback and a self-updating relative timestamp."
         code={copyCode}
       >
         <CopyTimestampDemo />
@@ -854,6 +923,7 @@ const demoTabs = [
   {
     value: "kira",
     label: "KiraAlert",
+    group: "KiraAlert",
     demo: (
       <DemoWrapper
         title="KiraAlert"
@@ -865,81 +935,283 @@ const demoTabs = [
     ),
   },
   {
+    value: "dismissible",
+    label: "Dismissible",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Dismissible Alerts"
+        description="Close with GSAP exit animation; instant under reduced motion."
+        code={dismissibleCode}
+      >
+        <DismissibleDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "undo-dismiss",
+    label: "Undo Dismiss",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Undo-dismiss"
+        description="Dismissal shows a 'Dismissed — Undo' strip instead of dead-ending; hovering or focusing the strip pauses the 5s timer."
+        code={undoDismissCode}
+      >
+        <UndoDismissDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "stress",
     label: "Stress Cases",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Stress Cases"
-        description="Long titles wrap instead of overflowing, empty descriptions render nothing, and dismiss/copy/expand coexist — all inside a max-w-[320px] column."
-        code={showcaseCode}
+        description="Long titles wrap, unbroken tokens break cleanly, empty descriptions render nothing, and dismiss/copy/expand coexist — all inside a max-w-xs column."
+        code={stressCode}
       >
         <StressDemo />
       </DemoWrapper>
     ),
   },
-];
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-// =============================================================================
-// Main Page Component
-// =============================================================================
-
-export default function AlertPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Alert"
-        version="v2.2.0"
-        description="Displays a callout for user attention with semantic variants, soft/banner styles, and a prop-driven KiraAlert. For transient notifications, use the toast() API."
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts
-        title="Keyboard Navigation"
-        description="Alert is a static region with regular buttons — Kira additions only; there is no Base UI primitive underneath, so no inherited behavior. Reference: WAI-ARIA alert pattern."
-        shortcuts={alertPageKeyboardShortcutsShortcuts}
-      />
-
-      <UsageBlock
-        code={usageCode}
-        title="Usage"
-        description="Common usage patterns for the Alert component"
-      />
-
-      <APIReference
-        sections={apiSections}
-        title="API Reference"
-        description="Props and configuration options for Alert components"
-      />
-
-      <Changelog entries={alertPageChangelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
-const alertPageKeyboardShortcutsShortcuts = [
+const alertPageShortcuts = [
   {
     keys: "Tab",
+    group: "Navigation",
     description:
-      "Move focus to the next control (close, copy, Show more, action buttons) — all normal tab stops in DOM order",
+      "Move focus to the next control (close, copy, Show more, action buttons, Undo) — all normal tab stops in DOM order.",
   },
   {
     keys: "Shift + Tab",
-    description: "Move focus to the previous control",
+    group: "Navigation",
+    description: "Move focus to the previous control.",
   },
   {
     keys: "Enter / Space",
-    description: "Activate the focused button (dismiss, copy, toggle)",
+    group: "Activation",
+    description:
+      "Activate the focused button (dismiss, copy, Show more/less toggle, action button, or Undo).",
   },
   {
     keys: "Esc",
+    group: "Dismissal",
     description:
-      "No behavior — an alert is not a dialog; dismissing relies on the visible close button",
+      "No behavior — an alert is not a dialog; dismissing relies on the visible close button.",
   },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const alertPageUsageNotes = [
+  {
+    label: "KiraAlert vs Alert primitives",
+    body: "Use KiraAlert when you want title, description, actions, copyable text, relative timestamp, expandable details, or undoable dismissal from props; compose Alert, AlertTitle, AlertDescription, and AlertActions for custom markup.",
+  },
+  {
+    label: "Alert vs toast()",
+    body: "Alert renders persistent inline status callouts inside the page layout. Reach for toast() from @/components/ui/toast for transient, non-blocking notifications.",
+  },
+] satisfies NonNullable<ReactComponentProps<typeof UsageBlock>["notes"]>;
+
+const alertPageAPISections = [
+  {
+    title: "Alert",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "info" | "success" | "warning" | "destructive" | "*-soft" | "outline-*"',
+        default: '"default"',
+        description: "Visual style variant of the alert.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Padding, typography, and icon scale of the alert.",
+      },
+      {
+        prop: "banner",
+        type: "boolean",
+        default: "false",
+        description:
+          "Full-width, edge-to-edge banner (no horizontal border or rounding).",
+      },
+      {
+        prop: "leftAccent",
+        type: "boolean",
+        default: "false",
+        description: "Add a 4px colored left accent border.",
+      },
+      {
+        prop: "showIcon",
+        type: "boolean",
+        default: "true",
+        description: "Show the variant-specific icon.",
+      },
+      {
+        prop: "icon",
+        type: "ReactNode | null",
+        default: "variant icon",
+        description:
+          "Override the auto icon, or pass null to hide it entirely.",
+      },
+      {
+        prop: "closable",
+        type: "boolean",
+        default: "false",
+        description:
+          "Show a close button in the header row to dismiss the alert.",
+      },
+      {
+        prop: "onClose",
+        type: "() => void",
+        default: "-",
+        description: "Callback invoked after the alert is dismissed.",
+      },
+      {
+        prop: "meta",
+        type: "ReactNode",
+        default: "-",
+        description:
+          "Extra header-row content (timestamp, copy) rendered left of the close button on one flex row.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "AlertTitle / AlertDescription",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Heading or body content.",
+      },
+    ],
+  },
+  {
+    title: "AlertActions",
+    props: [
+      {
+        prop: "actions",
+        type: "{ id?: string; label: ReactNode; onClick?: () => void; variant?: ButtonVariant }[]",
+        default: "required",
+        description:
+          "Action button items rendered in a wrapped row below the alert body; first button defaults to 'default' variant, subsequent buttons default to 'outline'.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the actions row.",
+      },
+    ],
+  },
+  {
+    title: "KiraAlert",
+    props: [
+      {
+        prop: "title / description",
+        type: "ReactNode",
+        default: "-",
+        description: "Alert heading and body copy.",
+      },
+      {
+        prop: "icon",
+        type: "ReactNode | null",
+        default: "variant icon",
+        description: "Override the auto icon or pass null to hide it.",
+      },
+      {
+        prop: "actions",
+        type: "AlertAction[]",
+        default: "-",
+        description:
+          "Action buttons ({ id?, label, onClick?, variant? }) rendered under the body.",
+      },
+      {
+        prop: "expandable / expandedContent",
+        type: "boolean / ReactNode",
+        default: "false / -",
+        description:
+          "Collapsible extra content behind a Show more / Show less toggle.",
+      },
+      {
+        prop: "copyable / copyText",
+        type: "boolean / string",
+        default: "false / description or title",
+        description:
+          "Copy-to-clipboard button with 1.5s check flash and polite live announcement.",
+      },
+      {
+        prop: "timestamp",
+        type: "Date",
+        default: "-",
+        description:
+          "Self-updating relative timestamp (e.g. '2m ago') in the header row.",
+      },
+      {
+        prop: "dismissible",
+        type: "boolean",
+        default: "false",
+        description: "Show a close button.",
+      },
+      {
+        prop: "undoDismiss",
+        type: "boolean",
+        default: "false",
+        description:
+          "Dismissing replaces the alert with a 'Dismissed — Undo' strip instead of unmounting immediately.",
+      },
+      {
+        prop: "undoDuration",
+        type: "number",
+        default: "5000",
+        description:
+          "How long the undo strip stays visible (ms); pauses on strip hover or focus.",
+      },
+      {
+        prop: "variant / size / banner / leftAccent / showIcon / meta / onClose / children",
+        type: 'Omit<AlertProps, "title">',
+        default: "Alert defaults",
+        description:
+          "All underlying Alert styling, header, and lifecycle props.",
+      },
+    ],
+  },
+  {
+    title: "alertVariants / formatRelativeTime",
+    props: [
+      {
+        prop: "alertVariants",
+        type: "cva",
+        default: 'variant: "default", size: "default", banner: false',
+        description:
+          "Exported class-variance-authority recipe for Alert styling.",
+      },
+      {
+        prop: "formatRelativeTime",
+        type: "(date: Date, now?: number) => string",
+        default: "now = Date.now()",
+        description:
+          "Formats elapsed time as 'just now', 'Xm ago', 'Xh ago', or 'Xd ago'.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const alertPageChangelogEntries = [
   {
@@ -974,7 +1246,7 @@ const alertPageChangelogEntries = [
         type: "changed",
         title: "WCAG AA Contrast for Tone Variants",
         description:
-          "Tone variant body text now uses foreground color in light and dark; the semantic tone is carried by icon, border, and left accent. Audited against @base-ui/react 1.9.0 (stock shadcn Base UI alert has no primitive — parity unchanged).",
+          "Tone variant body text now uses foreground color in light and dark; the semantic tone is carried by icon, border, and left accent. Audited against @base-ui/react 1.9.0 (the stock Base UI alert has no primitive — parity unchanged).",
       },
       {
         type: "fixed",

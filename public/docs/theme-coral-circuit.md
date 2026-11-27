@@ -1,16 +1,15 @@
 # Coral Circuit
 
-A hot coral accent on warm stone that makes collaborative canvases and campaign workspaces feel quick, tactile, and optimistic.
+A hot coral accent on warm paper that makes collaborative canvases and campaign workspaces feel quick, tactile, and optimistic.
 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/theme-coral-circuit
+kira-kit add @kira-kit/theme-coral-circuit
 ```
 
 ## Usage
 
 ```tsx
-import { ThemeCoralCircuit } from "@/components/ui/theme-coral-circuit";
-/* Applied as CSS variables by shadcn. */
+/* Applied as CSS variables by kira-kit. */
 ```

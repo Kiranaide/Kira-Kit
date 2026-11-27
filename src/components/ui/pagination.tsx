@@ -26,7 +26,7 @@ import {
 } from "@/hooks/use-pagination";
 import { KiraSelect } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import { isStringProp } from "@/components/ui/prop-guards";
+import { isStringProp } from "@/lib/component-utils";
 
 const paginationNavigationIcons = {
   first: IconChevronsLeft,
@@ -475,12 +475,14 @@ function PaginationPages({
 
 interface PaginationInfoProps extends React.ComponentProps<"div"> {
   format?: string;
+  emptyText?: string;
   mobileCompact?: boolean;
 }
 
 function PaginationInfo({
   className,
   format = "Showing {start}–{end} of {total}",
+  emptyText = "No results",
   mobileCompact = false,
   ...props
 }: PaginationInfoProps) {
@@ -498,7 +500,7 @@ function PaginationInfo({
 
   const text =
     context.total === 0
-      ? "No results"
+      ? emptyText
       : Object.entries(values).reduce(
           (template, [token, number]) =>
             template.replaceAll(`{${token}}`, context.formatNumber(number)),
@@ -541,6 +543,7 @@ interface PaginationSizeSelectorProps {
   className?: string;
   options?: readonly number[];
   label?: string;
+  suffix?: string;
   showLabel?: boolean;
   onSizeChange?: (size: number) => void;
   disabled?: boolean;
@@ -554,6 +557,7 @@ function PaginationSizeSelector({
   className,
   options = [10, 20, 50, 100],
   label = "Rows per page",
+  suffix,
   showLabel = true,
   onSizeChange,
   disabled,
@@ -565,6 +569,7 @@ function PaginationSizeSelector({
   const context = usePaginationContext();
   const generatedId = React.useId();
   const selectId = id ?? generatedId;
+  const suffixId = `${selectId}-suffix`;
 
   const { sizes, selected } = paginationSizeChoices(options, context);
 
@@ -593,8 +598,18 @@ function PaginationSizeSelector({
         value={String(selected)}
         disabled={paginationUnavailable(disabled, context)}
         aria-label={ariaLabel ?? label}
-        aria-describedby={paginationDescription(describedBy, context)}
-        className="w-auto min-w-20 motion-reduce:transition-none pointer-coarse:min-h-11"
+        aria-describedby={paginationDescription(
+          [describedBy, suffix && suffixId].filter(Boolean).join(" ") ||
+            undefined,
+          context,
+        )}
+        size="xs"
+        className={cn(
+          "w-fit max-w-full motion-reduce:transition-none pointer-coarse:min-h-11",
+          "**:data-[slot=select-field-input]:w-[5ch] **:data-[slot=select-field-input]:flex-none",
+          "supports-[field-sizing:content]:**:data-[slot=select-field-input]:w-auto supports-[field-sizing:content]:[&_[data-slot=select-field-input]]:field-sizing-content",
+          "**:data-[slot=select-field-clear]:hidden",
+        )}
         onChange={(value) => {
           if (!isStringProp(value) || !value) return;
           const next = Number(value);
@@ -602,6 +617,11 @@ function PaginationSizeSelector({
           context?.setPageSize(next);
         }}
       />
+      {suffix && (
+        <span id={suffixId} className="text-sm text-muted-foreground">
+          {suffix}
+        </span>
+      )}
     </div>
   );
 }
@@ -714,8 +734,14 @@ function PaginationStatus({
 interface KiraPagePaginationProps extends PaginationProps {
   mode?: "pages";
   showInfo?: boolean;
+  infoFormat?: string;
+  emptyInfoText?: string;
+  /** Compact "Page x of y" info in narrow containers instead of the full range. */
+  infoMobileCompact?: boolean;
   showSizeSelector?: boolean;
   pageSizeOptions?: readonly number[];
+  pageSizeLabel?: string;
+  pageSizeSuffix?: string;
   showJump?: boolean;
   showEdges?: boolean;
   showLabels?: boolean;
@@ -786,10 +812,15 @@ function KiraPagination(props: KiraPaginationProps) {
   if (props.mode === "cursor") return <KiraCursorPagination {...props} />;
 
   const {
-    mode = "pages",
+    mode: _mode,
     showInfo = true,
+    infoFormat,
+    emptyInfoText,
+    infoMobileCompact,
     showSizeSelector = false,
     pageSizeOptions,
+    pageSizeLabel,
+    pageSizeSuffix,
     showJump = false,
     showEdges = false,
     showLabels = false,
@@ -801,7 +832,14 @@ function KiraPagination(props: KiraPaginationProps) {
     ...paginationProps
   } = props;
 
-  const buildInfo = () => (showInfo ? <PaginationInfo /> : null);
+  const buildInfo = () =>
+    showInfo ? (
+      <PaginationInfo
+        format={infoFormat}
+        emptyText={emptyInfoText}
+        mobileCompact={infoMobileCompact}
+      />
+    ) : null;
 
   const buildNavigation = () => (
     <KiraPaginationNavigation
@@ -812,35 +850,35 @@ function KiraPagination(props: KiraPaginationProps) {
     />
   );
 
-  const buildOptions = () =>
-    showSizeSelector || showJump ? (
-      <div
-        data-slot="pagination-options"
-        className="flex min-w-0 w-full flex-wrap items-start gap-4"
-      >
-        {showSizeSelector && (
-          <PaginationSizeSelector options={pageSizeOptions} />
-        )}
-        {showJump && <PaginationJump getPageHref={getPageHref} />}
-      </div>
-    ) : null;
-
   return (
     <Pagination
       {...paginationProps}
       error={error}
       onRetry={onRetry}
       data-kira-pagination=""
-      data-mode={mode}
+      data-mode="pages"
     >
       <div
         data-slot="pagination-overview"
-        className="flex min-w-0 w-full flex-col gap-3 @lg/pagination:flex-row @lg/pagination:items-center @lg/pagination:justify-between"
+        className="flex min-w-0 w-full flex-wrap items-center justify-between gap-3"
       >
         {buildInfo()}
-        {buildNavigation()}
+        <div className="ml-auto flex min-w-0 max-w-full flex-wrap items-center justify-end gap-3">
+          {showSizeSelector && (
+            <PaginationSizeSelector
+              options={pageSizeOptions}
+              label={pageSizeLabel}
+              suffix={pageSizeSuffix}
+            />
+          )}
+          {buildNavigation()}
+        </div>
       </div>
-      {buildOptions()}
+      {showJump && (
+        <div data-slot="pagination-options" className="w-full">
+          <PaginationJump getPageHref={getPageHref} />
+        </div>
+      )}
       {children}
       <KiraPaginationResultStatus
         error={error}
@@ -1241,15 +1279,23 @@ function PaginationErrorView2({
 }
 
 function usePaginationModel(input: PaginationProps) {
-  const { className, children, id, error, onRetry, disabledReason, ...props } =
-    input;
+  const {
+    className,
+    children,
+    id,
+    error,
+    onRetry,
+    disabledReason,
+    pageSize,
+    ...props
+  } = input;
 
   const presentation = usePaginationPresentation(input);
   const generatedId = React.useId();
   const paginationId = id ?? generatedId;
   const [jumpOpen, setJumpOpen] = React.useState(false);
   const [jumped, setJumped] = React.useState(false);
-  const pagination = usePaginationState(input);
+  const pagination = usePaginationState(input, pageSize);
 
   const context = usePaginationContextValue(
     input,
@@ -1280,11 +1326,14 @@ function usePaginationModel(input: PaginationProps) {
   };
 }
 
-function usePaginationState(input: PaginationProps) {
+function usePaginationState(
+  input: PaginationProps,
+  pageSize: number | undefined,
+) {
   return usePagination({
     total: input.total,
     defaultTotal: input.defaultTotal,
-    pageSize: input.pageSize,
+    pageSize,
     defaultPageSize: input.defaultPageSize,
     defaultPage: input.defaultPage,
     page: input.page,

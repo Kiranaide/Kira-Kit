@@ -6,18 +6,10 @@ import { CheckboxGroup as CheckboxGroupPrimitive } from "@base-ui/react/checkbox
 import { cva } from "class-variance-authority";
 import { cn } from "cn";
 import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
+import { useOptimisticCommit } from "@/hooks/use-optimistic-commit";
 import { SimpleTooltip } from "@/components/ui/tooltip";
-import { toast } from "@/components/ui/toast";
 import { IconCheck, IconMinus, IconLoader } from "@tabler/icons-react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { isFunctionProp } from "@/components/ui/prop-guards";
-
-gsap.registerPlugin(useGSAP);
-
-// -----------------------------------------------------------------------------
-// Styling
-// -----------------------------------------------------------------------------
+import { isFunctionProp } from "@/lib/component-utils";
 
 type CheckboxSize = "sm" | "default" | "lg";
 
@@ -35,7 +27,7 @@ const checkboxVariants = cva(
     "transition-[color,background-color,border-color,box-shadow] duration-150 motion-reduce:transition-none",
     // Root is a <span> by default, so use data-disabled (not :disabled).
     "data-disabled:cursor-not-allowed data-disabled:opacity-50",
-    "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+    "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
     // Single error path: `error` prop and Field both set aria-invalid.
     "aria-invalid:border-destructive aria-invalid:ring-[3px] aria-invalid:ring-destructive/20",
     "dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
@@ -109,26 +101,18 @@ const rippleRadius: Record<CheckboxSize, string> = {
   lg: "rounded-md",
 };
 
-// -----------------------------------------------------------------------------
-// Utilities
-// -----------------------------------------------------------------------------
-
 function useMergedRef<T>(...refs: (React.Ref<T> | undefined)[]) {
   return React.useCallback((node: T | null) => {
     for (const ref of refs) {
       if (isFunctionProp(ref)) ref(node);
       else if (ref) ref.current = node;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refs is a rest parameter, so the array itself is the only dependency expressible here
   }, refs);
 }
 
 const joinIds = (...ids: (string | false | null | undefined)[]) =>
   ids.filter(Boolean).join(" ") || undefined;
-
-// -----------------------------------------------------------------------------
-// Checkbox
-// -----------------------------------------------------------------------------
 
 type CheckedChangeDetails = CheckboxPrimitive.Root.ChangeEventDetails;
 
@@ -186,7 +170,6 @@ function Checkbox({
   const rippleRef = React.useRef<HTMLSpanElement>(null);
   const mergedRef = useMergedRef<HTMLElement>(boxRef, ref);
   const scopeRef = React.useRef<HTMLSpanElement>(null);
-  const { contextSafe } = useGSAP({ scope: scopeRef });
   const reasonId = React.useId();
   const showReason = Boolean(disabled && disabledReason);
 
@@ -196,8 +179,7 @@ function Checkbox({
   const controlledChecked =
     checked === undefined ? undefined : checked === true;
 
-  const animateToggle = () =>
-    contextSafe(() => checkboxContextSafe(rippleRef, boxRef))();
+  const animateToggle = () => triggerCheckboxMotion(rippleRef, boxRef);
 
   const handleChange = (next: boolean, details: CheckedChangeDetails) => {
     animateToggle();
@@ -236,10 +218,6 @@ function Checkbox({
     box
   );
 }
-
-// -----------------------------------------------------------------------------
-// CheckboxWithLabel — sibling label, so render a native button (per docs)
-// -----------------------------------------------------------------------------
 
 interface CheckboxWithLabelProps extends CheckboxProps {
   label: string;
@@ -303,10 +281,6 @@ function CheckboxWithLabel({
   );
 }
 
-// -----------------------------------------------------------------------------
-// CheckboxGroup — always controlled internally (required for `parent`)
-// -----------------------------------------------------------------------------
-
 interface CheckboxGroupOption {
   value: string;
   label: string;
@@ -344,10 +318,6 @@ function CheckboxGroup(arg0: CheckboxGroupProps) {
 
   return <CheckboxGroupView {...model} />;
 }
-
-// -----------------------------------------------------------------------------
-// CheckboxCard — enclosing label (default <span> root is correct here)
-// -----------------------------------------------------------------------------
 
 interface CheckboxCardProps extends Omit<CheckboxProps, "customIcon"> {
   label: string;
@@ -460,7 +430,21 @@ function useCheckboxCardCommit({
   CheckboxCardProps,
   "optimistic" | "onCommit" | "checked" | "onCheckedChange" | "commitErrorTitle"
 >) {
-  const [pending, setPending] = React.useState<boolean | null>(null);
+  const detailsRef = React.useRef<CheckedChangeDetails | null>(null);
+
+  const { pending, commit } = useOptimisticCommit({
+    value: Boolean(checked),
+    onCommit: onCommit
+      ? async (next) => {
+          await onCommit(next);
+        }
+      : undefined,
+    onCommitted: (next) => {
+      if (detailsRef.current) onCheckedChange?.(next, detailsRef.current);
+    },
+    errorTitle: commitErrorTitle ?? "Couldn't save that",
+    errorDescription: "The change was reverted.",
+  });
 
   const handleChange = (next: boolean, details: CheckedChangeDetails) => {
     if (!optimistic || onCommit === undefined || checked === undefined) {
@@ -469,28 +453,12 @@ function useCheckboxCardCommit({
       return;
     }
 
-    setPending(next);
-    onCommit(next).then(
-      () => {
-        setPending(null);
-        onCheckedChange?.(next, details);
-      },
-      () => {
-        // Clearing the pending value restores the parent's committed value.
-        setPending(null);
-        toast.error(commitErrorTitle ?? "Couldn't save that", {
-          description: "The change was reverted.",
-        });
-      },
-    );
+    detailsRef.current = details;
+    commit(next);
   };
 
-  return { pending, handleChange };
+  return { pending: pending ? !checked : null, handleChange };
 }
-
-// -----------------------------------------------------------------------------
-// KiraCheckbox
-// -----------------------------------------------------------------------------
 
 type KiraCheckboxProps =
   | ({ mode?: "checkbox" } & CheckboxProps)
@@ -917,40 +885,26 @@ function useCheckboxGroupOptions2({
   );
 }
 
-function checkboxContextSafe(
+function triggerCheckboxMotion(
   rippleRef: React.RefObject<HTMLSpanElement | null>,
   boxRef: React.RefObject<HTMLElement | null>,
 ) {
   if (prefersReducedMotion()) return;
 
-  if (rippleRef.current) {
-    gsap.fromTo(
-      rippleRef.current,
-      { scale: 0.5, opacity: 0.3 },
-      {
-        scale: 1.5,
-        opacity: 0,
-        duration: 0.3,
-        ease: "power1.out",
-        overwrite: true,
-        clearProps: "transform,opacity", // hand back to scale-0/opacity-0 classes
-      },
-    );
+  const ripple = rippleRef.current;
+
+  if (ripple) {
+    ripple.classList.remove("animate-checkbox-ripple");
+    void ripple.offsetWidth;
+    ripple.classList.add("animate-checkbox-ripple");
   }
 
-  if (boxRef.current) {
-    gsap.fromTo(
-      boxRef.current,
-      { scale: 0.9 },
-      {
-        scale: 1,
-        duration: 0.12,
-        ease: "power2.out",
-        overwrite: true,
-        clearProps: "transform",
-      },
-    );
-  }
+  const box = boxRef.current;
+
+  box?.animate?.([{ transform: "scale(0.9)" }, { transform: "scale(1)" }], {
+    duration: 120,
+    easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+  });
 }
 
 function checkboxResolvePadding1(size: CheckboxSize) {
@@ -1158,7 +1112,7 @@ function CheckboxCardView({
         "transition-[background-color,border-color,box-shadow] duration-150 motion-reduce:transition-none",
         "hover:bg-muted/50",
         "has-data-checked:border-primary has-data-checked:bg-primary/5 has-data-checked:ring-1 has-data-checked:ring-primary/40",
-        "has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring/50",
+        "has-focus-visible:border-ring has-focus-visible:ring-[3px] has-focus-visible:ring-ring",
         "data-disabled:cursor-not-allowed data-disabled:opacity-50 data-disabled:hover:bg-transparent",
         "data-error:border-destructive",
         padding,

@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   IconHome,
@@ -36,8 +37,6 @@ import {
   APIReference,
   Changelog,
 } from "@/components/docs";
-
-/* ------------------------------- demos ------------------------------- */
 
 function BasicDemo() {
   return (
@@ -487,23 +486,25 @@ function IconsBadgesDemo() {
   );
 }
 
-/* --------------------------- stress cases ---------------------------- */
+const stressScrollTabs = ["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"];
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-function StressDemo() {
+function StressNarrowCases() {
   return (
-    <div className="space-y-10">
+    <>
       <div>
         <p className="mb-2 font-mono text-xs text-muted-foreground">
-          Very long label — truncates with <code>truncate</code>
+          Very long label &amp; disabled state in <code>max-w-xs</code>
         </p>
         <Tabs defaultValue="long">
-          <TabsList className="max-w-sm">
+          <TabsList className="max-w-xs">
             <TabsTrigger value="long">
               An extremely long tab label that must truncate gracefully at the
               max-width clamp
             </TabsTrigger>
             <TabsTrigger value="short">Short</TabsTrigger>
+            <TabsTrigger value="disabled" disabled>
+              Disabled
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="long">
             <p className="text-sm text-muted-foreground">
@@ -557,20 +558,28 @@ function StressDemo() {
           </TabsContent>
         </Tabs>
       </div>
+    </>
+  );
+}
+
+function StressDemo() {
+  return (
+    <div className="space-y-10">
+      <StressNarrowCases />
 
       <div>
         <p className="mb-2 font-mono text-xs text-muted-foreground">
-          8 tabs at 375px — scrollable, no page overflow
+          8 tabs in <code>max-w-xs</code> — scrollable, no page overflow
         </p>
         <Tabs defaultValue="t1">
-          <TabsList scrollable className="max-w-93.75">
-            {["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"].map((t) => (
+          <TabsList scrollable className="max-w-xs">
+            {stressScrollTabs.map((t) => (
               <TabsTrigger key={t} value={t}>
                 Tab {t}
               </TabsTrigger>
             ))}
           </TabsList>
-          {["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"].map((t) => (
+          {stressScrollTabs.map((t) => (
             <TabsContent key={t} value={t}>
               <p className="text-sm text-muted-foreground">{t} panel.</p>
             </TabsContent>
@@ -670,8 +679,6 @@ function KiraEditorStress() {
     />
   );
 }
-
-/* ------------------------------ code ---------------------------------- */
 
 const basicCode = `import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
@@ -852,15 +859,14 @@ export function ProjectFileEditor() {
 const statesCode = `import { IconBell, IconHome } from "@tabler/icons-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
-const reportTabs = ["overview", "traffic", "revenue", "retention", "regions", "devices", "campaigns", "exports"]
-
 export function TabsStressCases() {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="long">
-        <TabsList className="max-w-sm">
+        <TabsList className="max-w-xs">
           <TabsTrigger value="long">An extremely long tab label that must truncate gracefully at the max-width clamp</TabsTrigger>
           <TabsTrigger value="short">Short</TabsTrigger>
+          <TabsTrigger value="disabled" disabled>Disabled</TabsTrigger>
         </TabsList>
         <TabsContent value="long">Truncated label panel.</TabsContent>
         <TabsContent value="short">Short panel.</TabsContent>
@@ -882,7 +888,7 @@ export function TabsStressCases() {
         <TabsContent value="b">Bell panel.</TabsContent>
       </Tabs>
       <Tabs defaultValue="t1">
-        <TabsList scrollable className="max-w-93.75">
+        <TabsList scrollable className="max-w-xs">
           {["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"].map((tab) => <TabsTrigger key={tab} value={tab}>Tab {tab}</TabsTrigger>)}
         </TabsList>
         {["t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"].map((tab) => <TabsContent key={tab} value={tab}>{tab} panel.</TabsContent>)}
@@ -952,54 +958,6 @@ export function WorkspaceTabsExample() {
   )
 }`;
 
-const keyboardShortcuts = [
-  {
-    keys: "← / →",
-    description:
-      "Inherited from Base UI: move focus between horizontal tabs; when activateOnFocus is enabled, focus also selects.",
-  },
-  {
-    keys: "↑ / ↓",
-    description:
-      "Inherited from Base UI: move focus between vertical tabs; when activateOnFocus is enabled, focus also selects.",
-  },
-  {
-    keys: "Home / End",
-    description:
-      "Inherited from Base UI: move focus to the first or last tab. This Tabs implementation does not provide typeahead.",
-  },
-  {
-    keys: "Enter / Space",
-    description:
-      "Inherited from Base UI: activate the focused tab when activation-on-focus is disabled.",
-  },
-  {
-    keys: "Delete / Backspace",
-    description:
-      "Kira: close the focused closable tab; closing the active tab selects the following tab, wrapping to the first.",
-  },
-  {
-    keys: "Tab",
-    description:
-      "Kira: move from the tab list to the Add tab and All tabs controls. In the overflow menu, use the menu keyboard navigation.",
-  },
-  {
-    keys: "Space / arrows / Space",
-    description:
-      "Kira reorder: focus a grip, pick up the tab, move it with arrow keys, and drop it.",
-  },
-  {
-    keys: "Escape",
-    description:
-      "Kira reorder: cancel keyboard sorting and restore the original order.",
-  },
-  {
-    keys: "Enter / Space",
-    description:
-      "Kira: activate a focused scroll chevron; chevrons disable at the edges.",
-  },
-];
-
 const colorCode = `import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 const colors = ["default", "primary", "success", "warning", "destructive"] as const
@@ -1052,7 +1010,103 @@ export function IconBadgeAndOrientationTabs() {
   )
 }`;
 
-const apiSections = [
+export default function TabsPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Tabs"
+        description="Switch between different views with full accessibility, RTL support, segmented-control and reorderable editor modes."
+        version="v2.2.1"
+      />
+
+      <FeatureGrid features={tabsPageFeatures} />
+
+      <DemoTabs tabs={tabsPageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        shortcuts={tabsPageShortcuts}
+        description={
+          <>
+            Keyboard behavior for the WAI-ARIA tabs pattern (reference:{" "}
+            <a
+              className="underline underline-offset-4"
+              href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              WAI-ARIA APG Tabs
+            </a>
+            ).
+          </>
+        }
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Copy-paste examples for compound Tabs and the KiraTabs editor surface."
+      />
+
+      <APIReference
+        sections={tabsPageAPISections}
+        title="API reference"
+        description="Props and configuration options for each exported Tabs component."
+      />
+
+      <Changelog entries={tabsPageChangelogEntries} />
+    </ComponentPage>
+  );
+}
+
+const tabsPageShortcuts = [
+  {
+    keys: "← / →",
+    description:
+      "Inherited from Base UI: move focus between horizontal tabs; when activateOnFocus is enabled, focus also selects.",
+  },
+  {
+    keys: "↑ / ↓",
+    description:
+      "Inherited from Base UI: move focus between vertical tabs; when activateOnFocus is enabled, focus also selects.",
+  },
+  {
+    keys: "Home / End",
+    description:
+      "Inherited from Base UI: move focus to the first or last tab. This Tabs implementation does not provide typeahead.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Inherited from Base UI: activate the focused tab when activation-on-focus is disabled.",
+  },
+  {
+    keys: "Delete / Backspace",
+    description:
+      "Kira: close the focused closable tab; closing the active tab selects the following tab, wrapping to the first.",
+  },
+  {
+    keys: "Tab",
+    description:
+      "Kira: move from the tab list to the Add tab and All tabs controls. In the overflow menu, use the menu keyboard navigation.",
+  },
+  {
+    keys: "Space / arrows / Space",
+    description:
+      "Kira reorder: focus a grip, pick up the tab, move it with arrow keys, and drop it.",
+  },
+  {
+    keys: "Escape",
+    description:
+      "Kira reorder: cancel keyboard sorting and restore the original order.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Kira: activate a focused scroll chevron; chevrons disable at the edges.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const tabsPageAPISections = [
   {
     title: "Tabs",
     props: [
@@ -1436,12 +1490,24 @@ const apiSections = [
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const changelogEntries = [
+const tabsPageChangelogEntries = [
   {
-    version: "v2.2.0",
-    date: "2026-10-18",
+    version: "2.2.1",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Focus indicators at full strength",
+        description:
+          "Selected and focused tabs paint border-ring, ring-ring and outline-ring at full opacity instead of the /50 halo, which measured 1.63–2.82:1 against the page — under WCAG 1.4.11. Active tab surfaces inherit the retuned default-theme primary pair.",
+      },
+    ],
+  },
+  {
+    version: "2.2.0",
+    date: "18 October 2026",
     changes: [
       {
         type: "breaking",
@@ -1459,7 +1525,7 @@ const changelogEntries = [
         type: "breaking",
         title: "Indicator motion is transform-based",
         description:
-          "Position/size from Base UI CSS vars; animates translate + size via transition (200ms ease-out), reduced-motion gated. Replaces animate-in + transition-all.",
+          "Position/size from Base UI CSS vars; animates translate + size via transition (200ms ease-out), reduced-motion gated. Replaces the previous animate-in and all-property transition.",
       },
       {
         type: "breaking",
@@ -1525,13 +1591,13 @@ const changelogEntries = [
         type: "changed",
         title: "Audited against Base UI 1.9.0 (2026-10-18)",
         description:
-          "Verified TabsTab.Value (any|null), activateOnFocus/loopFocus on List, Indicator CSS vars, Panel keepMounted, and the 1.9.0 fixes (#5886, #5171, #4852, #5441).",
+          "Verified TabsTab.Value (any|null), activateOnFocus/loopFocus on List, Indicator CSS vars, Panel keepMounted, and the 1.9.0 fixes (issues 5886, 5171, 4852, and 5441).",
       },
     ],
   },
-] satisfies Parameters<typeof Changelog>[0]["entries"];
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
 
-const features = [
+const tabsPageFeatures = [
   {
     icon: <IconAccessible className="h-4 w-4" />,
     title: "Accessible navigation",
@@ -1556,12 +1622,13 @@ const features = [
     description:
       "KiraTabs manages guarded close, dirty state, deep links, overflow selection, add, and drag reorder; the editor example combines them in one live workspace.",
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const demoTabs = [
+const tabsPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Workspace tabs"
@@ -1575,6 +1642,7 @@ const demoTabs = [
   {
     value: "variants",
     label: "Variants",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Seven tab-list variants"
@@ -1588,6 +1656,7 @@ const demoTabs = [
   {
     value: "colors",
     label: "Colors",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Semantic color themes"
@@ -1601,6 +1670,7 @@ const demoTabs = [
   {
     value: "icons-and-orientation",
     label: "Icons & orientation",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Icons, badges, close, and orientation"
@@ -1617,6 +1687,7 @@ const demoTabs = [
   {
     value: "segment",
     label: "Segment",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Segment control (sliding pill)"
@@ -1632,6 +1703,7 @@ const demoTabs = [
   {
     value: "direction-aware",
     label: "Direction-aware panels",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Direction-aware panels"
@@ -1647,6 +1719,7 @@ const demoTabs = [
   {
     value: "scrollable",
     label: "Scrollable",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Scrollable report list"
@@ -1660,6 +1733,7 @@ const demoTabs = [
   {
     value: "close-guard",
     label: "Close guard",
+    group: "KiraTabs",
     demo: (
       <DemoWrapper
         title="Guarded close and unsaved state"
@@ -1673,6 +1747,7 @@ const demoTabs = [
   {
     value: "deep-link",
     label: "Deep link",
+    group: "KiraTabs",
     demo: (
       <DemoWrapper
         title="Deep-linked reports"
@@ -1686,6 +1761,7 @@ const demoTabs = [
   {
     value: "overflow-menu",
     label: "Overflow menu",
+    group: "KiraTabs",
     demo: (
       <DemoWrapper
         title="Overflow menu"
@@ -1699,6 +1775,7 @@ const demoTabs = [
   {
     value: "reorderable",
     label: "Reorderable",
+    group: "KiraTabs",
     demo: (
       <DemoWrapper
         title="Reorderable reports"
@@ -1712,6 +1789,7 @@ const demoTabs = [
   {
     value: "kira-tabs",
     label: "KiraTabs",
+    group: "KiraTabs",
     demo: (
       <DemoWrapper
         title="Project file editor"
@@ -1723,64 +1801,17 @@ const demoTabs = [
     ),
   },
   {
-    value: "showcase",
-    label: "Showcase",
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
     demo: (
       <DemoWrapper
-        title="States and stress cases"
-        description="Long labels, an empty panel, 375px constrained scroll, icon-only accessible names, disabled state, and RTL. Check at 200% zoom and in light and dark modes."
+        title="Stress Cases"
+        description="Long labels, empty panel state, narrow max-w-xs scroll, icon-only accessible names, disabled state, and RTL."
         code={statesCode}
       >
         <StressDemo />
       </DemoWrapper>
     ),
   },
-];
-
-export default function TabsPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Tabs"
-        description="Switch between different views with full accessibility, RTL support, segmented-control and reorderable editor modes."
-        version="v2.2.0"
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts
-        shortcuts={keyboardShortcuts}
-        description={
-          <>
-            Keyboard behavior for the WAI-ARIA tabs pattern (reference:{" "}
-            <a
-              className="underline underline-offset-4"
-              href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              WAI-ARIA APG Tabs
-            </a>
-            ).
-          </>
-        }
-      />
-
-      <UsageBlock
-        code={usageCode}
-        title="Usage"
-        description="Copy-paste examples for compound Tabs and the KiraTabs editor surface."
-      />
-
-      <APIReference
-        sections={apiSections}
-        title="API Reference"
-        description="Props and configuration options for each exported Tabs component."
-      />
-
-      <Changelog entries={changelogEntries} />
-    </ComponentPage>
-  );
-}
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];

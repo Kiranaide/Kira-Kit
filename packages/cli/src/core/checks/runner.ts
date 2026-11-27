@@ -1,5 +1,8 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { readConfig } from "../../lib/config";
+import { extractImports } from "../registry/extract";
+import { loadItemMetaMap, loadKitCss } from "../registry/loader";
 import type { CheckContext, Finding, ItemMeta, SourceFile } from "./types";
 import {
   isSuppressed,
@@ -18,6 +21,8 @@ import { spacingScale } from "./spacing-scale";
 import { registryMetadata } from "./registry-metadata";
 import { baseUiOnly } from "./base-ui-only";
 import { cnSource } from "./cn-source";
+import { libResolution } from "./lib-resolution";
+import { checkRegistryGraph } from "./registry-graph";
 
 const CHECKS = [
   importsMatchDeps,
@@ -32,6 +37,7 @@ const CHECKS = [
   registryMetadata,
   baseUiOnly,
   cnSource,
+  libResolution,
 ];
 
 const SKIP_FILES = new Set([
@@ -62,6 +68,8 @@ function prefixForPath(abs: string): string {
 
   if (abs.includes(join("src", "pages"))) return "pages/";
 
+  if (abs.includes(join("src", "lib"))) return "lib/";
+
   return "hooks/";
 }
 
@@ -73,6 +81,7 @@ function sourceDirs(
     return [
       [join(repoRoot, "src/components/ui"), "ui/"],
       [join(repoRoot, "src/hooks"), "hooks/"],
+      [join(repoRoot, "src/lib"), "lib/"],
     ];
   }
 
@@ -83,11 +92,49 @@ function sourceDirs(
   });
 }
 
-function collectSourceFiles(repoRoot: string, paths: string[]): SourceFile[] {
+function collectSourceFiles(
+  repoRoot: string,
+  paths: string[],
+  items: Map<string, ItemMeta>,
+): SourceFile[] {
   const files: SourceFile[] = [];
 
   for (const [dir, prefix] of sourceDirs(repoRoot, paths)) {
     if (!existsSync(dir)) continue;
+
+    if (prefix === "lib/") {
+      // Lib items may bundle subdirectories (camera/). Only scan files a
+      // registry:lib item actually ships; docs-only modules stay unchecked.
+      const walk = (rel: string): void => {
+        for (const entry of readdirSync(join(dir, rel), {
+          withFileTypes: true,
+        })) {
+          const relPath = rel ? `${rel}/${entry.name}` : entry.name;
+
+          if (entry.isDirectory()) {
+            walk(relPath);
+
+            continue;
+          }
+
+          if (!/\.(tsx|ts)$/.test(entry.name)) continue;
+
+          const name = `lib/${relPath.replace(/\.(tsx|ts)$/, "")}`;
+
+          if (!items.has(name)) continue;
+
+          files.push({
+            name,
+            path: join(dir, relPath),
+            content: readFileSync(join(dir, relPath), "utf-8"),
+          });
+        }
+      };
+
+      walk("");
+
+      continue;
+    }
 
     for (const entry of readdirSync(dir)) {
       if (!/\.(tsx|ts)$/.test(entry)) continue;
@@ -113,7 +160,11 @@ interface FileCheckResult {
 }
 
 function checkFile(file: SourceFile, ctx: CheckContext): FileCheckResult {
-  const fileFindings = CHECKS.flatMap((check) => check(file, ctx));
+  const parsed: SourceFile = file.imports
+    ? file
+    : { ...file, imports: extractImports(file.content, file.path) };
+
+  const fileFindings = CHECKS.flatMap((check) => check(parsed, ctx));
   const { errors, suppressions } = parseSuppressions(file.content, file.name);
 
   const valid = errors.filter(
@@ -136,14 +187,14 @@ function checkFile(file: SourceFile, ctx: CheckContext): FileCheckResult {
 
 export function runChecks(options: CheckRunOptions): CheckRunResult {
   const { repoRoot } = options;
-  const indexCssPath = join(repoRoot, "src/index.css");
 
-  const indexCss = existsSync(indexCssPath)
-    ? readFileSync(indexCssPath, "utf-8")
-    : "";
+  const ctx: CheckContext = {
+    indexCss: loadKitCss(repoRoot),
+    items: loadItemMetaMap(repoRoot),
+    iconLibrary: readConfig(repoRoot)?.iconLibrary,
+  };
 
-  const ctx: CheckContext = { indexCss, items: loadItemMeta(repoRoot) };
-  const files = collectSourceFiles(repoRoot, options.paths);
+  const files = collectSourceFiles(repoRoot, options.paths, ctx.items);
   const allFindings: Finding[] = [];
   let suppressed = 0;
 
@@ -152,6 +203,10 @@ export function runChecks(options: CheckRunOptions): CheckRunResult {
 
     suppressed += result.suppressed;
     allFindings.push(...result.findings);
+  }
+
+  if (options.paths.length === 0) {
+    allFindings.push(...checkRegistryGraph(ctx.items));
   }
 
   const failing = options.ci
@@ -167,74 +222,6 @@ export function runChecks(options: CheckRunOptions): CheckRunResult {
   };
 }
 
-/** Subset of a registry item that metadata checks read from registry.json. */
-interface RegistryIndexItem {
-  name: string;
-  dependencies?: string[];
-  registryDependencies?: string[];
-  files?: Array<string | { path: string }>;
-  description?: string;
-  categories?: string[];
-}
-
-/** Shape of a source registry.json file as parsed for metadata checks. */
-interface RegistryIndex {
-  items?: RegistryIndexItem[];
-}
-
-function readRegistryItems(registryFile: string): RegistryIndexItem[] {
-  if (!existsSync(registryFile)) return [];
-
-  try {
-    // SAFETY: these registry.json files are kira-kit's own, hand-maintained
-    // sources; every field the metadata checks read is present or optional
-    // per the schema, and a malformed file is skipped by the catch below.
-    const data = JSON.parse(
-      readFileSync(registryFile, "utf-8"),
-    ) as RegistryIndex;
-
-    return data.items ?? [];
-  } catch {
-    // Missing/invalid registry files make metadata checks skip, not crash.
-    return [];
-  }
-}
-
-function toItemMeta(item: RegistryIndexItem): ItemMeta {
-  return {
-    dependencies: item.dependencies ?? [],
-    registryDependencies: item.registryDependencies ?? [],
-    // oxlint-disable-next-line anti-slop/no-runtime-typeof -- the shadcn registry schema allows files as strings or {path} objects; typeof discriminates that union
-    files: (item.files ?? []).map((f) => (typeof f === "string" ? f : f.path)),
-    description: item.description ?? "",
-    categories: item.categories ?? [],
-  };
-}
-
-function loadItemMeta(repoRoot: string): Map<string, ItemMeta> {
-  const metaByKey = new Map<string, ItemMeta>();
-
-  // Registry file → the check-lookup prefix for its items ("ui/button" etc.).
-  const registryFiles: Array<[string, string]> = [
-    [join(repoRoot, "src/components/ui/registry.json"), "ui"],
-    [join(repoRoot, "src/hooks/registry.json"), "hooks"],
-    [join(repoRoot, "src/themes/registry.json"), "theme"],
-  ];
-
-  for (const [registryFile, prefix] of registryFiles) {
-    for (const item of readRegistryItems(registryFile)) {
-      const meta = toItemMeta(item);
-
-      // Key by item name and prefixed name so lookups work for both plain
-      // and "ui/button"-style naming schemes.
-      metaByKey.set(item.name, meta);
-      metaByKey.set(`${prefix}/${item.name}`, meta);
-    }
-  }
-
-  return metaByKey;
-}
-
 function githubAnnotation(f: Finding): string {
   const level = f.severity === "error" ? "error" : "warning";
   const lineProp = f.line ? `,line=${f.line}` : "";
@@ -242,6 +229,7 @@ function githubAnnotation(f: Finding): string {
   const filePath = f.file
     .replace(/^ui\//, "src/components/ui/")
     .replace(/^hooks\//, "src/hooks/")
+    .replace(/^lib\//, "src/lib/")
     .replace(/^pages\//, "src/pages/components/");
 
   const props = [`file=${filePath}${lineProp}`, `title=${f.checkId}`].join(",");

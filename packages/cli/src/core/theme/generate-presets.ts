@@ -1,5 +1,14 @@
 import { PRESETS } from "./presets";
-import { generateTheme } from "./theme";
+import { BASE_COLORS } from "./palette";
+import {
+  FONT_PRESETS,
+  MONO_FONTS,
+  SANS_FONTS,
+  SERIF_FONTS,
+  type FontSpec,
+} from "./fonts";
+import { RADIUS_PRESETS, SURFACE_PRESETS } from "./geometry";
+import { generateBaseColorVars, generateTheme } from "./theme";
 import type { SourceRegistryItem } from "../../lib/schemas";
 
 /** A single lightness adjustment recorded while generating one preset. */
@@ -25,14 +34,7 @@ export function generatePresetItems(): PresetGenerationResult {
   const adjustments: PresetAdjustment[] = [];
 
   for (const preset of PRESETS) {
-    const generated = generateTheme({
-      name: preset.name,
-      title: preset.title,
-      description: preset.description,
-      primary: preset.primary,
-      baseColor: preset.baseColor,
-      chartHues: preset.chartHues,
-    });
+    const generated = generateTheme(preset);
 
     for (const adjustment of generated.adjustments) {
       adjustments.push({
@@ -47,4 +49,59 @@ export function generatePresetItems(): PresetGenerationResult {
   }
 
   return { items, adjustments };
+}
+
+function toDocFont(spec: FontSpec) {
+  return {
+    name: spec.name,
+    family: spec.family,
+    stack: spec.stack,
+    category: spec.category,
+  };
+}
+
+/**
+ * Emit the full theme studio catalog (base colors, radii, surfaces, fonts,
+ * font pairings, and per-preset recipes) directly from the CLI source of truth.
+ */
+export function generateThemeCatalog() {
+  const baseColors = Object.values(BASE_COLORS).map((spec) => ({
+    name: spec.name,
+    title: spec.title,
+    family: spec.family,
+    description: spec.description,
+    ...generateBaseColorVars(spec.name),
+  }));
+
+  const recipes = {
+    "theme-default": {
+      baseColor: "neutral",
+      fontPreset: "precision",
+      surface: "tactile",
+    },
+    ...Object.fromEntries(
+      PRESETS.map((preset) => [
+        `theme-${preset.name}`,
+        {
+          baseColor: preset.baseColor,
+          fontPreset: preset.fontPreset,
+          radius: preset.radius,
+          surface: preset.surface,
+        },
+      ]),
+    ),
+  };
+
+  return {
+    baseColors,
+    radiusPresets: Object.values(RADIUS_PRESETS),
+    surfacePresets: Object.values(SURFACE_PRESETS),
+    fonts: {
+      sans: Object.values(SANS_FONTS).map(toDocFont),
+      serif: Object.values(SERIF_FONTS).map(toDocFont),
+      mono: Object.values(MONO_FONTS).map(toDocFont),
+    },
+    fontPresets: Object.values(FONT_PRESETS),
+    recipes,
+  };
 }

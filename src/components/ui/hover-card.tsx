@@ -195,9 +195,12 @@ function HoverCardContent({
               "*:data-current:animate-in *:data-current:fade-in-0",
               "data-instant:*:animate-none motion-reduce:*:animate-none",
             )}
-          />
-        ) : null}
-        {props.children}
+          >
+            {props.children}
+          </PreviewCardPrimitive.Viewport>
+        ) : (
+          props.children
+        )}
       </PreviewCardPrimitive.Popup>
     </PreviewCardPrimitive.Positioner>
   );

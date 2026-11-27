@@ -5,7 +5,7 @@ A popover color editor with saturation, hue, optional alpha, swatches, recent co
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/color-picker
+kira-kit add @kira-kit/color-picker
 ```
 
 ## Dependencies
@@ -19,6 +19,8 @@ npx shadcn add @kira-kit/color-picker
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/color-picker-lib
+- @kira-kit/component-utils
 - @kira-kit/input
 - @kira-kit/popover
 - @kira-kit/select

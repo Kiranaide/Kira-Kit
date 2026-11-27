@@ -1,11 +1,9 @@
 /* kira-kit-ignore-file spacing-scale: badges are labels, not controls; the compact ladder keeps optical half-steps (contract 3.9) */
 /* kira-kit-ignore-file arbitrary-values: xs micro badges keep 10px type (documented sub-12px exception) */
-/* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 
 import * as React from "react";
 import { mergeProps } from "@base-ui/react/merge-props";
-import { Combobox } from "@base-ui/react/combobox";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 import { IconX, IconTrendingUp, IconTrendingDown } from "@tabler/icons-react";
@@ -17,7 +15,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const badgeVariants = cva(
-  "gap-1.5 rounded-full border border-transparent font-medium transition-[color,background-color,border-color,box-shadow,opacity,scale] duration-150 inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden group/badge",
+  "gap-1.5 rounded-full border border-transparent font-medium transition-[color,background-color,border-color,box-shadow,opacity,scale] duration-150 inline-flex items-center justify-center w-fit whitespace-nowrap shrink-0 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px] overflow-hidden group/badge",
   {
     variants: {
       variant: {
@@ -35,13 +33,15 @@ const badgeVariants = cva(
           "bg-muted text-muted-foreground hover:bg-muted/80 dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",
         "primary-soft": "bg-primary/10 text-primary",
-        "secondary-soft": "bg-secondary/50 text-secondary-foreground",
+        "secondary-soft":
+          "bg-secondary/50 text-secondary-foreground dark:text-foreground",
         "destructive-soft": "bg-destructive/10 text-destructive",
         "success-soft":
-          "bg-success/10 text-success-foreground dark:text-success",
+          "bg-success/10 text-[color-mix(in_oklab,var(--success)_65%,var(--foreground))] dark:text-success",
         "warning-soft":
-          "bg-warning/10 text-warning-foreground dark:text-warning",
-        "info-soft": "bg-info/10 text-info-foreground dark:text-info",
+          "bg-warning/10 text-[color-mix(in_oklab,var(--warning)_55%,var(--foreground))] dark:text-warning",
+        "info-soft":
+          "bg-info/10 text-[color-mix(in_oklab,var(--info)_65%,var(--foreground))] dark:text-info",
       },
 
       size: {
@@ -130,7 +130,7 @@ const badgeDotVariants = cva("rounded-full shrink-0", {
 // but the hit box is padded to ≥ 24×24 and pulled back with negative margin
 // so the visible footprint doesn't grow.
 const badgeCloseVariants = cva(
-  "relative rounded-full p-0.5 opacity-70 hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-ring/50 focus-visible:ring-[2px] after:absolute after:-inset-y-1.5 after:-inset-x-1.5 after:content-['']",
+  "relative rounded-full p-0.5 opacity-70 hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-ring focus-visible:ring-[2px] after:absolute after:-inset-y-1.5 after:-inset-x-1.5 after:content-['']",
   {
     variants: {
       size: {
@@ -636,41 +636,6 @@ function BadgeGroup({
   );
 }
 
-// =============================================================================
-// TagInput — tag collection built on Base UI Combobox.Chips
-// =============================================================================
-
-interface TagInputProps extends Omit<
-  React.HTMLAttributes<HTMLDivElement>,
-  "onChange" | "value"
-> {
-  /** Current tags (controlled). */
-  value?: string[];
-  /** Initial tags (uncontrolled). */
-  defaultValue?: string[];
-  /** Fired whenever the tag list changes (add or remove). */
-  onValueChange?: (tags: string[]) => void;
-  /** Suggested tags shown in the popup; the typed text is appended dynamically. */
-  suggestions?: string[];
-  placeholder?: string;
-  /** Maximum number of tags; further input is ignored. */
-  maxTags?: number;
-  disabled?: boolean;
-  size?: BadgeProps["size"];
-  className?: string;
-  ariaLabel?: string;
-}
-
-function TagInput(arg0: TagInputProps) {
-  const model = useTagInputModel(arg0);
-
-  return <TagInputView {...model} />;
-}
-
-// =============================================================================
-// KiraBadge — one prop-driven entry point over every badge mode
-// =============================================================================
-
 interface KiraBadgeProps {
   mode?: "badge" | "status" | "count" | "tag" | "dot";
   // Shared
@@ -686,16 +651,13 @@ interface KiraBadgeProps {
   preset?: BadgeProps["preset"];
   dismissible?: boolean;
   onClose?: () => void;
-  // status
   status?: StatusBadgeProps["status"];
   label?: string;
   pulse?: "none" | "continuous" | "once";
-  // count
   count?: number;
   max?: number;
   format?: CountFormat;
   animateCount?: boolean;
-  // dot
   dot?: BadgeProps["dot"];
   dotPulse?: BadgeProps["dotPulse"];
 }
@@ -815,7 +777,6 @@ export {
   CountBadge,
   TagBadge,
   BadgeGroup,
-  TagInput,
   KiraBadge,
   formatCount,
 };
@@ -826,20 +787,8 @@ export type {
   CountBadgeProps,
   TagBadgeProps,
   BadgeGroupProps,
-  TagInputProps,
   KiraBadgeProps,
 };
-
-function keyedTags(tags: readonly string[]) {
-  const occurrences = new Map<string, number>();
-
-  return tags.map((tag) => {
-    const occurrence = occurrences.get(tag) ?? 0;
-    occurrences.set(tag, occurrence + 1);
-
-    return { tag, key: JSON.stringify([tag, occurrence]) };
-  });
-}
 
 function resolveBadgeOptions({
   variant = "default",
@@ -913,22 +862,6 @@ function resolveTagBadgeOptions({
   return { variant, size, iconPosition, removable };
 }
 
-function resolveTagInputOptions({
-  suggestions = [],
-  placeholder = "Add tag…",
-  disabled = false,
-  size = "sm",
-  ariaLabel = "Tags",
-}: {
-  suggestions?: TagInputProps["suggestions"];
-  placeholder?: TagInputProps["placeholder"];
-  disabled?: TagInputProps["disabled"];
-  size?: TagInputProps["size"];
-  ariaLabel?: TagInputProps["ariaLabel"];
-}) {
-  return { suggestions, placeholder, disabled, size, ariaLabel };
-}
-
 function resolveKiraBadgeOptions({
   mode = "badge",
   status = "default",
@@ -941,156 +874,6 @@ function resolveKiraBadgeOptions({
   count?: KiraBadgeProps["count"];
 }) {
   return { mode, status, pulse, count };
-}
-
-function BadgeContentView({
-  value,
-  size,
-  placeholder,
-}: {
-  value: string[];
-  size: "default" | "sm" | "lg" | "xs" | "xl" | null;
-  placeholder: string;
-}) {
-  return (
-    <Combobox.Chips className="contents">
-      {keyedTags(value).map(({ tag, key }) => (
-        <Combobox.Chip
-          key={key}
-          className={cn(
-            badgeVariants({ variant: "secondary", size }),
-            "rounded-md normal-case",
-          )}
-        >
-          {tag}
-          <Combobox.ChipRemove
-            className="flex items-center justify-center rounded-sm text-current opacity-70 hover:opacity-100"
-            aria-label={`Remove ${tag}`}
-          >
-            <IconX className="h-3 w-3" />
-          </Combobox.ChipRemove>
-        </Combobox.Chip>
-      ))}
-      <Combobox.Input
-        placeholder={value.length === 0 ? placeholder : ""}
-        className="h-6 min-w-24 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
-      />
-    </Combobox.Chips>
-  );
-}
-
-function useTagInputModel({
-  value: valueProp,
-  defaultValue,
-  onValueChange,
-  suggestions: suggestionsInput,
-  placeholder: placeholderInput,
-  maxTags,
-  disabled: disabledInput,
-  size: sizeInput,
-  className,
-  ariaLabel: ariaLabelInput,
-  ...props
-}: TagInputProps) {
-  const { suggestions, placeholder, disabled, size, ariaLabel } =
-    useTagInputOptions({
-      suggestions: suggestionsInput,
-      placeholder: placeholderInput,
-      disabled: disabledInput,
-      size: sizeInput,
-      ariaLabel: ariaLabelInput,
-    });
-
-  const [internal, setInternal] = React.useState<string[]>(defaultValue ?? []);
-  const value = valueProp ?? internal;
-  const [inputValue, setInputValue] = React.useState("");
-
-  const commit = (next: string[]) =>
-    badgeCommit(next, maxTags, setInternal, onValueChange);
-
-  // Filter suggestions against the typed query and append the raw typed
-  // text as a creatable item so Enter can commit arbitrary tags.
-  const items = React.useMemo(
-    () => badgeUseMemo(inputValue, suggestions),
-    [inputValue, suggestions],
-  );
-
-  return {
-    items,
-    value,
-    commit,
-    inputValue,
-    setInputValue,
-    disabled,
-    ariaLabel,
-    className,
-    props,
-    size,
-    placeholder,
-  };
-}
-
-function TagInputView({
-  items,
-  value,
-  commit,
-  inputValue,
-  setInputValue,
-  disabled,
-  ariaLabel,
-  className,
-  props,
-  size,
-  placeholder,
-}: ReturnType<typeof useTagInputModel>) {
-  return (
-    <Combobox.Root
-      multiple
-      items={items}
-      value={value}
-      onValueChange={(next) => commit([...next])}
-      inputValue={inputValue}
-      onInputValueChange={setInputValue}
-      disabled={disabled}
-      autoHighlight
-    >
-      <div
-        data-slot="tag-input"
-        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This generic ARIA group preserves the custom composite layout without fieldset defaults or form semantics.
-        role="group"
-        aria-label={ariaLabel}
-        className={cn(
-          "flex flex-wrap items-center gap-1.5 rounded-lg border border-border bg-background p-2 text-sm focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px] transition-colors",
-          { "pointer-events-none opacity-50": disabled },
-          className,
-        )}
-        {...props}
-      >
-        <BadgeContentView value={value} size={size} placeholder={placeholder} />
-      </div>
-      <Combobox.Portal>
-        <Combobox.Positioner>
-          <Combobox.Popup className="z-50 min-w-(--anchor-width) rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md">
-            <Combobox.List>
-              <Combobox.Empty className="px-2 py-1.5 text-sm text-muted-foreground">
-                No matching tags
-              </Combobox.Empty>
-              {items.map((tag) => (
-                <Combobox.Item
-                  key={tag}
-                  value={tag}
-                  className="flex cursor-pointer items-center rounded-md px-2 py-1.5 text-sm outline-none data-highlighted:bg-muted data-highlighted:text-foreground"
-                >
-                  {tag}
-                </Combobox.Item>
-              ))}
-            </Combobox.List>
-          </Combobox.Popup>
-        </Combobox.Positioner>
-      </Combobox.Portal>
-      <Combobox.Status className="sr-only" />
-    </Combobox.Root>
-  );
 }
 
 function useBadgeOptions({
@@ -1214,32 +997,6 @@ function useKiraBadgeOptions({
   );
 }
 
-function useTagInputOptions({
-  suggestions: suggestionsInput,
-  placeholder: placeholderInput,
-  disabled: disabledInput,
-  size: sizeInput,
-  ariaLabel: ariaLabelInput,
-}: Parameters<typeof resolveTagInputOptions>[0]) {
-  return React.useMemo(
-    () =>
-      resolveTagInputOptions({
-        suggestions: suggestionsInput,
-        placeholder: placeholderInput,
-        disabled: disabledInput,
-        size: sizeInput,
-        ariaLabel: ariaLabelInput,
-      }),
-    [
-      suggestionsInput,
-      placeholderInput,
-      disabledInput,
-      sizeInput,
-      ariaLabelInput,
-    ],
-  );
-}
-
 function badgeResolvePresetVariant1(
   preset: "beta" | "new" | "version" | undefined,
 ) {
@@ -1289,59 +1046,6 @@ function badgeUseCallback(
     },
     reducedMotion ? 0 : 150,
   );
-}
-
-function badgeCommit(
-  next: string[],
-  maxTags: number | undefined,
-  setInternal: React.Dispatch<React.SetStateAction<string[]>>,
-  onValueChange: ((tags: string[]) => void) | undefined,
-) {
-  // Split any comma-separated input that slipped into a committed value,
-  // then dedupe case-insensitively on trimmed text.
-  const split = next.flatMap((t) => t.split(",").map((s) => s.trim()));
-  const seen = new Set<string>();
-
-  const deduped = split.filter((t) => {
-    if (!t) return false;
-    const key = t.toLowerCase();
-
-    if (seen.has(key)) return false;
-    seen.add(key);
-
-    return true;
-  });
-
-  const capped = maxTags === undefined ? deduped : deduped.slice(0, maxTags);
-  setInternal(capped);
-  onValueChange?.(capped);
-}
-
-function badgeUseMemo(inputValue: string, suggestions: string[]) {
-  const query = inputValue.trim().toLowerCase();
-  const typed = inputValue.trim();
-
-  const matching = query
-    ? suggestions.filter((s) => s.toLowerCase().includes(query))
-    : suggestions;
-
-  const all = [
-    ...matching,
-    ...(typed && !matching.some((s) => s.toLowerCase() === typed)
-      ? [typed]
-      : []),
-  ];
-
-  const seen = new Set<string>();
-
-  return all.filter((t) => {
-    const key = t.toLowerCase();
-
-    if (seen.has(key)) return false;
-    seen.add(key);
-
-    return true;
-  });
 }
 
 type BadgeMainContentViewProps = {
@@ -1415,7 +1119,11 @@ function BadgeMainContentView({
           )}
         </span>
       )}
-      <span className={cn({ "pr-1": dismissible && !loading })}>
+      <span
+        className={cn("inline-flex items-center gap-1", {
+          "pr-1": dismissible && !loading,
+        })}
+      >
         {resolvedChildren}
       </span>
       {dismissible && !loading && (

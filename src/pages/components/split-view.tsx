@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 
 import {
@@ -437,7 +438,18 @@ function KiraDemo() {
 
 const kiraCode = `import * as React from "react";\nimport { KiraSplitView } from "@/components/ui/split-view";\nimport { Button } from "@/components/ui/button";\nimport { Textarea } from "@/components/ui/textarea";\ntype ReviewId = "permissions" | "migration";\n\nexport function KiraDemo() {\n  const [selected, setSelected] = React.useState<ReviewId>("permissions");\n  const [pane, setPane] = React.useState<"sidebar" | "main">("sidebar");\n  const [notes, setNotes] = React.useState<Record<ReviewId, string>>({ permissions: "Check inherited guest permissions.", migration: "Waiting for staging restore." });\n  return <div className="h-96"><KiraSplitView activePane={pane} onActivePaneChange={setPane} autoSaveId="split-view-kira-review" sidebarContent={<div>{(["permissions", "migration"] as const).map((id) => <Button key={id} aria-pressed={selected === id} onClick={() => { setSelected(id); setPane("main"); }}>{id === "permissions" ? "Workspace permissions" : "Migration rollback"}</Button>)}</div>} mainContent={<label>Review note<Textarea value={notes[selected]} onChange={(event) => setNotes({ ...notes, [selected]: event.target.value })} /></label>} /></div>;\n}`;
 
-function StatesDemo() {
+const stressReviewItems = [
+  { id: "review-1", label: "Review item 1" },
+  { id: "review-2", label: "Review item 2" },
+  { id: "review-3", label: "Review item 3" },
+  { id: "review-4", label: "Review item 4" },
+  { id: "review-5", label: "Review item 5" },
+  { id: "review-6", label: "Review item 6" },
+  { id: "review-7", label: "Review item 7" },
+  { id: "review-8", label: "Review item 8" },
+] as const;
+
+function StressDemo() {
   const controlId1 = React.useId();
 
   const [state, setState] = React.useState<
@@ -460,7 +472,7 @@ function StatesDemo() {
           </Button>
         ))}
       </div>
-      <div className="h-96 max-w-80 rounded-lg border">
+      <div className="h-96 max-w-xs rounded-lg border">
         <KiraSplitView
           defaultActivePane="main"
           disabled={state === "disabled"}
@@ -488,10 +500,10 @@ function StatesDemo() {
                     defaultValue="ณัฐชา 山田 — keep text and controls reachable."
                   />
                 </label>
-                {Array.from({ length: 8 }, (_, index) => (
-                  <p key={index} className="text-sm text-muted-foreground">
-                    Review item {index + 1}: independent pane scrolling keeps
-                    the toolbar reachable.
+                {stressReviewItems.map((item) => (
+                  <p key={item.id} className="text-sm text-muted-foreground">
+                    {item.label}: independent pane scrolling keeps the toolbar
+                    reachable.
                   </p>
                 ))}
               </div>
@@ -503,96 +515,345 @@ function StatesDemo() {
   );
 }
 
-const statesCode =
-  'import * as React from "react";\nimport { KiraSplitView } from "@/components/ui/split-view";\nimport { Button } from "@/components/ui/button";\nimport { Textarea } from "@/components/ui/textarea";\n\nexport function StatesDemo() {\n  const [state, setState] = React.useState<\n    "disabled" | "empty" | "loading" | "stress"\n  >("stress");\n  return (\n    <div className="space-y-3">\n      <div className="flex flex-wrap gap-2">\n        {(["disabled", "empty", "loading", "stress"] as const).map((value) => (\n          <Button\n            key={value}\n            type="button"\n            variant="outline"\n            size="sm"\n            aria-pressed={state === value}\n            onClick={() => setState(value)}\n          >\n            {value}\n          </Button>\n        ))}\n      </div>\n      <div className="h-96 max-w-80 rounded-lg border">\n        <KiraSplitView\n          defaultActivePane="main"\n          disabled={state === "disabled"}\n          disabledReason={\n            state === "disabled"\n              ? "Layout is locked for this read-only review session."\n              : undefined\n          }\n          empty={state === "empty" || state === "loading"}\n          loading={state === "loading"}\n          sidebarLabel="ReviewAcrossEngineeringCustomerSuccessAndLocalization"\n          sidebarContent={\n            <p className="p-4 text-sm">No items match the current queue.</p>\n          }\n          mainContent={\n            state === "empty" || state === "loading" ? null : (\n              <div className="space-y-2 p-4">\n                <h3 className="break-words font-medium">\n                  ReviewAcrossInternationalEnterpriseWorkspacesWithoutWhitespace\n                </h3>\n                <label className="block text-sm">\n                  Note\n                  <Textarea defaultValue="ณัฐชา 山田 — keep text and controls reachable." />\n                </label>\n                {Array.from({ length: 8 }, (_, index) => (\n                  <p key={index} className="text-sm text-muted-foreground">\n                    Review item {index + 1}: independent pane scrolling keeps\n                    the toolbar reachable.\n                  </p>\n                ))}\n              </div>\n            )\n          }\n        />\n      </div>\n    </div>\n  );\n}';
+const stressCode = `import * as React from "react";
+import { KiraSplitView } from "@/components/ui/split-view";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
-const tabs = [
+const stressReviewItems = [
+  { id: "review-1", label: "Review item 1" },
+  { id: "review-2", label: "Review item 2" },
+  { id: "review-3", label: "Review item 3" },
+  { id: "review-4", label: "Review item 4" },
+  { id: "review-5", label: "Review item 5" },
+  { id: "review-6", label: "Review item 6" },
+  { id: "review-7", label: "Review item 7" },
+  { id: "review-8", label: "Review item 8" },
+] as const;
+
+export function StressDemo() {
+  const [state, setState] = React.useState<
+    "disabled" | "empty" | "loading" | "stress"
+  >("stress");
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {(["disabled", "empty", "loading", "stress"] as const).map((value) => (
+          <Button
+            key={value}
+            type="button"
+            variant="outline"
+            size="sm"
+            aria-pressed={state === value}
+            onClick={() => setState(value)}
+          >
+            {value}
+          </Button>
+        ))}
+      </div>
+      <div className="h-96 max-w-xs rounded-lg border">
+        <KiraSplitView
+          defaultActivePane="main"
+          disabled={state === "disabled"}
+          disabledReason={
+            state === "disabled"
+              ? "Layout is locked for this read-only review session."
+              : undefined
+          }
+          empty={state === "empty" || state === "loading"}
+          loading={state === "loading"}
+          sidebarLabel="ReviewAcrossEngineeringCustomerSuccessAndLocalization"
+          sidebarContent={
+            <p className="p-4 text-sm">No items match the current queue.</p>
+          }
+          mainContent={
+            state === "empty" || state === "loading" ? null : (
+              <div className="space-y-2 p-4">
+                <h3 className="break-words font-medium">
+                  ReviewAcrossInternationalEnterpriseWorkspacesWithoutWhitespace
+                </h3>
+                <label className="block text-sm">
+                  Note
+                  <Textarea defaultValue="ณัฐชา 山田 — keep text and controls reachable." />
+                </label>
+                {stressReviewItems.map((item) => (
+                  <p key={item.id} className="text-sm text-muted-foreground">
+                    {item.label}: independent pane scrolling keeps the toolbar
+                    reachable.
+                  </p>
+                ))}
+              </div>
+            )
+          }
+        />
+      </div>
+    </div>
+  );
+}`;
+
+const usageCode = `import { SplitView, KiraSplitView } from "@/components/ui/split-view";
+
+export function SplitViewUsage() {
+  return (
+    <div className="h-96 rounded-lg border">
+      <KiraSplitView
+        autoSaveId="release-review-layout"
+        sidebarContent={<p className="p-4 text-sm">Queue items</p>}
+        mainContent={<p className="p-4 text-sm">Selected review details</p>}
+      />
+    </div>
+  );
+}`;
+
+export default function SplitViewPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Split View"
+        description="A resizable review workspace with compact queue/detail navigation, saved widths and retained drafts."
+        version="v2.0.1"
+      />
+      <FeatureGrid
+        features={splitViewPageFeatures}
+        description="Capabilities built into Kira Kit."
+      />
+      <DemoTabs defaultValue="basic" tabs={splitViewPageDemoTabs} />
+      <KeyboardShortcuts
+        description="Shared panel-engine keys and native action buttons."
+        shortcuts={splitViewPageShortcuts}
+      />
+      <UsageBlock
+        title="Usage"
+        description="Import SplitView for direct layout control or KiraSplitView for responsive queue/detail workspaces."
+        code={usageCode}
+        notes={[
+          {
+            label: "KiraSplitView",
+            body: "Use KiraSplitView for responsive single-pane switching below 640px, named width presets, and retained loading/empty/error feedback.",
+          },
+          {
+            label: "SplitView + SplitViewRef",
+            body: "Use SplitView directly with a ref when you need imperative toggleSidebar, expandSidebar, collapseSidebar, or resizeSidebar control.",
+          },
+        ]}
+      />
+      <APIReference
+        sections={splitViewPageAPISections}
+        description="Props, types, and defaults for each exported part."
+      />
+      <Changelog entries={splitViewPageChangelogEntries} />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const splitViewPageFeatures = [
+  {
+    title: "Resize without dragging",
+    description:
+      "Native separator, width steps, presets and collapse controls.",
+  },
+  {
+    title: "Compact review",
+    description:
+      "Local-container queue/detail navigation keeps both panes mounted.",
+  },
+  {
+    title: "Retained context",
+    description: "Saved layout, record-owned drafts and recoverable refresh.",
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const splitViewPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
-    title: "Release queue and review",
-    code: basicCode,
-    component: <BasicDemo />,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Release queue and review"
+        description="Default horizontal split with bordered container and persistent controls."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "vertical",
     label: "Vertical",
-    title: "Summary above validation output",
-    code: verticalCode,
-    component: <VerticalDemo />,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Summary above validation output"
+        description="Stack the sidebar above the main pane with vertical orientation."
+        code={verticalCode}
+      >
+        <VerticalDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "sizes",
     label: "Sizes",
-    title: "Bounded percentage sizing",
-    code: sizesCode,
-    component: <SizesDemo />,
-  },
-  {
-    value: "presets",
-    label: "Presets",
-    title: "Named widths without dragging",
-    code: presetsCode,
-    component: <PresetsDemo />,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Bounded percentage sizing"
+        description="Configure minSize, maxSize, and mainMinSize bounds."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "control",
     label: "Control",
-    title: "Collapse and imperative control",
-    code: controlCode,
-    component: <ControlDemo />,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Collapse and imperative control"
+        description="Drive toggle, expand, collapse, and resize through SplitViewRef."
+        code={controlCode}
+      >
+        <ControlDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "persistence",
     label: "Saved layout",
-    title: "Saved resize and collapse",
-    code: persistenceCode,
-    component: <PersistenceDemo />,
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Saved resize and collapse"
+        description="Persist layout dimensions with autoSaveId across remounts."
+        code={persistenceCode}
+      >
+        <PersistenceDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "presets",
+    label: "Presets",
+    group: "KiraSplitView",
+    demo: (
+      <DemoWrapper
+        title="Named widths without dragging"
+        description="Provide one-click layout presets in the KiraSplitView toolbar."
+        code={presetsCode}
+      >
+        <PresetsDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "compact",
     label: "Compact",
-    title: "Queue/detail in a narrow container",
-    code: compactCode,
-    component: <CompactDemo />,
+    group: "KiraSplitView",
+    demo: (
+      <DemoWrapper
+        title="Queue/detail in a narrow container"
+        description="Switch between single-pane queue and detail views while preserving drafts."
+        code={compactCode}
+      >
+        <CompactDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "refresh",
     label: "Refresh",
-    title: "Retain an unsaved review",
-    code: refreshCode,
-    component: <RefreshDemo />,
+    group: "KiraSplitView",
+    demo: (
+      <DemoWrapper
+        title="Retain an unsaved review"
+        description="Display loading and recoverable error banners without unmounting the editor."
+        code={refreshCode}
+      >
+        <RefreshDemo />
+      </DemoWrapper>
+    ),
   },
   {
     value: "kira",
     label: "Kira",
-    title: "Record-specific review drafts",
-    code: kiraCode,
-    component: <KiraDemo />,
+    group: "KiraSplitView",
+    demo: (
+      <DemoWrapper
+        title="Record-specific review drafts"
+        description="Combine responsive queue/detail navigation with autoSaveId and caller-owned drafts."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
   },
   {
-    value: "states",
-    label: "States",
-    title: "Empty, loading, locked and long content",
-    code: statesCode,
-    component: <StatesDemo />,
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long unbroken labels, empty content, loading, disabled lock state, and narrow max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
   },
-];
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const api: React.ComponentProps<typeof APIReference>["sections"] = [
+const splitViewPageShortcuts = [
+  {
+    keys: "Tab / Shift+Tab",
+    description:
+      "Move through persistent controls, resize separator and active pane content.",
+  },
+  {
+    keys: "ArrowLeft / ArrowRight",
+    description:
+      "Resize a horizontal split (inherited from react-resizable-panels).",
+  },
+  {
+    keys: "ArrowUp / ArrowDown",
+    description:
+      "Resize a vertical split (inherited from react-resizable-panels).",
+  },
+  {
+    keys: "Home / End / Enter on separator",
+    description:
+      "Engine minimum/maximum and collapse/restore behavior; verify against current panel constraints.",
+  },
+  {
+    keys: "Enter / Space on width controls",
+    description: "Kira click/keyboard alternative: ±5% or a named preset.",
+  },
+  {
+    keys: "Enter / Space on queue/detail controls",
+    description:
+      "Change compact pane without remounting its editor; selection is caller-owned.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const splitViewPageAPISections = [
   {
     title: "SplitView",
     props: [
       {
         prop: "sidebarContent / mainContent",
         type: "React.ReactNode",
+        default: "Required",
         description:
           "Required slots; both content trees stay mounted when hidden or collapsed.",
       },
       {
         prop: "orientation / variant",
         type: '"horizontal" | "vertical" / "default" | "bordered"',
-        default: "horizontal / default",
+        default: '"horizontal" / "default"',
         description:
           "Shared Resizable direction and exported splitViewVariants appearance.",
       },
@@ -620,38 +881,41 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "sidebarLabel / mainLabel",
         type: "string / string",
-        default: "Sidebar / Main content",
+        default: '"Sidebar" / "Main content"',
         description: "Visible toolbar and accessible region/resize names.",
       },
       {
         prop: "onCollapsedChange / onSidebarSizeChange",
         type: "(collapsed: boolean) => void / (percentage: number) => void",
+        default: "-",
         description:
           "Native resize state notifications; compact presentation does not publish split measurements.",
       },
       {
         prop: "disabled / disabledReason",
         type: "boolean / string",
-        default: "false",
+        default: "false / -",
         description:
           "Disable layout actions with a visible reason. Content remains caller-owned.",
       },
       {
         prop: "autoSaveId",
         type: "string",
+        default: "-",
         description:
           "Opt-in safe browser storage. Use one unique key per instance. Layout keys include orientation; no content is persisted.",
       },
       {
         prop: "pane",
         type: '"split" | "sidebar" | "main"',
-        default: "split",
+        default: '"split"',
         description:
           "Presentation mode retaining both DOM trees; disables splitter in a single pane.",
       },
       {
         prop: "group props / className / ref",
         type: "Omit<React.ComponentProps<typeof ResizablePanelGroup>, 'orientation' | 'children' | 'className'> / string / React.Ref<SplitViewRef>",
+        default: "-",
         description:
           "Group attributes, layout/callback/ref options; className styles outer shell and ref exposes the SplitView handle. defaultLayout panel keys follow autoSaveId + :sidebar/:main, otherwise generated IDs.",
       },
@@ -663,6 +927,7 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "inherited",
         type: 'Omit<SplitViewProps, "pane">',
+        default: "-",
         description:
           "All SplitView configuration; Kira owns adaptive pane presentation.",
       },
@@ -676,7 +941,7 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "activePane / defaultActivePane / onActivePaneChange",
         type: '"sidebar" | "main" / "sidebar" | "main" / (pane: "sidebar" | "main") => void',
-        default: "sidebar",
+        default: '"sidebar"',
         description:
           "Controlled/current or local initial compact navigation. Caller can open details when selecting a record.",
       },
@@ -690,14 +955,14 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "loading / empty / error / onRetry",
         type: "boolean / boolean / string / () => void",
-        default: "false / false",
+        default: "false / false / - / -",
         description:
           "Detail status and caller recovery; existing editor stays mounted. empty with loading reserves a static skeleton.",
       },
       {
         prop: "sidebarLabel / mainLabel",
         type: "string / string",
-        default: "Work queue / Review details",
+        default: '"Work queue" / "Review details"',
         description: "Accessible queue and detail names.",
       },
     ],
@@ -708,18 +973,21 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "toggleSidebar / expandSidebar / collapseSidebar",
         type: "() => void",
+        default: "-",
         description:
           "Respect disabled/collapsible and split presentation; first expansion restores defaultSize, later expansions restore last size.",
       },
       {
         prop: "resizeSidebar",
         type: "(percentage: number) => void",
+        default: "-",
         description:
           "Bounded percentage resize, including expansion; ignored while disabled or in a single pane.",
       },
       {
         prop: "getSidebarSize",
         type: "() => number | undefined",
+        default: "-",
         description:
           "Current engine percentage; undefined before engine registration.",
       },
@@ -731,118 +999,48 @@ const api: React.ComponentProps<typeof APIReference>["sections"] = [
       {
         prop: "label / size",
         type: "string / number",
+        default: "Required",
         description: "Visible preset name and sidebar percentage.",
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function SplitViewPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Split View"
-        description="A resizable review workspace with compact queue/detail navigation, saved widths and retained drafts."
-        version="v2.0.0"
-      />
-      <FeatureGrid
-        features={[
-          {
-            title: "Resize without dragging",
-            description:
-              "Native separator, width steps, presets and collapse controls.",
-          },
-          {
-            title: "Compact review",
-            description:
-              "Local-container queue/detail navigation keeps both panes mounted.",
-          },
-          {
-            title: "Retained context",
-            description:
-              "Saved layout, record-owned drafts and recoverable refresh.",
-          },
-        ]}
-      />
-      <DemoTabs
-        defaultValue="basic"
-        tabs={tabs.map((tab) => ({
-          value: tab.value,
-          label: tab.label,
-          demo: (
-            <DemoWrapper title={tab.title} code={tab.code}>
-              {tab.component}
-            </DemoWrapper>
-          ),
-        }))}
-      />
-      <KeyboardShortcuts
-        description="Shared panel-engine keys and native action buttons."
-        shortcuts={[
-          {
-            keys: "Tab / Shift+Tab",
-            description:
-              "Move through persistent controls, resize separator and active pane content.",
-          },
-          {
-            keys: "ArrowLeft / ArrowRight",
-            description:
-              "Resize a horizontal split (inherited from react-resizable-panels).",
-          },
-          {
-            keys: "ArrowUp / ArrowDown",
-            description:
-              "Resize a vertical split (inherited from react-resizable-panels).",
-          },
-          {
-            keys: "Home / End / Enter on separator",
-            description:
-              "Engine minimum/maximum and collapse/restore behavior; verify against current panel constraints.",
-          },
-          {
-            keys: "Enter / Space on width controls",
-            description:
-              "Kira click/keyboard alternative: ±5% or a named preset.",
-          },
-          {
-            keys: "Enter / Space on queue/detail controls",
-            description:
-              "Change compact pane without remounting its editor; selection is caller-owned.",
-          },
-        ]}
-      />
-      <UsageBlock code={kiraCode} />
-      <UsageBlock title="Primitive and imperative handle" code={controlCode} />
-      <APIReference sections={api} />
-      <Changelog
-        entries={[
-          {
-            version: "2.0.0",
-            date: "15 November 2026",
-            changes: [
-              {
-                type: "changed",
-                title: "Breaking: explicit content and stable controls",
-                description:
-                  "Removed inherited children (never rendered). Default sidebar is 25%, with maximum/main minimum and finite percentage constraints. Toolbar stays mounted outside panes; new slot names and generated panel IDs replace fixed sidebar/main IDs. autoSaveId uses a new validated split-view storage namespace; old saved widths are not migrated. Audited against Base UI 1.9.0 and react-resizable-panels 4.16.0; use-case research cutoff October 31.",
-              },
-              {
-                type: "added",
-                title: "Kira review workspace",
-                description:
-                  "Compact container navigation, named presets, retained loading/error/empty states, caller retry and record-owned draft examples. ResizeSidebar/getSidebarSize extend the handle.",
-              },
-              {
-                type: "fixed",
-                title: "Accessible resizing and disclosure",
-                description:
-                  "Named persistent toggle, click/tap resize controls, unique region IDs, inert collapsed content, first-expansion size retention and focus transfer when compact navigation hides the focused pane.",
-              },
-            ],
-          },
-        ]}
-      />
-    </ComponentPage>
-  );
-}
+const splitViewPageChangelogEntries = [
+  {
+    version: "2.0.1",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Shared validated layout storage helper",
+        description:
+          "Adopted createValidatedLayoutStorage and unsavedLayoutStorage from @/lib/layout-storage, sharing persistence validation with Resizable.",
+      },
+    ],
+  },
+  {
+    version: "2.0.0",
+    date: "15 November 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "Explicit content and stable controls",
+        description:
+          "Removed inherited children (never rendered). Default sidebar is 25%, with maximum/main minimum and finite percentage constraints. Toolbar stays mounted outside panes; new slot names and generated panel IDs replace fixed sidebar/main IDs. autoSaveId uses a new validated split-view storage namespace; old saved widths are not migrated. Audited against Base UI 1.9.0 and react-resizable-panels 4.16.0; use-case research cutoff October 31.",
+      },
+      {
+        type: "added",
+        title: "Kira review workspace",
+        description:
+          "Compact container navigation, named presets, retained loading/error/empty states, caller retry and record-owned draft examples. ResizeSidebar/getSidebarSize extend the handle.",
+      },
+      {
+        type: "fixed",
+        title: "Accessible resizing and disclosure",
+        description:
+          "Named persistent toggle, click/tap resize controls, unique region IDs, inert collapsed content, first-expansion size retention and focus transfer when compact navigation hides the focused pane.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

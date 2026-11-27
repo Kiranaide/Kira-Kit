@@ -1,11 +1,6 @@
 /**
- * Camera Guide Presets
- * Pre-configured guide configurations for common use cases
- *
- * @2025-2026 Best Practices
- * - Portrait and document framing
- * - Photography composition
- * - Barcode/QR positioning
+ * Camera guide presets: pre-configured framing for portrait, document,
+ * photography-composition, and barcode/QR use cases.
  */
 
 import type {

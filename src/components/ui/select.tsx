@@ -17,8 +17,7 @@ import {
 } from "@tabler/icons-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isStringProp } from "@/lib/component-prop-guards";
+import { isStringProp, resolveComponentDefaults } from "@/lib/component-utils";
 
 const Select = SelectPrimitive.Root;
 
@@ -68,7 +67,7 @@ function SelectTrigger({
       className={cn(
         "flex w-full items-center justify-between rounded-lg border border-input bg-transparent py-1 text-sm transition-colors select-none gap-2",
         "dark:bg-input/30 dark:hover:bg-input/50",
-        "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+        "focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px]",
         "data-placeholder:text-muted-foreground",
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 aria-invalid:ring-[3px]",
         "data-[size=xs]:h-7 data-[size=xs]:px-2 data-[size=sm]:h-8 data-[size=sm]:px-3 data-[size=default]:h-9 data-[size=default]:px-4 data-[size=lg]:h-10 data-[size=lg]:px-5 data-[size=xl]:h-11 data-[size=xl]:px-5",
@@ -393,8 +392,6 @@ function ComboboxField<T extends SelectOption = SelectOption>(
 
   return renderComboboxField<T>(state8);
 }
-
-// === KiraSelect: one prop-driven combobox ===
 
 interface KiraSelectProps<T extends SelectOption = SelectOption> {
   /** Options to display. A `string[]` shorthand maps each entry to `{ value, label }`. */
@@ -862,7 +859,6 @@ function useComboboxFieldState6<T extends SelectOption = SelectOption>(
 
   const filterFn_ = resolveFilter();
 
-  // === GSAP stagger (open only, never while typing) ===
   useGSAP(
     () => {
       if (!state.isOpen || !state.popupEl || state.isLoading) return;
@@ -910,7 +906,7 @@ function useComboboxFieldState6<T extends SelectOption = SelectOption>(
     state.variant === "ghost" && "border-transparent hover:bg-muted",
     state.variant === "outline" &&
       "border-input bg-transparent hover:bg-muted/50",
-    "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+    "focus-within:border-ring focus-within:ring-ring focus-within:ring-[3px]",
     state.ariaInvalid &&
       "border-destructive ring-destructive/20 focus-within:border-destructive focus-within:ring-destructive/30",
     state.disabled && "opacity-50 pointer-events-none cursor-not-allowed",

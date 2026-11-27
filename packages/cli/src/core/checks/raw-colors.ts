@@ -4,6 +4,9 @@ import type { Check, Finding } from "./types";
 const RAW_COLOR = /#[0-9a-fA-F]{3,8}\b|\brgba?\(/g;
 
 export const rawColors: Check = (file) => {
+  // Lib modules are color math and capture-overlay data, not UI styling.
+  if (file.name.startsWith("lib/")) return [];
+
   const findings: Finding[] = [];
 
   for (const match of file.content.matchAll(RAW_COLOR)) {

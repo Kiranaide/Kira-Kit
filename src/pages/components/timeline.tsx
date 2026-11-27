@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import { IconList, IconLayoutColumns, IconHistory } from "@tabler/icons-react";
 import {
@@ -100,7 +101,7 @@ function BasicDemo() {
 }
 
 const basicCode =
-  'import * as React from "react";\nimport { Timeline, TimelineItem, TimelineDot, TimelineConnector, TimelineContent, TimelineTime, TimelineTitle, TimelineDescription, TimelineActions, TimelineAvatar } from "@/components/ui/timeline";\nimport { Button } from "@/components/ui/button";\n\nexport default function BasicDemo() {\n  const [note, setNote] = React.useState("");\n  return <Timeline aria-label="Release activity" size="lg">\n    <TimelineItem status="success"><TimelineDot /><TimelineConnector /><TimelineContent>\n      <TimelineTitle>Changes approved</TimelineTitle><TimelineTime datetime="2026-10-29T09:00:00Z" timeZone="UTC" />\n      <TimelineAvatar alt="Mina Park" fallback="MP" /><TimelineDescription>Accessibility review completed.</TimelineDescription>\n    </TimelineContent></TimelineItem>\n    <TimelineItem status="info"><TimelineDot /><TimelineConnector /><TimelineContent>\n      <TimelineTitle>Release notes available</TimelineTitle><TimelineDescription>Review the rollout checklist before publishing.</TimelineDescription>\n      <TimelineActions><Button size="sm" variant="outline" onClick={() => setNote("Checklist reviewed. The release is ready for staging.")}>Review checklist</Button></TimelineActions>\n      <p role="status" className="text-xs text-muted-foreground">{note}</p>\n    </TimelineContent></TimelineItem>\n  </Timeline>;\n}\n';
+  'import * as React from "react";\nimport { Timeline, TimelineItem, TimelineDot, TimelineConnector, TimelineContent, TimelineTime, TimelineTitle, TimelineDescription, TimelineActions, TimelineAvatar } from "@/components/ui/timeline";\nimport { Button } from "@/components/ui/button";\n\nexport default function BasicDemo() {\n  const [note, setNote] = React.useState("");\n  return <Timeline aria-label="Release activity" size="lg">\n    <TimelineItem status="success"><TimelineDot /><TimelineConnector /><TimelineContent>\n      <TimelineTitle>Changes approved</TimelineTitle><TimelineTime datetime="2026-10-29T09:00:00Z" timeZone="UTC" />\n      <TimelineAvatar alt="Mina Park" fallback="MP" /><TimelineDescription>Accessibility review completed.</TimelineDescription>\n    </TimelineContent></TimelineItem>\n    <TimelineItem status="info"><TimelineDot /><TimelineConnector /><TimelineContent>\n      <TimelineTitle>Release notes available</TimelineTitle><TimelineDescription>Review the rollout checklist before publishing.</TimelineDescription>\n      <TimelineActions><Button size="sm" variant="outline" onClick={() => setNote("Checklist reviewed. The release is ready for staging.")}>Review checklist</Button></TimelineActions>\n      <output className="block text-xs text-muted-foreground">{note}</output>\n    </TimelineContent></TimelineItem>\n  </Timeline>;\n}\n';
 
 function LayoutsDemo() {
   const [layout, setLayout] =
@@ -357,6 +358,7 @@ function VirtualizedDemo() {
 }
 
 const virtualizedCode =
+  // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
   'import { Timeline, type TimelineItemData } from "@/components/ui/timeline";\n\nexport default function VirtualizedDemo() {\n  const items: TimelineItemData[] = Array.from({ length: 150 }, (_, index) => ({\n    id: `event-${index}`, title: `Artifact ${index + 1} verified`, datetime: `2026-10-${String(1 + Math.floor(index / 10)).padStart(2, "0")}T09:00:00Z`, status: "success",\n    description: index % 3 === 0 ? "The build passed signature verification, accessibility checks, and the integration smoke run. This longer event demonstrates measured rows and text wrapping." : "Signature verification passed.",\n    collapsible: true, defaultCollapsed: index % 3 !== 0,\n  }));\n  return <Timeline items={items} virtualized groupBy="day" timeZone="UTC" size="lg" estimateSize={140} aria-label="150 artifact checks" />;\n}\n';
 
 function KiraDemo() {
@@ -484,10 +486,134 @@ function StatesDemo() {
 const statesCode =
   'import { Timeline, KiraTimeline } from "@/components/ui/timeline";\n\nexport default function StatesDemo() {\n  return <div className="grid gap-8 lg:grid-cols-2">\n    <div className="min-w-0 space-y-3"><h3 className="text-sm font-medium">Initial loading</h3><KiraTimeline items={[]} loading /></div>\n    <div className="min-w-0 space-y-3"><h3 className="text-sm font-medium">Empty history</h3><KiraTimeline items={[]} empty="No deployment events. Start a release to create the first event." /></div>\n    <div className="min-w-0 space-y-3"><h3 className="text-sm font-medium">Long labels and a blocked action</h3><KiraTimeline\n      items={[{ id: "long", title: "Internationalisation_Quality_Assurance_Release_Candidate_2026_10_31_Final_Approval", status: "pending", description: "等待审核 · ตรวจสอบการเผยแพร่ · Approval is still pending." }]}\n      hasMore onLoadMore={async () => {}} loadMoreDisabledReason="Connect to the history service to load older events."\n    /></div>\n    <div className="min-w-0 space-y-3"><h3 className="text-sm font-medium">Every event status</h3><Timeline variant="compact" size="lg" items={(["default", "success", "warning", "error", "info", "active", "pending"] as const).map((status) => ({ id: status, title: status, status }))} /></div>\n  </div>;\n}\n';
 
-const demoTabs = [
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-6">
+      <KiraTimeline
+        items={stressItems}
+        label="Constrained release history"
+        size="lg"
+        collapsible
+        hasMore
+        onLoadMore={async () => {}}
+        loadMoreDisabledReason="Connect to the history service to load older events."
+      />
+    </div>
+  );
+}
+
+const stressCode = `import { KiraTimeline, type TimelineItemData } from "@/components/ui/timeline"
+
+// Long titles, empty descriptions, disabled collapsible item, and blocked load-more inside max-w-xs
+<div className="max-w-xs space-y-6">
+  <KiraTimeline
+    items={stressItems}
+    label="Constrained release history"
+    size="lg"
+    collapsible
+    hasMore
+    onLoadMore={async () => {}}
+    loadMoreDisabledReason="Connect to the history service to load older events."
+  />
+</div>`;
+
+const usageCode =
+  'import { Timeline, TimelineRoot, TimelineItem, TimelineDot, TimelineConnector, TimelineContent, TimelineTime, TimelineTitle, TimelineDescription, TimelineActions, TimelineAvatar, KiraTimeline, type TimelineItemData } from "@/components/ui/timeline";\n\nconst releaseEvents: TimelineItemData[] = [\n  { id: "review", title: "Release reviewed", datetime: "2026-10-29T09:00:00Z", status: "success", description: "Mina approved the accessibility fixes and release notes.", avatar: { alt: "Mina Park", fallback: "MP" } },\n  { id: "build", title: "Production build completed", datetime: "2026-10-29T09:12:00Z", status: "success", description: "The signed artifact is ready for the staging environment." },\n  { id: "deploy", title: "Staging health check needs attention", datetime: "2026-10-30T10:00:00Z", status: "warning", description: "The search worker did not report readiness. Review the logs before continuing." },\n];\n\nexport default function AllPartsExample() {\n  return <div className="space-y-6">\n    <Timeline items={releaseEvents} />\n    <TimelineRoot size="lg"><TimelineItem><TimelineDot /><TimelineConnector /><TimelineContent>\n      <TimelineTitle>Release approved</TimelineTitle><TimelineTime datetime="2026-10-31T09:00:00Z" />\n      <TimelineAvatar alt="Mina Park" fallback="MP" /><TimelineDescription>Staging checks passed.</TimelineDescription>\n      <TimelineActions><a href="/components/timeline">Open history</a></TimelineActions>\n    </TimelineContent></TimelineItem></TimelineRoot>\n    <KiraTimeline items={releaseEvents} label="Release history" />\n  </div>;\n}\n';
+
+export default function TimelinePage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Timeline"
+        version="v2.0.0"
+        description="Readable event histories with measured virtualization, native disclosures and recoverable loading."
+      />
+      <FeatureGrid
+        features={timelinePageFeatures}
+        description="Capabilities built into Timeline and KiraTimeline."
+      />
+      <DemoTabs tabs={timelinePageDemoTabs} defaultValue="basic" />
+      <KeyboardShortcuts
+        shortcuts={timelinePageShortcuts}
+        description="Keyboard navigation and disclosure bindings for Timeline and KiraTimeline."
+      />
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Render data-driven histories, compose compound parts, or use KiraTimeline for full async lifecycle handling."
+        notes={[
+          {
+            label: "KiraTimeline",
+            body: "Use KiraTimeline when you need loading skeletons, empty/error states, and cancellable pagination out of the box.",
+          },
+        ]}
+      />
+      <APIReference
+        sections={timelinePageAPISections}
+        description="Props, types, and defaults for Timeline, its compound parts, and KiraTimeline."
+      />
+      <Changelog
+        entries={timelinePageChangelogEntries}
+        title="Changelog"
+        description="Version history for the Timeline component."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const stressItems = [
+  {
+    id: "long-title",
+    title:
+      "Internationalisation_Quality_Assurance_Release_Candidate_2026_10_31_Final_Approval",
+    status: "pending",
+    description:
+      "等待审核 · ตรวจสอบการเผยแพร่ · Approval is still pending in a narrow column.",
+  },
+  {
+    id: "empty-body",
+    title: "Minimal event with empty description",
+    datetime: "not-a-date",
+    status: "info",
+    description: "",
+  },
+  {
+    id: "disabled-item",
+    title: "Locked audit logs",
+    status: "warning",
+    disabled: true,
+    defaultCollapsed: true,
+    disabledReason: "Audit logs unlock once the deployment finishes.",
+    description: "Pending final checksum.",
+  },
+] satisfies ReactComponentProps<typeof KiraTimeline>["items"];
+
+const timelinePageFeatures = [
+  {
+    title: "Event context",
+    description:
+      "Inspect a workflow using native disclosures and visible status labels.",
+    icon: <IconList className="size-4" />,
+  },
+  {
+    title: "Flexible rails",
+    description: "Grouped, horizontal and responsive alternating histories.",
+    icon: <IconLayoutColumns className="size-4" />,
+  },
+  {
+    title: "Long histories",
+    description:
+      "Measured virtual rows and cancellable loading of older events.",
+    icon: <IconHistory className="size-4" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const timelinePageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper title="Release activity" code={basicCode}>
         <BasicDemo />
@@ -497,6 +623,7 @@ const demoTabs = [
   {
     value: "layouts",
     label: "Layouts",
+    group: "Core",
     demo: (
       <DemoWrapper title="Rails and horizontal history" code={layoutsCode}>
         <LayoutsDemo />
@@ -506,6 +633,7 @@ const demoTabs = [
   {
     value: "density",
     label: "Density",
+    group: "Core",
     demo: (
       <DemoWrapper title="Sizes, spacing and connectors" code={densityCode}>
         <DensityDemo />
@@ -515,6 +643,7 @@ const demoTabs = [
   {
     value: "grouping",
     label: "Grouping",
+    group: "Data & Dates",
     demo: (
       <DemoWrapper
         title="Calendar groups"
@@ -526,17 +655,9 @@ const demoTabs = [
     ),
   },
   {
-    value: "disclosure",
-    label: "Disclosure",
-    demo: (
-      <DemoWrapper title="Inspect event details" code={disclosureCode}>
-        <DisclosureDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "dates",
     label: "Dates",
+    group: "Data & Dates",
     demo: (
       <DemoWrapper title="Localized and incomplete timestamps" code={datesCode}>
         <DatesDemo />
@@ -546,6 +667,7 @@ const demoTabs = [
   {
     value: "virtualized",
     label: "Virtualized",
+    group: "Data & Dates",
     demo: (
       <DemoWrapper
         title="A measured event history"
@@ -557,8 +679,46 @@ const demoTabs = [
     ),
   },
   {
+    value: "disclosure",
+    label: "Disclosure",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper title="Inspect event details" code={disclosureCode}>
+        <DisclosureDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Loading, empty and constrained histories"
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long unbroken titles, empty descriptions, invalid timestamps, disabled disclosures, and blocked actions inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "kira",
     label: "Kira",
+    group: "KiraTimeline",
     demo: (
       <DemoWrapper
         title="Load older events"
@@ -569,19 +729,30 @@ const demoTabs = [
       </DemoWrapper>
     ),
   },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const timelinePageShortcuts = [
   {
-    value: "states",
-    label: "States",
-    demo: (
-      <DemoWrapper
-        title="Loading, empty and constrained histories"
-        code={statesCode}
-      >
-        <StatesDemo />
-      </DemoWrapper>
-    ),
+    keys: "Tab / Shift+Tab",
+    description:
+      "Move between event actions, disclosure controls and scrollable regions. Static events are not tab stops.",
   },
-];
+  {
+    keys: "Enter / Space",
+    description:
+      "Toggle a disclosure (inherited from Base UI Collapsible) or activate a focused button.",
+  },
+  {
+    keys: "Arrow keys / Home / End / Page Up / Page Down",
+    description:
+      "Native scrolling when the virtual viewport is focused. Kira does not implement feed-style article navigation.",
+  },
+  {
+    keys: "Tab / Enter",
+    description:
+      "Reach Cancel loading during a request, then Try again after a service error.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
 const nativeProps = [
   {
@@ -665,7 +836,7 @@ const timelineProps = [
   },
 ];
 
-const apiSections = [
+const timelinePageAPISections = [
   ...["Timeline", "TimelineRoot"].map((title) => ({
     title,
     props: timelineProps,
@@ -857,95 +1028,31 @@ const apiSections = [
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const usageCode =
-  'import { Timeline, TimelineRoot, TimelineItem, TimelineDot, TimelineConnector, TimelineContent, TimelineTime, TimelineTitle, TimelineDescription, TimelineActions, TimelineAvatar, KiraTimeline, type TimelineItemData } from "@/components/ui/timeline";\n\nconst releaseEvents: TimelineItemData[] = [\n  { id: "review", title: "Release reviewed", datetime: "2026-10-29T09:00:00Z", status: "success", description: "Mina approved the accessibility fixes and release notes.", avatar: { alt: "Mina Park", fallback: "MP" } },\n  { id: "build", title: "Production build completed", datetime: "2026-10-29T09:12:00Z", status: "success", description: "The signed artifact is ready for the staging environment." },\n  { id: "deploy", title: "Staging health check needs attention", datetime: "2026-10-30T10:00:00Z", status: "warning", description: "The search worker did not report readiness. Review the logs before continuing." },\n];\n\nexport default function AllPartsExample() {\n  return <div className="space-y-6">\n    <Timeline items={releaseEvents} />\n    <TimelineRoot size="lg"><TimelineItem><TimelineDot /><TimelineConnector /><TimelineContent>\n      <TimelineTitle>Release approved</TimelineTitle><TimelineTime datetime="2026-10-31T09:00:00Z" />\n      <TimelineAvatar alt="Mina Park" fallback="MP" /><TimelineDescription>Staging checks passed.</TimelineDescription>\n      <TimelineActions><a href="/components/timeline">Open history</a></TimelineActions>\n    </TimelineContent></TimelineItem></TimelineRoot>\n    <KiraTimeline items={releaseEvents} label="Release history" />\n  </div>;\n}\n';
-
-export default function TimelinePage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Timeline"
-        version="v2.0.0"
-        description="Readable event histories with measured virtualization, native disclosures and recoverable loading."
-      />
-      <FeatureGrid features={timelinePageFeatureGridFeatures} />
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-      <KeyboardShortcuts
-        shortcuts={[
-          {
-            keys: "Tab / Shift+Tab",
-            description:
-              "Move between event actions, disclosure controls and scrollable regions. Static events are not tab stops.",
-          },
-          {
-            keys: "Enter / Space",
-            description:
-              "Toggle a disclosure (inherited from Base UI Collapsible) or activate a focused button.",
-          },
-          {
-            keys: "Arrow keys / Home / End / Page Up / Page Down",
-            description:
-              "Native scrolling when the virtual viewport is focused. Kira does not implement feed-style article navigation.",
-          },
-          {
-            keys: "Tab / Enter",
-            description:
-              "Reach Cancel loading during a request, then Try again after a service error.",
-          },
-        ]}
-      />
-      <UsageBlock code={usageCode} />
-      <APIReference sections={apiSections} />
-      <Changelog
-        entries={[
-          {
-            version: "v2.0.0",
-            date: "2026-11-13",
-            changes: [
-              {
-                type: "changed",
-                title: "Audited against Base UI 1.9.0",
-                description:
-                  "Shared Collapsible and Avatar; real layouts, group/date safety, measured virtual rows and retained disclosure state.",
-              },
-              {
-                type: "added",
-                title: "KiraTimeline",
-                description:
-                  "Initial loading, empty/error states and cancellable older-event loading. Pending and active statuses, timezone grouping and explicit disclosure summaries.",
-              },
-              {
-                type: "breaking",
-                title: "Semantics and motion corrected",
-                description:
-                  "The root contains a list instead of an unsupported feed; items are listitems. Automatic GSAP entrances are removed. Custom renderItem receives displayed indexes. TimelineAvatar now includes its author name; part DOM and slots changed. Disclosure content is inert while closed.",
-              },
-            ],
-          },
-        ]}
-      />
-    </ComponentPage>
-  );
-}
-
-const timelinePageFeatureGridFeatures = [
+const timelinePageChangelogEntries = [
   {
-    title: "Event context",
-    description:
-      "Inspect a workflow using native disclosures and visible status labels.",
-    icon: <IconList className="size-4" />,
+    version: "2.0.0",
+    date: "13 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Audited against Base UI 1.9.0",
+        description:
+          "Shared Collapsible and Avatar; real layouts, group/date safety, measured virtual rows and retained disclosure state.",
+      },
+      {
+        type: "added",
+        title: "KiraTimeline",
+        description:
+          "Initial loading, empty/error states and cancellable older-event loading. Pending and active statuses, timezone grouping and explicit disclosure summaries.",
+      },
+      {
+        type: "breaking",
+        title: "Semantics and motion corrected",
+        description:
+          "The root contains a list instead of an unsupported feed; items are listitems. Automatic GSAP entrances are removed. Custom renderItem receives displayed indexes. TimelineAvatar now includes its author name; part DOM and slots changed. Disclosure content is inert while closed.",
+      },
+    ],
   },
-  {
-    title: "Flexible rails",
-    description: "Grouped, horizontal and responsive alternating histories.",
-    icon: <IconLayoutColumns className="size-4" />,
-  },
-  {
-    title: "Long histories",
-    description:
-      "Measured virtual rows and cancellable loading of older events.",
-    icon: <IconHistory className="size-4" />,
-  },
-] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

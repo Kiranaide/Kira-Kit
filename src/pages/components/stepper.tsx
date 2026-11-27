@@ -37,10 +37,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demos — one focused demo per feature, co-located snippets
-// =============================================================================
-
 const accountSteps = [
   { title: "Account", description: "Create your account" },
   { title: "Profile", description: "Set up your profile" },
@@ -104,8 +100,71 @@ function BasicDemo() {
   );
 }
 
-const basicCode =
-  'import { Stepper, StepperItem, StepperIndicator, StepperContent, StepperTitle, StepperDescription, StepperSeparator, StepperNavigation } from "@/components/ui/stepper"\nimport { useState } from "react"\n\nexport function BasicStepperDemo() {\n  const [step, setStep] = useState(0)\n  const [finished, setFinished] = useState(false)\n  const steps = ["Account", "Profile", "Security", "Complete"]\n\n  return (\n    <Stepper value={step} onValueChange={setStep} completedSteps={finished ? [0, 1, 2, 3] : []}>\n      {steps.map((title, index) => (\n        <StepperItem key={title} value={index} title={title}>\n          <StepperIndicator />\n          <StepperContent><StepperTitle>{title}</StepperTitle></StepperContent>\n          <StepperSeparator />\n        </StepperItem>\n      ))}\n      <p aria-live="polite">{finished ? "Your account is ready" : steps[step]}</p>\n      <StepperNavigation onFinish={() => setFinished(true)} nextDisabled={finished} finishLabel={finished ? "Complete" : "Finish"} />\n    </Stepper>\n  )\n}';
+const basicCode = `import * as React from "react"
+import {
+  Stepper,
+  StepperItem,
+  StepperIndicator,
+  StepperContent,
+  StepperTitle,
+  StepperDescription,
+  StepperSeparator,
+  StepperActions,
+  StepperNavigation,
+} from "@/components/ui/stepper"
+import { Button } from "@/components/ui/button"
+
+const steps = [
+  { title: "Account", description: "Create your account" },
+  { title: "Profile", description: "Set up your profile" },
+  { title: "Security", description: "Configure security" },
+  { title: "Complete", description: "You're all set!" },
+]
+
+export function BasicStepperDemo() {
+  const [step, setStep] = React.useState(0)
+  const [finished, setFinished] = React.useState(false)
+  const current = steps.find((_, index) => index === step)
+
+  return (
+    <Stepper
+      value={step}
+      onValueChange={setStep}
+      completedSteps={finished ? [0, 1, 2, 3] : []}
+    >
+      {steps.map((item, index) => (
+        <StepperItem key={item.title} value={index} title={item.title}>
+          <StepperIndicator />
+          <StepperContent>
+            <StepperTitle>{item.title}</StepperTitle>
+            <StepperDescription>{item.description}</StepperDescription>
+          </StepperContent>
+          <StepperSeparator />
+        </StepperItem>
+      ))}
+      <section aria-live="polite">
+        <p>{finished ? "Setup complete" : "Step " + (step + 1) + " of 4"}</p>
+        <h2>{finished ? "Your account is ready" : current?.title}</h2>
+        <p>{finished ? "All four steps are complete." : current?.description}</p>
+      </section>
+      {finished ? (
+        <StepperActions>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setStep(0)
+              setFinished(false)
+            }}
+          >
+            Start again
+          </Button>
+        </StepperActions>
+      ) : (
+        <StepperNavigation onFinish={() => setFinished(true)} />
+      )}
+    </Stepper>
+  )
+}`;
 
 function KiraDemo() {
   const [step, setStep] = React.useState(0);
@@ -436,140 +495,91 @@ export function MobileStepperDemo() {
   )
 }`;
 
-// =============================================================================
-// Page
-// =============================================================================
+function StressDemo() {
+  const [step, setStep] = React.useState(0);
 
-const features = [
-  {
-    title: "Accessible",
-    description:
-      "Real buttons for clickable steps, roving arrow/Home/End focus, live-region step announcements, and panels labelled by their step.",
-    icon: <IconAccessible className="w-4 h-4 text-primary" />,
-  },
-  {
-    title: "Data-driven",
-    description:
-      "KiraStepper renders a full rail from a steps array — with mobileStacked for narrow viewports.",
-    icon: <IconLayersIntersect className="w-4 h-4 text-primary" />,
-  },
-  {
-    title: "States built in",
-    description:
-      "Completed, active, pending, error, loading, and skipped indicators; linear gating with an onNext validation hook.",
-    icon: <IconListDetails className="w-4 h-4 text-primary" />,
-  },
-  {
-    title: "Vertical & mobile",
-    description:
-      "First-class vertical orientation, and CSS-only stacking below the sm breakpoint.",
-    icon: <IconDeviceMobile className="w-4 h-4 text-primary" />,
-  },
-];
+  return (
+    <div className="w-full max-w-xs">
+      <Stepper
+        orientation="vertical"
+        value={step}
+        onValueChange={setStep}
+        skippableSteps={[2]}
+      >
+        {stressSteps.map((item, index) => (
+          <StepperItem
+            key={item.id}
+            value={index}
+            title={item.title}
+            optional={item.optional}
+            disabled={item.disabled}
+          >
+            <StepperIndicator />
+            <StepperContent>
+              <StepperTitle>{item.title}</StepperTitle>
+              {item.description.length > 0 && (
+                <StepperDescription>{item.description}</StepperDescription>
+              )}
+            </StepperContent>
+            <StepperSeparator />
+          </StepperItem>
+        ))}
+        <StepperProgress />
+        <StepperNavigation />
+      </Stepper>
+    </div>
+  );
+}
 
-const demoTabs = [
-  {
-    value: "basic",
-    label: "Basic",
-    demo: (
-      <DemoWrapper
-        title="Basic stepper"
-        description="A four-step setup with aligned markers, clear progress and a working completion state."
-        code={basicCode}
-      >
-        <BasicDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "kira",
-    label: "Kira",
-    demo: (
-      <DemoWrapper
-        title="KiraStepper"
-        description="Data-driven rail from a steps array, with progress and navigation."
-        code={kiraCode}
-      >
-        <KiraDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "vertical",
-    label: "Vertical",
-    demo: (
-      <DemoWrapper
-        title="Vertical orientation"
-        description="Rails stack vertically for narrow layouts and long flows."
-        code={verticalCode}
-      >
-        <VerticalDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "validation",
-    label: "Validation",
-    demo: (
-      <DemoWrapper
-        title="Step validation"
-        description="onNext gates the transition (validate on step-exit). Enter an email without @ and press Next."
-        code={validationCode}
-      >
-        <ValidationDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "states",
-    label: "States",
-    demo: (
-      <DemoWrapper
-        title="Step states"
-        description="Completed, active, error, loading, skipped, and pending indicators."
-        code={statesCode}
-      >
-        <StatesDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "mobile",
-    label: "Mobile",
-    demo: (
-      <DemoWrapper
-        title="Mobile stacking"
-        description="mobileStacked swaps the horizontal rail to vertical below sm."
-        code={mobileCode}
-      >
-        <MobileDemo />
-      </DemoWrapper>
-    ),
-  },
-];
+const stressCode = `import * as React from "react"
+import {
+  Stepper,
+  StepperItem,
+  StepperIndicator,
+  StepperContent,
+  StepperTitle,
+  StepperDescription,
+  StepperSeparator,
+  StepperProgress,
+  StepperNavigation,
+} from "@/components/ui/stepper"
 
-const keyboardShortcuts = [
-  {
-    keys: "Tab",
-    description:
-      "Move focus to the stepper; each available step is a real button tab stop",
-  },
-  {
-    keys: "Space / Enter",
-    description: "Activate the focused step (native button behaviour)",
-  },
-  {
-    keys: "Arrow Right / Down",
-    description:
-      "Move focus to the next available step (Left/Right on horizontal rails; Up/Down on vertical rails)",
-  },
-  {
-    keys: "Arrow Left / Up",
-    description: "Move focus to the previous available step",
-  },
-  { keys: "Home", description: "Move focus to the first step" },
-  { keys: "End", description: "Move focus to the last step" },
-];
+// Long titles, empty descriptions, optional/disabled steps in a max-w-xs column
+export function StressStepperDemo() {
+  const [step, setStep] = React.useState(0)
+
+  return (
+    <div className="w-full max-w-xs">
+      <Stepper
+        orientation="vertical"
+        value={step}
+        onValueChange={setStep}
+        skippableSteps={[2]}
+      >
+        {steps.map((item, index) => (
+          <StepperItem
+            key={item.id}
+            value={index}
+            title={item.title}
+            optional={item.optional}
+            disabled={item.disabled}
+          >
+            <StepperIndicator />
+            <StepperContent>
+              <StepperTitle>{item.title}</StepperTitle>
+              {item.description.length > 0 && (
+                <StepperDescription>{item.description}</StepperDescription>
+              )}
+            </StepperContent>
+            <StepperSeparator />
+          </StepperItem>
+        ))}
+        <StepperProgress />
+        <StepperNavigation />
+      </Stepper>
+    </div>
+  )
+}`;
 
 const usageCode = `import {
   Stepper, StepperItem, StepperIndicator, StepperContent, StepperTitle,
@@ -591,7 +601,7 @@ const usageCode = `import {
   ))}
 </Stepper>
 
-// Data-driven (Pass B)
+// Data-driven (KiraStepper)
 <KiraStepper
   steps={[
     { id: "account", title: "Account", description: "Create your account" },
@@ -617,7 +627,264 @@ const usageCode = `import {
   <Button onClick={next}>Next</Button>
 </StepperActions>`;
 
-const apiReference = [
+export default function StepperPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Stepper"
+        version="v2.1.1"
+        description="A multi-step wizard rail: clickable step buttons, progress tracking, validation gates, error/loading/skipped states, vertical and mobile-stacked layouts."
+      />
+
+      <FeatureGrid
+        features={stepperPageFeatures}
+        description="Accessible multi-step navigation built for desktop and mobile flows."
+      />
+
+      <DemoTabs tabs={stepperPageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        shortcuts={stepperPageShortcuts}
+        description="Roving keyboard navigation and native button activation."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Compose individual Stepper parts or render a data-driven rail with KiraStepper."
+        notes={[
+          {
+            label: "KiraStepper",
+            body: "Use KiraStepper when rendering from a steps data array. Pass StepperPanel, StepperProgress, or StepperNavigation as children to share the same step context.",
+          },
+          {
+            label: "Mobile stacking",
+            body: "Horizontal rails stack vertically below the sm breakpoint by default via CSS. Pass mobileStacked={false} to keep a compact horizontal rail on small screens.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={stepperPageAPISections}
+        description="Props, types, and defaults for Stepper parts and KiraStepper."
+      />
+
+      <Changelog
+        entries={stepperPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Stepper."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const stressSteps = [
+  {
+    id: "long-title",
+    title:
+      "Configure multi-region workspace compliance and external collaborator approval rules",
+    description:
+      "Verify audit logging, retention schedules, and organization-level access policies before continuing.",
+    optional: false,
+    disabled: false,
+  },
+  {
+    id: "empty-description",
+    title: "Confirm billing contact",
+    description: "",
+    optional: false,
+    disabled: false,
+  },
+  {
+    id: "optional-step",
+    title: "Connect external webhook endpoints",
+    description: "Optional integration step that can be skipped.",
+    optional: true,
+    disabled: false,
+  },
+  {
+    id: "disabled-step",
+    title: "Enterprise SSO provisioning (restricted)",
+    description: "Requires organization administrator permissions.",
+    optional: false,
+    disabled: true,
+  },
+];
+
+const kiraDemoKiraStepperSteps = [
+  {
+    id: "account",
+    title: "Account",
+    description: "Create your account",
+    icon: <IconUser className="h-4 w-4" />,
+  },
+  {
+    id: "profile",
+    title: "Profile",
+    description: "Set up your profile",
+    icon: <IconMail className="h-4 w-4" />,
+  },
+  {
+    id: "billing",
+    title: "Billing",
+    description: "Payment details",
+    icon: <IconLock className="h-4 w-4" />,
+  },
+] satisfies ReactComponentProps<typeof KiraStepper>["steps"];
+
+const stepperPageFeatures = [
+  {
+    title: "Accessible",
+    description:
+      "Real buttons for clickable steps, roving arrow/Home/End focus, live-region step announcements, and panels labelled by their step.",
+    icon: <IconAccessible className="w-4 h-4 text-primary" />,
+  },
+  {
+    title: "Data-driven",
+    description:
+      "KiraStepper renders a full rail from a steps array — with mobileStacked for narrow viewports.",
+    icon: <IconLayersIntersect className="w-4 h-4 text-primary" />,
+  },
+  {
+    title: "States built in",
+    description:
+      "Completed, active, pending, error, loading, and skipped indicators; linear gating with an onNext validation hook.",
+    icon: <IconListDetails className="w-4 h-4 text-primary" />,
+  },
+  {
+    title: "Vertical & mobile",
+    description:
+      "First-class vertical orientation, and CSS-only stacking below the sm breakpoint.",
+    icon: <IconDeviceMobile className="w-4 h-4 text-primary" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const stepperPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic stepper"
+        description="A four-step setup with aligned markers, clear progress and a working completion state."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "vertical",
+    label: "Vertical",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Vertical orientation"
+        description="Rails stack vertically for narrow layouts and long flows."
+        code={verticalCode}
+      >
+        <VerticalDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Step states"
+        description="Completed, active, error, loading, skipped, and pending indicators."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraStepper",
+    group: "KiraStepper",
+    demo: (
+      <DemoWrapper
+        title="KiraStepper"
+        description="Data-driven rail from a steps array, with progress and navigation."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "mobile",
+    label: "Mobile",
+    group: "KiraStepper",
+    demo: (
+      <DemoWrapper
+        title="Mobile stacking"
+        description="mobileStacked swaps the horizontal rail to vertical below sm."
+        code={mobileCode}
+      >
+        <MobileDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "validation",
+    label: "Validation",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Step validation"
+        description="onNext gates the transition (validate on step-exit). Enter an email without @ and press Next."
+        code={validationCode}
+      >
+        <ValidationDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long step titles, empty descriptions, optional skips, and disabled steps inside a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const stepperPageShortcuts = [
+  {
+    keys: "Tab",
+    description:
+      "Move focus to the stepper; each available step is a real button tab stop",
+  },
+  {
+    keys: "Space / Enter",
+    description: "Activate the focused step (native button behaviour)",
+  },
+  {
+    keys: "Arrow Right / Down",
+    description:
+      "Move focus to the next available step (Left/Right on horizontal rails; Up/Down on vertical rails)",
+  },
+  {
+    keys: "Arrow Left / Up",
+    description: "Move focus to the previous available step",
+  },
+  { keys: "Home", description: "Move focus to the first step" },
+  { keys: "End", description: "Move focus to the last step" },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const stepperPageAPISections = [
   {
     title: "Stepper",
     props: [
@@ -759,7 +1026,7 @@ const apiReference = [
       {
         prop: "condition",
         type: "boolean",
-        default: "-",
+        default: "true",
         description:
           "Visibility condition; false hides the step from the rail.",
       },
@@ -803,13 +1070,13 @@ const apiReference = [
     ],
   },
   {
-    title: "StepperTitle / StepperDescription",
+    title: "StepperContent / StepperTitle / StepperDescription",
     props: [
       {
         prop: "children",
         type: "ReactNode",
         default: "-",
-        description: "Step title / supporting text.",
+        description: "Wrapper container and step title / supporting text.",
       },
     ],
   },
@@ -940,17 +1207,18 @@ const apiReference = [
     title: "KiraStepper",
     props: [
       {
-        prop: "children",
-        type: "ReactNode",
-        description:
-          "Panels, progress and navigation sharing the same step context.",
-      },
-      {
         prop: "steps",
         type: "KiraStepperStep[]",
         default: "-",
         description:
           "Step data: { id, title, description?, optional?, icon? }.",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description:
+          "Panels, progress and navigation sharing the same step context.",
       },
       {
         prop: "value / defaultValue / onValueChange",
@@ -985,9 +1253,21 @@ const apiReference = [
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const changelogEntries: React.ComponentProps<typeof Changelog>["entries"] = [
+const stepperPageChangelogEntries = [
+  {
+    version: "2.1.1",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "Dropped zod dependency",
+        description:
+          "Replaced the 3-line zod storage schema with a pure TypeScript parseSavedStepperJson guard so Stepper has no runtime zod dependency.",
+      },
+    ],
+  },
   {
     version: "2.1.0",
     date: "9 November 2026",
@@ -1072,50 +1352,4 @@ const changelogEntries: React.ComponentProps<typeof Changelog>["entries"] = [
       },
     ],
   },
-];
-
-export default function StepperPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Stepper"
-        version="v2.1.0"
-        description="A multi-step wizard rail: clickable step buttons, progress tracking, validation gates, error/loading/skipped states, vertical and mobile-stacked layouts."
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
-
-      <UsageBlock code={usageCode} />
-
-      <APIReference sections={apiReference} />
-
-      <Changelog entries={changelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
-const kiraDemoKiraStepperSteps = [
-  {
-    id: "account",
-    title: "Account",
-    description: "Create your account",
-    icon: <IconUser className="h-4 w-4" />,
-  },
-  {
-    id: "profile",
-    title: "Profile",
-    description: "Set up your profile",
-    icon: <IconMail className="h-4 w-4" />,
-  },
-  {
-    id: "billing",
-    title: "Billing",
-    description: "Payment details",
-    icon: <IconLock className="h-4 w-4" />,
-  },
-] satisfies ReactComponentProps<typeof KiraStepper>["steps"];
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

@@ -5,7 +5,7 @@ Pressable Base UI toggle with seven visual variants, six text/icon sizes, three 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/toggle
+kira-kit add @kira-kit/toggle
 ```
 
 ## Dependencies
@@ -14,12 +14,11 @@ npx shadcn add @kira-kit/toggle
 - @tabler/icons-react
 - class-variance-authority
 - cn
-- gsap
 
 ## Registry dependencies
 
-- @kira-kit/toast
 - @kira-kit/tooltip
+- @kira-kit/use-optimistic-commit
 - @kira-kit/use-reduced-motion
 
 ## Usage

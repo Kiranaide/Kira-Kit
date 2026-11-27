@@ -1,11 +1,15 @@
 const layoutBreakpoints = ["base", "sm", "md", "lg", "xl", "2xl"] as const;
 
+const responsivePrefixes = ["sm", "md", "lg", "xl", "2xl"] as const;
+
 type LayoutBreakpoint = (typeof layoutBreakpoints)[number];
 
 type LayoutResponsiveValue<Value> =
   Value | Partial<Record<LayoutBreakpoint, Value>>;
 
 type LayoutClassMap = Record<string, readonly string[]>;
+
+type SafelistedClassMap = Readonly<Record<string, string | undefined>>;
 
 function isLayoutMap<Value extends string | number | boolean>(
   value: LayoutResponsiveValue<Value>,
@@ -33,6 +37,39 @@ function resolveLayoutResponsive<Value extends string | number | boolean>(
       return classes ? [classes] : [];
     })
     .join(" ");
+}
+
+/**
+ * Resolves responsive props against a single-class map whose breakpoint-prefixed
+ * variants (`sm:...`..`2xl:...`) are safelisted via `@source inline(...)` in CSS.
+ * Used by `Box` where full token × breakpoint literal tuples would bloat source.
+ */
+function resolveSafelistedResponsive<Value extends string | number | boolean>(
+  value: LayoutResponsiveValue<Value> | undefined,
+  classMap: SafelistedClassMap,
+): string {
+  if (value == null) return "";
+
+  if (!isLayoutMap(value)) return classMap[String(value)] ?? "";
+
+  const classes: string[] = [];
+
+  if (value.base !== undefined) {
+    const cls = classMap[String(value.base)];
+
+    if (cls) classes.push(cls);
+  }
+
+  for (const bp of responsivePrefixes) {
+    const entry = value[bp];
+
+    if (entry === undefined) continue;
+    const cls = classMap[String(entry)];
+
+    if (cls) classes.push(`${bp}:${cls}`);
+  }
+
+  return classes.join(" ");
 }
 
 const layoutGapClasses = {
@@ -92,6 +129,11 @@ type LayoutSpacing = keyof typeof layoutGapClasses extends infer Key
     : never
   : never;
 
-export { resolveLayoutResponsive, layoutGapClasses };
+export {
+  layoutBreakpoints,
+  resolveLayoutResponsive,
+  resolveSafelistedResponsive,
+  layoutGapClasses,
+};
 
-export type { LayoutResponsiveValue, LayoutSpacing };
+export type { LayoutBreakpoint, LayoutResponsiveValue, LayoutSpacing };

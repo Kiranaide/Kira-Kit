@@ -5,22 +5,21 @@ Base UI checkbox supports indeterminate state, multiple sizes, variants and colo
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/checkbox
+kira-kit add @kira-kit/checkbox
 ```
 
 ## Dependencies
 
 - @base-ui/react
-- @gsap/react
 - @tabler/icons-react
 - class-variance-authority
 - cn
-- gsap
 
 ## Registry dependencies
 
-- @kira-kit/toast
+- @kira-kit/component-utils
 - @kira-kit/tooltip
+- @kira-kit/use-optimistic-commit
 - @kira-kit/use-reduced-motion
 
 ## Usage

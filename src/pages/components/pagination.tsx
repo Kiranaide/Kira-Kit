@@ -120,16 +120,27 @@ function BasicDemo() {
   );
 }
 
-const basicCode = `import { KiraPagination, Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationPages, PaginationNext, PaginationStatus } from "@/components/ui/pagination"
+const basicCode = `import {
+  KiraPagination,
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationPages,
+  PaginationNext,
+  PaginationInfo,
+  PaginationStatus,
+} from "@/components/ui/pagination"
 
 <KiraPagination total={180} defaultPage={3} defaultPageSize={10} />
 
-<Pagination total={90}>
+<Pagination total={90} defaultPage={2}>
   <PaginationContent>
     <PaginationItem><PaginationPrevious /></PaginationItem>
     <PaginationPages />
     <PaginationItem><PaginationNext /></PaginationItem>
   </PaginationContent>
+  <PaginationInfo />
   <PaginationStatus />
 </Pagination>`;
 
@@ -694,7 +705,7 @@ const recoveryCode = `import { KiraPagination } from "@/components/ui/pagination
 // Commit the new page after loading succeeds; retain the previous result on failure.
 <KiraPagination total={40} disabled disabledReason="Reviews are being exported." />`;
 
-function ShowcaseDemo() {
+function StressDemo() {
   const [worst, setWorst] = useState(false);
 
   return (
@@ -724,14 +735,20 @@ function ShowcaseDemo() {
           defaultPageSize={10}
           showJump
           showSizeSelector
+          pageSizeLabel={
+            worst
+              ? "Maximum workspace review entries displayed per page"
+              : "Rows per page"
+          }
           aria-label="Stress pagination"
         />
-        <div className="max-w-sm space-y-3 rounded-lg border border-border p-4">
+        <div className="max-w-xs space-y-3 rounded-lg border border-border p-4">
           <p className="text-sm font-medium">Narrow result container</p>
           <KiraPagination
             total={80}
             defaultPage={4}
             showLabels
+            infoMobileCompact
             aria-label="Narrow pagination"
           />
         </div>
@@ -766,12 +783,28 @@ function ShowcaseDemo() {
   );
 }
 
-const showcaseCode = `import { KiraPagination } from "@/components/ui/pagination"
+const stressCode = `import { KiraPagination } from "@/components/ui/pagination"
 
-<KiraPagination total={9876543210} defaultPage={999999} showJump />
+<KiraPagination
+  total={9_876_543_210}
+  defaultPage={999_999}
+  showJump
+  showSizeSelector
+  pageSizeLabel="Maximum workspace review entries displayed per page"
+/>
+<div className="max-w-xs">
+  <KiraPagination total={80} defaultPage={4} showLabels infoMobileCompact />
+</div>
 <KiraPagination total={0} showJump showSizeSelector />
-<div dir="rtl"><KiraPagination total={100} defaultPage={4} /></div>
-<KiraPagination mode="cursor" hasNextPage={false} itemCount={0} />`;
+<KiraPagination
+  mode="cursor"
+  hasPreviousPage={false}
+  hasNextPage={false}
+  itemCount={0}
+  disabled
+  disabledReason="No activity is available for this workspace."
+/>
+<div dir="rtl"><KiraPagination total={100} defaultPage={4} /></div>`;
 
 function KeyboardDemo() {
   return (
@@ -809,26 +842,7 @@ const keyboardCode = `import { KiraPagination } from "@/components/ui/pagination
   pageSizeOptions={[10, 20, 50]}
 />`;
 
-export default function PaginationPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Pagination"
-        description="Keep results in sync, preserve useful URLs, and move through pages or cursor batches with clear recovery states."
-        version="v3.1.2"
-      />
-      <FeatureGrid features={paginationPageFeatureGridFeatures} />
-      <DemoTabs
-        defaultValue="basic"
-        lazyMount
-        tabs={paginationPageDemoTabsTabs}
-      />
-      <KeyboardShortcuts
-        shortcuts={paginationPageKeyboardShortcutsShortcuts}
-        description="Use the Keyboard, Links, and URL state demos. Pagination adds no global arrow-key shortcuts."
-      />
-      <UsageBlock
-        code={`import { usePagination, KiraPagination } from "@/components/ui/pagination"
+const usageCode = `import { usePagination, KiraPagination } from "@/components/ui/pagination"
 
 export function Results({ rows }: { rows: { id: string; title: string }[] }) {
   const pagination = usePagination({ total: rows.length, defaultPageSize: 10 })
@@ -847,7 +861,32 @@ export function Results({ rows }: { rows: { id: string; title: string }[] }) {
       />
     </>
   )
-}`}
+}`;
+
+export default function PaginationPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Pagination"
+        description="Keep results in sync, preserve useful URLs, and move through pages or cursor batches with clear recovery states."
+        version="v3.2.1"
+      />
+      <FeatureGrid features={paginationPageFeatureGridFeatures} />
+      <DemoTabs defaultValue="basic" tabs={paginationPageDemoTabsTabs} />
+      <KeyboardShortcuts
+        shortcuts={paginationPageKeyboardShortcutsShortcuts}
+        description="Use the Keyboard, Links, and URL state demos. Pagination adds no global arrow-key shortcuts."
+      />
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Pair usePagination or useUrlPagination with KiraPagination, or compose the primitive parts directly."
+        notes={[
+          {
+            label: "KiraPagination",
+            body: "Use KiraPagination for standard numbered or cursor-based result sets with optional info, page-size selector, jump input, and recovery states.",
+          },
+        ]}
       />
       <APIReference sections={paginationPageAPIReferenceSections} />
       <Changelog entries={paginationPageChangelogEntries} />
@@ -883,6 +922,7 @@ const paginationPageDemoTabsTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Navigate a result set"
@@ -894,21 +934,9 @@ const paginationPageDemoTabsTabs = [
     ),
   },
   {
-    value: "results",
-    label: "Result sets",
-    demo: (
-      <DemoWrapper
-        title="Review workspace activity"
-        description="Filter the rows and change page size. The total and visible slice update together."
-        code={resultsCode}
-      >
-        <ResultsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "variants",
     label: "Variants",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Current-page emphasis"
@@ -922,6 +950,7 @@ const paginationPageDemoTabsTabs = [
   {
     value: "sizes",
     label: "Sizes",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Fit the control to the task"
@@ -933,8 +962,23 @@ const paginationPageDemoTabsTabs = [
     ),
   },
   {
+    value: "results",
+    label: "Result sets",
+    group: "KiraPagination",
+    demo: (
+      <DemoWrapper
+        title="Review workspace activity"
+        description="Filter the rows and change page size. The total and visible slice update together."
+        code={resultsCode}
+      >
+        <ResultsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "ellipsis",
     label: "Ellipsis jump",
+    group: "KiraPagination",
     demo: (
       <DemoWrapper
         title="Reach pages hidden by the dots"
@@ -948,6 +992,7 @@ const paginationPageDemoTabsTabs = [
   {
     value: "jump",
     label: "Jump and size",
+    group: "KiraPagination",
     demo: (
       <DemoWrapper
         title="Find a particular page"
@@ -961,6 +1006,7 @@ const paginationPageDemoTabsTabs = [
   {
     value: "url",
     label: "URL state",
+    group: "KiraPagination",
     demo: (
       <DemoWrapper
         title="Keep a shareable view"
@@ -974,6 +1020,7 @@ const paginationPageDemoTabsTabs = [
   {
     value: "links",
     label: "Links",
+    group: "KiraPagination",
     demo: (
       <DemoWrapper
         title="Retain native link behavior"
@@ -987,6 +1034,7 @@ const paginationPageDemoTabsTabs = [
   {
     value: "cursor",
     label: "Cursor API",
+    group: "KiraPagination",
     demo: (
       <DemoWrapper
         title="Browse recent activity"
@@ -1000,6 +1048,7 @@ const paginationPageDemoTabsTabs = [
   {
     value: "recovery",
     label: "Loading and retry",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Recover from a failed request"
@@ -1011,21 +1060,9 @@ const paginationPageDemoTabsTabs = [
     ),
   },
   {
-    value: "showcase",
-    label: "Showcase",
-    demo: (
-      <DemoWrapper
-        title="Empty, large, narrow, and RTL"
-        description="Switch the data, zoom the page, and check the result container in both themes."
-        code={showcaseCode}
-      >
-        <ShowcaseDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "keyboard",
     label: "Keyboard",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Operate every control"
@@ -1033,6 +1070,20 @@ const paginationPageDemoTabsTabs = [
         code={keyboardCode}
       >
         <KeyboardDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, empty results, disabled states, large totals, RTL, and a narrow max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
       </DemoWrapper>
     ),
   },
@@ -1181,6 +1232,20 @@ const paginationPageAPIReferenceSections = [
         default: "[10, 20, 50, 100]",
         description:
           "Available sizes; the current size is retained when it is not in the list.",
+      },
+      {
+        prop: "infoFormat / emptyInfoText / infoMobileCompact",
+        type: "string / string / boolean",
+        default: '"Showing {start}–{end} of {total}" / "No results" / false',
+        description:
+          "Customize the item-range text ({start} {end} {total} {page} {pageCount} tokens), the zero-total message, and show a compact 'Page x of y' in narrow containers.",
+      },
+      {
+        prop: "pageSizeLabel / pageSizeSuffix",
+        type: "string",
+        default: '"Rows per page"',
+        description:
+          "Label before the size selector and an optional suffix after it; the suffix is tied to the control via aria-describedby.",
       },
       {
         prop: "showEdges / showLabels",
@@ -1388,11 +1453,11 @@ const paginationPageAPIReferenceSections = [
     title: "PaginationInfo / PaginationStatus",
     props: [
       {
-        prop: "Info.format",
-        type: "string",
-        default: '"Showing {start}–{end} of {total}"',
+        prop: "Info.format / emptyText",
+        type: "string / string",
+        default: '"Showing {start}–{end} of {total}" / "No results"',
         description:
-          "Replace all start/end/total/page/pageCount placeholders with formatted values.",
+          "Replace all start/end/total/page/pageCount placeholders with formatted values, or render emptyText when total is 0.",
       },
       {
         prop: "Info.mobileCompact",
@@ -1427,11 +1492,11 @@ const paginationPageAPIReferenceSections = [
           "KiraSelect options and shared styling, plus additional caller notification; context resets the page to 1.",
       },
       {
-        prop: "label / showLabel",
-        type: "string / boolean",
-        default: '"Rows per page" / true',
+        prop: "label / suffix / showLabel",
+        type: "string / string / boolean",
+        default: '"Rows per page" / - / true',
         description:
-          "Persistent label and accessible name even when the visible label is hidden.",
+          "Persistent label and accessible name even when the visible label is hidden, plus an optional trailing suffix tied via aria-describedby.",
       },
       {
         prop: "disabled / id / name / aria-label / aria-describedby / className",
@@ -1558,23 +1623,59 @@ const paginationPageAPIReferenceSections = [
 
 const paginationPageChangelogEntries = [
   {
-    version: "3.1.2",
-    date: "November 13, 2026",
+    version: "3.2.1",
+    date: "20 November 2026",
     changes: [
       {
-        type: "fixed" as const,
+        type: "removed",
+        title: "Invisible ellipsis placeholders",
+        description:
+          "The desktop range no longer pads the slots where an ellipsis would appear, so the footer is as wide as the pages it actually shows. Edge pages no longer carry dead space next to the first and last buttons; expect the footer width to change as the window slides.",
+      },
+    ],
+  },
+  {
+    version: "3.2.0",
+    date: "19 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Info and size-selector customization",
+        description:
+          "KiraPagination gains infoFormat, emptyInfoText and infoMobileCompact for the item-range text, plus pageSizeLabel and pageSizeSuffix for the size selector. The suffix is associated with the control through aria-describedby.",
+      },
+      {
+        type: "fixed",
+        title: "Stable footer width across page ranges",
+        description:
+          "Windowed ranges keep a constant desktop slot count: a missing ellipsis renders an invisible placeholder, so navigating near the edges no longer shifts the footer width. The active page control keeps its identity and focus.",
+      },
+      {
+        type: "fixed",
+        title: "Size selector width and touch target",
+        description:
+          "The input fallback widens to 5ch so formatted sizes like 1,000 are not clipped (field-sizing:content still applies where supported); coarse pointers keep the 44px target.",
+      },
+    ],
+  },
+  {
+    version: "3.1.2",
+    date: "13 November 2026",
+    changes: [
+      {
+        type: "fixed",
         title: "Visible page links",
         description:
           "Numbered links retain their default page labels when href is supplied. Disabled generated anchors remove their URLs; ordinary and modified clicks keep their existing behavior.",
       },
       {
-        type: "changed" as const,
+        type: "changed",
         title: "KiraSelect page size",
         description:
           "The page-size control uses KiraSelect with Select's standard height, typography, and focus ring, while preserving its label, page reset, form value, and touch target.",
       },
       {
-        type: "added" as const,
+        type: "added",
         title: "Loading indicator",
         description:
           "Numbered and cursor pagination reuse the shared Spinner beside loading text. Reduced motion stops rotation; the existing status region owns announcements.",
@@ -1583,10 +1684,10 @@ const paginationPageChangelogEntries = [
   },
   {
     version: "3.1.1",
-    date: "November 13, 2026",
+    date: "13 November 2026",
     changes: [
       {
-        type: "changed" as const,
+        type: "changed",
         title: "Compact ellipsis page jump",
         description:
           "Clicking the dots opens a compact page input and Go action. Enter submits, Escape or clicking outside dismisses, and page validation and focus restoration are preserved.",
@@ -1595,7 +1696,7 @@ const paginationPageChangelogEntries = [
   },
   {
     version: "3.1.0",
-    date: "November 12, 2026",
+    date: "12 November 2026",
     changes: [
       {
         type: "added",
@@ -1619,7 +1720,7 @@ const paginationPageChangelogEntries = [
   },
   {
     version: "3.0.1",
-    date: "November 12, 2026",
+    date: "12 November 2026",
     changes: [
       {
         type: "fixed",
@@ -1649,7 +1750,7 @@ const paginationPageChangelogEntries = [
   },
   {
     version: "3.0.0",
-    date: "November 11, 2026",
+    date: "11 November 2026",
     changes: [
       {
         type: "added",
@@ -1685,7 +1786,7 @@ const paginationPageChangelogEntries = [
         type: "changed",
         title: "Single announcement and quiet navigation",
         description:
-          "Info is no longer a live region; Status announces complete phrases once. Removed transition-all and page-button scaling. PaginationStatus belongs once per composed nav and is included by KiraPagination.",
+          "Info is no longer a live region; Status announces complete phrases once. Removed all-property transitions and page-button scaling. PaginationStatus belongs once per composed nav and is included by KiraPagination.",
       },
     ],
   },

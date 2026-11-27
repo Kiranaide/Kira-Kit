@@ -1,0 +1,82 @@
+{
+  "items": [
+    {
+      "name": "camera-lib",
+      "type": "registry:lib",
+      "title": "Camera Support",
+      "description": "Camera capture types, browser permission constants, and scan-overlay guide presets shared by the camera component and hook.",
+      "categories": ["lib", "camera"],
+      "files": [
+        { "path": "camera/constants.ts", "type": "registry:lib" },
+        { "path": "camera/guide-presets.ts", "type": "registry:lib" },
+        { "path": "camera/types.ts", "type": "registry:lib" },
+        { "path": "camera/utils.ts", "type": "registry:lib" }
+      ]
+    },
+    {
+      "name": "code-presentation",
+      "type": "registry:lib",
+      "title": "Code Presentation",
+      "description": "Shiki highlighting and Prettier formatting pipeline that powers code block rendering and copy-ready output.",
+      "categories": ["lib", "code"],
+      "dependencies": [
+        "@shikijs/core",
+        "@shikijs/engine-javascript",
+        "@shikijs/langs",
+        "@shikijs/themes",
+        "prettier"
+      ],
+      "files": [{ "path": "code-presentation.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "color-picker-lib",
+      "type": "registry:lib",
+      "title": "Color Picker Math",
+      "description": "Color parsing, format conversion, and accessible-contrast math powering the color picker component and hook.",
+      "categories": ["lib", "color"],
+      "dependencies": ["@uiw/color-convert"],
+      "files": [{ "path": "color-picker.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "component-utils",
+      "type": "registry:lib",
+      "title": "Component Utils",
+      "description": "Shared component boundary plumbing: prop type guards, default resolution, native prop filtering, and occurrence-key derivation.",
+      "categories": ["lib", "support"],
+      "files": [{ "path": "component-utils.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "data-table-helpers",
+      "type": "registry:lib",
+      "title": "Data Table Helpers",
+      "description": "Sorting, filtering, and sample-data helpers used by the data table documentation demos.",
+      "categories": ["lib", "data"],
+      "files": [{ "path": "data-table-helpers.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "layout-responsive",
+      "type": "registry:lib",
+      "title": "Responsive Layout",
+      "description": "Responsive class composition for layout primitives like box, flex, grid, stack, and spacer.",
+      "categories": ["lib", "layout"],
+      "files": [{ "path": "layout-responsive.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "layout-storage",
+      "type": "registry:lib",
+      "title": "Validated Layout Storage",
+      "description": "Validated localStorage persistence adapter shared by resizable panel groups and split views.",
+      "categories": ["lib", "layout"],
+      "registryDependencies": ["@kira-kit/component-utils"],
+      "files": [{ "path": "layout-storage.ts", "type": "registry:lib" }]
+    },
+    {
+      "name": "view-transition",
+      "type": "registry:lib",
+      "title": "View Transition Utility",
+      "description": "Reduced-motion-aware wrapper around the native View Transitions API: runs DOM updates inside document.startViewTransition when supported, and applies them instantly otherwise.",
+      "categories": ["lib", "animation"],
+      "files": [{ "path": "view-transition.ts", "type": "registry:lib" }]
+    }
+  ]
+}

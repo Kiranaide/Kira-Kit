@@ -6,7 +6,6 @@ import {
   CountBadge,
   TagBadge,
   BadgeGroup,
-  TagInput,
   KiraBadge,
 } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,15 +32,21 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo Components
-// =============================================================================
+type TickerFormat = "default" | "short" | "commas";
+
+function nextTickerFormat(current: TickerFormat): TickerFormat {
+  if (current === "default") return "short";
+
+  if (current === "short") return "commas";
+
+  return "default";
+}
 
 function VariantsDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+        <h3 className="mb-3 text-sm font-medium text-muted-foreground">
           Basic
         </h3>
         <div className="flex flex-wrap gap-3">
@@ -54,7 +59,7 @@ function VariantsDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+        <h3 className="mb-3 text-sm font-medium text-muted-foreground">
           Semantic
         </h3>
         <div className="flex flex-wrap gap-3">
@@ -64,7 +69,7 @@ function VariantsDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Soft</h3>
+        <h3 className="mb-3 text-sm font-medium text-muted-foreground">Soft</h3>
         <div className="flex flex-wrap gap-3">
           <Badge variant="primary-soft">Primary Soft</Badge>
           <Badge variant="secondary-soft">Secondary Soft</Badge>
@@ -118,22 +123,26 @@ const sizesCode = `import { Badge } from "@/components/ui/badge"
 function WithIconsDemo() {
   return (
     <div className="flex flex-wrap gap-3">
-      <Badge variant="default" icon={<IconCheck />}>
+      <Badge variant="default" icon={<IconCheck aria-hidden="true" />}>
         Approved
       </Badge>
-      <Badge variant="destructive" icon={<IconX />}>
+      <Badge variant="destructive" icon={<IconX aria-hidden="true" />}>
         Rejected
       </Badge>
-      <Badge variant="success" icon={<IconCheck />}>
+      <Badge variant="success" icon={<IconCheck aria-hidden="true" />}>
         Completed
       </Badge>
-      <Badge variant="warning" icon={<IconAlertCircle />}>
+      <Badge variant="warning" icon={<IconAlertCircle aria-hidden="true" />}>
         Warning
       </Badge>
-      <Badge variant="info" icon={<IconInfoCircle />}>
+      <Badge variant="info" icon={<IconInfoCircle aria-hidden="true" />}>
         Information
       </Badge>
-      <Badge variant="secondary" icon={<IconStar />} iconPosition="right">
+      <Badge
+        variant="secondary"
+        icon={<IconStar aria-hidden="true" />}
+        iconPosition="right"
+      >
         Featured
       </Badge>
     </div>
@@ -141,15 +150,15 @@ function WithIconsDemo() {
 }
 
 const withIconsCode = `import { Badge } from "@/components/ui/badge"
-import { IconCheck, IconX, IconAlertCircle } from "@tabler/icons-react"
+import { IconCheck, IconStar } from "@tabler/icons-react"
 
 // Icon on left (default)
-<Badge variant="success" icon={<IconCheck />}>
+<Badge variant="success" icon={<IconCheck aria-hidden="true" />}>
   Completed
 </Badge>
 
 // Icon on right
-<Badge variant="secondary" icon={<IconStar />} iconPosition="right">
+<Badge variant="secondary" icon={<IconStar aria-hidden="true" />} iconPosition="right">
   Featured
 </Badge>`;
 
@@ -164,7 +173,7 @@ function DotIndicatorDemo() {
         <Badge dot="info">Info Dot</Badge>
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+        <h4 className="mb-3 text-sm font-medium text-muted-foreground">
           With Pulse Animation
         </h4>
         <div className="flex flex-wrap gap-3">
@@ -193,31 +202,35 @@ const dotIndicatorCode = `import { Badge } from "@/components/ui/badge"
 <Badge dot="warning">Warning Dot</Badge>
 <Badge dot="destructive">Error Dot</Badge>
 
-// With pulse animation
+// With pulse animation (respects reduced motion)
 <Badge dot dotPulse="continuous">Live</Badge>
 <Badge dot="success" dotPulse="once">New</Badge>`;
 
 function InteractiveDemo() {
   const [activeFilters, setActiveFilters] = useState<string[]>(["react"]);
 
+  const [statusMessage, setStatusMessage] = useState(
+    "Click or dismiss a badge to test native button semantics.",
+  );
+
   const toggleFilter = (filter: string) => {
     setActiveFilters((prev) =>
       prev.includes(filter)
-        ? prev.filter((f) => f !== filter)
+        ? prev.filter((item) => item !== filter)
         : [...prev, filter],
     );
   };
 
   return (
     <div className="space-y-6">
-      <InteractiveClickableRealButtonsTabEnterSection />
+      <InteractiveClickableSection onSelect={setStatusMessage} />
       <InteractiveToggleChipsSection
         activeFilters={activeFilters}
         toggleFilter={toggleFilter}
       />
-      <InteractiveDismissibleCloseHitArea24pxSection />
+      <InteractiveDismissibleSection onDismiss={setStatusMessage} />
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+        <h4 className="mb-3 text-sm font-medium text-muted-foreground">
           Loading
         </h4>
         <div className="flex flex-wrap gap-3">
@@ -230,6 +243,9 @@ function InteractiveDemo() {
           </Badge>
         </div>
       </div>
+      <output className="block text-xs text-muted-foreground">
+        {statusMessage}
+      </output>
     </div>
   );
 }
@@ -314,7 +330,7 @@ function CountBadgeDemo() {
         <CountBadge count={12} variant="secondary" />
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+        <h4 className="mb-3 text-sm font-medium text-muted-foreground">
           Short Format
         </h4>
         <div className="flex flex-wrap items-center gap-3">
@@ -324,20 +340,20 @@ function CountBadgeDemo() {
         </div>
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+        <h4 className="mb-3 text-sm font-medium text-muted-foreground">
           With Icons
         </h4>
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
-            <IconBell className="w-6 h-6" />
+            <IconBell className="size-6" aria-hidden="true" />
             <CountBadge
               count={3}
               size="xs"
               className="absolute -top-1 -right-1"
             />
           </div>
-          <CountBadge count={5} icon={<IconBell />} />
-          <CountBadge count={42} icon={<IconBell />} pulse />
+          <CountBadge count={5} icon={<IconBell aria-hidden="true" />} />
+          <CountBadge count={42} icon={<IconBell aria-hidden="true" />} pulse />
         </div>
       </div>
     </div>
@@ -345,19 +361,17 @@ function CountBadgeDemo() {
 }
 
 const countBadgeCode = `import { CountBadge } from "@/components/ui/badge"
+import { IconBell } from "@tabler/icons-react"
 
 // Basic count
 <CountBadge count={5} />
 <CountBadge count={150} max={99} /> // Shows "99+"
 
 // Short format
-<CountBadge count={1500} format="short" /> // Shows "1.5k"
+<CountBadge count={1500} format="short" /> // Shows "1.5k+"
 
-// With icon
-<CountBadge count={5} icon={<IconBell />} />
-
-// With pulse
-<CountBadge count={42} pulse />`;
+// With icon and pulse
+<CountBadge count={42} icon={<IconBell aria-hidden="true" />} pulse />`;
 
 function TagBadgeDemo() {
   return (
@@ -382,7 +396,7 @@ function TagBadgeDemo() {
         </TagBadge>
         <TagBadge
           variant="success-soft"
-          icon={<IconCheck />}
+          icon={<IconCheck aria-hidden="true" />}
           removable
           onRemove={() => {}}
         >
@@ -397,12 +411,13 @@ function TagBadgeDemo() {
 }
 
 const tagBadgeCode = `import { TagBadge } from "@/components/ui/badge"
+import { IconCheck } from "@tabler/icons-react"
 
 <TagBadge variant="outline" removable onRemove={handleRemove}>
   React
 </TagBadge>
 
-<TagBadge variant="success-soft" icon={<IconCheck />} removable>
+<TagBadge variant="success-soft" icon={<IconCheck aria-hidden="true" />} removable>
   Active
 </TagBadge>`;
 
@@ -410,7 +425,7 @@ function BadgeGroupDemo() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Tight gap</p>
+        <p className="mb-2 text-sm text-muted-foreground">Tight gap</p>
         <BadgeGroup gap="tight">
           <Badge variant="secondary">Tag 1</Badge>
           <Badge variant="secondary">Tag 2</Badge>
@@ -418,7 +433,7 @@ function BadgeGroupDemo() {
         </BadgeGroup>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Normal gap</p>
+        <p className="mb-2 text-sm text-muted-foreground">Normal gap</p>
         <BadgeGroup gap="normal">
           <Badge variant="outline">Option 1</Badge>
           <Badge variant="outline">Option 2</Badge>
@@ -426,7 +441,7 @@ function BadgeGroupDemo() {
         </BadgeGroup>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">
+        <p className="mb-2 text-sm text-muted-foreground">
           Vertical orientation
         </p>
         <BadgeGroup orientation="vertical" gap="normal">
@@ -453,9 +468,6 @@ const badgeGroupCode = `import { Badge, BadgeGroup } from "@/components/ui/badge
   <Badge>Step 2</Badge>
 </BadgeGroup>`;
 
-// =============================================================================
-// Demo: Number ticker (animated count)
-// =============================================================================
 function NumberTickerDemo() {
   const [count, setCount] = useState(3);
 
@@ -463,7 +475,10 @@ function NumberTickerDemo() {
     <div className="flex flex-col items-start gap-4">
       <div className="flex items-center gap-3">
         <div className="relative">
-          <IconBell className="w-6 h-6 text-muted-foreground" />
+          <IconBell
+            className="size-6 text-muted-foreground"
+            aria-hidden="true"
+          />
           <span className="absolute -top-2 -right-2">
             <CountBadge
               count={count}
@@ -479,21 +494,21 @@ function NumberTickerDemo() {
         <Button
           size="sm"
           variant="outline"
-          onClick={() => setCount((c) => Math.max(0, c - 3))}
+          onClick={() => setCount((current) => Math.max(0, current - 3))}
         >
           −3
         </Button>
         <Button
           size="sm"
           variant="outline"
-          onClick={() => setCount((c) => c + 3)}
+          onClick={() => setCount((current) => current + 3)}
         >
           +3
         </Button>
         <Button
           size="sm"
           variant="outline"
-          onClick={() => setCount((c) => c + 25)}
+          onClick={() => setCount((current) => current + 25)}
         >
           +25
         </Button>
@@ -512,14 +527,11 @@ const numberTickerCode = `import { CountBadge } from "@/components/ui/badge"
 <CountBadge count={count} animateCount />
 <CountBadge count={count} animateCount size="sm" variant="destructive" />`;
 
-// =============================================================================
-// Demo: Trends & shimmer
-// =============================================================================
 function TrendsShimmerDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+        <h3 className="mb-3 text-sm font-medium text-muted-foreground">
           Trend arrows
         </h3>
         <div className="flex flex-wrap gap-3">
@@ -535,14 +547,18 @@ function TrendsShimmerDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+        <h3 className="mb-3 text-sm font-medium text-muted-foreground">
           Shimmer
         </h3>
         <div className="flex flex-wrap gap-3">
           <Badge variant="primary-soft" shimmer>
             Featured
           </Badge>
-          <Badge variant="success" shimmer icon={<IconStar />}>
+          <Badge
+            variant="success"
+            shimmer
+            icon={<IconStar aria-hidden="true" />}
+          >
             Pro
           </Badge>
         </div>
@@ -560,9 +576,6 @@ const trendsShimmerCode = `import { Badge } from "@/components/ui/badge"
 // Shimmer sweep (respects reduced motion)
 <Badge variant="primary-soft" shimmer>Featured</Badge>`;
 
-// =============================================================================
-// Demo: Beta / version presets
-// =============================================================================
 function PresetsDemo() {
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -583,15 +596,9 @@ const presetsCode = `import { Badge } from "@/components/ui/badge"
 <Badge preset="new" shimmer />     {/* → "New", success-soft + shimmer */}
 <Badge preset="version">v2.0.0</Badge>`;
 
-// =============================================================================
-// Demo: Badge states
-// =============================================================================
 function StatesDemo() {
   const [tickerCount, setTickerCount] = useState(980);
-
-  const [tickerFormat, setTickerFormat] = useState<
-    "default" | "short" | "commas"
-  >("default");
+  const [tickerFormat, setTickerFormat] = useState<TickerFormat>("default");
 
   return (
     <div className="space-y-8">
@@ -634,14 +641,6 @@ function StatesDemo() {
         </Badge>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Badge size="xs">XS</Badge>
-        <Badge size="xl">
-          Very long badge label that must stay on one line without wrapping or
-          breaking the pill
-        </Badge>
-      </div>
-
       <StatesControlsSection
         tickerCount={tickerCount}
         setTickerCount={setTickerCount}
@@ -662,77 +661,21 @@ const statesCode = `import { Badge, StatusBadge, CountBadge } from "@/components
 <Badge onClick={() => {}} variant="primary-soft">Clickable</Badge>
 <Badge dismissible onClose={() => {}}>Dismissible</Badge>
 
-// StatusBadge: children replace the label (no role="status")
-<StatusBadge status="success">Children replace label</StatusBadge>
+// StatusBadge: children replace the label
+<StatusBadge status="info">Children replace label</StatusBadge>
 
-// Shimmer on solid vs soft/outline (foreground-tinted sweep)
+// Shimmer on solid vs soft/outline
 <Badge variant="default" shimmer>Solid</Badge>
 <Badge variant="primary-soft" shimmer>Soft</Badge>
 
-// CountBadge ticker + format switch (no stale tween origin)
+// CountBadge ticker + format switch
 <CountBadge count={count} animateCount format={format} />`;
 
-// =============================================================================
-// Demo: Tag input (Combobox.Chips)
-// =============================================================================
-function TagInputDemo() {
-  const [tags, setTags] = useState<string[]>(["design", "frontend"]);
-  const [capped, setCapped] = useState<string[]>([]);
-
-  return (
-    <div className="max-w-md space-y-6">
-      <div className="space-y-2">
-        <TagInput
-          value={tags}
-          onValueChange={setTags}
-          suggestions={["design", "frontend", "a11y", "react", "motion"]}
-          ariaLabel="Project tags"
-        />
-        <p className="text-xs text-muted-foreground">
-          Type to filter or create · Enter commits · Backspace removes the last
-          chip · Arrow keys navigate suggestions · Esc closes the popup.
-        </p>
-      </div>
-      <div className="space-y-2">
-        <TagInput
-          value={capped}
-          onValueChange={setCapped}
-          suggestions={["one", "two", "three"]}
-          maxTags={3}
-          size="sm"
-          placeholder="Max 3 tags…"
-          ariaLabel="Capped tags"
-        />
-        <p className="text-xs text-muted-foreground">
-          <code>maxTags=3</code> enforced — extra tags are ignored.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-const tagInputCode = `import { TagInput } from "@/components/ui/badge"
-
-const [tags, setTags] = useState(["design", "frontend"])
-
-<TagInput
-  value={tags}
-  onValueChange={setTags}
-  suggestions={["design", "frontend", "a11y", "react"]}
-  maxTags={5}
-  ariaLabel="Project tags"
-/>
-// Combobox.Chips chips · Enter commits · Backspace removes last
-// comma input splits into multiple tags · dedupe case-insensitive`;
-
-// =============================================================================
-// Demo: KiraBadge (prop-driven)
-// =============================================================================
 function KiraBadgeDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">
+        <h3 className="mb-3 text-sm font-medium text-muted-foreground">
           One component, every mode
         </h3>
         <div className="flex flex-wrap items-center gap-3">
@@ -759,617 +702,730 @@ const kiraBadgeCode = `import { KiraBadge } from "@/components/ui/badge"
 <KiraBadge mode="dot" variant="warning">Pending</KiraBadge>
 <KiraBadge mode="badge" preset="new" shimmer />`;
 
-// =============================================================================
-// Main Page Component
-// =============================================================================
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4 rounded-lg border border-border p-4">
+      <Badge variant="outline" className="max-w-full">
+        <span className="truncate">
+          Enterprise production deployment pipeline verification status label
+        </span>
+      </Badge>
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function BadgePage() {
-  const features = [
-    {
-      title: "Accessible",
-      description: "Semantic elements with proper ARIA attributes.",
-      icon: <IconAccessible className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Multiple Variants",
-      description: "15+ variants including soft, semantic, and outline styles.",
-      icon: <IconPalette className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Composable",
-      description:
-        "StatusBadge, CountBadge, TagBadge, and BadgeGroup components.",
-      icon: <IconStack2 className="w-4 h-4 text-primary" />,
-    },
-  ];
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge variant="secondary" aria-label="Empty badge" />
+        <Badge dot="success" aria-label="Dot only status" />
+        <CountBadge count={0} />
+        <CountBadge count={2_450_000} format="short" />
+      </div>
 
-  const demoTabs = [
-    {
-      value: "variants",
-      label: "Variants",
-      demo: (
-        <DemoWrapper
-          title="Badge Variants"
-          description="All available badge styles including semantic and soft variants"
-          code={variantsCode}
-        >
-          <VariantsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "sizes",
-      label: "Sizes",
-      demo: (
-        <DemoWrapper
-          title="Size Variants"
-          description="From extra small to extra large"
-          code={sizesCode}
-        >
-          <SizesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "icons",
-      label: "With Icons",
-      demo: (
-        <DemoWrapper
-          title="Badges with Icons"
-          description="Add icons for visual context"
-          code={withIconsCode}
-        >
-          <WithIconsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "dots",
-      label: "Dot Indicator",
-      demo: (
-        <DemoWrapper
-          title="Dot Indicators"
-          description="Status dots with optional pulse animation"
-          code={dotIndicatorCode}
-        >
-          <DotIndicatorDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "interactive",
-      label: "Interactive",
-      demo: (
-        <DemoWrapper
-          title="Interactive Badges"
-          description="Clickable, dismissible, and loading states"
-          code={interactiveCode}
-        >
-          <InteractiveDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "status",
-      label: "StatusBadge",
-      demo: (
-        <DemoWrapper
-          title="Status Badge"
-          description="Pre-configured badge with status dot indicator"
-          code={statusBadgeCode}
-        >
-          <StatusBadgeDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "count",
-      label: "CountBadge",
-      demo: (
-        <DemoWrapper
-          title="Count Badge"
-          description="Notification counts with formatting options"
-          code={countBadgeCode}
-        >
-          <CountBadgeDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "tag",
-      label: "TagBadge",
-      demo: (
-        <DemoWrapper
-          title="Tag Badge"
-          description="Removable tags for tagging systems"
-          code={tagBadgeCode}
-        >
-          <TagBadgeDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "group",
-      label: "BadgeGroup",
-      demo: (
-        <DemoWrapper
-          title="Badge Group"
-          description="Stack badges with configurable gaps"
-          code={badgeGroupCode}
-        >
-          <BadgeGroupDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "ticker",
-      label: "Number Ticker",
-      demo: (
-        <DemoWrapper
-          title="Animated Count"
-          description="CountBadge rolls to its new value; snaps under reduced motion"
-          code={numberTickerCode}
-        >
-          <NumberTickerDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "trends",
-      label: "Trends & Shimmer",
-      demo: (
-        <DemoWrapper
-          title="Trends & Shimmer"
-          description="Directional trend arrows and a light shimmer sweep"
-          code={trendsShimmerCode}
-        >
-          <TrendsShimmerDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "presets",
-      label: "Beta / Version",
-      demo: (
-        <DemoWrapper
-          title="Preset Badges"
-          description="Shorthand presets for Beta, New, and version tags"
-          code={presetsCode}
-        >
-          <PresetsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "states",
-      label: "States",
-      demo: (
-        <DemoWrapper
-          title="Badge States"
-          description="Loading, disabled, interactive, dismissible, shimmer, long/empty labels, format switching"
-          code={statesCode}
-        >
-          <StatesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "tag-input",
-      label: "Tag Input",
-      demo: (
-        <DemoWrapper
-          title="Tag Input"
-          description="Combobox-powered tag collection: suggestions, maxTags, Enter commits, Backspace removes the last chip"
-          code={tagInputCode}
-        >
-          <TagInputDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "kira",
-      label: "KiraBadge",
-      demo: (
-        <DemoWrapper
-          title="KiraBadge"
-          description="One prop-driven component covering badge / status / count / tag / dot"
-          code={kiraBadgeCode}
-        >
-          <KiraBadgeDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge disabled onClick={() => {}}>
+          Disabled button
+        </Badge>
+        <Badge disabled dismissible variant="secondary">
+          Disabled dismiss
+        </Badge>
+      </div>
+    </div>
+  );
+}
 
-  const usageCode = `import { 
-  Badge, 
-  StatusBadge, 
-  CountBadge, 
-  TagBadge, 
-  BadgeGroup 
+const stressCode = `import { Badge, CountBadge } from "@/components/ui/badge"
+
+// Narrow container (max-w-xs): long label truncation, empty content, disabled controls
+<div className="max-w-xs space-y-4">
+  <Badge variant="outline" className="max-w-full">
+    <span className="truncate">Enterprise production deployment pipeline verification status label</span>
+  </Badge>
+  <Badge variant="secondary" aria-label="Empty badge" />
+  <CountBadge count={0} />
+  <Badge disabled dismissible variant="secondary">Disabled dismiss</Badge>
+</div>`;
+
+const badgeUsageCode = `import {
+  Badge,
+  StatusBadge,
+  CountBadge,
+  TagBadge,
+  BadgeGroup,
+  KiraBadge,
 } from "@/components/ui/badge"
 
-// Basic badge
+// Basic and semantic badges
 <Badge>Default</Badge>
-<Badge variant="secondary">Secondary</Badge>
-<Badge variant="destructive">Error</Badge>
+<Badge variant="success-soft" trend="up">12.5%</Badge>
 
-// With icon
-<Badge icon={<IconCheck />}>Approved</Badge>
+// Interactive toggle chip & dismissible badge
+<Badge pressed={active} onClick={() => setActive(!active)}>React</Badge>
+<Badge dismissible onClose={handleClose}>Removable</Badge>
 
-// Clickable
-<Badge onClick={() => {}}>Click me</Badge>
-
-// Dismissible
-<Badge dismissible onClose={() => {}}>Removable</Badge>
-
-// With dot indicator
-<Badge dot>With dot</Badge>
-<Badge dot="success" dotPulse="continuous">Live</Badge>
-
-// Loading
-<Badge loading>Loading...</Badge>
-
-// StatusBadge
+// Specialized helpers
 <StatusBadge status="success">Online</StatusBadge>
+<CountBadge count={1500} format="short" animateCount />
+<TagBadge removable onRemove={handleRemove}>TypeScript</TagBadge>
 
-// CountBadge
-<CountBadge count={1500} format="short" />
+// KiraBadge — unified prop-driven wrapper
+<KiraBadge mode="status" status="success" />`;
 
-// TagBadge
-<TagBadge removable onRemove={() => {}}>Tag</TagBadge>
-
-// BadgeGroup
-<BadgeGroup gap="normal">
-  <Badge>Item 1</Badge>
-  <Badge>Item 2</Badge>
-</BadgeGroup>`;
-
-  const apiReference = [
-    {
-      title: "Badge",
-      props: [
-        {
-          prop: "variant",
-          type: '"default" | "secondary" | "outline" | "destructive" | "success" | "warning" | "info" | "primary-soft" | ...',
-          default: '"default"',
-          description: "Visual style",
-        },
-        {
-          prop: "size",
-          type: '"xs" | "sm" | "default" | "lg" | "xl"',
-          default: '"default"',
-          description: "Badge size",
-        },
-        {
-          prop: "icon",
-          type: "ReactNode",
-          default: "-",
-          description: "Icon element",
-        },
-        {
-          prop: "iconPosition",
-          type: '"left" | "right"',
-          default: '"left"',
-          description: "Icon position",
-        },
-        {
-          prop: "dot",
-          type: 'boolean | "success" | "warning" | "destructive" | "info"',
-          default: "-",
-          description: "Show dot indicator",
-        },
-        {
-          prop: "dotPulse",
-          type: '"once" | "continuous"',
-          default: "-",
-          description: "Dot pulse animation",
-        },
-        {
-          prop: "dismissible",
-          type: "boolean",
-          default: "false",
-          description: "Show close button",
-        },
-        {
-          prop: "onClose",
-          type: "() => void",
-          default: "-",
-          description: "Close callback",
-        },
-        {
-          prop: "loading",
-          type: "boolean",
-          default: "false",
-          description: "Show loading spinner",
-        },
-        {
-          prop: "trend",
-          type: '"up" | "down"',
-          default: "-",
-          description: "Directional trend arrow before content",
-        },
-        {
-          prop: "shimmer",
-          type: "boolean",
-          default: "false",
-          description: "Light sweep effect (respects reduced motion)",
-        },
-        {
-          prop: "preset",
-          type: '"beta" | "new" | "version"',
-          default: "-",
-          description: "Shorthand variant + default label",
-        },
-        {
-          prop: "onClick",
-          type: "() => void",
-          default: "-",
-          description:
-            "Click handler; without a render prop the badge renders a real <button>",
-        },
-        {
-          prop: "pressed",
-          type: "boolean",
-          default: "-",
-          description:
-            "Toggle state: sets aria-pressed + data-pressed (interactive badges)",
-        },
-      ],
-    },
-    {
-      title: "StatusBadge",
-      props: [
-        {
-          prop: "status",
-          type: '"success" | "warning" | "error" | "info" | "default"',
-          default: '"default"',
-          description: "Status type",
-        },
-        {
-          prop: "pulse",
-          type: '"once" | "continuous"',
-          default: "-",
-          description: "Pulse animation",
-        },
-        {
-          prop: "label",
-          type: "string",
-          default: "status default",
-          description:
-            "Override the default label; children replace the label instead",
-        },
-        {
-          prop: "size",
-          type: '"sm" | "default" | "lg"',
-          default: '"default"',
-          description: "Badge size",
-        },
-      ],
-    },
-    {
-      title: "CountBadge",
-      props: [
-        {
-          prop: "count",
-          type: "number",
-          default: "-",
-          description: "Count to display",
-        },
-        {
-          prop: "max",
-          type: "number",
-          default: "99",
-          description: "Maximum before showing +",
-        },
-        {
-          prop: "format",
-          type: '"default" | "short" | "commas"',
-          default: '"default"',
-          description: "Number format",
-        },
-        {
-          prop: "icon",
-          type: "ReactNode",
-          default: "-",
-          description: "Optional icon",
-        },
-        {
-          prop: "pulse",
-          type: "boolean",
-          default: "false",
-          description: "Pulse animation",
-        },
-        {
-          prop: "animateCount",
-          type: "boolean",
-          default: "false",
-          description:
-            "Roll the number to its new value (respects reduced motion)",
-        },
-      ],
-    },
-    {
-      title: "TagBadge",
-      props: [
-        {
-          prop: "removable",
-          type: "boolean",
-          default: "false",
-          description: "Show remove button",
-        },
-        {
-          prop: "onRemove",
-          type: "() => void",
-          default: "-",
-          description: "Remove callback",
-        },
-        {
-          prop: "...props",
-          type: "BadgeProps",
-          default: "-",
-          description: "All Badge props",
-        },
-      ],
-    },
-    {
-      title: "BadgeGroup",
-      props: [
-        {
-          prop: "gap",
-          type: '"tight" | "normal" | "loose"',
-          default: '"normal"',
-          description: "Spacing between badges",
-        },
-        {
-          prop: "orientation",
-          type: '"horizontal" | "vertical"',
-          default: '"horizontal"',
-          description: "Layout direction",
-        },
-      ],
-    },
-    {
-      title: "TagInput",
-      props: [
-        {
-          prop: "value",
-          type: "string[]",
-          default: "-",
-          description: "Current tags (controlled)",
-        },
-        {
-          prop: "defaultValue",
-          type: "string[]",
-          default: "[]",
-          description: "Initial tags (uncontrolled)",
-        },
-        {
-          prop: "onValueChange",
-          type: "(tags: string[]) => void",
-          default: "-",
-          description:
-            "Fired on add / remove (deduped, comma-split, maxTags-capped)",
-        },
-        {
-          prop: "suggestions",
-          type: "string[]",
-          default: "[]",
-          description:
-            "Suggested tags in the popup; typed text is appended dynamically",
-        },
-        {
-          prop: "maxTags",
-          type: "number",
-          default: "-",
-          description: "Maximum number of tags",
-        },
-        {
-          prop: "disabled",
-          type: "boolean",
-          default: "false",
-          description: "Disable the input and chips",
-        },
-        {
-          prop: "size",
-          type: 'Badge size ("sm" default)',
-          default: '"sm"',
-          description: "Chip size",
-        },
-        {
-          prop: "placeholder",
-          type: "string",
-          default: '"Add tag…"',
-          description: "Empty-state input placeholder",
-        },
-        {
-          prop: "ariaLabel",
-          type: "string",
-          default: '"Tags"',
-          description: "Accessible name for the group",
-        },
-      ],
-    },
-    {
-      title: "KiraBadge",
-      props: [
-        {
-          prop: "mode",
-          type: '"badge" | "status" | "count" | "tag" | "dot"',
-          default: '"badge"',
-          description: "Which badge behavior to render",
-        },
-        {
-          prop: "...props",
-          type: "Badge / Status / Count / Tag props",
-          default: "-",
-          description: "Mode-specific props (variant, count, status, trend, …)",
-        },
-      ],
-    },
-  ];
-
+export default function BadgePage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Badge"
         description="Small status indicators and labels to highlight information, display counts, and show user status."
-        version="v3.1.0"
+        version="v4.0.1"
       />
 
-      <FeatureGrid features={features} />
+      <FeatureGrid
+        features={badgePageFeatures}
+        description="Semantic badges, animated counters, and Base UI Combobox tag inputs."
+      />
 
-      <DemoTabs tabs={demoTabs} />
+      <DemoTabs defaultValue="variants" tabs={badgePageDemoTabs} />
 
-      <KeyboardShortcuts shortcuts={badgePageKeyboardShortcutsShortcuts} />
+      <KeyboardShortcuts
+        shortcuts={badgePageShortcuts}
+        description="Keyboard navigation and activation bindings."
+      />
 
-      <UsageBlock code={usageCode} />
+      <UsageBlock
+        code={badgeUsageCode}
+        title="Usage"
+        description="Compose specialized badge primitives or switch modes with KiraBadge."
+        notes={badgePageUsageNotes}
+      />
 
-      <APIReference sections={apiReference} />
+      <APIReference
+        sections={badgePageAPISections}
+        description="Props, types, and defaults for every exported Badge component."
+      />
 
-      <Changelog entries={badgePageChangelogEntries} />
+      <Changelog
+        entries={badgePageChangelogEntries}
+        title="Changelog"
+        description="Version history for Badge."
+      />
     </ComponentPage>
   );
 }
 
-// Static demo metadata stays co-located and follows its source constants.
-const badgePageKeyboardShortcutsShortcuts = [
+const badgePageFeatures = [
+  {
+    title: "Accessible",
+    description:
+      "Native button semantics for clickable badges, WCAG 2.5.8 close targets, and Combobox tag chips.",
+    icon: <IconAccessible className="size-4 text-primary" aria-hidden="true" />,
+  },
+  {
+    title: "Multiple Variants",
+    description:
+      "15 variants including solid, outline, ghost, semantic, and soft styles.",
+    icon: <IconPalette className="size-4 text-primary" aria-hidden="true" />,
+  },
+  {
+    title: "Composable",
+    description:
+      "StatusBadge, CountBadge, TagBadge, BadgeGroup, and KiraBadge.",
+    icon: <IconStack2 className="size-4 text-primary" aria-hidden="true" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const badgePageDemoTabs = [
+  {
+    value: "variants",
+    label: "Variants",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Badge Variants"
+        description="All available badge styles including semantic and soft variants."
+        code={variantsCode}
+      >
+        <VariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="From extra small to extra large."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "icons",
+    label: "With Icons",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Badges with Icons"
+        description="Add leading or trailing icons for visual context."
+        code={withIconsCode}
+      >
+        <WithIconsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "dots",
+    label: "Dot Indicator",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Dot Indicators"
+        description="Status dots with optional pulse animation."
+        code={dotIndicatorCode}
+      >
+        <DotIndicatorDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "trends",
+    label: "Trends & Shimmer",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Trends & Shimmer"
+        description="Directional trend arrows and a reduced-motion-safe shimmer sweep."
+        code={trendsShimmerCode}
+      >
+        <TrendsShimmerDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "presets",
+    label: "Beta / Version",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Preset Badges"
+        description="Shorthand presets for Beta, New, and version tags."
+        code={presetsCode}
+      >
+        <PresetsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "status",
+    label: "StatusBadge",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Status Badge"
+        description="Pre-configured badge with status dot indicator."
+        code={statusBadgeCode}
+      >
+        <StatusBadgeDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "count",
+    label: "CountBadge",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Count Badge"
+        description="Notification counts with formatting and cap options."
+        code={countBadgeCode}
+      >
+        <CountBadgeDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "ticker",
+    label: "Number Ticker",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Animated Count"
+        description="CountBadge rolls to its new value; snaps under reduced motion."
+        code={numberTickerCode}
+      >
+        <NumberTickerDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "tag",
+    label: "TagBadge",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Tag Badge"
+        description="Removable tags for tagging systems."
+        code={tagBadgeCode}
+      >
+        <TagBadgeDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "group",
+    label: "BadgeGroup",
+    group: "Specialized",
+    demo: (
+      <DemoWrapper
+        title="Badge Group"
+        description="Stack badges with configurable gaps and orientation."
+        code={badgeGroupCode}
+      >
+        <BadgeGroupDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraBadge",
+    group: "KiraBadge",
+    demo: (
+      <DemoWrapper
+        title="KiraBadge"
+        description="One prop-driven component covering badge, status, count, tag, and dot modes."
+        code={kiraBadgeCode}
+      >
+        <KiraBadgeDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "interactive",
+    label: "Interactive",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Interactive Badges"
+        description="Clickable buttons, toggle chips, dismissible badges, and loading states."
+        code={interactiveCode}
+      >
+        <InteractiveDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Badge States"
+        description="Loading, disabled, interactive, dismissible, shimmer, and format switching."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, empty badges, extreme counts, and disabled states inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const badgePageShortcuts = [
   {
     keys: "Tab",
-    description:
-      "Move between badges and into the tag input (focus rings visible)",
+    description: "Move between interactive badges and dismiss buttons.",
   },
   {
     keys: "Enter / Space",
-    description:
-      "Activate a clickable badge — it renders a native <button> (inherited from the browser); a render prop replaces the element with its own semantics",
-  },
-  {
-    keys: "Esc",
-    description: "Close the tag input popup (inherited from Base UI)",
-  },
-  {
-    keys: "Backspace",
-    description:
-      "Remove the last chip in the tag input (inherited from Base UI)",
-  },
-  {
-    keys: "↑ / ↓",
-    description: "Navigate tag input suggestions (inherited from Base UI)",
+    description: "Activate an interactive badge or its dismiss button.",
   },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
+const badgePageUsageNotes = [
+  {
+    label: "KiraBadge vs. Dedicated Primitives",
+    body: "Use KiraBadge when a data schema selects between badge, status, count, tag, and dot modes dynamically. Import Badge, StatusBadge, CountBadge, or TagBadge directly for tighter TypeScript props and full Base UI render-prop control.",
+  },
+  {
+    label: "Live Regions",
+    body: 'StatusBadge intentionally omits role="status" so pages with many badges do not spam screen readers. Wrap a single contextual <output> region around dynamic status summaries when live announcements are needed.',
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const badgePageAPISections = [
+  {
+    title: "Badge",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "secondary" | "destructive" | "success" | "warning" | "info" | "outline" | "ghost" | "link" | "primary-soft" | "secondary-soft" | "destructive-soft" | "success-soft" | "warning-soft" | "info-soft"',
+        default: '"default"',
+        description: "Visual style and semantic color pairing.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl"',
+        default: '"default"',
+        description: "Height, horizontal padding, and icon scale.",
+      },
+      {
+        prop: "icon",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Optional icon element rendered alongside label text.",
+      },
+      {
+        prop: "iconPosition",
+        type: '"left" | "right"',
+        default: '"left"',
+        description: "Side on which the icon is placed.",
+      },
+      {
+        prop: "dot",
+        type: 'boolean | "default" | "secondary" | "destructive" | "success" | "warning" | "info" | "outline" | "muted"',
+        default: "false",
+        description:
+          "Displays a leading status dot in the chosen semantic color.",
+      },
+      {
+        prop: "dotPulse",
+        type: '"none" | "continuous" | "once"',
+        default: '"none"',
+        description: "Pulse animation on the dot (respects reduced motion).",
+      },
+      {
+        prop: "dismissible",
+        type: "boolean",
+        default: "false",
+        description: "Renders a dismiss button with a ≥ 24×24 hit target.",
+      },
+      {
+        prop: "onClose",
+        type: "() => void",
+        default: "-",
+        description: "Callback fired after the badge finishes dismissing.",
+      },
+      {
+        prop: "closeLabel",
+        type: "string",
+        default: '"Remove"',
+        description: "Accessible aria-label for the dismiss button.",
+      },
+      {
+        prop: "loading",
+        type: "boolean",
+        default: "false",
+        description: "Replaces the icon with a Spinner and sets aria-busy.",
+      },
+      {
+        prop: "disabled",
+        type: "boolean",
+        default: "false",
+        description:
+          "Disables interaction, lowers opacity, and sets aria-disabled.",
+      },
+      {
+        prop: "shimmer",
+        type: "boolean",
+        default: "false",
+        description:
+          "Light sweep effect (automatically disabled under reduced motion).",
+      },
+      {
+        prop: "trend",
+        type: '"up" | "down"',
+        default: "-",
+        description: "Renders a directional trend arrow before content.",
+      },
+      {
+        prop: "preset",
+        type: '"beta" | "new" | "version"',
+        default: "-",
+        description:
+          "Shorthand that resolves default variant and label styling.",
+      },
+      {
+        prop: "pressed",
+        type: "boolean",
+        default: "-",
+        description:
+          "Toggle state for interactive badges: sets aria-pressed and data-pressed.",
+      },
+      {
+        prop: "onClick",
+        type: "React.MouseEventHandler",
+        default: "-",
+        description:
+          "Makes the badge interactive; renders a native <button> when no render prop is provided.",
+      },
+      {
+        prop: "render",
+        type: "useRender.RenderProp",
+        default: "-",
+        description:
+          "Base UI render prop to replace the underlying element (e.g. with a link).",
+      },
+    ],
+  },
+  {
+    title: "StatusBadge",
+    props: [
+      {
+        prop: "status",
+        type: '"success" | "warning" | "error" | "info" | "default"',
+        default: "-",
+        description: "Maps to semantic dot color and default label text.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Badge size.",
+      },
+      {
+        prop: "pulse",
+        type: '"none" | "continuous" | "once"',
+        default: '"none"',
+        description: "Dot pulse animation.",
+      },
+      {
+        prop: "label",
+        type: "string",
+        default: "status default",
+        description:
+          "Overrides the default status text (children take precedence).",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "CountBadge",
+    props: [
+      {
+        prop: "count",
+        type: "number",
+        default: "-",
+        description: "Numeric count to display.",
+      },
+      {
+        prop: "max",
+        type: "number",
+        default: "99",
+        description: "Upper threshold before displaying <max>+.",
+      },
+      {
+        prop: "format",
+        type: '"default" | "short" | "commas"',
+        default: '"default"',
+        description: "Number formatting strategy.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default"',
+        default: '"default"',
+        description: "Pill size and minimum width.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "destructive" | "secondary"',
+        default: '"default"',
+        description: "Visual color variant.",
+      },
+      {
+        prop: "icon",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Optional icon beside the count.",
+      },
+      {
+        prop: "iconPosition",
+        type: '"left" | "right"',
+        default: '"left"',
+        description: "Side on which the icon is rendered.",
+      },
+      {
+        prop: "pulse",
+        type: "boolean",
+        default: "false",
+        description: "Pulses when count > 0 (respects reduced motion).",
+      },
+      {
+        prop: "animateCount",
+        type: "boolean",
+        default: "false",
+        description:
+          'Tweens the displayed number when format="default" (snaps under reduced motion).',
+      },
+    ],
+  },
+  {
+    title: "TagBadge",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "secondary" | "outline" | "ghost" | "primary-soft" | "secondary-soft" | "success" | "success-soft" | "warning" | "warning-soft" | "info" | "info-soft" | "destructive" | "destructive-soft"',
+        default: '"default"',
+        description: "Tag color variant.",
+      },
+      {
+        prop: "size",
+        type: 'BadgeProps["size"]',
+        default: '"sm"',
+        description: "Tag size.",
+      },
+      {
+        prop: "removable",
+        type: "boolean",
+        default: "false",
+        description:
+          "Shows the dismiss button and unmounts the tag when removed.",
+      },
+      {
+        prop: "onRemove",
+        type: "() => void",
+        default: "-",
+        description: "Callback fired when the tag is removed.",
+      },
+      {
+        prop: "...props",
+        type: 'Omit<BadgeProps, "variant">',
+        default: "-",
+        description: "Forwards remaining Badge props.",
+      },
+    ],
+  },
+  {
+    title: "BadgeGroup",
+    props: [
+      {
+        prop: "gap",
+        type: '"tight" | "normal" | "loose"',
+        default: '"normal"',
+        description: "Spacing between grouped badges.",
+      },
+      {
+        prop: "orientation",
+        type: '"horizontal" | "vertical"',
+        default: '"horizontal"',
+        description: "Layout flow direction.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "KiraBadge",
+    props: [
+      {
+        prop: "mode",
+        type: '"badge" | "status" | "count" | "tag" | "dot"',
+        default: '"badge"',
+        description: "Selects which underlying badge mode to render.",
+      },
+      {
+        prop: "variant",
+        type: 'BadgeProps["variant"]',
+        default: '"default"',
+        description:
+          "Shared color variant (narrowed automatically for count/tag modes).",
+      },
+      {
+        prop: "size",
+        type: 'BadgeProps["size"]',
+        default: '"default"',
+        description: "Shared size token (mapped to valid sizes per mode).",
+      },
+      {
+        prop: "status / label / pulse",
+        type: 'StatusBadgeProps["status"] / string / "none" | "continuous" | "once"',
+        default: '"default" / - / "none"',
+        description: 'Status mode configuration when mode="status".',
+      },
+      {
+        prop: "count / max / format / animateCount",
+        type: 'number / number / "default" | "short" | "commas" / boolean',
+        default: '0 / 99 / "default" / false',
+        description: 'Count mode configuration when mode="count".',
+      },
+      {
+        prop: "icon / iconPosition / trend / shimmer / preset / dismissible / onClose / dot / dotPulse",
+        type: "BadgeProps",
+        default: "-",
+        description:
+          "Badge, tag, and dot mode props forwarded to the active renderer.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
 const badgePageChangelogEntries = [
+  {
+    version: "4.0.1",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Improve soft badge label contrast",
+        description:
+          "Secondary, info, success, and warning labels stay readable on tinted surfaces.",
+      },
+    ],
+  },
+  {
+    version: "4.0.0",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "Removed duplicate TagInput export and Combobox dependency",
+        description:
+          "Removed TagInput and its @base-ui/react/combobox dependency from badge.tsx. Use TagInput from input.tsx or KiraSelect with multiple + creatable instead.",
+      },
+    ],
+  },
+  {
+    version: "3.1.2",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Dismiss focus ring at full strength",
+        description:
+          "The close button draws the kit focus ring as ring-ring at 2px instead of ring-ring/50, which sat below the 3:1 WCAG 1.4.11 minimum. Primary badges inherit the retuned default-theme primary pair.",
+      },
+    ],
+  },
   {
     version: "3.1.1",
     date: "18 November 2026",
     changes: [
       {
         type: "fixed",
-        title: "lg close button off the 4px grid",
+        title: "lg close button aligned to the 4px grid",
         description:
-          "The lg dismiss button drops h-4.5 w-4.5 (18px) to h-4 w-4 with size-3 icons. The compact badge ladder itself is unchanged — badges are labels, not controls.",
+          "The lg dismiss button drops from 18px to 16px (h-4 w-4) with size-3 icons. The compact badge ladder itself is unchanged — badges are labels, not controls.",
       },
     ],
   },
@@ -1381,13 +1437,13 @@ const badgePageChangelogEntries = [
         type: "breaking",
         title: "Interactive badges render a real <button>",
         description:
-          'A Badge with onClick and no render prop now renders <button type="button"> instead of a span with tabIndex + Enter/Space shim. Enter no longer needs the shim; press styling via data-pressed.',
+          'A Badge with onClick and no render prop now renders <button type="button"> instead of a span with tabIndex + Enter/Space shim. Press styling uses data-pressed.',
       },
       {
         type: "added",
         title: "pressed prop for toggle chips",
         description:
-          "Sets aria-pressed and data-pressed so filter chips expose selected state to AT and CSS (data-[pressed]:…).",
+          "Sets aria-pressed and data-pressed so filter chips expose selected state to AT and CSS.",
       },
       {
         type: "changed",
@@ -1399,7 +1455,7 @@ const badgePageChangelogEntries = [
         type: "changed",
         title: "CountBadge ticker 0.6s → 0.35s",
         description:
-          "Under the 400ms motion cap (§3.5); reduced-motion still snaps instantly.",
+          "Under the 400ms motion cap; reduced-motion still snaps instantly.",
       },
     ],
   },
@@ -1417,55 +1473,49 @@ const badgePageChangelogEntries = [
         type: "breaking",
         title: "TagInput rewritten on Combobox.Chips",
         description:
-          "New props API: value/defaultValue + onValueChange (was tags/onChange), plus suggestions, maxTags, disabled, ariaLabel. readOnlyInput and variant removed. Chips render via Base UI Combobox with full a11y (arrow-key navigation, result announcements).",
+          "New props API: value/defaultValue + onValueChange (was tags/onChange), plus suggestions, maxTags, disabled, ariaLabel. Chips render via Base UI Combobox with full keyboard and screen-reader support.",
       },
       {
         type: "breaking",
         title: 'StatusBadge: role="status" removed; children replace label',
         description:
-          "No more one live region per badge (announcement spam). Render a single contextual status region around your badges if you need live announcements. Children now replace the default label instead of being concatenated after it.",
+          "Eliminates one live region per badge. Render a single contextual status region around your badges if you need live announcements. Children now replace the default label.",
       },
       {
         type: "changed",
         title: "Loading spinner reuses shared Spinner",
         description:
-          "The hand-rolled inline SVG is replaced by <Spinner /> from @/components/ui/spinner, inheriting the badge foreground color and size on every variant.",
+          "The inline SVG is replaced by <Spinner /> from @/components/ui/spinner, inheriting the badge foreground color and size on every variant.",
       },
       {
         type: "fixed",
         title: "Transition merge on clickable badges",
         description:
-          "transition-all was overridden by a later transition-colors, so active:scale-95 never animated. One merged transition now covers colors, opacity and scale.",
+          "A broad all-property transition was overridden by a later transition-colors, so active:scale-95 never animated. One explicit transition now covers colors, opacity, and scale.",
       },
       {
         type: "fixed",
         title: "No double key activation with render props",
         description:
-          "When render is a native <button>/<a>, Badge no longer adds tabIndex + Enter/Space handling — the consumer element handles its own keys.",
+          "When render is a native <button>/<a>, Badge no longer adds redundant Enter/Space handling.",
       },
       {
         type: "fixed",
         title: "Close button no longer double-fires",
         description:
-          "Redundant Enter/Space keydown removed from the dismiss close button; native button activation is enough.",
+          "Redundant Enter/Space keydown removed from the dismiss close button.",
       },
       {
         type: "changed",
         title: "Shimmer visible on soft/ghost/outline variants",
         description:
-          "The white shimmer sweep was invisible on light backgrounds; those variants now use a foreground-tinted sweep.",
+          "Soft, ghost, and outline variants now use a foreground-tinted shimmer sweep.",
       },
       {
         type: "fixed",
         title: "CountBadge tween origin",
         description:
           'Switching format away from "default" and back no longer animates from a stale previous count.',
-      },
-      {
-        type: "changed",
-        title: "Close-button focus ring",
-        description:
-          "Dismiss close button now uses the kit focus ring (ring-ring/50, 2px).",
       },
     ],
   },
@@ -1483,24 +1533,28 @@ const badgePageChangelogEntries = [
   },
 ] satisfies ReactComponentProps<typeof Changelog>["entries"];
 
-function InteractiveClickableRealButtonsTabEnterSection() {
+function InteractiveClickableSection({
+  onSelect,
+}: {
+  onSelect: (message: string) => void;
+}) {
   return (
     <div>
-      <h4 className="text-sm font-medium text-muted-foreground mb-3">
+      <h4 className="mb-3 text-sm font-medium text-muted-foreground">
         Clickable — real buttons (Tab + Enter/Space, native semantics)
       </h4>
       <div className="flex flex-wrap gap-3">
         <Badge
           variant="primary-soft"
-          icon={<IconStar />}
-          onClick={() => alert("Premium clicked!")}
+          icon={<IconStar aria-hidden="true" />}
+          onClick={() => onSelect("Activated Premium badge.")}
         >
           Premium
         </Badge>
         <Badge
           variant="success-soft"
-          icon={<IconCheck />}
-          onClick={() => alert("Verified clicked!")}
+          icon={<IconCheck aria-hidden="true" />}
+          onClick={() => onSelect("Activated Verified badge.")}
         >
           Verified
         </Badge>
@@ -1518,7 +1572,7 @@ function InteractiveToggleChipsSection({
 }) {
   return (
     <div>
-      <h4 className="text-sm font-medium text-muted-foreground mb-3">
+      <h4 className="mb-3 text-sm font-medium text-muted-foreground">
         Toggle chips — <code>pressed</code> sets aria-pressed + data-pressed
       </h4>
       <div className="flex flex-wrap gap-3">
@@ -1535,32 +1589,36 @@ function InteractiveToggleChipsSection({
           </Badge>
         ))}
       </div>
-      <p className="text-sm text-muted-foreground mt-2">
-        Active: {activeFilters.length ? activeFilters.join(", ") : "none"}
+      <p className="mt-2 text-sm text-muted-foreground">
+        Active: {activeFilters.length > 0 ? activeFilters.join(", ") : "none"}
       </p>
     </div>
   );
 }
 
-function InteractiveDismissibleCloseHitArea24pxSection() {
+function InteractiveDismissibleSection({
+  onDismiss,
+}: {
+  onDismiss: (message: string) => void;
+}) {
   return (
     <div>
-      <h4 className="text-sm font-medium text-muted-foreground mb-3">
+      <h4 className="mb-3 text-sm font-medium text-muted-foreground">
         Dismissible — close hit area ≥ 24px (WCAG 2.5.8)
       </h4>
       <div className="flex flex-wrap gap-3">
         <Badge
           variant="secondary-soft"
           dismissible
-          onClose={() => alert("Dismissed!")}
+          onClose={() => onDismiss("Dismissed Removable badge.")}
         >
           Removable
         </Badge>
         <Badge
           variant="warning-soft"
-          icon={<IconAlertCircle />}
+          icon={<IconAlertCircle aria-hidden="true" />}
           dismissible
-          onClose={() => alert("Dismissed!")}
+          onClose={() => onDismiss("Dismissed warning badge.")}
         >
           Can be closed
         </Badge>
@@ -1577,10 +1635,8 @@ function StatesControlsSection({
 }: {
   tickerCount: number;
   setTickerCount: React.Dispatch<React.SetStateAction<number>>;
-  tickerFormat: "default" | "short" | "commas";
-  setTickerFormat: React.Dispatch<
-    React.SetStateAction<"default" | "short" | "commas">
-  >;
+  tickerFormat: TickerFormat;
+  setTickerFormat: React.Dispatch<React.SetStateAction<TickerFormat>>;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-4">
@@ -1589,7 +1645,7 @@ function StatesControlsSection({
         <Button
           size="sm"
           variant="outline"
-          onClick={() => setTickerCount((c) => c + 137)}
+          onClick={() => setTickerCount((current) => current + 137)}
         >
           +137
         </Button>
@@ -1604,23 +1660,7 @@ function StatesControlsSection({
         <Button
           size="sm"
           variant="outline"
-          onClick={() =>
-            setTickerFormat((f) => {
-              const resolveOnClick1 = () => {
-                if (f === "default") {
-                  return "short" as const;
-                }
-
-                if (f === "short") {
-                  return "commas" as const;
-                }
-
-                return "default" as const;
-              };
-
-              return resolveOnClick1();
-            })
-          }
+          onClick={() => setTickerFormat(nextTickerFormat)}
         >
           format: {tickerFormat}
         </Button>

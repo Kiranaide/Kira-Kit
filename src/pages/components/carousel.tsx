@@ -1,7 +1,13 @@
-"use client";
-
 import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconMaximize,
+  IconKeyboard,
+  IconPhoto,
+  IconCode,
+} from "@tabler/icons-react";
 import {
   Carousel,
   CarouselContent,
@@ -21,14 +27,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  IconChevronLeft,
-  IconChevronRight,
-  IconMaximize,
-  IconKeyboard,
-  IconPhoto,
-  IconCode,
-} from "@tabler/icons-react";
 import {
   ComponentPage,
   PageHeader,
@@ -131,9 +129,9 @@ function BasicDemo() {
               <img
                 src={img.src}
                 alt={img.alt}
-                className="w-full h-[400px] object-cover rounded-lg"
+                className="w-full h-96 object-cover rounded-lg"
               />
-              <div className="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1.5 rounded-md text-sm backdrop-blur-sm">
+              <div className="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-md text-sm backdrop-blur-sm">
                 {img.title}
               </div>
             </div>
@@ -141,10 +139,10 @@ function BasicDemo() {
         ))}
       </CarouselContent>
       <CarouselPrevious>
-        <IconChevronLeft className="h-4 w-4" />
+        <IconChevronLeft className="h-4 w-4" aria-hidden="true" />
       </CarouselPrevious>
       <CarouselNext>
-        <IconChevronRight className="h-4 w-4" />
+        <IconChevronRight className="h-4 w-4" aria-hidden="true" />
       </CarouselNext>
       <CarouselDots className="mt-4" />
       <CarouselProgressBar className="mt-2" />
@@ -194,7 +192,7 @@ function CardDemo() {
                 <ul className="space-y-2">
                   {product.features.map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                      <div className="size-2 rounded-full bg-primary" />
                       {f}
                     </li>
                   ))}
@@ -293,7 +291,7 @@ function ThumbnailDemo() {
             <img
               src={img.src}
               alt={img.alt}
-              className="w-full h-[400px] object-cover rounded-lg"
+              className="w-full h-96 object-cover rounded-lg"
             />
           </CarouselItem>
         ))}
@@ -342,19 +340,19 @@ function LightboxDemo() {
                 <img
                   src={img.src}
                   alt={img.alt}
-                  className="w-full h-[400px] object-cover rounded-lg"
+                  className="w-full h-96 object-cover rounded-lg"
                 />
               </button>
               <button
                 type="button"
-                className="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                className="absolute top-4 right-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-opacity motion-reduce:transition-none hover:bg-black/70"
                 onClick={() => {
                   setLightboxIndex(index);
                   setLightboxOpen(true);
                 }}
                 aria-label="Open in lightbox"
               >
-                <IconMaximize className="h-5 w-5" />
+                <IconMaximize className="h-5 w-5" aria-hidden="true" />
               </button>
             </div>
           </CarouselItem>
@@ -403,11 +401,8 @@ function LightboxDemo() {
 
 function VerticalDemo() {
   return (
-    <Carousel
-      orientation="vertical"
-      className="w-full max-w-md mx-auto h-[400px]"
-    >
-      <CarouselContent className="h-[300px]">
+    <Carousel orientation="vertical" className="w-full max-w-md mx-auto h-96">
+      <CarouselContent className="h-72">
         {images.slice(0, 4).map((img) => (
           <CarouselItem key={img.src}>
             <Card className="p-0">
@@ -415,7 +410,7 @@ function VerticalDemo() {
                 <img
                   src={img.src}
                   alt={img.alt}
-                  className="w-full h-[280px] object-cover rounded-lg"
+                  className="w-full h-64 object-cover rounded-lg"
                 />
               </CardContent>
             </Card>
@@ -430,8 +425,8 @@ function VerticalDemo() {
 
 const verticalCode = `import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 
-<Carousel orientation="vertical" className="h-[400px]">
-  <CarouselContent className="h-[300px]">
+<Carousel orientation="vertical" className="h-96">
+  <CarouselContent className="h-72">
     {/* vertical slides */}
   </CarouselContent>
   <CarouselPrevious />
@@ -447,7 +442,7 @@ function PeekDemo() {
             <img
               src={img.src}
               alt={img.alt}
-              className="w-full h-[300px] object-cover rounded-lg"
+              className="w-full h-72 object-cover rounded-lg"
             />
           </CarouselItem>
         ))}
@@ -473,7 +468,7 @@ const peekCode = `import { Carousel, CarouselContent, CarouselItem } from "@/com
 function FadeDemo() {
   return (
     <Carousel variant="fade" className="w-full max-w-xl mx-auto">
-      <CarouselContent className="h-[300px]">
+      <CarouselContent className="h-72">
         {images.slice(0, 4).map((img, index) => (
           <CarouselItem key={img.src} variant="fade" index={index}>
             <img
@@ -494,7 +489,7 @@ function FadeDemo() {
 const fadeCode = `import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 
 <Carousel variant="fade">
-  <CarouselContent className="h-[300px]">
+  <CarouselContent className="h-72">
     {images.map((img) => (
       <CarouselItem key={img.src} variant="fade">
         <img
@@ -519,7 +514,7 @@ function LoopDemo() {
             <img
               src={img.src}
               alt={img.alt}
-              className="w-full h-[300px] object-cover rounded-lg"
+              className="w-full h-72 object-cover rounded-lg"
             />
           </CarouselItem>
         ))}
@@ -547,14 +542,14 @@ function CarouselImageDemo() {
       <CarouselContent>
         {images.slice(0, 4).map((img, index) => (
           <CarouselItem key={img.src}>
-            <div className="relative h-[300px]">
+            <div className="relative h-72">
               <CarouselImage
                 src={img.src}
                 alt={img.alt}
                 loading={index === 0 ? "eager" : "lazy"}
                 showSkeleton
               />
-              <div className="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1.5 rounded-md text-sm backdrop-blur-sm">
+              <div className="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-md text-sm backdrop-blur-sm">
                 {img.title}
               </div>
             </div>
@@ -594,7 +589,7 @@ function CounterDemo() {
             <img
               src={img.src}
               alt={img.alt}
-              className="w-full h-[300px] object-cover rounded-lg"
+              className="w-full h-72 object-cover rounded-lg"
             />
           </CarouselItem>
         ))}
@@ -622,18 +617,19 @@ const counterCode = `import { Carousel, CarouselContent, CarouselItem, CarouselC
 </Carousel>`;
 
 function ProgrammaticDemo() {
-  const { api, scrollPrev, scrollNext, current, count } = useCarouselApi();
+  const { api, setApi, scrollPrev, scrollNext, current, count } =
+    useCarouselApi();
 
   return (
     <div className="space-y-4">
-      <Carousel className="w-full max-w-xl mx-auto">
+      <Carousel className="w-full max-w-xl mx-auto" setApi={setApi}>
         <CarouselContent>
           {images.slice(0, 4).map((img) => (
             <CarouselItem key={img.src}>
               <img
                 src={img.src}
                 alt={img.alt}
-                className="w-full h-[300px] object-cover rounded-lg"
+                className="w-full h-72 object-cover rounded-lg"
               />
             </CarouselItem>
           ))}
@@ -641,14 +637,24 @@ function ProgrammaticDemo() {
       </Carousel>
 
       <div className="flex items-center justify-center gap-4 mt-4">
-        <Button variant="outline" size="icon" onClick={() => scrollPrev()}>
-          <IconChevronLeft className="h-4 w-4" />
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Previous slide"
+          onClick={() => scrollPrev()}
+        >
+          <IconChevronLeft className="h-4 w-4" aria-hidden="true" />
         </Button>
-        <span className="text-sm text-muted-foreground min-w-[80px] text-center">
+        <output className="text-sm text-muted-foreground min-w-20 text-center">
           {current + 1} / {count}
-        </span>
-        <Button variant="outline" size="icon" onClick={() => scrollNext()}>
-          <IconChevronRight className="h-4 w-4" />
+        </output>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label="Next slide"
+          onClick={() => scrollNext()}
+        >
+          <IconChevronRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
 
@@ -662,15 +668,15 @@ function ProgrammaticDemo() {
   );
 }
 
-const programmaticCode = `import { useCarouselApi } from "@/components/ui/carousel"
+const programmaticCode = `import { Carousel, CarouselContent, CarouselItem, useCarouselApi } from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
 
 function ProgrammaticDemo() {
-  const { api, scrollPrev, scrollNext, current, count } = useCarouselApi()
+  const { setApi, scrollPrev, scrollNext } = useCarouselApi()
 
   return (
     <>
-      <Carousel>
+      <Carousel setApi={setApi}>
         <CarouselContent>
           {/* slides */}
         </CarouselContent>
@@ -731,7 +737,7 @@ function EventCallbacksDemo() {
               <img
                 src={img.src}
                 alt={img.alt}
-                className="w-full h-[300px] object-cover rounded-lg"
+                className="w-full h-72 object-cover rounded-lg"
               />
             </CarouselItem>
           ))}
@@ -779,7 +785,14 @@ const eventCallbacksCode = `import { Carousel, CarouselContent, CarouselItem } f
   </CarouselContent>
 </Carousel>`;
 
-const usageCode = `import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+const usageCode = `import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  CarouselDots,
+} from "@/components/ui/carousel"
 
 export default function MyCarousel() {
   const items = [
@@ -791,8 +804,8 @@ export default function MyCarousel() {
   return (
     <Carousel aria-label="My gallery">
       <CarouselContent>
-        {items.map((item, index) => (
-          <CarouselItem key={index}>
+        {items.map((item) => (
+          <CarouselItem key={item.src}>
             <img src={item.src} alt={item.alt} />
           </CarouselItem>
         ))}
@@ -809,9 +822,11 @@ const longLabels = [
   "Quarterly business review deck with extended executive summary and appendix materials",
   "Customer onboarding flow: account provisioning, workspace setup, and invitation steps",
   "Design system governance: contribution guidelines, review process, and versioning policy",
-  "Infrastructure migration plan covering zero-downtime database cutover and rollback",
+  "",
   "Accessibility audit remediation roadmap with WCAG 2.2 success criteria mapping",
 ];
+
+const manySlideNumbers = Array.from({ length: 50 }, (_, index) => index + 1);
 
 function KiraCarouselDemo() {
   return (
@@ -823,9 +838,9 @@ function KiraCarouselDemo() {
           <img
             src={img.src}
             alt={img.alt}
-            className="w-full h-[300px] object-cover rounded-lg"
+            className="w-full h-72 object-cover rounded-lg"
           />
-          <div className="absolute bottom-4 left-4 rounded-md bg-black/60 px-3 py-1.5 text-sm text-white backdrop-blur-sm">
+          <div className="absolute bottom-4 left-4 rounded-md bg-black/60 px-3 py-1 text-sm text-white backdrop-blur-sm">
             {img.title}
           </div>
         </div>
@@ -855,36 +870,58 @@ const kiraCode = `import { KiraCarousel } from "@/components/ui/carousel"
 function StressDemo() {
   return (
     <div className="space-y-8">
-      <div className="max-w-[340px]">
+      <div className="max-w-xs">
         <KiraCarousel
           aria-label="Narrow container stress test"
-          items={longLabels.map((label) => (
+          items={longLabels.map((label, position) => (
             <div
-              key={label}
+              key={label || `empty-slide-${position}`}
               className="flex h-24 items-center rounded-lg border bg-muted/30 px-4"
             >
-              <span className="min-w-0 truncate text-sm">{label}</span>
+              <span className="min-w-0 truncate text-sm">
+                {label || "(Empty slide content)"}
+              </span>
             </div>
           ))}
           dots
           progressBar
         />
         <p className="mt-2 text-xs text-muted-foreground">
-          ~340px container, single very long slide label â€” label truncates
-          (min-w-0), controls stay inside the viewport.
+          Narrow max-w-xs container with long labels and an empty slide — labels
+          truncate via min-w-0 and controls stay inside the viewport.
+        </p>
+      </div>
+      <div className="max-w-xs">
+        <KiraCarousel
+          aria-label="Single slide disabled controls stress test"
+          items={[
+            <div
+              key="single-slide"
+              className="flex h-20 items-center justify-center rounded-lg border bg-muted/30 px-4"
+            >
+              <span className="text-sm text-muted-foreground">
+                Single slide (navigation arrows disabled)
+              </span>
+            </div>,
+          ]}
+          dots={false}
+          counter
+        />
+        <p className="mt-2 text-xs text-muted-foreground">
+          Single-slide carousel verifies disabled previous/next arrow states.
         </p>
       </div>
       <div>
         <KiraCarousel
           aria-label="Many slides stress test"
           loop
-          items={Array.from({ length: 50 }, (_, i) => (
+          items={manySlideNumbers.map((slideNumber) => (
             <div
-              key={i}
+              key={`slide-${slideNumber}`}
               className="flex h-20 items-center justify-center rounded-lg border bg-muted/30"
             >
               <span className="text-sm text-muted-foreground">
-                Slide {i + 1} of 50
+                Slide {slideNumber} of 50
               </span>
             </div>
           ))}
@@ -893,7 +930,7 @@ function StressDemo() {
           counter
         />
         <p className="mt-2 text-xs text-muted-foreground">
-          50 slides with loop + real scroll progress â€” dots intentionally off
+          50 slides with loop + real scroll progress — dots intentionally off
           (50 dots would be unusable); counter and progress bar carry position.
         </p>
       </div>
@@ -903,21 +940,32 @@ function StressDemo() {
 
 const stressCode = `import { KiraCarousel } from "@/components/ui/carousel"
 
-// Narrow container (~340px): long labels truncate via min-w-0.
-<KiraCarousel
-  items={longLabels.map((label) => (
-    <div className="flex h-24 items-center px-4">
-      <span className="min-w-0 truncate text-sm">{label}</span>
-    </div>
-  ))}
-  dots
-  progressBar
-/>
+// Narrow container (max-w-xs): long labels truncate via min-w-0, plus empty slide.
+<div className="max-w-xs">
+  <KiraCarousel
+    items={longLabels.map((label, position) => (
+      <div key={label || \`empty-slide-\${position}\`} className="flex h-24 items-center px-4">
+        <span className="min-w-0 truncate text-sm">{label || "(Empty slide content)"}</span>
+      </div>
+    ))}
+    dots
+    progressBar
+  />
+</div>
+
+// Single slide: previous/next arrows are disabled.
+<div className="max-w-xs">
+  <KiraCarousel
+    items={[<div key="single">Single slide</div>]}
+    dots={false}
+    counter
+  />
+</div>
 
 // Many slides (50): dots off, counter + progress bar carry position.
 <KiraCarousel
   loop
-  items={Array.from({ length: 50 }, (_, i) => <Slide key={i} index={i} />)}
+  items={manySlideNumbers.map((n) => <div key={n}>Slide {n} of 50</div>)}
   dots={false}
   progressBar
   counter
@@ -929,25 +977,35 @@ export default function CarouselPage() {
       <PageHeader
         title="Carousel"
         description="Accessible carousel component with keyboard navigation, autoplay controls, touch gestures, lightbox mode, and full WCAG 2.2 compliance. Built with Embla Carousel and GSAP animations."
-        version="v2.1"
+        version="v2.1.0"
       />
 
       <FeatureGrid features={carouselPageFeatureGridFeatures} />
 
-      <DemoTabs tabs={carouselPageDemoTabsTabs} />
+      <DemoTabs defaultValue="basic" tabs={carouselPageDemoTabsTabs} />
 
       <KeyboardShortcuts shortcuts={carouselPageKeyboardShortcutsShortcuts} />
 
       <UsageBlock
         code={usageCode}
         title="Usage"
-        description="Basic implementation example for a simple image carousel."
+        description="Compose Carousel primitives or use KiraCarousel for common slide layouts."
+        notes={[
+          {
+            label: "KiraCarousel",
+            body: "Use KiraCarousel when you want slides, arrows, dots, progress bar, counter, autoplay, and thumbnails configured via boolean switches.",
+          },
+          {
+            label: "Composed primitives",
+            body: "Compose Carousel, CarouselContent, CarouselItem, and individual controls when you need custom layouts, CarouselLightbox, or external useCarouselApi control.",
+          },
+        ]}
       />
 
       <APIReference
         sections={carouselPageAPIReferenceSections}
-        title="API Reference"
-        description="Key props and configuration options for all Carousel components"
+        title="API reference"
+        description="Key props and configuration options for all Carousel components."
       />
       <Changelog
         entries={carouselPageChangelogEntries}
@@ -964,19 +1022,19 @@ const carouselPageFeatureGridFeatures = [
     title: "Fully Accessible",
     description:
       "WAI-ARIA carousel pattern with aria-roledescription, keyboard navigation (arrows, Home, End), screen reader announcements, prefers-reduced-motion support, and autoplay that stops when the tab is hidden.",
-    icon: <IconKeyboard className="h-4 w-4" />,
+    icon: <IconKeyboard className="h-4 w-4" aria-hidden="true" />,
   },
   {
     title: "Rich Features",
     description:
       "Plugin-based autoplay with pause on hover/focus/tab-hidden, real scroll progress bar, thumbnail navigation, lightbox gallery on Base UI Dialog, vertical orientation, and fade/peek/zoom/flip variants.",
-    icon: <IconPhoto className="h-4 w-4" />,
+    icon: <IconPhoto className="h-4 w-4" aria-hidden="true" />,
   },
   {
     title: "Developer Friendly",
     description:
-      "KiraCarousel one-import composition (items + boolean switches), useCarouselApi hook, event callbacks, CarouselImage loading states, and CarouselCounter â€” see the Kira and Stress tabs.",
-    icon: <IconCode className="h-4 w-4" />,
+      "KiraCarousel one-import composition (items + boolean switches), useCarouselApi hook, event callbacks, CarouselImage loading states, and CarouselCounter — see the KiraCarousel and Stress Cases tabs.",
+    icon: <IconCode className="h-4 w-4" aria-hidden="true" />,
   },
 ] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
@@ -984,6 +1042,7 @@ const carouselPageDemoTabsTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Image Carousel"
@@ -997,6 +1056,7 @@ const carouselPageDemoTabsTabs = [
   {
     value: "cards",
     label: "Cards",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Card Slider"
@@ -1008,47 +1068,9 @@ const carouselPageDemoTabsTabs = [
     ),
   },
   {
-    value: "autoplay",
-    label: "Autoplay",
-    demo: (
-      <DemoWrapper
-        title="Autoplay with Controls"
-        description="Auto-scrolling carousel with pause on hover/focus, play/pause button, and progress indicator."
-        code={autoplayCode}
-      >
-        <AutoplayDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "thumbnails",
-    label: "Thumbnails",
-    demo: (
-      <DemoWrapper
-        title="Thumbnail Navigation"
-        description="Gallery with synchronized thumbnail strip for quick navigation."
-        code={thumbnailCode}
-      >
-        <ThumbnailDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "lightbox",
-    label: "Lightbox",
-    demo: (
-      <DemoWrapper
-        title="Lightbox Gallery"
-        description="Full-screen lightbox with zoom, pan, download, and share functionality. Keyboard shortcuts: +/- for zoom, 0 to reset, ? for help."
-        code={lightboxCode}
-      >
-        <LightboxDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "vertical",
     label: "Vertical",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Vertical Carousel"
@@ -1060,8 +1082,23 @@ const carouselPageDemoTabsTabs = [
     ),
   },
   {
+    value: "loop",
+    label: "Loop",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Loop Mode"
+        description="Infinite scrolling through all items."
+        code={loopCode}
+      >
+        <LoopDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "peek",
     label: "Peek",
+    group: "Variants",
     demo: (
       <DemoWrapper
         title="Peek Variant"
@@ -1075,6 +1112,7 @@ const carouselPageDemoTabsTabs = [
   {
     value: "fade",
     label: "Fade",
+    group: "Variants",
     demo: (
       <DemoWrapper
         title="Fade Variant"
@@ -1086,21 +1124,9 @@ const carouselPageDemoTabsTabs = [
     ),
   },
   {
-    value: "loop",
-    label: "Loop",
-    demo: (
-      <DemoWrapper
-        title="Loop Mode"
-        description="Infinite scrolling through all items."
-        code={loopCode}
-      >
-        <LoopDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "carouselimage",
     label: "CarouselImage",
+    group: "Variants",
     demo: (
       <DemoWrapper
         title="CarouselImage Component"
@@ -1114,6 +1140,7 @@ const carouselPageDemoTabsTabs = [
   {
     value: "counter",
     label: "Counter",
+    group: "Variants",
     demo: (
       <DemoWrapper
         title="Carousel Counter"
@@ -1125,8 +1152,65 @@ const carouselPageDemoTabsTabs = [
     ),
   },
   {
+    value: "autoplay",
+    label: "Autoplay",
+    group: "Controls",
+    demo: (
+      <DemoWrapper
+        title="Autoplay with Controls"
+        description="Auto-scrolling carousel with pause on hover/focus, play/pause button, and progress indicator."
+        code={autoplayCode}
+      >
+        <AutoplayDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "thumbnails",
+    label: "Thumbnails",
+    group: "Controls",
+    demo: (
+      <DemoWrapper
+        title="Thumbnail Navigation"
+        description="Gallery with synchronized thumbnail strip for quick navigation."
+        code={thumbnailCode}
+      >
+        <ThumbnailDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "lightbox",
+    label: "Lightbox",
+    group: "Controls",
+    demo: (
+      <DemoWrapper
+        title="Lightbox Gallery"
+        description="Full-screen lightbox with zoom, pan, download, and share functionality. Keyboard shortcuts: +/- for zoom, 0 to reset, ? for help."
+        code={lightboxCode}
+      >
+        <LightboxDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraCarousel",
+    group: "KiraCarousel",
+    demo: (
+      <DemoWrapper
+        title="KiraCarousel"
+        description="One-import composed carousel: slides, arrows, dots, real scroll progress, counter, autoplay, and thumbnails behind boolean switches."
+        code={kiraCode}
+      >
+        <KiraCarouselDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "programmatic",
     label: "Programmatic",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Programmatic Control"
@@ -1140,6 +1224,7 @@ const carouselPageDemoTabsTabs = [
   {
     value: "events",
     label: "Events",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Event Callbacks"
@@ -1151,25 +1236,13 @@ const carouselPageDemoTabsTabs = [
     ),
   },
   {
-    value: "kira",
-    label: "KiraCarousel",
-    demo: (
-      <DemoWrapper
-        title="KiraCarousel"
-        description="One-import composed carousel: slides, arrows, dots, real scroll progress, counter, autoplay, and thumbnails behind boolean switches."
-        code={kiraCode}
-      >
-        <KiraCarouselDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "stress",
-    label: "Stress",
+    label: "Stress Cases",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Stress Cases"
-        description="Narrow ~340px container with a very long slide label (truncates, controls stay in viewport) and 50 looped slides (dots off, counter + progress bar carry position)."
+        description="Narrow max-w-xs container with long labels, empty slide content, disabled single-slide controls, and 50 looped slides."
         code={stressCode}
       >
         <StressDemo />
@@ -1185,11 +1258,11 @@ const carouselPageKeyboardShortcutsShortcuts = [
       "Move to the carousel, then between its controls (standard tab order)",
   },
   {
-    keys: "â† / â†’",
+    keys: "← / →",
     description: "Previous / next slide (horizontal orientation)",
   },
   {
-    keys: "â†‘ / â†“",
+    keys: "↑ / ↓",
     description: "Previous / next slide (vertical orientation)",
   },
   { keys: "Home", description: "Go to first slide" },
@@ -1202,7 +1275,7 @@ const carouselPageKeyboardShortcutsShortcuts = [
     keys: "Esc",
     description: "Close lightbox (inherited from Base UI Dialog)",
   },
-  { keys: "Lightbox: + / âˆ’", description: "Zoom in / out" },
+  { keys: "Lightbox: + / −", description: "Zoom in / out" },
   { keys: "Lightbox: 0", description: "Reset zoom" },
   { keys: "Lightbox: ?", description: "Toggle shortcut help overlay" },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
@@ -1306,6 +1379,48 @@ const carouselPageAPIReferenceSections = [
         type: "(api) => void",
         default: "-",
         description: "Callback to receive embla API",
+      },
+    ],
+  },
+  {
+    title: "CarouselContent",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the flex track.",
+      },
+      {
+        prop: "children",
+        type: "React.ReactNode",
+        default: "-",
+        description: "CarouselItem elements rendered inside the viewport.",
+      },
+    ],
+  },
+  {
+    title: "CarouselItem",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "cards" | "fade" | "peek" | "zoom" | "flip"',
+        default: '"default"',
+        description:
+          "Slide layout variant; inherits from parent Carousel when omitted.",
+      },
+      {
+        prop: "index",
+        type: "number",
+        default: "0",
+        description:
+          "Zero-based slide index (injected automatically by CarouselContent).",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the slide container.",
       },
     ],
   },
@@ -1581,7 +1696,7 @@ const carouselPageAPIReferenceSections = [
 const carouselPageChangelogEntries = [
   {
     version: "2.1.0",
-    date: "2026-11-04",
+    date: "4 November 2026",
     changes: [
       {
         type: "fixed",
@@ -1593,7 +1708,7 @@ const carouselPageChangelogEntries = [
         type: "added",
         title: "Autoplay stops when the tab is hidden",
         description:
-          "Rotating content pauses on visibilitychange and resumes when the tab is visible again (WCAG 2.2.2 / Â§9).",
+          "Rotating content pauses on visibilitychange and resumes when the tab is visible again (WCAG 2.2.2 / §9).",
       },
       {
         type: "breaking",

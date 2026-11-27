@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   IconCamera,
@@ -199,6 +200,7 @@ export function ReviewDemo() {
 
 function createImageFixture(): CameraReviewCapture {
   const svg =
+    // kira-kit-ignore raw-colors: standalone SVG data URI fixture cannot inherit CSS custom properties
     '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><rect width="640" height="480" fill="#f1f5f9"/><rect x="120" y="100" width="400" height="280" rx="8" fill="#cbd5e1" stroke="#64748b" stroke-width="2"/><rect x="210" y="170" width="220" height="120" rx="4" fill="#ffffff"/><text x="320" y="221" text-anchor="middle" font-family="sans-serif" font-size="22" fill="#0f172a">Parcel 1042</text><text x="320" y="255" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#475569">Illustrative image fixture</text></svg>';
 
   return {
@@ -580,7 +582,7 @@ function OverlaysDemo() {
   return (
     <div className="w-full max-w-lg space-y-3">
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label htmlFor={id + "-preset"} className="block text-xs font-medium">
             Overlay preset
           </label>
@@ -598,7 +600,7 @@ function OverlaysDemo() {
             }}
           />
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <label htmlFor={id + "-status"} className="block text-xs font-medium">
             Status fixture
           </label>
@@ -757,10 +759,10 @@ export function KiraDemo() {
   );
 }`;
 
-function StatesDemo() {
+function StressDemo() {
   return (
     <div className="grid w-full gap-5 sm:grid-cols-2">
-      <div className="w-full max-w-80 space-y-3">
+      <div className="w-full max-w-xs space-y-3">
         <p className="text-sm font-medium">Empty and disabled</p>
         <KiraCamera
           label="International returns inspection photo with a long workflow label"
@@ -774,27 +776,27 @@ function StatesDemo() {
         <p className="text-sm font-medium">Control state fixtures</p>
         <div className="flex flex-wrap items-center gap-3">
           <CameraButton
-            icon={<IconCamera />}
+            icon={<IconCamera aria-hidden="true" />}
             label="Capture"
             showLabel
             hapticPattern="none"
           />
           <CameraButton
-            icon={<IconCamera />}
+            icon={<IconCamera aria-hidden="true" />}
             label="Selected fixture"
             showLabel
             isActive
             hapticPattern="none"
           />
           <CameraButton
-            icon={<IconCamera />}
+            icon={<IconCamera aria-hidden="true" />}
             label="Preparing fixture"
             showLabel
             isLoading
             hapticPattern="none"
           />
           <CameraButton
-            icon={<IconCamera />}
+            icon={<IconCamera aria-hidden="true" />}
             label="Disabled fixture"
             showLabel
             disabled
@@ -810,176 +812,178 @@ function StatesDemo() {
   );
 }
 
-const statesCode = `import { KiraCamera, CameraButton } from "@/components/ui/camera";
+const stressCode = `import { KiraCamera, CameraButton } from "@/components/ui/camera";
 import { IconCamera } from "@tabler/icons-react";
 
-export function StatesDemo() {
+// Long workflow labels, empty/disabled states, and control fixtures in a max-w-xs column
+export function StressDemo() {
   return (
-    <div className="space-y-4">
-      <KiraCamera label="Inspection photo" disabled disabledReason="Only assigned reviewers can add evidence." onAccept={() => {}} />
-      <CameraButton icon={<IconCamera />} label="Preparing fixture" showLabel isLoading hapticPattern="none" />
-      <CameraButton icon={<IconCamera />} label="Disabled fixture" showLabel disabled hapticPattern="none" />
+    <div className="max-w-xs space-y-4">
+      <KiraCamera
+        label="International returns inspection photo with a long workflow label"
+        description="The empty state explains how to begin."
+        disabled
+        disabledReason="Only an assigned reviewer can add evidence."
+        onAccept={() => {}}
+      />
+      <CameraButton icon={<IconCamera aria-hidden="true" />} label="Preparing fixture" showLabel isLoading hapticPattern="none" />
+      <CameraButton icon={<IconCamera aria-hidden="true" />} label="Disabled fixture" showLabel disabled hapticPattern="none" />
     </div>
   );
 }`;
 
-const demoTabs = [
-  {
-    value: "basic",
-    label: "Basic",
-    title: "Camera capture",
-    description:
-      "Explicit start, native controls, scoped shortcuts and owned preview URLs.",
-    code: basicCode,
-    content: <BasicDemo />,
-  },
-  {
-    value: "review",
-    label: "Review",
-    title: "Review before accepting",
-    description:
-      "Camera or file selection, image review, retake and local acceptance.",
-    code: reviewCode,
-    content: <ReviewDemo />,
-  },
-  {
-    value: "acceptance",
-    label: "Acceptance",
-    title: "Cancellable acceptance",
-    description:
-      "Labelled image/delay fixtures show pending, cancel, error, retry and local success.",
-    code: acceptanceCode,
-    content: <AcceptanceDemo />,
-  },
-  {
-    value: "controls",
-    label: "Controls",
-    title: "Shared camera controls",
-    description:
-      "One controller for digital zoom, focus gestures, timer and real recording.",
-    code: controlsCode,
-    content: <ControlsDemo />,
-  },
-  {
-    value: "settings",
-    label: "Settings",
-    title: "Camera settings",
-    description:
-      "Shared Tabs, Select, Switch and Button with caller-owned values.",
-    code: settingsCode,
-    content: <SettingsDemo />,
-  },
-  {
-    value: "voice",
-    label: "Voice",
-    title: "Opt-in voice controls",
-    description:
-      "Feature-detected speech recognition with explicit start and button alternatives.",
-    code: voiceCode,
-    content: <VoiceDemo />,
-  },
-  {
-    value: "overlays",
-    label: "Overlays",
-    title: "Scan overlay states",
-    description: "Status fixtures for framing, processing and recovery.",
-    code: overlaysCode,
-    content: <OverlaysDemo />,
-  },
-  {
-    value: "guides",
-    label: "Guides",
-    title: "Framing presets",
-    description: "Static document, photo and code-positioning guides.",
-    code: guidesCode,
-    content: <GuidesDemo />,
-  },
-  {
-    value: "kira",
-    label: "Kira",
-    title: "Claim photo workflow",
-    description:
-      "The reviewed camera/file workflow with caller-owned acceptance.",
-    code: kiraCode,
-    content: <KiraDemo />,
-  },
-  {
-    value: "states",
-    label: "States",
-    title: "States and narrow layouts",
-    description:
-      "Long labels, empty/disabled workflow and labelled control fixtures.",
-    code: statesCode,
-    content: <StatesDemo />,
-  },
-].map(({ content, title, description, code, ...tab }) => ({
-  ...tab,
-  demo: (
-    <DemoWrapper title={title} description={description} code={code}>
-      {content}
-    </DemoWrapper>
-  ),
-}));
+function SharedCameraToolsControlsSection({
+  grid,
+  setGrid,
+  camera,
+  changeTimer,
+}: {
+  grid: CameraGridType;
+  setGrid: React.Dispatch<React.SetStateAction<CameraGridType>>;
+  camera: ReturnType<typeof useCameraContext>;
+  changeTimer: (duration: number) => void;
+}) {
+  return (
+    <CameraControlBar position="top">
+      <CameraControlBarGroup>
+        <GridButton size="sm" gridType={grid} onGridChange={setGrid} />
+        <TimerButton
+          size="sm"
+          duration={camera.timerDuration}
+          onDurationChange={changeTimer}
+        />
+        <ZoomButton
+          size="sm"
+          zoomAction="out"
+          onZoom={(delta) => camera.zoomOut(-delta)}
+          disabled={camera.zoom <= camera.minZoom}
+        />
+        <ZoomButton
+          size="sm"
+          zoomAction="in"
+          onZoom={(delta) => camera.zoomIn(delta)}
+          disabled={camera.zoom >= camera.maxZoom}
+        />
+        <ZoomButton
+          size="sm"
+          zoomAction="reset"
+          onZoom={() => camera.resetZoom()}
+        />
+      </CameraControlBarGroup>
+    </CameraControlBar>
+  );
+}
 
-const features = [
-  {
-    title: "Intentional capture",
-    description:
-      "Start explicitly, photograph or choose an image, review it and accept or retake.",
-    icon: <IconCamera aria-hidden="true" className="size-4" />,
-  },
-  {
-    title: "Cancellable handoff",
-    description:
-      "Caller-owned acceptance preserves the image through pending, cancel and retry.",
-    icon: <IconPhoto aria-hidden="true" className="size-4" />,
-  },
-  {
-    title: "Shared controls",
-    description:
-      "Timer, recording, digital zoom, settings and opt-in voice/gesture alternatives.",
-    icon: <IconAdjustments aria-hidden="true" className="size-4" />,
-  },
-  {
-    title: "Framing guides",
-    description:
-      "Static photo, document and code-positioning frames with caller-owned alignment feedback.",
-    icon: <IconScan aria-hidden="true" className="size-4" />,
-  },
-];
+function SharedCameraToolsControlsSection2({
+  camera,
+  record,
+}: {
+  camera: ReturnType<typeof useCameraContext>;
+  record: () => Promise<void>;
+}) {
+  return (
+    <CameraControlBar position="bottom">
+      <CameraControlBarGroup>
+        <FlashButton
+          size="sm"
+          isEnabled={camera.isFlashOn}
+          isSupported={camera.isFlashSupported}
+          onClick={() => {
+            void camera.toggleFlash();
+          }}
+        />
+        <SwitchCameraButton
+          size="sm"
+          disabled={camera.devices.length < 2 || camera.isRecording}
+          onClick={() => {
+            void camera.switchCamera();
+          }}
+        />
+        <CameraControlBarDivider />
+        <CaptureButton
+          size="sm"
+          disabled={camera.isRecording || camera.isTimerActive}
+          onClick={camera.startTimer}
+        />
+        <RecordButton
+          size="sm"
+          isRecording={camera.isRecording}
+          onClick={() => {
+            void record();
+          }}
+        />
+      </CameraControlBarGroup>
+    </CameraControlBar>
+  );
+}
 
-const shortcuts = [
-  {
-    keys: "Tab / Shift+Tab",
-    description:
-      "Move through native camera buttons, file selection and review actions. Focus must remain visible.",
-  },
-  {
-    keys: "Enter / Space",
-    description:
-      "Activate a focused control; inherited from Base UI Button. File selection also uses the native browser dialog.",
-  },
-  {
-    keys: "Space / R / S / F",
-    description:
-      "With enableKeyboardShortcuts and the camera region itself focused: timed photo, recording, camera switch and torch; Kira additions.",
-  },
-  {
-    keys: "Escape",
-    description:
-      "With the camera region focused: cancel a countdown. In settings/help: native Base UI dismissal and focus return. Use Stop camera to end capture.",
-  },
-  {
-    keys: "Arrow keys / Enter / typeahead",
-    description:
-      "Choose settings options; inherited from the kit’s Base UI Select and Tabs.",
-  },
-  {
-    keys: "Cancel acceptance / Cancel timer",
-    description:
-      "Reachable button alternatives stop caller-owned acceptance or a countdown without discarding the reviewed image.",
-  },
-];
+function ControlsControlsSection({
+  cameraRef,
+  setCapture,
+  setRecording,
+}: {
+  cameraRef: React.RefObject<CameraRef | null>;
+  setCapture: React.Dispatch<React.SetStateAction<CaptureResult | null>>;
+  setRecording: React.Dispatch<
+    React.SetStateAction<{ blob: Blob; url: string } | null>
+  >;
+}) {
+  return (
+    <Camera
+      ref={cameraRef}
+      mode="video"
+      className="w-full"
+      autoStart={false}
+      enableGestures
+      enableKeyboardShortcuts
+      onCapture={setCapture}
+    >
+      <CameraPreview showSkeleton={false} />
+      <CameraPermissions variant="overlay" />
+      <CameraCaptureFlash />
+      <SharedCameraTools
+        onRecording={(blob) =>
+          setRecording({ blob, url: URL.createObjectURL(blob) })
+        }
+      />
+    </Camera>
+  );
+}
+
+function ControlsControlsSection2({
+  cameraRef,
+  setHelpOpen,
+}: {
+  cameraRef: React.RefObject<CameraRef | null>;
+  setHelpOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => {
+          void cameraRef.current?.stop();
+        }}
+      >
+        Stop camera
+      </Button>
+      {/* oxlint-disable anti-slop/no-shape-in-symbol-names -- CameraButton's public shape prop selects geometric styling. */}
+      <CameraButton
+        size="sm"
+        variant="secondary"
+        shape="rounded"
+        icon={<IconKeyboard aria-hidden="true" />}
+        label="Keyboard help"
+        showLabel
+        labelPosition="right"
+        action="settings"
+        onClick={() => setHelpOpen(true)}
+      />
+      {/* oxlint-enable anti-slop/no-shape-in-symbol-names */}
+    </div>
+  );
+}
 
 const partsCode = `import { useState } from "react";
 import { IconKeyboard } from "@tabler/icons-react";
@@ -1020,7 +1024,7 @@ function CameraParts() {
         <AspectRatioButton aspectRatio={ratio} onAspectRatioChange={setRatio} />
         <ZoomButton zoomAction="in" onZoom={delta => camera.zoomIn(delta)} />
         <SettingsButton isOpen={settingsOpen} onClick={() => setSettingsOpen(true)} />
-        <CameraButton icon={<IconKeyboard />} label="Keyboard help" onClick={() => setHelpOpen(true)} />
+        <CameraButton icon={<IconKeyboard aria-hidden="true" />} label="Keyboard help" onClick={() => setHelpOpen(true)} />
       </CameraControlBar>
       <CameraControlBar position="bottom">
         <CameraControlBarGroup>
@@ -1071,6 +1075,263 @@ import type { CaptureResult } from "@/lib/camera/types";` +
     .map((code) => code.replace(/^import[\s\S]*?;\s*\n/gm, ""))
     .join("\n\n");
 
+export default function CameraPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Camera"
+        version="v3.0.1"
+        description="Composable photo/video capture with reviewed image handoff, shared controls and framing guides."
+      />
+
+      <FeatureGrid
+        features={cameraPageFeatures}
+        description="Explicit camera activation, reviewed capture handoff, and composable controls."
+      />
+
+      <DemoTabs defaultValue="basic" tabs={cameraPageDemoTabs} />
+
+      <KeyboardShortcuts
+        shortcuts={cameraPageShortcuts}
+        description="Scoped camera shortcuts and native Base UI control bindings."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Use KiraCamera for reviewed capture workflows or compose Camera primitives directly."
+        notes={cameraPageUsageNotes}
+      />
+
+      <APIReference
+        sections={cameraPageAPISections}
+        description="Props, types, and defaults for every exported Camera part and utility."
+      />
+
+      <Changelog
+        entries={cameraPageChangelogEntries}
+        title="Changelog"
+        description="Version history for the Camera component."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const cameraPageFeatures = [
+  {
+    title: "Intentional capture",
+    description:
+      "Start explicitly, photograph or choose an image, review it and accept or retake.",
+    icon: <IconCamera aria-hidden="true" className="size-4" />,
+  },
+  {
+    title: "Cancellable handoff",
+    description:
+      "Caller-owned acceptance preserves the image through pending, cancel and retry.",
+    icon: <IconPhoto aria-hidden="true" className="size-4" />,
+  },
+  {
+    title: "Shared controls",
+    description:
+      "Timer, recording, digital zoom, settings and opt-in voice/gesture alternatives.",
+    icon: <IconAdjustments aria-hidden="true" className="size-4" />,
+  },
+  {
+    title: "Framing guides",
+    description:
+      "Static photo, document and code-positioning frames with caller-owned alignment feedback.",
+    icon: <IconScan aria-hidden="true" className="size-4" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const cameraPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Camera capture"
+        description="Explicit start, native controls, scoped shortcuts and owned preview URLs."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "controls",
+    label: "Controls",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Shared camera controls"
+        description="One controller for digital zoom, focus gestures, timer and real recording."
+        code={controlsCode}
+      >
+        <ControlsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "settings",
+    label: "Settings",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Camera settings"
+        description="Shared Tabs, Select, Switch and Button with caller-owned values."
+        code={settingsCode}
+      >
+        <SettingsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "voice",
+    label: "Voice",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Opt-in voice controls"
+        description="Feature-detected speech recognition with explicit start and button alternatives."
+        code={voiceCode}
+      >
+        <VoiceDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "review",
+    label: "Review",
+    group: "KiraCamera",
+    demo: (
+      <DemoWrapper
+        title="Review before accepting"
+        description="Camera or file selection, image review, retake and local acceptance."
+        code={reviewCode}
+      >
+        <ReviewDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "acceptance",
+    label: "Acceptance",
+    group: "KiraCamera",
+    demo: (
+      <DemoWrapper
+        title="Cancellable acceptance"
+        description="Labelled image/delay fixtures show pending, cancel, error, retry and local success."
+        code={acceptanceCode}
+      >
+        <AcceptanceDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    group: "KiraCamera",
+    demo: (
+      <DemoWrapper
+        title="Claim photo workflow"
+        description="The reviewed camera/file workflow with caller-owned acceptance."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "overlays",
+    label: "Overlays",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Scan overlay states"
+        description="Status fixtures for framing, processing and recovery."
+        code={overlaysCode}
+      >
+        <OverlaysDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "guides",
+    label: "Guides",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Framing presets"
+        description="Static document, photo and code-positioning guides."
+        code={guidesCode}
+      >
+        <GuidesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long workflow labels, empty/disabled states, and control fixtures in a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const cameraPageShortcuts = [
+  {
+    keys: "Tab / Shift+Tab",
+    description:
+      "Move through native camera buttons, file selection and review actions. Focus must remain visible.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Activate a focused control; inherited from Base UI Button. File selection also uses the native browser dialog.",
+  },
+  {
+    keys: "Space / R / S / F",
+    description:
+      "With enableKeyboardShortcuts and the camera region itself focused: timed photo, recording, camera switch and torch; Kira additions.",
+  },
+  {
+    keys: "Escape",
+    description:
+      "With the camera region focused: cancel a countdown. In settings/help: native Base UI dismissal and focus return. Use Stop camera to end capture.",
+  },
+  {
+    keys: "Arrow keys / Enter / typeahead",
+    description:
+      "Choose settings options; inherited from the kit’s Base UI Select and Tabs.",
+  },
+  {
+    keys: "Cancel acceptance / Cancel timer",
+    description:
+      "Reachable button alternatives stop caller-owned acceptance or a countdown without discarding the reviewed image.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const cameraPageUsageNotes = [
+  {
+    label: "KiraCamera",
+    body: "Use KiraCamera for complete photo-capture and file-selection workflows with built-in review, retake, and cancellable caller-owned acceptance.",
+  },
+  {
+    label: "Composable Camera primitives",
+    body: "Compose Camera, CameraPreview, CameraControls, CameraControlBar, and framing overlays directly when you need custom recording, zoom, timer, or settings layouts.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
 function apiProp(
   prop: string,
   type: string,
@@ -1094,7 +1355,7 @@ const nativeButton = apiProp(
   "Shared native-button labels, busy/disabled states, CVA variants and click callbacks.",
 );
 
-const apiSections = [
+const cameraPageAPISections = [
   {
     title: "Camera",
     props: [
@@ -1721,12 +1982,24 @@ const apiSections = [
       ),
     ],
   },
-] satisfies React.ComponentProps<typeof APIReference>["sections"];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const changelog = [
+const cameraPageChangelogEntries = [
   {
-    version: "v3.0.0",
-    date: "November 14, 2026",
+    version: "3.0.1",
+    date: "20 November 2026",
+    changes: [
+      {
+        type: "removed",
+        title: "Orphan scan-overlay-pulse-glow keyframes",
+        description:
+          "The base stylesheet declared keyframes no component references — the scan overlay animates with scan-overlay-corner-pulse. Dropped from the kit CSS and CLI templates.",
+      },
+    ],
+  },
+  {
+    version: "3.0.0",
+    date: "14 November 2026",
     changes: [
       {
         type: "added",
@@ -1779,8 +2052,8 @@ const changelog = [
     ],
   },
   {
-    version: "v2.1.0",
-    date: "Previous release",
+    version: "2.1.0",
+    date: "1 November 2026",
     changes: [
       {
         type: "added",
@@ -1790,175 +2063,4 @@ const changelog = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof Changelog>["entries"];
-
-export default function CameraPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Camera"
-        version="v3.0.0"
-        description="Composable photo/video capture with reviewed image handoff, shared controls and framing guides."
-      />
-      <FeatureGrid features={features} />
-      <DemoTabs tabs={demoTabs} defaultValue="basic" lazyMount />
-      <KeyboardShortcuts shortcuts={shortcuts} />
-      <UsageBlock code={usageCode} />
-      <APIReference sections={apiSections} />
-      <Changelog entries={changelog} />
-    </ComponentPage>
-  );
-}
-
-function SharedCameraToolsControlsSection({
-  grid,
-  setGrid,
-  camera,
-  changeTimer,
-}: {
-  grid: CameraGridType;
-  setGrid: React.Dispatch<React.SetStateAction<CameraGridType>>;
-  camera: ReturnType<typeof useCameraContext>;
-  changeTimer: (duration: number) => void;
-}) {
-  return (
-    <CameraControlBar position="top">
-      <CameraControlBarGroup>
-        <GridButton size="sm" gridType={grid} onGridChange={setGrid} />
-        <TimerButton
-          size="sm"
-          duration={camera.timerDuration}
-          onDurationChange={changeTimer}
-        />
-        <ZoomButton
-          size="sm"
-          zoomAction="out"
-          onZoom={(delta) => camera.zoomOut(-delta)}
-          disabled={camera.zoom <= camera.minZoom}
-        />
-        <ZoomButton
-          size="sm"
-          zoomAction="in"
-          onZoom={(delta) => camera.zoomIn(delta)}
-          disabled={camera.zoom >= camera.maxZoom}
-        />
-        <ZoomButton
-          size="sm"
-          zoomAction="reset"
-          onZoom={() => camera.resetZoom()}
-        />
-      </CameraControlBarGroup>
-    </CameraControlBar>
-  );
-}
-
-function SharedCameraToolsControlsSection2({
-  camera,
-  record,
-}: {
-  camera: ReturnType<typeof useCameraContext>;
-  record: () => Promise<void>;
-}) {
-  return (
-    <CameraControlBar position="bottom">
-      <CameraControlBarGroup>
-        <FlashButton
-          size="sm"
-          isEnabled={camera.isFlashOn}
-          isSupported={camera.isFlashSupported}
-          onClick={() => {
-            void camera.toggleFlash();
-          }}
-        />
-        <SwitchCameraButton
-          size="sm"
-          disabled={camera.devices.length < 2 || camera.isRecording}
-          onClick={() => {
-            void camera.switchCamera();
-          }}
-        />
-        <CameraControlBarDivider />
-        <CaptureButton
-          size="sm"
-          disabled={camera.isRecording || camera.isTimerActive}
-          onClick={camera.startTimer}
-        />
-        <RecordButton
-          size="sm"
-          isRecording={camera.isRecording}
-          onClick={() => {
-            void record();
-          }}
-        />
-      </CameraControlBarGroup>
-    </CameraControlBar>
-  );
-}
-
-function ControlsControlsSection({
-  cameraRef,
-  setCapture,
-  setRecording,
-}: {
-  cameraRef: React.RefObject<CameraRef | null>;
-  setCapture: React.Dispatch<React.SetStateAction<CaptureResult | null>>;
-  setRecording: React.Dispatch<
-    React.SetStateAction<{ blob: Blob; url: string } | null>
-  >;
-}) {
-  return (
-    <Camera
-      ref={cameraRef}
-      mode="video"
-      className="w-full"
-      autoStart={false}
-      enableGestures
-      enableKeyboardShortcuts
-      onCapture={setCapture}
-    >
-      <CameraPreview showSkeleton={false} />
-      <CameraPermissions variant="overlay" />
-      <CameraCaptureFlash />
-      <SharedCameraTools
-        onRecording={(blob) =>
-          setRecording({ blob, url: URL.createObjectURL(blob) })
-        }
-      />
-    </Camera>
-  );
-}
-
-function ControlsControlsSection2({
-  cameraRef,
-  setHelpOpen,
-}: {
-  cameraRef: React.RefObject<CameraRef | null>;
-  setHelpOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  return (
-    <div className="flex flex-wrap gap-2">
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => {
-          void cameraRef.current?.stop();
-        }}
-      >
-        Stop camera
-      </Button>
-      {/* oxlint-disable anti-slop/no-shape-in-symbol-names -- CameraButton's public shape prop selects geometric styling. */}
-      <CameraButton
-        size="sm"
-        variant="secondary"
-        shape="rounded"
-        icon={<IconKeyboard />}
-        label="Keyboard help"
-        showLabel
-        labelPosition="right"
-        action="settings"
-        onClick={() => setHelpOpen(true)}
-      />
-      {/* oxlint-enable anti-slop/no-shape-in-symbol-names */}
-    </div>
-  );
-}
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

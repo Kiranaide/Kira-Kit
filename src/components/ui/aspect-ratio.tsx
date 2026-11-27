@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { withContentKeys } from "@/components/ui/content-keys";
+import { isStringProp, withOccurrenceKeys } from "@/lib/component-utils";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { IconPhotoOff, IconPlayerPlay, IconRefresh } from "@tabler/icons-react";
@@ -11,7 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "cn";
-import { isStringProp } from "@/components/ui/prop-guards";
 
 const aspectRatioVariants = cva("relative w-full min-w-0 overflow-hidden", {
   variants: {
@@ -1018,7 +1017,7 @@ function AspectRatioImageResourceView({
           data-slot="aspect-ratio-picture"
           className="block h-full w-full"
         >
-          {withContentKeys(
+          {withOccurrenceKeys(
             sources,
             (source) =>
               `${source.media}:${source.type}:${source.srcSet}:${source.sizes}`,

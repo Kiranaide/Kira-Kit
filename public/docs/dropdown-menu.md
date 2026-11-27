@@ -5,7 +5,7 @@ A Base UI menu supporting actions, links, checkboxes, radios, searchable submenu
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/dropdown-menu
+kira-kit add @kira-kit/dropdown-menu
 ```
 
 ## Dependencies
@@ -17,6 +17,7 @@ npx shadcn add @kira-kit/dropdown-menu
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/use-menu-action
 - @kira-kit/use-reduced-motion
 

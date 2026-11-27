@@ -3,7 +3,11 @@
 "use client";
 
 import * as React from "react";
-import { mergeComponentRefs } from "@/lib/component-refs";
+import {
+  isFunctionProp,
+  omitComponentProps,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { hsvaToHexa, type HsvaColor } from "@uiw/color-convert";
 import Saturation from "@uiw/react-color-saturation";
@@ -40,8 +44,6 @@ import {
   type ColorPickerValue,
 } from "@/lib/color-picker";
 import { cn } from "cn";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { omitComponentProps } from "@/lib/component-native-props";
 
 const colorPickerVariants = cva(
   // kira-kit-ignore spacing-scale: compact swatch-field stack gap
@@ -323,7 +325,7 @@ function ColorSliders({
         tooltipMode="never"
         getValueText={(value) => Math.round(value) + " degrees"}
         onValueChange={(h) => onChange({ ...color, h })}
-        className="[&_[data-slot=slider-header]]:sr-only [&_[data-slot=slider-track]]:bg-[linear-gradient(to_right,red,yellow,lime,cyan,blue,magenta,red)] [&_[data-slot=slider-range]]:bg-transparent"
+        className="**:data-[slot=slider-header]:sr-only **:data-[slot=slider-track]:bg-[linear-gradient(to_right,red,yellow,lime,cyan,blue,magenta,red)] **:data-[slot=slider-range]:bg-transparent"
       />
       <div
         data-slot="color-picker-keyboard-channels"
@@ -928,7 +930,13 @@ function useColorPickerActions(state: ReturnType<typeof useColorPickerState4>) {
     };
   }, [feedbackTimerRef, eyeAbortRef, mountedRef, copyGenerationRef]);
 
-  const attachRoot = mergeComponentRefs(rootRef, ref);
+  const attachRoot = (element: HTMLDivElement | null) => {
+    rootRef.current = element;
+
+    if (isFunctionProp(ref)) return ref(element);
+
+    if (ref) ref.current = element;
+  };
 
   const allSwatches = state.hideDefaultSwatches
     ? [...state.swatches]
@@ -1697,7 +1705,13 @@ function useKiraColorPickerActions(
 
   const { ref } = state;
 
-  const attachRoot = mergeComponentRefs(rootRef, ref);
+  const attachRoot = (element: HTMLDivElement | null) => {
+    rootRef.current = element;
+
+    if (isFunctionProp(ref)) return ref(element);
+
+    if (ref) ref.current = element;
+  };
 
   return { ...state, attachRoot };
 }

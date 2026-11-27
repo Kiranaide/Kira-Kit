@@ -1,7 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { omitComponentProps } from "@/lib/component-native-props";
+import {
+  omitComponentProps,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 import { Field as FieldPrimitive } from "@base-ui/react/field";
 import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group";
@@ -10,17 +13,6 @@ import { cva, type VariantProps } from "class-variance-authority";
 import gsap from "gsap";
 import { cn } from "cn";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
-
-function mergeClassName<State>(
-  base: string,
-  className: string | ((state: State) => string | undefined) | undefined,
-) {
-  return isCallbackProp(className)
-    ? (state: State) => cn(base, className(state))
-    : cn(base, className);
-}
 
 const joinIds = (...ids: (string | undefined | false)[]) =>
   ids.filter(Boolean).join(" ") || undefined;
@@ -37,8 +29,9 @@ const radioGroupVariants = cva("min-w-0 gap-2", {
 
 interface RadioGroupProps<Value = string>
   extends
-    RadioGroupPrimitive.Props<Value>,
+    Omit<RadioGroupPrimitive.Props<Value>, "className">,
     VariantProps<typeof radioGroupVariants> {
+  className?: string;
   "data-slot"?: string;
   error?: boolean;
   errorMessage?: React.ReactNode;
@@ -78,7 +71,7 @@ function RadioGroup<Value = string>({
 }
 
 const radioItemVariants = cva(
-  "peer relative inline-flex shrink-0 items-center justify-center rounded-full border-2 bg-background outline-none touch-manipulation after:absolute after:-inset-2 after:content-[''] motion-safe:transition-colors motion-safe:duration-150 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-readonly:cursor-default aria-invalid:border-destructive aria-invalid:ring-destructive/20",
+  "peer relative inline-flex shrink-0 items-center justify-center rounded-full border-2 bg-background outline-none touch-manipulation after:absolute after:-inset-2 after:content-[''] motion-safe:transition-colors motion-safe:duration-150 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring data-disabled:cursor-not-allowed data-disabled:opacity-50 data-readonly:cursor-default aria-invalid:border-destructive aria-invalid:ring-destructive/20",
   {
     variants: {
       size: {
@@ -100,8 +93,10 @@ const radioItemVariants = cva(
 
 interface RadioGroupItemProps<Value = string>
   extends
-    Omit<RadioPrimitive.Root.Props<Value>, "color">,
-    VariantProps<typeof radioItemVariants> {}
+    Omit<RadioPrimitive.Root.Props<Value>, "color" | "className">,
+    VariantProps<typeof radioItemVariants> {
+  className?: string;
+}
 
 const dotSizes = {
   // kira-kit-ignore spacing-scale: radio dot scales inside the non-control size ladder
@@ -128,10 +123,7 @@ function RadioGroupItem<Value = string>({
       data-slot="radio-group-item"
       aria-invalid={ariaInvalid ?? group.invalid}
       aria-describedby={joinIds(describedBy, group.errorId)}
-      className={mergeClassName<RadioPrimitive.Root.State>(
-        radioItemVariants({ size, color }),
-        className,
-      )}
+      className={cn(radioItemVariants({ size, color }), className)}
     >
       {children ?? (
         <RadioPrimitive.Indicator
@@ -197,10 +189,7 @@ function RadioWithLabel<Value = string>({
             disabledReason != null && reasonId,
           )}
           disabled={unavailable}
-          className={mergeClassName<RadioPrimitive.Root.State>(
-            "mt-0.5",
-            itemClassName,
-          )}
+          className={cn("mt-0.5", itemClassName)}
         />
         <span data-slot="radio-label-content" className="grid min-w-0 gap-1">
           <span
@@ -235,11 +224,14 @@ function RadioWithLabel<Value = string>({
 }
 
 const radioCardVariants = cva(
-  "group/radio-card relative flex min-w-0 w-full cursor-pointer items-start gap-3 rounded-lg border border-input bg-background p-4 text-start outline-none touch-manipulation motion-safe:transition-colors motion-safe:duration-150 hover:border-primary/50 hover:bg-muted/50 active:bg-muted data-checked:border-primary data-checked:bg-primary/5 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-disabled:hover:border-input data-disabled:hover:bg-background data-readonly:cursor-default aria-invalid:border-destructive",
+  "group/radio-card relative flex min-w-0 w-full cursor-pointer items-start gap-3 rounded-lg border border-input bg-background p-4 text-start outline-none touch-manipulation motion-safe:transition-colors motion-safe:duration-150 hover:border-primary/50 hover:bg-muted/50 active:bg-muted data-checked:border-primary data-checked:bg-primary/5 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring data-disabled:cursor-not-allowed data-disabled:opacity-50 data-disabled:hover:border-input data-disabled:hover:bg-background data-readonly:cursor-default aria-invalid:border-destructive",
 );
 
-interface RadioCardProps<Value = string> extends RadioPrimitive.Root
-  .Props<Value> {
+interface RadioCardProps<Value = string> extends Omit<
+  RadioPrimitive.Root.Props<Value>,
+  "className"
+> {
+  className?: string;
   label: React.ReactNode;
   description?: React.ReactNode;
   icon?: React.ReactNode;
@@ -294,10 +286,7 @@ function RadioCard<Value = string>({
         )
       }
       {...accessibilityProps}
-      className={mergeClassName<RadioPrimitive.Root.State>(
-        radioCardVariants(),
-        className,
-      )}
+      className={cn(radioCardVariants(), className)}
     >
       {renderRadioCardContentPart2({
         id,
@@ -543,10 +532,7 @@ function RadioButtonGroup<Value = string>({
         {...props}
         data-slot="radio-button-group"
         orientation="horizontal"
-        className={mergeClassName<RadioGroupPrimitive.State>(
-          radioButtonGroupVariants({ size }),
-          className,
-        )}
+        className={cn(radioButtonGroupVariants({ size }), className)}
       >
         <RadioButtonGroupIndicator />
         {children}
@@ -556,7 +542,7 @@ function RadioButtonGroup<Value = string>({
 }
 
 const radioButtonVariants = cva(
-  "relative isolate z-10 inline-flex min-w-0 max-w-full cursor-pointer select-none items-center justify-center rounded-md font-medium text-muted-foreground outline-none touch-manipulation motion-safe:transition-colors motion-safe:duration-150 hover:text-foreground active:bg-background/70 data-checked:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-disabled:cursor-not-allowed data-disabled:opacity-50 data-readonly:cursor-default aria-invalid:ring-[3px] aria-invalid:ring-destructive/20",
+  "relative isolate z-10 inline-flex min-w-0 max-w-full cursor-pointer select-none items-center justify-center rounded-md font-medium text-muted-foreground outline-none touch-manipulation motion-safe:transition-colors motion-safe:duration-150 hover:text-foreground active:bg-background/70 data-checked:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring data-disabled:cursor-not-allowed data-disabled:opacity-50 data-readonly:cursor-default aria-invalid:ring-[3px] aria-invalid:ring-destructive/20",
   {
     variants: {
       size: {
@@ -572,8 +558,9 @@ const radioButtonVariants = cva(
 
 interface RadioButtonProps<Value = string>
   extends
-    RadioPrimitive.Root.Props<Value>,
+    Omit<RadioPrimitive.Root.Props<Value>, "className">,
     VariantProps<typeof radioButtonVariants> {
+  className?: string;
   children: React.ReactNode;
 }
 
@@ -606,7 +593,7 @@ function RadioButton<Value = string>({
       }
       aria-invalid={ariaInvalid ?? group.invalid}
       aria-describedby={joinIds(describedBy, group.errorId)}
-      className={mergeClassName<RadioPrimitive.Root.State>(
+      className={cn(
         radioButtonVariants({ size: size ?? style.size }),
         className,
       )}
@@ -736,10 +723,7 @@ function renderRadioGroupSectionPart1<Value = string>({
           data-error={error || undefined}
           aria-invalid={invalid}
           aria-describedby={joinIds(describedBy, hasMessage && errorId)}
-          className={mergeClassName<RadioGroupPrimitive.State>(
-            radioGroupVariants({ orientation }),
-            className,
-          )}
+          className={cn(radioGroupVariants({ orientation }), className)}
         >
           {children}
         </RadioGroupPrimitive>
@@ -1280,10 +1264,7 @@ function useRadioGroupActions<Value extends string | number = string>(
     layout === "segmented" && options.length > 0 ? (
       <RadioButtonGroup
         {...props}
-        className={mergeClassName<RadioGroupPrimitive.State>(
-          "flex w-full",
-          props.className,
-        )}
+        className={cn("flex w-full", props.className)}
         value={value}
         defaultValue={defaultValue}
         onValueChange={handleValueChange}

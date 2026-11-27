@@ -14,25 +14,12 @@
       ]
     },
     {
-      "name": "use-async-data-table",
-      "type": "registry:hook",
-      "title": "useAsyncDataTable",
-      "description": "Coordinates server-side table pagination, sorting, column filters, and global search through a fetchFn that returns rows and totalCount. It returns fetched data, loading and error states, table state setters, pageCount, refetch, and page-navigation flags, while debouncing filters and resetting to the first page when queries change.",
-      "categories": ["hooks", "data-display"],
-      "dependencies": ["@tanstack/react-table"],
-      "files": [
-        {
-          "path": "use-async-data-table.ts",
-          "type": "registry:hook"
-        }
-      ]
-    },
-    {
       "name": "use-camera",
       "type": "registry:hook",
       "title": "useCamera",
       "description": "Controls browser camera previews, photo capture, video recording, device switching, zoom, focus, flash, timers, and optional keyboard, gesture, and voice input. It returns videoRef and gestureContainerRef plus stream, permission, device, and capture state and actions, with options for facingMode, media constraints, autoStart, capture format and quality, and lifecycle callbacks.",
       "categories": ["hooks", "media"],
+      "registryDependencies": ["@kira-kit/camera-lib"],
       "files": [
         {
           "path": "use-camera.ts",
@@ -47,22 +34,10 @@
       "description": "Manages controlled or uncontrolled HSVA color and alpha state and returns setters, recent colors, generated harmonies, contrast ratios, formatting, and clipboard-copy helpers. Use it to build color-picker interfaces with value/defaultValue, onValueChange, showAlpha, maxRecentColors, disabled, and readOnly options.",
       "categories": ["hooks", "form"],
       "dependencies": ["@uiw/color-convert"],
+      "registryDependencies": ["@kira-kit/color-picker-lib"],
       "files": [
         {
           "path": "use-color-picker.ts",
-          "type": "registry:hook"
-        }
-      ]
-    },
-    {
-      "name": "use-focus-manager",
-      "type": "registry:hook",
-      "title": "useFocusManager",
-      "description": "Implements roving-tabindex keyboard navigation for grids using rowCount and colCount, with optional wrapping, initial positioning, and enable/disable control. It returns the current position, directional and boundary movement methods, getTabIndex, handleKeyDown, and a containerRef that focuses cells marked with data-row and data-col.",
-      "categories": ["hooks", "navigation"],
-      "files": [
-        {
-          "path": "use-focus-manager.ts",
           "type": "registry:hook"
         }
       ]
@@ -76,6 +51,19 @@
       "files": [
         {
           "path": "use-menu-action.ts",
+          "type": "registry:hook"
+        }
+      ]
+    },
+    {
+      "name": "use-optimistic-commit",
+      "type": "registry:hook",
+      "title": "useOptimisticCommit",
+      "description": "Manages optimistic async value commits with automatic rollback, optional single-flight locking, and configurable error feedback via a local callback or OptimisticFeedbackProvider context adapter without coupling primitives to a toast module.",
+      "categories": ["hooks", "feedback"],
+      "files": [
+        {
+          "path": "use-optimistic-commit.tsx",
           "type": "registry:hook"
         }
       ]
@@ -135,14 +123,14 @@
       ]
     },
     {
-      "name": "use-spotlight",
+      "name": "use-visibility-pause",
       "type": "registry:hook",
-      "title": "useSpotlight",
-      "description": "Reads spotlight state from SpotlightProvider and returns open, query, setQuery, and openSpotlight, closeSpotlight, and toggleSpotlight controls. Use it inside command-palette interfaces whose provider supplies a global Cmd+K/Ctrl+K-style shortcut with customizable shortcut and disableShortcut options.",
-      "categories": ["hooks", "overlay"],
+      "title": "useVisibilityPause",
+      "description": "Provides useDocumentVisible and useVisibilityPause hooks to pause looped animations and timers automatically when the document tab is hidden or the target element is scrolled offscreen.",
+      "categories": ["hooks", "animation"],
       "files": [
         {
-          "path": "use-spotlight.tsx",
+          "path": "use-visibility-pause.ts",
           "type": "registry:hook"
         }
       ]

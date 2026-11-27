@@ -1,3 +1,10 @@
+import type { DepInstaller } from "./core/install/deps";
+import type { z } from "zod";
+import type {
+  componentsConfigSchema,
+  RegistryItemPayload,
+} from "./lib/schemas";
+
 export type RegistryItemType =
   | "registry:ui"
   | "registry:hook"
@@ -31,36 +38,8 @@ export interface RegistryItem {
   };
 }
 
-export interface Registry {
-  $schema: string;
-  name: string;
-  homepage?: string;
-  include?: string[];
-  items?: RegistryItem[];
-}
-
-export interface ComponentsConfig {
-  $schema?: string;
-  style?: string;
-  rsc?: boolean;
-  tsx?: boolean;
-  tailwind?: {
-    config?: string;
-    css?: string;
-    baseColor?: string;
-    cssVariables?: boolean;
-    prefix?: string;
-  };
-  iconLibrary?: string;
-  aliases?: {
-    components?: string;
-    utils?: string;
-    ui?: string;
-    lib?: string;
-    hooks?: string;
-  };
-  registries?: Record<string, string>;
-}
+/** components.json shape is owned by the zod schema in lib/schemas. */
+export type ComponentsConfig = z.infer<typeof componentsConfigSchema>;
 
 export interface AddOptions {
   items: string[];
@@ -76,20 +55,37 @@ export interface AddOptions {
 
 export interface InitOptions {
   cwd: string;
-  base?: string;
   preset?: string;
   primary?: string;
   baseColor?: string;
+  fontPreset?: string;
+  font?: string;
+  fontDisplay?: string;
+  fontMono?: string;
+  radius?: string;
+  surface?: string;
+  icon?: string;
   force: boolean;
   yes: boolean;
+  /** Injectable package installer (tests); defaults to the detected PM. */
+  installer?: DepInstaller;
 }
 
 export interface ThemeOptions {
   primary?: string;
   baseColor?: string;
+  fontPreset?: string;
+  font?: string;
+  fontDisplay?: string;
+  fontMono?: string;
+  radius?: string;
+  surface?: string;
+  icon?: string;
   out?: string;
   apply: boolean;
   cwd: string;
+  /** Injectable package installer (tests); defaults to the detected PM. */
+  installer?: DepInstaller;
 }
 
 export interface CheckOptions {
@@ -97,18 +93,31 @@ export interface CheckOptions {
   ci: boolean;
   format?: "pretty" | "json" | "github";
   json: boolean;
+  cwd?: string;
 }
 
 export interface CreateOptions {
   dir?: string;
+  cwd?: string;
   template?: string;
   install: boolean;
   git: boolean;
   yes: boolean;
+  /** Injectable package installer (tests); defaults to the detected PM. */
+  installer?: DepInstaller;
+  /** Injectable git initializer (tests); defaults to `git init`. */
+  gitInit?: (cwd: string) => Promise<void>;
 }
 
 export interface MigrateOptions {
   cwd: string;
   dryRun: boolean;
   yes: boolean;
+  /** Injectable package installer (tests); defaults to the detected PM. */
+  installer?: DepInstaller;
+  /** Injectable registry fetcher for divergence checks (tests). */
+  fetchItem?: (
+    address: string,
+    ctx: { cwd: string; registries?: Record<string, string> },
+  ) => Promise<RegistryItemPayload>;
 }

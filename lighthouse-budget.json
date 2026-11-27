@@ -1,0 +1,26 @@
+{
+  "urls": [
+    { "slug": "home", "path": "/" },
+    { "slug": "overview", "path": "/overview" },
+    { "slug": "button", "path": "/components/button" },
+    { "slug": "data-table", "path": "/components/data-table" },
+    { "slug": "field", "path": "/components/field" }
+  ],
+  "modes": ["mobile", "desktop"],
+  "runs": 3,
+  "thresholds": {
+    "performance": 100,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100
+  },
+  "metrics": {
+    "lcpMs": 1800,
+    "tbtMs": 200,
+    "cls": 0.05
+  },
+  "resourceBudgets": {
+    "initialJsGzipKb": 130,
+    "initialCssGzipKb": 75
+  }
+}

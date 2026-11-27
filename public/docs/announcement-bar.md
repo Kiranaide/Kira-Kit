@@ -5,7 +5,7 @@ Inline, sticky, fixed, or floating announcement with semantic variants, marquees
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/announcement-bar
+kira-kit add @kira-kit/announcement-bar
 ```
 
 ## Dependencies
@@ -18,6 +18,7 @@ npx shadcn add @kira-kit/announcement-bar
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
 - @kira-kit/spinner
 - @kira-kit/use-reduced-motion
 

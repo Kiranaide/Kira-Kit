@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "cn";
-import { isFunctionProp } from "@/components/ui/prop-guards";
+import { isFunctionProp } from "@/lib/component-utils";
 
 const separatorVariants = cva(
   "shrink-0 data-[orientation=horizontal]:h-[var(--separator-size)] data-[orientation=horizontal]:w-full data-[orientation=vertical]:w-[var(--separator-size)] data-[orientation=vertical]:self-stretch",
@@ -921,7 +921,7 @@ function KiraSeparatorControl({
       tabIndex={disabled && reason ? 0 : undefined}
       aria-labelledby={disabled && reason ? id + "-label" : undefined}
       aria-describedby={disabled && reason ? details : undefined}
-      className="min-w-0 rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      className="min-w-0 rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
     >
       <CollapsibleTrigger
         data-slot="kira-separator-trigger"
@@ -929,7 +929,7 @@ function KiraSeparatorControl({
         showArrow
         disabled={disabled}
         aria-describedby={details}
-        className="h-auto min-h-8 w-auto max-w-full flex-wrap px-2 py-1 text-start focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        className="h-auto min-h-8 w-auto max-w-full flex-wrap px-2 py-1 text-start focus-visible:ring-[3px] focus-visible:ring-ring"
       >
         {buildLabel()}
       </CollapsibleTrigger>

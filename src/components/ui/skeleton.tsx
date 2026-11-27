@@ -1,12 +1,14 @@
-/* oxlint-disable react/only-export-components -- public compound API and variants */
 "use client";
 
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { useVisibilityPause } from "@/hooks/use-visibility-pause";
 import { cn } from "cn";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
+import {
+  isFunctionProp,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 const skeletonVariants = cva("min-w-0 rounded-md bg-muted", {
   variants: {
@@ -92,37 +94,22 @@ function useSkeletonActivity(
   ref: React.RefObject<HTMLDivElement | null>,
   enabled: boolean,
 ) {
+  const paused = useVisibilityPause(ref, enabled);
+
   React.useEffect(() => {
     const node = ref.current;
 
     if (!node || !enabled) return;
 
-    let visible = typeof IntersectionObserver === "undefined";
-
-    const update = () =>
-      node.style.setProperty(
-        "--skeleton-play-state",
-        visible && !document.hidden ? "running" : "paused",
-      );
-
-    const observer =
-      typeof IntersectionObserver === "undefined"
-        ? undefined
-        : new IntersectionObserver(([entry]) => {
-            visible = entry.isIntersecting;
-            update();
-          });
-
-    observer?.observe(node);
-    document.addEventListener("visibilitychange", update);
-    update();
+    node.style.setProperty(
+      "--skeleton-play-state",
+      paused ? "paused" : "running",
+    );
 
     return () => {
-      observer?.disconnect();
-      document.removeEventListener("visibilitychange", update);
       node.style.setProperty("--skeleton-play-state", "paused");
     };
-  }, [enabled, ref]);
+  }, [enabled, paused, ref]);
 }
 
 function finiteTime(value: number, fallback: number) {
@@ -764,7 +751,7 @@ function RenderSkeletonRootSectionPart1({
         ref={(node) => {
           localRef.current = node;
 
-          if (isCallbackProp(ref)) return ref(node);
+          if (isFunctionProp(ref)) return ref(node);
 
           if (ref) ref.current = node;
         }}
@@ -840,7 +827,7 @@ function RenderSkeletonBonePart2({
       ref={(node) => {
         localRef.current = node;
 
-        if (isCallbackProp(ref)) return ref(node);
+        if (isFunctionProp(ref)) return ref(node);
 
         if (ref) ref.current = node;
       }}

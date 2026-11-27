@@ -1,4 +1,3 @@
-/* oxlint-disable react/only-export-components -- compound component exports are required by the public API */
 "use client";
 
 import * as React from "react";
@@ -43,8 +42,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp, isObjectProp } from "@/lib/component-prop-guards";
+import {
+  isFunctionProp,
+  isObjectProp,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 interface AccordionItemData {
   value: string;
@@ -269,6 +271,7 @@ function Accordion({
   className,
   scrollIntoView = false,
   hiddenUntilFound = false,
+  onValueChange,
   children,
   ref,
   ...props
@@ -279,7 +282,7 @@ function Accordion({
     value,
     ...args
   ) => {
-    props.onValueChange?.(value, ...args);
+    onValueChange?.(value, ...args);
 
     if (scrollIntoView && value.length > 0) {
       const lastOpened = value[value.length - 1];
@@ -374,7 +377,7 @@ function AccordionItem({
         itemRef.current = node as HTMLDivElement | null;
 
         // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
-        if (isCallbackProp(userRef)) userRef(node);
+        if (isFunctionProp(userRef)) userRef(node);
         // oxlint-disable-next-line anti-slop/no-runtime-typeof -- React refs support callback and mutable-object forms, requiring runtime dispatch.
         else if (userRef && isObjectProp(userRef)) {
           userRef.current = node;
@@ -463,11 +466,10 @@ function TriggerDragHandleSlot({
 
   return (
     <span
-      role="presentation"
-      className={cn("absolute top-1/2 -translate-y-1/2", edge)}
-      onClick={(e) => e.stopPropagation()}
-      onKeyDown={(e) => e.stopPropagation()}
-      onPointerDown={(e) => e.stopPropagation()}
+      className={cn(
+        "absolute top-1/2 z-10 flex -translate-y-1/2 items-center",
+        edge,
+      )}
     >
       {handle}
     </span>
@@ -517,11 +519,12 @@ function TriggerRetry({
 
   return (
     <button
+      type="button"
       onClick={(e) => {
         e.stopPropagation();
         onRetry();
       }}
-      className="shrink-0 p-1 rounded hover:bg-destructive/20 text-destructive"
+      className="mr-2 inline-flex size-8 shrink-0 items-center justify-center rounded hover:bg-destructive/20 text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label="Retry loading content"
     >
       <IconRefresh className="h-4 w-4" />
@@ -573,11 +576,10 @@ function DisabledReasonWrapper({
   reason: string;
   children: React.ReactNode;
 }) {
-  // Focus proxy for a native-disabled trigger (Base UI's documented pattern for
-  // tooltips on disabled controls): the span is hit-tested where the disabled
-  // button is not, and Tab reaches it so keyboard users can read the reason.
-  // role="button" is deliberately avoided â€” the accessible "disabled button" is
-  // already announced via aria-disabled; the label carries the reason.
+  // Focus proxy for a native-disabled trigger (Base UI's documented pattern
+  // for tooltips on disabled controls): the span is hit-tested where the
+  // disabled button is not, and Tab reaches it so keyboard users can read the
+  // reason. `role="button"` is avoided — aria-disabled already announces it.
   const anchorProps = {
     // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus proxy required for disabled-control tooltip reachability (WCAG 2.2 Â§9)
     tabIndex: 0,
@@ -610,9 +612,9 @@ function dragHandlePadding(
 ): string {
   if (!hasHandle) return "";
 
-  if (position === "start") return "pl-8";
+  if (position === "start") return "pl-10";
 
-  return "pr-8";
+  return "pr-10";
 }
 
 function AccordionTrigger(input: AccordionTriggerProps) {
@@ -783,6 +785,7 @@ function AccordionContentBody({
         <p className="text-xs opacity-80 mt-1">{error.message}</p>
         {onRetry && (
           <button
+            type="button"
             onClick={onRetry}
             className="mt-2 text-xs flex items-center gap-1 hover:underline"
           >
@@ -894,14 +897,16 @@ function useSortableAccordionDrag(item: AccordionItemData) {
   }
 
   const dragHandle = (
-    <span
+    <button
+      type="button"
       {...attributes}
       {...listeners}
-      className="shrink-0 p-1 rounded hover:bg-muted cursor-grab active:cursor-grabbing touch-none"
+      disabled={item.disabled}
+      className="inline-flex size-7 shrink-0 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40 cursor-grab active:cursor-grabbing touch-none"
       aria-label="Drag to reorder"
     >
-      <IconGripVertical className="h-4 w-4 text-muted-foreground" />
-    </span>
+      <IconGripVertical className="h-4 w-4" aria-hidden="true" />
+    </button>
   );
 
   return { setNodeRef, style, dragHandle };
@@ -1091,7 +1096,6 @@ function useHashDeepLink(
 /** dnd-kit wiring for the draggable accordion mode. */
 function useAccordionDrag(
   setItems: (updater: React.SetStateAction<AccordionItemData[]>) => void,
-  onReorder?: (items: AccordionItemData[]) => void,
 ) {
   const [activeId, setActiveId] = React.useState<string | null>(null);
 
@@ -1131,15 +1135,11 @@ function useAccordionDrag(
 
           if (oldIndex === -1 || newIndex === -1) return items;
 
-          const newFlatItems = arrayMove(flatItems, oldIndex, newIndex);
-
-          onReorder?.(newFlatItems);
-
-          return newFlatItems;
+          return arrayMove(flatItems, oldIndex, newIndex);
         });
       }
     },
-    [onReorder, setItems],
+    [setItems],
   );
 
   return { activeId, sensors, handleDragStart, handleDragEnd };
@@ -1173,7 +1173,7 @@ function AccordionSearchHeader({
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder={searchPlaceholder}
           aria-label="Search accordion items"
-          className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring"
         />
       </div>
       {visibleCount === 0 && (
@@ -1510,10 +1510,9 @@ function useExpandedButtonClasses(reducedMotion: boolean): string {
 /** Drag wiring bundle consumed by AccordionItemsRoot. */
 function useAccordionDragWiring(
   setItems: (updater: React.SetStateAction<AccordionItemData[]>) => void,
-  onReorder?: (items: AccordionItemData[]) => void,
 ): AccordionDragWiring {
   const { activeId, sensors, handleDragStart, handleDragEnd } =
-    useAccordionDrag(setItems, onReorder);
+    useAccordionDrag(setItems);
 
   return { activeId, sensors, handleDragStart, handleDragEnd };
 }
@@ -1558,6 +1557,7 @@ function KiraAccordionCore({
     searchPlaceholder,
     hiddenUntilFound,
     deepLink,
+    ...accordionProps
   } = { ...CORE_DEFAULTS, ...props };
 
   const reducedMotion = useReducedMotion();
@@ -1583,7 +1583,7 @@ function KiraAccordionCore({
   // what the browser is looking for, so it is ignored while the feature is on.
   const forceMounted = hiddenUntilFound;
 
-  const drag = useAccordionDragWiring(setItems, onReorder);
+  const drag = useAccordionDragWiring(setItems);
 
   const { handleExpandAll, handleCollapseAll } = useExpandCollapseAll(
     items,
@@ -1607,7 +1607,7 @@ function KiraAccordionCore({
     openValues,
     handleValueChange,
     hiddenUntilFound,
-    props,
+    props: accordionProps,
     draggable,
     items,
     variant,
@@ -1672,18 +1672,25 @@ function DragOverlayItem({
   size: VariantProps<typeof accordionTriggerVariants>["size"];
 }) {
   return (
-    <AccordionItem value={item.value} disabled={item.disabled}>
-      <AccordionTrigger
-        variant={item.variant ?? variant}
-        size={item.size ?? size}
-        icon={item.icon}
-        showArrow={item.showArrow ?? true}
-        chevronIcon={item.chevronIcon}
-        chevronPosition={item.chevronPosition ?? "end"}
-      >
-        {item.title}
-      </AccordionTrigger>
-    </AccordionItem>
+    <div
+      data-slot="accordion-drag-overlay"
+      className={cn(
+        accordionTriggerVariants({
+          variant: item.variant ?? variant,
+          size: item.size ?? size,
+        }),
+        "cursor-grabbing rounded-lg border border-primary/40 bg-background shadow-lg ring-1 ring-primary/15",
+      )}
+    >
+      <span className="flex flex-1 min-w-0 items-center gap-2">
+        <IconGripVertical
+          className="h-4 w-4 shrink-0 text-muted-foreground"
+          aria-hidden="true"
+        />
+        <TriggerIcon icon={item.icon} />
+        <span className="flex-1 min-w-0 truncate">{item.title}</span>
+      </span>
+    </div>
   );
 }
 
@@ -1719,11 +1726,7 @@ function DragOverlayContent({
 
   if (!item) return null;
 
-  return (
-    <div className="opacity-50">
-      <DragOverlayItem item={item} variant={variant} size={size} />
-    </div>
-  );
+  return <DragOverlayItem item={item} variant={variant} size={size} />;
 }
 
 function renderAccordionItem({
@@ -1934,7 +1937,15 @@ function renderAccordionHeaderPart1({
   onRetry,
 }: renderAccordionHeaderPart1Args) {
   return (
-    <AccordionPrimitive.Header data-slot="accordion-header">
+    <AccordionPrimitive.Header
+      data-slot="accordion-header"
+      className="relative flex items-center"
+    >
+      <TriggerDragHandleSlot
+        handle={dragHandle}
+        position={dragHandlePosition}
+        side="start"
+      />
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
@@ -1944,11 +1955,6 @@ function renderAccordionHeaderPart1({
         {...props}
       >
         <span className="flex items-center gap-2 flex-1 min-w-0">
-          <TriggerDragHandleSlot
-            handle={dragHandle}
-            position={dragHandlePosition}
-            side="start"
-          />
           <TriggerChevron
             icon={chevronIcon}
             position={chevronPosition}
@@ -1960,7 +1966,6 @@ function renderAccordionHeaderPart1({
           <span className="flex-1 min-w-0 truncate">{children}</span>
           <TriggerLoading loading={loading} reducedMotion={reducedMotion} />
           <TriggerSuccess active={showSuccess} />
-          <TriggerRetry error={error} loading={loading} onRetry={onRetry} />
           <TriggerChevron
             icon={chevronIcon}
             position={chevronPosition}
@@ -1968,13 +1973,14 @@ function renderAccordionHeaderPart1({
             show={showArrow}
             reducedMotion={reducedMotion}
           />
-          <TriggerDragHandleSlot
-            handle={dragHandle}
-            position={dragHandlePosition}
-            side="end"
-          />
         </span>
       </AccordionPrimitive.Trigger>
+      <TriggerRetry error={error} loading={loading} onRetry={onRetry} />
+      <TriggerDragHandleSlot
+        handle={dragHandle}
+        position={dragHandlePosition}
+        side="end"
+      />
     </AccordionPrimitive.Header>
   );
 }

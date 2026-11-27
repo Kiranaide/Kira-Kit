@@ -5,7 +5,7 @@ SVG loading indicator with six sizes and semantic colors, supporting indetermina
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/spinner
+kira-kit add @kira-kit/spinner
 ```
 
 ## Dependencies
@@ -16,7 +16,9 @@ npx shadcn add @kira-kit/spinner
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/use-reduced-motion
+- @kira-kit/use-visibility-pause
 
 ## Usage
 

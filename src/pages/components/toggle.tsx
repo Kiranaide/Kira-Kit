@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import { useState } from "react";
 import { Toggle, KiraToggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -30,10 +31,6 @@ import {
   APIReference,
   Changelog,
 } from "@/components/docs";
-
-// =============================================================================
-// Demo Components
-// =============================================================================
 
 function BasicDemo() {
   return (
@@ -170,7 +167,7 @@ function SizesDemo() {
   return (
     <div className="flex items-center gap-4">
       <Toggle size="sm" aria-label="Small toggle">
-        <IconBold className="h-3.5 w-3.5" />
+        <IconBold className="size-3" />
       </Toggle>
       <Toggle size="default" aria-label="Default toggle">
         <IconBold className="h-4 w-4" />
@@ -192,7 +189,7 @@ export function ToggleSizesDemo() {
   return (
     <div className="flex items-center gap-4">
       <Toggle size="sm" aria-label="Small toggle">
-        <IconBold className="h-3.5 w-3.5" />
+        <IconBold className="size-3" />
       </Toggle>
       <Toggle size="default" aria-label="Default toggle">
         <IconBold className="h-4 w-4" />
@@ -805,9 +802,9 @@ export function FormDemo() {
 }`;
 
 const saveLike = () =>
-  new Promise<void>((_resolve, reject) =>
-    setTimeout(() => reject(new Error("offline")), 900),
-  );
+  new Promise<void>((_resolve, reject) => {
+    setTimeout(() => reject(new Error("offline")), 900);
+  });
 
 function OptimisticSection() {
   return (
@@ -963,64 +960,24 @@ function StatesBusySection() {
   );
 }
 
-function StatesStressSection() {
-  return (
-    <div className="space-y-2 border-t pt-4">
-      <p className="text-sm text-muted-foreground">
-        Stress cases — very long label, narrow container with scroll, icon-only
-        dense bar. All sizes keep ≥ 24×24 touch targets (icon-sm = 32px, group
-        sm = 28px) per WCAG 2.5.8.
-      </p>
-      <Toggle variant="outline" className="max-w-full" aria-label="Long label">
-        A very long label that would overflow a tight toolbar at small sizes
-      </Toggle>
-      <div className="w-[320px]">
-        <ToggleGroup
-          aria-label="Overflow demo"
-          variant="segment"
-          overflowMode="scroll"
-        >
-          <ToggleGroupItem value="one">One</ToggleGroupItem>
-          <ToggleGroupItem value="two">Two</ToggleGroupItem>
-          <ToggleGroupItem value="three">Three</ToggleGroupItem>
-          <ToggleGroupItem value="four">Four</ToggleGroupItem>
-          <ToggleGroupItem value="five">Five</ToggleGroupItem>
-        </ToggleGroup>
-      </div>
-      <div className="flex items-center gap-1">
-        <Toggle size="icon-sm" aria-label="Bold">
-          <IconBold className="h-3.5 w-3.5" />
-        </Toggle>
-        <Toggle size="icon-sm" aria-label="Italic">
-          <IconItalic className="h-3.5 w-3.5" />
-        </Toggle>
-        <Toggle size="icon-sm" aria-label="Underline">
-          <IconUnderline className="h-3.5 w-3.5" />
-        </Toggle>
-      </div>
-    </div>
-  );
-}
-
 function StatesDemo() {
   return (
     <div className="space-y-6">
       <StatesInteractiveSection />
       <StatesReasonSection />
       <StatesBusySection />
-      <StatesStressSection />
     </div>
   );
 }
 
 const statesCode = `import { Toggle, KiraToggle } from "@/components/ui/toggle"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 
 {/* States matrix */}
 <Toggle aria-label="Default state">Default</Toggle>
 <Toggle variant="outline" defaultPressed aria-label="Pressed state">
   Pressed
 </Toggle>
+<Toggle variant="ghost" aria-label="Ghost state">Ghost</Toggle>
 <Toggle disabled aria-label="Disabled state">Disabled</Toggle>
 <Toggle loading aria-label="Loading state">Saving</Toggle>
 
@@ -1028,6 +985,76 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 <KiraToggle disabled disabledReason="Read-only in demo mode.">
   Read-only
 </KiraToggle>`;
+
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <Toggle variant="outline" className="max-w-full" aria-label="Long label">
+        <span className="truncate">
+          A very long toggle label that must truncate cleanly inside a narrow
+          max-w-xs container
+        </span>
+      </Toggle>
+      <ToggleGroup
+        aria-label="Overflow demo"
+        variant="segment"
+        overflowMode="scroll"
+      >
+        <ToggleGroupItem value="one">One</ToggleGroupItem>
+        <ToggleGroupItem value="two">Two</ToggleGroupItem>
+        <ToggleGroupItem value="three">Three</ToggleGroupItem>
+        <ToggleGroupItem value="four">Four</ToggleGroupItem>
+        <ToggleGroupItem value="five">Five</ToggleGroupItem>
+      </ToggleGroup>
+      <div className="flex items-center gap-1">
+        <Toggle size="icon-sm" aria-label="Bold">
+          <IconBold className="size-3" />
+        </Toggle>
+        <Toggle size="icon-sm" aria-label="Italic">
+          <IconItalic className="size-3" />
+        </Toggle>
+        <Toggle size="icon-sm" aria-label="Underline">
+          <IconUnderline className="size-3" />
+        </Toggle>
+        <Toggle size="icon-sm" aria-label="Empty toggle" />
+      </div>
+      <KiraToggle
+        variant="outline"
+        disabled
+        disabledReason="Unavailable in narrow read-only mode."
+      >
+        Disabled control
+      </KiraToggle>
+    </div>
+  );
+}
+
+const stressCode = `import { Toggle, KiraToggle } from "@/components/ui/toggle"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import { IconBold, IconItalic, IconUnderline } from "@tabler/icons-react"
+
+// Long labels, narrow container overflow, icon-only/empty controls, and disabled state in max-w-xs
+<div className="max-w-xs space-y-4">
+  <Toggle variant="outline" className="max-w-full" aria-label="Long label">
+    <span className="truncate">A very long toggle label...</span>
+  </Toggle>
+  <ToggleGroup aria-label="Overflow demo" variant="segment" overflowMode="scroll">
+    <ToggleGroupItem value="one">One</ToggleGroupItem>
+    <ToggleGroupItem value="two">Two</ToggleGroupItem>
+    <ToggleGroupItem value="three">Three</ToggleGroupItem>
+    <ToggleGroupItem value="four">Four</ToggleGroupItem>
+    <ToggleGroupItem value="five">Five</ToggleGroupItem>
+  </ToggleGroup>
+  <div className="flex items-center gap-1">
+    <Toggle size="icon-sm" aria-label="Bold"><IconBold className="size-3" /></Toggle>
+    <Toggle size="icon-sm" aria-label="Italic"><IconItalic className="size-3" /></Toggle>
+    <Toggle size="icon-sm" aria-label="Underline"><IconUnderline className="size-3" /></Toggle>
+    <Toggle size="icon-sm" aria-label="Empty toggle" />
+  </div>
+  <KiraToggle variant="outline" disabled disabledReason="Unavailable in narrow read-only mode.">
+    Disabled control
+  </KiraToggle>
+</div>`;
 
 function KiraToggleDemo() {
   return (
@@ -1075,7 +1102,87 @@ import { IconHeart, IconStar, IconVolumeOff } from "@tabler/icons-react"
   description="Silences this channel until you turn it back on."
 />`;
 
-const features = [
+const usageCode = `import { Toggle, KiraToggle } from "@/components/ui/toggle"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+
+{/* Single Toggle (icon-only requires aria-label) */}
+<Toggle aria-label="Toggle bold">
+  <IconBold className="h-4 w-4" />
+</Toggle>
+
+{/* Toggle with text and indicator */}
+<Toggle showIndicator defaultPressed>
+  Enabled
+</Toggle>
+
+{/* Loading state */}
+<Toggle loading>Processing...</Toggle>
+
+{/* Toggle Group - Multiple selection */}
+<ToggleGroup aria-label="Text formatting" multiple>
+  <ToggleGroupItem value="bold">Bold</ToggleGroupItem>
+  <ToggleGroupItem value="italic">Italic</ToggleGroupItem>
+</ToggleGroup>
+
+{/* Toggle Group - Single selection (segment style) */}
+<ToggleGroup aria-label="View mode" variant="segment">
+  <ToggleGroupItem value="grid">Grid</ToggleGroupItem>
+  <ToggleGroupItem value="list">List</ToggleGroupItem>
+</ToggleGroup>`;
+
+export default function TogglePage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Toggle & Toggle Group"
+        description="Accessible two-state buttons with WCAG 2.2 AA compliance. Correct aria-pressed semantics, a dev-time guard against label swapping, and KiraToggle for optimistic async toggles."
+        version="v2.2.1"
+      />
+
+      <FeatureGrid
+        features={togglePageFeatures}
+        description="Capabilities built into Toggle and ToggleGroup."
+      />
+
+      <DemoTabs tabs={togglePageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        shortcuts={togglePageShortcuts}
+        description="Keyboard navigation and activation bindings for Toggle, KiraToggle, and ToggleGroup."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Basic implementation examples for Toggle and ToggleGroup."
+        notes={[
+          {
+            label: "KiraToggle",
+            body: "Use KiraToggle for optimistic async updates, bound keyboard shortcuts, tooltips, and keyboard-reachable disabled reasons.",
+          },
+          {
+            label: "Stable labels",
+            body: "Keep the visible label fixed between pressed states so aria-pressed announces state cleanly without breaking voice control.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={togglePageAPISections}
+        description="Props, types, and defaults for Toggle, KiraToggle, and ToggleGroup."
+      />
+
+      <Changelog
+        entries={togglePageChangelogEntries}
+        title="Changelog"
+        description="Version history for the Toggle component."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const togglePageFeatures = [
   {
     title: "Accessible",
     description:
@@ -1094,9 +1201,9 @@ const features = [
       "ToggleGroup supports single/multiple selection, segment and pills variants, vertical orientation, and various sizes.",
     icon: <IconStack2 className="h-4 w-4" />,
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const keyboardShortcuts = [
+const togglePageShortcuts = [
   { keys: "Space", description: "Toggle the focused button" },
   { keys: "Enter", description: "Toggle the focused button" },
   {
@@ -1112,9 +1219,9 @@ const keyboardShortcuts = [
   { keys: "Shift + Tab", description: "Move focus to previous element" },
   { keys: "Arrow Left/Right", description: "Navigate within toggle group" },
   { keys: "Arrow Up/Down", description: "Navigate vertical toggle group" },
-];
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-const apiSections = [
+const togglePageAPISections = [
   {
     title: "Toggle",
     props: [
@@ -1278,6 +1385,13 @@ const apiSections = [
         description:
           'Submits with the enclosing form while pressed — see Toggle\'s name. Pairs with value to set the submitted payload (defaults to "on").',
       },
+      {
+        prop: "value",
+        type: "string",
+        default: '"on"',
+        description:
+          'Value submitted while pressed when name is set. Defaults to "on".',
+      },
     ],
   },
   {
@@ -1354,12 +1468,13 @@ const apiSections = [
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const demoTabs = [
+const togglePageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Toggle"
@@ -1373,6 +1488,7 @@ const demoTabs = [
   {
     value: "variants",
     label: "Variants",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Toggle Variants"
@@ -1386,6 +1502,7 @@ const demoTabs = [
   {
     value: "semantic",
     label: "Semantic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Semantic Color Variants"
@@ -1399,6 +1516,7 @@ const demoTabs = [
   {
     value: "sizes",
     label: "Sizes",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Toggle Sizes"
@@ -1412,6 +1530,7 @@ const demoTabs = [
   {
     value: "loading",
     label: "Loading",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Loading State"
@@ -1425,6 +1544,7 @@ const demoTabs = [
   {
     value: "indicator",
     label: "Indicator",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="With Check Indicator"
@@ -1438,6 +1558,7 @@ const demoTabs = [
   {
     value: "radius",
     label: "Radius",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Radius Variants"
@@ -1451,10 +1572,11 @@ const demoTabs = [
   {
     value: "states",
     label: "States",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="State Matrix"
-        description="Every state the toggle can render: interactive, disabled (with a keyboard-reachable reason), loading, success, and stress cases."
+        description="Interactive, disabled (with a keyboard-reachable reason), and loading states."
         code={statesCode}
       >
         <StatesDemo />
@@ -1462,8 +1584,23 @@ const demoTabs = [
     ),
   },
   {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, narrow max-w-xs container overflow, icon-only/empty controls, and disabled reasons."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "rich",
     label: "Rich Examples",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Rich Examples"
@@ -1477,6 +1614,7 @@ const demoTabs = [
   {
     value: "stable-label",
     label: "Stable Label",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="A Toggle's Label Must Not Change"
@@ -1490,6 +1628,7 @@ const demoTabs = [
   {
     value: "form",
     label: "Form",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Form Submission"
@@ -1503,6 +1642,7 @@ const demoTabs = [
   {
     value: "kira",
     label: "KiraToggle",
+    group: "KiraToggle",
     demo: (
       <DemoWrapper
         title="KiraToggle"
@@ -1516,6 +1656,7 @@ const demoTabs = [
   {
     value: "group-multiple",
     label: "Group (Multiple)",
+    group: "ToggleGroup",
     demo: (
       <DemoWrapper
         title="Toggle Group (Multiple Selection)"
@@ -1529,6 +1670,7 @@ const demoTabs = [
   {
     value: "group-single",
     label: "Group (Single)",
+    group: "ToggleGroup",
     demo: (
       <DemoWrapper
         title="Toggle Group (Single Selection)"
@@ -1542,6 +1684,7 @@ const demoTabs = [
   {
     value: "group-variants",
     label: "Group Variants",
+    group: "ToggleGroup",
     demo: (
       <DemoWrapper
         title="Toggle Group Variants"
@@ -1555,6 +1698,7 @@ const demoTabs = [
   {
     value: "group-sizes",
     label: "Group Sizes",
+    group: "ToggleGroup",
     demo: (
       <DemoWrapper
         title="Toggle Group Sizes"
@@ -1568,6 +1712,7 @@ const demoTabs = [
   {
     value: "group-vertical",
     label: "Vertical",
+    group: "ToggleGroup",
     demo: (
       <DemoWrapper
         title="Vertical Orientation"
@@ -1578,37 +1723,27 @@ const demoTabs = [
       </DemoWrapper>
     ),
   },
-];
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const usageCode = `import { Toggle } from "@/components/ui/toggle"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-
-{/* Single Toggle (icon-only requires aria-label) */}
-<Toggle aria-label="Toggle bold">
-<IconBold className="h-4 w-4" />
-</Toggle>
-
-{/* Toggle with text and indicator */}
-<Toggle showIndicator defaultPressed>
-Enabled
-</Toggle>
-
-{/* Loading state */}
-<Toggle loading>Processing...</Toggle>
-
-{/* Toggle Group - Multiple selection */}
-<ToggleGroup aria-label="Text formatting" multiple>
-<ToggleGroupItem value="bold">Bold</ToggleGroupItem>
-<ToggleGroupItem value="italic">Italic</ToggleGroupItem>
-</ToggleGroup>
-
-{/* Toggle Group - Single selection (segment style) */}
-<ToggleGroup aria-label="View mode" variant="segment">
-<ToggleGroupItem value="grid">Grid</ToggleGroupItem>
-<ToggleGroupItem value="list">List</ToggleGroupItem>
-</ToggleGroup>`;
-
-const changelogEntries = [
+const togglePageChangelogEntries = [
+  {
+    version: "2.2.1",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "CSS toggle motion and shared useOptimisticCommit seam",
+        description:
+          "Removed gsap and direct toast imports; press/pop motion now uses Tailwind CSS (animate-toggle-pop) + WAAPI and optimistic toggle commits route through useOptimisticCommit.",
+      },
+      {
+        type: "fixed",
+        title: "Focus ring at full strength",
+        description:
+          "focus-visible now paints border-ring + ring-ring + ring-[3px] without the /50 alpha; the half-strength ring measured 1.63–2.82:1 against the page, below WCAG 1.4.11. The default pressed surface inherits the retuned primary pair.",
+      },
+    ],
+  },
   {
     version: "2.2.0",
     date: "20 October 2026",
@@ -1681,35 +1816,4 @@ const changelogEntries = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof Changelog>["entries"];
-
-// =============================================================================
-// Page Component
-// =============================================================================
-
-export default function TogglePage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Toggle & Toggle Group"
-        description="Accessible two-state buttons with WCAG 2.2 AA compliance. Correct aria-pressed semantics, a dev-time guard against label swapping, and KiraToggle for optimistic async toggles."
-        version="v2.2"
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
-
-      <UsageBlock
-        code={usageCode}
-        description="Basic implementation examples for Toggle and ToggleGroup."
-      />
-
-      <APIReference sections={apiSections} />
-
-      <Changelog entries={changelogEntries} />
-    </ComponentPage>
-  );
-}
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

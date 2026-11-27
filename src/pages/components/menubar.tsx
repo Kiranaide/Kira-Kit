@@ -40,10 +40,6 @@ import {
   Changelog,
 } from "@/components/docs";
 
-/* -------------------------------------------------------------------------- */
-/*                              Demo components                               */
-/* -------------------------------------------------------------------------- */
-
 function BasicDemo() {
   return (
     <Menubar aria-label="File actions">
@@ -220,7 +216,7 @@ function SearchDemo() {
   return (
     <KiraMenubar
       commandSearch
-      aria-label="Workspace commands"
+      rootProps={{ "aria-label": "Workspace commands" }}
       menus={searchDemoKiraMenubarMenus}
     />
   );
@@ -290,56 +286,34 @@ function KiraDemo() {
   );
 }
 
-function StatesDemo() {
-  const menus: KiraMenubarMenuData[] = [
-    {
-      id: "workspace",
-      label: "Workspace",
-      searchable: true,
-      items: [
-        {
-          type: "action",
-          id: "long",
-          label:
-            "Export the complete November release notes and review history",
-          onSelect: () => {},
-        },
-        {
-          type: "action",
-          id: "restricted",
-          label: "Transfer ownership",
-          disabled: true,
-          disabledReason: "Only the current owner can transfer this workspace.",
-          onSelect: () => {},
-        },
-      ],
-    },
-  ];
-
+function StressDemo() {
   return (
-    <div className="space-y-6">
+    <div className="max-w-xs space-y-6">
       <div className="space-y-2">
         <p className="text-sm font-medium">Long labels and permissions</p>
-        <KiraMenubar menus={menus} commandSearch />
+        <KiraMenubar
+          menus={stressDemoKiraMenubarMenus}
+          commandSearch
+          rootProps={{ "aria-label": "Workspace stress commands" }}
+        />
       </div>
       <div className="space-y-2">
         <p className="text-sm font-medium">Read-only workspace</p>
         <KiraMenubar
-          menus={menus}
+          menus={stressDemoKiraMenubarMenus}
           rootProps={{ disabled: true, "aria-label": "Read-only commands" }}
         />
       </div>
       <div className="space-y-2">
         <p className="text-sm font-medium">No available commands</p>
-        <KiraMenubar menus={[]} />
+        <KiraMenubar
+          menus={[]}
+          rootProps={{ "aria-label": "Empty commands" }}
+        />
       </div>
     </div>
   );
 }
-
-/* -------------------------------------------------------------------------- */
-/*                              Demo code snippets                            */
-/* -------------------------------------------------------------------------- */
 
 const basicCode = `import {
   Menubar,
@@ -365,6 +339,16 @@ export function BasicMenubar() {
           </MenubarGroup>
         </MenubarContent>
       </MenubarMenu>
+      <MenubarMenu>
+        <MenubarTrigger>Edit</MenubarTrigger>
+        <MenubarContent>
+          <MenubarGroup>
+            <MenubarLabel>Edit</MenubarLabel>
+            <MenubarItem>Undo</MenubarItem>
+            <MenubarItem>Redo</MenubarItem>
+          </MenubarGroup>
+        </MenubarContent>
+      </MenubarMenu>
     </Menubar>
   );
 }`;
@@ -372,7 +356,7 @@ export function BasicMenubar() {
 const variantsCode = `import { Menubar, MenubarMenu, MenubarTrigger, MenubarContent, MenubarItem } from "@/components/ui/menubar";
 
 // variant: "default" | "outline" | "soft"; density: "comfortable" | "compact"
-<Menubar variant="soft" density="compact" aria-label="Commands">
+<Menubar variant="soft" density="compact" aria-label="Soft compact menubar">
   <MenubarMenu>
     <MenubarTrigger>File</MenubarTrigger>
     <MenubarContent>
@@ -389,6 +373,9 @@ const itemsCode = `import { Menubar, MenubarMenu, MenubarTrigger, MenubarContent
     <MenubarContent>
       <MenubarItem icon={<IconPlus />} shortcut="Ctrl+N">
         New document
+      </MenubarItem>
+      <MenubarItem icon={<IconDeviceFloppy />} shortcut="Ctrl+S">
+        Save draft
       </MenubarItem>
       <MenubarItem disabled disabledReason="Only workspace owners can publish documents.">
         Publish
@@ -454,18 +441,22 @@ const searchCode = `import { KiraMenubar, type KiraMenubarMenuData } from "@/com
 
 const menus: KiraMenubarMenuData[] = [
   {
-    id: "workspace", label: "Workspace", searchable: true,
+    id: "workspace",
+    label: "Workspace",
+    searchable: true,
     items: [
-      { type: "action", id: "new", label: "New document" },
-      { type: "action", id: "copy", label: "Copy link" },
-      { type: "action", id: "archive", label: "Archive project" },
+      { type: "action", id: "new", label: "New document", onSelect: () => {} },
+      { type: "action", id: "copy", label: "Copy link", onSelect: () => {} },
+      { type: "action", id: "archive", label: "Archive project", onSelect: () => {} },
     ],
   },
 ];
 
-// commandSearch adds a Commands trigger (Ctrl/Cmd K while the menubar has focus)
-// that searches actions across every enabled menu.
-<KiraMenubar commandSearch menus={menus} aria-label="Workspace commands" />`;
+<KiraMenubar
+  commandSearch
+  rootProps={{ "aria-label": "Workspace commands" }}
+  menus={menus}
+/>`;
 
 const kiraCode = `import { useState } from "react";
 import { KiraMenubar, type KiraMenubarMenuData } from "@/components/ui/menubar";
@@ -474,11 +465,26 @@ export function DocumentMenubar() {
   const [notice, setNotice] = useState("No command run yet.");
   const menus: KiraMenubarMenuData[] = [
     {
-      id: "file", label: "File", items: [
-        { type: "action", id: "new", label: "New document", icon: <IconPlus />,
-          onSelect: () => setNotice("New document ready.") },
-        { type: "action", id: "save", label: "Save draft", icon: <IconDeviceFloppy />,
-          onSelect: async () => { /* await persistence */ setNotice("Draft saved."); } },
+      id: "file",
+      label: "File",
+      items: [
+        {
+          type: "action",
+          id: "new",
+          label: "New document",
+          icon: <IconPlus />,
+          onSelect: () => setNotice("New document ready."),
+        },
+        {
+          type: "action",
+          id: "save",
+          label: "Save draft",
+          icon: <IconDeviceFloppy />,
+          onSelect: async () => {
+            setNotice("Draft saved.");
+          },
+          successMessage: "Draft saved on this device.",
+        },
       ],
     },
   ];
@@ -491,26 +497,35 @@ export function DocumentMenubar() {
   );
 }`;
 
-const statesCode = `import { KiraMenubar, type KiraMenubarMenuData } from "@/components/ui/menubar";
+const stressCode = `import { KiraMenubar, type KiraMenubarMenuData } from "@/components/ui/menubar";
 
 const menus: KiraMenubarMenuData[] = [
   {
-    id: "workspace", label: "Workspace", searchable: true,
+    id: "workspace",
+    label: "Workspace",
+    searchable: true,
     items: [
-      { type: "action", id: "long",
+      {
+        type: "action",
+        id: "long",
         label: "Export the complete November release notes and review history",
-        onSelect: () => {} },
-      { type: "action", id: "restricted", label: "Transfer ownership",
+        onSelect: () => {},
+      },
+      {
+        type: "action",
+        id: "restricted",
+        label: "Transfer ownership",
         disabled: true,
         disabledReason: "Only the current owner can transfer this workspace.",
-        onSelect: () => {} },
+        onSelect: () => {},
+      },
     ],
   },
 ];
 
-export function MenubarStates() {
+export function MenubarStressCases() {
   return (
-    <div className="space-y-6">
+    <div className="max-w-xs space-y-6">
       <KiraMenubar menus={menus} commandSearch />
       <KiraMenubar menus={menus} rootProps={{ disabled: true }} />
       <KiraMenubar menus={[]} />
@@ -521,288 +536,139 @@ export function MenubarStates() {
 const usageCode = `import { KiraMenubar, type KiraMenubarMenuData } from "@/components/ui/menubar";
 
 export function DocumentMenus() {
-  const menus: KiraMenubarMenuData[] = [{
-    id: "file", label: "File", items: [{
-      type: "action", id: "save", label: "Save draft",
-      onSelect: () => window.localStorage.setItem("draft", "A new draft"),
-    }],
-  }];
-  return <KiraMenubar menus={menus} commandSearch rootProps={{ variant: "soft", density: "comfortable", "aria-label": "Document commands" }} />;
+  const menus: KiraMenubarMenuData[] = [
+    {
+      id: "file",
+      label: "File",
+      items: [
+        {
+          type: "action",
+          id: "save",
+          label: "Save draft",
+          onSelect: () => window.localStorage.setItem("draft", "A new draft"),
+        },
+      ],
+    },
+  ];
+
+  return (
+    <KiraMenubar
+      menus={menus}
+      commandSearch
+      rootProps={{
+        variant: "soft",
+        density: "comfortable",
+        "aria-label": "Document commands",
+      }}
+    />
+  );
 }`;
 
-/* -------------------------------------------------------------------------- */
-/*                                   Page                                     */
-/* -------------------------------------------------------------------------- */
+export default function MenubarPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Menubar"
+        description="A command surface for document editors and workspaces. Familiar menus, useful preferences, and one place to find the action you need."
+        version="v2.1.1"
+      />
 
-const primitiveApi = [
-  {
-    title: "MenubarMenu",
-    props: [
-      {
-        prop: "open / defaultOpen / onOpenChange",
-        type: "MenubarMenuProps",
-        description:
-          "Control one top-level menu. Keyboard coordination belongs to the parent Menubar.",
-      },
-    ],
-  },
-  {
-    title: "MenubarPortal",
-    props: [
-      {
-        prop: "keepMounted / container",
-        type: "MenubarPortalProps",
-        description:
-          "Retain a popup after closing or choose its portal container. Content normally creates its own portal.",
-      },
-    ],
-  },
-  {
-    title: "MenubarTrigger",
-    props: [
-      {
-        prop: "disabled / render / className",
-        type: "MenubarTriggerProps",
-        description:
-          "A named top-level button, with native disabled state and optional render composition.",
-      },
-    ],
-  },
-  {
-    title: "MenubarContent",
-    props: [
-      {
-        prop: "side / align / sideOffset / alignOffset",
-        type: "MenubarContentProps",
-        description:
-          "Popup placement. Portal, positioner, collision handling and balanced padding are included.",
-      },
-      {
-        prop: "keepMounted / showBackdrop / portalProps / positionerProps",
-        type: "MenubarContentProps",
-        description: "Mounting, overlay and advanced primitive configuration.",
-      },
-    ],
-  },
-  {
-    title: "MenubarGroup",
-    props: [
-      {
-        prop: "children",
-        type: "React.ReactNode",
-        description: "Group related rows and their MenubarLabel.",
-      },
-    ],
-  },
-  {
-    title: "MenubarLabel",
-    props: [
-      {
-        prop: "inset / children",
-        type: "boolean / React.ReactNode",
-        description:
-          "A group heading. Place inside MenubarGroup; inset aligns with indicator rows.",
-      },
-    ],
-  },
-  {
-    title: "MenubarItem",
-    props: [
-      {
-        prop: "onClick / closeOnClick",
-        type: "MenubarItemProps",
-        description: "Run an action; closing on activation defaults to true.",
-      },
-      {
-        prop: "icon / shortcut / loading / disabledReason / variant",
-        type: "MenubarItemProps",
-        description:
-          "Leading icon, trailing hint, pending state, readable permission explanation and default/destructive appearance.",
-      },
-    ],
-  },
-  {
-    title: "MenubarLinkItem",
-    props: [
-      {
-        prop: "href / target / rel / icon / shortcut",
-        type: "MenubarLinkItemProps",
-        description:
-          "A native anchor row preserving modifier-click and new-window behavior.",
-      },
-    ],
-  },
-  {
-    title: "MenubarCheckboxItem",
-    props: [
-      {
-        prop: "checked / defaultChecked / onCheckedChange",
-        type: "MenubarCheckboxItemProps",
-        description:
-          "An independent preference; closeOnClick defaults to false. Supports disabledReason.",
-      },
-    ],
-  },
-  {
-    title: "MenubarRadioGroup",
-    props: [
-      {
-        prop: "value / defaultValue / onValueChange",
-        type: "MenubarRadioGroupProps",
-        description: "Own the selected value of an exclusive preference group.",
-      },
-    ],
-  },
-  {
-    title: "MenubarRadioItem",
-    props: [
-      {
-        prop: "value / disabled / disabledReason / closeOnClick",
-        type: "MenubarRadioItemProps",
-        description:
-          "One radio option; preference changes keep the popup open by default.",
-      },
-    ],
-  },
-  {
-    title: "MenubarSeparator",
-    props: [
-      {
-        prop: "className",
-        type: "MenubarSeparatorProps['className']",
-        description: "A visual and semantic separator between command groups.",
-      },
-    ],
-  },
-  {
-    title: "MenubarShortcut",
-    props: [
-      {
-        prop: "children",
-        type: "React.ReactNode",
-        description:
-          "A trailing keyboard hint. Displaying a hint does not register a key binding.",
-      },
-    ],
-  },
-  {
-    title: "MenubarSub",
-    props: [
-      {
-        prop: "open / defaultOpen / onOpenChange",
-        type: "MenubarSubProps",
-        description: "The primitive root for a nested menu.",
-      },
-    ],
-  },
-  {
-    title: "MenubarSubTrigger",
-    props: [
-      {
-        prop: "icon / disabled / disabledReason / inset",
-        type: "MenubarSubTriggerProps",
-        description:
-          "A nested-menu row with its direction indicator and permission explanation.",
-      },
-    ],
-  },
-  {
-    title: "MenubarSubContent",
-    props: [
-      {
-        prop: "align / sideOffset / alignOffset / keepMounted",
-        type: "MenubarSubContentProps",
-        description: "A portalled nested popup placed on the logical end side.",
-      },
-    ],
-  },
-  {
-    title: "MenubarBackdrop",
-    props: [
-      {
-        prop: "className / style",
-        type: "MenubarBackdropProps",
-        description:
-          "Optional overlay; showBackdrop on Content provides the common composition.",
-      },
-    ],
-  },
-  {
-    title: "MenubarArrow",
-    props: [
-      {
-        prop: "className / style",
-        type: "MenubarArrowProps",
-        description: "An optional arrow positioned by the popup primitive.",
-      },
-    ],
-  },
-  {
-    title: "MenubarFilterProvider",
-    props: [
-      {
-        prop: "value / onValueChange / autoHighlight / filter",
-        type: "MenubarFilterProviderProps",
-        description:
-          "Base UI preview filtering. Wrap the menu root, then place Input and List in its Content.",
-      },
-    ],
-  },
-  {
-    title: "MenubarInput",
-    props: [
-      {
-        prop: "aria-label / placeholder",
-        type: "string",
-        description:
-          "The named search field of a menu wrapped in FilterProvider.",
-      },
-    ],
-  },
-  {
-    title: "MenubarList",
-    props: [
-      {
-        prop: "children",
-        type: "React.ReactNode",
-        description: "Place searchable rows and groups here, after the input.",
-      },
-    ],
-  },
-  {
-    title: "MenubarClear",
-    props: [
-      {
-        prop: "aria-label / children",
-        type: "MenubarClearProps",
-        description:
-          "Pointer clear control for a nonempty query; keyboard users can select and delete the input text.",
-      },
-    ],
-  },
-  {
-    title: "MenubarEmpty",
-    props: [
-      {
-        prop: "children",
-        type: "React.ReactNode",
-        description: "The zero-match message of a filtered menu.",
-      },
-    ],
-  },
-  {
-    title: "MenubarViewport",
-    props: [
-      {
-        prop: "children / className",
-        type: "MenubarViewportProps",
-        description: "A viewport for shared-popup content transitions.",
-      },
-    ],
-  },
-];
+      <FeatureGrid
+        features={menubarPageFeatures}
+        description="Command-surface capabilities built on Base UI Menubar and Menu."
+      />
 
-const features = [
+      <DemoTabs tabs={menubarPageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        shortcuts={menubarPageShortcuts}
+        description="Keyboard navigation and command-search bindings."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Use KiraMenubar for typed command trees or compose Menubar primitives directly."
+        notes={[
+          {
+            label: "KiraMenubar",
+            body: "Preferred entry point for workspace menubars with async actions, command search (Ctrl/Cmd K), and shared error recovery.",
+          },
+          {
+            label: "Menubar primitives",
+            body: "Compose Menubar, MenubarMenu, MenubarTrigger, and MenubarContent when you need custom layout or custom popup parts.",
+          },
+        ]}
+      />
+
+      <APIReference
+        sections={menubarPageAPISections}
+        title="API reference"
+        description="Props, types, and defaults for KiraMenubar and all Menubar primitives."
+      />
+
+      <Changelog
+        entries={menubarPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Menubar."
+      />
+    </ComponentPage>
+  );
+}
+
+const searchDemoKiraMenubarMenus = [
+  {
+    id: "workspace",
+    label: "Workspace",
+    searchable: true,
+    items: [
+      {
+        type: "action",
+        id: "new",
+        label: "New document",
+        onSelect: () => {},
+      },
+      {
+        type: "action",
+        id: "copy",
+        label: "Copy link",
+        onSelect: () => {},
+      },
+      {
+        type: "action",
+        id: "archive",
+        label: "Archive project",
+        onSelect: () => {},
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof KiraMenubar>["menus"];
+
+const stressDemoKiraMenubarMenus = [
+  {
+    id: "workspace",
+    label: "Workspace",
+    searchable: true,
+    items: [
+      {
+        type: "action",
+        id: "long",
+        label: "Export the complete November release notes and review history",
+        onSelect: () => {},
+      },
+      {
+        type: "action",
+        id: "restricted",
+        label: "Transfer ownership",
+        disabled: true,
+        disabledReason: "Only the current owner can transfer this workspace.",
+        onSelect: () => {},
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof KiraMenubar>["menus"];
+
+const menubarPageFeatures = [
   {
     title: "Search across menus",
     description:
@@ -821,12 +687,13 @@ const features = [
       "Use the KiraMenubar data API or compose individual parts; preferences and empty states remain readable.",
     icon: <IconSettings className="size-4" />,
   },
-];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
 
-const demoTabs = [
+const menubarPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Menubar"
@@ -840,6 +707,7 @@ const demoTabs = [
   {
     value: "variants",
     label: "Variants",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Variants & Density"
@@ -853,6 +721,7 @@ const demoTabs = [
   {
     value: "items",
     label: "Items",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Item Features"
@@ -866,6 +735,7 @@ const demoTabs = [
   {
     value: "preferences",
     label: "Preferences",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Checkbox & Radio Items"
@@ -879,6 +749,7 @@ const demoTabs = [
   {
     value: "submenu",
     label: "Submenu",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Submenus"
@@ -890,21 +761,9 @@ const demoTabs = [
     ),
   },
   {
-    value: "search",
-    label: "Search",
-    demo: (
-      <DemoWrapper
-        title="Command Search"
-        description="A searchable menu plus the Commands trigger; Ctrl/Cmd K toggles it while the menubar has focus."
-        code={searchCode}
-      >
-        <SearchDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "kira",
-    label: "Kira",
+    label: "KiraMenubar",
+    group: "KiraMenubar",
     demo: (
       <DemoWrapper
         title="KiraMenubar"
@@ -916,21 +775,36 @@ const demoTabs = [
     ),
   },
   {
-    value: "states",
-    label: "States",
+    value: "search",
+    label: "Search",
+    group: "KiraMenubar",
     demo: (
       <DemoWrapper
-        title="Stress Cases"
-        description="Long labels, permission-gated rows, a read-only workspace and an empty command set."
-        code={statesCode}
+        title="Command Search"
+        description="A searchable menu plus the Commands trigger; Ctrl/Cmd K toggles it while the menubar has focus."
+        code={searchCode}
       >
-        <StatesDemo />
+        <SearchDemo />
       </DemoWrapper>
     ),
   },
-];
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, permission-gated rows, a read-only workspace, and an empty command set inside a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const keyboardShortcuts = [
+const menubarPageShortcuts = [
   {
     keys: "Left / Right",
     description: "Move between menus; inherited from Base UI.",
@@ -962,15 +836,310 @@ const keyboardShortcuts = [
     description:
       "Filter actions and run the highlighted result in command search; inherited from Base UI filtering.",
   },
-];
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
-const apiSections = [
+const menubarPrimitiveAPISections = [
+  {
+    title: "MenubarMenu",
+    props: [
+      {
+        prop: "open / defaultOpen / onOpenChange",
+        type: "MenubarMenuProps",
+        default: "-",
+        description:
+          "Control one top-level menu. Keyboard coordination belongs to the parent Menubar.",
+      },
+    ],
+  },
+  {
+    title: "MenubarPortal",
+    props: [
+      {
+        prop: "keepMounted / container",
+        type: "MenubarPortalProps",
+        default: "-",
+        description:
+          "Retain a popup after closing or choose its portal container. Content normally creates its own portal.",
+      },
+    ],
+  },
+  {
+    title: "MenubarTrigger",
+    props: [
+      {
+        prop: "disabled / render / className",
+        type: "MenubarTriggerProps",
+        default: "-",
+        description:
+          "A named top-level button, with native disabled state and optional render composition.",
+      },
+    ],
+  },
+  {
+    title: "MenubarContent",
+    props: [
+      {
+        prop: "side / align / sideOffset / alignOffset",
+        type: "MenubarContentProps",
+        default: "-",
+        description:
+          "Popup placement. Portal, positioner, collision handling and balanced padding are included.",
+      },
+      {
+        prop: "keepMounted / showBackdrop / portalProps / positionerProps",
+        type: "MenubarContentProps",
+        default: "-",
+        description: "Mounting, overlay and advanced primitive configuration.",
+      },
+    ],
+  },
+  {
+    title: "MenubarGroup",
+    props: [
+      {
+        prop: "children",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Group related rows and their MenubarLabel.",
+      },
+    ],
+  },
+  {
+    title: "MenubarLabel",
+    props: [
+      {
+        prop: "inset / children",
+        type: "boolean / React.ReactNode",
+        default: "false",
+        description:
+          "A group heading. Place inside MenubarGroup; inset aligns with indicator rows.",
+      },
+    ],
+  },
+  {
+    title: "MenubarItem",
+    props: [
+      {
+        prop: "onClick / closeOnClick",
+        type: "MenubarItemProps",
+        default: "closeOnClick: true",
+        description: "Run an action; closing on activation defaults to true.",
+      },
+      {
+        prop: "icon / shortcut / loading / disabledReason / variant",
+        type: "MenubarItemProps",
+        default: "-",
+        description:
+          "Leading icon, trailing hint, pending state, readable permission explanation and default/destructive appearance.",
+      },
+    ],
+  },
+  {
+    title: "MenubarLinkItem",
+    props: [
+      {
+        prop: "href / target / rel / icon / shortcut",
+        type: "MenubarLinkItemProps",
+        default: "-",
+        description:
+          "A native anchor row preserving modifier-click and new-window behavior.",
+      },
+    ],
+  },
+  {
+    title: "MenubarCheckboxItem",
+    props: [
+      {
+        prop: "checked / defaultChecked / onCheckedChange",
+        type: "MenubarCheckboxItemProps",
+        default: "-",
+        description:
+          "An independent preference; closeOnClick defaults to false. Supports disabledReason.",
+      },
+    ],
+  },
+  {
+    title: "MenubarRadioGroup",
+    props: [
+      {
+        prop: "value / defaultValue / onValueChange",
+        type: "MenubarRadioGroupProps",
+        default: "-",
+        description: "Own the selected value of an exclusive preference group.",
+      },
+    ],
+  },
+  {
+    title: "MenubarRadioItem",
+    props: [
+      {
+        prop: "value / disabled / disabledReason / closeOnClick",
+        type: "MenubarRadioItemProps",
+        default: "closeOnClick: false",
+        description:
+          "One radio option; preference changes keep the popup open by default.",
+      },
+    ],
+  },
+  {
+    title: "MenubarSeparator",
+    props: [
+      {
+        prop: "className",
+        type: "MenubarSeparatorProps['className']",
+        default: "-",
+        description: "A visual and semantic separator between command groups.",
+      },
+    ],
+  },
+  {
+    title: "MenubarShortcut",
+    props: [
+      {
+        prop: "children",
+        type: "React.ReactNode",
+        default: "-",
+        description:
+          "A trailing keyboard hint. Displaying a hint does not register a key binding.",
+      },
+    ],
+  },
+  {
+    title: "MenubarSub",
+    props: [
+      {
+        prop: "open / defaultOpen / onOpenChange",
+        type: "MenubarSubProps",
+        default: "-",
+        description: "The primitive root for a nested menu.",
+      },
+    ],
+  },
+  {
+    title: "MenubarSubTrigger",
+    props: [
+      {
+        prop: "icon / disabled / disabledReason / inset",
+        type: "MenubarSubTriggerProps",
+        default: "-",
+        description:
+          "A nested-menu row with its direction indicator and permission explanation.",
+      },
+    ],
+  },
+  {
+    title: "MenubarSubContent",
+    props: [
+      {
+        prop: "align / sideOffset / alignOffset / keepMounted",
+        type: "MenubarSubContentProps",
+        default: "-",
+        description: "A portalled nested popup placed on the logical end side.",
+      },
+    ],
+  },
+  {
+    title: "MenubarBackdrop",
+    props: [
+      {
+        prop: "className / style",
+        type: "MenubarBackdropProps",
+        default: "-",
+        description:
+          "Optional overlay; showBackdrop on Content provides the common composition.",
+      },
+    ],
+  },
+  {
+    title: "MenubarArrow",
+    props: [
+      {
+        prop: "className / style",
+        type: "MenubarArrowProps",
+        default: "-",
+        description: "An optional arrow positioned by the popup primitive.",
+      },
+    ],
+  },
+  {
+    title: "MenubarFilterProvider",
+    props: [
+      {
+        prop: "value / onValueChange / autoHighlight / filter",
+        type: "MenubarFilterProviderProps",
+        default: "-",
+        description:
+          "Base UI preview filtering. Wrap the menu root, then place Input and List in its Content.",
+      },
+    ],
+  },
+  {
+    title: "MenubarInput",
+    props: [
+      {
+        prop: "aria-label / placeholder",
+        type: "string",
+        default: "-",
+        description:
+          "The named search field of a menu wrapped in FilterProvider.",
+      },
+    ],
+  },
+  {
+    title: "MenubarList",
+    props: [
+      {
+        prop: "children",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Place searchable rows and groups here, after the input.",
+      },
+    ],
+  },
+  {
+    title: "MenubarClear",
+    props: [
+      {
+        prop: "aria-label / children",
+        type: "MenubarClearProps",
+        default: "-",
+        description:
+          "Pointer clear control for a nonempty query; keyboard users can select and delete the input text.",
+      },
+    ],
+  },
+  {
+    title: "MenubarEmpty",
+    props: [
+      {
+        prop: "children",
+        type: "React.ReactNode",
+        default: "-",
+        description: "The zero-match message of a filtered menu.",
+      },
+    ],
+  },
+  {
+    title: "MenubarViewport",
+    props: [
+      {
+        prop: "children / className",
+        type: "MenubarViewportProps",
+        default: "-",
+        description: "A viewport for shared-popup content transitions.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
+const menubarPageAPISections = [
   {
     title: "KiraMenubar",
     props: [
       {
         prop: "menus",
         type: "readonly KiraMenubarMenuData[]",
+        default: "-",
         description:
           "Menus with IDs, labels, optional icons/disabled/searchable state, and MenuItemData rows.",
       },
@@ -984,12 +1153,14 @@ const apiSections = [
       {
         prop: "rootProps",
         type: "MenubarProps",
+        default: "-",
         description:
           "Root appearance, density, accessibility name and primitive options.",
       },
       {
         prop: "onActionError",
         type: "(error: unknown, item: MenuActionItem) => void",
+        default: "-",
         description:
           "Receive a failed command; the popup keeps the shared retry action.",
       },
@@ -1015,98 +1186,48 @@ const apiSections = [
       {
         prop: "orientation / loopFocus / disabled / modal",
         type: "MenubarPrimitive.Props",
+        default: "-",
         description: "Native Base UI coordination and interaction options.",
       },
     ],
   },
-  ...primitiveApi,
+  ...menubarPrimitiveAPISections,
   {
     title: "Variants and handles",
     props: [
       {
         prop: "menubarVariants / menubarTriggerVariants / menubarContentVariants / menubarItemVariants",
         type: "cva",
+        default: "-",
         description:
           "Exported styling recipes; content and item recipes share the dropdown implementation.",
       },
       {
         prop: "createDropdownMenuHandle",
         type: "<Payload>() => Menu.Handle<Payload>",
+        default: "-",
         description:
           "Connect detached triggers to one popup; re-exported from dropdown-menu.",
       },
     ],
   },
-];
-
-export default function MenubarPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Menubar"
-        description="A command surface for document editors and workspaces. Familiar menus, useful preferences, and one place to find the action you need."
-        version="v2.1.1"
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
-
-      <UsageBlock code={usageCode} />
-
-      <APIReference sections={apiSections} />
-
-      <Changelog entries={menubarPageChangelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
-const searchDemoKiraMenubarMenus = [
-  {
-    id: "workspace",
-    label: "Workspace",
-    searchable: true,
-    items: [
-      {
-        type: "action",
-        id: "new",
-        label: "New document",
-        onSelect: () => {},
-      },
-      {
-        type: "action",
-        id: "copy",
-        label: "Copy link",
-        onSelect: () => {},
-      },
-      {
-        type: "action",
-        id: "archive",
-        label: "Archive project",
-        onSelect: () => {},
-      },
-    ],
-  },
-] satisfies ReactComponentProps<typeof KiraMenubar>["menus"];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const menubarPageChangelogEntries = [
   {
-    version: "v2.1.1",
+    version: "2.1.1",
     date: "8 November 2026",
     changes: [
       {
         type: "changed",
         title: "One demo per feature",
         description:
-          "Replaced the workspace-scene demos with focused per-feature tabs (basic, variants, items, preferences, submenu, search, Kira, states) matching the dropdown-menu demo structure. Demo components and their snippets live in the page file; page padding no longer overrides ComponentPage. No API changes.",
+          "Replaced the workspace-scene demos with focused per-feature tabs (basic, variants, items, preferences, submenu, search, Kira, stress cases) matching the dropdown-menu demo structure. Demo components and their snippets live in the page file; page padding no longer overrides ComponentPage. No API changes.",
       },
     ],
   },
   {
-    version: "v2.1.0",
+    version: "2.1.0",
     date: "7 November 2026",
     changes: [
       {
@@ -1119,12 +1240,12 @@ const menubarPageChangelogEntries = [
         type: "changed",
         title: "A workspace you can use",
         description:
-          "Replaced placeholder menu rows with a working draft, independent preferences, an export submenu, shared command search and a dedicated states tab. Examples use their live source.",
+          "Replaced placeholder menu rows with a working draft, independent preferences, an export submenu, shared command search and a dedicated stress cases tab. Examples use their live source.",
       },
     ],
   },
   {
-    version: "v2.0.1",
+    version: "2.0.1",
     date: "7 November 2026",
     changes: [
       {
@@ -1136,7 +1257,7 @@ const menubarPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.0.0",
+    version: "2.0.0",
     date: "6 November 2026",
     changes: [
       {

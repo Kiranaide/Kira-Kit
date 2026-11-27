@@ -5,7 +5,7 @@ A Base UI Select and Combobox family supporting grouped options, multiple select
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/select
+kira-kit add @kira-kit/select
 ```
 
 ## Dependencies
@@ -19,6 +19,7 @@ npx shadcn add @kira-kit/select
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/use-reduced-motion
 
 ## Usage

@@ -5,17 +5,18 @@ Polymorphic layout primitive for semantic HTML tags with responsive background, 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/box
+kira-kit add @kira-kit/box
 ```
 
 ## Dependencies
 
+- @base-ui/react
 - class-variance-authority
 - cn
 
 ## Registry dependencies
 
-- @kira-kit/flex
+- @kira-kit/layout-responsive
 
 ## Usage
 

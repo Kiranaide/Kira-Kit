@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import {
   IconArrowLeft,
   IconCheck,
@@ -19,25 +18,22 @@ import {
   DialogClose,
   DialogDescription,
   DialogOverlay,
+  DialogPopup,
   DialogPortal,
   DialogTitle,
   DialogTrigger,
   dialogContentVariants,
+  type DialogPopupProps,
+  type DialogPortalProps,
+  type DialogRootActions,
+  type DialogRootProps,
 } from "@/components/ui/dialog";
 import { Kbd } from "@/components/ui/kbd";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
-import { omitComponentProps } from "@/lib/component-native-props";
-
-function mergeClassName<State>(
-  base: string,
-  className: string | ((state: State) => string | undefined) | undefined,
-) {
-  return isCallbackProp(className)
-    ? (state: State) => cn(base, className(state))
-    : cn(base, className);
-}
+import {
+  omitComponentProps,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 const commandVariants = cva(
   "group/command flex min-h-0 min-w-0 w-full flex-col overflow-hidden rounded-lg bg-background text-foreground",
@@ -59,7 +55,7 @@ const commandVariants = cva(
 );
 
 const commandItemVariants = cva(
-  "group/command-item relative flex min-h-11 min-w-0 cursor-default select-none items-center gap-3 rounded-md px-3 py-2 text-sm leading-5 outline-none touch-manipulation sm:min-h-9 motion-safe:transition-colors motion-safe:duration-150 group-data-[navigation=keyboard]/command:transition-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "group/command-item relative flex min-h-11 min-w-0 cursor-default select-none items-center gap-3 rounded-md px-3 py-2 text-sm leading-5 outline-none touch-manipulation sm:min-h-9 motion-safe:transition-colors motion-safe:duration-150 group-data-[navigation=keyboard]/command:transition-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 focus-visible:ring-[3px] focus-visible:ring-ring [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -204,7 +200,7 @@ const CommandInput = React.forwardRef<HTMLInputElement, CommandInputProps>(
   ({ className, ...props }, ref) => (
     <div
       data-slot="command-input-wrapper"
-      className="m-2 flex min-h-11 shrink-0 items-center gap-3 rounded-md border border-input bg-background px-3 motion-safe:transition-[border-color,box-shadow] motion-safe:duration-150 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50"
+      className="m-2 flex min-h-11 shrink-0 items-center gap-3 rounded-md border border-input bg-background px-3 motion-safe:transition-[border-color,box-shadow] motion-safe:duration-150 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring"
       cmdk-input-wrapper=""
     >
       <IconSearch
@@ -397,10 +393,7 @@ function CommandBusyIndicator({
   );
 }
 
-interface CommandDialogProps extends Omit<
-  DialogPrimitive.Root.Props,
-  "children"
-> {
+interface CommandDialogProps extends Omit<DialogRootProps, "children"> {
   title?: React.ReactNode;
   description?: React.ReactNode;
   trigger?: React.ReactElement;
@@ -408,8 +401,10 @@ interface CommandDialogProps extends Omit<
   children: React.ReactNode;
   className?: string;
   showCloseButton?: boolean;
-  contentProps?: Omit<DialogPrimitive.Popup.Props, "children">;
-  portalProps?: Omit<DialogPrimitive.Portal.Props, "children">;
+  contentProps?: Omit<DialogPopupProps, "children" | "className"> & {
+    className?: string;
+  };
+  portalProps?: Omit<DialogPortalProps, "children">;
 }
 
 function CommandDialog(input: CommandDialogProps) {
@@ -1066,18 +1061,16 @@ function renderCommandDialogSectionPart1({
           data-slot="command-dialog-viewport"
           className="pointer-events-none fixed inset-0 z-50 flex items-start justify-center px-4 py-8 sm:pt-24"
         >
-          <DialogPrimitive.Popup
+          <DialogPopup
             {...popupProps}
             data-slot="command-dialog"
-            className={mergeClassName<DialogPrimitive.Popup.State>(
-              cn(
-                dialogContentVariants(),
-                "max-h-[calc(100dvh-4rem)] overflow-hidden p-0 transition-[opacity,scale] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] data-starting-style:scale-97 data-starting-style:opacity-0 data-ending-style:scale-97 data-ending-style:opacity-0 data-ending-style:duration-150 motion-reduce:transition-none motion-reduce:data-starting-style:scale-100 motion-reduce:data-starting-style:opacity-100 motion-reduce:data-ending-style:scale-100 motion-reduce:data-ending-style:opacity-100 *:data-[slot=command]:rounded-none *:data-[slot=command]:border-0",
-                reducedMotion &&
-                  "transition-none data-starting-style:scale-100 data-starting-style:opacity-100 data-ending-style:scale-100 data-ending-style:opacity-100",
-                showCloseButton && "**:data-[slot=command-input-wrapper]:pr-12",
-                className,
-              ),
+            className={cn(
+              dialogContentVariants(),
+              "max-h-[calc(100dvh-4rem)] overflow-hidden p-0 transition-[opacity,scale] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] data-starting-style:scale-97 data-starting-style:opacity-0 data-ending-style:scale-97 data-ending-style:opacity-0 data-ending-style:duration-150 motion-reduce:transition-none motion-reduce:data-starting-style:scale-100 motion-reduce:data-starting-style:opacity-100 motion-reduce:data-ending-style:scale-100 motion-reduce:data-ending-style:opacity-100 *:data-[slot=command]:rounded-none *:data-[slot=command]:border-0",
+              reducedMotion &&
+                "transition-none data-starting-style:scale-100 data-starting-style:opacity-100 data-ending-style:scale-100 data-ending-style:opacity-100",
+              showCloseButton && "**:data-[slot=command-input-wrapper]:pr-12",
+              className,
               popupClassName,
             )}
           >
@@ -1091,12 +1084,12 @@ function renderCommandDialogSectionPart1({
             {showCloseButton && (
               <DialogClose
                 aria-label="Close commands"
-                className="absolute inset-e-3.5 top-3.5 flex size-8 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                className="absolute inset-e-3.5 top-3.5 flex size-8 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
               >
                 <IconX aria-hidden="true" className="size-4" />
               </DialogClose>
             )}
-          </DialogPrimitive.Popup>
+          </DialogPopup>
         </div>
       </DialogPortal>
     </Dialog>
@@ -1123,7 +1116,7 @@ type renderKiraCommandDialogSectionPart2Args = {
   setSession: React.Dispatch<
     React.SetStateAction<{ mounted: boolean; key: number }>
   >;
-  dialogActions: React.RefObject<DialogPrimitive.Root.Actions | null>;
+  dialogActions: React.RefObject<DialogRootActions | null>;
   triggerRef: React.RefObject<HTMLButtonElement | null>;
   buildTrigger: () => React.JSX.Element;
   session: { mounted: boolean; key: number };
@@ -1428,7 +1421,7 @@ function useCommandDialogSetup(inputProps: KiraCommandDialogProps) {
 
   const triggerRef = React.useRef<HTMLButtonElement>(null);
 
-  const dialogActions = React.useRef<DialogPrimitive.Root.Actions | null>(null);
+  const dialogActions = React.useRef<DialogRootActions | null>(null);
 
   const [localOpen, setLocalOpen] = React.useState(defaultOpen);
 
@@ -1462,7 +1455,7 @@ function useCommandDialogShortcut(
   shortcut: boolean,
   isOpen: boolean,
   triggerRef: React.RefObject<HTMLButtonElement | null>,
-  dialogActions: React.RefObject<DialogPrimitive.Root.Actions | null>,
+  dialogActions: React.RefObject<DialogRootActions | null>,
 ) {
   React.useEffect(() => {
     if (!shortcut) return;
@@ -1480,7 +1473,7 @@ function handleCommandDialogShortcut(
   event: KeyboardEvent,
   isOpen: boolean,
   triggerRef: React.RefObject<HTMLButtonElement | null>,
-  dialogActions: React.RefObject<DialogPrimitive.Root.Actions | null>,
+  dialogActions: React.RefObject<DialogRootActions | null>,
 ) {
   if (ignoresCommandShortcut({ event })) return;
   const button = triggerRef.current;

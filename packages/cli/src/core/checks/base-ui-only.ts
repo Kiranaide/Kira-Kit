@@ -1,11 +1,10 @@
-import { extractImports } from "../registry/extract";
-import type { Check, Finding } from "./types";
+import { getImports, type Check, type Finding } from "./types";
 
 const FORBIDDEN = /^(radix-ui|@radix-ui\/|react-aria)/;
 
 /** Check 11: Base UI only — flag Radix and React Aria imports. */
 export const baseUiOnly: Check = (file) => {
-  const { external } = extractImports(file.content, file.path);
+  const { external } = getImports(file);
   const findings: Finding[] = [];
 
   for (const entry of external) {

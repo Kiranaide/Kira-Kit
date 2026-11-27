@@ -5,7 +5,7 @@ Detects and caches the browser operating system from the user agent, returning "
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-platform
+kira-kit add @kira-kit/use-platform
 ```
 
 ## Usage

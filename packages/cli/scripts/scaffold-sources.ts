@@ -1,17 +1,15 @@
 /**
- * Maintainer bootstrap: (re)generate the source registry JSONs
- * (src/components/ui/registry.json, src/hooks/registry.json) with files,
+ * Maintainer bootstrap: regenerates the source registry JSONs with files,
  * dependencies, and registryDependencies extracted programmatically.
- * Titles/descriptions/categories come from a metadata JSON file (curated);
- * the emitted files are hand-maintained afterwards — rerunning only refreshes
- * dep/file facts and leaves curated fields intact when they already exist.
- *
- * Usage (from packages/cli): bun run scripts/scaffold-sources.ts
+ * Curated titles/descriptions/categories come from a metadata JSON and are
+ * left intact on reruns. Usage: `bun run scripts/scaffold-sources.ts`.
  */
 import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { extractImports, packageNameOf } from "../src/core/registry/extract";
+import { libItemNameFor } from "../src/core/registry/lib-items";
+import type { SourceRegistryItem } from "../src/lib/schemas";
 
 const REPO_ROOT = resolve(
   fileURLToPath(new URL(".", import.meta.url)),
@@ -41,20 +39,6 @@ function loadMetadata(): Metadata {
   return JSON.parse(readFileSync(METADATA_PATH, "utf-8")) as Metadata;
 }
 
-const VERSION_RANGES = {
-  // majors that matter for consumers get explicit ranges; bare elsewhere
-  "react-day-picker": "^10.0.0",
-  "embla-carousel": "8.6.0",
-  "embla-carousel-react": "^8.6.0",
-  "react-resizable-panels": "4.16.0",
-  "modern-monaco": "^0.4.2",
-  recharts: "^3.10.0",
-  "date-fns": "^4.4.0",
-  "@date-fns/tz": "^1.5.0",
-} satisfies Record<string, string>;
-
-void VERSION_RANGES;
-
 interface ScaffoldItem {
   name: string;
   type: "registry:ui" | "registry:hook";
@@ -64,6 +48,39 @@ interface ScaffoldItem {
   dependencies?: string[];
   registryDependencies?: string[];
   files: Array<{ path: string; type: "registry:ui" | "registry:hook" }>;
+  css?: string;
+  cssVars?: SourceRegistryItem["cssVars"];
+  docs?: string;
+}
+
+/** Curated fields the scaffold does not compute; carried over on reruns. */
+function loadExistingItems(dir: string): Map<string, SourceRegistryItem> {
+  const path = join(dir, "registry.json");
+
+  if (!existsSync(path)) return new Map();
+
+  // SAFETY: registry.json is this script's own output, validated by the
+  // registry loader on every build; only curated fields are read back.
+  const parsed = JSON.parse(readFileSync(path, "utf-8")) as {
+    items?: SourceRegistryItem[];
+  };
+
+  return new Map((parsed.items ?? []).map((item) => [item.name, item]));
+}
+
+/** Curated fields the scaffold does not compute; carried over on reruns. */
+function curatedFields(
+  prior: SourceRegistryItem | undefined,
+): Pick<ScaffoldItem, "css" | "cssVars" | "docs"> {
+  const curated: Pick<ScaffoldItem, "css" | "cssVars" | "docs"> = {};
+
+  if (prior?.css !== undefined) curated.css = prior.css;
+
+  if (prior?.cssVars !== undefined) curated.cssVars = prior.cssVars;
+
+  if (prior?.docs !== undefined) curated.docs = prior.docs;
+
+  return curated;
 }
 
 function buildItem(
@@ -72,11 +89,12 @@ function buildItem(
   type: "registry:ui" | "registry:hook",
   filesGlob: (name: string, ext: string) => string,
   metadata: Metadata,
+  existing: Map<string, SourceRegistryItem>,
 ): ScaffoldItem {
   const name = entry.replace(/\.(tsx|ts)$/, "");
   const ext = entry.slice(name.length);
   const source = readFileSync(join(dir, entry), "utf-8");
-  const { external, internal } = extractImports(source, entry);
+  const { external, internal, lib } = extractImports(source, entry);
 
   const dependencies = [
     ...new Set(
@@ -87,12 +105,17 @@ function buildItem(
   ].sort();
 
   const registryDependencies = [
-    ...new Set(
-      internal
+    ...new Set([
+      ...internal
         .map((imp) => imp.specifier.replace(/.*\//, ""))
         .filter((dep) => !SUPPORT_FILES.has(dep))
         .map((dep) => `@kira-kit/${dep}`),
-    ),
+      ...lib.flatMap((imp) => {
+        const item = libItemNameFor(imp.specifier);
+
+        return item ? [`@kira-kit/${item}`] : [];
+      }),
+    ]),
   ].sort();
 
   const supportFileNames = internal
@@ -129,6 +152,7 @@ function buildItem(
     files: [...new Map(files.map((f) => [f.path, f])).values()].sort((a, b) =>
       a.path.localeCompare(b.path),
     ),
+    ...curatedFields(existing.get(name)),
   };
 }
 
@@ -138,6 +162,7 @@ async function buildItems(
   filesGlob: (name: string, ext: string) => string,
 ): Promise<ScaffoldItem[]> {
   const metadata = loadMetadata();
+  const existing = loadExistingItems(dir);
   const entries = readdirSync(dir).filter((f) => /\.tsx?$/.test(f));
   const items: ScaffoldItem[] = [];
 
@@ -146,7 +171,7 @@ async function buildItems(
 
     if (SUPPORT_FILES.has(name)) continue;
 
-    items.push(buildItem(entry, dir, type, filesGlob, metadata));
+    items.push(buildItem(entry, dir, type, filesGlob, metadata, existing));
   }
 
   items.sort((a, b) => a.name.localeCompare(b.name));

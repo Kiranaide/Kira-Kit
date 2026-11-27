@@ -5,7 +5,7 @@ Base UI confirmation dialog with a configurable backdrop, content sizes, semanti
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/alert-dialog
+kira-kit add @kira-kit/alert-dialog
 ```
 
 ## Dependencies
@@ -18,6 +18,7 @@ npx shadcn add @kira-kit/alert-dialog
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
 - @kira-kit/dialog
 - @kira-kit/input
 

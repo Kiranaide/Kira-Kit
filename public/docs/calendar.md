@@ -5,7 +5,7 @@ React Day Picker calendar with single, multiple, and range selection, IANA time 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/calendar
+kira-kit add @kira-kit/calendar
 ```
 
 ## Dependencies
@@ -16,6 +16,10 @@ npx shadcn add @kira-kit/calendar
 - cn
 - date-fns
 - react-day-picker
+
+## Registry dependencies
+
+- @kira-kit/component-utils
 
 ## Usage
 

@@ -5,7 +5,7 @@ Accessible breadcrumb with configurable separators, link variants, middle trunca
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/breadcrumb
+kira-kit add @kira-kit/breadcrumb
 ```
 
 ## Dependencies
@@ -17,6 +17,7 @@ npx shadcn add @kira-kit/breadcrumb
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/use-reduced-motion
 
 ## Usage

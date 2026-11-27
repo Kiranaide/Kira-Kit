@@ -9,6 +9,7 @@ import {
 
 test("Prettier formats compact TypeScript without changing the input", async () => {
   const source =
+    // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
     'export const trail={name:"Alpine",km:8.4};function label(km:number){return `${km} km`;}';
 
   const formatted = await formatCodeSource(source, "ts");
@@ -16,6 +17,7 @@ test("Prettier formats compact TypeScript without changing the input", async () 
     'export const trail = { name: "Alpine", km: 8.4 };',
   );
   expect(formatted).toContain(
+    // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
     "function label(km: number) {\n  return `${km} km`;\n}",
   );
   expect(source).not.toContain("\n");
@@ -48,6 +50,7 @@ test("incremental stream colors match full tokenization across multiline grammar
   const cache: CodeTokenCache = { language: "", prefix: "", lines: [] };
 
   const source =
+    // oxlint-disable-next-line eslint/no-template-curly-in-string -- sample code kept as literal display text, so the placeholder must not interpolate
     '/* trail\n * details */\nconst label = `Alpine\n${8.4} km`;\n\nexport const card = <div title="Lake">{label}</div>;\n';
 
   for (let end = 1; end <= source.length; end += 3) {

@@ -5,13 +5,18 @@ import type { Check, Finding } from "./types";
  * their `*Variants`.
  */
 export const dataSlotAndCva: Check = (file) => {
+  // Demo pages are route views, not registry UI components — they render
+  // examples rather than owning component root slots or named *Variants exports.
+  if (file.name.startsWith("pages/")) return [];
+
   const findings: Finding[] = [];
   const content = file.content;
 
-  // Hooks render no DOM, so they can't carry data-slot attributes.
+  // Hooks and lib modules render no DOM, so they can't carry data-slot attributes.
   // Accept both JSX (`data-slot=`) and createElement (`"data-slot":`) forms.
   if (
     !file.name.startsWith("hooks/") &&
+    !file.name.startsWith("lib/") &&
     !content.includes("data-slot=") &&
     !/["']data-slot["']\s*:/.test(content)
   ) {

@@ -1,338 +1,161 @@
-import { Link } from "@tanstack/react-router";
 import {
-  IconAccessible,
-  IconBox,
-  IconPalette,
-  IconRuler2,
-  IconCode,
-  IconRobot,
   IconArrowRight,
-  IconDownload,
-  IconTerminal2,
-  IconForms,
   IconBook2,
+  IconDownload,
+  IconLayoutCards,
 } from "@tabler/icons-react";
 import { cn } from "cn";
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { CodeBlock } from "@/components/ui/code-block";
 import {
-  ComponentPage,
-  PageHeader,
-  Section,
-  FeatureGrid,
-} from "@/components/docs";
-
-const features = [
-  {
-    title: "Accessible by default",
-    description:
-      "Every component is built on Base UI primitives — keyboard navigation, focus management, and WAI-ARIA semantics come from the primitive layer, not bolted on afterwards.",
-    icon: (
-      <IconAccessible className="h-5 w-5 text-primary" aria-hidden="true" />
-    ),
-  },
-  {
-    title: "You own the code",
-    description:
-      "Kira Kit is a shadcn-compatible registry, not a runtime dependency. Components are copied into your source tree, so you can read, edit, and extend every line.",
-    icon: <IconBox className="h-5 w-5 text-primary" aria-hidden="true" />,
-  },
-  {
-    title: "OKLCH theming",
-    description:
-      "Nine curated presets and a generator that derives a full light/dark palette from any primary color, verified against WCAG 2.2 AA and APCA contrast at build time.",
-    icon: <IconPalette className="h-5 w-5 text-primary" aria-hidden="true" />,
-  },
-  {
-    title: "A spacing contract",
-    description:
-      "One 4px-based scale governs control heights, gaps, padding, and radii across the kit. Twelve parser-based CLI checks keep every component on the ladder.",
-    icon: <IconRuler2 className="h-5 w-5 text-primary" aria-hidden="true" />,
-  },
-  {
-    title: "TypeScript first",
-    description:
-      "Full type definitions, cva variant exports, and data-slot attributes on every root element — predictable APIs for humans and for tooling.",
-    icon: <IconCode className="h-5 w-5 text-primary" aria-hidden="true" />,
-  },
-  {
-    title: "Agent-ready docs",
-    description:
-      "The registry publishes llms.txt and per-item markdown, so coding agents can discover components and install them without hallucinating APIs.",
-    icon: <IconRobot className="h-5 w-5 text-primary" aria-hidden="true" />,
-  },
-];
-
-const stats = [
-  { value: "90+", label: "Components & hooks" },
-  { value: "9", label: "Theme presets" },
-  { value: "12", label: "Quality checks" },
-  { value: "4", label: "Project templates" },
-];
+  Code,
+  DocChecklist,
+  DocPage,
+  DocPathCards,
+  DocSection,
+  DocSteps,
+  GuideLink,
+} from "@/components/docs/doc-page";
 
 const paths = [
   {
     to: "/docs/installation",
     icon: IconDownload,
-    title: "Installation",
-    description: "Go from zero to your first component in a few minutes.",
-  },
-  {
-    to: "/docs/theming",
-    icon: IconPalette,
-    title: "Theming",
-    description: "Preview the nine presets and generate your own palette.",
-  },
-  {
-    to: "/docs/cli",
-    icon: IconTerminal2,
-    title: "CLI",
-    description: "Every command, flag, and quality check in one reference.",
-  },
-  {
-    to: "/docs/form",
-    icon: IconForms,
-    title: "Form",
+    title: "Install Kira Kit",
     description:
-      "Build validated forms with TanStack Form, zod, and KiraField.",
+      "Create a new app or add the kit to an existing React project.",
+  },
+  {
+    to: "/components/button",
+    icon: IconLayoutCards,
+    title: "Explore components",
+    description:
+      "Preview examples and copy the install command for what you need.",
   },
 ] as const;
 
-const registryConfigCode = `{
-  "registries": {
-    "@kira-kit": "https://kira-kit.vercel.app/r/{name}.json"
-  }
-}`;
-
-const steps = [
+const steps: readonly {
+  title: string;
+  description: string;
+  code?: string;
+}[] = [
   {
-    title: "Initialize",
+    title: "Connect the registry",
     description:
-      "kira-kit init wires the @kira-kit registry into components.json and can apply a theme preset in the same step.",
-    code: "npx kira-kit init --preset phase-line",
+      "Kira Kit stores the registry address, aliases, and theme settings in components.json.",
   },
   {
-    title: "Add components",
-    description:
-      "The pinned shadcn CLI copies components, hooks, and themes into your project and resolves their dependencies automatically.",
-    code: "npx shadcn@latest add @kira-kit/button @kira-kit/card",
+    title: "Add the pieces you need",
+    description: "The CLI resolves supporting files and packages for you.",
+    code: "npx kira-kit add button card",
   },
   {
-    title: "Make it yours",
+    title: "Edit the source",
     description:
-      "The source now lives in your repository. Edit variants, swap tokens, or extend a component — no fork of a node_modules package required.",
-    code: 'import { Button } from "@/components/ui/button";',
+      "Components, hooks, and support modules live in your project. Extend variants and update tokens as your product changes.",
   },
 ];
 
-function HeroActions() {
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Link
-        to="/docs/installation"
-        className={cn(buttonVariants({ size: "lg" }), "gap-2")}
-      >
-        Get started
-        <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-      </Link>
-      <Link
-        to="/components/button"
-        className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
-      >
-        Browse components
-      </Link>
-    </div>
-  );
-}
-
-function WhyKiraKitSection() {
-  return (
-    <Section
-      title="Why Kira Kit"
-      description="The kit optimizes for the three things teams actually fight with: accessibility regressions, visual drift, and theming that fails contrast checks."
-    >
-      <FeatureGrid features={features} />
-    </Section>
-  );
-}
-
-function HowItWorksSection() {
-  return (
-    <Section
-      title="How it works"
-      description="No runtime package to version-pin. The registry delivers source files through the same shadcn CLI you may already use."
-    >
-      <div className="grid gap-4 md:grid-cols-3">
-        {steps.map((step, index) => (
-          <Card key={step.title}>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-                  {index + 1}
-                </span>
-                {step.title}
-              </CardTitle>
-              <CardDescription>{step.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CodeBlock
-                code={step.code}
-                language={index === 2 ? "tsx" : "bash"}
-                copyFormat={index === 2 ? "raw" : "shell"}
-              />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">One registry entry</CardTitle>
-          <CardDescription>
-            This is the entire configuration the CLI adds to components.json.
-            Existing entries are never overwritten.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CodeBlock code={registryConfigCode} language="json" />
-        </CardContent>
-      </Card>
-    </Section>
-  );
-}
-
-function StatsSection() {
-  return (
-    <Section title="By the numbers">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.label}>
-            <CardContent className="pt-6">
-              <p className="text-3xl font-bold tracking-tight">{stat.value}</p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function PathsSection() {
-  return (
-    <Section
-      title="Pick your path"
-      description="Each guide is task-based: open the page that matches what you are trying to do right now."
-    >
-      <div className="grid gap-4 sm:grid-cols-2">
-        {paths.map((path) => (
-          <Link
-            key={path.to}
-            to={path.to}
-            className="group rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/40 hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            <div className="flex items-center gap-2">
-              <path.icon className="h-5 w-5 text-primary" aria-hidden="true" />
-              <h3 className="text-base font-semibold">{path.title}</h3>
-              <IconArrowRight
-                className="ml-auto h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
-                aria-hidden="true"
-              />
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {path.description}
-            </p>
-          </Link>
-        ))}
-      </div>
-    </Section>
-  );
-}
+const whatYouGet = [
+  {
+    title: "Base UI primitives",
+    description:
+      "Keyboard interactions, focus management, and ARIA semantics come from the primitive layer.",
+  },
+  {
+    title: "Semantic OKLCH tokens",
+    description:
+      "Apply a curated light/dark preset or generate a palette from your brand color.",
+  },
+  {
+    title: "TypeScript and consistent sizing",
+    description:
+      "Typed props, exported variants, and a shared 4px spacing scale make components easier to extend.",
+  },
+] as const;
 
 function AgentsSection() {
   return (
-    <Section
-      title="Working with coding agents?"
-      description="The same structure that helps people helps agents. Point your assistant at the machine-readable index instead of letting it guess component APIs."
+    <DocSection
+      id="for-coding-agents"
+      title="For coding agents"
+      description="Use the registry index and per-item Markdown for install commands, exports, and examples."
     >
-      <Card>
-        <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-2">
-            <IconBook2
-              className="mt-0.5 h-5 w-5 shrink-0 text-primary"
-              aria-hidden="true"
-            />
-            <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">llms.txt</span>{" "}
-              lists every registry item; per-item markdown lives under{" "}
-              <span className="font-mono text-xs">/docs/</span>. Agents can
-              read, pick, and install without inventing props.
-            </p>
-          </div>
-          <a
-            href="https://kira-kit.vercel.app/llms.txt"
-            target="_blank"
-            rel="noreferrer"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "shrink-0 gap-2",
-            )}
-          >
-            View llms.txt
-            <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-          </a>
-        </CardContent>
-      </Card>
-    </Section>
-  );
-}
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-4">
+        <IconBook2
+          aria-hidden="true"
+          className="h-5 w-5 shrink-0 docs-accent"
+        />
+        <p className="min-w-0 flex-1 text-sm leading-6 text-muted-foreground">
+          <Code>llms.txt</Code> lists every registry item and each item has its
+          own Markdown page, so an agent can read, pick, and install without
+          inventing props.
+        </p>
+        <a
+          href="/llms.txt"
+          target="_blank"
+          rel="noreferrer"
+          className={cn(
+            buttonVariants({ variant: "outline", size: "sm" }),
+            "min-h-11 shrink-0 gap-2 lg:min-h-9",
+          )}
+        >
+          Read llms.txt
+          <IconArrowRight aria-hidden="true" className="h-4 w-4" />
+        </a>
+      </div>
 
-function InstallationCta() {
-  return (
-    <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 p-6">
-      <p className="text-sm text-muted-foreground">
-        Ready to build? The quickstart takes a few minutes.
+      <p className="max-w-[620px] text-sm leading-6 text-muted-foreground">
+        The same index works as a starting point for people:{" "}
+        <GuideLink to="/docs/theming">theming</GuideLink>,{" "}
+        <GuideLink to="/docs/transitions">transitions</GuideLink>, and the{" "}
+        <GuideLink to="/docs/cli">full CLI reference</GuideLink> are each a
+        task-sized read.
       </p>
-      <Link
-        to="/docs/installation"
-        className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-      >
-        Installation
-        <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-      </Link>
-    </div>
+    </DocSection>
   );
 }
 
 export default function IntroductionPage() {
   return (
-    <ComponentPage>
-      <PageHeader
-        title="Introduction"
-        description="Kira Kit is an enterprise React UI kit built on Base UI and Tailwind CSS v4, distributed as a shadcn-compatible registry. Accessible primitives, a disciplined spacing system, and contrast-verified theming — with source code you own."
-        badge={<Badge variant="secondary">Registry-first</Badge>}
-      />
+    <DocPage
+      title="Introduction"
+      crumb="Introduction"
+      description="Kira Kit is a React source registry. Install accessible components and customize the code in your own project."
+      next={{ to: "/docs/installation", label: "Installation" }}
+    >
+      <DocSection
+        id="pick-your-path"
+        title="Pick your path"
+        description="Two ways in: a fresh scaffold, or the CLI pointed at a project you already have."
+      >
+        <DocPathCards paths={paths} />
+      </DocSection>
 
-      <HeroActions />
+      <DocSection
+        id="from-registry-to-repo"
+        title="From registry to repo"
+        description="Choose a template or initialize your existing app, then install the pieces you need."
+      >
+        <DocSteps
+          steps={steps.map((step) => ({
+            ...step,
+            children: step.code ? (
+              <CodeBlock code={step.code} language="bash" showLineNumbers />
+            ) : null,
+          }))}
+        />
+      </DocSection>
 
-      <WhyKiraKitSection />
-
-      <HowItWorksSection />
-
-      <StatsSection />
-
-      <PathsSection />
+      <DocSection
+        id="what-you-get"
+        title="What you get"
+        description="Every item in the registry is held to the same three contracts."
+      >
+        <DocChecklist items={whatYouGet} />
+      </DocSection>
 
       <AgentsSection />
-
-      <InstallationCta />
-    </ComponentPage>
+    </DocPage>
   );
 }

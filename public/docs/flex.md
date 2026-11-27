@@ -5,13 +5,18 @@ A polymorphic flexbox primitive whose direction, wrapping, justification, alignm
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/flex
+kira-kit add @kira-kit/flex
 ```
 
 ## Dependencies
 
+- @base-ui/react
 - class-variance-authority
 - cn
+
+## Registry dependencies
+
+- @kira-kit/layout-responsive
 
 ## Usage
 

@@ -5,7 +5,7 @@ Manages controlled or uncontrolled 1-indexed page, pageSize, and total state and
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-pagination
+kira-kit add @kira-kit/use-pagination
 ```
 
 ## Usage

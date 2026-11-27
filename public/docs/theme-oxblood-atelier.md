@@ -1,16 +1,15 @@
 # Oxblood Atelier
 
-A deep wine-red theme for luxury services, cultural institutions, and membership products that need drama in measured doses.
+A deep wine-red theme on warm stone for luxury services, cultural institutions, and membership products that need measured drama.
 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/theme-oxblood-atelier
+kira-kit add @kira-kit/theme-oxblood-atelier
 ```
 
 ## Usage
 
 ```tsx
-import { ThemeOxbloodAtelier } from "@/components/ui/theme-oxblood-atelier";
-/* Applied as CSS variables by shadcn. */
+/* Applied as CSS variables by kira-kit. */
 ```

@@ -5,7 +5,7 @@ A Base UI disclosure with eight trigger variants, four sizes, configurable icons
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/collapsible
+kira-kit add @kira-kit/collapsible
 ```
 
 ## Dependencies
@@ -17,6 +17,7 @@ npx shadcn add @kira-kit/collapsible
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/use-reduced-motion
 
 ## Usage

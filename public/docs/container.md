@@ -1,11 +1,11 @@
 # Container
 
-A polymorphic, centered layout wrapper with responsive max-widths including prose, adjustable padding, optional flex centering, and named CSS container queries. KiraContainer adds header and footer slots plus inert loading skeletons and error content with retry handling.
+A polymorphic, centered layout wrapper with responsive max-widths including prose, adjustable padding, optional flex centering, and named CSS container queries. KiraContainer adds header and footer slots.
 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/container
+kira-kit add @kira-kit/container
 ```
 
 ## Dependencies
@@ -13,11 +13,6 @@ npx shadcn add @kira-kit/container
 - @base-ui/react
 - class-variance-authority
 - cn
-
-## Registry dependencies
-
-- @kira-kit/button
-- @kira-kit/skeleton
 
 ## Usage
 

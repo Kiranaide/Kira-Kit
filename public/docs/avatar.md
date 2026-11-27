@@ -5,7 +5,7 @@ Avatar supports sizes from xs through 4xl, multiple shapes, semantic rings, posi
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/avatar
+kira-kit add @kira-kit/avatar
 ```
 
 ## Dependencies
@@ -17,6 +17,7 @@ npx shadcn add @kira-kit/avatar
 
 ## Registry dependencies
 
+- @kira-kit/component-utils
 - @kira-kit/popover
 - @kira-kit/tooltip
 - @kira-kit/use-reduced-motion

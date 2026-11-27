@@ -1,5 +1,3 @@
-"use client";
-
 import type { ComponentProps as ReactComponentProps } from "react";
 import { useMemo, useState } from "react";
 import { z } from "zod";
@@ -45,14 +43,14 @@ import {
 
 function BasicDemo() {
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
+    <div className="flex items-center justify-center min-h-48">
       <HoverCard>
         <HoverCardTrigger render={<Button variant="link">@kirakit</Button>} />
         <HoverCardContent>
           <HoverCardArrow />
           <div className="flex gap-4">
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src="https://github.com/mui.png" />
               <AvatarFallback>KK</AvatarFallback>
             </Avatar>
             <div className="space-y-1">
@@ -61,7 +59,7 @@ function BasicDemo() {
                 A beautiful UI component library built with Base UI.
               </p>
               <div className="flex items-center pt-2 text-xs text-muted-foreground">
-                <IconCalendar className="mr-1 h-3 w-3" />
+                <IconCalendar className="mr-1 h-3 w-3" aria-hidden="true" />
                 Joined December 2024
               </div>
             </div>
@@ -89,7 +87,7 @@ export function BasicDemo() {
         <HoverCardArrow />
         <div className="flex gap-4">
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src="https://github.com/mui.png" />
             <AvatarFallback>KK</AvatarFallback>
           </Avatar>
           <div className="space-y-1">
@@ -106,7 +104,7 @@ export function BasicDemo() {
 
 function BasicWithSectionsDemo() {
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
+    <div className="flex items-center justify-center min-h-48">
       <HoverCard>
         <HoverCardTrigger
           render={<Button variant="outline">View Profile</Button>}
@@ -115,7 +113,7 @@ function BasicWithSectionsDemo() {
           <HoverCardArrow />
           <HoverCardHeader>
             <Avatar size="lg">
-              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarImage src="https://github.com/mui.png" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
             <div>
@@ -131,11 +129,11 @@ function BasicWithSectionsDemo() {
           </p>
           <HoverCardFooter>
             <div className="flex items-center gap-1">
-              <IconMapPin className="h-3 w-3" />
+              <IconMapPin className="h-3 w-3" aria-hidden="true" />
               San Francisco, CA
             </div>
             <div className="flex items-center gap-1">
-              <IconUsers className="h-3 w-3" />
+              <IconUsers className="h-3 w-3" aria-hidden="true" />
               1.2k followers
             </div>
           </HoverCardFooter>
@@ -168,7 +166,7 @@ export function BasicWithSectionsDemo() {
         <HoverCardArrow />
         <HoverCardHeader>
           <Avatar size="lg">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src="https://github.com/mui.png" />
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div>
@@ -198,7 +196,7 @@ export function BasicWithSectionsDemo() {
 
 function WithImageDemo() {
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
+    <div className="flex items-center justify-center min-h-48">
       <HoverCard>
         <HoverCardTrigger
           render={<Button variant="outline">Hover for Image</Button>}
@@ -257,7 +255,7 @@ export function WithImageDemo() {
 
 function InlineLinkDemo() {
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
+    <div className="flex items-center justify-center min-h-48">
       <div className="max-w-md p-4 border rounded-lg">
         <p className="text-sm">
           The principles of good{" "}
@@ -322,7 +320,7 @@ export function InlineLinkDemo() {
 
 function BlurDemo() {
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
+    <div className="flex items-center justify-center min-h-48">
       <HoverCard>
         <HoverCardTrigger
           render={<Button variant="outline">Hover for Glass Effect</Button>}
@@ -412,8 +410,8 @@ function LoadingDemo() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[200px]">
-      <HoverCard onOpenChange={(open) => open && load("shadcn")}>
+    <div className="flex items-center justify-center min-h-48">
+      <HoverCard onOpenChange={(open) => open && load("mui")}>
         <HoverCardTrigger
           render={<Button variant="outline">Fetch Profile on Open</Button>}
         />
@@ -429,7 +427,7 @@ function LoadingDemo() {
               </HoverCardDescription>
               <HoverCardFooter>
                 <span className="flex items-center gap-1">
-                  <IconUsers className="h-3 w-3" />
+                  <IconUsers className="h-3 w-3" aria-hidden="true" />
                   {profile.followers.toLocaleString()} followers
                 </span>
               </HoverCardFooter>
@@ -467,7 +465,7 @@ export function LoadingDemo() {
   }
 
   return (
-    <HoverCard onOpenChange={(open) => open && load("shadcn")}>
+    <HoverCard onOpenChange={(open) => open && load("mui")}>
       <HoverCardTrigger render={<Button variant="outline">Fetch Profile on Open</Button>} />
       <HoverCardContent size="md">
         <HoverCardArrow />
@@ -487,7 +485,7 @@ export function LoadingDemo() {
 
 function SizesDemo() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-4 min-h-[200px]">
+    <div className="flex flex-wrap items-center justify-center gap-4 min-h-48">
       <HoverCard>
         <HoverCardTrigger
           render={
@@ -603,7 +601,7 @@ export function SizesDemo() {
 
 function PositioningDemo() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-4 min-h-[200px]">
+    <div className="flex flex-wrap items-center justify-center gap-4 min-h-48">
       <HoverCard>
         <HoverCardTrigger
           render={
@@ -724,7 +722,7 @@ function DetachedDemo() {
   ];
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-4 min-h-[200px]">
+    <div className="flex flex-wrap items-center justify-center gap-4 min-h-48">
       <HoverCard<MemberPayload> handle={handle}>
         {({ payload }) => (
           <HoverCardContent size="md">
@@ -782,7 +780,7 @@ function ContentTransitionsDemo() {
   const [variant, setVariant] = useState<"a" | "b">("a");
 
   return (
-    <div className="flex flex-col items-center justify-center gap-3 min-h-[220px]">
+    <div className="flex flex-col items-center justify-center gap-3 min-h-56">
       <div className="flex gap-2">
         <Button
           size="sm"
@@ -891,13 +889,380 @@ const usageCode = `import {
   </HoverCardContent>
 </HoverCard>`;
 
-const apiSections = [
+function StressDemo() {
+  return (
+    <div className="mx-auto flex min-h-48 max-w-xs flex-col items-start justify-center gap-4">
+      <HoverCard>
+        <HoverCardTrigger
+          render={
+            <Button variant="outline" className="max-w-full truncate">
+              @organization-release-engineering-team-with-a-very-long-handle
+            </Button>
+          }
+        />
+        <HoverCardContent size="auto">
+          <HoverCardArrow />
+          <HoverCardHeader>
+            <div className="min-w-0">
+              <HoverCardTitle className="wrap-break-word">
+                organization-release-engineering-team-with-a-very-long-handle
+              </HoverCardTitle>
+              <HoverCardDescription className="wrap-break-word">
+                Long unbroken identifiers and multi-sentence descriptions wrap
+                cleanly inside auto-sized hover cards without overflowing.
+              </HoverCardDescription>
+            </div>
+          </HoverCardHeader>
+          <HoverCardFooter>
+            <span>No location provided</span>
+          </HoverCardFooter>
+        </HoverCardContent>
+      </HoverCard>
+
+      <HoverCard>
+        <HoverCardTrigger
+          render={<Button variant="outline">Empty preview fallback</Button>}
+        />
+        <HoverCardContent size="sm">
+          <HoverCardArrow />
+          <HoverCardTitle>Unassigned profile</HoverCardTitle>
+          <HoverCardDescription>No bio available.</HoverCardDescription>
+        </HoverCardContent>
+      </HoverCard>
+
+      <HoverCard>
+        <HoverCardTrigger
+          render={
+            <Button variant="outline" disabled>
+              Disabled trigger
+            </Button>
+          }
+        />
+        <HoverCardContent size="sm">
+          <HoverCardDescription>
+            Disabled triggers remain non-interactive.
+          </HoverCardDescription>
+        </HoverCardContent>
+      </HoverCard>
+    </div>
+  );
+}
+
+const stressCode = `import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+  HoverCardArrow,
+  HoverCardHeader,
+  HoverCardTitle,
+  HoverCardDescription,
+  HoverCardFooter,
+} from "@/components/ui/hover-card"
+import { Button } from "@/components/ui/button"
+
+// Long labels, empty fallback copy, and disabled triggers in a max-w-xs column
+<div className="max-w-xs space-y-4">
+  <HoverCard>
+    <HoverCardTrigger
+      render={
+        <Button variant="outline" className="max-w-full truncate">
+          @organization-release-engineering-team-with-a-very-long-handle
+        </Button>
+      }
+    />
+    <HoverCardContent size="auto">
+      <HoverCardArrow />
+      <HoverCardHeader>
+        <div className="min-w-0">
+          <HoverCardTitle className="wrap-break-word">
+            organization-release-engineering-team-with-a-very-long-handle
+          </HoverCardTitle>
+          <HoverCardDescription className="wrap-break-word">
+            Long unbroken identifiers wrap cleanly inside auto-sized hover cards.
+          </HoverCardDescription>
+        </div>
+      </HoverCardHeader>
+      <HoverCardFooter>
+        <span>No location provided</span>
+      </HoverCardFooter>
+    </HoverCardContent>
+  </HoverCard>
+
+  <HoverCard>
+    <HoverCardTrigger
+      render={<Button variant="outline" disabled>Disabled trigger</Button>}
+    />
+    <HoverCardContent size="sm">
+      <HoverCardDescription>Disabled triggers remain non-interactive.</HoverCardDescription>
+    </HoverCardContent>
+  </HoverCard>
+</div>`;
+
+export default function HoverCardPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Hover Card"
+        description="A card that appears on hover, for previewing content. Built on Base UI's PreviewCard primitive with pre-styled sections, loading states, detached payload triggers, and viewport content transitions."
+        version="v2.0.1"
+      />
+
+      <FeatureGrid
+        features={hoverCardPageFeatures}
+        description="Preview card capabilities built on Base UI PreviewCard."
+      />
+
+      <DemoTabs tabs={hoverCardPageDemoTabs} defaultValue="basic" />
+
+      <KeyboardShortcuts
+        shortcuts={hoverCardPageShortcuts}
+        description="HoverCard content is pointer-only progressive enhancement per Base UI docs: triggers are not keyboard-activatable, so equivalent information must be reachable by navigation. Focus styles remain on triggers."
+      />
+
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Basic implementation patterns for HoverCard."
+        notes={hoverCardPageUsageNotes}
+      />
+
+      <APIReference
+        sections={hoverCardPageAPISections}
+        title="API reference"
+        description="Props and configuration options for every exported HoverCard part."
+      />
+
+      <Changelog
+        entries={hoverCardPageChangelogEntries}
+        title="Changelog"
+        description="Version history for HoverCard."
+      />
+    </ComponentPage>
+  );
+}
+
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const hoverCardPageFeatures = [
+  {
+    title: "Preview on Hover",
+    description:
+      "Show rich content previews without navigation. Perfect for user profiles, link previews, and contextual information.",
+    icon: <IconEye className="h-4 w-4" aria-hidden="true" />,
+  },
+  {
+    title: "Rich Media Support",
+    description:
+      "Built-in components for images, headers, footers, and loading states with consistent styling.",
+    icon: <IconPhoto className="h-4 w-4" aria-hidden="true" />,
+  },
+  {
+    title: "Inline Links",
+    description:
+      "HoverCardAnchor provides seamless inline link integration with hover previews for enhanced UX.",
+    icon: <IconLink className="h-4 w-4" aria-hidden="true" />,
+  },
+  {
+    title: "Detached Triggers",
+    description:
+      "One shared popup driven by many triggers via createHoverCardHandle, each carrying its own typed payload (see Detached tab).",
+    icon: <IconUsers className="h-4 w-4" aria-hidden="true" />,
+  },
+  {
+    title: "Content Transitions",
+    description:
+      "HoverCardViewport cross-fades content swaps between triggers, reduced-motion aware (see Transitions tab).",
+    icon: <IconStack2 className="h-4 w-4" aria-hidden="true" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const hoverCardPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic Hover Card"
+        description="Simple hover card with avatar and user info."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "basic-with-sections",
+    label: "With Sections",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Pre-styled Sections"
+        description="Use HoverCardHeader, HoverCardTitle, HoverCardDescription, and HoverCardFooter for consistent styling."
+        code={basicWithSectionsCode}
+      >
+        <BasicWithSectionsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "with-image",
+    label: "With Image",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Hover Card with Image"
+        description="Display an image preview with HoverCardImage component."
+        code={withImageCode}
+      >
+        <WithImageDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "without-trigger",
+    label: "Without Trigger",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Inline Link (No Separate Trigger)"
+        description="Use HoverCardAnchor for inline links that trigger the hover card directly."
+        code={inlineLinkCode}
+      >
+        <InlineLinkDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "blur-variant",
+    label: "Blur Variant",
+    group: "Styling",
+    demo: (
+      <DemoWrapper
+        title="Blur Variant (Glassmorphism)"
+        description="Translucent backdrop with blur effect for a modern look."
+        code={blurCode}
+      >
+        <BlurDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Styling",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="Available sizes: sm (w-48), md (w-64), lg (w-80), xl (w-96), and auto."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "positioning",
+    label: "Positioning",
+    group: "Styling",
+    demo: (
+      <DemoWrapper
+        title="Positioning"
+        description="Control placement with side and sideOffset props."
+        code={positioningCode}
+      >
+        <PositioningDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "loading-state",
+    label: "Async",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Async Content"
+        description="HoverCardLoading drives a real fetch; results are cached after the first open."
+        code={loadingCode}
+      >
+        <LoadingDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "detached",
+    label: "Detached Triggers",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Detached Payload Triggers"
+        description="Two triggers share one popup via createHoverCardHandle; each passes a typed payload and its own delays."
+        code={detachedCode}
+      >
+        <DetachedDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "transitions",
+    label: "Content Transitions",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Content Transitions (Viewport)"
+        description="viewport content swaps cross-fade through PreviewCard.Viewport; flip A/B while hovering."
+        code={transitionsCode}
+      >
+        <ContentTransitionsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long unbroken labels, empty fallback copy, and disabled triggers in a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const hoverCardPageShortcuts = [
+  {
+    keys: "Esc",
+    description:
+      "Dismiss open preview (inherited from Base UI popup behavior).",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const hoverCardPageUsageNotes = [
+  {
+    label: "Trigger delays",
+    body: "Set delay and closeDelay on HoverCardTrigger or HoverCardPayloadTrigger (defaults 600ms / 300ms), not on HoverCardContent.",
+  },
+  {
+    label: "Detached triggers",
+    body: "Use createHoverCardHandle with HoverCardPayloadTrigger when many items share one popup with per-trigger payloads.",
+  },
+  {
+    label: "Accessibility",
+    body: "PreviewCard is a pointer-only progressive enhancement; keep essential details reachable through the linked page or control.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const hoverCardPageAPISections = [
   {
     title: "HoverCard",
     props: [
       {
         prop: "open",
         type: "boolean",
+        default: "-",
         description: "Controlled open state of the hover card.",
       },
       {
@@ -909,6 +1274,7 @@ const apiSections = [
       {
         prop: "onOpenChange",
         type: "(open: boolean) => void",
+        default: "-",
         description: "Callback when open state changes.",
       },
       {
@@ -925,9 +1291,15 @@ const apiSections = [
     props: [
       {
         prop: "size",
-        type: '"sm" | "md" | "lg" | "xl"',
+        type: '"sm" | "md" | "lg" | "xl" | "auto"',
         default: '"md"',
         description: "Width of the hover card content.",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "blur"',
+        default: '"default"',
+        description: "Visual style variant. Blur adds glassmorphism effect.",
       },
       {
         prop: "viewport",
@@ -937,10 +1309,10 @@ const apiSections = [
           "Render Base UI PreviewCard.Viewport inside the popup so content swaps between triggers cross-fade.",
       },
       {
-        prop: "variant",
-        type: '"default" | "blur"',
-        default: '"default"',
-        description: "Visual style variant. Blur adds glassmorphism effect.",
+        prop: "portalled",
+        type: "boolean",
+        default: "true",
+        description: "Whether to render the popup inside a portal.",
       },
       {
         prop: "side",
@@ -959,6 +1331,26 @@ const apiSections = [
         type: '"start" | "center" | "end"',
         default: '"center"',
         description: "Alignment relative to the trigger.",
+      },
+      {
+        prop: "alignOffset",
+        type: "number",
+        default: "0",
+        description: "Additional offset along the alignment axis in pixels.",
+      },
+      {
+        prop: "arrowPadding / collisionPadding",
+        type: "number | Padding",
+        default: "-",
+        description:
+          "Collision and arrow padding forwarded to Base UI PreviewCard.Positioner.",
+      },
+      {
+        prop: "collisionBoundary / sticky",
+        type: "Boundary / boolean",
+        default: "-",
+        description:
+          "Boundary and sticky positioning options forwarded to PreviewCard.Positioner.",
       },
     ],
   },
@@ -982,6 +1374,7 @@ const apiSections = [
       {
         prop: "render",
         type: "ReactElement",
+        default: "-",
         description: "The element to render as the hover trigger.",
       },
     ],
@@ -992,12 +1385,14 @@ const apiSections = [
       {
         prop: "handle",
         type: "HoverCardHandle<Payload>",
+        default: "-",
         description:
           "Handle of the detached HoverCard Root this trigger opens (required).",
       },
       {
         prop: "payload",
         type: "Payload",
+        default: "-",
         description:
           "Value passed to the Root's function-as-child content when this trigger opens.",
       },
@@ -1015,12 +1410,92 @@ const apiSections = [
       {
         prop: "href",
         type: "string",
+        default: "-",
         description: "URL for the anchor link.",
+      },
+      {
+        prop: "target / rel",
+        type: "string",
+        default: "-",
+        description: "Link target and relationship attributes.",
       },
       {
         prop: "className",
         type: "string",
+        default: "-",
         description: "Additional CSS classes for the link.",
+      },
+    ],
+  },
+  {
+    title: "HoverCardArrow",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description:
+          "Additional CSS classes for the popover arrow (defaults to fill-popover).",
+      },
+    ],
+  },
+  {
+    title: "HoverCardViewport",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description:
+          "Additional CSS classes for the cross-fading PreviewCard.Viewport container.",
+      },
+    ],
+  },
+  {
+    title: "HoverCardHeader",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description:
+          "Additional CSS classes for the top header row (flex items-start gap-3).",
+      },
+    ],
+  },
+  {
+    title: "HoverCardFooter",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description:
+          "Additional CSS classes for the bordered footer metadata row.",
+      },
+    ],
+  },
+  {
+    title: "HoverCardTitle",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description:
+          "Additional CSS classes for the h4 heading inside the hover card.",
+      },
+    ],
+  },
+  {
+    title: "HoverCardDescription",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description:
+          "Additional CSS classes for muted descriptive copy inside the hover card.",
       },
     ],
   },
@@ -1030,16 +1505,18 @@ const apiSections = [
       {
         prop: "src",
         type: "string",
+        default: "-",
         description: "Image source URL.",
       },
       {
         prop: "alt",
         type: "string",
+        default: '""',
         description: "Alternative text for the image.",
       },
       {
         prop: "aspectRatio",
-        type: '"square" | "video" | "wide"',
+        type: '"video" | "square" | "portrait"',
         default: '"video"',
         description: "Aspect ratio of the image container.",
       },
@@ -1056,220 +1533,24 @@ const apiSections = [
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const features = [
-  {
-    title: "Preview on Hover",
-    description:
-      "Show rich content previews without navigation. Perfect for user profiles, link previews, and contextual information.",
-    icon: <IconEye className="h-4 w-4" />,
-  },
-  {
-    title: "Rich Media Support",
-    description:
-      "Built-in components for images, headers, footers, and loading states with consistent styling.",
-    icon: <IconPhoto className="h-4 w-4" />,
-  },
-  {
-    title: "Inline Links",
-    description:
-      "HoverCardAnchor provides seamless inline link integration with hover previews for enhanced UX.",
-    icon: <IconLink className="h-4 w-4" />,
-  },
-  {
-    title: "Detached Triggers",
-    description:
-      "One shared popup driven by many triggers via createHoverCardHandle, each carrying its own typed payload (see Detached tab).",
-    icon: <IconUsers className="h-4 w-4" />,
-  },
-  {
-    title: "Content Transitions",
-    description:
-      "HoverCardViewport cross-fades content swaps between triggers, reduced-motion aware (see Transitions tab).",
-    icon: <IconStack2 className="h-4 w-4" />,
-  },
-];
-
-const demoTabs = [
-  {
-    value: "basic",
-    label: "Basic",
-    demo: (
-      <DemoWrapper
-        title="Basic Hover Card"
-        description="Simple hover card with avatar and user info."
-        code={basicCode}
-      >
-        <BasicDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "basic-with-sections",
-    label: "With Sections",
-    demo: (
-      <DemoWrapper
-        title="Pre-styled Sections"
-        description="Use HoverCardHeader, HoverCardTitle, HoverCardDescription, and HoverCardFooter for consistent styling."
-        code={basicWithSectionsCode}
-      >
-        <BasicWithSectionsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "with-image",
-    label: "With Image",
-    demo: (
-      <DemoWrapper
-        title="Hover Card with Image"
-        description="Display an image preview with HoverCardImage component."
-        code={withImageCode}
-      >
-        <WithImageDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "without-trigger",
-    label: "Without Trigger",
-    demo: (
-      <DemoWrapper
-        title="Inline Link (No Separate Trigger)"
-        description="Use HoverCardAnchor for inline links that trigger the hover card directly."
-        code={inlineLinkCode}
-      >
-        <InlineLinkDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "blur-variant",
-    label: "Blur Variant",
-    demo: (
-      <DemoWrapper
-        title="Blur Variant (Glassmorphism)"
-        description="Translucent backdrop with blur effect for a modern look."
-        code={blurCode}
-      >
-        <BlurDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "loading-state",
-    label: "Async",
-    demo: (
-      <DemoWrapper
-        title="Async Content"
-        description="HoverCardLoading drives a real fetch; results are cached after the first open."
-        code={loadingCode}
-      >
-        <LoadingDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "detached",
-    label: "Detached Triggers",
-    demo: (
-      <DemoWrapper
-        title="Detached Payload Triggers"
-        description="Two triggers share one popup via createHoverCardHandle; each passes a typed payload and its own delays."
-        code={detachedCode}
-      >
-        <DetachedDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "transitions",
-    label: "Content Transitions",
-    demo: (
-      <DemoWrapper
-        title="Content Transitions (Viewport)"
-        description="viewport content swaps cross-fade through PreviewCard.Viewport; flip A/B while hovering."
-        code={transitionsCode}
-      >
-        <ContentTransitionsDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "sizes",
-    label: "Sizes",
-    demo: (
-      <DemoWrapper
-        title="Size Variants"
-        description="Available sizes: sm (w-48), md (w-64), lg (w-80), xl (w-96)."
-        code={sizesCode}
-      >
-        <SizesDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
-    value: "positioning",
-    label: "Positioning",
-    demo: (
-      <DemoWrapper
-        title="Positioning"
-        description="Control placement with side and sideOffset props."
-        code={positioningCode}
-      >
-        <PositioningDemo />
-      </DemoWrapper>
-    ),
-  },
-];
-
-export default function HoverCardPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Hover Card"
-        description="A card that appears on hover, for previewing content. Built on Base UI's PreviewCard primitive with pre-styled sections, loading states, detached payload triggers, and viewport content transitions."
-        version="v2.0"
-      />
-
-      <FeatureGrid features={features} />
-
-      <DemoTabs tabs={demoTabs} defaultValue="basic" />
-
-      <KeyboardShortcuts
-        shortcuts={[
-          {
-            keys: "Esc",
-            description:
-              "Dismiss open preview (inherited from Base UI popup behavior)",
-          },
-        ]}
-        description="HoverCard content is pointer-only progressive enhancement per Base UI docs: triggers are not keyboard-activatable, so equivalent information must be reachable by navigation. Focus styles remain on triggers."
-      />
-
-      <UsageBlock
-        code={usageCode}
-        title="Usage"
-        description="Basic implementation patterns for HoverCard"
-      />
-
-      <APIReference
-        sections={apiSections}
-        title="API Reference"
-        description="Props and configuration options for HoverCard components"
-      />
-
-      <Changelog entries={hoverCardPageChangelogEntries} />
-    </ComponentPage>
-  );
-}
-
-// Static demo metadata stays co-located and follows its source constants.
 const hoverCardPageChangelogEntries = [
   {
+    version: "2.0.1",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "HoverCardContent viewport now wraps children",
+        description:
+          "Fixed a bug where viewport={true} rendered an empty <PreviewCardPrimitive.Viewport /> sibling above children instead of wrapping props.children inside the viewport.",
+      },
+    ],
+  },
+  {
     version: "2.0.0",
-    date: "3 November 2026",
+    date: "03 November 2026",
     changes: [
       {
         type: "breaking",
@@ -1281,7 +1562,7 @@ const hoverCardPageChangelogEntries = [
         type: "breaking",
         title: "Motion Convention Replaced",
         description:
-          "The tw-animate data-open/data-closed zoom/slide stack is replaced by Base UI data-starting-style/data-ending-style transitions matching tooltip/popover. z-index drops from z-[100] to the shared z-50 popup layer.",
+          "The tw-animate data-open/data-closed zoom/slide stack is replaced by Base UI data-starting-style/data-ending-style transitions matching tooltip/popover. z-index drops from z-index 100 to the shared z-50 popup layer.",
       },
       {
         type: "breaking",

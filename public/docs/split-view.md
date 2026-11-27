@@ -5,7 +5,7 @@ Resizable two-pane layout with horizontal or vertical orientation, a collapsible
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/split-view
+kira-kit add @kira-kit/split-view
 ```
 
 ## Dependencies
@@ -18,6 +18,8 @@ npx shadcn add @kira-kit/split-view
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
+- @kira-kit/layout-storage
 - @kira-kit/resizable
 - @kira-kit/skeleton
 

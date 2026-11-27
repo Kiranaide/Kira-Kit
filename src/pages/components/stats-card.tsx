@@ -95,7 +95,7 @@ function RevenueDrawerContent() {
 
 function BasicStatsDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 md:grid-cols-3 gap-4">
       <StatsCard>
         <StatsCardHeader>
           <StatsCardTitle>Total Revenue</StatsCardTitle>
@@ -135,13 +135,13 @@ const basicStatsCode = `import { StatsCard } from "@/components/ui/stats-card"
 
 function WithIconsDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
       <StatsCard>
         <div className="flex items-start gap-4">
           <StatsCardIcon variant="primary">
             <IconCurrencyDollar className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Revenue</StatsCardTitle>
             <StatsCardValue value={12_345} format="currency" />
             <StatsCardTrend value={12.5} showSign />
@@ -154,7 +154,7 @@ function WithIconsDemo() {
           <StatsCardIcon variant="success">
             <IconUsers className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Users</StatsCardTitle>
             <StatsCardValue value={2847} format="compact" />
             <StatsCardTrend value={8.2} showSign />
@@ -167,7 +167,7 @@ function WithIconsDemo() {
           <StatsCardIcon variant="warning">
             <IconShoppingCart className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Orders</StatsCardTitle>
             <StatsCardValue value={1234} format="number" />
             <StatsCardTrend value={-2.4} showSign />
@@ -180,7 +180,7 @@ function WithIconsDemo() {
           <StatsCardIcon variant="info">
             <IconEye className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Page Views</StatsCardTitle>
             <StatsCardValue value={45_678} format="compact" />
             <StatsCardTrend value={15.3} showSign />
@@ -198,7 +198,7 @@ const withIconsCode = `import { StatsCard, StatsCardIcon } from "@/components/ui
     <StatsCardIcon variant="primary">
       <IconCurrencyDollar className="h-5 w-5" />
     </StatsCardIcon>
-    <div className="flex-1">
+    <div className="min-w-0 flex-1">
       <StatsCardTitle>Revenue</StatsCardTitle>
       <StatsCardValue value={12345} format="currency" />
       <StatsCardTrend value={12.5} showSign />
@@ -207,8 +207,10 @@ const withIconsCode = `import { StatsCard, StatsCardIcon } from "@/components/ui
 </StatsCard>`;
 
 function AllVariantsDemo() {
+  const [clicks, setClicks] = React.useState(0);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <StatsCard variant="default">
         <StatsCardHeader>
           <StatsCardTitle>Default</StatsCardTitle>
@@ -241,9 +243,14 @@ function AllVariantsDemo() {
         <StatsCardTrend value={12.5} />
       </StatsCard>
 
-      <StatsCard variant="interactive" onClick={() => alert("Card clicked!")}>
+      <StatsCard
+        variant="interactive"
+        onClick={() => setClicks((count) => count + 1)}
+      >
         <StatsCardHeader>
-          <StatsCardTitle>Interactive (Click me!)</StatsCardTitle>
+          <StatsCardTitle>
+            Interactive {clicks > 0 ? `(${clicks} clicks)` : "(Click me!)"}
+          </StatsCardTitle>
         </StatsCardHeader>
         <StatsCardValue>$12,345</StatsCardValue>
         <StatsCardTrend value={12.5} />
@@ -272,7 +279,7 @@ const allVariantsCode = `import { StatsCard } from "@/components/ui/stats-card"
 
 function SizesDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 md:grid-cols-3 gap-4">
       <StatsCard size="sm">
         <StatsCardHeader>
           <StatsCardTitle>Small</StatsCardTitle>
@@ -308,7 +315,7 @@ const sizesCode = `import { StatsCard } from "@/components/ui/stats-card"
 
 function StatusIndicatorsDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
       <StatsCard status="success">
         <StatsCardHeader>
           <StatsCardTitle>Success</StatsCardTitle>
@@ -361,7 +368,7 @@ const statusIndicatorsCode = `import { StatsCard } from "@/components/ui/stats-c
 
 function InteractiveCardsDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <StatsCard
         variant="interactive"
         drawerTitle="Revenue Details"
@@ -372,7 +379,7 @@ function InteractiveCardsDemo() {
           <StatsCardIcon variant="primary">
             <IconCurrencyDollar className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Total Revenue</StatsCardTitle>
             <StatsCardValue value={12_345} format="currency" />
             <StatsCardTrend value={12.5} comparison="vs last month" />
@@ -398,7 +405,7 @@ function InteractiveCardsDemo() {
           <StatsCardIcon variant="success">
             <IconUsers className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Active Users</StatsCardTitle>
             <StatsCardValue value={2847} format="compact" />
             <StatsCardTrend value={8.2} comparison="vs last week" />
@@ -424,7 +431,7 @@ function InteractiveCardsDemo() {
           <StatsCardIcon variant="warning">
             <IconShoppingCart className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Total Orders</StatsCardTitle>
             <StatsCardValue value={1234} format="number" />
             <StatsCardTrend value={-2.4} comparison="vs yesterday" />
@@ -451,36 +458,49 @@ const interactiveCardsCode = `import { StatsCard } from "@/components/ui/stats-c
   <StatsCardTrend value={12.5} comparison="vs last month" />
 </StatsCard>`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
+function ActionMenuDropdown({
+  showRefresh,
+  showChart,
+}: {
+  showRefresh?: boolean;
+  showChart?: boolean;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+        <IconDotsVertical className="h-4 w-4" />
+        <span className="sr-only">Open menu</span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem>
+          <IconDownload className="mr-2 h-4 w-4" />
+          Export
+        </DropdownMenuItem>
+        {showRefresh === true && (
+          <DropdownMenuItem>
+            <IconRefresh className="mr-2 h-4 w-4" />
+            Refresh
+          </DropdownMenuItem>
+        )}
+        {showChart === true && (
+          <DropdownMenuItem>
+            <IconChartLine className="mr-2 h-4 w-4" />
+            View Chart
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 function WithActionMenuDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <StatsCard>
         <StatsCardHeader>
           <StatsCardTitle>Revenue</StatsCardTitle>
           <StatsCardAction>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={<Button variant="ghost" size="icon-sm" />}
-              >
-                <IconDotsVertical className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <IconDownload className="mr-2 h-4 w-4" />
-                  Export
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconRefresh className="mr-2 h-4 w-4" />
-                  Refresh
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconChartLine className="mr-2 h-4 w-4" />
-                  View Chart
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ActionMenuDropdown showRefresh showChart />
           </StatsCardAction>
         </StatsCardHeader>
         <StatsCardValue value={12_345} format="currency" />
@@ -491,24 +511,7 @@ function WithActionMenuDemo() {
         <StatsCardHeader>
           <StatsCardTitle>Users</StatsCardTitle>
           <StatsCardAction>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={<Button variant="ghost" size="icon-sm" />}
-              >
-                <IconDotsVertical className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <IconDownload className="mr-2 h-4 w-4" />
-                  Export
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <IconRefresh className="mr-2 h-4 w-4" />
-                  Refresh
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ActionMenuDropdown showRefresh />
           </StatsCardAction>
         </StatsCardHeader>
         <StatsCardValue value={2847} format="compact" />
@@ -519,20 +522,7 @@ function WithActionMenuDemo() {
         <StatsCardHeader>
           <StatsCardTitle>Conversion</StatsCardTitle>
           <StatsCardAction>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={<Button variant="ghost" size="icon-sm" />}
-              >
-                <IconDotsVertical className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <IconDownload className="mr-2 h-4 w-4" />
-                  Export
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ActionMenuDropdown />
           </StatsCardAction>
         </StatsCardHeader>
         <StatsCardValue value={89.3} format="percentage" />
@@ -572,18 +562,18 @@ function LoadingStatesDemo() {
   };
 
   return (
-    <div className="space-y-4">
-      <Button onClick={toggleLoading} className="mb-4">
+    <div className="w-full space-y-4">
+      <Button onClick={toggleLoading}>
         {loading ? "Loading..." : "Simulate Loading"}
       </Button>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatsCard loading={loading}>
           <div className="flex items-start gap-4">
             <StatsCardIcon variant="primary">
               <IconCurrencyDollar className="h-5 w-5" />
             </StatsCardIcon>
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <StatsCardTitle>Revenue</StatsCardTitle>
               <StatsCardValue value={12_345} format="currency" />
               <StatsCardTrend value={12.5} />
@@ -622,13 +612,13 @@ const loadingStatesCode = `import { StatsCard, StatsCardSkeleton } from "@/compo
 
 function ProgressGoalsDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <StatsCard>
         <div className="flex items-start gap-4">
           <StatsCardIcon variant="primary">
             <IconTarget className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Sales Goal</StatsCardTitle>
             <StatsCardValue value={75_000} format="currency" />
             <StatsCardProgress value={75} max={100} variant="success" />
@@ -642,7 +632,7 @@ function ProgressGoalsDemo() {
           <StatsCardIcon variant="warning">
             <IconUsers className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>User Signups</StatsCardTitle>
             <StatsCardValue value={450} format="number" />
             <StatsCardProgress value={45} max={100} variant="warning" />
@@ -656,7 +646,7 @@ function ProgressGoalsDemo() {
           <StatsCardIcon variant="destructive">
             <IconActivity className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Server Uptime</StatsCardTitle>
             <StatsCardValue value={99.9} format="percentage" />
             <StatsCardProgress
@@ -678,7 +668,7 @@ const progressGoalsCode = `import { StatsCard, StatsCardProgress } from "@/compo
   <StatsCardIcon variant="primary">
     <IconTarget className="h-5 w-5" />
   </StatsCardIcon>
-  <div className="flex-1">
+  <div className="min-w-0 flex-1">
     <StatsCardTitle>Sales Goal</StatsCardTitle>
     <StatsCardValue value={75000} format="currency" />
     <StatsCardProgress value={75} max={100} variant="success" />
@@ -688,7 +678,7 @@ const progressGoalsCode = `import { StatsCard, StatsCardProgress } from "@/compo
 
 function WithSparklinesDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 md:grid-cols-3 gap-4">
       <StatsCard>
         <StatsCardHeader>
           <StatsCardTitle>Revenue</StatsCardTitle>
@@ -751,13 +741,13 @@ const withSparklinesCode = `import { StatsCard, StatsCardSpark, StatsCardSparkli
 
 function ValueFormattingDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
       <StatsCard>
         <div className="flex items-start gap-4">
           <StatsCardIcon variant="primary">
             <IconCurrencyDollar className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Currency (USD)</StatsCardTitle>
             <StatsCardValue
               value={12_345.67}
@@ -774,7 +764,7 @@ function ValueFormattingDemo() {
           <StatsCardIcon variant="success">
             <IconPercentage className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Percentage</StatsCardTitle>
             <StatsCardValue value={89.34} format="percentage" decimals={2} />
           </div>
@@ -786,7 +776,7 @@ function ValueFormattingDemo() {
           <StatsCardIcon variant="warning">
             <IconTrendingUp className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Compact Number</StatsCardTitle>
             <StatsCardValue value={1_234_567} format="compact" />
           </div>
@@ -798,7 +788,7 @@ function ValueFormattingDemo() {
           <StatsCardIcon variant="info">
             <IconClock className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Custom Formatter</StatsCardTitle>
             <StatsCardValue value={3.5} formatter={(v) => `${v} hours`} />
           </div>
@@ -817,13 +807,13 @@ const valueFormattingCode = `import { StatsCard, StatsCardValue } from "@/compon
 
 function AnimatedValuesDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid w-full grid-cols-1 md:grid-cols-3 gap-4">
       <StatsCard>
         <div className="flex items-start gap-4">
           <StatsCardIcon variant="primary">
             <IconCurrencyDollar className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Animated Currency</StatsCardTitle>
             <StatsCardValue
               value={12_345}
@@ -841,7 +831,7 @@ function AnimatedValuesDemo() {
           <StatsCardIcon variant="success">
             <IconUsers className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Animated Number</StatsCardTitle>
             <StatsCardValue value={2847} format="number" animate />
             <StatsCardTrend value={8.2} />
@@ -854,7 +844,7 @@ function AnimatedValuesDemo() {
           <StatsCardIcon variant="info">
             <IconPercentage className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Animated Percentage</StatsCardTitle>
             <StatsCardValue
               value={89.3}
@@ -891,13 +881,13 @@ function RealtimeUpdatesDemo() {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="grid w-full grid-cols-1 md:grid-cols-2 gap-4">
       <StatsCard>
         <div className="flex items-start gap-4">
           <StatsCardIcon variant="primary">
             <IconActivity className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Live Revenue</StatsCardTitle>
             <StatsCardValue
               value={liveValue}
@@ -918,7 +908,7 @@ function RealtimeUpdatesDemo() {
           <StatsCardIcon variant="success">
             <IconTrendingUp className="h-5 w-5" />
           </StatsCardIcon>
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <StatsCardTitle>Animated Live Value</StatsCardTitle>
             <StatsCardValue
               value={liveValue}
@@ -960,125 +950,53 @@ function RealtimeUpdatesDemo() {
   )
 }`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 function DashboardGridDemo() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <StatsCard
-        variant="interactive"
-        drawerTitle="Revenue Details"
-        drawerContent={<RevenueDrawerContent />}
-      >
-        <div className="flex items-start gap-4">
-          <StatsCardIcon variant="primary">
-            <IconCurrencyDollar className="h-5 w-5" />
-          </StatsCardIcon>
-          <div className="flex-1">
-            <StatsCardTitle>Total Revenue</StatsCardTitle>
-            <StatsCardValue value={12_345} format="currency" animate />
-            <StatsCardTrend value={12.5} showSign comparison="vs last month" />
+    <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
+      {dashboardMetrics.map((metric) => (
+        <StatsCard
+          key={metric.title}
+          variant="interactive"
+          drawerTitle={metric.drawerTitle}
+          drawerContent={metric.drawerContent}
+        >
+          <div className="flex items-start gap-4">
+            <StatsCardIcon variant={metric.iconVariant}>
+              {metric.icon}
+            </StatsCardIcon>
+            <div className="min-w-0 flex-1">
+              <StatsCardTitle>{metric.title}</StatsCardTitle>
+              <StatsCardValue
+                value={metric.value}
+                format={metric.format}
+                decimals={metric.decimals}
+                animate
+              />
+              <StatsCardTrend
+                value={metric.trendValue}
+                showSign
+                comparison={metric.comparison}
+              />
+            </div>
           </div>
-        </div>
-        <StatsCardSpark>
-          <StatsCardSparkline
-            data={[10, 15, 13, 18, 20, 25, 22, 28, 30, 35, 32, 40]}
-            trend="up"
-          />
-        </StatsCardSpark>
-        <StatsCardFooter>
-          <StatsCardTimeRange>Updated 2 hours ago</StatsCardTimeRange>
-        </StatsCardFooter>
-      </StatsCard>
-
-      <StatsCard
-        variant="interactive"
-        drawerTitle="User Analytics"
-        drawerContent={<div className="p-4">User details...</div>}
-      >
-        <div className="flex items-start gap-4">
-          <StatsCardIcon variant="destructive">
-            <IconUsers className="h-5 w-5" />
-          </StatsCardIcon>
-          <div className="flex-1">
-            <StatsCardTitle>New Users</StatsCardTitle>
-            <StatsCardValue value={2847} format="compact" animate />
-            <StatsCardTrend value={-3.2} showSign comparison="vs last month" />
-          </div>
-        </div>
-        <StatsCardSpark>
-          <StatsCardSparkline
-            data={[40, 35, 38, 30, 28, 25, 27, 22, 20, 18, 15, 10]}
-            trend="down"
-          />
-        </StatsCardSpark>
-        <StatsCardFooter>
-          <StatsCardTimeRange>Updated 1 hour ago</StatsCardTimeRange>
-        </StatsCardFooter>
-      </StatsCard>
-
-      <StatsCard
-        variant="interactive"
-        drawerTitle="Conversion Analytics"
-        drawerContent={<div className="p-4">Conversion details...</div>}
-      >
-        <div className="flex items-start gap-4">
-          <StatsCardIcon variant="success">
-            <IconPercentage className="h-5 w-5" />
-          </StatsCardIcon>
-          <div className="flex-1">
-            <StatsCardTitle>Conversion</StatsCardTitle>
-            <StatsCardValue
-              value={89.3}
-              format="percentage"
-              animate
-              decimals={1}
+          <StatsCardSpark>
+            <StatsCardSparkline
+              data={metric.sparkData}
+              trend={metric.sparkTrend}
             />
-            <StatsCardTrend value={0.5} showSign comparison="vs last month" />
-          </div>
-        </div>
-        <StatsCardSpark>
-          <StatsCardSparkline
-            data={[85, 87, 86, 88, 89, 88, 90, 89, 91, 90, 89, 89]}
-            trend="neutral"
-          />
-        </StatsCardSpark>
-        <StatsCardFooter>
-          <StatsCardTimeRange>Updated 30 mins ago</StatsCardTimeRange>
-        </StatsCardFooter>
-      </StatsCard>
-
-      <StatsCard
-        variant="interactive"
-        drawerTitle="Session Analytics"
-        drawerContent={<div className="p-4">Session details...</div>}
-      >
-        <div className="flex items-start gap-4">
-          <StatsCardIcon variant="info">
-            <IconActivity className="h-5 w-5" />
-          </StatsCardIcon>
-          <div className="flex-1">
-            <StatsCardTitle>Active Sessions</StatsCardTitle>
-            <StatsCardValue value={1234} format="number" animate />
-            <StatsCardTrend value={8.7} showSign comparison="vs yesterday" />
-          </div>
-        </div>
-        <StatsCardSpark>
-          <StatsCardSparkline
-            data={[20, 22, 25, 24, 28, 30, 32, 35, 38, 40, 42, 45]}
-            trend="up"
-          />
-        </StatsCardSpark>
-        <StatsCardFooter>
-          <StatsCardTimeRange>Live</StatsCardTimeRange>
-        </StatsCardFooter>
-      </StatsCard>
+          </StatsCardSpark>
+          <StatsCardFooter>
+            <StatsCardTimeRange>{metric.updated}</StatsCardTimeRange>
+          </StatsCardFooter>
+        </StatsCard>
+      ))}
     </div>
   );
 }
 
 const dashboardGridCode = `import { StatsCard } from "@/components/ui/stats-card"
 
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-4">
   <StatsCard variant="interactive">
     <StatsCardTitle>Total Revenue</StatsCardTitle>
     <StatsCardValue value={12345} format="currency" animate />
@@ -1089,7 +1007,7 @@ const dashboardGridCode = `import { StatsCard } from "@/components/ui/stats-card
 
 function CompactDashboardDemo() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div className="grid w-full grid-cols-2 sm:grid-cols-3 gap-3">
       <StatsCard size="sm">
         <StatsCardTitle>Revenue</StatsCardTitle>
         <StatsCardValue size="sm" value={12_345} format="compact" />
@@ -1141,7 +1059,7 @@ function CompactDashboardDemo() {
 
 const compactDashboardCode = `import { StatsCard } from "@/components/ui/stats-card"
 
-<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+<div className="grid w-full grid-cols-2 sm:grid-cols-3 gap-3">
   <StatsCard size="sm">
     <StatsCardTitle>Revenue</StatsCardTitle>
     <StatsCardValue size="sm" value={12345} format="compact" />
@@ -1149,7 +1067,100 @@ const compactDashboardCode = `import { StatsCard } from "@/components/ui/stats-c
   </StatsCard>
 </div>`;
 
-const usageCode = `import { StatsCard } from "@/components/ui/stats-card"
+function StressDemo() {
+  return (
+    <div className="w-full max-w-xs space-y-4">
+      <StatsCard status="warning">
+        <StatsCardHeader>
+          <StatsCardTitle>
+            Quarterly Enterprise Net Recurring Revenue Expansion Across EMEA and
+            APAC Regions
+          </StatsCardTitle>
+          <StatsCardAction>
+            <Button variant="ghost" size="icon-sm" disabled>
+              <IconDotsVertical className="h-4 w-4" />
+              <span className="sr-only">Actions unavailable</span>
+            </Button>
+          </StatsCardAction>
+        </StatsCardHeader>
+        <StatsCardValue value={987_654_321.89} format="currency" decimals={2} />
+        <StatsCardTrend
+          value={-14.75}
+          showSign
+          comparison="compared to prior fiscal quarter baseline"
+        />
+        <StatsCardDescription>
+          Includes deferred renewals pending finance reconciliation and
+          multi-year contract amendments.
+        </StatsCardDescription>
+      </StatsCard>
+
+      <StatsCard>
+        <StatsCardHeader>
+          <StatsCardTitle>Empty Metric</StatsCardTitle>
+        </StatsCardHeader>
+        <StatsCardValue>—</StatsCardValue>
+        <StatsCardTrend value={0} />
+        <StatsCardDescription>
+          No telemetry recorded in the selected window.
+        </StatsCardDescription>
+      </StatsCard>
+
+      <StatsCardSkeleton size="sm" showIcon showProgress />
+    </div>
+  );
+}
+
+const stressCode = `import {
+  StatsCard,
+  StatsCardHeader,
+  StatsCardTitle,
+  StatsCardAction,
+  StatsCardValue,
+  StatsCardTrend,
+  StatsCardDescription,
+  StatsCardSkeleton,
+} from "@/components/ui/stats-card"
+import { Button } from "@/components/ui/button"
+
+// Long titles, large numbers, empty values, disabled actions, and narrow max-w-xs layout
+<div className="w-full max-w-xs space-y-4">
+  <StatsCard status="warning">
+    <StatsCardHeader>
+      <StatsCardTitle>
+        Quarterly Enterprise Net Recurring Revenue Expansion Across EMEA and APAC Regions
+      </StatsCardTitle>
+      <StatsCardAction>
+        <Button variant="ghost" size="icon-sm" disabled>
+          <IconDotsVertical className="h-4 w-4" />
+          <span className="sr-only">Actions unavailable</span>
+        </Button>
+      </StatsCardAction>
+    </StatsCardHeader>
+    <StatsCardValue value={987654321.89} format="currency" decimals={2} />
+    <StatsCardTrend value={-14.75} showSign comparison="compared to prior fiscal quarter baseline" />
+    <StatsCardDescription>
+      Includes deferred renewals pending finance reconciliation.
+    </StatsCardDescription>
+  </StatsCard>
+  <StatsCard>
+    <StatsCardHeader>
+      <StatsCardTitle>Empty Metric</StatsCardTitle>
+    </StatsCardHeader>
+    <StatsCardValue>—</StatsCardValue>
+    <StatsCardTrend value={0} />
+  </StatsCard>
+  <StatsCardSkeleton size="sm" showIcon showProgress />
+</div>`;
+
+const usageCode = `import {
+  StatsCard,
+  StatsCardHeader,
+  StatsCardTitle,
+  StatsCardValue,
+  StatsCardTrend,
+  StatsCardDescription,
+} from "@/components/ui/stats-card"
 
 <StatsCard variant="gradient" status="success">
   <StatsCardHeader>
@@ -1166,35 +1177,121 @@ export default function StatsCardPage() {
       <PageHeader
         title="Stats Card"
         description="Display metrics with trends, sparklines, icons, and interactive features. WCAG 2.1 AA compliant with ARIA live regions, Base UI Meter progress, and size-aware skeletons."
-        version="v2.1"
+        version="v2.1.3"
       />
 
-      <FeatureGrid features={statsCardPageFeatureGridFeatures} />
+      <FeatureGrid
+        features={statsCardPageFeatureGridFeatures}
+        description="KPI cards with accessible live regions, GSAP count-up, and Base UI Meter progress."
+      />
 
       <DemoTabs defaultValue="basic" tabs={statsCardPageDemoTabsTabs} />
 
       <KeyboardShortcuts
-        shortcuts={[
-          { keys: "Enter / Space", description: "Activate interactive cards" },
-          { keys: "Tab", description: "Navigate between cards" },
-          { keys: "Shift + Tab", description: "Navigate backwards" },
-        ]}
+        shortcuts={statsCardPageShortcuts}
+        description="Keyboard navigation and activation for interactive cards."
       />
 
       <UsageBlock
         title="Usage"
-        description="Basic implementation example"
+        description="Compose StatsCard parts for KPI summaries, trends, progress meters, and drill-down drawers."
         code={usageCode}
+        notes={[
+          {
+            label: "Interactive drawers",
+            body: "Pass drawerContent (with optional drawerTitle and drawerDescription) to automatically make a StatsCard clickable and open a detail drawer.",
+          },
+          {
+            label: "Reduced motion",
+            body: "GSAP count-up animations in StatsCardValue and Recharts animations in StatsCardSparkline automatically respect prefers-reduced-motion.",
+          },
+        ]}
       />
 
-      <APIReference sections={statsCardPageAPIReferenceSections} />
+      <APIReference
+        sections={statsCardPageAPIReferenceSections}
+        description="Props, types, and defaults for every exported StatsCard sub-component."
+      />
 
-      <Changelog entries={statsCardPageChangelogEntries} />
+      <Changelog
+        entries={statsCardPageChangelogEntries}
+        title="Changelog"
+        description="Version history for StatsCard."
+      />
     </ComponentPage>
   );
 }
 
-// Static demo metadata stays co-located and follows its source constants.
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const dashboardMetrics = [
+  {
+    title: "Total Revenue",
+    drawerTitle: "Revenue Details",
+    drawerContent: <RevenueDrawerContent />,
+    iconVariant: "primary" as const,
+    icon: <IconCurrencyDollar className="h-5 w-5" />,
+    value: 12_345,
+    format: "currency" as const,
+    decimals: undefined,
+    trendValue: 12.5,
+    comparison: "vs last month",
+    sparkData: [10, 15, 13, 18, 20, 25, 22, 28, 30, 35, 32, 40],
+    sparkTrend: "up" as const,
+    updated: "Updated 2 hours ago",
+  },
+  {
+    title: "New Users",
+    drawerTitle: "User Analytics",
+    drawerContent: <div className="p-4">User details...</div>,
+    iconVariant: "destructive" as const,
+    icon: <IconUsers className="h-5 w-5" />,
+    value: 2847,
+    format: "compact" as const,
+    decimals: undefined,
+    trendValue: -3.2,
+    comparison: "vs last month",
+    sparkData: [40, 35, 38, 30, 28, 25, 27, 22, 20, 18, 15, 10],
+    sparkTrend: "down" as const,
+    updated: "Updated 1 hour ago",
+  },
+  {
+    title: "Conversion",
+    drawerTitle: "Conversion Analytics",
+    drawerContent: <div className="p-4">Conversion details...</div>,
+    iconVariant: "success" as const,
+    icon: <IconPercentage className="h-5 w-5" />,
+    value: 89.3,
+    format: "percentage" as const,
+    decimals: 1,
+    trendValue: 0.5,
+    comparison: "vs last month",
+    sparkData: [85, 87, 86, 88, 89, 88, 90, 89, 91, 90, 89, 89],
+    sparkTrend: "neutral" as const,
+    updated: "Updated 30 mins ago",
+  },
+  {
+    title: "Active Sessions",
+    drawerTitle: "Session Analytics",
+    drawerContent: <div className="p-4">Session details...</div>,
+    iconVariant: "info" as const,
+    icon: <IconActivity className="h-5 w-5" />,
+    value: 1234,
+    format: "number" as const,
+    decimals: undefined,
+    trendValue: 8.7,
+    comparison: "vs yesterday",
+    sparkData: [20, 22, 25, 24, 28, 30, 32, 35, 38, 40, 42, 45],
+    sparkTrend: "up" as const,
+    updated: "Live",
+  },
+];
+
+const statsCardPageShortcuts = [
+  { keys: "Enter / Space", description: "Activate interactive cards" },
+  { keys: "Tab", description: "Navigate between cards" },
+  { keys: "Shift + Tab", description: "Navigate backwards" },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
 const statsCardPageFeatureGridFeatures = [
   {
     title: "Accessible",
@@ -1220,6 +1317,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "basic",
     label: "Basic Stats",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Basic Stats"
@@ -1233,6 +1331,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "icons",
     label: "With Icons",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="With Icons"
@@ -1246,6 +1345,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "variants",
     label: "All Variants",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="All Variants"
@@ -1259,6 +1359,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "sizes",
     label: "Sizes",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Size Variants"
@@ -1272,6 +1373,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "status",
     label: "Status Indicators",
+    group: "Core",
     demo: (
       <DemoWrapper
         title="Status Indicators"
@@ -1285,6 +1387,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "interactive",
     label: "Interactive Cards",
+    group: "Composition",
     demo: (
       <DemoWrapper
         title="Interactive Cards with Drawer"
@@ -1298,6 +1401,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "action",
     label: "With Action Menu",
+    group: "Composition",
     demo: (
       <DemoWrapper
         title="With Action Menu"
@@ -1309,21 +1413,9 @@ const statsCardPageDemoTabsTabs = [
     ),
   },
   {
-    value: "loading",
-    label: "Loading States",
-    demo: (
-      <DemoWrapper
-        title="Loading States"
-        description="Skeleton loading demonstration"
-        code={loadingStatesCode}
-      >
-        <LoadingStatesDemo />
-      </DemoWrapper>
-    ),
-  },
-  {
     value: "progress",
     label: "Progress & Goals",
+    group: "Composition",
     demo: (
       <DemoWrapper
         title="Progress & Goals"
@@ -1337,6 +1429,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "sparklines",
     label: "With Sparklines",
+    group: "Composition",
     demo: (isActive) =>
       isActive ? (
         <DemoWrapper
@@ -1351,6 +1444,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "formatting",
     label: "Value Formatting",
+    group: "Composition",
     demo: (
       <DemoWrapper
         title="Value Formatting"
@@ -1362,8 +1456,23 @@ const statsCardPageDemoTabsTabs = [
     ),
   },
   {
+    value: "loading",
+    label: "Loading States",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Loading States"
+        description="Skeleton loading demonstration"
+        code={loadingStatesCode}
+      >
+        <LoadingStatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
     value: "animated",
     label: "Animated Values",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Animated Values (GSAP)"
@@ -1377,6 +1486,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "realtime",
     label: "Real-time Updates",
+    group: "Behavior",
     demo: (isActive) =>
       isActive ? (
         <DemoWrapper
@@ -1391,6 +1501,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "dashboard",
     label: "Dashboard Grid",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Dashboard Grid"
@@ -1404,6 +1515,7 @@ const statsCardPageDemoTabsTabs = [
   {
     value: "compact",
     label: "Compact Dashboard",
+    group: "Behavior",
     demo: (
       <DemoWrapper
         title="Compact Dashboard"
@@ -1411,6 +1523,20 @@ const statsCardPageDemoTabsTabs = [
         code={compactDashboardCode}
       >
         <CompactDashboardDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long titles, large numbers, empty values, disabled actions, and skeletons inside a max-w-xs column."
+        code={stressCode}
+      >
+        <StressDemo />
       </DemoWrapper>
     ),
   },
@@ -1422,51 +1548,58 @@ const statsCardPageAPIReferenceSections = [
     props: [
       {
         prop: "variant",
-        type: "'default' | 'outline' | 'filled' | 'gradient' | 'interactive' | 'glass'",
-        default: "'default'",
+        type: '"default" | "outline" | "filled" | "gradient" | "interactive" | "glass"',
+        default: '"default"',
         description: "Visual style variant of the card",
       },
       {
         prop: "size",
-        type: "'sm' | 'default' | 'lg'",
-        default: "'default'",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
         description: "Size of the card",
       },
       {
         prop: "status",
-        type: "'success' | 'warning' | 'error' | 'info'",
-        default: "undefined",
+        type: '"default" | "success" | "warning" | "error" | "info"',
+        default: '"default"',
         description: "Status indicator with left border color",
       },
       {
         prop: "loading",
         type: "boolean",
         default: "false",
-        description: "Show skeleton loading state",
+        description: "Show size-aware skeleton loading state",
       },
       {
         prop: "onClick",
-        type: "() => void",
-        default: "undefined",
-        description: "Click handler (for interactive variant)",
+        type: "(event: React.MouseEvent<HTMLElement>) => void",
+        default: "-",
+        description:
+          "Click handler (automatically enables interactive semantics)",
       },
       {
         prop: "drawerTitle",
         type: "string",
-        default: "undefined",
+        default: '"Details"',
         description: "Title for the drawer panel",
       },
       {
         prop: "drawerDescription",
         type: "string",
-        default: "undefined",
+        default: "-",
         description: "Description for the drawer panel",
       },
       {
         prop: "drawerContent",
         type: "ReactNode",
-        default: "undefined",
+        default: "-",
         description: "Content for the drawer panel",
+      },
+      {
+        prop: "onOpenChange",
+        type: "(open: boolean) => void",
+        default: "-",
+        description: "Called when the detail drawer opens or closes",
       },
     ],
   },
@@ -1475,9 +1608,26 @@ const statsCardPageAPIReferenceSections = [
     props: [
       {
         prop: "variant",
-        type: "'primary' | 'success' | 'warning' | 'error' | 'info' | 'destructive'",
-        default: "'primary'",
+        type: '"default" | "primary" | "success" | "warning" | "destructive" | "info"',
+        default: '"default"',
         description: "Color variant of the icon wrapper",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Dimensions of the icon wrapper",
+      },
+    ],
+  },
+  {
+    title: "StatsCardHeader",
+    props: [
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Vertical spacing scale inside the header",
       },
     ],
   },
@@ -1485,10 +1635,10 @@ const statsCardPageAPIReferenceSections = [
     title: "StatsCardTitle",
     props: [
       {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge with child element",
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Heading text linked via aria-labelledby to the card",
       },
     ],
   },
@@ -1496,10 +1646,10 @@ const statsCardPageAPIReferenceSections = [
     title: "StatsCardAction",
     props: [
       {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge with child element",
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Action control slot aligned in the card header",
       },
     ],
   },
@@ -1509,38 +1659,52 @@ const statsCardPageAPIReferenceSections = [
       {
         prop: "value",
         type: "number",
-        default: "undefined",
+        default: "-",
         description: "Numeric value for formatting",
       },
       {
         prop: "format",
-        type: "'currency' | 'number' | 'percentage' | 'compact'",
-        default: "undefined",
+        type: '"currency" | "percentage" | "compact" | "number" | "custom"',
+        default: '"number"',
         description: "Format type for the value",
       },
       {
         prop: "currency",
         type: "string",
-        default: "'USD'",
-        description: "Currency code for currency formatting",
+        default: '"USD"',
+        description: "ISO currency code for currency formatting",
+      },
+      {
+        prop: "locale",
+        type: "string",
+        default: '"en-US"',
+        description: "BCP 47 locale tag for Intl.NumberFormat",
       },
       {
         prop: "decimals",
         type: "number",
         default: "0",
-        description: "Number of decimal places",
+        description:
+          "Number of decimal places (defaults to 1 for percentage/compact)",
+      },
+      {
+        prop: "prefix / suffix",
+        type: "string",
+        default: '""',
+        description:
+          "Optional text prepended or appended to the formatted value",
       },
       {
         prop: "formatter",
         type: "(value: number) => string",
-        default: "undefined",
+        default: "-",
         description: "Custom formatter function",
       },
       {
         prop: "animate",
         type: "boolean",
         default: "false",
-        description: "Enable count-up animation",
+        description: "Enable GSAP count-up animation",
       },
       {
         prop: "animationDuration",
@@ -1550,9 +1714,15 @@ const statsCardPageAPIReferenceSections = [
       },
       {
         prop: "size",
-        type: "'sm' | 'default' | 'lg'",
-        default: "inherited",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
         description: "Size of the value text",
+      },
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Custom display node overriding numeric formatting",
       },
     ],
   },
@@ -1566,22 +1736,29 @@ const statsCardPageAPIReferenceSections = [
         description: "Trend percentage value",
       },
       {
+        prop: "trend",
+        type: '"up" | "down" | "neutral"',
+        default: "auto",
+        description:
+          "Override trend color direction (defaults from value sign)",
+      },
+      {
         prop: "showIcon",
         type: "boolean",
         default: "true",
-        description: "Show trend icon",
+        description: "Show trend direction icon",
       },
       {
         prop: "showSign",
         type: "boolean",
         default: "false",
-        description: "Show + or - sign",
+        description: "Show leading + or - sign",
       },
       {
         prop: "comparison",
         type: "string",
-        default: "undefined",
-        description: "Comparison text (e.g., 'vs last month')",
+        default: "-",
+        description: 'Comparison text (e.g., "vs last month")',
       },
     ],
   },
@@ -1589,10 +1766,10 @@ const statsCardPageAPIReferenceSections = [
     title: "StatsCardDescription",
     props: [
       {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge with child element",
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Supporting description text",
       },
     ],
   },
@@ -1603,31 +1780,39 @@ const statsCardPageAPIReferenceSections = [
         prop: "value",
         type: "number",
         default: "required",
-        description: "Current progress value",
+        description: "Current meter value",
       },
       {
         prop: "max",
         type: "number",
         default: "100",
-        description: "Maximum progress value",
+        description: "Maximum meter value",
       },
       {
         prop: "variant",
-        type: "'default' | 'success' | 'warning' | 'destructive'",
-        default: "'default'",
-        description: "Color variant of the progress bar",
+        type: '"default" | "success" | "warning" | "destructive"',
+        default: '"default"',
+        description:
+          "Indicator color. Built on Base UI Meter (role=meter with aria-valuetext)",
       },
       {
         prop: "showLabel",
         type: "boolean",
         default: "false",
-        description: "Show percentage label on progress bar",
+        description: "Show value / max label row above the meter",
       },
     ],
   },
   {
     title: "StatsCardSpark",
-    props: [],
+    props: [
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Decorative container for sparkline charts",
+      },
+    ],
   },
   {
     title: "StatsCardSparkline",
@@ -1640,30 +1825,31 @@ const statsCardPageAPIReferenceSections = [
       },
       {
         prop: "trend",
-        type: "'up' | 'down' | 'neutral'",
-        default: "'neutral'",
-        description: "Trend direction for color",
-      },
-      {
-        prop: "height",
-        type: "number",
-        default: "40",
-        description: "Height of the sparkline",
+        type: '"up" | "down" | "neutral"',
+        default: '"neutral"',
+        description: "Trend direction for semantic stroke and fill tokens",
       },
     ],
   },
   {
     title: "StatsCardFooter",
-    props: [],
+    props: [
+      {
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Footer content row",
+      },
+    ],
   },
   {
     title: "StatsCardTimeRange",
     props: [
       {
-        prop: "asChild",
-        type: "boolean",
-        default: "false",
-        description: "Merge with child element",
+        prop: "children",
+        type: "ReactNode",
+        default: "-",
+        description: "Timestamp or range label",
       },
     ],
   },
@@ -1690,46 +1876,39 @@ const statsCardPageAPIReferenceSections = [
       },
       {
         prop: "size",
-        type: "'sm' | 'default' | 'lg'",
-        default: "'default'",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
         description:
           "Scales padding and placeholder blocks; auto-applied by StatsCard loading",
-      },
-    ],
-  },
-  {
-    title: "StatsCardProgress",
-    props: [
-      {
-        prop: "value",
-        type: "number",
-        default: "required",
-        description: "Current meter value",
-      },
-      {
-        prop: "max",
-        type: "number",
-        default: "100",
-        description: "Maximum value",
-      },
-      {
-        prop: "showLabel",
-        type: "boolean",
-        default: "false",
-        description: "Show value / max label row",
-      },
-      {
-        prop: "variant",
-        type: "'default' | 'success' | 'warning' | 'destructive'",
-        default: "'default'",
-        description:
-          "Indicator color. Built on Base UI Meter (role=meter, free aria-valuetext formatting)",
       },
     ],
   },
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const statsCardPageChangelogEntries = [
+  {
+    version: "2.1.3",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Space wrapped trend labels on the 4px scale",
+        description: "Wrapped values and comparison labels use a 4px row gap.",
+      },
+    ],
+  },
+  {
+    version: "2.1.2",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Prevent horizontal clipping and header misalignment",
+        description:
+          "Replaced space-y-* with mb-* on StatsCardHeader so StatsCardAction stays top-aligned, allowed StatsCardTrend to wrap comparison copy cleanly, added min-w-0/break-words to StatsCardTitle and StatsCardValue, and gated StatsCardSkeleton pulse on motion-safe with max-w-full bars.",
+      },
+    ],
+  },
   {
     version: "2.1.1",
     date: "18 November 2026",
@@ -1775,7 +1954,7 @@ const statsCardPageChangelogEntries = [
         type: "fixed",
         title: "Sparkline Colors Use Theme Tokens",
         description:
-          "Raw hex fills (#22c55e/#ef4444/#6b7280) replaced with var(--color-success), var(--color-destructive), and var(--color-muted-foreground) so sparklines follow light/dark themes.",
+          "Hardcoded hex fills replaced with var(--color-success), var(--color-destructive), and var(--color-muted-foreground) so sparklines follow light/dark themes.",
       },
       {
         type: "added",

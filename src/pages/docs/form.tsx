@@ -1,33 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
-import { IconArrowRight, IconCheck } from "@tabler/icons-react";
-import { cn } from "cn";
-import { Button, buttonVariants } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  IconArrowRight,
+  IconArrowUpRight,
+  IconCheck,
+  IconInfoCircle,
+} from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
 import { CodeBlock } from "@/components/ui/code-block";
 import {
   KiraField,
   FieldErrorSummary,
   createZodValidator,
 } from "@/components/ui/field";
-import { ComponentPage, PageHeader, Section } from "@/components/docs";
+import {
+  Code,
+  DocChecklist,
+  DocPage,
+  DocSection,
+  DocTable,
+  type TocEntry,
+} from "@/components/docs/doc-page";
+
+const SECTIONS: readonly TocEntry[] = [
+  { id: "live-example", label: "Live example" },
+  { id: "form-integrations", label: "Form integrations" },
+  { id: "field-anatomy", label: "Field anatomy" },
+  { id: "validation-timing", label: "Validation timing" },
+  { id: "error-summaries", label: "Error summaries" },
+  { id: "accessibility-checklist", label: "Accessibility checklist" },
+];
 
 const nameSchema = z
   .string()
   .trim()
   .min(2, "Enter a workspace name with at least 2 characters.");
 
-const emailSchema = z.email("Enter an email address, like name@example.com.");
+const emailSchema = z.email("Enter a valid email address.");
 
-const notesSchema = z.string().max(160, "Keep the note under 160 characters.");
+const notesSchema = z
+  .string()
+  .max(240, "Keep the description under 240 characters.");
 
 const errorMessageSchema = z.union([
   z.string(),
@@ -37,7 +52,7 @@ const errorMessageSchema = z.union([
 const fieldLabels = {
   displayName: "Workspace name",
   email: "Owner email",
-  notes: "Note",
+  notes: "Description (optional)",
 } as const;
 
 const controlIds = {
@@ -62,21 +77,62 @@ function firstErrorMessage(
   return parsed.success ? parsed.data : undefined;
 }
 
+function createFieldValidators(schema: z.ZodType<string>) {
+  const base = createZodValidator(schema);
+
+  return {
+    ...base,
+    onChange: ({
+      value,
+      fieldApi,
+    }: {
+      value: string;
+      fieldApi: { state: { meta: { errors: unknown[] } } };
+    }) => {
+      if (fieldApi.state.meta.errors.length === 0) return undefined;
+
+      const parsed = schema.safeParse(value);
+
+      return parsed.success ? undefined : parsed.error.issues[0]?.message;
+    },
+  };
+}
+
 function useWorkspaceForm() {
   const [created, setCreated] = useState<{
     displayName: string;
     email: string;
   } | null>(null);
 
+  const [showInitialSummary, setShowInitialSummary] = useState(true);
+
   const form = useForm({
-    defaultValues: { displayName: "", email: "", notes: "" },
+    defaultValues: {
+      displayName: "Signal Studio",
+      email: "maya@",
+      notes: "",
+    },
     onSubmit: async ({ value }) => {
-      await new Promise((resolve) => setTimeout(resolve, 700));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 700);
+      });
+      setShowInitialSummary(false);
       setCreated({ displayName: value.displayName, email: value.email });
     },
   });
 
-  return { form, created, setCreated };
+  useEffect(() => {
+    form.setFieldMeta("email", (prev) => ({ ...prev, isTouched: true }));
+    void form.validateField("email", "blur");
+  }, [form]);
+
+  return {
+    form,
+    created,
+    setCreated,
+    showInitialSummary,
+    setShowInitialSummary,
+  };
 }
 
 type WorkspaceForm = ReturnType<typeof useWorkspaceForm>["form"];
@@ -89,12 +145,12 @@ function WorkspaceCreatedOutput({
   onStartOver: () => void;
 }) {
   return (
-    <output className="block space-y-4 rounded-lg border border-success/40 bg-success/10 p-6">
-      <p className="flex items-center gap-2 font-medium">
-        <IconCheck className="h-5 w-5 text-success" aria-hidden="true" />
+    <output className="block space-y-4 rounded-[14px] border border-success/40 bg-success/10 p-6">
+      <p className="flex items-center gap-2 font-semibold text-foreground">
+        <IconCheck className="size-5 text-success" aria-hidden="true" />
         Workspace created
       </p>
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm leading-[1.53] text-muted-foreground">
         {created.displayName} · {created.email}. In a real app this is where the
         server response lands — the form state stays the source of truth.
       </p>
@@ -105,28 +161,39 @@ function WorkspaceCreatedOutput({
   );
 }
 
-function WorkspaceErrorSummary({ form }: { form: WorkspaceForm }) {
+function WorkspaceErrorSummary({
+  form,
+  showInitialSummary,
+}: {
+  form: WorkspaceForm;
+  showInitialSummary: boolean;
+}) {
   return (
     <form.Subscribe
       selector={(state) => ({
         fieldMeta: state.fieldMeta,
         attempts: state.submissionAttempts,
-        isValid: state.isValid,
       })}
     >
-      {({ fieldMeta, attempts, isValid }) => {
+      {({ fieldMeta, attempts }) => {
+        const shouldShow = attempts > 0 || showInitialSummary;
+
         const summary = fieldKeys.flatMap((key) => {
           const message = firstErrorMessage(fieldMeta[key]?.errors?.[0]);
 
-          return attempts > 0 && !isValid && message
+          return shouldShow && message
             ? [{ id: controlIds[key], label: fieldLabels[key], message }]
             : [];
         });
 
+        const title =
+          summary.length === 1 ? "Fix 1 field" : `Fix ${summary.length} fields`;
+
         return (
           <FieldErrorSummary
+            title={title}
             errors={summary}
-            focusOnError
+            focusOnError={attempts > 0}
             focusKey={attempts}
           />
         );
@@ -140,7 +207,7 @@ function WorkspaceFields({ form }: { form: WorkspaceForm }) {
     <>
       <form.Field
         name="displayName"
-        validators={{ ...createZodValidator(nameSchema) }}
+        validators={createFieldValidators(nameSchema)}
       >
         {(field) => (
           <KiraField
@@ -148,23 +215,21 @@ function WorkspaceFields({ form }: { form: WorkspaceForm }) {
             label="Workspace name"
             controlId={controlIds.displayName}
             required
-            description="Shown to everyone you invite."
-            inputProps={{ placeholder: "Design Systems", autoComplete: "off" }}
+            inputProps={{
+              placeholder: "Signal Studio",
+              autoComplete: "organization",
+            }}
           />
         )}
       </form.Field>
 
-      <form.Field
-        name="email"
-        validators={{ ...createZodValidator(emailSchema) }}
-      >
+      <form.Field name="email" validators={createFieldValidators(emailSchema)}>
         {(field) => (
           <KiraField
             field={field}
             label="Owner email"
             controlId={controlIds.email}
             required
-            description="We send the invite link here."
             inputProps={{
               type: "email",
               placeholder: "name@example.com",
@@ -174,20 +239,17 @@ function WorkspaceFields({ form }: { form: WorkspaceForm }) {
         )}
       </form.Field>
 
-      <form.Field
-        name="notes"
-        validators={{ ...createZodValidator(notesSchema) }}
-      >
+      <form.Field name="notes" validators={createFieldValidators(notesSchema)}>
         {(field) => (
           <KiraField
             field={field}
-            label="Note"
+            label="Description (optional)"
             controlId={controlIds.notes}
-            description="Optional context for your team."
             multiline
             rows={3}
-            maxLength={160}
+            maxLength={240}
             showCharacterCount
+            inputProps={{ placeholder: "Describe the workspace" }}
           />
         )}
       </form.Field>
@@ -196,7 +258,13 @@ function WorkspaceFields({ form }: { form: WorkspaceForm }) {
 }
 
 function WorkspaceFormDemo() {
-  const { form, created, setCreated } = useWorkspaceForm();
+  const {
+    form,
+    created,
+    setCreated,
+    showInitialSummary,
+    setShowInitialSummary,
+  } = useWorkspaceForm();
 
   if (created) {
     return (
@@ -204,329 +272,265 @@ function WorkspaceFormDemo() {
         created={created}
         onStartOver={() => {
           setCreated(null);
-          form.reset();
+          setShowInitialSummary(false);
+          form.reset({ displayName: "", email: "", notes: "" });
         }}
       />
     );
   }
 
   return (
-    <form
-      noValidate
-      className="max-w-lg space-y-6"
-      onSubmit={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        form.handleSubmit();
-      }}
+    <div
+      data-slot="form-live-card"
+      className="flex flex-col gap-3 rounded-[14px] border border-border bg-card p-4 lg:p-6"
     >
-      <WorkspaceErrorSummary form={form} />
+      <div className="flex flex-col gap-1">
+        <h3 className="text-[22px] font-semibold leading-[1.15] tracking-[-0.35px] text-card-foreground">
+          Create a workspace
+        </h3>
+        <p className="text-sm leading-[1.53] text-muted-foreground">
+          Set up your team’s shared space.
+        </p>
+      </div>
 
-      <WorkspaceFields form={form} />
+      <form
+        noValidate
+        className="flex flex-col gap-3.5"
+        onSubmit={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
+        <WorkspaceErrorSummary
+          form={form}
+          showInitialSummary={showInitialSummary}
+        />
 
-      <form.Subscribe selector={(state) => state.isSubmitting}>
-        {(isSubmitting) => (
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating…" : "Create workspace"}
-          </Button>
-        )}
-      </form.Subscribe>
+        <WorkspaceFields form={form} />
 
-      <p className="text-sm text-muted-foreground">
-        Try submitting empty: the error summary takes focus and each link jumps
-        to its field. Errors validate on blur, not on every keystroke.
-      </p>
-    </form>
+        <div className="pt-1">
+          <form.Subscribe selector={(state) => state.isSubmitting}>
+            {(isSubmitting) => (
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="h-11 gap-2 rounded-[7px] px-3.5 text-sm font-semibold"
+              >
+                <IconArrowRight aria-hidden="true" className="size-4" />
+                {isSubmitting ? "Creating…" : "Create workspace"}
+              </Button>
+            )}
+          </form.Subscribe>
+        </div>
+      </form>
+    </div>
   );
 }
 
-const anatomyCode = `import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
-import { KiraField, createZodValidator } from "@/components/ui/field";
+const SUBMIT_NOTES = [
+  {
+    title: "Focus the summary",
+    description: "Each error links to its input.",
+  },
+  {
+    title: "Keep the draft",
+    description: "All entered values stay in place.",
+  },
+  {
+    title: "Show progress",
+    description: "The button reads “Creating…” during submission.",
+  },
+] as const;
 
-const form = useForm({
-  defaultValues: { email: "" },
-  onSubmit: async ({ value }) => saveWorkspace(value),
-});
+const FIELD_ANATOMY_ROWS = [
+  [
+    <Code key="useForm">useForm</Code>,
+    "Defaults, schema validation, and submit state.",
+  ],
+  [
+    <Code key="field">form.Field</Code>,
+    "Binds the workspace field to form state.",
+  ],
+  [
+    <Code key="kira">KiraField</Code>,
+    "Connects labels, helper text, and errors to the input.",
+  ],
+];
 
-<form
-  noValidate
-  onSubmit={(e) => {
-    e.preventDefault();
-    form.handleSubmit();
-  }}
->
-  <form.Field
-    name="email"
-    validators={{ ...createZodValidator(z.email("Enter a valid email.")) }}
-  >
-    {(field) => (
-      <KiraField
-        field={field}
-        label="Owner email"
-        controlId="workspace-email"
-        required
-      />
-    )}
-  </form.Field>
-  <Button type="submit">Create</Button>
-</form>`;
-
-const asyncCode = `<form.Field
-  name="slug"
-  validators={{
-    ...createZodValidator(z.string().min(3)),
-    onBlurAsync: async ({ value, signal }) => {
-      const res = await fetch(
-        "/api/availability?slug=" + encodeURIComponent(value),
-        { signal },
-      );
-      const { available } = await res.json();
-      return available ? undefined : "This URL is taken.";
-    },
-  }}
->
-  {(field) => <KiraField field={field} label="Workspace URL" required />}
-</form.Field>`;
-
-const summaryCode = `import { FieldErrorSummary } from "@/components/ui/field";
-
-// After a failed submit, move focus to the summary; each item
-// links to the invalid control's id.
-<FieldErrorSummary
-  errors={[
-    { id: "workspace-email", label: "Owner email", message: "Enter a valid email." },
-  ]}
-  focusOnError
-  focusKey={submissionAttempts}
+const ANATOMY_CODE = `<KiraField
+  field={field}
+  label="Owner email"
+  controlId="workspace-email"
+  required
 />`;
 
-const validationTiming = [
-  {
-    title: "Validate on blur",
-    description:
-      "createZodValidator wires onBlur and onSubmit by default. Users are not interrupted mid-typing, and errors appear as soon as they leave a field.",
-  },
-  {
-    title: "Async checks on blur too",
-    description:
-      "Server-side checks (uniqueness, availability) belong in onBlurAsync with the abort signal — never fire them on every keystroke.",
-  },
-  {
-    title: "Errors stay with the field",
-    description:
-      "KiraField renders the message below the control and links it with aria-describedby, so screen readers announce it in context.",
-  },
-  {
-    title: "Summarize on failed submit",
-    description:
-      "FieldErrorSummary lists every invalid field at the top, takes focus, and links back to each control. Inline errors remain visible.",
-  },
+const VALIDATION_TIMING_ROWS = [
+  [<Code key="blur">On blur</Code>, "Validate once users leave the field."],
+  [
+    <Code key="change">On change</Code>,
+    "Clear or revalidate an existing error as it’s fixed.",
+  ],
+  [
+    <Code key="submit">On submit</Code>,
+    "Validate the full schema and focus the error summary.",
+  ],
+  [
+    <Code key="async">Async validation</Code>,
+    "Abort stale requests when the value changes.",
+  ],
 ];
 
-const accessibilityChecklist = [
-  "Visible labels above every control — never placeholder-only labels.",
-  "Error text connected via aria-describedby and announced (role=alert).",
-  "Focus moves to the error summary after a failed submit, and to the field when its summary link is activated.",
-  "Inputs keep at least 16px text below the md breakpoint so iOS does not zoom on focus.",
-  "Required fields are marked programmatically (required), not just with an asterisk.",
-  "Submit buttons show a pending state and stay disabled while submitting.",
-];
-
-const dos = [
-  "One column of fields; group related fields with FieldSet.",
-  "Specific, actionable messages: “Enter an email address, like name@example.com.”",
-  "Helper text for format expectations before the user types.",
-  "Set noValidate on the form so browser bubbles don't preempt the error summary.",
-];
-
-const donts = [
-  "Validate only on submit, or on every keystroke.",
-  "Generic messages like “Invalid input” or red borders with no text.",
-  "Disable the submit button until the form is valid — users get no feedback about what is wrong.",
-];
+const ACCESSIBILITY_CHECKLIST = [
+  {
+    title: "Use visible labels",
+    description: "For custom controls, confirm the label targets the input ID.",
+  },
+  {
+    title: "Associate helper and error text",
+    description:
+      "Use aria-describedby and set aria-invalid when the control has an error.",
+  },
+  {
+    title: "Verify keyboard focus",
+    description:
+      "The failed-submit summary and its links must work with the keyboard.",
+  },
+  {
+    title: "Announce the result",
+    description:
+      "Use the pending and success states to give feedback as submission progresses.",
+  },
+] as const;
 
 function LiveExampleSection() {
   return (
-    <Section
+    <DocSection
+      id="live-example"
       title="Live example"
-      description="A complete create-workspace form: blur validation, a focusable error summary, character counting, and a pending submit state. Everything below is the actual kit running."
+      description="The example shows a failed submit. Users can jump from the summary to the field and fix it in place."
     >
-      <Card>
-        <CardContent className="pt-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+        <div className="w-full lg:w-[480px] lg:shrink-0">
           <WorkspaceFormDemo />
-        </CardContent>
-      </Card>
-    </Section>
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col gap-2.5 lg:py-3">
+          <h3 className="text-lg font-semibold leading-[1.15] tracking-[-0.35px] text-foreground">
+            What happens on submit
+          </h3>
+          <DocChecklist items={SUBMIT_NOTES} />
+        </div>
+      </div>
+    </DocSection>
   );
 }
 
-function AnatomySection() {
+function FieldAnatomySection() {
   return (
-    <Section
-      title="Anatomy"
-      description="Three pieces: useForm owns state and submission, form.Field binds a control, and KiraField renders label, description, control, and error as one accessible unit."
+    <DocSection
+      id="field-anatomy"
+      title="Field anatomy"
+      description="useForm owns state and submission. form.Field binds values. KiraField renders the label, description, control, and error."
     >
-      <Card>
-        <CardContent className="pt-6">
-          <CodeBlock code={anatomyCode} language="tsx" />
-        </CardContent>
-      </Card>
-    </Section>
+      <DocTable
+        columns={["Part", "Responsibility"]}
+        rows={FIELD_ANATOMY_ROWS}
+        caption="Field anatomy"
+      />
+      <CodeBlock code={ANATOMY_CODE} language="tsx" showLineNumbers />
+      <Link
+        to="/components/field"
+        className="docs-focus-ring inline-flex min-h-11 w-fit items-center gap-[7px] rounded-[6px] text-sm font-semibold leading-[1.42] docs-accent underline-offset-4 hover:underline"
+      >
+        <span>Open the Field reference</span>
+        <IconArrowUpRight aria-hidden="true" className="size-[15px]" />
+      </Link>
+    </DocSection>
   );
 }
 
 function ValidationTimingSection() {
   return (
-    <Section
+    <DocSection
+      id="validation-timing"
       title="Validation timing"
-      description="When validation runs matters as much as what it checks. These four rules come from form-UX research and are the kit's defaults."
+      description="Validate when feedback can help people complete the form."
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-        {validationTiming.map((rule) => (
-          <Card key={rule.title}>
-            <CardHeader>
-              <CardTitle className="text-base">{rule.title}</CardTitle>
-              <CardDescription>{rule.description}</CardDescription>
-            </CardHeader>
-          </Card>
-        ))}
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Async validation</CardTitle>
-          <CardDescription>
-            The abort signal cancels stale requests when the user keeps typing —
-            the field page has a runnable version of this demo.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CodeBlock code={asyncCode} language="tsx" />
-        </CardContent>
-      </Card>
-    </Section>
+      <DocTable
+        columns={["Trigger", "Behavior"]}
+        rows={VALIDATION_TIMING_ROWS}
+        caption="Validation timing"
+      />
+    </DocSection>
   );
 }
 
 function ErrorSummariesSection() {
   return (
-    <Section
+    <DocSection
+      id="error-summaries"
       title="Error summaries"
-      description="Inline errors tell users what is wrong in context; a summary makes failed submits recoverable by keyboard and screen reader. Use both together."
+      description="Use a short summary for navigation and an inline message for recovery. Link each summary item to the field ID."
     >
-      <Card>
-        <CardContent className="pt-6">
-          <CodeBlock code={summaryCode} language="tsx" />
-        </CardContent>
-      </Card>
-    </Section>
+      <div
+        data-slot="form-message-example"
+        className="flex items-start gap-3 rounded-[7px] border border-border bg-primary/8 px-4 py-[15px]"
+      >
+        <IconInfoCircle
+          aria-hidden="true"
+          className="mt-0.5 size-4 shrink-0 docs-accent"
+        />
+        <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+          <p className="text-[15px] font-semibold leading-[1.15] tracking-[-0.35px] docs-accent">
+            Message example
+          </p>
+          <p className="text-sm leading-[1.53] text-foreground">
+            Owner email: Enter a valid email address.
+          </p>
+        </div>
+      </div>
+    </DocSection>
   );
 }
 
 function AccessibilityChecklistSection() {
   return (
-    <Section
-      title="Accessibility checklist"
-      description="KiraField handles the wiring; this list is what to verify when composing custom controls with the control prop."
-    >
-      <Card>
-        <CardContent className="pt-6">
-          <ul className="space-y-2">
-            {accessibilityChecklist.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-sm">
-                <IconCheck
-                  className="mt-0.5 h-4 w-4 shrink-0 text-success"
-                  aria-hidden="true"
-                />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-    </Section>
-  );
-}
-
-function DoDontSection() {
-  return (
-    <Section title="Do / Don't">
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card className="border-success/40">
-          <CardHeader>
-            <CardTitle className="text-base text-success">Do</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-              {dos.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-        <Card className="border-destructive/40">
-          <CardHeader>
-            <CardTitle className="text-base text-destructive">
-              Don&apos;t
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-              {donts.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
-    </Section>
-  );
-}
-
-function FieldReferenceBanner() {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
-      <p className="text-sm text-muted-foreground">
-        Every field primitive — FieldSet, FieldRow, custom controls, status
-        icons — is documented on the Field component page.
-      </p>
-      <Link
-        to="/components/field"
-        className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-      >
-        Field reference
-        <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-      </Link>
-    </div>
+    <DocSection id="accessibility-checklist" title="Accessibility checklist">
+      <DocChecklist items={ACCESSIBILITY_CHECKLIST} />
+    </DocSection>
   );
 }
 
 export default function FormPage() {
   return (
-    <ComponentPage>
-      <PageHeader
-        title="Form"
-        description="Kira Kit forms combine TanStack Form for state, zod for validation, and KiraField for accessible field anatomy. This guide builds a real, working form and explains the decisions behind it."
-        badge={
-          <span className="text-sm text-muted-foreground">
-            TanStack Form + zod
-          </span>
-        }
-      />
-
+    <DocPage
+      title="Form"
+      crumb="Form"
+      description="Build accessible forms with TanStack Form, Zod, and KiraField, from first input to submit."
+      sections={SECTIONS}
+      previous={{ to: "/docs/typeset", label: "Typeset" }}
+      next={{ to: "/docs/changelog", label: "Changelog" }}
+    >
       <LiveExampleSection />
-
-      <AnatomySection />
-
+      <DocSection id="form-integrations" title="Form integrations">
+        <p className="text-sm leading-6 text-muted-foreground">
+          Open the{" "}
+          <Link
+            to="/components/field"
+            className="font-medium underline underline-offset-4"
+          >
+            Field demos
+          </Link>{" "}
+          for a compact TanStack Form example, React Hook Form with registered
+          text inputs and a controlled Select, or a native form that reads
+          values with <Code>FormData</Code>.
+        </p>
+      </DocSection>
+      <FieldAnatomySection />
       <ValidationTimingSection />
-
       <ErrorSummariesSection />
-
       <AccessibilityChecklistSection />
-
-      <DoDontSection />
-
-      <FieldReferenceBanner />
-    </ComponentPage>
+    </DocPage>
   );
 }

@@ -5,7 +5,7 @@ Media frame with ratio presets, object-fit and object-position controls, respons
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/aspect-ratio
+kira-kit add @kira-kit/aspect-ratio
 ```
 
 ## Dependencies
@@ -18,6 +18,7 @@ npx shadcn add @kira-kit/aspect-ratio
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
 - @kira-kit/skeleton
 - @kira-kit/use-reduced-motion
 

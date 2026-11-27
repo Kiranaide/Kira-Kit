@@ -20,8 +20,10 @@ import {
 import { SkeletonRoot, SkeletonListItem } from "@/components/ui/skeleton";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "cn";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isCallbackProp } from "@/lib/component-prop-guards";
+import {
+  isFunctionProp,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 
 const timelineVariants = cva("relative min-w-0 [--timeline-dot-size:1rem]", {
   variants: {
@@ -234,7 +236,7 @@ function groupLabel<T>(
   timeZone: string | undefined,
   weekStartsOn: number,
 ) {
-  if (isCallbackProp(groupBy)) return groupBy(item);
+  if (isFunctionProp(groupBy)) return groupBy(item);
   const date = item.datetime ? validDate(item.datetime) : null;
 
   if (!date) return "Date unavailable";

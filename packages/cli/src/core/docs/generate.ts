@@ -5,9 +5,65 @@ export interface DocsOptions {
   repoRoot: string;
   /** Output directory for docs (default: public). */
   outDir?: string;
+  /**
+   * Optional origin for links in llms.txt (e.g. "https://example.com").
+   * When omitted, resolved from deployment env vars or left empty so links
+   * stay root-relative ("/docs/<name>.md") and work on any deployed host.
+   */
+  siteUrl?: string;
 }
 
-const HOMEPAGE = "https://kira-kit.vercel.app";
+function normalizeOrigin(raw: string | undefined): string {
+  if (!raw) return "";
+
+  // Coolify can pass comma-separated URLs/FQDNs when multiple domains are bound.
+  const first = raw
+    .split(",")
+    .map((part) => part.trim())
+    .find(Boolean);
+
+  if (!first) return "";
+
+  const withScheme = /^https?:\/\//i.test(first) ? first : `https://${first}`;
+
+  return withScheme.replace(/\/+$/, "");
+}
+
+/**
+ * Resolve the deployed site origin from an explicit override or standard
+ * platform environment variables. Returns "" when none is set so generated
+ * llms.txt links stay root-relative ("/docs/<name>.md").
+ */
+export function resolveDocsBaseUrl(
+  explicit?: string,
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const direct = normalizeOrigin(explicit);
+
+  if (direct) return direct;
+
+  const candidates = [
+    env.SITE_URL,
+    env.PUBLIC_SITE_URL,
+    env.VITE_SITE_URL,
+    env.COOLIFY_URL,
+    env.COOLIFY_FQDN,
+    env.VERCEL_ENV === "production"
+      ? env.VERCEL_PROJECT_PRODUCTION_URL
+      : undefined,
+    env.VERCEL_URL,
+    env.CF_PAGES_URL,
+    env.URL && /^https?:\/\//i.test(env.URL) ? env.URL : undefined,
+  ];
+
+  for (const candidate of candidates) {
+    const normalized = normalizeOrigin(candidate);
+
+    if (normalized) return normalized;
+  }
+
+  return "";
+}
 
 /** One rendered per-item markdown page (llms.txt links to it). */
 export interface PerItemDoc {
@@ -30,26 +86,28 @@ export interface DocsOutputPaths {
 /** Generate public/llms.txt and public/docs/<item>.md from registry items. */
 export function generateDocs(
   items: SourceRegistryItem[],
-  _options: DocsOptions,
+  options: DocsOptions,
 ): GeneratedDocs {
+  const baseUrl = resolveDocsBaseUrl(options.siteUrl);
+
   const perItem = items.map((item) => ({
     name: item.name,
     content: renderMarkdown(item),
   }));
 
-  const llmsTxt = renderLlmsTxt(items);
+  const llmsTxt = renderLlmsTxt(items, baseUrl);
 
   return { llmsTxt, perItem };
 }
 
-function renderLlmsTxt(items: SourceRegistryItem[]): string {
+function renderLlmsTxt(items: SourceRegistryItem[], baseUrl: string): string {
   const lines: string[] = [
     "# Kira Kit",
     "",
     `> Enterprise UI kit built on Base UI primitives, ${items.length} components and hooks.`,
     "",
-    "Kira Kit is a shadcn-compatible component registry. Install items with the shadcn CLI:",
-    "`shadcn add @kira-kit/<name>`, or register the registry once with `shadcn registry add`.",
+    "Kira Kit is a component registry. Install items with the kira-kit CLI:",
+    "`kira-kit add @kira-kit/<name>`.",
     "",
     "Conventions:",
     "- Primitives: @base-ui/react (Base UI only — no Radix, no React Aria)",
@@ -58,14 +116,14 @@ function renderLlmsTxt(items: SourceRegistryItem[]): string {
     "- Slots: every component root carries data-slot",
     "- Variants: class-variance-authority, exported as `<name>Variants`",
     "- Motion: GSAP and CSS animations, always gated by useReducedMotion / gsap.matchMedia",
-    "- Icons: @tabler/icons-react",
+    "- Icons: @tabler/icons-react (lucide-react with --icon lucide)",
     "",
     "Items:",
   ];
 
   for (const item of items) {
     lines.push(
-      `- [${item.title ?? item.name}](${HOMEPAGE}/docs/${item.name}.md): ${item.description}`,
+      `- [${item.title ?? item.name}](${baseUrl}/docs/${item.name}.md): ${item.description}`,
     );
   }
 
@@ -77,14 +135,32 @@ function usageLines(item: SourceRegistryItem): string[] {
     return [`import { ${camelCase(item.name)} } from "@/hooks/${item.name}";`];
   }
 
-  const component = pascalCase(item.name);
-  const importLine = `import { ${component} } from "@/components/ui/${item.name}";`;
+  if (item.type === "registry:lib") {
+    const first = item.files?.[0]?.path ?? `${item.name}.ts`;
+    const subpath = first.replace(/\.(tsx|ts)$/, "");
 
-  if (item.type === "registry:theme") {
-    return [importLine, "/* Applied as CSS variables by shadcn. */"];
+    return [
+      `// Installed under your lib alias, e.g. src/lib/${subpath}.ts`,
+      `import { /* exports */ } from "@/lib/${subpath}";`,
+    ];
   }
 
-  return [importLine, `<${component}> text</${component}>`];
+  if (item.type === "registry:theme") {
+    return ["/* Applied as CSS variables by kira-kit. */"];
+  }
+
+  if (item.type === "registry:style") {
+    return [
+      "/* Installed as CSS files next to your global stylesheet by kira-kit. */",
+    ];
+  }
+
+  const component = pascalCase(item.name);
+
+  return [
+    `import { ${component} } from "@/components/ui/${item.name}";`,
+    `<${component}> text</${component}>`,
+  ];
 }
 
 function renderMarkdown(item: SourceRegistryItem): string {
@@ -99,7 +175,7 @@ function renderMarkdown(item: SourceRegistryItem): string {
     "## Install",
     "",
     "```bash",
-    `npx shadcn add @kira-kit/${item.name}`,
+    `kira-kit add @kira-kit/${item.name}`,
     "```",
     "",
   ];
@@ -119,7 +195,7 @@ function renderMarkdown(item: SourceRegistryItem): string {
 
   lines.push("## Usage", "", "```tsx", ...usageLines(item), "```", "");
 
-  if (item.type !== "registry:hook" && item.type !== "registry:theme") {
+  if (item.type === "registry:ui") {
     lines.push(
       "## Accessibility",
       "",

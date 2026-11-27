@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Build stage: registry + docs + Vite bundle, all with Bun ----
-FROM oven/bun:1 AS build
+FROM oven/bun:1.4.4 AS build
 WORKDIR /app
 
 # Root dependencies (showcase site + toolchain)

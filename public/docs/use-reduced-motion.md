@@ -5,7 +5,7 @@ Returns a live boolean for the user's prefers-reduced-motion: reduce media query
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-reduced-motion
+kira-kit add @kira-kit/use-reduced-motion
 ```
 
 ## Usage

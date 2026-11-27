@@ -1,11 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { omitComponentProps } from "@/lib/component-native-props";
-import { withOccurrenceKeys } from "@/lib/component-item-keys";
+import {
+  isNumberProp,
+  isStringProp,
+  omitComponentProps,
+  resolveComponentDefaults,
+  withOccurrenceKeys,
+} from "@/lib/component-utils";
 import { Field as FieldPrimitive } from "@base-ui/react/field";
 import { Fieldset as FieldsetPrimitive } from "@base-ui/react/fieldset";
-import { Input as InputPrimitive } from "@base-ui/react/input";
 import { IconAlertCircle, IconCheck, IconLoader2 } from "@tabler/icons-react";
 import type { AnyFieldApi } from "@tanstack/react-form";
 import { cva, type VariantProps } from "class-variance-authority";
@@ -15,8 +19,6 @@ import { cn } from "cn";
 import { Input, type InputProps } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isStringProp, isNumberProp } from "@/lib/component-prop-guards";
 
 const fieldValidationIcons = {
   valid: IconCheck,
@@ -1186,7 +1188,7 @@ type renderFieldInputSectionPart2Args = {
   label: FieldInputProps["label"];
   inputId: string;
   render: FieldInputProps["render"];
-  controlProps: Omit<InputPrimitive.Props, "className"> & {
+  controlProps: Omit<FieldPrimitive.Control.Props, "className"> & {
     className?: string;
     "data-slot": string;
   };
@@ -1233,7 +1235,7 @@ function renderFieldInputSectionPart2({
     <>
       {label != null && <FieldLabel htmlFor={inputId}>{label}</FieldLabel>}
       {render ? (
-        <InputPrimitive
+        <FieldPrimitive.Control
           {...controlProps}
           render={render}
           className={cn(
@@ -1712,7 +1714,10 @@ function fieldInputControlProps({
   className,
   onValueChange,
   onBlur,
-}: fieldInputControlPropsArgs): Omit<InputPrimitive.Props, "className"> & {
+}: fieldInputControlPropsArgs): Omit<
+  FieldPrimitive.Control.Props,
+  "className"
+> & {
   className?: string;
   "data-slot": string;
 } {
@@ -1736,7 +1741,7 @@ function fieldInputControlProps({
     className,
     onValueChange: (
       next: string,
-      details: InputPrimitive.ChangeEventDetails,
+      details: FieldPrimitive.Control.ChangeEventDetails,
     ) => {
       onValueChange?.(next, details);
 

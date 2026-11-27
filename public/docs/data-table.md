@@ -5,7 +5,7 @@ A TanStack Table data grid with sorting, filtering, pagination, grouping, expans
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/data-table
+kira-kit add @kira-kit/data-table
 ```
 
 ## Dependencies
@@ -25,8 +25,10 @@ npx shadcn add @kira-kit/data-table
 - @kira-kit/badge
 - @kira-kit/button
 - @kira-kit/checkbox
+- @kira-kit/component-utils
 - @kira-kit/dropdown-menu
 - @kira-kit/input
+- @kira-kit/pagination
 - @kira-kit/popover
 - @kira-kit/table
 - @kira-kit/tooltip

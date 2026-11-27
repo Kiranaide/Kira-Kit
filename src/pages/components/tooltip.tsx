@@ -4,6 +4,10 @@ import {
   IconPalette,
   IconKeyboard,
   IconLink,
+  IconPlus,
+  IconPencil,
+  IconSettings,
+  IconTrash,
 } from "@tabler/icons-react";
 import {
   Tooltip,
@@ -267,23 +271,23 @@ function IconButtonsDemo() {
   return (
     <div className="flex gap-2 items-center justify-center">
       <SimpleTooltip content="Add new item">
-        <Button variant="outline" size="icon">
-          <IconAccessible className="h-4 w-4" />
+        <Button variant="outline" size="icon" aria-label="Add new item">
+          <IconPlus className="h-4 w-4" />
         </Button>
       </SimpleTooltip>
       <SimpleTooltip content="Edit">
-        <Button variant="outline" size="icon">
-          <IconPalette className="h-4 w-4" />
+        <Button variant="outline" size="icon" aria-label="Edit">
+          <IconPencil className="h-4 w-4" />
         </Button>
       </SimpleTooltip>
       <SimpleTooltip content="Settings">
-        <Button variant="outline" size="icon">
-          <IconAccessible className="h-4 w-4" />
+        <Button variant="outline" size="icon" aria-label="Settings">
+          <IconSettings className="h-4 w-4" />
         </Button>
       </SimpleTooltip>
       <SimpleTooltip content="Delete" variant="destructive">
-        <Button variant="ghost" size="icon">
-          <IconAccessible className="h-4 w-4" />
+        <Button variant="ghost" size="icon" aria-label="Delete">
+          <IconTrash className="h-4 w-4" />
         </Button>
       </SimpleTooltip>
     </div>
@@ -298,22 +302,22 @@ export function IconButtonsDemo() {
   return (
     <div className="flex gap-2">
       <SimpleTooltip content="Add new item">
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" aria-label="Add new item">
           <IconPlus className="h-4 w-4" />
         </Button>
       </SimpleTooltip>
       <SimpleTooltip content="Edit">
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" aria-label="Edit">
           <IconPencil className="h-4 w-4" />
         </Button>
       </SimpleTooltip>
       <SimpleTooltip content="Settings">
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" aria-label="Settings">
           <IconSettings className="h-4 w-4" />
         </Button>
       </SimpleTooltip>
       <SimpleTooltip content="Delete" variant="destructive">
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" aria-label="Delete">
           <IconTrash className="h-4 w-4" />
         </Button>
       </SimpleTooltip>
@@ -447,7 +451,7 @@ export function FormattingToolbar() {
   )
 }`;
 
-function StatesDemo() {
+function StressDemo() {
   return (
     <div className="flex flex-col gap-6 items-center">
       <div className="flex gap-4 flex-wrap items-center justify-center">
@@ -462,6 +466,9 @@ function StatesDemo() {
             Disabled
           </Button>
         </SimpleTooltip>
+        <SimpleTooltip content="" disabled>
+          <Button variant="outline">Empty content (disabled)</Button>
+        </SimpleTooltip>
         <SimpleTooltip
           content="A tooltip with a very long content string that must wrap instead of overflowing the viewport. It respects the maxWidth cap and the available width."
           maxWidth={200}
@@ -469,49 +476,62 @@ function StatesDemo() {
           <Button variant="outline">Long content</Button>
         </SimpleTooltip>
       </div>
-      <div className="flex max-w-[320px] flex-col gap-4 rounded-md border p-4">
+      <div className="flex max-w-xs flex-col gap-4 rounded-md border p-4">
         <p className="text-xs text-muted-foreground">
-          Narrow container (~320px): the tooltip never overflows — it is capped
-          by the available viewport width.
+          Narrow container (max-w-xs): the tooltip never overflows — it is
+          capped by the available viewport width.
         </p>
         <SimpleTooltip
           content="Capped by viewport width, not container width"
           side="bottom"
         >
           <Button variant="outline" className="w-full">
-            Narrow container trigger
+            Narrow container trigger with a long label
           </Button>
         </SimpleTooltip>
       </div>
       <div className="flex gap-4 items-center justify-center">
         <SimpleTooltip content="Works on focusable non-button elements too">
-          <Switch />
+          <Switch aria-label="Toggle setting" />
         </SimpleTooltip>
       </div>
     </div>
   );
 }
 
-const statesCode = `import { SimpleTooltip } from "@/components/ui/tooltip"
+const stressCode = `import { SimpleTooltip } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 
-export function StatesDemo() {
+export function StressDemo() {
   return (
-    <div className="flex gap-4 flex-wrap">
-      <SimpleTooltip content="Enabled trigger">
-        <Button variant="outline">Enabled</Button>
-      </SimpleTooltip>
-      {/* disabled={true} disables the tooltip, not just the button */}
-      <SimpleTooltip content="Disabled, but the reason is still reachable" disabled>
-        <Button variant="outline" disabled>
-          Disabled
-        </Button>
-      </SimpleTooltip>
-      <SimpleTooltip
-        content="A tooltip with a very long content string that must wrap instead of overflowing the viewport."
-        maxWidth={200}
-      >
-        <Button variant="outline">Long content</Button>
+    <div className="flex flex-col gap-6 items-center">
+      <div className="flex gap-4 flex-wrap">
+        <SimpleTooltip content="Enabled trigger">
+          <Button variant="outline">Enabled</Button>
+        </SimpleTooltip>
+        <SimpleTooltip content="Disabled, but the reason is still reachable" disabled>
+          <Button variant="outline" disabled>Disabled</Button>
+        </SimpleTooltip>
+        <SimpleTooltip content="" disabled>
+          <Button variant="outline">Empty content (disabled)</Button>
+        </SimpleTooltip>
+        <SimpleTooltip
+          content="A tooltip with a very long content string that must wrap instead of overflowing the viewport."
+          maxWidth={200}
+        >
+          <Button variant="outline">Long content</Button>
+        </SimpleTooltip>
+      </div>
+      <div className="max-w-xs rounded-md border p-4">
+        <SimpleTooltip content="Capped by viewport width, not container width" side="bottom">
+          <Button variant="outline" className="w-full">
+            Narrow container trigger with a long label
+          </Button>
+        </SimpleTooltip>
+      </div>
+      <SimpleTooltip content="Works on focusable non-button elements too">
+        <Switch aria-label="Toggle setting" />
       </SimpleTooltip>
     </div>
   )
@@ -560,198 +580,7 @@ export function RichContentDemo() {
   )
 }`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function TooltipPage() {
-  const features = [
-    {
-      title: "Accessible",
-      description:
-        "WCAG 2.2 AA compliant. Escape dismisses (1.4.13), hoverable content, and Base UI's own ARIA wiring.",
-      icon: <IconAccessible className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Customizable",
-      description:
-        "Variants, sizes, positions, delays, arrows, keyboard shortcuts, and viewport-aware maxWidth.",
-      icon: <IconPalette className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Shared Tooltips",
-      description:
-        "One popup per toolbar that glides between buttons and shows keyboard shortcuts — Figma/Linear style.",
-      icon: <IconLink className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Keyboard-first",
-      description:
-        "Tooltips open on focus, Escape closes them, and shortcuts are advertised with aria-keyshortcuts.",
-      icon: <IconKeyboard className="w-4 h-4 text-primary" />,
-    },
-  ];
-
-  const demoTabs = [
-    {
-      value: "basic",
-      label: "Basic",
-      demo: (
-        <DemoWrapper
-          title="Simple Tooltip"
-          description="The easiest way to add tooltips. Just wrap your trigger with SimpleTooltip."
-          code={basicCode}
-        >
-          <BasicDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "positions",
-      label: "Positions",
-      demo: (
-        <DemoWrapper
-          title="Positioning"
-          description="Control which side of the trigger the tooltip appears on."
-          code={positionsCode}
-        >
-          <PositionsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "delay",
-      label: "Delay",
-      demo: (
-        <DemoWrapper
-          title="Custom Delay"
-          description="Default delay is 500ms. Grouped tooltips share the provider's skip window. Customize with the delay prop."
-          code={delayCode}
-        >
-          <DelayDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "variants",
-      label: "Variants",
-      demo: (
-        <DemoWrapper
-          title="Style Variants"
-          description="Different visual styles for various contexts."
-          code={variantsCode}
-        >
-          <VariantsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "sizes",
-      label: "Sizes",
-      demo: (
-        <DemoWrapper
-          title="Size Variants"
-          description="Small, default, and large tooltip sizes."
-          code={sizesCode}
-        >
-          <SizesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "arrow",
-      label: "Arrow",
-      demo: (
-        <DemoWrapper
-          title="Arrow Options"
-          description="Toggle the arrow pointer on or off. The arrow rotates to point at the trigger from every side."
-          code={arrowCode}
-        >
-          <ArrowDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "icon-buttons",
-      label: "Icon Buttons",
-      demo: (
-        <DemoWrapper
-          title="Icon Buttons with Tooltips"
-          description="Tooltips are essential for icon-only buttons to provide context."
-          code={iconButtonsCode}
-        >
-          <IconButtonsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "shortcut",
-      label: "Shortcuts",
-      demo: (
-        <DemoWrapper
-          title="Keyboard Shortcuts"
-          description="Render <kbd> key hints like ⌘ B next to the label. Visual only — advertise the real shortcut with aria-keyshortcuts on the trigger."
-          code={shortcutCode}
-        >
-          <ShortcutDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "shared-toolbar",
-      label: "Shared Toolbar",
-      demo: (
-        <DemoWrapper
-          title="Shared Tooltip (one popup, many triggers)"
-          description="Built on Base UI 1.9 detached triggers: one popup glides between toolbar buttons, showing label + shortcut. Hover across the buttons to see it move without reopening."
-          code={sharedToolbarCode}
-        >
-          <SharedToolbarDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "states",
-      label: "States",
-      demo: (
-        <DemoWrapper
-          title="States & Stress Cases"
-          description="Disabled triggers, very long content, narrow containers, and non-button triggers."
-          code={statesCode}
-        >
-          <StatesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "rich-content",
-      label: "Rich Content",
-      demo: (
-        <DemoWrapper
-          title="Advanced API (Compound Components)"
-          description="For more control, use the compound component pattern with custom content."
-          code={richContentCode}
-        >
-          <RichContentDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
-
-  const keyboardShortcuts = [
-    {
-      keys: "Tab",
-      description: "Focus trigger to show tooltip (inherited from Base UI)",
-    },
-    {
-      keys: "Escape",
-      description: "Dismiss tooltip (WCAG 1.4.13, inherited from Base UI)",
-    },
-    {
-      keys: "aria-keyshortcuts",
-      description:
-        "Advertise a trigger's real shortcut; the tooltip's kbd hints are visual-only",
-    },
-  ];
-
-  const usageCode = `import {
+const usageCode = `import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
@@ -817,397 +646,48 @@ const toolbarTip = createTooltipHandle<SharedTooltipPayload>()
   <App />
 </TooltipProvider>`;
 
-  const apiReference = [
-    {
-      title: "SimpleTooltip",
-      props: [
-        {
-          prop: "content",
-          type: "React.ReactNode",
-          default: "-",
-          description: "The tooltip content to display",
-        },
-        {
-          prop: "children",
-          type: "React.ReactElement",
-          default: "-",
-          description:
-            "The trigger element. Must accept ref + props; rendered via render, never wrapped",
-        },
-        {
-          prop: "side",
-          type: '"top" | "right" | "bottom" | "left"',
-          default: '"top"',
-          description: "Preferred side of trigger to render",
-        },
-        {
-          prop: "align",
-          type: '"start" | "center" | "end"',
-          default: '"center"',
-          description: "Alignment along the trigger edge",
-        },
-        {
-          prop: "sideOffset",
-          type: "number",
-          default: "8",
-          description: "Distance from trigger in pixels",
-        },
-        {
-          prop: "variant",
-          type: '"default" | "secondary" | "outline" | "muted" | "destructive"',
-          default: '"default"',
-          description: "Visual style variant",
-        },
-        {
-          prop: "size",
-          type: '"sm" | "default" | "lg"',
-          default: '"default"',
-          description: "Size of the tooltip",
-        },
-        {
-          prop: "showArrow",
-          type: "boolean",
-          default: "true",
-          description: "Whether to show the arrow pointer",
-        },
-        {
-          prop: "maxWidth",
-          type: "number | string",
-          default: "250",
-          description: "Max width; also capped by the available viewport width",
-        },
-        {
-          prop: "shortcut",
-          type: "string | readonly string[]",
-          default: "-",
-          description: "Keyboard shortcut hint(s) rendered as kbd keys",
-        },
-        {
-          prop: "delay",
-          type: "number",
-          default: "-",
-          description: "Open delay in ms (overrides Root/context)",
-        },
-        {
-          prop: "closeDelay",
-          type: "number",
-          default: "-",
-          description: "Close delay in ms (overrides Root/context)",
-        },
-        {
-          prop: "disabled",
-          type: "boolean",
-          default: "false",
-          description: "Disables the tooltip entirely",
-        },
-        {
-          prop: "open",
-          type: "boolean",
-          default: "-",
-          description: "Controlled open state",
-        },
-        {
-          prop: "onOpenChange",
-          type: "(open: boolean, eventDetails) => void",
-          default: "-",
-          description: "Callback when open state changes",
-        },
-      ],
-    },
-    {
-      title: "Tooltip",
-      props: [
-        {
-          prop: "open",
-          type: "boolean",
-          default: "-",
-          description: "Controlled open state",
-        },
-        {
-          prop: "onOpenChange",
-          type: "(open: boolean, eventDetails) => void",
-          default: "-",
-          description: "Callback when open state changes",
-        },
-        {
-          prop: "delay",
-          type: "number",
-          default: "-",
-          description: "Open delay in ms, forwarded to the trigger via context",
-        },
-        {
-          prop: "closeDelay",
-          type: "number",
-          default: "-",
-          description:
-            "Close delay in ms, forwarded to the trigger via context",
-        },
-        {
-          prop: "variant",
-          type: '"default" | "secondary" | "outline" | "muted" | "destructive"',
-          default: "-",
-          description:
-            "Default variant for TooltipContent/TooltipArrow in this root",
-        },
-        {
-          prop: "size",
-          type: '"sm" | "default" | "lg"',
-          default: "-",
-          description: "Default size for TooltipContent in this root",
-        },
-        {
-          prop: "handle",
-          type: "Tooltip.Handle<Payload>",
-          default: "-",
-          description:
-            "Associates this root with detached triggers (created via createTooltipHandle)",
-        },
-      ],
-    },
-    {
-      title: "TooltipTrigger",
-      props: [
-        {
-          prop: "render",
-          type: "ReactElement | (props, state) => ReactElement",
-          default: "-",
-          description:
-            "Render the trigger as this element instead of wrapping children in a button",
-        },
-        {
-          prop: "delay",
-          type: "number",
-          default: "-",
-          description: "Open delay in ms for this trigger",
-        },
-        {
-          prop: "closeDelay",
-          type: "number",
-          default: "-",
-          description: "Close delay in ms for this trigger",
-        },
-        {
-          prop: "handle",
-          type: "Tooltip.Handle<Payload>",
-          default: "-",
-          description: "Attach to a shared handle instead of this root",
-        },
-        {
-          prop: "payload",
-          type: "Payload",
-          default: "-",
-          description:
-            "Payload passed to the Root's render function when opened",
-        },
-      ],
-    },
-    {
-      title: "TooltipContent",
-      props: [
-        {
-          prop: "side",
-          type: '"top" | "right" | "bottom" | "left"',
-          default: '"top"',
-          description: "Preferred side of trigger to render",
-        },
-        {
-          prop: "sideOffset",
-          type: "number",
-          default: "8",
-          description: "Distance from trigger in pixels",
-        },
-        {
-          prop: "align",
-          type: '"start" | "center" | "end"',
-          default: '"center"',
-          description: "Alignment along the trigger edge",
-        },
-        {
-          prop: "alignOffset",
-          type: "number",
-          default: "0",
-          description: "Additional offset along the aligned edge",
-        },
-        {
-          prop: "collisionPadding",
-          type: "number | { top, right, bottom, left }",
-          default: "8",
-          description:
-            "Padding from the viewport edges when avoiding collisions",
-        },
-        {
-          prop: "variant",
-          type: '"default" | "secondary" | "outline" | "muted" | "destructive"',
-          default: '"default"',
-          description: "Visual style variant",
-        },
-        {
-          prop: "size",
-          type: '"sm" | "default" | "lg"',
-          default: '"default"',
-          description: "Size of the tooltip",
-        },
-        {
-          prop: "showArrow",
-          type: "boolean",
-          default: "true",
-          description: "Whether to show the arrow pointer",
-        },
-        {
-          prop: "maxWidth",
-          type: "number | string",
-          default: "250",
-          description: "Max width; also capped by the available viewport width",
-        },
-        {
-          prop: "shortcut",
-          type: "string | readonly string[]",
-          default: "-",
-          description: "Keyboard shortcut hint(s) rendered as kbd keys",
-        },
-        {
-          prop: "positionerProps",
-          type: "Tooltip.Positioner.Props",
-          default: "-",
-          description: "Forwarded to the Positioner (className, id, etc.)",
-        },
-        {
-          prop: "portalProps",
-          type: "Tooltip.Portal.Props",
-          default: "-",
-          description: "Forwarded to the Portal (container, etc.)",
-        },
-        {
-          prop: "className",
-          type: "string | (state) => string",
-          default: "-",
-          description: "Class or function form; merged, never dropped",
-        },
-        {
-          prop: "style",
-          type: "CSSProperties | (state) => CSSProperties",
-          default: "-",
-          description:
-            "Style or function form; merged with the maxWidth variable",
-        },
-      ],
-    },
-    {
-      title: "TooltipShortcut",
-      props: [
-        {
-          prop: "keys",
-          type: "string | readonly string[]",
-          default: "-",
-          description: "Key(s) rendered as kbd elements",
-        },
-        {
-          prop: "children",
-          type: "React.ReactNode",
-          default: "-",
-          description: "Not used; pass keys instead",
-        },
-      ],
-    },
-    {
-      title: "SharedTooltip",
-      props: [
-        {
-          prop: "handle",
-          type: "Tooltip.Handle<SharedTooltipPayload>",
-          default: "-",
-          description: "The shared handle the triggers attach to",
-        },
-        {
-          prop: "side",
-          type: '"top" | "right" | "bottom" | "left"',
-          default: '"top"',
-          description: "Preferred side of the trigger to render",
-        },
-        {
-          prop: "variant / size",
-          type: "string",
-          default: '"default"',
-          description: "Same variants and sizes as TooltipContent",
-        },
-      ],
-    },
-    {
-      title: "SharedTooltipTrigger",
-      props: [
-        {
-          prop: "handle",
-          type: "Tooltip.Handle<SharedTooltipPayload>",
-          default: "-",
-          description: "The shared handle to attach to",
-        },
-        {
-          prop: "label",
-          type: "string",
-          default: "-",
-          description:
-            "Label shown in the shared popup and set as the trigger's aria-label",
-        },
-        {
-          prop: "shortcut",
-          type: "string | readonly string[]",
-          default: "-",
-          description: "Shortcut hint(s) shown in the shared popup",
-        },
-        {
-          prop: "render",
-          type: "ReactElement | (props, state) => ReactElement",
-          default: "-",
-          description: "The element to render as (e.g. a Button)",
-        },
-      ],
-    },
-    {
-      title: "TooltipProvider",
-      props: [
-        {
-          prop: "delay",
-          type: "number",
-          default: "500",
-          description:
-            "Default open delay for all tooltips inside the provider",
-        },
-        {
-          prop: "closeDelay",
-          type: "number",
-          default: "200",
-          description:
-            "Default close delay for all tooltips inside the provider",
-        },
-        {
-          prop: "timeout",
-          type: "number",
-          default: "400",
-          description:
-            "Skip window: a tooltip opened within this time of the previous close opens instantly",
-        },
-      ],
-    },
-  ];
-
+export default function TooltipPage() {
   return (
     <TooltipProvider>
       <ComponentPage>
         <PageHeader
           title="Tooltip"
           description="Accessible popup that displays information on hover or focus. WCAG 2.2 AA compliant with Escape dismissal, delay grouping, keyboard shortcut hints, and a shared toolbar mode built on Base UI 1.9."
-          version="v2.0"
+          version="v2.0.0"
         />
 
-        <FeatureGrid features={features} />
+        <FeatureGrid
+          features={tooltipPageFeatures}
+          description="Capabilities built into Tooltip, SimpleTooltip, and SharedTooltip."
+        />
 
-        <DemoTabs tabs={demoTabs} />
+        <DemoTabs defaultValue="basic" tabs={tooltipPageDemoTabs} />
 
-        <KeyboardShortcuts shortcuts={keyboardShortcuts} />
+        <KeyboardShortcuts
+          shortcuts={tooltipPageShortcuts}
+          description="Keyboard focus, dismissal, and shortcut announcement behavior."
+        />
 
-        <UsageBlock code={usageCode} />
+        <UsageBlock
+          code={usageCode}
+          title="Usage"
+          description="Choose SimpleTooltip for common cases, Tooltip primitives for custom layouts, or SharedTooltip for toolbars."
+          notes={[
+            {
+              label: "SimpleTooltip",
+              body: "Renders the trigger directly via render={children} without adding a wrapper button. Pass a child that forwards ref and props.",
+            },
+            {
+              label: "SharedTooltip",
+              body: "Use createTooltipHandle() at module scope to glide a single popup across toolbar buttons without reopening.",
+            },
+          ]}
+        />
 
-        <APIReference sections={apiReference} />
+        <APIReference
+          sections={tooltipPageAPISections}
+          description="Props, types, and defaults for every exported Tooltip part."
+        />
 
         <Changelog
           entries={tooltipPageChangelogEntries}
@@ -1220,6 +700,604 @@ const toolbarTip = createTooltipHandle<SharedTooltipPayload>()
 }
 
 // Static demo metadata stays co-located and follows its source constants.
+const tooltipPageFeatures = [
+  {
+    title: "Accessible",
+    description:
+      "WCAG 2.2 AA compliant. Escape dismisses (1.4.13), hoverable content, and Base UI's own ARIA wiring.",
+    icon: <IconAccessible className="w-4 h-4 text-primary" />,
+  },
+  {
+    title: "Customizable",
+    description:
+      "Variants, sizes, positions, delays, arrows, keyboard shortcuts, and viewport-aware maxWidth.",
+    icon: <IconPalette className="w-4 h-4 text-primary" />,
+  },
+  {
+    title: "Shared Tooltips",
+    description:
+      "One popup per toolbar that glides between buttons and shows keyboard shortcuts — Figma/Linear style.",
+    icon: <IconLink className="w-4 h-4 text-primary" />,
+  },
+  {
+    title: "Keyboard-first",
+    description:
+      "Tooltips open on focus, Escape closes them, and shortcuts are advertised with aria-keyshortcuts.",
+    icon: <IconKeyboard className="w-4 h-4 text-primary" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const tooltipPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Simple Tooltip"
+        description="The easiest way to add tooltips. Just wrap your trigger with SimpleTooltip."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "positions",
+    label: "Positions",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Positioning"
+        description="Control which side of the trigger the tooltip appears on."
+        code={positionsCode}
+      >
+        <PositionsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "delay",
+    label: "Delay",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Custom Delay"
+        description="Default delay is 500ms. Grouped tooltips share the provider's skip window. Customize with the delay prop."
+        code={delayCode}
+      >
+        <DelayDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "variants",
+    label: "Variants",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Style Variants"
+        description="Different visual styles for various contexts."
+        code={variantsCode}
+      >
+        <VariantsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="Small, default, and large tooltip sizes."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "arrow",
+    label: "Arrow",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Arrow Options"
+        description="Toggle the arrow pointer on or off. The arrow rotates to point at the trigger from every side."
+        code={arrowCode}
+      >
+        <ArrowDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "icon-buttons",
+    label: "Icon Buttons",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Icon Buttons with Tooltips"
+        description="Tooltips are essential for icon-only buttons to provide context."
+        code={iconButtonsCode}
+      >
+        <IconButtonsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "rich-content",
+    label: "Rich Content",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Advanced API (Compound Components)"
+        description="For more control, use the compound component pattern with custom content."
+        code={richContentCode}
+      >
+        <RichContentDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "shortcut",
+    label: "Shortcuts",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Keyboard Shortcuts"
+        description="Render <kbd> key hints like ⌘ B next to the label. Visual only — advertise the real shortcut with aria-keyshortcuts on the trigger."
+        code={shortcutCode}
+      >
+        <ShortcutDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "shared-toolbar",
+    label: "Shared Toolbar",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Shared Tooltip (one popup, many triggers)"
+        description="Built on Base UI 1.9 detached triggers: one popup glides between toolbar buttons, showing label + shortcut. Hover across the buttons to see it move without reopening."
+        code={sharedToolbarCode}
+      >
+        <SharedToolbarDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Disabled triggers, empty content, very long content, narrow max-w-xs containers, and non-button triggers."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const tooltipPageShortcuts = [
+  {
+    keys: "Tab",
+    description: "Focus trigger to show tooltip (inherited from Base UI)",
+  },
+  {
+    keys: "Escape",
+    description: "Dismiss tooltip (WCAG 1.4.13, inherited from Base UI)",
+  },
+  {
+    keys: "aria-keyshortcuts",
+    description:
+      "Advertise a trigger's real shortcut; the tooltip's kbd hints are visual-only",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const tooltipPageAPISections = [
+  {
+    title: "SimpleTooltip",
+    props: [
+      {
+        prop: "content",
+        type: "React.ReactNode",
+        default: "-",
+        description: "The tooltip content to display",
+      },
+      {
+        prop: "children",
+        type: "React.ReactElement",
+        default: "-",
+        description:
+          "The trigger element. Must accept ref + props; rendered via render, never wrapped",
+      },
+      {
+        prop: "side",
+        type: '"top" | "right" | "bottom" | "left"',
+        default: '"top"',
+        description: "Preferred side of trigger to render",
+      },
+      {
+        prop: "align",
+        type: '"start" | "center" | "end"',
+        default: '"center"',
+        description: "Alignment along the trigger edge",
+      },
+      {
+        prop: "sideOffset",
+        type: "number",
+        default: "8",
+        description: "Distance from trigger in pixels",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "secondary" | "outline" | "muted" | "destructive"',
+        default: '"default"',
+        description: "Visual style variant",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Size of the tooltip",
+      },
+      {
+        prop: "showArrow",
+        type: "boolean",
+        default: "true",
+        description: "Whether to show the arrow pointer",
+      },
+      {
+        prop: "maxWidth",
+        type: "number | string",
+        default: "250",
+        description: "Max width; also capped by the available viewport width",
+      },
+      {
+        prop: "shortcut",
+        type: "string | readonly string[]",
+        default: "-",
+        description: "Keyboard shortcut hint(s) rendered as kbd keys",
+      },
+      {
+        prop: "delay",
+        type: "number",
+        default: "-",
+        description: "Open delay in ms (overrides Root/context)",
+      },
+      {
+        prop: "closeDelay",
+        type: "number",
+        default: "-",
+        description: "Close delay in ms (overrides Root/context)",
+      },
+      {
+        prop: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disables the tooltip entirely",
+      },
+      {
+        prop: "open",
+        type: "boolean",
+        default: "-",
+        description: "Controlled open state",
+      },
+      {
+        prop: "onOpenChange",
+        type: "(open: boolean, eventDetails) => void",
+        default: "-",
+        description: "Callback when open state changes",
+      },
+    ],
+  },
+  {
+    title: "Tooltip",
+    props: [
+      {
+        prop: "open",
+        type: "boolean",
+        default: "-",
+        description: "Controlled open state",
+      },
+      {
+        prop: "onOpenChange",
+        type: "(open: boolean, eventDetails) => void",
+        default: "-",
+        description: "Callback when open state changes",
+      },
+      {
+        prop: "delay",
+        type: "number",
+        default: "-",
+        description: "Open delay in ms, forwarded to the trigger via context",
+      },
+      {
+        prop: "closeDelay",
+        type: "number",
+        default: "-",
+        description: "Close delay in ms, forwarded to the trigger via context",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "secondary" | "outline" | "muted" | "destructive"',
+        default: "-",
+        description:
+          "Default variant for TooltipContent/TooltipArrow in this root",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: "-",
+        description: "Default size for TooltipContent in this root",
+      },
+      {
+        prop: "handle",
+        type: "Tooltip.Handle<Payload>",
+        default: "-",
+        description:
+          "Associates this root with detached triggers (created via createTooltipHandle)",
+      },
+    ],
+  },
+  {
+    title: "TooltipTrigger",
+    props: [
+      {
+        prop: "render",
+        type: "ReactElement | (props, state) => ReactElement",
+        default: "-",
+        description:
+          "Render the trigger as this element instead of wrapping children in a button",
+      },
+      {
+        prop: "delay",
+        type: "number",
+        default: "-",
+        description: "Open delay in ms for this trigger",
+      },
+      {
+        prop: "closeDelay",
+        type: "number",
+        default: "-",
+        description: "Close delay in ms for this trigger",
+      },
+      {
+        prop: "handle",
+        type: "Tooltip.Handle<Payload>",
+        default: "-",
+        description: "Attach to a shared handle instead of this root",
+      },
+      {
+        prop: "payload",
+        type: "Payload",
+        default: "-",
+        description: "Payload passed to the Root's render function when opened",
+      },
+    ],
+  },
+  {
+    title: "TooltipContent",
+    props: [
+      {
+        prop: "side",
+        type: '"top" | "right" | "bottom" | "left"',
+        default: '"top"',
+        description: "Preferred side of trigger to render",
+      },
+      {
+        prop: "sideOffset",
+        type: "number",
+        default: "8",
+        description: "Distance from trigger in pixels",
+      },
+      {
+        prop: "align",
+        type: '"start" | "center" | "end"',
+        default: '"center"',
+        description: "Alignment along the trigger edge",
+      },
+      {
+        prop: "alignOffset",
+        type: "number",
+        default: "0",
+        description: "Additional offset along the aligned edge",
+      },
+      {
+        prop: "collisionPadding",
+        type: "number | { top, right, bottom, left }",
+        default: "8",
+        description: "Padding from the viewport edges when avoiding collisions",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "secondary" | "outline" | "muted" | "destructive"',
+        default: '"default"',
+        description: "Visual style variant",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Size of the tooltip",
+      },
+      {
+        prop: "showArrow",
+        type: "boolean",
+        default: "true",
+        description: "Whether to show the arrow pointer",
+      },
+      {
+        prop: "maxWidth",
+        type: "number | string",
+        default: "250",
+        description: "Max width; also capped by the available viewport width",
+      },
+      {
+        prop: "shortcut",
+        type: "string | readonly string[]",
+        default: "-",
+        description: "Keyboard shortcut hint(s) rendered as kbd keys",
+      },
+      {
+        prop: "positionerProps",
+        type: "Tooltip.Positioner.Props",
+        default: "-",
+        description: "Forwarded to the Positioner (className, id, etc.)",
+      },
+      {
+        prop: "portalProps",
+        type: "Tooltip.Portal.Props",
+        default: "-",
+        description: "Forwarded to the Portal (container, etc.)",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes merged onto the popup",
+      },
+      {
+        prop: "style",
+        type: "React.CSSProperties",
+        default: "-",
+        description:
+          "Inline styles merged with the --tooltip-max-width variable",
+      },
+    ],
+  },
+  {
+    title: "TooltipArrow",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "secondary" | "outline" | "muted" | "destructive"',
+        default: '"default"',
+        description:
+          "Arrow fill/stroke color; inherits Tooltip context variant",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the arrow wrapper",
+      },
+    ],
+  },
+  {
+    title: "TooltipShortcut",
+    props: [
+      {
+        prop: "keys",
+        type: "string | readonly string[]",
+        default: "-",
+        description: "Key(s) rendered as kbd elements",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes for the shortcut container",
+      },
+    ],
+  },
+  {
+    title: "TooltipViewport",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description:
+          "Additional CSS classes for the animated shared-tooltip viewport",
+      },
+    ],
+  },
+  {
+    title: "SharedTooltip",
+    props: [
+      {
+        prop: "handle",
+        type: "Tooltip.Handle<SharedTooltipPayload>",
+        default: "-",
+        description: "The shared handle the triggers attach to",
+      },
+      {
+        prop: "side",
+        type: '"top" | "right" | "bottom" | "left"',
+        default: '"top"',
+        description: "Preferred side of the trigger to render",
+      },
+      {
+        prop: "variant / size",
+        type: "string",
+        default: '"default"',
+        description: "Same variants and sizes as TooltipContent",
+      },
+    ],
+  },
+  {
+    title: "SharedTooltipTrigger",
+    props: [
+      {
+        prop: "handle",
+        type: "Tooltip.Handle<SharedTooltipPayload>",
+        default: "-",
+        description: "The shared handle to attach to",
+      },
+      {
+        prop: "label",
+        type: "string",
+        default: "-",
+        description:
+          "Label shown in the shared popup and set as the trigger's aria-label",
+      },
+      {
+        prop: "shortcut",
+        type: "string | readonly string[]",
+        default: "-",
+        description: "Shortcut hint(s) shown in the shared popup",
+      },
+      {
+        prop: "render",
+        type: "ReactElement | (props, state) => ReactElement",
+        default: "-",
+        description: "The element to render as (e.g. a Button)",
+      },
+    ],
+  },
+  {
+    title: "TooltipProvider",
+    props: [
+      {
+        prop: "delay",
+        type: "number",
+        default: "500",
+        description: "Default open delay for all tooltips inside the provider",
+      },
+      {
+        prop: "closeDelay",
+        type: "number",
+        default: "200",
+        description: "Default close delay for all tooltips inside the provider",
+      },
+      {
+        prop: "timeout",
+        type: "number",
+        default: "400",
+        description:
+          "Skip window: a tooltip opened within this time of the previous close opens instantly",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
 const tooltipPageChangelogEntries = [
   {
     version: "2.0.0",

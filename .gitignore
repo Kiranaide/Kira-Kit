@@ -12,6 +12,10 @@ dist
 dist-ssr
 public/r
 *.local
+.env
+.env.*
+!.env.example
+release-artifacts/
 # AGENTS.md
 
 
@@ -29,5 +33,4 @@ public/r
 .cursor/*
 tools
 
-COMPONENT-UPGRADE-PLAYBOOK.md
 .agents/*

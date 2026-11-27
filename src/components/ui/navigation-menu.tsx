@@ -15,28 +15,9 @@ import {
   DrawerBody,
 } from "@/components/ui/drawer";
 import { IconChevronDown, IconMenu2 } from "@tabler/icons-react";
-import { isFunctionProp } from "@/components/ui/prop-guards";
+import { isFunctionProp } from "@/lib/component-utils";
 
-/* -------------------------------------------------------------------------- */
-/*                                  Helpers                                   */
-/* -------------------------------------------------------------------------- */
-
-type StateClassName<S> =
-  string | ((state: S) => string | undefined) | undefined;
-
-/**
- * Preserves Base UI's function-valued `className` props instead of
- * feeding functions to `cn` (tooltip.tsx convention).
- */
-function mergeClassName<S>(base: string, className: StateClassName<S>) {
-  return isFunctionProp(className)
-    ? (state: S) => cn(base, className(state))
-    : cn(base, className);
-}
-
-/* -------------------------------------------------------------------------- */
 /*                                  Variants                                  */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Trigger and link row styling. Active page is marked with weight +
@@ -48,7 +29,7 @@ export const navigationMenuTriggerVariants = cva(
     "group inline-flex h-10 w-max min-w-0 items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium outline-none",
     "transition-colors motion-reduce:transition-none",
     "hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground",
-    "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+    "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
     "disabled:pointer-events-none disabled:opacity-50 data-disabled:pointer-events-none data-disabled:opacity-50",
     "data-[popup-open]:bg-muted data-[popup-open]:text-foreground",
     "data-[active]:underline data-[active]:underline-offset-4 data-[active]:font-semibold",
@@ -92,49 +73,83 @@ export const navigationMenuContentVariants = cva(
   },
 );
 
-/* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
 
-type NavigationMenuProps<Value = string> =
-  NavigationMenuPrimitive.Root.Props<Value>;
+type NavigationMenuProps<Value = string> = Omit<
+  NavigationMenuPrimitive.Root.Props<Value>,
+  "className"
+> & { className?: string };
 
-type NavigationMenuListProps = NavigationMenuPrimitive.List.Props;
+type NavigationMenuListProps = Omit<
+  NavigationMenuPrimitive.List.Props,
+  "className"
+> & { className?: string };
 
-type NavigationMenuItemProps = NavigationMenuPrimitive.Item.Props;
+type NavigationMenuItemProps = Omit<
+  NavigationMenuPrimitive.Item.Props,
+  "className"
+> & { className?: string };
 
-type NavigationMenuTriggerProps = NavigationMenuPrimitive.Trigger.Props;
+type NavigationMenuTriggerProps = Omit<
+  NavigationMenuPrimitive.Trigger.Props,
+  "className"
+> & { className?: string };
 
-interface NavigationMenuContentProps
-  extends NavigationMenuPrimitive.Content.Props {
+interface NavigationMenuContentProps extends Omit<
+  NavigationMenuPrimitive.Content.Props,
+  "className"
+> {
+  className?: string;
   /** Padding mode only: mega panels manage their own internal padding. */
   megaMenu?: boolean;
   keepMounted?: boolean;
 }
 
-interface NavigationMenuLinkProps extends NavigationMenuPrimitive.Link.Props {
+interface NavigationMenuLinkProps extends Omit<
+  NavigationMenuPrimitive.Link.Props,
+  "className"
+> {
+  className?: string;
   active?: boolean;
 }
 
 type NavigationMenuPortalProps = NavigationMenuPrimitive.Portal.Props;
 
-interface NavigationMenuPositionerProps
-  extends NavigationMenuPrimitive.Positioner.Props {}
+interface NavigationMenuPositionerProps extends Omit<
+  NavigationMenuPrimitive.Positioner.Props,
+  "className"
+> {
+  className?: string;
+}
 
-interface NavigationMenuPopupProps
-  extends NavigationMenuPrimitive.Popup.Props {}
+interface NavigationMenuPopupProps extends Omit<
+  NavigationMenuPrimitive.Popup.Props,
+  "className"
+> {
+  className?: string;
+}
 
-type NavigationMenuViewportProps = NavigationMenuPrimitive.Viewport.Props;
+type NavigationMenuViewportProps = Omit<
+  NavigationMenuPrimitive.Viewport.Props,
+  "className"
+> & { className?: string };
 
-type NavigationMenuIconProps = NavigationMenuPrimitive.Icon.Props;
+type NavigationMenuIconProps = Omit<
+  NavigationMenuPrimitive.Icon.Props,
+  "className"
+> & { className?: string };
 
-type NavigationMenuArrowProps = NavigationMenuPrimitive.Arrow.Props;
+type NavigationMenuArrowProps = Omit<
+  NavigationMenuPrimitive.Arrow.Props,
+  "className"
+> & { className?: string };
 
-type NavigationMenuBackdropProps = NavigationMenuPrimitive.Backdrop.Props;
+type NavigationMenuBackdropProps = Omit<
+  NavigationMenuPrimitive.Backdrop.Props,
+  "className"
+> & { className?: string };
 
-/* -------------------------------------------------------------------------- */
 /*                                Components                                  */
-/* -------------------------------------------------------------------------- */
 
 /**
  * Website disclosure navigation built on the Base UI primitive (50ms
@@ -149,10 +164,7 @@ function NavigationMenu<Value = string>({
   return (
     <NavigationMenuPrimitive.Root
       data-slot="navigation-menu"
-      className={mergeClassName<NavigationMenuPrimitive.Root.State>(
-        "relative z-10 flex items-center gap-1",
-        className,
-      )}
+      className={cn("relative z-10 flex items-center gap-1", className)}
       {...props}
     >
       {children}
@@ -164,7 +176,7 @@ function NavigationMenuList({ className, ...props }: NavigationMenuListProps) {
   return (
     <NavigationMenuPrimitive.List
       data-slot="navigation-menu-list"
-      className={mergeClassName<NavigationMenuPrimitive.List.State>(
+      className={cn(
         "flex min-w-0 flex-wrap items-center gap-1 data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch",
         className,
       )}
@@ -177,10 +189,7 @@ function NavigationMenuItem({ className, ...props }: NavigationMenuItemProps) {
   return (
     <NavigationMenuPrimitive.Item
       data-slot="navigation-menu-item"
-      className={mergeClassName<NavigationMenuPrimitive.Item.State>(
-        "relative min-w-0",
-        className,
-      )}
+      className={cn("relative min-w-0", className)}
       {...props}
     />
   );
@@ -194,10 +203,7 @@ function NavigationMenuTrigger({
   return (
     <NavigationMenuPrimitive.Trigger
       data-slot="navigation-menu-trigger"
-      className={mergeClassName<NavigationMenuPrimitive.Trigger.State>(
-        navigationMenuTriggerVariants(),
-        className,
-      )}
+      className={cn(navigationMenuTriggerVariants(), className)}
       {...props}
     >
       {children}
@@ -221,11 +227,9 @@ function NavigationMenuContent({
       data-slot="navigation-menu-content"
       data-mega-menu={megaMenu || undefined}
       keepMounted={keepMounted}
-      className={mergeClassName<NavigationMenuPrimitive.Content.State>(
-        cn(
-          "grid min-w-0 max-w-(--available-width) overflow-x-hidden overflow-y-auto",
-          megaMenu ? "p-0" : "p-2",
-        ),
+      className={cn(
+        "grid min-w-0 max-w-(--available-width) overflow-x-hidden overflow-y-auto",
+        megaMenu ? "p-0" : "p-2",
         className,
       )}
       {...props}
@@ -250,8 +254,9 @@ function NavigationMenuLink({
       data-slot="navigation-menu-link"
       active={active}
       closeOnClick
-      className={mergeClassName<NavigationMenuPrimitive.Link.State>(
-        cn(navigationMenuTriggerVariants(), "h-auto w-auto"),
+      className={cn(
+        navigationMenuTriggerVariants(),
+        "h-auto w-auto",
         className,
       )}
       {...props}
@@ -300,7 +305,7 @@ function NavigationMenuPositioner({
       sideOffset={sideOffset}
       alignOffset={alignOffset}
       collisionPadding={collisionPadding}
-      className={mergeClassName<NavigationMenuPrimitive.Positioner.State>(
+      className={cn(
         "z-50 isolate h-(--positioner-height) w-(--positioner-width) max-w-(--available-width)",
         className,
       )}
@@ -321,11 +326,9 @@ function NavigationMenuPopup({
   return (
     <NavigationMenuPrimitive.Popup
       data-slot="navigation-menu-popup"
-      className={mergeClassName<NavigationMenuPrimitive.Popup.State>(
-        cn(
-          navigationMenuContentVariants({ megaMenu: true }),
-          "relative h-(--popup-height) w-(--popup-width)",
-        ),
+      className={cn(
+        navigationMenuContentVariants({ megaMenu: true }),
+        "relative h-(--popup-height) w-(--popup-width)",
         className,
       )}
       {...props}
@@ -335,20 +338,14 @@ function NavigationMenuPopup({
   );
 }
 
-type NavigationMenuViewportPropsDefault =
-  NavigationMenuPrimitive.Viewport.Props;
-
 function NavigationMenuViewport({
   className,
   ...props
-}: NavigationMenuViewportPropsDefault) {
+}: NavigationMenuViewportProps) {
   return (
     <NavigationMenuPrimitive.Viewport
       data-slot="navigation-menu-viewport"
-      className={mergeClassName<NavigationMenuPrimitive.Viewport.State>(
-        "relative h-full w-full overflow-hidden",
-        className,
-      )}
+      className={cn("relative h-full w-full overflow-hidden", className)}
       {...props}
     />
   );
@@ -362,7 +359,7 @@ function NavigationMenuIcon({
   return (
     <NavigationMenuPrimitive.Icon
       data-slot="navigation-menu-icon"
-      className={mergeClassName<NavigationMenuPrimitive.Icon.State>(
+      className={cn(
         "flex h-3 w-3 items-center justify-center transition-transform duration-200 motion-reduce:transition-none",
         className,
       )}
@@ -394,11 +391,9 @@ function NavigationMenuArrow({
   return (
     <NavigationMenuPrimitive.Arrow
       data-slot="navigation-menu-arrow"
-      className={mergeClassName<NavigationMenuPrimitive.Arrow.State>(
-        cn(
-          "z-50 h-2 w-4",
-          "[&>polygon]:fill-popover [&>polygon]:stroke-border",
-        ),
+      className={cn(
+        "z-50 h-2 w-4",
+        "[&>polygon]:fill-popover [&>polygon]:stroke-border",
         className,
       )}
       {...props}
@@ -413,18 +408,13 @@ function NavigationMenuBackdrop({
   return (
     <NavigationMenuPrimitive.Backdrop
       data-slot="navigation-menu-backdrop"
-      className={mergeClassName<NavigationMenuPrimitive.Backdrop.State>(
-        "fixed inset-0 z-50 bg-foreground/50",
-        className,
-      )}
+      className={cn("fixed inset-0 z-50 bg-foreground/50", className)}
       {...props}
     />
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                       Presentational content helpers                       */
-/* -------------------------------------------------------------------------- */
 
 function NavigationMenuHeader({
   className,
@@ -485,8 +475,11 @@ function NavigationMenuSection({
   );
 }
 
-interface NavigationMenuViewAllProps
-  extends NavigationMenuPrimitive.Link.Props {
+interface NavigationMenuViewAllProps extends Omit<
+  NavigationMenuPrimitive.Link.Props,
+  "className"
+> {
+  className?: string;
   title: string;
   description?: string;
 }
@@ -503,8 +496,8 @@ function NavigationMenuViewAll({
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-view-all"
       closeOnClick
-      className={mergeClassName<NavigationMenuPrimitive.Link.State>(
-        "group flex items-center gap-2 rounded-md p-3 text-sm outline-none transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-reduce:transition-none",
+      className={cn(
+        "group flex items-center gap-2 rounded-md p-3 text-sm outline-none transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring motion-reduce:transition-none",
         className,
       )}
       {...props}
@@ -537,9 +530,7 @@ function NavigationMenuViewAll({
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                                  Exports                                   */
-/* -------------------------------------------------------------------------- */
 
 export {
   NavigationMenu,
@@ -579,9 +570,7 @@ export type {
   NavigationMenuViewAllProps,
 };
 
-/* -------------------------------------------------------------------------- */
 /*                        KiraNavigationMenu (data-driven)                    */
-/* -------------------------------------------------------------------------- */
 
 export interface NavigationLinkData {
   type: "link";
@@ -633,9 +622,7 @@ function assertNavigationIds(items: readonly NavigationItemData[]): void {
   walk(items);
 }
 
-/* -------------------------------------------------------------------------- */
 /*                        Responsive presentation switch                      */
-/* -------------------------------------------------------------------------- */
 
 const NAV_DESKTOP_QUERY = "(min-width: 768px)";
 
@@ -678,14 +665,12 @@ function useNavDesktop(): boolean {
   );
 }
 
-/* -------------------------------------------------------------------------- */
 /*                          Context-free nav anchor                           */
-/* -------------------------------------------------------------------------- */
 
 const navigationLinkCardVariants = cva([
   "group flex w-full min-w-0 select-none items-start gap-3 rounded-md p-2.5 text-start leading-5 outline-none",
   "transition-colors hover:bg-muted focus-visible:bg-muted",
-  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
   "motion-reduce:transition-none",
   "data-[active]:font-semibold data-[active]:underline data-[active]:underline-offset-4",
 ]);
@@ -792,9 +777,7 @@ function renderDesktopItems(
   ));
 }
 
-/* -------------------------------------------------------------------------- */
 /*                            KiraNavigationMenu                              */
-/* -------------------------------------------------------------------------- */
 
 interface MobileNavDrawerProps {
   label: string;
@@ -893,18 +876,10 @@ function MobileNavDrawer({
 }
 
 /**
- * One typed navigation tree, two presentations:
- *
- * - Desktop (≥768px): native NavigationMenu — top-level links plus group
- *   triggers opening labelled mega panels (li-wrapped link cards); nested
- *   groups render as recursive labelled sections.
- * - Mobile (<768px): a labelled right-side Drawer with plain nav > ul/li
- *   links; nested groups use Collapsible Root/Trigger/Panel directly (the
- *   primitive Link requires root context and must not render alone here).
- *
- * `inline` keeps the responsive wrapping panels at every width instead.
- * Only one presentation renders at a time; breakpoint changes reset the
- * drawer open state.
+ * One typed navigation tree, two presentations: native NavigationMenu mega
+ * panels at ≥768px, and a labelled right-side Drawer below that, where
+ * nested groups use Collapsible directly (the primitive Link needs root
+ * context). Only one renders at a time; `inline` keeps panels at any width.
  */
 export function KiraNavigationMenu(
   props: KiraNavigationMenuProps,
@@ -942,10 +917,7 @@ export function KiraNavigationMenu(
     <NavigationMenu<string>
       {...rootProps}
       aria-label={label}
-      className={mergeClassName<NavigationMenuPrimitive.Root.State>(
-        cn("max-w-full", className),
-        rootProps?.className,
-      )}
+      className={cn("max-w-full", className, rootProps?.className)}
     >
       {emptyRoot ? (
         <span className="px-2 text-sm text-muted-foreground">
@@ -1018,7 +990,7 @@ function NavigationMobileGroupView({
           data-slot="navigation-mobile-group-trigger"
           className={cn(
             "group/navgroup flex min-h-11 w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-medium",
-            "hover:bg-muted focus-visible:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50",
+            "hover:bg-muted focus-visible:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring",
             "focus-visible:outline-none motion-reduce:transition-none",
           )}
         >
@@ -1074,7 +1046,7 @@ function KiraNavigationMobileTriggerView({
             aria-label={mobileLabel}
             className={cn(
               "inline-flex min-h-11 items-center gap-2 rounded-md px-3 text-sm font-medium",
-              "hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
+              "hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:outline-none",
               "motion-reduce:transition-none",
             )}
           >

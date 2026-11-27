@@ -12,7 +12,7 @@ import {
   IconArrowLeft,
   IconPlayerSkipForward,
 } from "@tabler/icons-react";
-import { z } from "zod";
+import { isNumberProp, isObjectProp } from "@/lib/component-utils";
 import { cn } from "cn";
 import { useAnnounce } from "@/hooks/use-announce";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -122,10 +122,42 @@ interface StepperProps
   children: React.ReactNode;
 }
 
-const savedStepperSchema = z.object({
-  currentStep: z.number().int().nonnegative(),
-  skippedSteps: z.array(z.number().int().nonnegative()).default([]),
-});
+interface SavedStepperState {
+  currentStep: number;
+  skippedSteps: number[];
+}
+
+function isNonNegativeInt(
+  value: number | string | boolean | object | null | undefined,
+): value is number {
+  return isNumberProp(value) && Number.isInteger(value) && value >= 0;
+}
+
+function parseSavedStepperJson(raw: string): SavedStepperState | null {
+  const parsed: unknown = JSON.parse(raw);
+
+  if (!isObjectProp(parsed) || Array.isArray(parsed)) return null;
+
+  const entries = new Map(Object.entries(parsed));
+  const currentStep = entries.get("currentStep");
+
+  if (!isNumberProp(currentStep) || !isNonNegativeInt(currentStep)) return null;
+
+  const rawSkipped = entries.get("skippedSteps");
+
+  if (rawSkipped === undefined) {
+    return { currentStep, skippedSteps: [] };
+  }
+
+  if (
+    !Array.isArray(rawSkipped) ||
+    !rawSkipped.every((item) => isNumberProp(item) && isNonNegativeInt(item))
+  ) {
+    return null;
+  }
+
+  return { currentStep, skippedSteps: rawSkipped };
+}
 
 function readStepperStorage(
   persistKey: string | undefined,
@@ -137,11 +169,11 @@ function readStepperStorage(
   if (!persistKey) return fallback;
 
   try {
-    const saved = savedStepperSchema.safeParse(
-      JSON.parse(localStorage.getItem(`stepper-${persistKey}`) ?? "null"),
-    );
+    const raw = localStorage.getItem(`stepper-${persistKey}`);
 
-    return saved.success ? saved.data : fallback;
+    if (!raw) return fallback;
+
+    return parseSavedStepperJson(raw) ?? fallback;
   } catch {
     return fallback;
   }
@@ -585,7 +617,7 @@ function StepTarget({ children }: { children: React.ReactNode }) {
       onClick={activate}
       onKeyDown={(event) => handleStepKey(event, model, item.stepValue)}
       className={cn(
-        "relative flex min-h-11 w-full min-w-0 rounded-lg p-1 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-safe:transition-colors motion-safe:duration-150",
+        "relative flex min-h-11 w-full min-w-0 rounded-lg p-1 text-start outline-none focus-visible:ring-[3px] focus-visible:ring-ring motion-safe:transition-colors motion-safe:duration-150",
         model.orientation === "horizontal"
           ? "flex-col items-center gap-3"
           : "items-start gap-3",
@@ -874,7 +906,7 @@ const StepperPanel = React.forwardRef<HTMLElement, StepperPanelProps>(
         data-slot="stepper-panel"
         data-state={active ? "active" : "inactive"}
         className={cn(
-          "min-w-0 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+          "min-w-0 rounded-lg outline-none focus-visible:ring-[3px] focus-visible:ring-ring",
           !active && "hidden",
           className,
         )}

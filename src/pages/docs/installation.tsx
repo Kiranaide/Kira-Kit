@@ -1,429 +1,536 @@
-import type { ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import * as React from "react";
+import { useGSAP } from "@gsap/react";
 import {
   IconCheck,
-  IconArrowRight,
-  IconAlertCircle,
+  IconFolderCode,
+  IconRocket,
+  IconTerminal2,
 } from "@tabler/icons-react";
 import { cn } from "cn";
-import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import gsap from "gsap";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { CodeBlock } from "@/components/ui/code-block";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-import { ComponentPage, PageHeader, Section } from "@/components/docs";
+  Code,
+  DocCallout,
+  DocChecklist,
+  DocPage,
+  DocSection,
+  DocSteps,
+  DocTable,
+  pickedValue,
+} from "@/components/docs/doc-page";
+import { SegmentedInstallationGuide } from "@/components/docs/segmented-installation-guide";
+import { prefersReducedMotion } from "@/hooks/use-reduced-motion";
+
+gsap.registerPlugin(useGSAP);
 
 const packageManagers = ["npm", "bun", "pnpm", "yarn"] as const;
 
 type PackageManager = (typeof packageManagers)[number];
 
-const runCommand: Record<PackageManager, string> = {
+/** How the CLI is invoked under each package manager. */
+const runner: Record<PackageManager, string> = {
   npm: "npx",
   bun: "bunx",
   pnpm: "pnpm dlx",
   yarn: "yarn dlx",
 };
 
-function CommandTabs({ command }: { command: string }) {
-  return (
-    <Tabs defaultValue="npm">
-      <TabsList>
-        {packageManagers.map((pm) => (
-          <TabsTrigger key={pm} value={pm}>
-            {pm}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-      {packageManagers.map((pm) => (
-        <TabsContent key={pm} value={pm} animation="none">
-          <CodeBlock
-            code={`${runCommand[pm]} ${command}`}
-            language="bash"
-            copyFormat="shell"
-          />
-        </TabsContent>
-      ))}
-    </Tabs>
-  );
-}
+/** Each manager's shorthand for the template's `dev` script. */
+const devScript: Record<PackageManager, string> = {
+  npm: "npm run dev",
+  bun: "bun run dev",
+  pnpm: "pnpm dev",
+  yarn: "yarn dev",
+};
 
-const requirements = [
-  {
-    title: "React 18.3+",
-    description: "Components target modern React with hooks and refs.",
+const setupPaths = ["new", "existing"] as const;
+
+type SetupPath = (typeof setupPaths)[number];
+
+const pathCopy: Record<
+  SetupPath,
+  { label: string; badge: string; description: string }
+> = {
+  new: {
+    label: "Create new project",
+    badge: "Fastest",
+    description:
+      "Fresh React 19.2+ & Vite starter with Tailwind v4, tokens, and registry pre-configured.",
   },
-  {
-    title: "Tailwind CSS v4",
-    description: "Tokens are CSS variables mapped through @theme inline.",
+  existing: {
+    label: "Existing project",
+    badge: "Auto-patched",
+    description:
+      "Run from any React 19.2+ app root. Detects Vite or Next.js and patches tsconfig & Tailwind v4.",
   },
-  {
-    title: "Node.js 22+",
-    description: "Required by the kira-kit CLI (Bun 1.x also works).",
-  },
-  {
-    title: "TypeScript",
-    description: "Recommended — every component ships full type definitions.",
-  },
-];
+};
 
-const registryConfigCode = `{
-  "registries": {
-    "@kira-kit": "https://kira-kit.vercel.app/r/{name}.json"
-  }
-}`;
-
-const firstComponentCode = `import { Button } from "@/components/ui/button";
-
-export function Example() {
-  return <Button variant="default">Ship it</Button>;
-}`;
-
-const fileTreeCode = `my-app/
-├── components.json          # @kira-kit registry entry
-├── src/
-│   ├── components/ui/       # copied components — yours to edit
-│   │   ├── button.tsx
-│   │   └── card.tsx
-│   ├── hooks/               # copied hooks (use-reduced-motion, ...)
-│   └── index.css            # OKLCH theme tokens
-└── package.json             # cn, cva, @base-ui/react, ...`;
+const configuredRows: Record<
+  SetupPath,
+  readonly { title: string; description: string }[]
+> = {
+  new: [
+    {
+      title: "Tailwind CSS v4",
+      description:
+        "Tailwind CSS and @tailwindcss/vite are included. The global CSS imports Tailwind and defines Kira’s theme tokens.",
+    },
+    {
+      title: "TypeScript paths",
+      description: "tsconfig.json maps @/* to src/*.",
+    },
+    {
+      title: "Vite resolution",
+      description:
+        "Vite resolves @ to src/ and already loads the React and Tailwind plugins.",
+    },
+    {
+      title: "Kira registry & styles",
+      description:
+        "components.json, base CSS, and Kira utility styles are in place.",
+    },
+  ],
+  existing: [
+    {
+      title: "Tailwind CSS v4",
+      description:
+        "Install missing Tailwind packages, register the Vite plugin, and ensure the app loads the global stylesheet.",
+    },
+    {
+      title: "TypeScript paths",
+      description:
+        "Merge the @/* alias into the app’s active tsconfig so editor and type checker resolve the same imports.",
+    },
+    {
+      title: "Vite resolution",
+      description:
+        "Match Vite’s resolve.alias to the TypeScript path and keep existing Vite plugins and settings.",
+    },
+    {
+      title: "Kira registry & styles",
+      description:
+        "Update components.json and add Kira’s base styles while preserving existing theme CSS where possible.",
+    },
+  ],
+};
 
 const templates = [
-  {
-    name: "vite",
-    description: "Vite + React SPA — the fastest way to try the kit.",
-  },
-  {
-    name: "next",
-    description: "Next.js App Router with the registry pre-wired.",
-  },
+  { name: "next", description: "Next.js App Router" },
   {
     name: "tanstack-start",
-    description: "TanStack Start full-stack React setup.",
+    description: "Full-stack TanStack Start with route transitions",
   },
-  {
-    name: "monorepo",
-    description: "Workspace with separate app and ui packages.",
-  },
+  { name: "monorepo", description: "Separate app and shared UI packages" },
 ];
 
 const troubleshooting = [
   {
-    value: "node-version",
-    question: "The CLI exits immediately or throws a syntax error",
-    answer:
-      "kira-kit targets Node.js 22 or newer. Check with node --version; older LTS lines such as 18 or 20 are not supported. Bun 1.x is a supported alternative runtime.",
+    title: "Already using Tailwind v3?",
+    description:
+      "Upgrade to Tailwind v4 before using the kit’s CSS-first tokens.",
   },
   {
-    value: "registry-404",
-    question: "shadcn reports it cannot fetch @kira-kit items",
-    answer:
-      "Confirm components.json contains the @kira-kit entry pointing at https://kira-kit.vercel.app/r/{name}.json — the {name} placeholder is literal and must stay in the URL. Running kira-kit init again repairs the entry without touching your other registries.",
-  },
-  {
-    value: "tailwind-v3",
-    question: "Styles are missing in a Tailwind v3 project",
-    answer:
-      "Kira Kit tokens are defined with Tailwind v4's @theme inline and @custom-variant syntax. Upgrade the project to Tailwind v4 first; the kit does not ship a v3 compatibility layer.",
-  },
-  {
-    value: "existing-config",
-    question: "I already have a components.json — will init overwrite it?",
-    answer:
-      "No. init registers the @kira-kit namespace only if it is absent and never overwrites an existing entry. Your shadcn configuration, aliases, and other registries are preserved.",
-  },
-  {
-    value: "diverged",
-    question: "I edited a component — how do I compare it with the registry?",
-    answer:
-      "Run kira-kit migrate. It reports components that have diverged from the published registry and never overwrites your work. Use kira-kit add --diff to preview incoming changes before applying them.",
+    title: "Already have a theme?",
+    description: (
+      <>
+        Review the proposed CSS changes before replacing tokens or passing{" "}
+        <Code>--force</Code>.
+      </>
+    ),
   },
 ];
 
-function StepHeading({
-  step,
-  title,
-  children,
+function CommandBlock({
+  command,
+  runnerPrefix,
 }: {
-  step: number;
-  title: string;
-  children?: ReactNode;
+  command: string;
+  runnerPrefix: string;
 }) {
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-          {step}
+    <CodeBlock
+      code={command.replace("{runner}", runnerPrefix)}
+      language="bash"
+      copyFormat="shell"
+      showLineNumbers
+    />
+  );
+}
+
+const pathIcons: Record<SetupPath, React.ReactNode> = {
+  new: <IconRocket className="size-4 shrink-0" aria-hidden />,
+  existing: <IconFolderCode className="size-4 shrink-0" aria-hidden />,
+};
+
+function SetupPathOptionCard({
+  option,
+  selected,
+  onSelect,
+}: {
+  option: SetupPath;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const copy = pathCopy[option];
+
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={onSelect}
+      className={cn(
+        "group relative flex flex-col gap-2 rounded-xl border p-4 text-left transition-[background-color,border-color,box-shadow,transform] duration-150 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none motion-reduce:active:scale-100",
+        selected
+          ? "border-primary/60 bg-primary/[0.06] shadow-xs"
+          : "border-border/80 bg-background/60 hover:border-border hover:bg-muted/35",
+      )}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <span
+            className={cn(
+              "flex size-7 items-center justify-center rounded-lg border transition-colors duration-150",
+              selected
+                ? "border-primary/40 bg-primary/12 text-primary"
+                : "border-border/80 bg-muted/60 text-muted-foreground group-hover:text-foreground",
+            )}
+          >
+            {pathIcons[option]}
+          </span>
+          {copy.label}
         </span>
-        <h3 className="text-lg font-semibold">{title}</h3>
+
+        <span className="flex items-center gap-1.5">
+          <Badge
+            variant={selected ? "secondary" : "outline"}
+            size="sm"
+            className="text-[11px]"
+          >
+            {copy.badge}
+          </Badge>
+          <span
+            aria-hidden
+            className={cn(
+              "flex size-4 items-center justify-center rounded-full border transition-colors duration-150",
+              selected
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-transparent",
+            )}
+          >
+            {selected && <IconCheck className="size-3" />}
+          </span>
+        </span>
       </div>
-      {children}
-    </div>
+
+      <p className="text-xs leading-5 text-muted-foreground">
+        {copy.description}
+      </p>
+    </button>
   );
 }
 
-function RequirementsSection() {
+function SetupPathPicker({
+  path,
+  onPathChange,
+  pm,
+  onPmChange,
+}: {
+  path: SetupPath;
+  onPathChange: (next: SetupPath) => void;
+  pm: PackageManager;
+  onPmChange: (next: PackageManager) => void;
+}) {
   return (
-    <Section
-      title="Requirements"
-      description="An existing shadcn project on Tailwind v4 already satisfies most of this list."
-    >
-      <div className="grid gap-4 sm:grid-cols-2">
-        {requirements.map((req) => (
-          <Card key={req.title}>
-            <CardContent className="flex items-start gap-2 pt-6">
-              <IconCheck
-                className="mt-0.5 h-5 w-5 shrink-0 text-success"
-                aria-hidden="true"
-              />
-              <div>
-                <p className="font-medium">{req.title}</p>
-                <p className="text-sm text-muted-foreground">
-                  {req.description}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function QuickstartSection() {
-  return (
-    <Section
-      title="Quick start"
-      description="Follow the four steps in order — each one ends with something you can run or see."
-    >
-      <div className="space-y-8">
-        <StepHeading step={1} title="Create a project (optional)">
-          <p className="text-sm text-muted-foreground">
-            Starting fresh? Scaffold a project pre-wired for Kira Kit. Skip this
-            step if you already have a React + Tailwind v4 app.
-          </p>
-          <CommandTabs command="kira-kit create my-app --template vite --install" />
-        </StepHeading>
-
-        <StepHeading step={2} title="Initialize your project">
-          <p className="text-sm text-muted-foreground">
-            In an existing project, init delegates base setup to the pinned
-            shadcn CLI and registers the{" "}
-            <span className="font-mono text-xs">@kira-kit</span> namespace. Add{" "}
-            <span className="font-mono text-xs">--preset phase-line</span> to
-            apply a theme in the same step — see{" "}
-            <Link
-              to="/docs/theming"
-              className="font-medium text-primary underline underline-offset-4"
-            >
-              Theming
-            </Link>
-            .
-          </p>
-          <CommandTabs command="kira-kit init" />
-        </StepHeading>
-
-        <StepHeading step={3} title="Add your first component">
-          <p className="text-sm text-muted-foreground">
-            Either command works — kira-kit add delegates to the same pinned
-            shadcn CLI and resolves transitive registry dependencies for you.
-          </p>
-          <CommandTabs command="shadcn@latest add @kira-kit/button" />
-          <CodeBlock
-            code="npx kira-kit add button card dialog"
-            language="bash"
-            copyFormat="shell"
-            filename="or use the kira-kit CLI directly"
-          />
-        </StepHeading>
-
-        <StepHeading step={4} title="Render it">
-          <CodeBlock code={firstComponentCode} language="tsx" />
-          <div className="flex items-start gap-2 rounded-lg border border-success/40 bg-success/10 p-4 text-sm">
-            <IconCheck
-              className="mt-0.5 h-4 w-4 shrink-0 text-success"
-              aria-hidden="true"
+    <Card className="overflow-hidden border-border/80">
+      <CardContent className="flex flex-col gap-5 pt-6">
+        <fieldset
+          aria-label="Setup path"
+          className="grid grid-cols-1 gap-3 border-0 p-0 sm:grid-cols-2"
+        >
+          {setupPaths.map((option) => (
+            <SetupPathOptionCard
+              key={option}
+              option={option}
+              selected={path === option}
+              onSelect={() => onPathChange(option)}
             />
-            <p>
-              If you see a styled button, the registry, tokens, and fonts are
-              all wired correctly. Continue with{" "}
-              <Link
-                to="/docs/theming"
-                className="font-medium text-primary underline underline-offset-4"
-              >
-                Theming
-              </Link>{" "}
-              to make it look like your product.
-            </p>
+          ))}
+        </fieldset>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-xs font-medium text-muted-foreground">
+              Package manager
+            </span>
+            <ToggleGroup
+              aria-label="Package manager"
+              variant="segment"
+              radius="pill"
+              size="sm"
+              slidingIndicator
+              semantics="current"
+              className="w-fit"
+              value={[pm]}
+              onValueChange={(next) => {
+                const picked = pickedValue(next, packageManagers);
+
+                if (picked) onPmChange(picked);
+              }}
+            >
+              {packageManagers.map((option) => (
+                <ToggleGroupItem key={option} value={option}>
+                  {option}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           </div>
-        </StepHeading>
-      </div>
-    </Section>
+
+          <Badge
+            variant="outline"
+            icon={<IconTerminal2 className="size-3" aria-hidden />}
+            className="font-mono text-[11px] text-muted-foreground"
+          >
+            Node.js 22.12.0+ · Bun 1.x
+          </Badge>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
-function RegistryConfigSection() {
+/** The step 3 block both paths end with: snippet, dev command, live result. */
+function VerifySetup({ pm }: { pm: PackageManager }) {
   return (
-    <Section
-      title="Registry configuration"
-      description="This is what init writes. The {name} placeholder is part of the shadcn registries format — keep it literal."
-    >
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">components.json</CardTitle>
-          <CardDescription>
-            Existing entries are never overwritten; the namespace is added only
-            when absent.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CodeBlock
-            code={registryConfigCode}
-            language="json"
-            filename="components.json"
-          />
-        </CardContent>
-      </Card>
-    </Section>
+    <DocSteps
+      steps={[
+        {
+          number: 3,
+          title: "Render Button",
+          description:
+            "Use the Button in a screen, then start your app with its dev script.",
+          children: (
+            <div className="flex flex-col gap-4">
+              <CodeBlock
+                code={`import { Button } from "@/components/ui/button";\n\nexport function Example() {\n  return <Button>Ship it</Button>;\n}`}
+                language="tsx"
+                showLineNumbers
+              />
+              <CommandBlock command={devScript[pm]} runnerPrefix={runner[pm]} />
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-border bg-muted/40 px-4 py-3">
+                <Button>Ship it</Button>
+                <span className="text-[13px] text-muted-foreground">
+                  Expected result · Styled button
+                </span>
+              </div>
+            </div>
+          ),
+        },
+      ]}
+    />
   );
 }
 
-function FileTreeSection() {
+function NewProjectSections({ cli }: { cli: string }) {
   return (
-    <Section
-      title="What lands in your project"
-      description="Registry items are source files, not a runtime package. Dependencies such as cn, class-variance-authority, and @base-ui/react are added to package.json by shadcn."
-    >
-      <Card>
-        <CardContent className="pt-6">
-          <CodeBlock code={fileTreeCode} language="text" showCopy={false} />
-        </CardContent>
-      </Card>
-    </Section>
+    <>
+      <DocSection id="scaffold-your-app" title="Scaffold your app">
+        <DocSteps
+          steps={[
+            {
+              number: 1,
+              title: "Create and enter your app",
+              description:
+                "The Vite starter already includes the Kira registry, base styles, and dependencies.",
+              children: (
+                <CommandBlock
+                  command={`{runner} kira-kit create my-app --template vite --install\ncd my-app`}
+                  runnerPrefix={cli}
+                />
+              ),
+            },
+          ]}
+        />
+      </DocSection>
+
+      <DocSection
+        id="what-comes-configured"
+        title="What comes configured"
+        description="The Vite template ships with the full setup. You can go straight to adding a component."
+      >
+        <DocChecklist items={configuredRows.new} />
+      </DocSection>
+    </>
   );
 }
 
-function TemplatesSection() {
+function ExistingProjectSections({ cli }: { cli: string }) {
   return (
-    <Section
-      title="Project templates"
-      description="kira-kit create embeds four templates, each pre-wired with the registry, theme tokens, and the cn package."
+    <>
+      <DocSection id="initialize-kira-kit" title="Initialize Kira Kit">
+        <DocSteps
+          steps={[
+            {
+              number: 1,
+              title: "Run init from your project root",
+              description:
+                "Detects Vite, Next.js, or PostCSS, configures Tailwind v4 and @/* aliases, installs missing base packages, and applies Phase Line.",
+              children: (
+                <CommandBlock
+                  command="{runner} kira-kit init --preset phase-line"
+                  runnerPrefix={cli}
+                />
+              ),
+            },
+          ]}
+        />
+        <DocCallout
+          variant="info"
+          title="Automatic runtime detection & safe patching"
+        >
+          <Code>kira-kit init</Code> automatically detects Vite, Next.js, or
+          PostCSS, inserts <Code>@/*</Code> into your active{" "}
+          <Code>tsconfig.json</Code> (preserving comments), and AST-patches{" "}
+          <Code>vite.config.*</Code> or PostCSS for Tailwind CSS v4. If a custom
+          config cannot be safely auto-edited, the CLI prints a targeted warning
+          instead of overwriting it.
+        </DocCallout>
+      </DocSection>
+
+      <DocSection
+        id="what-init-configures"
+        title="What init configures"
+        description="Checked and patched automatically on existing React 19.2+ projects while preserving compatible settings."
+      >
+        <DocChecklist items={configuredRows.existing} />
+      </DocSection>
+    </>
+  );
+}
+
+function OtherTemplatesSection() {
+  return (
+    <DocSection
+      id="other-templates"
+      title="Other templates"
+      description="Choose the scaffold that matches your application architecture."
     >
-      <Card>
-        <CardContent className="pt-6">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="py-2 text-left font-medium">Template</th>
-                  <th className="py-2 text-left font-medium">Description</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {templates.map((template) => (
-                  <tr key={template.name}>
-                    <td className="py-2 font-mono text-xs">{template.name}</td>
-                    <td className="py-2 text-muted-foreground">
-                      {template.description}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-    </Section>
+      <DocTable
+        columns={["Template", "Setup"]}
+        rows={templates.map((template) => [
+          <Code key={template.name}>{template.name}</Code>,
+          template.description,
+        ])}
+        caption="Project templates"
+      />
+    </DocSection>
+  );
+}
+
+function AppShellGuideSection({ cli }: { cli: string }) {
+  return (
+    <DocSection
+      id="core-modules"
+      title="ThemeProvider, Sidebar, Toast & RouteTransition"
+      description="Install and configure each app-level module independently — or wire all four together in one root-to-shell stack."
+    >
+      <SegmentedInstallationGuide cli={cli} />
+    </DocSection>
   );
 }
 
 function TroubleshootingSection() {
   return (
-    <Section
+    <DocSection
+      id="troubleshooting"
       title="Troubleshooting"
-      description="The failures people actually hit, and how to recover from each."
+      description="If the button renders without styles, check the global CSS import and Tailwind integration. If @ imports fail, compare TypeScript paths and the bundler alias."
     >
-      <Accordion defaultValue={[]}>
-        {troubleshooting.map((item) => (
-          <AccordionItem key={item.value} value={item.value}>
-            <AccordionTrigger>
-              <span className="flex items-center gap-2">
-                <IconAlertCircle
-                  className="h-4 w-4 shrink-0 text-muted-foreground"
-                  aria-hidden="true"
-                />
-                {item.question}
-              </span>
-            </AccordionTrigger>
-            <AccordionContent>{item.answer}</AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-    </Section>
-  );
-}
-
-function NextStepsCta() {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-muted/30 p-6">
-      <p className="text-sm text-muted-foreground">
-        Installed? Shape the look next, or learn the CLI in depth.
-      </p>
-      <div className="flex flex-wrap gap-2">
-        <Link
-          to="/docs/theming"
-          className={cn(buttonVariants({ size: "sm" }), "gap-2")}
-        >
-          Theming
-          <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
-        <Link
-          to="/docs/cli"
-          className={cn(
-            buttonVariants({ variant: "outline", size: "sm" }),
-            "gap-2",
-          )}
-        >
-          CLI reference
-          <IconArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
-      </div>
-    </div>
+      <DocChecklist items={troubleshooting} />
+    </DocSection>
   );
 }
 
 export default function InstallationPage() {
+  const [path, setPath] = React.useState<SetupPath>("new");
+  const [pm, setPm] = React.useState<PackageManager>("npm");
+  const pathBodyRef = React.useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion() || !pathBodyRef.current) return;
+
+      gsap.fromTo(
+        pathBodyRef.current,
+        { opacity: 0, y: 8 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.24,
+          ease: "power2.out",
+          clearProps: "transform",
+        },
+      );
+    },
+    { dependencies: [path], scope: pathBodyRef },
+  );
+
+  const cli = runner[pm];
+
   return (
-    <ComponentPage>
-      <PageHeader
-        title="Installation"
-        description="From zero to a rendered Kira Kit component in a few minutes. Every command below is copy-ready for your package manager."
-      />
+    <DocPage
+      title="Installation"
+      description="Get Tailwind, theme tokens, and your first Kira Kit component into a React project."
+      previous={{ to: "/docs/introduction", label: "Introduction" }}
+      next={{ to: "/docs/theming", label: "Theming" }}
+    >
+      <DocSection id="choose-a-setup-path" title="Choose a setup path">
+        <SetupPathPicker
+          path={path}
+          onPathChange={setPath}
+          pm={pm}
+          onPmChange={setPm}
+        />
+      </DocSection>
 
-      <RequirementsSection />
+      <div ref={pathBodyRef} className="flex flex-col gap-12">
+        {path === "new" ? (
+          <NewProjectSections cli={cli} />
+        ) : (
+          <ExistingProjectSections cli={cli} />
+        )}
+      </div>
 
-      <QuickstartSection />
+      <DocSection id="add-a-component" title="Add a component">
+        <DocSteps
+          steps={[
+            {
+              number: 2,
+              title: "Install Button",
+              description:
+                "The CLI copies the source and resolves registry dependencies.",
+              children: (
+                <CommandBlock
+                  command="{runner} kira-kit add button"
+                  runnerPrefix={cli}
+                />
+              ),
+            },
+          ]}
+        />
+      </DocSection>
 
-      <RegistryConfigSection />
+      <DocSection id="verify-the-setup" title="Verify the setup">
+        <VerifySetup pm={pm} />
+      </DocSection>
 
-      <FileTreeSection />
+      <AppShellGuideSection cli={cli} />
 
-      <TemplatesSection />
-
-      <TroubleshootingSection />
-
-      <NextStepsCta />
-    </ComponentPage>
+      {path === "new" ? <OtherTemplatesSection /> : <TroubleshootingSection />}
+    </DocPage>
   );
 }

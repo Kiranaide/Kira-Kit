@@ -5,7 +5,7 @@ Base UI toggle with three sizes, semantic colors, labels and validation, custom 
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/switch
+kira-kit add @kira-kit/switch
 ```
 
 ## Dependencies
@@ -17,8 +17,8 @@ npx shadcn add @kira-kit/switch
 
 ## Registry dependencies
 
-- @kira-kit/toast
 - @kira-kit/tooltip
+- @kira-kit/use-optimistic-commit
 - @kira-kit/use-reduced-motion
 
 ## Usage

@@ -10,6 +10,10 @@ export interface ExtractedImports {
   external: LocatedImport[];
   /** Internal registry deps as kebab item names, e.g. "@/components/ui/button" -> "button". */
   internal: LocatedImport[];
+  /** "@/lib/*" specifiers, shipped as registry:lib items (see lib-items.ts). */
+  lib: LocatedImport[];
+  /** Relative specifiers, e.g. "./types" — resolved within an item's files. */
+  relative: LocatedImport[];
 }
 
 /**
@@ -31,6 +35,9 @@ export function extractImports(
 
   const external = new Map<string, LocatedImport>();
   const internal = new Map<string, LocatedImport>();
+  const lib = new Map<string, LocatedImport>();
+  const relative = new Map<string, LocatedImport>();
+  const buckets = { external, internal, lib, relative };
 
   const lineOf = (node: ts.Node): number =>
     sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line +
@@ -55,13 +62,7 @@ export function extractImports(
       ts.isImportDeclaration(node) &&
       ts.isStringLiteral(node.moduleSpecifier)
     ) {
-      const key = classify(
-        node.moduleSpecifier.text,
-        external,
-        internal,
-        node,
-        add,
-      );
+      const key = classify(node.moduleSpecifier.text, buckets, node, add);
 
       void key;
     } else if (
@@ -69,7 +70,7 @@ export function extractImports(
       node.moduleSpecifier !== undefined &&
       ts.isStringLiteral(node.moduleSpecifier)
     ) {
-      classify(node.moduleSpecifier.text, external, internal, node, add);
+      classify(node.moduleSpecifier.text, buckets, node, add);
     } else if (
       ts.isCallExpression(node) &&
       node.expression.kind === ts.SyntaxKind.ImportKeyword &&
@@ -81,8 +82,7 @@ export function extractImports(
       // element type TS widened to Expression.
       classify(
         (node.arguments[0] as ts.StringLiteral).text,
-        external,
-        internal,
+        buckets,
         node,
         add,
       );
@@ -96,13 +96,21 @@ export function extractImports(
   return {
     external: [...external.values()].sort((a, b) => a.line - b.line),
     internal: [...internal.values()].sort((a, b) => a.line - b.line),
+    lib: [...lib.values()].sort((a, b) => a.line - b.line),
+    relative: [...relative.values()].sort((a, b) => a.line - b.line),
   };
+}
+
+interface ImportBuckets {
+  external: Map<string, LocatedImport>;
+  internal: Map<string, LocatedImport>;
+  lib: Map<string, LocatedImport>;
+  relative: Map<string, LocatedImport>;
 }
 
 function classify(
   specifier: string,
-  external: Map<string, LocatedImport>,
-  internal: Map<string, LocatedImport>,
+  buckets: ImportBuckets,
   node: ts.Node,
   add: (
     target: Map<string, LocatedImport>,
@@ -113,30 +121,61 @@ function classify(
 ): string {
   if (specifier.startsWith("node:")) return "";
 
+  if (specifier.startsWith(".")) {
+    add(buckets.relative, specifier, node, specifier);
+
+    return "";
+  }
+
+  if (!specifier.startsWith("@/")) {
+    add(buckets.external, specifier, node, packageNameOf(specifier));
+
+    return "";
+  }
+
+  classifyAlias(specifier, buckets, node, add);
+
+  return "";
+}
+
+function classifyAlias(
+  specifier: string,
+  buckets: ImportBuckets,
+  node: ts.Node,
+  add: (
+    target: Map<string, LocatedImport>,
+    specifier: string,
+    node: ts.Node,
+    key: string,
+  ) => void,
+): void {
   if (specifier.startsWith("@/components/ui/")) {
     const name = specifier
       .replace("@/components/ui/", "")
       .replace(/\.(tsx|ts)$/, "");
 
-    if (name && !name.includes("/")) add(internal, specifier, node, name);
+    if (name && !name.includes("/"))
+      add(buckets.internal, specifier, node, name);
 
-    return "";
+    return;
   }
 
   if (specifier.startsWith("@/hooks/")) {
     const name = specifier.replace("@/hooks/", "").replace(/\.(tsx|ts)$/, "");
 
-    if (name && !name.includes("/")) add(internal, specifier, node, name);
+    if (name && !name.includes("/"))
+      add(buckets.internal, specifier, node, name);
 
-    return "";
+    return;
   }
 
-  if (specifier.startsWith("@/")) return ""; // other internal aliases are not registry deps
+  if (specifier.startsWith("@/lib/")) {
+    const subpath = specifier.replace("@/lib/", "").replace(/\.(tsx|ts)$/, "");
 
-  if (specifier.startsWith(".")) return ""; // relative imports are not registry deps
-  add(external, specifier, node, packageNameOf(specifier));
+    if (subpath) add(buckets.lib, specifier, node, subpath);
+  }
 
-  return "";
+  // Other internal aliases are not registry deps.
 }
 
 /** Trim deep subpaths and peer-style suffixes to the package name. */

@@ -134,7 +134,7 @@ function mergeRefs<T>(
 }
 
 import { getGuidePreset, type GuidePreset } from "@/lib/camera/guide-presets";
-import { isFunctionProp } from "@/components/ui/prop-guards";
+import { isFunctionProp } from "@/lib/component-utils";
 
 type CameraActions = Pick<
   UseCameraReturn,
@@ -231,7 +231,7 @@ const cameraVariants = cva(
 );
 
 const cameraButtonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium motion-safe:transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-150 ease-out focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium motion-safe:transition-[color,background-color,border-color,opacity,box-shadow,transform] duration-150 ease-out focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -6021,7 +6021,7 @@ function KiraCameraReviewView({
       <h3
         ref={reviewHeadingRef}
         tabIndex={-1}
-        className="rounded-sm text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+        className="rounded-sm text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {phase.status === "accepted" ? "Accepted image" : "Review image"}
       </h3>

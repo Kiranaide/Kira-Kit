@@ -1,11 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { omitComponentProps } from "@/lib/component-native-props";
-import { withOccurrenceKeys } from "@/lib/component-item-keys";
+import {
+  omitComponentProps,
+  resolveComponentDefaults,
+  withOccurrenceKeys,
+} from "@/lib/component-utils";
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { cva } from "class-variance-authority";
-import { useDefaultLayout, type LayoutStorage } from "react-resizable-panels";
+import { useDefaultLayout } from "react-resizable-panels";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,10 +17,12 @@ import {
   ResizableHandle,
   usePanelRef,
 } from "@/components/ui/resizable";
+import {
+  createValidatedLayoutStorage,
+  unsavedLayoutStorage,
+} from "@/lib/layout-storage";
 import { cn } from "cn";
 import { Skeleton } from "@/components/ui/skeleton";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
-import { isObjectProp, isNumberProp } from "@/lib/component-prop-guards";
 
 type Orientation = "horizontal" | "vertical";
 
@@ -68,50 +73,7 @@ function percentage(value: number, fallback: number) {
   return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : fallback;
 }
 
-const splitLayoutStorage: LayoutStorage = {
-  getItem(key) {
-    if (typeof window === "undefined") return null;
-
-    try {
-      const raw = window.localStorage.getItem(key);
-
-      if (!raw) return null;
-      const value: unknown = JSON.parse(raw);
-
-      if (!value || !isObjectProp(value) || Array.isArray(value)) return null;
-      const sizes: unknown[] = Object.values(value);
-
-      if (
-        sizes.length !== 2 ||
-        !sizes.every(
-          (size) =>
-            isNumberProp(size) &&
-            Number.isFinite(size) &&
-            size >= 0 &&
-            size <= 100,
-        )
-      )
-        return null;
-      const total = sizes.reduce<number>((sum, size) => sum + Number(size), 0);
-
-      return Math.abs(total - 100) < 0.1 ? raw : null;
-    } catch {
-      return null;
-    }
-  },
-  setItem(key, value) {
-    try {
-      window.localStorage.setItem(key, value);
-    } catch {
-      /* Layout remains usable when storage is unavailable. */
-    }
-  },
-};
-
-const unsavedLayoutStorage: LayoutStorage = {
-  getItem: () => null,
-  setItem: () => {},
-};
+const splitLayoutStorage = createValidatedLayoutStorage({ expectedPanels: 2 });
 
 const SplitView = React.forwardRef<SplitViewRef, SplitViewProps>(
   function SplitView(input0, input1) {
@@ -1101,7 +1063,7 @@ function renderSplitView({
           >
             <span
               data-slot="split-view-label"
-              className="min-w-0 break-words text-sm font-medium"
+              className="min-w-0 wrap-break-word text-sm font-medium"
             >
               {sidebarLabel}
             </span>
@@ -1162,9 +1124,9 @@ function renderSplitView({
         className={cn(
           "min-h-0 flex-1",
           pane !== "split" &&
-            "[&>[data-panel]]:basis-full! [&>[data-panel]]:grow! [&>[data-panel]]:shrink-0! [&>[data-slot=split-view-handle]]:hidden!",
-          pane === "main" && "[&>[data-slot=split-view-sidebar]]:hidden!",
-          pane === "sidebar" && "[&>[data-slot=split-view-main]]:hidden!",
+            "*:data-panel:basis-full! *:data-panel:grow! *:data-panel:shrink-0! *:data-[slot=split-view-handle]:hidden!",
+          pane === "main" && "*:data-[slot=split-view-sidebar]:hidden!",
+          pane === "sidebar" && "*:data-[slot=split-view-main]:hidden!",
         )}
         defaultLayout={
           (validSavedLayout ? savedLayout : undefined) ??

@@ -1,14 +1,6 @@
 import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
-  Checkbox,
-  CheckboxWithLabel,
-  CheckboxGroup,
-  CheckboxCard,
-  KiraCheckbox,
-} from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import {
   IconHeart,
   IconStar,
   IconBookmark,
@@ -22,6 +14,14 @@ import {
   IconLock,
 } from "@tabler/icons-react";
 import {
+  Checkbox,
+  CheckboxWithLabel,
+  CheckboxGroup,
+  CheckboxCard,
+  KiraCheckbox,
+} from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
   ComponentPage,
   PageHeader,
   FeatureGrid,
@@ -32,10 +32,6 @@ import {
   APIReference,
   Changelog,
 } from "@/components/docs";
-
-// =============================================================================
-// Demo Components
-// =============================================================================
 
 function BasicDemo() {
   return (
@@ -294,7 +290,13 @@ function IconsDemo() {
           <Checkbox
             id="heart"
             variant="filled"
-            customIcon={<IconHeart className="h-3.5 w-3.5" strokeWidth={3} />}
+            customIcon={
+              <IconHeart
+                className="size-3"
+                strokeWidth={3}
+                aria-hidden="true"
+              />
+            }
           />
           <Label htmlFor="heart">Favorite</Label>
         </div>
@@ -302,7 +304,9 @@ function IconsDemo() {
           <Checkbox
             id="star"
             variant="filled"
-            customIcon={<IconStar className="h-3.5 w-3.5" strokeWidth={3} />}
+            customIcon={
+              <IconStar className="size-3" strokeWidth={3} aria-hidden="true" />
+            }
           />
           <Label htmlFor="star">Star</Label>
         </div>
@@ -311,7 +315,11 @@ function IconsDemo() {
             id="bookmark"
             variant="filled"
             customIcon={
-              <IconBookmark className="h-3.5 w-3.5" strokeWidth={3} />
+              <IconBookmark
+                className="size-3"
+                strokeWidth={3}
+                aria-hidden="true"
+              />
             }
           />
           <Label htmlFor="bookmark">Bookmark</Label>
@@ -332,7 +340,7 @@ export function CustomIcons() {
         <Checkbox
           id="heart"
           variant="filled"
-          customIcon={<IconHeart className="h-3.5 w-3.5" strokeWidth={3} />}
+          customIcon={<IconHeart className="size-3" strokeWidth={3} aria-hidden="true" />}
         />
         <Label htmlFor="heart">Favorite</Label>
       </div>
@@ -340,7 +348,7 @@ export function CustomIcons() {
         <Checkbox
           id="star"
           variant="filled"
-          customIcon={<IconStar className="h-3.5 w-3.5" strokeWidth={3} />}
+          customIcon={<IconStar className="size-3" strokeWidth={3} aria-hidden="true" />}
         />
         <Label htmlFor="star">Star</Label>
       </div>
@@ -348,7 +356,7 @@ export function CustomIcons() {
         <Checkbox
           id="bookmark"
           variant="filled"
-          customIcon={<IconBookmark className="h-3.5 w-3.5" strokeWidth={3} />}
+          customIcon={<IconBookmark className="size-3" strokeWidth={3} aria-hidden="true" />}
         />
         <Label htmlFor="bookmark">Bookmark</Label>
       </div>
@@ -541,9 +549,9 @@ function GroupDemo() {
             selectAllLabel="Select all fruits"
           />
         </div>
-        <p className="text-sm text-muted-foreground">
+        <output className="block text-sm text-muted-foreground">
           Selected: {groupValue.join(", ") || "None"}
-        </p>
+        </output>
       </div>
 
       <div className="space-y-4">
@@ -615,27 +623,27 @@ function CardDemo() {
       <CheckboxCard
         label="Mobile App"
         description="iOS and Android applications"
-        icon={<IconDeviceMobile className="h-5 w-5" />}
+        icon={<IconDeviceMobile className="h-5 w-5" aria-hidden="true" />}
         variant="outline"
       />
       <CheckboxCard
         label="Settings"
         description="Configure application preferences"
-        icon={<IconSettings className="h-5 w-5" />}
+        icon={<IconSettings className="h-5 w-5" aria-hidden="true" />}
         variant="outline"
         checked
       />
       <CheckboxCard
         label="User Profile"
         description="Manage account settings"
-        icon={<IconUser className="h-5 w-5" />}
+        icon={<IconUser className="h-5 w-5" aria-hidden="true" />}
         variant="outline"
         disabled
       />
       <CheckboxCard
         label="Security"
         description="Two-factor authentication"
-        icon={<IconShield className="h-5 w-5" />}
+        icon={<IconShield className="h-5 w-5" aria-hidden="true" />}
         variant="outline"
         error
       />
@@ -684,10 +692,6 @@ export function CheckboxCardDemo() {
     </div>
   )
 }`;
-
-// =============================================================================
-// Kira / Loading / Progress demos (v2.0)
-// =============================================================================
 
 function KiraDemo() {
   const [fruits, setFruits] = React.useState<string[]>(["apple"]);
@@ -747,13 +751,18 @@ function LoadingDemo() {
         loading
       />
       <div className="flex items-center gap-3">
-        <Checkbox loading />
-        <Checkbox loading variant="outline" size="lg" />
+        <Checkbox loading aria-label="Loading default checkbox" />
+        <Checkbox
+          loading
+          variant="outline"
+          size="lg"
+          aria-label="Loading large outline checkbox"
+        />
       </div>
       <CheckboxCard
         label="Provisioning"
         description="Async state on a card."
-        icon={<IconSettings className="h-5 w-5" />}
+        icon={<IconSettings className="h-5 w-5" aria-hidden="true" />}
         variant="outline"
         loading
       />
@@ -779,7 +788,7 @@ function DisabledReasonDemo() {
       <CheckboxCard
         label="Enterprise SSO"
         description="Available on the Team plan."
-        icon={<IconLock className="h-5 w-5" />}
+        icon={<IconLock className="h-5 w-5" aria-hidden="true" />}
         variant="outline"
         disabled
         disabledReason="Upgrade to unlock"
@@ -797,10 +806,6 @@ const disabledReasonCode = `import { CheckboxWithLabel } from "@/components/ui/c
   disabledReason="Requires an admin role"
 />`;
 
-// =============================================================================
-// Optimistic toggle demo (v2.2 — §3.5 like/bookmark pattern)
-// =============================================================================
-
 function OptimisticDemo() {
   const [bookmarked, setBookmarked] = React.useState(false);
   const [liked, setLiked] = React.useState(false);
@@ -812,7 +817,7 @@ function OptimisticDemo() {
       <CheckboxCard
         label="Save to bookmarks"
         description="Flip it on — the server rejects it and the card rolls back with a toast."
-        icon={<IconBookmark className="h-5 w-5" />}
+        icon={<IconBookmark className="h-5 w-5" aria-hidden="true" />}
         variant="outline"
         checked={bookmarked}
         onCheckedChange={(c) => setBookmarked(c === true)}
@@ -823,13 +828,15 @@ function OptimisticDemo() {
       <CheckboxCard
         label="Like this post"
         description="This one commits cleanly — instant flip, no rollback."
-        icon={<IconHeart className="h-5 w-5" />}
+        icon={<IconHeart className="h-5 w-5" aria-hidden="true" />}
         variant="outline"
         checked={liked}
         onCheckedChange={(c) => setLiked(c === true)}
         optimistic
         onCommit={async (next) => {
-          await new Promise<void>((resolve) => setTimeout(resolve, 900));
+          await new Promise<void>((resolve) => {
+            setTimeout(resolve, 900);
+          });
 
           return next;
         }}
@@ -860,9 +867,67 @@ export function OptimisticCardDemo() {
   )
 }`;
 
-// =============================================================================
-// Usage Code
-// =============================================================================
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-4">
+      <CheckboxWithLabel
+        label="Enable automated weekly compliance and security audit digest emails across all workspaces"
+        description="Long label and description wrap cleanly inside a max-w-xs column without overflowing."
+      />
+      <CheckboxWithLabel
+        label="Locked organization policy"
+        description=""
+        disabled
+        disabledReason="Managed by workspace administrator"
+      />
+      <CheckboxGroup
+        label="Narrow group with long labels and disabled option"
+        options={stressGroupOptions}
+        defaultValue={["audit"]}
+        showSelectAll
+        showProgress
+      />
+      <CheckboxCard
+        label="Enterprise single sign-on provisioning with SCIM directory sync"
+        description="Disabled card inside a narrow container."
+        icon={<IconLock className="h-5 w-5" aria-hidden="true" />}
+        variant="outline"
+        disabled
+      />
+    </div>
+  );
+}
+
+const stressCode = `import { CheckboxWithLabel, CheckboxGroup, CheckboxCard } from "@/components/ui/checkbox"
+import { IconLock } from "@tabler/icons-react"
+
+// Long labels, empty descriptions, and disabled states inside a narrow container
+<div className="max-w-xs space-y-4">
+  <CheckboxWithLabel
+    label="Enable automated weekly compliance and security audit digest emails across all workspaces"
+    description="Long label and description wrap cleanly inside a max-w-xs column."
+  />
+  <CheckboxWithLabel
+    label="Locked organization policy"
+    description=""
+    disabled
+    disabledReason="Managed by workspace administrator"
+  />
+  <CheckboxGroup
+    label="Narrow group with long labels and disabled option"
+    options={stressGroupOptions}
+    defaultValue={["audit"]}
+    showSelectAll
+    showProgress
+  />
+  <CheckboxCard
+    label="Enterprise single sign-on provisioning with SCIM directory sync"
+    description="Disabled card inside a narrow container."
+    icon={<IconLock className="h-5 w-5" aria-hidden="true" />}
+    variant="outline"
+    disabled
+  />
+</div>`;
 
 const usageCode = `import {
   Checkbox,
@@ -914,451 +979,594 @@ const usageCode = `import {
   icon={<IconDeviceMobile />}
 />`;
 
-// =============================================================================
-// Main Page Component
-// =============================================================================
-
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
 export default function CheckboxPage() {
-  const features = [
-    {
-      title: "Accessible",
-      description:
-        "Full WAI-ARIA compliance with proper roles, keyboard navigation, and screen reader support.",
-      icon: <IconAccessible className="h-4 w-4" />,
-    },
-    {
-      title: "Customizable",
-      description:
-        "Multiple variants (default, outline, filled, soft), sizes, colors, and custom icons.",
-      icon: <IconPalette className="h-4 w-4" />,
-    },
-    {
-      title: "Composable",
-      description:
-        "Use standalone or with CheckboxWithLabel, CheckboxGroup, or CheckboxCard components.",
-      icon: <IconCheck className="h-4 w-4" />,
-    },
-  ];
-
-  const demoTabs = [
-    {
-      value: "kira",
-      label: "Kira",
-      demo: (
-        <DemoWrapper
-          title="KiraCheckbox"
-          description="One prop-driven API for all four modes: checkbox, label, card, group."
-          code={kiraCode}
-        >
-          <KiraDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "loading",
-      label: "Loading",
-      demo: (
-        <DemoWrapper
-          title="Loading State"
-          description="A spinner replaces the indicator and blocks toggling while async work runs."
-          code={loadingCode}
-        >
-          <LoadingDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "disabled-reason",
-      label: "Disabled reason",
-      demo: (
-        <DemoWrapper
-          title="Disabled Reason"
-          description="Explain why a control is locked via an accessible tooltip on hover/focus."
-          code={disabledReasonCode}
-        >
-          <DisabledReasonDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "optimistic",
-      label: "Optimistic",
-      demo: (
-        <DemoWrapper
-          title="Optimistic toggle"
-          description="Like/bookmark flips instantly; a rejected commit rolls the card back and toasts."
-          code={optimisticCode}
-        >
-          <OptimisticDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "basic",
-      label: "Basic",
-      demo: (
-        <DemoWrapper
-          title="Basic Checkbox"
-          description="Simple checkbox with a label using the Checkbox component."
-          code={basicCode}
-        >
-          <BasicDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "sizes",
-      label: "Sizes",
-      demo: (
-        <DemoWrapper
-          title="Size Variants"
-          description="Available in small, default, and large sizes."
-          code={sizesCode}
-        >
-          <SizesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "styles",
-      label: "Styles",
-      demo: (
-        <DemoWrapper
-          title="Style Variants"
-          description="Choose from default, outline, filled, or soft visual styles."
-          code={stylesCode}
-        >
-          <StylesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "colors",
-      label: "Colors",
-      demo: (
-        <DemoWrapper
-          title="Color Variants"
-          description="Semantic colors for success, destructive, and warning states."
-          code={colorsCode}
-        >
-          <ColorsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "icons",
-      label: "Icons",
-      demo: (
-        <DemoWrapper
-          title="Custom Icons"
-          description="Replace the default checkmark with any custom icon."
-          code={iconsCode}
-        >
-          <IconsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "states",
-      label: "States",
-      demo: (
-        <DemoWrapper
-          title="Loading, Error & Disabled States"
-          description="Various interactive states for form feedback."
-          code={statesCode}
-        >
-          <StatesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "withlabel",
-      label: "WithLabel",
-      demo: (
-        <DemoWrapper
-          title="CheckboxWithLabel"
-          description="A convenience wrapper with built-in label and description support."
-          code={withLabelCode}
-        >
-          <WithLabelDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "group",
-      label: "Group",
-      demo: (
-        <DemoWrapper
-          title="CheckboxGroup"
-          description="Grouped checkboxes with optional select-all functionality."
-          code={groupCode}
-        >
-          <GroupDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "card",
-      label: "Card",
-      demo: (
-        <DemoWrapper
-          title="CheckboxCard"
-          description="Card-style selectable checkbox with icon and description support."
-          code={cardCode}
-        >
-          <CardDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
-
-  const keyboardShortcuts = [
-    { keys: "Space", description: "Toggle checkbox state" },
-    {
-      keys: "Enter",
-      description: "Submit the surrounding form (native checkbox behavior)",
-    },
-    { keys: "Tab", description: "Move focus to next focusable element" },
-    {
-      keys: "Shift + Tab",
-      description: "Move focus to previous focusable element",
-    },
-  ];
-
-  const apiSections = [
-    {
-      title: "Checkbox",
-      props: [
-        {
-          prop: "checked",
-          type: "boolean | 'indeterminate'",
-          default: "false",
-          description: "The checked state of the checkbox.",
-        },
-        {
-          prop: "onCheckedChange",
-          type: "(checked: boolean | 'indeterminate') => void",
-          description: "Callback when the checked state changes.",
-        },
-        {
-          prop: "variant",
-          type: "'default' | 'outline' | 'filled' | 'soft'",
-          default: "'default'",
-          description: "Visual style variant of the checkbox.",
-        },
-        {
-          prop: "size",
-          type: "'sm' | 'default' | 'lg'",
-          default: "'default'",
-          description: "Size of the checkbox.",
-        },
-        {
-          prop: "color",
-          type: "'default' | 'success' | 'destructive' | 'warning'",
-          default: "'default'",
-          description: "Color theme of the checkbox.",
-        },
-        {
-          prop: "customIcon",
-          type: "React.ReactNode",
-          description: "Custom icon to display when checked.",
-        },
-        {
-          prop: "loading",
-          type: "boolean",
-          default: "false",
-          description: "Shows a loading spinner.",
-        },
-        {
-          prop: "error",
-          type: "boolean",
-          default: "false",
-          description: "Shows error styling.",
-        },
-        {
-          prop: "disabled",
-          type: "boolean",
-          default: "false",
-          description: "Disables the checkbox.",
-        },
-        {
-          prop: "readOnly",
-          type: "boolean",
-          default: "false",
-          description: "Makes the checkbox read-only.",
-        },
-      ],
-    },
-    {
-      title: "CheckboxWithLabel",
-      props: [
-        {
-          prop: "label",
-          type: "string",
-          description: "The label text for the checkbox.",
-        },
-        {
-          prop: "description",
-          type: "string",
-          description: "The description text for the checkbox.",
-        },
-      ],
-    },
-    {
-      title: "CheckboxGroup",
-      props: [
-        {
-          prop: "options",
-          type: "CheckboxOption[]",
-          description:
-            "Array of checkbox options with value, label, description, and disabled.",
-        },
-        {
-          prop: "value",
-          type: "string[]",
-          description: "Array of selected values (controlled).",
-        },
-        {
-          prop: "defaultValue",
-          type: "string[]",
-          description: "Initial selected values (uncontrolled).",
-        },
-        {
-          prop: "onChange",
-          type: "(value: string[]) => void",
-          description: "Callback when selection changes.",
-        },
-        {
-          prop: "orientation",
-          type: "'vertical' | 'horizontal'",
-          default: "'vertical'",
-          description: "Layout direction of the group.",
-        },
-        {
-          prop: "showSelectAll",
-          type: "boolean",
-          default: "false",
-          description: "Show a select all checkbox.",
-        },
-        {
-          prop: "selectAllLabel",
-          type: "string",
-          default: "'Select all'",
-          description: "Label for the select all checkbox.",
-        },
-        {
-          prop: "showProgress",
-          type: "boolean",
-          default: "false",
-          description: "Show a live 'n/total selected' indicator.",
-        },
-        {
-          prop: "label",
-          type: "string",
-          description: "Group label.",
-        },
-        {
-          prop: "description",
-          type: "string",
-          description: "Group description.",
-        },
-      ],
-    },
-    {
-      title: "CheckboxCard",
-      props: [
-        {
-          prop: "label",
-          type: "string",
-          description: "The card label text.",
-        },
-        {
-          prop: "description",
-          type: "string",
-          description: "Optional description text.",
-        },
-        {
-          prop: "icon",
-          type: "React.ReactNode",
-          description: "Icon to display in the card.",
-        },
-        {
-          prop: "showIndicator",
-          type: "boolean",
-          default: "true",
-          description: "Render the checkbox box inside the card.",
-        },
-        {
-          prop: "optimistic",
-          type: "boolean",
-          default: "false",
-          description:
-            "Flip instantly on click; requires checked + onCheckedChange + onCommit.",
-        },
-        {
-          prop: "onCommit",
-          type: "(checked: boolean) => Promise<unknown>",
-          description:
-            "Async commit for optimistic mode; rejection rolls the card back and toasts.",
-        },
-        {
-          prop: "commitErrorTitle",
-          type: "React.ReactNode",
-          description: "Title of the rollback toast.",
-        },
-        {
-          prop: "...CheckboxProps",
-          type: "-",
-          description: "Inherits all Checkbox props.",
-        },
-      ],
-    },
-    {
-      title: "KiraCheckbox",
-      props: [
-        {
-          prop: "mode",
-          type: "'checkbox' | 'label' | 'card' | 'group'",
-          default: "'checkbox'",
-          description:
-            "Selects which underlying component renders; remaining props are those of the chosen mode.",
-        },
-      ],
-    },
-  ];
-
   return (
     <ComponentPage>
       <PageHeader
         title="Checkbox"
-        version="v2.2"
+        version="v2.3.1"
         description="A control that allows the user to toggle between checked and unchecked states with support for variants, colors, indeterminate state, and more."
       />
 
-      <FeatureGrid features={features} />
+      <FeatureGrid
+        features={checkboxPageFeatures}
+        description="Accessible checkbox primitives and composed selection patterns."
+      />
 
-      <DemoTabs tabs={demoTabs} defaultValue="kira" />
+      <DemoTabs tabs={checkboxPageDemoTabs} defaultValue="kira" />
 
-      <KeyboardShortcuts shortcuts={keyboardShortcuts} />
+      <KeyboardShortcuts
+        shortcuts={checkboxPageShortcuts}
+        description="Native checkbox keyboard interactions inherited from Base UI."
+      />
 
       <UsageBlock
         code={usageCode}
         title="Usage"
         description="Import and use the checkbox components in your application."
+        notes={[
+          {
+            label: "KiraCheckbox",
+            body: "Use KiraCheckbox with mode set to checkbox, label, card, or group when you want a single prop-driven entry point.",
+          },
+          {
+            label: "Optimistic CheckboxCard",
+            body: "Pass optimistic, checked, onCheckedChange, and an async onCommit handler to flip immediately and roll back with a toast on failure.",
+          },
+        ]}
       />
 
-      <APIReference sections={apiSections} />
+      <APIReference
+        sections={checkboxPageAPISections}
+        description="Props, types, and defaults for each exported Checkbox component."
+      />
 
-      <Changelog entries={checkboxPageChangelogEntries} />
+      <Changelog
+        entries={checkboxPageChangelogEntries}
+        title="Changelog"
+        description="Version history and release notes for Checkbox."
+      />
     </ComponentPage>
   );
 }
 
+// Static demo metadata stays co-located at the bottom, typed via satisfies.
+const stressGroupOptions = [
+  {
+    value: "audit",
+    label:
+      "Automated audit log retention and quarterly export verification policy",
+    description: "",
+  },
+  {
+    value: "alerts",
+    label: "Real-time anomaly alerts for privileged role grants",
+  },
+  {
+    value: "legacy",
+    label: "Legacy API key fallback (disabled by security baseline)",
+    disabled: true,
+  },
+] satisfies ReactComponentProps<typeof CheckboxGroup>["options"];
+
+const checkboxPageFeatures = [
+  {
+    title: "Accessible",
+    description:
+      "Full WAI-ARIA compliance with proper roles, keyboard navigation, and screen reader support.",
+    icon: <IconAccessible className="h-4 w-4" aria-hidden="true" />,
+  },
+  {
+    title: "Customizable",
+    description:
+      "Multiple variants (default, outline, filled, soft), sizes, colors, and custom icons.",
+    icon: <IconPalette className="h-4 w-4" aria-hidden="true" />,
+  },
+  {
+    title: "Composable",
+    description:
+      "Use standalone or with CheckboxWithLabel, CheckboxGroup, or CheckboxCard components.",
+    icon: <IconCheck className="h-4 w-4" aria-hidden="true" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const checkboxPageDemoTabs = [
+  {
+    value: "kira",
+    label: "KiraCheckbox",
+    group: "KiraCheckbox",
+    demo: (
+      <DemoWrapper
+        title="KiraCheckbox"
+        description="One prop-driven API for all four modes: checkbox, label, card, group."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic Checkbox"
+        description="Simple checkbox with a label using the Checkbox component."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "withlabel",
+    label: "WithLabel",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="CheckboxWithLabel"
+        description="A convenience wrapper with built-in label and description support."
+        code={withLabelCode}
+      >
+        <WithLabelDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "group",
+    label: "Group",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="CheckboxGroup"
+        description="Grouped checkboxes with optional select-all functionality."
+        code={groupCode}
+      >
+        <GroupDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "card",
+    label: "Card",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="CheckboxCard"
+        description="Card-style selectable checkbox with icon and description support."
+        code={cardCode}
+      >
+        <CardDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Variants",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="Available in small, default, and large sizes."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "styles",
+    label: "Styles",
+    group: "Variants",
+    demo: (
+      <DemoWrapper
+        title="Style Variants"
+        description="Choose from default, outline, filled, or soft visual styles."
+        code={stylesCode}
+      >
+        <StylesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "colors",
+    label: "Colors",
+    group: "Variants",
+    demo: (
+      <DemoWrapper
+        title="Color Variants"
+        description="Semantic colors for success, destructive, and warning states."
+        code={colorsCode}
+      >
+        <ColorsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "icons",
+    label: "Icons",
+    group: "Variants",
+    demo: (
+      <DemoWrapper
+        title="Custom Icons"
+        description="Replace the default checkmark with any custom icon."
+        code={iconsCode}
+      >
+        <IconsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Loading, Error & Disabled States"
+        description="Various interactive states for form feedback."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "loading",
+    label: "Loading",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Loading State"
+        description="A spinner replaces the indicator and blocks toggling while async work runs."
+        code={loadingCode}
+      >
+        <LoadingDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "disabled-reason",
+    label: "Disabled reason",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Disabled Reason"
+        description="Explain why a control is locked via an accessible tooltip on hover/focus."
+        code={disabledReasonCode}
+      >
+        <DisabledReasonDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "optimistic",
+    label: "Optimistic",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Optimistic toggle"
+        description="Like/bookmark flips instantly; a rejected commit rolls the card back and toasts."
+        code={optimisticCode}
+      >
+        <OptimisticDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long labels, empty descriptions, and disabled states inside a narrow max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const checkboxPageShortcuts = [
+  { keys: "Space", description: "Toggle checkbox state" },
+  {
+    keys: "Enter",
+    description: "Submit the surrounding form (native checkbox behavior)",
+  },
+  { keys: "Tab", description: "Move focus to next focusable element" },
+  {
+    keys: "Shift + Tab",
+    description: "Move focus to previous focusable element",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const checkboxPageAPISections = [
+  {
+    title: "Checkbox",
+    props: [
+      {
+        prop: "checked",
+        type: 'boolean | "indeterminate"',
+        default: "-",
+        description: "Controlled checked state of the checkbox.",
+      },
+      {
+        prop: "defaultChecked",
+        type: "boolean",
+        default: "-",
+        description: "Initial checked state when uncontrolled.",
+      },
+      {
+        prop: "onCheckedChange",
+        type: "(checked: boolean, eventDetails: CheckedChangeDetails) => void",
+        default: "-",
+        description:
+          "Callback when the checked state changes (emits booleans; indeterminate is input-only).",
+      },
+      {
+        prop: "variant",
+        type: '"default" | "outline" | "filled" | "soft"',
+        default: '"default"',
+        description: "Visual style variant of the checkbox.",
+      },
+      {
+        prop: "size",
+        type: '"sm" | "default" | "lg"',
+        default: '"default"',
+        description: "Size of the checkbox.",
+      },
+      {
+        prop: "color",
+        type: '"default" | "success" | "destructive" | "warning"',
+        default: '"default"',
+        description: "Color theme of the checkbox.",
+      },
+      {
+        prop: "customIcon",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Custom icon to display when checked.",
+      },
+      {
+        prop: "loading",
+        type: "boolean",
+        default: "false",
+        description: "Shows a loading spinner and blocks toggling.",
+      },
+      {
+        prop: "error",
+        type: "boolean",
+        default: "false",
+        description: "Shows error styling via aria-invalid.",
+      },
+      {
+        prop: "disabled",
+        type: "boolean",
+        default: "false",
+        description: "Disables the checkbox.",
+      },
+      {
+        prop: "disabledReason",
+        type: "React.ReactNode",
+        default: "-",
+        description:
+          "When disabled, shown in a tooltip and exposed to screen readers.",
+      },
+      {
+        prop: "readOnly",
+        type: "boolean",
+        default: "false",
+        description: "Makes the checkbox read-only.",
+      },
+      {
+        prop: "wrapperClassName",
+        type: "string",
+        default: "-",
+        description: "Additional classes for the outer ripple/box wrapper.",
+      },
+    ],
+  },
+  {
+    title: "CheckboxWithLabel",
+    props: [
+      {
+        prop: "label",
+        type: "string",
+        default: "-",
+        description: "The label text for the checkbox.",
+      },
+      {
+        prop: "description",
+        type: "string",
+        default: "-",
+        description: "Optional description text for the checkbox.",
+      },
+      {
+        prop: "labelPlacement",
+        type: '"right" | "left"',
+        default: '"right"',
+        description: "Placement of the label relative to the checkbox.",
+      },
+      {
+        prop: "...CheckboxProps",
+        type: "-",
+        default: "-",
+        description: "Inherits all Checkbox props.",
+      },
+    ],
+  },
+  {
+    title: "CheckboxGroup",
+    props: [
+      {
+        prop: "options",
+        type: "CheckboxGroupOption[]",
+        default: "-",
+        description:
+          "Array of checkbox options with value, label, description, and disabled.",
+      },
+      {
+        prop: "value",
+        type: "string[]",
+        default: "-",
+        description: "Array of selected values (controlled).",
+      },
+      {
+        prop: "defaultValue",
+        type: "string[]",
+        default: "-",
+        description: "Initial selected values (uncontrolled).",
+      },
+      {
+        prop: "onChange",
+        type: "(value: string[], eventDetails: CheckboxGroup.ChangeEventDetails) => void",
+        default: "-",
+        description: "Callback when selection changes.",
+      },
+      {
+        prop: "name",
+        type: "string",
+        default: "-",
+        description:
+          "Shared form field name; each checked option submits its value.",
+      },
+      {
+        prop: "orientation",
+        type: '"vertical" | "horizontal"',
+        default: '"vertical"',
+        description: "Layout direction of the group.",
+      },
+      {
+        prop: "showSelectAll",
+        type: "boolean",
+        default: "false",
+        description: "Show a select all parent checkbox.",
+      },
+      {
+        prop: "selectAllLabel",
+        type: "string",
+        default: '"Select all"',
+        description: "Label for the select all checkbox.",
+      },
+      {
+        prop: "showProgress",
+        type: "boolean",
+        default: "false",
+        description: 'Show a live "n/total selected" indicator.',
+      },
+      {
+        prop: "label",
+        type: "string",
+        default: "-",
+        description: "Group label.",
+      },
+      {
+        prop: "description",
+        type: "string",
+        default: "-",
+        description: "Group description.",
+      },
+      {
+        prop: "size / variant / color / disabled / error",
+        type: "CheckboxSize / CheckboxVariant / CheckboxColor / boolean / boolean",
+        default: '"default" / "default" / "default" / false / false',
+        description: "Shared styling and state forwarded to all options.",
+      },
+    ],
+  },
+  {
+    title: "CheckboxCard",
+    props: [
+      {
+        prop: "label",
+        type: "string",
+        default: "-",
+        description: "The card label text.",
+      },
+      {
+        prop: "description",
+        type: "string",
+        default: "-",
+        description: "Optional description text.",
+      },
+      {
+        prop: "icon",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Icon to display in the card.",
+      },
+      {
+        prop: "showIndicator",
+        type: "boolean",
+        default: "true",
+        description: "Render the checkbox box inside the card.",
+      },
+      {
+        prop: "optimistic",
+        type: "boolean",
+        default: "false",
+        description:
+          "Flip instantly on click; requires checked + onCheckedChange + onCommit.",
+      },
+      {
+        prop: "onCommit",
+        type: "(checked: boolean) => Promise<unknown>",
+        default: "-",
+        description:
+          "Async commit for optimistic mode; rejection rolls the card back and toasts.",
+      },
+      {
+        prop: "commitErrorTitle",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Title of the rollback toast.",
+      },
+      {
+        prop: "...CheckboxProps",
+        type: "-",
+        default: "-",
+        description: "Inherits all Checkbox props except customIcon.",
+      },
+    ],
+  },
+  {
+    title: "KiraCheckbox",
+    props: [
+      {
+        prop: "mode",
+        type: '"checkbox" | "label" | "card" | "group"',
+        default: '"checkbox"',
+        description:
+          "Selects which underlying component renders; remaining props are those of the chosen mode.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
 // Static demo metadata stays co-located and follows its source constants.
 const checkboxPageChangelogEntries = [
   {
-    version: "v2.3",
+    version: "2.3.1",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "changed",
+        title: "CSS toggle motion and shared useOptimisticCommit seam",
+        description:
+          "Removed gsap/@gsap/react and direct toast imports; toggle feedback now uses CSS/WAAPI (animate-checkbox-ripple) and CheckboxCard optimistic commits route through useOptimisticCommit.",
+      },
+      {
+        type: "fixed",
+        title: "Focus ring at full strength",
+        description:
+          "focus-visible now paints ring-[3px] ring-ring rather than ring-ring/50; the 50% halo fell to 1.63–2.82:1 against the page, below WCAG 1.4.11. The checked box inherits the retuned default-theme primary pair.",
+      },
+    ],
+  },
+  {
+    version: "2.3.0",
     date: "18 November 2026",
     changes: [
       {
@@ -1370,7 +1578,7 @@ const checkboxPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.2",
+    version: "2.2.0",
     date: "22 October 2026",
     changes: [
       {
@@ -1383,7 +1591,7 @@ const checkboxPageChangelogEntries = [
         type: "changed",
         title: "WCAG 2.5.8 hit area",
         description:
-          "The 16/20px boxes now get a 24px+ pointer target via an expanded ::after hit area (shadcn base-nova pattern).",
+          "The 16/20px boxes now get a 24px+ pointer target via an expanded ::after hit area (stock registry pattern).",
       },
       {
         type: "changed",
@@ -1394,7 +1602,7 @@ const checkboxPageChangelogEntries = [
     ],
   },
   {
-    version: "v2.0",
+    version: "2.0.0",
     date: "22 July 2026",
     changes: [
       {

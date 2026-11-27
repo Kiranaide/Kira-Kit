@@ -5,7 +5,7 @@ Implements roving-tabindex keyboard navigation for grids using rowCount and colC
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-focus-manager
+kira-kit add @kira-kit/use-focus-manager
 ```
 
 ## Usage

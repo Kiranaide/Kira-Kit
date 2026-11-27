@@ -5,7 +5,7 @@ Vertical, horizontal, or dual scrolling with three scrollbar thicknesses, always
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/scroll-area
+kira-kit add @kira-kit/scroll-area
 ```
 
 ## Dependencies
@@ -17,6 +17,7 @@ npx shadcn add @kira-kit/scroll-area
 ## Registry dependencies
 
 - @kira-kit/button
+- @kira-kit/component-utils
 - @kira-kit/use-reduced-motion
 
 ## Usage

@@ -1,7 +1,32 @@
-import { formatFindings, runChecks } from "../core/checks/runner";
+import {
+  formatFindings,
+  runChecks,
+  type CheckRunResult,
+} from "../core/checks/runner";
 import { error as logError, info } from "../lib/logger";
 import { EXIT_CHECKS, EXIT_OK } from "../lib/errors";
 import type { CheckOptions } from "../types";
+
+function printCheckResult(
+  result: CheckRunResult,
+  format: "pretty" | "json" | "github",
+  ci: boolean,
+): void {
+  if (format !== "pretty") {
+    console.log(formatFindings(result, format));
+
+    return;
+  }
+
+  if (result.findings.length > 0) {
+    console.log(`\n${formatFindings(result, "pretty")}\n`);
+  }
+
+  info(
+    `${result.filesChecked} files checked — ${result.findings.length} finding(s)` +
+      (ci ? " (CI mode: every unsuppressed finding fails)" : ""),
+  );
+}
 
 export async function check(options: CheckOptions): Promise<number> {
   // Strict mode is opt-in: CI env vars alone shouldn't turn warnings into
@@ -10,25 +35,12 @@ export async function check(options: CheckOptions): Promise<number> {
   const format = options.json ? "json" : (options.format ?? "pretty");
 
   const result = runChecks({
-    repoRoot: process.cwd(),
+    repoRoot: options.cwd ?? process.cwd(),
     paths: options.paths ?? [],
     ci,
   });
 
-  if (format === "json") {
-    console.log(formatFindings(result, "json"));
-  } else if (format === "github") {
-    console.log(formatFindings(result, "github"));
-  } else {
-    if (result.findings.length > 0) {
-      console.log(`\n${formatFindings(result, "pretty")}\n`);
-    }
-
-    info(
-      `${result.filesChecked} files checked — ${result.findings.length} finding(s)` +
-        (ci ? " (CI mode: every unsuppressed finding fails)" : ""),
-    );
-  }
+  printCheckResult(result, format, ci);
 
   if (result.failing > 0) {
     logError(

@@ -1,121 +1,186 @@
+"use client";
+
 import * as React from "react";
+import { mergeProps } from "@base-ui/react/merge-props";
+import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "cn";
-import { isObjectProp } from "@/lib/component-prop-guards";
+import {
+  layoutGapClasses,
+  resolveLayoutResponsive,
+  type LayoutBreakpoint,
+  type LayoutResponsiveValue,
+  type LayoutSpacing,
+} from "@/lib/layout-responsive";
 
-/* -------------------------------------------------------------------------- */
-/*                                 Responsive                                 */
-/* -------------------------------------------------------------------------- */
+/* Literal per-breakpoint class maps so consumer Tailwind scans them with zero safelist. */
 
-// Order matters: mobile-first, so later breakpoints win.
-const BREAKPOINTS = ["sm", "md", "lg", "xl", "2xl"] as const;
-
-type Breakpoint = (typeof BREAKPOINTS)[number];
-
-type ResponsiveValue<T> = T | ({ base?: T } & Partial<Record<Breakpoint, T>>);
-
-type ClassMap = { readonly [key: string]: string | undefined };
-
-/**
- * Resolves a (possibly responsive) prop value against a static class map.
- *
- * NOTE: breakpoint-prefixed classes (`md:flex-col`) are assembled at runtime,
- * so Tailwind can't see them in source. They MUST be safelisted with
- * `@source inline(...)` in your global CSS (see globals.css snippet).
- */
-function resolveResponsive<T extends string | number | boolean>(
-  value: ResponsiveValue<T> | undefined,
-  classMap: ClassMap,
-): string {
-  if (value == null) return "";
-
-  if (!isObjectProp(value)) return classMap[String(value)] ?? "";
-
-  const classes: string[] = [];
-
-  if (value.base !== undefined) {
-    const cls = classMap[String(value.base)];
-
-    if (cls) classes.push(cls);
-  }
-
-  for (const bp of BREAKPOINTS) {
-    const v = value[bp];
-
-    if (v === undefined) continue;
-    const cls = classMap[String(v)];
-
-    if (cls) classes.push(`${bp}:${cls}`);
-  }
-
-  return classes.join(" ");
-}
-
-/* -------------------------------------------------------------------------- */
-/*                                 Class maps                                 */
-/* -------------------------------------------------------------------------- */
-// Prop types are derived from these maps, so they can never drift apart.
-
-const directionMap = {
-  row: "flex-row",
-  "row-reverse": "flex-row-reverse",
-  column: "flex-col",
-  "column-reverse": "flex-col-reverse",
+const directionClasses = {
+  row: [
+    "flex-row",
+    "sm:flex-row",
+    "md:flex-row",
+    "lg:flex-row",
+    "xl:flex-row",
+    "2xl:flex-row",
+  ],
+  "row-reverse": [
+    "flex-row-reverse",
+    "sm:flex-row-reverse",
+    "md:flex-row-reverse",
+    "lg:flex-row-reverse",
+    "xl:flex-row-reverse",
+    "2xl:flex-row-reverse",
+  ],
+  column: [
+    "flex-col",
+    "sm:flex-col",
+    "md:flex-col",
+    "lg:flex-col",
+    "xl:flex-col",
+    "2xl:flex-col",
+  ],
+  "column-reverse": [
+    "flex-col-reverse",
+    "sm:flex-col-reverse",
+    "md:flex-col-reverse",
+    "lg:flex-col-reverse",
+    "xl:flex-col-reverse",
+    "2xl:flex-col-reverse",
+  ],
 } as const;
 
-const wrapMap = {
-  nowrap: "flex-nowrap",
-  wrap: "flex-wrap",
-  "wrap-reverse": "flex-wrap-reverse",
+const wrapClasses = {
+  nowrap: [
+    "flex-nowrap",
+    "sm:flex-nowrap",
+    "md:flex-nowrap",
+    "lg:flex-nowrap",
+    "xl:flex-nowrap",
+    "2xl:flex-nowrap",
+  ],
+  wrap: [
+    "flex-wrap",
+    "sm:flex-wrap",
+    "md:flex-wrap",
+    "lg:flex-wrap",
+    "xl:flex-wrap",
+    "2xl:flex-wrap",
+  ],
+  "wrap-reverse": [
+    "flex-wrap-reverse",
+    "sm:flex-wrap-reverse",
+    "md:flex-wrap-reverse",
+    "lg:flex-wrap-reverse",
+    "xl:flex-wrap-reverse",
+    "2xl:flex-wrap-reverse",
+  ],
 } as const;
 
-const justifyMap = {
-  start: "justify-start",
-  end: "justify-end",
-  center: "justify-center",
-  between: "justify-between",
-  around: "justify-around",
-  evenly: "justify-evenly",
+const justifyClasses = {
+  start: [
+    "justify-start",
+    "sm:justify-start",
+    "md:justify-start",
+    "lg:justify-start",
+    "xl:justify-start",
+    "2xl:justify-start",
+  ],
+  end: [
+    "justify-end",
+    "sm:justify-end",
+    "md:justify-end",
+    "lg:justify-end",
+    "xl:justify-end",
+    "2xl:justify-end",
+  ],
+  center: [
+    "justify-center",
+    "sm:justify-center",
+    "md:justify-center",
+    "lg:justify-center",
+    "xl:justify-center",
+    "2xl:justify-center",
+  ],
+  between: [
+    "justify-between",
+    "sm:justify-between",
+    "md:justify-between",
+    "lg:justify-between",
+    "xl:justify-between",
+    "2xl:justify-between",
+  ],
+  around: [
+    "justify-around",
+    "sm:justify-around",
+    "md:justify-around",
+    "lg:justify-around",
+    "xl:justify-around",
+    "2xl:justify-around",
+  ],
+  evenly: [
+    "justify-evenly",
+    "sm:justify-evenly",
+    "md:justify-evenly",
+    "lg:justify-evenly",
+    "xl:justify-evenly",
+    "2xl:justify-evenly",
+  ],
 } as const;
 
-const alignMap = {
-  start: "items-start",
-  end: "items-end",
-  center: "items-center",
-  baseline: "items-baseline",
-  stretch: "items-stretch",
+const alignClasses = {
+  start: [
+    "items-start",
+    "sm:items-start",
+    "md:items-start",
+    "lg:items-start",
+    "xl:items-start",
+    "2xl:items-start",
+  ],
+  end: [
+    "items-end",
+    "sm:items-end",
+    "md:items-end",
+    "lg:items-end",
+    "xl:items-end",
+    "2xl:items-end",
+  ],
+  center: [
+    "items-center",
+    "sm:items-center",
+    "md:items-center",
+    "lg:items-center",
+    "xl:items-center",
+    "2xl:items-center",
+  ],
+  baseline: [
+    "items-baseline",
+    "sm:items-baseline",
+    "md:items-baseline",
+    "lg:items-baseline",
+    "xl:items-baseline",
+    "2xl:items-baseline",
+  ],
+  stretch: [
+    "items-stretch",
+    "sm:items-stretch",
+    "md:items-stretch",
+    "lg:items-stretch",
+    "xl:items-stretch",
+    "2xl:items-stretch",
+  ],
 } as const;
 
-const gapMap = {
-  0: "gap-0",
-  1: "gap-1",
-  2: "gap-2",
-  3: "gap-3",
-  4: "gap-4",
-  5: "gap-5",
-  6: "gap-6",
-  8: "gap-8",
-  10: "gap-10",
-  12: "gap-12",
-  16: "gap-16",
-  20: "gap-20",
-  24: "gap-24",
-} as const;
+type FlexDirection = keyof typeof directionClasses;
 
-type FlexDirection = keyof typeof directionMap;
+type FlexWrap = keyof typeof wrapClasses;
 
-type FlexWrap = keyof typeof wrapMap;
+type FlexJustify = keyof typeof justifyClasses;
 
-type FlexJustify = keyof typeof justifyMap;
+type FlexAlign = keyof typeof alignClasses;
 
-type FlexAlign = keyof typeof alignMap;
-
-type FlexGap = keyof typeof gapMap;
-
-/* -------------------------------------------------------------------------- */
-/*                                  Component                                 */
-/* -------------------------------------------------------------------------- */
+type FlexGap = LayoutSpacing;
 
 const flexVariants = cva("", {
   variants: {
@@ -145,24 +210,22 @@ type FlexElement =
   | "span";
 
 interface FlexOwnProps extends VariantProps<typeof flexVariants> {
-  direction?: ResponsiveValue<FlexDirection>;
-  wrap?: ResponsiveValue<FlexWrap>;
-  justify?: ResponsiveValue<FlexJustify>;
-  align?: ResponsiveValue<FlexAlign>;
-  gap?: ResponsiveValue<FlexGap>;
+  direction?: LayoutResponsiveValue<FlexDirection>;
+  wrap?: LayoutResponsiveValue<FlexWrap>;
+  justify?: LayoutResponsiveValue<FlexJustify>;
+  align?: LayoutResponsiveValue<FlexAlign>;
+  gap?: LayoutResponsiveValue<FlexGap>;
 }
 
-/**
- * Polymorphic props: `<Flex as="form" onSubmit={...}>` gets form-specific
- * attributes and an `HTMLFormElement` ref. React 19 passes `ref` as a normal
- * prop, so no forwardRef is needed.
- */
 type FlexProps<T extends FlexElement = "div"> = FlexOwnProps & {
   as?: T;
-} & Omit<React.ComponentPropsWithRef<T>, keyof FlexOwnProps | "as">;
+  render?: useRender.RenderProp;
+} & Omit<React.ComponentPropsWithRef<T>, keyof FlexOwnProps | "as" | "render">;
 
 function Flex<T extends FlexElement = "div">({
   as,
+  render,
+  ref,
   className,
   inline,
   direction,
@@ -172,24 +235,31 @@ function Flex<T extends FlexElement = "div">({
   gap,
   ...props
 }: FlexProps<T>) {
-  const Component: React.ElementType = as ?? "div";
-
-  return React.createElement(Component, {
-    "data-slot": "flex",
-    className: cn(
-      flexVariants({ inline }),
-      resolveResponsive(direction, directionMap),
-      resolveResponsive(wrap, wrapMap),
-      resolveResponsive(justify, justifyMap),
-      resolveResponsive(align, alignMap),
-      resolveResponsive(gap, gapMap),
-      className,
+  return useRender({
+    defaultTagName: as ?? "div",
+    render,
+    // SAFETY: the ref's element type follows the selected native tag.
+    ref: ref as React.Ref<HTMLElement>,
+    props: mergeProps(
+      // SAFETY: data-slot is a native data attribute absent from HTMLAttributes.
+      {
+        "data-slot": "flex",
+        className: cn(
+          flexVariants({ inline }),
+          resolveLayoutResponsive(direction, directionClasses),
+          resolveLayoutResponsive(wrap, wrapClasses),
+          resolveLayoutResponsive(justify, justifyClasses),
+          resolveLayoutResponsive(align, alignClasses),
+          resolveLayoutResponsive(gap, layoutGapClasses),
+          className,
+        ),
+      } as React.HTMLAttributes<HTMLElement>,
+      props,
     ),
-    ...props,
   });
 }
 
-export { Flex, flexVariants, resolveResponsive, BREAKPOINTS };
+export { Flex, flexVariants };
 
 export type {
   FlexProps,
@@ -199,6 +269,6 @@ export type {
   FlexJustify,
   FlexAlign,
   FlexGap,
-  ResponsiveValue,
-  Breakpoint,
+  LayoutResponsiveValue as ResponsiveValue,
+  LayoutBreakpoint as Breakpoint,
 };

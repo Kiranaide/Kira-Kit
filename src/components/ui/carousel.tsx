@@ -1,8 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { omitComponentProps } from "@/lib/component-native-props";
-import { resolveComponentDefaults } from "@/lib/component-defaults";
+import {
+  isFunctionProp,
+  omitComponentProps,
+  resolveComponentDefaults,
+} from "@/lib/component-utils";
 import { useId } from "react";
 import {
   IconChevronLeft,
@@ -30,7 +33,6 @@ import { cn } from "cn";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { isCallbackProp } from "@/lib/component-prop-guards";
 
 const carouselVariants = cva("relative group", {
   variants: {
@@ -370,7 +372,7 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
     const { emblaRef, orientation, variant } = carouselContext;
 
     const indexedChildren = React.useMemo(() => {
-      let nextIndex = 0;
+      const cursor = { index: 0 };
 
       const injectIndex = (node: React.ReactNode): React.ReactNode => {
         if (!React.isValidElement(node)) return node;
@@ -390,8 +392,8 @@ const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
         }
 
         if (node.type === CarouselItem) {
-          const index = nextIndex;
-          nextIndex++;
+          const index = cursor.index;
+          cursor.index += 1;
 
           // SAFETY: node is a valid CarouselItem element (isValidElement guard
           // above), so cloning with an extra index prop is type-safe.
@@ -733,7 +735,7 @@ const CarouselProgressBar = React.forwardRef<
       ref={(node) => {
         barRef.current = node;
 
-        if (isCallbackProp(ref)) ref(node);
+        if (isFunctionProp(ref)) ref(node);
         else if (ref) ref.current = node;
       }}
       data-slot="carousel-progress-bar"
@@ -1091,7 +1093,7 @@ function RenderCarouselItemPart1({
       ref={(node) => {
         itemRef.current = node;
 
-        if (isCallbackProp(ref)) ref(node);
+        if (isFunctionProp(ref)) ref(node);
         else if (ref) ref.current = node;
       }}
       data-slot="carousel-item"
@@ -1900,9 +1902,8 @@ function useCarouselActions(state: ReturnType<typeof useCarouselState3>) {
 
       // Press feedback targets the VIEWPORT wrapper, never the translated
       // container: both GSAP and embla write `transform`, so a tween tail
-      // from a press could overwrite embla's momentum/final snap position
-      // and freeze the carousel half-way (stuck between slides after fast
-      // drags or rapid button clicks following a drag).
+      // from a press could overwrite embla's momentum/snap position and
+      // freeze the carousel half-way between slides.
       const viewportNode = emblaApi.rootNode();
 
       const handlePointerDown = () => {
@@ -2004,7 +2005,7 @@ function renderCarousel({
         ref={(node) => {
           containerRef.current = node;
 
-          if (isCallbackProp(ref)) ref(node);
+          if (isFunctionProp(ref)) ref(node);
           else if (ref) ref.current = node;
         }}
         data-slot="carousel"

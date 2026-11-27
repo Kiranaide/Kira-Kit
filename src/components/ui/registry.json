@@ -16,6 +16,7 @@
         "cn"
       ],
       "registryDependencies": [
+        "@kira-kit/component-utils",
         "@kira-kit/tooltip",
         "@kira-kit/use-reduced-motion"
       ],
@@ -40,19 +41,12 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/component-utils",
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
         {
           "path": "alert.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "content-keys.ts",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -71,6 +65,7 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/component-utils",
         "@kira-kit/dialog",
         "@kira-kit/input"
       ],
@@ -95,20 +90,13 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/component-utils",
         "@kira-kit/spinner",
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
         {
           "path": "announcement-bar.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "content-keys.ts",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -127,20 +115,13 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/component-utils",
         "@kira-kit/skeleton",
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
         {
           "path": "aspect-ratio.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "content-keys.ts",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -158,6 +139,7 @@
         "cn"
       ],
       "registryDependencies": [
+        "@kira-kit/component-utils",
         "@kira-kit/popover",
         "@kira-kit/tooltip",
         "@kira-kit/use-reduced-motion"
@@ -173,7 +155,7 @@
       "name": "badge",
       "type": "registry:ui",
       "title": "Badge",
-      "description": "Badge covers semantic, outline, ghost, link, and soft styles with status dots, trend arrows, loading, dismissal, and beta/new/version presets. CountBadge formats and animates changing counts, while the suite also provides status, tag, and group modes plus a Combobox-backed TagInput with suggestions and deduplication.",
+      "description": "Badge covers semantic, outline, ghost, link, and soft styles with status dots, trend arrows, loading, dismissal, and beta/new/version presets. CountBadge formats and animates changing counts, while the suite also provides status, tag, and group modes.",
       "categories": ["data-display", "form"],
       "dependencies": [
         "@base-ui/react",
@@ -200,8 +182,8 @@
       "title": "Box",
       "description": "Polymorphic layout primitive for semantic HTML tags with responsive background, color, sizing, spacing, and border props. CVA variants add rounding, shadows, display modes, and positioning using safelisted runtime-generated utilities.",
       "categories": ["layout", "utility"],
-      "dependencies": ["class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/flex"],
+      "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
+      "registryDependencies": ["@kira-kit/layout-responsive"],
       "files": [
         {
           "path": "box.tsx",
@@ -221,7 +203,10 @@
         "class-variance-authority",
         "cn"
       ],
-      "registryDependencies": ["@kira-kit/use-reduced-motion"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/use-reduced-motion"
+      ],
       "files": [
         {
           "path": "breadcrumb.tsx",
@@ -233,27 +218,17 @@
       "name": "button",
       "type": "registry:ui",
       "title": "Button",
-      "description": "Base UI button with extensive semantic variants, icon sizes, full-width layout, press ripples, and pointer/keyboard hold-to-complete progress. Loading, tooltip, and expandable-icon helpers are included, and KiraButton supports optimistic asynchronous toggles with an error toast on rejection.",
+      "description": "Base UI button with extensive semantic variants, icon sizes, full-width layout, CSS press ripples, and pointer/keyboard hold-to-complete progress. Loading and expandable-icon helpers are included, and KiraButton supports optimistic asynchronous toggles backed by useOptimisticCommit.",
       "categories": ["form"],
-      "dependencies": [
-        "@base-ui/react",
-        "@gsap/react",
-        "class-variance-authority",
-        "cn",
-        "gsap"
-      ],
+      "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
       "registryDependencies": [
-        "@kira-kit/toast",
-        "@kira-kit/tooltip",
+        "@kira-kit/component-utils",
+        "@kira-kit/use-optimistic-commit",
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
         {
           "path": "button.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -274,6 +249,7 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/component-utils",
         "@kira-kit/separator",
         "@kira-kit/use-reduced-motion"
       ],
@@ -298,16 +274,14 @@
         "date-fns",
         "react-day-picker"
       ],
+      "registryDependencies": ["@kira-kit/component-utils"],
       "files": [
         {
           "path": "calendar.tsx",
           "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
         }
-      ]
+      ],
+      "css": "/* Calendar month transition (`animate` prop) Ã¢â‚¬â€ adapted from react-day-picker\n   (MIT, https://github.com/gpbl/react-day-picker) style.css and namespaced so\n   the kit never needs the rdp-* stylesheet. */\n@keyframes kira-calendar-slide-in-left {\n  from { transform: translateX(-100%); }\n  to { transform: translateX(0); }\n}\n\n@keyframes kira-calendar-slide-in-right {\n  from { transform: translateX(100%); }\n  to { transform: translateX(0); }\n}\n\n@keyframes kira-calendar-slide-out-left {\n  from { transform: translateX(0); }\n  to { transform: translateX(-100%); }\n}\n\n@keyframes kira-calendar-slide-out-right {\n  from { transform: translateX(0); }\n  to { transform: translateX(100%); }\n}\n\n@keyframes kira-calendar-fade-in {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}\n\n@keyframes kira-calendar-fade-out {\n  from { opacity: 1; }\n  to { opacity: 0; }\n}\n\n.kira-calendar-weeks-before-enter {\n  animation: kira-calendar-slide-in-left var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-before-exit {\n  animation: kira-calendar-slide-out-left var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-after-enter {\n  animation: kira-calendar-slide-in-right var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-weeks-after-exit {\n  animation: kira-calendar-slide-out-right var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-after-enter {\n  animation-name: kira-calendar-slide-in-left;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-before-exit {\n  animation-name: kira-calendar-slide-out-right;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-before-enter {\n  animation-name: kira-calendar-slide-in-right;\n}\n\n[dir=\"rtl\"] .kira-calendar-weeks-after-exit {\n  animation-name: kira-calendar-slide-out-left;\n}\n\n.kira-calendar-caption-before-enter,\n.kira-calendar-caption-after-enter {\n  animation: kira-calendar-fade-in var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n.kira-calendar-caption-before-exit,\n.kira-calendar-caption-after-exit {\n  animation: kira-calendar-fade-out var(--kira-calendar-animation-duration, 0.3s) var(--kira-calendar-animation-timing, cubic-bezier(0.4, 0, 0.2, 1)) forwards;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  [data-slot=\"calendar\"],\n  [data-slot=\"calendar\"] * {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n  }\n}\n"
     },
     {
       "name": "camera",
@@ -318,6 +292,8 @@
       "dependencies": ["@tabler/icons-react", "class-variance-authority", "cn"],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/camera-lib",
+        "@kira-kit/component-utils",
         "@kira-kit/dialog",
         "@kira-kit/drawer",
         "@kira-kit/select",
@@ -329,10 +305,6 @@
       "files": [
         {
           "path": "camera.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -368,7 +340,10 @@
         "embla-carousel-react",
         "gsap"
       ],
-      "registryDependencies": ["@kira-kit/use-reduced-motion"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/use-reduced-motion"
+      ],
       "files": [
         {
           "path": "carousel.tsx",
@@ -398,24 +373,19 @@
       "categories": ["form"],
       "dependencies": [
         "@base-ui/react",
-        "@gsap/react",
         "@tabler/icons-react",
         "class-variance-authority",
-        "cn",
-        "gsap"
+        "cn"
       ],
       "registryDependencies": [
-        "@kira-kit/toast",
+        "@kira-kit/component-utils",
         "@kira-kit/tooltip",
+        "@kira-kit/use-optimistic-commit",
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
         {
           "path": "checkbox.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -435,6 +405,8 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/code-presentation",
+        "@kira-kit/component-utils",
         "@kira-kit/tabs",
         "@kira-kit/toast",
         "@kira-kit/use-reduced-motion"
@@ -458,7 +430,10 @@
         "class-variance-authority",
         "cn"
       ],
-      "registryDependencies": ["@kira-kit/use-reduced-motion"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/use-reduced-motion"
+      ],
       "files": [
         {
           "path": "collapsible.tsx",
@@ -481,6 +456,8 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/color-picker-lib",
+        "@kira-kit/component-utils",
         "@kira-kit/input",
         "@kira-kit/popover",
         "@kira-kit/select",
@@ -502,7 +479,6 @@
       "description": "A cmdk command palette with three visual variants, nested action pages, breadcrumbs, keyboard-aware selection, and a KiraCommandDialog that can bind Cmd/Ctrl+K. Async actions support cancellation, retry, and success or error status, while Escape intelligently clears search, goes back, or cancels pending work.",
       "categories": ["navigation", "overlay"],
       "dependencies": [
-        "@base-ui/react",
         "@tabler/icons-react",
         "class-variance-authority",
         "cmdk",
@@ -510,6 +486,7 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/component-utils",
         "@kira-kit/dialog",
         "@kira-kit/kbd",
         "@kira-kit/use-reduced-motion"
@@ -525,10 +502,9 @@
       "name": "container",
       "type": "registry:ui",
       "title": "Container",
-      "description": "A polymorphic, centered layout wrapper with responsive max-widths including prose, adjustable padding, optional flex centering, and named CSS container queries. KiraContainer adds header and footer slots plus inert loading skeletons and error content with retry handling.",
+      "description": "A polymorphic, centered layout wrapper with responsive max-widths including prose, adjustable padding, optional flex centering, and named CSS container queries. KiraContainer adds header and footer slots.",
       "categories": ["layout"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/button", "@kira-kit/skeleton"],
       "files": [
         {
           "path": "container.tsx",
@@ -544,6 +520,7 @@
       "categories": ["overlay", "navigation"],
       "dependencies": ["@base-ui/react", "cn"],
       "registryDependencies": [
+        "@kira-kit/component-utils",
         "@kira-kit/dropdown-menu",
         "@kira-kit/use-menu-action"
       ],
@@ -575,8 +552,10 @@
         "@kira-kit/badge",
         "@kira-kit/button",
         "@kira-kit/checkbox",
+        "@kira-kit/component-utils",
         "@kira-kit/dropdown-menu",
         "@kira-kit/input",
+        "@kira-kit/pagination",
         "@kira-kit/popover",
         "@kira-kit/table",
         "@kira-kit/tooltip"
@@ -605,6 +584,8 @@
       "registryDependencies": [
         "@kira-kit/button",
         "@kira-kit/calendar",
+        "@kira-kit/component-utils",
+        "@kira-kit/popover",
         "@kira-kit/time-picker"
       ],
       "files": [
@@ -630,10 +611,6 @@
         {
           "path": "dialog.tsx",
           "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
         }
       ]
     },
@@ -653,10 +630,6 @@
         {
           "path": "drawer.tsx",
           "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
         }
       ]
     },
@@ -673,6 +646,7 @@
         "cn"
       ],
       "registryDependencies": [
+        "@kira-kit/component-utils",
         "@kira-kit/use-menu-action",
         "@kira-kit/use-reduced-motion"
       ],
@@ -695,14 +669,14 @@
         "class-variance-authority",
         "cn"
       ],
-      "registryDependencies": ["@kira-kit/button", "@kira-kit/spinner"],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/component-utils",
+        "@kira-kit/spinner"
+      ],
       "files": [
         {
           "path": "empty.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -722,6 +696,7 @@
         "zod"
       ],
       "registryDependencies": [
+        "@kira-kit/component-utils",
         "@kira-kit/input",
         "@kira-kit/separator",
         "@kira-kit/textarea"
@@ -749,6 +724,7 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/component-utils",
         "@kira-kit/dialog",
         "@kira-kit/use-reduced-motion"
       ],
@@ -765,7 +741,8 @@
       "title": "Flex",
       "description": "A polymorphic flexbox primitive whose direction, wrapping, justification, alignment, and gap props accept either fixed values or breakpoint maps from base through 2xl. It supports inline flex and semantic elements such as forms, navigation, lists, and fieldsets while preserving element-specific props and refs.",
       "categories": ["layout"],
-      "dependencies": ["class-variance-authority", "cn"],
+      "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
+      "registryDependencies": ["@kira-kit/layout-responsive"],
       "files": [
         {
           "path": "flex.tsx",
@@ -777,17 +754,16 @@
       "name": "grid",
       "type": "registry:ui",
       "title": "Grid",
-      "description": "A responsive CSS Grid system with breakpoint-aware columns, rows, gaps, alignment, item spans, and placement, including auto-fit and auto-fill tracks controlled by minItemWidth. KiraGrid renders keyed collections with semantic list handling, skeleton loading, empty content, and full-span error states with retry.",
+      "description": "A responsive CSS Grid system with breakpoint-aware columns, rows, gaps, alignment, item spans, and placement, including auto-fit and auto-fill tracks controlled by minItemWidth. KiraGrid renders keyed collections with semantic list handling and empty content.",
       "categories": ["layout"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/button", "@kira-kit/skeleton"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/layout-responsive"
+      ],
       "files": [
         {
           "path": "grid.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -815,7 +791,7 @@
       "name": "input",
       "type": "registry:ui",
       "title": "Input",
-      "description": "A Base UI text input with five sizes, prefix and suffix content, clear and clipboard actions, and an announced character counter. The module also provides scrub-enabled numeric and formatted decimal inputs, debounced search, OTP fields, half-star ratings, password strength feedback, and separator-driven tag entry.",
+      "description": "A Base UI text input with five sizes, prefix and suffix content, clear and clipboard actions, and an announced character counter. The module also provides scrub-enabled numeric and formatted decimal inputs, debounced search, password strength feedback, and separator-driven tag entry.",
       "categories": ["form"],
       "dependencies": [
         "@base-ui/react",
@@ -823,14 +799,7 @@
         "class-variance-authority",
         "cn"
       ],
-      "registryDependencies": [
-        "@kira-kit/button",
-        "@kira-kit/field",
-        "@kira-kit/select",
-        "@kira-kit/toast",
-        "@kira-kit/tooltip",
-        "@kira-kit/use-reduced-motion"
-      ],
+      "registryDependencies": ["@kira-kit/use-reduced-motion"],
       "files": [
         {
           "path": "input.tsx",
@@ -845,7 +814,11 @@
       "description": "A compound control container that joins inputs or textareas with text, compact buttons, and addons aligned at inline or block start and end. Shared focus, invalid, and disabled styling surrounds the group, while clicking noninteractive addon space focuses its associated control.",
       "categories": ["form", "layout"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/button", "@kira-kit/textarea"],
+      "registryDependencies": [
+        "@kira-kit/button",
+        "@kira-kit/component-utils",
+        "@kira-kit/textarea"
+      ],
       "files": [
         {
           "path": "input-group.tsx",
@@ -871,6 +844,7 @@
       "registryDependencies": [
         "@kira-kit/avatar",
         "@kira-kit/button",
+        "@kira-kit/component-utils",
         "@kira-kit/dialog",
         "@kira-kit/input",
         "@kira-kit/select",
@@ -911,14 +885,13 @@
         "class-variance-authority",
         "cn"
       ],
-      "registryDependencies": ["@kira-kit/tooltip"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/tooltip"
+      ],
       "files": [
         {
           "path": "label.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -943,10 +916,6 @@
         {
           "path": "menubar.tsx",
           "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
         }
       ]
     },
@@ -962,14 +931,24 @@
         "class-variance-authority",
         "cn"
       ],
-      "registryDependencies": ["@kira-kit/drawer"],
+      "registryDependencies": ["@kira-kit/component-utils", "@kira-kit/drawer"],
       "files": [
         {
           "path": "navigation-menu.tsx",
           "type": "registry:ui"
-        },
+        }
+      ]
+    },
+    {
+      "name": "otp-input",
+      "type": "registry:ui",
+      "title": "OTP Input",
+      "description": "Base UI OTPField input for 4-to-8-character numeric, alphanumeric, or alphabetic one-time codes. Supports masking, optional separators, auto-submit on completion, invalid styling, three sizes, and three surface variants.",
+      "categories": ["form"],
+      "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
+      "files": [
         {
-          "path": "prop-guards.ts",
+          "path": "otp-input.tsx",
           "type": "registry:ui"
         }
       ]
@@ -987,6 +966,7 @@
         "cn"
       ],
       "registryDependencies": [
+        "@kira-kit/component-utils",
         "@kira-kit/select",
         "@kira-kit/spinner",
         "@kira-kit/use-pagination",
@@ -995,10 +975,6 @@
       "files": [
         {
           "path": "pagination.tsx",
-          "type": "registry:ui"
-        },
-        {
-          "path": "prop-guards.ts",
           "type": "registry:ui"
         }
       ]
@@ -1035,7 +1011,8 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
-        "@kira-kit/use-reduced-motion"
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/use-visibility-pause"
       ],
       "files": [
         {
@@ -1077,10 +1054,27 @@
         "cn",
         "gsap"
       ],
-      "registryDependencies": ["@kira-kit/use-reduced-motion"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/use-reduced-motion"
+      ],
       "files": [
         {
           "path": "radio-group.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "rating",
+      "type": "registry:ui",
+      "title": "Rating",
+      "description": "Accessible star rating control with hover preview, half-star increments, clear-on-reclick, keyboard arrow/Home/End navigation, custom icons and colors, and a read-only RatingDisplay helper with fraction and review-count labels.",
+      "categories": ["form", "data-display"],
+      "dependencies": ["@tabler/icons-react", "class-variance-authority", "cn"],
+      "files": [
+        {
+          "path": "rating.tsx",
           "type": "registry:ui"
         }
       ]
@@ -1099,18 +1093,30 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/layout-storage",
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "resizable.tsx",
           "type": "registry:ui"
         }
       ]
+    },
+    {
+      "name": "route-transition",
+      "type": "registry:ui",
+      "title": "Route Transition",
+      "description": "Route-change motion utilities: a keyed entrance with seven variants (fade, fade-up, fade-down, slide-left, slide-right, zoom, none) — movement variants ride a gentle spring curve — that replays when the transitionKey changes, and a fixed glowing 2px top navigation progress bar with a grace delay, composite-only CSS trickle, and interruptible completion. Adding the item merges its motion CSS (spring token, keyframes, view-transition tuning) into your global stylesheet. Pairs with the view-transition lib helper and the kit's native View Transitions crossfade.",
+      "categories": ["navigation", "animation"],
+      "dependencies": ["class-variance-authority", "cn"],
+      "files": [
+        {
+          "path": "route-transition.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "css": ":root {\n  --ease-spring: linear(0, 0.015, 0.0552, 0.1142, 0.1865, 0.2671, 0.352, 0.4379, 0.522, 0.6024, 0.6774, 0.7461, 0.8078, 0.8621, 0.9091, 0.9489, 0.9819, 1.0085, 1.0293, 1.0449, 1.056, 1.0631, 1.067, 1.0681, 1.067, 1.0642, 1.0601, 1.0552, 1.0497, 1.0439, 1.0381, 1.0324, 1.0269, 1.0218, 1.0171, 1.013, 1.0093, 1.0061, 1.0034, 1.0012, 0.9994, 0.998, 0.9969, 0.9962, 0.9957, 0.9954, 0.9954, 0.9954, 0.9956, 0.9959, 1);\n}\n\n@theme inline {\n  --animate-route-fade: route-fade 0.15s cubic-bezier(0.23, 1, 0.32, 1) both;\n  --animate-route-fade-up: route-fade-up 0.25s var(--ease-spring) both;\n  --animate-route-fade-down: route-fade-down 0.25s var(--ease-spring) both;\n  --animate-route-slide-left: route-slide-left 0.25s var(--ease-spring) both;\n  --animate-route-slide-right: route-slide-right 0.25s var(--ease-spring) both;\n  --animate-route-zoom: route-zoom 0.25s var(--ease-spring) both;\n  --animate-nav-progress: nav-progress 10s ease-out forwards;\n}\n\n@keyframes route-fade {\n  from { opacity: 0; }\n  to { opacity: 1; }\n}\n\n@keyframes route-fade-up {\n  from { opacity: 0; transform: translateY(8px); }\n  to { opacity: 1; transform: translateY(0); }\n}\n\n@keyframes route-fade-down {\n  from { opacity: 0; transform: translateY(-8px); }\n  to { opacity: 1; transform: translateY(0); }\n}\n\n@keyframes route-slide-left {\n  from { opacity: 0; transform: translateX(24px); }\n  to { opacity: 1; transform: translateX(0); }\n}\n\n@keyframes route-slide-right {\n  from { opacity: 0; transform: translateX(-24px); }\n  to { opacity: 1; transform: translateX(0); }\n}\n\n@keyframes route-zoom {\n  from { opacity: 0; transform: scale(0.96); }\n  to { opacity: 1; transform: scale(1); }\n}\n\n@keyframes nav-progress {\n  0% { transform: scaleX(0); }\n  15% { transform: scaleX(0.4); }\n  40% { transform: scaleX(0.65); }\n  70% { transform: scaleX(0.8); }\n  100% { transform: scaleX(0.9); }\n}\n\n::view-transition-old(root),\n::view-transition-new(root) {\n  animation-duration: 150ms;\n  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);\n}\n\n@media (prefers-reduced-motion: reduce) {\n  ::view-transition-old(root),\n  ::view-transition-new(root) {\n    animation-duration: 0.01ms;\n  }\n\n  [data-slot=\"route-transition\"],\n  [data-slot=\"navigation-progress\"] {\n    animation-duration: 0.01ms !important;\n    transition-duration: 0.01ms !important;\n  }\n}"
     },
     {
       "name": "scroll-area",
@@ -1121,6 +1127,7 @@
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/component-utils",
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
@@ -1144,7 +1151,10 @@
         "cn",
         "gsap"
       ],
-      "registryDependencies": ["@kira-kit/use-reduced-motion"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/use-reduced-motion"
+      ],
       "files": [
         {
           "path": "select.tsx",
@@ -1162,13 +1172,10 @@
       "registryDependencies": [
         "@kira-kit/button",
         "@kira-kit/collapsible",
+        "@kira-kit/component-utils",
         "@kira-kit/spinner"
       ],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "separator.tsx",
           "type": "registry:ui"
@@ -1197,12 +1204,11 @@
       "name": "sidebar",
       "type": "registry:ui",
       "title": "Sidebar",
-      "description": "An application navigation shell with offcanvas/icon/none collapse modes, floating and inset variants, custom widths, persisted collapse state, hover expansion, pointer-only GSAP layout motion, and a mobile Drawer below 768px. KiraSidebar adds searchable data-driven sections, router navigation, badges, favorites with drag or arrow-button reordering, user and theme controls, and loading, error, and empty states.",
+      "description": "An application navigation shell with offcanvas/icon/none collapse modes, floating and inset variants, custom widths, persisted collapse state, hover expansion, pointer-only GSAP layout motion, and a mobile Drawer below 768px. KiraSidebar adds searchable data-driven sections, router-agnostic navigation via SidebarRouterProvider, badges, favorites with drag or arrow-button reordering, user controls, and loading, error, and empty states.",
       "categories": ["navigation", "layout"],
       "dependencies": [
         "@base-ui/react",
         "@tabler/icons-react",
-        "@tanstack/react-router",
         "class-variance-authority",
         "cn",
         "gsap"
@@ -1210,6 +1216,7 @@
       "registryDependencies": [
         "@kira-kit/avatar",
         "@kira-kit/collapsible",
+        "@kira-kit/component-utils",
         "@kira-kit/drawer",
         "@kira-kit/dropdown-menu",
         "@kira-kit/skeleton",
@@ -1217,10 +1224,6 @@
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "sidebar.tsx",
           "type": "registry:ui"
@@ -1234,7 +1237,11 @@
       "description": "Skeleton bones and text, card, list, table, avatar, image, and button presets with shimmer/wave animation, delay, pause, reduced-motion, offscreen, and document-visibility controls. KiraSkeleton supports delayed fallback display, minimum visible duration, retained content during refresh, minimum-height reservation, and live loading announcements.",
       "categories": ["feedback", "animation"],
       "dependencies": ["class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/use-reduced-motion"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/use-visibility-pause"
+      ],
       "files": [
         {
           "path": "skeleton.tsx",
@@ -1249,12 +1256,12 @@
       "description": "Single and range sliders with horizontal or vertical orientation, semantic and gradient variants, inversion, read-only and error states, formatted values, thumb labels and icons, and four tooltip modes. Explicit or step-generated markers and stepOptions support constrained stops, while KiraRangeSlider adds synchronized From/To numeric inputs and KiraSlider exposes an accessible disabled-reason tooltip.",
       "categories": ["form"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/input", "@kira-kit/tooltip"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/input",
+        "@kira-kit/tooltip"
+      ],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "slider.tsx",
           "type": "registry:ui"
@@ -1265,10 +1272,13 @@
       "name": "spacer",
       "type": "registry:ui",
       "title": "Spacer",
-      "description": "Responsive horizontal or vertical whitespace with spacing-token sizes, an auto flex-fill mode, and decorative semantics enforced through aria-hidden, presentation role, and inert. KiraSpacer adds clamp-based fluid gaps with safe-area insets and a reserve mode that preserves height while showing accessible loading placeholders.",
+      "description": "Responsive horizontal or vertical whitespace with spacing-token sizes, an auto flex-fill mode, and decorative semantics enforced through aria-hidden, presentation role, and inert. KiraSpacer adds clamp-based fluid gaps with safe-area insets and a reserve mode that preserves minimum height.",
       "categories": ["layout", "utility"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/skeleton"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/layout-responsive"
+      ],
       "files": [
         {
           "path": "spacer.tsx",
@@ -1283,7 +1293,11 @@
       "description": "SVG loading indicator with six sizes and semantic colors, supporting indeterminate rotation, clamped determinate progress arcs, and success/error glyph states. It pauses in hidden documents, honors reduced motion, and KiraProgressSpinner adds a label with an optional percentage readout.",
       "categories": ["feedback", "animation"],
       "dependencies": ["@tabler/icons-react", "class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/use-reduced-motion"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/use-reduced-motion",
+        "@kira-kit/use-visibility-pause"
+      ],
       "files": [
         {
           "path": "spinner.tsx",
@@ -1305,6 +1319,8 @@
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/component-utils",
+        "@kira-kit/layout-storage",
         "@kira-kit/resizable",
         "@kira-kit/skeleton"
       ],
@@ -1325,15 +1341,12 @@
       "registryDependencies": [
         "@kira-kit/button",
         "@kira-kit/command",
+        "@kira-kit/component-utils",
         "@kira-kit/empty",
         "@kira-kit/kbd",
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
-        {
-          "path": "content-keys.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "spotlight.tsx",
           "type": "registry:ui"
@@ -1344,15 +1357,15 @@
       "name": "stack",
       "type": "registry:ui",
       "title": "Stack",
-      "description": "Polymorphic flex layout with responsive direction, wrapping, independent row and column gaps, alignment, justification, and list-safe automatic dividers. KiraStack adds a container-width switcher layout, child-count limits, and accessible loading placeholders.",
+      "description": "Polymorphic flex layout with responsive direction, wrapping, independent row and column gaps, alignment, justification, and list-safe automatic dividers. KiraStack adds a container-width switcher layout and child-count limits.",
       "categories": ["layout"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/separator", "@kira-kit/skeleton"],
+      "registryDependencies": [
+        "@kira-kit/component-utils",
+        "@kira-kit/layout-responsive",
+        "@kira-kit/separator"
+      ],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "stack.tsx",
           "type": "registry:ui"
@@ -1374,6 +1387,7 @@
         "recharts"
       ],
       "registryDependencies": [
+        "@kira-kit/component-utils",
         "@kira-kit/drawer",
         "@kira-kit/use-reduced-motion"
       ],
@@ -1394,11 +1408,11 @@
         "@base-ui/react",
         "@tabler/icons-react",
         "class-variance-authority",
-        "cn",
-        "zod"
+        "cn"
       ],
       "registryDependencies": [
         "@kira-kit/button",
+        "@kira-kit/component-utils",
         "@kira-kit/use-announce",
         "@kira-kit/use-reduced-motion"
       ],
@@ -1422,8 +1436,8 @@
         "cn"
       ],
       "registryDependencies": [
-        "@kira-kit/toast",
         "@kira-kit/tooltip",
+        "@kira-kit/use-optimistic-commit",
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
@@ -1440,7 +1454,10 @@
       "description": "Semantic table primitives with three densities, striping, sticky headers, RTL-aware pinned cells, sortable headers, selection, skeletons, and empty states. KiraTable combines typed columns and multi-type sorting with row selection, persisted density preferences, and screen-reader sort announcements.",
       "categories": ["data-display"],
       "dependencies": ["@tabler/icons-react", "class-variance-authority", "cn"],
-      "registryDependencies": ["@kira-kit/checkbox"],
+      "registryDependencies": [
+        "@kira-kit/checkbox",
+        "@kira-kit/component-utils"
+      ],
       "files": [
         {
           "path": "table.tsx",
@@ -1464,6 +1481,7 @@
         "cn"
       ],
       "registryDependencies": [
+        "@kira-kit/component-utils",
         "@kira-kit/dropdown-menu",
         "@kira-kit/use-announce",
         "@kira-kit/use-reduced-motion"
@@ -1491,6 +1509,21 @@
       ]
     },
     {
+      "name": "theme-provider",
+      "type": "registry:ui",
+      "title": "Theme Provider",
+      "description": "Lightweight light/dark theme context with localStorage persistence, system preference detection, useTheme hook, and a composable ThemeToggle button decoupled from any navigation shell.",
+      "categories": ["theme", "utility"],
+      "dependencies": ["@tabler/icons-react", "cn"],
+      "registryDependencies": ["@kira-kit/button"],
+      "files": [
+        {
+          "path": "theme-provider.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
       "name": "time-picker",
       "type": "registry:ui",
       "title": "Time Picker",
@@ -1502,6 +1535,7 @@
         "cn",
         "date-fns"
       ],
+      "registryDependencies": ["@kira-kit/popover"],
       "files": [
         {
           "path": "time-picker.tsx",
@@ -1525,6 +1559,7 @@
         "@kira-kit/avatar",
         "@kira-kit/button",
         "@kira-kit/collapsible",
+        "@kira-kit/component-utils",
         "@kira-kit/skeleton",
         "@kira-kit/use-reduced-motion"
       ],
@@ -1547,6 +1582,7 @@
         "class-variance-authority",
         "cn"
       ],
+      "registryDependencies": ["@kira-kit/component-utils"],
       "files": [
         {
           "path": "toast.tsx",
@@ -1564,12 +1600,11 @@
         "@base-ui/react",
         "@tabler/icons-react",
         "class-variance-authority",
-        "cn",
-        "gsap"
+        "cn"
       ],
       "registryDependencies": [
-        "@kira-kit/toast",
         "@kira-kit/tooltip",
+        "@kira-kit/use-optimistic-commit",
         "@kira-kit/use-reduced-motion"
       ],
       "files": [
@@ -1594,8 +1629,8 @@
         "gsap"
       ],
       "registryDependencies": [
-        "@kira-kit/toast",
         "@kira-kit/tooltip",
+        "@kira-kit/use-optimistic-commit",
         "@kira-kit/use-press-bounce",
         "@kira-kit/use-reduced-motion"
       ],
@@ -1613,11 +1648,8 @@
       "description": "Base UI tooltip family with five color variants, three sizes, configurable delays and collision-aware positioning, arrows, maximum widths, and visual keyboard-shortcut keycaps. SharedTooltip reuses one animated popup across handle-based triggers, while SimpleTooltip wraps a single trigger without adding a wrapper element.",
       "categories": ["overlay"],
       "dependencies": ["@base-ui/react", "class-variance-authority", "cn"],
+      "registryDependencies": ["@kira-kit/component-utils"],
       "files": [
-        {
-          "path": "prop-guards.ts",
-          "type": "registry:ui"
-        },
         {
           "path": "tooltip.tsx",
           "type": "registry:ui"

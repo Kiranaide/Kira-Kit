@@ -3,19 +3,9 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { IconX } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "cn";
-import { isFunctionProp } from "@/components/ui/prop-guards";
-
-function mergeClassName<S>(
-  base: string,
-  className: string | ((state: S) => string | undefined) | undefined,
-) {
-  return isFunctionProp(className)
-    ? (state: S) => cn(base, className(state))
-    : cn(base, className);
-}
 
 const dialogContentVariants = cva(
-  "pointer-events-auto relative flex min-h-0 max-h-full min-w-0 w-full flex-col overflow-y-auto break-words rounded-xl border border-border bg-background p-6 transition-[opacity,scale,box-shadow] duration-200 motion-reduce:transition-none data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 shadow-xl data-non-modal:shadow-md data-non-modal:data-starting-style:scale-[0.98] data-non-modal:data-ending-style:scale-[0.98]",
+  "pointer-events-auto relative flex min-h-0 max-h-full min-w-0 w-full flex-col overflow-y-auto break-words rounded-xl border border-border bg-background p-6 transition-[opacity,scale,box-shadow] duration-200 motion-reduce:transition-none data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 shadow-[var(--shadow-modal,var(--shadow-xl))] data-non-modal:shadow-[var(--shadow-popover,var(--shadow-md))] data-non-modal:data-starting-style:scale-[0.98] data-non-modal:data-ending-style:scale-[0.98]",
   {
     variants: {
       size: {
@@ -73,11 +63,13 @@ function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
 function DialogOverlay({
   className,
   ...props
-}: DialogPrimitive.Backdrop.Props) {
+}: Omit<DialogPrimitive.Backdrop.Props, "className"> & {
+  className?: string;
+}) {
   return (
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
-      className={mergeClassName<DialogPrimitive.Backdrop.State>(
+      className={cn(
         "fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity duration-200 motion-reduce:transition-none data-starting-style:opacity-0 data-ending-style:opacity-0",
         className,
       )}
@@ -88,8 +80,9 @@ function DialogOverlay({
 
 interface DialogContentProps
   extends
-    DialogPrimitive.Popup.Props,
+    Omit<DialogPrimitive.Popup.Props, "className">,
     VariantProps<typeof dialogContentVariants> {
+  className?: string;
   showCloseButton?: boolean;
   portalProps?: Omit<DialogPrimitive.Portal.Props, "children">;
   /** Keep the header and footer visible while DialogBody scrolls. */
@@ -120,10 +113,9 @@ function DialogContent({
         <DialogPrimitive.Popup
           data-slot="dialog-content"
           data-non-modal={modal ? undefined : ""}
-          className={mergeClassName<DialogPrimitive.Popup.State>(
-            cn(dialogContentVariants({ size }), {
-              "overflow-hidden": scrollable,
-            }),
+          className={cn(
+            dialogContentVariants({ size }),
+            { "overflow-hidden": scrollable },
             className,
           )}
           {...props}
@@ -131,7 +123,7 @@ function DialogContent({
           {children}
           {showCloseButton && (
             <DialogClose
-              className="absolute right-4 top-4 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 motion-reduce:transition-none"
+              className="absolute right-4 top-4 rounded-md p-1 opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring motion-reduce:transition-none"
               aria-label="Close"
             >
               <IconX aria-hidden="true" className="h-4 w-4" />
@@ -189,14 +181,14 @@ function DialogFooter({
   );
 }
 
-function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
+function DialogTitle({
+  className,
+  ...props
+}: Omit<DialogPrimitive.Title.Props, "className"> & { className?: string }) {
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={mergeClassName<DialogPrimitive.Title.State>(
-        "text-lg font-semibold",
-        className,
-      )}
+      className={cn("text-lg font-semibold", className)}
       {...props}
     />
   );
@@ -205,14 +197,13 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
 function DialogDescription({
   className,
   ...props
-}: DialogPrimitive.Description.Props) {
+}: Omit<DialogPrimitive.Description.Props, "className"> & {
+  className?: string;
+}) {
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={mergeClassName<DialogPrimitive.Description.State>(
-        "text-sm text-muted-foreground",
-        className,
-      )}
+      className={cn("text-sm text-muted-foreground", className)}
       {...props}
     />
   );
@@ -265,10 +256,21 @@ function KiraDialog({
   );
 }
 
+const DialogPopup = DialogPrimitive.Popup;
+
+type DialogRootProps = DialogPrimitive.Root.Props;
+
+type DialogPopupProps = DialogPrimitive.Popup.Props;
+
+type DialogPortalProps = DialogPrimitive.Portal.Props;
+
+type DialogRootActions = DialogPrimitive.Root.Actions;
+
 export {
   Dialog,
   DialogPortal,
   DialogOverlay,
+  DialogPopup,
   DialogClose,
   DialogTrigger,
   DialogContent,
@@ -281,4 +283,11 @@ export {
   DialogDescription,
 };
 
-export type { DialogContentProps, KiraDialogProps };
+export type {
+  DialogRootProps,
+  DialogPopupProps,
+  DialogPortalProps,
+  DialogRootActions,
+  DialogContentProps,
+  KiraDialogProps,
+};

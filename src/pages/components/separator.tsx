@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   IconLayoutRows,
@@ -370,7 +371,7 @@ export function ActionsDemo() {
     <KiraSeparator label="New updates" count={unread} countLabel="updates" color="info"
       action={{ label: "Mark as read", onClick: () => setUnread(0), pending, disabled: unread === 0,
         disabledReason: unread === 0 ? "All updates are already read" : undefined }} />
-    <p role="status" className="text-sm">{unread ? unread + " unread updates" : "All updates read"}</p>
+    <output className="block text-sm">{unread ? unread + " unread updates" : "All updates read"}</output>
     <div className="flex flex-wrap gap-2">
       <Button variant="outline" aria-pressed={pending} onClick={() => setPending(value => !value)}>
         {pending ? "Finish pending work" : "Show pending state"}
@@ -568,7 +569,7 @@ export function KeyboardDemo() {
   return <div className="space-y-6">
     <KiraSeparator label="Unread changes" count={3} countLabel="changes"
       action={{ label: "Review changes", onClick: () => setActivations(value => value + 1) }} />
-    <p role="status" className="text-sm">Review activated {activations} times.</p>
+    <output className="block text-sm">Review activated {activations} times.</output>
     <KiraSeparator label="Review note" collapsible keepMounted>
       <div className="space-y-2 pt-3">
         <label htmlFor={id} className="text-sm font-medium">Note</label>
@@ -581,13 +582,13 @@ export function KeyboardDemo() {
   </div>
 }`;
 
-function StatesDemo() {
+function StressDemo() {
   const ref = React.useRef<HTMLDivElement>(null);
   const [reported, setReported] = React.useState("Not inspected");
 
   return (
     <div className="space-y-7">
-      <div className="w-full max-w-[320px] space-y-6">
+      <div className="w-full max-w-xs space-y-6">
         <Separator label="Changes from the international customer-directory import need an additional permissions review" />
         <Separator
           ref={ref}
@@ -635,15 +636,15 @@ function StatesDemo() {
   );
 }
 
-const statesCode = `import { useRef, useState } from "react"
+const stressCode = `import { useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Separator, KiraSeparator } from "@/components/ui/separator"
 
-export function StatesDemo() {
+export function StressDemo() {
   const ref = useRef<HTMLDivElement>(null)
   const [reported, setReported] = useState("Not inspected")
   return <div className="space-y-7">
-    <div className="w-full max-w-[320px] space-y-6">
+    <div className="w-full max-w-xs space-y-6">
       <Separator label="Changes from the international customer-directory import need an additional permissions review" />
       <Separator ref={ref} label={0} id="separator-zero-example" data-example="zero-label"
         className={state => state.orientation === "horizontal" ? "rounded-md" : undefined} />
@@ -682,86 +683,333 @@ export function ActivityBoundary() {
   </div>
 }`;
 
-const separatorProps = [
-  {
-    prop: "orientation",
-    type: '"horizontal" | "vertical"',
-    default: '"horizontal"',
-    description: "Rule direction; vertical rules stretch in a flex row.",
-  },
-  {
-    prop: "size",
-    type: '"xs" | "sm" | "default" | "md" | "lg" | "xl"',
-    default: '"default"',
-    description:
-      "Thickness: 1/1/1/2/4/6px for solid, dashed, dotted, and gradient styles.",
-  },
-  {
-    prop: "lineStyle",
-    type: '"solid" | "dashed" | "dotted" | "gradient"',
-    default: '"solid"',
-    description: "Rule appearance; gradient follows its orientation.",
-  },
-  {
-    prop: "color",
-    type: '"default" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info"',
-    default: '"default"',
-    description: "Semantic token for all line styles.",
-  },
-  {
-    prop: "gradient",
-    type: '"none" | "fade" | "primary"',
-    default: '"none"',
-    description:
-      "Used with lineStyle=gradient. none/fade inherit the color; primary selects the primary token.",
-  },
-  {
-    prop: "label / labelAlign",
-    type: 'React.ReactNode / ("start" | "center" | "end")',
-    default: '"center"',
-    description:
-      "Sentence-case label and logical alignment. 0 is valid; empty string renders a plain rule.",
-  },
-  {
-    prop: "labelIcon / labelIconPosition",
-    type: 'React.ReactNode / ("left" | "right")',
-    default: '"left"',
-    description: "Decorative icon beside the label.",
-  },
-  {
-    prop: "labelClassName / lineClassName",
-    type: "string",
-    description: "Override the named label and inner line slots.",
-  },
-  {
-    prop: "spacing / inset",
-    type: '"none" | "sm" | "default" | "lg"',
-    description:
-      "Optional outer spacing or content inset using existing 0/8/16/24px tokens. No margin by default.",
-  },
-  {
-    prop: "decorative",
-    type: "boolean",
-    default: "false",
-    description:
-      "Maps to presentation/aria-hidden instead of an unsupported primitive prop.",
-  },
-  {
-    prop: "Base UI root props",
-    type: 'Omit<SeparatorPrimitive.Props, "children" | "color">',
-    description:
-      "Native ref/ID/events/ARIA, render, and state-aware className/style are preserved on plain and labelled roots. Use KiraSeparator for interactive labels.",
-  },
-];
+export default function SeparatorPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Separator"
+        description="Content boundaries with honest semantics, logical insets, and optional actions or section disclosure."
+        version="v2.0.0"
+      />
+      <FeatureGrid
+        features={separatorPageFeatures}
+        description="Semantic rules, contextual actions, and collapsible section boundaries."
+      />
+      <DemoTabs defaultValue="basic" tabs={separatorPageDemoTabs} />
+      <KeyboardShortcuts
+        description="Plain separators are not tab stops. Actions and disclosure controls inherit native Base UI behavior."
+        shortcuts={separatorPageShortcuts}
+      />
+      <UsageBlock
+        code={usageCode}
+        title="Usage"
+        description="Use decorative rules for purely visual separation. Put interactive boundary content in KiraSeparator."
+        notes={[
+          {
+            label: "KiraSeparator",
+            body: "Use KiraSeparator when a boundary needs a count badge, a boundary action, or collapsible section disclosure.",
+          },
+        ]}
+      />
+      <APIReference
+        sections={separatorPageAPISections}
+        description="Props, types, and defaults for each exported part."
+      />
+      <Changelog
+        entries={separatorPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Separator."
+      />
+    </ComponentPage>
+  );
+}
 
-const apiSections = [
-  { title: "Separator", props: separatorProps },
+const separatorPageFeatures = [
+  {
+    title: "Semantic rules",
+    description:
+      "Plain and labelled rules retain the Base UI root and native props.",
+    icon: <IconSeparator className="size-4" aria-hidden="true" />,
+  },
+  {
+    title: "Boundary actions",
+    description:
+      "Named counts and shared buttons turn a feed boundary into a useful next step.",
+    icon: <IconMessage className="size-4" aria-hidden="true" />,
+  },
+  {
+    title: "Section disclosure",
+    description:
+      "Reveal diagnostics and keep draft content through the shared Collapsible.",
+    icon: <IconLayoutRows className="size-4" aria-hidden="true" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const separatorPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Separate workspace settings"
+        description="Semantic and decorative plain rules preserve stock geometry."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "layout",
+    label: "Layout",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Both orientations"
+        description="Vertical self-stretch, labelled rails, and logical alignment."
+        code={layoutCode}
+      >
+        <LayoutDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "styles",
+    label: "Styles",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Semantic line styles"
+        description="Solid, dashed, dotted, and orientation-aware fades use existing tokens."
+        code={stylesCode}
+      >
+        <StylesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Consistent thickness"
+        description="All sizes apply to borders as well as solid rules."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "labels",
+    label: "Labels",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Named content boundaries"
+        description="Sentence case, icons, logical placement, and a composable label part."
+        code={labelsCode}
+      >
+        <LabelsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "insets",
+    label: "Insets",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Group related content"
+        description="Token-based insets and explicit outer spacing."
+        code={insetsCode}
+      >
+        <InsetsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "actions",
+    label: "Actions",
+    group: "KiraSeparator",
+    demo: (
+      <DemoWrapper
+        title="Act on a feed boundary"
+        description="Shared buttons with counts, busy states, and unavailable reasons."
+        code={actionsCode}
+      >
+        <ActionsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "disclosure",
+    label: "Disclosure",
+    group: "KiraSeparator",
+    demo: (
+      <DemoWrapper
+        title="Retain an import review note"
+        description="Controlled disclosure uses shared Collapsible and keeps draft input."
+        code={disclosureCode}
+      >
+        <DisclosureDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "Kira",
+    group: "KiraSeparator",
+    demo: (
+      <DemoWrapper
+        title="Activity boundaries"
+        description="Read new activity and reveal the archived section when needed."
+        code={kiraCode}
+      >
+        <KiraDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "keyboard",
+    label: "Keyboard",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Actions and section controls"
+        description="Native activation, reachable disabled reasons, and retained input."
+        code={keyboardCode}
+      >
+        <KeyboardDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Labels, refs, and narrow content"
+        description="Long names, zero/invalid counts, empty labels, native refs, and unavailable sections in a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const separatorPageShortcuts = [
+  {
+    keys: "Tab / Shift+Tab",
+    description:
+      "Visit boundary actions, disclosure triggers, retained inputs while open, and disabled-reason proxies.",
+  },
+  {
+    keys: "Enter / Space",
+    description:
+      "Activate the action or toggle the section; inherited from Base UI Button/Collapsible.",
+  },
+  {
+    keys: "Close → Open",
+    description:
+      "Kira addition: keepMounted preserves the review note; closed descendants remain outside normal keyboard interaction.",
+  },
+  {
+    keys: "Disabled reason",
+    description:
+      "Kira addition: focus the unavailable control/proxy to read its visible explanation.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const separatorPageAPISections = [
+  {
+    title: "Separator",
+    props: [
+      {
+        prop: "orientation",
+        type: '"horizontal" | "vertical"',
+        default: '"horizontal"',
+        description: "Rule direction; vertical rules stretch in a flex row.",
+      },
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "md" | "lg" | "xl"',
+        default: '"default"',
+        description:
+          "Thickness: 1/1/1/2/4/6px for solid, dashed, dotted, and gradient styles.",
+      },
+      {
+        prop: "lineStyle",
+        type: '"solid" | "dashed" | "dotted" | "gradient"',
+        default: '"solid"',
+        description: "Rule appearance; gradient follows its orientation.",
+      },
+      {
+        prop: "color",
+        type: '"default" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info"',
+        default: '"default"',
+        description: "Semantic token for all line styles.",
+      },
+      {
+        prop: "gradient",
+        type: '"none" | "fade" | "primary"',
+        default: '"none"',
+        description:
+          "Used with lineStyle=gradient. none/fade inherit the color; primary selects the primary token.",
+      },
+      {
+        prop: "label / labelAlign",
+        type: 'React.ReactNode / ("start" | "center" | "end")',
+        default: '"center"',
+        description:
+          "Sentence-case label and logical alignment. 0 is valid; empty string renders a plain rule.",
+      },
+      {
+        prop: "labelIcon / labelIconPosition",
+        type: 'React.ReactNode / ("left" | "right")',
+        default: '"left"',
+        description: "Decorative icon beside the label.",
+      },
+      {
+        prop: "labelClassName / lineClassName",
+        type: "string",
+        default: "-",
+        description: "Override the named label and inner line slots.",
+      },
+      {
+        prop: "spacing / inset",
+        type: '"none" | "sm" | "default" | "lg"',
+        default: "-",
+        description:
+          "Optional outer spacing or content inset using existing 0/8/16/24px tokens. No margin by default.",
+      },
+      {
+        prop: "decorative",
+        type: "boolean",
+        default: "false",
+        description:
+          "Maps to presentation/aria-hidden instead of an unsupported primitive prop.",
+      },
+      {
+        prop: "Base UI root props",
+        type: 'Omit<SeparatorPrimitive.Props, "children" | "color">',
+        default: "-",
+        description:
+          "Native ref/ID/events/ARIA, render, and state-aware className/style are preserved on plain and labelled roots. Use KiraSeparator for interactive labels.",
+      },
+    ],
+  },
   {
     title: "SeparatorLabel",
     props: [
       {
         prop: "children / className / native props",
         type: 'React.ComponentProps<"span">',
+        default: "-",
         description:
           "Composable sentence-case label with native ref/ID/attributes and separator-label slot.",
       },
@@ -773,12 +1021,14 @@ const apiSections = [
       {
         prop: "label",
         type: "React.ReactNode",
+        default: "-",
         description:
           "Visible boundary/section name. Actions stay outside separator-role descendants.",
       },
       {
         prop: "Rule options",
         type: 'Pick<SeparatorProps, "orientation" | "size" | "lineStyle" | "color" | "gradient" | "spacing" | "inset" | "labelAlign" | "labelIcon" | "labelIconPosition" | "labelClassName" | "lineClassName">',
+        default: "-",
         description: "Shares the base variants, label options, and spacing.",
       },
       {
@@ -791,6 +1041,7 @@ const apiSections = [
       {
         prop: "description / disabledReason",
         type: "React.ReactNode / string",
+        default: "-",
         description:
           "Visible descriptions and unavailable reasons linked to the root/control.",
       },
@@ -804,12 +1055,14 @@ const apiSections = [
       {
         prop: "action",
         type: "SeparatorAction",
+        default: "-",
         description:
           "Static boundary action; mutually exclusive with collapsible content.",
       },
       {
         prop: "collapsible / children",
         type: "true / React.ReactNode",
+        default: "-",
         description:
           "Enable a shared Base UI disclosure with a named trigger and panel.",
       },
@@ -830,6 +1083,7 @@ const apiSections = [
       {
         prop: "Native div props",
         type: 'Omit<React.ComponentProps<"div">, "children" | "color">',
+        default: "-",
         description:
           "Ref, ID, events, style, ARIA descriptions, and data attributes target the Kira wrapper.",
       },
@@ -841,6 +1095,7 @@ const apiSections = [
       {
         prop: "label / onClick",
         type: "string / (() => void)",
+        default: "-",
         description: "Visible action name and caller-owned operation.",
       },
       {
@@ -858,212 +1113,31 @@ const apiSections = [
       },
     ],
   },
-];
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
-const demos = [
+const separatorPageChangelogEntries = [
   {
-    value: "basic",
-    label: "Basic",
-    title: "Separate workspace settings",
-    description: "Semantic and decorative plain rules preserve stock geometry.",
-    code: basicCode,
-    component: BasicDemo,
+    version: "2.0.0",
+    date: "13 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Contextual boundaries and disclosure",
+        description:
+          "KiraSeparator adds counts, shared actions, visible disabled reasons, and controlled/uncontrolled Collapsible sections with retained content. Audited on Base UI 1.9.0; feature research through October 31, 2026.",
+      },
+      {
+        type: "fixed",
+        title: "Preserve the primitive and native props",
+        description:
+          "Labelled roots retain refs, IDs, events, render, state-aware classes/styles, and ARIA. Zero labels work; dashed/dotted thickness and vertical gradients follow their props; slots and logical insets are complete.",
+      },
+      {
+        type: "breaking",
+        title: "Remove decorative loops and rainbow gradients",
+        description:
+          "animated and gradient=rainbow are removed. Use semantic gradient colors; pending work belongs to the boundary action. Labels use sentence case and can wrap. Plain root geometry and the decorative=false default are retained.",
+      },
+    ],
   },
-  {
-    value: "layout",
-    label: "Layout",
-    title: "Both orientations",
-    description:
-      "Vertical self-stretch, labelled rails, and logical alignment.",
-    code: layoutCode,
-    component: LayoutDemo,
-  },
-  {
-    value: "styles",
-    label: "Styles",
-    title: "Semantic line styles",
-    description:
-      "Solid, dashed, dotted, and orientation-aware fades use existing tokens.",
-    code: stylesCode,
-    component: StylesDemo,
-  },
-  {
-    value: "sizes",
-    label: "Sizes",
-    title: "Consistent thickness",
-    description: "All sizes apply to borders as well as solid rules.",
-    code: sizesCode,
-    component: SizesDemo,
-  },
-  {
-    value: "labels",
-    label: "Labels",
-    title: "Named content boundaries",
-    description:
-      "Sentence case, icons, logical placement, and a composable label part.",
-    code: labelsCode,
-    component: LabelsDemo,
-  },
-  {
-    value: "insets",
-    label: "Insets",
-    title: "Group related content",
-    description: "Token-based insets and explicit outer spacing.",
-    code: insetsCode,
-    component: InsetsDemo,
-  },
-  {
-    value: "actions",
-    label: "Actions",
-    title: "Act on a feed boundary",
-    description:
-      "Shared buttons with counts, busy states, and unavailable reasons.",
-    code: actionsCode,
-    component: ActionsDemo,
-  },
-  {
-    value: "disclosure",
-    label: "Disclosure",
-    title: "Retain an import review note",
-    description:
-      "Controlled disclosure uses shared Collapsible and keeps draft input.",
-    code: disclosureCode,
-    component: DisclosureDemo,
-  },
-  {
-    value: "kira",
-    label: "Kira",
-    title: "Activity boundaries",
-    description:
-      "Read new activity and reveal the archived section when needed.",
-    code: kiraCode,
-    component: KiraDemo,
-  },
-  {
-    value: "keyboard",
-    label: "Keyboard",
-    title: "Actions and section controls",
-    description:
-      "Native activation, reachable disabled reasons, and retained input.",
-    code: keyboardCode,
-    component: KeyboardDemo,
-  },
-  {
-    value: "states",
-    label: "States",
-    title: "Labels, refs, and narrow content",
-    description:
-      "Long names, zero/invalid counts, empty labels, native refs, and unavailable sections.",
-    code: statesCode,
-    component: StatesDemo,
-  },
-];
-
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function SeparatorPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Separator"
-        description="Content boundaries with honest semantics, logical insets, and optional actions or section disclosure."
-        version="v2.0.0"
-      />
-      <FeatureGrid features={separatorPageFeatureGridFeatures} />
-      <DemoTabs
-        defaultValue="basic"
-        tabs={demos.map(({ component: Demo, ...demo }) => ({
-          value: demo.value,
-          label: demo.label,
-          demo: (
-            <DemoWrapper
-              title={demo.title}
-              description={demo.description}
-              code={demo.code}
-            >
-              <Demo />
-            </DemoWrapper>
-          ),
-        }))}
-      />
-      <KeyboardShortcuts
-        description="Plain separators are not tab stops. Actions and disclosure controls inherit native Base UI behavior."
-        shortcuts={[
-          {
-            keys: "Tab / Shift+Tab",
-            description:
-              "Visit boundary actions, disclosure triggers, retained inputs while open, and disabled-reason proxies.",
-          },
-          {
-            keys: "Enter / Space",
-            description:
-              "Activate the action or toggle the section; inherited from Base UI Button/Collapsible.",
-          },
-          {
-            keys: "Close → Open",
-            description:
-              "Kira addition: keepMounted preserves the review note; closed descendants remain outside normal keyboard interaction.",
-          },
-          {
-            keys: "Disabled reason",
-            description:
-              "Kira addition: focus the unavailable control/proxy to read its visible explanation.",
-          },
-        ]}
-      />
-      <UsageBlock
-        code={usageCode}
-        description="Use decorative rules for purely visual separation. Put interactive boundary content in KiraSeparator."
-      />
-      <APIReference sections={apiSections} />
-      <Changelog
-        entries={[
-          {
-            version: "v2.0.0",
-            date: "2026-11-13",
-            changes: [
-              {
-                type: "added",
-                title: "Contextual boundaries and disclosure",
-                description:
-                  "KiraSeparator adds counts, shared actions, visible disabled reasons, and controlled/uncontrolled Collapsible sections with retained content. Audited on Base UI 1.9.0; feature research through October 31, 2026.",
-              },
-              {
-                type: "fixed",
-                title: "Preserve the primitive and native props",
-                description:
-                  "Labelled roots retain refs, IDs, events, render, state-aware classes/styles, and ARIA. Zero labels work; dashed/dotted thickness and vertical gradients follow their props; slots and logical insets are complete.",
-              },
-              {
-                type: "breaking",
-                title: "Remove decorative loops and rainbow gradients",
-                description:
-                  "animated and gradient=rainbow are removed. Use semantic gradient colors; pending work belongs to the boundary action. Labels use sentence case and can wrap. Plain root geometry and the decorative=false default are retained.",
-              },
-            ],
-          },
-        ]}
-      />
-    </ComponentPage>
-  );
-}
-
-const separatorPageFeatureGridFeatures = [
-  {
-    title: "Semantic rules",
-    description:
-      "Plain and labelled rules retain the Base UI root and native props.",
-    icon: <IconSeparator className="size-4" aria-hidden="true" />,
-  },
-  {
-    title: "Boundary actions",
-    description:
-      "Named counts and shared buttons turn a feed boundary into a useful next step.",
-    icon: <IconMessage className="size-4" aria-hidden="true" />,
-  },
-  {
-    title: "Section disclosure",
-    description:
-      "Reveal diagnostics and keep draft content through the shared Collapsible.",
-    icon: <IconLayoutRows className="size-4" aria-hidden="true" />,
-  },
-] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
+] satisfies ReactComponentProps<typeof Changelog>["entries"];

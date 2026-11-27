@@ -1,10 +1,11 @@
 # Kira Kit Registry
 
-Kira Kit components can be installed via the shadcn CLI from our registry.
+Kira Kit components are installed with the `kira-kit` CLI from our registry.
 
 ## Setup
 
-Add the Kira Kit registry to your project's `components.json`:
+Add the Kira Kit registry to your project's `components.json` (or run
+`kira-kit init`, which also installs the kit's base CSS and default theme):
 
 ```json
 {
@@ -18,10 +19,13 @@ Add the Kira Kit registry to your project's `components.json`:
 
 ```bash
 # Install a single component
-npx shadcn@latest add @kira-kit/button
+npx kira-kit add button
 
 # Install multiple components
-npx shadcn@latest add @kira-kit/button @kira-kit/dialog @kira-kit/card
+npx kira-kit add button dialog card
+
+# Install every component, hook, and lib module (themes excluded)
+npx kira-kit add --all
 ```
 
 ## Available Components
@@ -77,12 +81,12 @@ npx shadcn@latest add @kira-kit/button @kira-kit/dialog @kira-kit/card
 
 ## Requirements
 
-- React 18.3+
+- React 19.2+ (components use `useEffectEvent`)
 - Tailwind CSS 4.x
-- `clsx` and `tailwind-merge` for `cn()` utility
+- The `cn` package for class merging
 
 ## Registry Endpoints
 
-- **All components**: `/r/registry.json`
-- **Component index**: `/r/index.json`
-- **Individual**: `/r/{component-name}.json`
+- **Index (metadata for all items)**: `/r/registry.json`
+- **Individual items**: `/r/{item-name}.json`
+- **JSON schemas**: `/schema/registry.json`, `/schema/registry-item.json`, `/schema/components.json`

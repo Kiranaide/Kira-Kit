@@ -11,11 +11,7 @@ import {
   IconInfoCircle,
   IconLoader2,
 } from "@tabler/icons-react";
-import { isCallbackProp } from "@/lib/component-prop-guards";
-
-// -----------------------------------------------------------------------------
-// Types & styling
-// -----------------------------------------------------------------------------
+import { isFunctionProp } from "@/lib/component-utils";
 
 const TOAST_TYPES = [
   "default",
@@ -83,16 +79,14 @@ const toastIcons: Record<ToastType, React.ReactNode> = {
 };
 
 /**
- * Collapsed-stack geometry (Base UI 1.9 stacking recipe): the frontmost toast
- * sits on the viewport's bottom edge, older toasts peek 0.75rem behind it with
- * decreasing scale, and `data-expanded` fans the stack out.
- *
- * No `overflow-hidden` here: it would clip the `after:` hover bridge.
- * Clipping happens on Toast.Content instead.
+ * Collapsed-stack geometry (Base UI 1.9 stacking recipe): the frontmost
+ * toast sits on the bottom edge, older ones peek 0.75rem behind at
+ * decreasing scale, and `data-expanded` fans them out. No
+ * `overflow-hidden` here — it would clip the `after:` hover bridge.
  */
 const stackedRootClasses = cn(
   "pointer-events-auto absolute inset-x-0 bottom-0 z-[calc(1000-var(--toast-index))] w-full origin-bottom select-none outline-none",
-  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
   "[--gap:0.75rem] [--peek:0.75rem]",
   "[--height:var(--toast-frontmost-height,var(--toast-height))]",
   "[--scale:calc(max(0,1-(var(--toast-index)*0.1)))]",
@@ -121,7 +115,7 @@ const stackedRootClasses = cn(
 /** Geometry for `Toast.Positioner`-wrapped (anchored) toasts. */
 const anchoredRootClasses = cn(
   "pointer-events-auto relative w-max max-w-96 origin-(--transform-origin) select-none outline-none",
-  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring",
   "transition-[scale,opacity] duration-150 ease-out",
   "data-starting-style:scale-96 data-starting-style:opacity-0",
   "data-ending-style:scale-96 data-ending-style:opacity-0 data-ending-style:ease-in",
@@ -134,10 +128,6 @@ const contentClasses = cn(
   "transition-opacity duration-200 data-behind:opacity-0 data-expanded:opacity-100",
   "motion-reduce:transition-none",
 );
-
-// -----------------------------------------------------------------------------
-// Managers — one per provider, per Base UI guidance
-// -----------------------------------------------------------------------------
 
 const stackedManager = Toast.createToastManager<ToastData>();
 const anchoredManager = Toast.createToastManager<ToastData>();
@@ -182,10 +172,6 @@ interface ToastAction {
 
 const toActionProps = (action?: ToastAction) =>
   action ? { children: action.label, onClick: action.onClick } : undefined;
-
-// -----------------------------------------------------------------------------
-// Imperative `toast()` API (works outside React)
-// -----------------------------------------------------------------------------
 
 interface ToastOptions {
   /** Stable ID. Re-adding the same ID updates the toast in place (dedupe). */
@@ -270,7 +256,7 @@ interface PromiseToastOptions<T> {
 const resolve = <A,>(
   value: React.ReactNode | ((arg: A) => React.ReactNode),
   arg: A,
-) => (isCallbackProp(value) ? value(arg) : value);
+) => (isFunctionProp(value) ? value(arg) : value);
 
 /** Global imperative toast API. Mirrors the previous sonner-based signature. */
 const toast = Object.assign(createToast("default"), {
@@ -350,10 +336,6 @@ const toast = Object.assign(createToast("default"), {
     }),
 });
 
-// -----------------------------------------------------------------------------
-// Rendering
-// -----------------------------------------------------------------------------
-
 function ToastItem({
   toast: t,
   anchored = false,
@@ -407,10 +389,6 @@ function KiraAnchoredToaster() {
     </Toast.Portal>
   );
 }
-
-// -----------------------------------------------------------------------------
-// Provider (mount once)
-// -----------------------------------------------------------------------------
 
 interface KiraToastProviderProps {
   children?: React.ReactNode;

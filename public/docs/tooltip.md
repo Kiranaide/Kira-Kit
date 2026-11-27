@@ -5,7 +5,7 @@ Base UI tooltip family with five color variants, three sizes, configurable delay
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/tooltip
+kira-kit add @kira-kit/tooltip
 ```
 
 ## Dependencies
@@ -13,6 +13,10 @@ npx shadcn add @kira-kit/tooltip
 - @base-ui/react
 - class-variance-authority
 - cn
+
+## Registry dependencies
+
+- @kira-kit/component-utils
 
 ## Usage
 

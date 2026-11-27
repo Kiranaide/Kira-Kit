@@ -5,7 +5,7 @@ Accepts an element ref and enabled flag and returns a callback that runs an inte
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-press-bounce
+kira-kit add @kira-kit/use-press-bounce
 ```
 
 ## Dependencies

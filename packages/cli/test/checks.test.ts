@@ -17,6 +17,8 @@ import { spacingScale } from "../src/core/checks/spacing-scale";
 import { registryMetadata } from "../src/core/checks/registry-metadata";
 import { baseUiOnly } from "../src/core/checks/base-ui-only";
 import { cnSource } from "../src/core/checks/cn-source";
+import { libResolution } from "../src/core/checks/lib-resolution";
+import { checkRegistryGraph } from "../src/core/checks/registry-graph";
 import {
   isSuppressed,
   parseSuppressions,
@@ -54,6 +56,17 @@ function depsMeta(overrides: Partial<ItemMeta> = {}): ItemMeta {
     files: ["ui/test.tsx"],
     description: "Well described.",
     categories: ["component"],
+    ...overrides,
+  };
+}
+
+function libMeta(overrides: Partial<ItemMeta> = {}): ItemMeta {
+  return {
+    dependencies: [],
+    registryDependencies: [],
+    files: ["camera/utils.ts", "camera/constants.ts", "camera/types.ts"],
+    description: "Camera support module with real detail in the description.",
+    categories: ["lib"],
     ...overrides,
   };
 }
@@ -109,6 +122,11 @@ describe("cn-source", () => {
   it("allows the cn package", () => {
     expect(cnSource(file(`import { cn } from "cn";`), ctx())).toHaveLength(0);
   });
+
+  it("ignores local cn references inside comments and strings", () => {
+    const commented = `// Do not use: import { cn } from "@/lib/utils";\nimport { cn } from "cn";`;
+    expect(cnSource(file(commented), ctx())).toHaveLength(0);
+  });
 });
 
 describe("data-slot-cva", () => {
@@ -139,6 +157,11 @@ describe("data-slot-cva", () => {
   it("accepts data-slot in createElement form", () => {
     const content = `return React.createElement(Component, { "data-slot": "box" });`;
     expect(dataSlotAndCva(file(content), ctx())).toHaveLength(0);
+  });
+
+  it("skips demo pages under pages/", () => {
+    const content = `export default function DemoPage() { return <div />; }`;
+    expect(dataSlotAndCva(file(content, "pages/demo"), ctx())).toHaveLength(0);
   });
 });
 
@@ -491,6 +514,140 @@ describe("imports-deps", () => {
   });
 });
 
+describe("imports-deps (lib modules)", () => {
+  it("errors on an undeclared lib import", () => {
+    const content = `import { resolveComponentDefaults } from "@/lib/component-utils";`;
+    const items = new Map([["ui/test", depsMeta({ dependencies: [] })]]);
+    const findings = importsMatchDeps(file(content, "ui/test"), ctx({ items }));
+
+    expect(findings[0].message).toContain("@kira-kit/component-utils");
+  });
+
+  it("passes when the mapped lib item is declared", () => {
+    const content = `import { resolveComponentDefaults } from "@/lib/component-utils";`;
+
+    const items = new Map([
+      [
+        "ui/test",
+        depsMeta({
+          dependencies: [],
+          registryDependencies: ["@kira-kit/component-utils"],
+        }),
+      ],
+    ]);
+
+    expect(
+      importsMatchDeps(file(content, "ui/test"), ctx({ items })),
+    ).toHaveLength(0);
+  });
+
+  it("errors on a lib module no item ships", () => {
+    const content = `import { x } from "@/lib/not-a-module";`;
+    const items = new Map([["ui/test", depsMeta({ dependencies: [] })]]);
+    const findings = importsMatchDeps(file(content, "ui/test"), ctx({ items }));
+
+    expect(findings[0].message).toContain("no registry:lib item ships");
+  });
+
+  it("errors on a declared lib dependency that is never imported", () => {
+    const importsBaseUi = `import { useButton } from "@base-ui/react/use-button";`;
+
+    const items = new Map([
+      [
+        "ui/test",
+        depsMeta({
+          registryDependencies: ["@kira-kit/component-utils"],
+        }),
+      ],
+    ]);
+
+    const findings = importsMatchDeps(
+      file(importsBaseUi, "ui/test"),
+      ctx({ items }),
+    );
+
+    expect(
+      findings.some((f) => f.message.includes("@kira-kit/component-utils")),
+    ).toBe(true);
+  });
+
+  it("does not treat a ui item as its own lib item on name collision", () => {
+    const content = `import { parseColor } from "@/lib/color-picker";`;
+
+    const items = new Map([
+      ["ui/color-picker", depsMeta({ dependencies: [] })],
+    ]);
+
+    const findings = importsMatchDeps(
+      file(content, "ui/color-picker"),
+      ctx({ items }),
+    );
+
+    expect(findings[0].message).toContain("@kira-kit/color-picker-lib");
+  });
+
+  it("exempts self-imports within a bundled lib item", () => {
+    const content = `import type { CameraType } from "@/lib/camera/types";`;
+    const items = new Map([["lib/camera/utils", libMeta()]]);
+
+    expect(
+      importsMatchDeps(file(content, "lib/camera/utils"), ctx({ items })),
+    ).toHaveLength(0);
+  });
+});
+
+describe("lib-resolution", () => {
+  it("ignores non-lib files", () => {
+    const content = `import { Button } from "@/components/ui/button";`;
+    expect(libResolution(file(content, "ui/test"), ctx())).toHaveLength(0);
+  });
+
+  it("errors when a lib module imports a ui item", () => {
+    const content = `import { Button } from "@/components/ui/button";`;
+    const items = new Map([["lib/camera/utils", libMeta()]]);
+
+    const findings = libResolution(
+      file(content, "lib/camera/utils"),
+      ctx({ items }),
+    );
+
+    expect(findings[0].checkId).toBe("lib-resolution");
+    expect(findings[0].message).toContain("must not depend on ui/hook");
+  });
+
+  it("passes relative imports inside the item's own files", () => {
+    const content = `import { HELP } from "./constants";`;
+    const items = new Map([["lib/camera/utils", libMeta()]]);
+    expect(
+      libResolution(file(content, "lib/camera/utils"), ctx({ items })),
+    ).toHaveLength(0);
+  });
+
+  it("errors on relative imports outside the item's files", () => {
+    const content = `import { x } from "../color-picker";`;
+    const items = new Map([["lib/camera/utils", libMeta()]]);
+
+    const findings = libResolution(
+      file(content, "lib/camera/utils"),
+      ctx({ items }),
+    );
+
+    expect(findings[0].message).toContain("outside the files shipped");
+  });
+
+  it("errors when a mapped lib item is not registered", () => {
+    const content = `import { x } from "@/lib/component-utils";`;
+    const items = new Map([["lib/camera/utils", libMeta()]]);
+
+    const findings = libResolution(
+      file(content, "lib/camera/utils"),
+      ctx({ items }),
+    );
+
+    expect(findings[0].message).toContain("not a registered item");
+  });
+});
+
 describe("suppressions", () => {
   it("errors on a suppression without a reason", () => {
     const { errors, suppressions } = parseSuppressions(
@@ -649,6 +806,19 @@ describe("runChecks", () => {
     ).toBe(false);
   });
 
+  it("scans shipped lib modules and their consumers", () => {
+    const result = runChecks({ repoRoot, paths: [], ci: true });
+    expect(result.filesChecked).toBeGreaterThanOrEqual(4);
+    expect(
+      result.findings.some(
+        (f) => f.file === "ui/widget" && f.checkId === "imports-deps",
+      ),
+    ).toBe(false);
+    expect(
+      result.findings.some((f) => f.file === "lib/layout-responsive"),
+    ).toBe(false);
+  });
+
   it("formats findings as github annotations", () => {
     const result = {
       findings: [
@@ -670,5 +840,47 @@ describe("runChecks", () => {
     expect(github).toContain(
       "::error file=src/components/ui/button,line=3,title=raw-colors::bad",
     );
+  });
+});
+
+describe("registry-graph", () => {
+  it("passes on an acyclic dependency graph", () => {
+    const items = new Map<string, ItemMeta>([
+      ["ui/button", depsMeta({ registryDependencies: [] })],
+      ["ui/input", depsMeta({ registryDependencies: [] })],
+      [
+        "ui/field",
+        depsMeta({
+          registryDependencies: ["@kira-kit/input", "@kira-kit/button"],
+        }),
+      ],
+    ]);
+
+    expect(checkRegistryGraph(items)).toHaveLength(0);
+  });
+
+  it("errors on a 2-node circular dependency", () => {
+    const items = new Map<string, ItemMeta>([
+      ["ui/input", depsMeta({ registryDependencies: ["@kira-kit/field"] })],
+      ["ui/field", depsMeta({ registryDependencies: ["@kira-kit/input"] })],
+    ]);
+
+    const findings = checkRegistryGraph(items);
+    expect(findings).toHaveLength(1);
+    expect(findings[0].checkId).toBe("registry-graph");
+    expect(findings[0].severity).toBe("error");
+    expect(findings[0].message).toContain("input -> field -> input");
+  });
+
+  it("errors on a 3-node circular dependency", () => {
+    const items = new Map<string, ItemMeta>([
+      ["ui/a", depsMeta({ registryDependencies: ["@kira-kit/b"] })],
+      ["ui/b", depsMeta({ registryDependencies: ["@kira-kit/c"] })],
+      ["ui/c", depsMeta({ registryDependencies: ["@kira-kit/a"] })],
+    ]);
+
+    const findings = checkRegistryGraph(items);
+    expect(findings).toHaveLength(1);
+    expect(findings[0].message).toContain("a -> b -> c -> a");
   });
 });

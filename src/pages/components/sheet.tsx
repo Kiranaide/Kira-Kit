@@ -1,3 +1,4 @@
+import type { ComponentProps as ReactComponentProps } from "react";
 import * as React from "react";
 import {
   IconLayoutSidebar,
@@ -139,7 +140,7 @@ export function BasicDemo({ isActive = true }: { isActive?: boolean }) {
         </SheetDetails>
       </SheetContent>
     </Sheet>
-    <p role="status" className="text-sm text-muted-foreground">{reviewed ? "October release reviewed." : "The release is waiting for review."}</p>
+    <output className="block text-sm text-muted-foreground">{reviewed ? "October release reviewed." : "The release is waiting for review."}</output>
   </div>;
 }`;
 
@@ -426,7 +427,7 @@ export function InspectorDemo({ isActive = true }: { isActive?: boolean }) {
       </Sheet>
       <Button variant="outline" onClick={() => setQueued((value) => value + 1)}>Queue next item</Button>
     </div>
-    <p role="status" className="text-sm text-muted-foreground">{queued} items queued. The inspector can stay open.</p>
+    <output className="block text-sm text-muted-foreground">{queued} items queued. The inspector can stay open.</output>
   </div>;
 }`;
 
@@ -592,7 +593,7 @@ export function KiraDemo({ isActive = true }: { isActive?: boolean }) {
           onChange={(event) => { setDraft(event.target.value); setError(null); }} />
       </form>
     </KiraSheet>
-    <p role="status" className="text-sm text-muted-foreground">Saved release: <span className="font-medium text-foreground">{record}</span></p>
+    <output className="block text-sm text-muted-foreground">Saved release: <span className="font-medium text-foreground">{record}</span></output>
   </div>;
 }`;
 
@@ -705,87 +706,320 @@ export function StatesDemo({ isActive = true }: { isActive?: boolean }) {
   </KiraSheet>;
 }`;
 
-const sheetDemos = [
+function StressDemo({ isActive = true }: { isActive?: boolean }) {
+  if (!isActive) return null;
+
+  return (
+    <div className="max-w-xs space-y-3">
+      <KiraSheet
+        trigger={
+          <Button variant="outline" className="w-full justify-start truncate">
+            EnterpriseReleasePermissionsAndAuditHistoryReviewPanel
+          </Button>
+        }
+        title="EnterpriseReleasePermissionsAndAuditHistoryReviewPanel"
+        description="Long unbroken title, empty body, and disabled footer action inside a narrow trigger container."
+        footer={
+          <>
+            <SheetClose render={<Button variant="outline">Close</Button>} />
+            <Button disabled>Approve rollout</Button>
+          </>
+        }
+      />
+      <Sheet>
+        <SheetTrigger
+          disabled
+          render={
+            <Button variant="outline" className="w-full justify-start truncate">
+              Disabled trigger in narrow column
+            </Button>
+          }
+        />
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Unavailable panel</SheetTitle>
+            <SheetDescription>This trigger is disabled.</SheetDescription>
+          </SheetHeader>
+          <SheetBody />
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
+
+const stressDemoCode = `import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetBody, SheetClose, KiraSheet } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+
+export function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-3">
+      <KiraSheet
+        trigger={
+          <Button variant="outline" className="w-full justify-start truncate">
+            EnterpriseReleasePermissionsAndAuditHistoryReviewPanel
+          </Button>
+        }
+        title="EnterpriseReleasePermissionsAndAuditHistoryReviewPanel"
+        description="Long unbroken title, empty body, and disabled footer action inside a narrow trigger container."
+        footer={
+          <>
+            <SheetClose render={<Button variant="outline">Close</Button>} />
+            <Button disabled>Approve rollout</Button>
+          </>
+        }
+      />
+      <Sheet>
+        <SheetTrigger
+          disabled
+          render={
+            <Button variant="outline" className="w-full justify-start truncate">
+              Disabled trigger in narrow column
+            </Button>
+          }
+        />
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Unavailable panel</SheetTitle>
+            <SheetDescription>This trigger is disabled.</SheetDescription>
+          </SheetHeader>
+          <SheetBody />
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}`;
+
+const sheetUsageCode = `import * as React from "react";
+import { Drawer } from "@base-ui/react/drawer";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetBody, SheetFooter, SheetClose, SheetHandle, SheetPortal, SheetOverlay, KiraSheet, sheetVariants } from "@/components/ui/sheet";
+
+export function ComposedSheet() {
+  return <Sheet>
+    <SheetTrigger render={<Button variant="outline">Review release</Button>} />
+    <SheetContent>
+      <SheetHeader><SheetTitle>Review release</SheetTitle><SheetDescription>Local release details.</SheetDescription></SheetHeader>
+      <SheetBody>Review the rollout notes.</SheetBody>
+      <SheetFooter><SheetClose render={<Button variant="outline">Close</Button>} /></SheetFooter>
+    </SheetContent>
+  </Sheet>;
+}
+
+export function ResponsiveSheet() {
+  return <KiraSheet trigger={<Button variant="outline">Open notes</Button>} title="Release notes"
+    contentProps={{ portalProps: { keepMounted: true } }}>
+    Draft content.
+  </KiraSheet>;
+}
+
+export function BottomSheet() {
+  const [point, setPoint] = React.useState<number | string | null>(0.5);
+  return <Sheet side="bottom" snapPoints={[0.5, 1]} snapPoint={point} onSnapPointChange={setPoint}>
+    <SheetTrigger render={<Button variant="outline">Open actions</Button>} />
+    <SheetContent><SheetHandle expanded={point === 1} onExpandedChange={(expanded) => setPoint(expanded ? 1 : 0.5)} />
+      <SheetHeader><SheetTitle>Actions</SheetTitle></SheetHeader>
+      <SheetBody>Release actions.</SheetBody>
+    </SheetContent>
+  </Sheet>;
+}
+
+// SheetContent includes a portal and overlay. Use the lower-level exports only
+// when composing your own native viewport and popup.
+export function CustomComposition() {
+  return <Sheet>
+    <SheetTrigger render={<Button variant="outline">Open custom panel</Button>} />
+    <SheetPortal><SheetOverlay />
+      <Drawer.Viewport className="pointer-events-none fixed inset-0 z-50">
+        <Drawer.Popup className={sheetVariants({ size: "default", className: "pointer-events-auto" })}>
+          <SheetHeader><SheetTitle>Custom panel</SheetTitle></SheetHeader>
+          <SheetBody>Custom composition.</SheetBody>
+          <SheetFooter><SheetClose render={<Button variant="outline">Close</Button>} /></SheetFooter>
+        </Drawer.Popup>
+      </Drawer.Viewport>
+    </SheetPortal>
+  </Sheet>;
+}`;
+
+export default function SheetPage() {
+  return (
+    <ComponentPage>
+      <PageHeader
+        title="Sheet"
+        description="Contextual panels for reviewing and editing. Native Drawer gestures and focus, with a responsive Kira composition."
+        version="v2.1.0"
+      />
+      <FeatureGrid
+        features={sheetPageFeatureGridFeatures}
+        description="Capabilities built into Kira Kit."
+      />
+      <DemoTabs defaultValue="basic" tabs={sheetPageDemoTabs} />
+      <KeyboardShortcuts
+        shortcuts={sheetPageKeyboardShortcuts}
+        description="Keyboard navigation, detent activation, and dismissal bindings."
+      />
+      <UsageBlock
+        code={sheetUsageCode}
+        title="Usage"
+        description="Compose Sheet primitives or use KiraSheet for responsive panels."
+        notes={sheetPageUsageNotes}
+      />
+      <APIReference
+        sections={sheetPageAPISections}
+        description="Props, types, and defaults for each exported part."
+      />
+      <Changelog
+        entries={sheetPageChangelogEntries}
+        title="Changelog"
+        description="Version history for this component."
+      />
+    </ComponentPage>
+  );
+}
+
+const sheetPageDemoTabs = [
   {
     value: "basic",
     label: "Basic",
-    title: "Review a release",
-    description: "A native composed Sheet with a working review action.",
-    Demo: BasicDemo,
-    code: basicDemoCode,
+    group: "Core",
+    demo: (isActive) => (
+      <DemoWrapper
+        title="Review a release"
+        description="A native composed Sheet with a working review action."
+        code={basicDemoCode}
+      >
+        <BasicDemo isActive={isActive} />
+      </DemoWrapper>
+    ),
   },
   {
     value: "edges",
     label: "Edges",
-    title: "Choose the edge",
-    description: "Four native swipe directions for secondary content.",
-    Demo: EdgesDemo,
-    code: edgesDemoCode,
+    group: "Core",
+    demo: (isActive) => (
+      <DemoWrapper
+        title="Choose the edge"
+        description="Four native swipe directions for secondary content."
+        code={edgesDemoCode}
+      >
+        <EdgesDemo isActive={isActive} />
+      </DemoWrapper>
+    ),
   },
   {
     value: "sizes",
     label: "Sizes",
-    title: "Panel widths",
-    description: "The five existing sizes share the Drawer variants.",
-    Demo: SizesDemo,
-    code: sizesDemoCode,
-  },
-  {
-    value: "drafts",
-    label: "Drafts",
-    title: "Keep a draft mounted",
-    description:
-      "Edit the field, close the Sheet, and reopen it. No save request is made.",
-    Demo: DraftsDemo,
-    code: draftsDemoCode,
-  },
-  {
-    value: "detents",
-    label: "Detents",
-    title: "Bottom-sheet snap points",
-    description:
-      "Swipe or use the named handle to switch between half and full height.",
-    Demo: DetentsDemo,
-    code: detentsDemoCode,
-  },
-  {
-    value: "inspector",
-    label: "Inspector",
-    title: "Keep the list available",
-    description: "A non-modal details panel leaves the page controls usable.",
-    Demo: InspectorDemo,
-    code: inspectorDemoCode,
+    group: "Core",
+    demo: (isActive) => (
+      <DemoWrapper
+        title="Panel widths"
+        description="The five existing sizes share the Drawer variants."
+        code={sizesDemoCode}
+      >
+        <SizesDemo isActive={isActive} />
+      </DemoWrapper>
+    ),
   },
   {
     value: "history",
     label: "Scrolling",
-    title: "Reach the final action",
-    description:
-      "Long history scrolls in the body while the footer stays reachable.",
-    Demo: HistoryDemo,
-    code: historyDemoCode,
+    group: "Core",
+    demo: (isActive) => (
+      <DemoWrapper
+        title="Reach the final action"
+        description="Long history scrolls in the body while the footer stays reachable."
+        code={historyDemoCode}
+      >
+        <HistoryDemo isActive={isActive} />
+      </DemoWrapper>
+    ),
   },
   {
     value: "kira",
     label: "Kira",
-    title: "Edit without losing context",
-    description:
-      "Desktop side panel, mobile bottom sheet, validation, and explicit save or discard.",
-    Demo: KiraDemo,
-    code: kiraDemoCode,
+    group: "KiraSheet",
+    demo: (isActive) => (
+      <DemoWrapper
+        title="Edit without losing context"
+        description="Desktop side panel, mobile bottom sheet, validation, and explicit save or discard."
+        code={kiraDemoCode}
+      >
+        <KiraDemo isActive={isActive} />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "drafts",
+    label: "Drafts",
+    group: "KiraSheet",
+    demo: (isActive) => (
+      <DemoWrapper
+        title="Keep a draft mounted"
+        description="Edit the field, close the Sheet, and reopen it. No save request is made."
+        code={draftsDemoCode}
+      >
+        <DraftsDemo isActive={isActive} />
+      </DemoWrapper>
+    ),
   },
   {
     value: "states",
     label: "States",
-    title: "Deferred details and recovery",
-    description:
-      "Use the footer controls to drive a local loading fixture and recover from an error.",
-    Demo: StatesDemo,
-    code: statesDemoCode,
+    group: "KiraSheet",
+    demo: (isActive) => (
+      <DemoWrapper
+        title="Deferred details and recovery"
+        description="Use the footer controls to drive a local loading fixture and recover from an error."
+        code={statesDemoCode}
+      >
+        <StatesDemo isActive={isActive} />
+      </DemoWrapper>
+    ),
   },
-];
+  {
+    value: "detents",
+    label: "Detents",
+    group: "Behavior",
+    demo: (isActive) => (
+      <DemoWrapper
+        title="Bottom-sheet snap points"
+        description="Swipe or use the named handle to switch between half and full height."
+        code={detentsDemoCode}
+      >
+        <DetentsDemo isActive={isActive} />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "inspector",
+    label: "Inspector",
+    group: "Behavior",
+    demo: (isActive) => (
+      <DemoWrapper
+        title="Keep the list available"
+        description="A non-modal details panel leaves the page controls usable."
+        code={inspectorDemoCode}
+      >
+        <InspectorDemo isActive={isActive} />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (isActive) => (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long unbroken titles, empty content, disabled triggers/actions, and narrow max-w-xs containers."
+        code={stressDemoCode}
+      >
+        <StressDemo isActive={isActive} />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
 
-const sheetApi = [
+const sheetPageAPISections = [
   {
     title: "Sheet",
     props: [
@@ -1260,173 +1494,101 @@ const sheetApi = [
       },
     ],
   },
-] satisfies React.ComponentProps<typeof APIReference>["sections"];
-
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function SheetPage() {
-  return (
-    <ComponentPage>
-      <PageHeader
-        title="Sheet"
-        description="Contextual panels for reviewing and editing. Native Drawer gestures and focus, with a responsive Kira composition."
-        version="2.1.0"
-      />
-      <FeatureGrid features={sheetPageFeatureGridFeatures} />
-      <DemoTabs
-        defaultValue="basic"
-        tabs={sheetDemos.map(
-          ({ value, label, title, description, Demo, code }) => ({
-            value,
-            label,
-            demo: (isActive) => (
-              <DemoWrapper title={title} description={description} code={code}>
-                <Demo isActive={isActive} />
-              </DemoWrapper>
-            ),
-          }),
-        )}
-      />
-      <KeyboardShortcuts
-        shortcuts={[
-          {
-            keys: "Enter / Space",
-            description:
-              "Open or close using native Base UI buttons. The detent handle switches half/full height.",
-          },
-          {
-            keys: "Tab / Shift + Tab",
-            description:
-              "Walk modal controls and contain focus, inherited from Base UI. Non-modal inspectors leave the page usable.",
-          },
-          {
-            keys: "Escape",
-            description:
-              "Request close and return focus, inherited from Base UI. Kira's visible closeDisabledReason can cancel the request.",
-          },
-          {
-            keys: "Enter in the form",
-            description:
-              "Validate and save the local release. Save or explicitly discard a dirty draft before closing.",
-          },
-        ]}
-      />
-      <UsageBlock
-        code={`import * as React from "react";
-import { Drawer } from "@base-ui/react/drawer";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetBody, SheetFooter, SheetClose, SheetHandle, SheetPortal, SheetOverlay, KiraSheet, sheetVariants } from "@/components/ui/sheet";
-
-export function ComposedSheet() {
-  return <Sheet>
-    <SheetTrigger render={<Button variant="outline">Review release</Button>} />
-    <SheetContent>
-      <SheetHeader><SheetTitle>Review release</SheetTitle><SheetDescription>Local release details.</SheetDescription></SheetHeader>
-      <SheetBody>Review the rollout notes.</SheetBody>
-      <SheetFooter><SheetClose render={<Button variant="outline">Close</Button>} /></SheetFooter>
-    </SheetContent>
-  </Sheet>;
-}
-
-export function ResponsiveSheet() {
-  return <KiraSheet trigger={<Button variant="outline">Open notes</Button>} title="Release notes"
-    contentProps={{ portalProps: { keepMounted: true } }}>
-    Draft content.
-  </KiraSheet>;
-}
-
-export function BottomSheet() {
-  const [point, setPoint] = React.useState<number | string | null>(0.5);
-  return <Sheet side="bottom" snapPoints={[0.5, 1]} snapPoint={point} onSnapPointChange={setPoint}>
-    <SheetTrigger render={<Button variant="outline">Open actions</Button>} />
-    <SheetContent><SheetHandle expanded={point === 1} onExpandedChange={(expanded) => setPoint(expanded ? 1 : 0.5)} />
-      <SheetHeader><SheetTitle>Actions</SheetTitle></SheetHeader>
-      <SheetBody>Release actions.</SheetBody>
-    </SheetContent>
-  </Sheet>;
-}
-
-// SheetContent includes a portal and overlay. Use the lower-level exports only
-// when composing your own native viewport and popup.
-export function CustomComposition() {
-  return <Sheet>
-    <SheetTrigger render={<Button variant="outline">Open custom panel</Button>} />
-    <SheetPortal><SheetOverlay />
-      <Drawer.Viewport className="pointer-events-none fixed inset-0 z-50">
-        <Drawer.Popup className={sheetVariants({ size: "default", className: "pointer-events-auto" })}>
-          <SheetHeader><SheetTitle>Custom panel</SheetTitle></SheetHeader>
-          <SheetBody>Custom composition.</SheetBody>
-          <SheetFooter><SheetClose render={<Button variant="outline">Close</Button>} /></SheetFooter>
-        </Drawer.Popup>
-      </Drawer.Viewport>
-    </SheetPortal>
-  </Sheet>;
-}`}
-      />
-      <APIReference sections={sheetApi} />
-      <Changelog
-        entries={[
-          {
-            version: "2.1.0",
-            date: "13 November 2026",
-            changes: [
-              {
-                type: "added",
-                title: "Responsive KiraSheet",
-                description:
-                  "Desktop/mobile edges, native dismissal guard, retained loading content and recovery. Audited against Base UI 1.9.0; research cutoff October 31, 2026.",
-              },
-              {
-                type: "added",
-                title: "SheetHandle and native types",
-                description:
-                  "Typed SheetProps, SheetContentProps, SheetHandleProps and SheetSide are exported; existing aliases and Drawer slots remain compatible.",
-              },
-              {
-                type: "fixed",
-                title: "Working release workflows",
-                description:
-                  "Replaced decorative fixtures and inert Save actions with labelled fields, local save/discard, native detents, retained drafts and a states tab.",
-              },
-            ],
-          },
-          {
-            version: "2.0.0",
-            date: "4 November 2026",
-            changes: [
-              {
-                type: "breaking",
-                title: "Native Drawer migration",
-                description:
-                  "Move side from SheetContent to Sheet; sheetVariants no longer accepts side. The outer popup is drawer-popup and receives className/ref; drawer-content identifies the inner wrapper. Base UI 1.9.0.",
-              },
-            ],
-          },
-        ]}
-      />
-    </ComponentPage>
-  );
-}
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const sheetPageFeatureGridFeatures = [
   {
     title: "Context stays available",
     description:
       "Modal editing and a non-modal inspector each have a live example.",
-    icon: <IconLayoutSidebar className="size-4" />,
+    icon: <IconLayoutSidebar className="size-4" aria-hidden="true" />,
   },
   {
     title: "Mobile bottom sheet",
     description:
       "Responsive edges and native snap points with a keyboard handle.",
-    icon: <IconDeviceMobile className="size-4" />,
+    icon: <IconDeviceMobile className="size-4" aria-hidden="true" />,
   },
   {
     title: "Drafts and recovery",
     description:
       "Keep draft content mounted, guard dismissal, and recover deferred details.",
-    icon: <IconHistory className="size-4" />,
+    icon: <IconHistory className="size-4" aria-hidden="true" />,
   },
-] satisfies React.ComponentProps<typeof FeatureGrid>["features"];
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const sheetPageKeyboardShortcuts = [
+  {
+    keys: "Enter / Space",
+    description:
+      "Open or close using native Base UI buttons. The detent handle switches half/full height.",
+  },
+  {
+    keys: "Tab / Shift + Tab",
+    description:
+      "Walk modal controls and contain focus, inherited from Base UI. Non-modal inspectors leave the page usable.",
+  },
+  {
+    keys: "Escape",
+    description:
+      "Request close and return focus, inherited from Base UI. Kira's visible closeDisabledReason can cancel the request.",
+  },
+  {
+    keys: "Enter in the form",
+    description:
+      "Validate and save the local release. Save or explicitly discard a dirty draft before closing.",
+  },
+] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
+
+const sheetPageUsageNotes = [
+  {
+    label: "KiraSheet",
+    body: "Use KiraSheet for responsive desktop-to-mobile panels with built-in loading, error recovery, and dismissal guards.",
+  },
+  {
+    label: "Snap points",
+    body: "Use composed Sheet with side='bottom' and SheetHandle when you need bottom-sheet detents.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const sheetPageChangelogEntries = [
+  {
+    version: "2.1.0",
+    date: "13 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Responsive KiraSheet",
+        description:
+          "Desktop/mobile edges, native dismissal guard, retained loading content and recovery. Audited against Base UI 1.9.0; research cutoff October 31, 2026.",
+      },
+      {
+        type: "added",
+        title: "SheetHandle and native types",
+        description:
+          "Typed SheetProps, SheetContentProps, SheetHandleProps and SheetSide are exported; existing aliases and Drawer slots remain compatible.",
+      },
+      {
+        type: "fixed",
+        title: "Working release workflows",
+        description:
+          "Replaced decorative fixtures and inert Save actions with labelled fields, local save/discard, native detents, retained drafts and a states tab.",
+      },
+    ],
+  },
+  {
+    version: "2.0.0",
+    date: "4 November 2026",
+    changes: [
+      {
+        type: "breaking",
+        title: "Native Drawer migration",
+        description:
+          "Move side from SheetContent to Sheet; sheetVariants no longer accepts side. The outer popup is drawer-popup and receives className/ref; drawer-content identifies the inner wrapper. Base UI 1.9.0.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof Changelog>["entries"];
 
 function KiraControlsSection({
   formId,

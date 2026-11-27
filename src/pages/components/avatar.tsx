@@ -9,6 +9,7 @@ import {
   AvatarGroup,
   AvatarStack,
   KiraAvatar,
+  getInitials,
 } from "@/components/ui/avatar";
 import {
   IconAccessible,
@@ -28,15 +29,11 @@ import {
   Changelog,
 } from "@/components/docs";
 
-// =============================================================================
-// Demo Components
-// =============================================================================
-
 function BasicDemo() {
   return (
     <div className="flex items-center gap-4">
       <Avatar>
-        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <AvatarImage src="https://github.com/mui.png" alt="@mui" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar>
@@ -53,13 +50,13 @@ function BasicDemo() {
 const basicCode = `import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 <Avatar>
-  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+  <AvatarImage src="https://github.com/mui.png" alt="@mui" />
   <AvatarFallback>CN</AvatarFallback>
 </Avatar>`;
 
 function SizesDemo() {
   return (
-    <div className="flex items-end gap-6">
+    <div className="flex flex-wrap items-end gap-6">
       <Avatar size="xs">
         <AvatarFallback>XS</AvatarFallback>
       </Avatar>
@@ -90,8 +87,8 @@ function SizesDemo() {
 
 const sizesCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
-// Sizes: xs (24px), sm (32px), default (40px), lg (48px), 
-//        xl (56px), 2xl (64px), 3xl (80px), 4xl (128px)
+// Sizes: xs (24px), sm (32px), default (40px), lg (48px),
+//        xl (64px), 2xl (80px), 3xl (96px), 4xl (128px)
 <Avatar size="xs"><AvatarFallback>XS</AvatarFallback></Avatar>
 <Avatar size="lg"><AvatarFallback>LG</AvatarFallback></Avatar>
 <Avatar size="4xl"><AvatarFallback>4XL</AvatarFallback></Avatar>`;
@@ -124,48 +121,48 @@ const geometryCode = `import { Avatar, AvatarFallback } from "@/components/ui/av
 function StatusDemo() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-6">
-        <Avatar status="online" size="lg">
+      <div className="flex flex-wrap items-center gap-6">
+        <Avatar status="online" statusLabel="Online" size="lg">
           <AvatarFallback>ON</AvatarFallback>
         </Avatar>
-        <Avatar status="offline" size="lg">
+        <Avatar status="offline" statusLabel="Offline" size="lg">
           <AvatarFallback>OFF</AvatarFallback>
         </Avatar>
-        <Avatar status="busy" size="lg">
+        <Avatar status="busy" statusLabel="Busy" size="lg">
           <AvatarFallback>BUSY</AvatarFallback>
         </Avatar>
-        <Avatar status="away" size="lg">
+        <Avatar status="away" statusLabel="Away" size="lg">
           <AvatarFallback>AWAY</AvatarFallback>
         </Avatar>
-        <Avatar status="offline_gray" size="lg">
+        <Avatar status="offline_gray" statusLabel="Inactive" size="lg">
           <AvatarFallback>GRAY</AvatarFallback>
         </Avatar>
       </div>
       <div>
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">
+        <h4 className="mb-3 text-sm font-medium text-muted-foreground">
           Status Positions
         </h4>
         <div className="grid gap-6 md:grid-cols-4">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">Top Right</p>
+            <p className="mb-2 text-sm text-muted-foreground">Top Right</p>
             <Avatar status="online" statusPosition="top-right" size="lg">
               <AvatarFallback>TR</AvatarFallback>
             </Avatar>
           </div>
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">Top Left</p>
+            <p className="mb-2 text-sm text-muted-foreground">Top Left</p>
             <Avatar status="online" statusPosition="top-left" size="lg">
               <AvatarFallback>TL</AvatarFallback>
             </Avatar>
           </div>
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">Bottom Right</p>
+            <p className="mb-2 text-sm text-muted-foreground">Bottom Right</p>
             <Avatar status="online" statusPosition="bottom-right" size="lg">
               <AvatarFallback>BR</AvatarFallback>
             </Avatar>
           </div>
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">Bottom Left</p>
+            <p className="mb-2 text-sm text-muted-foreground">Bottom Left</p>
             <Avatar status="online" statusPosition="bottom-left" size="lg">
               <AvatarFallback>BL</AvatarFallback>
             </Avatar>
@@ -178,13 +175,13 @@ function StatusDemo() {
 
 const statusCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
-// Status indicators
-<Avatar status="online"><AvatarFallback>ON</AvatarFallback></Avatar>
-<Avatar status="offline"><AvatarFallback>OFF</AvatarFallback></Avatar>
-<Avatar status="busy"><AvatarFallback>BUSY</AvatarFallback></Avatar>
-<Avatar status="away"><AvatarFallback>AWAY</AvatarFallback></Avatar>
+// Status indicators with accessible labels
+<Avatar status="online" statusLabel="Online"><AvatarFallback>ON</AvatarFallback></Avatar>
+<Avatar status="offline" statusLabel="Offline"><AvatarFallback>OFF</AvatarFallback></Avatar>
+<Avatar status="busy" statusLabel="Busy"><AvatarFallback>BUSY</AvatarFallback></Avatar>
+<Avatar status="away" statusLabel="Away"><AvatarFallback>AWAY</AvatarFallback></Avatar>
 
-// Status position (default: top-right)
+// Status position (default: bottom-right)
 <Avatar status="online" statusPosition="top-right">...</Avatar>
 <Avatar status="online" statusPosition="top-left">...</Avatar>
 <Avatar status="online" statusPosition="bottom-right">...</Avatar>
@@ -192,9 +189,12 @@ const statusCode = `import { Avatar, AvatarFallback } from "@/components/ui/avat
 
 function RingsDemo() {
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex flex-wrap items-center gap-6">
       <Avatar ring="primary" size="lg">
         <AvatarFallback>PR</AvatarFallback>
+      </Avatar>
+      <Avatar ring="secondary" size="lg">
+        <AvatarFallback>SC</AvatarFallback>
       </Avatar>
       <Avatar ring="success" size="lg">
         <AvatarFallback>SU</AvatarFallback>
@@ -205,6 +205,9 @@ function RingsDemo() {
       <Avatar ring="destructive" size="lg">
         <AvatarFallback>DE</AvatarFallback>
       </Avatar>
+      <Avatar ring="info" size="lg">
+        <AvatarFallback>IN</AvatarFallback>
+      </Avatar>
     </div>
   );
 }
@@ -212,16 +215,18 @@ function RingsDemo() {
 const ringsCode = `import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 // Ring colors
-<Avatar ring="primary"><AvatarFallback>P</AvatarFallback></Avatar>
-<Avatar ring="success"><AvatarFallback>S</AvatarFallback></Avatar>
-<Avatar ring="warning"><AvatarFallback>W</AvatarFallback></Avatar>
-<Avatar ring="destructive"><AvatarFallback>D</AvatarFallback></Avatar>`;
+<Avatar ring="primary"><AvatarFallback>PR</AvatarFallback></Avatar>
+<Avatar ring="secondary"><AvatarFallback>SC</AvatarFallback></Avatar>
+<Avatar ring="success"><AvatarFallback>SU</AvatarFallback></Avatar>
+<Avatar ring="warning"><AvatarFallback>WA</AvatarFallback></Avatar>
+<Avatar ring="destructive"><AvatarFallback>DE</AvatarFallback></Avatar>
+<Avatar ring="info"><AvatarFallback>IN</AvatarFallback></Avatar>`;
 
 function BadgeDemo() {
   return (
-    <div className="flex items-center gap-8">
+    <div className="flex flex-wrap items-center gap-8">
       <Avatar size="lg" badge={<AvatarBadge content="5" size="sm" />}>
-        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+        <AvatarImage src="https://github.com/mui.png" alt="@mui" />
         <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       <Avatar
@@ -246,8 +251,8 @@ function BadgeDemo() {
 
 const badgeCode = `import { Avatar, AvatarImage, AvatarFallback, AvatarBadge } from "@/components/ui/avatar"
 
-// Pass badge via the \`badge\` prop — it's rendered next to (not inside)
-// the avatar's image, so it isn't clipped by its overflow-hidden shape.
+// Pass badge via the \`badge\` prop — it is rendered next to (not inside)
+// the avatar's image, so it isn't clipped by overflow-hidden.
 <Avatar size="lg" badge={<AvatarBadge content="5" size="sm" />}>
   <AvatarImage src="..." alt="..." />
   <AvatarFallback>CN</AvatarFallback>
@@ -260,20 +265,32 @@ const badgeCode = `import { Avatar, AvatarImage, AvatarFallback, AvatarBadge } f
 
 function KiraAvatarDemo() {
   return (
-    <div className="flex items-center gap-4">
-      <KiraAvatar name="John Doe" size="lg" status="online" statusPulse />
+    <div className="flex flex-wrap items-center gap-4">
+      <KiraAvatar
+        name="John Doe"
+        size="lg"
+        status="online"
+        statusLabel="Online"
+        statusPulse
+      />
       <KiraAvatar
         name="Jane Smith"
-        src="https://github.com/shadcn.png"
+        src="https://github.com/mui.png"
         size="lg"
         badge="3"
       />
       <KiraAvatar name="Bob Johnson" size="lg" gradient="purple" />
-      <KiraAvatar name="Alice" size="lg" lastSeen="2h ago" status="away" />
+      <KiraAvatar
+        name="Alice"
+        size="lg"
+        lastSeen="2h ago"
+        status="away"
+        statusLabel="Away"
+      />
       <KiraAvatar
         name="Team"
         size="lg"
-        icon={<IconUser className="h-5 w-5" />}
+        icon={<IconUser className="size-5" aria-hidden="true" />}
       />
     </div>
   );
@@ -282,10 +299,10 @@ function KiraAvatarDemo() {
 const kiraAvatarCode = `import { KiraAvatar } from "@/components/ui/avatar"
 
 // Name → initials, plus status / badge / gradient / last-seen in one prop set
-<KiraAvatar name="John Doe" status="online" statusPulse />
+<KiraAvatar name="John Doe" status="online" statusLabel="Online" statusPulse />
 <KiraAvatar name="Jane Smith" src="https://…" badge="3" />
 <KiraAvatar name="Bob Johnson" gradient="purple" />
-<KiraAvatar name="Alice" lastSeen="2h ago" status="away" />`;
+<KiraAvatar name="Alice" lastSeen="2h ago" status="away" statusLabel="Away" />`;
 
 function LoadingDemo() {
   return (
@@ -296,7 +313,7 @@ function LoadingDemo() {
       </p>
       <div className="flex items-center gap-4">
         <Avatar size="lg">
-          <AvatarImage src="https://github.com/shadcn.png" alt="Loaded" />
+          <AvatarImage src="https://github.com/mui.png" alt="Loaded" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <Avatar size="lg">
@@ -306,7 +323,7 @@ function LoadingDemo() {
         <Avatar size="lg">
           <AvatarImage src="https://broken.example/nope.png" alt="Icon" />
           <AvatarFallback>
-            <IconUser className="h-5 w-5" />
+            <IconUser className="size-5" aria-hidden="true" />
           </AvatarFallback>
         </Avatar>
       </div>
@@ -320,32 +337,32 @@ const loadingCode = `import { Avatar, AvatarImage, AvatarFallback } from "@/comp
 // and AvatarImage blur-ups as it decodes.
 <Avatar>
   <AvatarImage src="https://…" alt="User" />
-  <AvatarFallback>CN</AvatarFallback>   {/* initials */}
+  <AvatarFallback>CN</AvatarFallback>
 </Avatar>
 <Avatar>
   <AvatarImage src={brokenUrl} alt="User" />
-  <AvatarFallback><IconUser /></AvatarFallback>  {/* icon */}
+  <AvatarFallback><IconUser aria-hidden="true" /></AvatarFallback>
 </Avatar>`;
 
 function PresenceDemo() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm text-muted-foreground mb-3">
+        <p className="mb-3 text-sm text-muted-foreground">
           Pulsing online ring
         </p>
         <div className="flex items-center gap-6">
-          <Avatar size="lg" status="online" statusPulse>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <Avatar size="lg" status="online" statusLabel="Online" statusPulse>
+            <AvatarImage src="https://github.com/mui.png" alt="@mui" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <Avatar size="lg" status="online" statusPulse>
+          <Avatar size="lg" status="online" statusLabel="Online" statusPulse>
             <AvatarFallback>ON</AvatarFallback>
           </Avatar>
         </div>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-3">Typing indicator</p>
+        <p className="mb-3 text-sm text-muted-foreground">Typing indicator</p>
         <div className="flex items-center gap-3">
           <Avatar size="default">
             <AvatarFallback>JD</AvatarFallback>
@@ -360,7 +377,7 @@ function PresenceDemo() {
 const presenceCode = `import { Avatar, AvatarFallback, AvatarTyping } from "@/components/ui/avatar"
 
 // Pulsing online ring (respects reduced motion)
-<Avatar status="online" statusPulse>
+<Avatar status="online" statusLabel="Online" statusPulse>
   <AvatarFallback>ON</AvatarFallback>
 </Avatar>
 
@@ -369,7 +386,7 @@ const presenceCode = `import { Avatar, AvatarFallback, AvatarTyping } from "@/co
 
 function GradientDemo() {
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-wrap items-center gap-4">
       <Avatar size="lg">
         <AvatarFallback variant="gradient">CN</AvatarFallback>
       </Avatar>
@@ -411,13 +428,15 @@ const gradientCode = `import { Avatar, AvatarFallback } from "@/components/ui/av
 <AvatarFallback variant="gradient" gradient="green">GR</AvatarFallback>`;
 
 function GroupDemo() {
+  const [memberCount, setMemberCount] = React.useState(2);
+
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm text-muted-foreground mb-2">Default (max 3)</p>
+        <p className="mb-2 text-sm text-muted-foreground">Default (max 3)</p>
         <AvatarGroup max={3}>
           <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarImage src="https://github.com/mui.png" alt="@mui" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Avatar>
@@ -436,12 +455,12 @@ function GroupDemo() {
         </AvatarGroup>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">
+        <p className="mb-2 text-sm text-muted-foreground">
           With tooltips + expandable overflow
         </p>
         <AvatarGroup max={3} tooltips overflowNames={["Dana", "Erin"]}>
           <Avatar data-name="Cody">
-            <AvatarImage src="https://github.com/shadcn.png" alt="Cody" />
+            <AvatarImage src="https://github.com/mui.png" alt="Cody" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <Avatar data-name="Vera">
@@ -460,16 +479,18 @@ function GroupDemo() {
         </AvatarGroup>
       </div>
       <div>
-        <p className="text-sm text-muted-foreground mb-2">
-          With add-member affordance
+        <p className="mb-2 text-sm text-muted-foreground">
+          With add-member affordance ({memberCount} members)
         </p>
-        <AvatarGroup max={3} onAddMember={() => {}}>
-          <Avatar>
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <Avatar>
-            <AvatarFallback>VC</AvatarFallback>
-          </Avatar>
+        <AvatarGroup
+          max={4}
+          onAddMember={() => setMemberCount((count) => Math.min(6, count + 1))}
+        >
+          {groupMembers.slice(0, memberCount).map((member) => (
+            <Avatar key={member.id} data-name={member.name}>
+              <AvatarFallback>{member.initials}</AvatarFallback>
+            </Avatar>
+          ))}
         </AvatarGroup>
       </div>
     </div>
@@ -478,19 +499,19 @@ function GroupDemo() {
 
 const groupCode = `import { Avatar, AvatarImage, AvatarFallback, AvatarGroup } from "@/components/ui/avatar"
 
-// Avatar group with overflow
-<AvatarGroup max={3}>
-  <Avatar><AvatarFallback>A</AvatarFallback></Avatar>
-  <Avatar><AvatarFallback>B</AvatarFallback></Avatar>
-  <Avatar><AvatarFallback>C</AvatarFallback></Avatar>
-  <Avatar><AvatarFallback>D</AvatarFallback></Avatar>
-  <Avatar><AvatarFallback>E</AvatarFallback></Avatar>
+// Avatar group with tooltips and expandable overflow popover
+<AvatarGroup max={3} tooltips overflowNames={["Dana", "Erin"]}>
+  <Avatar data-name="Cody"><AvatarFallback>CN</AvatarFallback></Avatar>
+  <Avatar data-name="Vera"><AvatarFallback>VC</AvatarFallback></Avatar>
+  <Avatar data-name="Abe"><AvatarFallback>AB</AvatarFallback></Avatar>
+  <Avatar data-name="Dana"><AvatarFallback>CD</AvatarFallback></Avatar>
+  <Avatar data-name="Erin"><AvatarFallback>EF</AvatarFallback></Avatar>
 </AvatarGroup>
 
-// With size and status
-<AvatarGroup max={4} size="lg">
-  <Avatar size="lg" status="online">...</Avatar>
-  <Avatar size="lg" status="busy">...</Avatar>
+// With add-member action
+<AvatarGroup max={4} onAddMember={handleAdd}>
+  <Avatar><AvatarFallback>CN</AvatarFallback></Avatar>
+  <Avatar><AvatarFallback>VC</AvatarFallback></Avatar>
 </AvatarGroup>`;
 
 function StackDemo() {
@@ -498,7 +519,7 @@ function StackDemo() {
     <div className="max-w-xl">
       <AvatarStack>
         <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarImage src="https://github.com/mui.png" alt="@mui" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <Avatar>
@@ -530,38 +551,24 @@ function StackDemo() {
 
 const stackCode = `import { Avatar, AvatarFallback, AvatarStack } from "@/components/ui/avatar"
 
-// Horizontally scrolling stack
-<AvatarStack>
+// Horizontally scrolling stack with total member count chip
+<AvatarStack showCount>
   <Avatar><AvatarFallback>A</AvatarFallback></Avatar>
   <Avatar><AvatarFallback>B</AvatarFallback></Avatar>
   <Avatar><AvatarFallback>C</AvatarFallback></Avatar>
 </AvatarStack>`;
 
-// =============================================================================
-// Main Page Component
-// =============================================================================
-
-// =============================================================================
-// Demo: Avatar states
-// =============================================================================
 function StatesDemo() {
   const imageRequestId = React.useId();
 
   return (
     <div className="space-y-8">
       <StatesLoadingSlowImageSection imageRequestId={imageRequestId} />
-
       <StatesFallbackDelaySection />
-
-      <StatesLongNameInitials35CharsSection />
-
-      <StatesSizeExtremesXs4xlInteractiveSection />
-
-      <StatesInteractiveAvatarRealSection />
-
-      <StatesBlurUpKeepMountedThrottledImageSection
-        imageRequestId={imageRequestId}
-      />
+      <StatesLongNameInitialsSection />
+      <StatesSizeExtremesSection />
+      <StatesInteractiveAvatarSection />
+      <StatesBlurUpSection imageRequestId={imageRequestId} />
     </div>
   );
 }
@@ -580,544 +587,759 @@ const statesCode = `import { Avatar, AvatarImage, AvatarFallback } from "@/compo
 <AvatarFallback delay={600}>600</AvatarFallback>
 
 // Accessible status dot
-<Avatar status="online" statusLabel="Online">
+<Avatar status="online" statusLabel="Online">...</Avatar>
 
-// Interactive: renders a real <button> — native Tab/Enter/Space semantics,
-// focus ring + scale animation kept
-<Avatar onClick={() => {}} aria-label="Open profile">`;
+// Interactive: renders a real <button> — native Tab/Enter/Space semantics
+<Avatar onClick={() => {}} aria-label="Open profile">...</Avatar>`;
 
-// oxlint-disable-next-line max-lines-per-function -- Static documentation keeps related examples and API tables together for comparison.
-export default function AvatarPage() {
-  const features = [
-    {
-      title: "Accessible",
-      description: "Proper alt text support and fallback handling.",
-      icon: <IconAccessible className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Customizable",
-      description: "8 sizes, 3 shapes, status indicators, and ring colors.",
-      icon: <IconPalette className="w-4 h-4 text-primary" />,
-    },
-    {
-      title: "Composable",
-      description:
-        "AvatarGroup, AvatarStack, KiraAvatar, and gradient fallbacks.",
-      icon: <IconStack2 className="w-4 h-4 text-primary" />,
-    },
-  ];
+function StressDemo() {
+  return (
+    <div className="max-w-xs space-y-6 rounded-lg border border-border p-4">
+      <div className="flex items-center gap-3">
+        <KiraAvatar
+          name="Alexandra Maximilian Bartholomew Wellington III"
+          status="online"
+          statusLabel="Online"
+          badge="99+"
+        />
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium">
+            Alexandra Maximilian Bartholomew Wellington III
+          </p>
+          <p className="truncate text-xs text-muted-foreground">
+            Long name collapses to 2 initials without overflow
+          </p>
+        </div>
+      </div>
 
-  const demoTabs = [
-    {
-      value: "basic",
-      label: "Basic",
-      demo: (
-        <DemoWrapper
-          title="Basic Avatar"
-          description="Image with fallback for when image fails to load"
-          code={basicCode}
+      <div className="flex items-center gap-4">
+        <Avatar aria-label="Empty fallback avatar">
+          <AvatarFallback />
+        </Avatar>
+        <KiraAvatar
+          name=""
+          icon={<IconUser className="size-4" aria-hidden="true" />}
+        />
+        <Avatar
+          aria-label="Disabled profile"
+          aria-disabled="true"
+          className="opacity-50"
         >
-          <BasicDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "sizes",
-      label: "Sizes",
-      demo: (
-        <DemoWrapper
-          title="Size Variants"
-          description="From 24px (xs) to 128px (4xl)"
-          code={sizesCode}
-        >
-          <SizesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "shapes",
-      label: "Shapes",
-      demo: (
-        <DemoWrapper
-          title="Shape Variants"
-          description="Circle, rounded, or square avatars"
-          code={geometryCode}
-        >
-          <GeometryDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "status",
-      label: "Status",
-      demo: (
-        <DemoWrapper
-          title="Status Indicators"
-          description="Online, offline, busy, away status with configurable positions"
-          code={statusCode}
-        >
-          <StatusDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "rings",
-      label: "Rings",
-      demo: (
-        <DemoWrapper
-          title="Ring Colors"
-          description="Colored border rings around avatars"
-          code={ringsCode}
-        >
-          <RingsDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "badge",
-      label: "Badge",
-      demo: (
-        <DemoWrapper
-          title="Avatar Badge"
-          description="Notification counts or status indicators"
-          code={badgeCode}
-        >
-          <BadgeDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "loading",
-      label: "Loading & Fallback",
-      demo: (
-        <DemoWrapper
-          title="Loading & Fallback Chain"
-          description="Real load/error state with blur-up; image → initials → icon"
-          code={loadingCode}
-        >
-          <LoadingDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "presence",
-      label: "Typing",
-      demo: (
-        <DemoWrapper
-          title="Typing & Presence Dots"
-          description="AvatarTyping dots and status-dot presence with optional sr-only labels (reduced-motion aware)"
-          code={presenceCode}
-        >
-          <PresenceDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "gradient",
-      label: "Gradient",
-      demo: (
-        <DemoWrapper
-          title="Gradient Fallback"
-          description="Predefined gradient backgrounds for fallback state"
-          code={gradientCode}
-        >
-          <GradientDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "group",
-      label: "Group",
-      demo: (
-        <DemoWrapper
-          title="Avatar Group"
-          description="Stacked avatars with automatic overflow indicator"
-          code={groupCode}
-        >
-          <GroupDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "stack",
-      label: "Stack",
-      demo: (
-        <DemoWrapper
-          title="Avatar Stack"
-          description="Horizontally scrolling stack of avatars"
-          code={stackCode}
-        >
-          <StackDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "states",
-      label: "States",
-      demo: (
-        <DemoWrapper
-          title="Avatar States"
-          description="Loading, error fallback, delay behavior, long names, size extremes, interactive states, keepMounted blur-up"
-          code={statesCode}
-        >
-          <StatesDemo />
-        </DemoWrapper>
-      ),
-    },
-    {
-      value: "kira",
-      label: "KiraAvatar",
-      demo: (
-        <DemoWrapper
-          title="KiraAvatar"
-          description="One prop-driven component: name + src + status + badge + gradient + last-seen"
-          code={kiraAvatarCode}
-        >
-          <KiraAvatarDemo />
-        </DemoWrapper>
-      ),
-    },
-  ];
+          <AvatarFallback>DS</AvatarFallback>
+        </Avatar>
+      </div>
 
-  const usageCode = `import {
+      <AvatarGroup
+        max={2}
+        tooltips
+        overflowNames={["Christopher", "Bartholomew", "Evangeline"]}
+      >
+        <KiraAvatar name="Alex Mercer" />
+        <KiraAvatar name="Priya Nair" />
+        <KiraAvatar name="Christopher" />
+        <KiraAvatar name="Bartholomew" />
+        <KiraAvatar name="Evangeline" />
+      </AvatarGroup>
+    </div>
+  );
+}
+
+const stressCode = `import { Avatar, AvatarFallback, AvatarGroup, KiraAvatar } from "@/components/ui/avatar"
+import { IconUser } from "@tabler/icons-react"
+
+// Narrow container (max-w-xs): long names, empty fallback, disabled state, and group overflow
+<div className="max-w-xs space-y-6">
+  <KiraAvatar
+    name="Alexandra Maximilian Bartholomew Wellington III"
+    status="online"
+    statusLabel="Online"
+    badge="99+"
+  />
+  <Avatar aria-label="Empty fallback avatar">
+    <AvatarFallback />
+  </Avatar>
+  <KiraAvatar name="" icon={<IconUser className="size-4" aria-hidden="true" />} />
+  <AvatarGroup max={2} tooltips overflowNames={["Christopher", "Bartholomew", "Evangeline"]}>
+    <KiraAvatar name="Alex Mercer" />
+    <KiraAvatar name="Priya Nair" />
+    <KiraAvatar name="Christopher" />
+    <KiraAvatar name="Bartholomew" />
+    <KiraAvatar name="Evangeline" />
+  </AvatarGroup>
+</div>`;
+
+const avatarUsageCode = `import {
   Avatar,
   AvatarImage,
   AvatarFallback,
   AvatarBadge,
+  AvatarTyping,
   AvatarGroup,
   AvatarStack,
-  KiraAvatar
+  KiraAvatar,
 } from "@/components/ui/avatar"
 
-// Basic
-<Avatar>
-  <AvatarImage src="https://..." alt="Name" />
-  <AvatarFallback>CN</AvatarFallback>
+// Composable primitives
+<Avatar status="online" statusLabel="Online" badge={<AvatarBadge content="5" />}>
+  <AvatarImage src="https://..." alt="Jane Doe" />
+  <AvatarFallback>JD</AvatarFallback>
 </Avatar>
 
-// Sizes: xs, sm, default, lg, xl, 2xl, 3xl, 4xl
-<Avatar size="lg">...</Avatar>
+// KiraAvatar — single prop-driven wrapper
+<KiraAvatar name="Jane Doe" status="online" statusLabel="Online" badge="3" lastSeen="2h ago" />
 
-// Shapes: circle, rounded, square
-<Avatar shape="rounded">...</Avatar>
-
-// Status indicators (statusPulse for a pulsing online ring)
-<Avatar status="online" statusPulse>...</Avatar>
-
-// Ring colors
-<Avatar ring="primary">...</Avatar>
-
-// Badge with notification count — pass it via the \`badge\` prop so it's
-// rendered next to (not inside) the avatar, avoiding the overflow-hidden clip
-<Avatar badge={<AvatarBadge content="5" />}>
-  <AvatarFallback>CN</AvatarFallback>
-</Avatar>
-
-// KiraAvatar — one prop-driven component
-<KiraAvatar name="John Doe" status="online" badge="3" lastSeen="2h ago" />
-
-// Avatar group (tooltips + expandable overflow)
-<AvatarGroup max={3} tooltips>
-  <Avatar data-name="Cody">...</Avatar>
-  <Avatar data-name="Vera">...</Avatar>
+// AvatarGroup with tooltips and overflow popover
+<AvatarGroup max={3} tooltips overflowNames={["Dana", "Erin"]}>
+  <Avatar data-name="Cody"><AvatarFallback>CN</AvatarFallback></Avatar>
+  <Avatar data-name="Vera"><AvatarFallback>VC</AvatarFallback></Avatar>
 </AvatarGroup>
-
-// Avatar stack (scrollable)
-<AvatarStack>
-  <Avatar>...</Avatar>
-</AvatarStack>
-
-// Accessible status + keepMounted blur-up
-<Avatar status="online" statusLabel="Online">...</Avatar>
-<AvatarImage src={url} keepMounted />
 
 // Typing indicator
 <AvatarTyping />`;
 
-  const apiReference = [
-    {
-      title: "Avatar",
-      props: [
-        {
-          prop: "size",
-          type: '"xs" | "sm" | "default" | "lg" | "xl" | "2xl" | "3xl" | "4xl"',
-          default: '"default"',
-          description: "Avatar size",
-        },
-        {
-          prop: "shape",
-          type: '"circle" | "rounded" | "square"',
-          default: '"circle"',
-          description: "Avatar shape",
-        },
-        {
-          prop: "status",
-          type: '"online" | "offline" | "busy" | "away" | "offline_gray"',
-          default: "-",
-          description: "Status indicator",
-        },
-        {
-          prop: "statusPosition",
-          type: '"top-right" | "top-left" | "bottom-right" | "bottom-left"',
-          default: '"top-right"',
-          description: "Status position",
-        },
-        {
-          prop: "statusLabel",
-          type: "string",
-          default: "-",
-          description:
-            'Screen-reader label for the status dot (e.g. "Online"). Without it the dot is decorative.',
-        },
-        {
-          prop: "ring",
-          type: '"primary" | "success" | "warning" | "destructive"',
-          default: "-",
-          description: "Ring color",
-        },
-        {
-          prop: "badge",
-          type: "ReactNode",
-          default: "-",
-          description:
-            "Corner badge, e.g. <AvatarBadge />. Rendered outside the clipped image so it isn't cut off.",
-        },
-        {
-          prop: "onClick",
-          type: "() => void",
-          default: "-",
-          description:
-            "Makes the avatar interactive: renders a real <button> (native Tab/Enter/Space, focusable).",
-        },
-        {
-          prop: "aria-label",
-          type: "string",
-          default: "-",
-          description:
-            'Accessible name. Non-interactive + label = span[role=img]; interactive avatars default to "Avatar" when omitted.',
-        },
-      ],
-    },
-    {
-      title: "AvatarImage",
-      props: [
-        { prop: "src", type: "string", default: "-", description: "Image URL" },
-        {
-          prop: "alt",
-          type: "string",
-          default: "-",
-          description: "Alt text for accessibility",
-        },
-        {
-          prop: "keepMounted",
-          type: "boolean",
-          default: "true",
-          description:
-            "Keep the img mounted through loading so the blur-up transition plays (data-loading / data-starting-style attributes).",
-        },
-      ],
-    },
-    {
-      title: "AvatarFallback",
-      props: [
-        {
-          prop: "variant",
-          type: '"default" | "gradient"',
-          default: '"default"',
-          description: "Fallback style",
-        },
-        {
-          prop: "gradient",
-          type: '"default" | "blue" | "purple" | "green" | "orange" | "pink"',
-          default: '"default"',
-          description: "Gradient color",
-        },
-      ],
-    },
-    {
-      title: "AvatarBadge",
-      props: [
-        {
-          prop: "content",
-          type: "string",
-          default: "-",
-          description: "Badge content",
-        },
-        {
-          prop: "variant",
-          type: '"default" | "success" | "destructive" | "info"',
-          default: '"default"',
-          description: "Badge variant",
-        },
-        {
-          prop: "size",
-          type: '"sm" | "default"',
-          default: '"default"',
-          description: "Badge size",
-        },
-      ],
-    },
-    {
-      title: "AvatarGroup",
-      props: [
-        {
-          prop: "max",
-          type: "number",
-          default: "3",
-          description: "Maximum visible avatars",
-        },
-        {
-          prop: "size",
-          type: "AvatarSize",
-          default: '"default"',
-          description: "Size of all avatars",
-        },
-      ],
-    },
-    {
-      title: "AvatarStack",
-      props: [
-        {
-          prop: "count",
-          type: "number",
-          default: "-",
-          description: "Total member count shown on the overflow chip",
-        },
-        {
-          prop: "size",
-          type: "AvatarSize",
-          default: '"default"',
-          description: "Chip and avatar size",
-        },
-        {
-          prop: "max",
-          type: "number",
-          default: "-",
-          description: "Maximum avatars rendered before collapsing",
-        },
-        {
-          prop: "overlap",
-          type: "boolean",
-          default: "true",
-          description: "Overlap avatars horizontally",
-        },
-        {
-          prop: "children",
-          type: "ReactNode",
-          default: "-",
-          description: "Avatar elements",
-        },
-      ],
-    },
-    {
-      title: "AvatarTyping",
-      props: [
-        {
-          prop: "size",
-          type: "AvatarSize",
-          default: '"default"',
-          description: "Dot scale",
-        },
-        {
-          prop: "dotCount",
-          type: "number",
-          default: "3",
-          description: "Number of typing dots",
-        },
-        {
-          prop: "className",
-          type: "string",
-          default: "-",
-          description: "Additional classes",
-        },
-      ],
-    },
-    {
-      title: "KiraAvatar",
-      props: [
-        {
-          prop: "name",
-          type: "string",
-          default: "-",
-          description: "Generates initials and aria-label; enables tooltips",
-        },
-        {
-          prop: "src",
-          type: "string",
-          default: "-",
-          description: "Image URL (falls back to initials/icon)",
-        },
-        {
-          prop: "badge",
-          type: "ReactNode",
-          default: "-",
-          description: "Corner badge content",
-        },
-        {
-          prop: "lastSeen",
-          type: "string",
-          default: "-",
-          description: "Shows a last-seen tooltip on hover",
-        },
-        {
-          prop: "icon",
-          type: "ReactNode",
-          default: "-",
-          description: "Fallback icon when no image/initials",
-        },
-        {
-          prop: "...props",
-          type: "AvatarProps",
-          default: "-",
-          description: "size, shape, status, statusPulse, ring, gradient",
-        },
-      ],
-    },
-  ];
-
+export default function AvatarPage() {
   return (
     <ComponentPage>
       <PageHeader
         title="Avatar"
         description="Image element with fallback for representing users, with status indicators, badges, and group layouts."
-        version="v3.1.0"
+        version="v3.1.1"
       />
 
-      <FeatureGrid features={features} />
+      <FeatureGrid
+        features={avatarPageFeatures}
+        description="Accessible user avatars built on Base UI primitives."
+      />
 
-      <DemoTabs tabs={demoTabs} />
+      <DemoTabs defaultValue="basic" tabs={avatarPageDemoTabs} />
 
-      <KeyboardShortcuts shortcuts={avatarPageKeyboardShortcutsShortcuts} />
+      <KeyboardShortcuts
+        shortcuts={avatarPageShortcuts}
+        description="Keyboard navigation and activation bindings."
+      />
 
-      <UsageBlock code={usageCode} />
+      <UsageBlock
+        code={avatarUsageCode}
+        title="Usage"
+        description="Compose Avatar primitives directly or use KiraAvatar for one-line user avatars."
+        notes={avatarPageUsageNotes}
+      />
 
-      <APIReference sections={apiReference} />
+      <APIReference
+        sections={avatarPageAPISections}
+        description="Props, types, and defaults for every exported Avatar part."
+      />
 
-      <Changelog entries={avatarPageChangelogEntries} />
+      <Changelog
+        entries={avatarPageChangelogEntries}
+        title="Changelog"
+        description="Version history for Avatar."
+      />
     </ComponentPage>
   );
 }
 
-// Static demo metadata stays co-located and follows its source constants.
-const avatarPageKeyboardShortcutsShortcuts = [
+const groupMembers = [
+  { id: "cn", name: "Cody", initials: "CN" },
+  { id: "vc", name: "Vera", initials: "VC" },
+  { id: "ab", name: "Abe", initials: "AB" },
+  { id: "cd", name: "Dana", initials: "CD" },
+  { id: "ef", name: "Erin", initials: "EF" },
+  { id: "gh", name: "Gale", initials: "GH" },
+] as const;
+
+const avatarPageFeatures = [
+  {
+    title: "Accessible",
+    description:
+      "Real button semantics for interactive avatars, alt text support, and screen-reader status labels.",
+    icon: <IconAccessible className="size-4 text-primary" aria-hidden="true" />,
+  },
+  {
+    title: "Customizable",
+    description:
+      "8 sizes, 3 shapes, status indicators, badges, and ring colors.",
+    icon: <IconPalette className="size-4 text-primary" aria-hidden="true" />,
+  },
+  {
+    title: "Composable",
+    description:
+      "AvatarGroup, AvatarStack, AvatarTyping, KiraAvatar, and gradient fallbacks.",
+    icon: <IconStack2 className="size-4 text-primary" aria-hidden="true" />,
+  },
+] satisfies ReactComponentProps<typeof FeatureGrid>["features"];
+
+const avatarPageDemoTabs = [
+  {
+    value: "basic",
+    label: "Basic",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Basic Avatar"
+        description="Image with fallback for when image fails to load."
+        code={basicCode}
+      >
+        <BasicDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "sizes",
+    label: "Sizes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Size Variants"
+        description="From 24px (xs) to 128px (4xl)."
+        code={sizesCode}
+      >
+        <SizesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "shapes",
+    label: "Shapes",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Shape Variants"
+        description="Circle, rounded, or square avatars."
+        code={geometryCode}
+      >
+        <GeometryDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "gradient",
+    label: "Gradient",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Gradient Fallback"
+        description="Predefined gradient backgrounds for fallback state."
+        code={gradientCode}
+      >
+        <GradientDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "status",
+    label: "Status",
+    group: "Indicators",
+    demo: (
+      <DemoWrapper
+        title="Status Indicators"
+        description="Online, offline, busy, and away status dots with configurable positions."
+        code={statusCode}
+      >
+        <StatusDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "rings",
+    label: "Rings",
+    group: "Indicators",
+    demo: (
+      <DemoWrapper
+        title="Ring Colors"
+        description="Colored border rings around avatars."
+        code={ringsCode}
+      >
+        <RingsDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "badge",
+    label: "Badge",
+    group: "Indicators",
+    demo: (
+      <DemoWrapper
+        title="Avatar Badge"
+        description="Notification counts or status indicators positioned outside the clipped frame."
+        code={badgeCode}
+      >
+        <BadgeDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "presence",
+    label: "Typing",
+    group: "Indicators",
+    demo: (
+      <DemoWrapper
+        title="Typing & Presence Dots"
+        description="AvatarTyping dots and pulsing online status (reduced-motion aware)."
+        code={presenceCode}
+      >
+        <PresenceDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "group",
+    label: "Group",
+    group: "Layouts",
+    demo: (
+      <DemoWrapper
+        title="Avatar Group"
+        description="Overlapping avatars with tooltips, overflow popover, and add-member affordance."
+        code={groupCode}
+      >
+        <GroupDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stack",
+    label: "Stack",
+    group: "Layouts",
+    demo: (
+      <DemoWrapper
+        title="Avatar Stack"
+        description="Horizontally scrolling stack of avatars with a member count chip."
+        code={stackCode}
+      >
+        <StackDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "kira",
+    label: "KiraAvatar",
+    group: "KiraAvatar",
+    demo: (
+      <DemoWrapper
+        title="KiraAvatar"
+        description="One prop-driven component: name, src, status, badge, gradient, and last-seen tooltip."
+        code={kiraAvatarCode}
+      >
+        <KiraAvatarDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "loading",
+    label: "Loading & Fallback",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Loading & Fallback Chain"
+        description="Real load/error state with blur-up; image → initials → icon."
+        code={loadingCode}
+      >
+        <LoadingDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "states",
+    label: "States",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Avatar States"
+        description="Loading, error fallback, delay behavior, long names, size extremes, interactive buttons, and blur-up."
+        code={statesCode}
+      >
+        <StatesDemo />
+      </DemoWrapper>
+    ),
+  },
+  {
+    value: "stress",
+    label: "Stress Cases",
+    group: "Behavior",
+    demo: (
+      <DemoWrapper
+        title="Stress Cases"
+        description="Long names, empty fallbacks, disabled styling, and group overflow inside a max-w-xs container."
+        code={stressCode}
+      >
+        <StressDemo />
+      </DemoWrapper>
+    ),
+  },
+] satisfies ReactComponentProps<typeof DemoTabs>["tabs"];
+
+const avatarPageShortcuts = [
   {
     keys: "Tab",
     description:
-      "Move focus between avatars; interactive avatars are real buttons and show the focus ring",
+      "Move focus between interactive avatars, AvatarGroup overflow triggers, and add-member buttons.",
   },
   {
     keys: "Enter / Space",
     description:
-      "Activate an interactive avatar — it renders a native <button> (inherited from the browser)",
+      "Activate an interactive avatar (renders a native <button>) or open the AvatarGroup overflow popover.",
   },
   {
     keys: "Esc",
     description:
-      "Close the AvatarGroup overflow popover (inherited from Base UI)",
+      "Close the AvatarGroup overflow popover or last-seen tooltip (provided by Base UI).",
   },
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
+const avatarPageUsageNotes = [
+  {
+    label: "KiraAvatar vs. Composable Primitives",
+    body: "Use KiraAvatar when you have a user name and optional src, status, badge, gradient, or lastSeen tooltip. Compose Avatar, AvatarImage, AvatarFallback, and AvatarBadge directly when you need custom fallback markup, custom loading callbacks, or fine-grained DOM control.",
+  },
+  {
+    label: "Accessible Status & Badges",
+    body: "Pass badge via Avatar's badge prop so it renders outside the overflow-hidden image frame. Provide statusLabel whenever presence carries meaning so screen readers announce it alongside the visual dot.",
+  },
+] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
+
+const avatarPageAPISections = [
+  {
+    title: "Avatar",
+    props: [
+      {
+        prop: "size",
+        type: '"xs" | "sm" | "default" | "lg" | "xl" | "2xl" | "3xl" | "4xl"',
+        default: '"default"',
+        description: "Avatar diameter from 24px (xs) to 128px (4xl).",
+      },
+      {
+        prop: "shape",
+        type: '"circle" | "rounded" | "square"',
+        default: '"circle"',
+        description: "Corner geometry of the avatar frame.",
+      },
+      {
+        prop: "interactive",
+        type: "boolean",
+        default: "false",
+        description:
+          "Applies interactive hover, press, and focus ring styling (automatically enabled when onClick is passed).",
+      },
+      {
+        prop: "ring",
+        type: '"default" | "primary" | "secondary" | "destructive" | "success" | "warning" | "info"',
+        default: '"default"',
+        description: "Offset border ring color around the avatar.",
+      },
+      {
+        prop: "status",
+        type: '"online" | "offline" | "busy" | "away" | "offline_gray"',
+        default: "-",
+        description: "Presence status dot rendered outside the clipped frame.",
+      },
+      {
+        prop: "statusPosition",
+        type: '"top-right" | "top-left" | "bottom-right" | "bottom-left"',
+        default: '"bottom-right"',
+        description: "Corner placement of the status dot.",
+      },
+      {
+        prop: "statusPulse",
+        type: "boolean",
+        default: "false",
+        description:
+          'Pulses the status dot when status="online" (automatically disabled under reduced motion).',
+      },
+      {
+        prop: "statusLabel",
+        type: "string",
+        default: "-",
+        description:
+          'Screen-reader label for the status dot (e.g. "Online"). Omitting keeps the dot decorative.',
+      },
+      {
+        prop: "badge",
+        type: "React.ReactNode",
+        default: "-",
+        description:
+          "Corner badge (typically <AvatarBadge />) rendered as a sibling so it is not clipped.",
+      },
+      {
+        prop: "onClick",
+        type: "React.MouseEventHandler<HTMLSpanElement>",
+        default: "-",
+        description:
+          "Makes the avatar interactive by rendering a native <button> with Tab/Enter/Space activation.",
+      },
+      {
+        prop: "aria-label",
+        type: "string",
+        default: "-",
+        description:
+          'Accessible name. Non-interactive avatars with aria-label get role="img"; interactive avatars default to "Avatar".',
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes merged onto the avatar root.",
+      },
+    ],
+  },
+  {
+    title: "AvatarImage",
+    props: [
+      {
+        prop: "src",
+        type: "string",
+        default: "-",
+        description: "Image URL to load.",
+      },
+      {
+        prop: "alt",
+        type: "string",
+        default: "-",
+        description: "Alternative text describing the user or subject.",
+      },
+      {
+        prop: "keepMounted",
+        type: "boolean",
+        default: "true",
+        description:
+          "Keeps the image mounted through loading so data-loading / data-starting-style blur-up transitions play.",
+      },
+      {
+        prop: "onLoadingStatusChange",
+        type: '(status: "idle" | "loading" | "loaded" | "error") => void',
+        default: "-",
+        description: "Callback invoked when image loading status changes.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "AvatarFallback",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "gradient"',
+        default: '"default"',
+        description: "Solid muted background or soft gradient background.",
+      },
+      {
+        prop: "gradient",
+        type: '"default" | "blue" | "purple" | "green" | "orange" | "pink"',
+        default: '"default"',
+        description: 'Gradient palette used when variant="gradient".',
+      },
+      {
+        prop: "delay",
+        type: "number",
+        default: "-",
+        description:
+          "Milliseconds to wait before displaying fallback content (Base UI prop).",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "AvatarBadge",
+    props: [
+      {
+        prop: "variant",
+        type: '"default" | "secondary" | "destructive" | "success" | "warning" | "info" | "outline"',
+        default: '"destructive"',
+        description: "Color theme of the corner badge.",
+      },
+      {
+        prop: "size",
+        type: "AvatarSize",
+        default: '"default"',
+        description: "Badge dimensions matched to the avatar size ladder.",
+      },
+      {
+        prop: "position",
+        type: '"top-right" | "top-left" | "bottom-right" | "bottom-left"',
+        default: '"top-right"',
+        description: "Corner placement around the avatar.",
+      },
+      {
+        prop: "content",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Badge content (falls back to children when omitted).",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "AvatarTyping",
+    props: [
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description:
+          'Additional CSS classes on the semantic <output aria-label="typing"> indicator.',
+      },
+    ],
+  },
+  {
+    title: "AvatarGroup",
+    props: [
+      {
+        prop: "max",
+        type: "number",
+        default: "3",
+        description: "Maximum visible avatars before collapsing into +N.",
+      },
+      {
+        prop: "overlap",
+        type: "number",
+        default: "-8",
+        description:
+          "Horizontal margin in pixels between avatars (negative overlaps).",
+      },
+      {
+        prop: "size",
+        type: "AvatarSize",
+        default: '"default"',
+        description: "Size for overflow and add-member chips.",
+      },
+      {
+        prop: "tooltips",
+        type: "boolean",
+        default: "false",
+        description:
+          "Wraps visible avatars with Base UI tooltips using each child's data-name prop.",
+      },
+      {
+        prop: "overflowNames",
+        type: "string[]",
+        default: "-",
+        description:
+          "Names shown under hidden avatars inside the expandable overflow popover.",
+      },
+      {
+        prop: "onAddMember",
+        type: "() => void",
+        default: "-",
+        description:
+          'Renders a trailing dashed "Add member" button when provided.',
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "AvatarStack",
+    props: [
+      {
+        prop: "size",
+        type: "AvatarSize",
+        default: '"default"',
+        description: "Scale used for left padding math and the count chip.",
+      },
+      {
+        prop: "showCount",
+        type: "boolean",
+        default: "true",
+        description: "Displays the trailing total-member count chip.",
+      },
+      {
+        prop: "className",
+        type: "string",
+        default: "-",
+        description: "Additional CSS classes.",
+      },
+    ],
+  },
+  {
+    title: "KiraAvatar",
+    props: [
+      {
+        prop: "name",
+        type: "string",
+        default: "-",
+        description:
+          "User display name; derives initials, aria-label, alt, and data-name.",
+      },
+      {
+        prop: "src",
+        type: "string",
+        default: "-",
+        description: "Optional image URL; falls back to icon or initials.",
+      },
+      {
+        prop: "icon",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Fallback icon shown instead of initials when provided.",
+      },
+      {
+        prop: "badge",
+        type: "React.ReactNode",
+        default: "-",
+        description: "Corner badge content rendered inside AvatarBadge.",
+      },
+      {
+        prop: "badgePosition",
+        type: '"top-right" | "top-left" | "bottom-right" | "bottom-left"',
+        default: '"top-right"',
+        description: "Corner placement of the rendered AvatarBadge.",
+      },
+      {
+        prop: "lastSeen",
+        type: "string",
+        default: "-",
+        description:
+          'Wraps the avatar in a tooltip showing "Last seen <value>".',
+      },
+      {
+        prop: "gradient",
+        type: '"default" | "blue" | "purple" | "green" | "orange" | "pink"',
+        default: "-",
+        description:
+          "Enables a gradient AvatarFallback with the chosen palette.",
+      },
+      {
+        prop: "...props",
+        type: 'Omit<AvatarProps, "children">',
+        default: "-",
+        description:
+          "Forwards size, shape, ring, status, statusPosition, statusPulse, statusLabel, onClick, and HTML attributes.",
+      },
+    ],
+  },
+] satisfies ReactComponentProps<typeof APIReference>["sections"];
+
 const avatarPageChangelogEntries = [
+  {
+    version: "3.1.1",
+    date: "26 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Focus ring at full strength",
+        description:
+          "Interactive avatars draw the kit focus ring as ring-ring at 3px instead of ring-ring/50 — the half-strength halo measured 1.63–2.82:1 against the page, under WCAG 1.4.11's 3:1 for a state indicator. The primary ring also inherits the retuned default-theme primary pair.",
+      },
+    ],
+  },
   {
     version: "3.1.0",
     date: "4 November 2026",
@@ -1132,7 +1354,7 @@ const avatarPageChangelogEntries = [
         type: "changed",
         title: "Interactive avatars get a fallback accessible name",
         description:
-          'An onClick avatar without aria-label announces as "Avatar" instead of an unnamed button (§9 icon-only rule).',
+          'An onClick avatar without aria-label announces as "Avatar" instead of an unnamed button.',
       },
     ],
   },
@@ -1186,13 +1408,13 @@ const avatarPageChangelogEntries = [
         type: "fixed",
         title: "scrollbar-hide utility added",
         description:
-          "AvatarStack referenced a scrollbar-hide class that didn't exist; the utility is now defined in index.css (also fixes camera.tsx).",
+          "AvatarStack referenced a scrollbar-hide class that didn't exist; the utility is now defined in index.css.",
       },
       {
         type: "changed",
         title: "Interactive focus ring + transitions",
         description:
-          "Interactive avatars use the kit focus ring (ring-ring/50, 3px) and a merged transition so active:scale-95 animates.",
+          "Interactive avatars use the kit focus ring and a merged transition so active:scale-95 animates.",
       },
     ],
   },
@@ -1265,42 +1487,29 @@ function StatesFallbackDelaySection() {
   );
 }
 
-function StatesLongNameInitials35CharsSection() {
+function StatesLongNameInitialsSection() {
+  const longName = "Alexandra Maximilian Bartholomew Wellington III";
+
   return (
     <div>
       <p className="mb-2 text-sm font-medium">Long name initials (35+ chars)</p>
       <div className="flex items-center gap-4">
         <Avatar>
-          <AvatarFallback>
-            {(() => {
-              // getInitials of a very long name stays bounded
-              const initials = "Alexandra Maximilian Bartholomew Wellington III"
-                .trim()
-                .split(/\s+/)
-                .map((w) => w[0])
-                .join("")
-                .slice(0, 2)
-                .toUpperCase();
-
-              return initials;
-            })()}
-          </AvatarFallback>
+          <AvatarFallback>{getInitials(longName)}</AvatarFallback>
         </Avatar>
-        <span className="text-sm text-muted-foreground">
-          Alexandra Maximilian Bartholomew Wellington III
-        </span>
+        <span className="text-sm text-muted-foreground">{longName}</span>
       </div>
     </div>
   );
 }
 
-function StatesSizeExtremesXs4xlInteractiveSection() {
+function StatesSizeExtremesSection() {
   return (
     <div>
       <p className="mb-2 text-sm font-medium">
         Size extremes (xs / 4xl) + interactive hover/focus/active
       </p>
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <Avatar size="xs">
           <AvatarFallback>XS</AvatarFallback>
         </Avatar>
@@ -1318,43 +1527,46 @@ function StatesSizeExtremesXs4xlInteractiveSection() {
   );
 }
 
-function StatesInteractiveAvatarRealSection() {
+function StatesInteractiveAvatarSection() {
+  const [selectedProfile, setSelectedProfile] = React.useState<string | null>(
+    null,
+  );
+
   return (
-    <div>
-      <p className="mb-2 text-sm font-medium">
-        Interactive avatar = real <code>&lt;button&gt;</code> (was a span +
-        keyboard shim). Tab to it, Enter/Space activate, AT announces a button
-        named by <code>aria-label</code>.
+    <div className="space-y-2">
+      <p className="text-sm font-medium">
+        Interactive avatar renders a native <code>&lt;button&gt;</code> — Tab to
+        focus, Enter/Space to activate.
       </p>
-      <div className="flex items-center gap-4">
-        <Avatar onClick={() => {}} aria-label="Open Priya's profile">
+      <div className="flex flex-wrap items-center gap-4">
+        <Avatar
+          onClick={() => setSelectedProfile("Priya")}
+          aria-label="Open Priya's profile"
+        >
           <AvatarFallback>PR</AvatarFallback>
         </Avatar>
         <Avatar
-          onClick={() => {}}
+          onClick={() => setSelectedProfile("Marcus")}
           aria-label="Open Marcus's profile"
           ring="primary"
         >
           <AvatarFallback>MA</AvatarFallback>
         </Avatar>
-        <span className="text-xs text-muted-foreground max-w-64">
-          Inspect the DOM: the interactive ones are &lt;button&gt;, the labelled
-          ones &lt;span role="img"&gt;.
-        </span>
+        <output className="text-xs text-muted-foreground">
+          {selectedProfile === null
+            ? "Select an interactive avatar to preview button activation."
+            : `Opened ${selectedProfile}'s profile.`}
+        </output>
       </div>
     </div>
   );
 }
 
-function StatesBlurUpKeepMountedThrottledImageSection({
-  imageRequestId,
-}: {
-  imageRequestId: string;
-}) {
+function StatesBlurUpSection({ imageRequestId }: { imageRequestId: string }) {
   return (
     <div>
       <p className="mb-2 text-sm font-medium">
-        Blur-up (keepMounted) — throttled image shows blur → sharp
+        Blur-up (keepMounted) — throttled image transitions blur → sharp
       </p>
       <div className="flex items-center gap-4">
         <Avatar size="lg">
@@ -1365,7 +1577,7 @@ function StatesBlurUpKeepMountedThrottledImageSection({
           />
           <AvatarFallback>BU</AvatarFallback>
         </Avatar>
-        <span className="text-xs text-muted-foreground max-w-64">
+        <span className="max-w-64 text-xs text-muted-foreground">
           Watch the image enter blurred/scaled and settle sharp (500ms, respects
           reduced motion).
         </span>

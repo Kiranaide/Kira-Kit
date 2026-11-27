@@ -5,7 +5,7 @@ Horizontal or vertical separators with six thicknesses, solid/dashed/dotted/grad
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/separator
+kira-kit add @kira-kit/separator
 ```
 
 ## Dependencies
@@ -18,6 +18,7 @@ npx shadcn add @kira-kit/separator
 
 - @kira-kit/button
 - @kira-kit/collapsible
+- @kira-kit/component-utils
 - @kira-kit/spinner
 
 ## Usage

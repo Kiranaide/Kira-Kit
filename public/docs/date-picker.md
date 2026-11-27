@@ -5,7 +5,7 @@ A date picker with single, datetime, and range modes, built around a native popo
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/date-picker
+kira-kit add @kira-kit/date-picker
 ```
 
 ## Dependencies
@@ -21,6 +21,8 @@ npx shadcn add @kira-kit/date-picker
 
 - @kira-kit/button
 - @kira-kit/calendar
+- @kira-kit/component-utils
+- @kira-kit/popover
 - @kira-kit/time-picker
 
 ## Usage

@@ -10,7 +10,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { IconInfoCircle } from "@tabler/icons-react";
-import { isNumberProp } from "@/components/ui/prop-guards";
+import { isNumberProp } from "@/lib/component-utils";
 
 interface LabelProps
   extends
@@ -302,8 +302,6 @@ function LabelGroup({
     </div>
   );
 }
-
-// === KiraLabel: one prop-driven entry point ===
 
 interface KiraLabelProps extends Omit<LabelProps, "counter"> {
   /** Description rendered below the label (folds LabelGroup's job). */

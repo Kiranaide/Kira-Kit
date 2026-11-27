@@ -1,10 +1,8 @@
-import {
-  extractImports,
-  packageNameOf,
-  type LocatedImport,
-} from "../registry/extract";
+import { packageNameOf, type LocatedImport } from "../registry/extract";
+import { libItemNameFor } from "../registry/lib-items";
 import {
   BUILTIN_IMPORTS,
+  getImports,
   type Check,
   type Finding,
   type ItemMeta,
@@ -19,11 +17,58 @@ function itemNameOf(specifier: string): string {
     .replace(/\.(tsx|ts)$/, "");
 }
 
+/** A lib file importing a module shipped by its own item is not a dep. */
+function isSelfLibImport(fileName: string, item: string): boolean {
+  return (
+    fileName.startsWith("lib/") &&
+    libItemNameFor(fileName.slice("lib/".length)) === item
+  );
+}
+
+function undeclaredLibImports(
+  fileName: string,
+  declaredRegistry: Set<string>,
+  lib: LocatedImport[],
+): Finding[] {
+  const findings: Finding[] = [];
+
+  for (const entry of lib) {
+    const item = libItemNameFor(entry.specifier);
+
+    if (!item) {
+      findings.push({
+        checkId: "imports-deps",
+        severity: "error",
+        file: fileName,
+        line: entry.line,
+        message: `imports "${entry.specifier}" but no registry:lib item ships this module (see lib-items.ts).`,
+      });
+
+      continue;
+    }
+
+    if (isSelfLibImport(fileName, item)) continue;
+
+    if (declaredRegistry.has(`@kira-kit/${item}`)) continue;
+
+    findings.push({
+      checkId: "imports-deps",
+      severity: "error",
+      file: fileName,
+      line: entry.line,
+      message: `imports "${entry.specifier}" but the registry item does not declare "@kira-kit/${item}" in registryDependencies.`,
+    });
+  }
+
+  return findings;
+}
+
 function undeclaredImports(
   fileName: string,
   meta: ItemMeta,
   external: LocatedImport[],
   internal: LocatedImport[],
+  lib: LocatedImport[],
 ): Finding[] {
   const findings: Finding[] = [];
   const declared = new Set(meta.dependencies);
@@ -59,7 +104,10 @@ function undeclaredImports(
     });
   }
 
-  return findings;
+  return [
+    ...findings,
+    ...undeclaredLibImports(fileName, declaredRegistry, lib),
+  ];
 }
 
 function unusedDeclarations(
@@ -67,17 +115,23 @@ function unusedDeclarations(
   meta: ItemMeta,
   external: LocatedImport[],
   internal: LocatedImport[],
+  lib: LocatedImport[],
 ): Finding[] {
   const findings: Finding[] = [];
   const imported = new Set(external.map((e) => packageNameOf(e.specifier)));
 
-  const importedRegistry = new Set(
-    internal.flatMap((e) => {
+  const importedRegistry = new Set([
+    ...internal.flatMap((e) => {
       const name = itemNameOf(e.specifier);
 
       return SUPPORT_MODULES.has(name) ? [] : [name];
     }),
-  );
+    ...lib.flatMap((e) => {
+      const item = libItemNameFor(e.specifier);
+
+      return item ? [item] : [];
+    }),
+  ]);
 
   for (const dep of meta.dependencies) {
     if (BUILTIN_IMPORTS.has(dep) || imported.has(dep)) continue;
@@ -107,20 +161,37 @@ function unusedDeclarations(
 }
 
 /**
- * Check 1: imports vs declared dependencies — bidirectional.
- * Every bare npm import must be declared in the item's `dependencies`
- * (or be a React builtin), every internal import must be declared as
- * `@kira-kit/<name>`, and every declared dependency must actually be used.
+ * Check 1: imports vs declared dependencies, bidirectionally. Bare npm
+ * imports must be declared (or be React builtins), internal imports must be
+ * `@kira-kit/<name>`, `@/lib/*` imports must map to a registry:lib item, and
+ * every declared dependency must actually be used.
  */
 export const importsMatchDeps: Check = (file, ctx) => {
   const meta = ctx.items.get(file.name);
 
   if (!meta) return [];
 
-  const { external, internal } = extractImports(file.content, file.path);
+  const { external, internal, lib } = getImports(file);
+
+  // Consumers on lucide still declare tabler in registry metadata; normalize
+  // so both check directions compare against the canonical dependency list.
+  const normalized =
+    ctx.iconLibrary === "lucide"
+      ? external.map((entry) =>
+          packageNameOf(entry.specifier) === "lucide-react"
+            ? {
+                ...entry,
+                specifier: entry.specifier.replace(
+                  /^lucide-react/,
+                  "@tabler/icons-react",
+                ),
+              }
+            : entry,
+        )
+      : external;
 
   return [
-    ...undeclaredImports(file.name, meta, external, internal),
-    ...unusedDeclarations(file.name, meta, external, internal),
+    ...undeclaredImports(file.name, meta, normalized, internal, lib),
+    ...unusedDeclarations(file.name, meta, normalized, internal, lib),
   ];
 };

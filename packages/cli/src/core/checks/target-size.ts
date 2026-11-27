@@ -2,10 +2,9 @@ import type { Check, Finding } from "./types";
 
 /**
  * Check 6: interactive targets below 24px (WCAG 2.5.8). Flags a bare
- * `h-*`/`size-*` below 6 on interactive elements: class strings with
- * interactive affordances (pointer cursor, focus ring, hover/active state)
- * or className strings on interactive JSX tags. Small icons and decoration
- * inside a properly sized target are not findings.
+ * `h-*`/`size-*` below 6 on class strings that carry interactive
+ * affordances (pointer cursor, focus ring, hover/active) or sit on
+ * interactive JSX tags. Icons inside a sized target are not findings.
  */
 const SMALL_SIZE = /^(?:h|size)-(\d+(?:\.\d+)?)$/;
 const STRING_LITERAL = /"([^"\\\n]*)"|'([^'\\\n]*)'/g;

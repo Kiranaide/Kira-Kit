@@ -5,8 +5,12 @@ Controls browser camera previews, photo capture, video recording, device switchi
 ## Install
 
 ```bash
-npx shadcn add @kira-kit/use-camera
+kira-kit add @kira-kit/use-camera
 ```
+
+## Registry dependencies
+
+- @kira-kit/camera-lib
 
 ## Usage
 
