@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kira-kit.vercel.app/sitemap.xml
+Sitemap: https://kit.kiranaide.my.id/sitemap.xml

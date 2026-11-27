@@ -763,7 +763,7 @@ function syncDocumentMeta(pathname: string): void {
   );
 
   if (canonical) {
-    canonical.href = `${window.location.origin}${cleanPath}`;
+    canonical.href = `https://kit.kiranaide.my.id${cleanPath}`;
   }
 }
 
