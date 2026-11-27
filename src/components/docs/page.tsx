@@ -110,6 +110,42 @@ const sectionFlow: [unknown, Flow][] = [
   [Changelog, "changelog"],
 ];
 
+function DeferredSection({ children }: { children: React.ReactNode }) {
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  const [mounted, setMounted] = React.useState(
+    () =>
+      typeof window !== "undefined" &&
+      (!("IntersectionObserver" in window) || window.location.hash.length > 1),
+  );
+
+  React.useEffect(() => {
+    const element = ref.current;
+
+    if (!element || mounted || !("IntersectionObserver" in window)) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          React.startTransition(() => setMounted(true));
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "250px 0px" },
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [mounted]);
+
+  return (
+    <div ref={ref} className="docs-deferred-section">
+      {mounted ? children : <div aria-hidden="true" className="min-h-80" />}
+    </div>
+  );
+}
+
 /**
  * Pages list their sections in whatever order they were written; the frame owns
  * the reading order from the design — playground, page-specific content,
@@ -175,19 +211,17 @@ export function ComponentPage({ children, className }: ComponentPageProps) {
 
           {flow.extra}
           {flow.features.length > 0 && (
-            <div className="docs-deferred-section">{flow.features}</div>
+            <DeferredSection>{flow.features}</DeferredSection>
           )}
           {flow.shortcuts.length > 0 && (
-            <div className="docs-deferred-section">{flow.shortcuts}</div>
+            <DeferredSection>{flow.shortcuts}</DeferredSection>
           )}
           {flow.usage.length > 0 && (
-            <div className="docs-deferred-section">{flow.usage}</div>
+            <DeferredSection>{flow.usage}</DeferredSection>
           )}
-          {flow.api.length > 0 && (
-            <div className="docs-deferred-section">{flow.api}</div>
-          )}
+          {flow.api.length > 0 && <DeferredSection>{flow.api}</DeferredSection>}
           {flow.changelog.length > 0 && (
-            <div className="docs-deferred-section">{flow.changelog}</div>
+            <DeferredSection>{flow.changelog}</DeferredSection>
           )}
         </div>
       </div>

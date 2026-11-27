@@ -30,6 +30,56 @@ const HeroShowcase = React.lazy(() =>
   })),
 );
 
+function DeferredHeroShowcase() {
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  const [visible, setVisible] = React.useState(
+    () => typeof window !== "undefined" && !("IntersectionObserver" in window),
+  );
+
+  React.useEffect(() => {
+    const element = ref.current;
+
+    if (!element || visible || !("IntersectionObserver" in window)) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          React.startTransition(() => setVisible(true));
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "80px 0px" },
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [visible]);
+
+  const fallback = (
+    <div
+      aria-hidden="true"
+      className="min-h-[388px] w-full rounded-xl bg-muted/20"
+    />
+  );
+
+  return (
+    <div
+      ref={ref}
+      className="min-h-[420px] min-w-0 flex-1 rounded-2xl border border-border bg-card p-4"
+    >
+      {visible ? (
+        <React.Suspense fallback={fallback}>
+          <HeroShowcase />
+        </React.Suspense>
+      ) : (
+        fallback
+      )}
+    </div>
+  );
+}
+
 const TECH_STACK = ["React", "Base UI", "Tailwind CSS", "TypeScript"] as const;
 
 const catalogCards = [
@@ -201,18 +251,7 @@ function HeroSection() {
           <InstallChip command="npx kira-kit add button" />
         </div>
 
-        <div className="min-h-[420px] min-w-0 flex-1 rounded-2xl border border-border bg-card p-4">
-          <React.Suspense
-            fallback={
-              <div
-                aria-hidden="true"
-                className="min-h-[388px] w-full rounded-xl bg-muted/20"
-              />
-            }
-          >
-            <HeroShowcase />
-          </React.Suspense>
-        </div>
+        <DeferredHeroShowcase />
       </div>
     </section>
   );
