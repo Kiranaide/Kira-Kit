@@ -17,7 +17,8 @@
     "check": "oxlint && tsc -b && prettier --check .",
     "check:pages": "bun packages/cli/src/index.ts check src/pages/components",
     "lint:strict": "oxlint --type-aware",
-    "export:kmp": "bun scripts/export-kmp-tokens.mjs"
+    "export:kmp": "bun scripts/export-kmp-tokens.mjs",
+    "perf:check": "bun scripts/perf-check.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
