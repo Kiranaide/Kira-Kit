@@ -28,19 +28,18 @@ interface Release {
   changes: Change[];
 }
 
-const COMMIT_HISTORY_URL =
-  "https://github.com/Kiranaide/kira-kit-v2/commits/development";
+const COMMIT_HISTORY_URL = "https://github.com/Kiranaide/Kira-Kit/commits/main";
 
 const RELEASES: readonly Release[] = [
   {
-    version: "Unreleased",
-    date: "In development",
+    version: "0.5.0",
+    date: "November 27, 2026",
     changes: [
       {
         type: "breaking",
         title: "CLI runtime floor",
         description:
-          "The next CLI release declares Node.js 22.12.0 as the minimum supported Node version.",
+          "The CLI now requires Node.js 22.12.0 as the minimum supported Node version.",
       },
       {
         type: "added",
@@ -529,7 +528,7 @@ const CHANGE_BADGE_STYLES: Record<
 
 const SECTIONS: readonly TocEntry[] = [
   { id: "releases", label: "Releases" },
-  { id: "unreleased", label: "Unreleased" },
+  { id: "0.5.0", label: "0.5.0" },
   { id: "0.4.0", label: "0.4.0" },
   { id: "earlier-releases", label: "Earlier releases" },
   { id: "how-we-version", label: "How we version" },
