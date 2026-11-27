@@ -127,9 +127,9 @@ function ExampleStage({
     >
       <div className="flex shrink-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0">
-          <h3 className="text-[19px] font-semibold leading-tight text-foreground lg:text-[22px]">
+          <h2 className="text-[19px] font-semibold leading-tight text-foreground lg:text-[22px]">
             {title}
-          </h3>
+          </h2>
 
           {description && (
             <p className="mt-1 text-[13px] leading-[1.45] text-muted-foreground lg:text-sm">

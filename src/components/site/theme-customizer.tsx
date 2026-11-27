@@ -415,16 +415,18 @@ function PresetStudioBody() {
 export function PresetStudioPopover({
   className,
   showLabel = true,
+  defaultOpen = false,
 }: {
   className?: string;
   showLabel?: boolean;
+  defaultOpen?: boolean;
 }) {
   const { presetName, presets, isCustomized } = usePreset();
   const selected = presets.find((preset) => preset.name === presetName);
   const label = selected?.title ?? "Default";
 
   return (
-    <Popover>
+    <Popover defaultOpen={defaultOpen}>
       <PopoverTrigger
         aria-label={`Preset studio: ${label}`}
         data-slot="preset-studio-trigger"

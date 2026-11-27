@@ -16,8 +16,8 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { cva, type VariantProps } from "class-variance-authority";
-import gsap from "gsap";
-import { CustomEase } from "gsap/CustomEase";
+import type gsap from "gsap";
+import type { CustomEase as CustomEaseType } from "gsap/CustomEase";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -60,9 +60,52 @@ const MOBILE_QUERY = "(max-width: 767px)";
 const sidebarEase = "cubic-bezier(0.23, 1, 0.32, 1)";
 const sidebarDrawerEase = "cubic-bezier(0.32, 0.72, 0, 1)";
 
-gsap.registerPlugin(CustomEase);
+type SidebarGsapRuntime = {
+  gsap: typeof gsap;
+  ease: ReturnType<typeof CustomEaseType.create>;
+};
 
-const sidebarLayoutEase = CustomEase.create("kira-sidebar", "0.23,1,0.32,1");
+let sidebarGsapCache: SidebarGsapRuntime | null = null;
+let sidebarGsapPromise: Promise<SidebarGsapRuntime> | null = null;
+
+function loadSidebarGsap(): Promise<SidebarGsapRuntime> {
+  if (sidebarGsapCache) return Promise.resolve(sidebarGsapCache);
+
+  if (!sidebarGsapPromise) {
+    sidebarGsapPromise = Promise.all([
+      import("gsap"),
+      import("gsap/CustomEase"),
+    ]).then(([gsapModule, customEaseModule]) => {
+      const instance = gsapModule.default;
+      instance.registerPlugin(customEaseModule.CustomEase);
+
+      const ease = customEaseModule.CustomEase.create(
+        "kira-sidebar",
+        "0.23,1,0.32,1",
+      );
+
+      sidebarGsapCache = { gsap: instance, ease };
+
+      return sidebarGsapCache;
+    });
+  }
+
+  return sidebarGsapPromise;
+}
+
+function measureSidebarOffsets(
+  before: Map<HTMLElement, DOMRect>,
+): Map<HTMLElement, { x: number; y: number }> {
+  const offsets = new Map<HTMLElement, { x: number; y: number }>();
+
+  for (const [node, previous] of before) {
+    if (!node.isConnected || !node.checkVisibility()) continue;
+    const next = node.getBoundingClientRect();
+    offsets.set(node, { x: previous.x - next.x, y: previous.y - next.y });
+  }
+
+  return offsets;
+}
 
 // Layout changes commit once. Only the visual displacement is animated, so
 // workspace text never stretches and no width tween runs on every frame.
@@ -103,19 +146,16 @@ function useSidebarLayoutMotion(
     // An interrupted tween stays frozen until this point, never flashing its end.
     cancel();
 
-    if (!root || !enabled || !pointerRef.current) return;
-    const offsets = new Map<HTMLElement, { x: number; y: number }>();
+    const runtime = sidebarGsapCache;
 
-    for (const [node, previous] of before) {
-      if (!node.isConnected || !node.checkVisibility()) continue;
-      const next = node.getBoundingClientRect();
-      offsets.set(node, { x: previous.x - next.x, y: previous.y - next.y });
-    }
+    if (!root || !enabled || !pointerRef.current || !runtime) return;
+    const offsets = measureSidebarOffsets(before);
 
     // GSAP runs this callback synchronously, so defer reading `context` to avoid the TDZ.
-    const context = gsap.context(
+    const context = runtime.gsap.context(
       () =>
         sidebarContext(
+          runtime,
           contextRef,
           () => context,
           cancel,
@@ -138,6 +178,10 @@ function useSidebarLayoutMotion(
       cancel();
 
       return;
+    }
+
+    if (!sidebarGsapCache) {
+      void loadSidebarGsap();
     }
 
     // Batched requests share the visual position before their first commit.
@@ -572,7 +616,6 @@ function SidebarMobileShell({ model }: { model: SidebarShellModel }) {
           width: `min(${width}, calc(100vw - 2rem))`,
           transitionTimingFunction: sidebarDrawerEase,
         }}
-        portalProps={{ keepMounted: true }}
         initialFocus={() => sidebarCallback(searchPendingRef, searchRef)}
         finalFocus={() => mobileTriggerRef.current ?? true}
       >
@@ -791,8 +834,12 @@ function SidebarHint({
 }) {
   const { expanded, side } = useSidebar();
 
+  if (expanded) {
+    return children;
+  }
+
   return (
-    <Tooltip disabled={expanded}>
+    <Tooltip>
       <TooltipTrigger data-slot={slot} render={children} />
       <TooltipContent side={side === "left" ? "right" : "left"}>
         {label}
@@ -3223,6 +3270,7 @@ function useKiraSidebarOptions2({
 }
 
 function sidebarContext(
+  runtime: SidebarGsapRuntime,
   contextRef: React.RefObject<gsap.Context | null>,
   getContext: () => gsap.Context,
   cancel: () => void,
@@ -3230,8 +3278,8 @@ function sidebarContext(
   offsets: Map<HTMLElement, { x: number; y: number }>,
   Math: Math,
 ) {
-  const timeline = gsap.timeline({
-    defaults: { duration: 0.2, ease: sidebarLayoutEase },
+  const timeline = runtime.gsap.timeline({
+    defaults: { duration: 0.2, ease: runtime.ease },
     onComplete: () => {
       if (contextRef.current === getContext()) cancel();
     },
@@ -3243,8 +3291,8 @@ function sidebarContext(
     const { x, y } = sidebarRelativeOffset(node, offset, offsets);
 
     if (Math.abs(x) < 0.5 && Math.abs(y) < 0.5) continue;
-    const originalX = gsap.getProperty(node, "x");
-    const originalY = gsap.getProperty(node, "y");
+    const originalX = runtime.gsap.getProperty(node, "x");
+    const originalY = runtime.gsap.getProperty(node, "y");
     timeline.fromTo(
       node,
       { x: `+=${x}`, y: `+=${y}` },

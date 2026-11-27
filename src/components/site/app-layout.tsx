@@ -2,7 +2,6 @@ import {
   Link,
   Outlet,
   useLocation,
-  useMatchRoute,
   useRouterState,
 } from "@tanstack/react-router";
 import {
@@ -100,9 +99,7 @@ function TanStackSidebarLink({ to, disabled, ...props }: SidebarLinkProps) {
 }
 
 function useTanStackIsActive(to: string) {
-  const matchRoute = useMatchRoute();
-
-  return Boolean(matchRoute({ to, fuzzy: false }));
+  return useLocation({ select: (location) => location.pathname === to });
 }
 
 const tanStackSidebarRouter: SidebarRouterAdapter = {
@@ -120,15 +117,19 @@ export function AppLayout() {
             <div className="flex items-center gap-2 ml-2">
               <Link
                 to="/"
-                aria-label="Kira Kit home"
                 className="docs-focus-ring flex items-center gap-2 rounded-[8px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
-                <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                <div
+                  aria-hidden="true"
+                  className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center"
+                >
                   <span className="text-primary-foreground font-bold text-xs">
                     K
                   </span>
                 </div>
-                <span className="font-semibold text-foreground">Kira Kit</span>
+                <span className="font-semibold text-foreground">
+                  Kira Kit<span className="sr-only"> home</span>
+                </span>
               </Link>
             </div>
           </header>

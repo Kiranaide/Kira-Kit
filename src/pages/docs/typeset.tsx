@@ -1,5 +1,7 @@
+import * as React from "react";
 import { CodeBlock } from "@/components/ui/code-block";
 import { DocPage, DocSection, type TocEntry } from "@/components/docs/doc-page";
+import { loadAllDocsFonts } from "@/lib/docs-fonts";
 import {
   DEFAULT_DOC_MONO,
   DEFAULT_DOC_SANS,
@@ -279,6 +281,10 @@ function FluidTypeSection() {
 }
 
 export default function TypesetPage() {
+  React.useEffect(() => {
+    loadAllDocsFonts();
+  }, []);
+
   return (
     <DocPage
       title="Typeset"

@@ -20,10 +20,65 @@ import {
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CodeBlock } from "@/components/ui/code-block";
+import { CodePanel } from "@/components/docs/code-panel";
 import { Reveal, SectionRule } from "@/components/docs/layout";
 import { SITE_REPOSITORY_URL, SiteHeader } from "@/components/site/site-chrome";
-import { HeroShowcase } from "@/components/landing/hero-showcase";
+
+const HeroShowcase = React.lazy(() =>
+  import("@/components/landing/hero-showcase").then((module) => ({
+    default: module.HeroShowcase,
+  })),
+);
+
+function DeferredHeroShowcase() {
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  const [visible, setVisible] = React.useState(
+    () => typeof window !== "undefined" && !("IntersectionObserver" in window),
+  );
+
+  React.useEffect(() => {
+    const element = ref.current;
+
+    if (!element || visible || !("IntersectionObserver" in window)) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          React.startTransition(() => setVisible(true));
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "80px 0px" },
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [visible]);
+
+  const fallback = (
+    <div
+      aria-hidden="true"
+      className="min-h-[388px] w-full rounded-xl bg-muted/20"
+    />
+  );
+
+  return (
+    <div
+      ref={ref}
+      className="min-h-[420px] min-w-0 flex-1 rounded-2xl border border-border bg-card p-4"
+    >
+      {visible ? (
+        <React.Suspense fallback={fallback}>
+          <HeroShowcase />
+        </React.Suspense>
+      ) : (
+        fallback
+      )}
+    </div>
+  );
+}
 
 const TECH_STACK = ["React", "Base UI", "Tailwind CSS", "TypeScript"] as const;
 
@@ -138,17 +193,22 @@ function InstallChip({ command }: { command: string }) {
 }
 
 function SectionHeading({
+  id,
   title,
   description,
   className,
 }: {
+  id?: string;
   title: string;
   description: string;
   className?: string;
 }) {
   return (
     <div className={cn("flex max-w-[620px] flex-col gap-2.5", className)}>
-      <h2 className="text-[30px] font-normal leading-[1.15] tracking-[-0.035em] text-balance text-foreground lg:text-[38px]">
+      <h2
+        id={id}
+        className="text-[30px] font-normal leading-[1.15] tracking-[-0.035em] text-balance text-foreground lg:text-[38px]"
+      >
         {title}
       </h2>
       <p className="text-base leading-6 text-muted-foreground">{description}</p>
@@ -160,7 +220,7 @@ function HeroSection() {
   return (
     <section data-slot="hero" className="bg-background text-foreground">
       <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-10 px-4 pt-12 pb-12 sm:px-8 lg:flex-row lg:items-center lg:gap-14 lg:px-12 lg:pt-20 lg:pb-16">
-        <Reveal className="flex w-full max-w-[520px] shrink-0 flex-col gap-5">
+        <div className="flex w-full max-w-[520px] shrink-0 flex-col gap-5">
           <p className="text-sm font-semibold tracking-wide docs-accent">
             React component registry
           </p>
@@ -189,14 +249,9 @@ function HeroSection() {
           </div>
 
           <InstallChip command="npx kira-kit add button" />
-        </Reveal>
+        </div>
 
-        <Reveal
-          delay={80}
-          className="min-w-0 flex-1 rounded-2xl border border-border bg-card p-4"
-        >
-          <HeroShowcase />
-        </Reveal>
+        <DeferredHeroShowcase />
       </div>
     </section>
   );
@@ -229,6 +284,7 @@ function CatalogSection() {
     >
       <div className="flex flex-wrap items-end justify-between gap-4">
         <SectionHeading
+          id="catalog-heading"
           title="Components for real workflows"
           description="Start with the pieces behind search, data management, and structured content."
         />
@@ -297,7 +353,7 @@ function InstallPathCard({ path }: { path: (typeof installPaths)[number] }) {
         <p className="text-sm leading-6 text-muted-foreground">
           {path.description}
         </p>
-        <CodeBlock code={path.code} language="bash" showLineNumbers />
+        <CodePanel code={path.code} language="bash" />
         <Link
           to={path.link.to}
           className="docs-focus-ring inline-flex min-h-11 w-fit items-center gap-1.5 rounded-[8px] text-sm font-semibold docs-accent transition-opacity duration-150 ease-out hover:opacity-80"
@@ -318,6 +374,7 @@ function InstallSection() {
     >
       <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-9 px-4 py-14 sm:px-8 lg:px-12 lg:py-16">
         <SectionHeading
+          id="install-heading"
           title="From registry to repo"
           description="Add components to an existing project and edit them alongside the rest of your app."
         />

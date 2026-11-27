@@ -33,5 +33,4 @@ release-artifacts/
 .cursor/*
 tools
 
-COMPONENT-UPGRADE-PLAYBOOK.md
 .agents/*

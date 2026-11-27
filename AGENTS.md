@@ -327,3 +327,11 @@ bun run check && bun run check:pages
 ```
 
 Run `bun run build` as well whenever component imports, registry metadata, or CSS tokens changed.
+
+### Demo Performance Guardrails (`lighthouse-budget.json`)
+
+- **Keep initial routes lean**: never import heavy editors (`CodeBlock`, Monaco, Markdown editor, Recharts, `@dnd-kit`) or GSAP eagerly in layout/chrome modules; use `CodePanel` (viewport-deferred Shiki highlighting) for static snippets and `React.lazy` for heavy interactive showcases.
+- **Reserve vertical space**: any lazy-loaded or deferred demo container must declare a `min-h-*` fallback so CLS stays `0`.
+- **Never hide LCP**: never wrap a page's `<h1>` or primary hero content in a scroll-reveal (`opacity: 0`) animation.
+- **Heading hierarchy**: start component demo sections at `<h2>` directly under `PageHeader`'s `<h1>`; do not skip heading levels.
+- Run `bun run perf:check` to verify Lighthouse budgets against `lighthouse-budget.json`.

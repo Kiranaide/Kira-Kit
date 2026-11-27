@@ -271,6 +271,7 @@ function Accordion({
   className,
   scrollIntoView = false,
   hiddenUntilFound = false,
+  onValueChange,
   children,
   ref,
   ...props
@@ -281,7 +282,7 @@ function Accordion({
     value,
     ...args
   ) => {
-    props.onValueChange?.(value, ...args);
+    onValueChange?.(value, ...args);
 
     if (scrollIntoView && value.length > 0) {
       const lastOpened = value[value.length - 1];
@@ -518,11 +519,12 @@ function TriggerRetry({
 
   return (
     <button
+      type="button"
       onClick={(e) => {
         e.stopPropagation();
         onRetry();
       }}
-      className="shrink-0 p-1 rounded hover:bg-destructive/20 text-destructive"
+      className="mr-2 inline-flex size-8 shrink-0 items-center justify-center rounded hover:bg-destructive/20 text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       aria-label="Retry loading content"
     >
       <IconRefresh className="h-4 w-4" />
@@ -783,6 +785,7 @@ function AccordionContentBody({
         <p className="text-xs opacity-80 mt-1">{error.message}</p>
         {onRetry && (
           <button
+            type="button"
             onClick={onRetry}
             className="mt-2 text-xs flex items-center gap-1 hover:underline"
           >
@@ -1554,6 +1557,7 @@ function KiraAccordionCore({
     searchPlaceholder,
     hiddenUntilFound,
     deepLink,
+    ...accordionProps
   } = { ...CORE_DEFAULTS, ...props };
 
   const reducedMotion = useReducedMotion();
@@ -1603,7 +1607,7 @@ function KiraAccordionCore({
     openValues,
     handleValueChange,
     hiddenUntilFound,
-    props,
+    props: accordionProps,
     draggable,
     items,
     variant,
@@ -1962,7 +1966,6 @@ function renderAccordionHeaderPart1({
           <span className="flex-1 min-w-0 truncate">{children}</span>
           <TriggerLoading loading={loading} reducedMotion={reducedMotion} />
           <TriggerSuccess active={showSuccess} />
-          <TriggerRetry error={error} loading={loading} onRetry={onRetry} />
           <TriggerChevron
             icon={chevronIcon}
             position={chevronPosition}
@@ -1972,6 +1975,7 @@ function renderAccordionHeaderPart1({
           />
         </span>
       </AccordionPrimitive.Trigger>
+      <TriggerRetry error={error} loading={loading} onRetry={onRetry} />
       <TriggerDragHandleSlot
         handle={dragHandle}
         position={dragHandlePosition}

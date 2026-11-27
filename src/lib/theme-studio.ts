@@ -1,4 +1,5 @@
 import themeCatalog from "@/themes/catalog.json";
+import { loadDocsFont } from "@/lib/docs-fonts";
 
 export type DocBaseColorName =
   | "neutral"
@@ -265,6 +266,10 @@ export function applyFontPreview(
 
     return;
   }
+
+  loadDocsFont(sans);
+  loadDocsFont(mono);
+  loadDocsFont(displayName);
 
   const style = existing ?? document.createElement("style");
 

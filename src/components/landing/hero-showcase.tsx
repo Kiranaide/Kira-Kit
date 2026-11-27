@@ -223,9 +223,9 @@ function MembersTable() {
     <div className="rounded-xl border border-border bg-card">
       <div className="flex flex-wrap items-center gap-3 px-4 pt-4 pb-3">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-base font-semibold text-card-foreground">
+          <h2 className="truncate text-base font-semibold text-card-foreground">
             Team members
-          </h3>
+          </h2>
           <p className="truncate text-xs text-muted-foreground">
             Real Data Table, Avatar, Badge and Select — from the registry.
           </p>

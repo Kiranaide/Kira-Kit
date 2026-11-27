@@ -1118,7 +1118,7 @@ export default function AccordionPage() {
       <PageHeader
         title="Accordion"
         description="Collapsible content panels for organizing information. Supports icons, semantic header variants, sizes, nested accordions, drag reorder, search, deep linking, and async loading."
-        version="v2.3.0"
+        version="v2.3.1"
       />
 
       <FeatureGrid
@@ -1861,6 +1861,18 @@ const accordionPageAPIReferenceSections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const accordionPageChangelogEntries = [
+  {
+    version: "2.3.1",
+    date: "27 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Prevent DOM Prop Leaks and Nested Retry Button",
+        description:
+          "Stripped Kira-only options before forwarding remaining props from KiraAccordionCore to AccordionPrimitive.Root, moved the error retry button out of AccordionPrimitive.Trigger into a sibling inside AccordionPrimitive.Header to avoid nested <button> hydration errors, and prevented Accordion's rest spread from overriding its scrollIntoView onValueChange handler.",
+      },
+    ],
+  },
   {
     version: "2.3.0",
     date: "26 November 2026",
