@@ -2232,7 +2232,7 @@ function announcementBarUseEffect2(
   request: React.RefObject<number>,
   pending: React.RefObject<boolean>,
   controller: React.RefObject<AbortController | null>,
-  busyTimer: React.RefObject<number | undefined>,
+  busyTimer: React.RefObject<ReturnType<typeof setTimeout> | undefined>,
 ) {
   request.current += 1;
   pending.current = false;
