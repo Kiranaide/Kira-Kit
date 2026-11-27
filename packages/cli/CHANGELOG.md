@@ -1,5 +1,17 @@
 # kira-kit
 
+## 0.7.0
+
+### Patch Changes
+
+- Registry release `0.7.0`:
+  - `data-table`: resolved human-readable column labels (`meta.label` → string `header` → `DataTableColumnHeader` title → Title-Cased ID), unmounted sticky `DataTableBulkActions` at 0 selected rows with spring-out dock motion, and kept `DataTableRowCount` / `DataTablePageCount` single-line beside `DataTablePagination`.
+  - `pagination`: stripped `onPaginationChange` and other hook/configuration props before spreading onto `<nav>` and stabilized `PaginationSizeSelector` width on open.
+  - `select`: preserved the selected option label as `placeholder` when opening single-select `KiraSelect`.
+  - `spotlight`: aligned close button in a dedicated flex header row, declared `@kira-kit/dialog` dependency, resolved OS-aware shortcut hints via `Kbd`, and added `aria-keyshortcuts` on `SpotlightTrigger`.
+  - `command`: reserved trailing close-button clearance on `command-breadcrumb` when nested pages are active in `CommandDialog`.
+  - `use-platform`: preferred `navigator.userAgentData.platform` before falling back to `navigator.userAgent`.
+
 ## 0.6.0
 
 ### Breaking changes
