@@ -15,6 +15,11 @@ published `0.5.0` commands below once that version is available.
   `npx kira-kit@0.5.0 add input --dry-run --diff`. Merge the changes you
   need into customized files. Review dependency and stylesheet changes in
   the same diff. Use `--overwrite` only for items you intend to replace.
+- Update each changed item together with its registry dependencies. If your
+  build reports missing helpers or changed exports, compare the full update
+  in a separate Git branch and reapply your edits to the new sources.
+  Remove legacy files only after checking that your app no longer imports
+  them. A mixed tree of old and new components can fail to compile.
 - Update scripts that fetch `/r/index.json` to fetch `/r/registry.json`.
   If your config uses the legacy `registryUrl` field, review
   `npx kira-kit@0.5.0 migrate --dry-run` before applying it.

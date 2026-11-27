@@ -62,7 +62,14 @@ jobs:
         run: |
           node packages/cli/dist/index.mjs build --skip-checks
           bunx vite build
-          git diff --exit-code -- public src/themes packages/cli/templates packages/cli/src/generated
+          generated=(public src/themes packages/cli/templates packages/cli/src/generated)
+          git diff --exit-code -- "${generated[@]}"
+          untracked=$(git ls-files --others --exclude-standard -- "${generated[@]}")
+          if [[ -n "$untracked" ]]; then
+            printf 'Untracked generated files:\n%s\n' "$untracked"
+            exit 1
+          fi
+        shell: bash
 
       - name: Pack CLI and registry snapshot
         run: |

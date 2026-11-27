@@ -55,13 +55,14 @@ async function verifyConsumer(
   const cssPath = join(project, "src/index.css");
   const customCss = "\n/* release smoke custom CSS */\n";
   await appendFile(cssPath, customCss);
-  const componentPath = join(project, "src/components/ui/color-picker.tsx");
+  const item = legacyRegistry === undefined ? "color-picker" : "button";
+  const componentPath = join(project, `src/components/ui/${item}.tsx`);
   const customSource = "\n// release smoke custom component\n";
 
   if (legacyRegistry !== undefined) {
     await $`bun add kira-kit@0.4.0`.cwd(scratch);
     assert.equal((await $`node ${cli} --version`.text()).trim(), "0.4.0");
-    await $`node ${cli} add color-picker --cwd ${project} --yes`;
+    await $`node ${cli} add ${item} --cwd ${project} --yes`;
     await appendFile(componentPath, customSource);
     await $`bun add ${tarball}`.cwd(scratch);
     await writeFile(
@@ -71,7 +72,7 @@ async function verifyConsumer(
   }
 
   await $`node ${cli} init --cwd ${project} --yes`;
-  await $`node ${cli} add color-picker --cwd ${project} --yes`;
+  await $`node ${cli} add ${item} --cwd ${project} --yes`;
   assert.ok((await readFile(cssPath, "utf8")).includes(customCss));
 
   if (legacyRegistry === undefined) {
@@ -80,8 +81,15 @@ async function verifyConsumer(
 
   const original = await readFile(componentPath, "utf8");
   assert.ok(original.includes(customSource));
-  await $`node ${cli} add color-picker --cwd ${project} --yes`;
+  await $`node ${cli} add ${item} --cwd ${project} --yes`;
   assert.equal(await readFile(componentPath, "utf8"), original);
+
+  if (legacyRegistry !== undefined) {
+    await $`node ${cli} add ${item} --cwd ${project} --overwrite --yes`;
+    assert.ok(!(await readFile(componentPath, "utf8")).includes(customSource));
+    await appendFile(componentPath, customSource);
+    await $`node ${cli} add color-picker --cwd ${project} --yes`;
+  }
 
   const missing =
     await $`node ${cli} add release-smoke-missing --cwd ${project} --yes`.nothrow();
