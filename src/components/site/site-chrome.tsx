@@ -7,10 +7,13 @@ import {
   IconChevronDown,
   IconChevronRight,
   IconMoon,
+  IconSearch,
   IconSun,
 } from "@tabler/icons-react";
 import { cn } from "cn";
+import { Kbd } from "@/components/ui/kbd";
 import { useTheme } from "@/components/ui/theme-provider";
+import { useSiteSpotlight } from "@/components/site/site-spotlight-context";
 
 const LazyPresetStudioPopover = React.lazy(() =>
   import("@/components/site/theme-customizer").then((module) => ({
@@ -161,6 +164,41 @@ export function ThemeModeToggle({ className }: { className?: string }) {
   );
 }
 
+function SiteSpotlightTrigger({
+  iconOnly = false,
+  className,
+}: {
+  iconOnly?: boolean;
+  className?: string;
+}) {
+  const { openSpotlight, preloadSpotlight } = useSiteSpotlight();
+
+  return (
+    <button
+      type="button"
+      data-slot="site-spotlight-trigger"
+      aria-label="Search Kira Kit"
+      aria-keyshortcuts="Control+K Meta+K"
+      onClick={openSpotlight}
+      onPointerEnter={preloadSpotlight}
+      onFocus={preloadSpotlight}
+      className={cn(
+        "docs-focus-ring inline-flex h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-full border border-border/80 bg-background/80 px-2.5 text-xs font-medium text-muted-foreground shadow-2xs transition-[background-color,border-color,color] duration-150 ease-out hover:border-border hover:bg-accent hover:text-foreground lg:h-9 lg:px-3",
+        iconOnly && "w-11 px-0 lg:w-9 lg:px-0",
+        className,
+      )}
+    >
+      <IconSearch aria-hidden="true" className="size-4 shrink-0" />
+      {!iconOnly && (
+        <>
+          <span className="text-muted-foreground">Search…</span>
+          <Kbd keys="mod+k" size="sm" />
+        </>
+      )}
+    </button>
+  );
+}
+
 function GitHubLink({
   iconOnly = false,
   className,
@@ -242,6 +280,8 @@ export function SiteHeader({ after, className }: SiteHeaderProps) {
             <span className="hidden sm:inline">Documentation</span>
             <IconArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
           </Link>
+          <SiteSpotlightTrigger iconOnly className="sm:hidden" />
+          <SiteSpotlightTrigger className="hidden sm:inline-flex" />
           <GitHubLink />
           <DeferredPresetStudioPopover
             showLabel={false}
@@ -336,6 +376,8 @@ export function PageTopBar({ crumb }: { crumb: string }) {
       </nav>
 
       <div className="flex shrink-0 items-center gap-1">
+        <SiteSpotlightTrigger iconOnly className="sm:hidden" />
+        <SiteSpotlightTrigger className="hidden sm:inline-flex" />
         <GitHubLink iconOnly />
         <DeferredPresetStudioPopover showLabel={false} className="lg:hidden" />
         <DeferredPresetStudioPopover className="hidden lg:inline-flex" />

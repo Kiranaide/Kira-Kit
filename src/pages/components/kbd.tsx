@@ -53,9 +53,9 @@ const variantsCode = `import { Kbd } from "@/components/ui/kbd"
 export function VariantsKbdDemo() {
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <Kbd variant="default">⌘K</Kbd>
-      <Kbd variant="outline">⌘K</Kbd>
-      <Kbd variant="ghost">⌘K</Kbd>
+      <Kbd variant="default" keys="mod+k" />
+      <Kbd variant="outline" keys="mod+k" />
+      <Kbd variant="ghost" keys="mod+k" />
     </div>
   )
 }`;
@@ -65,9 +65,9 @@ const sizesCode = `import { Kbd } from "@/components/ui/kbd"
 export function SizesKbdDemo() {
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <Kbd size="sm">⌘K</Kbd>
-      <Kbd size="default">⌘K</Kbd>
-      <Kbd size="lg">⌘K</Kbd>
+      <Kbd size="sm" keys="mod+k" />
+      <Kbd size="default" keys="mod+k" />
+      <Kbd size="lg" keys="mod+k" />
     </div>
   )
 }`;
@@ -236,9 +236,9 @@ function PlatformDemo() {
 function VariantsDemo() {
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <Kbd variant="default">⌘K</Kbd>
-      <Kbd variant="outline">⌘K</Kbd>
-      <Kbd variant="ghost">⌘K</Kbd>
+      <Kbd variant="default" keys="mod+k" />
+      <Kbd variant="outline" keys="mod+k" />
+      <Kbd variant="ghost" keys="mod+k" />
     </div>
   );
 }
@@ -246,9 +246,9 @@ function VariantsDemo() {
 function SizesDemo() {
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <Kbd size="sm">⌘K</Kbd>
-      <Kbd size="default">⌘K</Kbd>
-      <Kbd size="lg">⌘K</Kbd>
+      <Kbd size="sm" keys="mod+k" />
+      <Kbd size="default" keys="mod+k" />
+      <Kbd size="lg" keys="mod+k" />
     </div>
   );
 }
@@ -314,7 +314,7 @@ export default function KbdPage() {
       <PageHeader
         title="Kbd"
         description="Keyboard keycaps and shortcut display. 2026 shortcut grammar with platform-aware symbols, physical keycap depth, and composed screen-reader labels."
-        version="v2.0.0"
+        version="v2.0.1"
       />
 
       <FeatureGrid
@@ -584,6 +584,18 @@ const kbdPageAPISections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const kbdPageChangelogEntries = [
+  {
+    version: "2.0.1",
+    date: "27 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Client Hints platform detection and OS-aware demos",
+        description:
+          "Updated usePlatform to prefer navigator.userAgentData.platform before falling back to navigator.userAgent, and switched Variants and Sizes demos from hardcoded ⌘K children to keys='mod+k'.",
+      },
+    ],
+  },
   {
     version: "2.0.0",
     date: "4 November 2026",

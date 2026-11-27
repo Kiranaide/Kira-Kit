@@ -693,7 +693,7 @@ export default function SelectPage() {
     <ComponentPage>
       <PageHeader
         title="Select"
-        version="v3.4.0"
+        version="v3.4.1"
         description="Dropdown selection with a single prop-driven API (KiraSelect) covering multi-select, async loading, autocomplete, and creatable options."
       />
 
@@ -1085,6 +1085,18 @@ const selectPageAPISections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const selectPageChangelogEntries = [
+  {
+    version: "3.4.1",
+    date: "27 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Selected label stays visible as placeholder when opening",
+        description:
+          "Single-select KiraSelect now keeps the currently selected option's label as the input placeholder while open instead of flashing the generic 'Select...' placeholder, preventing trigger width jumps in content-sized controls.",
+      },
+    ],
+  },
   {
     version: "3.4.0",
     date: "18 November 2026",

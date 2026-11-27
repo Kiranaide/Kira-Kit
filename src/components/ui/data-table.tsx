@@ -116,6 +116,7 @@ import {
 import {
   isFunctionProp,
   isNumberProp,
+  isObjectProp,
   isStringProp,
   resolveComponentDefaults,
 } from "@/lib/component-utils";
@@ -191,16 +192,41 @@ const INTERACTIVE_SELECTOR =
 const isInteractiveTarget = (target: EventTarget | null) =>
   target instanceof Element && target.closest(INTERACTIVE_SELECTOR) !== null;
 
+function formatColumnId(id: string): string {
+  return id
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .trim()
+    .replace(/\b[a-z]/g, (char) => char.toUpperCase());
+}
+
+function readColumnMetaLabel(
+  columnDef: { meta?: unknown } | undefined,
+): string | undefined {
+  const meta = columnDef?.meta;
+
+  if (!isObjectProp(meta) || !("label" in meta)) return undefined;
+
+  return isStringProp(meta.label) && meta.label.trim() ? meta.label : undefined;
+}
+
 function columnLabel(
-  column: { id: string; columnDef: { header?: unknown } } | undefined,
+  column:
+    { id: string; columnDef: { header?: unknown; meta?: unknown } } | undefined,
+  registeredLabels?: Readonly<Record<string, string>>,
 ) {
-  const header = column?.columnDef.header;
+  if (!column) return "";
 
-  if (isStringProp(header)) return header;
+  const metaLabel = readColumnMetaLabel(column.columnDef);
 
-  return (column?.id ?? "")
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/_/g, " ");
+  if (metaLabel) return metaLabel;
+
+  const { header } = column.columnDef;
+
+  if (isStringProp(header) && header.trim()) return header;
+
+  return registeredLabels?.[column.id] ?? formatColumnId(column.id);
 }
 
 /** store.subscribe's return shape differs across TanStack Store versions. */
@@ -253,6 +279,8 @@ interface DataTableContextValue<TData extends RowData> {
   table: DTTable<TData>;
   density: DataTableDensity;
   setDensity: (density: DataTableDensity) => void;
+  columnLabels: Readonly<Record<string, string>>;
+  registerColumnLabel: (columnId: string, label: string) => void;
   enablePagination: boolean;
   enableVirtualization: boolean;
   enableKeyboardNavigation: boolean;
@@ -439,13 +467,14 @@ function describeChange<TData extends RowData>(
   table: DTTable<TData>,
   prev: DTState,
   next: DTState,
+  columnLabels?: Readonly<Record<string, string>>,
 ): string | null {
   if (next.sorting !== prev.sorting) {
     const s = next.sorting[0];
 
     if (!s) return "Sorting cleared";
 
-    return `Sorted by ${columnLabel(table.getColumn(s.id))}, ${s.desc ? "descending" : "ascending"}`;
+    return `Sorted by ${columnLabel(table.getColumn(s.id), columnLabels)}, ${s.desc ? "descending" : "ascending"}`;
   }
 
   if (
@@ -1287,19 +1316,29 @@ function DataTableSortableRow<TData extends RowData>({
   );
 }
 
-function DataTablePageCount() {
+interface DataTableCountProps {
+  className?: string;
+}
+
+function DataTablePageCount({ className }: DataTableCountProps = {}) {
   const { table } = useDataTable();
   const state = useTableState(table);
 
   return (
-    <div className="text-sm text-muted-foreground">
+    <div
+      data-slot="data-table-page-count"
+      className={cn(
+        "shrink-0 whitespace-nowrap text-sm tabular-nums text-muted-foreground",
+        className,
+      )}
+    >
       Page {state.pagination.pageIndex + 1} of{" "}
       {Math.max(1, table.getPageCount())}
     </div>
   );
 }
 
-function DataTableRowCount() {
+function DataTableRowCount({ className }: DataTableCountProps = {}) {
   const { table } = useDataTable();
   useTableState(table);
   const selectedCount = table.getFilteredSelectedRowModel().rows.length;
@@ -1308,7 +1347,13 @@ function DataTableRowCount() {
     table.options.rowCount ?? table.getFilteredRowModel().rows.length;
 
   return (
-    <div className="text-sm text-muted-foreground">
+    <div
+      data-slot="data-table-row-count"
+      className={cn(
+        "shrink-0 whitespace-nowrap text-sm tabular-nums text-muted-foreground",
+        className,
+      )}
+    >
       {selectedCount > 0
         ? `${selectedCount} of ${totalCount} row(s) selected`
         : `${totalCount} row(s)`}
@@ -1324,6 +1369,7 @@ interface DataTablePaginationProps {
   showFirstLast?: boolean;
   variant?: "default" | "outline" | "ghost";
   size?: "sm" | "default" | "lg";
+  className?: string;
 }
 
 function DataTablePagination(input: DataTablePaginationProps) {
@@ -1335,6 +1381,7 @@ function DataTablePagination(input: DataTablePaginationProps) {
     showPreviousNextText,
     variant,
     size,
+    className,
   } = resolveComponentDefaults(input, DATA_TABLE_PAGINATION_DEFAULTS_1);
 
   const { table, enablePagination } = useDataTable();
@@ -1359,6 +1406,7 @@ function DataTablePagination(input: DataTablePaginationProps) {
       aria-label="Pagination"
       variant={variant}
       size={size}
+      className={cn("w-auto flex-1", className)}
     />
   );
 }
@@ -1378,6 +1426,15 @@ function DataTableColumnHeader<TData extends RowData, TValue>({
   className,
   showPinning = false,
 }: DataTableColumnHeaderProps<TData, TValue>) {
+  const tableContext = React.useContext(DataTableContext);
+  const registerColumnLabel = tableContext?.registerColumnLabel;
+
+  React.useEffect(() => {
+    if (registerColumnLabel && title.trim()) {
+      registerColumnLabel(column.id, title);
+    }
+  }, [registerColumnLabel, column.id, title]);
+
   const resolveNext3 = () => {
     if (sorted === false) {
       return "ascending" as const;
@@ -1449,6 +1506,7 @@ function DataTableResizeHandle<TData extends RowData, TValue>({
 }: {
   header: DTHeader<TData, TValue>;
 }) {
+  const tableContext = React.useContext(DataTableContext);
   const column = header.column;
   const { table } = header.getContext();
   const size = Math.round(header.getSize());
@@ -1487,7 +1545,7 @@ function DataTableResizeHandle<TData extends RowData, TValue>({
       // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This compound divider preserves its div styling and inherited DOM contract while exposing separator semantics.
       role="separator"
       aria-orientation="vertical"
-      aria-label={`Resize ${columnLabel(column)} column`}
+      aria-label={`Resize ${columnLabel(column, tableContext?.columnLabels)} column`}
       aria-valuenow={size}
       aria-valuemin={minSize}
       aria-valuemax={maxSize}
@@ -1511,6 +1569,7 @@ function DataTableColumnPinningMenu<TData extends RowData, TValue>({
 }: {
   column: DTColumn<TData, TValue>;
 }) {
+  const tableContext = React.useContext(DataTableContext);
   const pinned = column.getIsPinned(); // "start" | "end" | false
 
   return (
@@ -1520,7 +1579,7 @@ function DataTableColumnPinningMenu<TData extends RowData, TValue>({
           <button
             type="button"
             onClick={(e) => e.stopPropagation()}
-            aria-label={`${columnLabel(column)} column options`}
+            aria-label={`${columnLabel(column, tableContext?.columnLabels)} column options`}
             // Visible on hover, keyboard focus, while open, and always on touch
             // screens (no hover there).
             className="rounded p-1 opacity-0 transition-opacity hover:bg-muted group-hover:opacity-100 focus-visible:opacity-100 data-popup-open:opacity-100 pointer-coarse:opacity-100"
@@ -1662,7 +1721,7 @@ function createDragHandleColumn<TData extends RowData>(): DTColumnDef<TData> {
 }
 
 function DataTableColumnVisibility() {
-  const { table } = useDataTable();
+  const { table, columnLabels } = useDataTable();
   useTableState(table);
 
   return (
@@ -1676,7 +1735,7 @@ function DataTableColumnVisibility() {
         .getAllLeafColumns()
         .filter((col) => col.getCanHide())
         .map((column) => {
-          const label = columnLabel(column);
+          const label = columnLabel(column, columnLabels);
 
           return (
             <label key={column.id} className="flex items-center gap-2 text-sm">
@@ -2029,7 +2088,7 @@ function NumberRangeFilter(inputProps: NumberRangeFilterProps) {
       step: 1,
     });
 
-  const { table } = useDataTable();
+  const { table, columnLabels } = useDataTable();
   const column = table.getColumn(columnId);
   const value = useColumnFilterValue(columnId);
   const [min, max] = parseOptionalPair<number>(value, isNumber);
@@ -2044,18 +2103,19 @@ function NumberRangeFilter(inputProps: NumberRangeFilterProps) {
     );
 
   const parse = parseNumberInput;
+  const label = columnLabel(column, columnLabels);
 
   return (
     <div
       className={cn("flex items-center gap-2", className)}
       // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This composite div groups controls or content without introducing fieldset form behavior, default styling, or a different public ref element.
       role="group"
-      aria-label={`${columnLabel(column)} range`}
+      aria-label={`${label} range`}
     >
       <Input
         type="number"
         size="sm"
-        aria-label={`Minimum ${columnLabel(column)}`}
+        aria-label={`Minimum ${label}`}
         placeholder={minPlaceholder}
         value={min ?? ""}
         onChange={(e) => set(parse(e.target.value), max)}
@@ -2068,7 +2128,7 @@ function NumberRangeFilter(inputProps: NumberRangeFilterProps) {
       <Input
         type="number"
         size="sm"
-        aria-label={`Maximum ${columnLabel(column)}`}
+        aria-label={`Maximum ${label}`}
         placeholder={maxPlaceholder}
         value={max ?? ""}
         onChange={(e) => set(min, parse(e.target.value))}
@@ -2086,7 +2146,7 @@ interface DateRangeFilterProps {
 
 /** Pair with `filterFn: dateRangeFilterFn`. */
 function DateRangeFilter({ columnId, className }: DateRangeFilterProps) {
-  const { table } = useDataTable();
+  const { table, columnLabels } = useDataTable();
   const column = table.getColumn(columnId);
   const value = useColumnFilterValue(columnId);
   const [from, to] = parseOptionalPair<string>(value, isString);
@@ -2103,7 +2163,7 @@ function DateRangeFilter({ columnId, className }: DateRangeFilterProps) {
       className={cn("flex items-center gap-2", className)}
       // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- This composite div groups controls or content without introducing fieldset form behavior, default styling, or a different public ref element.
       role="group"
-      aria-label={`${columnLabel(column)} date range`}
+      aria-label={`${columnLabel(column, columnLabels)} date range`}
     >
       <Input
         type="date"
@@ -2333,8 +2393,108 @@ interface DataTableBulkActionsProps {
   children: React.ReactNode;
   className?: string;
   onClearSelection?: () => void;
-  /** Float the bar over scrolled content (sticky bottom overlay). */
+  /** Float the bar as a bottom overlay dock without reserving layout height. */
   sticky?: boolean;
+}
+
+const BULK_DOCK_EXIT_MS = 220;
+
+function useStickyDockTransition(active: boolean, selectedCount: number) {
+  const [mounted, setMounted] = React.useState(active);
+  const [entered, setEntered] = React.useState(active);
+  const [lastCount, setLastCount] = React.useState(selectedCount);
+
+  if (active && !mounted) {
+    setMounted(true);
+  }
+
+  if (!active && entered) {
+    setEntered(false);
+  }
+
+  if (selectedCount > 0 && selectedCount !== lastCount) {
+    setLastCount(selectedCount);
+  }
+
+  React.useEffect(() => {
+    if (!active) {
+      if (!mounted) return;
+      const timer = setTimeout(() => setMounted(false), BULK_DOCK_EXIT_MS);
+
+      return () => clearTimeout(timer);
+    }
+
+    const frame = requestAnimationFrame(() => setEntered(true));
+
+    return () => cancelAnimationFrame(frame);
+  }, [active, mounted]);
+
+  const handleTransitionEnd = (
+    event: React.TransitionEvent<HTMLDivElement>,
+  ) => {
+    if (event.target === event.currentTarget && !active) {
+      setMounted(false);
+    }
+  };
+
+  return {
+    mounted,
+    visible: active && entered,
+    displayCount: selectedCount > 0 ? selectedCount : lastCount,
+    handleTransitionEnd,
+  };
+}
+
+function DataTableBulkActionsBar({
+  displayCount,
+  sticky,
+  className,
+  onClear,
+  children,
+}: {
+  displayCount: number;
+  sticky: boolean;
+  className?: string;
+  onClear: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      data-slot="data-table-bulk-actions"
+      role="toolbar"
+      aria-label="Bulk actions"
+      className={cn(
+        "flex max-w-full flex-wrap items-center gap-3 rounded-lg border border-border bg-muted/50 px-3 py-2",
+        sticky
+          ? "pointer-events-auto rounded-xl border-border/80 bg-popover/95 text-popover-foreground shadow-[var(--shadow-modal,var(--shadow-xl))] ring-1 ring-foreground/5 backdrop-blur-md"
+          : "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-1 motion-safe:duration-200 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]",
+        className,
+      )}
+    >
+      <div className="flex items-center gap-2 text-sm font-medium">
+        <span
+          key={displayCount}
+          data-slot="data-table-bulk-count"
+          className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-primary px-2 text-xs font-semibold tabular-nums text-primary-foreground motion-safe:animate-in motion-safe:zoom-in-95 motion-safe:duration-150"
+        >
+          {displayCount}
+        </span>
+        <span className="whitespace-nowrap">selected</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onClear}
+          className="h-6 px-2 text-muted-foreground hover:text-foreground"
+          aria-label="Clear selection"
+        >
+          {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
+          <IconX className="size-3.5" aria-hidden="true" />
+        </Button>
+      </div>
+      <div className="h-4 w-px bg-border" aria-hidden="true" />
+      <div className="flex flex-wrap items-center gap-2">{children}</div>
+    </div>
+  );
 }
 
 function DataTableBulkActions({
@@ -2350,52 +2510,38 @@ function DataTableBulkActions({
     Boolean,
   ).length;
 
-  const hidden = selectedCount === 0;
+  const active = selectedCount > 0;
+  const dock = useStickyDockTransition(sticky && active, selectedCount);
 
-  if (!sticky && hidden) return null;
+  if (!active && (!sticky || !dock.mounted)) return null;
 
   const bar = (
-    <div
-      role="toolbar"
-      aria-label="Bulk actions"
-      className={cn(
-        "flex items-center gap-3 rounded-lg border border-border bg-muted/50 px-4 py-2",
-        sticky && "bg-background shadow-lg",
-        className,
-      )}
+    <DataTableBulkActionsBar
+      displayCount={dock.displayCount}
+      sticky={sticky}
+      className={className}
+      onClear={onClearSelection ?? (() => table.resetRowSelection())}
     >
-      <div className="flex items-center gap-2 text-sm font-medium">
-        <span className="whitespace-nowrap">{selectedCount} selected</span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() =>
-            onClearSelection ? onClearSelection() : table.resetRowSelection()
-          }
-          className="h-6 px-2"
-          aria-label="Clear selection"
-        >
-          {/* kira-kit-ignore spacing-scale: 14px icon optically matches sm/compact controls; documented half-step exception */}
-          <IconX className="size-3.5" aria-hidden="true" />
-        </Button>
-      </div>
-      <div className="h-4 w-px bg-border" aria-hidden="true" />
-      <div className="flex items-center gap-2">{children}</div>
-    </div>
+      {children}
+    </DataTableBulkActionsBar>
   );
 
   if (!sticky) return bar;
 
   return (
-    <div className="sticky bottom-4 z-30">
+    <div
+      data-slot="data-table-bulk-actions-dock"
+      className="pointer-events-none fixed inset-x-0 bottom-6 z-40 m-0! flex justify-center px-4"
+    >
       <div
         // inert (not just aria-hidden): the hidden bar's buttons must leave the tab order.
-        inert={hidden}
+        inert={!dock.visible}
+        onTransitionEnd={dock.handleTransitionEnd}
         className={cn(
-          "motion-safe:transition-[transform,opacity] motion-safe:duration-200 motion-safe:ease-out",
-          hidden
-            ? "pointer-events-none translate-y-2 opacity-0"
-            : "translate-y-0 opacity-100",
+          "max-w-full motion-safe:transition-[transform,opacity] motion-reduce:transition-none",
+          dock.visible
+            ? "pointer-events-auto translate-y-0 scale-100 opacity-100 duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            : "pointer-events-none translate-y-4 scale-95 opacity-0 duration-200 ease-in",
         )}
       >
         {bar}
@@ -2913,6 +3059,7 @@ export type {
   DTColumn,
   DataTableProps,
   DataTableContentProps,
+  DataTableCountProps,
   DataTableSearchProps,
   DataTablePaginationProps,
   DataTableSkeletonProps,
@@ -3618,7 +3765,60 @@ function useDataTableState2<TData extends RowData, TValue>(
   // Live announcements for sort / filter / page changes.
   const [announcement, setAnnouncement] = React.useState("");
 
-  return { ...state, densityState, setDensity, announcement, setAnnouncement };
+  const [columnLabels, setColumnLabels] = React.useState<
+    Record<string, string>
+  >({});
+
+  const registerColumnLabel = React.useCallback(
+    (columnId: string, label: string) => {
+      setColumnLabels((prev) =>
+        prev[columnId] === label ? prev : { ...prev, [columnId]: label },
+      );
+    },
+    [],
+  );
+
+  return {
+    ...state,
+    densityState,
+    setDensity,
+    columnLabels,
+    registerColumnLabel,
+    announcement,
+    setAnnouncement,
+  };
+}
+
+function useTableAnnouncements<TData extends RowData>(
+  table: DTTable<TData>,
+  announceChanges: boolean,
+  columnLabels: Readonly<Record<string, string>>,
+  setAnnouncement: React.Dispatch<React.SetStateAction<string>>,
+) {
+  const formatChange = React.useEffectEvent((prev: DTState, next: DTState) =>
+    describeChange(table, prev, next, columnLabels),
+  );
+
+  React.useEffect(() => {
+    if (!announceChanges) return;
+    let prev = table.store.state;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const unsubscribe = subscribeTable(table, () => {
+      const next = table.store.state;
+      const message = formatChange(prev, next);
+      prev = next;
+
+      if (!message) return;
+      clearTimeout(timer);
+      timer = setTimeout(() => setAnnouncement(message), 500);
+    });
+
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [table, announceChanges, setAnnouncement]);
 }
 
 function useDataTableActions<TData extends RowData, TValue>(
@@ -3638,29 +3838,12 @@ function useDataTableActions<TData extends RowData, TValue>(
     table,
     densityState,
     setDensity,
+    columnLabels,
+    registerColumnLabel,
     setAnnouncement,
   } = state;
 
-  React.useEffect(() => {
-    if (!announceChanges) return;
-    let prev = table.store.state;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-
-    const unsubscribe = subscribeTable(table, () => {
-      const next = table.store.state;
-      const message = describeChange(table, prev, next);
-      prev = next;
-
-      if (!message) return;
-      clearTimeout(timer);
-      timer = setTimeout(() => setAnnouncement(message), 500);
-    });
-
-    return () => {
-      clearTimeout(timer);
-      unsubscribe();
-    };
-  }, [table, announceChanges, setAnnouncement]);
+  useTableAnnouncements(table, announceChanges, columnLabels, setAnnouncement);
 
   // SAFETY: the provider below serves this exact table instance, so reading
   // the context inside this provider yields this TData; the context type
@@ -3673,6 +3856,8 @@ function useDataTableActions<TData extends RowData, TValue>(
       table: contextTable,
       density: densityState,
       setDensity,
+      columnLabels,
+      registerColumnLabel,
       enablePagination:
         enablePagination && (!enableVirtualization || serverPaged),
       enableVirtualization,
@@ -3687,6 +3872,8 @@ function useDataTableActions<TData extends RowData, TValue>(
       contextTable,
       densityState,
       setDensity,
+      columnLabels,
+      registerColumnLabel,
       enablePagination,
       enableVirtualization,
       serverPaged,
