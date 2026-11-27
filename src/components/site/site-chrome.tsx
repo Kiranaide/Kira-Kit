@@ -113,7 +113,6 @@ export function SiteBrand({ className }: { className?: string }) {
   return (
     <Link
       to="/"
-      aria-label="Kira Kit home"
       data-slot="site-brand"
       className={cn(
         "docs-focus-ring flex shrink-0 items-center gap-2 rounded-[8px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring",
@@ -127,7 +126,7 @@ export function SiteBrand({ className }: { className?: string }) {
         K
       </span>
       <span className="text-[17px] font-bold tracking-[-0.02em] text-foreground">
-        Kira Kit
+        Kira Kit<span className="sr-only"> home</span>
       </span>
     </Link>
   );
