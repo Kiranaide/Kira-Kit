@@ -1069,7 +1069,8 @@ function renderCommandDialogSectionPart1({
               "max-h-[calc(100dvh-4rem)] overflow-hidden p-0 transition-[opacity,scale] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] data-starting-style:scale-97 data-starting-style:opacity-0 data-ending-style:scale-97 data-ending-style:opacity-0 data-ending-style:duration-150 motion-reduce:transition-none motion-reduce:data-starting-style:scale-100 motion-reduce:data-starting-style:opacity-100 motion-reduce:data-ending-style:scale-100 motion-reduce:data-ending-style:opacity-100 *:data-[slot=command]:rounded-none *:data-[slot=command]:border-0",
               reducedMotion &&
                 "transition-none data-starting-style:scale-100 data-starting-style:opacity-100 data-ending-style:scale-100 data-ending-style:opacity-100",
-              showCloseButton && "**:data-[slot=command-input-wrapper]:pr-12",
+              showCloseButton &&
+                "[&:not(:has([data-slot=command-breadcrumb]))]:**:data-[slot=command-input-wrapper]:pe-12 [&:has([data-slot=command-breadcrumb])]:**:data-[slot=command-breadcrumb]:pe-12",
               className,
               popupClassName,
             )}
@@ -1284,7 +1285,7 @@ function renderCommandBreadcrumbPart5({
   return (
     <div
       data-slot="command-breadcrumb"
-      className="flex min-w-0 shrink-0 items-center gap-2 border-b border-border p-2"
+      className="flex min-w-0 shrink-0 items-center gap-2 border-b border-border px-2 py-3"
     >
       <Button
         size="sm"
