@@ -834,8 +834,12 @@ function SidebarHint({
 }) {
   const { expanded, side } = useSidebar();
 
+  if (expanded) {
+    return children;
+  }
+
   return (
-    <Tooltip disabled={expanded}>
+    <Tooltip>
       <TooltipTrigger data-slot={slot} render={children} />
       <TooltipContent side={side === "left" ? "right" : "left"}>
         {label}
