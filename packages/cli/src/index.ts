@@ -169,7 +169,7 @@ program
   .description("Scaffold a new project pre-wired for Kira Kit")
   .option(
     "-t, --template <template>",
-    "Template: vite, next, tanstack-start, monorepo",
+    "Template: vite, next, astro, tanstack-start",
   )
   .option("--install", "Install dependencies after scaffolding")
   .option("--no-install", "Skip dependency installation")

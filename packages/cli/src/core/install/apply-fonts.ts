@@ -19,6 +19,7 @@ import { ensureNpmDeps, type DepInstaller } from "./deps";
 
 const CSS_CANDIDATES = [
   "src/index.css",
+  "src/styles.css",
   "src/app/globals.css",
   "app/globals.css",
   "src/styles/global.css",
