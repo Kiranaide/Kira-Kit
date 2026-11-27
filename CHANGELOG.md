@@ -6,6 +6,17 @@ components are source files you own, so entries describe the registry surface
 you install, not a published package's dependency tree. The CLI is versioned
 with Changesets; per-component history lives on each component's docs page.
 
+## 0.7.1 — November 27, 2026
+
+### Changed
+
+- **`kira-kit create` now delegates to official upstream scaffolders.** Replaced the bundled static starter templates (`vite`, `next`, `tanstack-start`, `monorepo`) with live delegation to `create-vite`, `create-next-app`, `create-astro`, and `@tanstack/cli`, followed by `kira-kit init` to configure `kira-kit.json`, Tailwind CSS v4, `@/*` aliases, and base styles. Dropped the `monorepo` template and added `astro`.
+
+### Fixed
+
+- **Cleared Socket.dev tarball alerts on `kira-kit`.** Removed all static template `package.json` files from the published CLI tarball (`files: ["dist"]`, 3 files total) so scanners no longer flag Next.js template manifests (`postcss` CVEs `GHSA-r28c-9q8g-f849`, `GHSA-6g55-p6wh-862q`, `GHSA-fxqj-rqcc-2cmp`, `GHSA-qx2v-qp2m-jg93`, and `caniuse-lite`) against `kira-kit`.
+- **TanStack Start stylesheet detection and `--no-install` init support.** Added `src/styles.css` to `detectCssPath` candidates and added `skipDeps` support to `init` so `kira-kit create --no-install` still wires config, CSS, and bundler settings cleanly.
+
 ## 0.7.0 — November 27, 2026
 
 ### Added
