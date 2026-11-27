@@ -262,8 +262,8 @@ describe("applyFonts (existing project)", () => {
 
     writeCss(dir, KIT_CSS);
     writeFileSync(
-      join(dir, "components.json"),
-      JSON.stringify({ style: "kira", tailwind: { css: "src/index.css" } }),
+      join(dir, "kira-kit.json"),
+      JSON.stringify({ css: "src/index.css" }),
       "utf-8",
     );
 
@@ -282,12 +282,12 @@ describe("applyFonts (existing project)", () => {
     expect(css).toContain('@import "@fontsource-variable/jetbrains-mono";');
     expect(css).toContain("--primary: oklch(0.59 0.22 1);");
 
-    const config = readJson<{ font: string; fontMono: string }>(
-      join(dir, "components.json"),
+    const config = readJson<{ theme: { font: string; fontMono: string } }>(
+      join(dir, "kira-kit.json"),
     );
 
-    expect(config.font).toBe("manrope");
-    expect(config.fontMono).toBe("jetbrains-mono");
+    expect(config.theme.font).toBe("manrope");
+    expect(config.theme.fontMono).toBe("jetbrains-mono");
     expect(calls.flat()).toEqual([
       "@fontsource-variable/manrope",
       "@fontsource-variable/jetbrains-mono",
@@ -298,8 +298,8 @@ describe("applyFonts (existing project)", () => {
     const dir = tempConsumer();
 
     writeFileSync(
-      join(dir, "components.json"),
-      JSON.stringify({ tailwind: { css: "styles/app.css" } }),
+      join(dir, "kira-kit.json"),
+      JSON.stringify({ css: "styles/app.css" }),
       "utf-8",
     );
 
@@ -343,8 +343,8 @@ describe("theme command (font and icon options)", () => {
 
     writeCss(dir, KIT_CSS);
     writeFileSync(
-      join(dir, "components.json"),
-      JSON.stringify({ style: "kira" }),
+      join(dir, "kira-kit.json"),
+      JSON.stringify({ css: "src/index.css" }),
       "utf-8",
     );
 
@@ -397,7 +397,7 @@ describe("theme command (font and icon options)", () => {
     );
 
     const config = readJson<{ iconLibrary: string }>(
-      join(dir, "components.json"),
+      join(dir, "kira-kit.json"),
     );
 
     expect(config.iconLibrary).toBe("lucide");
@@ -410,8 +410,8 @@ describe("theme command (base color, font preset, radius, surface)", () => {
 
     writeCss(dir, KIT_CSS);
     writeFileSync(
-      join(dir, "components.json"),
-      JSON.stringify({ style: "kira", tailwind: { css: "src/index.css" } }),
+      join(dir, "kira-kit.json"),
+      JSON.stringify({ css: "src/index.css" }),
       "utf-8",
     );
 
@@ -444,22 +444,24 @@ describe("theme command (base color, font preset, radius, surface)", () => {
     expect(css).toContain("--primary: oklch(0.59 0.22 1);");
 
     const config = readJson<{
-      font: string;
-      fontDisplay: string;
-      fontMono: string;
-      fontPreset: string;
-      radius: string;
-      surface: string;
-      tailwind: { baseColor: string };
-    }>(join(dir, "components.json"));
+      theme: {
+        font: string;
+        fontDisplay: string;
+        fontMono: string;
+        fontPreset: string;
+        radius: string;
+        surface: string;
+        baseColor: string;
+      };
+    }>(join(dir, "kira-kit.json"));
 
-    expect(config.font).toBe("instrument-sans");
-    expect(config.fontDisplay).toBe("newsreader");
-    expect(config.fontMono).toBe("jetbrains-mono");
-    expect(config.fontPreset).toBe("editorial");
-    expect(config.radius).toBe("crisp");
-    expect(config.surface).toBe("tactile");
-    expect(config.tailwind.baseColor).toBe("paper");
+    expect(config.theme.font).toBe("instrument-sans");
+    expect(config.theme.fontDisplay).toBe("newsreader");
+    expect(config.theme.fontMono).toBe("jetbrains-mono");
+    expect(config.theme.fontPreset).toBe("editorial");
+    expect(config.theme.radius).toBe("crisp");
+    expect(config.theme.surface).toBe("tactile");
+    expect(config.theme.baseColor).toBe("paper");
 
     expect(
       await theme({
@@ -496,13 +498,12 @@ describe("init (typography)", () => {
     expect(code).toBe(0);
 
     const config = readJson<{
-      font: string;
-      fontMono: string;
       iconLibrary: string;
-    }>(join(dir, "components.json"));
+      theme: { font: string; fontMono: string };
+    }>(join(dir, "kira-kit.json"));
 
-    expect(config.font).toBe("inter");
-    expect(config.fontMono).toBe("fira-code");
+    expect(config.theme.font).toBe("inter");
+    expect(config.theme.fontMono).toBe("fira-code");
     expect(config.iconLibrary).toBe("lucide");
 
     const css = readFileSync(join(dir, "src/index.css"), "utf-8");
@@ -531,13 +532,12 @@ describe("init (typography)", () => {
     });
 
     const config = readJson<{
-      font: string;
-      fontMono: string;
       iconLibrary: string;
-    }>(join(dir, "components.json"));
+      theme: { font: string; fontMono: string };
+    }>(join(dir, "kira-kit.json"));
 
-    expect(config.font).toBe("geist");
-    expect(config.fontMono).toBe("geist-mono");
+    expect(config.theme.font).toBe("geist");
+    expect(config.theme.fontMono).toBe("geist-mono");
     expect(config.iconLibrary).toBe("tabler");
     expect(calls.flat()).toContain("@tabler/icons-react");
     expect(calls.flat()).toContain("@fontsource-variable/geist-mono");
@@ -564,8 +564,8 @@ describe("init (existing projects)", () => {
 
     writeCss(dir, KIT_CSS);
     writeFileSync(
-      join(dir, "components.json"),
-      JSON.stringify({ style: "kira", font: "manrope" }),
+      join(dir, "kira-kit.json"),
+      JSON.stringify({ theme: { font: "manrope" } }),
       "utf-8",
     );
 

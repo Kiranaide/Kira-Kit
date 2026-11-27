@@ -27,7 +27,7 @@ async function allItemAddresses(cwd: string): Promise<string[]> {
   if (names.length === 0) {
     throw new RegistryError(
       "The registry index contains no installable items.",
-      "Check the '@kira-kit' registry URL in components.json.",
+      "Check the '@kira-kit' registry URL in kira-kit.json.",
     );
   }
 

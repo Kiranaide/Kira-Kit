@@ -64,7 +64,7 @@ function makeFixtureProject(): string {
   const registryTemplate = `${pathToFileURL(registryDir).href}/{name}.json`;
 
   writeFileSync(
-    join(root, "components.json"),
+    join(root, "kira-kit.json"),
     JSON.stringify({
       registries: { "@kira-kit": registryTemplate },
     }),

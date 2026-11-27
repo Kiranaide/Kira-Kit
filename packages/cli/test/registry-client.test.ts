@@ -62,7 +62,7 @@ describe("resolveAddress", () => {
     });
   });
 
-  it("resolves namespaces through components.json registries", () => {
+  it("resolves namespaces through kira-kit.json registries", () => {
     const resolved = resolveAddress("@custom/foo", {
       cwd: "/app",
       registries: { "@custom": "https://example.com/r/{name}.json" },

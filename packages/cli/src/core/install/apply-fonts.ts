@@ -2,8 +2,8 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   readRawConfig,
-  updateRawConfig,
-  type RawComponentsConfig,
+  updateThemeConfig,
+  type RawKiraThemeConfig,
 } from "../../lib/config";
 import { success } from "../../lib/logger";
 import {
@@ -31,7 +31,7 @@ const DISPLAY_HEADING_FAMILY =
   "font-family: var(--font-display, var(--font-sans));";
 
 export function detectCssPath(cwd: string): string {
-  const configured = readRawConfig(cwd)?.tailwind?.css;
+  const configured = readRawConfig(cwd)?.css;
 
   if (configured) return configured;
 
@@ -182,7 +182,7 @@ function recordFontConfig(
 ): void {
   if (!readRawConfig(cwd)) return;
 
-  const patch: Partial<RawComponentsConfig> = {
+  const patch: Partial<RawKiraThemeConfig> = {
     font: sans.name,
     fontMono: mono.name,
   };
@@ -191,7 +191,7 @@ function recordFontConfig(
 
   if (options.fontPreset) patch.fontPreset = options.fontPreset;
 
-  updateRawConfig(cwd, patch);
+  updateThemeConfig(cwd, patch);
 }
 
 function wantedFontPackages(
@@ -208,7 +208,7 @@ function wantedFontPackages(
   return wanted;
 }
 
-/** Apply fonts to an existing project: CSS, components.json, missing packages. */
+/** Apply fonts to an existing project: CSS, kira-kit.json, missing packages. */
 export async function applyFonts(
   cwd: string,
   sans: FontSpec,

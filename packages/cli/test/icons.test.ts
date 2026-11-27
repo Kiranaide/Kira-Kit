@@ -334,7 +334,7 @@ describe("applyIconLibrary", () => {
     );
 
     const config = readJson<{ iconLibrary: string }>(
-      join(dir, "components.json"),
+      join(dir, "kira-kit.json"),
     );
 
     const pkg = readJson<{ dependencies: Record<string, string> }>(
@@ -383,7 +383,7 @@ describe("applyIconLibrary", () => {
     );
 
     const config = readJson<{ iconLibrary: string }>(
-      join(dir, "components.json"),
+      join(dir, "kira-kit.json"),
     );
 
     expect(config.iconLibrary).toBe("tabler");

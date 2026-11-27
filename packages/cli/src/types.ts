@@ -1,9 +1,6 @@
 import type { DepInstaller } from "./core/install/deps";
 import type { z } from "zod";
-import type {
-  componentsConfigSchema,
-  RegistryItemPayload,
-} from "./lib/schemas";
+import type { kiraConfigSchema, RegistryItemPayload } from "./lib/schemas";
 
 export type RegistryItemType =
   | "registry:ui"
@@ -38,8 +35,8 @@ export interface RegistryItem {
   };
 }
 
-/** components.json shape is owned by the zod schema in lib/schemas. */
-export type ComponentsConfig = z.infer<typeof componentsConfigSchema>;
+/** kira-kit.json shape is owned by the zod schema in lib/schemas. */
+export type KiraConfig = z.infer<typeof kiraConfigSchema>;
 
 export interface AddOptions {
   items: string[];

@@ -4,33 +4,35 @@ export const KIRA_NAMESPACE = "@kira-kit";
 
 export const DEFAULT_REGISTRY_URL = "https://kira-kit.vercel.app/r/{name}.json";
 
-/**
- * components.json as written by kira-kit init. Deliberately loose: legacy
- * configs parse too, and unknown keys are preserved verbatim on write.
- */
-export const componentsConfigSchema = z.looseObject({
-  $schema: z.string().optional(),
-  style: z.string().optional(),
-  rsc: z.boolean().optional(),
-  tsx: z.boolean().optional(),
-  tailwind: z
-    .looseObject({
-      css: z.string().optional(),
-      baseColor: z.string().optional(),
-      cssVariables: z.boolean().optional(),
-    })
-    .optional(),
-  iconLibrary: z.string().optional(),
+export const CONFIG_FILENAME = "kira-kit.json";
+
+export const LEGACY_CONFIG_FILENAME = "components.json";
+
+export const kiraThemeConfigSchema = z.looseObject({
+  preset: z.string().optional(),
+  primary: z.string().optional(),
+  baseColor: z.string().optional(),
   font: z.string().optional(),
   fontDisplay: z.string().optional(),
   fontMono: z.string().optional(),
   fontPreset: z.string().optional(),
   radius: z.string().optional(),
   surface: z.string().optional(),
+});
+
+/**
+ * kira-kit.json as written by kira-kit init. Deliberately loose so unknown
+ * user keys are preserved verbatim on write.
+ */
+export const kiraConfigSchema = z.looseObject({
+  $schema: z.string().optional(),
+  css: z.string().optional(),
+  rsc: z.boolean().optional(),
+  iconLibrary: z.string().optional(),
+  theme: kiraThemeConfigSchema.optional(),
   aliases: z
     .looseObject({
       components: z.string().optional(),
-      utils: z.string().optional(),
       ui: z.string().optional(),
       lib: z.string().optional(),
       hooks: z.string().optional(),

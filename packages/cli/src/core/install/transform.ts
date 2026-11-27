@@ -1,14 +1,14 @@
-/** Consumer import aliases (components.json `aliases`), with defaults. */
+/** Consumer import aliases (kira-kit.json `aliases`), with defaults. */
 export interface ImportAliases {
   components: string;
   ui: string;
   hooks: string;
   lib: string;
-  utils: string;
+  utils?: string;
 }
 
 /** Longest prefixes first so "@/components/ui/" beats "@/components/". */
-const PREFIX_RULES: Array<[string, keyof ImportAliases]> = [
+const PREFIX_RULES: Array<[string, keyof Omit<ImportAliases, "utils">]> = [
   ["@/components/ui/", "ui"],
   ["@/hooks/", "hooks"],
   ["@/lib/", "lib"],
@@ -16,7 +16,7 @@ const PREFIX_RULES: Array<[string, keyof ImportAliases]> = [
 ];
 
 function rewriteSpecifier(specifier: string, aliases: ImportAliases): string {
-  if (specifier === "@/lib/utils") return aliases.utils;
+  if (specifier === "@/lib/utils" && aliases.utils) return aliases.utils;
 
   for (const [prefix, key] of PREFIX_RULES) {
     if (specifier.startsWith(prefix)) {

@@ -1,9 +1,9 @@
 import { dirname, resolve } from "node:path";
-import { readConfig } from "../../lib/config";
+import { findLegacyConfigFile, readConfig } from "../../lib/config";
 import { ValidationError } from "../../lib/errors";
 import { warning } from "../../lib/logger";
 import type { RegistryItemPayload } from "../../lib/schemas";
-import type { ComponentsConfig } from "../../types";
+import type { KiraConfig } from "../../types";
 import { createClientContext, resolveTree } from "./client";
 import { applyItemStyles, type ApplyItemStylesResult } from "../css/stylesheet";
 import {
@@ -62,7 +62,7 @@ function transformContent(
   file: { path: string; content: string },
   item: RegistryItemPayload,
   aliases: ImportAliases,
-  config: ComponentsConfig,
+  config: KiraConfig,
 ): string {
   const content = file.content.replaceAll("\r\n", "\n");
 
@@ -84,13 +84,11 @@ function fileTarget(
   file: { path: string; target?: string },
   item: RegistryItemPayload,
   roots: AliasRoots,
-  config: ComponentsConfig,
+  config: KiraConfig,
   options: InstallOptions,
 ): string {
   if (item.type === "registry:style") {
-    const cssDir = dirname(
-      resolve(options.cwd, config.tailwind?.css ?? "src/index.css"),
-    );
+    const cssDir = dirname(resolve(options.cwd, config.css ?? "src/index.css"));
 
     const base = file.path.replaceAll("\\", "/").split("/").pop() ?? file.path;
 
@@ -102,7 +100,7 @@ function fileTarget(
 
 function buildWriteRequests(
   items: RegistryItemPayload[],
-  config: ComponentsConfig,
+  config: KiraConfig,
   options: InstallOptions,
 ): WriteRequest[] {
   const roots = resolveAliasRoots(options.cwd, config);
@@ -124,7 +122,7 @@ function buildWriteRequests(
 
 function applyStyles(
   items: RegistryItemPayload[],
-  config: ComponentsConfig,
+  config: KiraConfig,
   options: InstallOptions,
 ): ApplyItemStylesResult {
   const styled = items.filter((item) => item.cssVars || item.css);
@@ -133,10 +131,10 @@ function applyStyles(
     return { cssVarsApplied: false, cssRulesApplied: false };
   }
 
-  const cssPath = config.tailwind?.css;
+  const cssPath = config.css;
 
   if (!cssPath) {
-    warning("No tailwind.css path in components.json — skipped item styles.");
+    warning("No css path in kira-kit.json — skipped item styles.");
 
     return { cssVarsApplied: false, cssRulesApplied: false };
   }
@@ -148,7 +146,7 @@ export interface InstallPlan {
   items: RegistryItemPayload[];
   planned: PlannedWrite[];
   npmDeps: string[];
-  config: ComponentsConfig;
+  config: KiraConfig;
 }
 
 /** Resolve the item tree and plan writes without touching disk or network installs. */
@@ -159,8 +157,15 @@ export async function planInstall(
   const config = readConfig(options.cwd);
 
   if (!config) {
+    if (findLegacyConfigFile(options.cwd)) {
+      throw new ValidationError(
+        "No kira-kit.json found (detected legacy components.json).",
+        "Run 'kira-kit migrate' to convert it to kira-kit.json, or 'kira-kit init' to start fresh.",
+      );
+    }
+
     throw new ValidationError(
-      "No components.json found.",
+      "No kira-kit.json found.",
       "Run 'kira-kit init' first.",
     );
   }

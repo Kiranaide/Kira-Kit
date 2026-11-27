@@ -69,10 +69,9 @@ function tempConsumer(regDir: string): string {
 
   temps.push(dir);
   writeFileSync(
-    join(dir, "components.json"),
+    join(dir, "kira-kit.json"),
     JSON.stringify({
-      style: "kira",
-      tailwind: { css: "src/index.css" },
+      css: "src/index.css",
       registries: {
         "@kira-kit": pathToFileURL(join(regDir, "{name}.json")).href,
       },

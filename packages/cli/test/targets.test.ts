@@ -7,7 +7,7 @@ import {
   resolveAliasRoots,
   targetForFile,
 } from "../src/core/install/targets";
-import type { ComponentsConfig } from "../src/types";
+import type { KiraConfig } from "../src/types";
 
 let tempDirs: string[] = [];
 
@@ -68,14 +68,14 @@ describe("resolveAliasRoots", () => {
     );
   });
 
-  it("honors custom aliases from components.json", () => {
+  it("honors custom aliases from kira-kit.json", () => {
     const dir = tempProject({
       "tsconfig.json": JSON.stringify({
         compilerOptions: { paths: { "@kit/*": ["./kit/*"] } },
       }),
     });
 
-    const config: ComponentsConfig = { aliases: { ui: "@kit/ui" } };
+    const config: KiraConfig = { aliases: { ui: "@kit/ui" } };
 
     expect(resolveAliasRoots(dir, config).ui).toBe(join(dir, "kit/ui"));
   });
@@ -95,7 +95,7 @@ describe("importAliases", () => {
 
     expect(aliases.ui).toBe("@kit/ui");
     expect(aliases.lib).toBe("@/lib");
-    expect(aliases.utils).toBe("@/lib/utils");
+    expect(aliases.hooks).toBe("@/hooks");
   });
 });
 

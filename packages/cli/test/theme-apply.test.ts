@@ -79,18 +79,20 @@ describe("resolveThemeSelection & CLI consistency", () => {
     ).rejects.toThrow(ValidationError);
   });
 
-  it("preserves existing fontDisplay from components.json when theme updates --font-mono", async () => {
+  it("preserves existing fontDisplay from kira-kit.json when theme updates --font-mono", async () => {
     const dir = makeProject();
 
     writeFileSync(
-      join(dir, "components.json"),
+      join(dir, "kira-kit.json"),
       JSON.stringify(
         {
-          style: "kira",
-          font: "inter",
-          fontDisplay: "newsreader",
-          fontMono: "geist-mono",
-          tailwind: { css: "src/index.css", baseColor: "neutral" },
+          css: "src/index.css",
+          theme: {
+            baseColor: "neutral",
+            font: "inter",
+            fontDisplay: "newsreader",
+            fontMono: "geist-mono",
+          },
         },
         null,
         2,
@@ -108,11 +110,11 @@ describe("resolveThemeSelection & CLI consistency", () => {
     expect(code).toBe(0);
 
     const updated = JSON.parse(
-      readFileSync(join(dir, "components.json"), "utf-8"),
+      readFileSync(join(dir, "kira-kit.json"), "utf-8"),
     );
 
-    expect(updated.font).toBe("inter");
-    expect(updated.fontDisplay).toBe("newsreader");
-    expect(updated.fontMono).toBe("jetbrains-mono");
+    expect(updated.theme.font).toBe("inter");
+    expect(updated.theme.fontDisplay).toBe("newsreader");
+    expect(updated.theme.fontMono).toBe("jetbrains-mono");
   });
 });
