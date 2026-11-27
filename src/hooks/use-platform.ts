@@ -10,13 +10,33 @@ export type Platform = "mac" | "windows" | "linux" | "unknown";
  */
 let cached: Platform | undefined;
 
+interface NavigatorUAData {
+  platform?: string;
+}
+
+function readNavigatorPlatform(): string {
+  if (typeof navigator === "undefined") return "";
+
+  if ("userAgentData" in navigator) {
+    // SAFETY: userAgentData is an optional Chromium Client Hints object not yet
+    // present in lib.dom.d.ts; we guard typeof before reading platform.
+    const uaData = navigator.userAgentData as NavigatorUAData | undefined;
+
+    if (uaData?.platform !== undefined && uaData.platform.length > 0) {
+      return uaData.platform;
+    }
+  }
+
+  return navigator.userAgent;
+}
+
 function detectPlatform(): Platform {
   if (cached) return cached;
-  const ua = navigator.userAgent;
+  const source = readNavigatorPlatform();
 
-  if (/Mac|iPhone|iPad/i.test(ua)) cached = "mac";
-  else if (/Win/i.test(ua)) cached = "windows";
-  else if (/Linux|X11/i.test(ua)) cached = "linux";
+  if (/Mac|iPhone|iPad|iOS/i.test(source)) cached = "mac";
+  else if (/Win/i.test(source)) cached = "windows";
+  else if (/Linux|X11|CrOS/i.test(source)) cached = "linux";
   else cached = "unknown";
 
   return cached;
