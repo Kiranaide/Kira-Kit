@@ -16,6 +16,7 @@ import {
   CommandList,
   CommandLoading,
 } from "@/components/ui/command";
+import { DialogClose } from "@/components/ui/dialog";
 import { EmptySearch, KiraEmpty } from "@/components/ui/empty";
 import { Kbd } from "@/components/ui/kbd";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -242,6 +243,7 @@ function SpotlightRoot<T = unknown>(input: SpotlightProps<T>) {
       trigger={trigger}
       title={title}
       description="Search your workspace. Use arrow keys to choose a result and Enter to open it."
+      showCloseButton={false}
       className={cn(spotlightContentVariants({ size }), className)}
       contentProps={{ initialFocus: inputRef }}
     >
@@ -375,7 +377,7 @@ function SpotlightItem<T>({
         >
           {withOccurrenceKeys(item.shortcut, (label) => label).map(
             ({ item: label, key }) => (
-              <Kbd key={key}>{label}</Kbd>
+              <Kbd key={key} keys={label} />
             ),
           )}
         </span>
@@ -395,7 +397,12 @@ function SpotlightTrigger({
   ...props
 }: SpotlightTriggerProps) {
   return (
-    <Button data-slot="spotlight-trigger" variant={variant} {...props}>
+    <Button
+      data-slot="spotlight-trigger"
+      variant={variant}
+      aria-keyshortcuts={showShortcut ? "Control+K Meta+K" : undefined}
+      {...props}
+    >
       <IconSearch aria-hidden="true" />
       {children}
       {showShortcut && <Kbd keys="mod+k" />}
@@ -1045,19 +1052,31 @@ function SpotlightSearchField<T>({
     query,
     setQuery,
     placeholder,
+    title,
     size,
   } = model;
 
   return (
     <div data-slot="spotlight-search">
-      <label
-        htmlFor={searchInputId}
-        ref={labelRef}
-        data-slot="spotlight-label"
-        className="block px-4 pt-3 text-xs font-medium text-muted-foreground"
+      <div
+        data-slot="spotlight-header"
+        className="flex items-center justify-between gap-2 ps-4 pe-3 pt-3 pb-1"
       >
-        Search workspace
-      </label>
+        <label
+          htmlFor={searchInputId}
+          ref={labelRef}
+          data-slot="spotlight-label"
+          className="min-w-0 text-xs font-medium text-muted-foreground [overflow-wrap:anywhere]"
+        >
+          {title}
+        </label>
+        <DialogClose
+          aria-label="Close search"
+          className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
+        >
+          <IconX aria-hidden="true" className="size-4" />
+        </DialogClose>
+      </div>
       <CommandInput
         id={searchInputId}
         ref={(node) => {
@@ -1068,7 +1087,7 @@ function SpotlightSearchField<T>({
         }}
         value={query}
         onValueChange={setQuery}
-        aria-label="Search workspace"
+        aria-label={title}
         placeholder={placeholder}
         className={spotlightInputVariants({ size })}
       />
@@ -1126,7 +1145,7 @@ function SpotlightResultFooter<T>({
             "transition-none": reducedMotion,
           })}
         >
-          <Kbd>↑ ↓</Kbd> choose <Kbd>Enter</Kbd> open
+          <Kbd>↑ ↓</Kbd> choose <Kbd keys="enter" /> open
         </span>
       )}
     </div>
