@@ -2,7 +2,6 @@ import {
   Link,
   Outlet,
   useLocation,
-  useMatchRoute,
   useRouterState,
 } from "@tanstack/react-router";
 import {
@@ -100,9 +99,7 @@ function TanStackSidebarLink({ to, disabled, ...props }: SidebarLinkProps) {
 }
 
 function useTanStackIsActive(to: string) {
-  const matchRoute = useMatchRoute();
-
-  return Boolean(matchRoute({ to, fuzzy: false }));
+  return useLocation({ select: (location) => location.pathname === to });
 }
 
 const tanStackSidebarRouter: SidebarRouterAdapter = {

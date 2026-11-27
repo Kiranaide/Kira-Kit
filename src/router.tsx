@@ -705,10 +705,12 @@ const routeTree = rootRoute.addChildren([
 export const router = createRouter({
   routeTree,
   defaultPreload: "intent",
-  // Crossfade only real path changes; search/hash updates stay instant.
+  // Crossfade only real client navigations; never trigger on initial load.
   defaultViewTransition: supportsViewTransitionTypes() && {
-    types: ({ pathChanged }) =>
-      pathChanged && !prefersReducedMotion() ? ["route-change"] : false,
+    types: ({ fromLocation, pathChanged }) =>
+      Boolean(fromLocation) && pathChanged && !prefersReducedMotion()
+        ? ["route-change"]
+        : false,
   },
 });
 
