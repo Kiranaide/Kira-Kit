@@ -1,38 +1,14 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 import { buildBaseCss, defaultThemeItem } from "./stylesheet";
-
-export const TEMPLATE_CSS_TARGETS = [
-  {
-    css: "vite/src/index.css",
-    utilities: "vite/src/styles/kira-utilities.css",
-    utilitiesImport: "./styles/kira-utilities.css",
-  },
-  {
-    css: "tanstack-start/src/index.css",
-    utilities: "tanstack-start/src/styles/kira-utilities.css",
-    utilitiesImport: "./styles/kira-utilities.css",
-  },
-  {
-    css: "next/app/globals.css",
-    utilities: "next/app/kira-utilities.css",
-    utilitiesImport: "./kira-utilities.css",
-  },
-  {
-    css: "monorepo/packages/ui/src/index.css",
-    utilities: "monorepo/packages/ui/src/styles/kira-utilities.css",
-    utilitiesImport: "./styles/kira-utilities.css",
-  },
-] as const;
 
 export interface SyncEmbeddedAssetsResult {
   assetsWritten: boolean;
-  templatesSynced: number;
 }
 
 /**
  * Sync src/index.css and src/styles/kira-utilities.css into
- * packages/cli/src/generated/assets.ts and the bundled create templates.
+ * packages/cli/src/generated/assets.ts so `kira-kit init` works offline.
  * No-ops cleanly when run outside the monorepo (e.g. a mini-repo fixture).
  */
 export function syncEmbeddedAssets(repoRoot: string): SyncEmbeddedAssetsResult {
@@ -45,7 +21,7 @@ export function syncEmbeddedAssets(repoRoot: string): SyncEmbeddedAssetsResult {
     !existsSync(utilitiesPath) ||
     !existsSync(cliRoot)
   ) {
-    return { assetsWritten: false, templatesSynced: 0 };
+    return { assetsWritten: false };
   }
 
   const indexCss = readFileSync(indexCssPath, "utf-8").replaceAll("\r\n", "\n");
@@ -72,25 +48,5 @@ export function syncEmbeddedAssets(repoRoot: string): SyncEmbeddedAssetsResult {
   mkdirSync(generatedDir, { recursive: true });
   writeFileSync(join(generatedDir, "assets.ts"), lines.join("\n"), "utf-8");
 
-  const templatesRoot = join(cliRoot, "templates");
-  let templatesSynced = 0;
-
-  if (existsSync(templatesRoot)) {
-    for (const target of TEMPLATE_CSS_TARGETS) {
-      const cssPath = join(templatesRoot, target.css);
-      const utilPath = join(templatesRoot, target.utilities);
-
-      mkdirSync(resolve(cssPath, ".."), { recursive: true });
-      mkdirSync(resolve(utilPath, ".."), { recursive: true });
-      writeFileSync(
-        cssPath,
-        buildBaseCss(indexCss, target.utilitiesImport),
-        "utf-8",
-      );
-      writeFileSync(utilPath, utilities, "utf-8");
-      templatesSynced += 1;
-    }
-  }
-
-  return { assetsWritten: true, templatesSynced };
+  return { assetsWritten: true };
 }
