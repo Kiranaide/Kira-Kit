@@ -76,6 +76,42 @@ function llmsOriginPlugin(): Plugin {
   };
 }
 
+function preloadGeistFontPlugin(): Plugin {
+  return {
+    name: "kira-preload-geist-font",
+    transformIndexHtml: {
+      order: "post",
+      handler(html, ctx) {
+        const bundle = ctx.bundle;
+
+        if (!bundle) return html;
+
+        const fontFile = Object.keys(bundle).find(
+          (file) =>
+            file.startsWith("assets/geist-latin-wght-normal-") &&
+            file.endsWith(".woff2"),
+        );
+
+        if (!fontFile) return html;
+
+        return [
+          {
+            tag: "link",
+            attrs: {
+              rel: "preload",
+              href: `/${fontFile}`,
+              as: "font",
+              type: "font/woff2",
+              crossorigin: "",
+            },
+            injectTo: "head-prepend",
+          },
+        ];
+      },
+    },
+  };
+}
+
 // Bundle analysis is opt-in (`ANALYZE=1 bun run build`) so normal and CI builds
 // don't pay the visualizer's generateBundle cost or try to open a browser.
 const analyze = process.env.ANALYZE === "1" || process.env.ANALYZE === "true";
@@ -84,6 +120,7 @@ const analyze = process.env.ANALYZE === "1" || process.env.ANALYZE === "true";
 export default defineConfig({
   plugins: [
     llmsOriginPlugin(),
+    preloadGeistFontPlugin(),
     react(),
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
