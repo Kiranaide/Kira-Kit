@@ -14,6 +14,7 @@ import { cn } from "cn";
 import { Kbd } from "@/components/ui/kbd";
 import { useTheme } from "@/components/ui/theme-provider";
 import { useSiteSpotlight } from "@/components/site/site-spotlight-context";
+import { presetSwatch, usePreset } from "@/lib/theme-presets";
 
 const LazyPresetStudioPopover = React.lazy(() =>
   import("@/components/site/theme-customizer").then((module) => ({
@@ -30,10 +31,14 @@ function PresetStudioShell({
   showLabel?: boolean;
   onActivate?: (openImmediately: boolean) => void;
 }) {
+  const { presetName, presets, isCustomized } = usePreset();
+  const selected = presets.find((preset) => preset.name === presetName);
+  const label = selected?.title ?? "Default";
+
   return (
     <button
       type="button"
-      aria-label="Preset studio: Default"
+      aria-label={`Preset studio: ${label}`}
       data-slot="preset-studio-trigger"
       onClick={() => onActivate?.(true)}
       onPointerEnter={() => onActivate?.(false)}
@@ -43,16 +48,26 @@ function PresetStudioShell({
         className,
       )}
     >
-      <span
-        aria-hidden="true"
-        className="size-3.5 shrink-0 rounded-full border border-black/15 dark:border-white/20"
-        style={{ background: "var(--primary)" }}
-      />
-      {showLabel ? (
-        <span className="max-w-32 truncate">Default</span>
-      ) : (
-        <span className="sr-only">Default</span>
-      )}
+      <span className="relative flex items-center">
+        <span
+          aria-hidden="true"
+          className="size-4 shrink-0 rounded-full border border-border"
+          style={{
+            backgroundColor: selected
+              ? presetSwatch(selected)
+              : "var(--primary)",
+          }}
+        />
+        {isCustomized && (
+          <span
+            aria-hidden="true"
+            className="absolute -right-0.5 -top-0.5 size-2 rounded-full border border-background bg-primary"
+          />
+        )}
+      </span>
+      <span className={showLabel ? "max-w-32 truncate" : "sr-only"}>
+        {label}
+      </span>
       <IconAdjustmentsHorizontal
         aria-hidden="true"
         className="size-3.5 text-muted-foreground"

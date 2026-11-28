@@ -341,7 +341,7 @@
   },
   "theme-provider": {
     "title": "Theme Provider",
-    "description": "Lightweight light/dark theme context with localStorage persistence, system preference detection, useTheme hook, and a composable ThemeToggle button decoupled from any navigation shell.",
+    "description": "SSR-safe light, dark, and system theme context with live OS change tracking, optional controlled cookie persistence, localStorage fallback, a pre-paint getThemeBootstrapScript helper, useTheme hook, and composable ThemeToggle button.",
     "categories": ["theme", "utility"]
   },
   "time-picker": {

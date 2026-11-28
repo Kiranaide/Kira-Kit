@@ -33,6 +33,7 @@ import {
   IconCurrencyDollar,
   IconPercentage,
   IconAt,
+  IconLock,
   IconSearch,
   IconSend,
   IconCheck,
@@ -257,7 +258,7 @@ export function InputCompositesDemo() {
           ]}
           defaultValue="+1"
           variant="ghost"
-          className="rounded-l-lg rounded-r-none border-input"
+          className="w-28 shrink-0 rounded-l-lg rounded-r-none border-r-0 border-input"
           aria-label="Country code"
         />
         <Input className="flex-1 rounded-l-none" placeholder="Phone number" />
@@ -701,7 +702,7 @@ function CompositesDemo() {
             ]}
             defaultValue="+1"
             variant="ghost"
-            className="rounded-l-lg rounded-r-none border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50"
+            className="w-28 shrink-0 rounded-l-lg rounded-r-none border-r-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50"
             aria-label="Country code"
             onChange={(value) => console.log("Selected:", value)}
           />
@@ -720,7 +721,7 @@ function CompositesDemo() {
             ]}
             defaultValue="gmail.com"
             variant="ghost"
-            className="rounded-l-none rounded-r-lg border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50"
+            className="w-40 shrink-0 rounded-l-none rounded-r-lg border-l-0 border-input hover:bg-muted/50 dark:bg-input/30 dark:hover:bg-input/50"
             aria-label="Email domain"
             onChange={(value) => console.log("Selected:", value)}
           />
@@ -1094,22 +1095,71 @@ function StressDemo() {
         <Label>RTL</Label>
         <Input
           dir="rtl"
+          prefix={<IconAt className="size-4" aria-hidden="true" />}
           placeholder="البريد الإلكتروني"
           defaultValue="مايكل جاكسون"
         />
       </div>
+      <StressAddonCases />
     </div>
   );
 }
 
-const stressCode = `import { useState } from "react"
-import { Input, NumericInput, PasswordInput, TagInput } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+function StressAddonCases() {
+  const [query, setQuery] = useState(
+    "quarterly-audit-report-2026-final-signed-copy",
+  );
 
-// Long labels/values, controlled zero, empty tags, disabled states, and RTL in max-w-xs
+  const [token, setToken] = useState(
+    "kira_live_9f82a4c71d3e6b05f12a8e9c441b7d20",
+  );
+
+  return (
+    <>
+      <div className="space-y-2">
+        <Label>Password with prefix &amp; long value</Label>
+        <PasswordInput
+          prefix={<IconLock className="size-4" aria-hidden="true" />}
+          defaultValue="correct-horse-battery-staple-2026-extra-long!"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Search loading + clear with long query</Label>
+        <SearchInput value={query} onChange={setQuery} isLoading showClear />
+      </div>
+      <div className="space-y-2">
+        <Label>Clear + copy with long value</Label>
+        <Input
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
+          onClear={() => setToken("")}
+          showClear
+          showCopy
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Text prefix &amp; suffix with long value</Label>
+        <Input
+          prefix="https://"
+          suffix=".kira.dev"
+          defaultValue="enterprise-design-system-workspace"
+        />
+      </div>
+    </>
+  );
+}
+
+const stressCode = `import { useState } from "react"
+import { Input, NumericInput, PasswordInput, SearchInput, TagInput } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { IconAt, IconLock } from "@tabler/icons-react"
+
+// Long values, addons, loading+clear, clear+copy, disabled states, and RTL in max-w-xs
 export function StressDemo() {
   const [zero, setZero] = useState(0)
   const [text, setText] = useState("")
+  const [query, setQuery] = useState("quarterly-audit-report-2026-final-signed-copy")
+  const [token, setToken] = useState("kira_live_9f82a4c71d3e6b05f12a8e9c441b7d20")
   const [tags, setTags] = useState<string[]>([])
 
   return (
@@ -1121,7 +1171,11 @@ export function StressDemo() {
       <TagInput value={tags} onChange={setTags} placeholder="No tags yet…" />
       <Input defaultValue="Locked value" disabled />
       <PasswordInput defaultValue="secret-value" disabled />
-      <Input dir="rtl" placeholder="البريد الإلكتروني" defaultValue="مايكل جاكسون" />
+      <Input dir="rtl" prefix={<IconAt className="size-4" aria-hidden="true" />} placeholder="البريد الإلكتروني" defaultValue="مايكل جاكسون" />
+      <PasswordInput prefix={<IconLock className="size-4" aria-hidden="true" />} defaultValue="correct-horse-battery-staple-2026-extra-long!" />
+      <SearchInput value={query} onChange={setQuery} isLoading showClear />
+      <Input value={token} onChange={(e) => setToken(e.target.value)} onClear={() => setToken("")} showClear showCopy />
+      <Input prefix="https://" suffix=".kira.dev" defaultValue="enterprise-design-system-workspace" />
     </div>
   )
 }`;
@@ -1252,7 +1306,7 @@ export default function InputPage() {
     <ComponentPage>
       <PageHeader
         title="Input"
-        version="v3.0.0"
+        version="v3.0.1"
         description="A comprehensive collection of input components for forms and data entry. Includes basic inputs, numeric inputs, formatted inputs, OTP, ratings, password fields, tag inputs, and composable patterns."
       />
 
@@ -2029,6 +2083,30 @@ const inputPageAPISections = [
 
 // Static demo metadata stays co-located and follows its source constants.
 const inputPageChangelogEntries = [
+  {
+    version: "3.0.1",
+    date: "28 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Flex input shell eliminates prefix, suffix, and toggle overlap",
+        description:
+          "Refactored Input to a flex shell with real 4px-scale gaps (gap-2 on xs/sm/default, gap-3 on lg/xl) and logical ps-*/pe-* padding, removing all hardcoded pl-*/pr-* offset maps. Fixes cramped leading icons, PasswordInput toggle text collision, combined suffix + clear/copy overlaps (such as loading SearchInput), arbitrary-width text addons, and RTL mirroring.",
+      },
+      {
+        type: "fixed",
+        title: "Action button accessibility & reduced motion",
+        description:
+          "Added focus-visible rings and hover surfaces to clear, copy, and password-toggle buttons while preserving 24px WCAG 2.5.8 target sizes, forwarded disabled state and xs icon sizing to PasswordInput's toggle, gated spinner and button transitions on useReducedMotion, and simplified SearchInput and InputWithSpinner to compose directly via Input prefix/suffix.",
+      },
+      {
+        type: "changed",
+        title: "Elevated native file input button styling",
+        description:
+          "Styled <Input type='file' /> with a bordered, high-contrast inset pill for the file-selector button, concentric start padding, a 12px gap before muted status/filename text, hover states, and clean vertical centering across all sizes.",
+      },
+    ],
+  },
   {
     version: "3.0.0",
     date: "26 November 2026",

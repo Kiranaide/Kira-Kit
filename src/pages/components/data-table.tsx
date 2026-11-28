@@ -18,7 +18,9 @@ import {
   DataTableBulkActions,
   DataTableDensityToggle,
   DataTableFacetedFilter,
+  KiraDataTable,
   useDataTable,
+  useDataTableFilters,
   useTableStatePersistence,
   createSelectColumn,
   StatusCell,
@@ -26,9 +28,13 @@ import {
   CurrencyCell,
   AvatarCell,
   ActionsCell,
+  type DataTableFilterField,
+  type DataTablePreset,
   type DTColumnDef as ColumnDef,
 } from "@/components/ui/data-table";
+import type { SortingState } from "@tanstack/react-table";
 import { exportToCSV, exportToJSON } from "@/lib/data-table-helpers";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   ComponentPage,
@@ -752,13 +758,13 @@ export default function DataTablePage() {
     <ComponentPage>
       <PageHeader
         title="Data Table"
-        description="A powerful, modular table with sorting, filtering, pagination, and more using TanStack Table. Includes cell renderers, bulk actions, density controls, and comprehensive accessibility features."
-        version="v3.2.2"
+        description="A powerful, modular table with sorting, filtering, pagination, card view, and preset layouts using TanStack Table. Includes KiraDataTable presets, cell renderers, bulk actions, density controls, KiraEmpty states, and full keyboard accessibility."
+        version="v3.4.0"
       />
 
       <FeatureGrid features={dataTablePageFeatureGridFeatures} />
 
-      <DemoTabs defaultValue="cell-renderers" tabs={dataTablePageDemoTabs} />
+      <DemoTabs defaultValue="kira-presets" tabs={dataTablePageDemoTabs} />
 
       <KeyboardShortcuts
         title="Keyboard shortcuts"
@@ -1017,9 +1023,77 @@ const dataTablePageAPIReferenceSections = [
       },
       {
         prop: "emptyState",
-        type: "ReactNode",
+        type: "ReactNode | ((ctx: DataTableEmptyContext) => ReactNode)",
+        default: "KiraEmpty (no-data / no-results / error)",
+        description:
+          "Custom empty state node or render callback. Defaults to KiraEmpty with contextual no-data, no-results (with Reset), and error (with Retry) states.",
+      },
+      {
+        prop: "view",
+        type: '"table" | "cards"',
+        default: '"table"',
+        description:
+          "Render semantic <table> rows or an accessible role=list card layout with a Sort by selector.",
+      },
+      {
+        prop: "renderCard",
+        type: "(row: DTRow<T>) => ReactNode",
         default: "-",
-        description: "Custom empty state component",
+        description:
+          "Custom card body when view='cards'. Falls back to rendering visible cells in a responsive 2-column mobile grid.",
+      },
+    ],
+  },
+  {
+    title: "KiraDataTable",
+    props: [
+      {
+        prop: "preset",
+        type: '"toolbar" | "sidebar" | "cards"',
+        default: '"toolbar"',
+        description:
+          "Controls the filter and results layout: bordered toolbar, sticky collapsible sidebar, or stacked filter card with active filter tags and pill pagination.",
+      },
+      {
+        prop: "view",
+        type: '"table" | "cards"',
+        default: '"cards" for the cards preset, "table" otherwise',
+        description:
+          "Overrides how results render. Use table to share the same columns and row controls across presets.",
+      },
+      {
+        prop: "title / hint / totalCount",
+        type: "ReactNode / ReactNode / number",
+        default: "- / - / server rowCount or data.length",
+        description: "Header title with tabular result count and muted hint.",
+      },
+      {
+        prop: "filters / filterState",
+        type: "DataTableFilterField[] / UseDataTableFiltersReturn",
+        default: "-",
+        description:
+          "Declarative search/select/chips/date-range fields paired with useDataTableFilters (draft vs applied, live debounce, reset).",
+      },
+      {
+        prop: "filterMode",
+        type: '"manual" | "live"',
+        default: '"live" for sidebar, "manual" otherwise',
+        description:
+          "Deferred Search/Enter commit or 250ms debounced live filtering.",
+      },
+      {
+        prop: "showActiveFilters / enableSlashShortcut",
+        type: "boolean / boolean",
+        default: "cards: true / sidebar: true",
+        description:
+          "Toggle removable active-filter pills and '/' search focus shortcut.",
+      },
+      {
+        prop: "pagination",
+        type: "DataTablePaginationProps | false",
+        default: "6/12/24 page sizes + range info",
+        description:
+          "Footer pagination configuration or false to hide the footer.",
       },
     ],
   },
@@ -1045,6 +1119,19 @@ const dataTablePageAPIReferenceSections = [
         description: "Show showing X-Y of Z info",
       },
       {
+        prop: "showJump",
+        type: "boolean",
+        default: "false",
+        description:
+          "Show an inline page-jump number input (Page [input] of N)",
+      },
+      {
+        prop: "infoFormat",
+        type: "string",
+        default: '"Showing {start}–{end} of {total}"',
+        description: "Format string for the item range indicator",
+      },
+      {
         prop: "showFirstLast",
         type: "boolean",
         default: "true",
@@ -1058,7 +1145,7 @@ const dataTablePageAPIReferenceSections = [
       },
       {
         prop: "variant",
-        type: "default | outline | ghost",
+        type: "default | outline | ghost | pills | rounded",
         default: "outline",
         description: "Button variant style",
       },
@@ -1700,6 +1787,11 @@ const dataTablePageAPIReferenceSections = [
 
 const dataTablePageKeyboardShortcutsShortcuts = [
   {
+    keys: "/",
+    description:
+      "Focus the search input when enableSlashShortcut is enabled (ignored inside editable fields and dialogs)",
+  },
+  {
     keys: "Tab",
     description:
       "Enter the grid on the first cell; Shift+Tab returns to the toolbar",
@@ -1741,6 +1833,42 @@ const dataTablePageKeyboardShortcutsShortcuts = [
 ] satisfies ReactComponentProps<typeof KeyboardShortcuts>["shortcuts"];
 
 const dataTablePageChangelogEntries = [
+  {
+    version: "3.4.0",
+    date: "28 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Configurable results view for each preset",
+        description:
+          'Set view="table" to use the same sortable table across filter layouts. The presets demo shows all three layouts with a shared table and sticky header.',
+      },
+    ],
+  },
+  {
+    version: "3.3.0",
+    date: "28 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Unified KiraDataTable presets and composable filter primitives",
+        description:
+          'Added KiraDataTable with preset="toolbar" | "sidebar" | "cards", useDataTableFilters (draft vs applied state + 250ms live debounce), DataTableFilterBar (search/select/chips/date-range, "/" focus shortcut, collapsible <= 820px sidebar), DataTableActiveFilters, and DataTableContent view="cards" with card skeletons and Sort by control.',
+      },
+      {
+        type: "added",
+        title: "KiraEmpty integration, refetching, and error states",
+        description:
+          "DataTableContent now defaults to KiraEmpty for no-data, filtered no-results (with Reset), and error (with Retry) states, supports isFetching (dimmed rows + top progress bar without layout shift), and forwards showJump, infoFormat, and pills variant on DataTablePagination.",
+      },
+      {
+        type: "fixed",
+        title: "Resizable column text overlap and fixed utility column handles",
+        description:
+          "Fixed text overflowing into neighboring columns under table-layout: fixed by clipping resizable cells with overflow-hidden text-ellipsis, and disabled resizing on createSelectColumn, createExpandColumn, and createDragHandleColumn so fixed-width utility columns no longer render stuck resize handles.",
+      },
+    ],
+  },
   {
     version: "3.2.2",
     date: "27 November 2026",
@@ -2224,6 +2352,10 @@ const columns: ColumnDef<User, unknown>[] = [
 
 const dataTablePageUsageNotes = [
   {
+    label: "KiraDataTable Presets",
+    body: 'Use KiraDataTable with preset="toolbar" | "sidebar" | "cards" to switch layouts from a single component, or compose DataTableFilterBar, DataTableActiveFilters, DataTableContent, and DataTablePagination inside DataTableRoot.',
+  },
+  {
     label: "TanStack Table v9",
     body: "Type your column definitions with DTColumnDef<TData, TValue> from @/components/ui/data-table so every v9 feature (pinning, resizing, faceting, grouping) stays typed.",
   },
@@ -2237,7 +2369,489 @@ const dataTablePageUsageNotes = [
   },
 ] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
 
+type CatalogItem = {
+  id: string;
+  title: string;
+  category: "Design System" | "Platform" | "DevOps" | "Content" | "Security";
+  status: "active" | "draft" | "archived";
+  owner: string;
+  updatedAt: string;
+};
+
+const CATALOG_ITEMS: CatalogItem[] = [
+  {
+    id: "c1",
+    title: "Oxblood Atelier Design Tokens",
+    category: "Design System",
+    status: "active",
+    owner: "Kazu Atelier",
+    updatedAt: "2026-11-26",
+  },
+  {
+    id: "c2",
+    title: "Dual BFF Auth Proxy Adapter",
+    category: "Platform",
+    status: "active",
+    owner: "Hana Sato",
+    updatedAt: "2026-11-25",
+  },
+  {
+    id: "c3",
+    title: "Multi-Stage Coolify Runtime Config",
+    category: "DevOps",
+    status: "draft",
+    owner: "Raka Pratama",
+    updatedAt: "2026-11-26",
+  },
+  {
+    id: "c4",
+    title: "Legacy Marketing Redirect Map",
+    category: "Content",
+    status: "archived",
+    owner: "Nadia Putri",
+    updatedAt: "2026-11-18",
+  },
+  {
+    id: "c5",
+    title: "W3C Traceparent Propagation Middleware",
+    category: "Platform",
+    status: "active",
+    owner: "Hana Sato",
+    updatedAt: "2026-11-26",
+  },
+  {
+    id: "c6",
+    title: "AES-256-GCM Session Cookie Rotation",
+    category: "Security",
+    status: "active",
+    owner: "Kazu Atelier",
+    updatedAt: "2026-11-24",
+  },
+  {
+    id: "c7",
+    title: "Paraglide Locale Negotiation Matrix",
+    category: "Content",
+    status: "active",
+    owner: "Nadia Putri",
+    updatedAt: "2026-11-23",
+  },
+  {
+    id: "c8",
+    title: "Rolldown Vendor Chunk Budget Policy",
+    category: "DevOps",
+    status: "active",
+    owner: "Raka Pratama",
+    updatedAt: "2026-11-22",
+  },
+  {
+    id: "c9",
+    title: "Semantic Motion Curve Specification",
+    category: "Design System",
+    status: "draft",
+    owner: "Kazu Atelier",
+    updatedAt: "2026-11-21",
+  },
+  {
+    id: "c10",
+    title: "Edge Rate Limiter Token Bucket",
+    category: "Security",
+    status: "active",
+    owner: "Hana Sato",
+    updatedAt: "2026-11-20",
+  },
+  {
+    id: "c11",
+    title: "Zero-Downtime Postgres Migration Playbook",
+    category: "DevOps",
+    status: "active",
+    owner: "Raka Pratama",
+    updatedAt: "2026-11-19",
+  },
+  {
+    id: "c12",
+    title: "Deprecated V1 Onboarding Copy",
+    category: "Content",
+    status: "archived",
+    owner: "Nadia Putri",
+    updatedAt: "2026-11-15",
+  },
+];
+
+type CatalogFilters = {
+  search: string;
+  status: string;
+  category: string;
+  owner: string;
+};
+
+const CATALOG_DEFAULT_FILTERS: CatalogFilters = {
+  search: "",
+  status: "",
+  category: "",
+  owner: "",
+};
+
+const CATALOG_STATUS_OPTIONS = [
+  { value: "active", label: "Active" },
+  { value: "draft", label: "Draft" },
+  { value: "archived", label: "Archived" },
+] as const;
+
+const CATALOG_CATEGORY_OPTIONS = [
+  { value: "Design System", label: "Design System" },
+  { value: "Platform", label: "Platform" },
+  { value: "DevOps", label: "DevOps" },
+  { value: "Content", label: "Content" },
+  { value: "Security", label: "Security" },
+] as const;
+
+const CATALOG_OWNER_OPTIONS = [
+  { value: "Kazu Atelier", label: "Kazu Atelier" },
+  { value: "Hana Sato", label: "Hana Sato" },
+  { value: "Raka Pratama", label: "Raka Pratama" },
+  { value: "Nadia Putri", label: "Nadia Putri" },
+] as const;
+
+const CATALOG_STATUS_MAP = {
+  active: "success",
+  draft: "warning",
+  archived: "default",
+} as const;
+
+function buildCatalogFilters(preset: DataTablePreset): DataTableFilterField[] {
+  return [
+    {
+      kind: "search",
+      key: "search",
+      label: "Search",
+      placeholder: "Search title or owner...",
+    },
+    {
+      kind: preset === "sidebar" ? "chips" : "select",
+      key: "status",
+      label: "Status",
+      options: CATALOG_STATUS_OPTIONS,
+    },
+    {
+      kind: "select",
+      key: "category",
+      label: "Category",
+      options: CATALOG_CATEGORY_OPTIONS,
+    },
+    {
+      kind: "select",
+      key: "owner",
+      label: "Owner",
+      options: CATALOG_OWNER_OPTIONS,
+    },
+  ];
+}
+
+const CATALOG_BASE_COLUMNS: ColumnDef<CatalogItem, unknown>[] = [
+  createSelectColumn<CatalogItem>(),
+  {
+    accessorKey: "title",
+    size: 240,
+    minSize: 160,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Title" />
+    ),
+  },
+  {
+    accessorKey: "category",
+    size: 140,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Category" />
+    ),
+    cell: ({ row }) => <Badge variant="outline">{row.original.category}</Badge>,
+  },
+  {
+    accessorKey: "status",
+    size: 120,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
+    cell: ({ row }) => (
+      <StatusCell
+        value={row.original.status}
+        statusMap={CATALOG_STATUS_MAP}
+        dot
+      />
+    ),
+  },
+  {
+    accessorKey: "owner",
+    size: 160,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Owner" />
+    ),
+    cell: ({ row }) => (
+      <AvatarCell name={row.original.owner} size="sm" showName />
+    ),
+  },
+  {
+    accessorKey: "updatedAt",
+    size: 130,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Updated" />
+    ),
+    cell: ({ row }) => (
+      <DateCell
+        value={row.original.updatedAt}
+        format={{ dateStyle: "medium" }}
+      />
+    ),
+  },
+];
+
+function buildCatalogColumns(
+  onDelete: (item: CatalogItem) => void,
+): ColumnDef<CatalogItem, unknown>[] {
+  return [
+    ...CATALOG_BASE_COLUMNS,
+    {
+      id: "actions",
+      size: 56,
+      minSize: 56,
+      maxSize: 56,
+      enableSorting: false,
+      enableResizing: false,
+      header: () => <span className="sr-only">Actions</span>,
+      cell: ({ row }) => (
+        <div className="flex justify-end">
+          <ActionsCell
+            row={row.original}
+            label={`Actions for ${row.original.title}`}
+            onView={(item) => console.log("View:", item.title)}
+            onEdit={(item) => console.log("Edit:", item.title)}
+            onDelete={onDelete}
+          />
+        </div>
+      ),
+    },
+  ];
+}
+
+function readCatalogSortValue(item: CatalogItem, columnId: string): string {
+  switch (columnId) {
+    case "title":
+      return item.title;
+    case "category":
+      return item.category;
+    case "status":
+      return item.status;
+    case "owner":
+      return item.owner;
+    case "updatedAt":
+      return item.updatedAt;
+    default:
+      return "";
+  }
+}
+
+function filterAndSortCatalog(
+  items: CatalogItem[],
+  applied: CatalogFilters,
+  sorting: SortingState,
+): CatalogItem[] {
+  const query = applied.search.trim().toLowerCase();
+
+  const filtered = items.filter((item) => {
+    if (
+      query &&
+      !item.title.toLowerCase().includes(query) &&
+      !item.owner.toLowerCase().includes(query)
+    ) {
+      return false;
+    }
+
+    if (applied.status && item.status !== applied.status) return false;
+
+    if (applied.category && item.category !== applied.category) return false;
+
+    if (applied.owner && item.owner !== applied.owner) return false;
+
+    return true;
+  });
+
+  const activeSort = sorting[0];
+
+  if (!activeSort) return filtered;
+
+  return [...filtered].sort((a, b) => {
+    const cmp = readCatalogSortValue(a, activeSort.id).localeCompare(
+      readCatalogSortValue(b, activeSort.id),
+    );
+
+    return activeSort.desc ? -cmp : cmp;
+  });
+}
+
+function PresetDemoControls({
+  preset,
+  onPresetChange,
+  simulateError,
+  onToggleError,
+}: {
+  preset: DataTablePreset;
+  onPresetChange: (next: DataTablePreset) => void;
+  simulateError: boolean;
+  onToggleError: () => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2">
+      <div
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- Segmented preset switcher avoids fieldset styling.
+        role="group"
+        aria-label="Table layout preset"
+        className="flex flex-wrap items-center gap-2"
+      >
+        {(["toolbar", "sidebar", "cards"] as const).map((next) => (
+          <Button
+            key={next}
+            type="button"
+            size="sm"
+            variant={preset === next ? "default" : "outline"}
+            aria-pressed={preset === next}
+            onClick={() => onPresetChange(next)}
+            className="capitalize"
+          >
+            {next}
+          </Button>
+        ))}
+      </div>
+      <Button type="button" size="sm" variant="outline" onClick={onToggleError}>
+        {simulateError ? "Clear Error" : "Simulate Error"}
+      </Button>
+    </div>
+  );
+}
+
+function KiraPresetsDemo() {
+  const [preset, setPreset] = React.useState<DataTablePreset>("toolbar");
+  const [items, setItems] = React.useState<CatalogItem[]>(CATALOG_ITEMS);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 6,
+  });
+
+  const [simulateError, setSimulateError] = React.useState(false);
+
+  const filterState = useDataTableFilters<CatalogFilters>({
+    defaultValues: CATALOG_DEFAULT_FILTERS,
+    mode: preset === "sidebar" ? "live" : "manual",
+    isSortModified: sorting.length > 0,
+    onApply: () => setPagination((prev) => ({ ...prev, pageIndex: 0 })),
+    onReset: () => {
+      setSorting([]);
+      setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    },
+  });
+
+  const handleDelete = React.useCallback((item: CatalogItem) => {
+    setItems((prev) => prev.filter((entry) => entry.id !== item.id));
+  }, []);
+
+  const columns = React.useMemo(
+    () => buildCatalogColumns(handleDelete),
+    [handleDelete],
+  );
+
+  const fields = React.useMemo(() => buildCatalogFilters(preset), [preset]);
+
+  const filtered = React.useMemo(
+    () => filterAndSortCatalog(items, filterState.applied, sorting),
+    [items, filterState.applied, sorting],
+  );
+
+  const pageRows = React.useMemo(() => {
+    const start = pagination.pageIndex * pagination.pageSize;
+
+    return filtered.slice(start, start + pagination.pageSize);
+  }, [filtered, pagination]);
+
+  return (
+    <div className="space-y-4">
+      <PresetDemoControls
+        preset={preset}
+        onPresetChange={setPreset}
+        simulateError={simulateError}
+        onToggleError={() => setSimulateError((prev) => !prev)}
+      />
+      <KiraDataTable
+        preset={preset}
+        view="table"
+        title="Items"
+        hint="Use Search/Enter or switch presets"
+        columns={columns}
+        data={pageRows}
+        getRowId={(row) => row.id}
+        filters={fields}
+        filterState={filterState}
+        searchQuery={filterState.applied.search}
+        sorting={sorting}
+        onSortingChange={setSorting}
+        manualSorting
+        enableRowSelection
+        enableColumnResizing
+        enableColumnPinning
+        initialColumnPinning={{ end: ["actions"] }}
+        stickyHeader
+        announceChanges
+        error={simulateError ? "Failed to sync latest items." : undefined}
+        onRetry={() => setSimulateError(false)}
+        serverPagination={{
+          state: pagination,
+          rowCount: filtered.length,
+          onPageChange: (pageIndex) =>
+            setPagination((prev) => ({ ...prev, pageIndex })),
+          onPageSizeChange: (pageSize) =>
+            setPagination({ pageIndex: 0, pageSize }),
+        }}
+      />
+    </div>
+  );
+}
+
+const kiraPresetsCode = `import { KiraDataTable, useDataTableFilters } from "@/components/ui/data-table"
+
+const filterState = useDataTableFilters({
+  defaultValues: { search: "", status: "", category: "", owner: "" },
+  mode: preset === "sidebar" ? "live" : "manual",
+})
+
+<KiraDataTable
+  preset={preset} // "toolbar" | "sidebar" | "cards"
+  view="table"
+  title="Items"
+  columns={columns}
+  data={pageRows}
+  filters={fields}
+  filterState={filterState}
+  enableColumnResizing
+  enableColumnPinning
+  initialColumnPinning={{ end: ["actions"] }}
+  stickyHeader
+  serverPagination={{ state: pagination, rowCount: total, onPageChange, onPageSizeChange }}
+/>`;
+
 const dataTablePageDemoTabs = [
+  {
+    value: "kira-presets",
+    label: "KiraDataTable Presets",
+    group: "Core",
+    demo: (
+      <DemoWrapper
+        title="Unified KiraDataTable (Toolbar, Sidebar, Cards)"
+        description="Switch between Toolbar, Sidebar, and Cards filters while using the same sortable table with resizable columns and sticky Actions."
+        code={kiraPresetsCode}
+      >
+        <KiraPresetsDemo />
+      </DemoWrapper>
+    ),
+  },
   {
     value: "cell-renderers",
     label: "Cell Renderers",

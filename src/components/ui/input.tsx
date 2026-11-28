@@ -9,6 +9,7 @@ import {
   IconMinus,
   IconPlus,
   IconLoader2,
+  IconSearch,
   IconX,
   IconCopy,
   IconCheck,
@@ -18,15 +19,34 @@ import {
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const inputVariants = cva(
-  "dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 rounded-lg border bg-transparent file:text-sm file:font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] file:text-foreground placeholder:text-muted-foreground w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+  "dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 rounded-lg border bg-transparent file:inline-flex file:cursor-pointer file:items-center file:justify-center file:rounded-md file:border file:border-border dark:file:border-input file:bg-muted dark:file:bg-input/50 file:font-medium file:text-foreground hover:file:bg-accent hover:file:text-accent-foreground dark:hover:file:bg-input/70 hover:file:border-ring/50 focus-visible:ring-[3px] aria-invalid:ring-[3px] placeholder:text-muted-foreground w-full min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       size: {
-        xs: "h-7 px-2 py-0.5 text-xs file:h-5 file:text-xs",
-        sm: "h-8 px-3 py-1 text-xs file:h-6 file:text-xs",
-        default: "h-9 px-4 py-1 text-base md:text-sm file:h-7 file:text-sm",
-        lg: "h-10 px-5 py-1.5 text-base md:text-sm file:h-8 file:text-sm",
-        xl: "h-11 px-5 py-2 text-base file:h-8 file:text-sm",
+        xs: "h-7 px-2 py-0.5 text-xs file:me-2 file:h-5 file:px-2 file:text-xs",
+        sm: "h-8 px-3 py-1 text-xs file:me-2 file:h-6 file:px-2 file:text-xs",
+        default:
+          "h-9 px-4 py-1 text-base md:text-sm file:me-3 file:h-7 file:px-3 file:text-xs",
+        lg: "h-10 px-5 py-1.5 text-base md:text-sm file:me-3 file:h-8 file:px-3 file:text-sm",
+        xl: "h-11 px-5 py-2 text-base file:me-3 file:h-8 file:px-4 file:text-sm",
+      },
+    },
+    defaultVariants: {
+      size: "default",
+    },
+  },
+);
+
+const inputShellVariants = cva(
+  "dark:bg-input/30 border-input has-[>input:focus-visible]:border-ring has-[>input:focus-visible]:ring-ring has-[>input:focus-visible]:ring-[3px] has-[>input[aria-invalid=true]]:ring-destructive/20 dark:has-[>input[aria-invalid=true]]:ring-destructive/40 has-[>input[aria-invalid=true]]:border-destructive dark:has-[>input[aria-invalid=true]]:border-destructive/50 has-[>input[aria-invalid=true]]:ring-[3px] has-[>input:disabled]:bg-input/50 dark:has-[>input:disabled]:bg-input/80 has-[>input:disabled]:pointer-events-none has-[>input:disabled]:cursor-not-allowed has-[>input:disabled]:opacity-50 relative flex w-full min-w-0 cursor-text items-center rounded-lg border bg-transparent outline-none",
+  {
+    variants: {
+      size: {
+        xs: "h-7 gap-2 text-xs",
+        sm: "h-8 gap-2 text-xs",
+        default: "h-9 gap-2 text-base md:text-sm",
+        lg: "h-10 gap-3 text-base md:text-sm",
+        xl: "h-11 gap-3 text-base",
       },
     },
     defaultVariants: {
@@ -100,79 +120,82 @@ interface InputProps
   showCount?: boolean;
 }
 
-// Affordance offsets follow: text offset = container px + affordance width + 4px gap.
-const PREFIX_PADDING = {
-  xs: "pl-6",
-  sm: "pl-8",
-  default: "pl-9",
-  lg: "pl-10",
-  xl: "pl-10",
+// Outer inline padding on the flex shell (4px scale, RTL-safe logical sides).
+// Leading/trailing addons pull slightly closer to the border for optical balance;
+// size-6 action buttons already include 4px internal padding around their 16px icons.
+const SHELL_START_PADDING = {
+  xs: "ps-2",
+  sm: "ps-3",
+  default: "ps-4",
+  lg: "ps-5",
+  xl: "ps-5",
 } as const;
 
-const SUFFIX_PADDING = {
-  xs: "pr-6",
-  sm: "pr-8",
-  default: "pr-9",
-  lg: "pr-10",
-  xl: "pr-10",
+const SHELL_PREFIX_START_PADDING = {
+  xs: "ps-2",
+  sm: "ps-3",
+  default: "ps-3",
+  lg: "ps-4",
+  xl: "ps-4",
 } as const;
 
-const PREFIX_CONTAINER_PADDING = {
-  xs: "pl-2",
-  sm: "pl-3",
-  default: "pl-4",
-  lg: "pl-5",
-  xl: "pl-5",
+const SHELL_END_PADDING = {
+  xs: "pe-2",
+  sm: "pe-3",
+  default: "pe-4",
+  lg: "pe-5",
+  xl: "pe-5",
 } as const;
 
-const SUFFIX_CONTAINER_PADDING = {
-  xs: "pr-2",
-  sm: "pr-3",
-  default: "pr-4",
-  lg: "pr-5",
-  xl: "pr-5",
+const SHELL_SUFFIX_END_PADDING = {
+  xs: "pe-2",
+  sm: "pe-3",
+  default: "pe-3",
+  lg: "pe-4",
+  xl: "pe-4",
 } as const;
 
-const PREFIX_INSET = {
-  xs: "left-2",
-  sm: "left-3",
-  default: "left-4",
-  lg: "left-5",
-  xl: "left-5",
+const SHELL_ACTION_END_PADDING = {
+  xs: "has-[[data-slot=input-suffix]_button]:pe-1",
+  sm: "has-[[data-slot=input-suffix]_button]:pe-2",
+  default: "has-[[data-slot=input-suffix]_button]:pe-2",
+  lg: "has-[[data-slot=input-suffix]_button]:pe-3",
+  xl: "has-[[data-slot=input-suffix]_button]:pe-3",
 } as const;
 
-const SUFFIX_INSET = {
-  xs: "right-2",
-  sm: "right-3",
-  default: "right-4",
-  lg: "right-5",
-  xl: "right-5",
+const SHELL_FILE_START_PADDING = {
+  xs: "ps-1",
+  sm: "ps-1",
+  default: "ps-1",
+  lg: "ps-2",
+  xl: "ps-2",
 } as const;
 
-// One size-6 action box: container px + 24px box + 4px gap.
-const SINGLE_ACTION_PADDING = {
-  xs: "pr-9",
-  sm: "pr-10",
-  default: "pr-11",
-  lg: "pr-12",
-  xl: "pr-12",
+const INPUT_CONTROL_SIZE = {
+  xs: "py-0.5",
+  sm: "py-1",
+  default: "py-1",
+  lg: "py-1.5",
+  xl: "py-2",
 } as const;
 
-// Two size-6 boxes: single-action offset + 24px box + 4px gap.
-const DOUBLE_ACTION_PADDING = {
-  xs: "pr-16",
-  sm: "pr-17",
-  default: "pr-18",
-  lg: "pr-19",
-  xl: "pr-19",
+const FILE_CONTROL_SIZE = {
+  xs: "file:me-2 file:h-5 file:px-2 file:text-xs",
+  sm: "file:me-2 file:h-6 file:px-2 file:text-xs",
+  default: "file:me-3 file:h-7 file:px-3 file:text-xs",
+  lg: "file:me-3 file:h-8 file:px-3 file:text-sm",
+  xl: "file:me-3 file:h-8 file:px-4 file:text-sm",
 } as const;
+
+const FILE_INPUT_CLASSES =
+  "h-auto cursor-pointer py-0 text-muted-foreground file:inline-flex file:cursor-pointer file:items-center file:justify-center file:rounded-md file:border file:border-border dark:file:border-input file:bg-muted dark:file:bg-input/50 file:font-medium file:text-foreground hover:file:bg-accent hover:file:text-accent-foreground dark:hover:file:bg-input/70 hover:file:border-ring/50";
 
 const ACTION_ICON_SIZE = {
-  xs: "h-3 w-3",
-  sm: "h-4 w-4",
-  default: "h-4 w-4",
-  lg: "h-4 w-4",
-  xl: "h-4 w-4",
+  xs: "size-3",
+  sm: "size-4",
+  default: "size-4",
+  lg: "size-4",
+  xl: "size-4",
 } as const;
 
 const TAG_INPUT_MIN_HEIGHT = {
@@ -183,31 +206,27 @@ const TAG_INPUT_MIN_HEIGHT = {
   xl: "min-h-11",
 } as const;
 
-const SEARCH_ICON_SIZE = {
-  xs: "h-3 w-3",
-  sm: "h-4 w-4",
-  default: "h-4 w-4",
-  lg: "h-4 w-4",
-  xl: "h-4 w-4",
-} as const;
-
 interface InputActionButtonsProps {
   show: boolean;
   showClearButton: boolean;
   showCopy: boolean;
+  disabled?: boolean;
   size: InputSize;
   copied: boolean;
+  reducedMotion: boolean;
   onClear: () => void;
   onCopy: () => void;
 }
 
-/** Clear + copy affordances rendered as an absolutely positioned suffix. */
+/** Clear + copy affordances rendered inside the trailing suffix slot. */
 function InputActionButtons({
   show,
   showClearButton,
   showCopy,
+  disabled,
   size,
   copied,
+  reducedMotion,
   onClear,
   onCopy,
 }: InputActionButtonsProps) {
@@ -215,11 +234,13 @@ function InputActionButtons({
 
   const iconSize = ACTION_ICON_SIZE[size] ?? ACTION_ICON_SIZE.default;
   let copyButtonLabel = "Copy to clipboard";
-  let copyButtonIcon = <IconCopy className={iconSize} />;
+  let copyButtonIcon = <IconCopy className={iconSize} aria-hidden="true" />;
 
   if (copied) {
     copyButtonLabel = "Copied";
-    copyButtonIcon = <IconCheck className={cn(iconSize, "text-success")} />;
+    copyButtonIcon = (
+      <IconCheck className={cn(iconSize, "text-success")} aria-hidden="true" />
+    );
   }
 
   return (
@@ -228,6 +249,8 @@ function InputActionButtons({
       onClear={onClear}
       iconSize={iconSize}
       showCopy={showCopy}
+      disabled={disabled}
+      reducedMotion={reducedMotion}
       onCopy={onCopy}
       copyButtonLabel={copyButtonLabel}
       copyButtonIcon={copyButtonIcon}
@@ -380,16 +403,13 @@ interface InputFieldViewOptions {
 
 type InputSize = NonNullable<VariantProps<typeof inputVariants>["size"]>;
 
-/** Build the padded base <input> element for InputFieldView. */
+/** Build the borderless flex-1 <input> element inside InputFieldView's shell. */
 function createInputElement(
   options: InputFieldViewOptions,
   effectiveSize: InputSize,
 ) {
   const {
-    className,
     type,
-    prefix,
-    suffix,
     disabled,
     min,
     max,
@@ -403,6 +423,8 @@ function createInputElement(
   } = options;
 
   const isNumeric = type === "number";
+  const isSearch = type === "search";
+  const isFile = type === "file";
 
   return (
     <InputPrimitive
@@ -410,15 +432,20 @@ function createInputElement(
       type={type}
       data-slot="input"
       className={cn(
-        inputVariants({ size: effectiveSize }),
-        !reducedMotion && transitionClasses,
-        prefix && PREFIX_PADDING[effectiveSize],
-        suffix && SUFFIX_PADDING[effectiveSize],
+        "h-full w-full min-w-0 flex-1 bg-transparent text-inherit outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed",
+        isFile
+          ? [
+              FILE_INPUT_CLASSES,
+              FILE_CONTROL_SIZE[effectiveSize],
+              !reducedMotion && "file:transition-colors",
+            ]
+          : INPUT_CONTROL_SIZE[effectiveSize],
         {
           "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none":
             isNumeric,
+          "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none":
+            isSearch,
         },
-        className,
       )}
       value={value}
       onChange={onChange}
@@ -479,12 +506,23 @@ function hasClearAffordance(
 function resolveActionButtons(params: {
   showClearButton: boolean;
   showCopy: boolean;
+  disabled?: boolean;
   size: InputSize;
   copied: boolean;
+  reducedMotion: boolean;
   onClear: () => void;
   onCopy: () => void;
 }): React.ReactNode {
-  const { showClearButton, showCopy, size, copied, onClear, onCopy } = params;
+  const {
+    showClearButton,
+    showCopy,
+    disabled,
+    size,
+    copied,
+    reducedMotion,
+    onClear,
+    onCopy,
+  } = params;
 
   return (
     (showClearButton || showCopy) && (
@@ -492,8 +530,10 @@ function resolveActionButtons(params: {
         show={showClearButton || showCopy}
         showClearButton={showClearButton}
         showCopy={showCopy}
+        disabled={disabled}
         size={size}
         copied={copied}
+        reducedMotion={reducedMotion}
         onClear={onClear}
         onCopy={onCopy}
       />
@@ -501,50 +541,21 @@ function resolveActionButtons(params: {
   );
 }
 
-/** Suffix content: user suffix + action buttons in one row. */
-function resolveCombinedSuffix(
-  suffix: React.ReactNode,
-  actionButtons: React.ReactNode,
-): React.ReactNode {
-  return (
-    (suffix || actionButtons) && (
-      <div className="flex items-center gap-1">
-        {suffix}
-        {actionButtons}
-      </div>
-    )
-  );
-}
-
-/** Right padding applied to the input when action buttons are shown. */
-function resolveActionButtonsPadding(
-  showClear: boolean,
-  showCopy: boolean,
-  size: InputSize,
-): string {
-  if (showClear && showCopy) return DOUBLE_ACTION_PADDING[size];
-
-  if (showClear || showCopy) return SINGLE_ACTION_PADDING[size];
-
-  return "";
-}
-
-/** Absolutely-positioned prefix container on the left edge. */
+/** Leading flex addon slot before the input. */
 function renderPrefixContainer(
   prefix: React.ReactNode,
-  prefixContainerPadding: string,
   size: InputSize,
 ): React.ReactNode {
   return (
     prefix && (
       <div
+        data-slot="input-prefix"
         className={cn(
-          "absolute left-0 flex h-full items-center text-muted-foreground pointer-events-none",
-          // Bare icons get the contract affordance size so text offsets never collide.
+          "flex shrink-0 items-center text-muted-foreground select-none",
+          // Bare icons get the contract affordance size for consistent proportion.
           size === "xs"
             ? "[&_svg:not([class*='size-'])]:size-3"
             : "[&_svg:not([class*='size-'])]:size-4",
-          prefixContainerPadding,
         )}
       >
         {prefix}
@@ -553,32 +564,103 @@ function renderPrefixContainer(
   );
 }
 
-/** Absolutely-positioned suffix container on the right edge. */
+/** Trailing flex addon slot after the input (user suffix + clear/copy actions). */
 function renderSuffixContainer(
-  combinedSuffix: React.ReactNode,
-  suffixContainerPadding: string,
+  suffix: React.ReactNode,
+  actionButtons: React.ReactNode,
   size: InputSize,
 ): React.ReactNode {
   return (
-    combinedSuffix && (
+    (suffix || actionButtons) && (
       <div
+        data-slot="input-suffix"
         className={cn(
-          "absolute right-0 flex h-full items-center",
+          "flex shrink-0 items-center gap-1 text-muted-foreground select-none",
           size === "xs"
             ? "[&_svg:not([class*='size-'])]:size-3"
             : "[&_svg:not([class*='size-'])]:size-4",
-          suffixContainerPadding,
         )}
       >
-        {combinedSuffix}
+        {suffix}
+        {actionButtons}
       </div>
     )
   );
 }
 
-/** Layout view for Input: padded primitive + prefix/suffix containers + counter. */
+/** Focus the inner input when clicking empty shell padding or non-interactive addons. */
+function handleInputShellClick(
+  event: React.MouseEvent<HTMLDivElement>,
+  inputRef: React.RefObject<HTMLInputElement | null>,
+  disabled?: boolean,
+) {
+  if (
+    disabled ||
+    !(event.target instanceof Element) ||
+    event.target.closest("button, a, input, select, textarea")
+  ) {
+    return;
+  }
+
+  inputRef.current?.focus();
+}
+
+/** Compute flex-shell classes including optical start/end padding for addons. */
+function resolveShellClassName(params: {
+  size: InputSize;
+  reducedMotion: boolean;
+  hasPrefix: boolean;
+  hasSuffix: boolean;
+  isFile: boolean;
+  className?: string;
+}): string {
+  const { size, reducedMotion, hasPrefix, hasSuffix, isFile, className } =
+    params;
+
+  let startPadding: string = SHELL_START_PADDING[size];
+
+  if (hasPrefix) {
+    startPadding = SHELL_PREFIX_START_PADDING[size];
+  } else if (isFile) {
+    startPadding = SHELL_FILE_START_PADDING[size];
+  }
+
+  return cn(
+    inputShellVariants({ size }),
+    !reducedMotion && transitionClasses,
+    isFile && "cursor-pointer",
+    startPadding,
+    hasSuffix
+      ? [SHELL_SUFFIX_END_PADDING[size], SHELL_ACTION_END_PADDING[size]]
+      : SHELL_END_PADDING[size],
+    className,
+  );
+}
+
+/** Shared inline loading spinner for SearchInput and InputWithSpinner. */
+function renderLoadingSpinner(
+  isLoading: boolean,
+  iconSize: "size-3" | "size-4",
+  reducedMotion: boolean,
+): React.ReactNode {
+  if (!isLoading) return undefined;
+
+  return (
+    <IconLoader2
+      className={cn(
+        iconSize,
+        !reducedMotion && "animate-spin",
+        "text-muted-foreground",
+      )}
+      aria-hidden="true"
+    />
+  );
+}
+
+/** Layout view for Input: flex shell + leading/trailing addons + inner primitive + counter. */
 function InputFieldView(options: InputFieldViewOptions) {
   const {
+    className,
     size = "default",
     disabled,
     showClear = false,
@@ -589,10 +671,11 @@ function InputFieldView(options: InputFieldViewOptions) {
     showCount = false,
     maxLength,
     value,
+    inputRef,
+    reducedMotion,
   } = options;
 
   const effectiveSize = size || "default";
-
   const inputElement = createInputElement(options, effectiveSize);
 
   const showClearButton = hasClearAffordance(
@@ -607,39 +690,37 @@ function InputFieldView(options: InputFieldViewOptions) {
   const actionButtons = resolveActionButtons({
     showClearButton,
     showCopy,
+    disabled,
     size: effectiveSize,
     copied,
+    reducedMotion,
     onClear,
     onCopy,
   });
 
-  const combinedSuffix = resolveCombinedSuffix(options.suffix, actionButtons);
+  const shellClassName = resolveShellClassName({
+    size: effectiveSize,
+    reducedMotion,
+    hasPrefix: Boolean(options.prefix),
+    hasSuffix: Boolean(options.suffix || actionButtons),
+    isFile: options.type === "file",
+    className,
+  });
 
-  const actionButtonsPadding = resolveActionButtonsPadding(
-    showClear,
-    showCopy,
-    effectiveSize,
-  );
-
-  // Always render the wrapper div: switching between bare-input and wrapper
-  // trees remounts the <input> on first keystroke (showClear/showCopy appearing
-  // when value goes empty → non-empty) and drops focus mid-typing.
+  // Always render the flex shell: switching trees when showClear appears would
+  // remount the <input> on first keystroke and drop focus mid-typing.
   return withCounterWrapper(
     counter,
-    <div className="relative flex items-center">
-      {renderPrefixContainer(
-        options.prefix,
-        PREFIX_CONTAINER_PADDING[effectiveSize],
-        effectiveSize,
-      )}
-      {React.cloneElement(inputElement, {
-        className: cn(inputElement.props.className, actionButtonsPadding),
-      })}
-      {renderSuffixContainer(
-        combinedSuffix,
-        SUFFIX_CONTAINER_PADDING[effectiveSize],
-        effectiveSize,
-      )}
+    // oxlint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- Click-to-focus is pointer convenience for the already keyboard-focusable input; the shell may contain independent action buttons and must not become a nested button.
+    <div
+      data-slot="input-shell"
+      dir={options.props.dir}
+      onClick={(event) => handleInputShellClick(event, inputRef, disabled)}
+      className={shellClassName}
+    >
+      {renderPrefixContainer(options.prefix, effectiveSize)}
+      {inputElement}
+      {renderSuffixContainer(options.suffix, actionButtons, effectiveSize)}
     </div>,
   );
 }
@@ -1013,28 +1094,20 @@ function InputWithSpinner({
   ...props
 }: InputWithSpinnerProps) {
   const effectiveSize = size || "default";
+  const reducedMotion = useReducedMotion();
 
   return (
-    <div className="relative">
-      <Input
-        className={cn(
-          isLoading && SINGLE_ACTION_PADDING[effectiveSize],
-          className,
-        )}
-        size={size}
-        {...props}
-      />
-      {isLoading && (
-        <div
-          className={cn(
-            "absolute top-1/2 -translate-y-1/2",
-            SUFFIX_INSET[effectiveSize],
-          )}
-        >
-          <IconLoader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-        </div>
+    <Input
+      className={className}
+      size={size}
+      suffix={renderLoadingSpinner(
+        isLoading,
+        ACTION_ICON_SIZE[effectiveSize],
+        reducedMotion,
       )}
-    </div>
+      aria-busy={isLoading || undefined}
+      {...props}
+    />
   );
 }
 
@@ -1157,8 +1230,11 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
       describedBy = describedById;
     }
 
+    const effectiveSize = size || "default";
+    const iconSize = ACTION_ICON_SIZE[effectiveSize];
+
     return (
-      <div className="w-full">
+      <div data-slot="password-input" className="w-full">
         <Input
           ref={ref}
           type={inputType}
@@ -1171,15 +1247,22 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           suffix={
             <button
               type="button"
+              data-slot="password-input-toggle"
+              disabled={props.disabled}
               // Toggling must not steal focus from the field.
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => setVisible((v) => !v)}
-              className="pointer-events-auto flex size-6 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
+              className={cn(
+                "flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground outline-none hover:bg-muted/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+                !reducedMotion && transitionClasses,
+              )}
               aria-label={toggleLabel}
               aria-pressed={visible}
             >
-              {visible && <IconEyeOff className="h-4 w-4" />}
-              {!visible && <IconEye className="h-4 w-4" />}
+              {visible && (
+                <IconEyeOff className={iconSize} aria-hidden="true" />
+              )}
+              {!visible && <IconEye className={iconSize} aria-hidden="true" />}
             </button>
           }
           {...props}
@@ -1322,41 +1405,54 @@ function InputContentView({
   onClear,
   iconSize,
   showCopy,
+  disabled,
+  reducedMotion,
   onCopy,
   copyButtonLabel,
   copyButtonIcon,
 }: {
   showClearButton: boolean;
   onClear: () => void;
-  iconSize: "h-3 w-3" | "h-4 w-4";
+  iconSize: "size-3" | "size-4";
   showCopy: boolean;
+  disabled?: boolean;
+  reducedMotion: boolean;
   onCopy: () => void;
   copyButtonLabel: string;
   copyButtonIcon: React.JSX.Element;
 }) {
+  const actionButtonClass = cn(
+    "flex size-6 shrink-0 items-center justify-center rounded-sm text-muted-foreground outline-none hover:bg-muted/60 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+    !reducedMotion && transitionClasses,
+  );
+
   return (
-    <div className="flex items-center gap-1">
+    <>
       {showClearButton && (
         <button
           type="button"
+          data-slot="input-clear"
+          onMouseDown={(e) => e.preventDefault()}
           onClick={onClear}
-          className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-sm"
+          className={actionButtonClass}
           aria-label="Clear input"
         >
-          <IconX className={iconSize} />
+          <IconX className={iconSize} aria-hidden="true" />
         </button>
       )}
       {showCopy && (
         <button
           type="button"
+          data-slot="input-copy"
+          disabled={disabled}
           onClick={onCopy}
-          className="flex size-6 items-center justify-center text-muted-foreground hover:text-foreground transition-colors rounded-sm"
+          className={actionButtonClass}
           aria-label={copyButtonLabel}
         >
           {copyButtonIcon}
         </button>
       )}
-    </div>
+    </>
   );
 }
 
@@ -1439,12 +1535,11 @@ function useSearchInputModel({
   const [internalValue, setInternalValue] = React.useState(value || "");
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const reducedMotion = useReducedMotion();
 
   const effectiveValue = value === undefined ? internalValue : value;
-
   const effectiveSize = size || "default";
-
-  const iconSize = SEARCH_ICON_SIZE[effectiveSize];
+  const iconSize = ACTION_ICON_SIZE[effectiveSize];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     inputHandleChange(
@@ -1478,15 +1573,7 @@ function useSearchInputModel({
 
   React.useEffect(() => () => cancelSearchDebounce(debounceRef), []);
 
-  let suffix: React.ReactNode = undefined;
-
-  if (isLoading) {
-    suffix = (
-      <IconLoader2
-        className={cn(iconSize, "animate-spin text-muted-foreground")}
-      />
-    );
-  }
+  const suffix = renderLoadingSpinner(isLoading, iconSize, reducedMotion);
 
   return {
     iconSize,
@@ -1498,6 +1585,7 @@ function useSearchInputModel({
     handleKeyDown,
     placeholder,
     showClear,
+    isLoading,
     handleClear,
     suffix,
     props,
@@ -1514,54 +1602,28 @@ function SearchInputView({
   handleKeyDown,
   placeholder,
   showClear,
+  isLoading,
   handleClear,
   suffix,
   props,
 }: ReturnType<typeof useSearchInputModel>) {
-  const effectiveSize = size || "default";
-
   return (
-    <div className="relative flex items-center">
-      <div
-        className={cn(
-          "absolute flex items-center pointer-events-none text-muted-foreground z-10",
-          PREFIX_INSET[effectiveSize],
-        )}
-      >
-        <svg
-          className={iconSize}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
-      </div>
-      <Input
-        ref={inputRef}
-        type="search"
-        className={cn(
-          PREFIX_PADDING[effectiveSize],
-
-          "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
-          className,
-        )}
-        size={size}
-        value={effectiveValue}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        showClear={showClear}
-        onClear={handleClear}
-        suffix={suffix}
-        {...props}
-      />
-    </div>
+    <Input
+      ref={inputRef}
+      type="search"
+      className={className}
+      size={size}
+      value={effectiveValue}
+      onChange={handleChange}
+      onKeyDown={handleKeyDown}
+      placeholder={placeholder}
+      prefix={<IconSearch className={iconSize} aria-hidden="true" />}
+      showClear={showClear}
+      onClear={handleClear}
+      suffix={suffix}
+      aria-busy={isLoading || undefined}
+      {...props}
+    />
   );
 }
 

@@ -1394,7 +1394,7 @@ function SidebarUser({
   const { expanded, side, isMobile, motion } = useSidebar();
 
   const content = (
-    <SidebarUserAvatarView
+    <SidebarUserContent
       avatar={avatar}
       expanded={expanded}
       name={name}
@@ -1572,7 +1572,7 @@ function SidebarDestination({
   onNavigate,
 }: {
   item: SidebarNavItem;
-  active: boolean;
+  active: boolean | undefined;
   onNavigate: (item: SidebarNavItem) => void;
 }) {
   const { isMobile, setOpenMobile } = useSidebar();
@@ -1893,7 +1893,33 @@ function SidebarItemGroupLabelView({
   );
 }
 
-function SidebarUserAvatarView({
+function SidebarUserAvatarView({ avatar }: Pick<SidebarUserProps, "avatar">) {
+  const avatarUrl = isStringProp(avatar) ? avatar : undefined;
+
+  if (
+    avatarUrl !== undefined ||
+    avatar == null ||
+    avatar === false ||
+    avatar === true
+  ) {
+    return (
+      <Avatar data-slot="sidebar-user-avatar" className="size-8 shrink-0">
+        {avatarUrl !== undefined && <AvatarImage src={avatarUrl} alt="" />}
+        <AvatarFallback>
+          <IconUser aria-hidden="true" className="size-4" />
+        </AvatarFallback>
+      </Avatar>
+    );
+  }
+
+  return (
+    <span data-slot="sidebar-user-avatar" className="inline-flex shrink-0">
+      {avatar}
+    </span>
+  );
+}
+
+function SidebarUserContent({
   avatar,
   expanded,
   name,
@@ -1908,12 +1934,7 @@ function SidebarUserAvatarView({
 }) {
   return (
     <>
-      <Avatar data-slot="sidebar-user-avatar" className="size-8 shrink-0">
-        {isStringProp(avatar) ? <AvatarImage src={avatar} alt="" /> : avatar}
-        <AvatarFallback>
-          <IconUser aria-hidden="true" className="size-4" />
-        </AvatarFallback>
-      </Avatar>
+      <SidebarUserAvatarView avatar={avatar} />
       <span
         data-slot="sidebar-user-details"
         className={cn("min-w-0 flex-1 text-start", { "sr-only": !expanded })}
@@ -1955,6 +1976,8 @@ function SidebarUserTriggerView({
   motion: boolean;
   menuItems: NonNullable<SidebarUserProps["menuItems"]>;
 }) {
+  const { Link: LinkComponent } = React.useContext(SidebarRouterContext);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -1984,7 +2007,8 @@ function SidebarUserTriggerView({
           item.href ? (
             <DropdownMenuLinkItem
               key={item.label}
-              href={item.href}
+              render={<LinkComponent to={item.href} />}
+              closeOnClick
               icon={item.icon}
               variant={item.destructive ? "destructive" : "default"}
               onClick={item.onClick}
@@ -2067,26 +2091,37 @@ function SidebarContentView({
   setOpenMobile,
 }: {
   item: SidebarNavItem;
-  active: boolean;
+  active: boolean | undefined;
   onNavigate: (item: SidebarNavItem) => void;
   isMobile: boolean;
   setOpenMobile: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  if (item.href && !item.disabled) {
+    return (
+      <SidebarItem
+        to={item.href}
+        icon={item.icon ?? <IconMenu2 />}
+        isActive={active}
+        badge={item.badge}
+        badgeVariant={item.badgeVariant}
+        onClick={(event) => sidebarLinkCallback(event, item, onNavigate)}
+      >
+        {item.label}
+      </SidebarItem>
+    );
+  }
+
+  const isActive = active ?? false;
+
   return (
     <SidebarMenuButton
       icon={item.icon ?? <IconMenu2 />}
-      isActive={active}
+      isActive={isActive}
       badge={item.badge}
       badgeVariant={item.badgeVariant}
       disabled={item.disabled}
       disabledReason={item.disabledReason}
-      aria-current={active ? "page" : undefined}
-      render={
-        item.href && !item.disabled ? (
-          <a href={item.href}>{item.label}</a>
-        ) : undefined
-      }
-      nativeButton={!item.href || item.disabled}
+      aria-current={isActive ? "page" : undefined}
       onClick={(event) =>
         sidebarCallback2(event, item, onNavigate, isMobile, setOpenMobile)
       }
@@ -2782,7 +2817,9 @@ function SidebarFavoriteListView({
             >
               <SidebarDestination
                 item={item}
-                active={activeId === item.id}
+                active={
+                  activeId === undefined ? undefined : activeId === item.id
+                }
                 onNavigate={onNavigate}
               />
               {showControls && (
@@ -2888,7 +2925,6 @@ function useKiraSidebarModel(input: KiraSidebarProps) {
     header,
     controlledActive,
     defaultActiveId,
-    onNavigate,
     searchable,
     searchValue,
     onSearchValueChange,
@@ -2926,12 +2962,8 @@ function useKiraSidebarModel(input: KiraSidebarProps) {
     onSearchValueChange?.(next);
   };
 
-  const navigate = (item: SidebarNavItem) => {
-    if (item.disabled) return;
-
-    if (controlledActive === undefined) setLocalActive(item.id);
-    onNavigate?.(item);
-  };
+  const navigate = (item: SidebarNavItem) =>
+    sidebarNavigateItem(item, settings, setLocalActive);
 
   const updatePinned = (next: string[], message: string) => {
     if (readOnly) return;
@@ -3470,6 +3502,39 @@ function sidebarUseEffect(
     document.removeEventListener("visibilitychange", update);
     rows.style.animationPlayState = "paused";
   };
+}
+
+function sidebarNavigateItem(
+  item: SidebarNavItem,
+  settings: ReturnType<typeof useKiraSidebarSettings>,
+  setLocalActive: React.Dispatch<React.SetStateAction<string | undefined>>,
+) {
+  if (item.disabled) return;
+
+  if (settings.controlledActive === undefined) {
+    setLocalActive(
+      item.href && settings.defaultActiveId === undefined ? undefined : item.id,
+    );
+  }
+
+  settings.onNavigate?.(item);
+}
+
+function sidebarLinkCallback(
+  event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  item: SidebarNavItem,
+  onNavigate: (item: SidebarNavItem) => void,
+) {
+  if (
+    event.defaultPrevented ||
+    item.disabled ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  )
+    return;
+  onNavigate(item);
 }
 
 function sidebarCallback2(
@@ -4026,7 +4091,9 @@ function KiraSidebarSections({ model }: { model: KiraSidebarCollection }) {
                 >
                   <SidebarDestination
                     item={item}
-                    active={activeId === item.id}
+                    active={
+                      activeId === undefined ? undefined : activeId === item.id
+                    }
                     onNavigate={navigate}
                   />
                   {favorites && expanded && !readOnly && (

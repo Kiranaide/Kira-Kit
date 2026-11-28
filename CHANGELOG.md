@@ -6,6 +6,21 @@ components are source files you own, so entries describe the registry surface
 you install, not a published package's dependency tree. The CLI is versioned
 with Changesets; per-component history lives on each component's docs page.
 
+## 0.8.0 — November 28, 2026
+
+### Added
+
+- **DataTable presets and filters.** `KiraDataTable` provides toolbar, sidebar, and cards presets. Use `view="table"` for sortable table results with any preset. The filter primitives support manual apply and live filtering.
+- **DataTable result states.** `DataTableContent` shows distinct states for empty data, filtered results, and errors. It keeps existing rows visible during a refetch. `KiraEmpty` also supports a neutral no-data state.
+- **System theme and server rendering.** `ThemeProvider` follows OS changes in system mode and accepts a controlled preference for cookie-backed apps. `getThemeBootstrapScript` applies the preference before paint.
+
+### Fixed
+
+- **Input controls.** Prefixes, suffixes, and action buttons stay clear of the input text. File inputs and InputGroup add-ons use consistent spacing.
+- **DataTable column resizing.** Long cell text stays within resized columns. Fixed-width selection, expansion, and drag columns no longer show resize handles.
+- **Sidebar routing and account avatars.** `KiraSidebar` destinations and `SidebarUser` menu links use the router adapter. A supplied account avatar renders once, with the person fallback reserved for unavailable images and omitted avatars.
+- **Docs preset picker.** The header displays the selected preset before the picker opens.
+
 ## 0.7.1 — November 27, 2026
 
 ### Changed

@@ -237,6 +237,7 @@ function EmptyFile(props: Omit<EmptyProps, "icon">) {
 
 type KiraEmptyState =
   | "first-use"
+  | "no-data"
   | "no-results"
   | "error"
   | "offline"
@@ -268,6 +269,11 @@ const emptyStateDefaults: Record<
   "first-use": {
     title: "Start your first project",
     description: "Create a project or import existing work to get started.",
+    icon: "inbox",
+  },
+  "no-data": {
+    title: "No data yet",
+    description: "There are no items to display right now.",
     icon: "inbox",
   },
   "no-results": {
