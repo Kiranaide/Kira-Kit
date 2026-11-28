@@ -635,7 +635,7 @@ export default function EmptyPage() {
       <PageHeader
         title="Empty"
         description="Composable empty states that explain the situation and give people a useful next action."
-        version="v2.0.0"
+        version="v2.1.0"
       />
 
       <FeatureGrid
@@ -661,7 +661,7 @@ export default function EmptyPage() {
           },
           {
             label: "KiraEmpty",
-            body: "Use KiraEmpty for contextual states (first-use, no-results, error, offline, forbidden, complete, loading) with caller-owned async actions, AbortSignal cancellation, and polite status announcements.",
+            body: "Use KiraEmpty for contextual states (first-use, no-data, no-results, error, offline, forbidden, complete, loading) with caller-owned async actions, AbortSignal cancellation, and polite status announcements.",
           },
           {
             label: "Presets",
@@ -982,10 +982,10 @@ const emptyPageAPISections = [
     props: [
       {
         prop: "state",
-        type: '"first-use" | "no-results" | "error" | "offline" | "forbidden" | "complete" | "loading"',
+        type: '"first-use" | "no-data" | "no-results" | "error" | "offline" | "forbidden" | "complete" | "loading"',
         default: '"first-use"',
         description:
-          "Contextual text and media. Loading is distinct from absence of data.",
+          "Contextual text and media. Loading is distinct from absence of data; no-data provides a neutral table/list empty state.",
       },
       {
         prop: "query",
@@ -1032,6 +1032,18 @@ const emptyPageAPISections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const emptyPageChangelogEntries = [
+  {
+    version: "2.1.0",
+    date: "28 November 2026",
+    changes: [
+      {
+        type: "added",
+        title: "Neutral no-data state on KiraEmpty",
+        description:
+          'Added state="no-data" ("No data yet") for data tables and lists that need a neutral empty dataset state distinct from project-oriented first-use copy and filtered no-results.',
+      },
+    ],
+  },
   {
     version: "2.0.0",
     date: "13 November 2026",

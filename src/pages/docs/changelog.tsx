@@ -32,6 +32,54 @@ const COMMIT_HISTORY_URL = "https://github.com/Kiranaide/Kira-Kit/commits/main";
 
 const RELEASES: readonly Release[] = [
   {
+    version: "0.8.0",
+    date: "November 28, 2026",
+    changes: [
+      {
+        type: "added",
+        title: "DataTable presets and filters",
+        description:
+          'KiraDataTable provides toolbar, sidebar, and cards presets. Set view="table" to use sortable table results with any preset. The filter primitives support manual apply and live filtering.',
+      },
+      {
+        type: "added",
+        title: "DataTable result states",
+        description:
+          "DataTableContent shows distinct states for empty data, filtered results, and errors. It keeps existing rows visible during a refetch. KiraEmpty also supports a neutral no-data state.",
+      },
+      {
+        type: "added",
+        title: "System theme and server rendering",
+        description:
+          "ThemeProvider follows OS changes in system mode and accepts a controlled preference for cookie-backed apps. getThemeBootstrapScript applies the preference before paint.",
+      },
+      {
+        type: "fixed",
+        title: "Input controls",
+        description:
+          "Prefixes, suffixes, and action buttons stay clear of the input text. File inputs and InputGroup add-ons use consistent spacing.",
+      },
+      {
+        type: "fixed",
+        title: "DataTable column resizing",
+        description:
+          "Long cell text stays within resized columns. Fixed-width selection, expansion, and drag columns no longer show resize handles.",
+      },
+      {
+        type: "fixed",
+        title: "Sidebar routing and account avatars",
+        description:
+          "KiraSidebar destinations and SidebarUser menu links use the router adapter. A supplied account avatar renders once. The person icon still appears when an image fails to load or the avatar is omitted.",
+      },
+      {
+        type: "fixed",
+        title: "Docs preset picker",
+        description:
+          "The header displays the selected preset before the picker opens.",
+      },
+    ],
+  },
+  {
     version: "0.7.1",
     date: "November 27, 2026",
     changes: [

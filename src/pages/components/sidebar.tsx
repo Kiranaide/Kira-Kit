@@ -11,6 +11,7 @@ import {
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   KiraSidebar,
   Sidebar,
@@ -592,6 +593,11 @@ function AccountDemo() {
           <SidebarUser
             name="Alex Morgan"
             email="alex@acme.example"
+            avatar={
+              <Avatar size="sm">
+                <AvatarFallback>AM</AvatarFallback>
+              </Avatar>
+            }
             menuItems={[
               {
                 label: "Profile",
@@ -620,6 +626,7 @@ const accountCode =
   previewCode +
   `
 import { IconHome, IconUsers, IconSettings, IconFile } from "@tabler/icons-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Sidebar, SidebarHeader, SidebarContent, SidebarMenuButton, SidebarFooter, SidebarUser } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/ui/theme-provider";
 // The application wraps this example in ThemeProvider.
@@ -628,7 +635,9 @@ export function AccountDemo() {
   return <SidebarPreview defaultCollapsed detail={<output className="block">{view}</output>}>
     <Sidebar><SidebarHeader title="Acme" /><SidebarContent><SidebarMenuButton icon={<IconHome />} onClick={() => setView("Account overview")}>Overview</SidebarMenuButton></SidebarContent><SidebarFooter>
       <ThemeToggle />
-      <SidebarUser name="Alex Morgan" email="alex@acme.example" menuItems={[
+      <SidebarUser name="Alex Morgan" email="alex@acme.example" avatar={
+        <Avatar size="sm"><AvatarFallback>AM</AvatarFallback></Avatar>
+      } menuItems={[
         { label: "Profile", icon: <IconUsers />, onClick: () => setView("Profile settings selected") },
         { label: "Preferences", icon: <IconSettings />, onClick: () => setView("Preferences selected") },
         { label: "Sidebar documentation", icon: <IconFile />, href: "/components/sidebar" },
@@ -1071,12 +1080,13 @@ const sidebarPageAPISections = [
         type: "{ Link?: React.ComponentType<SidebarLinkProps>; useIsActive?: (to: string) => boolean }",
         default: "native <a> / pathname match",
         description:
-          "Optional router seam for TanStack Router, Next.js, or React Router. Without it, SidebarItem renders native links.",
+          "Optional router seam for TanStack Router, Next.js, or React Router. Shared by SidebarItem, KiraSidebar href items, and SidebarUser link menu items; without it, links render native <a> elements.",
       },
       {
         prop: "children",
         type: "React.ReactNode",
-        description: "Application subtree that uses SidebarItem links.",
+        description:
+          "Application subtree that uses SidebarItem, KiraSidebar, or SidebarUser links.",
       },
     ],
   },
@@ -1449,13 +1459,13 @@ const sidebarPageAPISections = [
         prop: "name / email / avatar",
         type: "string / string / string | React.ReactNode",
         description:
-          "Wrapping identity text and optional image URL or avatar content. Missing/broken images use a neutral avatar fallback.",
+          "Wrapping identity text and an optional image URL or custom avatar. Missing or broken images use the person icon. A custom avatar supplies its own fallback.",
       },
       {
         prop: "menuItems",
         type: "Array<{ label: string; icon?: React.ReactNode; onClick?: () => void; href?: string; destructive?: boolean }>",
         description:
-          "Native Base UI account menu in both widths. href renders a link; omitted items render a static profile.",
+          "Native Base UI account menu in both widths. href renders through SidebarRouterProvider's Link (native <a> by default); omitted items render a static profile.",
       },
       {
         prop: "div props",
@@ -1552,7 +1562,7 @@ const sidebarPageAPISections = [
         prop: "activeId / defaultActiveId / onNavigate",
         type: "string / string / (item: SidebarNavItem) => void",
         description:
-          "Controlled or local current destination. href stays a real link; the caller owns routing and application content.",
+          "Controlled or local current destination. Items with href render through SidebarRouterProvider's Link and match the active route via useIsActive when activeId and defaultActiveId are omitted.",
       },
       {
         prop: "searchable / searchLabel / searchValue / onSearchValueChange",
@@ -1629,7 +1639,8 @@ import {
 } from "@/components/ui/sidebar";
 
 // 2. Optional: wire your router (TanStack Router, Next.js, React Router).
-//    Without SidebarRouterProvider, SidebarItem renders native <a href>.
+//    Without SidebarRouterProvider, SidebarItem, KiraSidebar, and SidebarUser
+//    links render native <a href>.
 // function AppLink({ to, disabled, ...props }: SidebarLinkProps) {
 //   return <Link {...props} to={to} disabled={disabled} />;
 // }
@@ -1707,7 +1718,7 @@ export default function SidebarPage() {
     <ComponentPage>
       <PageHeader
         title="Sidebar"
-        version="v4.0.0"
+        version="v4.0.2"
         description="Navigation that stays close to your work. Search views, keep personal favorites, and move between a compact rail and a mobile drawer."
       />
       <FeatureGrid
@@ -1895,7 +1906,7 @@ const sidebarPageDemoTabsTabs = [
     demo: (
       <DemoWrapper
         title="Account actions in either width"
-        description="Open the profile menu from the rail, use the keyboard, or switch theme."
+        description="Open the profile menu from the rail or with the keyboard. The account row uses a custom initials avatar."
         code={accountCode}
       >
         <AccountDemo />
@@ -1991,7 +2002,7 @@ const sidebarPageUsageNotes = [
   },
   {
     label: "SidebarRouterProvider",
-    body: "Wrap your app in SidebarRouterProvider to bind TanStack Router, Next.js, or React Router links; without it, SidebarItem uses native anchors.",
+    body: "Wrap your app in SidebarRouterProvider to bind TanStack Router, Next.js, or React Router links across SidebarItem, KiraSidebar href items, and SidebarUser link menu items; without it, links use native anchors.",
   },
   {
     label: "Workspace shell & printing",
@@ -2004,6 +2015,31 @@ const sidebarPageUsageNotes = [
 ] satisfies ReactComponentProps<typeof UsageBlock>["notes"];
 
 const sidebarPageChangelogEntries = [
+  {
+    version: "4.0.2",
+    date: "28 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Custom account avatars render once",
+        description:
+          "SidebarUser renders a supplied avatar directly in the account row, removing the extra person icon.",
+      },
+    ],
+  },
+  {
+    version: "4.0.1",
+    date: "28 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title:
+          "SidebarRouterProvider integration in KiraSidebar and SidebarUser",
+        description:
+          "KiraSidebar items with href now delegate to SidebarItem so custom router Link adapters, useIsActive matching (when activeId and defaultActiveId are omitted), icons, badges, and native link semantics work identically to composable SidebarItem. SidebarUser menu items with href also render through SidebarRouterProvider's Link and close the menu on click.",
+      },
+    ],
+  },
   {
     version: "4.0.0",
     date: "26 November 2026",

@@ -212,7 +212,7 @@ function ThemeProviderPanel({ cli }: { cli: string }) {
                 {showFouc && (
                   <CodeBlock
                     code={themeFoucScriptCode}
-                    language="html"
+                    language="tsx"
                     showLineNumbers={false}
                   />
                 )}

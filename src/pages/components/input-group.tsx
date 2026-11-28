@@ -547,7 +547,7 @@ export default function InputGroupPage() {
       <PageHeader
         title="Input Group"
         description="Input with addons, icons, and buttons attached."
-        version="v2.3.0"
+        version="v2.3.1"
       />
 
       <FeatureGrid
@@ -808,6 +808,18 @@ const inputGroupPageAPISections = [
 ] satisfies ReactComponentProps<typeof APIReference>["sections"];
 
 const inputGroupPageChangelogEntries = [
+  {
+    version: "2.3.1",
+    date: "28 November 2026",
+    changes: [
+      {
+        type: "fixed",
+        title: "Aligned addon spacing with Input's 4px optical rhythm",
+        description:
+          "Updated inline-start/inline-end addon insets to logical ps-3/pe-3 (ps-2/pe-2 for buttons and kbd) and increased the addon-to-input gap to 8px (ps-2/pe-2), removing half-step spacing and arbitrary negative margin hacks while improving RTL support and respecting prefers-reduced-motion.",
+      },
+    ],
+  },
   {
     version: "2.3.0",
     date: "18 November 2026",
